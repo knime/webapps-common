@@ -6,7 +6,7 @@ import { toDataPath } from "@jsonforms/core";
 import { fallbackRenderers, defaultRenderers } from "./renderers";
 import { hasAdvancedOptions } from "../nodeDialog/utils";
 import Button from "webapps-common/ui/components/Button.vue";
-import { cloneDeep, set } from "lodash";
+import { cloneDeep, set, isEqual } from "lodash";
 
 const renderers = [
   ...vanillaRenderers,
@@ -32,9 +32,9 @@ export default {
     return {
       jsonDataService: null,
       settings: null,
-      originalSettingsData: null,
       renderers: Object.freeze(renderers),
       registeredWatchers: [],
+      originalModelSettings: null,
     };
   },
   // TODO: UIEXT-236 Move to dialog service
@@ -52,6 +52,7 @@ export default {
     settings.schema.hasNodeView = this.dialogService.hasNodeView();
     settings.schema.showAdvancedSettings = false;
     this.settings = settings;
+    this.setOriginalModelSettings(settings);
     this.jsonDataService.registerDataGetter(this.getData);
     this.$store.dispatch("pagebuilder/dialog/setApplySettings", {
       applySettings: this.applySettings,
@@ -60,6 +61,18 @@ export default {
   methods: {
     getData() {
       return this.settings.data;
+    },
+    setOriginalModelSettings(settings) {
+      this.originalModelSettings = this.getModelSettings(settings);
+    },
+    hasOriginalModelSettings(settings) {
+      return isEqual(
+        this.originalModelSettings,
+        this.getModelSettings(settings),
+      );
+    },
+    getModelSettings(settings) {
+      return settings?.data?.model;
     },
     callDataService({ method, options }) {
       return this.jsonDataService.data({ method, options });
@@ -101,6 +114,12 @@ export default {
     onSettingsChanged(data) {
       if (data.data) {
         this.settings.data = data.data;
+        if (this.hasOriginalModelSettings(this.settings)) {
+          this.$store.dispatch(
+            "pagebuilder/dialog/cleanSettings",
+            cloneDeep(this.settings.data),
+          );
+        }
         // TODO: UIEXT-236 Move to dialog service
         if (!this.dirtyModelSettings) {
           const rawSettings = cloneDeep(this.settings);
@@ -109,6 +128,7 @@ export default {
       }
     },
     applySettings() {
+      this.setOriginalModelSettings(this.settings);
       return this.jsonDataService.applyData();
     },
     async applySettingsCloseDialog() {

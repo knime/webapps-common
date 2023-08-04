@@ -15,10 +15,12 @@ describe("NodeDialog.vue", () => {
     setApplySettingsMock,
     createAlertMock,
     sendWarningMock,
+    cleanSettingsMock,
   } = {}) => {
     const dialogStoreOptions = {
       actions: {
         setApplySettings: setApplySettingsMock || vi.fn(),
+        cleanSettings: cleanSettingsMock || vi.fn(),
       },
       namespaced: true,
     };
@@ -94,10 +96,15 @@ describe("NodeDialog.vue", () => {
   });
 
   describe("onSettingsChanged", () => {
-    let wrapper, onSettingsChangedSpy, publishDataSpy, jsonformsStub;
+    let wrapper,
+      onSettingsChangedSpy,
+      publishDataSpy,
+      jsonformsStub,
+      cleanSettingsMock;
 
     beforeEach(async () => {
-      wrapper = shallowMount(NodeDialog, getOptions());
+      cleanSettingsMock = vi.fn();
+      wrapper = shallowMount(NodeDialog, getOptions({ cleanSettingsMock }));
       onSettingsChangedSpy = vi.spyOn(wrapper.vm, "onSettingsChanged");
       publishDataSpy = vi.spyOn(wrapper.vm.jsonDataService, "publishData");
 
@@ -134,6 +141,20 @@ describe("NodeDialog.vue", () => {
         ...dialogInitialData.data,
       });
       expect(publishDataSpy).not.toHaveBeenCalled();
+    });
+
+    it("cleans settings if new data match original data", async () => {
+      const payload = {
+        data: { ...dialogInitialData.data, model: { yAxisScale: "NEW_VALUE" } },
+      };
+      wrapper.vm.setOriginalModelSettings(payload);
+      await jsonformsStub.vm.$emit("change", payload);
+      expect(onSettingsChangedSpy).toHaveBeenCalledWith(payload);
+      expect(publishDataSpy).toHaveBeenCalledWith(wrapper.vm.settings);
+      expect(cleanSettingsMock).toHaveBeenCalledWith(
+        expect.anything(),
+        payload.data,
+      );
     });
   });
 
