@@ -59,12 +59,15 @@ import org.knime.core.webui.node.port.PortViewManager;
  */
 public class PortViewEnt extends NodeUIExtensionEnt<NodePortWrapper> {
 
+    private final NodeInfoEnt m_info;
+
     /**
      * @param wrapper
      * @param manager
      */
     public PortViewEnt(final NodePortWrapper wrapper, final PortViewManager manager) {
         super(wrapper, manager, manager, PageType.PORT);
+        m_info = new NodeInfoEnt(wrapper.get());
     }
 
     /**
@@ -72,6 +75,13 @@ public class PortViewEnt extends NodeUIExtensionEnt<NodePortWrapper> {
      */
     public String getIFrameStyle() {
         return "border: none; width: 100%; height: 100%;";
+    }
+
+    /**
+     * @return additional info for the node providing the view
+     */
+    public NodeInfoEnt getNodeInfo() {
+        return m_info;
     }
 
 }
