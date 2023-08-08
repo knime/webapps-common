@@ -100,7 +100,7 @@ export default {
 </script>
 
 <template>
-  <div class="knime-ui-DeferredTableView">
+  <div class="knime-ui-DeferredTableView" style="height: 100%">
     <div class="table-view-wrapper">
       <div class="submenu-wrapper">
         <SubMenu
