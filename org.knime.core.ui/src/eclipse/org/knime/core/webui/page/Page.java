@@ -51,6 +51,7 @@ package org.knime.core.webui.page;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Comparator;
@@ -196,6 +197,14 @@ public final class Page implements Resource {
     @Override
     public ContentType getContentType() {
         return m_pageResource.getContentType();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<Charset> getCharset() {
+        return m_pageResource.getCharset();
     }
 
     /**
