@@ -50,8 +50,11 @@ package org.knime.core.webui.page;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
 
 /**
  * A {@link Resource}-implementation that references a file.
@@ -61,6 +64,8 @@ import java.nio.file.Path;
  * @since 4.5
  */
 class FileResource implements Resource {
+
+    private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
     private final Path m_absolutePath;
 
@@ -89,6 +94,12 @@ class FileResource implements Resource {
     @Override
     public ContentType getContentType() {
         return ContentType.determineType(m_relativePath.toString());
+    }
+
+    @Override
+    public Optional<Charset> getCharset() {
+        return Charset.defaultCharset().equals(DEFAULT_CHARSET) ? Optional.<Charset> empty()
+            : Optional.ofNullable(DEFAULT_CHARSET);
     }
 
 }

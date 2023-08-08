@@ -103,6 +103,8 @@ public final class FromFilePageBuilder extends PageBuilder {
     /**
      * Adds another resource file to the 'context' of a page (such as a js-file).
      *
+     * NOTE: the referenced resource-file is expected to be UTF-8-encoded.
+     *
      * @param relativeFilePath the relative path to the file
      * @return this page builder instance
      */
@@ -114,6 +116,8 @@ public final class FromFilePageBuilder extends PageBuilder {
     /**
      * Adds all files in the given directory to the 'context' of a page (a directory containing, e.g., js- and
      * css-files).
+     *
+     * NOTE: the referenced resource-files are expected to be UTF-8-encoded.
      *
      * @param relativeDirPath the relative path to the directory
      * @return this page builder instance
