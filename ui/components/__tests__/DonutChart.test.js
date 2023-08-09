@@ -107,6 +107,33 @@ describe("DonutChart.vue", () => {
     expect(wrapper.find("circle.inner-disabled-circle").exists()).toBe(false);
   });
 
+  it("renders with extended values and blocked animation", () => {
+    const primaryValue = {
+      value: 25,
+      color: "#252525",
+    };
+    const secondaryValue = {
+      value: 35,
+      color: "#353535",
+    };
+    const wrapper = mount(DonutChart, {
+      propsData: {
+        value: primaryValue,
+        secondaryValue,
+        blockAnimation: true,
+        maxValue: 100,
+      },
+    });
+    expect(wrapper.find("svg").exists()).toBe(true);
+    let primaryWedge = wrapper.findAll(".value-wedge").at(1);
+    let secondaryWedge = wrapper.findAll(".value-wedge").at(0);
+
+    expect(primaryWedge.attributes("stroke")).toBe(primaryValue.color);
+    expect(primaryWedge.classes()).toContain("block-animation");
+    expect(secondaryWedge.attributes("stroke")).toBe(secondaryValue.color);
+    expect(secondaryWedge.classes()).toContain("block-animation");
+  });
+
   it("sets radius", () => {
     const radius = 100;
     let expectedWidth = "200";
