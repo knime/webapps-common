@@ -52,9 +52,9 @@ export default {
       default: null,
     },
     /** optional parameter wether the transition between values should be animated or not */
-    blockAnimation: {
+    animate: {
       type: Boolean,
-      default: false,
+      default: true,
     },
   },
 
@@ -210,7 +210,7 @@ export default {
       />
       <circle
         v-if="secondarySegment"
-        :class="['value-wedge', { 'block-animation': blockAnimation }]"
+        :class="['value-wedge', { animate }]"
         :cx="radius"
         :cy="radius"
         :r="r"
@@ -222,7 +222,7 @@ export default {
         :transform="transformWedge"
       />
       <circle
-        :class="['value-wedge', { 'block-animation': blockAnimation }]"
+        :class="['value-wedge', { animate }]"
         :cx="radius"
         :cy="radius"
         :r="r"
@@ -267,12 +267,10 @@ svg {
   display: block;
 
   & circle.value-wedge {
-    transition:
-      stroke-dashoffset 0.5s,
-      stroke 0.5s;
-
-    &.block-animation {
-      transition: none !important;
+    &.animate {
+      transition:
+        stroke-dashoffset 0.5s,
+        stroke 0.5s;
     }
   }
 }
