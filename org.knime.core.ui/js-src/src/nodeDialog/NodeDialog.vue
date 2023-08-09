@@ -7,6 +7,7 @@ import { fallbackRenderers, defaultRenderers } from "./renderers";
 import { hasAdvancedOptions } from "../nodeDialog/utils";
 import Button from "webapps-common/ui/components/Button.vue";
 import { cloneDeep, set, isEqual } from "lodash";
+import { markRaw } from "vue";
 
 const renderers = [
   ...vanillaRenderers,
@@ -35,7 +36,6 @@ export default {
       renderers: Object.freeze(renderers),
       registeredWatchers: [],
       currentData: null,
-      initialData: null,
       schema: null,
       uischema: null,
       ready: false,
@@ -58,8 +58,8 @@ export default {
     schema.showAdvancedSettings = false;
     this.schema = schema;
     this.uischema = initialSettings.ui_schema;
-    this.currentData = this.initialData = initialSettings.data;
-    this.setOriginalModelSettings(this.initialData);
+    this.currentData = initialSettings.data;
+    this.setOriginalModelSettings(this.currentData);
     this.jsonDataService.registerDataGetter(this.getData);
     this.$store.dispatch("pagebuilder/dialog/setApplySettings", {
       applySettings: this.applySettings,
@@ -118,7 +118,11 @@ export default {
     },
     onSettingsChanged({ data }) {
       if (data) {
-        this.currentData = data;
+        // We must not set this.currentData = data directly, as this would update the internal
+        // data of the jsonforms component.
+        Object.getOwnPropertyNames(data).forEach((key) => {
+          this.currentData[key] = data[key];
+        });
         if (this.hasOriginalModelSettings(this.currentData)) {
           this.$store.dispatch(
             "pagebuilder/dialog/cleanSettings",
@@ -159,6 +163,7 @@ export default {
       }
       return hasAdvancedOptions(this.uischema);
     },
+    markRaw,
   },
 };
 </script>
@@ -169,7 +174,7 @@ export default {
       <JsonForms
         v-if="ready"
         ref="jsonforms"
-        :data="initialData"
+        :data="markRaw(currentData)"
         :schema="schema"
         :uischema="uischema"
         :renderers="renderers"
