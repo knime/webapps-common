@@ -1,11 +1,15 @@
 <script>
+import { Yellow, AquamarineDark } from '../colors/knimeColors.mjs';
+
+const DEFAULT_PRIMARY_COLOR = Yellow;
+const DEFAULT_SECONDARY_COLOR = AquamarineDark;
 
 export default {
 
     props: {
         /** The value of the wedge to be displayed, can exceed the maximum value */
         value: {
-            type: Number,
+            type: [Number, Object],
             required: true
         },
         /**
@@ -13,7 +17,7 @@ export default {
         * Note this will not be displayed as inner value.
         */
         secondaryValue: {
-            type: Number,
+            type: [Number, Object],
             default: 0
         },
         /** The maximum value on which the wedge size is calculated. Also 'Infinity' can be passed here */
@@ -47,6 +51,11 @@ export default {
         additionalLabel: {
             type: String,
             default: null
+        },
+        /** optional parameter wether the transition between values should be animated or not */
+        blockAnimation: {
+            type: Boolean,
+            default: false
         }
     },
 
@@ -60,20 +69,36 @@ export default {
     },
 
     computed: {
+        primarySegment() {
+            return typeof this.value === 'number'
+                ? {
+                    value: this.value,
+                    color: DEFAULT_PRIMARY_COLOR
+                }
+                : this.value;
+        },
+        secondarySegment() {
+            return typeof this.secondaryValue === 'number'
+                ? {
+                    value: this.secondaryValue,
+                    color: DEFAULT_SECONDARY_COLOR
+                }
+                : this.secondaryValue;
+        },
         clippedValue() {
-            let value = Math.max(0, this.value);
+            let value = Math.max(0, this.primarySegment.value);
             return this.acceptValuesLargerThanMax ? value : Math.min(value, this.maxValue);
         },
         secondaryClippedValue() {
             // calculate secondary value including the first value (to overlap the two svgs)
-            let value = Math.max(0, this.secondaryValue + this.clippedValue);
+            let value = Math.max(0, this.secondarySegment.value + this.clippedValue);
             return this.acceptValuesLargerThanMax ? value : Math.min(value, this.maxValue);
         },
         strokeWidth() {
             return this.radius - this.innerRadius;
         },
         backgroundStrokeWidth() {
-            // to account for rendering inacuracies the background stroke is slightly smaller than the wedge stroke
+            // to account for rendering inaccuracies the background stroke is slightly smaller than the wedge stroke
             return this.strokeWidth - this.backgroundStrokeOffset;
         },
         r() {
@@ -177,11 +202,12 @@ export default {
         fill="transparent"
       />
       <circle
-        v-if="secondaryValue"
-        class="value-wedge secondary-value-wedge"
+        v-if="secondarySegment"
+        :class="['value-wedge', { 'block-animation': blockAnimation }]"
         :cx="radius"
         :cy="radius"
         :r="r"
+        :stroke="secondarySegment.color"
         :stroke-width="strokeWidth"
         :stroke-dasharray="circumference"
         :stroke-dashoffset="secondaryStrokeDashOffset"
@@ -189,10 +215,11 @@ export default {
         :transform="transformWedge"
       />
       <circle
-        class="value-wedge primary-value-wedge"
+        :class="['value-wedge', { 'block-animation': blockAnimation }]"
         :cx="radius"
         :cy="radius"
         :r="r"
+        :stroke="primarySegment.color"
         :stroke-width="strokeWidth"
         :stroke-dasharray="circumference"
         :stroke-dashoffset="strokeDashOffset"
@@ -226,15 +253,6 @@ export default {
   & .background-circle {
     stroke: var(--theme-donut-chart-background-color);
   }
-
-  & .primary-value-wedge {
-    stroke: var(--theme-donut-chart-value-color);
-  }
-
-  & .secondary-value-wedge {
-    stroke: var(--knime-aquamarine-dark);
-  }
-
   & .disabled-circle {
     stroke: var(--theme-donut-chart-disabled-color);
   }
@@ -242,13 +260,19 @@ export default {
   & .disabled-inner-circle {
     stroke: var(--theme-donut-chart-disabled-color);
   }
+
+  
 }
 
 svg {
   display: block;
 
   & circle.value-wedge {
-    transition: stroke-dashoffset 0.5s;
+    transition: stroke-dashoffset 0.5s, stroke 0.5s;
+
+    &.block-animation {
+      transition: none !important;
+    }
   }
 }
 
