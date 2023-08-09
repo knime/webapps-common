@@ -57,7 +57,11 @@ export default defineComponent({
       normal: !compact,
     }"
     @update:model-value="$emit('update:modelValue', $event)"
-  />
+  >
+    <template #default="slotProps">
+      <slot v-bind="slotProps" />
+    </template>
+  </BaseRadioButtons>
 </template>
 
 <style lang="postcss" scoped>

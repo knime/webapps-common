@@ -63,6 +63,8 @@ export interface MenuItem {
   hotkeyText?: string;
   /** sub menu */
   children?: Array<MenuItem>;
+  /** any typed field that can be used to put any data in the item by users of this component */
+  metadata?: any;
 }
 
 type Props = {

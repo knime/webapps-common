@@ -79,6 +79,13 @@ export default defineComponent({
         @change="onInput"
       />
       <span :title="item.text">{{ item.text }}</span>
+      <slot :item="item" />
     </label>
   </div>
 </template>
+
+<style type="postcss" scoped>
+label {
+  display: flex;
+}
+</style>
