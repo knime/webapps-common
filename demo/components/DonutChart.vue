@@ -43,6 +43,8 @@ export default {
 
             It can display the current and max value as well as display an additional label.
             Also supports a secondary value to be displayed.
+
+            Passed values can either be a number or an object containing the value and color.
           </p>
         </div>
       </div>
@@ -79,6 +81,21 @@ export default {
             :inner-radius="70"
             :radius="100"
             accept-values-larger-than-max
+          />
+          <DonutChart
+            :value="{
+              value: 33,
+              color: 'hsl(206, 74%, 90%)',
+            }"
+            :secondary-value="{
+              value: 33,
+              color: 'hsl(263, 40.4%, 77.6%)',
+            }"
+            display-values
+            additional-label="custom colors"
+            :max-value="100"
+            :inner-radius="70"
+            :radius="100"
           />
         </div>
       </div>
