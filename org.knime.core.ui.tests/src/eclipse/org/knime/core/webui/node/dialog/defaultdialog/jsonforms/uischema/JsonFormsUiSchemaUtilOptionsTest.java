@@ -86,6 +86,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonChange;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.PossibleValue;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DeclaringDefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
 
@@ -262,12 +263,18 @@ class JsonFormsUiSchemaUtilOptionsTest {
     }
 
     static class TestChoicesProvider implements ChoicesProvider {
-        /**
-         * {@inheritDoc}
-         */
+
         @Override
         public String[] choices(final DefaultNodeSettingsContext context) {
             return new String[]{"column1", "column2"};
+        }
+    }
+
+    static class TestChoicesProviderWithIdAndText implements ChoicesProvider {
+
+        @Override
+        public PossibleValue[] choicesWithIdAndText(final DefaultNodeSettingsContext context) {
+            return new PossibleValue[]{new PossibleValue("id1", "text1"), new PossibleValue("id2", "text2")};
         }
     }
 
@@ -278,6 +285,9 @@ class JsonFormsUiSchemaUtilOptionsTest {
 
         @ChoicesWidget(choices = TestChoicesProvider.class)
         String m_bar;
+
+        @ChoicesWidget(choices = TestChoicesProviderWithIdAndText.class)
+        String m_idAndText;
 
     }
 
@@ -309,12 +319,21 @@ class JsonFormsUiSchemaUtilOptionsTest {
             .contains("org.knime.core.data.NominalValue");
         assertThatJson(response).inPath("$.elements[0].options.possibleValues[1].compatibleTypes").isArray()
             .contains("org.knime.core.data.BoundedValue");
+
         assertThatJson(response).inPath("$.elements[1].scope").isString().contains("bar");
         assertThatJson(response).inPath("$.elements[1].options.possibleValues").isArray().hasSize(2);
         assertThatJson(response).inPath("$.elements[1].options.possibleValues[0].id").isString().isEqualTo("column1");
         assertThatJson(response).inPath("$.elements[1].options.possibleValues[1].id").isString().isEqualTo("column2");
         assertThatJson(response).inPath("$.elements[1].options.possibleValues[0].text").isString().isEqualTo("column1");
         assertThatJson(response).inPath("$.elements[1].options.possibleValues[1].text").isString().isEqualTo("column2");
+
+        assertThatJson(response).inPath("$.elements[2].scope").isString().contains("idAndText");
+        assertThatJson(response).inPath("$.elements[2].options.possibleValues").isArray().hasSize(2);
+        assertThatJson(response).inPath("$.elements[2].options.possibleValues[0].id").isString().isEqualTo("id1");
+        assertThatJson(response).inPath("$.elements[2].options.possibleValues[1].id").isString().isEqualTo("id2");
+        assertThatJson(response).inPath("$.elements[2].options.possibleValues[0].text").isString().isEqualTo("text1");
+        assertThatJson(response).inPath("$.elements[2].options.possibleValues[1].text").isString().isEqualTo("text2");
+
     }
 
     @Test

@@ -48,7 +48,10 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.widget;
 
+import java.util.Arrays;
+
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.PossibleValue;
 
 /**
  * A class that provides an array of possible values based on the current {@link DefaultNodeSettingsContext}.
@@ -64,6 +67,20 @@ public interface ChoicesProvider {
      *            choices
      * @return array of possible values, never {@code null}
      */
-    String[] choices(DefaultNodeSettingsContext context);
+    default String[] choices(final DefaultNodeSettingsContext context) {
+        throw new IllegalStateException(
+            "At least one method must be implemented: Choices.choices or Choices.choicesWithIdAndText");
+    }
+
+    /**
+     * Computes the array of possible values based on the {@link DefaultNodeSettingsContext}.
+     *
+     * @param context the context that holds any available information that might be relevant for determining available
+     *            choices
+     * @return array of possible values (represented by an id and a text/label), never {@code null}
+     */
+    default PossibleValue[] choicesWithIdAndText(final DefaultNodeSettingsContext context) {
+        return Arrays.stream(choices(context)).map(PossibleValue::fromId).toArray(PossibleValue[]::new);
+    }
 
 }

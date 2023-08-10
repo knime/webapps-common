@@ -77,7 +77,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.Defaul
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
@@ -168,13 +167,6 @@ class JsonFormsSchemaUtilTest {
             TestEnum testEnum;
         }
         assertThrows(IllegalStateException.class, () -> testSettings(EnumTestSettingWidgetAnnotation.class));
-    }
-
-    private static class TestChoices implements ChoicesProvider {
-        @Override
-        public String[] choices(final DefaultNodeSettingsContext context) {
-            return new String[]{context.getDataTableSpecs()[0].getColumnSpec(0).getName()};
-        }
     }
 
     private static class MinMaxSetting {

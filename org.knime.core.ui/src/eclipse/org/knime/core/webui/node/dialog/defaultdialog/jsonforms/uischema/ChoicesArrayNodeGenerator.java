@@ -55,6 +55,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.Co
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.PossibleValue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -111,15 +112,15 @@ final class ChoicesArrayNodeGenerator {
     }
 
     private void addStringsFromChoicesProvider(final ChoicesProvider choicesProvider) {
-        String[] choices = choicesProvider == null || m_settingsContext == null //
-            ? new String[0] //
-            : choicesProvider.choices(m_settingsContext);
-        addStringChoices(choices);
+        var choices = choicesProvider == null || m_settingsContext == null //
+            ? new PossibleValue[0] //
+            : choicesProvider.choicesWithIdAndText(m_settingsContext);
+        addChoices(choices);
     }
 
-    private void addStringChoices(final String[] choices) {
+    private void addChoices(final PossibleValue[] choices) {
         for (var choice : choices) {
-            addChoice(choice, choice);
+            addChoice(choice.id(), choice.text());
         }
     }
 
