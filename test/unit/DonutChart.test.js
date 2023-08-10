@@ -79,7 +79,7 @@ describe('DonutChart.vue', () => {
         expect(wrapper.find('circle.inner-disabled-circle').exists()).toBe(false);
     });
 
-    it('renders with extended values and blocked animation', () => {
+    it('renders with extended values and animation', () => {
         const primaryValue = {
             value: 25,
             color: '#252525'
@@ -91,7 +91,6 @@ describe('DonutChart.vue', () => {
         const wrapper = mount(DonutChart, { propsData: {
             value: primaryValue,
             secondaryValue,
-            blockAnimation: true,
             maxValue: 100
         } });
         expect(wrapper.find('svg').exists()).toBe(true);
@@ -99,9 +98,22 @@ describe('DonutChart.vue', () => {
         let secondaryWedge = wrapper.findAll('.value-wedge').at(0);
 
         expect(primaryWedge.attributes('stroke')).toBe(primaryValue.color);
-        expect(primaryWedge.classes()).toContain('block-animation');
+        expect(primaryWedge.classes()).toContain('animate');
         expect(secondaryWedge.attributes('stroke')).toBe(secondaryValue.color);
-        expect(secondaryWedge.classes()).toContain('block-animation');
+        expect(secondaryWedge.classes()).toContain('animate');
+    });
+
+    it('does not animate if prop is set to false', () => {
+        const wrapper = mount(DonutChart, {
+            propsData: {
+                value: 45,
+                animate: false,
+                maxValue: 100
+            }
+        });
+        expect(wrapper.find('svg').exists()).toBe(true);
+        let primaryWedge = wrapper.findAll('.value-wedge').at(1);
+        expect(primaryWedge.classes()).not.toContain('animate');
     });
 
     it('sets radius', () => {
