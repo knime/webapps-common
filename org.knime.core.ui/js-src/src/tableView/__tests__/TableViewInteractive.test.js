@@ -522,6 +522,12 @@ describe("TableViewInteractive.vue", () => {
             dataRequestResult.rowCount,
           );
         });
+
+        it("renders table after lazy loading", () => {
+          const tableUIWithAutoSizeCalculation =
+            findTableUIWithAutoSizeCalculation(wrapper);
+          expect(tableUIWithAutoSizeCalculation.exists()).toBe(true);
+        });
       });
 
       it("refreshes the scroller when refreshing the table", () => {

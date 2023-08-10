@@ -31,6 +31,7 @@ export default {
   data() {
     return {
       dataLoaded: false,
+      selectionLoaded: false,
       currentIndex: 0,
       currentPage: 1,
       currentScopeStartIndex: null,
@@ -204,6 +205,7 @@ export default {
         await this.initializeLazyLoading();
       } else {
         this.table = table;
+        this.dataLoaded = true;
       }
       await this.handleInitialSelection();
       const { publishSelection, subscribeToSelection } = settings;
@@ -212,7 +214,7 @@ export default {
         publishSelection,
         subscribeToSelection,
       );
-      this.dataLoaded = true;
+      this.selectionLoaded = true;
       this.columnFiltersMap = this.getDefaultFilterConfigsMap(
         this.displayedColumns,
       );
@@ -326,6 +328,7 @@ export default {
         return;
       }
       this.updateInternals(data, options);
+      this.dataLoaded = true;
     },
     async requestData(options) {
       const {
@@ -1055,7 +1058,7 @@ export default {
     class="table-view-display"
     :settings="settings"
     :rows="{
-      loaded: dataLoaded,
+      loaded: dataLoaded && selectionLoaded,
       top: table.rows,
       bottom: bottomRows,
       numRowsAbove,
