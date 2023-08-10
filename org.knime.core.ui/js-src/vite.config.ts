@@ -9,6 +9,12 @@ import postcss from "postcss";
 // @ts-ignore
 import scopify from "postcss-scopify";
 
+/**
+ * NOTE: If you add a new library, make sure it is wrapped in a <div> with the
+ * class `knime-ui-LIBNAME` where LIBNAME is the name you dfine in this object as key.
+ *
+ * See below how the CSS code is scoped in order to prevent problems with webapps-common in knime-ui.
+ */
 const libraries = {
   NodeDialog: {
     entry: fileURLToPath(
