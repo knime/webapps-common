@@ -48,30 +48,13 @@
  */
 package org.knime.core.webui.node.dialog;
 
-import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.Node;
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.NotConfigurableException;
-import org.knime.core.node.port.PortObjectSpec;
-import org.knime.core.node.util.CheckUtils;
-import org.knime.core.node.workflow.CredentialsProvider;
-import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.NativeNodeContainer;
-import org.knime.core.node.workflow.NodeContainer;
-import org.knime.core.node.workflow.NodeContext;
-import org.knime.core.node.workflow.NodeID;
 import org.knime.core.webui.UIExtension;
-import org.knime.core.webui.data.ApplyDataService;
-import org.knime.core.webui.data.DataServiceProvider;
-import org.knime.core.webui.data.InitialDataService;
+import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 
 /**
@@ -81,66 +64,45 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
  *
  * @since 4.5
  */
-public abstract class NodeDialog implements UIExtension, DataServiceProvider {
-
-    private final NodeContainer m_nc;
-
-    private final Set<SettingsType> m_settingsTypes;
-
-    private final OnApplyNodeModifier m_onApplyModifier;
+public interface NodeDialog extends UIExtension {
 
     /**
-     * Creates a new node dialog instance.
-     *
-     * NOTE: when called a {@link NodeContext} needs to be available
-     *
-     * @param onApplyModifier an {@link OnApplyNodeModifier} that will be invoked when cleaning up the
-     *            {@link ApplyDataService} created in {@link #createApplyDataService()}
-     * @param settingsTypes the list of {@link SettingsType}s the {@link NodeSettingsService} is able to deal with;
-     *            must not be empty
+     * @return settingsTypes the list of {@link SettingsType}s the {@link NodeSettingsService} is able to deal with;
+     *         must not be empty
      */
-    protected NodeDialog(final OnApplyNodeModifier onApplyModifier, final SettingsType... settingsTypes) {
-        CheckUtils.checkState(settingsTypes.length > 0, "At least one settings type must be provided");
-        m_settingsTypes = Set.of(settingsTypes);
-        m_nc = NodeContext.getContext().getNodeContainer();
-        m_onApplyModifier = onApplyModifier;
+    Set<SettingsType> getSettingsTypes();
+
+    /**
+     * @return a {@link NodeSettingsService}-instance
+     */
+    NodeSettingsService getNodeSettingsService();
+
+    /**
+     * @return optional service generally providing data to the node view, port view or node dialog.
+     */
+    Optional<RpcDataService> createRpcDataService();
+
+    /**
+     * @return a {@link VariableSettingsService}-instance
+     */
+    default Optional<VariableSettingsService> getVariableSettingsService() {
+        return Optional.empty();
     }
 
     /**
-     * Creates a new node dialog instance.
-     *
-     * NOTE: when called a {@link NodeContext} needs to be available
-     *
-     * @param settingsTypes the list of {@link SettingsType}s the {@link NodeSettingsService} is able to deal with;
-     *            must not be empty
+     * @return see {@link OnApplyNodeModifier}
      */
-    protected NodeDialog(final SettingsType... settingsTypes) {
-        this(null, settingsTypes);
-    }
-
-    @Override
-    public final Optional<InitialDataService<String>> createInitialDataService() {
-        var nodeSettingsService = getNodeSettingsService();
-        var initialData = new InitialData(m_nc, m_settingsTypes, nodeSettingsService);
-        return Optional.of(InitialDataService.builder(initialData::get).build());
-    }
-
-    @Override
-    public final Optional<ApplyDataService<String>> createApplyDataService() {
-        var applyData = new ApplyData(m_nc, m_settingsTypes, getNodeSettingsService(), getVariableSettingsService(),
-            m_onApplyModifier);
-        return Optional.of(ApplyDataService.builder(applyData::applyData) //
-            .onDeactivate(applyData::cleanUp) //
-            .build());
+    default Optional<OnApplyNodeModifier> getOnApplyNodeModifier() {
+        return Optional.empty();
     }
 
     /**
      * Can be implemented and provided to the NodeDialog upon creation. Provides a method that is called when settings
-     * are applied. May optionally modify the node based on the difference difference between previous and updated model
+     * are applied. May optionally modify the node based on the difference between previous and updated model
      * and view {@link DefaultNodeSettings settings}.
      */
     @FunctionalInterface
-    public interface OnApplyNodeModifier {
+    interface OnApplyNodeModifier {
         /**
          * Called when the dialog is closed. May optionally modify the node based on the difference difference between
          * previous and updated model and view {@link DefaultNodeSettings settings}. Note that for any settings
@@ -160,83 +122,6 @@ public abstract class NodeDialog implements UIExtension, DataServiceProvider {
         void onApply(final NativeNodeContainer nnc, NodeSettingsRO previousModelSettings,
             NodeSettingsRO updatedModelSettings, NodeSettingsRO previousViewSettings,
             NodeSettingsRO updatedViewSettings);
-    }
-
-    /**
-     * @return a {@link NodeSettingsService}-instance
-     */
-    protected abstract NodeSettingsService getNodeSettingsService();
-
-    /**
-     * @return a {@link VariableSettingsService}-instance
-     */
-    protected Optional<VariableSettingsService> getVariableSettingsService() {
-        return Optional.empty();
-    }
-
-    /**
-     * @return a legacy flow variable node dialog
-     */
-    public final NodeDialogPane createLegacyFlowVariableNodeDialog() {
-        return new LegacyFlowVariableNodeDialog();
-    }
-
-    final class LegacyFlowVariableNodeDialog extends NodeDialogPane {
-
-        private static final String FLOW_VARIABLES_TAB_NAME = "Flow Variables";
-
-        private NodeSettingsRO m_modelSettings;
-
-        @Override
-        public void onOpen() {
-            setSelected(FLOW_VARIABLES_TAB_NAME);
-        }
-
-        @Override
-        protected boolean hasModelSettings() {
-            return m_settingsTypes.contains(SettingsType.MODEL);
-        }
-
-        @Override
-        protected boolean hasViewSettings() {
-            return m_settingsTypes.contains(SettingsType.VIEW);
-        }
-
-        @Override
-        protected void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs)
-            throws NotConfigurableException {
-            m_modelSettings = settings;
-        }
-
-        @Override
-        protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
-            m_modelSettings.copyTo(settings);
-        }
-
-        @Override
-        protected NodeSettingsRO getDefaultViewSettings(final PortObjectSpec[] specs) {
-            if (hasViewSettings()) {
-                var ns = new NodeSettings("default_view_settings");
-                getNodeSettingsService().getDefaultNodeSettings(Map.of(SettingsType.VIEW, ns), specs);
-                return ns;
-            } else {
-                return super.getDefaultViewSettings(specs);
-            }
-        }
-
-        /**
-         * For testing purposes only!
-         *
-         * @throws NotConfigurableException
-         */
-        void initDialogForTesting(final NodeSettingsRO settings, final PortObjectSpec[] spec)
-            throws NotConfigurableException {
-            Node.invokeDialogInternalLoad(this, settings, spec, null,
-                FlowObjectStack.createFromFlowVariableList(Collections.emptyList(), new NodeID(0)),
-                CredentialsProvider.EMPTY_CREDENTIALS_PROVIDER, false);
-            setSelected(FLOW_VARIABLES_TAB_NAME);
-        }
-
     }
 
 }

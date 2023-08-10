@@ -51,9 +51,11 @@ package org.knime.core.webui.node.dialog;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContext;
+import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.webui.data.DataServiceProvider;
 import org.knime.core.webui.node.AbstractNodeUIManager;
@@ -72,7 +74,7 @@ public final class NodeDialogManager extends AbstractNodeUIManager<NodeWrapper> 
 
     private static NodeDialogManager instance;
 
-    private final Map<NodeContainer, NodeDialog> m_nodeDialogMap = new WeakHashMap<>();
+    private final Map<NodeContainer, NodeDialogAdapter> m_nodeDialogAdapterMap = new WeakHashMap<>();
 
     /**
      * Returns the singleton instance for this class.
@@ -92,7 +94,7 @@ public final class NodeDialogManager extends AbstractNodeUIManager<NodeWrapper> 
 
     /**
      * @param nc the node to check
-     * @return whether the node provides a {@link NodeDialog}
+     * @return whether the node provides a {@link NodeDialogAdapter}
      */
     public static boolean hasNodeDialog(final NodeContainer nc) {
         if (nc instanceof NativeNodeContainer) {
@@ -106,27 +108,27 @@ public final class NodeDialogManager extends AbstractNodeUIManager<NodeWrapper> 
     }
 
     /**
-     * Gets the {@link NodeDialog} for a given node container.
+     * Gets the {@link NodeDialogAdapter} for a given node container.
      *
      * @param nc the node to create the node dialog from
      * @return a node dialog instance
      * @throws IllegalArgumentException if the passed node does not provide a node dialog
      */
-    public NodeDialog getNodeDialog(final NodeContainer nc) {
+    public NodeDialogAdapter getNodeDialog(final NodeContainer nc) {
         if (!hasNodeDialog(nc)) {
             throw new IllegalArgumentException("The node " + nc.getNameWithID() + " doesn't provide a node dialog");
         }
 
         if (nc instanceof NativeNodeContainer) {
             var nnc = (NativeNodeContainer)nc;
-            return m_nodeDialogMap.computeIfAbsent(nc, id -> {
-                NodeCleanUpCallback.builder(nnc, () -> m_nodeDialogMap.remove(nnc)).build();
+            return m_nodeDialogAdapterMap.computeIfAbsent(nc, id -> {
+                NodeCleanUpCallback.builder(nnc, () -> m_nodeDialogAdapterMap.remove(nnc)).build();
                 return createNativeNodeDialog(nnc);
             });
         } else if (nc instanceof SubNodeContainer) {
             var snc = (SubNodeContainer)nc;
-            return m_nodeDialogMap.computeIfAbsent(nc, id -> {
-                NodeCleanUpCallback.builder(nc, () -> m_nodeDialogMap.remove(nc)).build();
+            return m_nodeDialogAdapterMap.computeIfAbsent(nc, id -> {
+                NodeCleanUpCallback.builder(nc, () -> m_nodeDialogAdapterMap.remove(nc)).build();
                 return createSubNodeContainerDialog(snc);
             });
         } else {
@@ -134,20 +136,20 @@ public final class NodeDialogManager extends AbstractNodeUIManager<NodeWrapper> 
         }
     }
 
-    private static NodeDialog createNativeNodeDialog(final NativeNodeContainer nnc) {
+    private static NodeDialogAdapter createNativeNodeDialog(final NativeNodeContainer nnc) {
         NodeDialogFactory fac = (NodeDialogFactory)nnc.getNode().getFactory();
         NodeContext.pushContext(nnc);
         try {
-            return fac.createNodeDialog();
+            return new NodeDialogAdapter(nnc, fac.createNodeDialog());
         } finally {
             NodeContext.removeLastContext();
         }
     }
 
-    private static NodeDialog createSubNodeContainerDialog(final SubNodeContainer snc) {
+    private static NodeDialogAdapter createSubNodeContainerDialog(final SubNodeContainer snc) {
         NodeContext.pushContext(snc);
         try {
-            return new SubNodeContainerDialogFactory(snc).createNodeDialog();
+            return new NodeDialogAdapter(snc, new SubNodeContainerDialogFactory(snc).createNodeDialog());
         } finally {
             NodeContext.removeLastContext();
         }
@@ -157,7 +159,7 @@ public final class NodeDialogManager extends AbstractNodeUIManager<NodeWrapper> 
      * For testing purposes only.
      */
     void clearCaches() {
-        m_nodeDialogMap.clear();
+        m_nodeDialogAdapterMap.clear();
         clearPageCache();
     }
 
@@ -183,6 +185,16 @@ public final class NodeDialogManager extends AbstractNodeUIManager<NodeWrapper> 
     @Override
     public PageType getPageType() {
         return PageType.DIALOG;
+    }
+
+    /**
+     * @param dialog
+     *
+     * @return a legacy flow variable node dialog
+     */
+    public static NodeDialogPane createLegacyFlowVariableNodeDialog(final NodeDialog dialog) {
+        return new NodeDialogAdapter((SingleNodeContainer)NodeContext.getContext().getNodeContainer(), dialog)
+            .createLegacyFlowVariableNodeDialog();
     }
 
 }

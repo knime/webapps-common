@@ -55,6 +55,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.knime.core.node.NodeLogger;
@@ -170,13 +171,17 @@ public final class SubNodeContainerDialogFactory implements NodeDialogFactory {
         }
     }
 
-    private class SubNodeContainerNodeDialog extends NodeDialog {
+    private class SubNodeContainerNodeDialog implements NodeDialog {
         private final NodeSettingsService m_settingsService;
 
         @SuppressWarnings("rawtypes")
         public SubNodeContainerNodeDialog(final Map<NodeID, DialogNode> dialogNodes) {
-            super(SettingsType.MODEL);
             m_settingsService = new SubNodeContainerSettingsService(dialogNodes);
+        }
+
+        @Override
+        public Set<SettingsType> getSettingsTypes() {
+            return Set.of(SettingsType.MODEL);
         }
 
         @Override
@@ -190,7 +195,7 @@ public final class SubNodeContainerDialogFactory implements NodeDialogFactory {
         }
 
         @Override
-        protected NodeSettingsService getNodeSettingsService() {
+        public NodeSettingsService getNodeSettingsService() {
             return m_settingsService;
         }
     }

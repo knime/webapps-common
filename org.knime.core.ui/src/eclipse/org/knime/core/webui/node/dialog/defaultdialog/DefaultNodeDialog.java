@@ -52,6 +52,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.knime.core.webui.data.ApplyDataService;
 import org.knime.core.webui.data.RpcDataService;
@@ -68,7 +69,7 @@ import org.knime.core.webui.page.Page;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
-public final class DefaultNodeDialog extends NodeDialog {
+public final class DefaultNodeDialog implements NodeDialog {
 
     /**
      * The page representing the default node dialog.
@@ -78,7 +79,11 @@ public final class DefaultNodeDialog extends NodeDialog {
 
     private final DefaultNodeSettingsService m_settingsDataService;
 
-    private Collection<Class<?>> m_settingsClasses;
+    private final Collection<Class<?>> m_settingsClasses;
+
+    private final Set<SettingsType> m_settingsTypes;
+
+    private final OnApplyNodeModifier m_onApplyModifier;
 
     /**
      * Creates a new instance.
@@ -88,9 +93,10 @@ public final class DefaultNodeDialog extends NodeDialog {
      */
     public DefaultNodeDialog(final SettingsType settingsType,
         final Class<? extends DefaultNodeSettings> settingsClass) {
-        super(settingsType);
+        m_settingsTypes = Set.of(settingsType);
         m_settingsClasses = List.of(settingsClass);
         m_settingsDataService = new DefaultNodeSettingsService(Map.of(settingsType, settingsClass));
+        m_onApplyModifier = null;
     }
 
     /**
@@ -121,10 +127,16 @@ public final class DefaultNodeDialog extends NodeDialog {
     public DefaultNodeDialog(final SettingsType settingsType1,
         final Class<? extends DefaultNodeSettings> settingsClass1, final SettingsType settingsType2,
         final Class<? extends DefaultNodeSettings> settingsClass2, final OnApplyNodeModifier onApplyModifier) {
-        super(onApplyModifier, settingsType1, settingsType2);
+        m_settingsTypes = Set.of(settingsType1, settingsType2);
         m_settingsClasses = List.of(settingsClass1, settingsClass2);
         m_settingsDataService =
             new DefaultNodeSettingsService(Map.of(settingsType1, settingsClass1, settingsType2, settingsClass2));
+        m_onApplyModifier = onApplyModifier;
+    }
+
+    @Override
+    public Set<SettingsType> getSettingsTypes() {
+        return m_settingsTypes;
     }
 
     @Override
@@ -140,8 +152,13 @@ public final class DefaultNodeDialog extends NodeDialog {
     }
 
     @Override
-    protected NodeSettingsService getNodeSettingsService() {
+    public NodeSettingsService getNodeSettingsService() {
         return m_settingsDataService;
+    }
+
+    @Override
+    public Optional<OnApplyNodeModifier> getOnApplyNodeModifier() {
+        return Optional.ofNullable(m_onApplyModifier);
     }
 
 }

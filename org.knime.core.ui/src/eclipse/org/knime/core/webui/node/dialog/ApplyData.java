@@ -52,7 +52,6 @@ import java.io.IOException;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 
 import org.knime.core.node.InvalidSettingsException;
@@ -81,13 +80,13 @@ final class ApplyData {
 
     private final NodeSettingsService m_textNodeSettingsService;
 
-    private final Optional<VariableSettingsService> m_variableSettingsService;
+    private final VariableSettingsService m_variableSettingsService;
 
     private final OnApplyNodeModiferWrapper m_onApplyModifierWrapper;
 
     ApplyData(final NodeContainer nc, final Set<SettingsType> settingsTypes,
-        final NodeSettingsService textNodeSettingsService,
-        final Optional<VariableSettingsService> variableSettingsService, final OnApplyNodeModifier onApplyModifier) {
+        final NodeSettingsService textNodeSettingsService, final VariableSettingsService variableSettingsService,
+        final OnApplyNodeModifier onApplyModifier) {
         m_nc = nc;
         m_settingsTypes = settingsTypes;
         m_textNodeSettingsService = textNodeSettingsService;
@@ -178,7 +177,7 @@ final class ApplyData {
      * Writes the variable settings into the nodeSettings if the m_variableSettingsService is present
      */
     private void applyVariableSettings(final String data, final NodeSettings nodeSettings) {
-        if (m_variableSettingsService.isPresent()) {
+        if (m_variableSettingsService != null) {
             var variableSettingsMap = new EnumMap<SettingsType, VariableSettingsWO>(SettingsType.class);
             if (hasModelSettings()) {
                 variableSettingsMap.put(SettingsType.MODEL, new LazyVariableSettings(nodeSettings, SettingsType.MODEL));
@@ -186,7 +185,7 @@ final class ApplyData {
             if (hasViewSettings()) {
                 variableSettingsMap.put(SettingsType.VIEW, new LazyVariableSettings(nodeSettings, SettingsType.VIEW));
             }
-            m_variableSettingsService.get().toVariableSettings(data, variableSettingsMap);
+            m_variableSettingsService.toVariableSettings(data, variableSettingsMap);
         }
     }
 

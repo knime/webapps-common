@@ -58,6 +58,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.knime.core.node.ExecutionMonitor;
@@ -78,8 +79,8 @@ import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.data.rpc.json.impl.ObjectMapperUtil;
 import org.knime.core.webui.node.NodeWrapper;
-import org.knime.core.webui.node.dialog.NodeDialog.LegacyFlowVariableNodeDialog;
 import org.knime.core.webui.node.dialog.NodeDialog.OnApplyNodeModifier;
+import org.knime.core.webui.node.dialog.NodeDialogAdapter.LegacyFlowVariableNodeDialog;
 import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.core.webui.page.Page;
 import org.knime.testing.node.dialog.NodeDialogNodeFactory;
@@ -730,7 +731,12 @@ public class NodeDialogTest {
     static NodeDialog createNodeDialog(final Page page, final NodeSettingsService settingsDataService,
         final VariableSettingsService variableSettingsService, final RpcDataService dataService,
         final OnApplyNodeModifier onApplyModifier) {
-        return new NodeDialog(onApplyModifier, SettingsType.MODEL, SettingsType.VIEW) {
+        return new NodeDialog() {
+
+            @Override
+            public Set<SettingsType> getSettingsTypes() {
+                return Set.of(SettingsType.MODEL, SettingsType.VIEW);
+            }
 
             @Override
             public Optional<RpcDataService> createRpcDataService() {
@@ -738,18 +744,23 @@ public class NodeDialogTest {
             }
 
             @Override
-            protected NodeSettingsService getNodeSettingsService() {
+            public NodeSettingsService getNodeSettingsService() {
                 return settingsDataService;
             }
 
             @Override
-            protected Optional<VariableSettingsService> getVariableSettingsService() {
+            public Optional<VariableSettingsService> getVariableSettingsService() {
                 return Optional.ofNullable(variableSettingsService);
             }
 
             @Override
             public Page getPage() {
                 return page;
+            }
+
+            @Override
+            public Optional<OnApplyNodeModifier> getOnApplyNodeModifier() {
+                return Optional.ofNullable(onApplyModifier);
             }
 
         };
