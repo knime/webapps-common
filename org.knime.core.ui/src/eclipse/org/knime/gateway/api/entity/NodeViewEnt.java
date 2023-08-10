@@ -133,7 +133,13 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
      */
     public static NodeViewEnt create(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection,
         final boolean isUsedForReportGeneration) {
-        return create(nnc, initialSelection, null, isUsedForReportGeneration);
+        // NOTE on the 'generatingReportContent'-constant:
+        // this is a shortcut to inform the respective node view frontend that it's part of a report such that it can
+        // optionally do things differently. It's a shortcut because this information is already provided to the frontend
+        // via 'JSONWebNodePageConfiguration.getGeneratedReportActionId' such that the frontend could actually take care
+        // of distributing the info to the individual views itself.
+        return create(nnc, initialSelection, isUsedForReportGeneration ? "generatingReportContent" : null,
+            isUsedForReportGeneration);
     }
 
     /**
