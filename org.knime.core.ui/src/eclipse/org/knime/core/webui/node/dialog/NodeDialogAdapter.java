@@ -50,7 +50,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Supplier;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.Node;
@@ -84,11 +83,9 @@ import org.knime.core.webui.page.Page;
  */
 public final class NodeDialogAdapter implements UIExtension, DataServiceProvider {
 
-    private final Supplier<Page> m_pageSupplier;
-
-    private final Supplier<RpcDataService> m_rpcDataServiceSupplier;
-
     private final SingleNodeContainer m_snc;
+
+    private final NodeDialog m_dialog;
 
     private final Set<SettingsType> m_settingsTypes;
 
@@ -98,10 +95,10 @@ public final class NodeDialogAdapter implements UIExtension, DataServiceProvider
 
     private final VariableSettingsService m_variableSettingsService;
 
+
     NodeDialogAdapter(final SingleNodeContainer snc, final NodeDialog dialog) {
+        m_dialog = dialog;
         m_settingsTypes = dialog.getSettingsTypes();
-        m_pageSupplier = dialog::getPage;
-        m_rpcDataServiceSupplier = () -> dialog.createRpcDataService().orElse(null);
         CheckUtils.checkState(m_settingsTypes.size() > 0, "At least one settings type must be provided");
         m_snc = snc;
         m_onApplyModifier = dialog.getOnApplyNodeModifier().orElse(null);
@@ -111,7 +108,7 @@ public final class NodeDialogAdapter implements UIExtension, DataServiceProvider
 
     @Override
     public Page getPage() {
-        return m_pageSupplier.get();
+        return m_dialog.getPage();
     }
 
     @Override
@@ -122,7 +119,7 @@ public final class NodeDialogAdapter implements UIExtension, DataServiceProvider
 
     @Override
     public Optional<RpcDataService> createRpcDataService() {
-        return Optional.ofNullable(m_rpcDataServiceSupplier.get());
+        return m_dialog.createRpcDataService();
     }
 
     @Override
@@ -132,6 +129,13 @@ public final class NodeDialogAdapter implements UIExtension, DataServiceProvider
         return Optional.of(ApplyDataService.builder(applyData::applyData) //
             .onDeactivate(applyData::cleanUp) //
             .build());
+    }
+
+    /**
+     * @return the original dialog this dialog adapter wraps
+     */
+    public NodeDialog getNodeDialog() {
+        return m_dialog;
     }
 
     /**
