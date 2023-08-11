@@ -71,6 +71,7 @@ describe("NodeDialog.vue", () => {
 
     expect(wrapper.getComponent(NodeDialog).exists()).toBe(true);
     expect(setApplySettingsMock).toHaveBeenCalled();
+    expect(wrapper.find("a.advanced-options").exists()).not.toBe(true);
   });
 
   it("passes props to jsonform", async () => {
@@ -86,6 +87,24 @@ describe("NodeDialog.vue", () => {
     expect(jsonformsStub.props("uischema")).toStrictEqual(
       dialogInitialData.ui_schema,
     );
+  });
+
+  it("renders advanced settings", async () => {
+    const advancedDialogData = { ...dialogInitialData };
+    advancedDialogData.ui_schema.options = { isAdvanced: true };
+    vi.spyOn(JsonDataService.prototype, "initialData").mockResolvedValueOnce(
+      advancedDialogData,
+    );
+    const wrapper = shallowMount(NodeDialog, getOptions());
+    await flushPromises();
+
+    expect(wrapper.getComponent(NodeDialog).exists()).toBe(true);
+    let advancedLink = wrapper.find("a.advanced-options");
+    expect(advancedLink.exists()).toBe(true);
+    expect(advancedLink.text()).toBe("Show advanced settings");
+
+    await advancedLink.trigger("click");
+    expect(advancedLink.text()).toBe("Hide advanced settings");
   });
 
   it("returns current values on getData", async () => {

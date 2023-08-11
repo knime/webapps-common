@@ -185,8 +185,7 @@ export default {
         class="advanced-options"
         @click="changeAdvancedSettings"
       >
-        {{ settings.schema.showAdvancedSettings ? "Hide" : "Show" }} advanced
-        settings
+        {{ schema.showAdvancedSettings ? "Hide" : "Show" }} advanced settings
       </a>
     </div>
     <div class="controls">
