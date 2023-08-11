@@ -142,6 +142,7 @@ describe("TableViewInteractive.vue", () => {
         compactMode: false,
         skipRemainingColumns: false,
         autoSizeColumnsToContent: "FIXED",
+        showOnlySelectedRows: false,
         enableCellCopying: true,
       },
     };
@@ -1706,6 +1707,7 @@ describe("TableViewInteractive.vue", () => {
           false,
           true,
           false,
+          false,
         ],
       });
       expect(wrapper.vm.currentPage).toBe(1);
@@ -1731,6 +1733,7 @@ describe("TableViewInteractive.vue", () => {
           false,
           true,
           false,
+          false,
         ],
       });
       expect(wrapper.vm.currentPage).toBe(1);
@@ -1751,6 +1754,7 @@ describe("TableViewInteractive.vue", () => {
           false,
           false,
           true,
+          false,
           false,
         ],
       });
@@ -1775,6 +1779,7 @@ describe("TableViewInteractive.vue", () => {
           false,
           false,
           true,
+          false,
           false,
         ],
       });
@@ -1802,6 +1807,7 @@ describe("TableViewInteractive.vue", () => {
           false,
           false,
           true,
+          false,
           false,
         ],
       });
@@ -1917,6 +1923,30 @@ describe("TableViewInteractive.vue", () => {
         ]);
         expect(wrapper.vm.currentBottomSelection).toEqual([false, false]);
         expect(wrapper.vm.totalSelected).toBe(0);
+      });
+
+      it("requests new sorted data on changing showOnlySelectedRows", () => {
+        changeViewSetting(wrapper, "showOnlySelectedRows", true);
+
+        expect(getData).toBeCalledWith({
+          method: "getFilteredAndSortedTable",
+          options: [
+            initialDataMock.table.displayedColumns,
+            0,
+            2,
+            null,
+            false,
+            "",
+            emptyColumnFilterValues,
+            false,
+            emptyRenderers,
+            false,
+            false,
+            true,
+            false,
+            true,
+          ],
+        });
       });
 
       describe("onSelectAll", () => {
@@ -2110,6 +2140,7 @@ describe("TableViewInteractive.vue", () => {
           true,
           true,
           false,
+          false,
         ],
       });
     });
@@ -2134,6 +2165,7 @@ describe("TableViewInteractive.vue", () => {
           false,
           true,
           true,
+          false,
           false,
         ],
       });

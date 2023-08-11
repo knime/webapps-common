@@ -334,13 +334,13 @@ class TableViewTest {
         final var sortColumnName = getDefaultTestSpec().getColumnNames()[sortColumnIndex];
         var columns = getDefaultTestSpec().getColumnNames();
         final var tableSortedAscending = testTable.getFilteredAndSortedTable(columns, 0, 5, sortColumnName, true, null,
-            null, true, null, false, false, true, false).getRows();
+            null, true, null, false, false, true, false, false).getRows();
         IntStream.range(1, tableSortedAscending.size()).forEach(rowIndex -> {
             assertThat((String)tableSortedAscending.get(rowIndex).get(sortColumnIndex))
                 .isGreaterThanOrEqualTo((String)tableSortedAscending.get(rowIndex - 1).get(sortColumnIndex));
         });
         final var tableSortedDescending = testTable.getFilteredAndSortedTable(getDefaultTestSpec().getColumnNames(), 0,
-            5, sortColumnName, false, null, null, true, null, false, false, true, false).getRows();
+            5, sortColumnName, false, null, null, true, null, false, false, true, false, false).getRows();
         IntStream.range(1, tableSortedDescending.size()).forEach(rowIndex -> {
             assertThat((String)tableSortedDescending.get(rowIndex).get(sortColumnIndex))
                 .isLessThanOrEqualTo((String)tableSortedDescending.get(rowIndex - 1).get(sortColumnIndex));
@@ -354,14 +354,14 @@ class TableViewTest {
         var sortColumnIndexInResultTable = sortColumnIndex + 2; //  the first two columns are row index and row key
         final var sortColumnName = getDefaultTestSpec().getColumnNames()[sortColumnIndex];
         final var tableSortedAscending = testTable.getFilteredAndSortedTable(getDefaultTestSpec().getColumnNames(), 0,
-            5, sortColumnName, true, null, null, true, null, false, false, true, false).getRows();
+            5, sortColumnName, true, null, null, true, null, false, false, true, false, false).getRows();
         IntStream.range(1, tableSortedAscending.size()).forEach(rowIndex -> {
             assertThat((String)tableSortedAscending.get(rowIndex).get(sortColumnIndexInResultTable))
                 .isGreaterThanOrEqualTo(
                     (String)tableSortedAscending.get(rowIndex - 1).get(sortColumnIndexInResultTable));
         });
         final var tableSortedDescending = testTable.getFilteredAndSortedTable(getDefaultTestSpec().getColumnNames(), 5,
-            5, sortColumnName, true, null, null, true, null, false, false, true, false).getRows();
+            5, sortColumnName, true, null, null, true, null, false, false, true, false, false).getRows();
         IntStream.range(1, tableSortedDescending.size()).forEach(rowIndex -> {
             assertThat((String)tableSortedDescending.get(rowIndex).get(sortColumnIndexInResultTable))
                 .isGreaterThanOrEqualTo(
@@ -414,7 +414,7 @@ class TableViewTest {
         final var filterDataService = createTableViewDataServiceInstance(() -> filterTestTable);
         final var columnFilterValue = new String[][]{new String[0], new String[0], new String[]{"1"}};
         filterDataService.getFilteredAndSortedTable(filterTestTable.getDataTableSpec().getColumnNames(), 0, 2, "string",
-            true, "STRING1", columnFilterValue, false, null, false, false, true, false);
+            true, "STRING1", columnFilterValue, false, null, false, false, true, false, false);
         assertThat(filterDataService.getCurrentRowKeys()).hasSize(1);
     }
 
@@ -427,7 +427,7 @@ class TableViewTest {
         final var selection = Set.of(new RowKey("rowkey 0"));
         final var dataService = TableViewUtil.createTableViewDataService(() -> table, () -> selection, null);
         dataService.getFilteredAndSortedTable(table.getDataTableSpec().getColumnNames(), 0, 2, "string", true,
-            globalSearchTerm, columnFilterValue, filterRowKeys, null, false, false, true, false);
+            globalSearchTerm, columnFilterValue, filterRowKeys, null, false, false, true, false, false);
         assertThat(dataService.getTotalSelected()).isEqualTo(1);
     }
 
@@ -460,13 +460,16 @@ class TableViewTest {
         final var testTable = createTableViewDataServiceInstance(() -> filterTestTable);
         final var sortColumnName = "string";
         final var columnFilterValue = new String[][]{new String[0], new String[0], new String[]{"1"}};
-        final var emptyTable = testTable.getFilteredAndSortedTable(filterTestTable.getDataTableSpec().getColumnNames(),
-            0, 2, sortColumnName, true, "wrongSearchTerm", columnFilterValue, false, null, false, false, true, false)
-            .getRows();
+        final var emptyTable =
+            testTable
+                .getFilteredAndSortedTable(filterTestTable.getDataTableSpec().getColumnNames(), 0, 2, sortColumnName,
+                    true, "wrongSearchTerm", columnFilterValue, false, null, false, false, true, false, false)
+                .getRows();
         assertThat(emptyTable.size()).as("filters and excludes all rows").isEqualTo(0);
 
         final var table = testTable.getFilteredAndSortedTable(filterTestTable.getDataTableSpec().getColumnNames(), 0, 2,
-            sortColumnName, true, "STRING1", columnFilterValue, false, null, false, false, true, false).getRows();
+            sortColumnName, true, "STRING1", columnFilterValue, false, null, false, false, true, false, false)
+            .getRows();
         assertThat(table.size()).as("filters all rows correctly").isEqualTo(1);
     }
 
@@ -480,15 +483,16 @@ class TableViewTest {
             new String[0], new String[0], new String[0], new String[0], new String[0]};
         final var tableSortedAscending =
             testTable.getFilteredAndSortedTable(getDefaultTestSpec().getColumnNames(), 0, 5, sortColumnName, true,
-                globalSearchTerm, columnFilterValue, true, null, false, false, true, false).getRows();
+                globalSearchTerm, columnFilterValue, true, null, false, false, true, false, false).getRows();
         IntStream.range(1, tableSortedAscending.size()).forEach(rowIndex -> {
             assertThat((String)tableSortedAscending.get(rowIndex).get(sortColumnIndex))
                 .isGreaterThanOrEqualTo((String)tableSortedAscending.get(rowIndex - 1).get(sortColumnIndex));
         });
         assertThat(tableSortedAscending.size()).as("filters rows correctly").isEqualTo(1);
 
-        final var cachedTable = testTable.getFilteredAndSortedTable(getDefaultTestSpec().getColumnNames(), 0, 5,
-            sortColumnName, true, globalSearchTerm, columnFilterValue, true, null, false, false, true, false).getRows();
+        final var cachedTable =
+            testTable.getFilteredAndSortedTable(getDefaultTestSpec().getColumnNames(), 0, 5, sortColumnName, true,
+                globalSearchTerm, columnFilterValue, true, null, false, false, true, false, false).getRows();
         assertThat(cachedTable).hasSameSizeAs(tableSortedAscending);
         for (int i = 0; i < cachedTable.size(); i++) {
             assertThat(cachedTable.get(i)).hasSameElementsAs(tableSortedAscending.get(i));
@@ -504,7 +508,7 @@ class TableViewTest {
 
         testTable.getTable(columnNames, 0, 10, null, true, true, false);
         final var tableRemColSortCol = testTable.getFilteredAndSortedTable(columnNames, 0, 10, sortColumnName, false,
-            null, columnFilterValues, false, null, false, false, true, false);
+            null, columnFilterValues, false, null, false, false, true, false, false);
         assertThat(tableRemColSortCol.getRowCount()).as("filters correctly after removing the first column")
             .isEqualTo(1);
     }
@@ -711,7 +715,7 @@ class TableViewTest {
                 new TableViewDataServiceImpl(createDefaultTestTable(100), null, new SwingBasedRendererFactory(), null);
 
             dataService.getFilteredAndSortedTable(selectedTestColumns, 1, 1, selectedTestColumns[0], false, "3", null,
-                false, null, false, false, false, false);
+                false, null, false, false, false, false, false);
             final var copyContent = dataService.getCopyContent(false, false, selectedTestColumns, 0, 1);
             assertThat(copyContent).isEqualTo(expectedResult);
         }

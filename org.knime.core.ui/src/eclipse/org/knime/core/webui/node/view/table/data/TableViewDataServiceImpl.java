@@ -165,7 +165,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
     public Table getTable(final String[] columns, final long fromIndex, final int numRows, final String[] rendererIds,
         final boolean updateDisplayedColumns, final boolean forceClearImageDataCache, final boolean trimColumns) {
         return getFilteredAndSortedTable(columns, fromIndex, numRows, null, false, null, null, false, rendererIds,
-            updateDisplayedColumns, false, forceClearImageDataCache, trimColumns);
+            updateDisplayedColumns, false, forceClearImageDataCache, trimColumns, false);
     }
 
     @Override
@@ -173,7 +173,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         final String sortColumn, final boolean sortAscending, final String globalSearchTerm,
         final String[][] columnFilterValue, final boolean filterRowKeys, final String[] rendererIdsParam,
         final boolean updateDisplayedColumns, final boolean updateTotalSelected, final boolean forceClearImageDataCache,
-        final boolean trimColumns) {
+        final boolean trimColumns, final boolean showOnlySelectedRows) {
         var bufferedDataTable = getInputTable();
         if (bufferedDataTable == null) {
             return createEmptyTable();

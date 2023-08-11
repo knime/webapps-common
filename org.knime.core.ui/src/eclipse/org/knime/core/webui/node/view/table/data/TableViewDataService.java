@@ -90,13 +90,14 @@ public interface TableViewDataService {
      *            total table which are selected is returned
      * @param forceClearImageDataCache forces to clear the image data cache
      * @param trimColumns restricts the number of columns from which data is loaded
+     * @param showOnlySelectedRows if true, only show the currently selected rows
      * @return the table
      */
     @SuppressWarnings("java:S107") // accept the large number of parameters
     Table getFilteredAndSortedTable(String[] columns, long fromIndex, int numRows, String sortColumn,
         boolean sortAscending, String globalSearchTerm, String[][] columnFilterValue, boolean filterRowKeys,
         String[] rendererIds, boolean updateDisplayedColumns, boolean updateTotalSelected,
-        boolean forceClearImageDataCache, boolean trimColumns);
+        boolean forceClearImageDataCache, boolean trimColumns, boolean showOnlySelectedRows);
 
     /**
      * A method receiving a representation of a selected rectangle of cells in the frontend which is invoked when these

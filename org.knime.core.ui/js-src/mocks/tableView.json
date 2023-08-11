@@ -39,7 +39,8 @@
         "enableSortingByHeader": true,
         "enableRendererSelection": true,
         "publishSelection": true,
-        "subscribeToSelection": true
+        "subscribeToSelection": true,
+        "showOnlySelectedRows": false
       }
     },
     "schema": {
@@ -287,6 +288,12 @@
               "title": "Show table size",
               "description": "Whether to display the number of rows and columns above the table or not.",
               "default": true
+            },
+            "showOnlySelectedRows": {
+              "type": "boolean",
+              "title": "Show only selected rows",
+              "description": "When checked, only the selected rows are shown in the table view.",
+              "default": false
             }
           }
         }
@@ -425,6 +432,13 @@
             {
               "type": "Control",
               "scope": "#/properties/view/properties/subscribeToSelection",
+              "options": {
+                "format": "checkbox"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/showOnlySelectedRows",
               "options": {
                 "format": "checkbox"
               }

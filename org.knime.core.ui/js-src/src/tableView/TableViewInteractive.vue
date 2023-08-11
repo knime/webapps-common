@@ -509,7 +509,8 @@ export default {
       if (
         this.columnSortColumnName ||
         this.searchTerm ||
-        this.colFilterActive
+        this.colFilterActive ||
+        this.settings.showOnlySelectedRows
       ) {
         return this.requestFilteredAndSortedTable(
           startIndex,
@@ -558,6 +559,7 @@ export default {
         updateTotalSelected,
         clearImageDataCache,
         this.skipRemainingColumns,
+        this.settings.showOnlySelectedRows,
       ]);
     },
     // eslint-disable-next-line max-params
@@ -708,6 +710,8 @@ export default {
       const autoSizeColumnsToContentChanged =
         newSettings.autoSizeColumnsToContent !==
         this.settings.autoSizeColumnsToContent;
+      const showOnlySelectedRowsChanged =
+        newSettings.showOnlySelectedRows !== this.settings.showOnlySelectedRows;
 
       const oldDisplayedColumns = this.settings.displayedColumns.selected;
 
@@ -730,6 +734,9 @@ export default {
       }
       if (showRowKeysChanged || showRowIndicesChanged) {
         this.$refs.tableViewDisplay.clearCellSelection();
+      }
+      if (showOnlySelectedRowsChanged) {
+        await this.refreshTable({ resetPage: true });
       }
       if (displayedColumnsChanged) {
         await this.refreshTable({
