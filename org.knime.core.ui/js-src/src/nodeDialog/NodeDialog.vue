@@ -120,7 +120,7 @@ export default {
       if (data) {
         // We must not set this.currentData = data directly, as this would update the internal
         // data of the jsonforms component.
-        Object.getOwnPropertyNames(data).forEach((key) => {
+        Object.keys(data).forEach((key) => {
           this.currentData[key] = data[key];
         });
         if (this.hasOriginalModelSettings(this.currentData)) {
