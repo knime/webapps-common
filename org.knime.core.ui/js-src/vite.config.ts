@@ -56,6 +56,14 @@ const libraries = {
     fileName: "FlowVariableView",
     formats: ["umd"],
   } as LibraryOptions,
+  ImageView: {
+    entry: fileURLToPath(
+      new URL("./src/imageView/ImageView.vue", import.meta.url),
+    ),
+    name: "imageview",
+    fileName: "ImageView",
+    formats: ["umd"],
+  } as LibraryOptions,
 };
 
 const getCurrentLibrary = (mode: string) => {
@@ -64,7 +72,8 @@ const getCurrentLibrary = (mode: string) => {
     mode === "TableView" ||
     mode === "TextView" ||
     mode === "DeferredTableView" ||
-    mode === "FlowVariableView"
+    mode === "FlowVariableView" ||
+    mode === "ImageView"
   ) {
     return libraries[mode];
   }

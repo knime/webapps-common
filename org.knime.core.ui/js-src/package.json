@@ -17,6 +17,7 @@
     "build:DeferredTableView": "vite build --mode DeferredTableView",
     "build:TextView": "vite build --mode TextView",
     "build:FlowVariableView": "vite build --mode FlowVariableView",
+    "build:ImageView": "vite build --mode ImageView",
     "type-check": "vue-tsc --noEmit",
     "format": "prettier --cache --write .",
     "format:check": "prettier --cache --check .",
