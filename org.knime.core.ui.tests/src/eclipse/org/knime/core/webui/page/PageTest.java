@@ -165,8 +165,6 @@ public class PageTest {
 
         page = Page.builder(BUNDLE_ID, "files", "page.js").markAsReusable(pageName).build();
         assertThat(page.getPageIdForReusablePage().orElse(null)).isEqualTo(pageName);
-        page = Page.builder(BUNDLE_ID, "files", "vue_component_reference").markAsReusable(pageName).build();
-        assertThat(page.getPageIdForReusablePage().orElse(null)).isEqualTo(pageName);
 
         var illegalStatePage = Page.builder(BUNDLE_ID, "files", "page.html").addResource(() -> null, "resource.html")
             .markAsReusable(pageName).build();

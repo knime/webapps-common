@@ -62,7 +62,6 @@ import java.util.function.Supplier;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 import org.knime.core.node.NodeLogger;
-import org.knime.core.webui.page.Resource.ContentType;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
@@ -149,10 +148,6 @@ public final class FromFilePageBuilder extends PageBuilder {
 
     private static FileResource createFileResource(final Class<?> clazz, final String bundleID, final String basePath,
         final String relativeFilePath) {
-        if (Resource.ContentType.FILE_EXTENSION_TO_CONTENT_TYPE_MAP
-            .get(relativeFilePath) == ContentType.VUE_COMPONENT_REFERENCE) {
-            return new FileResource(null, Path.of(relativeFilePath));
-        }
         var relFile = Paths.get(relativeFilePath);
         Path file = getAbsoluteBasePath(clazz, bundleID, basePath).resolve(relFile);
         return createResourceFromFile(relFile, file);

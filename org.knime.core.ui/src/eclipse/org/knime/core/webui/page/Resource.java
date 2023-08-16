@@ -83,19 +83,13 @@ public interface Resource {
             /**
              * The resource is a png image.
              */
-            PNG,
-            /**
-             * The resource just references a vue component which is already present on the frontend-side (i.e. it does
-             * not provide the vue component itself).
-             */
-            VUE_COMPONENT_REFERENCE;
+            PNG;
 
         static final Map<String, ContentType> FILE_EXTENSION_TO_CONTENT_TYPE_MAP = Map.of( //
             ".js", VUE_COMPONENT_LIB, //
             ".html", HTML, //
             ".svg", SVG, //
-            ".png", PNG, //
-            "vue_component_reference", VUE_COMPONENT_REFERENCE);
+            ".png", PNG);
 
         static ContentType determineType(final String path) {
             return FILE_EXTENSION_TO_CONTENT_TYPE_MAP.entrySet().stream() //
