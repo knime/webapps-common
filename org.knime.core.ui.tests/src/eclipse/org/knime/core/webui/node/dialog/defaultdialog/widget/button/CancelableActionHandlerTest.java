@@ -86,8 +86,8 @@ class CancelableActionHandlerTest {
         final var handler = new TestHandler();
         final var result = handler.invoke(States.READY, null, null);
         assertThat(result.buttonState()).isEqualTo(States.DONE);
-        assertThat(result.settingsValue()).isEqualTo(TestHandler.RESULT);
-        assertThat(result.setSettingsValue()).isTrue();
+        assertThat(result.settingValue()).isEqualTo(TestHandler.RESULT);
+        assertThat(result.setSettingValue()).isTrue();
     }
 
     static class TestHandlerFail extends TestHandler {
@@ -122,8 +122,8 @@ class CancelableActionHandlerTest {
         final var handler = new SingleUseHandler();
         final var result = handler.invoke(States.READY, null, null);
         assertThat(result.buttonState()).isEqualTo(States.DONE);
-        assertThat(result.settingsValue()).isEqualTo(TestHandler.RESULT);
-        assertThat(result.setSettingsValue()).isTrue();
+        assertThat(result.settingValue()).isEqualTo(TestHandler.RESULT);
+        assertThat(result.setSettingValue()).isTrue();
     }
 
     @Test
@@ -139,8 +139,8 @@ class CancelableActionHandlerTest {
         final var handler = new CancelableActionHandler.UpdateHandler<String, Void>();
         final var result = handler.update(null, null);
         assertThat(result.buttonState()).isEqualTo(States.READY);
-        assertThat(result.settingsValue()).isNull();
-        assertThat(result.setSettingsValue()).isTrue();
+        assertThat(result.settingValue()).isNull();
+        assertThat(result.setSettingValue()).isTrue();
     }
 
     @Test
@@ -148,8 +148,8 @@ class CancelableActionHandlerTest {
         final var handler = new TestHandler();
         final var result = handler.initialize(null, null);
         assertThat(result.buttonState()).isEqualTo(States.READY);
-        assertThat(result.settingsValue()).isNull();
-        assertThat(result.setSettingsValue()).isFalse();
+        assertThat(result.settingValue()).isNull();
+        assertThat(result.setSettingValue()).isFalse();
     }
 
 }

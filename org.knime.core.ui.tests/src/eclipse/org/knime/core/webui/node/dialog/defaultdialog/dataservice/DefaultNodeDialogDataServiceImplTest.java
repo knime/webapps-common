@@ -189,7 +189,7 @@ class DefaultNodeDialogDataServiceImplTest {
                 dataService.initializeButton("widgetId", GenericTypesTestHandler.class.getName(), currentState);
             @SuppressWarnings("unchecked")
             final var buttonChange = (ButtonChange<String, TestButtonStates>)result.result();
-            assertThat(buttonChange.settingsValue()).isEqualTo(currentState);
+            assertThat(buttonChange.settingValue()).isEqualTo(currentState);
         }
 
         @Test
@@ -207,7 +207,7 @@ class DefaultNodeDialogDataServiceImplTest {
             @SuppressWarnings("unchecked")
             final var buttonChange = (ButtonChange<String, TestButtonStates>)result.result();
             assertThat(buttonChange.buttonState()).isEqualTo(TestButtonStates.FIRST);
-            assertThat(buttonChange.settingsValue()).isEqualTo(testDepenenciesFooValue);
+            assertThat(buttonChange.settingValue()).isEqualTo(testDepenenciesFooValue);
         }
 
         @Test
@@ -225,7 +225,7 @@ class DefaultNodeDialogDataServiceImplTest {
                 Map.of("foo", testDepenenciesFooValue));
             @SuppressWarnings("unchecked")
             final var buttonChange = (ButtonChange<String, TestButtonStates>)result.result();
-            assertThat(buttonChange.settingsValue()).isEqualTo(testDepenenciesFooValue);
+            assertThat(buttonChange.settingValue()).isEqualTo(testDepenenciesFooValue);
         }
     }
 

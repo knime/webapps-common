@@ -53,18 +53,18 @@ package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
  * {@link ButtonActionHandler} or a {@link ButtonUpdateHandler}.
  *
  * @param buttonState The next state of the button
- * @param settingsValue The next value the setting should be set to if {@link ButtonChange#m_setSettingValue} is true
- * @param setSettingsValue Whether the next value of the setting should be set or ignored
+ * @param settingValue The next value the setting should be set to if {@link ButtonChange#setSettingValue} is true
+ * @param setSettingValue Whether the next value of the setting should be set or ignored
  * @param <R> the type of the annotated setting
  * @param <M> the state machine of the button
  *
  * @author Paul Bärnreuther
  */
-public record ButtonChange<R, M extends Enum<M>>(M buttonState, R settingsValue, boolean setSettingsValue) {
+public record ButtonChange<R, M extends Enum<M>>(M buttonState, R settingValue, boolean setSettingValue) {
 
 
     /**
-     * Use this constructor to change the buttonState but keep the settings value untouched.
+     * Use this constructor to change the buttonState but keep the setting value untouched.
      *
      * @param newButtonState the new state of the button.
      */
@@ -73,13 +73,13 @@ public record ButtonChange<R, M extends Enum<M>>(M buttonState, R settingsValue,
     }
 
     /**
-     * Use this constructor to change the buttonState and the settings value.
+     * Use this constructor to change the buttonState and the setting value.
      *
-     * @param newSettingsValue the new value of the setting.
+     * @param newSettingValue the new value of the setting.
      * @param newButtonState the new state of the button.
      */
-    public ButtonChange(final R newSettingsValue, final M newButtonState) {
-        this(newButtonState, newSettingsValue, true);
+    public ButtonChange(final R newSettingValue, final M newButtonState) {
+        this(newButtonState, newSettingValue, true);
     }
 
 }
