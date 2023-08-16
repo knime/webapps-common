@@ -6,7 +6,7 @@ import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
 import LabeledInput from "./LabeledInput.vue";
 import LoadingIcon from "webapps-common/ui/components/LoadingIcon.vue";
 import { isModelSettingAndHasNodeView, getFlowVariablesMap } from "../utils";
-import { useJsonFormsControlWithUpdate } from "./composables/jsonFormsControlWithUpdate";
+import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
 import getFlattenedSettings from "../utils/getFlattenedSettings";
 import { v4 as uuidv4 } from "uuid";
 

@@ -10,7 +10,7 @@ import RadioButtons from "webapps-common/ui/components/forms/RadioButtons.vue";
 import ValueSwitch from "webapps-common/ui/components/forms/ValueSwitch.vue";
 import LabeledInput from "./LabeledInput.vue";
 import DialogComponentWrapper from "./DialogComponentWrapper.vue";
-import { useJsonFormsControlWithUpdate } from "./composables/jsonFormsControlWithUpdate";
+import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
 
 const RadioInputBase = defineComponent({
   name: "RadioInputBase",

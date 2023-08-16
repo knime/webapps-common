@@ -5,7 +5,7 @@ import { isModelSettingAndHasNodeView, getFlowVariablesMap } from "../utils";
 import InputField from "webapps-common/ui/components/forms/InputField.vue";
 import LabeledInput from "./LabeledInput.vue";
 import DialogComponentWrapper from "./DialogComponentWrapper.vue";
-import { useJsonFormsControlWithUpdate } from "./composables/jsonFormsControlWithUpdate";
+import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
 
 const TextInput = defineComponent({
   name: "TextInput",

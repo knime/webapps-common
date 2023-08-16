@@ -5,7 +5,7 @@ import { isModelSettingAndHasNodeView, getFlowVariablesMap } from "../utils";
 import NumberInput from "webapps-common/ui/components/forms/NumberInput.vue";
 import LabeledInput from "./LabeledInput.vue";
 import DialogComponentWrapper from "./DialogComponentWrapper.vue";
-import { useJsonFormsControlWithUpdate } from "./composables/jsonFormsControlWithUpdate";
+import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
 
 const NumberInputBase = defineComponent({
   name: "NumberInputBase",

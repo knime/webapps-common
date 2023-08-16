@@ -5,7 +5,7 @@ import { isModelSettingAndHasNodeView, getFlowVariablesMap } from "../utils";
 import LabeledInput from "./LabeledInput.vue";
 import DateInput from "webapps-common/ui/components/forms/DateTimeInput.vue";
 import DialogComponentWrapper from "./DialogComponentWrapper.vue";
-import { useJsonFormsControlWithUpdate } from "./composables/jsonFormsControlWithUpdate";
+import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
 
 const DateTimeInput = defineComponent({
   name: "DateTimeInput",

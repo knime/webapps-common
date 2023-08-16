@@ -1,11 +1,12 @@
 <script>
 import { defineComponent } from "vue";
 import {
-  useJsonFormsArrayControl,
   rendererProps,
   DispatchRenderer,
+  useJsonFormsArrayControl,
 } from "@jsonforms/vue";
 import { composePaths } from "@jsonforms/core";
+import { useJsonFormsControlWithUpdate } from "@/nodeDialog/composables/useJsonFormsControlWithUpdate";
 import Label from "webapps-common/ui/components/forms/Label.vue";
 import Button from "webapps-common/ui/components/Button.vue";
 import PlusIcon from "webapps-common/ui/assets/img/icons/plus.svg";
@@ -26,7 +27,13 @@ const ArrayLayout = defineComponent({
     ...rendererProps(),
   },
   setup(props) {
-    return useJsonFormsArrayControl(props);
+    const { handleChange, control } = useJsonFormsControlWithUpdate(props);
+    const triggerUpdates = () =>
+      handleChange(control.value.path, control.value.data);
+    return {
+      ...useJsonFormsArrayControl(props),
+      triggerUpdates,
+    };
   },
   data() {
     return {
@@ -62,12 +69,22 @@ const ArrayLayout = defineComponent({
         this.control.path,
         this.createDefaultValue(this.control.schema),
       )();
+      this.triggerUpdates();
+    },
+    moveItemUp(index) {
+      this.moveUp(this.control.path, index)();
+      this.triggerUpdates();
+    },
+    moveItemDown(index) {
+      this.moveDown(this.control.path, index)();
+      this.triggerUpdates();
     },
     createIndexedPath(index) {
       return composePaths(this.control.path, `${index}`);
     },
     deleteItem(index) {
       this.removeItems(composePaths(this.control.path, ""), [index])();
+      this.triggerUpdates();
     },
     returnLabel(index) {
       let convertedIndex = parseInt(index, 10);
@@ -93,8 +110,8 @@ export default ArrayLayout;
             :is-first="objIndex === 0"
             :is-last="objIndex === control.data.length - 1"
             :show-sort-controls="showSortControls"
-            @move-up="moveUp(control.path, objIndex)()"
-            @move-down="moveDown(control.path, objIndex)()"
+            @move-up="moveItemUp(control.path, objIndex)()"
+            @move-down="moveItemDown(control.path, objIndex)()"
             @delete="deleteItem(objIndex)"
           />
         </div>

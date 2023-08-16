@@ -10,119 +10,130 @@ import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
 import ArrowUpIcon from "webapps-common/ui/assets/img/icons/arrow-up.svg";
 import ArrowDownIcon from "webapps-common/ui/assets/img/icons/arrow-down.svg";
 import TrashIcon from "webapps-common/ui/assets/img/icons/trash.svg";
+import { ref } from "vue";
 
-describe("ArrayLayout.vue", () => {
-  let wrapper, props;
-
-  beforeEach(async () => {
-    props = {
-      control: {
-        visible: true,
-        cells: [],
-        data: [
+const control = {
+  visible: true,
+  cells: [],
+  data: [
+    {
+      borderStyle: "DASHED",
+      color: "blue",
+      label: undefined,
+      size: 1,
+      value: "0",
+    },
+    {
+      borderStyle: "DOTTED",
+      color: "red",
+      label: undefined,
+      size: 1,
+      value: "1",
+    },
+    {
+      borderStyle: "SOLID",
+      color: "green",
+      label: undefined,
+      size: 1,
+      value: "2",
+    },
+  ],
+  path: "view/referenceLines",
+  schema: {
+    type: "object",
+    properties: {
+      borderStyle: {
+        oneOf: [
           {
-            borderStyle: "DASHED",
-            color: "blue",
-            label: undefined,
-            size: 1,
-            value: "0",
+            const: "DASHED",
+            title: "Dashed",
           },
           {
-            borderStyle: "DOTTED",
-            color: "red",
-            label: undefined,
-            size: 1,
-            value: "1",
+            const: "DOTTED",
+            title: "Dotted",
           },
           {
-            borderStyle: "SOLID",
-            color: "green",
-            label: undefined,
-            size: 1,
-            value: "2",
+            const: "SOLID",
+            title: "Solid",
           },
         ],
-        path: "view/referenceLines",
-        schema: {
-          type: "object",
-          properties: {
-            borderStyle: {
-              oneOf: [
-                {
-                  const: "DASHED",
-                  title: "Dashed",
-                },
-                {
-                  const: "DOTTED",
-                  title: "Dotted",
-                },
-                {
-                  const: "SOLID",
-                  title: "Solid",
-                },
-              ],
-              title: "Borderstyle",
-              default: "DASHED",
-            },
-            color: {
-              type: "string",
-              title: "Color",
-              default: "blue",
-            },
-            label: {
-              type: "string",
-              title: "Label",
-            },
-            size: {
-              type: "integer",
-              format: "int32",
-              title: "Size",
-              default: 1,
-              minimum: 0,
-              maximum: 10,
-            },
-            value: {
-              type: "string",
-              title: "Value",
-              default: "0",
-            },
+        title: "Borderstyle",
+        default: "DASHED",
+      },
+      color: {
+        type: "string",
+        title: "Color",
+        default: "blue",
+      },
+      label: {
+        type: "string",
+        title: "Label",
+      },
+      size: {
+        type: "integer",
+        format: "int32",
+        title: "Size",
+        default: 1,
+        minimum: 0,
+        maximum: 10,
+      },
+      value: {
+        type: "string",
+        title: "Value",
+        default: "0",
+      },
+    },
+  },
+  uischema: {
+    type: "Control",
+    scope: "#/properties/view/properties/referenceLines",
+    options: {
+      arrayElementTitle: "ElementTitle",
+      detail: {
+        value: {
+          type: "Control",
+          scope: "#/properties/value",
+        },
+        label: {
+          type: "Control",
+          scope: "#/properties/label",
+        },
+        borderStyle: {
+          type: "Control",
+          scope: "#/properties/borderStyle",
+          options: {
+            format: "radio",
+            radioLayout: "horizontal",
           },
         },
-        uischema: {
-          type: "Control",
-          scope: "#/properties/view/properties/referenceLines",
-          options: {
-            arrayElementTitle: "ElementTitle",
-            detail: {
-              value: {
-                type: "Control",
-                scope: "#/properties/value",
-              },
-              label: {
-                type: "Control",
-                scope: "#/properties/label",
-              },
-              borderStyle: {
-                type: "Control",
-                scope: "#/properties/borderStyle",
-                options: {
-                  format: "radio",
-                  radioLayout: "horizontal",
-                },
-              },
-              horizontalLayout: {
-                type: "HorizontalLayout",
-                elements: [
-                  { type: "Control", scope: "#/properties/size" },
-                  { type: "Control", scope: "#/properties/color" },
-                ],
-              },
-            },
-          },
+        horizontalLayout: {
+          type: "HorizontalLayout",
+          elements: [
+            { type: "Control", scope: "#/properties/size" },
+            { type: "Control", scope: "#/properties/color" },
+          ],
         },
       },
-    };
-    const component = await mountJsonFormsComponent(ArrayLayout, { props });
+    },
+  },
+};
+
+const useJsonFormsControlMock = {
+  handleChange: vi.fn(),
+  control: ref(control),
+};
+
+vi.mock("@/nodeDialog/composables/useJsonFormsControlWithUpdate", () => ({
+  useJsonFormsControlWithUpdate: () => useJsonFormsControlMock,
+}));
+
+describe("ArrayLayout.vue", () => {
+  let wrapper;
+
+  beforeEach(async () => {
+    const component = await mountJsonFormsComponent(ArrayLayout, {
+      props: { control },
+    });
     wrapper = component.wrapper;
   });
 
@@ -147,52 +158,93 @@ describe("ArrayLayout.vue", () => {
       value: "0",
     };
     expect(
-      wrapper
-        .getComponent(ArrayLayout)
-        .vm.createDefaultValue(props.control.schema),
+      wrapper.getComponent(ArrayLayout).vm.createDefaultValue(control.schema),
     ).toStrictEqual(expectedDefaultValue);
   });
 
   it("renders an add button", () => {
-    const addItemSpy = (ArrayLayout.methods.addItem = vi
-      .fn()
-      .mockReturnValue(() => false));
-    const { wrapper } = mountJsonFormsComponent(ArrayLayout, { props });
+    const { wrapper } = mountJsonFormsComponent(ArrayLayout, {
+      props: { control },
+    });
     const addButton = wrapper.find(".array > button");
     expect(addButton.text()).toBe("New");
     addButton.element.click();
-    expect(addItemSpy).toHaveBeenCalled();
+    expect(wrapper.vm.addItem).toHaveBeenCalled();
   });
 
   it("sets add button text", () => {
     const customAddButtonText = "My add button text";
-    props.control.uischema.options.addButtonText = customAddButtonText;
-    const { wrapper } = mountJsonFormsComponent(ArrayLayout, { props });
+    control.uischema.options.addButtonText = customAddButtonText;
+    const { wrapper } = mountJsonFormsComponent(ArrayLayout, {
+      props: { control },
+    });
     const addButton = wrapper.find(".array > button");
     expect(addButton.text()).toBe(customAddButtonText);
   });
 
   it("adds default item", () => {
-    const addItemSpy = (ArrayLayout.methods.addItem = vi
-      .fn()
-      .mockReturnValue(() => false));
-    const { wrapper } = mountJsonFormsComponent(ArrayLayout, { props });
+    const { wrapper } = mountJsonFormsComponent(ArrayLayout, {
+      props: { control },
+    });
     wrapper.vm.addDefaultItem();
-    expect(addItemSpy).toHaveBeenCalled();
+    expect(wrapper.vm.addItem).toHaveBeenCalledWith(control.path, {
+      borderStyle: "DASHED",
+      color: "blue",
+      size: 1,
+      value: "0",
+    });
+    expect(useJsonFormsControlMock.handleChange).toHaveBeenCalledWith(
+      control.path,
+      control.data,
+    );
   });
 
   it("deletes item", () => {
-    const deleteItemSpy = (ArrayLayout.methods.deleteItem = vi
-      .fn()
-      .mockReturnValue(() => false));
-    const { wrapper } = mountJsonFormsComponent(ArrayLayout, { props });
-    wrapper.vm.deleteItem();
-    expect(deleteItemSpy).toHaveBeenCalled();
+    const { wrapper } = mountJsonFormsComponent(ArrayLayout, {
+      props: { control },
+    });
+    const index = 1;
+    wrapper.vm.deleteItem(index);
+    expect(wrapper.vm.removeItems).toHaveBeenCalledWith(expect.anything(), [
+      index,
+    ]);
+    expect(useJsonFormsControlMock.handleChange).toHaveBeenCalledWith(
+      control.path,
+      control.data,
+    );
+  });
+
+  it("moves item up", () => {
+    const { wrapper } = mountJsonFormsComponent(ArrayLayout, {
+      props: { control },
+    });
+    const index = 1;
+    wrapper.vm.moveItemUp(1);
+    expect(wrapper.vm.moveUp).toHaveBeenCalledWith(control.path, index);
+    expect(useJsonFormsControlMock.handleChange).toHaveBeenCalledWith(
+      control.path,
+      control.data,
+    );
+  });
+
+  it("moves item down", () => {
+    const { wrapper } = mountJsonFormsComponent(ArrayLayout, {
+      props: { control },
+    });
+    const index = 1;
+    wrapper.vm.moveItemDown(index);
+    expect(wrapper.vm.moveDown).toHaveBeenCalledWith(control.path, index);
+    expect(useJsonFormsControlMock.handleChange).toHaveBeenCalledWith(
+      control.path,
+      control.data,
+    );
   });
 
   it("does not render sort buttons when showSortButtons is not present or false", () => {
-    const { wrapper } = mountJsonFormsComponent(ArrayLayout, { props });
-    const numberDataItems = props.control.data.length;
+    const { wrapper } = mountJsonFormsComponent(ArrayLayout, {
+      props: { control },
+    });
+    const numberDataItems = control.data.length;
     const itemControls = wrapper.findAllComponents(ArrayLayoutItemControls);
 
     expect(itemControls).toHaveLength(numberDataItems);
@@ -212,16 +264,20 @@ describe("ArrayLayout.vue", () => {
   });
 
   it("renders headers", () => {
-    const { wrapper } = mountJsonFormsComponent(ArrayLayout, { props });
+    const { wrapper } = mountJsonFormsComponent(ArrayLayout, {
+      props: { control },
+    });
     expect(wrapper.find(".item-header").exists()).toBeTruthy();
     expect(wrapper.find(".item-header").text()).toBe("ElementTitle 1");
   });
 
   it("does not render headers but renders controls if arrayElementTitle is missing", () => {
-    delete props.control.uischema.options.arrayElementTitle;
-    const { wrapper } = mountJsonFormsComponent(ArrayLayout, { props });
+    delete control.uischema.options.arrayElementTitle;
+    const { wrapper } = mountJsonFormsComponent(ArrayLayout, {
+      props: { control },
+    });
     expect(wrapper.find(".item-header").exists()).toBeFalsy();
-    const numberDataItems = props.control.data.length;
+    const numberDataItems = control.data.length;
     const itemControls = wrapper.findAllComponents(ArrayLayoutItemControls);
     expect(itemControls).toHaveLength(numberDataItems);
   });
@@ -251,8 +307,10 @@ describe("ArrayLayout.vue", () => {
   ])(
     "disables $button for $position item when showSortButtons is true",
     ({ itemNum, moveUpDisabled, moveDownDisabled }) => {
-      props.control.uischema.options.showSortButtons = true;
-      const { wrapper } = mountJsonFormsComponent(ArrayLayout, { props });
+      control.uischema.options.showSortButtons = true;
+      const { wrapper } = mountJsonFormsComponent(ArrayLayout, {
+        props: { control },
+      });
       const itemControls = wrapper.findAll(".item-controls");
       const itemControlsButtons = itemControls
         .at(itemNum)

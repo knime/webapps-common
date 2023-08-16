@@ -62,10 +62,12 @@
  *
  * <h4>Known limitations</h4>
  * <ol>
- * <li>Updates between settings are not possible if either the source or the target setting is nested within an array
- * layout setting.</li>
- * <li>Dependency chains are not possible, i.e. if setting A gets updated by setting B and setting B gets updated by setting C, an update of setting C does not
- * influence A. In order to circumvent this, it is currently necessary to have a direct dependency from A to C, too.</li>
+ * <li>Updates between settings are not possible if the target setting is nested within an array layout setting and as a
+ * source it is only possible to trigger an update by every change of an array layout, not individual changes of
+ * specific nested settings.</li>
+ * <li>Dependency chains are not possible, i.e. if setting A gets updated by setting B and setting B gets updated by
+ * setting C, an update of setting C does not influence A. In order to circumvent this, it is currently necessary to
+ * have a direct dependency from A to C, too.</li>
  * <li>The order in which updates due to dependencies between settings are resolved is non-deterministic.</li>
  * </ol>
  *

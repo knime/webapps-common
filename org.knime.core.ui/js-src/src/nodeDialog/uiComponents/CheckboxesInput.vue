@@ -9,7 +9,7 @@ import {
 import Checkboxes from "webapps-common/ui/components/forms/Checkboxes.vue";
 import LabeledInput from "./LabeledInput.vue";
 import DialogComponentWrapper from "./DialogComponentWrapper.vue";
-import { useJsonFormsControlWithUpdate } from "./composables/jsonFormsControlWithUpdate";
+import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
 
 const CheckboxesInput = defineComponent({
   name: "CheckboxesInput",

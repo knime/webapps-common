@@ -4,7 +4,7 @@ import { rendererProps } from "@jsonforms/vue";
 import { isModelSettingAndHasNodeView, getFlowVariablesMap } from "../utils";
 import RichTextEditor from "webapps-common/ui/components/forms/RichTextEditor/RichTextEditor.vue";
 import LabeledInput from "./LabeledInput.vue";
-import { useJsonFormsControlWithUpdate } from "./composables/jsonFormsControlWithUpdate";
+import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
 
 const RichTextInput = defineComponent({
   name: "RichTextInput",

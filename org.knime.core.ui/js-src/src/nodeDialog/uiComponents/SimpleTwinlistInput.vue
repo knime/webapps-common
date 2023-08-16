@@ -9,7 +9,7 @@ import {
 import Twinlist from "webapps-common/ui/components/forms/Twinlist.vue";
 import LabeledInput from "./LabeledInput.vue";
 import DialogComponentWrapper from "./DialogComponentWrapper.vue";
-import { useJsonFormsControlWithUpdate } from "./composables/jsonFormsControlWithUpdate";
+import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
 
 const defaultTwinlistSize = 7;
 const defaultTwinlistLeftLabel = "Excludes";

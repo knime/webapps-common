@@ -11,7 +11,7 @@ import LabeledInput from "./LabeledInput.vue";
 import DialogComponentWrapper from "./DialogComponentWrapper.vue";
 import { AlertTypes } from "@knime/ui-extension-service";
 import { set, isEqual } from "lodash";
-import { useJsonFormsControlWithUpdate } from "./composables/jsonFormsControlWithUpdate";
+import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
 import getFlattenedSettings from "../utils/getFlattenedSettings";
 import { v4 as uuidv4 } from "uuid";
 

@@ -1,4 +1,4 @@
-import type { ControlProps, DispatchPropsOfControl } from "@jsonforms/core";
+import type { ControlProps } from "@jsonforms/core";
 import { useJsonFormsControl } from "@jsonforms/vue";
 import { inject } from "vue";
 
@@ -9,7 +9,7 @@ import { inject } from "vue";
  */
 export const useJsonFormsControlWithUpdate = (
   props: ControlProps,
-): DispatchPropsOfControl => {
+): ReturnType<typeof useJsonFormsControl> => {
   const jsonFormsControl = useJsonFormsControl(props);
   type HandleChangeArguments = [path: string, value: any];
   const updateData = inject("updateData") as (

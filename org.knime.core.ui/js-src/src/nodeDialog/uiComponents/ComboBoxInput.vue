@@ -5,7 +5,7 @@ import { getFlowVariablesMap, isModelSettingAndHasNodeView } from "../utils";
 import ComboBox from "webapps-common/ui/components/forms/ComboBox.vue";
 import LabeledInput from "./LabeledInput.vue";
 import DialogComponentWrapper from "./DialogComponentWrapper.vue";
-import { useJsonFormsControlWithUpdate } from "./composables/jsonFormsControlWithUpdate";
+import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
 
 const ComboBoxInput = defineComponent({
   name: "ComboBoxInput",

@@ -8,7 +8,7 @@ import FlowVariableIcon from "./FlowVariableIcon.vue";
 import ErrorMessage from "./ErrorMessage.vue";
 import DescriptionPopover from "./DescriptionPopover.vue";
 import DialogComponentWrapper from "./DialogComponentWrapper.vue";
-import { useJsonFormsControlWithUpdate } from "./composables/jsonFormsControlWithUpdate";
+import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
 
 const CheckboxInput = defineComponent({
   name: "CheckboxInput",

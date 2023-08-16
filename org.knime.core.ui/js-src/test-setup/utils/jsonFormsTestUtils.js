@@ -9,11 +9,17 @@ import { createStore } from "vuex";
 
 import { useJsonFormsLayout, useJsonFormsArrayControl } from "@jsonforms/vue";
 
-import * as jsonFormsControlWithUpdateModule from "@/nodeDialog/uiComponents/composables/jsonFormsControlWithUpdate";
+import * as jsonFormsControlWithUpdateModule from "@/nodeDialog/composables/useJsonFormsControlWithUpdate";
 
 export const mountJsonFormsComponent = (
   component,
-  { props, provide, modules = null, showAdvanced = false, stubs = {} },
+  {
+    props = {},
+    provide,
+    modules = null,
+    showAdvanced = false,
+    stubs = {},
+  } = {},
 ) => {
   const useJsonFormsControlSpy = vi.spyOn(
     jsonFormsControlWithUpdateModule,

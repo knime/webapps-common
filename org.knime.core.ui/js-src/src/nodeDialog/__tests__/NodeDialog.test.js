@@ -259,12 +259,10 @@ describe("NodeDialog.vue", () => {
       await flushPromises();
 
       wrapper.setData({
-        settings: {
-          data: {
-            test: "test",
-            test2: "test",
-            otherTest: "test",
-          },
+        currentData: {
+          test: "test",
+          test2: "test",
+          otherTest: "test",
         },
       });
 
@@ -300,13 +298,11 @@ describe("NodeDialog.vue", () => {
     let wrapper, handleChange, registeredWatchers;
 
     const settingsData = {
-      settings: {
-        data: {
-          test1: "test",
-          test2: "test",
-          test3: "test",
-          test4: "test",
-        },
+      currentData: {
+        test1: "test",
+        test2: "test",
+        test3: "test",
+        test4: "test",
       },
     };
 
@@ -328,6 +324,7 @@ describe("NodeDialog.vue", () => {
           dependencies: ["#/properties/test2", "#/properties/test3"],
         },
       ];
+
       handleChange = vi.fn(() => {});
       registeredWatchers.forEach(async (watcher) => {
         await wrapper.vm.registerWatcher(watcher);
@@ -355,6 +352,31 @@ describe("NodeDialog.vue", () => {
         ...wrapper.vm.getData(),
         test2: data,
         test4: "transformed",
+      });
+    });
+
+    it("reacts to path updates nested inside array layouts", async () => {
+      await wrapper.setData({
+        currentData: {
+          arrayLayoutSetting: [{ value: "first" }, { value: "second" }],
+        },
+      });
+
+      const arrayLayoutWatcher = {
+        transformSettings: vi.fn(),
+        dependencies: ["#/properties/arrayLayoutSetting"],
+      };
+
+      await wrapper.vm.registerWatcher(arrayLayoutWatcher);
+      const path = "arrayLayoutSetting.0.value";
+      const data = "some data";
+      await wrapper.vm.updateData(handleChange, path, data);
+
+      expect(arrayLayoutWatcher.transformSettings).toHaveBeenCalled();
+
+      expect(handleChange).toHaveBeenCalledWith("", {
+        ...wrapper.vm.getData(),
+        arrayLayoutSetting: [{ value: "some data" }, { value: "second" }],
       });
     });
   });
