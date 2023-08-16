@@ -71,6 +71,25 @@ describe('NodeDialog.vue', () => {
         expect(jsonformsStub.props('uischema')).toStrictEqual(dialogInitialData.ui_schema);
     });
 
+    it('renders advanced settings', async () => {
+        const advancedDialogData = { ...dialogInitialData };
+        advancedDialogData.ui_schema.options = { isAdvanced: true };
+        vi.spyOn(JsonDataService.prototype, 'initialData').mockResolvedValueOnce(
+            advancedDialogData
+        );
+        const wrapper = shallowMount(NodeDialog, getOptions());
+        await flushPromises();
+  
+        expect(wrapper.getComponent(NodeDialog).exists()).toBe(true);
+        let advancedLink = wrapper.find('a.advanced-options');
+        expect(advancedLink.exists()).toBe(true);
+        expect(advancedLink.text()).toBe('Show advanced settings');
+  
+        await advancedLink.trigger('click');
+        expect(advancedLink.text()).toBe('Hide advanced settings');
+    });
+  
+
     it('returns current values on getData', async () => {
         const wrapper = shallowMount(NodeDialog, getOptions());
         await flushPromises();
@@ -105,14 +124,14 @@ describe('NodeDialog.vue', () => {
                 model: { yAxisScale: 'NEW_VALUE' }
             };
 
-            expect(wrapper.vm.settings.data).toStrictEqual(expectedData);
-            expect(publishDataSpy).toHaveBeenCalledWith({ ...dialogInitialData, data: expectedData });
+            expect(wrapper.vm.currentData).toStrictEqual(expectedData);
+            expect(publishDataSpy).toHaveBeenCalledWith({ schema: dialogInitialData.schema, data: expectedData });
         });
 
         it('does not set new value if data is not provided', () => {
             jsonformsStub.vm.$emit('change', {});
 
-            expect(wrapper.vm.settings.data).toStrictEqual({
+            expect(wrapper.vm.currentData).toStrictEqual({
                 ...dialogInitialData.data
             });
             expect(publishDataSpy).not.toHaveBeenCalled();
@@ -175,13 +194,13 @@ describe('NodeDialog.vue', () => {
             const wrapper = shallowMount(NodeDialog, getOptions());
             await flushPromises();
 
-            wrapper.setData({ settings: {
-                data: {
+            wrapper.setData({
+                currentData: {
                     test: 'test',
                     test2: 'test',
                     otherTest: 'test'
                 }
-            } });
+            });
 
             const transformSettings = vi.fn();
             const init = vi.fn();
@@ -208,14 +227,14 @@ describe('NodeDialog.vue', () => {
     describe('updateData', () => {
         let wrapper, handleChange, registeredWatchers;
 
-        const settingsData = { settings: {
-            data: {
+        const settingsData = {
+            currentData: {
                 test1: 'test',
                 test2: 'test',
                 test3: 'test',
                 test4: 'test'
             }
-        } };
+        };
 
         beforeEach(async () => {
             wrapper = shallowMount(NodeDialog, getOptions());
@@ -261,7 +280,7 @@ describe('NodeDialog.vue', () => {
                 expect(transformSettings).toHaveBeenCalled();
             });
             expect(handleChange).toHaveBeenCalledWith('', {
-                ...wrapper.vm.settings.data,
+                ...wrapper.vm.currentData,
                 test2: data,
                 test4: 'transformed'
             });

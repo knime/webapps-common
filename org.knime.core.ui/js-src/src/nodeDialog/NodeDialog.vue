@@ -7,6 +7,7 @@ import { fallbackRenderers, defaultRenderers } from './renderers';
 import { hasAdvancedOptions } from '../nodeDialog/utils';
 import Button from 'webapps-common/ui/components/Button.vue';
 import { cloneDeep, set } from 'lodash';
+import { markRaw } from 'vue';
 
 const renderers = [...vanillaRenderers, ...fallbackRenderers, ...defaultRenderers];
 
@@ -25,8 +26,10 @@ export default {
     data() {
         return {
             jsonDataService: null,
-            settings: null,
-            originalSettingsData: null,
+            currentData: null,
+            schema: null,
+            uischema: null,
+            ready: false,
             renderers: Object.freeze(renderers),
             registeredWatchers: []
         };
@@ -40,17 +43,22 @@ export default {
     async mounted() {
         this.jsonDataService = new JsonDataService(this.getKnimeService());
         this.dialogService = new DialogService(this.getKnimeService());
-        const settings = await this.jsonDataService.initialData();
-        settings.schema.flowVariablesMap = await this.dialogService.getFlowVariableSettings();
-        settings.schema.hasNodeView = this.dialogService.hasNodeView();
-        settings.schema.showAdvancedSettings = false;
-        this.settings = settings;
+        const initialSettings = await this.jsonDataService.initialData();
+        const { schema } = initialSettings;
+        schema.flowVariablesMap =
+          await this.dialogService.getFlowVariableSettings();
+        schema.hasNodeView = this.dialogService.hasNodeView();
+        schema.showAdvancedSettings = false;
+        this.schema = schema;
+        this.uischema = initialSettings.ui_schema;
+        this.currentData = initialSettings.data;
         this.jsonDataService.registerDataGetter(this.getData);
         this.$store.dispatch('pagebuilder/dialog/setApplySettings', { applySettings: this.applySettings });
+        this.ready = true;
     },
     methods: {
         getData() {
-            return this.settings.data;
+            return this.currentData;
         },
         /**
          * @param {Function} handleChange The handler function that is used to handle the change of a dialog setting
@@ -64,7 +72,7 @@ export default {
                 handleChange(path, data);
                 return;
             }
-            const newData = cloneDeep(this.settings.data);
+            const newData = cloneDeep(this.currentData);
             set(newData, path, data);
             for (const watcher of triggeredWatchers) {
                 await watcher.transformSettings(newData);
@@ -77,17 +85,23 @@ export default {
                 dataPaths: dependencies.map(toDataPath)
             });
             if (typeof init === 'function') {
-                await init(this.settings.data);
-                this.onSettingsChanged(this.settings.data);
+                await init(this.currentData);
             }
         },
-        onSettingsChanged(data) {
-            if (data.data) {
-                this.settings.data = data.data;
+        onSettingsChanged({ data }) {
+            if (data) {
+                // We must not set this.currentData = data directly, as this would update the internal
+                // data of the jsonforms component.
+                Object.keys(data).forEach((key) => {
+                    this.currentData[key] = data[key];
+                });
                 // TODO: UIEXT-236 Move to dialog service
                 if (!this.dirtyModelSettings) {
-                    const rawSettings = cloneDeep(this.settings);
-                    this.jsonDataService.publishData(rawSettings);
+                    const publishedData = cloneDeep({
+                        data,
+                        schema: this.schema
+                    });
+                    this.jsonDataService.publishData(publishedData);
                 }
             }
         },
@@ -106,14 +120,15 @@ export default {
             window.closeCEFWindow();
         },
         changeAdvancedSettings() {
-            this.settings.schema.showAdvancedSettings = !this.settings.schema.showAdvancedSettings;
+            this.schema.showAdvancedSettings = !this.schema.showAdvancedSettings;
         },
         hasAdvancedOptions() {
-            if (!this.settings) {
+            if (!this.uischema) {
                 return false;
             }
-            return hasAdvancedOptions(this.settings.ui_schema);
-        }
+            return hasAdvancedOptions(this.uischema);
+        },
+        markRaw
     }
 };
 </script>
@@ -122,10 +137,10 @@ export default {
   <div class="dialog">
     <div class="form">
       <JsonForms
-        v-if="settings"
-        :data="settings.data"
-        :schema="settings.schema"
-        :uischema="settings.ui_schema"
+        v-if="ready"
+        :data="markRaw(currentData)"
+        :schema="schema"
+        :uischema="uischema"
         :renderers="renderers"
         @change="onSettingsChanged"
       />
@@ -134,7 +149,7 @@ export default {
         class="advanced-options"
         @click="changeAdvancedSettings"
       >
-        {{ settings.schema.showAdvancedSettings ? 'Hide' : 'Show' }} advanced settings
+        {{ schema.showAdvancedSettings ? 'Hide' : 'Show' }} advanced settings
       </a>
     </div>
     <div class="controls">
