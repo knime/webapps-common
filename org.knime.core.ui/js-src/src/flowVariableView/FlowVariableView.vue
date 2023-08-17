@@ -22,41 +22,40 @@ export default {
 </script>
 
 <template>
-  <div class="knime-ui-FlowVariableView">
-    <div class="container">
-      <div v-if="initialData" class="counts">
-        <span class="count">Count: {{ initialData.length }}</span>
-      </div>
-      <div class="scroll-container">
-        <table>
-          <thead>
-            <tr>
-              <th class="title">Owner ID</th>
-              <th class="title">Data Type</th>
-              <th class="title">Variable Name</th>
-              <th class="title">Value</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="flowVariable of initialData"
-              :key="`flowVariable-${flowVariable.name}`"
-            >
-              <td>{{ flowVariable.ownerNodeId }}</td>
-              <td>{{ flowVariable.type }}</td>
-              <td>{{ flowVariable.name }}</td>
-              <td>{{ flowVariable.value }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+  <div class="knime-ui-FlowVariableView" style="height: 100%">
+    <div v-if="initialData" class="counts">
+      <span class="count">Count: {{ initialData.length }}</span>
+    </div>
+    <div class="scroll-container">
+      <table>
+        <thead>
+          <tr>
+            <th class="title">Owner ID</th>
+            <th class="title">Data Type</th>
+            <th class="title">Variable Name</th>
+            <th class="title">Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="flowVariable of initialData"
+            :key="`flowVariable-${flowVariable.name}`"
+          >
+            <td>{{ flowVariable.ownerNodeId }}</td>
+            <td>{{ flowVariable.type }}</td>
+            <td>{{ flowVariable.name }}</td>
+            <td>{{ flowVariable.value }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>
 
 <style lang="postcss" scoped>
-.container {
-  height: 100%;
+.scroll-container,
+.counts {
+  font-weight: 400;
 }
 
 .scroll-container {
