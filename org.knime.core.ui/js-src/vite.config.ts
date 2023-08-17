@@ -9,74 +9,57 @@ import postcss from "postcss";
 // @ts-ignore
 import scopify from "postcss-scopify";
 
+const camelCase = (input: string) => {
+  return input
+    .replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
+      return index === 0 ? word.toLowerCase() : word.toUpperCase();
+    })
+    .replace(/\s+/g, "");
+};
+
+const COMPONENTS = [
+  "NodeDialog",
+  "TableView",
+  "DeferredTableView",
+  "TextView",
+  "FlowVariableView",
+  "ImageView",
+] as const;
+
+type ComponentLibraries = (typeof COMPONENTS)[number];
+
+const getComponentLibraryOptions = (
+  name: ComponentLibraries,
+  overrideName?: string,
+): LibraryOptions => ({
+  name: overrideName || name,
+  entry: fileURLToPath(
+    new URL(`./src/${camelCase(name)}/${name}.vue`, import.meta.url),
+  ),
+  fileName: name,
+  formats: ["umd"],
+});
+
 /**
  * NOTE: If you add a new library, make sure it is wrapped in a <div> with the
  * class `knime-ui-LIBNAME` where LIBNAME is the name you dfine in this object as key.
  *
  * See below how the CSS code is scoped in order to prevent problems with webapps-common in knime-ui.
  */
-const libraries = {
-  NodeDialog: {
-    entry: fileURLToPath(
-      new URL("./src/nodeDialog/NodeDialog.vue", import.meta.url),
-    ),
-    name: "defaultdialog",
-    fileName: "NodeDialog",
-    formats: ["umd"],
-  } as LibraryOptions,
-  TableView: {
-    entry: fileURLToPath(
-      new URL("./src/tableView/TableView.vue", import.meta.url),
-    ),
-    name: "tableview",
-    fileName: "TableView",
-    formats: ["umd"],
-  } as LibraryOptions,
-  DeferredTableView: {
-    entry: fileURLToPath(
-      new URL("./src/deferredTableView/DeferredTableView.vue", import.meta.url),
-    ),
-    name: "deferredtableview",
-    fileName: "DeferredTableView",
-    formats: ["umd"],
-  } as LibraryOptions,
-  TextView: {
-    entry: fileURLToPath(
-      new URL("./src/textView/TextView.vue", import.meta.url),
-    ),
-    name: "textview",
-    fileName: "TextView",
-    formats: ["umd"],
-  } as LibraryOptions,
-  FlowVariableView: {
-    entry: fileURLToPath(
-      new URL("./src/flowVariableView/FlowVariableView.vue", import.meta.url),
-    ),
-    name: "flowvariableview",
-    fileName: "FlowVariableView",
-    formats: ["umd"],
-  } as LibraryOptions,
-  ImageView: {
-    entry: fileURLToPath(
-      new URL("./src/imageView/ImageView.vue", import.meta.url),
-    ),
-    name: "imageview",
-    fileName: "ImageView",
-    formats: ["umd"],
-  } as LibraryOptions,
+const libraries: Record<ComponentLibraries, LibraryOptions> = {
+  NodeDialog: getComponentLibraryOptions("NodeDialog", "defaultdialog"),
+  TableView: getComponentLibraryOptions("TableView"),
+  DeferredTableView: getComponentLibraryOptions("DeferredTableView"),
+  TextView: getComponentLibraryOptions("TextView"),
+  FlowVariableView: getComponentLibraryOptions("FlowVariableView"),
+  ImageView: getComponentLibraryOptions("ImageView"),
 };
 
-const getCurrentLibrary = (mode: string) => {
-  if (
-    mode === "NodeDialog" ||
-    mode === "TableView" ||
-    mode === "TextView" ||
-    mode === "DeferredTableView" ||
-    mode === "FlowVariableView" ||
-    mode === "ImageView"
-  ) {
+const getCurrentLibrary = (mode: ComponentLibraries) => {
+  if (mode in libraries) {
     return libraries[mode];
   }
+
   return false;
 };
 
@@ -111,7 +94,7 @@ export default defineConfig(({ mode }) => {
       ],
     },
     build: {
-      lib: getCurrentLibrary(mode),
+      lib: getCurrentLibrary(mode as ComponentLibraries),
       emptyOutDir: false,
       rollupOptions: {
         external: ["vue"],
