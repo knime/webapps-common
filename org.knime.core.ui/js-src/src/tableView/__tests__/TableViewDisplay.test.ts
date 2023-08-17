@@ -44,21 +44,15 @@ describe("TableViewDisplay.vue", () => {
   });
 
   describe("tableUI props", () => {
-    const getTableUIAttributes = (
-      wrapper: VueWrapper,
-      attrKey: string,
-      attrName: string,
-    ) => {
-      const tableUI = wrapper.findComponent(TableUIWithAutoSizeCalculation);
-      const attributes = tableUI.vm[`$${attrKey}`];
-      return attributes[attrName];
+    const findTableComponent = (wrapper: VueWrapper<any>) => {
+      return wrapper.findComponent(TableUIWithAutoSizeCalculation);
     };
 
     describe("data", () => {
-      const getData = (wrapper: VueWrapper) =>
-        getTableUIAttributes(wrapper, "props", "data");
-      const getBottomData = (wrapper: VueWrapper) =>
-        getTableUIAttributes(wrapper, "attrs", "bottom-data");
+      const getData = (wrapper: VueWrapper): any[][] =>
+        findTableComponent(wrapper).vm.$props.data as any;
+      const getBottomData = (wrapper: VueWrapper): any[] =>
+        findTableComponent(wrapper).vm.$attrs["bottom-data"] as any;
 
       it("sets data", () => {
         const wrapper = shallowMountDisplay({ props });
@@ -97,7 +91,7 @@ describe("TableViewDisplay.vue", () => {
 
     describe("dataConfig", () => {
       const getDataConfig = (wrapper: VueWrapper) =>
-        getTableUIAttributes(wrapper, "props", "dataConfig");
+        findTableComponent(wrapper).vm.$props.dataConfig;
 
       it("sets dataConfig without special columns", () => {
         const wrapper = shallowMountDisplay({ props });
@@ -111,7 +105,7 @@ describe("TableViewDisplay.vue", () => {
           rowConfig: { enableResizing: false },
         });
 
-        expect(dataConfig.columnConfigs[0]).toStrictEqual({
+        expect(dataConfig?.columnConfigs[0]).toStrictEqual({
           filterConfig: { is: "", modelValue: "" },
           formatter: expect.anything(),
           hasSlotContent: false,
@@ -156,7 +150,7 @@ describe("TableViewDisplay.vue", () => {
           ],
         });
 
-        expect(dataConfig.columnConfigs[0]).toStrictEqual({
+        expect(dataConfig?.columnConfigs[0]).toStrictEqual({
           filterConfig: { is: "", modelValue: "" },
           formatter: expect.anything(),
           hasSlotContent: false,
@@ -168,7 +162,7 @@ describe("TableViewDisplay.vue", () => {
           subHeader: undefined,
         });
 
-        expect(dataConfig.columnConfigs[1]).toStrictEqual({
+        expect(dataConfig?.columnConfigs[1]).toStrictEqual({
           filterConfig: { is: "", modelValue: "" },
           formatter: expect.anything(),
           hasSlotContent: false,
@@ -180,7 +174,7 @@ describe("TableViewDisplay.vue", () => {
           subHeader: undefined,
         });
 
-        expect(dataConfig.columnConfigs[5]).toStrictEqual({
+        expect(dataConfig?.columnConfigs[5]).toStrictEqual({
           filterConfig: { is: "", modelValue: "" },
           formatter: expect.anything(),
           hasSlotContent: false,
@@ -195,7 +189,7 @@ describe("TableViewDisplay.vue", () => {
 
       describe("columnConfig", () => {
         const getColumnConfigs = (wrapper: VueWrapper) =>
-          getDataConfig(wrapper).columnConfigs;
+          getDataConfig(wrapper)?.columnConfigs;
 
         it("sets minimal column config", () => {
           const wrapper = shallowMountDisplay({ props });
@@ -311,7 +305,7 @@ describe("TableViewDisplay.vue", () => {
 
       describe("rowConfig", () => {
         const getRowConfig = (wrapper: VueWrapper) =>
-          getDataConfig(wrapper).rowConfig;
+          getDataConfig(wrapper)?.rowConfig;
 
         it("sets minimal row config", () => {
           const wrapper = shallowMountDisplay({ props });
@@ -342,7 +336,7 @@ describe("TableViewDisplay.vue", () => {
 
     describe("tableConfig", () => {
       const getTableConfig = (wrapper: VueWrapper) =>
-        getTableUIAttributes(wrapper, "props", "tableConfig");
+        findTableComponent(wrapper).vm.$props.tableConfig;
 
       it("sets basic tableConfig", () => {
         const wrapper = shallowMountDisplay({ props });

@@ -87,5 +87,6 @@ export const getDefaultProps = (): TableViewDisplayProps => {
       extensionConfig: { resourceInfo: { baseUrl: "baseUrl" } },
     } as any,
     firstRowImageDimensions: {},
+    enableCellSelection: false,
   };
 };
