@@ -1,4 +1,5 @@
 <script>
+// @ts-ignore
 import packages from "../../buildtools/opensourcecredits/used-packages.json";
 import Description from "../components/Description.vue";
 import ArrowNextIcon from "../assets/img/icons/arrow-next.svg";

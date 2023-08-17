@@ -116,11 +116,15 @@ export default {
   },
   data() {
     return {
-      MenuItems,
       menuItemsData,
       codeExampleStandalone,
       code,
       hoveredItem: null,
+    } as {
+      menuItemsData: MenuItem[];
+      codeExampleStandalone: string;
+      code: string;
+      hoveredItem: null | MenuItem;
     };
   },
   computed: {
@@ -181,14 +185,14 @@ export default {
     },
   },
   methods: {
-    onItemClick(event, item, id) {
+    onItemClick(_event: MouseEvent, item: MenuItem, id: string) {
       window.alert(
         `You clicked on menu ${id} on an item with a value of: ${JSON.stringify(
           item,
         )}`,
       );
     },
-    onItemActive(item) {
+    onItemActive(item: MenuItem | null) {
       this.hoveredItem = item;
     },
   },
