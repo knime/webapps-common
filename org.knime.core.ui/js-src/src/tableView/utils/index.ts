@@ -11,7 +11,7 @@ export const createDefaultFilterConfig = (
   if (isMultiselect) {
     return {
       is: "ControlMultiselect",
-      possibleValues: possibleValues || [],
+      possibleValues: possibleValues ?? [],
       modelValue: filterComponents.Multiselect.getInitialValue(),
     };
   }

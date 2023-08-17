@@ -125,7 +125,7 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     @Layout(DataSection.class)
     public boolean m_showColumnDataType = true;
 
-     /**
+    /**
      * Whether to show the number of rows and columns above the table or or not
      */
     @Widget(title = "Show table size",
@@ -159,7 +159,7 @@ public class TableViewViewSettings implements DefaultNodeSettings {
      */
     @Widget(title = "Pagination",
         description = "Enables or disables the ability to only show a certain number of rows. "
-        + "Enabling pagination hides the option “Show table size”.")
+            + "Enabling pagination hides the option “Show table size”.")
     @Persist(optional = true)
     @Layout(ViewSection.class)
     @Signal(id = IsPaginationEnabled.class, condition = TrueCondition.class)
@@ -234,6 +234,17 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     @Persist(optional = true)
     @Layout(InteractivitySection.class)
     public boolean m_enableRendererSelection = true;
+
+    /**
+     * If cell selection + copying should be enabled
+     */
+    @Widget(title = "Enable copying cells",
+        description = "When checked, the cells of the table are selectable and can be copied. "
+            + "Click on a cell to select it. To select a range, select a cell, then click another "
+            + "cell with shift pressed or with the left mouse button pressed, drag over other cells.")
+    @Persist(optional = true)
+    @Layout(InteractivitySection.class)
+    public boolean m_enableCellCopying = true;
 
     /**
      * If this view notifies other views when the users do a selection action

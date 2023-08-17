@@ -32,6 +32,7 @@
       "enableColumnSearch" : true,
       "enableSortingByHeader" : true,
       "enableRendererSelection" : true,
+      "enableCellCopying" : true,
       "publishSelection" : true,
       "subscribeToSelection" : true,
       "skipRemainingColumns" : false
@@ -193,6 +194,13 @@
               }
             },
             "configKeys" : [ "displayedColumns" ]
+          },
+          "enableCellCopying" : {
+            "type" : "boolean",
+            "title" : "Enable copying cells",
+            "description" : "When checked, the cells of the table are selectable and can be copied. Click on a cell to select it. To select a range, select a cell, then click another cell with shift pressed or with the left mouse button pressed, drag over other cells.",
+            "default" : true,
+            "configKeys" : [ "enableCellCopying" ]
           },
           "enableColumnSearch" : {
             "type" : "boolean",
@@ -434,6 +442,12 @@
       }, {
         "type" : "Control",
         "scope" : "#/properties/view/properties/enableRendererSelection",
+        "options" : {
+          "format" : "checkbox"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/view/properties/enableCellCopying",
         "options" : {
           "format" : "checkbox"
         }

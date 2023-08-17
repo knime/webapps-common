@@ -1052,7 +1052,9 @@ export default {
     :enable-column-resizing="true"
     :enable-row-resizing="true"
     :include-image-resources="false"
-    :enable-cell-selection="enableCellSelection"
+    :enable-cell-selection="
+      enableCellSelection && Boolean(settings.enableCellCopying)
+    "
     :knime-service="knimeService"
     :force-hide-table-sizes="forceHideTableSizes"
     :first-row-image-dimensions="table.firstRowImageDimensions || {}"
