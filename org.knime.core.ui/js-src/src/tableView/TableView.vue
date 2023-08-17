@@ -4,6 +4,10 @@ import TableViewReport from './TableViewReport.vue';
 import { inject } from 'vue';
 import { ReportingService, type KnimeService } from '@knime/ui-extension-service';
 
+defineOptions({
+    inheritAttrs: false
+});
+
 const getKnimeService = (inject('getKnimeService') || (() => null)) as (() => KnimeService);
 const knimeService = getKnimeService();
 const reportingService = new ReportingService(knimeService);
@@ -12,9 +16,14 @@ const onRendered = () => reportingService.setRenderCompleted();
 </script>
 
 <template>
-  <TableViewReport
-    v-if="isReport"
-    @rendered="onRendered"
-  />
-  <TableViewInteractive v-else />
+  <div
+    class="knime-ui-TableView"
+    style="height: 100%"
+  >
+    <TableViewReport
+      v-if="isReport"
+      @rendered="onRendered"
+    />
+    <TableViewInteractive v-else />
+  </div>
 </template>

@@ -57,10 +57,12 @@ export default {
 </script>
 
 <template>
-  <div
-    class="text-view-container"
-    v-html="richTextContent"
-  />
+  <div class="knime-ui-TextView">
+    <div
+      class="text-view-container"
+      v-html="richTextContent"
+    />
+  </div>
 </template>
 
 <style lang="postcss" scoped>

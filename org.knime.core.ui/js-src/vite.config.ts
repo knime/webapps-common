@@ -5,7 +5,16 @@ import svgLoader from 'vite-svg-loader';
 import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js';
 import type { LibraryOptions } from 'vite';
 import { loadEnv } from 'vite';
+import postcss from 'postcss';
+// @ts-ignore
+import scopify from 'postcss-scopify';
 
+/**
+ * NOTE: If you add a new library, make sure it is wrapped in a <div> with the
+ * class `knime-ui-LIBNAME` where LIBNAME is the name you dfine in this object as key.
+ *
+ * See below how the CSS code is scoped in order to prevent problems with webapps-common in knime-ui.
+ */
 const libraries = {
     NodeDialog: {
         entry: fileURLToPath(new URL('./src/nodeDialog/NodeDialog.vue', import.meta.url)),
@@ -51,7 +60,12 @@ export default defineConfig(({ mode }) => {
         plugins: [
             vue(),
             svgLoader(),
-            cssInjectedByJsPlugin() // not supported natively in Vite yet, see https://github.com/vitejs/vite/issues/1579]
+            cssInjectedByJsPlugin({
+                preRenderCSSCode: (cssCode) => postcss()
+                    // add a prefix class to every rule; this helps mitigate CSS problems with duplicated webapps-common rules
+                    .use(scopify(`.knime-ui-${mode}`))
+                    .process(cssCode).css
+            })
         ],
         resolve: {
             alias: {
