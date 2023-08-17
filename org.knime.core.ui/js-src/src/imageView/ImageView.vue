@@ -14,6 +14,7 @@ export default {
     },
     getImageUrl() {
       const baseUrl = this.knimeService?.extensionConfig?.resourceInfo?.baseUrl;
+      // TODO unfortunate coupling with pagebuilder internals - see NXT-1295
       return this.$store.getters["api/uiExtResourceLocation"]({
         resourceInfo: {
           baseUrl,
