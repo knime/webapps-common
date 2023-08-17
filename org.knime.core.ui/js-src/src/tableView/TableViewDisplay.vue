@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { computed, reactive, onMounted, ref, type Ref, toRefs } from "vue";
-// @ts-ignore
-import { TableUIWithAutoSizeCalculation } from "@knime/knime-ui-table";
+import {
+  TableUIWithAutoSizeCalculation,
+  type Rect,
+} from "@knime/knime-ui-table";
 import ImageRenderer from "./ImageRenderer.vue";
 import HtmlRenderer from "./HtmlRenderer.vue";
 import getDataConfig from "./utils/getDataConfig";
@@ -10,7 +12,7 @@ import useColumnSizes from "./composables/useColumnSizes";
 import useAutoColumnSizes from "./composables/useAutoColumnSizes";
 import type { TableViewDisplayProps } from "./types";
 import useBoolean from "./utils/useBoolean";
-import specialColumns from "./utils/specialColumns";
+import { separateSpecialColumns } from "./utils/specialColumns";
 
 const emit = defineEmits([
   "page-change",
@@ -141,7 +143,7 @@ const getContentType = (index: number) =>
   props.header.columnContentTypes[index - 2];
 const columnResizeActive = useBoolean();
 
-const table: Ref<null | TableUIWithAutoSizeCalculation> = ref(null);
+const table: Ref<null | typeof TableUIWithAutoSizeCalculation> = ref(null);
 
 const tableIsReady = ref(false);
 const onTableIsReady = () => {
@@ -151,21 +153,18 @@ const onTableIsReady = () => {
 
 defineExpose(
   [
-    "refreshScroller",
-    "clearCellSelection",
-    "triggerCalculationOfAutoColumnSizes",
+    "refreshScroller" as const,
+    "clearCellSelection" as const,
+    "triggerCalculationOfAutoColumnSizes" as const,
   ].reduce((acc: Record<string, Function>, methodName) => {
     acc[methodName] = () => {
-      if (table.value?.[methodName]) {
-        table.value[methodName]();
+      if (table.value?.methods?.[methodName]) {
+        table.value.methods?.[methodName]();
       }
     };
     return acc;
   }, {}),
 );
-
-type MinMax = { min: number; max: number };
-type Rect = { x: MinMax; y: MinMax };
 
 const onCopySelection = ({
   rect: { x, y },
@@ -174,21 +173,19 @@ const onCopySelection = ({
   rect: Rect;
   id: boolean;
 }) => {
-  const { min, max } = x;
   const indices = Array.from(
-    { length: max - min + 1 },
-    (_, index) => min + index,
+    { length: x.max - x.min + 1 },
+    (_, index) => x.min + index,
   );
-  const columnIds = indices.map(getColumnId);
-  const columnNames = columnIds.filter((v) => typeof v === "string");
-  const withRowKeys = columnIds.some((v) => v === specialColumns.ROW_ID.id);
-  const withRowIndices = columnIds.some((v) => v === specialColumns.INDEX.id);
+  const { columnNames, containedSpecialColumns } = separateSpecialColumns(
+    indices.map(getColumnId),
+  );
   const fromIndex = y.min;
   const toIndex = y.max;
   emit("copy-selection", {
     columnNames,
-    withRowIndices,
-    withRowKeys,
+    withRowIndices: containedSpecialColumns.has("INDEX"),
+    withRowKeys: containedSpecialColumns.has("ROW_ID"),
     fromIndex,
     toIndex,
     isTop: id,
