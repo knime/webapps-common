@@ -32,7 +32,7 @@ const getComponentLibraryOptions = (
   name: ComponentLibraries,
   overrideName?: string,
 ): LibraryOptions => ({
-  name: overrideName || name,
+  name: (overrideName || name).toLowerCase(),
   entry: fileURLToPath(
     new URL(`./src/${camelCase(name)}/${name}.vue`, import.meta.url),
   ),
