@@ -7,6 +7,7 @@ import { fallbackRenderers, defaultRenderers } from "./renderers";
 import { hasAdvancedOptions } from "../nodeDialog/utils";
 import Button from "webapps-common/ui/components/Button.vue";
 import { cloneDeep, set, isEqual } from "lodash";
+import * as flowVariablesApi from "./api/flowVariables";
 import { markRaw } from "vue";
 
 const renderers = [
@@ -27,6 +28,10 @@ export default {
       updateData: this.updateData,
       getData: this.callDataService,
       sendAlert: this.sendAlert,
+      flowVariablesApi: {
+        getAvailableFlowVariables: this.getAvailableFlowVariables,
+        getFlowVariableOverrideValue: this.getFlowVariableOverrideValue,
+      },
     };
   },
   data() {
@@ -126,6 +131,20 @@ export default {
       if (typeof init === "function") {
         await init(this.currentData);
       }
+    },
+    getAvailableFlowVariables(persistPath) {
+      return flowVariablesApi.getAvailableFlowVariables(
+        this.callDataService.bind(this),
+        persistPath,
+        this.getData(),
+      );
+    },
+    getFlowVariableOverrideValue(dataPath) {
+      return flowVariablesApi.getFlowVariableOverrideValue(
+        this.callDataService.bind(this),
+        dataPath,
+        this.getData(),
+      );
     },
     onSettingsChanged({ data }) {
       if (data) {

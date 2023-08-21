@@ -1,0 +1,45 @@
+<script setup lang="ts">
+import OnlyFlowVariable from "webapps-common/ui/assets/img/icons/only-flow-variables.svg";
+import ExposeFlowVariable from "webapps-common/ui/assets/img/icons/expose-flow-variables.svg";
+import BothFlowVariables from "webapps-common/ui/assets/img/icons/both-flow-variables.svg";
+import type FlowVariableIconProps from "./types/FlowVariableIconProps";
+import { computed, watch } from "vue";
+
+const props = defineProps<FlowVariableIconProps>();
+const emit = defineEmits(["tooltip"]);
+const isControlled = computed(() =>
+  Boolean(props.flowSettings?.controllingFlowVariableName),
+);
+const isExposed = computed(() =>
+  Boolean(props.flowSettings?.exposedFlowVariableName),
+);
+
+const emitTooltip = (tooltip: string) => {
+  emit("tooltip", tooltip);
+};
+
+watch(
+  () => [isExposed.value, isControlled.value],
+  ([exposed, controlled]) => {
+    if (exposed && controlled) {
+      emitTooltip(
+        "Config is overwritten by flow variable and exposes a flow variable.",
+      );
+    } else if (exposed) {
+      emitTooltip("Config exposes a flow variable.");
+    } else if (controlled) {
+      emitTooltip("Config is overwritten by a flow variable.");
+    } else {
+      emitTooltip("");
+    }
+  },
+  { immediate: true },
+);
+</script>
+
+<template>
+  <BothFlowVariables v-if="isControlled && isExposed" />
+  <OnlyFlowVariable v-else-if="isControlled" />
+  <ExposeFlowVariable v-else-if="isExposed" />
+  <BothFlowVariables v-else-if="show" />
+</template>

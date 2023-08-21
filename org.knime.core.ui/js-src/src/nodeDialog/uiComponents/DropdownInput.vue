@@ -162,13 +162,17 @@ export default DropdownInput;
 <template>
   <DialogComponentWrapper :control="control" style="min-width: 0">
     <LabeledInput
+      #default="{ labelForId }"
+      :config-keys="control?.schema?.configKeys"
+      :with-flow-variables="false"
+      :path="control.path"
       :text="control.label"
       :show-reexecution-icon="isModelSettingAndHasNodeView"
-      :scope="control.uischema.scope"
-      :flow-settings="flowSettings"
       :description="control.description"
+      @controlling-flow-variable-set="onChange"
     >
       <Dropdown
+        :id="labelForId"
         :aria-label="control.label"
         :disabled="disabled"
         :model-value="dropdownValue"

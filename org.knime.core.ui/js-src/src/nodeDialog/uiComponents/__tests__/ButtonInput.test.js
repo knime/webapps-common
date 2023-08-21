@@ -8,6 +8,7 @@ import DialogComponentWrapper from "../DialogComponentWrapper.vue";
 import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
 import LoadingIcon from "webapps-common/ui/components/LoadingIcon.vue";
 import Label from "webapps-common/ui/components/forms/Label.vue";
+import LabeledInput from "../LabeledInput.vue";
 
 describe("ButtonInput", () => {
   const states = [
@@ -67,6 +68,9 @@ describe("ButtonInput", () => {
       visible: true,
       path,
       schema,
+      rootSchema: {
+        flowVariablesMap: {},
+      },
       label: "Test title",
       uischema: {
         ...uischema,
@@ -101,12 +105,28 @@ describe("ButtonInput", () => {
     initializesJsonFormsControl(component);
   });
 
+  const getButtonComponent = (wrapper) => {
+    return wrapper
+      .find(".button-wrapper")
+      .findComponent(FunctionButton)
+      .find("button");
+  };
+
+  it("sets labelForId", async () => {
+    await wrapper.vm.$nextTick();
+    const labeldInput = wrapper.findComponent(LabeledInput);
+    expect(getButtonComponent(wrapper).attributes().id).toBe(
+      labeldInput.vm.labelForId,
+    );
+    expect(labeldInput.vm.labeledElement).toBeDefined().not.toBeNull();
+  });
+
   describe("renders", () => {
     it("renders main components", () => {
       expect(
         wrapper.findComponent(DialogComponentWrapper).exists(),
       ).toBeTruthy();
-      expect(wrapper.findComponent(FunctionButton).exists()).toBeTruthy();
+      expect(getButtonComponent(wrapper).exists()).toBeTruthy();
       expect(wrapper.findComponent(Label).exists()).toBeTruthy();
     });
 
@@ -140,10 +160,7 @@ describe("ButtonInput", () => {
         currentSettings,
         widgetId,
       });
-      await wrapper
-        .findComponent(FunctionButton)
-        .find("button")
-        .trigger("click");
+      await getButtonComponent(wrapper).trigger("click");
       expect(getData).toHaveBeenCalledWith({
         method: "invokeButtonAction",
         options: [
@@ -156,7 +173,7 @@ describe("ButtonInput", () => {
     });
 
     it("sets next state specified in the uischema immediately", () => {
-      wrapper.findComponent(FunctionButton).find("button").trigger("click");
+      getButtonComponent(wrapper).trigger("click");
       expect(wrapper.vm.currentState).toStrictEqual(states[2]);
     });
 
@@ -166,10 +183,7 @@ describe("ButtonInput", () => {
         state: "SUCCESS",
         result: { buttonState: nextState.id },
       }));
-      await wrapper
-        .findComponent(FunctionButton)
-        .find("button")
-        .trigger("click");
+      await getButtonComponent(wrapper).trigger("click");
       expect(wrapper.vm.currentState).toStrictEqual(nextState);
     });
 
@@ -178,7 +192,7 @@ describe("ButtonInput", () => {
         state: "SUCCESS",
         result: null,
       }));
-      wrapper.findComponent(FunctionButton).find("button").trigger("click");
+      getButtonComponent(wrapper).trigger("click");
       const stateAfterClick = wrapper.vm.currentState;
       await wrapper.vm.$nextTick();
       expect(wrapper.vm.currentState).toStrictEqual(stateAfterClick);
@@ -238,10 +252,7 @@ describe("ButtonInput", () => {
     });
 
     it("displays error message on FAIL", async () => {
-      await wrapper
-        .findComponent(FunctionButton)
-        .find("button")
-        .trigger("click");
+      await getButtonComponent(wrapper).trigger("click");
       await wrapper.vm.$nextTick();
       expect(wrapper.find(".button-wrapper").text()).contains(
         "Error: some error",
@@ -266,14 +277,11 @@ describe("ButtonInput", () => {
     });
 
     it("clears error message on next update", async () => {
-      await wrapper
-        .findComponent(FunctionButton)
-        .find("button")
-        .trigger("click");
+      await getButtonComponent(wrapper).trigger("click");
       expect(wrapper.find(".button-wrapper").text()).contains(
         "Error: some error",
       );
-      wrapper.findComponent(FunctionButton).find("button").trigger("click");
+      getButtonComponent(wrapper).trigger("click");
       await wrapper.vm.$nextTick();
       expect(wrapper.find(".button-wrapper").text()).not.contains(
         "Error: some error",
@@ -405,7 +413,7 @@ describe("ButtonInput", () => {
   it("does not switch to next state on click when none exists", () => {
     wrapper.vm.currentState = states[2];
     expect(wrapper.vm.currentState).toBe(states[2]);
-    wrapper.findComponent(FunctionButton).find("button").trigger("click");
+    getButtonComponent(wrapper).trigger("click");
     expect(wrapper.vm.currentState).toBe(states[2]);
   });
 
@@ -414,36 +422,36 @@ describe("ButtonInput", () => {
       await wrapper.setData({
         currentState: { disabled: true },
       });
-      expect(
-        wrapper.findComponent(FunctionButton).find("button").attributes().class,
-      ).contains("disabled");
+      expect(getButtonComponent(wrapper).attributes().class).contains(
+        "disabled",
+      );
     });
 
     it("does not disabled button if current state is not disabled", async () => {
       await wrapper.setData({
         currentState: { disabled: false },
       });
-      expect(
-        wrapper.findComponent(FunctionButton).find("button").attributes().class,
-      ).not.contains("disabled");
+      expect(getButtonComponent(wrapper).attributes().class).not.contains(
+        "disabled",
+      );
     });
 
     it("sets primary if current state is primary", async () => {
       await wrapper.setData({
         currentState: { primary: true },
       });
-      expect(
-        wrapper.findComponent(FunctionButton).find("button").attributes().class,
-      ).contains("primary");
+      expect(getButtonComponent(wrapper).attributes().class).contains(
+        "primary",
+      );
     });
 
     it("does not set primary if current state is not primary", async () => {
       await wrapper.setData({
         currentState: { primary: false },
       });
-      expect(
-        wrapper.findComponent(FunctionButton).find("button").attributes().class,
-      ).not.contains("primary");
+      expect(getButtonComponent(wrapper).attributes().class).not.contains(
+        "primary",
+      );
     });
 
     it("displays custom button texts", async () => {

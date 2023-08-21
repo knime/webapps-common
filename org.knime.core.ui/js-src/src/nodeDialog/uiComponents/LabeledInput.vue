@@ -1,15 +1,17 @@
 <script>
 import Label from "webapps-common/ui/components/forms/Label.vue";
 import ErrorMessage from "./ErrorMessage.vue";
-import FlowVariableIcon from "./FlowVariableIcon.vue";
+import FlowVariableButton from "./flowVariables/FlowVariableButton.vue";
+import FlowVariableIcon from "./flowVariables/FlowVariableIcon.vue";
 import ReexecutionIcon from "webapps-common/ui/assets/img/icons/reexecution.svg";
-import DescriptionPopover from "./DescriptionPopover.vue";
+import DescriptionPopover from "./description/DescriptionPopover.vue";
 
 const LabeledInput = {
   name: "LabeledInput",
   components: {
     Label,
     ErrorMessage,
+    FlowVariableButton,
     FlowVariableIcon,
     ReexecutionIcon,
     DescriptionPopover,
@@ -17,6 +19,8 @@ const LabeledInput = {
   data() {
     return {
       hover: false,
+      labeledElement: null,
+      labelForId: null,
     };
   },
   props: {
@@ -27,6 +31,14 @@ const LabeledInput = {
     description: {
       default: null,
       type: String,
+    },
+    path: {
+      required: true,
+      type: String,
+    },
+    configKeys: {
+      type: Array,
+      required: false,
     },
     errors: {
       default: () => [],
@@ -40,18 +52,30 @@ const LabeledInput = {
       default: false,
       type: Boolean,
     },
-    scope: {
-      default: "",
-      type: String,
+    withFlowVariables: {
+      default: true,
+      type: Boolean,
     },
     flowSettings: {
       default: null,
+      type: Object,
+    },
+    flowVariablesMap: {
+      default: () => {},
       type: Object,
     },
     show: {
       default: true,
       type: Boolean,
     },
+  },
+  emits: ["controllingFlowVariableSet"],
+  mounted() {
+    // Wait one tick for the labelForId to be applied to the control element
+    this.$nextTick().then(() => {
+      this.labeledElement =
+        this.$el.querySelector?.(`#${this.labelForId}`) || null;
+    });
   },
 };
 export default LabeledInput;
@@ -64,17 +88,35 @@ export default LabeledInput;
     @mouseover="hover = true"
     @mouseleave="hover = false"
   >
-    <Label :text="text" :compact="true">
-      <ReexecutionIcon v-if="showReexecutionIcon" class="reexecution-icon" />
-      <FlowVariableIcon :flow-settings="flowSettings" />
+    <div ref="controlHeader" class="control-header">
+      <div class="left">
+        <Label
+          :text="text"
+          :compact="true"
+          class="label"
+          @label-for-id="labelForId = $event"
+        />
+        <ReexecutionIcon v-if="showReexecutionIcon" class="reexecution-icon" />
+      </div>
+      <FlowVariableButton
+        v-if="withFlowVariables"
+        :flow-settings="flowSettings"
+        :flow-variables-map="flowVariablesMap"
+        :path="path"
+        :config-keys="configKeys"
+        :hover="hover"
+        @controlling-flow-variable-set="
+          $emit('controllingFlowVariableSet', $event)
+        "
+      />
       <DescriptionPopover
         v-if="description"
         :html="description"
         :hover="hover"
-        @close="hover = false"
+        :ignored-click-outside-target="labeledElement"
       />
-      <slot />
-    </Label>
+    </div>
+    <slot :label-for-id="labelForId" />
     <ErrorMessage v-if="showErrors" :error="errors" />
   </div>
   <slot v-else />
@@ -97,17 +139,35 @@ export default LabeledInput;
     position: relative;
   }
 
-  & :deep(.label-text) {
-    display: inline-block;
-    z-index: 1;
-    max-width: calc(100% - var(--description-button-size) - 20px);
+  & .control-header {
+    display: flex;
+    max-width: 100%;
+
+    & .left {
+      min-width: 0;
+      flex: 1;
+      justify-content: flex-start;
+      display: flex;
+
+      & .label {
+        min-width: 0;
+        flex-shrink: 1;
+      }
+
+      & .reexecution-icon {
+        flex-shrink: 0;
+        height: 10px;
+        margin: 3px 0 1px 5px;
+      }
+    }
   }
 
-  & .reexecution-icon {
+  & :deep(.label-text) {
     display: inline-block;
-    vertical-align: top;
-    height: 10px;
-    margin: 3px 0 1px 5px;
+  }
+
+  & .icons-next-to-label {
+    flex: 1;
   }
 }
 </style>

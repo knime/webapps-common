@@ -68,6 +68,16 @@ describe("DateTimeInput.vue", () => {
     expect(wrapper.findComponent(DateTimeInputBase).exists()).toBe(true);
   });
 
+  it("sets labelForId", async () => {
+    await wrapper.vm.$nextTick();
+    const labeldInput = wrapper.findComponent(LabeledInput);
+    expect(wrapper.getComponent(DateTimeInputBase).props().id).toBe(
+      labeldInput.vm.labelForId,
+    );
+    expect(labeldInput.vm.labeledElement).toBeDefined();
+    expect(labeldInput.vm.labeledElement).not.toBeNull();
+  });
+
   it("initializes jsonforms", () => {
     initializesJsonFormsControl(component);
   });
@@ -169,7 +179,7 @@ describe("DateTimeInput.vue", () => {
   });
 
   it("checks that it is rendered if it is an advanced setting and advanced settings are shown", () => {
-    defaultProps.control.rootSchema = { showAdvancedSettings: true };
+    defaultProps.control.rootSchema.showAdvancedSettings = true;
     defaultProps.control.uischema.options.isAdvanced = true;
     const { wrapper } = mountJsonFormsComponent(DateTimeInput, {
       props: defaultProps,

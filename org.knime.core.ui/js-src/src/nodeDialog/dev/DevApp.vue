@@ -1,8 +1,15 @@
-<script>
+<script lang="ts">
 /* eslint-disable no-console */
-import { KnimeService } from "@knime/ui-extension-service";
+import {
+  ExtensionTypes,
+  KnimeService,
+  NodeServices,
+  ResourceTypes,
+  type ExtensionConfig,
+  type ServiceParameters,
+} from "@knime/ui-extension-service";
 import NodeDialog from "@/nodeDialog/NodeDialog.vue";
-import { computed } from "vue";
+import dataServiceMock from "./dataServiceMock";
 
 export default {
   components: {
@@ -13,7 +20,7 @@ export default {
     if (localStorage && localStorage.dialogIdx) {
       this.currentDialogIndex = Number(localStorage.getItem("dialogIdx"));
     }
-    this.currentKS = computed(() => this.getMockKnimeService());
+    this.currentKS = this.getMockKnimeService();
     return {
       getKnimeService: () => this.currentKS,
     };
@@ -21,18 +28,24 @@ export default {
   data() {
     return {
       currentDialogIndex: 0,
-      currentKS: null,
+      currentKS: null as null | KnimeService,
     };
   },
   computed: {
     dialogMocks() {
       // eslint-disable-next-line no-undef
-      const mocks = import.meta.glob("@@/mocks/*.json", { eager: true });
+      const mocks: Record<string, { result: object }> = import.meta.glob(
+        "@@/mocks/*.json",
+        { eager: true },
+      );
       return Object.keys(mocks)
         .sort()
         .map((file) => ({
           name: file.replace("/mocks/", ""),
-          config: mocks[file],
+          config: {
+            ...mocks[file],
+            result: { flowVariableSettings: {}, ...mocks[file].result },
+          },
         }));
     },
     currentDialog() {
@@ -45,7 +58,7 @@ export default {
         return;
       }
       localStorage.setItem("dialogIdx", newIdx);
-      this.currentKS = computed(() => this.getMockKnimeService());
+      this.currentKS = this.getMockKnimeService();
     },
   },
   created() {
@@ -60,21 +73,27 @@ export default {
   methods: {
     getMockKnimeService() {
       let initialData = JSON.stringify(this.currentDialog);
-      let extensionConfig = {
+      let extensionConfig: ExtensionConfig = {
         initialData,
         nodeId: "0",
         workflowId: "0",
         projectId: "7",
         flowVariableSettings: {
+          modelVariables: this.currentDialog.result.schema.flowVariablesMap,
           viewVariables: this.currentDialog.result.schema.flowVariablesMap,
         },
         resourceInfo: {
-          type: "VUE_COMPONENT_LIB",
+          type: ResourceTypes.VUE_COMPONENT_LIB,
           id: "NodeDialog",
           path: "any",
-          url: null,
+          url: "dummyUrl",
         },
-        extensionType: "dialog",
+        nodeInfo: {
+          nodeState: "executed",
+          nodeName: "DevApp",
+        },
+        hasNodeView: false,
+        extensionType: ExtensionTypes.DIALOG,
       };
       return new KnimeService(
         extensionConfig,
@@ -82,18 +101,32 @@ export default {
         this.pushEvent,
       );
     },
-    onDialogSelect(e) {
+    onDialogSelect(e: any) {
       let dialogIdx = e.target.selectedOptions[0].index - 1;
       this.currentDialogIndex = dialogIdx;
     },
     // Mock service calls
-    callService(request) {
-      console.log("KnimeService called service with request:", request);
-      const delay = 3000;
-      return new Promise((resolve) => setTimeout(resolve, delay));
+    callService(...serviceParameters: ServiceParameters) {
+      console.log(
+        "KnimeService called service with request:",
+        serviceParameters,
+      );
+      if (
+        serviceParameters[0] === NodeServices.CALL_NODE_DATA_SERVICE &&
+        typeof serviceParameters[2] === "string"
+      ) {
+        const rpcRequest = JSON.parse(serviceParameters[2]);
+        const result = dataServiceMock(rpcRequest);
+        const delay = 2000;
+        return new Promise((resolve) =>
+          setTimeout(() => resolve({ result: { result } }), delay),
+        );
+      }
+      return Promise.resolve();
     },
-    pushEvent(event) {
+    pushEvent(event: any) {
       console.log("Push event was called:", event);
+      return Promise.resolve();
     },
     applySettings() {
       let message = "Current dialog does not have an apply data method.";

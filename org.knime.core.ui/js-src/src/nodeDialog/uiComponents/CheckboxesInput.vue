@@ -64,14 +64,19 @@ export default CheckboxesInput;
 <template>
   <DialogComponentWrapper :control="control">
     <LabeledInput
+      #default="{ labelForId }"
+      :config-keys="control?.schema?.configKeys"
+      :flow-variables-map="control.rootSchema.flowVariablesMap"
+      :path="control.path"
       :text="control.label"
       :show-reexecution-icon="isModelSettingAndHasNodeView"
-      :scope="control.uischema.scope"
       :flow-settings="flowSettings"
       :description="control.description"
+      @controlling-flow-variable-set="onChange"
     >
       <Checkboxes
         v-if="options"
+        :id="labelForId"
         :possible-values="options"
         :alignment="alignment"
         :disabled="disabled"

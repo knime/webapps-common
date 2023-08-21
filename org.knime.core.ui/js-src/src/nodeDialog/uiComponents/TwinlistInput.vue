@@ -191,15 +191,19 @@ export default TwinlistInput;
   <DialogComponentWrapper :control="control">
     <LabeledInput
       v-if="control.visible"
+      #default="{ labelForId }"
+      :config-keys="control?.schema?.configKeys"
+      :with-flow-variables="false"
+      :path="control.path"
       :text="control.label"
       :show-reexecution-icon="isModelSettingAndHasNodeView"
-      :scope="control.uischema.scope"
-      :flow-settings="flowSettings"
       :description="control.description"
+      @controlling-flow-variable-set="onChange"
     >
       <MultiModeTwinlist
         v-if="possibleValues"
         v-bind="$attrs"
+        :id="labelForId"
         :show-mode="showMode"
         :show-search="showSearch"
         :disabled="disabled"

@@ -72,11 +72,15 @@ export default ComboBoxInput;
 <template>
   <DialogComponentWrapper :control="control" style="min-width: 0">
     <LabeledInput
+      #default="{ labelForId }"
+      :config-keys="control?.schema?.configKeys"
+      :flow-variables-map="control.rootSchema.flowVariablesMap"
+      :path="control.path"
       :text="control.label"
       :show-reexecution-icon="isModelSettingAndHasNodeView"
-      :scope="control.uischema.scope"
       :flow-settings="flowSettings"
       :description="control.description"
+      @controlling-flow-variable-set="onChange"
     >
       <!--
         TODO Enable unsing :allow-new-values="noPossibleValuesPresent"
@@ -84,6 +88,7 @@ export default ComboBoxInput;
       -->
       <ComboBox
         v-if="loaded"
+        :id="labelForId"
         :allow-new-values="noPossibleValuesPresent ? '' : false"
         :aria-label="control.label"
         :disabled="disabled"

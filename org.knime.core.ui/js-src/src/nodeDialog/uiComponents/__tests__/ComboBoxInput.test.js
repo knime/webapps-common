@@ -66,6 +66,15 @@ describe("ComboBoxInput.vue", () => {
     expect(wrapper.findComponent(ComboBox).exists()).toBe(true);
   });
 
+  it("sets labelForId", () => {
+    const labeldInput = wrapper.findComponent(LabeledInput);
+    expect(wrapper.getComponent(ComboBox).attributes().id).toBe(
+      labeldInput.vm.labelForId,
+    );
+    expect(labeldInput.vm.labeledElement).toBeDefined();
+    expect(labeldInput.vm.labeledElement).not.toBeNull();
+  });
+
   it("initializes jsonforms", () => {
     initializesJsonFormsControl(component);
   });

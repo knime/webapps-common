@@ -60,10 +60,36 @@ const getCurrentLibrary = (mode: ComponentLibraries) => {
   return false;
 };
 
+const getIncludedTestFiles = (mode: "integration" | "unit") => {
+  if (mode === "unit") {
+    return ["src/**/__tests__/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"];
+  } else {
+    return [
+      "**/__integrationTests__/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
+    ];
+  }
+};
+
+const getExcludedTestFiles = (mode: "integration" | "unit") => {
+  if (mode === "unit") {
+    return getIncludedTestFiles("integration");
+  } else {
+    return [];
+  }
+};
+
+const getTestSetupFile = (mode: "integration" | "unit") => {
+  if (mode === "unit") {
+    return "test-setup/vitest.setup.js";
+  } else {
+    return "test-setup/vitest.setup.integration.js";
+  }
+};
+
 // https://vitest.dev/config/
 export default defineConfig(({ mode }) => {
   const env = { ...process.env, ...loadEnv(mode, process.cwd()) };
-
+  const testMode = mode === "integration" ? "integration" : "unit";
   return {
     define: {
       "process.env": env, // needed by v-calendar
@@ -110,12 +136,13 @@ export default defineConfig(({ mode }) => {
       },
     },
     test: {
-      include: ["src/**/__tests__/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+      include: getIncludedTestFiles(testMode),
+      exclude: getExcludedTestFiles(testMode),
       environment: "jsdom",
       reporters: ["default", "junit"],
       deps: { inline: ["consola"] },
       setupFiles: [
-        fileURLToPath(new URL("test-setup/vitest.setup.js", import.meta.url)),
+        fileURLToPath(new URL(getTestSetupFile(testMode), import.meta.url)),
       ],
       coverage: {
         all: true,

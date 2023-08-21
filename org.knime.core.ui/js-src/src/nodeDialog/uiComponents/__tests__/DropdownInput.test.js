@@ -90,6 +90,15 @@ describe("DropdownInput.vue", () => {
     expect(wrapper.findComponent(Dropdown).exists()).toBe(true);
   });
 
+  it("sets labelForId", () => {
+    const labeldInput = wrapper.findComponent(LabeledInput);
+    expect(wrapper.getComponent(Dropdown).props().id).toBe(
+      labeldInput.vm.labelForId,
+    );
+    expect(labeldInput.vm.labeledElement).toBeDefined();
+    expect(labeldInput.vm.labeledElement).not.toBeNull();
+  });
+
   it("initializes jsonforms", () => {
     initializesJsonFormsControl(component);
   });
@@ -218,7 +227,7 @@ describe("DropdownInput.vue", () => {
   });
 
   it("checks that it is rendered if it is an advanced setting and advanced settings are shown", () => {
-    props.control.rootSchema = { showAdvancedSettings: true };
+    props.control.rootSchema.showAdvancedSettings = true;
     props.control.uischema.options.isAdvanced = true;
     const { wrapper } = mountJsonFormsComponent(DropdownInput, { props });
     expect(wrapper.getComponent(DropdownInput).isVisible()).toBe(true);

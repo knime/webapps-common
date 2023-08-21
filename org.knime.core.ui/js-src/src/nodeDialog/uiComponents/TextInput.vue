@@ -34,7 +34,6 @@ const TextInput = defineComponent({
       );
     },
   },
-
   methods: {
     onChange(event) {
       this.handleChange(this.control.path, event);
@@ -50,14 +49,19 @@ export default TextInput;
 <template>
   <DialogComponentWrapper :control="control" style="min-width: 0">
     <LabeledInput
+      #default="{ labelForId }"
+      :config-keys="control?.schema?.configKeys"
+      :flow-variables-map="control.rootSchema.flowVariablesMap"
+      :path="control.path"
       :text="control.label"
       :description="control.description"
       :errors="[control.errors]"
       :show-reexecution-icon="isModelSettingAndHasNodeView"
-      :scope="control.uischema.scope"
       :flow-settings="flowSettings"
+      @controlling-flow-variable-set="onChange"
     >
       <InputField
+        :id="labelForId"
         :model-value="control.data"
         :disabled="disabled"
         @update:model-value="onChange"

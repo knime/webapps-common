@@ -80,6 +80,15 @@ describe("RadioInputBase.vue", () => {
     expect(wrapper.findComponent(BaseRadioButtons).exists()).toBe(true);
   });
 
+  it("sets labelForId", () => {
+    const labeldInput = wrapper.findComponent(LabeledInput);
+    expect(wrapper.getComponent(RadioButtons).props().id).toBe(
+      labeldInput.vm.labelForId,
+    );
+    expect(labeldInput.vm.labeledElement).toBeDefined();
+    expect(labeldInput.vm.labeledElement).not.toBeNull();
+  });
+
   it("initializes jsonforms", () => {
     initializesJsonFormsControl(component);
   });
@@ -293,7 +302,7 @@ describe("RadioInputBase.vue", () => {
   });
 
   it("checks that it is rendered if it is an advanced setting and advanced settings are shown", () => {
-    defaultProps.control.rootSchema = { showAdvancedSettings: true };
+    defaultProps.control.rootSchema.showAdvancedSettings = true;
     defaultProps.control.uischema.options.isAdvanced = true;
     const { wrapper } = mountJsonFormsComponent(RadioInputBase, {
       props: defaultProps,

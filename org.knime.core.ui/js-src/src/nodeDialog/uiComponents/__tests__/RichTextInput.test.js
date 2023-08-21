@@ -14,6 +14,7 @@ import {
 import RichTextEditor from "webapps-common/ui/components/forms/RichTextEditor/RichTextEditor.vue";
 import RichTextInput from "../RichTextInput.vue";
 import { inputFormats } from "@/nodeDialog/constants";
+import LabeledInput from "../LabeledInput.vue";
 
 describe("RichTextInput.vue", () => {
   let props, wrapper, onChangeSpy, component, stubs;
@@ -65,6 +66,15 @@ describe("RichTextInput.vue", () => {
   it("renders", () => {
     expect(wrapper.findComponent(RichTextInput).exists()).toBeTruthy();
     expect(wrapper.findComponent(RichTextEditor).exists()).toBeTruthy();
+  });
+
+  it("sets labelForId", () => {
+    const labeldInput = wrapper.findComponent(LabeledInput);
+    expect(wrapper.getComponent(RichTextEditor).attributes().id).toBe(
+      labeldInput.vm.labelForId,
+    );
+    expect(labeldInput.vm.labeledElement).toBeDefined();
+    expect(labeldInput.vm.labeledElement).not.toBeNull();
   });
 
   it("initializes jsonforms", () => {

@@ -73,6 +73,11 @@ const RadioInputBase = defineComponent({
         this.$store.dispatch("pagebuilder/dialog/dirtySettings", true);
       }
     },
+    setControllingFlowVariable(value) {
+      if (this.options.filter(({ id }) => value === id).length) {
+        this.onChange(value);
+      }
+    },
   },
 });
 export default RadioInputBase;
@@ -81,15 +86,21 @@ export default RadioInputBase;
 <template>
   <DialogComponentWrapper :control="control">
     <LabeledInput
+      #default="{ labelForId }"
+      :config-keys="control?.schema?.configKeys"
+      :flow-variables-map="control.rootSchema.flowVariablesMap"
+      :path="control.path"
       :text="control.label"
       :show-reexecution-icon="isModelSettingAndHasNodeView"
       :scope="control.uischema.scope"
       :flow-settings="flowSettings"
       :description="control.description"
+      @controlling-flow-variable-set="setControllingFlowVariable"
     >
       <component
         :is="uiComponent"
         v-if="options"
+        :id="labelForId"
         :possible-values="options"
         :alignment="alignment"
         :disabled="disabled"

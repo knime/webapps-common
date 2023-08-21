@@ -13,8 +13,8 @@ import {
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import CheckboxInput from "../CheckboxInput.vue";
 import ErrorMessage from "../ErrorMessage.vue";
-import FlowVariableIcon from "../FlowVariableIcon.vue";
-import DescriptionPopover from "../DescriptionPopover.vue";
+import FlowVariableIcon from "../flowVariables/FlowVariableIcon.vue";
+import DescriptionPopover from "../description/DescriptionPopover.vue";
 import ReexecutionIcon from "webapps-common/ui/assets/img/icons/reexecution.svg";
 import Checkbox from "webapps-common/ui/components/forms/Checkbox.vue";
 import BothFlowVariables from "webapps-common/ui/assets/img/icons/both-flow-variables.svg";
@@ -195,14 +195,8 @@ describe("CheckboxInput.vue", () => {
     const { wrapper } = mountJsonFormsComponent(CheckboxInput, {
       props: defaultProps,
     });
-    expect(
-      Boolean(
-        wrapper.findComponent(FlowVariableIcon).vm.isControlledByFlowVariable,
-      ),
-    ).toBe(true);
-    expect(
-      Boolean(wrapper.findComponent(FlowVariableIcon).vm.isExposedFlowVariable),
-    ).toBe(true);
+    expect(wrapper.findComponent(FlowVariableIcon).vm.isControlled).toBe(true);
+    expect(wrapper.findComponent(FlowVariableIcon).vm.isExposed).toBe(true);
 
     const icon = wrapper.findComponent(BothFlowVariables);
     expect(icon.exists()).toBe(true);
@@ -226,9 +220,7 @@ describe("CheckboxInput.vue", () => {
         wrapper.findComponent(FlowVariableIcon).vm.isControlledByFlowVariable,
       ),
     ).toBe(false);
-    expect(
-      Boolean(wrapper.findComponent(FlowVariableIcon).vm.isExposedFlowVariable),
-    ).toBe(true);
+    expect(wrapper.findComponent(FlowVariableIcon).vm.isExposed).toBe(true);
 
     const icon = wrapper.findComponent(ExposeFlowVariable);
     expect(icon.exists()).toBe(true);
@@ -247,11 +239,7 @@ describe("CheckboxInput.vue", () => {
     const { wrapper } = mountJsonFormsComponent(CheckboxInput, {
       props: defaultProps,
     });
-    expect(
-      Boolean(
-        wrapper.findComponent(FlowVariableIcon).vm.isControlledByFlowVariable,
-      ),
-    ).toBe(true);
+    expect(wrapper.findComponent(FlowVariableIcon).vm.isControlled).toBe(true);
     expect(
       Boolean(wrapper.findComponent(FlowVariableIcon).vm.isExposedFlowVariable),
     ).toBe(false);
@@ -284,7 +272,7 @@ describe("CheckboxInput.vue", () => {
   });
 
   it("checks that it is rendered if it is an advanced setting and advanced settings are shown", () => {
-    defaultProps.control.rootSchema = { showAdvancedSettings: true };
+    defaultProps.control.rootSchema.showAdvancedSettings = true;
     defaultProps.control.uischema.options.isAdvanced = true;
     const { wrapper } = mountJsonFormsComponent(CheckboxInput, {
       props: defaultProps,

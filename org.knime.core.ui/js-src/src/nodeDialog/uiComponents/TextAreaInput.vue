@@ -52,14 +52,18 @@ export default TextAreaInput;
 <template>
   <DialogComponentWrapper :control="control" style="min-width: 0">
     <LabeledInput
+      #default="{ labelForId }"
+      :config-keys="control?.schema?.configKeys"
+      :with-flow-variables="false"
+      :path="control.path"
       :text="control.label"
+      :show-reexecution-icon="isModelSettingAndHasNodeView"
       :description="control.description"
       :errors="[control.errors]"
-      :show-reexecution-icon="isModelSettingAndHasNodeView"
-      :scope="control.uischema.scope"
-      :flow-settings="flowSettings"
+      @controlling-flow-variable-set="onChange"
     >
       <TextArea
+        :id="labelForId"
         class="text-area-input"
         :model-value="control.data"
         :disabled="disabled"

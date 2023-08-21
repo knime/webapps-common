@@ -22,6 +22,7 @@ definitions:
           - npm ci
           - npm run ci:lint-format
           - npm run coverage
+          - npm run test:integration
           # - npm run audit # TODO temporarily disabled due to unsolvable issues
           - pipe: sonarsource/sonarcloud-scan:1.4.0
             variables:

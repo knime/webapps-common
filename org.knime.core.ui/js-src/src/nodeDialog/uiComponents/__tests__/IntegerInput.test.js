@@ -12,9 +12,9 @@ describe("IntegerInput.vue", () => {
 
   beforeEach(async () => {
     defaultProps = {
-      path: "",
       control: {
         visible: true,
+        path: "",
         schema: {
           properties: {
             maxRows: {
@@ -22,6 +22,9 @@ describe("IntegerInput.vue", () => {
               title: "Show tooltip",
             },
           },
+        },
+        rootSchema: {
+          flowVariablesMap: {},
         },
         uischema: {
           type: "Control",
@@ -71,7 +74,7 @@ describe("IntegerInput.vue", () => {
   });
 
   it("checks that it is rendered if it is an advanced setting and advanced settings are shown", () => {
-    defaultProps.control.rootSchema = { showAdvancedSettings: true };
+    defaultProps.control.rootSchema.showAdvancedSettings = true;
     defaultProps.control.uischema.options.isAdvanced = true;
     const { wrapper } = mountJsonFormsComponent(IntegerInput, {
       props: defaultProps,

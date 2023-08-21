@@ -1,6 +1,7 @@
 {
   "result": {
     "name": "Button Input Mock Dialog",
+    "data": {},
     "schema": {
       "type": "object",
       "properties": {

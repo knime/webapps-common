@@ -79,14 +79,19 @@ export default DateTimeInput;
 <template>
   <DialogComponentWrapper :control="control" style="min-width: 0">
     <LabeledInput
+      #default="{ labelForId }"
+      :config-keys="control?.schema?.configKeys"
+      :flow-variables-map="control.rootSchema.flowVariablesMap"
+      :path="control.path"
       :text="control.label"
       :description="control.description"
       :errors="[control.errors]"
       :show-reexecution-icon="isModelSettingAndHasNodeView"
-      :scope="control.uischema.scope"
       :flow-settings="flowSettings"
+      @controlling-flow-variable-set="onChange"
     >
       <DateInput
+        :id="labelForId"
         :model-value="new Date(control.data)"
         class="date-time"
         :required="true"

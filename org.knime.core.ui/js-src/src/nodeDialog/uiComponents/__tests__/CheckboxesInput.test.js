@@ -13,13 +13,9 @@ import {
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import CheckboxesInput from "../CheckboxesInput.vue";
 import ErrorMessage from "../ErrorMessage.vue";
-import FlowVariableIcon from "../FlowVariableIcon.vue";
-import DescriptionPopover from "../DescriptionPopover.vue";
+import DescriptionPopover from "../description/DescriptionPopover.vue";
 import ReexecutionIcon from "webapps-common/ui/assets/img/icons/reexecution.svg";
 import Checkboxes from "webapps-common/ui/components/forms/Checkboxes.vue";
-import BothFlowVariables from "webapps-common/ui/assets/img/icons/both-flow-variables.svg";
-import OnlyFlowVariable from "webapps-common/ui/assets/img/icons/only-flow-variables.svg";
-import ExposeFlowVariable from "webapps-common/ui/assets/img/icons/expose-flow-variables.svg";
 
 describe("CheckboxesInput.vue", () => {
   let wrapper,
@@ -166,84 +162,6 @@ describe("CheckboxesInput.vue", () => {
     expect(wrapper.vm.disabled).toBeTruthy();
   });
 
-  it("renders both icons when controlled and exposed by a flow variable", () => {
-    defaultProps.control.rootSchema.flowVariablesMap[
-      defaultProps.control.path
-    ] = {
-      controllingFlowVariableAvailable: true,
-      controllingFlowVariableName: "knime.test",
-      exposedFlowVariableName: "test",
-      leaf: true,
-    };
-
-    const { wrapper } = mountJsonFormsComponent(CheckboxesInput, {
-      props: defaultProps,
-    });
-    expect(
-      Boolean(
-        wrapper.findComponent(FlowVariableIcon).vm.isControlledByFlowVariable,
-      ),
-    ).toBe(true);
-    expect(
-      Boolean(wrapper.findComponent(FlowVariableIcon).vm.isExposedFlowVariable),
-    ).toBe(true);
-
-    const icon = wrapper.findComponent(BothFlowVariables);
-    expect(icon.exists()).toBe(true);
-  });
-
-  it("renders exposedFlowVariable icon when exposed flow variable exists", () => {
-    defaultProps.control.rootSchema.flowVariablesMap[
-      defaultProps.control.path
-    ] = {
-      controllingFlowVariableAvailable: true,
-      controllingFlowVariableName: null,
-      exposedFlowVariableName: "test",
-      leaf: true,
-    };
-
-    const { wrapper } = mountJsonFormsComponent(CheckboxesInput, {
-      props: defaultProps,
-    });
-    expect(
-      Boolean(
-        wrapper.findComponent(FlowVariableIcon).vm.isControlledByFlowVariable,
-      ),
-    ).toBe(false);
-    expect(
-      Boolean(wrapper.findComponent(FlowVariableIcon).vm.isExposedFlowVariable),
-    ).toBe(true);
-
-    const icon = wrapper.findComponent(ExposeFlowVariable);
-    expect(icon.exists()).toBe(true);
-  });
-
-  it("renders onlyFlowVariable icon when controlled by a flow variable", () => {
-    defaultProps.control.rootSchema.flowVariablesMap[
-      defaultProps.control.path
-    ] = {
-      controllingFlowVariableAvailable: true,
-      controllingFlowVariableName: "knime.test",
-      exposedFlowVariableName: null,
-      leaf: true,
-    };
-
-    const { wrapper } = mountJsonFormsComponent(CheckboxesInput, {
-      props: defaultProps,
-    });
-    expect(
-      Boolean(
-        wrapper.findComponent(FlowVariableIcon).vm.isControlledByFlowVariable,
-      ),
-    ).toBe(true);
-    expect(
-      Boolean(wrapper.findComponent(FlowVariableIcon).vm.isExposedFlowVariable),
-    ).toBe(false);
-
-    const icon = wrapper.findComponent(OnlyFlowVariable);
-    expect(icon.exists()).toBe(true);
-  });
-
   it("does not render CheckboxesInput when visible is false", async () => {
     wrapper.setProps({
       control: {
@@ -268,7 +186,7 @@ describe("CheckboxesInput.vue", () => {
   });
 
   it("checks that it is rendered if it is an advanced setting and advanced settings are shown", () => {
-    defaultProps.control.rootSchema = { showAdvancedSettings: true };
+    defaultProps.control.rootSchema.showAdvancedSettings = true;
     defaultProps.control.uischema.options.isAdvanced = true;
     const { wrapper } = mountJsonFormsComponent(CheckboxesInput, {
       props: defaultProps,

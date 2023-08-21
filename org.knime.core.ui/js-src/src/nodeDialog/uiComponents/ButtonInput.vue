@@ -157,16 +157,21 @@ export default ButtonInput;
 <template>
   <DialogComponentWrapper :control="control">
     <LabeledInput
+      #default="{ labelForId }"
+      :config-keys="control?.schema?.configKeys"
+      :flow-variables-map="control.rootSchema.flowVariablesMap"
+      :path="control.path"
       :text="control.label"
       :description="control.description"
       :errors="[control.errors]"
       :show-reexecution-icon="isModelSettingAndHasNodeView"
-      :scope="control.uischema.scope"
       :flow-settings="flowSettings"
       :show="showTitleAndDescription"
+      @controlling-flow-variable-set="saveResult"
     >
       <div class="button-wrapper">
         <FunctionButton
+          :id="labelForId"
           :disabled="currentState.disabled"
           class="button-input"
           :primary="currentState.primary"

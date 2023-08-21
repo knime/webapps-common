@@ -4,9 +4,9 @@ import { rendererProps } from "@jsonforms/vue";
 import { isModelSettingAndHasNodeView, getFlowVariablesMap } from "../utils";
 import Checkbox from "webapps-common/ui/components/forms/Checkbox.vue";
 import ReexecutionIcon from "webapps-common/ui/assets/img/icons/reexecution.svg";
-import FlowVariableIcon from "./FlowVariableIcon.vue";
+import FlowVariableButton from "./flowVariables/FlowVariableButton.vue";
 import ErrorMessage from "./ErrorMessage.vue";
-import DescriptionPopover from "./DescriptionPopover.vue";
+import DescriptionPopover from "./description/DescriptionPopover.vue";
 import DialogComponentWrapper from "./DialogComponentWrapper.vue";
 import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
 
@@ -15,7 +15,7 @@ const CheckboxInput = defineComponent({
   components: {
     Checkbox,
     ErrorMessage,
-    FlowVariableIcon,
+    FlowVariableButton,
     DescriptionPopover,
     ReexecutionIcon,
     DialogComponentWrapper,
@@ -75,17 +75,19 @@ export default CheckboxInput;
           v-if="isModelSettingAndHasNodeView"
           class="reexecution-icon"
         />
-        <FlowVariableIcon
-          :flow-settings="flowSettings"
-          class="flow-variable-icon"
-        />
       </Checkbox>
+      <FlowVariableButton
+        :flow-settings="flowSettings"
+        :flow-variables-map="control.rootSchema.flowVariablesMap"
+        :path="control.path"
+        :hover="hover"
+        :config-keys="control.schema.configKeys"
+        @controlling-flow-variable-set="onChange"
+      />
       <DescriptionPopover
         v-if="control.description"
         :html="control.description"
         :hover="hover"
-        class="description-popover"
-        @close="hover = false"
       />
       <ErrorMessage :error="control.errors" />
     </div>
@@ -96,14 +98,12 @@ export default CheckboxInput;
 .checkbox-input {
   margin-bottom: 10px;
   position: relative;
+  display: flex;
 
   & .checkbox {
+    flex: 1;
     width: calc(100% - var(--description-button-size) - 3px);
     position: relative;
-  }
-
-  & .description-popover {
-    top: 3px;
   }
 }
 

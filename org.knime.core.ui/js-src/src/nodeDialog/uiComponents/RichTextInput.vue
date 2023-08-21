@@ -50,14 +50,19 @@ export default RichTextInput;
 
 <template>
   <LabeledInput
+    #default="{ labelForId }"
+    :config-keys="control?.schema?.configKeys"
+    :flow-variables-map="control.rootSchema.flowVariablesMap"
+    :path="control.path"
     :text="control.label"
     :description="control.description"
     :errors="[control.errors]"
-    :scope="control.uischema.scope"
     :flow-settings="flowSettings"
     class="input-wrapper"
+    @controlling-flow-variable-set="onChange"
   >
     <RichTextEditor
+      :id="labelForId"
       class="editor"
       :class="{ 'editor-editable': !disabled }"
       :min-height="400"

@@ -54,14 +54,19 @@ export default NumberInputBase;
 <template>
   <DialogComponentWrapper :control="control">
     <LabeledInput
+      #default="{ labelForId }"
+      :config-keys="control?.schema?.configKeys"
+      :flow-variables-map="control.rootSchema.flowVariablesMap"
+      :path="control.path"
       :text="control.label"
       :description="control.description"
       :errors="[control.errors]"
       :show-reexecution-icon="isModelSettingAndHasNodeView"
-      :scope="control.uischema.scope"
       :flow-settings="flowSettings"
+      @controlling-flow-variable-set="onChange"
     >
       <NumberInput
+        :id="labelForId"
         class="number-input"
         :disabled="disabled"
         :model-value="control.data"

@@ -75,6 +75,15 @@ describe("SimpleTwinlistInput.vue", () => {
     expect(wrapper.findComponent(Twinlist).exists()).toBe(true);
   });
 
+  it("sets labelForId", () => {
+    const labeldInput = wrapper.findComponent(LabeledInput);
+    expect(wrapper.getComponent(Twinlist).attributes().id).toBe(
+      labeldInput.vm.labelForId,
+    );
+    expect(labeldInput.vm.labeledElement).toBeDefined();
+    expect(labeldInput.vm.labeledElement).not.toBeNull();
+  });
+
   it("initializes jsonforms", () => {
     initializesJsonFormsControl(component);
   });

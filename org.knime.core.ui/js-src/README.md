@@ -80,14 +80,18 @@ When committing your changes, a couple of commit hooks will run via [husky].
 
 #### Running unit tests
 
-This project contains unit tests written with [jest]. They are run with
+This project contains unit tests written with [vitest]. They are run with
+
+```sh
+npm run test
+```
+
+or one can run unit- and integration-tests individually by
 
 ```sh
 npm run test:unit
+npm run test:integration
 ```
-
-During development, you can use `npm run test:unit -- --watch` to have the unit tests run automatically whenever a
-source file changes.
 
 You can generate a coverage report with
 
@@ -162,7 +166,7 @@ The views expect that the embedding app provides the following:
 [Java]: https://www.oracle.com/technetwork/java/javase/downloads/index.html
 [Vue CLI docs]: https://cli.vuejs.org/guide/
 [Vue libraries]: https://cli.vuejs.org/guide/build-targets.html#library
-[jest]: https://jestjs.io/en
+[vitest]: https://vitest.dev/
 [LCOV]: https://github.com/linux-test-project/lcov
 [Clover]: http://openclover.org/
 [husky]: https://www.npmjs.com/package/husky

@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createStore } from "vuex";
 import { shallowMount } from "@vue/test-utils";
 import { JsonForms } from "@jsonforms/vue";
 import { JsonDataService } from "@knime/ui-extension-service";
@@ -11,50 +10,11 @@ import {
 import NodeDialog from "../NodeDialog.vue";
 import flushPromises from "flush-promises";
 
+import { getOptions } from "./utils";
+
 window.closeCEFWindow = () => {};
 
 describe("NodeDialog.vue", () => {
-  const getOptions = ({
-    setApplySettingsMock,
-    createAlertMock,
-    sendWarningMock,
-    cleanSettingsMock,
-  } = {}) => {
-    const dialogStoreOptions = {
-      actions: {
-        setApplySettings: setApplySettingsMock || vi.fn(),
-        cleanSettings: cleanSettingsMock || vi.fn(),
-      },
-      namespaced: true,
-    };
-    return {
-      global: {
-        provide: {
-          getKnimeService: () => ({
-            extensionConfig: {},
-            callService: vi.fn().mockResolvedValue({}),
-            registerDataGetter: vi.fn(),
-            addEventCallback: vi.fn(),
-            createAlert: createAlertMock || vi.fn(),
-            sendWarning: sendWarningMock || vi.fn(),
-          }),
-        },
-        mocks: {
-          $store: createStore({
-            modules: {
-              "pagebuilder/dialog": dialogStoreOptions,
-            },
-          }),
-        },
-      },
-      props: {
-        dialogSettings: {
-          nodeId: "test",
-        },
-      },
-    };
-  };
-
   beforeEach(() => {
     vi.clearAllMocks();
     vi.spyOn(JsonDataService.prototype, "initialData").mockResolvedValue({
@@ -244,6 +204,52 @@ describe("NodeDialog.vue", () => {
     wrapper.vm.sendAlert(callParams);
     expect(createAlertMock).toHaveBeenCalledWith(callParams);
     expect(sendWarningMock).toHaveBeenCalledWith("myAlert");
+  });
+
+  it("provides 'getAvailableFlowVariables' method", () => {
+    const wrapper = shallowMount(NodeDialog, getOptions());
+    const path = "path.to.my.setting";
+    const currentData = { foo: "bar" };
+    wrapper.vm.currentData = currentData;
+    const flowVariablesMap = {};
+    wrapper.vm.schema = { flowVariablesMap };
+    wrapper.vm.getAvailableFlowVariables(path);
+    expect(wrapper.vm.jsonDataService.data).toHaveBeenCalledWith({
+      method: "getAvailableFlowVariables",
+      options: [
+        JSON.stringify({
+          data: currentData,
+          flowVariableSettings: flowVariablesMap,
+        }),
+        ["path", "to", "my", "setting"],
+      ],
+    });
+  });
+
+  it("provides 'getFlowVariableOverrideValue' method", () => {
+    const wrapper = shallowMount(NodeDialog, getOptions());
+    const dataPath = "path.to.my.setting";
+    const currentData = { foo: "bar" };
+    const flowVariablesMap = {
+      myPath: {
+        controllingFlowVariableAvailable: true,
+        controllingFlowVariableName: "myVar",
+        exposedFlowVariableName: null,
+      },
+    };
+    wrapper.vm.currentData = currentData;
+    wrapper.vm.schema = { flowVariablesMap };
+    wrapper.vm.getFlowVariableOverrideValue(dataPath);
+    expect(wrapper.vm.jsonDataService.data).toHaveBeenCalledWith({
+      method: "getFlowVariableOverrideValue",
+      options: [
+        JSON.stringify({
+          data: currentData,
+          flowVariableSettings: flowVariablesMap,
+        }),
+        ["path", "to", "my", "setting"],
+      ],
+    });
   });
 
   describe("registerWatcher", () => {

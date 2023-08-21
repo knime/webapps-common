@@ -13,6 +13,7 @@ import {
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import NumberInput from "../NumberInput.vue";
 import NumberInputBase from "../NumberInputBase.vue";
+import NumberInputComponent from "webapps-common/ui/components/forms/NumberInput.vue";
 import ErrorMessage from "../ErrorMessage.vue";
 import LabeledInput from "../LabeledInput.vue";
 
@@ -67,6 +68,15 @@ describe("NumberInput.vue", () => {
     expect(
       wrapper.getComponent(NumberInput).getComponent(ErrorMessage).exists(),
     ).toBe(true);
+  });
+
+  it("sets labelForId", () => {
+    const labeldInput = wrapper.findComponent(LabeledInput);
+    expect(wrapper.getComponent(NumberInputComponent).props().id).toBe(
+      labeldInput.vm.labelForId,
+    );
+    expect(labeldInput.vm.labeledElement).toBeDefined();
+    expect(labeldInput.vm.labeledElement).not.toBeNull();
   });
 
   it("passes default props", () => {
@@ -157,7 +167,7 @@ describe("NumberInput.vue", () => {
   });
 
   it("checks that it is rendered if it is an advanced setting and advanced settings are shown", () => {
-    defaultProps.control.rootSchema = { showAdvancedSettings: true };
+    defaultProps.control.rootSchema.showAdvancedSettings = true;
     defaultProps.control.uischema.options.isAdvanced = true;
     const { wrapper } = mountJsonFormsComponent(NumberInput, {
       props: defaultProps,
