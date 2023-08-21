@@ -546,6 +546,10 @@ export default {
             const autoSizeColumnsToContentChanged =
                 newSettings.autoSizeColumnsToContent !== this.settings.autoSizeColumnsToContent;
 
+            if (autoSizeColumnsToContentChanged) {
+                this.columnSizeOverrides = {};
+            }
+
             this.settings = newSettings;
 
             const numberOfDisplayedColsChanged = displayedColumnsChanged || showRowKeysChanged || showRowIndicesChanged;
@@ -555,7 +559,7 @@ export default {
                     showRowKeysChanged, showRowIndicesChanged);
             }
             if (displayedColumnsChanged) {
-                this.refreshTable({ updateDisplayedColumns: true, updateTotalSelected: true });
+                await this.refreshTable({ updateDisplayedColumns: true, updateTotalSelected: true });
             } else if (compactModeChangeInducesRefresh || sortingParamsReseted || (autoSizeColumnsToContentChanged &&
                 this.useAutoColumnSizes)) {
                 await this.refreshTable();
@@ -563,6 +567,12 @@ export default {
                 await this.refreshTable({ resetPage: true });
                 this.$refs.tableViewDisplay.triggerCalculationOfAutoColumnSizes();
             }
+
+            this.deleteColumnSizeOverrides({
+                showRowIndicesChanged,
+                showRowKeysChanged,
+                displayedColumnsChanged
+            });
 
             this.selectionService.onSettingsChange(() => Array.from(this.currentSelectedRowKeys), this.clearSelection,
                 newSettings.publishSelection, newSettings.subscribeToSelection);
@@ -770,16 +780,27 @@ export default {
             );
         },
         onAutoColumnSizesUpdate(newAutoColumnSizes) {
-            if (Reflect.ownKeys(newAutoColumnSizes).length === 0) {
-                this.columnSizeOverrides = {};
-            } else {
-                Reflect.ownKeys(newAutoColumnSizes).forEach((columnId) => {
+            Reflect.ownKeys(newAutoColumnSizes).forEach((columnId) => {
+                if (!this.columnSizeOverrides[columnId]) {
                     this.columnSizeOverrides[columnId] = newAutoColumnSizes[columnId];
-                });
-            }
+                }
+            });
         },
         onRowHeightUpdate(rowHeight) {
             this.currentRowHeight = rowHeight;
+        },
+        deleteColumnSizeOverrides({ showRowIndicesChanged, showRowKeysChanged, displayedColumnsChanged }) {
+            if (showRowIndicesChanged && !this.settings.showRowIndices) {
+                delete this.columnSizeOverrides[INDEX.id];
+            } else if (showRowKeysChanged && !this.settings.showRowKeys) {
+                delete this.columnSizeOverrides[ROW_ID.id];
+            } else if (displayedColumnsChanged) {
+                Object.keys(this.columnSizeOverrides)
+                    .filter(columnName => !this.displayedColumns.includes(columnName))
+                    .forEach(columnName => {
+                        delete this.columnSizeOverrides[columnName];
+                    });
+            }
         }
     }
 };

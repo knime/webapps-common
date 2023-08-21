@@ -1266,6 +1266,54 @@ describe('TableViewInteractive.vue', () => {
                     expect(updateSortingParamsSpy).toHaveBeenCalled();
                 });
         });
+
+        describe('deletion of columnSizeOverrides', () => {
+            const columnSizeOverride = 80;
+            let tableUIWithAutoSizeCalculation;
+
+            beforeEach(async () => {
+                initialDataMock.settings.showRowIndices = true;
+                initialDataMock.settings.showRowKeys = true;
+                dataRequestResult.displayedColumns = ['col2', 'col3'];
+                wrapper = await shallowMountInteractive(context);
+                tableUIWithAutoSizeCalculation = findTableUIWithAutoSizeCalculation(wrapper);
+                tableUIWithAutoSizeCalculation.vm.$emit('column-resize', 2, columnSizeOverride);
+                tableUIWithAutoSizeCalculation.vm.$emit('column-resize', 3, columnSizeOverride);
+            });
+
+            it.each([
+                ['index', 'showRowIndices', specialColumns.INDEX.id, 0],
+                ['rowKey', 'showRowKeys', specialColumns.ROW_ID.id, 1]
+            ])('deletes the columnSizeOverride for the %s column when the column is removed',
+                (_, settingsKey, columnId, columnIndex) => {
+                    expect(wrapper.vm.columnSizeOverrides).toStrictEqual({ col1: columnSizeOverride,
+                        col2: columnSizeOverride });
+                    tableUIWithAutoSizeCalculation.vm.$emit('column-resize', columnIndex, columnSizeOverride);
+                    expect(wrapper.vm.columnSizeOverrides).toStrictEqual({
+                        [columnId]: columnSizeOverride,
+                        col1: columnSizeOverride,
+                        col2: columnSizeOverride
+                    });
+                    changeViewSetting(wrapper, settingsKey, false);
+                    expect(wrapper.vm.columnSizeOverrides).toStrictEqual({ col1: columnSizeOverride,
+                        col2: columnSizeOverride });
+                });
+
+            it('deletes the columnSizeOverride for non-id columns when they are removed', async () => {
+                expect(wrapper.vm.columnSizeOverrides).toStrictEqual({ col1: columnSizeOverride,
+                    col2: columnSizeOverride });
+                changeViewSetting(wrapper, 'displayedColumns', { selected: ['col2', 'col3'] });
+                await flushPromises();
+                expect(wrapper.vm.columnSizeOverrides).toStrictEqual({ col2: columnSizeOverride });
+            });
+
+            it('deletes all columnSizeOverrides when autoSizeColumnsToContent is changed', () => {
+                expect(wrapper.vm.columnSizeOverrides).toStrictEqual({ col1: columnSizeOverride,
+                    col2: columnSizeOverride });
+                changeViewSetting(wrapper, 'autoSizeColumnsToContent', 'FIT_CONTENT');
+                expect(wrapper.vm.columnSizeOverrides).toStrictEqual({});
+            });
+        });
     });
 
     describe('sorting and pagination', () => {
@@ -1932,14 +1980,18 @@ describe('TableViewInteractive.vue', () => {
                 expect(wrapper.vm.$refs).toStrictEqual({ tableViewDisplay: expect.any(Object) });
             });
 
-        it('overrides the columnSizeOverrides on onAutoColumnSizesUpdate', async () => {
+        it('overrides the columnSizeOverrides on onAutoColumnSizesUpdate when there is no override yet', async () => {
+            const columnSizeOverride = 60;
+            const newColumnSizeOverride = 100;
             const wrapper = await shallowMountInteractive(context);
             const tableViewDisplay = wrapper.findComponent(TableViewDisplay);
-            tableViewDisplay.vm.$emit('auto-column-sizes-update', { col1: 60, col2: 60, col3: 60, col4: 60 });
-            expect(wrapper.vm.columnSizeOverrides).toStrictEqual({ col1: 60, col2: 60, col3: 60, col4: 60 });
+            tableViewDisplay.vm.$emit('auto-column-sizes-update', { col1: columnSizeOverride });
+            expect(wrapper.vm.columnSizeOverrides).toStrictEqual({ col1: columnSizeOverride });
 
-            tableViewDisplay.vm.$emit('auto-column-sizes-update', {});
-            expect(wrapper.vm.columnSizeOverrides).toStrictEqual({});
+            tableViewDisplay.vm.$emit('auto-column-sizes-update', { col1: newColumnSizeOverride,
+                col2: columnSizeOverride });
+            expect(wrapper.vm.columnSizeOverrides).toStrictEqual({ col1: columnSizeOverride,
+                col2: columnSizeOverride });
         });
 
         it('correctly converts the image dimensions of the first row', async () => {
