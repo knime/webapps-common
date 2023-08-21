@@ -54,6 +54,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonChange;
@@ -97,12 +98,12 @@ public class ButtonWidgetActionHandlerHolderTest {
     @Test
     void testValidatesReturnType() {
 
-        class ButtonSettings {
+        class ButtonSettings implements DefaultNodeSettings {
             @ButtonWidget(actionHandler = WrongResultTypeActionHandler.class)
             String m_button;
         }
 
-        final Collection<Class<?>> settingsClasses = List.of(ButtonSettings.class);
+        final Collection<Class<? extends DefaultNodeSettings>> settingsClasses = List.of(ButtonSettings.class);
         assertThrows(IllegalArgumentException.class, () -> new ButtonWidgetActionHandlerHolder(settingsClasses));
     }
 

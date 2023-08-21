@@ -296,6 +296,17 @@ public interface DefaultNodeSettings extends PersistableSettings {
         }
 
         /**
+         * @param name the name of a flow variable
+         * @return the associated flow variable if it exists
+         */
+        public Optional<FlowVariable> getFlowVariableByName(final String name) {
+            if (m_stack == null) {
+                return Optional.empty();
+            }
+            return Optional.ofNullable(m_stack.getAllAvailableFlowVariables().get(name));
+        }
+
+        /**
          * @return the {@link CredentialsProvider} associated with the node. Can be empty, e.g., if the node is a
          *         component
          */

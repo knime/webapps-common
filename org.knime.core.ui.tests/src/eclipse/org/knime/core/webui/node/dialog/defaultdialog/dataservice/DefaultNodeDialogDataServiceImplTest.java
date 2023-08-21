@@ -48,20 +48,37 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
+import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.workflow.FlowObjectStack;
+import org.knime.core.node.workflow.FlowVariable;
+import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.VariableType;
+import org.knime.core.webui.node.dialog.NodeSettingsService;
+import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DefaultNodeDialogDataService.PossibleFlowVariable;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonChange;
@@ -70,6 +87,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.PossibleValue;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Tests DefaultNodeSettingsService.
@@ -84,8 +104,8 @@ class DefaultNodeDialogDataServiceImplTest {
     }
 
     private static DefaultNodeDialogDataServiceImpl
-        getDataServiceWithNullContext(final Collection<Class<?>> settingsClasses) {
-        return new DefaultNodeDialogDataServiceImpl(settingsClasses, () -> null);
+        getDataServiceWithNullContext(final Collection<Class<? extends DefaultNodeSettings>> settingsClasses) {
+        return new DefaultNodeDialogDataServiceImpl(settingsClasses, () -> null, null);
     }
 
     @Nested
@@ -110,7 +130,7 @@ class DefaultNodeDialogDataServiceImplTest {
         @Test
         void testUpdate() throws ExecutionException, InterruptedException {
 
-            class ButtonSettings {
+            class ButtonSettings implements DefaultNodeSettings {
                 @ChoicesWidget(choicesUpdateHandler = TestChoicesUpdateHandler.class)
                 String m_button;
 
@@ -178,7 +198,7 @@ class DefaultNodeDialogDataServiceImplTest {
         @Test
         void testInitializeButton() throws ExecutionException, InterruptedException {
 
-            class ButtonSettings {
+            class ButtonSettings implements DefaultNodeSettings {
                 @ButtonWidget(actionHandler = GenericTypesTestHandler.class)
                 String m_button;
             }
@@ -195,7 +215,7 @@ class DefaultNodeDialogDataServiceImplTest {
         @Test
         void testInvokeButtonAction() throws ExecutionException, InterruptedException {
 
-            class ButtonSettings {
+            class ButtonSettings implements DefaultNodeSettings {
                 @ButtonWidget(actionHandler = GenericTypesTestHandler.class)
                 String m_button;
             }
@@ -213,7 +233,7 @@ class DefaultNodeDialogDataServiceImplTest {
         @Test
         void testUpdate() throws ExecutionException, InterruptedException {
 
-            class ButtonSettings {
+            class ButtonSettings implements DefaultNodeSettings {
                 @ButtonWidget(actionHandler = GenericTypesTestHandler.class,
                     updateHandler = GenericTypesUpdateHandler.class)
                 String m_button;
@@ -270,7 +290,7 @@ class DefaultNodeDialogDataServiceImplTest {
         @Test
         void testMultipleHandlers() throws ExecutionException, InterruptedException {
 
-            class TestSettings {
+            class TestSettings implements DefaultNodeSettings {
                 @ChoicesWidget(choicesUpdateHandler = FirstTestHandler.class)
                 String m_button;
 
@@ -288,7 +308,7 @@ class DefaultNodeDialogDataServiceImplTest {
         @Test
         void testThrowsIfNoHandlerPresent() throws ExecutionException, InterruptedException {
 
-            class TestSettings {
+            class TestSettings implements DefaultNodeSettings {
                 @ChoicesWidget(choicesUpdateHandler = FirstTestHandler.class)
                 String m_button;
             }
@@ -305,7 +325,7 @@ class DefaultNodeDialogDataServiceImplTest {
             class NonStaticHandler extends FirstTestHandler {
             }
 
-            class TestSettings {
+            class TestSettings implements DefaultNodeSettings {
                 @ChoicesWidget(choicesUpdateHandler = NonStaticHandler.class)
                 String m_button;
             }
@@ -318,12 +338,12 @@ class DefaultNodeDialogDataServiceImplTest {
         @Test
         void testMultipleSettingsClasses() throws ExecutionException, InterruptedException {
 
-            class TestSettings {
+            class TestSettings implements DefaultNodeSettings {
                 @ChoicesWidget(choicesUpdateHandler = FirstTestHandler.class)
                 String m_button;
             }
 
-            class OtherTestSettings {
+            class OtherTestSettings implements DefaultNodeSettings {
                 @ChoicesWidget(choicesUpdateHandler = SecondTestHandler.class)
                 String m_button;
             }
@@ -356,7 +376,7 @@ class DefaultNodeDialogDataServiceImplTest {
         @Test
         void testSuppliesDefaultNodeSettingsContextToHandler() throws ExecutionException, InterruptedException {
 
-            class ButtonSettings {
+            class ButtonSettings implements DefaultNodeSettings {
                 @ChoicesWidget(choicesUpdateHandler = DefaultNodeSettingsContextHandler.class)
                 Boolean m_button;
             }
@@ -372,7 +392,7 @@ class DefaultNodeDialogDataServiceImplTest {
 
             m_context = null;
             final var dataService =
-                new DefaultNodeDialogDataServiceImpl(List.of(ButtonSettings.class), contextProvider);
+                new DefaultNodeDialogDataServiceImpl(List.of(ButtonSettings.class), contextProvider, null);
 
             final var firstResult =
                 dataService.update("widgetId", DefaultNodeSettingsContextHandler.class.getName(), null).result();
@@ -385,6 +405,194 @@ class DefaultNodeDialogDataServiceImplTest {
             assertThat(secondResult).isNotNull();
 
         }
+    }
+
+    @Nested
+    class FlowVariablesTest {
+
+        private static FlowVariable stringVar1 = new FlowVariable("stringVar1", "stringVar1_value");
+
+        private static FlowVariable stringVar2 = new FlowVariable("stringVar2", "stringVar2_value");
+
+        private static FlowVariable doubleVar = new FlowVariable("doubleVar", 1.0);
+
+        private static FlowVariable intVar = new FlowVariable("intVar", 1);
+
+        private static DefaultNodeSettingsContext getContextWithFlowVariables() {
+            final var flowVariables = List.of(stringVar1, stringVar2, doubleVar, intVar);
+            final FlowObjectStack variableStack =
+                FlowObjectStack.createFromFlowVariableList(flowVariables, new NodeID(0));
+            return new DefaultNodeSettingsContext(new PortObjectSpec[0], variableStack, null);
+
+        }
+
+        private static DefaultNodeDialogDataService
+            getDataServiceWithSettingsService(final NodeSettingsService settingsService) {
+            return new DefaultNodeDialogDataServiceImpl(Collections.emptyList(),
+                FlowVariablesTest::getContextWithFlowVariables, settingsService);
+        }
+
+        static class FromTextSettingsService implements NodeSettingsService {
+
+            private final Map<SettingsType, Class<? extends DefaultNodeSettings>> m_settingsClasses;
+
+            FromTextSettingsService(final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses) {
+                this.m_settingsClasses = settingsClasses;
+            }
+
+            @Override
+            public String fromNodeSettings(final Map<SettingsType, NodeSettingsRO> settings,
+                final PortObjectSpec[] specs) {
+                throw new IllegalStateException("This code should be unreachable");
+            }
+
+            @Override
+            public void toNodeSettings(final String textSettings, final Map<SettingsType, NodeSettingsWO> settings) {
+                try {
+                    final var root = (ObjectNode)JsonFormsDataUtil.getMapper().readTree(textSettings);
+                    textSettingsToNodeSettings(root, SettingsType.MODEL, settings);
+                    textSettingsToNodeSettings(root, SettingsType.VIEW, settings);
+                } catch (JsonProcessingException e) {
+                    throw new IllegalStateException(
+                        String.format("Exception when writing data to node settings: %s", e.getMessage()), e);
+                }
+            }
+
+            private void textSettingsToNodeSettings(final ObjectNode rootNode, final SettingsType settingsType,
+                final Map<SettingsType, NodeSettingsWO> settings) {
+                if (settings.containsKey(settingsType)) {
+                    final var node = rootNode.get(settingsType.getConfigKey());
+                    var settingsClass = m_settingsClasses.get(settingsType);
+                    var settingsObj = JsonFormsDataUtil.toDefaultNodeSettings(node, settingsClass);
+                    DefaultNodeSettings.saveSettings(settingsClass, settingsObj, settings.get(settingsType));
+                }
+            }
+
+            @Override
+            public void getDefaultNodeSettings(final Map<SettingsType, NodeSettingsWO> settings,
+                final PortObjectSpec[] specs) {
+                throw new IllegalStateException("This code should be unreachable");
+            }
+
+        }
+
+        static class TestViewSettings implements DefaultNodeSettings {
+            String m_myViewSetting;
+        }
+
+        static class NestedSetting implements PersistableSettings {
+            @Persist(configKey = "myModelSettingConfigKey")
+            boolean m_myModelSetting;
+        }
+
+        static class TestModelSettings implements DefaultNodeSettings {
+            NestedSetting m_nestedSetting;
+        }
+
+        @Test
+        void testGetPossibleFlowVariables() throws InvalidSettingsException {
+
+            final var settingsClasses =
+                Map.of(SettingsType.MODEL, TestModelSettings.class, SettingsType.VIEW, TestViewSettings.class);
+            final var nodeDialogSettingsService = new FromTextSettingsService(settingsClasses);
+            final var dataService = getDataServiceWithSettingsService(nodeDialogSettingsService);
+            final var viewSettingsFlowVariables = dataService.getAvailableFlowVariables("{\"view\": {}}",
+                new LinkedList<String>(List.of("view")), "myViewSetting");
+            final var modelSettingsFlowVariables =
+                dataService.getAvailableFlowVariables("{\"model\": {\"nestedSetting\": {}}}",
+                    new LinkedList<String>(List.of("model", "nestedSetting")), "myModelSettingConfigKey");
+            assertPossibleFlowVariables( //
+                Set.of(stringVar1, stringVar2), //
+                viewSettingsFlowVariables.get(VariableType.StringType.INSTANCE.getIdentifier()) //
+            );
+            assertPossibleFlowVariables( //
+                Set.of(doubleVar), //
+                viewSettingsFlowVariables.get(VariableType.DoubleType.INSTANCE.getIdentifier()) //
+            );
+            assertPossibleFlowVariables( //
+                Set.of(intVar), //
+                viewSettingsFlowVariables.get(VariableType.IntType.INSTANCE.getIdentifier()) //
+            );
+            assertThat(viewSettingsFlowVariables.get(VariableType.StringArrayType.INSTANCE.getIdentifier()))
+                .isNullOrEmpty();
+
+            assertPossibleFlowVariables( //
+                Set.of(stringVar1, stringVar2), //
+                modelSettingsFlowVariables.get(VariableType.StringType.INSTANCE.getIdentifier()) //
+            );
+            assertPossibleFlowVariables( //
+                Collections.emptySet(), //
+                modelSettingsFlowVariables.get(VariableType.BooleanType.INSTANCE.getIdentifier()) //
+            );
+            assertThat(modelSettingsFlowVariables.get(VariableType.StringArrayType.INSTANCE.getIdentifier()))
+                .isNullOrEmpty();
+        }
+
+        private void assertPossibleFlowVariables(final Collection<FlowVariable> expected,
+            final Collection<PossibleFlowVariable> actual) {
+            assertThat(actual).containsAll(
+                expected.stream().map(DefaultNodeDialogDataServiceImpl::toPossibleFlowVariable).collect(toSet()));
+        }
+
+        @Test
+        void testGetFlowVariableValue() {
+            final var dataService = new DefaultNodeDialogDataServiceImpl(Collections.emptyList(),
+                FlowVariablesTest::getContextWithFlowVariables, null);
+            assertThat(dataService.getFlowVariableValue(stringVar1.getName())).isEqualTo(stringVar1.getStringValue());
+            assertThat(dataService.getFlowVariableValue(stringVar2.getName())).isEqualTo(stringVar2.getStringValue());
+            assertThat(dataService.getFlowVariableValue(intVar.getName())).isEqualTo("1");
+            assertThat(dataService.getFlowVariableValue(doubleVar.getName())).isEqualTo("1.0");
+        }
+
+        @Nested
+        class ToPossibleFlowVariableTest {
+
+            @Test
+            void testShortStringFlowVariable() {
+                final var name = "shortString";
+                final var value = "short";
+                final var possibleFlowVariable =
+                    DefaultNodeDialogDataServiceImpl.toPossibleFlowVariable(new FlowVariable(name, value));
+                assertThat(possibleFlowVariable.name()).isEqualTo(name);
+                assertThat(possibleFlowVariable.value()).isEqualTo(value);
+                assertThat(possibleFlowVariable.abbreviated()).isFalse();
+            }
+
+            @Test
+            void testLongStringFlowVariable() {
+                final var name = "longString";
+                final var value = "longVariableNamelongVariableNamelongVariableNamelongVariableNamelongVariableNamelongVariableNamelongVariableNamelongVariableName ( > 50 characters)";
+                final var possibleFlowVariable =
+                    DefaultNodeDialogDataServiceImpl.toPossibleFlowVariable(new FlowVariable(name, value));
+                assertThat(possibleFlowVariable.name()).isEqualTo(name);
+                assertThat(possibleFlowVariable.value()).isEqualTo("longVariableNamelongVariableNamelongVariableNam...");
+                assertThat(possibleFlowVariable.abbreviated()).isTrue();
+            }
+
+            @Test
+            void testIntFlowVariable() {
+                final var name = "int";
+                final var value = 1;
+                final var possibleFlowVariable =
+                    DefaultNodeDialogDataServiceImpl.toPossibleFlowVariable(new FlowVariable(name, value));
+                assertThat(possibleFlowVariable.name()).isEqualTo(name);
+                assertThat(possibleFlowVariable.value()).isEqualTo("1");
+                assertThat(possibleFlowVariable.abbreviated()).isFalse();
+            }
+
+            @Test
+            void testDoubleFlowVariable() {
+                final var name = "double";
+                final var value = 1.0;
+                final var possibleFlowVariable =
+                    DefaultNodeDialogDataServiceImpl.toPossibleFlowVariable(new FlowVariable(name, value));
+                assertThat(possibleFlowVariable.name()).isEqualTo(name);
+                assertThat(possibleFlowVariable.value()).isEqualTo("1.0");
+                assertThat(possibleFlowVariable.abbreviated()).isFalse();
+            }
+
+        }
+
     }
 
 }

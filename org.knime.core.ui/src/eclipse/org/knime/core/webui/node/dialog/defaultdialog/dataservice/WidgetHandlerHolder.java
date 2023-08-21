@@ -56,6 +56,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
@@ -72,11 +73,11 @@ abstract class WidgetHandlerHolder<H> {
 
     private Map<String, H> m_handlers = new HashMap<>();
 
-    WidgetHandlerHolder(final Collection<Class<?>> settingsClasses) {
+    WidgetHandlerHolder(final Collection<Class<? extends DefaultNodeSettings>> settingsClasses) {
         addHandlers(settingsClasses, JsonFormsDataUtil.getMapper());
     }
 
-    private void addHandlers(final Collection<Class<?>> settings, final ObjectMapper mapper) {
+    private void addHandlers(final Collection<Class<? extends DefaultNodeSettings>> settings, final ObjectMapper mapper) {
         final Consumer<TraversedField> addActionHandlerClass = getAddActionHandlerClassCallback();
         settings.forEach(settingsClass -> {
             final var generator = new DefaultNodeSettingsFieldTraverser(mapper, settingsClass);

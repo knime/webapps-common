@@ -51,6 +51,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 import java.util.Collection;
 import java.util.Optional;
 
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
@@ -65,7 +66,7 @@ class ButtonWidgetUpdateHandlerHolder extends WidgetHandlerHolder<ButtonUpdateHa
     /**
      * @param settingsClasses
      */
-    ButtonWidgetUpdateHandlerHolder(final Collection<Class<?>> settingsClasses) {
+    ButtonWidgetUpdateHandlerHolder(final Collection<Class<? extends DefaultNodeSettings>> settingsClasses) {
         super(settingsClasses);
     }
 

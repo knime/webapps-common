@@ -48,10 +48,23 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
+import static java.util.stream.Collectors.toMap;
+
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 
+import org.apache.commons.lang3.StringUtils;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.node.workflow.FlowVariable;
+import org.knime.core.node.workflow.VariableType;
+import org.knime.core.webui.node.dialog.NodeSettingsService;
+import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
@@ -77,13 +90,18 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
 
     private final DataServiceRequestHandler m_requestHandler;
 
+    private final NodeSettingsService m_nodeSettingsService;
+
     /**
      * @param settingsClasses the collection of {@link DefaultNodeSettings} to extract the handler classes from.
      * @param contextProvider providing the current {@link DefaultNodeSettingsContext}
+     * @param nodeSettingsService used to transform data to {@link NodeSettings} in order to determine the compatible
+     *            flow variables.
      */
-    public DefaultNodeDialogDataServiceImpl(final Collection<Class<?>> settingsClasses,
-        final Supplier<DefaultNodeSettingsContext> contextProvider) {
+    public DefaultNodeDialogDataServiceImpl(final Collection<Class<? extends DefaultNodeSettings>> settingsClasses,
+        final Supplier<DefaultNodeSettingsContext> contextProvider, final NodeSettingsService nodeSettingsService) {
         m_contextProvider = contextProvider;
+        m_nodeSettingsService = nodeSettingsService;
         m_buttonActionHandlers = new ButtonWidgetActionHandlerHolder(settingsClasses);
         m_buttonUpdateHandlers = new ButtonWidgetUpdateHandlerHolder(settingsClasses);
         m_choicesService = new ChoicesWidgetHandlerHolder(settingsClasses);
@@ -157,6 +175,51 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
         NoHandlerFoundException(final String widgetId) {
             super(String.format("No handler found for component %s. Most likely an implementation error.", widgetId));
         }
+    }
+
+    @Override
+    public Map<String, Collection<PossibleFlowVariable>> getAvailableFlowVariables(final String textSettings,
+        final LinkedList<String> path, final String configKey) throws InvalidSettingsException {
+        final var typesService = new FlowVariableTypesExtractor(m_nodeSettingsService);
+        final var firstPathElement = path.pollFirst();
+        final SettingsType settingsType;
+        if (SettingsType.MODEL.getConfigKey().equals(firstPathElement)) {
+            settingsType = SettingsType.MODEL;
+        } else if (SettingsType.VIEW.getConfigKey().equals(firstPathElement)) {
+            settingsType = SettingsType.VIEW;
+        } else {
+            throw new IllegalArgumentException(String
+                .format("First element of the path must be either 'view' or 'model' but was %s", firstPathElement));
+        }
+        final var variableTypes = typesService.getTypes(settingsType, path, configKey, textSettings);
+        final var context = m_contextProvider.get();
+        return Arrays.asList(variableTypes).stream()
+            .collect(toMap(VariableType::getIdentifier, type -> getPossibleFlowVariables(context, type)));
+    }
+
+    private static List<PossibleFlowVariable> getPossibleFlowVariables(final DefaultNodeSettingsContext context,
+        final VariableType<?> type) {
+        return context.getAvailableInputFlowVariables(type).values().stream()
+            .map(DefaultNodeDialogDataServiceImpl::toPossibleFlowVariable).toList();
+    }
+
+    private static final int  ABBREVUATION_THRESHOLD = 50;
+
+    static PossibleFlowVariable toPossibleFlowVariable(final FlowVariable flowVariable) {
+        var value = flowVariable.getValueAsString();
+        boolean abbreviated = false;
+        if (value != null && value.length() > ABBREVUATION_THRESHOLD) {
+            value = StringUtils.abbreviate(value, ABBREVUATION_THRESHOLD);
+            abbreviated = true;
+        }
+        return new PossibleFlowVariable(flowVariable.getName(), value, abbreviated);
+    }
+
+    @Override
+    public String getFlowVariableValue(final String name) {
+        //TODO: More elaborate approach using m_nodeSettingsService#fromNodeSettings
+        final var flowVariable = m_contextProvider.get().getFlowVariableByName(name).get();
+        return flowVariable.getValueAsString();
     }
 
 }

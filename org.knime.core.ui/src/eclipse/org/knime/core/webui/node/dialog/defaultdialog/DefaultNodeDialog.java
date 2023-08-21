@@ -57,6 +57,7 @@ import java.util.Set;
 import org.knime.core.webui.data.ApplyDataService;
 import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.dialog.NodeDialog;
+import org.knime.core.webui.node.dialog.NodeDialogAdapter;
 import org.knime.core.webui.node.dialog.NodeSettingsService;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DefaultNodeDialogDataServiceImpl;
@@ -79,7 +80,7 @@ public final class DefaultNodeDialog implements NodeDialog {
 
     private final DefaultNodeSettingsService m_settingsDataService;
 
-    private final Collection<Class<?>> m_settingsClasses;
+    private final Collection<Class<? extends DefaultNodeSettings>> m_settingsClasses;
 
     private final Set<SettingsType> m_settingsTypes;
 
@@ -122,7 +123,7 @@ public final class DefaultNodeDialog implements NodeDialog {
      * @param settingsType2 another settings type this dialog is able to provide
      * @param settingsClass2 dialog definition for the second settings type
      * @param onApplyModifier an {@link org.knime.core.webui.node.dialog.NodeDialog.OnApplyNodeModifier} that will be
-     *            invoked when cleaning up the {@link ApplyDataService} created in {@link #createApplyDataService()}
+     *            invoked when cleaning up the {@link ApplyDataService} created in {@link NodeDialogAdapter#createApplyDataService()}
      */
     public DefaultNodeDialog(final SettingsType settingsType1,
         final Class<? extends DefaultNodeSettings> settingsClass1, final SettingsType settingsType2,
@@ -147,7 +148,7 @@ public final class DefaultNodeDialog implements NodeDialog {
     @Override
     public Optional<RpcDataService> createRpcDataService() {
         final var dataService =
-            new DefaultNodeDialogDataServiceImpl(m_settingsClasses, m_settingsDataService::getCreationContext);
+            new DefaultNodeDialogDataServiceImpl(m_settingsClasses, m_settingsDataService::getCreationContext, m_settingsDataService);
         return Optional.ofNullable(RpcDataService.builder(dataService).build());
     }
 

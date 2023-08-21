@@ -44,43 +44,62 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jul 10, 2023 (Paul Bärnreuther): created
+ *   Aug 18, 2023 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
-import java.util.Collection;
-import java.util.Optional;
+import java.util.List;
+import java.util.Map;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesUpdateHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.NoopChoicesUpdateHandler;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.node.workflow.VariableType;
+import org.knime.core.node.workflow.VariableTypeRegistry;
+import org.knime.core.webui.node.dialog.NodeSettingsService;
+import org.knime.core.webui.node.dialog.SettingsType;
 
 /**
- * The holder of all {@link ChoicesWidget#choicesUpdateHandler}s.
+ * Used to extract the possible types of flow variables from text settings given a node settings service. These text
+ * settings come from the front-end and it is necessary to depend on them since the possible flow variables are defined
+ * by the {@link NodeSettings} they would be persisted to.
  *
  * @author Paul Bärnreuther
  */
-class ChoicesWidgetHandlerHolder extends WidgetHandlerHolder<ChoicesUpdateHandler<?>> {
+class FlowVariableTypesExtractor {
 
-    /**
-     * @param settingsClasses
-     */
-    ChoicesWidgetHandlerHolder(final Collection<Class<? extends DefaultNodeSettings>> settingsClasses) {
-        super(settingsClasses);
+    private final NodeSettingsService m_nodeSettingsService;
+
+    private final VariableTypeRegistry m_valueTypeReqistry;
+
+    FlowVariableTypesExtractor(final NodeSettingsService nodeSettingsService) {
+        m_nodeSettingsService = nodeSettingsService;
+        m_valueTypeReqistry = VariableTypeRegistry.getInstance();
     }
 
-    @Override
-    Optional<Class<? extends ChoicesUpdateHandler<?>>> getHandlerClass(final TraversedField field) {
-        final var choicesWidget = field.propertyWriter().getAnnotation(ChoicesWidget.class);
-        if (choicesWidget != null) {
-            final var updateHandler = choicesWidget.choicesUpdateHandler();
-            if (updateHandler != NoopChoicesUpdateHandler.class) {
-                return Optional.of(updateHandler);
-            }
+    VariableType<?>[] getTypes(final SettingsType settingsType, final List<String> path, final String configKey,
+        final String textSettings) throws InvalidSettingsException {
+        final var nodeSettings = toNodeSettings(settingsType, textSettings);
+        final var fieldNodeSetting = atPath(nodeSettings, path);
+        return getTypes(fieldNodeSetting, configKey);
+    }
+
+    private NodeSettings toNodeSettings(final SettingsType settingsType, final String textSettings) {
+        final var nodeSettings = new NodeSettings("current_dialog_settings");
+        m_nodeSettingsService.toNodeSettings(textSettings, Map.of(settingsType, nodeSettings));
+        return nodeSettings;
+    }
+
+    private static NodeSettings atPath(final NodeSettings nodeSettings, final List<String> path)
+        throws InvalidSettingsException {
+        var nodeSettingsAtPath = nodeSettings;
+        for (var key : path) {
+            nodeSettingsAtPath = nodeSettingsAtPath.getNodeSettings(key);
         }
-        return Optional.empty();
+        return nodeSettingsAtPath;
+    }
+
+    private VariableType<?>[] getTypes(final NodeSettings nodeSettings, final String configKey) {
+        return m_valueTypeReqistry.getOverwritingTypes(nodeSettings, configKey);
     }
 
 }

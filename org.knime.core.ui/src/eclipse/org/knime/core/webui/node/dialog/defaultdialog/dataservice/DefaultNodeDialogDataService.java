@@ -48,8 +48,12 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialog;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.UpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
@@ -106,5 +110,30 @@ interface DefaultNodeDialogDataService {
      */
     Result<?> update(String widgetId, String handlerClass, Object objectSettings)
         throws InterruptedException, ExecutionException;
+
+    /**
+     * @param name the name of the flow variable
+     * @param value an abbreviated string representation of the variables value
+     * @param abbreviated whether the value is the actual value or was abbreviated
+     */
+    record PossibleFlowVariable(String name, String value, boolean abbreviated) {
+    }
+
+    /**
+     * @param textSettings the state of the settings in json format for which the available flow variables are to be
+     *            fetched
+     * @param path the path leading to the setting excluding its config key (i.e. the parent path)
+     * @param configKey the config key used to persist the setting
+     * @return a map from the possible types of the specified setting to the present flow variables.
+     * @throws InvalidSettingsException if the path does not start with "model" or "view"
+     */
+    Map<String, Collection<PossibleFlowVariable>> getAvailableFlowVariables(final String textSettings,
+        final LinkedList<String> path, final String configKey) throws InvalidSettingsException;
+
+    /**
+     * @param name the name of a present flow variable
+     * @return the full value as string of the flow variable
+     */
+    String getFlowVariableValue(final String name);
 
 }
