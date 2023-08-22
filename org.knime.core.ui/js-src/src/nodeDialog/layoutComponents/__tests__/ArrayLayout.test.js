@@ -214,12 +214,15 @@ describe("ArrayLayout.vue", () => {
     );
   });
 
-  it("moves item up", () => {
+  it("moves item up", async () => {
     const { wrapper } = mountJsonFormsComponent(ArrayLayout, {
       props: { control },
     });
     const index = 1;
-    wrapper.vm.moveItemUp(1);
+    await wrapper
+      .findAllComponents(ArrayLayoutItemControls)
+      .at(index)
+      .vm.$emit("moveUp");
     expect(wrapper.vm.moveUp).toHaveBeenCalledWith(control.path, index);
     expect(useJsonFormsControlMock.handleChange).toHaveBeenCalledWith(
       control.path,
@@ -227,12 +230,15 @@ describe("ArrayLayout.vue", () => {
     );
   });
 
-  it("moves item down", () => {
+  it("moves item down", async () => {
     const { wrapper } = mountJsonFormsComponent(ArrayLayout, {
       props: { control },
     });
     const index = 1;
-    wrapper.vm.moveItemDown(index);
+    await wrapper
+      .findAllComponents(ArrayLayoutItemControls)
+      .at(index)
+      .vm.$emit("moveDown");
     expect(wrapper.vm.moveDown).toHaveBeenCalledWith(control.path, index);
     expect(useJsonFormsControlMock.handleChange).toHaveBeenCalledWith(
       control.path,

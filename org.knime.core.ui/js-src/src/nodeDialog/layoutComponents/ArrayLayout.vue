@@ -110,8 +110,8 @@ export default ArrayLayout;
             :is-first="objIndex === 0"
             :is-last="objIndex === control.data.length - 1"
             :show-sort-controls="showSortControls"
-            @move-up="moveItemUp(control.path, objIndex)()"
-            @move-down="moveItemDown(control.path, objIndex)()"
+            @move-up="moveItemUp(objIndex)"
+            @move-down="moveItemDown(objIndex)"
             @delete="deleteItem(objIndex)"
           />
         </div>
