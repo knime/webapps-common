@@ -233,7 +233,7 @@ describe('ButtonInput', () => {
     });
 
     describe('dependencies to other settings', () => {
-        let settingsChangeCallback, wrapper, dependencies;
+        let settingsChangeCallback, wrapper, dependencies, initCallback;
 
         const dependenciesUischema = ['foo', 'bar'];
 
@@ -244,6 +244,7 @@ describe('ButtonInput', () => {
             wrapper = comp.wrapper;
             const firstWatcherCall = comp.callbacks[0];
             settingsChangeCallback = firstWatcherCall.transformSettings;
+            initCallback = firstWatcherCall.init;
             dependencies = firstWatcherCall.dependencies;
             wrapper.vm.cancel = vi.fn();
             wrapper.vm.handleChange = vi.fn();
@@ -251,6 +252,7 @@ describe('ButtonInput', () => {
 
         it('registers watcher', () => {
             expect(settingsChangeCallback).toBeDefined();
+            expect(initCallback).toBeDefined();
             expect(dependencies).toStrictEqual(dependenciesUischema);
         });
 

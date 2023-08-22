@@ -72,6 +72,7 @@ const ButtonInput = defineComponent({
     mounted() {
         const dependencies = this.control.uischema.options?.dependencies || [];
         this.registerWatcher({
+            init: this.onSettingsChange.bind(this),
             transformSettings: this.onSettingsChange.bind(this),
             dependencies
         });
