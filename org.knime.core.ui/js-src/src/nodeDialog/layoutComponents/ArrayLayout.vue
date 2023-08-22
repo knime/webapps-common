@@ -1,6 +1,7 @@
 <script>
 import { defineComponent } from 'vue';
 import { useJsonFormsArrayControl, rendererProps, DispatchRenderer } from '@jsonforms/vue';
+import { useJsonFormsControlWithUpdate } from '@/nodeDialog/uiComponents/composables/jsonFormsControlWithUpdate';
 import { composePaths } from '@jsonforms/core';
 import Label from 'webapps-common/ui/components/forms/Label.vue';
 import Button from 'webapps-common/ui/components/Button.vue';
@@ -22,7 +23,12 @@ const ArrayLayout = defineComponent({
         ...rendererProps()
     },
     setup(props) {
-        return useJsonFormsArrayControl(props);
+        const { handleChange, control } = useJsonFormsControlWithUpdate(props);
+        const triggerUpdates = () => handleChange(control.value.path, control.value.data);
+        return {
+            ...useJsonFormsArrayControl(props),
+            triggerUpdates
+        };
     },
     data() {
         return {
@@ -54,6 +60,15 @@ const ArrayLayout = defineComponent({
         addDefaultItem() {
             this.addItem(this.control.path,
                 this.createDefaultValue(this.control.schema))();
+            this.triggerUpdates();
+        },
+        moveItemUp(index) {
+            this.moveUp(this.control.path, index)();
+            this.triggerUpdates();
+        },
+        moveItemDown(index) {
+            this.moveDown(this.control.path, index)();
+            this.triggerUpdates();
         },
         createIndexedPath(index) {
             return composePaths(this.control.path, `${index}`);
@@ -61,6 +76,7 @@ const ArrayLayout = defineComponent({
         deleteItem(index) {
             this.removeItems(composePaths(this.control.path, ''),
                 [index])();
+            this.triggerUpdates();
         },
         returnLabel(index) {
             let convertedIndex = parseInt(index, 10);
@@ -92,8 +108,8 @@ export default ArrayLayout;
             :is-first="objIndex === 0"
             :is-last="objIndex === control.data.length - 1"
             :show-sort-controls="showSortControls"
-            @move-up="moveUp(control.path, objIndex)()"
-            @move-down="moveDown(control.path, objIndex)()"
+            @move-up="moveItemUp(objIndex)"
+            @move-down="moveItemDown(objIndex)"
             @delete="deleteItem(objIndex)"
           />
         </div>

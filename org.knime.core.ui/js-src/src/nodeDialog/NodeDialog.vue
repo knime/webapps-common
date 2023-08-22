@@ -67,7 +67,10 @@ export default {
          * @returns {void}
          */
         async updateData(handleChange, path, data) {
-            const triggeredWatchers = this.registeredWatchers.filter(({ dataPaths }) => dataPaths.includes(path));
+            const startsWithPath = (dataPath) => path.startsWith(`${dataPath}.`);
+            const triggeredWatchers = this.registeredWatchers.filter(
+                ({ dataPaths }) => dataPaths.includes(path) || dataPaths.some(startsWithPath)
+            );
             if (triggeredWatchers.length === 0) {
                 handleChange(path, data);
                 return;

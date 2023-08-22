@@ -1,5 +1,6 @@
 /* eslint-disable no-undefined */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { ref } from 'vue';
 import { mountJsonFormsComponent, initializesJsonFormsArrayControl } from '@@/test-setup/utils/jsonFormsTestUtils';
 import ArrayLayout from '../ArrayLayout.vue';
 import ArrayLayoutItemControls from '../ArrayLayoutItemControls.vue';
@@ -7,6 +8,15 @@ import FunctionButton from 'webapps-common/ui/components/FunctionButton.vue';
 import ArrowUpIcon from 'webapps-common/ui/assets/img/icons/arrow-up.svg';
 import ArrowDownIcon from 'webapps-common/ui/assets/img/icons/arrow-down.svg';
 import TrashIcon from 'webapps-common/ui/assets/img/icons/trash.svg';
+
+const useJsonFormsControlMock = {
+    handleChange: vi.fn(),
+    control: ref({ path: 'foo', data: 'bar' })
+};
+
+vi.mock('@/nodeDialog/uiComponents/composables/jsonFormsControlWithUpdate', () => ({
+    useJsonFormsControlWithUpdate: () => useJsonFormsControlMock
+}));
 
 describe('ArrayLayout.vue', () => {
     let wrapper, props;
@@ -145,12 +155,11 @@ describe('ArrayLayout.vue', () => {
     });
 
     it('renders an add button', () => {
-        const addItemSpy = ArrayLayout.methods.addItem = vi.fn().mockReturnValue(() => false);
         const { wrapper } = mountJsonFormsComponent(ArrayLayout, props);
         const addButton = wrapper.find('.array > button');
         expect(addButton.text()).toBe('New');
         addButton.element.click();
-        expect(addItemSpy).toHaveBeenCalled();
+        expect(wrapper.vm.addItem).toHaveBeenCalled();
     });
 
 
@@ -163,19 +172,54 @@ describe('ArrayLayout.vue', () => {
     });
 
     it('adds default item', () => {
-        const addItemSpy = ArrayLayout.methods.addItem = vi.fn().mockReturnValue(() => false);
         const { wrapper } = mountJsonFormsComponent(ArrayLayout, props);
         wrapper.vm.addDefaultItem();
-        expect(addItemSpy).toHaveBeenCalled();
+        expect(wrapper.vm.addItem).toHaveBeenCalled();
+        expect(useJsonFormsControlMock.handleChange).toHaveBeenCalledWith(
+            useJsonFormsControlMock.control.value.path,
+            useJsonFormsControlMock.control.value.data
+        );
     });
 
 
     it('deletes item', () => {
-        const deleteItemSpy = ArrayLayout.methods.deleteItem = vi.fn().mockReturnValue(() => false);
         const { wrapper } = mountJsonFormsComponent(ArrayLayout, props);
         wrapper.vm.deleteItem();
-        expect(deleteItemSpy).toHaveBeenCalled();
+        expect(wrapper.vm.removeItems).toHaveBeenCalled();
+        expect(useJsonFormsControlMock.handleChange).toHaveBeenCalledWith(
+            useJsonFormsControlMock.control.value.path,
+            useJsonFormsControlMock.control.value.data
+        );
     });
+
+    it('moves item up', async () => {
+        const { wrapper } = mountJsonFormsComponent(ArrayLayout, props);
+        const index = 1;
+        await wrapper
+            .findAllComponents(ArrayLayoutItemControls)
+            .at(index)
+            .vm.$emit('moveUp');
+        expect(wrapper.vm.moveUp).toHaveBeenCalledWith(props.control.path, index);
+        expect(useJsonFormsControlMock.handleChange).toHaveBeenCalledWith(
+            useJsonFormsControlMock.control.value.path,
+            useJsonFormsControlMock.control.value.data
+        );
+    });
+
+    it('moves item down', async () => {
+        const { wrapper } = mountJsonFormsComponent(ArrayLayout, props);
+        const index = 1;
+        await wrapper
+            .findAllComponents(ArrayLayoutItemControls)
+            .at(index)
+            .vm.$emit('moveDown');
+        expect(wrapper.vm.moveDown).toHaveBeenCalledWith(props.control.path, index);
+        expect(useJsonFormsControlMock.handleChange).toHaveBeenCalledWith(
+            useJsonFormsControlMock.control.value.path,
+            useJsonFormsControlMock.control.value.data
+        );
+    });
+
 
     it('does not render sort buttons when showSortButtons is not present or false', () => {
         const { wrapper } = mountJsonFormsComponent(ArrayLayout, props);

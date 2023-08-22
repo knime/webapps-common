@@ -285,5 +285,30 @@ describe('NodeDialog.vue', () => {
                 test4: 'transformed'
             });
         });
+
+        it('reacts to path updates nested inside array layouts', async () => {
+            await wrapper.setData({
+                currentData: {
+                    arrayLayoutSetting: [{ value: 'first' }, { value: 'second' }]
+                }
+            });
+      
+            const arrayLayoutWatcher = {
+                transformSettings: vi.fn(),
+                dependencies: ['#/properties/arrayLayoutSetting']
+            };
+      
+            await wrapper.vm.registerWatcher(arrayLayoutWatcher);
+            const path = 'arrayLayoutSetting.0.value';
+            const data = 'some data';
+            await wrapper.vm.updateData(handleChange, path, data);
+      
+            expect(arrayLayoutWatcher.transformSettings).toHaveBeenCalled();
+      
+            expect(handleChange).toHaveBeenCalledWith('', {
+                ...wrapper.vm.getData(),
+                arrayLayoutSetting: [{ value: 'some data' }, { value: 'second' }]
+            });
+        });
     });
 });

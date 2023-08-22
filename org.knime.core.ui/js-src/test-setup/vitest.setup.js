@@ -22,7 +22,12 @@ vi.mock('@jsonforms/vue', async () => {
             handleChange: vi.fn()
         })),
         useJsonFormsLayout: vi.fn(),
-        useJsonFormsArrayControl: vi.fn()
+        useJsonFormsArrayControl: vi.fn(() => ({
+            addItem: vi.fn(() => vi.fn()),
+            moveUp: vi.fn(() => vi.fn()),
+            moveDown: vi.fn(() => vi.fn()),
+            removeItems: vi.fn(() => vi.fn())
+        }))
     };
 }, { virtual: false });
 vi.mock('@jsonforms/core', async () => {
