@@ -1004,14 +1004,23 @@ export default {
       const toIndex = rect.isTop
         ? rect.toIndex
         : this.bottomScrollIndexToIndex(rect.toIndex);
-      const copyContent = await this.performRequest("getCopyContent", [
-        rect.withRowIndices,
-        rect.withRowKeys,
-        rect.columnNames,
-        fromIndex,
-        toIndex,
-      ]);
-      navigator.clipboard.writeText(copyContent);
+      document.body.style.cursor = "wait";
+      try {
+        const copyContent = await this.performRequest("getCopyContent", [
+          rect.withRowIndices,
+          rect.withRowKeys,
+          rect.columnNames,
+          fromIndex,
+          toIndex,
+        ]);
+        navigator.clipboard.writeText(copyContent);
+      } catch (error) {
+        consola.error(
+          "Failed to copy content to clipboard with error: ",
+          error,
+        );
+      }
+      document.body.style.cursor = "unset";
     },
     /**
      * A method to revert the index shift caused by leaving out rows between top and bottom rows by counting from the bottom.
