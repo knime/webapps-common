@@ -14,6 +14,8 @@ import type { TableViewDisplayProps } from "./types";
 import useBoolean from "./utils/useBoolean";
 import { separateSpecialColumns } from "./utils/specialColumns";
 
+const BORDER_BOTTOM_WIDTH = 1;
+
 const emit = defineEmits([
   "page-change",
   "column-sort",
@@ -241,7 +243,10 @@ const onCopySelection = ({
           $emit('header-sub-menu-item-selection', item, getColumnId(colIndex))
       "
       @auto-column-sizes-update="onAutoColumnSizesUpdate"
-      @row-height-update="onRowHeightUpdate"
+      @row-height-update="
+        (newRowHeight: number) =>
+          onRowHeightUpdate(newRowHeight - BORDER_BOTTOM_WIDTH)
+      "
       @ready="onTableIsReady"
       @copy-selection="onCopySelection"
     >
@@ -256,7 +261,7 @@ const onCopySelection = ({
           :include-data-in-html="includeImageResources"
           :path="cell"
           :width="width"
-          :height="height"
+          :height="height - BORDER_BOTTOM_WIDTH"
           :base-url="baseUrl"
           :update="!columnResizeActive.state"
           :table-is-ready="tableIsReady"
@@ -302,7 +307,8 @@ const onCopySelection = ({
   }
 
   & :deep(.row) {
-    border-bottom: 1px solid var(--knime-porcelain);
+    border-bottom: v-bind(BORDER_BOTTOM_WIDTH + "px") solid
+      var(--knime-porcelain);
     align-content: center;
   }
 }

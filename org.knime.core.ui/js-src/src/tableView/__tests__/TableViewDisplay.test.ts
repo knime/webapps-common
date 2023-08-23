@@ -553,11 +553,12 @@ describe("TableViewDisplay.vue", () => {
         "onAutoColumnSizesUpdate",
         "auto-column-sizes-update",
         { col1: 55, col2: 66, col3: 77 },
+        { col1: 55, col2: 66, col3: 77 },
       ],
-      ["onRowHeightUpdate", "row-height-update", 99],
+      ["onRowHeightUpdate", "row-height-update", 99, 98],
     ])(
       "calls the method %s within useAutoColumnSizes on emit of %s",
-      (composableMethodName, emitMethodName, emitParams) => {
+      (composableMethodName, emitMethodName, emitParams, calledWithParams) => {
         const wrapper = shallowMountDisplay({ props });
         const tableUIWithAutoSizeCalculation = wrapper.findComponent(
           TableUIWithAutoSizeCalculation,
@@ -566,7 +567,7 @@ describe("TableViewDisplay.vue", () => {
         tableUIWithAutoSizeCalculation.vm.$emit(emitMethodName, emitParams);
         expect(
           useAutoColumnSizesMock[composableMethodName],
-        ).toHaveBeenCalledWith(emitParams);
+        ).toHaveBeenCalledWith(calledWithParams);
       },
     );
   });
