@@ -551,10 +551,8 @@ describe("TableViewInteractive.vue", () => {
           tableComp = findTableComponent(wrapper);
           refreshScrollerMock = vi.fn();
           clearCellSelectionMock = vi.fn();
-          tableComp.vm.methods = {
-            refreshScroller: refreshScrollerMock,
-            clearCellSelection: clearCellSelectionMock,
-          };
+          tableComp.vm.refreshScroller = refreshScrollerMock;
+          tableComp.vm.clearCellSelection = clearCellSelectionMock;
         });
 
         it("refreshes the scroller and clears the cell selection when refreshing the table", () => {
@@ -2294,10 +2292,8 @@ describe("TableViewInteractive.vue", () => {
         const wrapper = await shallowMountInteractive(context);
         const tableUIWithAutoSizeCalc = findTableComponent(wrapper);
         const triggerCalculationOfAutoColumnSizesMock = vi.fn();
-        tableUIWithAutoSizeCalc.vm.methods = {
-          triggerCalculationOfAutoColumnSizes:
-            triggerCalculationOfAutoColumnSizesMock,
-        };
+        tableUIWithAutoSizeCalc.vm.triggerCalculationOfAutoColumnSizes =
+          triggerCalculationOfAutoColumnSizesMock;
         changeCallback(wrapper);
         await flushPromises();
         expect(triggerCalculationOfAutoColumnSizesMock).toHaveBeenCalledTimes(

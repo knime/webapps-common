@@ -158,8 +158,9 @@ defineExpose(
     "triggerCalculationOfAutoColumnSizes" as const,
   ].reduce((acc: Record<string, Function>, methodName) => {
     acc[methodName] = () => {
-      if (table.value?.methods?.[methodName]) {
-        table.value.methods?.[methodName]();
+      const method = table.value?.[methodName];
+      if (typeof method === "function") {
+        method();
       }
     };
     return acc;
