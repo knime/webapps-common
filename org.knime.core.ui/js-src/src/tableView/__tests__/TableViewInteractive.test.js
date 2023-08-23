@@ -15,6 +15,7 @@ import {
   TableUIWithAutoSizeCalculation,
 } from "@knime/knime-ui-table";
 import specialColumns from "../utils/specialColumns";
+import { AutoSizeColumnsToContent } from "../types";
 
 const { MIN_COLUMN_SIZE } = tableUIConstants;
 const DEFAULT_COLUMN_SIZE = 100;
@@ -2356,6 +2357,62 @@ describe("TableViewInteractive.vue", () => {
         method: "getCopyContent",
         options: [false, false, ["col3", "col4"], 1, 2],
       });
+    });
+  });
+
+  describe("column size overrides", () => {
+    let wrapper, deleteColumnSizeOverridesSpy;
+
+    beforeEach(async () => {
+      wrapper = await shallowMountInteractive(context);
+      deleteColumnSizeOverridesSpy = vi.spyOn(
+        wrapper.vm.$refs.tableViewDisplay,
+        "deleteColumnSizeOverrides",
+      );
+    });
+
+    it("calls TableViewDisplay.deleteColumnSizeOverrides on change of autoSizeColumnsToContent", () => {
+      changeViewSetting(
+        wrapper,
+        "autoSizeColumnsToContent",
+        AutoSizeColumnsToContent.FIT_CONTENT,
+      );
+      expect(deleteColumnSizeOverridesSpy).toHaveBeenCalledWith();
+    });
+
+    it.each([
+      ["showRowIndices", specialColumns.INDEX.id],
+      ["showRowKeys", specialColumns.ROW_ID.id],
+    ])(
+      "calls TableViewDisplay.deleteColumnSizeOverrides when changing %s to false with the corresponding column id",
+      async (settingsKey, deleteId) => {
+        changeViewSetting(wrapper, settingsKey, true);
+        await flushPromises();
+        expect(deleteColumnSizeOverridesSpy).not.toHaveBeenCalled();
+
+        changeViewSetting(wrapper, settingsKey, false);
+        await flushPromises();
+        expect(deleteColumnSizeOverridesSpy).toHaveBeenCalledWith([deleteId]);
+      },
+    );
+
+    it("calls TableViewDisplay.deleteColumnSizeOverrides on removal of displayed columns with the corresponding column ids", async () => {
+      const shownColumns = ["col1", "col4"];
+      const removedColumns = ["col2", "col3"];
+      dataRequestResult.displayedColumns = shownColumns;
+      changeViewSetting(wrapper, "displayedColumns", {
+        selected: shownColumns,
+      });
+      await flushPromises();
+      expect(deleteColumnSizeOverridesSpy).toHaveBeenCalledWith(removedColumns);
+
+      const addedColumns = ["col1", "col2", "col4"];
+      dataRequestResult.displayedColumns = addedColumns;
+      changeViewSetting(wrapper, "displayedColumns", {
+        selected: addedColumns,
+      });
+      await flushPromises();
+      expect(deleteColumnSizeOverridesSpy).not.toHaveBeenCalledWith();
     });
   });
 });

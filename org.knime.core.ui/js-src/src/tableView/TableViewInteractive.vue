@@ -709,6 +709,12 @@ export default {
         newSettings.autoSizeColumnsToContent !==
         this.settings.autoSizeColumnsToContent;
 
+      const oldDisplayedColumns = this.settings.displayedColumns.selected;
+
+      if (autoSizeColumnsToContentChanged) {
+        this.$refs.tableViewDisplay.deleteColumnSizeOverrides();
+      }
+
       this.settings = newSettings;
 
       const numberOfDisplayedColsChanged =
@@ -726,7 +732,7 @@ export default {
         this.$refs.tableViewDisplay.clearCellSelection();
       }
       if (displayedColumnsChanged) {
-        this.refreshTable({
+        await this.refreshTable({
           updateDisplayedColumns: true,
           updateTotalSelected: true,
         });
@@ -742,6 +748,13 @@ export default {
         await this.refreshTable({ resetPage: true });
         this.$refs.tableViewDisplay.triggerCalculationOfAutoColumnSizes();
       }
+
+      this.deleteColumnSizeOverrides({
+        showRowIndicesChanged,
+        showRowKeysChanged,
+        displayedColumnsChanged,
+        oldDisplayedColumns,
+      });
 
       this.selectionService.onSettingsChange(
         () => Array.from(this.currentSelectedRowKeys),
@@ -1005,6 +1018,24 @@ export default {
      */
     bottomScrollIndexToIndex(bottomScrollIndex) {
       return this.currentRowCount - this.maxNumRows + bottomScrollIndex;
+    },
+    deleteColumnSizeOverrides({
+      showRowIndicesChanged,
+      showRowKeysChanged,
+      displayedColumnsChanged,
+      oldDisplayedColumns,
+    }) {
+      if (showRowIndicesChanged && !this.settings.showRowIndices) {
+        this.$refs.tableViewDisplay.deleteColumnSizeOverrides([INDEX.id]);
+      } else if (showRowKeysChanged && !this.settings.showRowKeys) {
+        this.$refs.tableViewDisplay.deleteColumnSizeOverrides([ROW_ID.id]);
+      } else if (displayedColumnsChanged) {
+        this.$refs.tableViewDisplay.deleteColumnSizeOverrides(
+          oldDisplayedColumns.filter(
+            (columnName) => !this.displayedColumns.includes(columnName),
+          ),
+        );
+      }
     },
   },
 };

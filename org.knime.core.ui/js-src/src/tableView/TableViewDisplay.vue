@@ -85,6 +85,7 @@ const {
   onColumnResize,
   onAllColumnsResize,
   onUpdateAvailableWidth,
+  deleteColumnSizeOverrides,
 } = useColumnSizes({
   header,
   settings,
@@ -151,8 +152,8 @@ const onTableIsReady = () => {
   tableIsReady.value = true;
 };
 
-defineExpose(
-  [
+defineExpose({
+  ...[
     "refreshScroller" as const,
     "clearCellSelection" as const,
     "triggerCalculationOfAutoColumnSizes" as const,
@@ -165,7 +166,8 @@ defineExpose(
     };
     return acc;
   }, {}),
-);
+  deleteColumnSizeOverrides,
+});
 
 const onCopySelection = ({
   rect: { x, y },

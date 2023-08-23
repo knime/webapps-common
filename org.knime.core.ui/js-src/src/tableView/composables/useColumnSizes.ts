@@ -19,7 +19,6 @@ export interface UseColumnSizesOptions {
 }
 
 const DEFAULT_COLUMN_SIZE = 100;
-const SKIPPED_REMAINING_COLUMNS_COLUMN_MIN_WIDTH = 200;
 
 const getDataColumnSizes = ({
   availableSpace,
@@ -73,17 +72,11 @@ export default ({
   const availableWidth: Ref<number> = ref(0);
 
   watch(autoColumnSizes, () => {
-    const autoSizeIds = Reflect.ownKeys(autoColumnSizes.value);
-    if (autoSizeIds.length === 0) {
-      Reflect.ownKeys(columnSizeOverrides).forEach((columnName) => {
-        delete columnSizeOverrides[columnName];
-      });
-      defaultColumnSizeOverride.value = null;
-    } else {
-      autoSizeIds.forEach((columnId) => {
+    Reflect.ownKeys(autoColumnSizes.value).forEach((columnId) => {
+      if (!columnSizeOverrides[columnId]) {
         columnSizeOverrides[columnId] = autoColumnSizes.value[columnId];
-      });
-    }
+      }
+    });
   });
 
   const onColumnResize = (
@@ -97,6 +90,19 @@ export default ({
     defaultColumnSizeOverride.value = columnSize;
     header.value.displayedColumns.forEach((columnName) => {
       delete columnSizeOverrides[columnName];
+    });
+  };
+
+  const deleteColumnSizeOverrides = (
+    columnIdsToDelete: (string | symbol)[] | null = null,
+  ) => {
+    let allColumnIdsToDelete = columnIdsToDelete;
+    if (allColumnIdsToDelete === null) {
+      allColumnIdsToDelete = Reflect.ownKeys(columnSizeOverrides);
+      defaultColumnSizeOverride.value = null;
+    }
+    allColumnIdsToDelete.forEach((columnId) => {
+      delete columnSizeOverrides[columnId];
     });
   };
 
@@ -122,7 +128,7 @@ export default ({
   );
   const initialRemainingSkippedColumnSize = computed(() =>
     header.value.indicateRemainingColumnsSkipped
-      ? SKIPPED_REMAINING_COLUMNS_COLUMN_MIN_WIDTH
+      ? SKIPPED_REMAINING_COLUMNS_COLUMN.defaultSize
       : 0,
   );
 
@@ -179,5 +185,6 @@ export default ({
     onColumnResize,
     onAllColumnsResize,
     onUpdateAvailableWidth,
+    deleteColumnSizeOverrides,
   };
 };

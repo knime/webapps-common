@@ -243,12 +243,88 @@ describe("useColumnSizes", () => {
     expect(columnSizes.value).toStrictEqual([400, 0]);
   });
 
+  it("deletes the override for the given column ids when calling deleteColumnSizeOverrides", () => {
+    initialDataMock.settings.value.showRowIndices = true;
+    initialDataMock.settings.value.showRowKeys = true;
+
+    const { columnSizes, deleteColumnSizeOverrides, onColumnResize } =
+      useColumnSizes(initialDataMock);
+    expect(columnSizes.value).toStrictEqual([50, 50, 100, 100, 100]);
+
+    const columnSizeOverride = 75;
+    onColumnResize(specialColumns.ROW_ID.id, columnSizeOverride);
+    onColumnResize("col1", columnSizeOverride);
+    onColumnResize("col3", columnSizeOverride);
+    expect(columnSizes.value).toStrictEqual([
+      50,
+      columnSizeOverride,
+      columnSizeOverride,
+      100,
+      columnSizeOverride,
+    ]);
+
+    deleteColumnSizeOverrides(["col1", "col3"]);
+    expect(columnSizes.value).toStrictEqual([
+      50,
+      columnSizeOverride,
+      100,
+      100,
+      100,
+    ]);
+  });
+
+  it("deletes all overrides when calling deleteColumnSizeOverrides with null/nothing", () => {
+    initialDataMock.settings.value.showRowIndices = true;
+    initialDataMock.settings.value.showRowKeys = true;
+
+    const { columnSizes, deleteColumnSizeOverrides, onColumnResize } =
+      useColumnSizes(initialDataMock);
+    expect(columnSizes.value).toStrictEqual([50, 50, 100, 100, 100]);
+
+    const columnSizeOverride = 75;
+    onColumnResize(specialColumns.ROW_ID.id, columnSizeOverride);
+    onColumnResize("col1", columnSizeOverride);
+    onColumnResize("col3", columnSizeOverride);
+    expect(columnSizes.value).toStrictEqual([
+      50,
+      columnSizeOverride,
+      columnSizeOverride,
+      100,
+      columnSizeOverride,
+    ]);
+
+    deleteColumnSizeOverrides();
+    expect(columnSizes.value).toStrictEqual([50, 50, 100, 100, 100]);
+  });
+
+  it("deletes the default override when calling deleteColumnSizeOverrides with null/nothing", () => {
+    initialDataMock.settings.value.showRowIndices = true;
+    initialDataMock.settings.value.showRowKeys = true;
+
+    const { columnSizes, deleteColumnSizeOverrides, onAllColumnsResize } =
+      useColumnSizes(initialDataMock);
+    expect(columnSizes.value).toStrictEqual([50, 50, 100, 100, 100]);
+
+    const defaultColumnSizeOverride = 75;
+    onAllColumnsResize(defaultColumnSizeOverride);
+    expect(columnSizes.value).toStrictEqual([
+      50,
+      50,
+      defaultColumnSizeOverride,
+      defaultColumnSizeOverride,
+      defaultColumnSizeOverride,
+    ]);
+
+    deleteColumnSizeOverrides();
+    expect(columnSizes.value).toStrictEqual([50, 50, 100, 100, 100]);
+  });
+
   describe("auto column size changes", () => {
     beforeEach(() => {
       initialDataMock.autoColumnSizesActive.value = true;
     });
 
-    it("deletes the overrides when auto size is active and the update of auto sizes is empty", async () => {
+    it("does not override existing overrides when new auto sizes were calculated", async () => {
       const { columnSizes, onColumnResize, onUpdateAvailableWidth } =
         useColumnSizes(initialDataMock);
 
@@ -265,9 +341,28 @@ describe("useColumnSizes", () => {
         301,
       ]);
 
-      initialDataMock.autoColumnSizes.value = {};
+      const newAutoColumnSizeCol1 = 75;
+      initialDataMock.autoColumnSizes.value = { col1: newAutoColumnSizeCol1 };
       await nextTick(); // wait for overrides to be updated
-      expect(columnSizes.value).toStrictEqual([0, 0, 200, 200, 200]);
+      expect(columnSizes.value).toStrictEqual([
+        0,
+        0,
+        newColumnSizeCol1,
+        200,
+        301,
+      ]);
+    });
+
+    it("adds the new auto sizes for columns that have no overrides yet", async () => {
+      const { columnSizes, onUpdateAvailableWidth } =
+        useColumnSizes(initialDataMock);
+
+      const initialAvailableWidth = 600;
+      onUpdateAvailableWidth(initialAvailableWidth);
+
+      initialDataMock.autoColumnSizes.value = { col2: 60 };
+      await nextTick(); // wait for overrides to be updated
+      expect(columnSizes.value).toStrictEqual([0, 0, 200, 60, 340]);
     });
 
     it("does not use the ratio of the initial/new available width to update overrides when auto sizes active", async () => {
