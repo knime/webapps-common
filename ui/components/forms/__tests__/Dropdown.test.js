@@ -62,6 +62,31 @@ describe("Dropdown.vue", () => {
     expect(button.attributes("aria-label")).toBe(props.ariaLabel);
   });
 
+  it("sets titles from text or optional titles of items", () => {
+    const wrapper = mount(Dropdown, {
+      props: {
+        possibleValues: [
+          {
+            id: "test1",
+            text: "Text 1",
+            title: "custom title",
+          },
+          {
+            id: "test2",
+            text: "Text 2",
+          },
+        ],
+        ariaLabel: "Test Label",
+      },
+    });
+
+    const options = wrapper.findAll("[role=option]");
+    expect(options.map((li) => li.attributes().title)).toStrictEqual([
+      "custom title",
+      "Text 2",
+    ]);
+  });
+
   it("renders value text or placeholder if no or empty value set", async () => {
     let placeholder = "my-placeholder";
     const wrapper = mount(Dropdown, {

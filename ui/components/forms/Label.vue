@@ -48,6 +48,7 @@ export default {
       default: true,
     },
   },
+  emits: ["labelForId"],
   computed: {
     labelFor() {
       if (this.generateId) {
@@ -68,6 +69,9 @@ export default {
   beforeCreate() {
     labelForId += 1;
     this.labelForId = labelForId;
+  },
+  mounted() {
+    this.$emit("labelForId", this.labelFor);
   },
 };
 </script>

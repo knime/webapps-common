@@ -75,6 +75,19 @@ describe("FunctionButton.vue", () => {
     expect(document.activeElement).toBe(wrapper.get("button").wrapperElement);
   });
 
+  it("gets button component with getComponent", () => {
+    const slot = "<span>text</span>";
+    const wrapper = mount(FunctionButton, {
+      slots: {
+        default: [slot],
+      },
+      attachTo: document.body,
+    });
+    const comp = wrapper.vm.getComponent();
+    expect(comp.tagName).toBe("BUTTON");
+    expect(comp.innerHTML).toBe(slot);
+  });
+
   it("renders disabled button", () => {
     const wrapper = shallowMount(FunctionButton, {
       props: {

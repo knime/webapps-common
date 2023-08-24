@@ -312,7 +312,7 @@ export default {
         :key="`listbox-${item.id}`"
         ref="options"
         role="option"
-        :title="item.text"
+        :title="typeof item.title === 'undefined' ? item.text : item.title"
         :class="{
           focused: isCurrentValue(item.id),
           noselect: true,
