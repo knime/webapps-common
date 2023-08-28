@@ -83,13 +83,6 @@ public interface NodeDialog extends UIExtension {
     Optional<RpcDataService> createRpcDataService();
 
     /**
-     * @return a {@link VariableSettingsService}-instance
-     */
-    default Optional<VariableSettingsService> getVariableSettingsService() {
-        return Optional.empty();
-    }
-
-    /**
      * Indicates whether the dialog (optionally) wants/needs to be displayed in an enlarged display area.
      *
      * @return if {@code true} if it can be enlarged, otherwise {@code false}

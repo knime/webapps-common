@@ -44,66 +44,17 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Aug 18, 2022 (benjamin): created
+ *   Aug 25, 2023 (hornm): created
  */
 package org.knime.core.webui.node.dialog;
 
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettings;
+import org.knime.core.node.NodeSettingsWO;
 
 /**
- * Write-only settings for using and exposing other settings via flow variables.
- * <P>
- * EXAMPLE: Take the following settings tree:
+ * Represents {@link NodeSettingsWO} and {@link VariableSettingsWO}.
  *
- * <pre>
- * - first_setting: "my_value"
- * - group_setting (added via NodeSettings#addNodeSettings)
- *   - first_child_setting: "one_value"
- *   - second_child_setting: "another_value"
- * </pre>
- *
- * To set the setting "first_setting" to use the value of the variable named "my_variable" use
- *
- * <pre>
- * rootVariableSettingsObj.addUsedVariable("first_setting", "my_variable");
- * </pre>
- *
- * To set the variable "my_other_variable" to take the value of the setting "first_child_setting" use
- *
- * <pre>
- * rootVariableSettingsObj.getChild("group_setting").addExposedVariable("first_child_setting", "my_other_variable");
- * </pre>
- *
- * @author Benjamin Wilhelm, KNIME GmbH, Konstanz, Germany
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-interface VariableSettingsWO {
+public interface NodeAndVariableSettingsWO extends NodeSettingsWO, VariableSettingsWO {
 
-    /**
-     * Access the variable settings of a settings group that was added by {@link NodeSettings#addNodeSettings(String)}.
-     * See the class javadoc for an example.
-     *
-     * @param key the key of the child settings
-     * @return the child settings
-     * @throws InvalidSettingsException if there are no child settings with the given key
-     */
-    VariableSettingsWO getChild(String key) throws InvalidSettingsException;
-
-    /**
-     * Set that the setting with the given key uses the value of the variable.
-     *
-     * @param settingsKey
-     * @param usedVariable the name of the variable which should be used
-     * @throws InvalidSettingsException if there is no setting with the given key
-     */
-    void addUsedVariable(String settingsKey, String usedVariable) throws InvalidSettingsException;
-
-    /**
-     * Set that the setting with the given key is exposed as a variable.
-     *
-     * @param settingsKey
-     * @param exposedVariable the name of the variable which should be exposed
-     * @throws InvalidSettingsException if there is no setting with the given key
-     */
-    void addExposedVariable(String settingsKey, String exposedVariable) throws InvalidSettingsException;
 }

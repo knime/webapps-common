@@ -272,14 +272,14 @@ public class NodeDialogManagerTest {
         Supplier<NodeDialog> nodeDialogSupplier = () -> createNodeDialog(page, new NodeSettingsService() { // NOSONAR
 
             @Override
-            public void toNodeSettings(final String s, final Map<SettingsType, NodeSettingsWO> settings) {
+            public void toNodeSettings(final String s, final Map<SettingsType, NodeAndVariableSettingsWO> settings) {
                 var split = s.split(",");
                 settings.get(SettingsType.MODEL).addString(split[0], split[1]);
                 settings.get(SettingsType.VIEW).addString(split[0], split[1]);
             }
 
             @Override
-            public String fromNodeSettings(final Map<SettingsType, NodeSettingsRO> settings,
+            public String fromNodeSettings(final Map<SettingsType, NodeAndVariableSettingsRO> settings,
                 final PortObjectSpec[] specs) {
                 assertThat(settings.size()).isEqualTo(2);
                 return "the node settings";

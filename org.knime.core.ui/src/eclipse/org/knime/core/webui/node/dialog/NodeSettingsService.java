@@ -51,7 +51,6 @@ package org.knime.core.webui.node.dialog;
 import java.util.Map;
 
 import org.knime.core.node.NodeSettings;
-import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObjectSpec;
 
@@ -71,8 +70,8 @@ public interface NodeSettingsService {
     /**
      * Called when a dialog is initialized.
      *
-     * Infers a single text-based settings representation from possibly multiple {@link NodeSettingsRO}-instances (one
-     * per {@link SettingsType}).
+     * Infers a single text-based settings representation from possibly multiple
+     * {@link NodeAndVariableSettingsRO}-instances (one per {@link SettingsType}).
      *
      * @param settings the settings to read from; if there are no settings with the node stored, yet, the default node
      *            settings will be supplied (see {@link #getDefaultNodeSettings(Map, PortObjectSpec[])})
@@ -80,17 +79,17 @@ public interface NodeSettingsService {
      *            {@code null}-values, e.g., in case an input port is not connected
      * @return a new text-based settings representation
      */
-    String fromNodeSettings(Map<SettingsType, NodeSettingsRO> settings, PortObjectSpec[] specs);
+    String fromNodeSettings(Map<SettingsType, NodeAndVariableSettingsRO> settings, PortObjectSpec[] specs);
 
     /**
      * Called when dialog settings are applied.
      *
-     * Translates text-based settings to {@link NodeSettingsWO}-instances of certain {@link SettingsType}.
+     * Translates text-based settings to {@link NodeAndVariableSettingsWO}-instances of certain {@link SettingsType}.
      *
      * @param textSettings the text-based settings object
      * @param settings the settings instances to write into
      */
-    void toNodeSettings(final String textSettings, Map<SettingsType, NodeSettingsWO> settings);
+    void toNodeSettings(final String textSettings, Map<SettingsType, NodeAndVariableSettingsWO> settings);
 
     /**
      * Saves the default settings to the given settings objects. Will be called if there are no settings stored with the

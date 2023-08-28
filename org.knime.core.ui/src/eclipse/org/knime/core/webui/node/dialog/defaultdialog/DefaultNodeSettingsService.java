@@ -58,9 +58,10 @@ import java.util.Map;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettings;
-import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.webui.node.dialog.NodeAndVariableSettingsRO;
+import org.knime.core.webui.node.dialog.NodeAndVariableSettingsWO;
 import org.knime.core.webui.node.dialog.NodeSettingsService;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
@@ -93,7 +94,7 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
     }
 
     @Override
-    public void toNodeSettings(final String textSettings, final Map<SettingsType, NodeSettingsWO> settings) {
+    public void toNodeSettings(final String textSettings, final Map<SettingsType, NodeAndVariableSettingsWO> settings) {
         try {
             final var root = (ObjectNode)JsonFormsDataUtil.getMapper().readTree(textSettings);
             textSettingsToNodeSettings(root, SettingsType.MODEL, settings);
@@ -105,7 +106,7 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
     }
 
     private void textSettingsToNodeSettings(final ObjectNode rootNode, final SettingsType settingsType,
-        final Map<SettingsType, NodeSettingsWO> settings) {
+        final Map<SettingsType, NodeAndVariableSettingsWO> settings) {
         if (settings.containsKey(settingsType)) {
             final var node = rootNode.get(settingsType.getConfigKey());
             var settingsClass = m_settingsClasses.get(settingsType);
@@ -115,7 +116,8 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
     }
 
     @Override
-    public String fromNodeSettings(final Map<SettingsType, NodeSettingsRO> settings, final PortObjectSpec[] specs) {
+    public String fromNodeSettings(final Map<SettingsType, NodeAndVariableSettingsRO> settings,
+        final PortObjectSpec[] specs) {
         m_creationContext = DefaultNodeSettings.createDefaultNodeSettingsContext(specs);
         var loadedSettings = settings.entrySet().stream()//
             .collect(toMap(Map.Entry::getKey, e -> loadSettings(settings, e.getKey(), specs)));
@@ -137,7 +139,7 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
         return m_creationContext;
     }
 
-    private DefaultNodeSettings loadSettings(final Map<SettingsType, NodeSettingsRO> nodeSettings,
+    private DefaultNodeSettings loadSettings(final Map<SettingsType, NodeAndVariableSettingsRO> nodeSettings,
         final SettingsType settingsType, final PortObjectSpec[] specs) {
         var settingsClass = m_settingsClasses.get(settingsType);
         try {
@@ -150,7 +152,8 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
     }
 
     @Override
-    public void getDefaultNodeSettings(final Map<SettingsType, NodeSettingsWO> settings, final PortObjectSpec[] specs) {
+    public void getDefaultNodeSettings(final Map<SettingsType, NodeSettingsWO> settings,
+        final PortObjectSpec[] specs) {
         saveDefaultSettings(settings, SettingsType.MODEL, specs);
         saveDefaultSettings(settings, SettingsType.VIEW, specs);
     }

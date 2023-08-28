@@ -54,7 +54,7 @@ import org.knime.core.node.NodeSettings;
  *
  * @author Benjamin Wilhelm, KNIME GmbH, Konstanz, Germany
  */
-final class LazyVariableSettings implements VariableSettingsWO {
+final class VariableSettings implements VariableSettingsWO {
 
     // See org.knime.core.node.config.ConfigEditTreeModel#CURRENT_VERSION
     private static final String CURRENT_VERSION = "V_2019_09_13";
@@ -88,7 +88,7 @@ final class LazyVariableSettings implements VariableSettingsWO {
         return m_settingsTree;
     }
 
-    LazyVariableSettings(final NodeSettings nodeSettings, final SettingsType type) {
+    VariableSettings(final NodeSettings nodeSettings, final SettingsType type) {
         m_nodeSettings = nodeSettings;
         m_type = type;
     }
@@ -127,7 +127,7 @@ final class LazyVariableSettings implements VariableSettingsWO {
         }
     }
 
-    static final class VariableSettingsTree implements VariableSettingsWO {
+    private static final class VariableSettingsTree implements VariableSettingsWO {
 
         private final NodeSettings m_variablesRoot;
 

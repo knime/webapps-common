@@ -59,6 +59,7 @@ import org.knime.core.data.def.StringCell;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.webui.node.dialog.NodeDialogTest;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonNodeSettingsMapperUtil;
@@ -123,8 +124,8 @@ class DefaultNodeSettingsServiceTest {
 
         // create settings service and obtain initial data using node settings and specs
         final var settingsService = new DefaultNodeSettingsService(Map.of(SettingsType.VIEW, TestSettings.class));
-        final var initialData =
-            MAPPER.readTree(settingsService.fromNodeSettings(Map.of(SettingsType.VIEW, nodeSettings), specs));
+        final var initialData = MAPPER.readTree(settingsService.fromNodeSettings(
+            Map.of(SettingsType.VIEW, NodeDialogTest.createNodeAndVariableSettingsRO(nodeSettings)), specs));
 
         // assert that returned data is equal to wrapped "foo" view data created via JsonFormsDataUtil
         final var wrappedViewData = MAPPER.createObjectNode().set(SettingsType.VIEW.getConfigKey(), viewData);
@@ -153,7 +154,8 @@ class DefaultNodeSettingsServiceTest {
         // create settings service and apply wrapped "foo" view data into node settings
         final var settingsService = new DefaultNodeSettingsService(Map.of(SettingsType.VIEW, TestSettings.class));
         final var wrappedViewData = MAPPER.createObjectNode().set(SettingsType.VIEW.getConfigKey(), viewData);
-        settingsService.toNodeSettings(wrappedViewData.toString(), Map.of(SettingsType.VIEW, nodeSettings));
+        settingsService.toNodeSettings(wrappedViewData.toString(),
+            Map.of(SettingsType.VIEW, NodeDialogTest.createNodeAndVariableSettingsWO(nodeSettings)));
 
         // assert that node settings are no longer empty but equal to the "foo" view data
         final var node = JsonFormsDataUtil.getMapper().createObjectNode();

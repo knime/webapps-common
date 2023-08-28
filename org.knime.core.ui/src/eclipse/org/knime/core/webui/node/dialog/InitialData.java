@@ -55,7 +55,6 @@ import java.util.Set;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
-import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
@@ -74,13 +73,13 @@ final class InitialData {
 
     private final Set<SettingsType> m_settingsTypes;
 
-    private final NodeSettingsService m_textNodeSettingsService;
+    private final NodeSettingsService m_nodeSettingsService;
 
     protected InitialData(final NodeContainer nc, final Set<SettingsType> settingsTypes,
-        final NodeSettingsService textNodeSettingsService) {
+        final NodeSettingsService nodeSettingsService) {
         m_nc = nc;
         m_settingsTypes = settingsTypes;
-        m_textNodeSettingsService = textNodeSettingsService;
+        m_nodeSettingsService = nodeSettingsService;
     }
 
     String get() {
@@ -90,10 +89,10 @@ final class InitialData {
 
         NodeContext.pushContext(m_nc);
         try {
-            Map<SettingsType, NodeSettingsRO> settings = new EnumMap<>(SettingsType.class);
+            Map<SettingsType, NodeAndVariableSettingsRO> settings = new EnumMap<>(SettingsType.class);
             getSettings(SettingsType.MODEL, specs, settings);
             getSettings(SettingsType.VIEW, specs, settings);
-            return m_textNodeSettingsService.fromNodeSettings(settings, specs);
+            return m_nodeSettingsService.fromNodeSettings(settings, specs);
         } finally {
             NodeContext.removeLastContext();
         }
@@ -116,7 +115,7 @@ final class InitialData {
     }
 
     private void getSettings(final SettingsType settingsType, final PortObjectSpec[] specs,
-        final Map<SettingsType, NodeSettingsRO> resultSettings) {
+        final Map<SettingsType, NodeAndVariableSettingsRO> resultSettings) {
         if (m_settingsTypes.contains(settingsType)) {
             NodeSettings settings = null;
             if (m_nc instanceof NativeNodeContainer) {
@@ -131,9 +130,10 @@ final class InitialData {
                     // And if no settings have been applied, yet, there can also be no flow variables configured
                     // to overwrite a setting.
                     // Thus, no need to merge the default settings with flow variable values (as done above).
-                    m_textNodeSettingsService.getDefaultNodeSettings(Map.of(settingsType, settings), specs);
+                    m_nodeSettingsService.getDefaultNodeSettings(
+                        Map.of(settingsType, NodeAndVariableSettingsProxy.createWOProxy(settings, null)), specs);
                 }
-                resultSettings.put(settingsType, settings);
+                resultSettings.put(settingsType, NodeAndVariableSettingsProxy.createROProxy(settings, null));
             }
             // else: SubNodeContainers (aka components) are ignored here since those retrieve the settings
             // from the contained configuration nodes and not from the component settings directly

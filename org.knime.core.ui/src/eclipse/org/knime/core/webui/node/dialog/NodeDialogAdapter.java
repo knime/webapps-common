@@ -93,9 +93,6 @@ public final class NodeDialogAdapter implements UIExtension, DataServiceProvider
 
     private final NodeSettingsService m_nodeSettingsService;
 
-    private final VariableSettingsService m_variableSettingsService;
-
-
     NodeDialogAdapter(final SingleNodeContainer snc, final NodeDialog dialog) {
         m_dialog = dialog;
         m_settingsTypes = dialog.getSettingsTypes();
@@ -103,7 +100,6 @@ public final class NodeDialogAdapter implements UIExtension, DataServiceProvider
         m_snc = snc;
         m_onApplyModifier = dialog.getOnApplyNodeModifier().orElse(null);
         m_nodeSettingsService = dialog.getNodeSettingsService();
-        m_variableSettingsService = dialog.getVariableSettingsService().orElse(null);
     }
 
     @Override
@@ -125,7 +121,7 @@ public final class NodeDialogAdapter implements UIExtension, DataServiceProvider
     @Override
     public final Optional<ApplyDataService<String>> createApplyDataService() {
         var applyData =
-            new ApplyData(m_snc, m_settingsTypes, m_nodeSettingsService, m_variableSettingsService, m_onApplyModifier);
+            new ApplyData(m_snc, m_settingsTypes, m_nodeSettingsService, m_onApplyModifier);
         return Optional.of(ApplyDataService.builder(applyData::applyData) //
             .onDeactivate(applyData::cleanUp) //
             .build());
@@ -181,7 +177,8 @@ public final class NodeDialogAdapter implements UIExtension, DataServiceProvider
         protected NodeSettingsRO getDefaultViewSettings(final PortObjectSpec[] specs) {
             if (hasViewSettings()) {
                 var ns = new NodeSettings("default_view_settings");
-                m_nodeSettingsService.getDefaultNodeSettings(Map.of(SettingsType.VIEW, ns), specs);
+                m_nodeSettingsService.getDefaultNodeSettings(
+                    Map.of(SettingsType.VIEW, NodeAndVariableSettingsProxy.createWOProxy(ns, null)), specs);
                 return ns;
             } else {
                 return super.getDefaultViewSettings(specs);

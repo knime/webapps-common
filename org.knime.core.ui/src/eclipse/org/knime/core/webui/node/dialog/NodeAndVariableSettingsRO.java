@@ -44,38 +44,17 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Aug 25, 2022 (benjamin): created
+ *   Aug 25, 2023 (hornm): created
  */
 package org.knime.core.webui.node.dialog;
 
-import java.util.Map;
+import org.knime.core.node.NodeSettingsRO;
 
 /**
- * Similar to the {@link NodeSettingsService} but for handling settings that are overwritten or exposed by flow
- * variables. Translates the same text-based settings (strings) as used in the {@link NodeSettingsService} to the
- * backend-side representation (i.e. {@link VariableSettingsWO}).
+ * Represents {@link NodeSettingsRO} (and VariableSettingsRO - TODO).
  *
- * @author Benjamin Wilhelm, KNIME GmbH, Konstanz, Germany
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public interface VariableSettingsService {
+public interface NodeAndVariableSettingsRO extends NodeSettingsRO { // TODO, VariableSettingsRO {
 
-    /*
-     * TODO UIEXT-479
-     * It would make sense to also have a fromNodeSettings method that knows about the variables.
-     * Right now, the values of settings that are overwritten by variables are replaced by the
-     * current value of the variable. Therefore the TextNodeSettingsService#fromNodeSettings method
-     * has no idea if a setting was saved like this or is overwritten by a variable.
-     * If the dialog is supposed to display these cases separately it must use the DialogService which
-     * gets the flowVariableSettings from the extension config. This is not intuitive.
-     */
-
-    /**
-     * Called when dialog settings are applied.
-     *
-     * Translates text-based settings to {@link VariableSettingsWO}-instances of certain {@link SettingsType}.
-     *
-     * @param textSettings the text-based settings object
-     * @param settings the settings to overwrite other settings with flow variables
-     */
-    void toVariableSettings(final String textSettings, Map<SettingsType, VariableSettingsWO> settings);
 }

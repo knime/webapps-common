@@ -57,8 +57,11 @@ import java.awt.Container;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.knime.core.node.ExecutionMonitor;
@@ -79,6 +82,7 @@ import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.data.rpc.json.impl.ObjectMapperUtil;
 import org.knime.core.webui.node.NodeWrapper;
+import org.knime.core.webui.node.dialog.NodeAndVariableSettingsProxy.NodeSettingsWrapper;
 import org.knime.core.webui.node.dialog.NodeDialog.OnApplyNodeModifier;
 import org.knime.core.webui.node.dialog.NodeDialogAdapter.LegacyFlowVariableNodeDialog;
 import org.knime.core.webui.node.view.NodeViewManager;
@@ -109,7 +113,7 @@ public class NodeDialogTest {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var nnc = WorkflowManagerUtil.createAndAddNode(wfm,
             new NodeDialogNodeFactory(() -> createNodeDialog(Page.builder(() -> "test", "test.html").build(),
-                createTextSettingsDataService(), null), 1));
+                createNodeSettingsService(), null), 1));
         var nncWrapper = NodeWrapper.of(nnc);
         var nodeDialogManager = NodeDialogManager.getInstance();
 
@@ -141,7 +145,7 @@ public class NodeDialogTest {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var nnc = WorkflowManagerUtil.createAndAddNode(wfm,
             new NodeDialogNodeFactory(() -> createNodeDialog(Page.builder(() -> "test", "test.html").build(),
-                createTextSettingsDataService(), null)));
+                createNodeSettingsService(), null)));
         var nncWrapper = NodeWrapper.of(nnc);
 
         var modelSettings = new NodeSettings("model");
@@ -240,7 +244,7 @@ public class NodeDialogTest {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var nnc = WorkflowManagerUtil.createAndAddNode(wfm,
             new NodeDialogNodeFactory(() -> createNodeDialog(Page.builder(() -> "test", "test.html").build(),
-                createTextSettingsDataService(), null, null, onApplyModifier)));
+                createNodeSettingsService(), null, onApplyModifier)));
         var nncWrapper = NodeWrapper.of(nnc);
 
         var initialModelSettings = new NodeSettings("model");
@@ -305,7 +309,7 @@ public class NodeDialogTest {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var nnc = WorkflowManagerUtil.createAndAddNode(wfm,
             new NodeDialogNodeFactory(() -> createNodeDialog(Page.builder(() -> "test", "test.html").build(),
-                createTextSettingsDataService(), null)));
+                createNodeSettingsService(), null)));
         var nncWrapper = NodeWrapper.of(nnc);
 
         var modelSettings = new NodeSettings("model");
@@ -363,7 +367,7 @@ public class NodeDialogTest {
      */
     @Test
     public void testSettingWithFlowVariables() throws IOException, InvalidSettingsException {
-        VariableSettingsService varService = (textSettings, settings) -> { // NOSONAR: The lambda is easy to understand
+        Consumer<Map<SettingsType, VariableSettingsWO>> varSettingsWriter = (settings) -> { // NOSONAR: The lambda is easy to understand
             try {
                 // First level settings
                 settings.get(SettingsType.MODEL).addUsedVariable("model_key1", "model_variable");
@@ -395,7 +399,7 @@ public class NodeDialogTest {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var nnc = WorkflowManagerUtil.createAndAddNode(wfm,
             new NodeDialogNodeFactory(() -> createNodeDialog(Page.builder(() -> "test", "test.html").build(),
-                createTextSettingsDataService(), varService, null)));
+                createNodeSettingsService(varSettingsWriter), null)));
         var nncWrapper = NodeWrapper.of(nnc);
 
         var modelSettings = new NodeSettings("model");
@@ -464,7 +468,7 @@ public class NodeDialogTest {
      */
     @Test
     public void testFailingSettingWithFlowVariables() throws IOException {
-        VariableSettingsService varService = (textSettings, settings) -> { // NOSONAR: The lambda is easy to understand
+        Consumer<Map<SettingsType, VariableSettingsWO>> varSettingsWriter = (settings) -> { // NOSONAR: The lambda is easy to understand
             try {
                 settings.get(SettingsType.MODEL).addUsedVariable("key1", "var1");
             } catch (final InvalidSettingsException ex) { // NOSONAR
@@ -487,7 +491,7 @@ public class NodeDialogTest {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var nnc = WorkflowManagerUtil.createAndAddNode(wfm,
             new NodeDialogNodeFactory(() -> createNodeDialog(Page.builder(() -> "test", "test.html").build(),
-                createTextSettingsDataService(), varService, null)));
+                createNodeSettingsService(varSettingsWriter), null)));
         var nncWrapper = NodeWrapper.of(nnc);
 
         var modelSettings = new NodeSettings("model");
@@ -536,7 +540,7 @@ public class NodeDialogTest {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var nnc = WorkflowManagerUtil.createAndAddNode(wfm,
             new NodeDialogNodeFactory(() -> createNodeDialog(Page.builder(() -> "test", "test.html").build(),
-                createTextSettingsDataService(), null)));
+                createNodeSettingsService(), null)));
 
         openLegacyFlowVariableDialogAndCheckViewSettings(nnc, "a default view setting value");
 
@@ -597,7 +601,7 @@ public class NodeDialogTest {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var nc = WorkflowManagerUtil.createAndAddNode(wfm,
             new NodeDialogNodeFactory(() -> createNodeDialog(Page.builder(() -> "test", "test.html").build(),
-                createTextSettingsDataService(), null)));
+                createNodeSettingsService(), null)));
 
         LegacyFlowVariableNodeDialog legacyNodeDialog = initLegacyFlowVariableDialog(nc);
 
@@ -618,18 +622,36 @@ public class NodeDialogTest {
      *
      * @return a new instance
      */
-    public static NodeSettingsService createTextSettingsDataService() {
+    public static NodeSettingsService createNodeSettingsService() {
+        return createNodeSettingsService(null);
+    }
+
+    /**
+     * Helper to create a {@link NodeSettingsService}-instance for testing.
+     *
+     * @param variableSettingsWriter optional logic that fills the {@link VariableSettingsWO}
+     *
+     * @return a new instance
+     */
+    public static NodeSettingsService
+        createNodeSettingsService(final Consumer<Map<SettingsType, VariableSettingsWO>> variableSettingsWriter) {
         return new NodeSettingsService() {
 
             @Override
-            public String fromNodeSettings(final Map<SettingsType, NodeSettingsRO> settings,
+            public String fromNodeSettings(final Map<SettingsType, NodeAndVariableSettingsRO> settings,
                 final PortObjectSpec[] specs) {
                 return settingsToString(settings.get(SettingsType.MODEL), settings.get(SettingsType.VIEW));
             }
 
             @Override
-            public void toNodeSettings(final String textSettings, final Map<SettingsType, NodeSettingsWO> settings) {
+            public void toNodeSettings(final String textSettings,
+                final Map<SettingsType, NodeAndVariableSettingsWO> settings) {
                 stringToSettings(textSettings, settings.get(SettingsType.MODEL), settings.get(SettingsType.VIEW));
+                if(variableSettingsWriter != null) {
+                    variableSettingsWriter.accept(
+                        settings.entrySet().stream().map(e -> Map.entry(e.getKey(), (VariableSettingsWO)e.getValue()))
+                            .collect(Collectors.toMap(Entry::getKey, Entry::getValue)));
+                }
             }
 
             @Override
@@ -651,8 +673,10 @@ public class NodeDialogTest {
     private static String settingsToString(final NodeSettingsRO modelSettings, final NodeSettingsRO viewSettings) {
         var root = MAPPER.createObjectNode();
         try {
-            root.set("model", MAPPER.readTree(JSONConfig.toJSONString(modelSettings, WriterConfig.DEFAULT)));
-            root.set("view", MAPPER.readTree(JSONConfig.toJSONString(viewSettings, WriterConfig.DEFAULT)));
+            root.set("model",
+                MAPPER.readTree(JSONConfig.toJSONString(extractNodeSettings(modelSettings), WriterConfig.DEFAULT)));
+            root.set("view",
+                MAPPER.readTree(JSONConfig.toJSONString(extractNodeSettings(viewSettings), WriterConfig.DEFAULT)));
         } catch (JsonProcessingException ex) {
             throw new RuntimeException(ex);
         }
@@ -663,10 +687,18 @@ public class NodeDialogTest {
         final NodeSettingsWO viewSettings) {
         try {
             var jsonNode = MAPPER.readTree(s);
-            JSONConfig.readJSON(modelSettings, new StringReader(jsonNode.get("model").toString()));
-            JSONConfig.readJSON(viewSettings, new StringReader(jsonNode.get("view").toString()));
+            JSONConfig.readJSON(extractNodeSettings(modelSettings), new StringReader(jsonNode.get("model").toString()));
+            JSONConfig.readJSON(extractNodeSettings(viewSettings), new StringReader(jsonNode.get("view").toString()));
         } catch (IOException ex) {
             throw new RuntimeException(ex);
+        }
+    }
+
+    private static <C> C extractNodeSettings(final C settings) {
+        if (settings instanceof NodeSettingsWrapper wrapper) {
+            return (C)wrapper.getNodeSettings();
+        } else {
+            return settings;
         }
     }
 
@@ -681,12 +713,13 @@ public class NodeDialogTest {
         var settingsMapper = new NodeSettingsService() {
 
             @Override
-            public void toNodeSettings(final String textSettings, final Map<SettingsType, NodeSettingsWO> settings) {
+            public void toNodeSettings(final String textSettings,
+                final Map<SettingsType, NodeAndVariableSettingsWO> settings) {
                 //
             }
 
             @Override
-            public String fromNodeSettings(final Map<SettingsType, NodeSettingsRO> settings,
+            public String fromNodeSettings(final Map<SettingsType, NodeAndVariableSettingsRO> settings,
                 final PortObjectSpec[] specs) {
                 return "test settings";
             }
@@ -711,26 +744,11 @@ public class NodeDialogTest {
      */
     public static NodeDialog createNodeDialog(final Page page, final NodeSettingsService settingsDataService,
         final RpcDataService dataService) {
-        return createNodeDialog(page, settingsDataService, null, dataService);
-    }
-
-    /**
-     * Helper to create {@link NodeDialog}.
-     *
-     * @param page
-     * @param settingsDataService
-     * @param dataService
-     * @param variableSettingsService
-     * @return a new dialog instance
-     */
-    public static NodeDialog createNodeDialog(final Page page, final NodeSettingsService settingsDataService,
-        final VariableSettingsService variableSettingsService, final RpcDataService dataService) {
-        return createNodeDialog(page, settingsDataService, variableSettingsService, dataService, null);
+        return createNodeDialog(page, settingsDataService, dataService, null);
     }
 
     static NodeDialog createNodeDialog(final Page page, final NodeSettingsService settingsDataService,
-        final VariableSettingsService variableSettingsService, final RpcDataService dataService,
-        final OnApplyNodeModifier onApplyModifier) {
+        final RpcDataService dataService, final OnApplyNodeModifier onApplyModifier) {
         return new NodeDialog() {
 
             @Override
@@ -749,11 +767,6 @@ public class NodeDialogTest {
             }
 
             @Override
-            public Optional<VariableSettingsService> getVariableSettingsService() {
-                return Optional.ofNullable(variableSettingsService);
-            }
-
-            @Override
             public Page getPage() {
                 return page;
             }
@@ -765,4 +778,25 @@ public class NodeDialogTest {
 
         };
     }
+
+    /**
+     * TODO
+     *
+     * @param nodeSettings
+     * @return
+     */
+    public static NodeAndVariableSettingsRO createNodeAndVariableSettingsRO(final NodeSettings nodeSettings) {
+        return NodeAndVariableSettingsProxy.createROProxy(nodeSettings, null);
+    }
+
+    /**
+     * TODO
+     *
+     * @param nodeSettings
+     * @return
+     */
+    public static NodeAndVariableSettingsWO createNodeAndVariableSettingsWO(final NodeSettings nodeSettings) {
+        return NodeAndVariableSettingsProxy.createWOProxy(nodeSettings, null);
+    }
+
 }

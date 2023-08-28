@@ -150,7 +150,7 @@ public class NodeDialogEntTest {
         var nc = WorkflowManagerUtil.createAndAddNode(wfm,
             new NodeDialogNodeFactory(
                 () -> NodeDialogTest.createNodeDialog(Page.builder(() -> "test", "test.html").build(),
-                    NodeDialogTest.createTextSettingsDataService(), null),
+                    NodeDialogTest.createNodeSettingsService(), null),
                 1));
 
         var nodeDialogEnt = new NodeDialogEnt(nc);

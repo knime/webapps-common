@@ -59,7 +59,6 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.knime.core.node.NodeLogger;
-import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.dialog.DialogNode;
 import org.knime.core.node.dialog.DialogNodeRepresentation;
@@ -221,7 +220,7 @@ public final class SubNodeContainerDialogFactory implements NodeDialogFactory {
         @SuppressWarnings("unchecked")
         @Override
         public void toNodeSettings(final String jsonSettings,
-            final Map<SettingsType, NodeSettingsWO> settings) {
+            final Map<SettingsType, NodeAndVariableSettingsWO> settings) {
 
             JsonNode newSettingsJson;
             try {
@@ -259,7 +258,7 @@ public final class SubNodeContainerDialogFactory implements NodeDialogFactory {
         }
 
         @Override
-        public String fromNodeSettings(final Map<SettingsType, NodeSettingsRO> settings,
+        public String fromNodeSettings(final Map<SettingsType, NodeAndVariableSettingsRO> settings,
             final PortObjectSpec[] specs) {
             JsonFormsDialogBuilder dialogBuilder = new JsonFormsDialogBuilder();
 
