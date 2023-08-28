@@ -81,9 +81,9 @@ final class NodeAndVariableSettingsProxy {
 
     private static Object createProxy(final NodeSettings nodeSettingsDelegate,
         final VariableSettings variableSettingsDelegate) {
-        NodeSettingsWrapper wrapper = () -> nodeSettingsDelegate;
+        NodeSettingsWrapper nodeSettingsWrapper = () -> nodeSettingsDelegate;
         InvocationHandler invocationHandler = (proxy, method, args) -> {
-            for (Object delegate : new Object[]{nodeSettingsDelegate, variableSettingsDelegate, wrapper}) {
+            for (Object delegate : new Object[]{nodeSettingsDelegate, variableSettingsDelegate, nodeSettingsWrapper}) {
                 try {
                     if (delegate != null) {
                         return method.invoke(delegate, args);

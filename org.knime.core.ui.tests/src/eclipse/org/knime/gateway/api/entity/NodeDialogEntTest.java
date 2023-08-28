@@ -51,27 +51,12 @@ package org.knime.gateway.api.entity;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
-import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettings;
-import org.knime.core.node.workflow.FlowVariable;
-import org.knime.core.node.workflow.NativeNodeContainer;
-import org.knime.core.webui.node.dialog.NodeDialog;
-import org.knime.core.webui.node.dialog.NodeDialogManagerTest;
 import org.knime.core.webui.node.dialog.NodeDialogTest;
 import org.knime.core.webui.page.Page;
 import org.knime.testing.node.dialog.NodeDialogNodeFactory;
 import org.knime.testing.util.WorkflowManagerUtil;
-
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.util.DefaultIndenter;
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 
 /**
  * Tests {@link NodeDialogEnt}.
@@ -79,64 +64,6 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public class NodeDialogEntTest {
-
-    /**
-     * Makes sure that {@link NodeDialogEnt#getFlowVariableSettings()} are correctly created.
-     *
-     * @throws IOException
-     * @throws InvalidSettingsException
-     */
-    @Test
-    public void testFlowVariableSettingsEnt() throws IOException, InvalidSettingsException {
-        var wfm = WorkflowManagerUtil.createEmptyWorkflow();
-
-        Supplier<NodeDialog> nodeDialogCreator =
-            () -> NodeDialogTest.createNodeDialog(Page.builder(() -> "page content", "page.html").build());
-        var nnc = NodeDialogManagerTest.createNodeWithNodeDialog(wfm, nodeDialogCreator);
-
-        initNodeSettings(nnc);
-        nnc.getFlowObjectStack().push(new FlowVariable("flow variable 2", "test"));
-
-        var flowVariableSettingsEnt = new NodeDialogEnt(nnc).getFlowVariableSettings();
-
-        var mapper = JsonMapper.builder().configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true).build();
-        mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-        mapper.setSerializationInclusion(Include.NON_NULL);
-        var expectedJson = "{\n"
-            + "  \"modelVariables\" : {\n"
-            + "    \"model setting\" : {\n"
-            + "      \"controllingFlowVariableAvailable\" : false,\n"
-            + "      \"controllingFlowVariableName\" : \"flow variable 1\",\n"
-            + "      \"leaf\" : true\n"
-            + "    }\n"
-            + "  },\n"
-            + "  \"viewVariables\" : {\n"
-            + "    \"view setting\" : {\n"
-            + "      \"controllingFlowVariableAvailable\" : true,\n"
-            + "      \"controllingFlowVariableName\" : \"flow variable 2\",\n"
-            + "      \"leaf\" : true\n"
-            + "    },\n"
-            + "    \"nested\" : {\n"
-            + "      \"nested view settings 2\" : {\n"
-            + "        \"exposedFlowVariableName\" : \"exposed var name\",\n"
-            + "        \"leaf\" : true\n"
-            + "      },\n"
-            + "      \"nested view settings\" : {\n"
-            + "        \"controllingFlowVariableAvailable\" : false,\n"
-            + "        \"controllingFlowVariableName\" : \"flow variable 3\",\n"
-            + "        \"exposedFlowVariableName\" : \"exposed var name\",\n"
-            + "        \"leaf\" : true\n"
-            + "      }\n"
-            + "    }\n"
-            + "  }\n"
-            + "}";
-        ObjectWriter writer =
-            mapper.writer(new DefaultPrettyPrinter().withObjectIndenter(new DefaultIndenter().withLinefeed("\n")));
-        var json = writer.writeValueAsString(flowVariableSettingsEnt);
-        assertThat(json).isEqualTo(expectedJson);
-
-        WorkflowManagerUtil.disposeWorkflow(wfm);
-    }
 
     /**
      * Tests that {@link NodeDialogEnt}-instances can be created without problems even if the input ports of a node are
@@ -154,63 +81,9 @@ public class NodeDialogEntTest {
                 1));
 
         var nodeDialogEnt = new NodeDialogEnt(nc);
-        assertThat(nodeDialogEnt.getFlowVariableSettings().getViewVariables()).isEmpty();
         assertThat(nodeDialogEnt.getInitialData()).containsSequence("a default model setting");
 
         WorkflowManagerUtil.disposeWorkflow(wfm);
-    }
-
-    private static void initNodeSettings(final NativeNodeContainer nnc) throws InvalidSettingsException {
-        var parent = nnc.getParent();
-        var nodeSettings = new NodeSettings("node_settings");
-        parent.saveNodeSettings(nnc.getID(), nodeSettings);
-
-        initModelSettings(nodeSettings);
-        initModelVariableSettings(nodeSettings);
-        initViewSettings(nodeSettings);
-        initViewVariableSettings(nodeSettings);
-
-        parent.loadNodeSettings(nnc.getID(), nodeSettings);
-        parent.executeAllAndWaitUntilDone();
-    }
-
-    private static void initModelSettings(final NodeSettings ns) {
-        var modelSettings = ns.addNodeSettings("model");
-        modelSettings.addString("model setting", "model setting value");
-    }
-
-    private static void initModelVariableSettings(final NodeSettings ns) {
-        var modelVariables = ns.addNodeSettings("variables");
-        modelVariables.addString("version", "V_2019_09_13");
-        var variableTree = modelVariables.addNodeSettings("tree");
-        var variableTreeNode = variableTree.addNodeSettings("model setting");
-        variableTreeNode.addString("used_variable", "flow variable 1");
-        variableTreeNode.addString("exposed_variable", null);
-    }
-
-    private static void initViewSettings(final NodeSettings ns) {
-        var viewSettings = ns.addNodeSettings("view");
-        viewSettings.addString("view setting", "view setting value");
-
-        var nested = viewSettings.addNodeSettings("nested");
-        nested.addString("nested view setting", "nested view setting value");
-    }
-
-    private static void initViewVariableSettings(final NodeSettings ns) {
-        var viewVariables = ns.addNodeSettings("view_variables");
-        viewVariables.addString("version", "V_2019_09_13");
-        var variableTree = viewVariables.addNodeSettings("tree");
-        var variableTreeNode1 = variableTree.addNodeSettings("view setting");
-        variableTreeNode1.addString("used_variable", "flow variable 2");
-        variableTreeNode1.addString("exposed_variable", null);
-
-        var nested = variableTree.addNodeSettings("nested");
-        var variableTreeNode2 = nested.addNodeSettings("nested view settings");
-        variableTreeNode2.addString("used_variable", "flow variable 3");
-        variableTreeNode2.addString("exposed_variable", "exposed var name");
-
-        var variableTreeNode3 = nested.addNodeSettings("nested view settings 2");
-        variableTreeNode3.addString("exposed_variable", "exposed var name");
     }
 
 }

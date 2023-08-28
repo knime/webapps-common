@@ -51,10 +51,10 @@ package org.knime.core.webui.node.dialog;
 import org.knime.core.node.NodeSettingsRO;
 
 /**
- * Represents {@link NodeSettingsRO} (and VariableSettingsRO - TODO).
+ * Represents {@link NodeSettingsRO} and {@link VariableSettingsRO}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public interface NodeAndVariableSettingsRO extends NodeSettingsRO { // TODO, VariableSettingsRO {
+public interface NodeAndVariableSettingsRO extends NodeSettingsRO, VariableSettingsRO {
 
 }

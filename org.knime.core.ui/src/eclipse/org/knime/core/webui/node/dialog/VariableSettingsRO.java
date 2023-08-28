@@ -44,66 +44,58 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Aug 18, 2022 (benjamin): created
+ *   Aug 28, 2023 (hornm): created
  */
 package org.knime.core.webui.node.dialog;
 
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettings;
 
 /**
- * Write-only settings for using and exposing other settings via flow variables.
- * <P>
- * EXAMPLE: Take the following settings tree:
+ * Gives access to the variable settings tree. Infos on the settings which are exposed as or controlled by flow
+ * variables.
  *
- * <pre>
- * - first_setting: "my_value"
- * - group_setting (added via NodeSettings#addNodeSettings)
- *   - first_child_setting: "one_value"
- *   - second_child_setting: "another_value"
- * </pre>
- *
- * To set the setting "first_setting" to use the value of the variable named "my_variable" use
- *
- * <pre>
- * rootVariableSettingsObj.addUsedVariable("first_setting", "my_variable");
- * </pre>
- *
- * To set the variable "my_other_variable" to take the value of the setting "first_child_setting" use
- *
- * <pre>
- * rootVariableSettingsObj.getChild("group_setting").addExposedVariable("first_child_setting", "my_other_variable");
- * </pre>
- *
- * @author Benjamin Wilhelm, KNIME GmbH, Konstanz, Germany
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public interface VariableSettingsWO {
+public interface VariableSettingsRO {
 
     /**
-     * Access the variable settings of a settings group that was added by {@link NodeSettings#addNodeSettings(String)}.
-     * See the class javadoc for an example.
-     *
-     * @param key the key of the child settings
-     * @return the child settings
-     * @throws InvalidSettingsException if there are no child settings with the given key
+     * @return an iterable over all the settings keys at this level
      */
-    VariableSettingsWO getOrCreateVariableSettings(String key) throws InvalidSettingsException;
+    Iterable<String> getVariableSettingsIterable();
 
     /**
-     * Set that the setting with the given key uses the value of the variable.
+     * Whether the setting for the given key is a 'leaf' in the variable settings tree. I.e.
+     * {@link #getUsedVariable(String)} and {@link #getExposedVariable(String)} can be called without them throwing an
+     * {@link InvalidSettingsException} .
      *
-     * @param settingsKey
-     * @param usedVariable the name of the variable which should be used
-     * @throws InvalidSettingsException if there is no setting with the given key
+     * If {@code false} {@link #getVariableSettings(String)} can be used to further traverse the variable settings tree.
+     *
+     * @param key
+     * @return {@code true} if the setting for the key is a variable setting
      */
-    void addUsedVariable(String settingsKey, String usedVariable) throws InvalidSettingsException;
+    boolean isVariableSetting(String key);
 
     /**
-     * Set that the setting with the given key is exposed as a variable.
-     *
-     * @param settingsKey
-     * @param exposedVariable the name of the variable which should be exposed
-     * @throws InvalidSettingsException if there is no setting with the given key
+     * @param key
+     * @return the variable settings subtree for the given key
+     * @throws InvalidSettingsException if there is no variable settings subtree for the given key
      */
-    void addExposedVariable(String settingsKey, String exposedVariable) throws InvalidSettingsException;
+    VariableSettingsRO getVariableSettings(String key) throws InvalidSettingsException;
+
+    /**
+     * @param key
+     * @return the name of the variable used or {@code null} if none is set
+     *
+     * @throws InvalidSettingsException if there no variable setting for the given key
+     */
+    String getUsedVariable(String key) throws InvalidSettingsException;
+
+    /**
+     * @param key
+     * @return the name of the variable exposed or {@code null} if none is set
+     *
+     * @throws InvalidSettingsException if there no variable setting for the given key
+     */
+    String getExposedVariable(String key) throws InvalidSettingsException;
+
 }

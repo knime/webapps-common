@@ -54,6 +54,7 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.FIELD_NAME_UI_SCHEMA;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
@@ -127,6 +128,9 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
         root.set(FIELD_NAME_DATA, jsonFormsSettings.getData());
         root.set(FIELD_NAME_SCHEMA, jsonFormsSettings.getSchema());
         root.putRawValue(FIELD_NAME_UI_SCHEMA, jsonFormsSettings.getUiSchema());
+        root.set("flowVariableSettings",
+            VariableSettingsUtil.fromVariableSettingsToJson(settings.get(SettingsType.MODEL),
+                settings.get(SettingsType.VIEW), Set.of(m_creationContext.getAvailableFlowVariableNames()), mapper));
         try {
             return mapper.writeValueAsString(root);
         } catch (JsonProcessingException e) {

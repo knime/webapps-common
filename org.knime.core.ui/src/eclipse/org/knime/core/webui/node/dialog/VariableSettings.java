@@ -45,6 +45,10 @@
  */
 package org.knime.core.webui.node.dialog;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
+
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 
@@ -53,8 +57,25 @@ import org.knime.core.node.NodeSettings;
  * necessary.
  *
  * @author Benjamin Wilhelm, KNIME GmbH, Konstanz, Germany
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-final class VariableSettings implements VariableSettingsWO {
+final class VariableSettings implements VariableSettingsWO, VariableSettingsRO {
+
+    /**
+     * Creates a new {@link VariableSettings}-instance.
+     *
+     * @param nodeSettings
+     * @param type
+     * @return the new instance or {@code null} if the nodeSettings-object doesn't contain for
+     *         {@link SettingsType#getConfigKey()}
+     */
+    public static VariableSettings create(final NodeSettings nodeSettings, final SettingsType type) {
+        try {
+            return new VariableSettings(nodeSettings, type);
+        } catch (InvalidSettingsException ex) {
+            return null;
+        }
+    }
 
     // See org.knime.core.node.config.ConfigEditTreeModel#CURRENT_VERSION
     private static final String CURRENT_VERSION = "V_2019_09_13";
@@ -65,55 +86,139 @@ final class VariableSettings implements VariableSettingsWO {
 
     private static final String USED_VARIABLE_CFG_KEY = "used_variable";
 
+    private final Supplier<NodeSettings> m_variableSettingsCreator;
+
+    private final Supplier<NodeSettings> m_variableSettingsGetter;
+
+    private NodeSettings m_cachedVariableSettings;
+
     private final NodeSettings m_nodeSettings;
 
-    private final SettingsType m_type;
+    private VariableSettings(final NodeSettings nodeSettings, final SettingsType type) throws InvalidSettingsException {
+        m_nodeSettings = nodeSettings.getNodeSettings(type.getConfigKey());
 
-    private VariableSettingsTree m_settingsTree;
-
-    private VariableSettingsTree getVariablesTree() throws InvalidSettingsException {
-        // Create the variable settings on demand
-        if (m_settingsTree == null) {
-
-            // The settings
-            var settings = m_nodeSettings.getNodeSettings(m_type.getConfigKey());
-
-            // The variable settings
-            var variableSettings = getOrCreateSubSettings(m_nodeSettings, m_type.getVariablesConfigKey());
+        m_variableSettingsCreator = () -> {
+            var variableSettings = getOrCreateSubSettings(nodeSettings, type.getVariablesConfigKey());
             addStringIfNotPresent(variableSettings, VERSION_CFG_KEY, CURRENT_VERSION);
-            var variablesRoot = getOrCreateSubSettings(variableSettings, "tree");
+            return getOrCreateSubSettings(variableSettings, "tree");
+        };
 
-            m_settingsTree = new VariableSettingsTree(variablesRoot, settings);
-        }
-        return m_settingsTree;
+        m_variableSettingsGetter = () -> {
+            NodeSettings variableSettings;
+            try {
+                variableSettings = nodeSettings.getNodeSettings(type.getVariablesConfigKey());
+                return variableSettings.getNodeSettings("tree");
+            } catch (InvalidSettingsException ex) {
+                return null;
+            }
+        };
     }
 
-    VariableSettings(final NodeSettings nodeSettings, final SettingsType type) {
+    private VariableSettings(final NodeSettings variableSettings, final NodeSettings nodeSettings) {
         m_nodeSettings = nodeSettings;
-        m_type = type;
+        m_variableSettingsCreator = null;
+        m_variableSettingsGetter = () -> variableSettings;
+        m_cachedVariableSettings = variableSettings;
+    }
+
+    private Optional<NodeSettings> getVariableSettings() {
+        return Optional.ofNullable(m_variableSettingsGetter.get());
+    }
+
+    private NodeSettings getVariableSettingsOrThrow() throws InvalidSettingsException {
+        var ns = m_variableSettingsGetter.get();
+        if (ns == null) {
+            throw new InvalidSettingsException("No variable settings given");
+        }
+        return ns;
+    }
+
+    private NodeSettings getOrCreateVariableSettings() {
+        if (m_cachedVariableSettings == null) {
+            m_cachedVariableSettings = m_variableSettingsCreator.get();
+        }
+        return m_cachedVariableSettings;
     }
 
     @Override
-    public VariableSettingsWO getChild(final String key) throws InvalidSettingsException {
-        return getVariablesTree().getChild(key);
+    public Iterable<String> getVariableSettingsIterable() {
+        return () -> getVariableSettings().map(NodeSettings::iterator).orElse(List.<String> of().iterator());
+    }
+
+    @Override
+    public boolean isVariableSetting(final String key) {
+        NodeSettings ns = getVariableSettings().orElse(null);
+        if (ns == null) {
+            return false;
+        }
+
+        try {
+            ns = ns.getNodeSettings(key);
+            ns.getString(USED_VARIABLE_CFG_KEY);
+            ns.getString(EXPOSED_VARIABLE_CFG_KEY);
+            return true;
+        } catch (InvalidSettingsException ex) { // NOSONAR
+            return false;
+        }
+    }
+
+    @Override
+    public VariableSettingsRO getVariableSettings(final String key) throws InvalidSettingsException {
+        return new VariableSettings(getVariableSettingsOrThrow().getNodeSettings(key),
+            m_nodeSettings.getNodeSettings(key));
+    }
+
+    @Override
+    public VariableSettingsWO getOrCreateVariableSettings(final String key) throws InvalidSettingsException {
+        // NB: m_settings.getNodeSettings throws an exception if the object does not exist - we want this - ?? TODO
+        return new VariableSettings(getOrCreateSubSettings(getOrCreateVariableSettings(), key),
+            m_nodeSettings.getNodeSettings(key));
+    }
+
+    @Override
+    public String getUsedVariable(final String key) throws InvalidSettingsException {
+        return getVariableSettingsOrThrow().getNodeSettings(key).getString(USED_VARIABLE_CFG_KEY);
     }
 
     @Override
     public void addUsedVariable(final String settingsKey, final String usedVariable) throws InvalidSettingsException {
-        getVariablesTree().addUsedVariable(settingsKey, usedVariable);
+        if (!m_nodeSettings.containsKey(settingsKey)) {
+            throw new InvalidSettingsException("Cannot overwrite the setting '" + settingsKey
+                + "' with the flow variable '" + usedVariable + "' because the setting does not exist.");
+        }
+
+        final var s = getOrCreateSubSettings(getOrCreateVariableSettings(), settingsKey);
+        s.addString(USED_VARIABLE_CFG_KEY, usedVariable);
+        addStringIfNotPresent(s, EXPOSED_VARIABLE_CFG_KEY, null);
+    }
+
+    @Override
+    public String getExposedVariable(final String key) throws InvalidSettingsException {
+        return getVariableSettingsOrThrow().getNodeSettings(key).getString(EXPOSED_VARIABLE_CFG_KEY);
     }
 
     @Override
     public void addExposedVariable(final String settingsKey, final String exposedVariable)
         throws InvalidSettingsException {
-        getVariablesTree().addExposedVariable(settingsKey, exposedVariable);
+        if (!m_nodeSettings.containsKey(settingsKey)) {
+            throw new InvalidSettingsException("Cannot expose the setting '" + settingsKey
+                + "' with the flow variable '" + exposedVariable + "' because the setting does not exist.");
+        }
+
+        final var s = getOrCreateSubSettings(getOrCreateVariableSettings(), settingsKey);
+        s.addString(EXPOSED_VARIABLE_CFG_KEY, exposedVariable);
+        addStringIfNotPresent(s, USED_VARIABLE_CFG_KEY, null);
     }
 
-    private static NodeSettings getOrCreateSubSettings(final NodeSettings settings, final String key)
-        throws InvalidSettingsException {
+    private static NodeSettings getOrCreateSubSettings(final NodeSettings settings, final String key) {
         NodeSettings subSettings;
         if (settings.containsKey(key)) {
-            subSettings = settings.getNodeSettings(key);
+            try {
+                subSettings = settings.getNodeSettings(key);
+            } catch (InvalidSettingsException ex) {
+                // should never happen
+                throw new IllegalStateException(ex);
+            }
         } else {
             subSettings = new NodeSettings(key);
             settings.addNodeSettings(subSettings);
@@ -127,48 +232,4 @@ final class VariableSettings implements VariableSettingsWO {
         }
     }
 
-    private static final class VariableSettingsTree implements VariableSettingsWO {
-
-        private final NodeSettings m_variablesRoot;
-
-        private final NodeSettings m_settings;
-
-        public VariableSettingsTree(final NodeSettings variablesRoot, final NodeSettings settings) {
-            m_variablesRoot = variablesRoot;
-            m_settings = settings;
-        }
-
-        @Override
-        public VariableSettingsWO getChild(final String key) throws InvalidSettingsException {
-            // NB: m_settings.getNodeSettings throws an exception if the object does not exist - we want this
-            return new VariableSettingsTree(getOrCreateSubSettings(m_variablesRoot, key),
-                m_settings.getNodeSettings(key));
-        }
-
-        @Override
-        public void addUsedVariable(final String settingsKey, final String usedVariable)
-            throws InvalidSettingsException {
-            if (!m_settings.containsKey(settingsKey)) {
-                throw new InvalidSettingsException("Cannot overwrite the setting '" + settingsKey
-                    + "' with the flow variable '" + usedVariable + "' because the setting does not exist.");
-            }
-
-            final var s = getOrCreateSubSettings(m_variablesRoot, settingsKey);
-            s.addString(USED_VARIABLE_CFG_KEY, usedVariable);
-            addStringIfNotPresent(s, EXPOSED_VARIABLE_CFG_KEY, null);
-        }
-
-        @Override
-        public void addExposedVariable(final String settingsKey, final String exposedVariable)
-            throws InvalidSettingsException {
-            if (!m_settings.containsKey(settingsKey)) {
-                throw new InvalidSettingsException("Cannot expose the setting '" + settingsKey
-                    + "' with the flow variable '" + exposedVariable + "' because the setting does not exist.");
-            }
-
-            final var s = getOrCreateSubSettings(m_variablesRoot, settingsKey);
-            s.addString(EXPOSED_VARIABLE_CFG_KEY, exposedVariable);
-            addStringIfNotPresent(s, USED_VARIABLE_CFG_KEY, null);
-        }
-    }
 }

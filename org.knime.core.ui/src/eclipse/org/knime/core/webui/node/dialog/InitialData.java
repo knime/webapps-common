@@ -118,8 +118,8 @@ final class InitialData {
         final Map<SettingsType, NodeAndVariableSettingsRO> resultSettings) {
         if (m_settingsTypes.contains(settingsType)) {
             NodeSettings settings = null;
-            if (m_nc instanceof NativeNodeContainer) {
-                settings = getSettingsFromNativeNodeContainer(settingsType, (NativeNodeContainer)m_nc);
+            if (m_nc instanceof NativeNodeContainer nnc) {
+                settings = getSettingsFromNativeNodeContainer(settingsType, nnc);
 
                 // fallback to default settings
                 if (settings == null) {
@@ -130,10 +130,11 @@ final class InitialData {
                     // And if no settings have been applied, yet, there can also be no flow variables configured
                     // to overwrite a setting.
                     // Thus, no need to merge the default settings with flow variable values (as done above).
-                    m_nodeSettingsService.getDefaultNodeSettings(
-                        Map.of(settingsType, NodeAndVariableSettingsProxy.createWOProxy(settings, null)), specs);
+                    m_nodeSettingsService.getDefaultNodeSettings(Map.of(settingsType, NodeAndVariableSettingsProxy
+                        .createWOProxy(settings, VariableSettings.create(nnc.getNodeSettings(), settingsType))), specs);
                 }
-                resultSettings.put(settingsType, NodeAndVariableSettingsProxy.createROProxy(settings, null));
+                resultSettings.put(settingsType, NodeAndVariableSettingsProxy.createROProxy(settings,
+                    VariableSettings.create(nnc.getNodeSettings(), settingsType)));
             }
             // else: SubNodeContainers (aka components) are ignored here since those retrieve the settings
             // from the contained configuration nodes and not from the component settings directly

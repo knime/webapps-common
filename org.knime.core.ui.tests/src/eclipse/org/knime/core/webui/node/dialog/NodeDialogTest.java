@@ -377,18 +377,18 @@ public class NodeDialogTest {
 
                 // Nested settings
                 settings.get(SettingsType.MODEL) //
-                    .getChild("settings_group") //
+                    .getOrCreateVariableSettings("settings_group") //
                     .addUsedVariable("child_key1", "child1_variable");
                 settings.get(SettingsType.MODEL) //
-                    .getChild("settings_group") //
+                    .getOrCreateVariableSettings("settings_group") //
                     .addExposedVariable("child_key2", "exp_child2_variable");
                 settings.get(SettingsType.VIEW) //
-                    .getChild("deep_settings_group") //
-                    .getChild("inner_settings_group") //
+                    .getOrCreateVariableSettings("deep_settings_group") //
+                    .getOrCreateVariableSettings("inner_settings_group") //
                     .addUsedVariable("child_key3", "child3_variable");
                 settings.get(SettingsType.VIEW) //
-                    .getChild("deep_settings_group") //
-                    .getChild("inner_settings_group") //
+                    .getOrCreateVariableSettings("deep_settings_group") //
+                    .getOrCreateVariableSettings("inner_settings_group") //
                     .addExposedVariable("child_key4", "exp_child4_variable");
             } catch (final InvalidSettingsException ex) {
                 throw new IllegalStateException(ex);
@@ -476,7 +476,7 @@ public class NodeDialogTest {
             }
             VariableSettingsWO childSettings;
             try {
-                childSettings = settings.get(SettingsType.MODEL).getChild("child_settings");
+                childSettings = settings.get(SettingsType.MODEL).getOrCreateVariableSettings("child_settings");
             } catch (final InvalidSettingsException ex) { // NOSONAR
                 throw new ChildKeyException();
             }

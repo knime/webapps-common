@@ -62,8 +62,6 @@ import org.knime.core.webui.node.view.NodeViewManager;
  */
 public class NodeDialogEnt extends NodeUIExtensionEnt<NodeWrapper> {
 
-    private final FlowVariableSettingsEnt m_flowVariableSettings;
-
     private final boolean m_hasNodeView;
 
     /**
@@ -72,16 +70,8 @@ public class NodeDialogEnt extends NodeUIExtensionEnt<NodeWrapper> {
     public NodeDialogEnt(final SingleNodeContainer nc) {
         super(NodeWrapper.of(nc), NodeDialogManager.getInstance(), NodeDialogManager.getInstance(), PageType.DIALOG);
         CheckUtils.checkArgument(NodeDialogManager.hasNodeDialog(nc), "The provided node doesn't have a node dialog");
-        m_flowVariableSettings = new FlowVariableSettingsEnt(nc);
         NodeViewManager.getInstance();
         m_hasNodeView = NodeViewManager.hasNodeView(nc);
-    }
-
-    /**
-     * @return a representation of the flow variable settings
-     */
-    public FlowVariableSettingsEnt getFlowVariableSettings() {
-        return m_flowVariableSettings;
     }
 
     /**

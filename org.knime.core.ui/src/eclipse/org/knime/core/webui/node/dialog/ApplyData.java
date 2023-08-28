@@ -290,7 +290,7 @@ final class ApplyData {
             var viewSettings = getOrCreateSubSettings(settings, SettingsType.VIEW.getConfigKey());
             var previousViewSettings = getOrCreateSubSettings(previousSettings, SettingsType.VIEW.getConfigKey());
             settingsMap.put(SettingsType.VIEW, NodeAndVariableSettingsProxy.createWOProxy(viewSettings,
-                new VariableSettings(settings, SettingsType.VIEW)));
+                VariableSettings.create(settings, SettingsType.VIEW)));
             return Pair.create(viewSettings, previousViewSettings);
         }
         return null;
@@ -306,7 +306,7 @@ final class ApplyData {
             var modelSettings = getOrCreateSubSettings(settings, SettingsType.MODEL.getConfigKey());
             var previousModelSettings = getOrCreateSubSettings(previousSettings, SettingsType.MODEL.getConfigKey());
             settingsMap.put(SettingsType.MODEL, NodeAndVariableSettingsProxy.createWOProxy(modelSettings,
-                new VariableSettings(settings, SettingsType.MODEL)));
+                VariableSettings.create(settings, SettingsType.MODEL)));
             return Pair.create(modelSettings, previousModelSettings);
         } else {
             // even if the node has no model settings,

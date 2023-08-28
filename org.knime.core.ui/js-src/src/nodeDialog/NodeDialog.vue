@@ -4,7 +4,10 @@ import { vanillaRenderers } from "@jsonforms/vue-vanilla";
 import { JsonForms } from "@jsonforms/vue";
 import { toDataPath } from "@jsonforms/core";
 import { fallbackRenderers, defaultRenderers } from "./renderers";
-import { hasAdvancedOptions } from "../nodeDialog/utils";
+import {
+  hasAdvancedOptions,
+  createFlowVariablesMap,
+} from "../nodeDialog/utils";
 import Button from "webapps-common/ui/components/Button.vue";
 import { cloneDeep, set, isEqual } from "lodash";
 import { markRaw } from "vue";
@@ -52,8 +55,9 @@ export default {
     this.dialogService = new DialogService(this.getKnimeService());
     const initialSettings = await this.jsonDataService.initialData();
     const { schema } = initialSettings;
-    schema.flowVariablesMap =
-      await this.dialogService.getFlowVariableSettings();
+    schema.flowVariablesMap = createFlowVariablesMap(
+      initialSettings.flowVariableSettings,
+    );
     schema.hasNodeView = this.dialogService.hasNodeView();
     schema.showAdvancedSettings = false;
     this.schema = schema;

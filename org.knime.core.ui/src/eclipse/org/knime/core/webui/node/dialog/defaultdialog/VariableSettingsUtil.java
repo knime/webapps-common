@@ -46,103 +46,98 @@
  * History
  *   Mar 23, 2022 (hornm): created
  */
-package org.knime.gateway.api.entity;
+package org.knime.core.webui.node.dialog.defaultdialog;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettings;
-import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.NodeLogger;
+import org.knime.core.webui.node.dialog.VariableSettingsRO;
+import org.knime.core.webui.node.dialog.VariableSettingsWO;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Represents a node dialog's flow variable settings. I.e. which settings are overwritten by flow variables or exposed
- * as flow variables.
+ * Utilities around {@link VariableSettingsRO} and {@link VariableSettingsWO}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public final class FlowVariableSettingsEnt {
+final class VariableSettingsUtil {
 
-    private static final String CFG_VIEW_VARIABLES = "view_variables";
+    private VariableSettingsUtil() {
+        // utility
+    }
 
-    private static final String CFG_MODEL_VARIABLES = "variables";
+    /**
+     * Serializes variable settings trees in to a json-object.
+     *
+     * @param modelVariableSettings the model variable settings, or {@code null}
+     * @param viewVariableSettings the view variable settings or {@code null}
+     * @param availableFlowVariableNames
+     * @param mapper the mapper used to create the resulting {@link JsonNode}s
+     * @return a new JsonNode-instance
+     */
+    static JsonNode fromVariableSettingsToJson(final VariableSettingsRO modelVariableSettings,
+        final VariableSettingsRO viewVariableSettings, final Set<String> availableFlowVariableNames,
+        final ObjectMapper mapper) {
+        var root = mapper.createObjectNode();
+        if (modelVariableSettings != null) {
+            root.set("modelVariables", toJson(modelVariableSettings, availableFlowVariableNames, mapper));
+        }
+        if (viewVariableSettings != null) {
+            root.set("viewVariables", toJson(viewVariableSettings, availableFlowVariableNames, mapper));
+        }
+        return root;
+    }
 
-    private final Map<String, Object> m_modelVariables;
-
-    private final Map<String, Object> m_viewVariables;
-
-    FlowVariableSettingsEnt(final NodeContainer nc) {
-        var nodeSettings = nc.getNodeSettings();
-        var flowObjectStack = nc.getFlowObjectStack();
-        if (flowObjectStack != null) {
-            var flowVariables = flowObjectStack.getAllAvailableFlowVariables().keySet();
-            m_modelVariables = createSettingsTree(CFG_MODEL_VARIABLES, nodeSettings, flowVariables);
-            m_viewVariables = createSettingsTree(CFG_VIEW_VARIABLES, nodeSettings, flowVariables);
+    private static JsonNode toJson(final VariableSettingsRO variableSettings,
+        final Set<String> availableFlowVariableNames, final ObjectMapper mapper) {
+        if (availableFlowVariableNames.isEmpty()) {
+            return mapper.createObjectNode();
         } else {
-            m_modelVariables = Collections.emptyMap();
-            m_viewVariables = Collections.emptyMap();
+            return mapper.valueToTree(createSettingsTree(variableSettings, availableFlowVariableNames));
         }
     }
 
-    private static Map<String, Object> createSettingsTree(final String settingsKey, final NodeSettings nodeSettings,
+    private static Map<String, Object> createSettingsTree(final VariableSettingsRO variableSettings,
         final Set<String> flowVariables) {
-        try {
-            var ns = nodeSettings.getNodeSettings(settingsKey).getNodeSettings("tree");
-            var settingsTree = new HashMap<String, Object>();
-            createSettingsTree(ns, flowVariables, settingsTree);
-            return settingsTree;
-        } catch (InvalidSettingsException ex) { // NOSONAR
-            return null; // NOSONAR
-        }
+        var settingsTree = new HashMap<String, Object>();
+        createSettingsTree(variableSettings, flowVariables, settingsTree);
+        return settingsTree;
     }
 
-    private static void createSettingsTree(final NodeSettings nodeSettings, final Set<String> flowVariables,
-        final Map<String, Object> settingsTreeNodeEnts) throws InvalidSettingsException {
-        for (var key : nodeSettings) {
-            var subSettings = nodeSettings.getNodeSettings(key);
-            if (isFlowVariableSetting(subSettings)) {
-                var usedVariable = subSettings.getString("used_variable", null);
+    private static void createSettingsTree(final VariableSettingsRO variableSettings, final Set<String> flowVariables,
+        final Map<String, Object> settingsTreeNodeEnts) {
+        for (var key : variableSettings.getVariableSettingsIterable()) {
+            if (variableSettings.isVariableSetting(key)) {
+                String usedVariable = null;
+                String exposedVariable = null;
+                try {
+                    usedVariable = variableSettings.getUsedVariable(key);
+                    exposedVariable = variableSettings.getExposedVariable(key);
+                } catch (InvalidSettingsException ex) {
+                    // should never happen
+                }
                 var isUsedVariableAvailable = usedVariable != null && flowVariables.contains(usedVariable);
-                settingsTreeNodeEnts.put(key, new SettingsTreeLeafEnt(usedVariable, isUsedVariableAvailable,
-                    subSettings.getString("exposed_variable", null)));
+                settingsTreeNodeEnts.put(key,
+                    new SettingsTreeLeafEnt(usedVariable, isUsedVariableAvailable, exposedVariable));
             } else {
+                VariableSettingsRO subSettings;
+                try {
+                    subSettings = variableSettings.getVariableSettings(key);
+                } catch (InvalidSettingsException ex) {
+                    NodeLogger.getLogger(VariableSettingsUtil.class).warn("No variable setting found for key " + key,
+                        ex);
+                    continue;
+                }
                 var settingsTree = new HashMap<String, Object>();
                 createSettingsTree(subSettings, flowVariables, settingsTree);
                 settingsTreeNodeEnts.put(key, settingsTree);
             }
         }
-    }
-
-    private static boolean isFlowVariableSetting(final NodeSettings ns) {
-        try {
-            ns.getString("used_variable");
-            return true;
-        } catch (InvalidSettingsException ex) { // NOSONAR
-            //
-        }
-        try {
-            ns.getString("exposed_variable");
-            return true;
-        } catch (InvalidSettingsException ex) { // NOSONAR
-            //
-        }
-        return false;
-    }
-
-    /**
-     * @return the model flow variable settings tree
-     */
-    public Map<String, Object> getModelVariables() {
-        return m_modelVariables;
-    }
-
-    /**
-     * @return the view flow variable settings tree
-     */
-    public Map<String, Object> getViewVariables() {
-        return m_viewVariables;
     }
 
     private static class SettingsTreeLeafEnt {
