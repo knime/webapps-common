@@ -6,7 +6,8 @@ Bundle-Version: 5.2.0.qualifier
 Bundle-ClassPath: knime-core-ui.jar,
  lib/jsonschema-generator-4.20.0.jar,
  lib/classmate-1.5.1.jar,
- lib/slf4j-api-1.7.32.jar
+ lib/slf4j-api-1.7.32.jar,
+ lib/j2html-1.6.0.jar
 Bundle-Activator: org.knime.core.ui.CoreUIPlugin
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
 Eclipse-BundleShape: dir

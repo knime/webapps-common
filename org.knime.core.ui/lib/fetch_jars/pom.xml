@@ -48,6 +48,11 @@ xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/
             <artifactId>jsonschema-generator</artifactId>
             <version>4.20.0</version>
         </dependency>
+		<dependency>
+		    <groupId>com.j2html</groupId>
+		    <artifactId>j2html</artifactId>
+		    <version>1.6.0</version>
+		</dependency>
     </dependencies>
 
     <build>
