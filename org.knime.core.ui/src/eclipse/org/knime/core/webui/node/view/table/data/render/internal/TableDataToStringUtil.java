@@ -48,6 +48,13 @@
  */
 package org.knime.core.webui.node.view.table.data.render.internal;
 
+import static j2html.TagCreator.body;
+import static j2html.TagCreator.each;
+import static j2html.TagCreator.html;
+import static j2html.TagCreator.table;
+import static j2html.TagCreator.td;
+import static j2html.TagCreator.tr;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
@@ -79,5 +86,17 @@ public class TableDataToStringUtil {
             }
         }
         return out.toString().stripTrailing();
+    }
+
+    /**
+     *
+     * @param rows the table data
+     * @return the table as HTML string
+     */
+    public static String toHTML(final List<List<String>> rows) {
+        return html(body(table(//
+            each(rows, row -> tr(//
+                each(row, column -> td(column))//
+            ))))).render();
     }
 }

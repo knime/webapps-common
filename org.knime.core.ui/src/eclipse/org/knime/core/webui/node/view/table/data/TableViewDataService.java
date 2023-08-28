@@ -100,6 +100,9 @@ public interface TableViewDataService {
         String[] rendererIds, boolean updateDisplayedColumns, boolean updateTotalSelected,
         boolean forceClearImageDataCache, boolean trimColumns, boolean showOnlySelectedRows);
 
+
+
+    public record HTMLAndCSV(String html, String csv) {}
     /**
      * A method receiving a representation of a selected rectangle of cells in the frontend which is invoked when these
      * are copied.
@@ -113,7 +116,7 @@ public interface TableViewDataService {
      * @return the original content of the cells as spreadsheet-readable formatted String
      * @throws IOException when an I/O error occurs during conversion to csv format.
      */
-    String getCopyContent(boolean withIndices, boolean withRowKeys, String[] dataColumns, int fromIndex, int toIndex)
+    HTMLAndCSV getCopyContent(boolean withIndices, boolean withRowKeys, String[] dataColumns, int fromIndex, int toIndex)
         throws IOException;
 
     /**

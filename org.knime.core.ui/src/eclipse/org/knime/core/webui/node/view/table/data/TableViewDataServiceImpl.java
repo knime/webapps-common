@@ -571,7 +571,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
     }
 
     @Override
-    public String getCopyContent(final boolean withIndices, final boolean withRowKeys, final String[] dataColumns,
+    public HTMLAndCSV getCopyContent(final boolean withIndices, final boolean withRowKeys, final String[] dataColumns,
         final int fromIndex, final int toIndex) throws IOException {
         final var cachedProcessedTable = getCachedProcessedTable();
         final var toBeRenderedTable = cachedProcessedTable.orElseGet(m_tableSupplier);
@@ -580,7 +580,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
             getCopyContentRowRenderer(withIndices, withRowKeys, colIndices, cachedProcessedTable.isEmpty());
         final var tableRenderer = new TableSectionRenderer<String>(rowRenderer, fromIndex, toIndex);
         final var rows = tableRenderer.renderRows(toBeRenderedTable);
-        return TableDataToStringUtil.toCSV(rows);
+        return new HTMLAndCSV(TableDataToStringUtil.toHTML(rows), TableDataToStringUtil.toCSV(rows));
     }
 
     private static RowRenderer<String> getCopyContentRowRenderer(final boolean withIndices, final boolean withRowKeys,
