@@ -71,6 +71,7 @@ import org.knime.core.webui.node.dialog.NodeDialogManagerTest;
 import org.knime.core.webui.node.dialog.NodeDialogTest;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
+import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.SettingsConverter;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.page.Page;
 import org.knime.testing.util.WorkflowManagerUtil;
@@ -123,8 +124,9 @@ public class DefaultNodeDialogTest {
     @BeforeEach
     void createWorkflowAndAddNode() throws IOException {
         m_wfm = WorkflowManagerUtil.createEmptyWorkflow();
-        m_defaultNodeSettingsService = new DefaultNodeSettingsService(
-            Map.of(SettingsType.MODEL, ModelSettings.class, SettingsType.VIEW, ViewSettings.class));
+        final var settingsClasses =
+            Map.of(SettingsType.MODEL, ModelSettings.class, SettingsType.VIEW, ViewSettings.class);
+        m_defaultNodeSettingsService = new DefaultNodeSettingsService(new SettingsConverter(settingsClasses));
         Supplier<NodeDialog> nodeDialogCreator =
             () -> NodeDialogTest.createNodeDialog(Page.builder(() -> "page content", "page.html").build(),
                 m_defaultNodeSettingsService, null);
@@ -240,8 +242,8 @@ public class DefaultNodeDialogTest {
         assertSubNodeSettingsForKey(nodeSettingsToCheck, expectedNodeSettings, "view_variables");
     }
 
-    private static void assertSubNodeSettingsForKey(final NodeSettings test, final NodeSettings expected, final String key)
-        throws InvalidSettingsException {
+    private static void assertSubNodeSettingsForKey(final NodeSettings test, final NodeSettings expected,
+        final String key) throws InvalidSettingsException {
         assertThat(test.getNodeSettings(key)).isEqualTo(expected.getNodeSettings(key));
     }
 

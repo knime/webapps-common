@@ -54,6 +54,7 @@ import java.lang.reflect.Proxy;
 
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.config.base.JSONConfig;
+import org.knime.core.webui.node.dialog.internal.VariableSettings;
 
 /**
  * Instead of implementing the {@link NodeAndVariableSettingsRO}- and {@link NodeAndVariableSettingsWO}-interface and

@@ -48,7 +48,8 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms;
 
-import com.fasterxml.jackson.databind.JsonSerializable;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.util.RawValue;
 
 /**
  * Data service that provides all data that is necessary to generate a <a href="https://jsonforms.io/">JSON Forms</a>
@@ -56,21 +57,21 @@ import com.fasterxml.jackson.databind.JsonSerializable;
  *
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
-interface JsonFormsSettings {
+public interface JsonFormsSettings {
 
     /**
      * @return the dialog's schema content
      */
-    JsonSerializable getSchema();
+    JsonNode getSchema();
 
     /**
      * @return the dialog's UI schema content
      */
-    JsonSerializable getUiSchema();
+    RawValue getUiSchema();
 
     /**
      * @return the dialog's data content
      */
-    JsonSerializable getData();
+    JsonNode getData();
 
 }

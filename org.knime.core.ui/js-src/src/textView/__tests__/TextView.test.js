@@ -69,9 +69,7 @@ describe("TextView.vue", () => {
             richTextContent: "abcdefg",
           },
         },
-        schema: {
-          flowVariablesMap: {},
-        },
+        flowVariableSettings: {},
       };
       await wrapper.vm.onViewSettingsChange({ data });
       expect(wrapper.vm.richTextContent).toStrictEqual(
@@ -90,9 +88,7 @@ describe("TextView.vue", () => {
             richTextContent: '$$["key1"] abc $$["key2"]',
           },
         },
-        schema: {
-          flowVariablesMap: {},
-        },
+        flowVariableSettings: {},
       };
       wrapper.vm.flowVariablesMap = flowVariablesMap;
       await wrapper.vm.onViewSettingsChange({ data });
@@ -112,9 +108,7 @@ describe("TextView.vue", () => {
             richTextContent: "$$[&#34;key1&#34;] abc $$[&#34;key2&#34;]",
           },
         },
-        schema: {
-          flowVariablesMap: {},
-        },
+        flowVariableSettings: {},
       };
       wrapper.vm.flowVariablesMap = flowVariablesMap;
       await wrapper.vm.onViewSettingsChange({ data });
@@ -130,11 +124,9 @@ describe("TextView.vue", () => {
             richTextContent: "abcdefg",
           },
         },
-        schema: {
-          flowVariablesMap: {
-            "view.richTextContent": {
-              controllingFlowVariableAvailable: true,
-            },
+        flowVariableSettings: {
+          "view.richTextContent": {
+            controllingFlowVariableAvailable: true,
           },
         },
       };

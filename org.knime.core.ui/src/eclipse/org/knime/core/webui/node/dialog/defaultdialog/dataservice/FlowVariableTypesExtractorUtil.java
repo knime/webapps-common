@@ -44,67 +44,49 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 13, 2023 (hornm): created
+ *   Aug 18, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.view.table.data;
+package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
-import static org.knime.testing.util.TableTestUtil.assertTableResults;
-import static org.knime.testing.util.TableTestUtil.getExec;
+import java.util.LinkedList;
+import java.util.List;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.knime.core.data.def.IntCell;
-import org.knime.core.data.def.StringCell;
-import org.knime.core.webui.data.DataServiceContextTest;
-import org.knime.testing.util.TableTestUtil;
-import org.knime.testing.util.TableTestUtil.ObjectColumn;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.node.workflow.VariableType;
+import org.knime.core.node.workflow.VariableTypeRegistry;
 
 /**
- * Tests {@link TableWithIndicesSupplier}.
+ * Used to extract the possible types of flow variables from text settings given a node settings service. These text
+ * settings come from the front-end and it is necessary to depend on them since the possible flow variables are defined
+ * by the {@link NodeSettings} they would be persisted to.
  *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Paul Bärnreuther
  */
-class TableWithIndicesSupplierTest {
+final class FlowVariableTypesExtractorUtil {
 
-    @BeforeEach
-    void initDataServiceContext() {
-        DataServiceContextTest.initDataServiceContext(() -> getExec(), null);
+    private FlowVariableTypesExtractorUtil() {
+        // Utility class
     }
 
-    @AfterEach
-    void removeDataServiceContext() {
-        DataServiceContextTest.removeDataServiceContext();
+    static VariableType<?>[] getTypes(final NodeSettings nodeSettings, final LinkedList<String> path)
+        throws InvalidSettingsException {
+        final var configKey = path.pollLast();
+        final var fieldNodeSetting = atPath(nodeSettings, path);
+        return getTypes(fieldNodeSetting, configKey);
     }
 
-    @Test
-    void testIndicesAreAppended() throws Exception {
-        final var stringColumnContent = new String[]{"A", "B"};
-        final var intColumnContent = new Integer[]{1, 3};
-        final var inputTable = TableTestUtil.createTableFromColumns( //
-            new ObjectColumn("col1", StringCell.TYPE, stringColumnContent), //
-            new ObjectColumn("col2", IntCell.TYPE, intColumnContent) //
-        );
-
-        var tableWithIndicesSupplier = new TableWithIndicesSupplier(() -> inputTable);
-
-        assertTableResults(tableWithIndicesSupplier.get(), new String[]{"Long", "String", "Integer"},
-            new Object[][]{{1l, 2l}, stringColumnContent, intColumnContent});
+    private static NodeSettings atPath(final NodeSettings nodeSettings, final List<String> path)
+        throws InvalidSettingsException {
+        var nodeSettingsAtPath = nodeSettings;
+        for (var key : path) {
+            nodeSettingsAtPath = nodeSettingsAtPath.getNodeSettings(key);
+        }
+        return nodeSettingsAtPath;
     }
 
-    @Test
-    void testIndexColumnAdjustsName() throws Exception {
-        final var stringColumnContent = new String[]{"A", "B"};
-        final var intColumnContent = new Integer[]{1, 3};
-        final var inputTable = TableTestUtil.createTableFromColumns( //
-            new ObjectColumn("<index>", StringCell.TYPE, stringColumnContent), //
-            new ObjectColumn("<index>(1)", IntCell.TYPE, intColumnContent) //
-        );
-
-        var tableWithIndicesSupplier = new TableWithIndicesSupplier(() -> inputTable);
-
-        assertTableResults(tableWithIndicesSupplier.get(), new String[]{"Long", "String", "Integer"},
-            new Object[][]{{1l, 2l}, stringColumnContent, intColumnContent});
+    private static VariableType<?>[] getTypes(final NodeSettings nodeSettings, final String configKey) {
+        return VariableTypeRegistry.getInstance().getOverwritingTypes(nodeSettings, configKey);
     }
 
 }

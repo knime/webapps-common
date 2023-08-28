@@ -44,62 +44,54 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Aug 18, 2023 (Paul Bärnreuther): created
+ *   Aug 30, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
+package org.knime.core.webui.node.dialog.defaultdialog.settingsconversion;
 
-import java.util.List;
+import static java.util.stream.Collectors.toMap;
+
 import java.util.Map;
-
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettings;
-import org.knime.core.node.workflow.VariableType;
-import org.knime.core.node.workflow.VariableTypeRegistry;
-import org.knime.core.webui.node.dialog.NodeSettingsService;
-import org.knime.core.webui.node.dialog.SettingsType;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
- * Used to extract the possible types of flow variables from text settings given a node settings service. These text
- * settings come from the front-end and it is necessary to depend on them since the possible flow variables are defined
- * by the {@link NodeSettings} they would be persisted to.
+ * A utility class existing because it is tedious in java to perform even simple operations on the values of maps.
  *
  * @author Paul Bärnreuther
  */
-class FlowVariableTypesExtractor {
+public final class MapValuesUtil {
 
-    private final NodeSettingsService m_nodeSettingsService;
-
-    private final VariableTypeRegistry m_valueTypeReqistry;
-
-    FlowVariableTypesExtractor(final NodeSettingsService nodeSettingsService) {
-        m_nodeSettingsService = nodeSettingsService;
-        m_valueTypeReqistry = VariableTypeRegistry.getInstance();
+    private MapValuesUtil() {
+        // Utility class
     }
 
-    VariableType<?>[] getTypes(final SettingsType settingsType, final List<String> path, final String configKey,
-        final String textSettings) throws InvalidSettingsException {
-        final var nodeSettings = toNodeSettings(settingsType, textSettings);
-        final var fieldNodeSetting = atPath(nodeSettings, path);
-        return getTypes(fieldNodeSetting, configKey);
+    /**
+     * Utility method for mapping the values of a {@link Map}.
+     *
+     * @param <K> keys
+     * @param <V1> values before mapping
+     * @param <V2> values after mapping
+     * @param map the map the mapping should be applied to
+     * @param mapping to be applied to the values
+     * @return a new map with the same keys and mapped values
+     */
+    public static <K, V1, V2> Map<K, V2> mapValues(final Map<K, V1> map, final Function<V1, V2> mapping) {
+        return mapValuesWithKeys(map, (key, value) -> mapping.apply(value));
     }
 
-    private NodeSettings toNodeSettings(final SettingsType settingsType, final String textSettings) {
-        final var nodeSettings = new NodeSettings("current_dialog_settings");
-        m_nodeSettingsService.toNodeSettings(textSettings, Map.of(settingsType, nodeSettings));
-        return nodeSettings;
-    }
-
-    private static NodeSettings atPath(final NodeSettings nodeSettings, final List<String> path)
-        throws InvalidSettingsException {
-        var nodeSettingsAtPath = nodeSettings;
-        for (var key : path) {
-            nodeSettingsAtPath = nodeSettingsAtPath.getNodeSettings(key);
-        }
-        return nodeSettingsAtPath;
-    }
-
-    private VariableType<?>[] getTypes(final NodeSettings nodeSettings, final String configKey) {
-        return m_valueTypeReqistry.getOverwritingTypes(nodeSettings, configKey);
+    /**
+     * Utility method for mapping the values of a {@link Map}.
+     *
+     * @param <K> keys
+     * @param <V1> values before mapping
+     * @param <V2> values after mapping
+     * @param map the map the mapping should be applied to
+     * @param mapping defining the new values from key and old value
+     * @return a new map with the same keys and mapped values
+     */
+    public static <K, V1, V2> Map<K, V2> mapValuesWithKeys(final Map<K, V1> map, final BiFunction<K, V1, V2> mapping) {
+        return map.entrySet().stream()//
+            .collect(toMap(Map.Entry::getKey, e -> mapping.apply(e.getKey(), e.getValue())));
     }
 
 }

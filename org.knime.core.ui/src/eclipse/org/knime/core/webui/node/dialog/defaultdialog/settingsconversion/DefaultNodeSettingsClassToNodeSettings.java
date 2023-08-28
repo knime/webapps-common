@@ -44,67 +44,42 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 13, 2023 (hornm): created
+ *   Aug 30, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.view.table.data;
+package org.knime.core.webui.node.dialog.defaultdialog.settingsconversion;
 
-import static org.knime.testing.util.TableTestUtil.assertTableResults;
-import static org.knime.testing.util.TableTestUtil.getExec;
+import java.util.Map;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.knime.core.data.def.IntCell;
-import org.knime.core.data.def.StringCell;
-import org.knime.core.webui.data.DataServiceContextTest;
-import org.knime.testing.util.TableTestUtil;
-import org.knime.testing.util.TableTestUtil.ObjectColumn;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 
 /**
- * Tests {@link TableWithIndicesSupplier}.
+ * This class is used to construct new {@link NodeSettings} to initialize them. For this the constructor of the given
+ * {@link DefaultNodeSettings} classes is called with the given context.
  *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Paul Bärnreuther
  */
-class TableWithIndicesSupplierTest {
+public final class DefaultNodeSettingsClassToNodeSettings extends ToNodeSettings<Void> {
 
-    @BeforeEach
-    void initDataServiceContext() {
-        DataServiceContextTest.initDataServiceContext(() -> getExec(), null);
+    private final DefaultNodeSettingsContext m_context;
+
+    DefaultNodeSettingsClassToNodeSettings(final DefaultNodeSettingsContext context,
+        final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses) {
+        super(settingsClasses);
+        m_context = context;
     }
 
-    @AfterEach
-    void removeDataServiceContext() {
-        DataServiceContextTest.removeDataServiceContext();
+    @Override
+    protected DefaultNodeSettings constructDefaultNodeSettings(final Void _input,
+        final Class<? extends DefaultNodeSettings> settingsClass) {
+        return DefaultNodeSettings.createSettings(settingsClass, m_context);
     }
 
-    @Test
-    void testIndicesAreAppended() throws Exception {
-        final var stringColumnContent = new String[]{"A", "B"};
-        final var intColumnContent = new Integer[]{1, 3};
-        final var inputTable = TableTestUtil.createTableFromColumns( //
-            new ObjectColumn("col1", StringCell.TYPE, stringColumnContent), //
-            new ObjectColumn("col2", IntCell.TYPE, intColumnContent) //
-        );
-
-        var tableWithIndicesSupplier = new TableWithIndicesSupplier(() -> inputTable);
-
-        assertTableResults(tableWithIndicesSupplier.get(), new String[]{"Long", "String", "Integer"},
-            new Object[][]{{1l, 2l}, stringColumnContent, intColumnContent});
-    }
-
-    @Test
-    void testIndexColumnAdjustsName() throws Exception {
-        final var stringColumnContent = new String[]{"A", "B"};
-        final var intColumnContent = new Integer[]{1, 3};
-        final var inputTable = TableTestUtil.createTableFromColumns( //
-            new ObjectColumn("<index>", StringCell.TYPE, stringColumnContent), //
-            new ObjectColumn("<index>(1)", IntCell.TYPE, intColumnContent) //
-        );
-
-        var tableWithIndicesSupplier = new TableWithIndicesSupplier(() -> inputTable);
-
-        assertTableResults(tableWithIndicesSupplier.get(), new String[]{"Long", "String", "Integer"},
-            new Object[][]{{1l, 2l}, stringColumnContent, intColumnContent});
+    void saveDefaultNodeSetting(final Map<SettingsType, NodeSettingsWO> nodeSettings) {
+        toNodeSettings(null, nodeSettings);
     }
 
 }

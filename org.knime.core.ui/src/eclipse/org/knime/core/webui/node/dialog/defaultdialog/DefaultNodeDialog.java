@@ -61,6 +61,7 @@ import org.knime.core.webui.node.dialog.NodeDialogAdapter;
 import org.knime.core.webui.node.dialog.NodeSettingsService;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DefaultNodeDialogDataServiceImpl;
+import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.SettingsConverter;
 import org.knime.core.webui.page.Page;
 
 /**
@@ -86,6 +87,8 @@ public final class DefaultNodeDialog implements NodeDialog {
 
     private final OnApplyNodeModifier m_onApplyModifier;
 
+    private final SettingsConverter m_settingsConverter;
+
     /**
      * Creates a new instance.
      *
@@ -96,7 +99,9 @@ public final class DefaultNodeDialog implements NodeDialog {
         final Class<? extends DefaultNodeSettings> settingsClass) {
         m_settingsTypes = Set.of(settingsType);
         m_settingsClasses = List.of(settingsClass);
-        m_settingsDataService = new DefaultNodeSettingsService(Map.of(settingsType, settingsClass));
+        m_settingsConverter =
+                new SettingsConverter(Map.of(settingsType, settingsClass));
+        m_settingsDataService = new DefaultNodeSettingsService(m_settingsConverter);
         m_onApplyModifier = null;
     }
 
@@ -130,8 +135,9 @@ public final class DefaultNodeDialog implements NodeDialog {
         final Class<? extends DefaultNodeSettings> settingsClass2, final OnApplyNodeModifier onApplyModifier) {
         m_settingsTypes = Set.of(settingsType1, settingsType2);
         m_settingsClasses = List.of(settingsClass1, settingsClass2);
-        m_settingsDataService =
-            new DefaultNodeSettingsService(Map.of(settingsType1, settingsClass1, settingsType2, settingsClass2));
+        m_settingsConverter =
+            new SettingsConverter(Map.of(settingsType1, settingsClass1, settingsType2, settingsClass2));
+        m_settingsDataService = new DefaultNodeSettingsService(m_settingsConverter);
         m_onApplyModifier = onApplyModifier;
     }
 
@@ -147,8 +153,7 @@ public final class DefaultNodeDialog implements NodeDialog {
 
     @Override
     public Optional<RpcDataService> createRpcDataService() {
-        final var dataService =
-            new DefaultNodeDialogDataServiceImpl(m_settingsClasses, m_settingsDataService::getCreationContext, m_settingsDataService);
+        final var dataService = new DefaultNodeDialogDataServiceImpl(m_settingsClasses, m_settingsConverter);
         return Optional.ofNullable(RpcDataService.builder(dataService).build());
     }
 

@@ -46,7 +46,7 @@
  * History
  *   Mar 23, 2022 (hornm): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog;
+package org.knime.core.webui.node.dialog.defaultdialog.settingsconversion;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -68,7 +68,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-final class VariableSettingsUtil {
+public final class VariableSettingsUtil {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(VariableSettingsUtil.class);
 
@@ -79,23 +79,20 @@ final class VariableSettingsUtil {
     /**
      * Serializes variable settings trees in to a json-object.
      *
-     * @param modelVariableSettings the model variable settings, or {@code null}
-     * @param viewVariableSettings the view variable settings or {@code null}
+     * @param variableSettings the map of model and/or view variable settings
      * @param availableFlowVariableNames
      * @param mapper the mapper used to create the resulting {@link JsonNode}s
      * @return a new JsonNode-instance
      */
-    static JsonNode fromVariableSettingsToJson(final VariableSettingsRO modelVariableSettings,
-        final VariableSettingsRO viewVariableSettings, final Set<String> availableFlowVariableNames,
-        final ObjectMapper mapper) {
+    public static JsonNode fromVariableSettingsToJson(final Map<SettingsType, VariableSettingsRO> variableSettings,
+        final Set<String> availableFlowVariableNames, final ObjectMapper mapper) {
         var flowVariableSettingsMap = new HashMap<String, FlowVariableSetting>();
-        if (modelVariableSettings != null) {
-            addToFlowVariableSettingsMap(SettingsType.MODEL.getConfigKey(), modelVariableSettings,
-                availableFlowVariableNames, flowVariableSettingsMap);
-        }
-        if (viewVariableSettings != null) {
-            addToFlowVariableSettingsMap(SettingsType.VIEW.getConfigKey(), viewVariableSettings,
-                availableFlowVariableNames, flowVariableSettingsMap);
+        for (SettingsType settingsType : SettingsType.values()) {
+            final var settings = variableSettings.get(settingsType);
+            if (settings != null) {
+                addToFlowVariableSettingsMap(settingsType.getConfigKey(), settings, availableFlowVariableNames,
+                    flowVariableSettingsMap);
+            }
         }
         return mapper.valueToTree(flowVariableSettingsMap);
     }
@@ -134,12 +131,11 @@ final class VariableSettingsUtil {
      * Writes the info represented by a {@link JsonNode} into {@link VariableSettingsRO}-instances.
      *
      * @param json
-     * @param modelVariableSettings
-     * @param viewVariableSettings
+     * @param variableSettings
      * @param mapper
      */
-    static void fromJsonToVariableSettings(final JsonNode json, final VariableSettingsWO modelVariableSettings,
-        final VariableSettingsWO viewVariableSettings, final ObjectMapper mapper) {
+    public static void fromJsonToVariableSettings(final JsonNode json,
+        final Map<SettingsType, VariableSettingsWO> variableSettings, final ObjectMapper mapper) {
         if (json == null) {
             return;
         }
@@ -149,17 +145,22 @@ final class VariableSettingsUtil {
             var flowVariableSetting = mapper.convertValue(node, FlowVariableSetting.class);
             var keys = compositeKey.split("\\.");
 
-            var nestedVariableSettings = keys[0].equals("model") ? modelVariableSettings : viewVariableSettings;
-            try {
-                for (int i = 1; i < keys.length - 1; i++) {
-                    nestedVariableSettings = nestedVariableSettings.getOrCreateVariableSettings(keys[i]);
+            for (SettingsType settingsType : variableSettings.keySet()) {
+                if (!settingsType.getConfigKey().equals(keys[0])) {
+                    continue;
                 }
-                nestedVariableSettings.addUsedVariable(keys[keys.length - 1],
-                    flowVariableSetting.getControllingFlowVariableName());
-                nestedVariableSettings.addExposedVariable(keys[keys.length - 1],
-                    flowVariableSetting.getExposedFlowVariableName());
-            } catch (InvalidSettingsException ex) {
-                NodeLogger.getLogger(VariableSettingsUtil.class).warn("Failed to read flow variable settings from json", ex);
+                var nestedVariableSettings = variableSettings.get(settingsType);
+                try {
+                    for (int i = 1; i < keys.length - 1; i++) {
+                        nestedVariableSettings = nestedVariableSettings.getOrCreateVariableSettings(keys[i]);
+                    }
+                    nestedVariableSettings.addUsedVariable(keys[keys.length - 1],
+                        flowVariableSetting.getControllingFlowVariableName());
+                    nestedVariableSettings.addExposedVariable(keys[keys.length - 1],
+                        flowVariableSetting.getExposedFlowVariableName());
+                } catch (InvalidSettingsException ex) {
+                    NodeLogger.getLogger(VariableSettingsUtil.class).warn("Failed to read flow variable settings from json", ex);
+                }
             }
         });
     }
@@ -180,8 +181,8 @@ final class VariableSettingsUtil {
             m_exposedFlowVariableName = exposedFlowVariableName;
         }
 
-        private FlowVariableSetting(final String controllingFlowVariableName, final boolean isControllingFlowVariableAvailable,
-            final String exposedFlowVariableName) {
+        private FlowVariableSetting(final String controllingFlowVariableName,
+            final boolean isControllingFlowVariableAvailable, final String exposedFlowVariableName) {
             m_controllingFlowVariableName = controllingFlowVariableName;
             m_isControllingFlowVariableAvailable = isControllingFlowVariableAvailable;
             m_exposedFlowVariableName = exposedFlowVariableName;

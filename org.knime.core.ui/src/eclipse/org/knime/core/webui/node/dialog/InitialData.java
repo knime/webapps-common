@@ -48,7 +48,8 @@
  */
 package org.knime.core.webui.node.dialog;
 
-import java.util.Arrays;
+import static org.knime.core.webui.data.InputSpecsSupplier.getInputSpecsExcludingVariablePort;
+
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Set;
@@ -59,7 +60,7 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContext;
-import org.knime.core.node.workflow.NodeOutPort;
+import org.knime.core.webui.node.dialog.internal.VariableSettings;
 
 /**
  * Helper to assemble the initial-data object for node dialogs (which encompasses a representation of the model and view
@@ -83,9 +84,7 @@ final class InitialData {
     }
 
     String get() {
-        var rawSpecs = getInputSpecs(m_nc);
-        // copy input port object specs, ignoring the 0-variable port:
-        final var specs = Arrays.copyOfRange(rawSpecs, 1, rawSpecs.length);
+        var specs = getInputSpecsExcludingVariablePort(m_nc);
 
         NodeContext.pushContext(m_nc);
         try {
@@ -96,22 +95,6 @@ final class InitialData {
         } finally {
             NodeContext.removeLastContext();
         }
-    }
-
-    private static PortObjectSpec[] getInputSpecs(final NodeContainer nc) {
-        final var rawSpecs = new PortObjectSpec[nc.getNrInPorts()];
-        final var wfm = nc.getParent();
-        for (var cc : wfm.getIncomingConnectionsFor(nc.getID())) {
-            var sourceId = cc.getSource();
-            NodeOutPort outPort;
-            if (sourceId.equals(wfm.getID())) {
-                outPort = wfm.getWorkflowIncomingPort(cc.getSourcePort());
-            } else {
-                outPort = wfm.getNodeContainer(sourceId).getOutPort(cc.getSourcePort());
-            }
-            rawSpecs[cc.getDestPort()] = outPort.getPortObjectSpec();
-        }
-        return rawSpecs;
     }
 
     private void getSettings(final SettingsType settingsType, final PortObjectSpec[] specs,

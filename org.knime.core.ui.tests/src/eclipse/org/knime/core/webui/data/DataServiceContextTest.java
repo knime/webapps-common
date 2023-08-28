@@ -56,11 +56,13 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
+import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.webui.node.NodeWrapper;
@@ -150,9 +152,10 @@ public class DataServiceContextTest {
      * Helper to init the data service context for the current thread.
      *
      * @param execSupplier
+     * @param inputSpecsSupplier
      */
-    public static void initDataServiceContext(final Supplier<ExecutionContext> execSupplier) {
-        DataServiceContext.init(execSupplier);
+    public static void initDataServiceContext(final Supplier<ExecutionContext> execSupplier, final LazyInitializer<PortObjectSpec[]> inputSpecsSupplier) {
+        DataServiceContext.init(execSupplier, inputSpecsSupplier);
     }
 
     /**

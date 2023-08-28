@@ -43,7 +43,7 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  */
-package org.knime.core.webui.node.dialog;
+package org.knime.core.webui.node.dialog.internal;
 
 import java.util.List;
 import java.util.Optional;
@@ -51,6 +51,9 @@ import java.util.function.Supplier;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.VariableSettingsRO;
+import org.knime.core.webui.node.dialog.VariableSettingsWO;
 
 /**
  * An implementation of {@link VariableSettingsWO} that only adds the settings for the variables to the node settings if
@@ -59,7 +62,7 @@ import org.knime.core.node.NodeSettings;
  * @author Benjamin Wilhelm, KNIME GmbH, Konstanz, Germany
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-final class VariableSettings implements VariableSettingsWO, VariableSettingsRO {
+public final class VariableSettings implements VariableSettingsWO, VariableSettingsRO {
 
     // See org.knime.core.node.config.ConfigEditTreeModel#CURRENT_VERSION
     private static final String CURRENT_VERSION = "V_2019_09_13";
@@ -78,7 +81,13 @@ final class VariableSettings implements VariableSettingsWO, VariableSettingsRO {
 
     private final NodeSettings m_nodeSettings;
 
-    VariableSettings(final NodeSettings nodeSettings, final SettingsType type) {
+    /**
+     * Internal use only
+     * @param nodeSettings
+     * @param type
+     * @throws InvalidSettingsException
+     */
+    public VariableSettings(final NodeSettings nodeSettings, final SettingsType type) {
         m_nodeSettings = getNodeSettingsForType(type, nodeSettings);
 
         m_variableSettingsCreator = () -> {
@@ -106,14 +115,19 @@ final class VariableSettings implements VariableSettingsWO, VariableSettingsRO {
         }
     }
 
-    VariableSettings(final NodeSettings variableSettings, final NodeSettings nodeSettings) {
+    /**
+     * Internal use only
+     * @param variableSettings
+     * @param nodeSettings
+     */
+    public VariableSettings(final NodeSettings variableSettings, final NodeSettings nodeSettings) {
         m_nodeSettings = nodeSettings;
         m_variableSettingsCreator = null;
         m_variableSettingsGetter = () -> variableSettings;
         m_cachedVariableSettings = variableSettings;
     }
 
-    private Optional<NodeSettings> getVariableSettings() {
+    public Optional<NodeSettings> getVariableSettings() {
         return Optional.ofNullable(m_variableSettingsGetter.get());
     }
 

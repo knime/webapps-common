@@ -44,67 +44,59 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 13, 2023 (hornm): created
+ *   Aug 30, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.view.table.data;
+package org.knime.core.webui.node.dialog.defaultdialog.settingsconversion;
 
-import static org.knime.testing.util.TableTestUtil.assertTableResults;
-import static org.knime.testing.util.TableTestUtil.getExec;
+import static org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.MapValuesUtil.mapValuesWithKeys;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.knime.core.data.def.IntCell;
-import org.knime.core.data.def.StringCell;
-import org.knime.core.webui.data.DataServiceContextTest;
-import org.knime.testing.util.TableTestUtil;
-import org.knime.testing.util.TableTestUtil.ObjectColumn;
+import java.util.Map;
+
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeLogger;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsSettingsImpl;
 
 /**
- * Tests {@link TableWithIndicesSupplier}.
+ * This class can be used to transform {@link NodeSettings} first to {@link DefaultNodeSettings} and then further to
+ * {@link JsonFormsSettings}. If the first step of this transformation fails, new {@link DefaultNodeSettings} are
+ * constructed instead.
  *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Paul Bärnreuther
  */
-class TableWithIndicesSupplierTest {
+final class NodeSettingsToJsonFormsSettings {
 
-    @BeforeEach
-    void initDataServiceContext() {
-        DataServiceContextTest.initDataServiceContext(() -> getExec(), null);
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(NodeSettingsToJsonFormsSettings.class);
+
+    private final DefaultNodeSettingsContext m_context;
+
+    private final Map<SettingsType, Class<? extends DefaultNodeSettings>> m_settingsClasses;
+
+    NodeSettingsToJsonFormsSettings(final DefaultNodeSettingsContext context,
+        final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses) {
+        m_settingsClasses = settingsClasses;
+        m_context = context;
     }
 
-    @AfterEach
-    void removeDataServiceContext() {
-        DataServiceContextTest.removeDataServiceContext();
+    JsonFormsSettings nodeSettingsToJsonFormsSettings(final Map<SettingsType, NodeSettingsRO> settings) {
+        final var loadedSettings = mapValuesWithKeys(settings, this::fromNodeSettingsToDefaultNodeSettings);
+        return new JsonFormsSettingsImpl(loadedSettings, m_context);
     }
 
-    @Test
-    void testIndicesAreAppended() throws Exception {
-        final var stringColumnContent = new String[]{"A", "B"};
-        final var intColumnContent = new Integer[]{1, 3};
-        final var inputTable = TableTestUtil.createTableFromColumns( //
-            new ObjectColumn("col1", StringCell.TYPE, stringColumnContent), //
-            new ObjectColumn("col2", IntCell.TYPE, intColumnContent) //
-        );
-
-        var tableWithIndicesSupplier = new TableWithIndicesSupplier(() -> inputTable);
-
-        assertTableResults(tableWithIndicesSupplier.get(), new String[]{"Long", "String", "Integer"},
-            new Object[][]{{1l, 2l}, stringColumnContent, intColumnContent});
-    }
-
-    @Test
-    void testIndexColumnAdjustsName() throws Exception {
-        final var stringColumnContent = new String[]{"A", "B"};
-        final var intColumnContent = new Integer[]{1, 3};
-        final var inputTable = TableTestUtil.createTableFromColumns( //
-            new ObjectColumn("<index>", StringCell.TYPE, stringColumnContent), //
-            new ObjectColumn("<index>(1)", IntCell.TYPE, intColumnContent) //
-        );
-
-        var tableWithIndicesSupplier = new TableWithIndicesSupplier(() -> inputTable);
-
-        assertTableResults(tableWithIndicesSupplier.get(), new String[]{"Long", "String", "Integer"},
-            new Object[][]{{1l, 2l}, stringColumnContent, intColumnContent});
+    private DefaultNodeSettings fromNodeSettingsToDefaultNodeSettings(final SettingsType type,
+        final NodeSettingsRO nodeSettings) {
+        try {
+            return DefaultNodeSettings.loadSettings(nodeSettings, m_settingsClasses.get(type));
+        } catch (InvalidSettingsException ex) {
+            LOGGER.error(String.format("Failed to load settings ('%s'). New settings are created for the dialog.",
+                ex.getMessage()), ex);
+            return DefaultNodeSettings.createSettings(m_settingsClasses.get(type), m_context);
+        }
     }
 
 }

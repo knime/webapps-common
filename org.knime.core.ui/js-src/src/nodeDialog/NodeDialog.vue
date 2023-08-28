@@ -72,6 +72,10 @@ export default {
         flowVariableSettings: this.schema.flowVariablesMap,
       };
     },
+    publishData() {
+      const publishedData = cloneDeep(this.getData());
+      this.jsonDataService.publishData(publishedData);
+    },
     setOriginalModelSettings(data) {
       this.originalModelSettings = this.getModelSettings(data);
     },
@@ -138,11 +142,7 @@ export default {
         }
         // TODO: UIEXT-236 Move to dialog service
         if (!this.dirtyModelSettings) {
-          const publishedData = cloneDeep({
-            data,
-            schema: this.schema,
-          });
-          this.jsonDataService.publishData(publishedData);
+          this.publishData();
         }
       }
     },

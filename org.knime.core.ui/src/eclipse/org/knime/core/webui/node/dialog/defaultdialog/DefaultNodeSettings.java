@@ -354,7 +354,7 @@ public interface DefaultNodeSettings extends PersistableSettings {
     /**
      * Helper to create a new {@link DefaultNodeSettings} of the specified type.
      *
-     * @param <S>
+     * @param <S> the type of DefaultNodeSettings
      * @param clazz default node settings class
      * @param specs the specs with which to create the settings. NOTE: can contain {@code null} values, e.g., if input
      *            port is not connected
@@ -362,6 +362,19 @@ public interface DefaultNodeSettings extends PersistableSettings {
      */
     static <S extends DefaultNodeSettings> S createSettings(final Class<S> clazz, final PortObjectSpec[] specs) {
         return InstantiationUtil.createDefaultNodeSettings(clazz, createDefaultNodeSettingsContext(specs));
+    }
+
+    /**
+     * Helper to create a new {@link DefaultNodeSettings} of the specified type.
+     *
+     * @param <S> the type of DefaultNodeSettings
+     * @param clazz default node settings class
+     * @param context the {@link DefaultNodeSettingsContext} to be used as constructor argument
+     * @return a new {@link DefaultNodeSettings}-instance
+     */
+    static <S extends DefaultNodeSettings> S createSettings(final Class<S> clazz,
+        final DefaultNodeSettingsContext context) {
+        return InstantiationUtil.createDefaultNodeSettings(clazz, context);
     }
 
     /**

@@ -53,6 +53,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.webui.data.rpc.RpcServer;
 import org.knime.core.webui.data.rpc.RpcServerManager;
 import org.knime.core.webui.data.rpc.json.impl.JsonRpcSingleServer;
@@ -95,6 +96,7 @@ public final class RpcDataService implements DataService {
      */
     public String handleRpcRequest(final String request) {
         try {
+            NodeContext.pushContext(m_nc);
             DataServiceContext.init(m_nc);
             final var response = RpcServerManager.doRpc(m_rpcServer, request);
             // We have to get the DataServiceContext again here, since the context may have changed since (or as a
@@ -112,6 +114,7 @@ public final class RpcDataService implements DataService {
             throw new IllegalStateException("A problem occurred while making a rpc call.", ex);
         } finally {
             DataServiceContext.remove();
+            NodeContext.removeLastContext();
         }
     }
 

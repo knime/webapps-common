@@ -62,6 +62,7 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.webui.node.dialog.NodeDialog.OnApplyNodeModifier;
+import org.knime.core.webui.node.dialog.internal.VariableSettings;
 import org.knime.core.webui.node.view.NodeViewManager;
 
 /**

@@ -40,7 +40,7 @@ export default {
     onViewSettingsChange(event) {
       // TODO: Can be removed once we have frontend sanitization
       if (
-        event.data.schema.flowVariablesMap["view.richTextContent"]
+        event.data.flowVariableSettings["view.richTextContent"]
           ?.controllingFlowVariableAvailable
       ) {
         return;

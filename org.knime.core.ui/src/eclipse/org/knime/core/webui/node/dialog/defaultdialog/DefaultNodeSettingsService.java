@@ -48,17 +48,13 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog;
 
-import static java.util.stream.Collectors.toMap;
-import static org.knime.core.webui.node.dialog.defaultdialog.VariableSettingsUtil.fromJsonToVariableSettings;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.FIELD_NAME_DATA;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.FIELD_NAME_SCHEMA;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.FIELD_NAME_UI_SCHEMA;
+import static org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.MapValuesUtil.mapValues;
 
 import java.util.Map;
-import java.util.Set;
 
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObjectSpec;
@@ -66,9 +62,9 @@ import org.knime.core.webui.node.dialog.NodeAndVariableSettingsRO;
 import org.knime.core.webui.node.dialog.NodeAndVariableSettingsWO;
 import org.knime.core.webui.node.dialog.NodeSettingsService;
 import org.knime.core.webui.node.dialog.SettingsType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsSettingsImpl;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.SettingsConverter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -83,62 +79,38 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 final class DefaultNodeSettingsService implements NodeSettingsService {
 
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(DefaultNodeSettingsService.class);
-
-    private static final String FLOW_VARIABLE_SETTINGS_KEY = "flowVariableSettings";
-
-    private final Map<SettingsType, Class<? extends DefaultNodeSettings>> m_settingsClasses;
-
-    private DefaultNodeSettingsContext m_creationContext;
+    private final SettingsConverter m_converter;
 
     /**
-     * @param settingsClasses map that associates a {@link DefaultNodeSettings} class-with a {@link SettingsType}
+     * @param converter map that associates a {@link DefaultNodeSettings} class-with a {@link SettingsType}
      */
-    public DefaultNodeSettingsService(final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses) {
-        m_settingsClasses = settingsClasses;
+    public DefaultNodeSettingsService(final SettingsConverter converter) {
+        m_converter = converter;
     }
 
     @Override
     public void toNodeSettings(final String textSettings, final Map<SettingsType, NodeAndVariableSettingsWO> settings) {
-        try {
-            var mapper = JsonFormsDataUtil.getMapper();
-            final var root = (ObjectNode)mapper.readTree(textSettings);
-            var data = root.get(FIELD_NAME_DATA);
-            fromJsonToNodeSettings(data, SettingsType.MODEL, settings);
-            fromJsonToNodeSettings(data, SettingsType.VIEW, settings);
-            fromJsonToVariableSettings(root.get(FLOW_VARIABLE_SETTINGS_KEY), settings.get(SettingsType.MODEL),
-                settings.get(SettingsType.VIEW), mapper);
-        } catch (JsonProcessingException e) {
-            throw new IllegalStateException(
-                String.format("Exception when writing data to node settings: %s", e.getMessage()), e);
-        }
-    }
-
-    private void fromJsonToNodeSettings(final JsonNode rootNode, final SettingsType settingsType,
-        final Map<SettingsType, NodeAndVariableSettingsWO> settings) {
-        if (settings.containsKey(settingsType)) {
-            final var node = rootNode.get(settingsType.getConfigKey());
-            var settingsClass = m_settingsClasses.get(settingsType);
-            var settingsObj = JsonFormsDataUtil.toDefaultNodeSettings(node, settingsClass);
-            DefaultNodeSettings.saveSettings(settingsClass, settingsObj, settings.get(settingsType));
-        }
+        m_converter.textSettingsToNodeAndVariableSettings(textSettings, settings);
     }
 
     @Override
     public String fromNodeSettings(final Map<SettingsType, NodeAndVariableSettingsRO> settings,
         final PortObjectSpec[] specs) {
-        m_creationContext = DefaultNodeSettings.createDefaultNodeSettingsContext(specs);
-        var loadedSettings = settings.entrySet().stream()//
-            .collect(toMap(Map.Entry::getKey, e -> loadSettings(settings, e.getKey(), specs)));
-        final var jsonFormsSettings = new JsonFormsSettingsImpl(loadedSettings, m_creationContext);
+        var context = DefaultNodeSettings.createDefaultNodeSettingsContext(specs);
+        final var jsonFormsSettings = m_converter.nodeSettingsToJsonFormsSettings(mapValues(settings, v -> v), context);
+        final var flowVariablesMapJsonObject =
+            m_converter.variableSettingsToJsonObject(mapValues(settings, v -> v), context);
+        return toString(jsonFormsSettings, flowVariablesMapJsonObject);
+    }
+
+    private static String toString(final JsonFormsSettings jsonFormsSettings,
+        final ObjectNode flowVariablesMapJsonObject) {
         final var mapper = JsonFormsDataUtil.getMapper();
         final var root = mapper.createObjectNode();
         root.set(FIELD_NAME_DATA, jsonFormsSettings.getData());
         root.set(FIELD_NAME_SCHEMA, jsonFormsSettings.getSchema());
         root.putRawValue(FIELD_NAME_UI_SCHEMA, jsonFormsSettings.getUiSchema());
-        root.set(FLOW_VARIABLE_SETTINGS_KEY,
-            VariableSettingsUtil.fromVariableSettingsToJson(settings.get(SettingsType.MODEL),
-                settings.get(SettingsType.VIEW), Set.of(m_creationContext.getAvailableFlowVariableNames()), mapper));
+        root.setAll(flowVariablesMapJsonObject);
         try {
             return mapper.writeValueAsString(root);
         } catch (JsonProcessingException e) {
@@ -147,41 +119,10 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
         }
     }
 
-    DefaultNodeSettingsContext getCreationContext() {
-        return m_creationContext;
-    }
-
-    private DefaultNodeSettings loadSettings(final Map<SettingsType, NodeAndVariableSettingsRO> nodeSettings,
-        final SettingsType settingsType, final PortObjectSpec[] specs) {
-        var settingsClass = m_settingsClasses.get(settingsType);
-        try {
-            return DefaultNodeSettings.loadSettings(nodeSettings.get(settingsType), settingsClass);
-        } catch (InvalidSettingsException ex) {
-            LOGGER.error(String.format("Failed to load settings ('%s'). New settings are created for the dialog.",
-                ex.getMessage()), ex);
-            return DefaultNodeSettings.createSettings(settingsClass, specs);
-        }
-    }
-
     @Override
-    public void getDefaultNodeSettings(final Map<SettingsType, NodeSettingsWO> settings,
-        final PortObjectSpec[] specs) {
-        saveDefaultSettings(settings, SettingsType.MODEL, specs);
-        saveDefaultSettings(settings, SettingsType.VIEW, specs);
-    }
-
-    private void saveDefaultSettings(final Map<SettingsType, NodeSettingsWO> settingsMap,
-        final SettingsType settingsType, final PortObjectSpec[] specs) {
-        var nodeSettings = settingsMap.get(settingsType);
-        if (nodeSettings != null) {
-            saveDefaultSettings(m_settingsClasses.get(settingsType), nodeSettings, specs);
-        }
-    }
-
-    private static <S extends DefaultNodeSettings> void saveDefaultSettings(final Class<S> settingsClass,
-        final NodeSettingsWO nodeSettings, final PortObjectSpec[] specs) {
-        var settingsObj = DefaultNodeSettings.createSettings(settingsClass, specs);
-        DefaultNodeSettings.saveSettings(settingsClass, settingsObj, nodeSettings);
+    public void getDefaultNodeSettings(final Map<SettingsType, NodeSettingsWO> settings, final PortObjectSpec[] specs) {
+        var context = DefaultNodeSettings.createDefaultNodeSettingsContext(specs);
+        m_converter.saveDefaultNodeSettings(settings, context);
     }
 
 }

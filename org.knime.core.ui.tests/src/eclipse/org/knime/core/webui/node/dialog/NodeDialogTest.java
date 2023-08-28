@@ -85,6 +85,7 @@ import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.dialog.NodeAndVariableSettingsProxy.NodeSettingsWrapper;
 import org.knime.core.webui.node.dialog.NodeDialog.OnApplyNodeModifier;
 import org.knime.core.webui.node.dialog.NodeDialogAdapter.LegacyFlowVariableNodeDialog;
+import org.knime.core.webui.node.dialog.internal.VariableSettings;
 import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.core.webui.page.Page;
 import org.knime.testing.node.dialog.NodeDialogNodeFactory;

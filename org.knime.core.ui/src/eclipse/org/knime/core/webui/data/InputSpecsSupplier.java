@@ -44,67 +44,63 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 13, 2023 (hornm): created
+ *   Aug 30, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.view.table.data;
+package org.knime.core.webui.data;
 
-import static org.knime.testing.util.TableTestUtil.assertTableResults;
-import static org.knime.testing.util.TableTestUtil.getExec;
+import java.util.Arrays;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.knime.core.data.def.IntCell;
-import org.knime.core.data.def.StringCell;
-import org.knime.core.webui.data.DataServiceContextTest;
-import org.knime.testing.util.TableTestUtil;
-import org.knime.testing.util.TableTestUtil.ObjectColumn;
+import org.apache.commons.lang3.concurrent.ConcurrentException;
+import org.apache.commons.lang3.concurrent.LazyInitializer;
+import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.NodeOutPort;
 
 /**
- * Tests {@link TableWithIndicesSupplier}.
+ * A lazy initializer for the input {@link PortObjectSpec PortObjectSpecs} of a node excluding the flow variables port.
  *
- * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Paul Bärnreuther
  */
-class TableWithIndicesSupplierTest {
+public final class InputSpecsSupplier extends LazyInitializer<PortObjectSpec[]> {
 
-    @BeforeEach
-    void initDataServiceContext() {
-        DataServiceContextTest.initDataServiceContext(() -> getExec(), null);
+    private final NodeContainer m_nc;
+
+    /**
+     * @param nc to lazily extract the input specs from
+     */
+    public InputSpecsSupplier(final NodeContainer nc) {
+        this.m_nc = nc;
     }
 
-    @AfterEach
-    void removeDataServiceContext() {
-        DataServiceContextTest.removeDataServiceContext();
+    @Override
+    protected PortObjectSpec[] initialize() throws ConcurrentException {
+        return getInputSpecsExcludingVariablePort(m_nc);
     }
 
-    @Test
-    void testIndicesAreAppended() throws Exception {
-        final var stringColumnContent = new String[]{"A", "B"};
-        final var intColumnContent = new Integer[]{1, 3};
-        final var inputTable = TableTestUtil.createTableFromColumns( //
-            new ObjectColumn("col1", StringCell.TYPE, stringColumnContent), //
-            new ObjectColumn("col2", IntCell.TYPE, intColumnContent) //
-        );
-
-        var tableWithIndicesSupplier = new TableWithIndicesSupplier(() -> inputTable);
-
-        assertTableResults(tableWithIndicesSupplier.get(), new String[]{"Long", "String", "Integer"},
-            new Object[][]{{1l, 2l}, stringColumnContent, intColumnContent});
+    /**
+     * @param nc to extract the input specs from
+     * @return the associated array of input {@link PortObjectSpec PortObjectSpecs} excluding the flow variables port.
+     */
+    public static PortObjectSpec[] getInputSpecsExcludingVariablePort(final NodeContainer nc) {
+        final var rawSpecs = getInputSpecsIncludingVariablePort(nc);
+        // copy input port object specs, ignoring the 0-variable port:
+        return Arrays.copyOfRange(rawSpecs, 1, rawSpecs.length);
     }
 
-    @Test
-    void testIndexColumnAdjustsName() throws Exception {
-        final var stringColumnContent = new String[]{"A", "B"};
-        final var intColumnContent = new Integer[]{1, 3};
-        final var inputTable = TableTestUtil.createTableFromColumns( //
-            new ObjectColumn("<index>", StringCell.TYPE, stringColumnContent), //
-            new ObjectColumn("<index>(1)", IntCell.TYPE, intColumnContent) //
-        );
-
-        var tableWithIndicesSupplier = new TableWithIndicesSupplier(() -> inputTable);
-
-        assertTableResults(tableWithIndicesSupplier.get(), new String[]{"Long", "String", "Integer"},
-            new Object[][]{{1l, 2l}, stringColumnContent, intColumnContent});
+    private static PortObjectSpec[] getInputSpecsIncludingVariablePort(final NodeContainer nc) {
+        final var rawSpecs = new PortObjectSpec[nc.getNrInPorts()];
+        final var wfm = nc.getParent();
+        for (var cc : wfm.getIncomingConnectionsFor(nc.getID())) {
+            var sourceId = cc.getSource();
+            NodeOutPort outPort;
+            if (sourceId.equals(wfm.getID())) {
+                outPort = wfm.getWorkflowIncomingPort(cc.getSourcePort());
+            } else {
+                outPort = wfm.getNodeContainer(sourceId).getOutPort(cc.getSourcePort());
+            }
+            rawSpecs[cc.getDestPort()] = outPort.getPortObjectSpec();
+        }
+        return rawSpecs;
     }
 
 }

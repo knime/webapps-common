@@ -54,10 +54,14 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialog;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.UpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
+import org.knime.core.webui.node.dialog.internal.VariableSettings;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * This is the interface for the rpc data service of the {@link DefaultNodeDialog}. Its use enables e.g. lazyloaded data
@@ -120,20 +124,31 @@ interface DefaultNodeDialogDataService {
     }
 
     /**
-     * @param textSettings the state of the settings in json format for which the available flow variables are to be
+     * @param textSettings the state of the settings in JSON format for which the available flow variables are to be
      *            fetched
-     * @param path the path leading to the setting excluding its config key (i.e. the parent path)
-     * @param configKey the config key used to persist the setting
+     * @param persistPath the path leading to the setting as it is stored in the node settings, i.e. including its
+     *            settings type ("view" or "model") and its (possibly custom) config key
      * @return a map from the possible types of the specified setting to the present flow variables.
      * @throws InvalidSettingsException if the path does not start with "model" or "view"
      */
     Map<String, Collection<PossibleFlowVariable>> getAvailableFlowVariables(final String textSettings,
-        final LinkedList<String> path, final String configKey) throws InvalidSettingsException;
+        final LinkedList<String> persistPath) throws InvalidSettingsException;
 
     /**
-     * @param name the name of a present flow variable
-     * @return the full value as string of the flow variable
+     *
+     * This method first transforms the given text settings to {@link NodeSettings} and {@link VariableSettings} only to
+     * then overwrite the node settings with the variables and transform them back to JSON. Hereby only those setting
+     * (model or view) are transformed which are necessary as defined by the first entry of the dataPath.
+     *
+     * @param textSettings the front-end representation of the current settings in JSON format containing data and flow
+     *            variable settings.
+     * @param dataPath the path of the setting as it is stored in the data within the front-end JSON representation. In
+     *            particular this has to start with its settings type ("view" or "model").
+     * @return The string representation of the value of the resulting JSON at the given data path.
+     * @throws InvalidSettingsException
+     * @throws JsonProcessingException
      */
-    String getFlowVariableValue(final String name);
+    Object getFlowVariableOverrideValue(final String textSettings, final LinkedList<String> dataPath)
+        throws InvalidSettingsException, JsonProcessingException;
 
 }

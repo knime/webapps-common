@@ -150,7 +150,7 @@ describe("NodeDialog.vue", () => {
       };
 
       expect(publishDataSpy).toHaveBeenCalledWith({
-        schema: dialogInitialData.schema,
+        flowVariableSettings: dialogInitialData.schema.flowVariablesMap,
         data: expectedData,
       });
     });
