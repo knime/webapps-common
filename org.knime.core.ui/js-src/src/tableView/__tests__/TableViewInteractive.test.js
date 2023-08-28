@@ -16,6 +16,7 @@ import {
 } from "@knime/knime-ui-table";
 import specialColumns from "../utils/specialColumns";
 import { AutoSizeColumnsToContent } from "../types";
+import consolaGlobalInstance from "consola";
 
 const { MIN_COLUMN_SIZE } = tableUIConstants;
 const DEFAULT_COLUMN_SIZE = 100;
@@ -2328,7 +2329,7 @@ describe("TableViewInteractive.vue", () => {
       [false, true, ["col1", "col2", "col3"]],
       [false, false, ["col1", "col2", "col3", "col4"]],
     ])(
-      "copies table content when showIndices is %s amd showRowKeys is %s",
+      "copies table content when showIndices is %s and showRowKeys is %s",
       async (showRowIndices, showRowKeys, otherColumns) => {
         await wrapper.setData({
           settings: {
@@ -2344,6 +2345,56 @@ describe("TableViewInteractive.vue", () => {
         });
       },
     );
+
+    it("sets cursor to 'wait' while copying content to clipboard and unsets afterwards", async (showRowIndices, showRowKeys) => {
+      await wrapper.setData({
+        settings: {
+          ...initialDataMock.settings,
+          showRowIndices,
+          showRowKeys,
+        },
+      });
+      copyContent({ x: { min: 0, max: 3 }, y: { min: 1, max: 4 } });
+      expect(document.body.style.cursor).toBe("wait");
+      await flushPromises();
+      expect(document.body.style.cursor).toBe("unset");
+    });
+
+    it("catches failed copy event", async (showRowIndices, showRowKeys) => {
+      const errorMock = vi.fn();
+      consolaGlobalInstance.error = errorMock;
+      await wrapper.setData({
+        settings: {
+          ...initialDataMock.settings,
+          showRowIndices,
+          showRowKeys,
+        },
+      });
+      wrapper.vm.performRequest = vi.fn().mockImplementation(() => {
+        throw new Error("failed");
+      });
+      copyContent({ x: { min: 0, max: 3 }, y: { min: 1, max: 4 } });
+      expect(errorMock).toHaveBeenCalled();
+    });
+
+    it("writes successfull copy request into clipboard", async (showRowIndices, showRowKeys) => {
+      const writeTextMock = vi.fn();
+      const resultText = "successful";
+      navigator.clipboard.writeText = writeTextMock;
+      await wrapper.setData({
+        settings: {
+          ...initialDataMock.settings,
+          showRowIndices,
+          showRowKeys,
+        },
+      });
+      wrapper.vm.performRequest = vi
+        .fn()
+        .mockImplementation(() => Promise.resolve(resultText));
+      copyContent({ x: { min: 0, max: 3 }, y: { min: 1, max: 4 } });
+      await flushPromises();
+      expect(writeTextMock).toHaveBeenCalledWith(resultText);
+    });
 
     it("copies table content for bottom rows", () => {
       copyContent(
