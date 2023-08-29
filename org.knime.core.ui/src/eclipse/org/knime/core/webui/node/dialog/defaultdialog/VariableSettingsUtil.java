@@ -83,35 +83,22 @@ final class VariableSettingsUtil {
     static JsonNode fromVariableSettingsToJson(final VariableSettingsRO modelVariableSettings,
         final VariableSettingsRO viewVariableSettings, final Set<String> availableFlowVariableNames,
         final ObjectMapper mapper) {
-        var root = mapper.createObjectNode();
+        var flowVariableSettingsMap = new HashMap<String, FlowVariableSetting>();
         if (modelVariableSettings != null) {
-            root.set("modelVariables", toJson(modelVariableSettings, availableFlowVariableNames, mapper));
+            addToFlowVariableSettingsMap("model", modelVariableSettings, availableFlowVariableNames,
+                flowVariableSettingsMap);
         }
         if (viewVariableSettings != null) {
-            root.set("viewVariables", toJson(viewVariableSettings, availableFlowVariableNames, mapper));
+            addToFlowVariableSettingsMap("view", viewVariableSettings, availableFlowVariableNames,
+                flowVariableSettingsMap);
         }
-        return root;
+        return mapper.valueToTree(flowVariableSettingsMap);
     }
 
-    private static JsonNode toJson(final VariableSettingsRO variableSettings,
-        final Set<String> availableFlowVariableNames, final ObjectMapper mapper) {
-        if (availableFlowVariableNames.isEmpty()) {
-            return mapper.createObjectNode();
-        } else {
-            return mapper.valueToTree(createSettingsTree(variableSettings, availableFlowVariableNames));
-        }
-    }
-
-    private static Map<String, Object> createSettingsTree(final VariableSettingsRO variableSettings,
-        final Set<String> flowVariables) {
-        var settingsTree = new HashMap<String, Object>();
-        createSettingsTree(variableSettings, flowVariables, settingsTree);
-        return settingsTree;
-    }
-
-    private static void createSettingsTree(final VariableSettingsRO variableSettings, final Set<String> flowVariables,
-        final Map<String, Object> settingsTreeNodeEnts) {
+    private static void addToFlowVariableSettingsMap(final String keyPrefix, final VariableSettingsRO variableSettings,
+        final Set<String> flowVariables, final Map<String, FlowVariableSetting> flowVariableSettingsMap) {
         for (var key : variableSettings.getVariableSettingsIterable()) {
+            var newKeyPrefix = keyPrefix + "." + key;
             if (variableSettings.isVariableSetting(key)) {
                 String usedVariable = null;
                 String exposedVariable = null;
@@ -122,8 +109,8 @@ final class VariableSettingsUtil {
                     // should never happen
                 }
                 var isUsedVariableAvailable = usedVariable != null && flowVariables.contains(usedVariable);
-                settingsTreeNodeEnts.put(key,
-                    new SettingsTreeLeafEnt(usedVariable, isUsedVariableAvailable, exposedVariable));
+                flowVariableSettingsMap.put(newKeyPrefix,
+                    new FlowVariableSetting(usedVariable, isUsedVariableAvailable, exposedVariable));
             } else {
                 VariableSettingsRO subSettings;
                 try {
@@ -133,14 +120,12 @@ final class VariableSettingsUtil {
                         ex);
                     continue;
                 }
-                var settingsTree = new HashMap<String, Object>();
-                createSettingsTree(subSettings, flowVariables, settingsTree);
-                settingsTreeNodeEnts.put(key, settingsTree);
+                addToFlowVariableSettingsMap(newKeyPrefix, subSettings, flowVariables, flowVariableSettingsMap);
             }
         }
     }
 
-    private static class SettingsTreeLeafEnt {
+    private static class FlowVariableSetting {
 
         private final String m_controllingFlowVariableName;
 
@@ -148,16 +133,11 @@ final class VariableSettingsUtil {
 
         private final boolean m_isControllingFlowVariableAvailable;
 
-        SettingsTreeLeafEnt(final String controllingFlowVariableName, final boolean isControllingFlowVariableAvailable,
+        FlowVariableSetting(final String controllingFlowVariableName, final boolean isControllingFlowVariableAvailable,
             final String exposedFlowVariableName) {
             m_controllingFlowVariableName = controllingFlowVariableName;
             m_isControllingFlowVariableAvailable = isControllingFlowVariableAvailable;
             m_exposedFlowVariableName = exposedFlowVariableName;
-        }
-
-        @SuppressWarnings("unused")
-        public boolean isLeaf() {
-            return true;
         }
 
         @SuppressWarnings("unused")

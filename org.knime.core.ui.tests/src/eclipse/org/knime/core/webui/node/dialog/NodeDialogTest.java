@@ -780,23 +780,26 @@ public class NodeDialogTest {
     }
 
     /**
-     * TODO
+     * Creates an instance of {@link NodeAndVariableSettingsRO} by proxing all the calls to the given
+     * {@link NodeSettings}- and created {@link VariableSettings}-instance.
      *
      * @param nodeSettings
-     * @return
+     * @return a new instance
      */
     public static NodeAndVariableSettingsRO createNodeAndVariableSettingsRO(final NodeSettings nodeSettings) {
-        return NodeAndVariableSettingsProxy.createROProxy(nodeSettings, null);
+        return NodeAndVariableSettingsProxy.createROProxy(nodeSettings, new VariableSettings(nodeSettings, new NodeSettings("ignored")));
     }
 
     /**
-     * TODO
+     * Creates an instance of {@link NodeAndVariableSettingsWO} by proxing all the calls to the given
+     * {@link NodeSettings}- and created {@link VariableSettings}-instance.
      *
      * @param nodeSettings
-     * @return
+     * @return a new instance
      */
     public static NodeAndVariableSettingsWO createNodeAndVariableSettingsWO(final NodeSettings nodeSettings) {
-        return NodeAndVariableSettingsProxy.createWOProxy(nodeSettings, null);
+        return NodeAndVariableSettingsProxy.createWOProxy(nodeSettings,
+            new VariableSettings(nodeSettings, new NodeSettings("ignored")));
     }
 
 }

@@ -114,7 +114,7 @@ final class VariableSettings implements VariableSettingsWO, VariableSettingsRO {
         };
     }
 
-    private VariableSettings(final NodeSettings variableSettings, final NodeSettings nodeSettings) {
+    VariableSettings(final NodeSettings variableSettings, final NodeSettings nodeSettings) {
         m_nodeSettings = nodeSettings;
         m_variableSettingsCreator = null;
         m_variableSettingsGetter = () -> variableSettings;

@@ -6,7 +6,6 @@ import {
   getFlowVariablesMap,
   mergeDeep,
   getPossibleValuesFromUiSchema,
-  createFlowVariablesMap,
 } from "..";
 
 describe("Utils", () => {
@@ -294,59 +293,6 @@ describe("Utils", () => {
           },
         }),
       ).toEqual(MERGED_FLOW_SETTINGS);
-    });
-
-    it("createFlowVariablesMap maps flowVariables correctly", () => {
-      const viewVariables = {
-        test: {
-          controllingFlowVariableAvailable: true,
-          controllingFlowVariableName: "knime.test",
-          exposedFlowVariablename: "test",
-          leaf: true,
-        },
-        nestedTest: {
-          0: {
-            value: {
-              controllingFlowVariableAvailable: true,
-              controllingFlowVariableName: "knime.nestedTest",
-              exposedFlowVariablename: "nestedTest",
-              leaf: true,
-            },
-          },
-          1: {
-            nestedTest2: {
-              controllingFlowVariableAvailable: true,
-              controllingFlowVariableName: "knime.nestedTest",
-              exposedFlowVariablename: "nestedTest",
-              leaf: true,
-            },
-          },
-        },
-      };
-      const modelVariables = {};
-      const expectedResult = {
-        "view.test": {
-          controllingFlowVariableAvailable: true,
-          controllingFlowVariableName: "knime.test",
-          exposedFlowVariablename: "test",
-          leaf: true,
-        },
-        "view.nestedTest.0.value": {
-          controllingFlowVariableAvailable: true,
-          controllingFlowVariableName: "knime.nestedTest",
-          exposedFlowVariablename: "nestedTest",
-          leaf: true,
-        },
-        "view.nestedTest.1.nestedTest2": {
-          controllingFlowVariableAvailable: true,
-          controllingFlowVariableName: "knime.nestedTest",
-          exposedFlowVariablename: "nestedTest",
-          leaf: true,
-        },
-      };
-      expect(createFlowVariablesMap({ viewVariables, modelVariables })).toEqual(
-        expectedResult,
-      );
     });
   });
 });

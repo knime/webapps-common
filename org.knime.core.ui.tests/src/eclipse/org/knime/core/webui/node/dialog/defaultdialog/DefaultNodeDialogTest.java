@@ -143,35 +143,24 @@ public class DefaultNodeDialogTest {
         throws JsonMappingException, JsonProcessingException {
         var expectedFlowVariableSettings = """
                 {
-                  "modelVariables" : {
-                    "model setting" : {
-                      "controllingFlowVariableAvailable" : false,
-                      "controllingFlowVariableName" : "flow variable 1",
-                      "leaf" : true
-                    }
+                  "model.model setting": {
+                    "controllingFlowVariableAvailable": false,
+                    "controllingFlowVariableName": "flow variable 1"
                   },
-                  "viewVariables" : {
-                    "view setting" : {
-                      "controllingFlowVariableAvailable" : true,
-                      "controllingFlowVariableName" : "flow variable 2",
-                      "leaf" : true
-                    },
-                    "nested" : {
-                      "nested view setting 3" : {
-                        "exposedFlowVariableName" : "exposed var name",
-                        "leaf" : true
-                      },
-                      "nested view setting 2" : {
-                        "exposedFlowVariableName" : "exposed var name",
-                        "leaf" : true
-                      },
-                      "nested view setting" : {
-                        "controllingFlowVariableAvailable" : false,
-                        "controllingFlowVariableName" : "flow variable 3",
-                        "exposedFlowVariableName" : "exposed var name",
-                        "leaf" : true
-                      }
-                    }
+                  "view.view setting": {
+                    "controllingFlowVariableAvailable": true,
+                    "controllingFlowVariableName": "flow variable 2"
+                  },
+                  "view.nested.nested view setting 3": {
+                    "exposedFlowVariableName": "exposed var name"
+                  },
+                  "view.nested.nested view setting 2": {
+                    "exposedFlowVariableName": "exposed var name"
+                  },
+                  "view.nested.nested view setting": {
+                    "controllingFlowVariableAvailable": false,
+                    "controllingFlowVariableName": "flow variable 3",
+                    "exposedFlowVariableName": "exposed var name"
                   }
                 }
                 """;

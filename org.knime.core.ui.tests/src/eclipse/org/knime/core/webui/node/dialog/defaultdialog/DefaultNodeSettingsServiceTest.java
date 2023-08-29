@@ -143,9 +143,6 @@ class DefaultNodeSettingsServiceTest {
         final var uiSchema = JsonFormsUiSchemaUtil.buildUISchema(testSettingsMap, MAPPER,
             DefaultNodeSettings.createDefaultNodeSettingsContext(specs));
         assertThatJson(initialData.get("ui_schema")).isEqualTo(uiSchema);
-
-        assertThatJson(initialData.get("flowVariableSettings"))
-            .isEqualTo(MAPPER.createObjectNode().set("viewVariables", MAPPER.createObjectNode()));
     }
 
     @Test
