@@ -49,6 +49,7 @@
 package org.knime.core.webui.node.dialog.defaultdialog;
 
 import static java.util.stream.Collectors.toMap;
+import static org.knime.core.webui.node.dialog.defaultdialog.VariableSettingsUtil.fromJsonToVariableSettings;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.FIELD_NAME_DATA;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.FIELD_NAME_SCHEMA;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.FIELD_NAME_UI_SCHEMA;
@@ -83,6 +84,8 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(DefaultNodeSettingsService.class);
 
+    private static final String FLOW_VARIABLE_SETTINGS_KEY = "flowVariableSettings";
+
     private final Map<SettingsType, Class<? extends DefaultNodeSettings>> m_settingsClasses;
 
     private DefaultNodeSettingsContext m_creationContext;
@@ -97,16 +100,19 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
     @Override
     public void toNodeSettings(final String textSettings, final Map<SettingsType, NodeAndVariableSettingsWO> settings) {
         try {
-            final var root = (ObjectNode)JsonFormsDataUtil.getMapper().readTree(textSettings);
-            textSettingsToNodeSettings(root, SettingsType.MODEL, settings);
-            textSettingsToNodeSettings(root, SettingsType.VIEW, settings);
+            var mapper = JsonFormsDataUtil.getMapper();
+            final var root = (ObjectNode)mapper.readTree(textSettings);
+            fromJsonToNodeSettings(root, SettingsType.MODEL, settings);
+            fromJsonToNodeSettings(root, SettingsType.VIEW, settings);
+            fromJsonToVariableSettings(root.get(FLOW_VARIABLE_SETTINGS_KEY), settings.get(SettingsType.MODEL),
+                settings.get(SettingsType.VIEW), mapper);
         } catch (JsonProcessingException e) {
             throw new IllegalStateException(
                 String.format("Exception when writing data to node settings: %s", e.getMessage()), e);
         }
     }
 
-    private void textSettingsToNodeSettings(final ObjectNode rootNode, final SettingsType settingsType,
+    private void fromJsonToNodeSettings(final ObjectNode rootNode, final SettingsType settingsType,
         final Map<SettingsType, NodeAndVariableSettingsWO> settings) {
         if (settings.containsKey(settingsType)) {
             final var node = rootNode.get(settingsType.getConfigKey());
@@ -128,7 +134,7 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
         root.set(FIELD_NAME_DATA, jsonFormsSettings.getData());
         root.set(FIELD_NAME_SCHEMA, jsonFormsSettings.getSchema());
         root.putRawValue(FIELD_NAME_UI_SCHEMA, jsonFormsSettings.getUiSchema());
-        root.set("flowVariableSettings",
+        root.set(FLOW_VARIABLE_SETTINGS_KEY,
             VariableSettingsUtil.fromVariableSettingsToJson(settings.get(SettingsType.MODEL),
                 settings.get(SettingsType.VIEW), Set.of(m_creationContext.getAvailableFlowVariableNames()), mapper));
         try {

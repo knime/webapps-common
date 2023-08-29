@@ -49,17 +49,21 @@
 package org.knime.core.webui.node.dialog.defaultdialog;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.NativeNodeContainer;
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.dialog.NodeDialog;
 import org.knime.core.webui.node.dialog.NodeDialogManager;
@@ -110,33 +114,43 @@ public class DefaultNodeDialogTest {
 
     }
 
-    @Test
-    void testInitialDataWithFlowVariableSettings() throws InvalidSettingsException, IOException {
-        var wfm = WorkflowManagerUtil.createEmptyWorkflow();
+    private WorkflowManager m_wfm;
 
-        var defaultNodeSettingsService = new DefaultNodeSettingsService(
+    private NativeNodeContainer m_nnc;
+
+    private DefaultNodeSettingsService m_defaultNodeSettingsService;
+
+    @BeforeEach
+    void createWorkflowAndAddNode() throws IOException {
+        m_wfm = WorkflowManagerUtil.createEmptyWorkflow();
+        m_defaultNodeSettingsService = new DefaultNodeSettingsService(
             Map.of(SettingsType.MODEL, ModelSettings.class, SettingsType.VIEW, ViewSettings.class));
         Supplier<NodeDialog> nodeDialogCreator =
             () -> NodeDialogTest.createNodeDialog(Page.builder(() -> "page content", "page.html").build(),
-                defaultNodeSettingsService, null);
-        var nnc = NodeDialogManagerTest.createNodeWithNodeDialog(wfm, nodeDialogCreator);
+                m_defaultNodeSettingsService, null);
+        m_nnc = NodeDialogManagerTest.createNodeWithNodeDialog(m_wfm, nodeDialogCreator);
+    }
 
+    @AfterEach
+    void disposeWorkflow() {
+        WorkflowManagerUtil.disposeWorkflow(m_wfm);
+    }
+
+    @Test
+    void testInitialDataWithFlowVariableSettings() throws InvalidSettingsException, IOException {
         var defModelSettings = new NodeSettings("model");
         var defViewSettings = new NodeSettings("view");
-        defaultNodeSettingsService.getDefaultNodeSettings(
+        m_defaultNodeSettingsService.getDefaultNodeSettings(
             Map.of(SettingsType.MODEL, defModelSettings, SettingsType.VIEW, defViewSettings),
             new DataTableSpec[]{new DataTableSpec()});
-        initNodeSettings(nnc, defModelSettings, defViewSettings);
-        nnc.getFlowObjectStack().push(new FlowVariable("flow variable 2", "test"));
+        initNodeSettings(m_nnc, defModelSettings, defViewSettings);
+        m_nnc.getFlowObjectStack().push(new FlowVariable("flow variable 2", "test"));
 
-        var initialData = NodeDialogManager.getInstance().callInitialDataService(NodeWrapper.of(nnc));
+        var initialData = NodeDialogManager.getInstance().callInitialDataService(NodeWrapper.of(m_nnc));
 
         var mapper = new ObjectMapper();
         var initialDataJson = mapper.readTree(initialData);
         assertFlowVariableSettings(initialDataJson, mapper);
-
-
-        WorkflowManagerUtil.disposeWorkflow(wfm);
     }
 
     private static void assertFlowVariableSettings(final JsonNode initialData, final ObjectMapper mapper)
@@ -166,7 +180,67 @@ public class DefaultNodeDialogTest {
                 """;
         var expectedJson = mapper.readTree(expectedFlowVariableSettings);
         assertThatJson(initialData.get("result").get("flowVariableSettings")).isEqualTo(expectedJson);
+    }
 
+    @Test
+    void testApplyDataWithFlowVariableSettings() throws IOException, InvalidSettingsException {
+        var applyData = """
+                {
+              "model": {
+                "model setting": "2"
+              },
+              "view": {
+                "view setting": "3",
+                "nested": {
+                  "nested view setting": "4",
+                  "nested view setting 2": "5"
+                }
+              },
+              "flowVariableSettings": {
+                  "model.model setting": {
+                    "controllingFlowVariableAvailable": false,
+                    "controllingFlowVariableName": "flow variable 1"
+                  },
+                  "view.view setting": {
+                    "controllingFlowVariableAvailable": true,
+                    "controllingFlowVariableName": "flow variable 2"
+                  },
+                  "view.nested.nested view setting 3": {
+                    "exposedFlowVariableName": "exposed var name"
+                  },
+                  "view.nested.nested view setting 2": {
+                    "exposedFlowVariableName": "exposed var name"
+                  },
+                  "view.nested.nested view setting": {
+                    "controllingFlowVariableAvailable": false,
+                    "controllingFlowVariableName": "flow variable 3",
+                    "exposedFlowVariableName": "exposed var name"
+                  }
+               }
+            }
+                """;
+        NodeDialogManager.getInstance().callApplyDataService(NodeWrapper.of(m_nnc), applyData);
+
+        var nodeSettingsToCheck = m_nnc.getNodeSettings();
+
+        var expectedNodeSettings = new NodeSettings("configuration");
+        var modelSettings = expectedNodeSettings.addNodeSettings("model");
+        var viewSettings = expectedNodeSettings.addNodeSettings("view");
+        m_defaultNodeSettingsService.getDefaultNodeSettings(
+            Map.of(SettingsType.MODEL, modelSettings, SettingsType.VIEW, viewSettings),
+            new DataTableSpec[]{new DataTableSpec()});
+        initModelVariableSettings(expectedNodeSettings);
+        initViewVariableSettings(expectedNodeSettings, false);
+
+        assertSubNodeSettingsForKey(nodeSettingsToCheck, expectedNodeSettings, "model");
+        assertSubNodeSettingsForKey(nodeSettingsToCheck, expectedNodeSettings, "variables");
+        assertSubNodeSettingsForKey(nodeSettingsToCheck, expectedNodeSettings, "view");
+        assertSubNodeSettingsForKey(nodeSettingsToCheck, expectedNodeSettings, "view_variables");
+    }
+
+    private static void assertSubNodeSettingsForKey(final NodeSettings test, final NodeSettings expected, final String key)
+        throws InvalidSettingsException {
+        assertThat(test.getNodeSettings(key)).isEqualTo(expected.getNodeSettings(key));
     }
 
     private static void initNodeSettings(final NativeNodeContainer nnc, final NodeSettings defaultModelSettings,
@@ -178,7 +252,7 @@ public class DefaultNodeDialogTest {
         nodeSettings.addNodeSettings(defaultModelSettings);
         initModelVariableSettings(nodeSettings);
         nodeSettings.addNodeSettings(defaultViewSettings);
-        initViewVariableSettings(nodeSettings);
+        initViewVariableSettings(nodeSettings, true);
 
         parent.loadNodeSettings(nnc.getID(), nodeSettings);
         parent.executeAllAndWaitUntilDone();
@@ -193,7 +267,8 @@ public class DefaultNodeDialogTest {
         variableTreeNode.addString("exposed_variable", null);
     }
 
-    private static void initViewVariableSettings(final NodeSettings ns) {
+    private static void initViewVariableSettings(final NodeSettings ns,
+        final boolean includeVariableSettingForNonexistentNodeSetting) {
         var viewVariables = ns.addNodeSettings("view_variables");
         viewVariables.addString("version", "V_2019_09_13");
         var variableTree = viewVariables.addNodeSettings("tree");
@@ -210,9 +285,11 @@ public class DefaultNodeDialogTest {
         variableTreeNode3.addString("used_variable", null);
         variableTreeNode3.addString("exposed_variable", "exposed var name");
 
-        var variableTreeNode4 = nested.addNodeSettings("nested view setting 3");
-        variableTreeNode4.addString("used_variable", null);
-        variableTreeNode4.addString("exposed_variable", "exposed var name");
+        if (includeVariableSettingForNonexistentNodeSetting) {
+            var variableTreeNode4 = nested.addNodeSettings("nested view setting 3");
+            variableTreeNode4.addString("used_variable", null);
+            variableTreeNode4.addString("exposed_variable", "exposed var name");
+        }
     }
 
 }

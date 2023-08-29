@@ -58,6 +58,8 @@ import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.VariableSettingsRO;
 import org.knime.core.webui.node.dialog.VariableSettingsWO;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -126,6 +128,40 @@ final class VariableSettingsUtil {
         }
     }
 
+    /**
+     * TODO
+     *
+     * @param json
+     * @param modelVariableSettings
+     * @param viewVariableSettings
+     * @param mapper
+     */
+    static void fromJsonToVariableSettings(final JsonNode json, final VariableSettingsWO modelVariableSettings,
+        final VariableSettingsWO viewVariableSettings, final ObjectMapper mapper) {
+        if (json == null) {
+            return;
+        }
+
+        json.fieldNames().forEachRemaining(compositeKey -> {
+            var node = json.get(compositeKey);
+            var flowVariableSetting = mapper.convertValue(node, FlowVariableSetting.class);
+            var keys = compositeKey.split("\\.");
+
+            var nestedVariableSettings = keys[0].equals("model") ? modelVariableSettings : viewVariableSettings;
+            try {
+                for (int i = 1; i < keys.length - 1; i++) {
+                    nestedVariableSettings = nestedVariableSettings.getOrCreateVariableSettings(keys[i]);
+                }
+                nestedVariableSettings.addUsedVariable(keys[keys.length - 1],
+                    flowVariableSetting.getControllingFlowVariableName());
+                nestedVariableSettings.addExposedVariable(keys[keys.length - 1],
+                    flowVariableSetting.getExposedFlowVariableName());
+            } catch (InvalidSettingsException ex) {
+                // TODO
+            }
+        });
+    }
+
     private static class FlowVariableSetting {
 
         private final String m_controllingFlowVariableName;
@@ -134,7 +170,15 @@ final class VariableSettingsUtil {
 
         private final boolean m_isControllingFlowVariableAvailable;
 
-        FlowVariableSetting(final String controllingFlowVariableName, final boolean isControllingFlowVariableAvailable,
+        @JsonCreator
+        FlowVariableSetting(@JsonProperty("controllingFlowVariableName") final String controllingFlowVariableName,
+            @JsonProperty("exposedFlowVariableName") final String exposedFlowVariableName) {
+            m_controllingFlowVariableName = controllingFlowVariableName;
+            m_isControllingFlowVariableAvailable = false;
+            m_exposedFlowVariableName = exposedFlowVariableName;
+        }
+
+        private FlowVariableSetting(final String controllingFlowVariableName, final boolean isControllingFlowVariableAvailable,
             final String exposedFlowVariableName) {
             m_controllingFlowVariableName = controllingFlowVariableName;
             m_isControllingFlowVariableAvailable = isControllingFlowVariableAvailable;
