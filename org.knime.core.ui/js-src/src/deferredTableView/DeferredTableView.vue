@@ -97,62 +97,58 @@ export default {
 </script>
 
 <template>
-  <div
-    class="knime-ui-DeferredTableView"
-    style="height: 100%"
-  >
-    <div class="table-view-wrapper">
-      <div class="submenu-wrapper">
+  <div class="table-view-wrapper">
+    <div class="submenu-wrapper">
+      <SubMenu
+        v-if="tableViewInitialData"
+        :items="subMenuItems"
+        orientation="left"
+        @item-click="(_, item) => onSubmenuItemClick(item.value)"
+      >
+        <span>
+          Rows: {{ numDisplayedRows }}
+          <DropdownIcon />
+        </span>
+      </SubMenu>
+      <span
+        v-if="columnCount"
+        class="column-count"
+      >
+        {{ `   |   Columns: ${columnCount}` }}
+      </span>
+    </div>
+    <TableViewInteractive
+      v-if="tableViewInitialData"
+      :key="tableViewKey"
+      :initial-data="tableViewInitialData"
+      :enable-cell-selection="false"
+      :force-hide-table-sizes="true"
+    />
+    <div
+      v-else
+      class="empty-container"
+    >
+      <p class="description">
+        To see the output table please fetch data from database
+      </p>
+      <SplitButton>
+        <Button
+          primary
+          compact
+          @click="fetchTableData"
+        >
+          <CircleArrow />
+          Fetch {{ numRows }} table rows
+        </Button>
         <SubMenu
-          v-if="tableViewInitialData"
           :items="subMenuItems"
+          class="submenu"
           orientation="left"
           @item-click="(_, item) => onSubmenuItemClick(item.value)"
         >
-          <span>
-            Rows: {{ numDisplayedRows }}
-            <DropdownIcon />
-          </span>
+          <DropdownIcon />
         </SubMenu>
-        <span
-          v-if="columnCount"
-          class="column-count"
-        >
-          {{ `   |   Columns: ${columnCount}` }}
-        </span>
-      </div>
-      <TableViewInteractive
-        v-if="tableViewInitialData"
-        :key="tableViewKey"
-        :initial-data="tableViewInitialData"
-        force-hide-table-sizes="true"
-      />
-      <div
-        v-else
-        class="empty-container"
-      >
-        <p class="description">
-          To see the output table please fetch data from database
-        </p>
-        <SplitButton>
-          <Button
-            primary
-            compact
-            @click="fetchTableData"
-          >
-            <CircleArrow />
-            Fetch {{ numRows }} table rows
-          </Button>
-          <SubMenu
-            :items="subMenuItems"
-            class="submenu"
-            orientation="left"
-            @item-click="(_, item) => onSubmenuItemClick(item.value)"
-          >
-            <DropdownIcon />
-          </SubMenu>
-        </SplitButton>
-      </div>
+      </SplitButton>
     </div>
   </div>
 </template>
@@ -184,7 +180,7 @@ export default {
     display: flex;
     justify-content: left;
     align-items: center;
-  
+
     & .column-count {
       color: var(--knime-dove-gray);
       font-size: 13px;

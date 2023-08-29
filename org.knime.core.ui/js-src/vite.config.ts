@@ -5,9 +5,6 @@ import svgLoader from 'vite-svg-loader';
 import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js';
 import type { LibraryOptions } from 'vite';
 import { loadEnv } from 'vite';
-import postcss from 'postcss';
-// @ts-ignore
-import scopify from 'postcss-scopify';
 
 /**
  * NOTE: If you add a new library, make sure it is wrapped in a <div> with the
@@ -61,10 +58,19 @@ export default defineConfig(({ mode }) => {
             vue(),
             svgLoader(),
             cssInjectedByJsPlugin({
-                preRenderCSSCode: (cssCode) => postcss()
-                    // add a prefix class to every rule; this helps mitigate CSS problems with duplicated webapps-common rules
-                    .use(scopify(`.knime-ui-${mode}`))
-                    .process(cssCode).css
+                styleId: 'knime-ui-table',
+                injectCodeFunction: function injectCodeFunction(cssCode) {
+                    try {
+                        if (typeof document !== 'undefined') {
+                            const elementStyle = document.createElement('style');
+                            elementStyle.appendChild(document.createTextNode(cssCode));
+                            document.head.prepend(elementStyle);
+                        }
+                    } catch (e) {
+                        // eslint-disable-next-line no-console
+                        console.error('vite-plugin-css-injected-by-js', e);
+                    }
+                }
             })
         ],
         resolve: {
