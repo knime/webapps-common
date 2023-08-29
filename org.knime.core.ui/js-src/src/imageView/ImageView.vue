@@ -32,9 +32,7 @@ export default {
 </script>
 
 <template>
-  <div class="knime-ui-ImageView">
-    <div class="scroll-container">
-      <img :src="getImageUrl" alt="" />
-    </div>
+  <div class="scroll-container">
+    <img :src="getImageUrl" alt="" />
   </div>
 </template>

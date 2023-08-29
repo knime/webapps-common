@@ -22,7 +22,7 @@ export default {
 </script>
 
 <template>
-  <div class="knime-ui-FlowVariableView" style="height: 100%">
+  <div class="container">
     <div v-if="initialData" class="counts">
       <span class="count">Count: {{ initialData.length }}</span>
     </div>
@@ -53,6 +53,10 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
+.container {
+  height: 100%;
+}
+
 .scroll-container,
 .counts {
   font-weight: 400;

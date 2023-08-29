@@ -5,9 +5,6 @@ import svgLoader from "vite-svg-loader";
 import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 import type { LibraryOptions } from "vite";
 import { loadEnv } from "vite";
-import postcss from "postcss";
-// @ts-ignore
-import scopify from "postcss-scopify";
 
 const camelCase = (input: string) => {
   return input
@@ -74,13 +71,20 @@ export default defineConfig(({ mode }) => {
     plugins: [
       vue(),
       svgLoader(),
-      // not supported natively in Vite yet, see https://github.com/vitejs/vite/issues/1579]
+      // not supported natively in Vite yet, see https://github.com/vitejs/vite/issues/1579
       cssInjectedByJsPlugin({
-        preRenderCSSCode: (cssCode) => {
-          // add a prefix class to every rule; this helps mitigate CSS problems with duplicated webapps-common rules
-          return postcss()
-            .use(scopify(`.knime-ui-${mode}`))
-            .process(cssCode).css;
+        styleId: "knime-ui-table",
+        injectCodeFunction: function injectCodeFunction(cssCode) {
+          try {
+            if (typeof document !== "undefined") {
+              const elementStyle = document.createElement("style");
+              elementStyle.appendChild(document.createTextNode(cssCode));
+              document.head.prepend(elementStyle);
+            }
+          } catch (e) {
+            // eslint-disable-next-line no-console
+            console.error("vite-plugin-css-injected-by-js", e);
+          }
         },
       }),
     ],
