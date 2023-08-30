@@ -796,6 +796,9 @@ export default {
       }
       this.transformSelection();
       this.totalSelected = await this.requestTotalSelected();
+      if (this.showOnlySelectedRows) {
+        this.refreshTable({ resetPage: true });
+      }
     },
     requestTotalSelected() {
       if (this.searchTerm || this.colFilterActive) {
@@ -810,6 +813,9 @@ export default {
         : this.bottomRows[rowInd][1];
       this.totalSelected += selected ? 1 : -1;
       this.updateSelection(selected, [rowKey]);
+      if (this.showOnlySelectedRows) {
+        this.refreshTable({ resetPage: true });
+      }
     },
     async onSelectAll(selected) {
       const filterActive = this.currentRowCount !== this.totalRowCount;
@@ -840,6 +846,9 @@ export default {
       }
       this.transformSelection();
       this.totalSelected = selected ? this.currentRowCount : 0;
+      if (this.showOnlySelectedRows) {
+        this.refreshTable({ resetPage: true });
+      }
     },
     onSearch(input) {
       this.searchTerm = input;

@@ -432,6 +432,38 @@ class TableViewTest {
     }
 
     @Test
+    void testDataServiceGetSelectedOnly() {
+        final var table = createTestTableFiltering();
+        final var globalSearchTerm = "";
+        final var columnFilterValue = new String[][]{new String[0], new String[0], new String[0]};
+        final var filterRowKeys = false;
+        final var selection = Set.of(new RowKey("rowkey 0"));
+        final var dataService = TableViewUtil.createTableViewDataService(() -> table, () -> selection, null);
+        final var resultTable = dataService.getFilteredAndSortedTable(table.getDataTableSpec().getColumnNames(), 0, 2, "string", true,
+            globalSearchTerm, columnFilterValue, filterRowKeys, null, false, false, true, false, true);
+        assertThat(resultTable.getRowCount()).isEqualTo(1);
+    }
+
+    @Test
+    void testDataServiceGetSelectedOnlyWithGlobalSearch() {
+        final var table = createTestTableFiltering();
+        var globalSearchTerm = "StRinG1";
+        final var columnFilterValue = new String[][]{new String[0], new String[0], new String[0]};
+        final var filterRowKeys = false;
+        final var selection = Set.of(new RowKey("rowkey 0"));
+        final var dataService = TableViewUtil.createTableViewDataService(() -> table, () -> selection, null);
+        var resultTable = dataService.getFilteredAndSortedTable(table.getDataTableSpec().getColumnNames(), 0, 2, "string", true,
+            globalSearchTerm, columnFilterValue, filterRowKeys, null, false, false, true, false, true);
+        assertThat(resultTable.getRowCount()).isEqualTo(1);
+
+        // search for something that is not selected
+        globalSearchTerm = "NotInTable";
+        resultTable = dataService.getFilteredAndSortedTable(table.getDataTableSpec().getColumnNames(), 0, 2, "string", true,
+            globalSearchTerm, columnFilterValue, filterRowKeys, null, false, false, true, false, true);
+        assertThat(resultTable.getRowCount()).isEqualTo(0);
+    }
+
+    @Test
     void testDataServiceSetsGetTableWithMultipleMissingColumn() {
         final var warningMessageAsserter = new DataServiceContextWarningMessagesAsserter(
             "The selected columns foo, bar are not present in the table.");

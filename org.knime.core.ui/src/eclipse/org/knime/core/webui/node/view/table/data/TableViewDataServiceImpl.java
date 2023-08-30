@@ -113,6 +113,8 @@ public class TableViewDataServiceImpl implements TableViewDataService {
 
     private final Supplier<Set<RowKey>> m_selectionSupplier;
 
+    private Set<RowKey> m_previousSelection = null;
+
     /**
      * @param tableSupplier supplier for the table from which to obtain data
      * @param tableId a globally unique id; used to uniquely identify images in the renderer-registry which belong to
@@ -175,6 +177,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         final boolean updateDisplayedColumns, final boolean updateTotalSelected, final boolean forceClearImageDataCache,
         final boolean trimColumns, final boolean showOnlySelectedRows) {
         var bufferedDataTable = getInputTable();
+        var currentSelection = getCurrentSelection();
         if (bufferedDataTable == null) {
             return createEmptyTable();
         }
@@ -192,11 +195,13 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         sortTable(bufferedDataTable, sortColumn, sortAscending), sortColumn == null || bufferedDataTable.size() <= 1,
             sortColumn, sortAscending);
         final var sortedTable = getSortedTableFromCache();
+        // Keys are only interesting if showOnlySelected is true otherwise we don't want to reset the cache
+        final var currentSelectedKeys = showOnlySelectedRows ? currentSelection : Set.of();
         m_filteredAndSortedTableCache.conditionallyUpdateCachedTable(
             () -> filterTable(sortedTable, columns, globalSearchTerm, columnFilterValue, filterRowKeys),
             globalSearchTerm == null && columnFilterValue == null, globalSearchTerm, columnFilterValue, columns,
-            sortColumn, sortAscending);
-        final var filteredAndSortedTable = getFilteredAndSortedTableFromCache();
+            sortColumn, sortAscending,  showOnlySelectedRows, currentSelectedKeys);
+        final var filteredAndSortedTable = getFilteredAndSortedTableFromCache()
 
         if (m_rendererRegistry != null) {
             if (forceClearImageDataCache || m_sortedTableCache.wasUpdated()
@@ -277,7 +282,6 @@ public class TableViewDataServiceImpl implements TableViewDataService {
 
             @Override
             public Long getTotalSelected() {
-                var currentSelection = getCurrentSelection();
                 return m_filteredAndSortedTableCache.getCachedTable().isEmpty() ? currentSelection.size()
                     : countSelectedRows(filteredAndSortedTable, currentSelection);
             }
@@ -367,15 +371,15 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         }
     }
 
-    private static BufferedDataTable filterTable(final DataTable table, final String[] columns,
-        final String globalSearchTerm, final String[][] columnFilterValue, final boolean filterRowKeys) {
+    private BufferedDataTable filterTable(final DataTable table, final String[] columns,
+        final String globalSearchTerm, final String[][] columnFilterValue, final boolean filterRowKeys, final boolean showOnlySelectedRows) {
         final var spec = table.getDataTableSpec();
         var exec = DataServiceContext.get().getExecutionContext();
         var resultContainer = exec.createDataContainer(spec);
         try (final var iterator = (CloseableRowIterator)table.iterator()) {
             while (iterator.hasNext()) {
                 final var row = iterator.next();
-                if (filtersMatch(row, spec, globalSearchTerm, columnFilterValue, columns, filterRowKeys)) {
+                if (filtersMatch(row, spec, globalSearchTerm, columnFilterValue, columns, filterRowKeys, showOnlySelectedRows)) {
                     resultContainer.addRowToTable(row);
                 }
             }
@@ -409,15 +413,22 @@ public class TableViewDataServiceImpl implements TableViewDataService {
     }
 
     @SuppressWarnings("java:S107") // accept the large number of parameters
-    private static boolean filtersMatch(final DataRow row, final DataTableSpec spec, final String globalSearchTerm,
-        final String[][] columnFilterValue, final String[] columns, final boolean filterRowKeys) {
+    private boolean filtersMatch(final DataRow row, final DataTableSpec spec, final String globalSearchTerm,
+        final String[][] columnFilterValue, final String[] columns, final boolean filterRowKeys,
+        final boolean showOnlySelectedRows) {
 
         var globalMatch = false;
+
+        if (showOnlySelectedRows && !isSelected(row)) {
+            return false;
+        }
 
         if (filterRowKeys) {
             final var rowKeyValue = row.getKey().toString().toLowerCase();
             if (matchesGlobalSearchTerm(rowKeyValue, globalSearchTerm)) {
                 globalMatch = true;
+            } else {
+                return false;
             }
             if (!matchesColumnFilter(rowKeyValue, columnFilterValue, 0, false)) {
                 return false;
@@ -445,6 +456,10 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         return globalMatch;
     }
 
+    private boolean isSelected(final DataRow row) {
+        return getCurrentSelection().contains(row.getKey());
+    }
+
     private static boolean matchesColumnFilter(final String cellStringValue, final String[][] columnFilters,
         final int columnFilterIndex, final boolean needsExactMatch) {
         if (allColumnFiltersEmpty(columnFilters)) {
@@ -463,7 +478,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
     }
 
     private static boolean columnFiltersEmpty(final String[] columnFilter) {
-        return columnFilter.length == 0 || columnFilter[0].isEmpty();
+        return columnFilter == null || columnFilter.length == 0 || columnFilter[0].isEmpty();
     }
 
     private static boolean matchesGlobalSearchTerm(final String cellStringValue, final String globalSearchTerm) {
