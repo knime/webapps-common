@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { radioTester } from "../../radioRenderer";
-import { dialogInitialData } from "@@/test-setup/mocks/dialogInitialData";
+import { dialogInitialData } from "@@/test-setup/mocks/dialogData";
 
 describe("radioTester", () => {
   it("applies on oneOf control with radio format", () => {

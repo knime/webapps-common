@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { simpleTwinlistTester } from "../../twinlistRenderer";
 import { inputFormats } from "@/nodeDialog/constants/inputFormats";
-import { dialogInitialData } from "@@/test-setup/mocks/dialogInitialData";
+import { dialogInitialData } from "@@/test-setup/mocks/dialogData";
 
 describe("simpleTwinlistTester", () => {
   it("applies on anyOf control with twinlist format", () => {

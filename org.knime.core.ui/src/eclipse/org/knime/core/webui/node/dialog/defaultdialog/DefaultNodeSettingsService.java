@@ -71,6 +71,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUti
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsSettingsImpl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
@@ -102,8 +103,9 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
         try {
             var mapper = JsonFormsDataUtil.getMapper();
             final var root = (ObjectNode)mapper.readTree(textSettings);
-            fromJsonToNodeSettings(root, SettingsType.MODEL, settings);
-            fromJsonToNodeSettings(root, SettingsType.VIEW, settings);
+            var data = root.get(FIELD_NAME_DATA);
+            fromJsonToNodeSettings(data, SettingsType.MODEL, settings);
+            fromJsonToNodeSettings(data, SettingsType.VIEW, settings);
             fromJsonToVariableSettings(root.get(FLOW_VARIABLE_SETTINGS_KEY), settings.get(SettingsType.MODEL),
                 settings.get(SettingsType.VIEW), mapper);
         } catch (JsonProcessingException e) {
@@ -112,7 +114,7 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
         }
     }
 
-    private void fromJsonToNodeSettings(final ObjectNode rootNode, final SettingsType settingsType,
+    private void fromJsonToNodeSettings(final JsonNode rootNode, final SettingsType settingsType,
         final Map<SettingsType, NodeAndVariableSettingsWO> settings) {
         if (settings.containsKey(settingsType)) {
             final var node = rootNode.get(settingsType.getConfigKey());

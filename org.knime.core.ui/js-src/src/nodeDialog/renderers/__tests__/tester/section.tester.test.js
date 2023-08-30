@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { dialogInitialData } from "@@/test-setup/mocks/dialogInitialData";
+import { dialogInitialData } from "@@/test-setup/mocks/dialogData";
 import { sectionLayoutTester } from "../../sectionLayoutRenderer";
 
 describe("uses section layout", () => {

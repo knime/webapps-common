@@ -515,6 +515,18 @@ export const dialogInitialData = {
       },
     ],
   },
+  flowVariableSettings: {
+    "view.title": {
+      controllingFlowVariableName: "variable_1",
+      exposedFlowVariableName: "exposed variable",
+      controllingFlowVariableAvailable: true,
+    },
+  },
+};
+
+export const dialogApplyData = {
+  data: dialogInitialData.data,
+  flowVariableSettings: dialogInitialData.flowVariableSettings,
 };
 
 export const expectedRenderers = [

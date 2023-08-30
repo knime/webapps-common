@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { columnSelectTester } from "../../columnSelectRenderer";
-import { dialogInitialData } from "@@/test-setup/mocks/dialogInitialData";
+import { dialogInitialData } from "@@/test-setup/mocks/dialogData";
 
 describe("columnSelectTester", () => {
   it("applies control with columnSelect format", () => {

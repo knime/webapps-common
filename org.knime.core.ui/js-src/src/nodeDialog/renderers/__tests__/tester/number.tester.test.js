@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { numberTester } from "../../numberRenderer";
 import { inputFormats } from "@/nodeDialog/constants/inputFormats";
-import { dialogInitialData } from "@@/test-setup/mocks/dialogInitialData";
+import { dialogInitialData } from "@@/test-setup/mocks/dialogData";
 
 describe("numberTester", () => {
   it("applies on number control with number format", () => {

@@ -1,5 +1,5 @@
 import { expect, describe, it } from "vitest";
-import { dialogInitialData } from "@@/test-setup/mocks/dialogInitialData";
+import { dialogInitialData } from "@@/test-setup/mocks/dialogData";
 import { arrayLayoutTester } from "../../arrayLayoutRenderer";
 
 describe("array tester", () => {

@@ -4,7 +4,7 @@ import { fallbackRenderers, defaultRenderers } from "..";
 import {
   dialogInitialData,
   expectedRenderers,
-} from "@@/test-setup/mocks/dialogInitialData";
+} from "@@/test-setup/mocks/dialogData";
 import { determineRenderer } from "./rendererTestUtils";
 
 const renderers = [

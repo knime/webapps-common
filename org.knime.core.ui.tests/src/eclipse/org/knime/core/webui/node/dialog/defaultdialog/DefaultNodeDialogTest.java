@@ -186,38 +186,40 @@ public class DefaultNodeDialogTest {
     void testApplyDataWithFlowVariableSettings() throws IOException, InvalidSettingsException {
         var applyData = """
                 {
-              "model": {
-                "model setting": "2"
-              },
-              "view": {
-                "view setting": "3",
-                "nested": {
-                  "nested view setting": "4",
-                  "nested view setting 2": "5"
-                }
-              },
-              "flowVariableSettings": {
-                  "model.model setting": {
-                    "controllingFlowVariableAvailable": false,
-                    "controllingFlowVariableName": "flow variable 1"
+                  "data": {
+                    "model": {
+                      "model setting": "2"
+                    },
+                    "view": {
+                      "view setting": "3",
+                      "nested": {
+                        "nested view setting": "4",
+                        "nested view setting 2": "5"
+                      }
+                    }
                   },
-                  "view.view setting": {
-                    "controllingFlowVariableAvailable": true,
-                    "controllingFlowVariableName": "flow variable 2"
-                  },
-                  "view.nested.nested view setting 3": {
-                    "exposedFlowVariableName": "exposed var name"
-                  },
-                  "view.nested.nested view setting 2": {
-                    "exposedFlowVariableName": "exposed var name"
-                  },
-                  "view.nested.nested view setting": {
-                    "controllingFlowVariableAvailable": false,
-                    "controllingFlowVariableName": "flow variable 3",
-                    "exposedFlowVariableName": "exposed var name"
+                  "flowVariableSettings": {
+                    "model.model setting": {
+                      "controllingFlowVariableAvailable": false,
+                      "controllingFlowVariableName": "flow variable 1"
+                    },
+                    "view.view setting": {
+                      "controllingFlowVariableAvailable": true,
+                      "controllingFlowVariableName": "flow variable 2"
+                    },
+                    "view.nested.nested view setting 3": {
+                      "exposedFlowVariableName": "exposed var name"
+                    },
+                    "view.nested.nested view setting 2": {
+                      "exposedFlowVariableName": "exposed var name"
+                    },
+                    "view.nested.nested view setting": {
+                      "controllingFlowVariableAvailable": false,
+                      "controllingFlowVariableName": "flow variable 3",
+                      "exposedFlowVariableName": "exposed var name"
+                    }
                   }
-               }
-            }
+                }
                 """;
         NodeDialogManager.getInstance().callApplyDataService(NodeWrapper.of(m_nnc), applyData);
 

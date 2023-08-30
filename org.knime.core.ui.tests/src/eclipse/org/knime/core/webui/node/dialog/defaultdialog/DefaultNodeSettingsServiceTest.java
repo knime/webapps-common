@@ -153,7 +153,8 @@ class DefaultNodeSettingsServiceTest {
 
         // create settings service and apply wrapped "foo" view data into node settings
         final var settingsService = new DefaultNodeSettingsService(Map.of(SettingsType.VIEW, TestSettings.class));
-        final var wrappedViewData = MAPPER.createObjectNode().set(SettingsType.VIEW.getConfigKey(), viewData);
+        final var wrappedViewData = MAPPER.createObjectNode().set("data",
+            MAPPER.createObjectNode().set(SettingsType.VIEW.getConfigKey(), viewData));
         settingsService.toNodeSettings(wrappedViewData.toString(),
             Map.of(SettingsType.VIEW, NodeDialogTest.createNodeAndVariableSettingsWO(nodeSettings)));
 

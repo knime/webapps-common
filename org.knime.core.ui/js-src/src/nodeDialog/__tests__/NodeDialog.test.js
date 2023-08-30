@@ -3,7 +3,10 @@ import { createStore } from "vuex";
 import { shallowMount } from "@vue/test-utils";
 import { JsonForms } from "@jsonforms/vue";
 import { JsonDataService } from "@knime/ui-extension-service";
-import { dialogInitialData } from "@@/test-setup/mocks/dialogInitialData";
+import {
+  dialogApplyData,
+  dialogInitialData,
+} from "@@/test-setup/mocks/dialogData";
 
 import NodeDialog from "../NodeDialog.vue";
 import flushPromises from "flush-promises";
@@ -111,7 +114,7 @@ describe("NodeDialog.vue", () => {
     const wrapper = shallowMount(NodeDialog, getOptions());
     await flushPromises();
 
-    expect(wrapper.vm.getData()).toStrictEqual(dialogInitialData.data);
+    expect(wrapper.vm.getData()).toStrictEqual(dialogApplyData);
   });
 
   describe("onSettingsChanged", () => {
@@ -155,9 +158,7 @@ describe("NodeDialog.vue", () => {
     it("does not set new value if data is not provided", () => {
       jsonformsStub.vm.$emit("change", {});
 
-      expect(wrapper.vm.getData()).toStrictEqual({
-        ...dialogInitialData.data,
-      });
+      expect(wrapper.vm.getData()).toStrictEqual(dialogApplyData);
       expect(publishDataSpy).not.toHaveBeenCalled();
     });
 
@@ -349,7 +350,7 @@ describe("NodeDialog.vue", () => {
         expect(transformSettings).toHaveBeenCalled();
       });
       expect(handleChange).toHaveBeenCalledWith("", {
-        ...wrapper.vm.getData(),
+        ...wrapper.vm.getData().data,
         test2: data,
         test4: "transformed",
       });
@@ -375,7 +376,7 @@ describe("NodeDialog.vue", () => {
       expect(arrayLayoutWatcher.transformSettings).toHaveBeenCalled();
 
       expect(handleChange).toHaveBeenCalledWith("", {
-        ...wrapper.vm.getData(),
+        ...wrapper.vm.getData().data,
         arrayLayoutSetting: [{ value: "some data" }, { value: "second" }],
       });
     });

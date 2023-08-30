@@ -67,7 +67,10 @@ export default {
   },
   methods: {
     getData() {
-      return this.currentData;
+      return {
+        data: this.currentData,
+        flowVariableSettings: this.schema.flowVariablesMap,
+      };
     },
     setOriginalModelSettings(data) {
       this.originalModelSettings = this.getModelSettings(data);

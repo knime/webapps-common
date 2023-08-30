@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { valueSwitchTester } from "../../valueSwitchRenderer";
-import { dialogInitialData } from "@@/test-setup/mocks/dialogInitialData";
+import { dialogInitialData } from "@@/test-setup/mocks/dialogData";
 
 describe("valueSwitchTester", () => {
   it("applies on a oneOf control with valueSwitch format", () => {
