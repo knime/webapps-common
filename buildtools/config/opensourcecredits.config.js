@@ -19,6 +19,7 @@ module.exports = {
     "webapps-common@0.0.0",
     "knime-build-tools@0.0.0",
     "knime-ui@0.0.0-unused",
+    "@knime/knime-ui-table@0.3.1-release.202307",
     "knime-ui-extension-service@1.0.0",
     "knime-pagebuilder@1.0.0",
     "webpack-external-import@0.3.0-beta.0", // licensed under GPL-3 but not included in the production app
