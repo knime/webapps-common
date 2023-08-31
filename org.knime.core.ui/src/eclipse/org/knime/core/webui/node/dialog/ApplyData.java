@@ -50,7 +50,6 @@ package org.knime.core.webui.node.dialog;
 
 import java.io.IOException;
 import java.util.EnumMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -62,7 +61,6 @@ import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.NodeDialog.OnApplyNodeModifier;
 import org.knime.core.webui.node.view.NodeViewManager;
 
@@ -94,26 +92,26 @@ final class ApplyData {
         var nodeSettings = new NodeSettings("node_settings");
         // to keep another copy of the settings to be able to tell whether
         // settings have been changed
-        var previousNodeSettings = new NodeSettings("previous_settings");
         var wfm = m_nc.getParent();
         var nodeID = m_nc.getID();
         try {
-            // write settings into nodeSettings and previousNodeSettings objects
+            // write settings into nodeSettings
             wfm.saveNodeSettings(nodeID, nodeSettings);
-            wfm.saveNodeSettings(nodeID, previousNodeSettings);
-
-            // extract model and view settings from nodeSettings object
-            Map<SettingsType, NodeAndVariableSettingsWO> settingsMap = new EnumMap<>(SettingsType.class);
-            var modelSettings = getModelSettings(nodeSettings, previousNodeSettings, settingsMap);
-            var viewSettings = getViewSettings(nodeSettings, previousNodeSettings, settingsMap);
+            var previousNodeSettings = cloneSettings(nodeSettings, "previous_settings");
 
             // transfer data into settings, i.e., apply the data to the settings
-            m_nodeSettingsService.toNodeSettings(data, settingsMap);
+            populateNewSettings(data, nodeSettings);
+
+            // extract model and view settings from nodeSettings objects
+            var modelSettings = getSubSettings(nodeSettings, SettingsType.MODEL);
+            var viewSettings = getSubSettings(nodeSettings, SettingsType.VIEW);
+            var previousModelSettings = getSubSettings(previousNodeSettings, SettingsType.MODEL);
+            var previousViewSettings = getSubSettings(previousNodeSettings, SettingsType.VIEW);
 
             // determine whether model or view settings changed by comparing against the previousNodeSettings
-            var modelSettingsChanged = settingsChanged(modelSettings)
+            var modelSettingsChanged = settingsChanged(modelSettings, previousModelSettings)
                 || variableSettingsChanged(SettingsType.MODEL, nodeSettings, previousNodeSettings);
-            var viewSettingsChanged = settingsChanged(viewSettings)
+            var viewSettingsChanged = settingsChanged(viewSettings, previousViewSettings)
                 || variableSettingsChanged(SettingsType.VIEW, nodeSettings, previousNodeSettings);
 
             NodeSettings viewVariables = null;
@@ -124,13 +122,13 @@ final class ApplyData {
                     viewVariables =
                         nodeSettings.getNodeSettings(SettingsType.VIEW.getVariablesConfigKey()).getNodeSettings("tree");
                     replaceVariableControlledSettingsWithPreviousSettings(viewVariables, //
-                        viewSettings.getFirst(), // NOSONAR: viewSettingsChanged is false if viewSettings is null
-                        viewSettings.getSecond());
+                        viewSettings, // NOSONAR: viewSettingsChanged is false if viewSettings is null
+                        previousViewSettings);
                 }
 
                 // validate settings
                 var nodeView = NodeViewManager.getInstance().getNodeView(m_nc);
-                nodeView.validateSettings(viewSettings.getFirst()); // NOSONAR: viewSettingsChanged is false if viewSettings are null
+                nodeView.validateSettings(viewSettings); // NOSONAR: viewSettingsChanged is false if viewSettings are null
             }
 
             if (modelSettingsChanged) {
@@ -140,15 +138,14 @@ final class ApplyData {
                     var modelVariables = nodeSettings.getNodeSettings(SettingsType.MODEL.getVariablesConfigKey())
                         .getNodeSettings("tree");
                     replaceVariableControlledSettingsWithPreviousSettings(modelVariables, //
-                        modelSettings.getFirst(), // NOSONAR: modelSettingsChanged is false if modelSettings is null
-                        modelSettings.getSecond());
+                        modelSettings, // NOSONAR: modelSettingsChanged is false if modelSettings is null
+                        previousModelSettings);
                 }
 
                 // 'persist' settings and load model settings into the node model
                 wfm.loadNodeSettings(nodeID, nodeSettings);
             } else if (viewSettingsChanged) {
-                loadViewSettingsIntoNode(wfm, nodeID, viewVariables, viewSettings.getFirst(), viewSettings.getSecond(),
-                    nodeSettings);
+                loadViewSettingsIntoNode(wfm, nodeID, viewVariables, viewSettings, previousViewSettings, nodeSettings);
             }
 
             if (m_onApplyModifierWrapper != null) {
@@ -158,11 +155,22 @@ final class ApplyData {
                 // to settings controlled by flow variables are ignored by the close modifier. In other words, if a
                 // setting is controlled by a flow variable, its previous and updated values, as passed to the close
                 // modifier, are always identical.
-                m_onApplyModifierWrapper.onApply(modelSettings, viewSettings);
+                m_onApplyModifierWrapper.onApply(modelSettings, viewSettings, previousModelSettings, previousViewSettings);
             }
         } catch (InvalidSettingsException ex) {
             throw new IOException("Invalid node settings: " + ex.getMessage(), ex);
         }
+    }
+
+    private void populateNewSettings(final String data, final NodeSettings nodeSettings)
+        throws InvalidSettingsException {
+        var settingsMap = new EnumMap<SettingsType, NodeAndVariableSettingsWO>(SettingsType.class);
+        for (var settingsType : SettingsType.values()) {
+            var subSettings = getSubSettings(nodeSettings, settingsType);
+            settingsMap.put(settingsType, NodeAndVariableSettingsProxy.createWOProxy(subSettings,
+                new VariableSettings(nodeSettings, settingsType)));
+        }
+        m_nodeSettingsService.toNodeSettings(data, settingsMap);
     }
 
     private static void loadViewSettingsIntoNode(final WorkflowManager wfm, final NodeID nodeID,
@@ -261,9 +269,9 @@ final class ApplyData {
             && variable.getString("used_variable", null) == null;
     }
 
-    private static boolean settingsChanged(final Pair<NodeSettings, NodeSettings> settings) {
+    private static boolean settingsChanged(final NodeSettings settings, final NodeSettings previousSettings) {
         if (settings != null) {
-            return !Objects.equals(settings.getFirst(), settings.getSecond());
+            return !Objects.equals(settings, previousSettings);
         }
         return false;
     }
@@ -277,43 +285,26 @@ final class ApplyData {
         final var previousVarSettings = previousNodeSettings.containsKey(variablesConfigKey) //
             ? previousNodeSettings.getNodeSettings(variablesConfigKey) //
             : null;
-        return settingsChanged(Pair.create(varSettings, previousVarSettings));
+        return settingsChanged(varSettings, previousVarSettings);
     }
 
-    /*
-     * Returns a pair of the view settings and the previous view settings. Or null if there aren't any view settings.
-     */
-    private Pair<NodeSettings, NodeSettings> getViewSettings(final NodeSettings settings,
-        final NodeSettings previousSettings, final Map<SettingsType, NodeAndVariableSettingsWO> settingsMap)
+    private NodeSettings getSubSettings(final NodeSettings settings, final SettingsType type)
         throws InvalidSettingsException {
-        if (hasViewSettings()) {
-            var viewSettings = getOrCreateSubSettings(settings, SettingsType.VIEW.getConfigKey());
-            var previousViewSettings = getOrCreateSubSettings(previousSettings, SettingsType.VIEW.getConfigKey());
-            settingsMap.put(SettingsType.VIEW, NodeAndVariableSettingsProxy.createWOProxy(viewSettings,
-                VariableSettings.create(settings, SettingsType.VIEW)));
-            return Pair.create(viewSettings, previousViewSettings);
+        if (hasSettings(type)) {
+            return getOrCreateSubSettings(settings, type.getConfigKey());
+        } else if (type == SettingsType.MODEL) {
+            // even if the node has no model settings,
+            // we still have to add empty model settings since the wfm expects node settings to be present
+            settings.addNodeSettings(type.getConfigKey());
         }
         return null;
     }
 
-    /*
-     * Returns a pair of the model settings and the previous model settings. Or null if there aren't any model settings.
-     */
-    private Pair<NodeSettings, NodeSettings> getModelSettings(final NodeSettings settings,
-        final NodeSettings previousSettings, final Map<SettingsType, NodeAndVariableSettingsWO> settingsMap)
-        throws InvalidSettingsException {
-        if (hasModelSettings()) {
-            var modelSettings = getOrCreateSubSettings(settings, SettingsType.MODEL.getConfigKey());
-            var previousModelSettings = getOrCreateSubSettings(previousSettings, SettingsType.MODEL.getConfigKey());
-            settingsMap.put(SettingsType.MODEL, NodeAndVariableSettingsProxy.createWOProxy(modelSettings,
-                VariableSettings.create(settings, SettingsType.MODEL)));
-            return Pair.create(modelSettings, previousModelSettings);
-        } else {
-            // even if the node has no model settings,
-            // we still have to add empty model settings since the wfm expects node settings to be present
-            settings.addNodeSettings(SettingsType.MODEL.getConfigKey());
-            return null;
-        }
+
+    private static NodeSettings cloneSettings(final NodeSettings s, final String key) {
+        var res = new NodeSettings(key);
+        s.copyTo(res);
+        return res;
     }
 
     private static NodeSettings getOrCreateSubSettings(final NodeSettings settings, final String key)
@@ -328,12 +319,8 @@ final class ApplyData {
         return subSettings;
     }
 
-    private boolean hasModelSettings() {
-        return m_settingsTypes.contains(SettingsType.MODEL);
-    }
-
-    private boolean hasViewSettings() {
-        return m_settingsTypes.contains(SettingsType.VIEW);
+    private boolean hasSettings(final SettingsType type) {
+        return m_settingsTypes.contains(type);
     }
 
     void cleanUp() {
@@ -365,19 +352,19 @@ final class ApplyData {
             m_modifier = modifier;
         }
 
-        private void onApply(final Pair<NodeSettings, NodeSettings> modelSettings,
-            final Pair<NodeSettings, NodeSettings> viewSettings) {
+        private void onApply(final NodeSettings modelSettings, final NodeSettings viewSettings,
+            final NodeSettings previousModelSettings, final NodeSettings previousViewSettings) {
             if (modelSettings != null) {
                 if (m_initialModelSettings == null) {
-                    m_initialModelSettings = modelSettings.getSecond();
+                    m_initialModelSettings = previousModelSettings;
                 }
-                m_updatedModelSettings = modelSettings.getFirst();
+                m_updatedModelSettings = modelSettings;
             }
             if (viewSettings != null) {
                 if (m_initialViewSettings == null) {
-                    m_initialViewSettings = viewSettings.getSecond();
+                    m_initialViewSettings = previousViewSettings;
                 }
-                m_updatedViewSettings = viewSettings.getFirst();
+                m_updatedViewSettings = viewSettings;
             }
         }
 

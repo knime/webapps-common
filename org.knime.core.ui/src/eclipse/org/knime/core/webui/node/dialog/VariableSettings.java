@@ -94,7 +94,7 @@ final class VariableSettings implements VariableSettingsWO, VariableSettingsRO {
 
     private final NodeSettings m_nodeSettings;
 
-    private VariableSettings(final NodeSettings nodeSettings, final SettingsType type) throws InvalidSettingsException {
+    VariableSettings(final NodeSettings nodeSettings, final SettingsType type) throws InvalidSettingsException {
         m_nodeSettings = nodeSettings.getNodeSettings(type.getConfigKey());
 
         m_variableSettingsCreator = () -> {

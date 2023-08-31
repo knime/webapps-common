@@ -178,7 +178,7 @@ public final class NodeDialogAdapter implements UIExtension, DataServiceProvider
             if (hasViewSettings()) {
                 var ns = new NodeSettings("default_view_settings");
                 m_nodeSettingsService.getDefaultNodeSettings(
-                    Map.of(SettingsType.VIEW, NodeAndVariableSettingsProxy.createWOProxy(ns, null)), specs);
+                    Map.of(SettingsType.VIEW, ns), specs);
                 return ns;
             } else {
                 return super.getDefaultViewSettings(specs);
