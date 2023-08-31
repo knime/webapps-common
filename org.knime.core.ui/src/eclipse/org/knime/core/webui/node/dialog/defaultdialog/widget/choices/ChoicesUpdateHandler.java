@@ -59,5 +59,5 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyH
  *
  * @author Paul Bärnreuther
  */
-public interface ChoicesUpdateHandler<S> extends UpdateHandler<PossibleValue[], S> {
+public interface ChoicesUpdateHandler<S> extends UpdateHandler<IdAndText[], S> {
 }

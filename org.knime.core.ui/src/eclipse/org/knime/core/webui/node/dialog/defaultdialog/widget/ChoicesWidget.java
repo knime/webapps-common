@@ -70,8 +70,10 @@ public @interface ChoicesWidget {
 
     /**
      * @return the provider for the list of possible values. Use a {@link ColumnChoicesProvider} to supply additional
-     *         information like the type of a column alongside its name to the frontend.
-     *         TODO UIEXT-907 use a separate annotation instead for column choices.
+     *         information like the type of a column alongside its name to the frontend. Make the choices provider
+     *         asynchronous by additionally implementing {@link AsyncChoicesProvider}. TODO UIEXT-907 use a separate
+     *         annotation instead for column choices.
+     *
      */
     Class<? extends ChoicesProvider> choices() default ChoicesProvider.class;
 

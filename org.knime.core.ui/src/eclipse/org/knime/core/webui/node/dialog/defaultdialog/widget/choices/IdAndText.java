@@ -44,43 +44,26 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jul 10, 2023 (Paul Bärnreuther): created
+ *   Jun 28, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
+package org.knime.core.webui.node.dialog.defaultdialog.widget.choices;
 
-import java.util.Collection;
-import java.util.Optional;
-
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesUpdateHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.NoopChoicesUpdateHandler;
 
 /**
- * The holder of all {@link ChoicesWidget#choicesUpdateHandler}s.
+ * This represents one of the possible values within a {@link ChoicesWidget}.
+ *
+ * @param id the id which is saved on selection
+ * @param text the displayed text
  *
  * @author Paul Bärnreuther
  */
-class ChoicesWidgetHandlerHolder extends WidgetHandlerHolder<ChoicesUpdateHandler<?>> {
-
+public record IdAndText(String id, String text) {
     /**
-     * @param settingsClasses
+     * @param id
+     * @return a choice whose text matches the given id.
      */
-    ChoicesWidgetHandlerHolder(final Collection<Class<? extends DefaultNodeSettings>> settingsClasses) {
-        super(settingsClasses);
+    public static IdAndText fromId(final String id) {
+        return new IdAndText(id, id);
     }
-
-    @Override
-    Optional<Class<? extends ChoicesUpdateHandler<?>>> getHandlerClass(final TraversedField field) {
-        final var choicesWidget = field.propertyWriter().getAnnotation(ChoicesWidget.class);
-        if (choicesWidget != null) {
-            final var updateHandler = choicesWidget.choicesUpdateHandler();
-            if (updateHandler != NoopChoicesUpdateHandler.class) {
-                return Optional.of(updateHandler);
-            }
-        }
-        return Optional.empty();
-    }
-
 }

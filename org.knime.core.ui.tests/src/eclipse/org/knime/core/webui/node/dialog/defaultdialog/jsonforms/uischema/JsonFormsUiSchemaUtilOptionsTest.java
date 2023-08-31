@@ -73,6 +73,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.LayoutGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.AsyncChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesProvider;
@@ -86,7 +87,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonChange;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.PossibleValue;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.IdAndText;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DeclaringDefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
 
@@ -273,8 +274,8 @@ class JsonFormsUiSchemaUtilOptionsTest {
     static class TestChoicesProviderWithIdAndText implements ChoicesProvider {
 
         @Override
-        public PossibleValue[] choicesWithIdAndText(final DefaultNodeSettingsContext context) {
-            return new PossibleValue[]{new PossibleValue("id1", "text1"), new PossibleValue("id2", "text2")};
+        public IdAndText[] choicesWithIdAndText(final DefaultNodeSettingsContext context) {
+            return new IdAndText[]{new IdAndText("id1", "text1"), new IdAndText("id2", "text2")};
         }
     }
 
@@ -291,15 +292,20 @@ class JsonFormsUiSchemaUtilOptionsTest {
 
     }
 
-    @Test
-    void testChoicesWidget() {
-
-        DefaultNodeSettingsContext DefaultNodeSettingsContext = new DefaultNodeSettingsContext(
+    private static DefaultNodeSettingsContext createDefaultNodeSettingsContext() {
+        DefaultNodeSettingsContext defaultNodeSettingsContext = new DefaultNodeSettingsContext(
             new PortObjectSpec[]{new DataTableSpec(new DataColumnSpecCreator("column1", StringCell.TYPE).createSpec(), //
                 new DataColumnSpecCreator("column2", DoubleCell.TYPE).createSpec())},
             null, null);
+        return defaultNodeSettingsContext;
+    }
 
-        var response = buildTestUiSchema(ChoicesSettings.class, DefaultNodeSettingsContext);
+    @Test
+    void testChoicesWidget() {
+
+        DefaultNodeSettingsContext defaultNodeSettingsContext = createDefaultNodeSettingsContext();
+
+        var response = buildTestUiSchema(ChoicesSettings.class, defaultNodeSettingsContext);
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("foo");
         assertThatJson(response).inPath("$.elements[0].options.showNoneColumn").isBoolean().isTrue();
         assertThatJson(response).inPath("$.elements[0].options.possibleValues").isArray().hasSize(2);
@@ -345,6 +351,49 @@ class JsonFormsUiSchemaUtilOptionsTest {
         assertThatJson(response).inPath("$.elements[0].options.possibleValues").isArray().isEmpty();
         assertThatJson(response).inPath("$.elements[1].scope").isString().contains("bar");
         assertThatJson(response).inPath("$.elements[1].options.possibleValues").isArray().isEmpty();
+
+    }
+
+    static class TestAsyncColumnChoicesProvider implements ColumnChoicesProvider, AsyncChoicesProvider {
+
+        @Override
+        public DataColumnSpec[] columnChoices(final DefaultNodeSettingsContext context) {
+            return ((DataTableSpec)context.getPortObjectSpec(0).get()).stream().toArray(DataColumnSpec[]::new);
+        }
+    }
+
+    static class TestAsyncChoicesProvider implements ChoicesProvider, AsyncChoicesProvider {
+
+        @Override
+        public IdAndText[] choicesWithIdAndText(final DefaultNodeSettingsContext context) {
+            return new IdAndText[]{new IdAndText("id1", "text1"), new IdAndText("id2", "text2")};
+        }
+    }
+
+    class AsyncChoicesSettings implements DefaultNodeSettings {
+
+        @ChoicesWidget(showNoneColumn = true, choices = TestAsyncColumnChoicesProvider.class)
+        ColumnSelection m_foo;
+
+        @ChoicesWidget(choices = TestAsyncChoicesProvider.class)
+        String m_bar;
+
+    }
+
+    @Test
+    void testChoicesWidgetWitAsyncChoicesProvider() {
+        DefaultNodeSettingsContext defaultNodeSettingsContext = createDefaultNodeSettingsContext();
+
+        var response = buildTestUiSchema(AsyncChoicesSettings.class, defaultNodeSettingsContext);
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("foo");
+        assertThatJson(response).inPath("$.elements[0].options.showNoneColumn").isBoolean().isTrue();
+        assertThatJson(response).inPath("$.elements[0].options").isObject().doesNotContainKey("possibleValues");
+        assertThatJson(response).inPath("$.elements[0].options.asyncChoicesProviderClass").isString()
+            .isEqualTo(TestAsyncColumnChoicesProvider.class.getName());
+        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("bar");
+        assertThatJson(response).inPath("$.elements[1].options").isObject().doesNotContainKey("possibleValues");
+        assertThatJson(response).inPath("$.elements[1].options.asyncChoicesProviderClass").isString()
+            .isEqualTo(TestAsyncChoicesProvider.class.getName());
 
     }
 

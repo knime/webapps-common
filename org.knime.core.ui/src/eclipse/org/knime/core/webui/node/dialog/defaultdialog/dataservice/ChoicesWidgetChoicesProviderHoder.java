@@ -44,63 +44,37 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 28, 2023 (Paul Bärnreuther): created
+ *   Aug 31, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget.choices;
+package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 
-import org.knime.core.data.DataColumnSpec;
-import org.knime.core.data.def.StringCell;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
+import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 
 /**
  *
  * @author Paul Bärnreuther
- * @param <S> the supplier of the column name whose domain should be used. Other settings can be referenced by using the
- *            same name/paths for fields in this class as described in {@link DependencyHandler}.
  */
-public class DomainChoicesUpdateHandler<S extends ColumnNameSupplier> implements ChoicesUpdateHandler<S> {
+public class ChoicesWidgetChoicesProviderHoder extends WidgetHandlerHolder<ChoicesProvider> {
+
+    ChoicesWidgetChoicesProviderHoder(final Collection<Class<?>> settingsClasses) {
+        super(settingsClasses);
+    }
 
     @Override
-    public IdAndText[] update(final S settings, final DefaultNodeSettingsContext context)
-        throws WidgetHandlerException {
-        final var spec = context.getDataTableSpec(0);
-        if (spec.isEmpty()) {
-            return getEmptyResult();
+    Optional<Class<? extends ChoicesProvider>> getHandlerClass(final TraversedField field) {
+        final var choicesWidget = field.propertyWriter().getAnnotation(ChoicesWidget.class);
+        if (choicesWidget != null) {
+            final var choicesProviderClass = choicesWidget.choices();
+            if (choicesProviderClass != ChoicesProvider.class) {
+                return Optional.of(choicesProviderClass);
+            }
         }
-        final var columnName = settings.columnName();
-        final var colSpec = spec.get().getColumnSpec(columnName);
-        if (colSpec == null) {
-            return getEmptyResult();
-        }
-        final var domainValues = getDomainValues(colSpec);
-        if (domainValues.isEmpty()) {
-            throw new WidgetHandlerException(String.format(
-                "No column domain values present for column \"%s\". Consider using a Domain Calculator node.",
-                columnName));
-        }
-        return domainValues.get().stream().map(IdAndText::fromId).toArray(IdAndText[]::new);
-
-    }
-
-    private static IdAndText[] getEmptyResult() {
-        return new IdAndText[0];
-    }
-
-    /**
-     * @param colSpec the {@link DataColumnSpec} to obtain the domain values from
-     * @return the possible domain values of the given {@link DataColumnSpec}
-     */
-    public static Optional<List<String>> getDomainValues(final DataColumnSpec colSpec) {
-        var colDomain = colSpec.getDomain().getValues();
-        if (colDomain == null) {
-            return Optional.empty();
-        }
-        return Optional.of(colDomain.stream().map(cell -> ((StringCell)cell).getStringValue()).toList());
+        return Optional.empty();
     }
 
 }

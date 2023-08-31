@@ -43,64 +43,59 @@
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
  *
- * History
- *   Jun 28, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget.choices;
+package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.Arrays;
 
 import org.knime.core.data.DataColumnSpec;
-import org.knime.core.data.def.StringCell;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.IdAndText;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.PossibleColumnValue;
 
 /**
+ * This generator can be used to get the representation of the choices in a {@link ChoicesWidget} which we send via the
+ * uischema to the front-end. It is also used in data service requests when fetching the choices asynchronously.
  *
  * @author Paul Bärnreuther
- * @param <S> the supplier of the column name whose domain should be used. Other settings can be referenced by using the
- *            same name/paths for fields in this class as described in {@link DependencyHandler}.
  */
-public class DomainChoicesUpdateHandler<S extends ColumnNameSupplier> implements ChoicesUpdateHandler<S> {
+public final class ChoicesGenerator {
 
-    @Override
-    public IdAndText[] update(final S settings, final DefaultNodeSettingsContext context)
-        throws WidgetHandlerException {
-        final var spec = context.getDataTableSpec(0);
-        if (spec.isEmpty()) {
-            return getEmptyResult();
-        }
-        final var columnName = settings.columnName();
-        final var colSpec = spec.get().getColumnSpec(columnName);
-        if (colSpec == null) {
-            return getEmptyResult();
-        }
-        final var domainValues = getDomainValues(colSpec);
-        if (domainValues.isEmpty()) {
-            throw new WidgetHandlerException(String.format(
-                "No column domain values present for column \"%s\". Consider using a Domain Calculator node.",
-                columnName));
-        }
-        return domainValues.get().stream().map(IdAndText::fromId).toArray(IdAndText[]::new);
+    private final DefaultNodeSettingsContext m_settingsContext;
 
-    }
-
-    private static IdAndText[] getEmptyResult() {
-        return new IdAndText[0];
+    /**
+     * @param settingsContext supplied to the choices providers
+     */
+    public ChoicesGenerator(final DefaultNodeSettingsContext settingsContext) {
+        m_settingsContext = settingsContext;
     }
 
     /**
-     * @param colSpec the {@link DataColumnSpec} to obtain the domain values from
-     * @return the possible domain values of the given {@link DataColumnSpec}
+     * @param choicesProvider
+     * @return an array of possible values (either an array of {@link IdAndText} or of {@link PossibleColumnValue}).
      */
-    public static Optional<List<String>> getDomainValues(final DataColumnSpec colSpec) {
-        var colDomain = colSpec.getDomain().getValues();
-        if (colDomain == null) {
-            return Optional.empty();
+    public Object[] getChoices(final ChoicesProvider choicesProvider) {
+        if (choicesProvider instanceof ColumnChoicesProvider columnChoicesProvider) {
+            return getChoicesFromColumnChoicesProvider(columnChoicesProvider);
+        } else {
+            return getChoicesFromChoicesProvider(choicesProvider);
         }
-        return Optional.of(colDomain.stream().map(cell -> ((StringCell)cell).getStringValue()).toList());
+
     }
 
+    private PossibleColumnValue[] getChoicesFromColumnChoicesProvider(final ColumnChoicesProvider choicesProvider) {
+        DataColumnSpec[] columnChoices = choicesProvider == null || m_settingsContext == null ? new DataColumnSpec[0]
+            : choicesProvider.columnChoices(m_settingsContext);
+        return Arrays.asList(columnChoices).stream().map(PossibleColumnValue::fromColSpec)
+            .toArray(PossibleColumnValue[]::new);
+    }
+
+    private IdAndText[] getChoicesFromChoicesProvider(final ChoicesProvider choicesProvider) {
+        return choicesProvider == null || m_settingsContext == null //
+            ? new IdAndText[0] //
+            : choicesProvider.choicesWithIdAndText(m_settingsContext);
+    }
 }

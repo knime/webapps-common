@@ -85,6 +85,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFi
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.AsyncChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ComboBoxWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
@@ -124,7 +125,7 @@ final class UiSchemaOptionsGenerator {
 
     private final JavaType m_fieldType;
 
-    private final DefaultNodeSettingsContext m_DefaultNodeSettingsContext;
+    private final DefaultNodeSettingsContext m_defaultNodeSettingsContext;
 
     private final Collection<JsonFormsControl> m_fields;
 
@@ -142,7 +143,7 @@ final class UiSchemaOptionsGenerator {
         m_fieldType = field.getType();
         m_fieldClass = field.getType().getRawClass();
         m_fieldName = field.getName();
-        m_DefaultNodeSettingsContext = context;
+        m_defaultNodeSettingsContext = context;
         m_fields = fields;
         m_scope = scope;
     }
@@ -250,8 +251,15 @@ final class UiSchemaOptionsGenerator {
 
         if (annotatedWidgets.contains(ChoicesWidget.class)) {
             final var choicesWidget = m_field.getAnnotation(ChoicesWidget.class);
-            final var possibleValuesGenerator = new ChoicesArrayNodeGenerator(m_mapper, m_DefaultNodeSettingsContext);
-            options.set("possibleValues", possibleValuesGenerator.createChoicesNode(choicesWidget.choices()));
+            final var choicesProviderClass = choicesWidget.choices();
+            if (AsyncChoicesProvider.class.isAssignableFrom(choicesProviderClass)) {
+                options.put("asyncChoicesProviderClass", choicesProviderClass.getName());
+            } else {
+                final var possibleValuesGenerator = new ChoicesGenerator(m_defaultNodeSettingsContext);
+                final var choicesProvider = InstantiationUtil.createInstance(choicesWidget.choices());
+                final var possibleValues = possibleValuesGenerator.getChoices(choicesProvider);
+                options.set("possibleValues", m_mapper.valueToTree(possibleValues));
+            }
             if (!m_fieldClass.equals(ColumnSelection.class) && !m_fieldClass.equals(ColumnFilter.class)) {
                 String format = getChoicesComponentFormat();
                 options.put(TAG_FORMAT, format);
@@ -269,7 +277,6 @@ final class UiSchemaOptionsGenerator {
                 options.put(TAG_FORMAT, Format.COMBO_BOX);
             }
         }
-
 
         if (isArrayOfObjects) {
             applyArrayLayoutOptions(options, m_fieldType.getContentType().getRawClass());
@@ -401,7 +408,7 @@ final class UiSchemaOptionsGenerator {
 
         Map<String, Class<?>> arraySettings = new HashMap<>();
         arraySettings.put(null, componentType);
-        var details = JsonFormsUiSchemaUtil.buildUISchema(arraySettings, m_mapper, m_DefaultNodeSettingsContext)
+        var details = JsonFormsUiSchemaUtil.buildUISchema(arraySettings, m_mapper, m_defaultNodeSettingsContext)
             .get(TAG_ELEMENTS);
         options.set(TAG_ARRAY_LAYOUT_DETAIL, details);
 

@@ -56,6 +56,7 @@ import java.util.concurrent.ExecutionException;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialog;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.UpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
@@ -114,6 +115,16 @@ interface DefaultNodeDialogDataService {
      */
     Result<?> update(String widgetId, String handlerClass, Object objectSettings)
         throws InterruptedException, ExecutionException;
+
+    /**
+     * @param widgetId identifying which pending requests came from the same widget and thus have to be canceled
+     * @param className the class name of the {@link ChoicesProvider} that is to be used.
+     * @return the choices of the choices provider as they would be supplied with the initial data in the synchronous
+     *         case.
+     * @throws InterruptedException if an error is thrown during the invocation
+     * @throws ExecutionException if the used thread is interrupted
+     */
+    Result<?> getChoices(String widgetId, String className) throws InterruptedException, ExecutionException;
 
     /**
      * @param name the name of the flow variable

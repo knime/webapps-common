@@ -44,63 +44,43 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 28, 2023 (Paul Bärnreuther): created
+ *   Jul 10, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget.choices;
+package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 
-import org.knime.core.data.DataColumnSpec;
-import org.knime.core.data.def.StringCell;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesUpdateHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.NoopChoicesUpdateHandler;
 
 /**
+ * The holder of all {@link ChoicesWidget#choicesUpdateHandler}s.
  *
  * @author Paul Bärnreuther
- * @param <S> the supplier of the column name whose domain should be used. Other settings can be referenced by using the
- *            same name/paths for fields in this class as described in {@link DependencyHandler}.
  */
-public class DomainChoicesUpdateHandler<S extends ColumnNameSupplier> implements ChoicesUpdateHandler<S> {
-
-    @Override
-    public IdAndText[] update(final S settings, final DefaultNodeSettingsContext context)
-        throws WidgetHandlerException {
-        final var spec = context.getDataTableSpec(0);
-        if (spec.isEmpty()) {
-            return getEmptyResult();
-        }
-        final var columnName = settings.columnName();
-        final var colSpec = spec.get().getColumnSpec(columnName);
-        if (colSpec == null) {
-            return getEmptyResult();
-        }
-        final var domainValues = getDomainValues(colSpec);
-        if (domainValues.isEmpty()) {
-            throw new WidgetHandlerException(String.format(
-                "No column domain values present for column \"%s\". Consider using a Domain Calculator node.",
-                columnName));
-        }
-        return domainValues.get().stream().map(IdAndText::fromId).toArray(IdAndText[]::new);
-
-    }
-
-    private static IdAndText[] getEmptyResult() {
-        return new IdAndText[0];
-    }
+class ChoicesWidgetUpdateHandlerHolder extends WidgetHandlerHolder<ChoicesUpdateHandler<?>> {
 
     /**
-     * @param colSpec the {@link DataColumnSpec} to obtain the domain values from
-     * @return the possible domain values of the given {@link DataColumnSpec}
+     * @param settingsClasses
      */
-    public static Optional<List<String>> getDomainValues(final DataColumnSpec colSpec) {
-        var colDomain = colSpec.getDomain().getValues();
-        if (colDomain == null) {
-            return Optional.empty();
+    ChoicesWidgetUpdateHandlerHolder(final Collection<Class<? extends DefaultNodeSettings>> settingsClasses) {
+        super(settingsClasses);
+    }
+
+    @Override
+    Optional<Class<? extends ChoicesUpdateHandler<?>>> getHandlerClass(final TraversedField field) {
+        final var choicesWidget = field.propertyWriter().getAnnotation(ChoicesWidget.class);
+        if (choicesWidget != null) {
+            final var updateHandler = choicesWidget.choicesUpdateHandler();
+            if (updateHandler != NoopChoicesUpdateHandler.class) {
+                return Optional.of(updateHandler);
+            }
         }
-        return Optional.of(colDomain.stream().map(cell -> ((StringCell)cell).getStringValue()).toList());
+        return Optional.empty();
     }
 
 }

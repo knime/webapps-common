@@ -68,6 +68,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.knime.core.data.DataColumnSpec;
+import org.knime.core.data.DataColumnSpecCreator;
+import org.knime.core.data.def.StringCell;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.workflow.FlowObjectStack;
@@ -89,13 +92,16 @@ import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DefaultNodeDia
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.SettingsConverter;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonChange;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesUpdateHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.PossibleValue;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.IdAndText;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.PossibleColumnValue;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
 import org.knime.core.webui.page.Page;
 import org.knime.testing.util.WorkflowManagerUtil;
@@ -148,8 +154,8 @@ class DefaultNodeDialogDataServiceImplTest {
     class ChoicesDataServiceTest {
         static class TestChoicesUpdateHandler implements ChoicesUpdateHandler<TestDefaultNodeSettings> {
 
-            public final static PossibleValue[] getResult(final String id) {
-                return new PossibleValue[]{PossibleValue.fromId(id)};
+            public final static IdAndText[] getResult(final String id) {
+                return new IdAndText[]{IdAndText.fromId(id)};
 
             }
 
@@ -157,7 +163,7 @@ class DefaultNodeDialogDataServiceImplTest {
              * {@inheritDoc}
              */
             @Override
-            public PossibleValue[] update(final TestDefaultNodeSettings settings,
+            public IdAndText[] update(final TestDefaultNodeSettings settings,
                 final DefaultNodeSettingsContext context) {
                 return getResult(settings.m_foo);
             }
@@ -166,7 +172,7 @@ class DefaultNodeDialogDataServiceImplTest {
         @Test
         void testUpdate() throws ExecutionException, InterruptedException {
 
-            class ButtonSettings implements DefaultNodeSettings {
+            class ChoicesSettings implements DefaultNodeSettings {
                 @ChoicesWidget(choicesUpdateHandler = TestChoicesUpdateHandler.class)
                 String m_button;
 
@@ -175,10 +181,48 @@ class DefaultNodeDialogDataServiceImplTest {
             }
 
             final String testDepenenciesFooValue = "custom value";
-            final var dataService = getDataService(ButtonSettings.class);
+            final var dataService = getDataService(ChoicesSettings.class);
             final var result = dataService.update("widgetId", TestChoicesUpdateHandler.class.getName(),
                 Map.of("foo", testDepenenciesFooValue));
             assertThat(result.result()).isEqualTo(TestChoicesUpdateHandler.getResult(testDepenenciesFooValue));
+        }
+
+        static class TestChoicesProvider implements ChoicesProvider {
+
+            @Override
+            public String[] choices(final DefaultNodeSettingsContext context) {
+                return new String[]{"A", "B", "C"};
+            }
+
+        }
+
+        static class TestColumnChoicesProvider implements ColumnChoicesProvider {
+
+            @Override
+            public DataColumnSpec[] columnChoices(final DefaultNodeSettingsContext context) {
+                final var colSpec = new DataColumnSpecCreator("myCol", StringCell.TYPE).createSpec();
+                return new DataColumnSpec[]{colSpec};
+            }
+
+        }
+
+        @Test
+        void testGetChoices() throws ExecutionException, InterruptedException {
+
+            class ChoicesSettings {
+                @ChoicesWidget(choices = TestChoicesProvider.class)
+                String m_button;
+
+                @ChoicesWidget(choices = TestColumnChoicesProvider.class)
+                String m_otherSetting;
+            }
+
+            final var dataService = new DefaultNodeDialogDataServiceImpl(List.of(ChoicesSettings.class),
+                () -> DefaultNodeSettings.createDefaultNodeSettingsContext(new PortObjectSpec[0]));
+            final var result1 = dataService.getChoices("widgetId", TestChoicesProvider.class.getName());
+            assertThat(((IdAndText[])result1.result())[0]).isEqualTo(new IdAndText("A", "A"));
+            final var result2 = dataService.getChoices("widgetId", TestColumnChoicesProvider.class.getName());
+            assertThat(((PossibleColumnValue[])result2.result())[0].id()).isEqualTo("myCol");
         }
     }
 
@@ -292,9 +336,9 @@ class DefaultNodeDialogDataServiceImplTest {
             String getResult();
 
             @Override
-            default public PossibleValue[] update(final TestDefaultNodeSettings settings,
+            default public IdAndText[] update(final TestDefaultNodeSettings settings,
                 final DefaultNodeSettingsContext context) {
-                return new PossibleValue[]{PossibleValue.fromId(getResult())};
+                return new IdAndText[]{IdAndText.fromId(getResult())};
 
             }
 
@@ -336,8 +380,8 @@ class DefaultNodeDialogDataServiceImplTest {
             final var dataService = getDataService(TestSettings.class);
             final var firstResult = dataService.update("widgetId", FirstTestHandler.class.getName(), null);
             final var secondResult = dataService.update("widgetId", SecondTestHandler.class.getName(), null);
-            assertThat(((PossibleValue[])firstResult.result())[0].id()).isEqualTo(FirstTestHandler.ID);
-            assertThat(((PossibleValue[])secondResult.result())[0].id()).isEqualTo(SecondTestHandler.ID);
+            assertThat(((IdAndText[])firstResult.result())[0].id()).isEqualTo(FirstTestHandler.ID);
+            assertThat(((IdAndText[])secondResult.result())[0].id()).isEqualTo(SecondTestHandler.ID);
         }
 
         @Test
@@ -386,8 +430,8 @@ class DefaultNodeDialogDataServiceImplTest {
             final var dataService = getDataService(TestSettings.class, OtherTestSettings.class);
             final var firstResult = dataService.update("widgetId", FirstTestHandler.class.getName(), null);
             final var secondResult = dataService.update("widgetId", SecondTestHandler.class.getName(), null);
-            assertThat(((PossibleValue[])firstResult.result())[0].id()).isEqualTo(FirstTestHandler.ID);
-            assertThat(((PossibleValue[])secondResult.result())[0].id()).isEqualTo(SecondTestHandler.ID);
+            assertThat(((IdAndText[])firstResult.result())[0].id()).isEqualTo(FirstTestHandler.ID);
+            assertThat(((IdAndText[])secondResult.result())[0].id()).isEqualTo(SecondTestHandler.ID);
         }
     }
 

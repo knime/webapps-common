@@ -44,26 +44,39 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 28, 2023 (Paul Bärnreuther): created
+ *   Aug 31, 2023 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.widget.choices;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.knime.core.data.DataColumnSpec;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesProvider;
 
 /**
- * This represents one of the possible values within a {@link ChoicesWidget}.
- *
- * @param id the id which is saved on selection
- * @param text the displayed text
+ * This represents one of the possible values within a {@link ChoicesWidget} with a {@link ColumnChoicesProvider}.
  *
  * @author Paul Bärnreuther
+ * @param id to be used as an identifier for the selection option
+ * @param text to be displayed for the selection option
+ * @param type the id and displayed text of the type of the column
+ * @param compatibleTypes the list of type ids that are compatible with respect to the columns type
  */
-public record PossibleValue(String id, String text) {
+public record PossibleColumnValue(String id, String text, IdAndText type, List<String> compatibleTypes) {
+
     /**
-     * @param id
-     * @return a choice whose text matches the given id.
+     * @param colSpec the spec of the column to be represented
+     * @return the PossibleColumnValue associated to the given colSpec
      */
-    public static PossibleValue fromId(final String id) {
-        return new PossibleValue(id, id);
+    public static PossibleColumnValue fromColSpec(final DataColumnSpec colSpec) {
+        final var colName = colSpec.getName();
+        final var colType = colSpec.getType();
+        final var typeIdentifier = colType.getPreferredValueClass().getName();
+        final var displayedType = colType.getName();
+        final var compatibleTypes = Arrays.asList(ColumnSelection.getCompatibleTypes(colType));
+        return new PossibleColumnValue(colName, colName, new IdAndText(typeIdentifier, displayedType), compatibleTypes);
     }
 }
