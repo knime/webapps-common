@@ -70,6 +70,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 final class VariableSettingsUtil {
 
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(VariableSettingsUtil.class);
+
     private VariableSettingsUtil() {
         // utility
     }
@@ -129,7 +131,7 @@ final class VariableSettingsUtil {
     }
 
     /**
-     * TODO
+     * Writes the info represented by a {@link JsonNode} into {@link VariableSettingsRO}-instances.
      *
      * @param json
      * @param modelVariableSettings
@@ -157,7 +159,7 @@ final class VariableSettingsUtil {
                 nestedVariableSettings.addExposedVariable(keys[keys.length - 1],
                     flowVariableSetting.getExposedFlowVariableName());
             } catch (InvalidSettingsException ex) {
-                // TODO
+                NodeLogger.getLogger(VariableSettingsUtil.class).warn("Failed to read flow variable settings from json", ex);
             }
         });
     }
@@ -185,7 +187,6 @@ final class VariableSettingsUtil {
             m_exposedFlowVariableName = exposedFlowVariableName;
         }
 
-        @SuppressWarnings("unused")
         public String getControllingFlowVariableName() {
             return m_controllingFlowVariableName;
         }
@@ -195,7 +196,6 @@ final class VariableSettingsUtil {
             return m_controllingFlowVariableName == null ? null : m_isControllingFlowVariableAvailable;
         }
 
-        @SuppressWarnings("unused")
         public String getExposedFlowVariableName() {
             return m_exposedFlowVariableName;
         }
