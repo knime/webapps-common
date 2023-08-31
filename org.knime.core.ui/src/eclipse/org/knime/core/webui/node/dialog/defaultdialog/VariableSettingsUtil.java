@@ -54,6 +54,7 @@ import java.util.Set;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
+import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.VariableSettingsRO;
 import org.knime.core.webui.node.dialog.VariableSettingsWO;
 
@@ -85,12 +86,12 @@ final class VariableSettingsUtil {
         final ObjectMapper mapper) {
         var flowVariableSettingsMap = new HashMap<String, FlowVariableSetting>();
         if (modelVariableSettings != null) {
-            addToFlowVariableSettingsMap("model", modelVariableSettings, availableFlowVariableNames,
-                flowVariableSettingsMap);
+            addToFlowVariableSettingsMap(SettingsType.MODEL.getConfigKey(), modelVariableSettings,
+                availableFlowVariableNames, flowVariableSettingsMap);
         }
         if (viewVariableSettings != null) {
-            addToFlowVariableSettingsMap("view", viewVariableSettings, availableFlowVariableNames,
-                flowVariableSettingsMap);
+            addToFlowVariableSettingsMap(SettingsType.VIEW.getConfigKey(), viewVariableSettings,
+                availableFlowVariableNames, flowVariableSettingsMap);
         }
         return mapper.valueToTree(flowVariableSettingsMap);
     }

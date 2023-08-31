@@ -787,7 +787,8 @@ public class NodeDialogTest {
      * @return a new instance
      */
     public static NodeAndVariableSettingsRO createNodeAndVariableSettingsRO(final NodeSettings nodeSettings) {
-        return NodeAndVariableSettingsProxy.createROProxy(nodeSettings, new VariableSettings(nodeSettings, new NodeSettings("ignored")));
+        return NodeAndVariableSettingsProxy.createROProxy(nodeSettings,
+            new VariableSettings(new NodeSettings("ignored"), nodeSettings));
     }
 
     /**
@@ -799,7 +800,7 @@ public class NodeDialogTest {
      */
     public static NodeAndVariableSettingsWO createNodeAndVariableSettingsWO(final NodeSettings nodeSettings) {
         return NodeAndVariableSettingsProxy.createWOProxy(nodeSettings,
-            new VariableSettings(nodeSettings, new NodeSettings("ignored")));
+            new VariableSettings(new NodeSettings("ignored"), nodeSettings));
     }
 
 }
