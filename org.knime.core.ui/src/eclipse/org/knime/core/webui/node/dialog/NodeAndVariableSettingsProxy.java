@@ -71,11 +71,15 @@ final class NodeAndVariableSettingsProxy {
 
     static NodeAndVariableSettingsRO createROProxy(final NodeSettings nodeSettingsDelegate,
         final VariableSettings variableSettingsDelegate) {
+        assert nodeSettingsDelegate != null;
+        assert variableSettingsDelegate != null;
         return (NodeAndVariableSettingsRO)createProxy(nodeSettingsDelegate, variableSettingsDelegate);
     }
 
     static NodeAndVariableSettingsWO createWOProxy(final NodeSettings nodeSettingsDelegate,
         final VariableSettings variableSettingsDelegate) {
+        assert nodeSettingsDelegate != null;
+        assert variableSettingsDelegate != null;
         return (NodeAndVariableSettingsWO)createProxy(nodeSettingsDelegate, variableSettingsDelegate);
     }
 

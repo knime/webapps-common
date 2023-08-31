@@ -131,10 +131,10 @@ final class InitialData {
                     // to overwrite a setting.
                     // Thus, no need to merge the default settings with flow variable values (as done above).
                     m_nodeSettingsService.getDefaultNodeSettings(Map.of(settingsType, NodeAndVariableSettingsProxy
-                        .createWOProxy(settings, VariableSettings.create(nnc.getNodeSettings(), settingsType))), specs);
+                        .createWOProxy(settings, new VariableSettings(settings, settingsType))), specs);
                 }
                 resultSettings.put(settingsType, NodeAndVariableSettingsProxy.createROProxy(settings,
-                    VariableSettings.create(nnc.getNodeSettings(), settingsType)));
+                    new VariableSettings(nnc.getNodeSettings(), settingsType)));
             }
             // else: SubNodeContainers (aka components) are ignored here since those retrieve the settings
             // from the contained configuration nodes and not from the component settings directly

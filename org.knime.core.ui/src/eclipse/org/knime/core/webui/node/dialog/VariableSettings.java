@@ -61,22 +61,6 @@ import org.knime.core.node.NodeSettings;
  */
 final class VariableSettings implements VariableSettingsWO, VariableSettingsRO {
 
-    /**
-     * Creates a new {@link VariableSettings}-instance.
-     *
-     * @param nodeSettings
-     * @param type
-     * @return the new instance or {@code null} if the nodeSettings-object doesn't contain for
-     *         {@link SettingsType#getConfigKey()}
-     */
-    public static VariableSettings create(final NodeSettings nodeSettings, final SettingsType type) {
-        try {
-            return new VariableSettings(nodeSettings, type);
-        } catch (InvalidSettingsException ex) {
-            return null;
-        }
-    }
-
     // See org.knime.core.node.config.ConfigEditTreeModel#CURRENT_VERSION
     private static final String CURRENT_VERSION = "V_2019_09_13";
 
@@ -94,8 +78,8 @@ final class VariableSettings implements VariableSettingsWO, VariableSettingsRO {
 
     private final NodeSettings m_nodeSettings;
 
-    VariableSettings(final NodeSettings nodeSettings, final SettingsType type) throws InvalidSettingsException {
-        m_nodeSettings = nodeSettings.getNodeSettings(type.getConfigKey());
+    VariableSettings(final NodeSettings nodeSettings, final SettingsType type) {
+        m_nodeSettings = getNodeSettingsForType(type, nodeSettings);
 
         m_variableSettingsCreator = () -> {
             var variableSettings = getOrCreateSubSettings(nodeSettings, type.getVariablesConfigKey());
@@ -112,6 +96,14 @@ final class VariableSettings implements VariableSettingsWO, VariableSettingsRO {
                 return null;
             }
         };
+    }
+
+    private static NodeSettings getNodeSettingsForType(final SettingsType type, final NodeSettings nodeSettings) {
+        try {
+            return nodeSettings.getNodeSettings(type.getConfigKey());
+        } catch (InvalidSettingsException ex) {
+            return new NodeSettings("empty");
+        }
     }
 
     VariableSettings(final NodeSettings variableSettings, final NodeSettings nodeSettings) {
