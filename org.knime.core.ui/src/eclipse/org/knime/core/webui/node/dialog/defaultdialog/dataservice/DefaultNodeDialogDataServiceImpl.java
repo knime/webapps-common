@@ -67,8 +67,8 @@ import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.ChoicesGeneratorUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.SettingsConverter;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.ChoicesGenerator;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.UpdateHandler;
@@ -118,13 +118,13 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
         final Object objectSettings) throws ExecutionException, InterruptedException {
         final var handler = getButtonActionHandler(handlerClass);
         final var convertedSettings = convertDependencies(objectSettings, handler);
-        final var context = getContext();
+        final var context = createContext();
         return m_requestHandler.handleRequest(widgetId,
             () -> handler.castAndInvoke(buttonState, convertedSettings, context));
 
     }
 
-    private static DefaultNodeSettingsContext getContext() {
+    private static DefaultNodeSettingsContext createContext() {
         return DefaultNodeSettings.createDefaultNodeSettingsContext(DataServiceContext.get().getInputSpecs());
     }
 
@@ -134,7 +134,7 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
         final var handler = getButtonActionHandler(handlerClass);
         final var resultType = GenericTypeFinderUtil.getFirstGenericType(handler.getClass(), ButtonActionHandler.class);
         final var convertedCurrentValue = convertValue(currentValue, resultType);
-        final var context = getContext();
+        final var context = createContext();
         return m_requestHandler.handleRequest(widgetId,
             () -> handler.castAndInitialize(convertedCurrentValue, context));
 
@@ -153,7 +153,7 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
         throws InterruptedException, ExecutionException {
         final var handler = getUpdateHandler(handlerClass);
         final var convertedSettings = convertDependencies(objectSettings, handler);
-        final var context = getContext();
+        final var context = createContext();
         return m_requestHandler.handleRequest(widgetId, () -> handler.castAndUpdate(convertedSettings, context));
     }
 
@@ -170,11 +170,10 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
     }
 
     @Override
-    public Result<?> getChoices(final String widgetId, final String className)
-        throws InterruptedException, ExecutionException {
+    public Result<?> getChoices(final String className) throws InterruptedException, ExecutionException {
         final var choicesProvider = getChoicesProvider(className);
-        final var choiceGenerator = new ChoicesGenerator(m_contextProvider.get());
-        return m_requestHandler.handleRequest(widgetId, () -> choiceGenerator.getChoices(choicesProvider));
+        final var context = createContext();
+        return m_requestHandler.handleRequest(() -> ChoicesGeneratorUtil.getChoices(choicesProvider, context));
     }
 
     private ChoicesProvider getChoicesProvider(final String handlerClassName) {
@@ -206,7 +205,7 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
         final SettingsType settingsType = extractSettingsType(firstPathElement);
         final var nodeSettings = m_converter.textSettingsToNodeSettings(textSettings, settingsType);
         final var variableTypes = FlowVariableTypesExtractorUtil.getTypes(nodeSettings, path);
-        final var context = getContext();
+        final var context = createContext();
         return Arrays.asList(variableTypes).stream()
             .collect(toMap(VariableType::getIdentifier, type -> getPossibleFlowVariables(context, type)));
     }
@@ -243,7 +242,7 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
     @Override
     public String getFlowVariableOverrideValue(final String textSettings, final LinkedList<String> dataPath)
         throws InvalidSettingsException, JsonProcessingException {
-        var context = getContext();
+        var context = createContext();
         final var settingsType = extractSettingsType(dataPath.get(0));
         final var nodeSettingsWithVariableMask =
             m_converter.textSettingsToNodeAndVariableSettings(textSettings, settingsType);

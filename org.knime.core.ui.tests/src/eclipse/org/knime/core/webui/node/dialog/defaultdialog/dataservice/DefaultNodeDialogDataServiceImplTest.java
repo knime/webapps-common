@@ -209,7 +209,7 @@ class DefaultNodeDialogDataServiceImplTest {
         @Test
         void testGetChoices() throws ExecutionException, InterruptedException {
 
-            class ChoicesSettings {
+            class ChoicesSettings implements DefaultNodeSettings {
                 @ChoicesWidget(choices = TestChoicesProvider.class)
                 String m_button;
 
@@ -217,11 +217,10 @@ class DefaultNodeDialogDataServiceImplTest {
                 String m_otherSetting;
             }
 
-            final var dataService = new DefaultNodeDialogDataServiceImpl(List.of(ChoicesSettings.class),
-                () -> DefaultNodeSettings.createDefaultNodeSettingsContext(new PortObjectSpec[0]));
-            final var result1 = dataService.getChoices("widgetId", TestChoicesProvider.class.getName());
+            final var dataService = getDataService(ChoicesSettings.class);
+            final var result1 = dataService.getChoices(TestChoicesProvider.class.getName());
             assertThat(((IdAndText[])result1.result())[0]).isEqualTo(new IdAndText("A", "A"));
-            final var result2 = dataService.getChoices("widgetId", TestColumnChoicesProvider.class.getName());
+            final var result2 = dataService.getChoices(TestColumnChoicesProvider.class.getName());
             assertThat(((PossibleColumnValue[])result2.result())[0].id()).isEqualTo("myCol");
         }
     }
@@ -438,8 +437,7 @@ class DefaultNodeDialogDataServiceImplTest {
     static class DefaultNodeSettingsContextHandler implements ChoicesUpdateHandler<TestDefaultNodeSettings> {
 
         @Override
-        public PossibleValue[] update(final TestDefaultNodeSettings settings,
-            final DefaultNodeSettingsContext context) {
+        public IdAndText[] update(final TestDefaultNodeSettings settings, final DefaultNodeSettingsContext context) {
             assertThat(context.getPortObjectSpecs()).isEqualTo(PORT_OBJECT_SPECS);
             return null;
         }

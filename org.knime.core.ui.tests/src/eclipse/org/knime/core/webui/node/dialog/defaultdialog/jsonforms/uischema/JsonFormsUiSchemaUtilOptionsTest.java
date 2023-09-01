@@ -388,11 +388,11 @@ class JsonFormsUiSchemaUtilOptionsTest {
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("foo");
         assertThatJson(response).inPath("$.elements[0].options.showNoneColumn").isBoolean().isTrue();
         assertThatJson(response).inPath("$.elements[0].options").isObject().doesNotContainKey("possibleValues");
-        assertThatJson(response).inPath("$.elements[0].options.asyncChoicesProviderClass").isString()
+        assertThatJson(response).inPath("$.elements[0].options.choicesProviderClass").isString()
             .isEqualTo(TestAsyncColumnChoicesProvider.class.getName());
         assertThatJson(response).inPath("$.elements[1].scope").isString().contains("bar");
         assertThatJson(response).inPath("$.elements[1].options").isObject().doesNotContainKey("possibleValues");
-        assertThatJson(response).inPath("$.elements[1].options.asyncChoicesProviderClass").isString()
+        assertThatJson(response).inPath("$.elements[1].options.choicesProviderClass").isString()
             .isEqualTo(TestAsyncChoicesProvider.class.getName());
 
     }

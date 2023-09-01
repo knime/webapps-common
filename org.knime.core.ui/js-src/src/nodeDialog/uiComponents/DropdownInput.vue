@@ -1,19 +1,18 @@
-<script>
-import { defineComponent } from "vue";
+<script lang="ts">
+import { defineComponent, type PropType } from "vue";
 import { rendererProps } from "@jsonforms/vue";
-import {
-  getFlowVariablesMap,
-  getPossibleValuesFromUiSchema,
-  isModelSettingAndHasNodeView,
-} from "../utils";
+import { getFlowVariablesMap, isModelSettingAndHasNodeView } from "../utils";
 import Dropdown from "webapps-common/ui/components/forms/Dropdown.vue";
 import LabeledInput from "./LabeledInput.vue";
 import DialogComponentWrapper from "./DialogComponentWrapper.vue";
 import { AlertTypes } from "@knime/ui-extension-service";
-import { set, isEqual } from "lodash";
+import { set } from "lodash";
 import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
 import getFlattenedSettings from "../utils/getFlattenedSettings";
 import { v4 as uuidv4 } from "uuid";
+import inject from "../utils/inject";
+import type SettingsData from "../types/SettingsData";
+import type { IdAndText } from "../types/ChoicesUiSchema";
 
 const DropdownInput = defineComponent({
   name: "DropdownInput",
@@ -22,31 +21,43 @@ const DropdownInput = defineComponent({
     LabeledInput,
     DialogComponentWrapper,
   },
-  inject: ["registerWatcher", "getKnimeService", "getData", "sendAlert"],
   props: {
     ...rendererProps(),
-    optionsGenerator: {
-      type: Function,
+    getOptions: {
+      type: Function as PropType<() => Promise<IdAndText[]>>,
       required: false,
-      default: getPossibleValuesFromUiSchema,
+      default: null,
+    },
+    jsonFormsControl: {
+      type: Object as PropType<null | ReturnType<
+        typeof useJsonFormsControlWithUpdate
+      >>,
+      required: false,
+      default: null,
     },
     controlDataToDropdownValue: {
-      type: Function,
+      type: Function as PropType<(data: any) => string>,
       required: false,
-      default: (data) => data,
+      default: (data: string) => data,
     },
     dropdownValueToControlData: {
-      type: Function,
+      type: Function as PropType<(value: string | null) => any>,
       required: false,
-      default: (control, value) => value,
+      default: (value: string | null) => value,
     },
   },
   setup(props) {
-    return useJsonFormsControlWithUpdate(props);
+    return {
+      ...(props.jsonFormsControl ?? useJsonFormsControlWithUpdate(props)),
+      getPossibleValuesFromUiSchema: inject("getPossibleValuesFromUiSchema"),
+      registerWatcher: inject("registerWatcher"),
+      getData: inject("getData"),
+      sendAlert: inject("sendAlert"),
+    };
   },
   data() {
     return {
-      options: [],
+      options: [] as IdAndText[],
       widgetId: uuidv4(),
     };
   },
@@ -85,31 +96,25 @@ const DropdownInput = defineComponent({
         dependencies,
       });
     } else {
-      this.setInitialOption();
+      this.setInitialOptions();
     }
-    this.updateInitialData();
   },
   methods: {
-    setInitialOption() {
-      let options = this.optionsGenerator(this.control);
-      this.options = options;
+    async setInitialOptions() {
+      if (this.getOptions === null) {
+        this.getPossibleValuesFromUiSchema(this.control).then((result) => {
+          this.options = result;
+        });
+      } else {
+        this.options = await this.getOptions();
+      }
     },
-    async fetchInitialOptions(newSettings) {
+    async fetchInitialOptions(newSettings: SettingsData) {
       // initially only fetch possible values, but do not set a value
       // instead, use value from initial data
       await this.updateOptions(newSettings, false);
     },
-    updateInitialData() {
-      const initialData = this.control.data;
-      const updatedInitialData = this.dropdownValueToControlData(
-        this.control,
-        this.controlDataToDropdownValue(initialData),
-      );
-      if (!isEqual(initialData, updatedInitialData)) {
-        this.handleChange(this.control.path, updatedInitialData);
-      }
-    },
-    async updateOptions(newSettings, setNewValue = true) {
+    async updateOptions(newSettings: SettingsData, setNewValue = true) {
       const { result, state, message } = await this.getData({
         method: "update",
         options: [
@@ -129,7 +134,11 @@ const DropdownInput = defineComponent({
         this.handleResult([], newSettings, setNewValue);
       }
     },
-    handleResult(result, newSettings, setNewValue = true) {
+    handleResult(
+      result: IdAndText[],
+      newSettings: SettingsData,
+      setNewValue = true,
+    ) {
       this.options = result;
       if (setNewValue) {
         set(
@@ -139,18 +148,18 @@ const DropdownInput = defineComponent({
         );
       }
     },
-    getFirstValueFromDropdownOrNull(result) {
+    getFirstValueFromDropdownOrNull(result: IdAndText[]) {
       return this.dropdownValueToControlData(
-        this.control,
         result.length > 0 ? result[0].id : null,
       );
     },
-    onChange(value) {
+    onChange(value: string) {
       this.handleChange(
         this.control.path,
-        this.dropdownValueToControlData(this.control, value),
+        this.dropdownValueToControlData(value),
       );
       if (this.isModelSettingAndHasNodeView) {
+        // @ts-ignore
         this.$store.dispatch("pagebuilder/dialog/dirtySettings", true);
       }
     },

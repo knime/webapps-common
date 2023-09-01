@@ -1,15 +1,13 @@
-<script>
+<script lang="ts">
 import { defineComponent } from "vue";
 import { rendererProps } from "@jsonforms/vue";
-import {
-  getFlowVariablesMap,
-  isModelSettingAndHasNodeView,
-  getPossibleValuesFromUiSchema,
-} from "../utils";
+import { getFlowVariablesMap, isModelSettingAndHasNodeView } from "../utils";
 import Twinlist from "webapps-common/ui/components/forms/Twinlist.vue";
 import LabeledInput from "./LabeledInput.vue";
 import DialogComponentWrapper from "./DialogComponentWrapper.vue";
 import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
+import inject from "../utils/inject";
+import type { IdAndText } from "../types/ChoicesUiSchemaOptions";
 
 const defaultTwinlistSize = 7;
 const defaultTwinlistLeftLabel = "Excludes";
@@ -42,15 +40,18 @@ const SimpleTwinlistInput = defineComponent({
     optionsGenerator: {
       type: Function,
       required: false,
-      default: getPossibleValuesFromUiSchema,
+      default: null,
     },
   },
   setup(props) {
-    return useJsonFormsControlWithUpdate(props);
+    return {
+      ...useJsonFormsControlWithUpdate(props),
+      getPossibleValuesFromUiSchema: inject("getPossibleValuesFromUiSchema"),
+    };
   },
   data() {
     return {
-      possibleValues: null,
+      possibleValues: null as null | IdAndText[],
     };
   },
   computed: {
@@ -68,12 +69,19 @@ const SimpleTwinlistInput = defineComponent({
     },
   },
   created() {
-    this.possibleValues = this.optionsGenerator(this.control);
+    if (this.optionsGenerator === null) {
+      this.getPossibleValuesFromUiSchema(this.control).then((result) => {
+        this.possibleValues = result;
+      });
+    } else {
+      this.possibleValues = this.optionsGenerator(this.control);
+    }
   },
   methods: {
-    onChange(event) {
+    onChange(event: any) {
       this.handleChange(this.control.path, event);
       if (this.isModelSettingAndHasNodeView) {
+        // @ts-ignore
         this.$store.dispatch("pagebuilder/dialog/dirtySettings", true);
       }
     },

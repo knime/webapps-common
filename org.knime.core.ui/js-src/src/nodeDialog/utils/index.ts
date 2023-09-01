@@ -1,14 +1,7 @@
-import type { useJsonFormsControl } from "@jsonforms/vue";
+import getPossibleValuesFromUiSchema from "./getPossibleValuesFromUiSchema";
+export { getPossibleValuesFromUiSchema };
 import type { FlowSettings } from "../api/types";
-type Control = ReturnType<typeof useJsonFormsControl>["control"] & {
-  rootSchema: {
-    hasNodeView: boolean;
-    flowVariablesMap?: Record<string, FlowSettings>;
-  };
-  schema: {
-    configKeys?: string[];
-  };
-};
+import type Control from "../types/Control";
 
 export const optionsMapper = ({
   const: id,
@@ -20,27 +13,6 @@ export const optionsMapper = ({
 
 const isObject = (item: any) =>
   item && typeof item === "object" && !Array.isArray(item);
-
-const extractFromUiSchemaOptions = (control: Control, key: string) => {
-  const options = control.uischema.options;
-  return options ? options[key] : false;
-};
-
-export const getPossibleValuesFromUiSchema = (control: Control) => {
-  const normalPossibleValues =
-    extractFromUiSchemaOptions(control, "possibleValues") || [];
-  const showNoneColumn = Boolean(
-    extractFromUiSchemaOptions(control, "showNoneColumn"),
-  );
-  const showRowKeys = Boolean(
-    extractFromUiSchemaOptions(control, "showRowKeys"),
-  );
-  return [
-    ...(showNoneColumn ? [{ id: "<none>", text: "None" }] : []),
-    ...(showRowKeys ? [{ id: "<row-keys>", text: "RowIDs" }] : []),
-    ...normalPossibleValues,
-  ];
-};
 
 // Merge two objects deeply while overwriting only keys of obj1 if necessary. This can be used to alter the data
 // in the dialog settings in a more simple way for complex data structures.
@@ -63,8 +35,8 @@ export const mergeDeep = (obj1: any, obj2: any) => {
 };
 
 export const isModelSettingAndHasNodeView = (control: Control) =>
-  control?.rootSchema?.hasNodeView &&
-  control?.uischema?.scope?.startsWith("#/properties/model");
+  control?.rootSchema.hasNodeView &&
+  control?.uischema.scope?.startsWith("#/properties/model");
 
 const isFlowSettings = (
   flowSettings: FlowSettings | undefined | null,

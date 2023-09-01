@@ -1,20 +1,46 @@
-<script>
-import { defineComponent } from "vue";
+<script lang="ts">
+import { defineComponent, type Ref } from "vue";
 import { rendererProps } from "@jsonforms/vue";
 import {
   mergeDeep,
   getFlowVariablesMap,
   isModelSettingAndHasNodeView,
-  getPossibleValuesFromUiSchema,
 } from "../utils";
 import LabeledInput from "./LabeledInput.vue";
 import DialogComponentWrapper from "./DialogComponentWrapper.vue";
 import MultiModeTwinlist from "webapps-common/ui/components/forms/MultiModeTwinlist.vue";
 import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
+import inject from "../utils/inject";
+import type { IdAndText, PossibleValue } from "../types/ChoicesUiSchemaOptions";
+import type Control from "../types/Control";
+import type { PartialDeep } from "type-fest";
 
 const defaultTwinlistSize = 7;
 const defaultTwinlistLeftLabel = "Excludes";
 const defaultTwinlistRightLabel = "Includes";
+
+type TwinlistData = {
+  mode: string;
+  manualFilter: {
+    manuallySelected: string[];
+    manuallyDeselected: string[];
+    includeUnknownColumns: boolean;
+  };
+  typeFilter: {
+    selectedTypes: string[];
+    typeDisplays: IdAndText[] | undefined;
+  };
+  patternFilter: {
+    pattern: string;
+    isInverted: boolean;
+    isCaseSensitive: boolean;
+  };
+  selected: string[] | null | undefined;
+};
+
+type ControlWithTwinlistData = {
+  [P in keyof Control]: P extends "data" ? TwinlistData : Control[P];
+};
 
 const TwinlistInput = defineComponent({
   name: "TwinListInput",
@@ -42,12 +68,17 @@ const TwinlistInput = defineComponent({
     },
   },
   setup(props) {
-    return useJsonFormsControlWithUpdate(props);
+    const jsonFormsControl = useJsonFormsControlWithUpdate(props);
+    return {
+      handleChange: jsonFormsControl.handleChange,
+      control: jsonFormsControl.control as Ref<ControlWithTwinlistData>,
+      getPossibleValuesFromUiSchema: inject("getPossibleValuesFromUiSchema"),
+    };
   },
   data() {
     return {
-      possibleValues: null,
-      previouslySelectedTypes: null,
+      possibleValues: [] as PossibleValue[],
+      previouslySelectedTypes: null as null | IdAndText[],
     };
   },
   computed: {
@@ -64,11 +95,7 @@ const TwinlistInput = defineComponent({
       );
     },
     withTypes() {
-      return (
-        this.possibleValues &&
-        this.possibleValues[0] &&
-        this.possibleValues[0].hasOwnProperty("type")
-      );
+      return this.possibleValues?.[0]?.hasOwnProperty("type");
     },
     showMode() {
       return (
@@ -84,17 +111,28 @@ const TwinlistInput = defineComponent({
     },
   },
   created() {
-    this.possibleValues = getPossibleValuesFromUiSchema(this.control);
-    this.updateManualFilter(this.possibleValues.map((col) => col.id));
-
-    this.previouslySelectedTypes = this.getPreviouslySelectedTypes();
+    this.getPossibleValuesFromUiSchema(this.control).then((result) => {
+      this.possibleValues = result;
+      this.updateManualFilter(this.possibleValues.map((col) => col.id));
+      this.previouslySelectedTypes = this.getPreviouslySelectedTypes();
+    });
   },
   methods: {
-    onChange(obj) {
+    onChange(obj: PartialDeep<TwinlistData>) {
       let newData = mergeDeep(this.control.data, obj);
       this.handleChange(this.control.path, newData);
     },
-    onSelectedChange({ selected, isManual, isFirstInput, deselected }) {
+    onSelectedChange({
+      selected,
+      isManual,
+      isFirstInput,
+      deselected,
+    }: {
+      selected: string[];
+      isManual: boolean;
+      isFirstInput: boolean;
+      deselected: string[];
+    }) {
       this.onChange({
         selected,
         ...(isManual
@@ -111,10 +149,11 @@ const TwinlistInput = defineComponent({
        * once the initial value is set correctly in the backend.
        * */
       if (this.isModelSettingAndHasNodeView && !isFirstInput) {
+        // @ts-ignore
         this.$store.dispatch("pagebuilder/dialog/dirtySettings", true);
       }
     },
-    onIncludeUnknownColumnsChange(includeUnknownColumns) {
+    onIncludeUnknownColumnsChange(includeUnknownColumns: boolean) {
       this.onChange({ manualFilter: { includeUnknownColumns } });
     },
     /**
@@ -122,7 +161,7 @@ const TwinlistInput = defineComponent({
      * @param {string[]} possibleValueIds the possible values from which unknown values are determined.
      * @returns {void}.
      */
-    updateManualFilter(possibleValueIds) {
+    updateManualFilter(possibleValueIds: string[]) {
       const { manuallySelected, manuallyDeselected, includeUnknownColumns } =
         this.control.data.manualFilter;
       const unknownColumns = possibleValueIds.filter(
@@ -132,7 +171,7 @@ const TwinlistInput = defineComponent({
       const remainingManuallyDeselected = manuallyDeselected.filter((col) =>
         possibleValueIds.includes(col),
       );
-      const newData = {};
+      const newData = {} as any;
       if (includeUnknownColumns) {
         newData.manualFilter = {
           manuallySelected: [...manuallySelected, ...unknownColumns],
@@ -158,28 +197,28 @@ const TwinlistInput = defineComponent({
         text: selectedTypesToDisplayedText[id] || id,
       }));
     },
-    typeDisplaysToMap(keyValuePairs) {
+    typeDisplaysToMap(keyValuePairs: IdAndText[] | undefined) {
       if (typeof keyValuePairs === "undefined") {
         return {};
       }
       return keyValuePairs.reduce(
         (obj, { id, text }) => ({ ...obj, [id]: text }),
-        {},
+        {} as Record<string, string>,
       );
     },
-    onPatternChange(pattern) {
+    onPatternChange(pattern: string) {
       this.onChange({ patternFilter: { pattern } });
     },
-    onModeChange(mode) {
+    onModeChange(mode: string) {
       this.onChange({ mode: mode.toUpperCase() });
     },
-    onSelectedTypesChange(selectedTypes, typeDisplays) {
+    onSelectedTypesChange(selectedTypes: string[], typeDisplays: IdAndText[]) {
       this.onChange({ typeFilter: { selectedTypes, typeDisplays } });
     },
-    onInversePatternChange(isInverted) {
+    onInversePatternChange(isInverted: boolean) {
       this.onChange({ patternFilter: { isInverted } });
     },
-    onCaseSensitiveChange(isCaseSensitive) {
+    onCaseSensitiveChange(isCaseSensitive: boolean) {
       this.onChange({ patternFilter: { isCaseSensitive } });
     },
   },
@@ -201,7 +240,6 @@ export default TwinlistInput;
       @controlling-flow-variable-set="onChange"
     >
       <MultiModeTwinlist
-        v-if="possibleValues"
         v-bind="$attrs"
         :id="labelForId"
         :show-mode="showMode"

@@ -189,9 +189,10 @@ describe("DropdownInput.vue", () => {
     expect(wrapper.vm.placeholderText).toBe("No values present");
   });
 
-  it("checks that placeholder text is correctly set if there are possible values present", () => {
+  it("checks that placeholder text is correctly set if there are possible values present", async () => {
     props.control.data = "";
     const { wrapper } = mountJsonFormsComponent(DropdownInput, { props });
+    await flushPromises();
     expect(wrapper.vm.placeholderText).toBe("No value selected");
   });
 
@@ -203,6 +204,7 @@ describe("DropdownInput.vue", () => {
   it("does not disable dropdown when not controlled by a flow variable", async () => {
     delete props.control.rootSchema.flowVariablesMap;
     const { wrapper } = await mountJsonFormsComponent(DropdownInput, { props });
+    await flushPromises();
     expect(wrapper.vm.disabled).toBeFalsy();
     expect(wrapper.findComponent(Dropdown).vm.disabled).toBeFalsy();
   });
@@ -231,31 +233,6 @@ describe("DropdownInput.vue", () => {
     props.control.uischema.options.isAdvanced = true;
     const { wrapper } = mountJsonFormsComponent(DropdownInput, { props });
     expect(wrapper.getComponent(DropdownInput).isVisible()).toBe(true);
-  });
-
-  describe("update initial data", () => {
-    it("updates initial data on change", async () => {
-      const updatedValue = "Universe_0_1 (updated value)";
-      props.dropdownValueToControlData = () => updatedValue;
-      const { updateData } = await mountJsonFormsComponent(
-        DropdownInput,
-        { props },
-        null,
-        false,
-      );
-      expect(updateData).toHaveBeenCalledWith(
-        expect.anything(),
-        props.control.path,
-        updatedValue,
-      );
-    });
-
-    it("does not update initial data if they are current", async () => {
-      const { updateData } = await mountJsonFormsComponent(DropdownInput, {
-        props,
-      });
-      expect(updateData).not.toHaveBeenCalled();
-    });
   });
 
   describe("dependencies to other settings", () => {
@@ -375,5 +352,21 @@ describe("DropdownInput.vue", () => {
         type: "error",
       });
     });
+  });
+
+  it("uses passed in jsonFormsControls if present", () => {
+    const customControl = { uischema: { foo: "bar" } };
+    props.jsonFormsControl = { control: customControl, handleChange: () => {} };
+    const { wrapper } = mountJsonFormsComponent(DropdownInput, { props });
+    expect(wrapper.vm.control).toStrictEqual(customControl);
+  });
+
+  it("sets initial options if provided", async () => {
+    const customOptions = [{ id: "foo", text: "bar" }];
+    const initialOptions = Promise.resolve(customOptions);
+    props.getOptions = () => initialOptions;
+    const { wrapper } = mountJsonFormsComponent(DropdownInput, { props });
+    await flushPromises();
+    expect(wrapper.vm.options).toStrictEqual(customOptions);
   });
 });

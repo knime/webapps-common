@@ -153,7 +153,7 @@ describe("ComboBoxInput.vue", () => {
   });
 
   it("does not render content of ComboBoxInput when visible is false", async () => {
-    wrapper.setProps({ control: { ...props.control, visible: false } });
+    wrapper.vm.control = { ...props.control, visible: false };
     await wrapper.vm.$nextTick(); // wait until pending promises are resolved
     expect(wrapper.findComponent(LabeledInput).exists()).toBe(false);
   });

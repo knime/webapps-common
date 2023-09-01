@@ -9,7 +9,11 @@ import { createStore } from "vuex";
 
 import { useJsonFormsLayout, useJsonFormsArrayControl } from "@jsonforms/vue";
 
-import * as jsonFormsControlWithUpdateModule from "@/nodeDialog/composables/useJsonFormsControlWithUpdate";
+import * as useJsonFormsControlWithUpdateModule from "@/nodeDialog/composables/useJsonFormsControlWithUpdate";
+import * as jsonformsVueModule from "@jsonforms/vue";
+
+import { getPossibleValuesFromUiSchema } from "@/nodeDialog/utils";
+import { ref } from "vue";
 
 export const mountJsonFormsComponent = (
   component,
@@ -22,16 +26,28 @@ export const mountJsonFormsComponent = (
   } = {},
 ) => {
   const useJsonFormsControlSpy = vi.spyOn(
-    jsonFormsControlWithUpdateModule,
+    useJsonFormsControlWithUpdateModule,
     "useJsonFormsControlWithUpdate",
   );
   const callbacks = [];
-  const { getDataMock, updateDataMock, sendAlertMock } = provide || {};
+  const {
+    getDataMock,
+    updateDataMock,
+    sendAlertMock,
+    asyncChoicesProviderMock,
+  } = provide || {};
   const updateData =
     updateDataMock ||
     vi.fn((handleChange, path, value) => handleChange(path, value));
   const getData = getDataMock || vi.fn();
   const sendAlert = sendAlertMock || vi.fn();
+  const asyncChoicesProvider = asyncChoicesProviderMock || vi.fn();
+  if (props.control) {
+    vi.spyOn(jsonformsVueModule, "useJsonFormsControl").mockReturnValue({
+      handleChange: vi.fn(),
+      control: ref(props.control),
+    });
+  }
   const wrapper = mount(component, {
     props,
     global: {
@@ -52,6 +68,8 @@ export const mountJsonFormsComponent = (
             init({});
           }
         },
+        getPossibleValuesFromUiSchema: (control) =>
+          getPossibleValuesFromUiSchema(control, asyncChoicesProvider),
         updateData,
         getData,
         sendAlert,

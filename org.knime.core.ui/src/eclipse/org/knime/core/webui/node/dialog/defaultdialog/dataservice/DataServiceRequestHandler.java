@@ -75,11 +75,15 @@ class DataServiceRequestHandler {
     <T> Result<T> handleRequest(final String widgetId, final Callable<T> callback)
         throws InterruptedException, ExecutionException {
         final var future = KNIMEConstants.GLOBAL_THREAD_POOL.enqueue(callback);
-        getPendingRequest(widgetId).ifPresent(pendingFuture -> pendingFuture.cancel(true));
-        m_pendingRequests.put(widgetId, future);
+        if (widgetId != null) {
+            getPendingRequest(widgetId).ifPresent(pendingFuture -> pendingFuture.cancel(true));
+            m_pendingRequests.put(widgetId, future);
+        }
         try {
             final var result = future.get();
-            m_pendingRequests.remove(widgetId);
+            if (widgetId != null) {
+                m_pendingRequests.remove(widgetId);
+            }
             return Result.succeed(result);
         } catch (CancellationException ex) {
             LOGGER.info(ex);
@@ -91,6 +95,10 @@ class DataServiceRequestHandler {
             }
             throw ex;
         }
+    }
+
+    <T> Result<T> handleRequest(final Callable<T> callback) throws InterruptedException, ExecutionException {
+        return handleRequest(null, callback);
     }
 
     /**

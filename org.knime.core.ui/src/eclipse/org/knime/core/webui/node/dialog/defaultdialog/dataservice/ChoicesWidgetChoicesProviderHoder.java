@@ -51,6 +51,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 import java.util.Collection;
 import java.util.Optional;
 
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
@@ -61,7 +62,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
  */
 public class ChoicesWidgetChoicesProviderHoder extends WidgetHandlerHolder<ChoicesProvider> {
 
-    ChoicesWidgetChoicesProviderHoder(final Collection<Class<?>> settingsClasses) {
+    ChoicesWidgetChoicesProviderHoder(final Collection<Class<? extends DefaultNodeSettings>> settingsClasses) {
         super(settingsClasses);
     }
 

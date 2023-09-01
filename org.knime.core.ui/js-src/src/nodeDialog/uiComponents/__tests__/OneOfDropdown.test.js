@@ -9,7 +9,7 @@ import DropdownInput from "../DropdownInput.vue";
 describe("OneOfDropdown.vue", () => {
   let wrapper, props, component;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     props = {
       path: "",
       control: {
@@ -42,7 +42,7 @@ describe("OneOfDropdown.vue", () => {
       },
     };
 
-    component = await mountJsonFormsComponent(OneOfDropdown, { props });
+    component = mountJsonFormsComponent(OneOfDropdown, { props });
     wrapper = component.wrapper;
   });
 
@@ -67,11 +67,9 @@ describe("OneOfDropdown.vue", () => {
     });
   });
 
-  it("optionsGenerator correctly transforms the data", async () => {
-    await wrapper.vm.$nextTick();
-
+  it("computed dropdown options from oneof options", async () => {
     expect(
-      wrapper.getComponent(OneOfDropdown).vm.optionsGenerator(props.control),
+      await wrapper.getComponent(DropdownInput).props().getOptions(),
     ).toEqual([
       {
         id: "Universe_0_0",

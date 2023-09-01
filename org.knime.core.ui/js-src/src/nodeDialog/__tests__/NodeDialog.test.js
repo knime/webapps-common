@@ -250,6 +250,24 @@ describe("NodeDialog.vue", () => {
         ["path", "to", "my", "setting"],
       ],
     });
+
+    it("provides 'getPossibleValuesFromUiSchema' method", async () => {
+      const mockChoices = [{ id: "foo", text: "bar" }];
+      const wrapper = shallowMount(NodeDialog, getOptions());
+      const getDataSpy = vi
+        .spyOn(wrapper.vm.jsonDataService, "data")
+        .mockResolvedValue({ state: "SUCCESS", result: mockChoices });
+      const choices = await wrapper.vm.getPossibleValuesFromUiSchema({
+        uischema: {
+          options: { choicesProviderClass: "myChoicesProviderClass" },
+        },
+      });
+      expect(getDataSpy).toHaveBeenCalledWith({
+        method: "getChoices",
+        options: ["myChoicesProviderClass"],
+      });
+      expect(choices).toStrictEqual(mockChoices);
+    });
   });
 
   describe("registerWatcher", () => {

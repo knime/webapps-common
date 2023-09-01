@@ -5,7 +5,6 @@ import {
   hasAdvancedOptions,
   getFlowVariablesMap,
   mergeDeep,
-  getPossibleValuesFromUiSchema,
 } from "..";
 
 describe("Utils", () => {
@@ -19,57 +18,6 @@ describe("Utils", () => {
       { id: "rowName", text: "Row Name" },
       { id: "columName", text: "Colum Name" },
     ]);
-  });
-
-  describe("generatePossibleValues", () => {
-    const possibleValues = [
-      { id: "column_1", text: "Column Name 1" },
-      { id: "column_2", text: "Column Name 2" },
-    ];
-    const control = { uischema: { options: { possibleValues } } };
-
-    it("uses optionsMapper per default", () => {
-      expect(getPossibleValuesFromUiSchema(control)).toStrictEqual(
-        possibleValues,
-      );
-    });
-
-    it("adds additional options", () => {
-      expect(
-        getPossibleValuesFromUiSchema({
-          uischema: {
-            options: {
-              possibleValues,
-              showNoneColumn: true,
-            },
-          },
-        }),
-      ).toEqual(
-        expect.arrayContaining([
-          {
-            id: "<none>",
-            text: "None",
-          },
-        ]),
-      );
-      expect(
-        getPossibleValuesFromUiSchema({
-          uischema: {
-            options: {
-              possibleValues,
-              showRowKeys: true,
-            },
-          },
-        }),
-      ).toEqual(
-        expect.arrayContaining([
-          {
-            id: "<row-keys>",
-            text: "RowIDs",
-          },
-        ]),
-      );
-    });
   });
 
   it("mergeDeep", () => {

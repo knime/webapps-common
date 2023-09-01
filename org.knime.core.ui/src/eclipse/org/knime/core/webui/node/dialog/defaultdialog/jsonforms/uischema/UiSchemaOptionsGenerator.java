@@ -253,11 +253,11 @@ final class UiSchemaOptionsGenerator {
             final var choicesWidget = m_field.getAnnotation(ChoicesWidget.class);
             final var choicesProviderClass = choicesWidget.choices();
             if (AsyncChoicesProvider.class.isAssignableFrom(choicesProviderClass)) {
-                options.put("asyncChoicesProviderClass", choicesProviderClass.getName());
+                options.put("choicesProviderClass", choicesProviderClass.getName());
             } else {
-                final var possibleValuesGenerator = new ChoicesGenerator(m_defaultNodeSettingsContext);
                 final var choicesProvider = InstantiationUtil.createInstance(choicesWidget.choices());
-                final var possibleValues = possibleValuesGenerator.getChoices(choicesProvider);
+                final var possibleValues =
+                    ChoicesGeneratorUtil.getChoices(choicesProvider, m_defaultNodeSettingsContext);
                 options.set("possibleValues", m_mapper.valueToTree(possibleValues));
             }
             if (!m_fieldClass.equals(ColumnSelection.class) && !m_fieldClass.equals(ColumnFilter.class)) {

@@ -10,7 +10,7 @@ import Dropdown from "webapps-common/ui/components/forms/Dropdown.vue";
 describe("ColumnSelect.vue", () => {
   let wrapper, props, path, component, updateData;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     path = "control path mock";
     props = {
       control: {
@@ -62,7 +62,7 @@ describe("ColumnSelect.vue", () => {
         },
       },
     };
-    component = await mountJsonFormsComponent(ColumnSelect, { props });
+    component = mountJsonFormsComponent(ColumnSelect, { props });
     wrapper = component.wrapper;
     updateData = component.updateData;
   });
@@ -109,11 +109,7 @@ describe("ColumnSelect.vue", () => {
 
   describe("optionsGenerator", () => {
     it("optionsGenerator correctly transforms the data", async () => {
-      await wrapper.vm.$nextTick();
-
-      expect(
-        wrapper.getComponent(ColumnSelect).vm.optionsGenerator(props.control),
-      ).toEqual([
+      expect(await wrapper.getComponent(ColumnSelect).vm.getOptions()).toEqual([
         expect.objectContaining({
           id: "Universe_0_0",
           text: "Universe_0_0",
@@ -134,14 +130,14 @@ describe("ColumnSelect.vue", () => {
     });
 
     it("optionsGenerator correctly transforms the data with none column and row keys", async () => {
-      await wrapper.vm.$nextTick();
       props.control.uischema.options.showNoneColumn = true;
       props.control.uischema.options.showRowKeys = true;
 
-      const tmp = wrapper
-        .getComponent(ColumnSelect)
-        .vm.optionsGenerator(props.control);
-      expect(tmp).toEqual([
+      const wrapper = (component = mountJsonFormsComponent(ColumnSelect, {
+        props,
+      }).wrapper);
+
+      expect(await wrapper.getComponent(ColumnSelect).vm.getOptions()).toEqual([
         expect.objectContaining({
           id: "<none>",
           text: "None",
@@ -168,5 +164,14 @@ describe("ColumnSelect.vue", () => {
         }),
       ]);
     });
+  });
+
+  it("throws an error when trying to convert settings before the options are loaded", () => {
+    const wrapper = (component = mountJsonFormsComponent(ColumnSelect, {
+      props,
+    }).wrapper);
+    expect(() => wrapper.vm.toData("Value")).toThrowError(
+      "Must not convert data before column choices are fetched.",
+    );
   });
 });

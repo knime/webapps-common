@@ -14,6 +14,7 @@ import {
 import SimpleTwinlistInput from "../SimpleTwinlistInput.vue";
 import LabeledInput from "../LabeledInput.vue";
 import Twinlist from "webapps-common/ui/components/forms/Twinlist.vue";
+import flushPromises from "flush-promises";
 
 describe("SimpleTwinlistInput.vue", () => {
   const defaultProps = {
@@ -208,8 +209,8 @@ describe("SimpleTwinlistInput.vue", () => {
   });
 
   it("does not render content of SimpleTwinlistInput when visible is false", async () => {
-    wrapper.setProps({ control: { ...defaultProps.control, visible: false } });
-    await wrapper.vm.$nextTick(); // wait until pending promises are resolved
+    wrapper.vm.control = { ...defaultProps.control, visible: false };
+    await flushPromises(); // wait until pending promises are resolved
     expect(wrapper.findComponent(LabeledInput).exists()).toBe(false);
   });
 });

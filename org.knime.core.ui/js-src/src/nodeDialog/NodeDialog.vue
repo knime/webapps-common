@@ -1,20 +1,47 @@
-<script>
-import { JsonDataService, DialogService } from "@knime/ui-extension-service";
+<script lang="ts">
+import {
+  JsonDataService,
+  DialogService,
+  KnimeService,
+} from "@knime/ui-extension-service";
 import { vanillaRenderers } from "@jsonforms/vue-vanilla";
 import { JsonForms } from "@jsonforms/vue";
-import { toDataPath } from "@jsonforms/core";
+import {
+  toDataPath,
+  type JsonSchema,
+  type UISchemaElement,
+} from "@jsonforms/core";
 import { fallbackRenderers, defaultRenderers } from "./renderers";
-import { hasAdvancedOptions } from "../nodeDialog/utils";
+import {
+  getPossibleValuesFromUiSchema,
+  hasAdvancedOptions,
+} from "../nodeDialog/utils";
 import Button from "webapps-common/ui/components/Button.vue";
 import { cloneDeep, set, isEqual } from "lodash";
+import { inject, markRaw } from "vue";
+import type ProvidedMethods from "./types/provided";
+import type SettingsData from "./types/SettingsData";
+import type Control from "./types/Control";
+import getChoices from "./api/getChoices";
 import * as flowVariablesApi from "./api/flowVariables";
-import { markRaw } from "vue";
+import type { FlowSettings } from "./api/types";
 
 const renderers = [
   ...vanillaRenderers,
   ...fallbackRenderers,
   ...defaultRenderers,
 ];
+
+declare global {
+  export interface Window {
+    closeCEFWindow: Function;
+  }
+}
+
+type RegisteredWatcher = {
+  dataPaths: string[];
+  transformSettings: (newData: SettingsData) => void;
+};
 
 export default {
   components: {
@@ -27,28 +54,37 @@ export default {
       registerWatcher: this.registerWatcher,
       updateData: this.updateData,
       getData: this.callDataService,
+      getPossibleValuesFromUiSchema: this.getPossibleValuesFromUiSchema,
       sendAlert: this.sendAlert,
       flowVariablesApi: {
         getAvailableFlowVariables: this.getAvailableFlowVariables,
         getFlowVariableOverrideValue: this.getFlowVariableOverrideValue,
       },
-    };
+    } as ProvidedMethods;
+  },
+  setup() {
+    return { getKnimeService: inject<() => KnimeService>("getKnimeService")! };
   },
   data() {
     return {
-      jsonDataService: null,
-      originalModelSettings: null,
+      jsonDataService: null as JsonDataService | null,
+      dialogService: null as DialogService | null,
+      originalModelSettings: null as any,
       renderers: Object.freeze(renderers),
-      registeredWatchers: [],
-      currentData: null,
-      schema: null,
-      uischema: null,
+      registeredWatchers: [] as RegisteredWatcher[],
+      currentData: {} as SettingsData,
+      schema: {} as JsonSchema & {
+        showAdvancedSettings: boolean;
+        flowVariablesMap: Record<string, FlowSettings>;
+      },
+      uischema: {} as UISchemaElement,
       ready: false,
     };
   },
   // TODO: UIEXT-236 Move to dialog service
   computed: {
-    dirtyModelSettings() {
+    dirtyModelSettings(): boolean {
+      // @ts-ignore
       return this.$store.state["pagebuilder/dialog"].dirtyModelSettings;
     },
   },
@@ -65,6 +101,7 @@ export default {
     this.currentData = initialSettings.data;
     this.setOriginalModelSettings(this.currentData);
     this.jsonDataService.registerDataGetter(this.getData);
+    // @ts-ignore
     this.$store.dispatch("pagebuilder/dialog/setApplySettings", {
       applySettings: this.applySettings,
     });
@@ -79,21 +116,30 @@ export default {
     },
     publishData() {
       const publishedData = cloneDeep(this.getData());
-      this.jsonDataService.publishData(publishedData);
+      this.jsonDataService!.publishData(publishedData);
     },
-    setOriginalModelSettings(data) {
+    setOriginalModelSettings(data: SettingsData) {
       this.originalModelSettings = this.getModelSettings(data);
     },
-    hasOriginalModelSettings(data) {
+    hasOriginalModelSettings(data: SettingsData) {
       return isEqual(this.originalModelSettings, this.getModelSettings(data));
     },
-    getModelSettings(data) {
+    getModelSettings(data: SettingsData) {
       return data.model;
     },
-    callDataService({ method, options }) {
-      return this.jsonDataService.data({ method, options });
+    callDataService({
+      method,
+      options,
+    }: Parameters<ProvidedMethods["getData"]>[0]) {
+      return this.jsonDataService?.data({ method, options })!;
     },
-    sendAlert({ type, message }) {
+    getPossibleValuesFromUiSchema(control: Control) {
+      return getPossibleValuesFromUiSchema(
+        control,
+        getChoices(this.callDataService.bind(this)),
+      );
+    },
+    sendAlert({ type, message }: Parameters<ProvidedMethods["sendAlert"]>[0]) {
       const knimeService = this.getKnimeService();
       knimeService.sendWarning(knimeService.createAlert({ type, message }));
     },
@@ -103,8 +149,12 @@ export default {
      * @param {any} data The new data that should be stored at the path
      * @returns {void}
      */
-    async updateData(handleChange, path, data) {
-      const startsWithPath = (dataPath) => {
+    async updateData(
+      handleChange: (path: string, value: any) => any,
+      path: string,
+      data: any,
+    ) {
+      const startsWithPath = (dataPath: string) => {
         return path.startsWith(`${dataPath}.`);
       };
 
@@ -123,7 +173,11 @@ export default {
       }
       handleChange("", newData);
     },
-    async registerWatcher({ transformSettings, init, dependencies }) {
+    async registerWatcher({
+      transformSettings,
+      init,
+      dependencies,
+    }: Parameters<ProvidedMethods["registerWatcher"]>[0]) {
       this.registeredWatchers.push({
         transformSettings,
         dataPaths: dependencies.map(toDataPath),
@@ -132,28 +186,29 @@ export default {
         await init(this.currentData);
       }
     },
-    getAvailableFlowVariables(persistPath) {
+    getAvailableFlowVariables(persistPath: string) {
       return flowVariablesApi.getAvailableFlowVariables(
         this.callDataService.bind(this),
         persistPath,
         this.getData(),
       );
     },
-    getFlowVariableOverrideValue(dataPath) {
+    getFlowVariableOverrideValue(dataPath: string) {
       return flowVariablesApi.getFlowVariableOverrideValue(
         this.callDataService.bind(this),
         dataPath,
         this.getData(),
       );
     },
-    onSettingsChanged({ data }) {
+    onSettingsChanged({ data }: { data: SettingsData }) {
       if (data) {
         // We must not set this.currentData = data directly, as this would update the internal
         // data of the jsonforms component.
-        Object.keys(data).forEach((key) => {
+        Object.keys(data).forEach((key: string) => {
           this.currentData[key] = data[key];
         });
         if (this.hasOriginalModelSettings(this.currentData)) {
+          // @ts-ignore
           this.$store.dispatch(
             "pagebuilder/dialog/cleanSettings",
             cloneDeep(this.currentData),
@@ -167,7 +222,7 @@ export default {
     },
     applySettings() {
       this.setOriginalModelSettings(this.currentData);
-      return this.jsonDataService.applyData();
+      return this.jsonDataService!.applyData();
     },
     async applySettingsCloseDialog() {
       const response = await this.applySettings();
@@ -181,6 +236,9 @@ export default {
       window.closeCEFWindow();
     },
     changeAdvancedSettings() {
+      if (this.schema === null) {
+        return;
+      }
       this.schema.showAdvancedSettings = !this.schema.showAdvancedSettings;
     },
     hasAdvancedOptions() {

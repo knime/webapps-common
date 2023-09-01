@@ -62,40 +62,39 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.PossibleCol
  *
  * @author Paul Bärnreuther
  */
-public final class ChoicesGenerator {
+public final class ChoicesGeneratorUtil {
 
-    private final DefaultNodeSettingsContext m_settingsContext;
-
-    /**
-     * @param settingsContext supplied to the choices providers
-     */
-    public ChoicesGenerator(final DefaultNodeSettingsContext settingsContext) {
-        m_settingsContext = settingsContext;
+    private ChoicesGeneratorUtil() {
+        // Utility class
     }
 
     /**
      * @param choicesProvider
+     * @param settingsContext supplied to the choices providers
      * @return an array of possible values (either an array of {@link IdAndText} or of {@link PossibleColumnValue}).
      */
-    public Object[] getChoices(final ChoicesProvider choicesProvider) {
+    public static Object[] getChoices(final ChoicesProvider choicesProvider,
+        final DefaultNodeSettingsContext settingsContext) {
         if (choicesProvider instanceof ColumnChoicesProvider columnChoicesProvider) {
-            return getChoicesFromColumnChoicesProvider(columnChoicesProvider);
+            return getChoicesFromColumnChoicesProvider(columnChoicesProvider, settingsContext);
         } else {
-            return getChoicesFromChoicesProvider(choicesProvider);
+            return getChoicesFromChoicesProvider(choicesProvider, settingsContext);
         }
 
     }
 
-    private PossibleColumnValue[] getChoicesFromColumnChoicesProvider(final ColumnChoicesProvider choicesProvider) {
-        DataColumnSpec[] columnChoices = choicesProvider == null || m_settingsContext == null ? new DataColumnSpec[0]
-            : choicesProvider.columnChoices(m_settingsContext);
+    private static PossibleColumnValue[] getChoicesFromColumnChoicesProvider(final ColumnChoicesProvider choicesProvider,
+        final DefaultNodeSettingsContext settingsContext) {
+        DataColumnSpec[] columnChoices = choicesProvider == null || settingsContext == null ? new DataColumnSpec[0]
+            : choicesProvider.columnChoices(settingsContext);
         return Arrays.asList(columnChoices).stream().map(PossibleColumnValue::fromColSpec)
             .toArray(PossibleColumnValue[]::new);
     }
 
-    private IdAndText[] getChoicesFromChoicesProvider(final ChoicesProvider choicesProvider) {
-        return choicesProvider == null || m_settingsContext == null //
+    private static IdAndText[] getChoicesFromChoicesProvider(final ChoicesProvider choicesProvider,
+        final DefaultNodeSettingsContext settingsContext) {
+        return choicesProvider == null || settingsContext == null //
             ? new IdAndText[0] //
-            : choicesProvider.choicesWithIdAndText(m_settingsContext);
+            : choicesProvider.choicesWithIdAndText(settingsContext);
     }
 }

@@ -31,6 +31,34 @@
         "patternFilter": {
           "pattern": ""
         }
+      },
+      "AsyncChoices": {
+        "mode": "MANUAL",
+        "manualFilter": {
+          "manuallySelected": ["AVG", "foo"],
+          "manuallyDeselected": ["bar"]
+        },
+        "typeFilter": {
+          "selectedTypes": ["typeA"]
+        },
+
+        "patternFilter": {
+          "pattern": ""
+        }
+      },
+      "AsyncChoicesFail": {
+        "mode": "MANUAL",
+        "manualFilter": {
+          "manuallySelected": ["AVG", "foo"],
+          "manuallyDeselected": ["bar"]
+        },
+        "typeFilter": {
+          "selectedTypes": ["typeA"]
+        },
+
+        "patternFilter": {
+          "pattern": ""
+        }
       }
     },
     "schema": {
@@ -60,6 +88,22 @@
           }
         },
         "ColumnFilter": {
+          "type": "object",
+          "properties": {
+            "selected": {
+              "type": "array"
+            }
+          }
+        },
+        "AsyncChoices": {
+          "type": "object",
+          "properties": {
+            "selected": {
+              "type": "array"
+            }
+          }
+        },
+        "AsyncChoicesFail": {
           "type": "object",
           "properties": {
             "selected": {
@@ -133,6 +177,28 @@
               }
             ]
           }
+        },
+        {
+          "type": "Section",
+          "label": "Asynchronous",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "properties/AsyncChoices",
+              "options": {
+                "format": "columnFilter",
+                "choicesProviderClass": "successfulChoicesProvider"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "properties/AsyncChoicesFail",
+              "options": {
+                "format": "columnFilter",
+                "choicesProviderClass": "failingChoicesProvider"
+              }
+            }
+          ]
         }
       ]
     }

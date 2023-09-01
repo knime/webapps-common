@@ -49,8 +49,10 @@
 package org.knime.core.webui.node.dialog.defaultdialog.widget;
 
 /**
- * Marker interface to be implemented by a {@link ChoicesWidget#choices()} class. If it does, the choices values are not
- * supplied with the initial data but instead requested via the dialogs data service.
+ * Marker interface to be implemented by to be implemented by a {@link ChoicesProvider}. If it does, the choices values
+ * are supplied asynchronously such that node dialog can already be displayed while the possible values are still being
+ * determined (a respective loading indicator is shown within the respective widget). This is, e.g., useful when a
+ * http-request needs to be made in order to determine the possible values.
  *
  * @author Paul Bärnreuther
  */

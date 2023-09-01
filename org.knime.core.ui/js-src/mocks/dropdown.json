@@ -15,6 +15,12 @@
       },
       "EmptyButSpecialValuesShown": {
         "selected": "<none>"
+      },
+      "AsyncChoices": {
+        "selected": "AVG"
+      },
+      "AsyncChoicesFail": {
+        "selected": "SUM"
       }
     },
     "schema": {
@@ -75,8 +81,8 @@
               "type": "string"
             }
           },
-          "title": "No possible values but special values",
-          "description": "Tests a dropdown with no possible values but therefore special values",
+          "title": "Missing value",
+          "description": "Tests a dropdown with a missing value",
           "default": ""
         },
         "EmptyButSpecialValuesShown": {
@@ -88,6 +94,28 @@
           },
           "title": "No possible values but special values",
           "description": "Tests a dropdown with no possible values but therefore special values",
+          "default": ""
+        },
+        "AsyncChoices": {
+          "type": "object",
+          "properties": {
+            "selected": {
+              "type": "string"
+            }
+          },
+          "title": "Async possible values",
+          "description": "Possible values are fetched asynchronously",
+          "default": ""
+        },
+        "AsyncChoicesFail": {
+          "type": "object",
+          "properties": {
+            "selected": {
+              "type": "string"
+            }
+          },
+          "title": "Async possible values (fail)",
+          "description": "Possible values are fetched asynchronously but the result has state 'FAIL'",
           "default": ""
         }
       }
@@ -193,6 +221,32 @@
                 "format": "columnSelection",
                 "showRowKeys": true,
                 "showNoneColumn": true
+              }
+            }
+          ]
+        },
+        {
+          "type": "Section",
+          "label": "Asynchronous",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/AsyncChoices",
+              "options": {
+                "format": "columnSelection",
+                "showRowKeys": false,
+                "showNoneColumn": false,
+                "choicesProviderClass": "successfulChoicesProvider"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/AsyncChoicesFail",
+              "options": {
+                "format": "columnSelection",
+                "showRowKeys": false,
+                "showNoneColumn": false,
+                "choicesProviderClass": "failingChoicesProvider"
               }
             }
           ]

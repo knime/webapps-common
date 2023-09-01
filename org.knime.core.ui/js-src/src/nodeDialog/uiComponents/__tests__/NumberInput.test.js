@@ -153,7 +153,10 @@ describe("NumberInput.vue", () => {
   });
 
   it("does not render content of NumberInputBase when visible is false", async () => {
-    wrapper.setProps({ control: { ...defaultProps.control, visible: false } });
+    wrapper.findComponent(NumberInputBase).vm.control = {
+      ...defaultProps.control,
+      visible: false,
+    };
     await wrapper.vm.$nextTick(); // wait until pending promises are resolved
     expect(wrapper.findComponent(LabeledInput).exists()).toBe(false);
   });

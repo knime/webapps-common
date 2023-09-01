@@ -2,19 +2,17 @@
 import Dropdown from "webapps-common/ui/components/forms/Dropdown.vue";
 import MulitpleConfigKeysNotYetSupported from "./MultipleConfigKeysNotYetSupported.vue";
 import type FlowVariableSelectorProps from "./types/FlowVariableSelectorProps";
-import { computed, inject, onMounted, ref, type Ref } from "vue";
-import type {
-  PossibleFlowVariable,
-  ProvidedFlowVariablesApi,
-} from "@/nodeDialog/api/types";
+import { computed, onMounted, ref, type Ref } from "vue";
+import type { PossibleFlowVariable } from "@/nodeDialog/api/types";
 import {
   setControllingFlowVariable,
   unsetControllingFlowVariable,
 } from "@/nodeDialog/api/flowVariables";
 import { getConfigPaths } from "@/nodeDialog/utils";
+import inject from "@/nodeDialog/utils/inject";
 
 const { getAvailableFlowVariables, getFlowVariableOverrideValue } =
-  inject<ProvidedFlowVariablesApi>("flowVariablesApi")!;
+  inject("flowVariablesApi")!;
 
 const props = defineProps<FlowVariableSelectorProps>();
 

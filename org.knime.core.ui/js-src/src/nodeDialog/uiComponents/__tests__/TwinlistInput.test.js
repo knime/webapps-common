@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import {
   afterEach,
   beforeEach,
@@ -16,6 +17,7 @@ import LabeledInput from "../LabeledInput.vue";
 import MultiModeTwinlist from "webapps-common/ui/components/forms/MultiModeTwinlist.vue";
 import Twinlist from "webapps-common/ui/components/forms/Twinlist.vue";
 import { mergeDeep } from "@/nodeDialog/utils";
+import flushPromises from "flush-promises";
 
 describe("TwinlistInput.vue", () => {
   let props;
@@ -407,7 +409,7 @@ describe("TwinlistInput.vue", () => {
   });
 
   describe("unknown columns", () => {
-    it("excludes unknown columns", () => {
+    it("excludes unknown columns", async () => {
       const localProps = mergeDeep(props, {
         control: {
           data: {
@@ -432,6 +434,7 @@ describe("TwinlistInput.vue", () => {
       const { updateData } = mountJsonFormsComponent(TwinlistInput, {
         props: localProps,
       });
+      await flushPromises();
       expect(updateData).toHaveBeenCalledWith(
         expect.anything(),
         localProps.control.path,
@@ -444,7 +447,7 @@ describe("TwinlistInput.vue", () => {
       );
     });
 
-    it("includes unknown columns", () => {
+    it("includes unknown columns", async () => {
       const localProps = mergeDeep(props, {
         control: {
           data: {
@@ -468,6 +471,7 @@ describe("TwinlistInput.vue", () => {
       const { updateData } = mountJsonFormsComponent(TwinlistInput, {
         props: localProps,
       });
+      await flushPromises();
       expect(updateData).toHaveBeenCalledWith(
         expect.anything(),
         localProps.control.path,
@@ -567,7 +571,7 @@ describe("TwinlistInput.vue", () => {
   });
 
   it("does not render content of TwinlistInput when visible is false", async () => {
-    wrapper.setProps({ control: { ...props.control, visible: false } });
+    wrapper.vm.control = { ...props.control, visible: false };
     await wrapper.vm.$nextTick(); // wait until pending promises are resolved
     expect(wrapper.findComponent(LabeledInput).exists()).toBe(false);
   });

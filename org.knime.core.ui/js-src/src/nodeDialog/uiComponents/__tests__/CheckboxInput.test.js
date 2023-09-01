@@ -20,6 +20,7 @@ import Checkbox from "webapps-common/ui/components/forms/Checkbox.vue";
 import BothFlowVariables from "webapps-common/ui/assets/img/icons/both-flow-variables.svg";
 import OnlyFlowVariable from "webapps-common/ui/assets/img/icons/only-flow-variables.svg";
 import ExposeFlowVariable from "webapps-common/ui/assets/img/icons/expose-flow-variables.svg";
+import flushPromises from "flush-promises";
 
 describe("CheckboxInput.vue", () => {
   let wrapper, onChangeSpy, defaultProps, component;
@@ -76,10 +77,8 @@ describe("CheckboxInput.vue", () => {
 
   it("renders the description popover", async () => {
     expect(wrapper.findComponent(DescriptionPopover).exists()).toBe(false);
-    wrapper.setProps({
-      control: { ...defaultProps.control, description: "foo" },
-    });
-    await wrapper.vm.$nextTick(); // wait until pending promises are resolved
+    wrapper.vm.control.description = "foo";
+    await flushPromises(); // wait until pending promises are resolved
     expect(wrapper.findComponent(DescriptionPopover).exists()).toBe(true);
   });
 
@@ -249,15 +248,13 @@ describe("CheckboxInput.vue", () => {
   });
 
   it("does not render content of CheckboxInput when visible is false", async () => {
-    wrapper.setProps({
-      control: {
-        ...defaultProps.control,
-        visible: false,
-        errors: "errors",
-        description: "description",
-      },
-    });
-    await wrapper.vm.$nextTick(); // wait until pending promises are resolved
+    wrapper.vm.control = {
+      ...defaultProps.control,
+      visible: false,
+      errors: "errors",
+      description: "description",
+    };
+    await flushPromises();
     expect(wrapper.findComponent(Checkbox).exists()).toBe(false);
     expect(wrapper.findComponent(ErrorMessage).exists()).toBe(false);
     expect(wrapper.findComponent(ReexecutionIcon).exists()).toBe(false);

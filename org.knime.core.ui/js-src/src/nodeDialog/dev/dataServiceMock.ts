@@ -29,6 +29,35 @@ export default (rpcRequest: { method: string; params: any[] }) => {
         default:
           return "someValue";
       }
+    case "getChoices":
+      if (rpcRequest.params[0] === "successfulChoicesProvider") {
+        return {
+          result: [
+            {
+              id: "NONE",
+              text: "None",
+            },
+            {
+              id: "COUNT",
+              text: "Occurrence count",
+            },
+            {
+              id: "SUM",
+              text: "Sum",
+            },
+            {
+              id: "AVG",
+              text: "Average",
+            },
+          ],
+          state: "SUCCESS",
+        };
+      } else {
+        return {
+          state: "FAIL",
+          message: "Async choices fetching failed because xyz",
+        };
+      }
     default:
       return null;
   }

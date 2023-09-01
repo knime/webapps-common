@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import type { ProvidedFlowVariablesApi } from "@/nodeDialog/api/types";
+import type Provided from "@/nodeDialog/types/provided";
 import Dropdown from "webapps-common/ui/components/forms/Dropdown.vue";
 import MulitpleConfigKeysNotYetSupported from "../MultipleConfigKeysNotYetSupported.vue";
 import { mount } from "@vue/test-utils";
@@ -41,7 +41,7 @@ describe("FlowVariableSelector.vue", () => {
     getFlowVariableOverrideValue,
   }: {
     props: FlowVariableSelectorProps;
-  } & MockedMethods<ProvidedFlowVariablesApi>) => {
+  } & MockedMethods<Provided["flowVariablesApi"]>) => {
     return mount(FlowVariableSelector as any, {
       props,
       global: {

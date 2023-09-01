@@ -95,9 +95,7 @@ describe("CheckboxesInput.vue", () => {
 
   it("renders the description popover", async () => {
     expect(wrapper.findComponent(DescriptionPopover).exists()).toBe(false);
-    wrapper.setProps({
-      control: { ...defaultProps.control, description: "foo" },
-    });
+    wrapper.vm.control = { ...defaultProps.control, description: "foo" };
     await wrapper.vm.$nextTick(); // wait until pending promises are resolved
     expect(wrapper.findComponent(DescriptionPopover).exists()).toBe(true);
   });
@@ -163,14 +161,12 @@ describe("CheckboxesInput.vue", () => {
   });
 
   it("does not render CheckboxesInput when visible is false", async () => {
-    wrapper.setProps({
-      control: {
-        ...defaultProps.control,
-        visible: false,
-        errors: "errors",
-        description: "description",
-      },
-    });
+    wrapper.vm.control = {
+      ...defaultProps.control,
+      visible: false,
+      errors: "errors",
+      description: "description",
+    };
     await wrapper.vm.$nextTick(); // wait until pending promises are resolved
     expect(wrapper.findComponent(Checkboxes).exists()).toBe(false);
     expect(wrapper.findComponent(ErrorMessage).exists()).toBe(false);

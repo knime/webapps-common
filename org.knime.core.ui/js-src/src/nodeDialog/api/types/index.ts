@@ -9,10 +9,3 @@ export type FlowSettings = {
   exposedFlowVariableName: string | null;
   controllingFlowVariableAvailable: boolean;
 };
-
-export type ProvidedFlowVariablesApi = {
-  getAvailableFlowVariables: (
-    persistPath: string,
-  ) => Promise<Record<string, PossibleFlowVariable[]>>;
-  getFlowVariableOverrideValue: (dataPath: string) => Promise<any>;
-};
