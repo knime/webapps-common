@@ -721,9 +721,15 @@ class TableViewTest {
 
         @Test
         void testGetCopyContent() throws IOException {
-            final var expectedResult = "11\t1.0\r\n" //
-                + "22\t2.0\r\n" //
-                + "33\t3.0";
+            final var expectedResult = new TableViewDataService.HTMLAndCSV(//
+                "<html><body><table>" //
+                    + "<tr><td>11</td><td>1.0</td></tr>" //
+                    + "<tr><td>22</td><td>2.0</td></tr>" //
+                    + "<tr><td>33</td><td>3.0</td></tr>" //
+                    + "</table></body></html>",
+                "11\t1.0\r\n" //
+                    + "22\t2.0\r\n" //
+                    + "33\t3.0");
 
             final var copyContent = dataService.getCopyContent(false, false, selectedTestColumns, 1, 3);
             assertThat(copyContent).isEqualTo(expectedResult);
@@ -731,9 +737,15 @@ class TableViewTest {
 
         @Test
         void testGetCopyContentWithRowKeys() throws IOException {
-            final var expectedResult = "rowkey 1\t11\t1.0\r\n" //
-                + "rowkey 2\t22\t2.0\r\n" //
-                + "rowkey 3\t33\t3.0";
+            final var expectedResult = new TableViewDataService.HTMLAndCSV(//
+                "<html><body><table>" //
+                    + "<tr><td>rowkey 1</td><td>11</td><td>1.0</td></tr>" //
+                    + "<tr><td>rowkey 2</td><td>22</td><td>2.0</td></tr>" //
+                    + "<tr><td>rowkey 3</td><td>33</td><td>3.0</td></tr>" //
+                    + "</table></body></html>",
+                "rowkey 1\t11\t1.0\r\n" //
+                    + "rowkey 2\t22\t2.0\r\n" //
+                    + "rowkey 3\t33\t3.0");
 
             final var copyContent = dataService.getCopyContent(false, true, selectedTestColumns, 1, 3);
             assertThat(copyContent).isEqualTo(expectedResult);
@@ -741,9 +753,16 @@ class TableViewTest {
 
         @Test
         void testGetCopyContentWithIndices() throws IOException {
-            final var expectedResult = "2\t11\t1.0\r\n" //
+
+            final var expectedResult = new TableViewDataService.HTMLAndCSV(//
+                "<html><body><table>" //
+                + "<tr><td>2</td><td>11</td><td>1.0</td></tr>" //
+                + "<tr><td>3</td><td>22</td><td>2.0</td></tr>" //
+                + "<tr><td>4</td><td>33</td><td>3.0</td></tr>" //
+                + "</table></body></html>",
+                "2\t11\t1.0\r\n" //
                 + "3\t22\t2.0\r\n" //
-                + "4\t33\t3.0";
+                + "4\t33\t3.0");
 
             final var copyContent = dataService.getCopyContent(true, false, selectedTestColumns, 1, 3);
             assertThat(copyContent).isEqualTo(expectedResult);
@@ -751,8 +770,13 @@ class TableViewTest {
 
         @Test
         void testGetCopyContentForFilteredAndSortedTable() throws IOException {
-            final var expectedResult = "1034\t94.0\r\n"//
-                + "1023\t93.0";
+            final var expectedResult = new TableViewDataService.HTMLAndCSV(//
+                "<html><body><table>" //
+                    + "<tr><td>1034</td><td>94.0</td></tr>"//
+                    + "<tr><td>1023</td><td>93.0</td></tr>"//
+                    + "</table></body></html>", //
+                "1034\t94.0\r\n" //
+                    + "1023\t93.0");
 
             dataService =
                 new TableViewDataServiceImpl(createDefaultTestTable(100), null, new SwingBasedRendererFactory(), null);
