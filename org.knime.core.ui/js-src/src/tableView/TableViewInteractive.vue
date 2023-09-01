@@ -1042,15 +1042,16 @@ export default {
           fromIndex,
           toIndex,
         ]);
-  
+
         const blobHTML = new Blob([copyContent.html], { type: "text/html" });
         const blobCSV = new Blob([copyContent.csv], { type: "text/plain" });
-        navigator.clipboard.write([
-          new ClipboardItem({
-            [blobHTML.type]: blobHTML,
-            [blobCSV.type]: blobCSV,
-          }),
-        ]);
+
+        const clipboardItem = new ClipboardItem({
+          [blobHTML.type]: blobHTML,
+          [blobCSV.type]: blobCSV,
+        });
+
+        navigator.clipboard.write([clipboardItem]);
       } catch (error) {
         consola.error(
           "Failed to copy content to clipboard with error: ",

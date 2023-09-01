@@ -2398,8 +2398,9 @@ describe("TableViewInteractive.vue", () => {
     beforeEach(async () => {
       wrapper = await shallowMountInteractive(context);
       navigator.clipboard = {
-        writeText: vi.fn(),
+        write: vi.fn(),
       };
+      window.ClipboardItem = vi.fn();
       dataRequestResult = "copyContent";
       const tableComp = findTableComponent(wrapper);
       copyContent = (rect, isTop = true) => {
@@ -2462,9 +2463,21 @@ describe("TableViewInteractive.vue", () => {
     });
 
     it("writes successfull copy request into clipboard", async (showRowIndices, showRowKeys) => {
-      const writeTextMock = vi.fn();
-      const resultText = "successful";
-      navigator.clipboard.writeText = writeTextMock;
+      const writeMock = vi.fn();
+      const clipboardMock = vi.fn().mockImplementation((items) => items);
+      const blobMock = vi.fn().mockImplementation((data, options) => ({
+        size: data[0].length,
+        type: options.type,
+      }));
+
+      navigator.clipboard.write = writeMock;
+      window.ClipboardItem = clipboardMock;
+      window.Blob = blobMock;
+
+      const result = {
+        csv: "row0col0 row0col1",
+        html: "<tr><td>row0col0</td><td>row0col1</td></tr>",
+      };
       await wrapper.setData({
         settings: {
           ...initialDataMock.settings,
@@ -2474,10 +2487,26 @@ describe("TableViewInteractive.vue", () => {
       });
       wrapper.vm.performRequest = vi
         .fn()
-        .mockImplementation(() => Promise.resolve(resultText));
+        .mockImplementation(() => Promise.resolve(result));
       copyContent({ x: { min: 0, max: 3 }, y: { min: 1, max: 4 } });
       await flushPromises();
-      expect(writeTextMock).toHaveBeenCalledWith(resultText);
+      expect(blobMock).toHaveBeenNthCalledWith(1, [result.html], {
+        type: "text/html",
+      });
+      expect(blobMock).toHaveBeenNthCalledWith(2, [result.csv], {
+        type: "text/plain",
+      });
+      expect(clipboardMock).toHaveBeenCalledWith({
+        "text/html": {
+          size: 43,
+          type: "text/html",
+        },
+        "text/plain": {
+          size: 17,
+          type: "text/plain",
+        },
+      });
+      expect(writeMock).toHaveBeenCalledWith([clipboardMock.results[0][1]]);
     });
 
     it("copies table content for bottom rows", () => {
