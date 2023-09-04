@@ -70,7 +70,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  *
  * @author Paul Bärnreuther
  */
-public final class JsonDataToNodeSettings extends ToNodeSettings<JsonNode> {
+final class JsonDataToNodeSettings extends ToNodeSettings<JsonNode> {
 
     JsonDataToNodeSettings(final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses) {
         super(settingsClasses);

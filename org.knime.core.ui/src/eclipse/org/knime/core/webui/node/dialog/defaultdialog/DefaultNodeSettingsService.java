@@ -67,7 +67,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsSetting
 import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.SettingsConverter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
@@ -99,7 +98,7 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
         var context = DefaultNodeSettings.createDefaultNodeSettingsContext(specs);
         final var jsonFormsSettings = m_converter.nodeSettingsToJsonFormsSettings(mapValues(settings, v -> v), context);
         final var flowVariablesMapJsonObject =
-            m_converter.variableSettingsToJsonObject(mapValues(settings, v -> v), context);
+            SettingsConverter.variableSettingsToJsonObject(mapValues(settings, v -> v), context);
         return toString(jsonFormsSettings, flowVariablesMapJsonObject);
     }
 

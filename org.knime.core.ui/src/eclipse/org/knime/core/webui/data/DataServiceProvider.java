@@ -50,6 +50,8 @@ package org.knime.core.webui.data;
 
 import java.util.Optional;
 
+import org.knime.core.node.workflow.NodeContext;
+
 /**
  * Provides different types of data services. Data service instances are only created once per node or port instance!
  *
@@ -58,16 +60,22 @@ import java.util.Optional;
 public interface DataServiceProvider {
 
     /**
+     * Creates the initial data service instance. A {@link NodeContext} is available when this method is called.
+     *
      * @return optional service that provides data for initialization of the node view, port view or node dialog.
      */
     <D> Optional<InitialDataService<D>> createInitialDataService();
 
     /**
-     * @return optional service generally providing data to the node view, port view or node dialog.
+     * Creates the rpc data service instance. A {@link NodeContext} is available when this method is called.
+     *
+     * @return optional service generally providing data to the node view, port view or node dialog;
      */
     Optional<RpcDataService> createRpcDataService();
 
     /**
+     * Creates the apply data service instance. A {@link NodeContext} is available when this method is called.
+     *
      * @return optional service to apply new data
      */
     <D> Optional<ApplyDataService<D>> createApplyDataService();

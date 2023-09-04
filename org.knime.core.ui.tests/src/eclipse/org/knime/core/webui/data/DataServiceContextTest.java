@@ -154,7 +154,8 @@ public class DataServiceContextTest {
      * @param execSupplier
      * @param inputSpecsSupplier
      */
-    public static void initDataServiceContext(final Supplier<ExecutionContext> execSupplier, final LazyInitializer<PortObjectSpec[]> inputSpecsSupplier) {
+    public static void initDataServiceContext(final Supplier<ExecutionContext> execSupplier,
+        final LazyInitializer<PortObjectSpec[]> inputSpecsSupplier) {
         DataServiceContext.init(execSupplier, inputSpecsSupplier);
     }
 

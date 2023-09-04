@@ -48,8 +48,6 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -81,8 +79,6 @@ public final class DefaultNodeDialog implements NodeDialog {
 
     private final DefaultNodeSettingsService m_settingsDataService;
 
-    private final Collection<Class<? extends DefaultNodeSettings>> m_settingsClasses;
-
     private final Set<SettingsType> m_settingsTypes;
 
     private final OnApplyNodeModifier m_onApplyModifier;
@@ -98,7 +94,6 @@ public final class DefaultNodeDialog implements NodeDialog {
     public DefaultNodeDialog(final SettingsType settingsType,
         final Class<? extends DefaultNodeSettings> settingsClass) {
         m_settingsTypes = Set.of(settingsType);
-        m_settingsClasses = List.of(settingsClass);
         m_settingsConverter =
                 new SettingsConverter(Map.of(settingsType, settingsClass));
         m_settingsDataService = new DefaultNodeSettingsService(m_settingsConverter);
@@ -134,7 +129,6 @@ public final class DefaultNodeDialog implements NodeDialog {
         final Class<? extends DefaultNodeSettings> settingsClass1, final SettingsType settingsType2,
         final Class<? extends DefaultNodeSettings> settingsClass2, final OnApplyNodeModifier onApplyModifier) {
         m_settingsTypes = Set.of(settingsType1, settingsType2);
-        m_settingsClasses = List.of(settingsClass1, settingsClass2);
         m_settingsConverter =
             new SettingsConverter(Map.of(settingsType1, settingsClass1, settingsType2, settingsClass2));
         m_settingsDataService = new DefaultNodeSettingsService(m_settingsConverter);
@@ -153,7 +147,7 @@ public final class DefaultNodeDialog implements NodeDialog {
 
     @Override
     public Optional<RpcDataService> createRpcDataService() {
-        final var dataService = new DefaultNodeDialogDataServiceImpl(m_settingsClasses, m_settingsConverter);
+        final var dataService = new DefaultNodeDialogDataServiceImpl(m_settingsConverter);
         return Optional.ofNullable(RpcDataService.builder(dataService).build());
     }
 

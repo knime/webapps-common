@@ -77,11 +77,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
+ * Implementation of the {@link DefaultNodeDialogDataService}.
  *
  * @author Paul Bärnreuther
  */
 @SuppressWarnings({"java:S1452"}) //Allow wildcard return values
 public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataService {
+
+    private static final int ABBREVIATION_THRESHOLD = 50;
 
     private final ButtonWidgetUpdateHandlerHolder m_buttonUpdateHandlers;
 
@@ -94,12 +97,11 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
     private final SettingsConverter m_converter;
 
     /**
-     * @param settingsClasses the collection of {@link DefaultNodeSettings} to extract the handler classes from.
      * @param converter used to transform between text settings from the front-end to {@link NodeSettings} and back
      */
-    public DefaultNodeDialogDataServiceImpl(final Collection<Class<? extends DefaultNodeSettings>> settingsClasses,
-        final SettingsConverter converter) {
+    public DefaultNodeDialogDataServiceImpl(final SettingsConverter converter) {
         m_converter = converter;
+        var settingsClasses = converter.getSettingsClasses();
         m_buttonActionHandlers = new ButtonWidgetActionHandlerHolder(settingsClasses);
         m_buttonUpdateHandlers = new ButtonWidgetUpdateHandlerHolder(settingsClasses);
         m_choicesService = new ChoicesWidgetHandlerHolder(settingsClasses);
@@ -211,13 +213,11 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
             .map(DefaultNodeDialogDataServiceImpl::toPossibleFlowVariable).toList();
     }
 
-    private static final int ABBREVUATION_THRESHOLD = 50;
-
     static PossibleFlowVariable toPossibleFlowVariable(final FlowVariable flowVariable) {
         var value = flowVariable.getValueAsString();
         boolean abbreviated = false;
-        if (value != null && value.length() > ABBREVUATION_THRESHOLD) {
-            value = StringUtils.abbreviate(value, ABBREVUATION_THRESHOLD);
+        if (value != null && value.length() > ABBREVIATION_THRESHOLD) {
+            value = StringUtils.abbreviate(value, ABBREVIATION_THRESHOLD);
             abbreviated = true;
         }
         return new PossibleFlowVariable(flowVariable.getName(), value, abbreviated);

@@ -81,7 +81,7 @@ public final class DataServiceContext {
     public static DataServiceContext get() {
         var context = CONTEXT.get();
         if (context == null) {
-            init((Supplier<ExecutionContext>)null, null);
+            init(null, null);
             return CONTEXT.get();
         } else {
             return context;

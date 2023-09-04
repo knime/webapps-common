@@ -62,7 +62,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.Defaul
  *
  * @author Paul Bärnreuther
  */
-public final class DefaultNodeSettingsClassToNodeSettings extends ToNodeSettings<Void> {
+final class DefaultNodeSettingsClassToNodeSettings extends ToNodeSettings<Void> {
 
     private final DefaultNodeSettingsContext m_context;
 

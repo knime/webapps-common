@@ -85,7 +85,7 @@ abstract class ToNodeSettings<T> {
      * @param nodeSettings the output to which the extracted {@link NodeSettings} are written
      * @param type of the settings
      */
-    protected void toNodeSettings(final T input, final NodeSettingsWO nodeSettings, final SettingsType type) {
+    final void toNodeSettings(final T input, final NodeSettingsWO nodeSettings, final SettingsType type) {
         var settingsClass = m_settingsClasses.get(type);
         var settingsObj = constructDefaultNodeSettings(input, settingsClass);
         DefaultNodeSettings.saveSettings(settingsClass, settingsObj, nodeSettings);
@@ -96,7 +96,7 @@ abstract class ToNodeSettings<T> {
      * @param nodeSettings the output to which the extracted {@link NodeSettings} are written per type. Note that the
      *            keys of this map define, which settings are extracted.
      */
-    void toNodeSettings(final T input, final Map<SettingsType, NodeSettingsWO> nodeSettings) {
+    final void toNodeSettings(final T input, final Map<SettingsType, NodeSettingsWO> nodeSettings) {
         for (var settingsType : nodeSettings.keySet()) {
             toNodeSettings(getInputForType(input, settingsType), nodeSettings.get(settingsType), settingsType);
         }
@@ -108,7 +108,7 @@ abstract class ToNodeSettings<T> {
      * @param type of the settings
      * @return the constructed {@link NodeSettings}
      */
-    NodeSettings toNodeSettings(final T input, final SettingsType type) {
+    final NodeSettings toNodeSettings(final T input, final SettingsType type) {
         var res = new NodeSettings(type.getConfigKey());
         toNodeSettings(input, Map.of(type, res));
         return res;

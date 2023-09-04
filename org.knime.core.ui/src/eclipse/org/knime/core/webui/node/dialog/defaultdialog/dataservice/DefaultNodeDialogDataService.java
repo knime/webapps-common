@@ -148,7 +148,7 @@ interface DefaultNodeDialogDataService {
      * @throws InvalidSettingsException
      * @throws JsonProcessingException
      */
-    Object getFlowVariableOverrideValue(final String textSettings, final LinkedList<String> dataPath)
+    String getFlowVariableOverrideValue(final String textSettings, final LinkedList<String> dataPath)
         throws InvalidSettingsException, JsonProcessingException;
 
 }

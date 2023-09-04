@@ -135,13 +135,21 @@ class DefaultNodeDialogDataServiceImplTest {
     }
 
     private static DefaultNodeDialogDataServiceImpl
-        getDataService(final Collection<Class<? extends DefaultNodeSettings>> settingsClasses) {
-        return new DefaultNodeDialogDataServiceImpl(settingsClasses, null);
+        getDataService(final Class<? extends DefaultNodeSettings> modelSettingsClass) {
+        return new DefaultNodeDialogDataServiceImpl(
+            new SettingsConverter(Map.of(SettingsType.MODEL, modelSettingsClass)));
+    }
+
+    private static DefaultNodeDialogDataServiceImpl getDataService(
+        final Class<? extends DefaultNodeSettings> modelSettingsClass,
+        final Class<? extends DefaultNodeSettings> viewSettingsClass) {
+        return new DefaultNodeDialogDataServiceImpl(new SettingsConverter(
+            Map.of(SettingsType.MODEL, modelSettingsClass, SettingsType.VIEW, viewSettingsClass)));
     }
 
     private static DefaultNodeDialogDataServiceImpl
         getDataServiceWithConverter(final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses) {
-        return new DefaultNodeDialogDataServiceImpl(settingsClasses.values(), new SettingsConverter(settingsClasses));
+        return new DefaultNodeDialogDataServiceImpl(new SettingsConverter(settingsClasses));
     }
 
     @Nested
@@ -175,7 +183,7 @@ class DefaultNodeDialogDataServiceImplTest {
             }
 
             final String testDepenenciesFooValue = "custom value";
-            final var dataService = getDataService(List.of(ButtonSettings.class));
+            final var dataService = getDataService(ButtonSettings.class);
             final var result = dataService.update("widgetId", TestChoicesUpdateHandler.class.getName(),
                 Map.of("foo", testDepenenciesFooValue));
             assertThat(result.result()).isEqualTo(TestChoicesUpdateHandler.getResult(testDepenenciesFooValue));
@@ -238,7 +246,7 @@ class DefaultNodeDialogDataServiceImplTest {
                 String m_button;
             }
 
-            final var dataService = getDataService(List.of(ButtonSettings.class));
+            final var dataService = getDataService(ButtonSettings.class);
             final String currentState = "currentState";
             final var result =
                 dataService.initializeButton("widgetId", GenericTypesTestHandler.class.getName(), currentState);
@@ -256,7 +264,7 @@ class DefaultNodeDialogDataServiceImplTest {
             }
 
             final var testDepenenciesFooValue = "custom value";
-            final var dataService = getDataService(List.of(ButtonSettings.class));
+            final var dataService = getDataService(ButtonSettings.class);
             final var result = dataService.invokeButtonAction("widgetId", GenericTypesTestHandler.class.getName(),
                 "FIRST", Map.of("foo", testDepenenciesFooValue));
             @SuppressWarnings("unchecked")
@@ -275,7 +283,7 @@ class DefaultNodeDialogDataServiceImplTest {
             }
 
             final var testDepenenciesFooValue = "custom value";
-            final var dataService = getDataService(List.of(ButtonSettings.class));
+            final var dataService = getDataService(ButtonSettings.class);
             final var result = dataService.update("widgetId", GenericTypesUpdateHandler.class.getName(),
                 Map.of("foo", testDepenenciesFooValue));
             @SuppressWarnings("unchecked")
@@ -333,7 +341,7 @@ class DefaultNodeDialogDataServiceImplTest {
                 String m_otherButton;
             }
 
-            final var dataService = getDataService(List.of(TestSettings.class));
+            final var dataService = getDataService(TestSettings.class);
             final var firstResult = dataService.update("widgetId", FirstTestHandler.class.getName(), null);
             final var secondResult = dataService.update("widgetId", SecondTestHandler.class.getName(), null);
             assertThat(((PossibleValue[])firstResult.result())[0].id()).isEqualTo(FirstTestHandler.ID);
@@ -348,7 +356,7 @@ class DefaultNodeDialogDataServiceImplTest {
                 String m_button;
             }
 
-            final var dataService = getDataService(List.of(TestSettings.class));
+            final var dataService = getDataService(TestSettings.class);
             final var handlerName = SecondTestHandler.class.getName();
             assertThrows(IllegalArgumentException.class, () -> dataService.update("widgetId", handlerName, null));
 
@@ -365,7 +373,7 @@ class DefaultNodeDialogDataServiceImplTest {
                 String m_button;
             }
             final var handlerName = NonStaticHandler.class.getName();
-            final var dataService = getDataService(List.of(TestSettings.class));
+            final var dataService = getDataService(TestSettings.class);
             assertThrows(IllegalArgumentException.class, () -> dataService.update("widgetId", handlerName, null));
 
         }
@@ -383,7 +391,7 @@ class DefaultNodeDialogDataServiceImplTest {
                 String m_button;
             }
 
-            final var dataService = getDataService(List.of(TestSettings.class, OtherTestSettings.class));
+            final var dataService = getDataService(TestSettings.class, OtherTestSettings.class);
             final var firstResult = dataService.update("widgetId", FirstTestHandler.class.getName(), null);
             final var secondResult = dataService.update("widgetId", SecondTestHandler.class.getName(), null);
             assertThat(((PossibleValue[])firstResult.result())[0].id()).isEqualTo(FirstTestHandler.ID);
@@ -413,7 +421,8 @@ class DefaultNodeDialogDataServiceImplTest {
                 Boolean m_button;
             }
 
-            final var dataService = new DefaultNodeDialogDataServiceImpl(List.of(ButtonSettings.class), null);
+            final var dataService = new DefaultNodeDialogDataServiceImpl(
+                new SettingsConverter(Map.of(SettingsType.MODEL, ButtonSettings.class)));
             dataService.update("widgetId", DefaultNodeSettingsContextHandler.class.getName(), null).result();
             /** Assertion happens inside {@link DefaultNodeSettingsContextHandler#update} */
         }

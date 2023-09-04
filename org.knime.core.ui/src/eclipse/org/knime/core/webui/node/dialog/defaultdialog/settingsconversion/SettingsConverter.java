@@ -51,6 +51,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.settingsconversion;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.FIELD_NAME_DATA;
 import static org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.MapValuesUtil.mapValues;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -105,7 +106,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * node dialog. Hereby it is possible to use this converter for only a part of the conversion defined by one
  * {@link SettingsType} even if both model and view settings are present in any of the conversion steps.
  *
- * @author hornm
+ *
+ * @author Paul Bärnreuther
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 public final class SettingsConverter {
 
@@ -295,14 +298,14 @@ public final class SettingsConverter {
     /**
      * Transforms the given variable settings to an object node which is to be provide within the top-level node of the
      * data provided to the front-end (i.e. it already contains the key
-     * {@link SettingsConverter#FLOW_VARIABLE_SETTINGS_KEY}.
+     * {@link SettingsConverter#FLOW_VARIABLE_SETTINGS_KEY}).
      *
      * @param settings a map of variable settings
      * @param context used to get the available flow variables
      * @return an {@link ObjectNode} of with a key {@link SettingsConverter#FLOW_VARIABLE_SETTINGS_KEY} under which the
      *         variables are listed as constructed in {@link VariableSettingsUtil#fromVariableSettingsToJson}
      */
-    public ObjectNode variableSettingsToJsonObject(final Map<SettingsType, VariableSettingsRO> settings,
+    public static ObjectNode variableSettingsToJsonObject(final Map<SettingsType, VariableSettingsRO> settings,
         final DefaultNodeSettingsContext context) {
         final var mapper = JsonFormsDataUtil.getMapper();
         final var objectNode = mapper.createObjectNode();
@@ -322,6 +325,13 @@ public final class SettingsConverter {
     public void saveDefaultNodeSettings(final Map<SettingsType, NodeSettingsWO> settings,
         final DefaultNodeSettingsContext context) {
         new DefaultNodeSettingsClassToNodeSettings(context, m_settingsClasses).saveDefaultNodeSetting(settings);
+    }
+
+    /**
+     * @return the {@link DefaultNodeSettings}-classes this settings converter is associated with
+     */
+    public Collection<Class<? extends DefaultNodeSettings>> getSettingsClasses() {
+        return m_settingsClasses.values();
     }
 
 }
