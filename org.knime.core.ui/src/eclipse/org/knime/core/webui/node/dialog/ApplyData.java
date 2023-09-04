@@ -166,9 +166,11 @@ final class ApplyData {
         throws InvalidSettingsException {
         var settingsMap = new EnumMap<SettingsType, NodeAndVariableSettingsWO>(SettingsType.class);
         for (var settingsType : SettingsType.values()) {
-            var subSettings = getSubSettings(nodeSettings, settingsType);
-            settingsMap.put(settingsType, NodeAndVariableSettingsProxy.createWOProxy(subSettings,
-                new VariableSettings(nodeSettings, settingsType)));
+            if (m_settingsTypes.contains(settingsType)) {
+                var subSettings = getSubSettings(nodeSettings, settingsType);
+                settingsMap.put(settingsType, NodeAndVariableSettingsProxy.createWOProxy(subSettings,
+                    new VariableSettings(nodeSettings, settingsType)));
+            }
         }
         m_nodeSettingsService.toNodeSettings(data, settingsMap);
     }
