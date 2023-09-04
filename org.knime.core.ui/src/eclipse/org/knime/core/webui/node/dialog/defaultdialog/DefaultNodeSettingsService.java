@@ -51,7 +51,7 @@ package org.knime.core.webui.node.dialog.defaultdialog;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.FIELD_NAME_DATA;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.FIELD_NAME_SCHEMA;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.FIELD_NAME_UI_SCHEMA;
-import static org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.MapValuesUtil.mapValues;
+import static org.knime.core.webui.node.dialog.defaultdialog.util.MapValuesUtil.mapValues;
 
 import java.util.Map;
 

@@ -46,7 +46,7 @@
  * History
  *   Aug 30, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.settingsconversion;
+package org.knime.core.webui.node.dialog.defaultdialog.util;
 
 import static java.util.stream.Collectors.toMap;
 

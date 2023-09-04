@@ -48,7 +48,7 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.settingsconversion;
 
-import static org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.MapValuesUtil.mapValuesWithKeys;
+import static org.knime.core.webui.node.dialog.defaultdialog.util.MapValuesUtil.mapValuesWithKeys;
 
 import java.util.Map;
 

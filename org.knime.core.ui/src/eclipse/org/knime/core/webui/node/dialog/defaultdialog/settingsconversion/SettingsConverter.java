@@ -49,7 +49,7 @@
 package org.knime.core.webui.node.dialog.defaultdialog.settingsconversion;
 
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.FIELD_NAME_DATA;
-import static org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.MapValuesUtil.mapValues;
+import static org.knime.core.webui.node.dialog.defaultdialog.util.MapValuesUtil.mapValues;
 
 import java.util.Collection;
 import java.util.Map;
