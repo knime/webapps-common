@@ -60,6 +60,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.JsonFormsSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.util.RawValue;
@@ -131,6 +132,7 @@ public final class JsonFormsSettingsImpl implements JsonFormsSettings {
         if (m_viewSettingsClass != null) {
             settings.put(SettingsType.VIEW.getConfigKey(), m_viewSettingsClass);
         }
+        AsyncChoicesHolder.clear();
         return new RawValue(
             JsonFormsUiSchemaUtil.buildUISchema(settings, JsonFormsDataUtil.getMapper(), m_context).toString());
     }

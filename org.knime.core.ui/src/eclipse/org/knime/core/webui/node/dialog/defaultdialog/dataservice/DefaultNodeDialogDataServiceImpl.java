@@ -67,12 +67,11 @@ import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.ChoicesGeneratorUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.SettingsConverter;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.UpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -93,9 +92,6 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
     private final ButtonWidgetActionHandlerHolder m_buttonActionHandlers;
 
     private final ChoicesWidgetUpdateHandlerHolder m_choicesUpdateHandlers;
-
-    private final ChoicesWidgetChoicesProviderHoder m_choicesProviders;
-
     private final DataServiceRequestHandler m_requestHandler;
 
     private final SettingsConverter m_converter;
@@ -109,7 +105,6 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
         m_buttonActionHandlers = new ButtonWidgetActionHandlerHolder(settingsClasses);
         m_buttonUpdateHandlers = new ButtonWidgetUpdateHandlerHolder(settingsClasses);
         m_choicesUpdateHandlers = new ChoicesWidgetUpdateHandlerHolder(settingsClasses);
-        m_choicesProviders = new ChoicesWidgetChoicesProviderHoder(settingsClasses);
         m_requestHandler = new DataServiceRequestHandler();
     }
 
@@ -171,13 +166,7 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
 
     @Override
     public Result<?> getChoices(final String className) throws InterruptedException, ExecutionException {
-        final var choicesProvider = getChoicesProvider(className);
-        final var context = createContext();
-        return m_requestHandler.handleRequest(() -> ChoicesGeneratorUtil.getChoices(choicesProvider, context));
-    }
-
-    private ChoicesProvider getChoicesProvider(final String handlerClassName) {
-        return m_choicesProviders.getHandler(handlerClassName);
+        return m_requestHandler.handleRequestFuture(AsyncChoicesHolder.getChoices(className));
     }
 
     private static Object convertDependencies(final Object objectSettings, final DependencyHandler<?> handler) {

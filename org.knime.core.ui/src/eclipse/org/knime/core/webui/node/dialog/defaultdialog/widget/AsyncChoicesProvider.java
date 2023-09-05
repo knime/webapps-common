@@ -57,5 +57,4 @@ package org.knime.core.webui.node.dialog.defaultdialog.widget;
  * @author Paul Bärnreuther
  */
 public interface AsyncChoicesProvider {
-
 }

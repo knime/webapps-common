@@ -60,6 +60,7 @@ import org.knime.core.webui.node.dialog.NodeSettingsService;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DefaultNodeDialogDataServiceImpl;
 import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.SettingsConverter;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
 import org.knime.core.webui.page.Page;
 
 /**
@@ -148,7 +149,7 @@ public final class DefaultNodeDialog implements NodeDialog {
     @Override
     public Optional<RpcDataService> createRpcDataService() {
         final var dataService = new DefaultNodeDialogDataServiceImpl(m_settingsConverter);
-        return Optional.ofNullable(RpcDataService.builder(dataService).build());
+        return Optional.ofNullable(RpcDataService.builder(dataService).onDeactivate(() -> AsyncChoicesHolder.clear()).build());
     }
 
     @Override

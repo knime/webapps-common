@@ -101,7 +101,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonUpdate
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.IdAndText;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.PossibleColumnValue;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
 import org.knime.core.webui.page.Page;
 import org.knime.testing.util.WorkflowManagerUtil;
@@ -174,7 +174,7 @@ class DefaultNodeDialogDataServiceImplTest {
 
             class ChoicesSettings implements DefaultNodeSettings {
                 @ChoicesWidget(choicesUpdateHandler = TestChoicesUpdateHandler.class)
-                String m_button;
+                String m_choicesWidgetElement;
 
                 @SuppressWarnings("unused")
                 String m_otherSetting;
@@ -211,17 +211,24 @@ class DefaultNodeDialogDataServiceImplTest {
 
             class ChoicesSettings implements DefaultNodeSettings {
                 @ChoicesWidget(choices = TestChoicesProvider.class)
-                String m_button;
+                String m_foo;
 
                 @ChoicesWidget(choices = TestColumnChoicesProvider.class)
-                String m_otherSetting;
+                String m_bar;
             }
 
+            AsyncChoicesHolder.clear();
+            final var choices = new IdAndText[]{new IdAndText("id", "text")};
+            AsyncChoicesHolder.addChoices(TestChoicesProvider.class.getName(), () -> choices);
+            final var errorMessage = "Failed to load choices";
+            AsyncChoicesHolder.addChoices(TestColumnChoicesProvider.class.getName(), () -> {
+                throw new WidgetHandlerException(errorMessage);
+            });
             final var dataService = getDataService(ChoicesSettings.class);
             final var result1 = dataService.getChoices(TestChoicesProvider.class.getName());
-            assertThat(((IdAndText[])result1.result())[0]).isEqualTo(new IdAndText("A", "A"));
+            assertThat(result1.result()).isEqualTo(choices);
             final var result2 = dataService.getChoices(TestColumnChoicesProvider.class.getName());
-            assertThat(((PossibleColumnValue[])result2.result())[0].id()).isEqualTo("myCol");
+            assertThat(result2.message()).isEqualTo(errorMessage);
         }
     }
 
@@ -437,7 +444,8 @@ class DefaultNodeDialogDataServiceImplTest {
     static class DefaultNodeSettingsContextHandler implements ChoicesUpdateHandler<TestDefaultNodeSettings> {
 
         @Override
-        public IdAndText[] update(final TestDefaultNodeSettings settings, final DefaultNodeSettingsContext context) {
+        public IdAndText[] update(final TestDefaultNodeSettings settings,
+            final DefaultNodeSettingsContext context) {
             assertThat(context.getPortObjectSpecs()).isEqualTo(PORT_OBJECT_SPECS);
             return null;
         }

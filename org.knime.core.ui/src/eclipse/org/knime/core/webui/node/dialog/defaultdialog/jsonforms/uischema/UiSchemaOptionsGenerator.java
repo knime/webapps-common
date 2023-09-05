@@ -86,6 +86,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.AsyncChoicesProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ComboBoxWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
@@ -98,6 +99,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonAction
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonState;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.NoopButtonUpdateHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.NoopChoicesUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DeclaringDefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
@@ -253,11 +255,12 @@ final class UiSchemaOptionsGenerator {
             final var choicesWidget = m_field.getAnnotation(ChoicesWidget.class);
             final var choicesProviderClass = choicesWidget.choices();
             if (AsyncChoicesProvider.class.isAssignableFrom(choicesProviderClass)) {
-                options.put("choicesProviderClass", choicesProviderClass.getName());
+                final var choicesProviderClassName = choicesProviderClass.getName();
+                options.put("choicesProviderClass", choicesProviderClassName);
+                AsyncChoicesHolder.addChoices(choicesProviderClassName,
+                    () -> generatePossibleValues(choicesProviderClass));
             } else {
-                final var choicesProvider = InstantiationUtil.createInstance(choicesWidget.choices());
-                final var possibleValues =
-                    ChoicesGeneratorUtil.getChoices(choicesProvider, m_defaultNodeSettingsContext);
+                final var possibleValues = generatePossibleValues(choicesProviderClass);
                 options.set("possibleValues", m_mapper.valueToTree(possibleValues));
             }
             if (!m_fieldClass.equals(ColumnSelection.class) && !m_fieldClass.equals(ColumnFilter.class)) {
@@ -281,6 +284,12 @@ final class UiSchemaOptionsGenerator {
         if (isArrayOfObjects) {
             applyArrayLayoutOptions(options, m_fieldType.getContentType().getRawClass());
         }
+    }
+
+    private Object[] generatePossibleValues(final Class<? extends ChoicesProvider> choicesProviderClass) {
+        final var choicesProvider = InstantiationUtil.createInstance(choicesProviderClass);
+        final var possibleValues = ChoicesGeneratorUtil.getChoices(choicesProvider, m_defaultNodeSettingsContext);
+        return possibleValues;
     }
 
     private static <M extends Enum<M>> void generateStates(final ArrayNode states,
