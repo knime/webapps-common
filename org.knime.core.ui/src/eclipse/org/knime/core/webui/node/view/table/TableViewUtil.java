@@ -153,8 +153,8 @@ public final class TableViewUtil {
      * @return the table view's initial data object
      */
     static TableViewInitialData createInitialData(final TableViewViewSettings settings,
-        final BufferedDataTable table, final String tableId) {
-        return new TableViewInitialDataImpl(settings, () -> table, tableId, new SwingBasedRendererFactory(),
+        final BufferedDataTable table, final Supplier<Set<RowKey>> selectionSupplier, final String tableId) {
+        return new TableViewInitialDataImpl(settings, () -> table, selectionSupplier, tableId, new SwingBasedRendererFactory(),
             RENDERER_REGISTRY);
     }
 
@@ -167,21 +167,35 @@ public final class TableViewUtil {
     public static InitialDataService<TableViewInitialData> createInitialDataService(
         final Supplier<TableViewViewSettings> settingsSupplier, final Supplier<BufferedDataTable> tableSupplier,
         final String tableId) {
-        return createInitialDataService(settingsSupplier, tableSupplier, tableId, null);
+        return createInitialDataService(settingsSupplier, tableSupplier, null, tableId, null);
     }
 
     /**
      * @param settingsSupplier
      * @param tableSupplier
+     * @param selectionSupplier
+     * @param tableId
+     * @return the table view initial data service
+     */
+    public static InitialDataService<TableViewInitialData> createInitialDataService(
+        final Supplier<TableViewViewSettings> settingsSupplier, final Supplier<BufferedDataTable> tableSupplier,
+        final Supplier<Set<RowKey>> selectionSupplier, final String tableId) {
+        return createInitialDataService(settingsSupplier, tableSupplier, selectionSupplier, tableId, null);
+    }
+
+    /**
+     * @param settingsSupplier
+     * @param tableSupplier
+     * @param selectionSupplier
      * @param tableId
      * @param onDispose
      * @return the table view initial data service
      */
     public static InitialDataService<TableViewInitialData> createInitialDataService(
         final Supplier<TableViewViewSettings> settingsSupplier, final Supplier<BufferedDataTable> tableSupplier,
-        final String tableId, final Runnable onDispose) {
+        final Supplier<Set<RowKey>> selectionSupplier, final String tableId, final Runnable onDispose) {
         Runnable clearImageData = () -> TableViewUtil.RENDERER_REGISTRY.clearImageDataCache(tableId);
-        return InitialDataService.builder(() -> createInitialData(settingsSupplier.get(), tableSupplier.get(), tableId)) //
+        return InitialDataService.builder(() -> createInitialData(settingsSupplier.get(), tableSupplier.get(), selectionSupplier, tableId)) //
             .onDeactivate(clearImageData) //
             .onDispose(() -> {
                 clearImageData.run();

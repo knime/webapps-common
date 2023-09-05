@@ -129,7 +129,7 @@ public final class TableNodeView implements NodeTableView {
         if (m_settings == null) {
             m_settings = new TableViewViewSettings(m_tableSupplier.get().getSpec());
         }
-        return Optional.of(TableViewUtil.createInitialDataService(() -> m_settings, m_tableSupplier, m_tableId));
+        return Optional.of(TableViewUtil.createInitialDataService(() -> m_settings, m_tableSupplier, m_selectionSupplier, m_tableId));
     }
 
     @Override

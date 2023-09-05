@@ -50,10 +50,12 @@ package org.knime.core.webui.node.view.table.data;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
+import org.knime.core.data.RowKey;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.webui.node.view.table.TableViewViewSettings;
 import org.knime.core.webui.node.view.table.data.render.DataValueImageRendererRegistry;
@@ -81,13 +83,14 @@ public final class TableViewInitialDataImpl implements TableViewInitialData {
      *            {@link TableViewDataServiceImpl#TableViewDataServiceImpl(Supplier, String, DataValueRendererFactory, DataValueImageRendererRegistry)}
      * @param rendererRegistry see
      *            {@link TableViewDataServiceImpl#TableViewDataServiceImpl(Supplier, String, DataValueRendererFactory, DataValueImageRendererRegistry)}
+     * @param selectionSupplier supplying the currently selected row keys (for update of totalSelected when filtering)
      */
     public TableViewInitialDataImpl(final TableViewViewSettings settings, final Supplier<BufferedDataTable> table,
-        final String tableId, final DataValueRendererFactory rendererFactory,
+        final Supplier<Set<RowKey>> selectionSupplier, final String tableId, final DataValueRendererFactory rendererFactory,
         final DataValueImageRendererRegistry rendererRegistry) {
         m_settings = settings;
         m_table = table;
-        m_dataService = new TableViewDataServiceImpl(table, tableId, rendererFactory, rendererRegistry);
+        m_dataService = new TableViewDataServiceImpl(table, selectionSupplier, tableId, rendererFactory, rendererRegistry);
     }
 
     @Override
@@ -96,8 +99,9 @@ public final class TableViewInitialDataImpl implements TableViewInitialData {
         final var displayedColumns = m_settings.getDisplayedColumns(spec);
         final var trimColumns = m_settings.m_skipRemainingColumns;
         final var pageSize = m_settings.m_enablePagination ? m_settings.m_pageSize : 0;
+        final var showOnlySelectedRows = m_settings.m_showOnlySelectedRows ? m_settings.m_showOnlySelectedRows : false;
         return m_dataService.getTable(displayedColumns, 0, pageSize, new String[displayedColumns.length], true, true,
-            trimColumns);
+            trimColumns, showOnlySelectedRows);
     }
 
     @Override

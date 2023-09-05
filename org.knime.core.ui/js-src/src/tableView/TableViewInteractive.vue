@@ -509,8 +509,7 @@ export default {
       if (
         this.columnSortColumnName ||
         this.searchTerm ||
-        this.colFilterActive ||
-        this.settings.showOnlySelectedRows
+        this.colFilterActive
       ) {
         return this.requestFilteredAndSortedTable(
           startIndex,
@@ -545,7 +544,7 @@ export default {
       const columnSortIsAscending = this.columnSortDirection === 1;
       return this.performRequest("getFilteredAndSortedTable", [
         displayedColumns,
-        Math.min(this.totalRowCount - 1, Math.max(0, startIndex)),
+        startIndex,
         numRows,
         this.columnSortColumnName,
         columnSortIsAscending,
@@ -579,6 +578,7 @@ export default {
         updateDisplayedColumns,
         clearImageDataCache,
         this.skipRemainingColumns,
+        this.settings.showOnlySelectedRows,
       ]);
     },
     getColumnsForRequest(updateDisplayedColumns) {
@@ -735,9 +735,6 @@ export default {
       if (showRowKeysChanged || showRowIndicesChanged) {
         this.$refs.tableViewDisplay.clearCellSelection();
       }
-      if (showOnlySelectedRowsChanged) {
-        await this.refreshTable({ resetPage: true });
-      }
       if (displayedColumnsChanged) {
         await this.refreshTable({
           updateDisplayedColumns: true,
@@ -750,8 +747,12 @@ export default {
           this.settings.autoSizeColumnsToContent !==
             AutoSizeColumnsToContent.FIXED)
       ) {
-        await this.refreshTable();
-      } else if (pageSizeChanged || enablePaginationChanged) {
+        this.refreshTable();
+      } else if (
+        pageSizeChanged ||
+        enablePaginationChanged ||
+        showOnlySelectedRowsChanged
+      ) {
         await this.refreshTable({ resetPage: true });
         this.$refs.tableViewDisplay.triggerCalculationOfAutoColumnSizes();
       }
@@ -796,7 +797,7 @@ export default {
       }
       this.transformSelection();
       this.totalSelected = await this.requestTotalSelected();
-      if (this.showOnlySelectedRows) {
+      if (this.settings.showOnlySelectedRows) {
         this.refreshTable({ resetPage: true });
       }
     },
@@ -813,7 +814,7 @@ export default {
         : this.bottomRows[rowInd][1];
       this.totalSelected += selected ? 1 : -1;
       this.updateSelection(selected, [rowKey]);
-      if (this.showOnlySelectedRows) {
+      if (this.settings.showOnlySelectedRows) {
         this.refreshTable({ resetPage: true });
       }
     },
@@ -846,7 +847,7 @@ export default {
       }
       this.transformSelection();
       this.totalSelected = selected ? this.currentRowCount : 0;
-      if (this.showOnlySelectedRows) {
+      if (this.settings.showOnlySelectedRows) {
         this.refreshTable({ resetPage: true });
       }
     },

@@ -92,12 +92,12 @@ public class DataValueImageRendererRegistryTest {
         var pathPrefix = "uiext/test_page_id/images/";
 
         // test pre-condition: make sure that all images in the table have unique ids
-        var table = dataService.getTable(new String[]{"image"}, 0, 15, null, false, false, false);
+        var table = dataService.getTable(new String[]{"image"}, 0, 15, null, false, false, false, false);
         assertThat(table.getRows().stream().map(r -> r.get(1)).collect(Collectors.toSet())).hasSize(15);
         imgReg.clearImageDataCache("test_table_id");
 
         // access the same image multiple times (within the same chunk/page of rows)
-        table = dataService.getTable(new String[]{"image"}, 0, 5, null, false, false, false);
+        table = dataService.getTable(new String[]{"image"}, 0, 5, null, false, false, false, false);
         var imgPath = ((String)table.getRows().get(3).get(2)).replace(pathPrefix, "");
         var img = imgReg.renderImage(imgPath);
         assertThat(img).hasSizeGreaterThan(0);
@@ -105,7 +105,7 @@ public class DataValueImageRendererRegistryTest {
         assertThat(img).hasSizeGreaterThan(0);
 
         // request a new chunk of rows, but still access image resources from the previous chunk
-        table = dataService.getTable(new String[]{"image"}, 5, 5, null, false, false, false);
+        table = dataService.getTable(new String[]{"image"}, 5, 5, null, false, false, false, false);
         img = imgReg.renderImage(imgPath);
         assertThat(img).hasSizeGreaterThan(0);
         // request image from the new chunk
@@ -114,7 +114,7 @@ public class DataValueImageRendererRegistryTest {
         assertThat(img).hasSizeGreaterThan(0);
 
         // do the same again but with the image data cache cleared
-        table = dataService.getTable(new String[]{"image"}, 10, 5, null, false, true, false);
+        table = dataService.getTable(new String[]{"image"}, 10, 5, null, false, true, false, false);
         // request image from the previous chunk
         img = imgReg.renderImage(imgPath);
         assertThat(img).hasSize(0);
@@ -135,7 +135,7 @@ public class DataValueImageRendererRegistryTest {
         var pathPrefix = "uiext/test_page_id/images/";
 
         // read dimensions of same image twice
-        var table = dataService.getTable(new String[]{"image"}, 0, 5, null, false, false, false);
+        var table = dataService.getTable(new String[]{"image"}, 0, 5, null, false, false, false, false);
         var imgPath = ((String)table.getRows().get(3).get(2)).replace(pathPrefix, "");
         var imgDims = imgReg.getImageDimensions(imgPath);
         assertThat(imgDims).hasFieldOrPropertyWithValue("heightInPx", 11);
@@ -146,7 +146,7 @@ public class DataValueImageRendererRegistryTest {
         assertThat(imgDims).hasFieldOrPropertyWithValue("widthInPx", 11);
 
         // clear image cache and access data from previous and new chunk
-        table = dataService.getTable(new String[]{"image"}, 10, 5, null, false, true, false);
+        table = dataService.getTable(new String[]{"image"}, 10, 5, null, false, true, false, false);
 
         imgDims = imgReg.getImageDimensions(imgPath);
         assertThat(imgDims).isNull();
@@ -174,7 +174,7 @@ public class DataValueImageRendererRegistryTest {
         var rendererIds = new String[]{"org.knime.core.data.renderer.DoubleBarRenderer$Factory", null};
         var columns = new String[]{"double", "image"};
         for (var i = 0; i <= 1; i++) {
-            var table = dataService.getTable(columns, i * 100l, 100, rendererIds, false, false, false);
+            var table = dataService.getTable(columns, i * 100l, 100, rendererIds, false, false, false, false);
             table.getRows().forEach(r -> imgPaths.add((String)r.get(1)));
             var stats = imgReg.getStatsPerTable(tableId);
             assertThat(stats.numImages()).isEqualTo((i + 1) * 100 * 2); // there are two images per row
@@ -188,7 +188,7 @@ public class DataValueImageRendererRegistryTest {
         assertThat(imgReg.getStatsPerTable(tableId).batchSizes()).isEqualTo(new int[]{200, 200});
 
         // the image data cache has it's limit at 2 row batches -> if exceed, the oldest batch is removed
-        var table = dataService.getTable(columns, 200, 80, rendererIds, false, false, false);
+        var table = dataService.getTable(columns, 200, 80, rendererIds, false, false, false, false);
         table.getRows().forEach(r -> imgPaths.add((String)r.get(1)));
         var stats = imgReg.getStatsPerTable(tableId);
         assertThat(stats.numImages()).isEqualTo(360); // there are two images per row
@@ -199,7 +199,7 @@ public class DataValueImageRendererRegistryTest {
         assertThat(imgPaths).hasSize(280);
 
         // makes sure that the image data cache is cleared, when the respective parameter is passed to the data service
-        dataService.getTable(new String[]{"image"}, 200, 10, null, false, true, false);
+        dataService.getTable(new String[]{"image"}, 200, 10, null, false, true, false, false);
         stats = imgReg.getStatsPerTable(tableId);
         assertThat(stats.numImages()).isEqualTo(10);
         assertThat(stats.batchSizes()).isEqualTo(new int[]{10});
@@ -229,12 +229,12 @@ public class DataValueImageRendererRegistryTest {
         var tableId = "test_table_id";
         var dataService = new TableViewDataServiceImpl(tableSupplier, tableId, new SwingBasedRendererFactory(), imgReg);
 
-        dataService.getTable(new String[]{"image"}, 0, 475, null, false, false, false);
+        dataService.getTable(new String[]{"image"}, 0, 475, null, false, false, false, false);
         var stats = imgReg.getStatsPerTable(tableId);
         assertThat(stats.numImages()).isEqualTo(100);
 
-        dataService.getTable(new String[]{"image"}, 475, 50, null, false, false, false);
-        dataService.getTable(new String[]{"image"}, 525, 25, null, false, false, false);
+        dataService.getTable(new String[]{"image"}, 475, 50, null, false, false, false, false);
+        dataService.getTable(new String[]{"image"}, 525, 25, null, false, false, false, false);
         stats = imgReg.getStatsPerTable(tableId);
         assertThat(stats.numImages()).isEqualTo(75);
 
@@ -252,11 +252,11 @@ public class DataValueImageRendererRegistryTest {
         var dataService = new TableViewDataServiceImpl(tableSupplier, tableId, new SwingBasedRendererFactory(), imgReg);
         var pathPrefix = "uiext/test_page_id/images/";
 
-        var table = dataService.getTable(new String[]{"image"}, 0, 15, null, false, false, false);
+        var table = dataService.getTable(new String[]{"image"}, 0, 15, null, false, false, false, false);
         imgReg.clearImageDataCache("test_table_id");
 
         // access the same image multiple times (within the same chunk/page of rows)
-        table = dataService.getTable(new String[]{"image"}, 0, 5, null, false, false, false);
+        table = dataService.getTable(new String[]{"image"}, 0, 5, null, false, false, false, false);
         var imgPath = ((String)table.getRows().get(3).get(2)).replace(pathPrefix, "");
         var res1 = imgReg.renderImage(imgPath);
         var res2 = imgReg.renderImage(imgPath + "?w=20&h=30");

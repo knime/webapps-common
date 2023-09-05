@@ -1326,6 +1326,7 @@ describe("TableViewInteractive.vue", () => {
       ["pageSize", 3],
       ["enablePagination", false],
       ["autoSizeColumnsToContent", "FIT_CONTENT"],
+      ["showOnlySelectedRows", true],
     ])(
       "view setting %s change causes table to be refreshed",
       (settingsKey, newValue) => {
@@ -1395,6 +1396,7 @@ describe("TableViewInteractive.vue", () => {
           true,
           true,
           false,
+          false,
         ],
       });
       expect(wrapper.vm.displayedColumns).toStrictEqual(
@@ -1420,7 +1422,7 @@ describe("TableViewInteractive.vue", () => {
 
       expect(getData).toHaveBeenCalledWith({
         method: "getTable",
-        options: [newColumns, 0, 2, [null, null], true, true, true],
+        options: [newColumns, 0, 2, [null, null], true, true, true, false],
       });
       const expectedColumnSize = DEFAULT_COLUMN_SIZE;
       const newColumnConfig = [
@@ -1482,7 +1484,7 @@ describe("TableViewInteractive.vue", () => {
 
       expect(getData).toHaveBeenCalledWith({
         method: "getTable",
-        options: [newColumns, 0, 2, [null, null], true, true, false],
+        options: [newColumns, 0, 2, [null, null], true, true, false, false],
       });
       const newColumnConfig = [
         {
@@ -1643,6 +1645,7 @@ describe("TableViewInteractive.vue", () => {
           false,
           true,
           false,
+          false,
         ],
       });
       expect(wrapper.vm.currentPage).toBe(2);
@@ -1661,6 +1664,7 @@ describe("TableViewInteractive.vue", () => {
           emptyRenderers,
           false,
           true,
+          false,
           false,
         ],
       });
@@ -1925,22 +1929,26 @@ describe("TableViewInteractive.vue", () => {
         expect(wrapper.vm.totalSelected).toBe(0);
       });
 
+      it("refrehses Table if row is selected", async () => {
+        initialDataMock.settings.showOnlySelectedRows = true;
+        const wrapper = await shallowMountInteractive(context);
+        const tableComponent = findTableComponent(wrapper);
+        // select row
+        const refreshTableSpy = vi.spyOn(wrapper.vm, "refreshTable");
+        await tableComponent.vm.$emit("rowSelect", true, 1, 0, true);
+        expect(refreshTableSpy).toHaveBeenCalledWith({ resetPage: true });
+      });
+
       it("requests new sorted data on changing showOnlySelectedRows", () => {
         changeViewSetting(wrapper, "showOnlySelectedRows", true);
 
         expect(getData).toBeCalledWith({
-          method: "getFilteredAndSortedTable",
+          method: "getTable",
           options: [
             initialDataMock.table.displayedColumns,
             0,
             2,
-            null,
-            false,
-            "",
-            emptyColumnFilterValues,
-            false,
             emptyRenderers,
-            false,
             false,
             true,
             false,
@@ -2022,6 +2030,16 @@ describe("TableViewInteractive.vue", () => {
           ]);
           expect(wrapper.vm.totalSelected).toBe(0);
         });
+
+        it("refrehses Table if row is selected", async () => {
+          initialDataMock.settings.showOnlySelectedRows = true;
+          const wrapper = await shallowMountInteractive(context);
+          const tableComponent = findTableComponent(wrapper);
+          const refreshTableSpy = vi.spyOn(wrapper.vm, "refreshTable");
+          await tableComponent.vm.$emit("selectAll", true);
+          await flushPromises();
+          expect(refreshTableSpy).toHaveBeenCalledWith({ resetPage: true });
+        });
       });
     });
 
@@ -2101,6 +2119,17 @@ describe("TableViewInteractive.vue", () => {
           publishSelection,
           subscribeToSelection,
         );
+      });
+
+      it("refreshes table if showOnlySelectedRows is true", async () => {
+        initialDataMock.settings.showOnlySelectedRows = true;
+        const wrapper = await shallowMountInteractive(context);
+        const refreshTableSpy = vi.spyOn(wrapper.vm, "refreshTable");
+        wrapper.vm.onSelectionChange({ mode: "ADD", selection: [rowKey1] });
+
+        await flushPromises();
+
+        expect(refreshTableSpy).toHaveBeenCalledWith({ resetPage: true });
       });
     });
   });
@@ -2187,6 +2216,7 @@ describe("TableViewInteractive.vue", () => {
           false,
           true,
           false,
+          false,
         ],
       });
     });
@@ -2245,6 +2275,7 @@ describe("TableViewInteractive.vue", () => {
           [null, null, renderer.id, null],
           false,
           true,
+          false,
           false,
         ],
       });
@@ -2306,7 +2337,7 @@ describe("TableViewInteractive.vue", () => {
 
       expect(getData).toHaveBeenNthCalledWith(2, {
         method: "getTable",
-        options: [newColumns, 0, 2, ["t2r1", null], true, true, false],
+        options: [newColumns, 0, 2, ["t2r1", null], true, true, false, false],
       });
     });
   });

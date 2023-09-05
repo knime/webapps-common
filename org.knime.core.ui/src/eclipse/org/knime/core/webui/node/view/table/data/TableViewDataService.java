@@ -67,10 +67,11 @@ public interface TableViewDataService {
      *            missing.
      * @param forceClearImageDataCache forces to clear the image data cache
      * @param trimColumns restricts the number of columns from which data is loaded
+     * @param showOnlySelectedRows restricts the shown rows to the ones that are selected
      * @return the table
      */
     Table getTable(String[] columns, long fromIndex, int numRows, String[] rendererIds, boolean updateDisplayedColumns,
-        boolean forceClearImageDataCache, boolean trimColumns);
+        boolean forceClearImageDataCache, boolean trimColumns, boolean showOnlySelectedRows);
 
     /**
      * @param columns the names of the columns that are to be displayed

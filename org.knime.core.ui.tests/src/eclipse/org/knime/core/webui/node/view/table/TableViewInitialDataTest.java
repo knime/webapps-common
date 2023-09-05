@@ -56,10 +56,14 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Set;
+import java.util.function.Supplier;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.knime.core.data.RowKey;
 import org.knime.core.data.def.BooleanCell;
 import org.knime.core.data.def.DoubleCell;
 import org.knime.core.data.def.StringCell;
@@ -84,6 +88,8 @@ class TableViewInitialDataTest {
 
     private final BufferedDataTable table = TableTestUtil.createDefaultTestTable(numRows).get();
 
+    private final Supplier<Set<RowKey>> selectionSupplier = () -> Collections.emptySet();
+
     private final String[] initiallySelectedColumns = new String[]{"double", "string", "date"};
 
     private final ColumnFilter displayedColumns = new ColumnFilter(initiallySelectedColumns);
@@ -106,10 +112,10 @@ class TableViewInitialDataTest {
         settings.m_displayedColumns = displayedColumns;
         settings.m_enablePagination = true;
         settings.m_pageSize = 8;
-        final var initialData = TableViewUtil.createInitialData(settings, table, nodeId);
+        final var initialData = TableViewUtil.createInitialData(settings, table, selectionSupplier, nodeId);
         initialData.getTable();
         verify(dataServiceMock.constructed().get(0)).getTable(aryEq(initiallySelectedColumns), eq(0L),
-            eq(settings.m_pageSize), any(String[].class), eq(true), eq(true), eq(false));
+            eq(settings.m_pageSize), any(String[].class), eq(true), eq(true), eq(false), eq(false));
     }
 
     @Test
@@ -117,10 +123,10 @@ class TableViewInitialDataTest {
         final var settings = new TableViewViewSettings(table.getSpec());
         settings.m_displayedColumns = displayedColumns;
         settings.m_enablePagination = false;
-        final var initialData = TableViewUtil.createInitialData(settings, table, nodeId);
+        final var initialData = TableViewUtil.createInitialData(settings, table, selectionSupplier, nodeId);
         initialData.getTable();
         verify(dataServiceMock.constructed().get(0)).getTable(aryEq(initiallySelectedColumns), eq(0L), eq(0),
-            any(String[].class), eq(true), eq(true), eq(false));
+            any(String[].class), eq(true), eq(true), eq(false), eq(false));
     }
 
     @Test
@@ -128,22 +134,33 @@ class TableViewInitialDataTest {
         final var settings = new TableViewViewSettings(table.getSpec());
         settings.m_displayedColumns = displayedColumns;
         settings.m_skipRemainingColumns = true;
-        final var initialData = TableViewUtil.createInitialData(settings, table, nodeId);
+        final var initialData = TableViewUtil.createInitialData(settings, table, selectionSupplier, nodeId);
         initialData.getTable();
         verify(dataServiceMock.constructed().get(0)).getTable(aryEq(initiallySelectedColumns), eq(0L), any(Integer.class),
-            any(String[].class), eq(true), eq(true), eq(true));
+            any(String[].class), eq(true), eq(true), eq(true), eq(false));
+    }
+
+    @Test
+    void testGetTableWithShowOnlySelectedRows() {
+        final var settings = new TableViewViewSettings(table.getSpec());
+        settings.m_displayedColumns = displayedColumns;
+        settings.m_showOnlySelectedRows = true;
+        final var initialData = TableViewUtil.createInitialData(settings, table, selectionSupplier, nodeId);
+        initialData.getTable();
+        verify(dataServiceMock.constructed().get(0)).getTable(aryEq(initiallySelectedColumns), eq(0L), any(Integer.class),
+            any(String[].class), eq(true), eq(true), eq(false), eq(true));
     }
 
     @Test
     void testGetSettings() {
         final var settings = new TableViewViewSettings(table.getSpec());
-        final var initialData = TableViewUtil.createInitialData(settings, table, nodeId);
+        final var initialData = TableViewUtil.createInitialData(settings, table, selectionSupplier, nodeId);
         assertThat(initialData.getSettings()).isEqualTo(initialData.getSettings());
     }
 
     @Test
     void testInitialDataGetDataTypes() {
-        final var initData = TableViewUtil.createInitialData(new TableViewViewSettings(table.getSpec()), table, nodeId);
+        final var initData = TableViewUtil.createInitialData(new TableViewViewSettings(table.getSpec()), table, selectionSupplier, nodeId);
         var dataTypes = initData.getDataTypes();
 
         var stringType = dataTypes.get(String.valueOf(StringCell.TYPE.hashCode()));
