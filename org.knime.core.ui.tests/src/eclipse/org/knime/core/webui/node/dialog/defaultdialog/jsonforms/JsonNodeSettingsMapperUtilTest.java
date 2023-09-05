@@ -509,6 +509,27 @@ class JsonNodeSettingsMapperUtilTest {
     }
 
     @Test
+    void testGetNestedJsonObject() throws InvalidSettingsException {
+        var schema = "" //
+            + "{\n" //
+            + "    \"type\": \"object\",\n" //
+            + "    \"properties\": {\n" //
+            + "        \"inner\": {\n" //
+            + "            \"type\": \"object\",\n" //
+            + "            \"properties\": {\n" //
+            + "                \"prop\":  {\n" //
+            + "                    \"type\": \"string\"\n" //
+            + "                }\n" //
+            + "            }\n" //
+            + "        }\n" //
+            + "    }\n" //
+            + "}";
+
+        var nested = JsonNodeSettingsMapperUtil.getNestedJsonObject(schema, "properties", "inner");
+        assertThat(nested).isEqualTo("{\"type\":\"object\",\"properties\":{\"prop\":{\"type\":\"string\"}}}");
+    }
+
+    @Test
     void testWriteNullObjectAndArray() throws InvalidSettingsException {
         var node = "{}";
         var schema = "" //

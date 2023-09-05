@@ -857,6 +857,9 @@ public final class JsonNodeSettingsMapperUtil {
             var node = mapper.readTree(json);
             var schemaNode = mapper.readTree(schema);
             jsonObjectToNodeSettings((ObjectNode)node, (ObjectNode)schemaNode, settings);
+            // adds a json-type to the settings-root such that it can be turned into a json string again
+            // via nodeSettingsToJsonString/Object
+            settings.addString(FIELD_NAME_TYPE, Type.OBJECT.name());
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException("Failed to parse the provided json.", e);
         }
@@ -903,6 +906,34 @@ public final class JsonNodeSettingsMapperUtil {
      */
     public static String nodeSettingsToJsonString(final NodeSettingsRO settings) {
         return nodeSettingsToJsonObject(settings).toString();
+    }
+
+    /**
+     * Extracts and returns the nested json object at the given json path.
+     *
+     * @param json
+     * @param jsonPath
+     * @return the new json string representing the nested object
+     */
+    public static String getNestedJsonObject(final String json, final String... jsonPath) {
+        var mapper = JsonFormsDataUtil.getMapper();
+        try {
+            var node = mapper.readTree(json);
+            return mapper.writeValueAsString(getNestedJsonObject(node, jsonPath));
+        } catch (JsonProcessingException ex) {
+            throw new IllegalArgumentException("Failed to parse the provided json.", ex);
+        }
+    }
+
+    private static JsonNode getNestedJsonObject(final JsonNode root, final String... path) {
+        if (path == null) {
+            return root;
+        }
+        var res = root;
+        for (var segment : path) {
+            res = res.get(segment);
+        }
+        return res;
     }
 
 }
