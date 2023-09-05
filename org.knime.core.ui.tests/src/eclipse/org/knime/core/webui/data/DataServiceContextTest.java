@@ -56,7 +56,6 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -155,8 +154,9 @@ public class DataServiceContextTest {
      * @param inputSpecsSupplier
      */
     public static void initDataServiceContext(final Supplier<ExecutionContext> execSupplier,
-        final LazyInitializer<PortObjectSpec[]> inputSpecsSupplier) {
-        DataServiceContext.init(execSupplier, inputSpecsSupplier);
+        final Supplier<PortObjectSpec[]> inputSpecsSupplier) {
+        DataServiceContext.init(execSupplier == null ? null : new CachingSupplier<>(execSupplier),
+            inputSpecsSupplier == null ? null : new CachingSupplier<>(inputSpecsSupplier));
     }
 
     /**

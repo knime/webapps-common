@@ -50,7 +50,6 @@ package org.knime.core.webui.node.view.table.data.render;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.knime.testing.util.TableTestUtil.createDefaultTestTable;
-import static org.knime.testing.util.TableTestUtil.getExec;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -61,6 +60,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.knime.core.webui.data.DataServiceContextTest;
 import org.knime.core.webui.node.view.table.data.TableViewDataServiceImpl;
+import org.knime.testing.util.TableTestUtil;
 
 /**
  * Tests for the {@link DataValueImageRendererRegistry}.
@@ -71,7 +71,7 @@ public class DataValueImageRendererRegistryTest {
 
     @BeforeEach
     void initDataServiceContext() {
-        DataServiceContextTest.initDataServiceContext(() -> getExec(), null);
+        DataServiceContextTest.initDataServiceContext(() -> TableTestUtil.getExec(), null);
     }
 
     @AfterEach

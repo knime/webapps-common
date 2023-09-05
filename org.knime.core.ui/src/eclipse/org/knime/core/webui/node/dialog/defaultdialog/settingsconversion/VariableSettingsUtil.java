@@ -68,9 +68,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public final class VariableSettingsUtil {
-
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(VariableSettingsUtil.class);
+final class VariableSettingsUtil {
 
     private VariableSettingsUtil() {
         // utility
@@ -84,7 +82,7 @@ public final class VariableSettingsUtil {
      * @param mapper the mapper used to create the resulting {@link JsonNode}s
      * @return a new JsonNode-instance
      */
-    public static JsonNode fromVariableSettingsToJson(final Map<SettingsType, VariableSettingsRO> variableSettings,
+    static JsonNode fromVariableSettingsToJson(final Map<SettingsType, VariableSettingsRO> variableSettings,
         final Set<String> availableFlowVariableNames, final ObjectMapper mapper) {
         var flowVariableSettingsMap = new HashMap<String, FlowVariableSetting>();
         for (SettingsType settingsType : SettingsType.values()) {
@@ -134,7 +132,7 @@ public final class VariableSettingsUtil {
      * @param variableSettings
      * @param mapper
      */
-    public static void fromJsonToVariableSettings(final JsonNode json,
+    static void fromJsonToVariableSettings(final JsonNode json,
         final Map<SettingsType, VariableSettingsWO> variableSettings, final ObjectMapper mapper) {
         if (json == null) {
             return;

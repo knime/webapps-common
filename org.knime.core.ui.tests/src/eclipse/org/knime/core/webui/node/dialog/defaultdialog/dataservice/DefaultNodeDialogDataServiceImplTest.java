@@ -62,8 +62,6 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 
-import org.apache.commons.lang3.concurrent.ConcurrentException;
-import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -120,13 +118,7 @@ class DefaultNodeDialogDataServiceImplTest {
 
     @BeforeAll
     static void initDataServiceContext() {
-        DataServiceContextTest.initDataServiceContext(null, new LazyInitializer<PortObjectSpec[]>() {
-
-            @Override
-            protected PortObjectSpec[] initialize() throws ConcurrentException {
-                return PORT_OBJECT_SPECS;
-            }
-        });
+        DataServiceContextTest.initDataServiceContext(null, () -> PORT_OBJECT_SPECS);
     }
 
     @AfterAll

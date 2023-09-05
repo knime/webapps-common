@@ -50,15 +50,13 @@ package org.knime.core.webui.data;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
-import org.apache.commons.lang3.concurrent.ConcurrentException;
-import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.SingleNodeContainer;
+import org.knime.core.webui.data.util.InputSpecUtil;
 
 /**
  * A {@link DataServiceContext} allows to report warning messages during a data service invocation or assembly of
@@ -89,29 +87,28 @@ public final class DataServiceContext {
     }
 
     static void init(final NodeContainer nc) {
-        final var inputSpecsSupplier = new InputSpecsSupplier(nc);
+        final var inputSpecsSupplier =
+            new CachingSupplier<>(() -> InputSpecUtil.getInputSpecsExcludingVariablePort(nc));
         if (nc instanceof SingleNodeContainer snc) {
-            init(snc::createExecutionContext, inputSpecsSupplier);
+            init(new CachingSupplier<>(snc::createExecutionContext), inputSpecsSupplier);
         } else {
-            init((Supplier<ExecutionContext>)null, inputSpecsSupplier);
+            init(null, inputSpecsSupplier);
         }
     }
 
-    static void init(final Supplier<ExecutionContext> execSupplier,
-        final LazyInitializer<PortObjectSpec[]> specsSupplier) {
+    static void init(final CachingSupplier<ExecutionContext> execSupplier,
+        final CachingSupplier<PortObjectSpec[]> specsSupplier) {
         CONTEXT.set(new DataServiceContext(execSupplier, specsSupplier));
     }
 
     private final List<String> m_warningMessages = new ArrayList<>();
 
-    private final Supplier<ExecutionContext> m_execSupplier;
+    private final CachingSupplier<ExecutionContext> m_execSupplier;
 
-    private ExecutionContext m_exec;
+    private final CachingSupplier<PortObjectSpec[]> m_specsSupplier;
 
-    private final LazyInitializer<PortObjectSpec[]> m_specsSupplier;
-
-    private DataServiceContext(final Supplier<ExecutionContext> execSupplier,
-        final LazyInitializer<PortObjectSpec[]> specsSupplier) {
+    private DataServiceContext(final CachingSupplier<ExecutionContext> execSupplier,
+        final CachingSupplier<PortObjectSpec[]> specsSupplier) {
         m_execSupplier = execSupplier;
         m_specsSupplier = specsSupplier;
     }
@@ -144,12 +141,8 @@ public final class DataServiceContext {
      * @throws IllegalStateException if there is no execution context available
      */
     public synchronized ExecutionContext getExecutionContext() {
-        if (m_exec != null) {
-            return m_exec;
-        }
         if (m_execSupplier != null) {
-            m_exec = m_execSupplier.get();
-            return m_exec;
+            return m_execSupplier.get();
         }
         throw new IllegalStateException("No execution context available");
     }
@@ -158,14 +151,10 @@ public final class DataServiceContext {
      * @return the input specs excluding the flow variable port
      */
     public PortObjectSpec[] getInputSpecs() {
-        if (m_specsSupplier == null) {
-            throw new IllegalStateException("No spec supplier has been initialized within the data service context.");
-        }
-        try {
+        if (m_specsSupplier != null) {
             return m_specsSupplier.get();
-        } catch (ConcurrentException ex) {
-            throw new IllegalStateException("An error occurred while receiving the input specs.", ex);
         }
+        throw new IllegalStateException("No spec supplier has been initialized within the data service context.");
     }
 
     /**

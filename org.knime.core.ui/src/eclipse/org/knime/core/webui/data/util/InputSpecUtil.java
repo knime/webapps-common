@@ -46,35 +46,23 @@
  * History
  *   Aug 30, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.data;
+package org.knime.core.webui.data.util;
 
 import java.util.Arrays;
 
-import org.apache.commons.lang3.concurrent.ConcurrentException;
-import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeOutPort;
 
 /**
- * A lazy initializer for the input {@link PortObjectSpec PortObjectSpecs} of a node excluding the flow variables port.
+ * Utilities around a nodes input {@link PortObjectSpec}s.
  *
  * @author Paul Bärnreuther
  */
-public final class InputSpecsSupplier extends LazyInitializer<PortObjectSpec[]> {
+public final class InputSpecUtil {
 
-    private final NodeContainer m_nc;
-
-    /**
-     * @param nc to lazily extract the input specs from
-     */
-    public InputSpecsSupplier(final NodeContainer nc) {
-        this.m_nc = nc;
-    }
-
-    @Override
-    protected PortObjectSpec[] initialize() throws ConcurrentException {
-        return getInputSpecsExcludingVariablePort(m_nc);
+    private InputSpecUtil() {
+        // utility
     }
 
     /**
