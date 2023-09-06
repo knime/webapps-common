@@ -926,9 +926,6 @@ public final class JsonNodeSettingsMapperUtil {
     }
 
     private static JsonNode getNestedJsonObject(final JsonNode root, final String... path) {
-        if (path == null) {
-            return root;
-        }
         var res = root;
         for (var segment : path) {
             res = res.get(segment);

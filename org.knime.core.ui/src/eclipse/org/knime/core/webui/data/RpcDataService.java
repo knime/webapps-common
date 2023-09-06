@@ -95,8 +95,10 @@ public final class RpcDataService implements DataService {
      * @return the rpc-response (e.g. a json-rpc response)
      */
     public String handleRpcRequest(final String request) {
-        try {
+        if (m_nc != null) {
             NodeContext.pushContext(m_nc);
+        }
+        try {
             DataServiceContext.init(m_nc);
             final var response = RpcServerManager.doRpc(m_rpcServer, request);
             // We have to get the DataServiceContext again here, since the context may have changed since (or as a
@@ -114,7 +116,9 @@ public final class RpcDataService implements DataService {
             throw new IllegalStateException("A problem occurred while making a rpc call.", ex);
         } finally {
             DataServiceContext.remove();
-            NodeContext.removeLastContext();
+            if (m_nc != null) {
+                NodeContext.removeLastContext();
+            }
         }
     }
 
