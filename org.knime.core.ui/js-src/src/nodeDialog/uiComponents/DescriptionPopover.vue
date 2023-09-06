@@ -111,7 +111,7 @@ export default {
     pointer-events: auto;
     width: var(--description-button-size);
     height: var(--description-button-size);
-    padding: 0;
+    padding: 0 !important;
 
     & svg {
       width: var(--description-button-size);
