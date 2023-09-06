@@ -2395,6 +2395,8 @@ describe("TableViewInteractive.vue", () => {
   describe("copying content", () => {
     let wrapper, copyContent;
 
+    const { INDEX, ROW_ID } = specialColumns;
+
     beforeEach(async () => {
       wrapper = await shallowMountInteractive(context);
       navigator.clipboard = {
@@ -2403,19 +2405,19 @@ describe("TableViewInteractive.vue", () => {
       window.ClipboardItem = vi.fn();
       dataRequestResult = "copyContent";
       const tableComp = findTableComponent(wrapper);
-      copyContent = (rect, isTop = true) => {
-        tableComp.vm.$emit("copySelection", { rect, id: isTop });
+      copyContent = (rect, isTop = true, withHeaders = false) => {
+        tableComp.vm.$emit("copySelection", { rect, id: isTop, withHeaders });
       };
     });
 
     it.each([
-      [true, true, ["col1", "col2"]],
-      [true, false, ["col1", "col2", "col3"]],
-      [false, true, ["col1", "col2", "col3"]],
-      [false, false, ["col1", "col2", "col3", "col4"]],
+      [true, true, ["col1", "col2"], [INDEX.name, ROW_ID.name]],
+      [true, false, ["col1", "col2", "col3"], [INDEX.name]],
+      [false, true, ["col1", "col2", "col3"], [ROW_ID.name]],
+      [false, false, ["col1", "col2", "col3", "col4"], []],
     ])(
       "copies table content when showIndices is %s and showRowKeys is %s",
-      async (showRowIndices, showRowKeys, otherColumns) => {
+      async (showRowIndices, showRowKeys, otherColumns, specialColumnNames) => {
         await wrapper.setData({
           settings: {
             ...initialDataMock.settings,
@@ -2426,7 +2428,15 @@ describe("TableViewInteractive.vue", () => {
         copyContent({ x: { min: 0, max: 3 }, y: { min: 1, max: 4 } });
         expect(wrapper.vm.jsonDataService.data).toHaveBeenCalledWith({
           method: "getCopyContent",
-          options: [showRowIndices, showRowKeys, otherColumns, 1, 4],
+          options: [
+            showRowIndices,
+            showRowKeys,
+            false,
+            otherColumns,
+            specialColumnNames,
+            1,
+            4,
+          ],
         });
       },
     );
@@ -2519,7 +2529,7 @@ describe("TableViewInteractive.vue", () => {
       );
       expect(wrapper.vm.jsonDataService.data).toHaveBeenCalledWith({
         method: "getCopyContent",
-        options: [false, false, ["col3", "col4"], 1, 2],
+        options: [false, false, false, ["col3", "col4"], [], 1, 2],
       });
     });
   });

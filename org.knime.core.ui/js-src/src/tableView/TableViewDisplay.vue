@@ -173,9 +173,11 @@ defineExpose({
 const onCopySelection = ({
   rect: { x, y },
   id,
+  withHeaders,
 }: {
   rect: Rect;
   id: boolean;
+  withHeaders: boolean;
 }) => {
   const indices = Array.from(
     { length: x.max - x.min + 1 },
@@ -190,6 +192,7 @@ const onCopySelection = ({
     columnNames,
     withRowIndices: containedSpecialColumns.has("INDEX"),
     withRowKeys: containedSpecialColumns.has("ROW_ID"),
+    withHeaders,
     fromIndex,
     toIndex,
     isTop: id,

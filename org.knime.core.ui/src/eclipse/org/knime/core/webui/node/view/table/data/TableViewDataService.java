@@ -109,15 +109,17 @@ public interface TableViewDataService {
      *
      * @param withIndices whether the index column is part of the selection
      * @param withRowKeys whether the row key column is part of the selection
+     * @param withHeaders whether the column headers should be copied
      * @param dataColumns the names of the selected columns
+     * @param specialColumnNames the names of the index/row key column if withIndices/withRowKeys is true, else empty
      * @param fromIndex the index of the first row which is partially selected (within the filtered table)
      * @param toIndex the index of the last row which is partially selected (within the filtered table)
      *
      * @return the original content of the cells as spreadsheet-readable formatted String
      * @throws IOException when an I/O error occurs during conversion to csv format.
      */
-    HTMLAndCSV getCopyContent(boolean withIndices, boolean withRowKeys, String[] dataColumns, int fromIndex,
-        int toIndex) throws IOException;
+    HTMLAndCSV getCopyContent(boolean withIndices, boolean withRowKeys, boolean withHeaders, String[] dataColumns,
+        String[] specialColumnNames, int fromIndex, int toIndex) throws IOException;
 
     /**
      * @return the row keys of the currently cached sorted and filtered table or the input table

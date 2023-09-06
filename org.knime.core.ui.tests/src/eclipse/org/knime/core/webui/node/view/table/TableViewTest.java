@@ -721,6 +721,7 @@ class TableViewTest {
 
         @Test
         void testGetCopyContent() throws IOException {
+            final var selectedSpecialColumnNames = new String[0];
             final var expectedResult = new TableViewDataService.HTMLAndCSV(//
                 "<html><body><table>" //
                     + "<tr><td>11</td><td>1.0</td></tr>" //
@@ -731,12 +732,14 @@ class TableViewTest {
                     + "22\t2.0\r\n" //
                     + "33\t3.0");
 
-            final var copyContent = dataService.getCopyContent(false, false, selectedTestColumns, 1, 3);
+            final var copyContent =
+                dataService.getCopyContent(false, false, false, selectedTestColumns, selectedSpecialColumnNames, 1, 3);
             assertThat(copyContent).isEqualTo(expectedResult);
         }
 
         @Test
         void testGetCopyContentWithRowKeys() throws IOException {
+            final var selectedSpecialColumnNames = new String[]{"RowID"};
             final var expectedResult = new TableViewDataService.HTMLAndCSV(//
                 "<html><body><table>" //
                     + "<tr><td>rowkey 1</td><td>11</td><td>1.0</td></tr>" //
@@ -747,29 +750,52 @@ class TableViewTest {
                     + "rowkey 2\t22\t2.0\r\n" //
                     + "rowkey 3\t33\t3.0");
 
-            final var copyContent = dataService.getCopyContent(false, true, selectedTestColumns, 1, 3);
+            final var copyContent =
+                dataService.getCopyContent(false, true, false, selectedTestColumns, selectedSpecialColumnNames, 1, 3);
             assertThat(copyContent).isEqualTo(expectedResult);
         }
 
         @Test
         void testGetCopyContentWithIndices() throws IOException {
-
+            final var selectedSpecialColumnNames = new String[]{"RowID"};
             final var expectedResult = new TableViewDataService.HTMLAndCSV(//
                 "<html><body><table>" //
-                + "<tr><td>2</td><td>11</td><td>1.0</td></tr>" //
-                + "<tr><td>3</td><td>22</td><td>2.0</td></tr>" //
-                + "<tr><td>4</td><td>33</td><td>3.0</td></tr>" //
-                + "</table></body></html>",
+                    + "<tr><td>2</td><td>11</td><td>1.0</td></tr>" //
+                    + "<tr><td>3</td><td>22</td><td>2.0</td></tr>" //
+                    + "<tr><td>4</td><td>33</td><td>3.0</td></tr>" //
+                    + "</table></body></html>",
                 "2\t11\t1.0\r\n" //
                 + "3\t22\t2.0\r\n" //
                 + "4\t33\t3.0");
 
-            final var copyContent = dataService.getCopyContent(true, false, selectedTestColumns, 1, 3);
+            final var copyContent =
+                dataService.getCopyContent(true, false, false, selectedTestColumns, selectedSpecialColumnNames, 1, 3);
+            assertThat(copyContent).isEqualTo(expectedResult);
+        }
+
+        @Test
+        void testGetCopyContentWithHeaders() throws IOException {
+            final var selectedSpecialColumnNames = new String[]{"#", "RowID"};
+            final var expectedResult = new TableViewDataService.HTMLAndCSV(//
+                "<html><body><table>" //
+                    + "<tr><th>#</th><th>RowID</th><th>long</th><th>double</th></tr>" //
+                    + "<tr><td>2</td><td>rowkey 1</td><td>11</td><td>1.0</td></tr>" //
+                    + "<tr><td>3</td><td>rowkey 2</td><td>22</td><td>2.0</td></tr>" //
+                    + "<tr><td>4</td><td>rowkey 3</td><td>33</td><td>3.0</td></tr>" //
+                    + "</table></body></html>",
+                "\"#\"\tRowID\tlong\tdouble\r\n" //
+                    + "2\trowkey 1\t11\t1.0\r\n" //
+                    + "3\trowkey 2\t22\t2.0\r\n" //
+                    + "4\trowkey 3\t33\t3.0\r\n");
+
+            final var copyContent =
+                dataService.getCopyContent(true, true, true, selectedTestColumns, selectedSpecialColumnNames, 1, 3);
             assertThat(copyContent).isEqualTo(expectedResult);
         }
 
         @Test
         void testGetCopyContentForFilteredAndSortedTable() throws IOException {
+            final var selectedSpecialColumnNames = new String[0];
             final var expectedResult = new TableViewDataService.HTMLAndCSV(//
                 "<html><body><table>" //
                     + "<tr><td>1034</td><td>94.0</td></tr>"//
@@ -783,7 +809,8 @@ class TableViewTest {
 
             dataService.getFilteredAndSortedTable(selectedTestColumns, 1, 1, selectedTestColumns[0], false, "3", null,
                 false, null, false, false, false, false, false);
-            final var copyContent = dataService.getCopyContent(false, false, selectedTestColumns, 0, 1);
+            final var copyContent =
+                dataService.getCopyContent(false, false, false, selectedTestColumns, selectedSpecialColumnNames, 0, 1);
             assertThat(copyContent).isEqualTo(expectedResult);
         }
 

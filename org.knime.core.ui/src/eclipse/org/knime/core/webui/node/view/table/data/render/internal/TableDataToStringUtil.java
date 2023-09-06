@@ -51,8 +51,10 @@ package org.knime.core.webui.node.view.table.data.render.internal;
 import static j2html.TagCreator.body;
 import static j2html.TagCreator.each;
 import static j2html.TagCreator.html;
+import static j2html.TagCreator.iff;
 import static j2html.TagCreator.table;
 import static j2html.TagCreator.td;
+import static j2html.TagCreator.th;
 import static j2html.TagCreator.tr;
 
 import java.io.IOException;
@@ -69,19 +71,37 @@ import org.apache.commons.csv.CSVPrinter;
  */
 public class TableDataToStringUtil {
 
-    private TableDataToStringUtil() {
-        // utility
+    private final List<String> m_columnHeaders;
+
+    private final List<List<String>> m_rows;
+
+    private final boolean m_withHeaders;
+
+    /**
+     *
+     * @param columnHeaders the table header
+     * @param rows the table data
+     * @param withHeaders whether to include the column headers
+     */
+    public TableDataToStringUtil(final List<String> columnHeaders, final List<List<String>> rows,
+        final boolean withHeaders) {
+        m_columnHeaders = columnHeaders;
+        m_rows = rows;
+        m_withHeaders = withHeaders;
     }
 
     /**
-     * @param rows the table data
+     *
      * @return the table as CSV string
      * @throws IOException
      */
-    public static String toCSV(final List<List<String>> rows) throws IOException {
+    public String toCSV() throws IOException {
         StringWriter out = new StringWriter();
         try (CSVPrinter printer = new CSVPrinter(out, CSVFormat.TDF)) {
-            for (var row : rows) {
+            if (m_withHeaders) {
+                printer.printRecord(m_columnHeaders);
+            }
+            for (var row : m_rows) {
                 printer.printRecord(row);
             }
         }
@@ -90,12 +110,13 @@ public class TableDataToStringUtil {
 
     /**
      *
-     * @param rows the table data
      * @return the table as HTML string
      */
-    public static String toHTML(final List<List<String>> rows) {
+    public String toHTML() {
         return html(body(table(//
-            each(rows, row -> tr(//
+            iff(m_withHeaders, tr(//
+                each(m_columnHeaders, columnHeader -> th(columnHeader)))),
+            each(m_rows, row -> tr(//
                 each(row, column -> td(column))//
             ))))).render();
     }
