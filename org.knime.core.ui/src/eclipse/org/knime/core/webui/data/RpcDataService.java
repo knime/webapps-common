@@ -49,13 +49,14 @@
 package org.knime.core.webui.data;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.webui.data.rpc.RpcServer;
 import org.knime.core.webui.data.rpc.RpcServerManager;
+import org.knime.core.webui.data.rpc.json.impl.JsonRpcServer;
 import org.knime.core.webui.data.rpc.json.impl.JsonRpcSingleServer;
 import org.knime.core.webui.data.rpc.json.impl.ObjectMapperUtil;
 
@@ -80,10 +81,21 @@ public final class RpcDataService implements DataService {
     private final NodeContainer m_nc;
 
     private RpcDataService(final RpcDataServiceBuilder builder) {
-        if (builder.m_handlers.size() == 1) {
-            m_rpcServer = new JsonRpcSingleServer<>(builder.m_handlers.get(0));
+        final var hasUnnamedHandler = builder.m_unnamedHandler != null;
+        final var hasNamedHandlers = !builder.m_namedHandlers.isEmpty();
+        if (hasUnnamedHandler) {
+            if (hasNamedHandlers) {
+                throw new IllegalStateException(
+                    "Having named and unnamed handlers at the same time is not supported at the moment.");
+            }
+            m_rpcServer = new JsonRpcSingleServer<>(builder.m_unnamedHandler);
+        } else if (hasNamedHandlers) {
+            final var jsonRpcServer = new JsonRpcServer();
+            builder.m_namedHandlers.forEach((key, value) -> jsonRpcServer.addService(key, value));
+            m_rpcServer = jsonRpcServer;
         } else {
-            throw new IllegalStateException("Unexpected amount of rpc service handlers: " + builder.m_handlers.size());
+            throw new IllegalStateException(
+                "No handler was supplied to this RPCDataService");
         }
         m_deactivate = builder.m_deactivate;
         m_dispose = builder.m_dispose;
@@ -171,18 +183,47 @@ public final class RpcDataService implements DataService {
     }
 
     /**
+     *
+     * @param <S>
+     * @return a new builder instance
+     */
+    public static <S> RpcDataServiceBuilder builder() {
+        return new RpcDataServiceBuilder();
+    }
+
+    /**
      * The builder.
      */
     public static final class RpcDataServiceBuilder implements DataServiceBuilder {
 
-        private final List<Object> m_handlers;
+        private final Object m_unnamedHandler;
+
+        private Map<String, Object> m_namedHandlers = new HashMap<>();
 
         private Runnable m_dispose;
 
         private Runnable m_deactivate;
 
         private RpcDataServiceBuilder(final Object handler) {
-            m_handlers = Collections.singletonList(handler);
+            m_unnamedHandler = handler;
+        }
+
+        private RpcDataServiceBuilder() {
+            m_unnamedHandler = null;
+        }
+
+        /**
+         * Add a named service which can be accessed via RPC of the form [name].[methodName] i.e. the method name of the
+         * given handler prefixed by the name and a "dot".
+         *
+         * @param name
+         * @param handler the handler whose methods are called for the respective requests. Whenever any of the methods
+         *            are being called, a {@link DataServiceContext} is available within the method.
+         * @return the builder
+         */
+        public RpcDataServiceBuilder addService(final String name, final Object handler) {
+            m_namedHandlers.put(name, handler);
+            return this;
         }
 
         @Override
@@ -203,8 +244,6 @@ public final class RpcDataService implements DataService {
         public RpcDataService build() {
             return new RpcDataService(this);
         }
-
-
 
     }
 
