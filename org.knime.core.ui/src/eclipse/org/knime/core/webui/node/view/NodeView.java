@@ -88,5 +88,19 @@ public interface NodeView extends UIExtension, DataServiceProvider {
         return PageFormat.ASPECT_RATIO_4BY3;
     }
 
+    /**
+     * Whether this node view can be used within a report (if the node view is created to be rendered into a report). If
+     * not, a 'not supported' placeholder will be added instead.
+     *
+     * If a node view can be used in a report, its frontend implementation must actively inform the framework that it's
+     * either done rendering or directly supply the content (image, html, ...) to it. This is done via the
+     * ReportingService in the knime-ui-extension-service package.
+     *
+     * @return {@code true} if this node view can be used in a report (and exhibits the necessary capabilities);
+     *         otherwise {@code false}
+     */
+    default boolean canBeUsedInReport() {
+        return false;
+    }
 
 }

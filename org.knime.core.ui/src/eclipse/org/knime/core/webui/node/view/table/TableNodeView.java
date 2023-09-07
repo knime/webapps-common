@@ -120,6 +120,11 @@ public final class TableNodeView implements NodeTableView {
     }
 
     @Override
+    public boolean canBeUsedInReport() {
+        return true;
+    }
+
+    @Override
     public Optional<InitialDataService<TableViewInitialData>> createInitialDataService() {
         if (m_settings == null) {
             m_settings = new TableViewViewSettings(m_tableSupplier.get().getSpec());

@@ -111,6 +111,11 @@ public final class TextViewView implements NodeView {
         return PageFormat.AUTO;
     }
 
+    @Override
+    public boolean canBeUsedInReport() {
+        return true;
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public Optional<InitialDataService<TextViewInitialData>> createInitialDataService() {

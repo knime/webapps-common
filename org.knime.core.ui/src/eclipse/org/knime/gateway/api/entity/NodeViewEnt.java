@@ -133,12 +133,14 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
      */
     public static NodeViewEnt create(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection,
         final boolean isUsedForReportGeneration) {
+        boolean canBeUsedInReport = NodeViewManager.getInstance().getNodeView(nnc).canBeUsedInReport();
         // NOTE on the 'generatingReportContent'-constant:
         // this is a shortcut to inform the respective node view frontend that it's part of a report such that it can
         // optionally do things differently. It's a shortcut because this information is already provided to the frontend
         // via 'JSONWebNodePageConfiguration.getGeneratedReportActionId' such that the frontend could actually take care
         // of distributing the info to the individual views itself.
-        return create(nnc, initialSelection, isUsedForReportGeneration ? "generatingReportContent" : null,
+        return create(nnc, initialSelection,
+            isUsedForReportGeneration && canBeUsedInReport ? "generatingReportContent" : null,
             isUsedForReportGeneration);
     }
 
@@ -216,12 +218,21 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
     }
 
     /**
-     * If the view represented by this view entity is used for the purpose of image generation via an image output port,
-     * then this action-id is used to uniquely communicate the image back to the java-side If given, it also indicates
-     * that the node view may already be generated while the node is in executing state. It also indicates that support
-     * for any kind of interactivity is not needed.
+     * If the view represented by this view entity is used for the purpose of image or report generation via an image or
+     * report output port. In case of image generation
+     * <ul>
+     * <li>this action-id is used to uniquely communicate the image back to the java-side</li>
+     * <li>indicates that the node view may already be generated while the node is in executing state</li>
+     * </ul>
+     * In case of report generation, the (absence/presence) of the id is used as indication whether this view is able to
+     * generate a report (i.e. can contribute to the report).
      *
-     * @return the action-id or {@code null} if view is not used for image generation
+     * In both cases (report and image generation) the presence of this property also indicates that support for any
+     * kind of interactivity is not needed.
+     *
+     * TODO report and image generation properties should be separated as part of UIEXT-1031
+     *
+     * @return the action-id or {@code null} if view is not used for image generation nor report generation
      */
     public String getGeneratedImageActionId() {
         return m_generatedImageActionId;

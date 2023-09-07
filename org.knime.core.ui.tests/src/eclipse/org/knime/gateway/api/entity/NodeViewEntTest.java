@@ -294,6 +294,38 @@ class NodeViewEntTest {
 
     }
 
+    @Test
+    void testNodeViewEntForReporting() {
+        Function<NodeViewNodeModel, NodeView> nodeViewCreator = m -> new TestNodeView();
+        var nnc = WorkflowManagerUtil.createAndAddNode(m_wfm, new NodeViewNodeFactory(nodeViewCreator));
+        m_wfm.executeAllAndWaitUntilDone();
+
+        // isUsedForReportingGeneration=true but the node view doesn't support it
+        var ent = NodeViewEnt.create(nnc, null, true);
+        assertThat(ent.getGeneratedImageActionId()).isNull();
+
+        // isUsedForReportingGeneration=false
+        ent = NodeViewEnt.create(nnc, null, false);
+        assertThat(ent.getGeneratedImageActionId()).isNull();
+
+        nodeViewCreator = m -> new TestNodeView() {
+            @Override
+            public boolean canBeUsedInReport() {
+                return true;
+            }
+        };
+        nnc = WorkflowManagerUtil.createAndAddNode(m_wfm, new NodeViewNodeFactory(nodeViewCreator));
+        m_wfm.executeAllAndWaitUntilDone();
+
+        // isUsedForReportingGeneration=true and the node view supports it
+        ent = NodeViewEnt.create(nnc, null, true);
+        assertThat(ent.getGeneratedImageActionId()).isEqualTo("generatingReportContent");
+
+        // isUsedForReportingGeneration=false
+        ent = NodeViewEnt.create(nnc, null, false);
+        assertThat(ent.getGeneratedImageActionId()).isNull();
+    }
+
     private static void initViewSettingsAndExecute(final NativeNodeContainer nnc) throws InvalidSettingsException {
         var nodeSettings = new NodeSettings("node_settings");
         nodeSettings.addNodeSettings("model");
