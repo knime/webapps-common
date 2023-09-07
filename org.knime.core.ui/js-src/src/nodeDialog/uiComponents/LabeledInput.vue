@@ -90,12 +90,7 @@ export default LabeledInput;
   >
     <div ref="controlHeader" class="control-header">
       <div class="left">
-        <Label
-          :text="text"
-          :compact="true"
-          class="label"
-          @label-for-id="labelForId = $event"
-        />
+        <Label :text="text" class="label" @label-for-id="labelForId = $event" />
         <ReexecutionIcon v-if="showReexecutionIcon" class="reexecution-icon" />
       </div>
       <FlowVariableButton

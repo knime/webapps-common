@@ -21,6 +21,9 @@ const TextInput = defineComponent({
     return useJsonFormsControlWithUpdate(props);
   },
   computed: {
+    placeholder() {
+      return this.control.uischema.options?.placeholder ?? "";
+    },
     isModelSettingAndHasNodeView() {
       return isModelSettingAndHasNodeView(this.control);
     },
@@ -62,6 +65,7 @@ export default TextInput;
     >
       <InputField
         :id="labelForId"
+        :placeholder="placeholder"
         :model-value="control.data"
         :disabled="disabled"
         @update:model-value="onChange"
