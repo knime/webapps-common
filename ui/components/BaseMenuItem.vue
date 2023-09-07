@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { MenuItem } from "./MenuItems.vue";
+import Checkbox from "./forms/Checkbox.vue";
+import BaseMenuItemText from "./BaseMenuItemText.vue";
 
 type Props = {
   item: MenuItem;
@@ -51,11 +53,23 @@ const dynamicAttributes = (item: MenuItem) => {
     <Component :is="item.icon" v-if="item.icon" class="item-icon" />
     <div class="label">
       <div class="text-and-hotkey">
-        <span :class="['text', { truncate: useMaxMenuWidth }]">
-          {{ item.text }}
-        </span>
-        <span v-if="item.hotkeyText" class="hotkey">{{ item.hotkeyText }}</span>
-        <slot name="submenu" :item-element="$refs.listItemComponent" />
+        <template v-if="item.checkbox">
+          <Checkbox :model-value="item.checkbox.checked" class="checkbox">
+            <BaseMenuItemText
+              :text="item.text"
+              :use-max-menu-width="useMaxMenuWidth"
+              :hotkey-text="item.hotkeyText"
+            />
+          </Checkbox>
+        </template>
+        <template v-else>
+          <BaseMenuItemText
+            :text="item.text"
+            :use-max-menu-width="useMaxMenuWidth"
+            :hotkey-text="item.hotkeyText"
+          />
+          <slot name="submenu" :item-element="$refs.listItemComponent" />
+        </template>
       </div>
       <div v-if="item.description" class="description">
         {{ item.description }}
@@ -64,7 +78,7 @@ const dynamicAttributes = (item: MenuItem) => {
   </Component>
 </template>
 
-<style lang="postcss">
+<style lang="postcss" scoped>
 .list-item {
   --icon-size: 18;
 
@@ -120,6 +134,12 @@ const dynamicAttributes = (item: MenuItem) => {
         width: 100%;
         height: calc(var(--icon-size) * 1px);
         align-items: center;
+
+        & .checkbox {
+          margin-top: 7px;
+          padding-left: 23px;
+          padding-top: 2px;
+        }
 
         & .text {
           flex-shrink: 1;

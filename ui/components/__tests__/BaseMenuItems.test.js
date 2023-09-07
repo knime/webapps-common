@@ -314,6 +314,35 @@ describe("BaseMenuItems.vue", () => {
     expect(wrapper.findAll("li")[1].attributes("title")).toBeUndefined();
   });
 
+  it("renders checkboxes correctly", () => {
+    const items = [
+      {
+        text: "Apples",
+        download: true,
+      },
+      {
+        text: "Checkbox1",
+        checkbox: {
+          checked: true,
+        },
+      },
+      {
+        text: "Checkbox2",
+        checkbox: {
+          checked: false,
+        },
+      },
+    ];
+    const wrapper = mount(BaseMenuItems, {
+      props: {
+        menuAriaLabel: "label",
+        items,
+      },
+    });
+    const checkboxItems = wrapper.findAll(".checkbox");
+    expect(checkboxItems.length).toBe(2);
+  });
+
   describe("clicking menu items", () => {
     let wrapper;
     const items = [

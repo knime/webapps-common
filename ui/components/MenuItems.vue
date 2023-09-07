@@ -69,6 +69,12 @@ export interface MenuItem {
   children?: Array<MenuItem>;
   /** any typed field that can be used to put any data in the item by users of this component */
   metadata?: any;
+  /** If this field is set, the item will be displayed as a checkbox with initial state checkbox.checked, triggering
+  checkbox.setBoolean on toggle */
+  checkbox?: {
+    checked: boolean;
+    setBoolean: (checked: boolean) => void;
+  };
 }
 
 type Props = {

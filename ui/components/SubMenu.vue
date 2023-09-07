@@ -185,6 +185,10 @@ export default {
     },
     onItemClick(event: Event, item: any) {
       this.$emit("item-click", event, item, this.id);
+      if (item.checkbox) {
+        item.checkbox.setBoolean(!item.checkbox.checked);
+        return;
+      }
       this.toggleMenu(event);
     },
     onKeydown(event: KeyboardEvent) {

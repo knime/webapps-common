@@ -113,6 +113,27 @@ describe("SubMenu.vue", () => {
     expect(wrapper.findComponent(MenuItems).exists()).toBeFalsy();
   });
 
+  it("does not close menu on item-click if item is checkbox", async () => {
+    const items = [
+      {
+        checkbox: {
+          checked: true,
+        },
+      },
+    ];
+    const id = "test";
+
+    const wrapper = mount(SubMenu, {
+      props: { items, id },
+    });
+
+    expect(wrapper.findComponent(MenuItems).exists()).toBeFalsy();
+    await wrapper.find(".submenu-toggle").trigger("click");
+    expect(wrapper.findComponent(MenuItems).exists()).toBeTruthy();
+    wrapper.find(".submenu").trigger("click");
+    expect(wrapper.findComponent(MenuItems).exists()).toBeTruthy();
+  });
+
   it("does not toggle the menu if disabled", async () => {
     props.disabled = true;
     const wrapper = mount(SubMenu, { props });

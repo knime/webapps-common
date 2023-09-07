@@ -113,7 +113,7 @@ export default {
 
       return listItems
         .map((element, index) => {
-          const firstChild = element.firstChild as ElementTemplateRef;
+          const firstChild = element.children[0] as ElementTemplateRef;
 
           return {
             element,
