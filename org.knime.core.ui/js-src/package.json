@@ -45,7 +45,9 @@
     "@knime/ui-extension-service": "0.16.0",
     "uuid": "9.0.0",
     "vue3-click-away": "1.2.4",
-    "webapps-common": "file:webapps-common"
+    "webapps-common": "file:webapps-common",
+    "focus-trap-vue": "4.0.2",
+    "tabbable": "6.2.0"
   },
   "devDependencies": {
     "@knime/eslint-config": "8.0.7",
