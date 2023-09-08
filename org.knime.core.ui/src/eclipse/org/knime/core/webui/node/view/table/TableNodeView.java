@@ -82,35 +82,44 @@ public final class TableNodeView implements NodeTableView {
 
     private TableViewViewSettings m_settings;
 
+    private final int m_inputPortIndex;
+
     /**
      * @param tableSupplier supplier of the table which this view visualizes
      * @param selectionSupplier supplier of currently selected rowKeys
      * @param nc the node this node view belongs to; used to determine the table id (derived from the node id) and to a
      *            {@link NodeCleanUpCallback} to free resources (caches) in case the node is, e.g., deleted
+     * @param inputPortIndex the index of the input port this table node view is created for; index starts at '0'
+     *            ignoring the flow variable port
      */
     public TableNodeView(final Supplier<BufferedDataTable> tableSupplier, final Supplier<Set<RowKey>> selectionSupplier,
-        final NodeContainer nc) {
-        this(TableViewUtil.toTableId(nc.getID()), tableSupplier, selectionSupplier, nc);
+        final NodeContainer nc, final int inputPortIndex) {
+        this(TableViewUtil.toTableId(nc.getID()), tableSupplier, selectionSupplier, nc, inputPortIndex);
     }
 
     /**
      * @param tableSupplier supplier of the table which this view visualizes
      * @param nc the node this node view belongs to; used to determine the table id (derived from the node id) and to a
      *            {@link NodeCleanUpCallback} to free resources (caches) in case the node is, e.g., deleted
+     * @param inputPortIndex the index of the input port this table node view is created for; index starts at '0'
+     *            ignoring the flow variable port
      */
-    public TableNodeView(final Supplier<BufferedDataTable> tableSupplier, final NodeContainer nc) {
-        this(tableSupplier, null, nc);
+    public TableNodeView(final Supplier<BufferedDataTable> tableSupplier, final NodeContainer nc,
+        final int inputPortIndex) {
+        this(tableSupplier, null, nc, inputPortIndex);
     }
 
-    TableNodeView(final String tableId, final Supplier<BufferedDataTable> tableSupplier, final NodeContainer nc) {
-        this(tableId, tableSupplier, null, nc);
+    TableNodeView(final String tableId, final Supplier<BufferedDataTable> tableSupplier, final NodeContainer nc,
+        final int inputPortIndex) {
+        this(tableId, tableSupplier, null, nc, inputPortIndex);
     }
 
     TableNodeView(final String tableId, final Supplier<BufferedDataTable> tableSupplier,
-        final Supplier<Set<RowKey>> selectionSupplier, final NodeContainer nc) {
+        final Supplier<Set<RowKey>> selectionSupplier, final NodeContainer nc, final int inputPortIndex) {
         m_tableId = tableId;
         m_tableSupplier = tableSupplier;
         m_selectionSupplier = selectionSupplier;
+        m_inputPortIndex = inputPortIndex;
         TableViewUtil.registerRendererRegistryCleanup(tableId, nc);
     }
 
@@ -155,6 +164,11 @@ public final class TableNodeView implements NodeTableView {
         } catch (InvalidSettingsException ex) {
             throw new IllegalStateException("The settings should have been validated first.", ex);
         }
+    }
+
+    @Override
+    public int getInPortIndex() {
+        return m_inputPortIndex;
     }
 
 }

@@ -227,7 +227,7 @@ class TableViewTest {
         var tableId = "test_table_id";
         var nnc =
             WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(nodeModel -> new TableNodeView(tableId,
-                () -> nodeModel.getInternalTables()[0], NodeContext.getContext().getNodeContainer())));
+                () -> nodeModel.getInternalTables()[0], NodeContext.getContext().getNodeContainer(), 0)));
         ((NodeViewNodeModel)nnc.getNodeModel())
             .setInternalTables(new BufferedDataTable[]{createDefaultTestTable(2).get()});
 
@@ -283,7 +283,7 @@ class TableViewTest {
         var tableId = "test_table_id";
         var nnc = WorkflowManagerUtil.createAndAddNode(wfm,
             new NodeViewNodeFactory(1, 0, nodeModel -> new TableNodeView(tableId,
-                () -> nodeModel.getInternalTables()[0], NodeContext.getContext().getNodeContainer())));
+                () -> nodeModel.getInternalTables()[0], NodeContext.getContext().getNodeContainer(), 0)));
         final var sourceNodeFactory = new DefaultVirtualPortObjectInNodeFactory(new PortType[]{BufferedDataTable.TYPE});
         final var sourceNode = WorkflowManagerUtil.createAndAddNode(wfm, sourceNodeFactory);
         var testTable = createDefaultTestTable(2).get();
@@ -615,7 +615,7 @@ class TableViewTest {
         var tableId = "test_table_id";
         var nnc =
             WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(nodeModel -> new TableNodeView(tableId,
-                () -> nodeModel.getInternalTables()[0], NodeContext.getContext().getNodeContainer())));
+                () -> nodeModel.getInternalTables()[0], NodeContext.getContext().getNodeContainer(), 0)));
         ((NodeViewNodeModel)nnc.getNodeModel())
             .setInternalTables(new BufferedDataTable[]{createDefaultTestTable(2).get()});
 
