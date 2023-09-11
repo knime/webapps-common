@@ -164,7 +164,7 @@ public final class NodeIDEnt {
      */
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(ROOT_MARKER);
+        final var sb = new StringBuilder(ROOT_MARKER);
         for (int i : m_ids) {
             sb.append(":" + i);
         }
@@ -175,23 +175,22 @@ public final class NodeIDEnt {
         return toString().substring(ROOT_MARKER.length() + 1);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int hashCode() {
         return Arrays.hashCode(m_ids);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean equals(final Object obj) {
-        if (obj instanceof NodeIDEnt) {
-            return Arrays.equals(m_ids, ((NodeIDEnt)obj).m_ids);
-        } else {
-            return false;
-        }
+        return obj instanceof NodeIDEnt other && Arrays.equals(m_ids, other.m_ids);
+    }
+
+    /**
+     * @param subtreeRootId potential subtree root id
+     * @return {@code true} if this node id is in the subtree of the given node id
+     */
+    public boolean isInSubtreeOf(final NodeIDEnt subtreeRootId) {
+        final var otherLen = subtreeRootId.m_ids.length;
+        return m_ids.length >= otherLen && Arrays.equals(subtreeRootId.m_ids, 0, otherLen, m_ids, 0, otherLen);
     }
 }
