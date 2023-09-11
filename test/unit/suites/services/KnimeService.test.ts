@@ -357,4 +357,14 @@ describe("KnimeService", () => {
       expect(getDataMock).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe("closeWindow", () => {
+    it("calls window.closeCEFWindow on closeWindow", () => {
+      const knimeService = new KnimeService();
+      const closeWindowSpy = jest.fn();
+      window.closeCEFWindow = closeWindowSpy;
+      knimeService.closeWindow();
+      expect(closeWindowSpy).toHaveBeenCalled();
+    });
+  });
 });

@@ -299,4 +299,11 @@ export class KnimeService<T = any> {
       this.extensionConfig || {};
     return `${nodeId}.${projectId}.${workflowId}.${extensionType}`;
   }
+
+  // eslint-disable-next-line class-methods-use-this
+  closeWindow() {
+    if (typeof window.closeCEFWindow === "function") {
+      window.closeCEFWindow();
+    }
+  }
 }

@@ -106,6 +106,9 @@ export class IFrameKnimeServiceAdapter extends KnimeService {
         }
         this.imageGeneratedCallback = null;
         break;
+      case "closeWindow":
+        this.closeWindow();
+        break;
       default:
         break;
     }

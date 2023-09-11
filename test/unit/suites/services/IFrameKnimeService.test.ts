@@ -227,5 +227,16 @@ describe("IFrameKnimeService", () => {
         "*",
       );
     });
+
+    it("posts closeWindow message when closeWindow methot is invoked ", () => {
+      const postSpy = jest.spyOn(window, "postMessage");
+      knimeService.closeWindow();
+      expect(postSpy).toHaveBeenCalledWith(
+        {
+          type: `${UI_EXT_POST_MESSAGE_PREFIX}:closeWindow`,
+        },
+        "*",
+      );
+    });
   });
 });

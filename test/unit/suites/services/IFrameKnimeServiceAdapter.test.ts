@@ -181,5 +181,23 @@ describe("IFrameKnimeServiceAdapter", () => {
       expect(generatedImage).toBe("foo");
       iFrameKnimeServiceAdapter.destroy();
     });
+
+    it.only("calls closeWindow function when receiving closeWindow message", async () => {
+      const { iFrameKnimeServiceAdapter } = buildIFrameKnimeServiceAdapter();
+      const closeWindowSpy = jest.fn();
+      iFrameKnimeServiceAdapter.closeWindow = closeWindowSpy;
+
+      // receive 'imageGenerated' message from child
+      window.postMessage(
+        {
+          type: `${UI_EXT_POST_MESSAGE_PREFIX}:closeWindow`,
+        },
+        "*",
+      );
+
+      await sleep();
+      expect(closeWindowSpy).toHaveBeenCalled();
+      iFrameKnimeServiceAdapter.destroy();
+    });
   });
 });

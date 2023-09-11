@@ -180,6 +180,11 @@ export class IFrameKnimeService extends KnimeService {
     window.removeEventListener("message", this.boundOnMessageFromParent);
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  closeWindow() {
+    IFrameKnimeService.postMessage({ messageType: "closeWindow" });
+  }
+
   /**
    * Called when an image has been generated. Posts the generated image to the parent via an 'imageGenerated' message.
    *
