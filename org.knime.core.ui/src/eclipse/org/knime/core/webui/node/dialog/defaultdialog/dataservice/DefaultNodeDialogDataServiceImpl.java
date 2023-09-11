@@ -92,20 +92,27 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
     private final ButtonWidgetActionHandlerHolder m_buttonActionHandlers;
 
     private final ChoicesWidgetUpdateHandlerHolder m_choicesUpdateHandlers;
+
     private final DataServiceRequestHandler m_requestHandler;
 
     private final SettingsConverter m_converter;
 
+    private final AsyncChoicesHolder m_asyncChoicesHolder;
+
     /**
      * @param converter used to transform between text settings from the front-end to {@link NodeSettings} and back
+     * @param asyncChoicesHolder holding those choices whose computation was triggered during the determination of the
+     *            initial data.
      */
-    public DefaultNodeDialogDataServiceImpl(final SettingsConverter converter) {
+    public DefaultNodeDialogDataServiceImpl(final SettingsConverter converter,
+        final AsyncChoicesHolder asyncChoicesHolder) {
         m_converter = converter;
         var settingsClasses = converter.getSettingsClasses();
         m_buttonActionHandlers = new ButtonWidgetActionHandlerHolder(settingsClasses);
         m_buttonUpdateHandlers = new ButtonWidgetUpdateHandlerHolder(settingsClasses);
         m_choicesUpdateHandlers = new ChoicesWidgetUpdateHandlerHolder(settingsClasses);
         m_requestHandler = new DataServiceRequestHandler();
+        m_asyncChoicesHolder = asyncChoicesHolder;
     }
 
     @Override
@@ -166,7 +173,7 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
 
     @Override
     public Result<?> getChoices(final String className) throws InterruptedException, ExecutionException {
-        return m_requestHandler.handleRequestFuture(AsyncChoicesHolder.getChoices(className));
+        return m_requestHandler.handleRequestFuture(m_asyncChoicesHolder.getChoices(className));
     }
 
     private static Object convertDependencies(final Object objectSettings, final DependencyHandler<?> handler) {

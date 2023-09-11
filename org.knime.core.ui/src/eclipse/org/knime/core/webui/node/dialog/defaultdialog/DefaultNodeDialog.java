@@ -86,6 +86,8 @@ public final class DefaultNodeDialog implements NodeDialog {
 
     private final SettingsConverter m_settingsConverter;
 
+    private final AsyncChoicesHolder m_asyncChoicesHolder;
+
     /**
      * Creates a new instance.
      *
@@ -95,9 +97,9 @@ public final class DefaultNodeDialog implements NodeDialog {
     public DefaultNodeDialog(final SettingsType settingsType,
         final Class<? extends DefaultNodeSettings> settingsClass) {
         m_settingsTypes = Set.of(settingsType);
-        m_settingsConverter =
-                new SettingsConverter(Map.of(settingsType, settingsClass));
-        m_settingsDataService = new DefaultNodeSettingsService(m_settingsConverter);
+        m_settingsConverter = new SettingsConverter(Map.of(settingsType, settingsClass));
+        m_asyncChoicesHolder = new AsyncChoicesHolder();
+        m_settingsDataService = new DefaultNodeSettingsService(m_settingsConverter, m_asyncChoicesHolder);
         m_onApplyModifier = null;
     }
 
@@ -124,7 +126,8 @@ public final class DefaultNodeDialog implements NodeDialog {
      * @param settingsType2 another settings type this dialog is able to provide
      * @param settingsClass2 dialog definition for the second settings type
      * @param onApplyModifier an {@link org.knime.core.webui.node.dialog.NodeDialog.OnApplyNodeModifier} that will be
-     *            invoked when cleaning up the {@link ApplyDataService} created in {@link NodeDialogAdapter#createApplyDataService()}
+     *            invoked when cleaning up the {@link ApplyDataService} created in
+     *            {@link NodeDialogAdapter#createApplyDataService()}
      */
     public DefaultNodeDialog(final SettingsType settingsType1,
         final Class<? extends DefaultNodeSettings> settingsClass1, final SettingsType settingsType2,
@@ -132,7 +135,8 @@ public final class DefaultNodeDialog implements NodeDialog {
         m_settingsTypes = Set.of(settingsType1, settingsType2);
         m_settingsConverter =
             new SettingsConverter(Map.of(settingsType1, settingsClass1, settingsType2, settingsClass2));
-        m_settingsDataService = new DefaultNodeSettingsService(m_settingsConverter);
+        m_asyncChoicesHolder = new AsyncChoicesHolder();
+        m_settingsDataService = new DefaultNodeSettingsService(m_settingsConverter, m_asyncChoicesHolder);
         m_onApplyModifier = onApplyModifier;
     }
 
@@ -148,8 +152,9 @@ public final class DefaultNodeDialog implements NodeDialog {
 
     @Override
     public Optional<RpcDataService> createRpcDataService() {
-        final var dataService = new DefaultNodeDialogDataServiceImpl(m_settingsConverter);
-        return Optional.ofNullable(RpcDataService.builder(dataService).onDeactivate(() -> AsyncChoicesHolder.clear()).build());
+        final var dataService = new DefaultNodeDialogDataServiceImpl(m_settingsConverter, m_asyncChoicesHolder);
+        return Optional
+            .ofNullable(RpcDataService.builder(dataService).onDeactivate(m_asyncChoicesHolder::clear).build());
     }
 
     @Override

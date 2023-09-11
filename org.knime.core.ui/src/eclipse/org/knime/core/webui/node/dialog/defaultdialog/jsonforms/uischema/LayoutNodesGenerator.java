@@ -60,6 +60,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.Defaul
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaDefaultNodeSettingsTraverser.JsonFormsControl;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.JsonFormsExpression;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -77,9 +78,11 @@ final class LayoutNodesGenerator {
 
     private Map<Class<?>, JsonFormsExpression> m_signals;
 
-    private final DefaultNodeSettingsContext m_DefaultNodeSettingsContext;
+    private final DefaultNodeSettingsContext m_defaultNodeSettingsContext;
 
     private final Collection<JsonFormsControl> m_fields;
+
+    private final AsyncChoicesHolder m_asyncChoicesHolder;
 
     static record LayoutSkeleton(LayoutTreeNode layoutTreeRoot, Map<Class<?>, JsonFormsExpression> signals,
         Collection<JsonFormsControl> fields) {
@@ -90,14 +93,16 @@ final class LayoutNodesGenerator {
      *            controls) and a ruleSourcesMap (the mapping between ids of rule sources to their conditions)
      * @param mapper the object mapper used for the ui schema generation
      * @param context the settings creation context with access to the input ports
+     * @param asyncChoicesHolder used to start asynchronous computations of choices during the ui-schema generation.
      */
     LayoutNodesGenerator(final LayoutSkeleton layout, final ObjectMapper mapper,
-        final DefaultNodeSettingsContext context) {
+        final DefaultNodeSettingsContext context, final AsyncChoicesHolder asyncChoicesHolder) {
         m_mapper = mapper;
         m_signals = layout.signals();
         m_fields = layout.fields();
         m_rootLayoutTree = layout.layoutTreeRoot();
-        m_DefaultNodeSettingsContext = context;
+        m_defaultNodeSettingsContext = context;
+        m_asyncChoicesHolder = asyncChoicesHolder;
     }
 
     ObjectNode build() {
@@ -117,7 +122,8 @@ final class LayoutNodesGenerator {
         final var scope = controlElement.scope();
         final var control = root.addObject().put(TAG_TYPE, TYPE_CONTROL).put(TAG_SCOPE, scope);
         final var field = controlElement.field();
-        new UiSchemaOptionsGenerator(m_mapper, field, m_DefaultNodeSettingsContext, m_fields, scope).addOptionsTo(control);
+        new UiSchemaOptionsGenerator(m_mapper, field, m_defaultNodeSettingsContext, m_fields, scope, m_asyncChoicesHolder)
+            .addOptionsTo(control);
         new UiSchemaRulesGenerator(m_mapper, field.getAnnotation(Effect.class), m_signals).applyRulesTo(control);
     }
 }

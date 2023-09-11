@@ -56,7 +56,6 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.
 import java.util.concurrent.ExecutionException;
 import java.util.stream.IntStream;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.knime.core.data.DataColumnSpec;
@@ -230,11 +229,6 @@ class ChoicesWidgetUiSchemaOptionsTest {
     @Nested
     class AsynchChoicesTest {
 
-        @BeforeAll
-        static void initAsyncChoicesHolder() {
-            AsyncChoicesHolder.clear();
-        }
-
         static class TestAsyncColumnChoicesProvider implements ColumnChoicesProvider, AsyncChoicesProvider {
 
             @Override
@@ -267,8 +261,10 @@ class ChoicesWidgetUiSchemaOptionsTest {
         @Test
         void testChoicesWidgetWithAsyncChoicesProvider() throws InterruptedException, ExecutionException {
             DefaultNodeSettingsContext defaultNodeSettingsContext = createDefaultNodeSettingsContext();
+            final var asyncChoicesHolder = new AsyncChoicesHolder();
 
-            var response = buildTestUiSchema(AsyncChoicesSettings.class, defaultNodeSettingsContext);
+            var response =
+                buildTestUiSchema(AsyncChoicesSettings.class, defaultNodeSettingsContext, asyncChoicesHolder);
             assertThatJson(response).inPath("$.elements[0].scope").isString().contains("foo");
             assertThatJson(response).inPath("$.elements[0].options.showNoneColumn").isBoolean().isTrue();
             assertThatJson(response).inPath("$.elements[0].options").isObject().doesNotContainKey("possibleValues");
@@ -284,19 +280,19 @@ class ChoicesWidgetUiSchemaOptionsTest {
                 .isEqualTo(TestAsyncChoicesProvider.class.getName());
 
             for (int i = 0; i < 2; i++) {
-                assertThat(AsyncChoicesHolder.getChoices(TestAsyncChoicesProvider.class.getName()).get())
+                assertThat(asyncChoicesHolder.getChoices(TestAsyncChoicesProvider.class.getName()).get())
                     .isEqualTo(new IdAndText[]{new IdAndText("id1", "text1"), new IdAndText("id2", "text2")});
             }
 
             assertThrows(NullPointerException.class,
-                () -> AsyncChoicesHolder.getChoices(TestAsyncChoicesProvider.class.getName()));
+                () -> asyncChoicesHolder.getChoices(TestAsyncChoicesProvider.class.getName()));
 
-            assertThat(AsyncChoicesHolder.getChoices(TestAsyncColumnChoicesProvider.class.getName()).get())
+            assertThat(asyncChoicesHolder.getChoices(TestAsyncColumnChoicesProvider.class.getName()).get())
                 .isEqualTo(IntStream.range(0, columnSpecs.length).mapToObj(i -> columnSpecs[i])
                     .map(PossibleColumnValue::fromColSpec).toArray(PossibleColumnValue[]::new));
 
             assertThrows(NullPointerException.class,
-                () -> AsyncChoicesHolder.getChoices(TestAsyncColumnChoicesProvider.class.getName()));
+                () -> asyncChoicesHolder.getChoices(TestAsyncColumnChoicesProvider.class.getName()));
 
         }
 

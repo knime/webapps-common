@@ -133,15 +133,24 @@ final class UiSchemaOptionsGenerator {
 
     private final String m_scope;
 
+    private final AsyncChoicesHolder m_asyncChoicesHolder;
+
     /**
      *
      * @param mapper the object mapper used for the ui schema generation
      * @param field the field for which options are to be added from {@link Style} annotations
+     * @param context the current context of the default node settings
+     * @param fields all traversed fields
+     * @param scope of the current field
+     * @param asyncChoicesProvider to be used to store results of asynchronously computed choices of
+     *            {@link ChoicesWidget}s.
      */
     UiSchemaOptionsGenerator(final ObjectMapper mapper, final PropertyWriter field,
-        final DefaultNodeSettingsContext context, final Collection<JsonFormsControl> fields, final String scope) {
+        final DefaultNodeSettingsContext context, final Collection<JsonFormsControl> fields, final String scope,
+        final AsyncChoicesHolder asyncChoicesHolder) {
         m_mapper = mapper;
         m_field = field;
+        m_asyncChoicesHolder = asyncChoicesHolder;
         m_fieldType = field.getType();
         m_fieldClass = field.getType().getRawClass();
         m_fieldName = field.getName();
@@ -257,7 +266,7 @@ final class UiSchemaOptionsGenerator {
             if (AsyncChoicesProvider.class.isAssignableFrom(choicesProviderClass)) {
                 final var choicesProviderClassName = choicesProviderClass.getName();
                 options.put("choicesProviderClass", choicesProviderClassName);
-                AsyncChoicesHolder.addChoices(choicesProviderClassName,
+                m_asyncChoicesHolder.addChoices(choicesProviderClassName,
                     () -> generatePossibleValues(choicesProviderClass));
             } else {
                 final var possibleValues = generatePossibleValues(choicesProviderClass);
@@ -417,7 +426,8 @@ final class UiSchemaOptionsGenerator {
 
         Map<String, Class<?>> arraySettings = new HashMap<>();
         arraySettings.put(null, componentType);
-        var details = JsonFormsUiSchemaUtil.buildUISchema(arraySettings, m_mapper, m_defaultNodeSettingsContext)
+        var details = JsonFormsUiSchemaUtil
+            .buildUISchema(arraySettings, m_mapper, m_defaultNodeSettingsContext, m_asyncChoicesHolder)
             .get(TAG_ELEMENTS);
         options.set(TAG_ARRAY_LAYOUT_DETAIL, details);
 

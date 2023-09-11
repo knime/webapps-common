@@ -65,6 +65,7 @@ import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.SettingsConverter;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -79,12 +80,15 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 final class DefaultNodeSettingsService implements NodeSettingsService {
 
     private final SettingsConverter m_converter;
+    private final AsyncChoicesHolder m_asyncChoicesHolder;
 
     /**
      * @param converter map that associates a {@link DefaultNodeSettings} class-with a {@link SettingsType}
+     * @param asyncChoicesHolder used to start asynchronous computations of choices during the ui-schema generation.
      */
-    public DefaultNodeSettingsService(final SettingsConverter converter) {
+    public DefaultNodeSettingsService(final SettingsConverter converter, final AsyncChoicesHolder asyncChoicesHolder) {
         m_converter = converter;
+        m_asyncChoicesHolder = asyncChoicesHolder;
     }
 
     @Override
@@ -102,13 +106,13 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
         return toString(jsonFormsSettings, flowVariablesMapJsonObject);
     }
 
-    private static String toString(final JsonFormsSettings jsonFormsSettings,
+    private String toString(final JsonFormsSettings jsonFormsSettings,
         final ObjectNode flowVariablesMapJsonObject) {
         final var mapper = JsonFormsDataUtil.getMapper();
         final var root = mapper.createObjectNode();
         root.set(FIELD_NAME_DATA, jsonFormsSettings.getData());
         root.set(FIELD_NAME_SCHEMA, jsonFormsSettings.getSchema());
-        root.putRawValue(FIELD_NAME_UI_SCHEMA, jsonFormsSettings.getUiSchema());
+        root.putRawValue(FIELD_NAME_UI_SCHEMA, jsonFormsSettings.getUiSchema(m_asyncChoicesHolder));
         root.setAll(flowVariablesMapJsonObject);
         try {
             return mapper.writeValueAsString(root);

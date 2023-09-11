@@ -55,6 +55,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.LayoutN
 import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -85,12 +86,13 @@ public final class JsonFormsUiSchemaUtil {
      * @param settings
      * @param mapper
      * @param context
+     * @param asyncChoicesHolder
      * @return the ui schema resolved by the mapper from the given settings
      */
     public static ObjectNode buildUISchema(final Map<String, Class<?>> settings, final ObjectMapper mapper,
-        final DefaultNodeSettingsContext context) {
+        final DefaultNodeSettingsContext context, final AsyncChoicesHolder asyncChoicesHolder) {
         final var layoutSkeleton = resolveLayout(settings, mapper);
-        return new LayoutNodesGenerator(layoutSkeleton, mapper, context).build();
+        return new LayoutNodesGenerator(layoutSkeleton, mapper, context, asyncChoicesHolder).build();
     }
 
     private static LayoutSkeleton resolveLayout(final Map<String, Class<?>> settings, final ObjectMapper mapper) {

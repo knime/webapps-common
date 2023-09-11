@@ -134,20 +134,26 @@ class DefaultNodeDialogDataServiceImplTest {
 
     private static DefaultNodeDialogDataServiceImpl
         getDataService(final Class<? extends DefaultNodeSettings> modelSettingsClass) {
+        return getDataServiceWithAsyncChoices(modelSettingsClass, new AsyncChoicesHolder());
+    }
+
+    private static DefaultNodeDialogDataServiceImpl getDataServiceWithAsyncChoices(
+        final Class<? extends DefaultNodeSettings> modelSettingsClass, final AsyncChoicesHolder asyncChoicesHolder) {
         return new DefaultNodeDialogDataServiceImpl(
-            new SettingsConverter(Map.of(SettingsType.MODEL, modelSettingsClass)));
+            new SettingsConverter(Map.of(SettingsType.MODEL, modelSettingsClass)), asyncChoicesHolder);
     }
 
     private static DefaultNodeDialogDataServiceImpl getDataService(
         final Class<? extends DefaultNodeSettings> modelSettingsClass,
         final Class<? extends DefaultNodeSettings> viewSettingsClass) {
-        return new DefaultNodeDialogDataServiceImpl(new SettingsConverter(
-            Map.of(SettingsType.MODEL, modelSettingsClass, SettingsType.VIEW, viewSettingsClass)));
+        return new DefaultNodeDialogDataServiceImpl(
+            new SettingsConverter(Map.of(SettingsType.MODEL, modelSettingsClass, SettingsType.VIEW, viewSettingsClass)),
+            new AsyncChoicesHolder());
     }
 
     private static DefaultNodeDialogDataServiceImpl
         getDataServiceWithConverter(final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses) {
-        return new DefaultNodeDialogDataServiceImpl(new SettingsConverter(settingsClasses));
+        return new DefaultNodeDialogDataServiceImpl(new SettingsConverter(settingsClasses), new AsyncChoicesHolder());
     }
 
     @Nested
@@ -217,14 +223,14 @@ class DefaultNodeDialogDataServiceImplTest {
                 String m_bar;
             }
 
-            AsyncChoicesHolder.clear();
+            final var asyncChoicesHolder = new AsyncChoicesHolder();
             final var choices = new IdAndText[]{new IdAndText("id", "text")};
-            AsyncChoicesHolder.addChoices(TestChoicesProvider.class.getName(), () -> choices);
+            asyncChoicesHolder.addChoices(TestChoicesProvider.class.getName(), () -> choices);
             final var errorMessage = "Failed to load choices";
-            AsyncChoicesHolder.addChoices(TestColumnChoicesProvider.class.getName(), () -> {
+            asyncChoicesHolder.addChoices(TestColumnChoicesProvider.class.getName(), () -> {
                 throw new WidgetHandlerException(errorMessage);
             });
-            final var dataService = getDataService(ChoicesSettings.class);
+            final var dataService = getDataServiceWithAsyncChoices(ChoicesSettings.class, asyncChoicesHolder);
             final var result1 = dataService.getChoices(TestChoicesProvider.class.getName());
             assertThat(result1.result()).isEqualTo(choices);
             final var result2 = dataService.getChoices(TestColumnChoicesProvider.class.getName());
@@ -444,8 +450,7 @@ class DefaultNodeDialogDataServiceImplTest {
     static class DefaultNodeSettingsContextHandler implements ChoicesUpdateHandler<TestDefaultNodeSettings> {
 
         @Override
-        public IdAndText[] update(final TestDefaultNodeSettings settings,
-            final DefaultNodeSettingsContext context) {
+        public IdAndText[] update(final TestDefaultNodeSettings settings, final DefaultNodeSettingsContext context) {
             assertThat(context.getPortObjectSpecs()).isEqualTo(PORT_OBJECT_SPECS);
             return null;
         }
@@ -463,8 +468,7 @@ class DefaultNodeDialogDataServiceImplTest {
                 Boolean m_button;
             }
 
-            final var dataService = new DefaultNodeDialogDataServiceImpl(
-                new SettingsConverter(Map.of(SettingsType.MODEL, ButtonSettings.class)));
+            final var dataService = getDataService(ButtonSettings.class);
             dataService.update("widgetId", DefaultNodeSettingsContextHandler.class.getName(), null).result();
             /** Assertion happens inside {@link DefaultNodeSettingsContextHandler#update} */
         }

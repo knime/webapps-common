@@ -70,9 +70,10 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.Inside;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.LayoutGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
-import org.knime.core.webui.node.dialog.defaultdialog.util.FieldAnnotationsHolder;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.util.FieldAnnotationsHolder;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Hidden;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -85,11 +86,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 class JsonFormsUiSchemaUtilTest {
 
     static ObjectNode buildUiSchema(final Map<String, Class<?>> settings) {
-        return buildUiSchema(settings, null);
+        return buildUiSchema(settings, null, new AsyncChoicesHolder());
     }
 
-    static ObjectNode buildUiSchema(final Map<String, Class<?>> settings, final DefaultNodeSettingsContext context) {
-        return JsonFormsUiSchemaUtil.buildUISchema(settings, JsonFormsDataUtil.getMapper(), context);
+    static ObjectNode buildUiSchema(final Map<String, Class<?>> settings, final DefaultNodeSettingsContext context,
+        final AsyncChoicesHolder asyncChoicesHolder) {
+        return JsonFormsUiSchemaUtil.buildUISchema(settings, JsonFormsDataUtil.getMapper(), context,
+            asyncChoicesHolder);
     }
 
     static ObjectNode buildTestUiSchema(final Class<?> settingsClass) {
@@ -97,7 +100,12 @@ class JsonFormsUiSchemaUtilTest {
     }
 
     static ObjectNode buildTestUiSchema(final Class<?> settingsClass, final DefaultNodeSettingsContext context) {
-        return buildUiSchema(Map.of("test", settingsClass), context);
+        return buildTestUiSchema(settingsClass, context, new AsyncChoicesHolder());
+    }
+
+    static ObjectNode buildTestUiSchema(final Class<?> settingsClass, final DefaultNodeSettingsContext context,
+        final AsyncChoicesHolder asyncChoicesHolder) {
+        return buildUiSchema(Map.of("test", settingsClass), context, asyncChoicesHolder);
     }
 
     interface TestSettingsLayout {
@@ -207,8 +215,6 @@ class JsonFormsUiSchemaUtilTest {
         assertThatJson(response).inPath("$.elements[3].scope").isString()
             .isEqualTo("#/properties/test/properties/customSetting");
     }
-
-
 
     @Test
     void testHiddenSettings() throws JsonProcessingException {
@@ -490,21 +496,25 @@ class JsonFormsUiSchemaUtilTest {
 
         abstract class CenterLayout implements PersistableSettings, LayoutGroup {
             @HorizontalLayout()
-            interface CenterLayoutInnerLayout {}
+            interface CenterLayoutInnerLayout {
+            }
         }
 
         class CenterLayoutExtended extends CenterLayout {
             @Layout(CenterLayoutInnerLayout.class)
             String centerLayoutElement1;
+
             @Layout(CenterLayoutInnerLayout.class)
             String centerLayoutElement2;
         }
 
         @Before(CenterLayout.class)
-        interface BeforeCenterLayout {}
+        interface BeforeCenterLayout {
+        }
 
         @After(CenterLayout.class)
-        interface AfterCenterLayout {}
+        interface AfterCenterLayout {
+        }
     }
 
     @Test
@@ -534,9 +544,12 @@ class JsonFormsUiSchemaUtilTest {
         assertThatJson(response).inPath("$.elements[0].elements[0].scope").isString().contains("intBeforeCenterLayout");
         assertThatJson(response).inPath("$.elements[0].elements[1].type").isEqualTo("HorizontalLayout");
         assertThatJson(response).inPath("$.elements[0].elements[1].elements").isArray().hasSize(2);
-        assertThatJson(response).inPath("$.elements[0].elements[1].elements[0].scope").isString().contains("centerLayoutElement1");
-        assertThatJson(response).inPath("$.elements[0].elements[1].elements[1].scope").isString().contains("centerLayoutElement2");
-        assertThatJson(response).inPath("$.elements[0].elements[2].scope").isString().contains("stringAfterCenterLayout");
+        assertThatJson(response).inPath("$.elements[0].elements[1].elements[0].scope").isString()
+            .contains("centerLayoutElement1");
+        assertThatJson(response).inPath("$.elements[0].elements[1].elements[1].scope").isString()
+            .contains("centerLayoutElement2");
+        assertThatJson(response).inPath("$.elements[0].elements[2].scope").isString()
+            .contains("stringAfterCenterLayout");
 
         assertThatJson(response).inPath("$.elements[1].label").isString().isEqualTo("Second");
         assertThatJson(response).inPath("$.elements[1].type").isString().isEqualTo("Section");

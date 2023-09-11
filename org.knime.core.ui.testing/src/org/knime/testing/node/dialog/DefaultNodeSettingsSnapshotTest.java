@@ -129,7 +129,7 @@ public class DefaultNodeSettingsSnapshotTest {
         var objectNode = mapper.createObjectNode();
         objectNode.set(JsonFormsConsts.FIELD_NAME_DATA, jsonFormsSettings.getData());
         objectNode.set(JsonFormsConsts.FIELD_NAME_SCHEMA, jsonFormsSettings.getSchema());
-        objectNode.putRawValue(JsonFormsConsts.FIELD_NAME_UI_SCHEMA, jsonFormsSettings.getUiSchema());
+        objectNode.putRawValue(JsonFormsConsts.FIELD_NAME_UI_SCHEMA, jsonFormsSettings.getUiSchema(null));
         var jsonForms = mapper.readTree(mapper.writeValueAsString(objectNode));
 
         // write the snapshot or compare with an existing snapshot

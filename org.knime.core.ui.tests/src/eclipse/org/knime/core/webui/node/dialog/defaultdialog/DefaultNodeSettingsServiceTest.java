@@ -66,6 +66,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonNodeSettings
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.JsonFormsSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.SettingsConverter;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -124,8 +125,8 @@ class DefaultNodeSettingsServiceTest {
         final PortObjectSpec[] specs) throws JsonProcessingException {
 
         // create settings service and obtain initial data using node settings and specs
-        final var settingsService =
-            new DefaultNodeSettingsService(new SettingsConverter(SettingsType.VIEW, TestSettings.class));
+        final var settingsService = new DefaultNodeSettingsService(
+            new SettingsConverter(SettingsType.VIEW, TestSettings.class), new AsyncChoicesHolder());
         final var initialData = MAPPER.readTree(settingsService.fromNodeSettings(
             Map.of(SettingsType.VIEW, NodeDialogTest.createNodeAndVariableSettingsRO(nodeSettings)), specs));
 
@@ -143,7 +144,7 @@ class DefaultNodeSettingsServiceTest {
         // assert that returned ui schema is equal to json object created via JsonFormsUiSchemaUtil
         final Map<String, Class<?>> testSettingsMap = Map.of(SettingsType.VIEW.getConfigKey(), TestSettings.class);
         final var uiSchema = JsonFormsUiSchemaUtil.buildUISchema(testSettingsMap, MAPPER,
-            DefaultNodeSettings.createDefaultNodeSettingsContext(specs));
+            DefaultNodeSettings.createDefaultNodeSettingsContext(specs), new AsyncChoicesHolder());
         assertThatJson(initialData.get("ui_schema")).isEqualTo(uiSchema);
     }
 
@@ -154,8 +155,8 @@ class DefaultNodeSettingsServiceTest {
         final var nodeSettings = new NodeSettings("node_settings");
 
         // create settings service and apply wrapped "foo" view data into node settings
-        final var settingsService =
-            new DefaultNodeSettingsService(new SettingsConverter(SettingsType.VIEW, TestSettings.class));
+        final var settingsService = new DefaultNodeSettingsService(
+            new SettingsConverter(SettingsType.VIEW, TestSettings.class), new AsyncChoicesHolder());
         final var wrappedViewData = MAPPER.createObjectNode().set("data",
             MAPPER.createObjectNode().set(SettingsType.VIEW.getConfigKey(), viewData));
         settingsService.toNodeSettings(wrappedViewData.toString(),

@@ -111,11 +111,11 @@ public final class JsonFormsSettingsImpl implements JsonFormsSettings {
     }
 
     @Override
-    public RawValue getUiSchema() {
+    public RawValue getUiSchema(final AsyncChoicesHolder asyncChoicesHolder) {
         final var clazz = m_viewSettingsClass != null ? m_viewSettingsClass : m_modelSettingsClass;
         try (final var inputStream = clazz.getResourceAsStream("uischema.json")) {
             if (inputStream == null) {
-                return generateUiSchema();
+                return generateUiSchema(asyncChoicesHolder == null ? new AsyncChoicesHolder() : asyncChoicesHolder);
             }
             return new RawValue(IOUtils.toString(inputStream, StandardCharsets.UTF_8));
         } catch (IOException ex) {
@@ -124,7 +124,7 @@ public final class JsonFormsSettingsImpl implements JsonFormsSettings {
 
     }
 
-    private RawValue generateUiSchema() {
+    private RawValue generateUiSchema(final AsyncChoicesHolder asyncChoicesHolder) {
         final var settings = new LinkedHashMap<String, Class<?>>();
         if (m_modelSettingsClass != null) {
             settings.put(SettingsType.MODEL.getConfigKey(), m_modelSettingsClass);
@@ -132,9 +132,8 @@ public final class JsonFormsSettingsImpl implements JsonFormsSettings {
         if (m_viewSettingsClass != null) {
             settings.put(SettingsType.VIEW.getConfigKey(), m_viewSettingsClass);
         }
-        AsyncChoicesHolder.clear();
-        return new RawValue(
-            JsonFormsUiSchemaUtil.buildUISchema(settings, JsonFormsDataUtil.getMapper(), m_context).toString());
+        return new RawValue(JsonFormsUiSchemaUtil
+            .buildUISchema(settings, JsonFormsDataUtil.getMapper(), m_context, asyncChoicesHolder).toString());
     }
 
     @Override
