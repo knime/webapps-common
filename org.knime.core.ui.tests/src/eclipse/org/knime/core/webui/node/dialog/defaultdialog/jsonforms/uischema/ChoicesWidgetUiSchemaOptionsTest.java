@@ -245,6 +245,17 @@ class ChoicesWidgetUiSchemaOptionsTest {
             }
         }
 
+        static class TestChoicesProviderWithManyChoices implements ChoicesProvider {
+
+            static final IdAndText[] manyChoices =
+                IntStream.range(0, 101).mapToObj(String::valueOf).map(IdAndText::fromId).toArray(IdAndText[]::new);
+
+            @Override
+            public IdAndText[] choicesWithIdAndText(final DefaultNodeSettingsContext context) {
+                return manyChoices;
+            }
+        }
+
         class AsyncChoicesSettings implements DefaultNodeSettings {
 
             @ChoicesWidget(showNoneColumn = true, choices = TestAsyncColumnChoicesProvider.class)
@@ -255,6 +266,9 @@ class ChoicesWidgetUiSchemaOptionsTest {
 
             @ChoicesWidget(choices = TestAsyncChoicesProvider.class)
             String m_baz;
+
+            @ChoicesWidget(choices = TestChoicesProviderWithManyChoices.class)
+            String m_manyChoices;
 
         }
 
@@ -278,6 +292,10 @@ class ChoicesWidgetUiSchemaOptionsTest {
             assertThatJson(response).inPath("$.elements[2].options").isObject().doesNotContainKey("possibleValues");
             assertThatJson(response).inPath("$.elements[2].options.choicesProviderClass").isString()
                 .isEqualTo(TestAsyncChoicesProvider.class.getName());
+            assertThatJson(response).inPath("$.elements[3].scope").isString().contains("manyChoices");
+            assertThatJson(response).inPath("$.elements[3].options").isObject().doesNotContainKey("possibleValues");
+            assertThatJson(response).inPath("$.elements[3].options.choicesProviderClass").isString()
+                .isEqualTo(TestChoicesProviderWithManyChoices.class.getName());
 
             for (int i = 0; i < 2; i++) {
                 assertThat(asyncChoicesHolder.getChoices(TestAsyncChoicesProvider.class.getName()).get())
@@ -293,6 +311,12 @@ class ChoicesWidgetUiSchemaOptionsTest {
 
             assertThrows(NullPointerException.class,
                 () -> asyncChoicesHolder.getChoices(TestAsyncColumnChoicesProvider.class.getName()));
+
+            assertThat(asyncChoicesHolder.getChoices(TestChoicesProviderWithManyChoices.class.getName()).get())
+                .isEqualTo(TestChoicesProviderWithManyChoices.manyChoices);
+
+            assertThrows(NullPointerException.class,
+                () -> asyncChoicesHolder.getChoices(TestChoicesProviderWithManyChoices.class.getName()));
 
         }
 

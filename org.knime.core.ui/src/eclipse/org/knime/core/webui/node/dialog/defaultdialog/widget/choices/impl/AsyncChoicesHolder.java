@@ -65,7 +65,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
  *
  * @author Paul Bärnreuther
  */
-public class AsyncChoicesHolder {
+public final class AsyncChoicesHolder {
 
     /**
      * A map from the class name of a choices provider to its choices.

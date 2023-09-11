@@ -70,6 +70,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -134,6 +135,8 @@ final class UiSchemaOptionsGenerator {
     private final String m_scope;
 
     private final AsyncChoicesHolder m_asyncChoicesHolder;
+
+    private static final int ASYNC_CHOICES_THRESHOLD = 100;
 
     /**
      *
@@ -264,13 +267,14 @@ final class UiSchemaOptionsGenerator {
             final var choicesWidget = m_field.getAnnotation(ChoicesWidget.class);
             final var choicesProviderClass = choicesWidget.choices();
             if (AsyncChoicesProvider.class.isAssignableFrom(choicesProviderClass)) {
-                final var choicesProviderClassName = choicesProviderClass.getName();
-                options.put("choicesProviderClass", choicesProviderClassName);
-                m_asyncChoicesHolder.addChoices(choicesProviderClassName,
-                    () -> generatePossibleValues(choicesProviderClass));
+                prepareAsyncChoices(options, choicesProviderClass, () -> generatePossibleValues(choicesProviderClass));
             } else {
                 final var possibleValues = generatePossibleValues(choicesProviderClass);
-                options.set("possibleValues", m_mapper.valueToTree(possibleValues));
+                if (possibleValues.length < ASYNC_CHOICES_THRESHOLD) {
+                    options.set("possibleValues", m_mapper.valueToTree(possibleValues));
+                } else {
+                    prepareAsyncChoices(options, choicesProviderClass, () -> possibleValues);
+                }
             }
             if (!m_fieldClass.equals(ColumnSelection.class) && !m_fieldClass.equals(ColumnFilter.class)) {
                 String format = getChoicesComponentFormat();
@@ -293,6 +297,13 @@ final class UiSchemaOptionsGenerator {
         if (isArrayOfObjects) {
             applyArrayLayoutOptions(options, m_fieldType.getContentType().getRawClass());
         }
+    }
+
+    private void prepareAsyncChoices(final ObjectNode options,
+        final Class<? extends ChoicesProvider> choicesProviderClass, final Callable<Object[]> getChoices) {
+        String choicesProviderClassName = choicesProviderClass.getName();
+        options.put("choicesProviderClass", choicesProviderClassName);
+        m_asyncChoicesHolder.addChoices(choicesProviderClassName, getChoices);
     }
 
     private Object[] generatePossibleValues(final Class<? extends ChoicesProvider> choicesProviderClass) {
