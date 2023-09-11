@@ -1,0 +1,118 @@
+{
+  "result": {
+    "name": "Flow Variables",
+    "data": {
+      "model": {
+        "noVariableSet": "Enabled",
+        "controlling": "Disabled",
+        "exposed": "Enabled",
+        "exposedAndControlling": "Disabled",
+        "missingFlowVariable": "Disabled",
+        "controlledByNonAvailable": "Enabled"
+      }
+    },
+    "schema": {
+      "type": "object",
+      "properties": {
+        "model": {
+          "type": "object",
+          "properties": {
+            "noVariableSet": {
+              "type": "string",
+              "title": "No flow variable set",
+              "description": "The flow variable button should be visible on hover."
+            },
+            "controlling": {
+              "type": "string",
+              "title": "Controlled by flow variable",
+              "description": "The respective icon with one red dot at the left should be permanenty visible and the flow variable should be preselected among the options.",
+              "default": ""
+            },
+            "exposed": {
+              "type": "string",
+              "title": "Exposes flow variable",
+              "description": "The respective icon with one red dot at the right should be permanenty visible."
+            },
+            "exposedAndControlling": {
+              "type": "string",
+              "title": "Exposes and is controlled by flow variable",
+              "description": "The respective icon with two red dot should be permanenty visible."
+            },
+            "missingFlowVariable": {
+              "type": "string",
+              "title": "Controlled by missing flow variable",
+              "description": "The initial option in the dropdown shows a missing element."
+            },
+            "controlledByNonAvailable": {
+              "type": "string",
+              "title": "Controlled by a flow variable which is not available",
+              "description": "Controlling flow variable is selected but not available."
+            }
+          }
+        }
+      }
+    },
+    "ui_schema": {
+      "elements": [
+        {
+          "type": "Section",
+          "label": "Usual cases",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/noVariableSet"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/controlling"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/exposed"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/exposedAndControlling"
+            }
+          ]
+        },
+        {
+          "type": "Section",
+          "label": "Corner cases",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/missingFlowVariable"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/controlledByNonAvailable"
+            }
+          ]
+        }
+      ]
+    },
+    "flowVariableSettings": {
+      "model.controlling": {
+        "controllingFlowVariableAvailable": true,
+        "controllingFlowVariableName": "stringVariable"
+      },
+      "model.exposed": {
+        "exposedFlowVariableName": "foo"
+      },
+      "model.exposedAndControlling": {
+        "controllingFlowVariableAvailable": true,
+        "controllingFlowVariableName": "stringVariable",
+        "exposedFlowVariableName": "bar"
+      },
+      "model.missingFlowVariable": {
+        "controllingFlowVariableAvailable": true,
+        "controllingFlowVariableName": "I am missing"
+      },
+      "model.controlledByNonAvailable": {
+        "controllingFlowVariableAvailable": false,
+        "controllingFlowVariableName": "stringVariable"
+      }
+    }
+  }
+}
