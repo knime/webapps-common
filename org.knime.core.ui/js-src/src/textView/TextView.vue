@@ -14,7 +14,7 @@ export default {
       return this.getKnimeService();
     },
     disabled() {
-      return this.flowSettings?.controllingFlowVariableAvailable;
+      return Boolean(this.flowSettings?.controllingFlowVariableName);
     },
     flowSettings() {
       return getFlowVariablesMap(this.control);

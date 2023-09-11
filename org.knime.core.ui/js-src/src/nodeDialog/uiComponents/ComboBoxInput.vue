@@ -42,7 +42,7 @@ const ComboBoxInput = defineComponent({
     disabled() {
       return (
         !this.control.enabled ||
-        this.flowSettings?.controllingFlowVariableAvailable ||
+        Boolean(this.flowSettings?.controllingFlowVariableName) ||
         typeof this.options === "undefined" ||
         this.options.length === 0
       );

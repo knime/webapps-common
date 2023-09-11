@@ -40,13 +40,15 @@ export default {
       );
       return Object.keys(mocks)
         .sort()
-        .map((file) => ({
-          name: file.replace("/mocks/", ""),
-          config: {
-            ...mocks[file],
-            result: { flowVariableSettings: {}, ...mocks[file].result },
-          },
-        }));
+        .map((file) => {
+          return {
+            name: file.replace("/mocks/", ""),
+            config: {
+              ...mocks[file],
+              result: { flowVariableSettings: {}, ...mocks[file].result },
+            },
+          };
+        });
     },
     currentDialog() {
       return this.dialogMocks[this.currentDialogIndex]?.config;

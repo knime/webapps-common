@@ -60,7 +60,7 @@ const DropdownInput = defineComponent({
     disabled() {
       return (
         !this.control.enabled ||
-        this.flowSettings?.controllingFlowVariableAvailable ||
+        Boolean(this.flowSettings?.controllingFlowVariableName) ||
         this.options.length === 0
       );
     },

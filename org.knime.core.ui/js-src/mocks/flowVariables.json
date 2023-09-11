@@ -8,7 +8,7 @@
         "exposed": "Enabled",
         "exposedAndControlling": "Disabled",
         "missingFlowVariable": "Disabled",
-        "controlledByNonAvailable": "Enabled"
+        "controlledByNonAvailable": "Disabled"
       }
     },
     "schema": {

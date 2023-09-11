@@ -60,7 +60,7 @@ const TwinlistInput = defineComponent({
     disabled() {
       return (
         !this.control.enabled ||
-        this.flowSettings?.controllingFlowVariableAvailable
+        Boolean(this.flowSettings?.controllingFlowVariableName)
       );
     },
     withTypes() {

@@ -33,7 +33,7 @@ const TextAreaInput = defineComponent({
     disabled() {
       return (
         !this.control.enabled ||
-        this.flowSettings?.controllingFlowVariableAvailable
+        Boolean(this.flowSettings?.controllingFlowVariableName)
       );
     },
   },
