@@ -50,6 +50,7 @@ package org.knime.core.webui.node.dialog.defaultdialog;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.Map;
@@ -239,6 +240,65 @@ public class DefaultNodeDialogTest {
         assertSubNodeSettingsForKey(nodeSettingsToCheck, expectedNodeSettings, "model");
         assertSubNodeSettingsForKey(nodeSettingsToCheck, expectedNodeSettings, "variables");
         assertSubNodeSettingsForKey(nodeSettingsToCheck, expectedNodeSettings, "view");
+        assertSubNodeSettingsForKey(nodeSettingsToCheck, expectedNodeSettings, "view_variables");
+    }
+
+    @Test
+    void testApplyDataWithOnlyViewFlowVariableSettings() throws IOException, InvalidSettingsException {
+
+        var initialApplyData = """
+                {
+                  "data": {
+                    "model": {},
+                    "view": {}
+                  },
+                  "flowVariableSettings": {}
+                }
+                """;
+
+        NodeDialogManager.getInstance().callApplyDataService(NodeWrapper.of(m_nnc), initialApplyData);
+        m_wfm.executeAllAndWaitUntilDone();
+
+        /**
+         * Essential here is that the settings and the model variables did not change, i.e. only new view variables get
+         * applied.
+         */
+        var applyViewVariablesData = """
+                {
+                  "data": {
+                    "model": {},
+                    "view": {}
+                   },
+                  "flowVariableSettings": {
+                    "view.view setting": {
+                      "controllingFlowVariableAvailable": true,
+                      "controllingFlowVariableName": "flow variable 2"
+                    },
+                    "view.nested.nested view setting 3": {
+                      "exposedFlowVariableName": "exposed var name"
+                    },
+                    "view.nested.nested view setting 2": {
+                      "exposedFlowVariableName": "exposed var name"
+                    },
+                    "view.nested.nested view setting": {
+                      "controllingFlowVariableAvailable": false,
+                      "controllingFlowVariableName": "flow variable 3",
+                      "exposedFlowVariableName": "exposed var name"
+                    }
+                  }
+                }
+                """;
+        NodeDialogManager.getInstance().callApplyDataService(NodeWrapper.of(m_nnc), applyViewVariablesData);
+
+        var nodeSettingsToCheck = m_nnc.getNodeSettings();
+        var expectedNodeSettings = new NodeSettings("configuration");
+        var modelSettings = expectedNodeSettings.addNodeSettings("model");
+        var viewSettings = expectedNodeSettings.addNodeSettings("view");
+        m_defaultNodeSettingsService.getDefaultNodeSettings(
+            Map.of(SettingsType.MODEL, modelSettings, SettingsType.VIEW, viewSettings),
+            new DataTableSpec[]{new DataTableSpec()});
+        initViewVariableSettings(expectedNodeSettings, false);
+        assertTrue(m_nnc.getNodeContainerState().isExecuted());
         assertSubNodeSettingsForKey(nodeSettingsToCheck, expectedNodeSettings, "view_variables");
     }
 
