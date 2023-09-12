@@ -69,7 +69,7 @@ describe("OneOfDropdown.vue", () => {
 
   it("computed dropdown options from oneof options", async () => {
     expect(
-      await wrapper.getComponent(DropdownInput).props().getOptions(),
+      await wrapper.getComponent(DropdownInput).props().asyncInitialOptions,
     ).toEqual([
       {
         id: "Universe_0_0",

@@ -363,8 +363,7 @@ describe("DropdownInput.vue", () => {
 
   it("sets initial options if provided", async () => {
     const customOptions = [{ id: "foo", text: "bar" }];
-    const initialOptions = Promise.resolve(customOptions);
-    props.getOptions = () => initialOptions;
+    props.asyncInitialOptions = Promise.resolve(customOptions);
     const { wrapper } = mountJsonFormsComponent(DropdownInput, { props });
     await flushPromises();
     expect(wrapper.vm.options).toStrictEqual(customOptions);

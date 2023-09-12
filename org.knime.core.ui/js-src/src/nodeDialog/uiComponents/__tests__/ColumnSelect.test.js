@@ -110,7 +110,9 @@ describe("ColumnSelect.vue", () => {
 
   describe("optionsGenerator", () => {
     it("optionsGenerator correctly transforms the data", async () => {
-      expect(await wrapper.getComponent(ColumnSelect).vm.getOptions()).toEqual([
+      expect(
+        await wrapper.getComponent(ColumnSelect).vm.asyncInitialOptions,
+      ).toEqual([
         expect.objectContaining({
           id: "Universe_0_0",
           text: "Universe_0_0",
@@ -138,7 +140,9 @@ describe("ColumnSelect.vue", () => {
         props,
       }).wrapper);
 
-      expect(await wrapper.getComponent(ColumnSelect).vm.getOptions()).toEqual([
+      expect(
+        await wrapper.getComponent(ColumnSelect).vm.asyncInitialOptions,
+      ).toEqual([
         expect.objectContaining({
           id: "<none>",
           text: "None",

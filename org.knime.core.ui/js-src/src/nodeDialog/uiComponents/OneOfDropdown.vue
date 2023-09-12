@@ -1,6 +1,5 @@
 <script lang="ts">
 import { rendererProps } from "@jsonforms/vue";
-import { computed } from "vue";
 import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
 import { optionsMapper } from "../utils";
 import DropdownInput from "./DropdownInput.vue";
@@ -16,18 +15,18 @@ export default {
   },
   setup(props) {
     const control = useJsonFormsControlWithUpdate(props).control;
-    const options = computed(() => {
-      const oneOf = control.value?.schema?.oneOf;
-      return oneOf?.map(optionsMapper) ?? [];
-    });
+    const options = control.value?.schema?.oneOf?.map(optionsMapper) ?? [];
 
     return {
-      getOptions: () => Promise.resolve(options.value),
+      asyncInitialOptions: Promise.resolve(options),
     };
   },
 };
 </script>
 
 <template>
-  <DropdownInput v-bind="{ ...$attrs, ...$props }" :get-options="getOptions" />
+  <DropdownInput
+    v-bind="{ ...$attrs, ...$props }"
+    :async-initial-options="asyncInitialOptions"
+  />
 </template>

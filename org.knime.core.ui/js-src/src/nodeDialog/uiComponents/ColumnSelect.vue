@@ -1,6 +1,6 @@
 <script lang="ts">
 import { rendererProps } from "@jsonforms/vue";
-import { computed, onMounted, ref, type Ref } from "vue";
+import { onMounted, ref, watchEffect, type Ref } from "vue";
 import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
 import type { PossibleValue } from "../types/ChoicesUiSchema";
 import inject from "../utils/inject";
@@ -22,14 +22,18 @@ export default {
     const getPossibleValuesFromUiSchema = inject(
       "getPossibleValuesFromUiSchema",
     );
-    const getOptions = computed(
-      () => () => getPossibleValuesFromUiSchema(jsonFormsControl.control.value),
-    );
+    const possibleValues: Ref<null | PossibleValue[]> = ref(null);
 
-    const optionsWithColumnInformation: Ref<null | PossibleValue[]> = ref(null);
+    const asyncInitialOptions = new Promise<PossibleValue[]>((resolve) => {
+      watchEffect(() => {
+        if (possibleValues.value) {
+          resolve(possibleValues.value);
+        }
+      });
+    });
 
     const toData = (value: string | null) => {
-      const allColumns = optionsWithColumnInformation.value;
+      const allColumns = possibleValues.value;
       if (allColumns === null) {
         throw new Error(
           "Must not convert data before column choices are fetched.",
@@ -54,12 +58,14 @@ export default {
     };
 
     onMounted(async () => {
-      optionsWithColumnInformation.value = await getOptions.value();
+      possibleValues.value = await getPossibleValuesFromUiSchema(
+        jsonFormsControl.control.value,
+      );
       updateInitialData();
     });
 
     return {
-      getOptions,
+      asyncInitialOptions,
       jsonFormsControl,
       toData,
       toValue,
@@ -71,7 +77,7 @@ export default {
 <template>
   <DropdownInput
     v-bind="{ ...$attrs, ...$props }"
-    :get-options="getOptions"
+    :async-initial-options="asyncInitialOptions"
     :json-forms-control="jsonFormsControl"
     :control-data-to-dropdown-value="toValue"
     :dropdown-value-to-control-data="toData"

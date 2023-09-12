@@ -23,8 +23,8 @@ const DropdownInput = defineComponent({
   },
   props: {
     ...rendererProps(),
-    getOptions: {
-      type: Function as PropType<() => Promise<IdAndText[]>>,
+    asyncInitialOptions: {
+      type: Object as PropType<Promise<IdAndText[]>>,
       required: false,
       default: null,
     },
@@ -101,12 +101,12 @@ const DropdownInput = defineComponent({
   },
   methods: {
     async setInitialOptions() {
-      if (this.getOptions === null) {
+      if (this.asyncInitialOptions === null) {
         this.getPossibleValuesFromUiSchema(this.control).then((result) => {
           this.options = result;
         });
       } else {
-        this.options = await this.getOptions();
+        this.options = await this.asyncInitialOptions;
       }
     },
     async fetchInitialOptions(newSettings: SettingsData) {
