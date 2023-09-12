@@ -19,6 +19,15 @@ const linkTagByType = (item: MenuItem) => {
 };
 
 defineProps<Props>();
+
+const dynamicAttributes = (item: MenuItem) => {
+  if (item.href && item.download) {
+    return {
+      download: typeof item.download === "boolean" ? "" : item.download,
+    };
+  }
+  return null;
+};
 </script>
 
 <template>
@@ -37,6 +46,7 @@ defineProps<Props>();
     ]"
     :to="item.to || null"
     :href="item.href || null"
+    v-bind="dynamicAttributes(item)"
   >
     <Component :is="item.icon" v-if="item.icon" class="item-icon" />
     <div class="label">

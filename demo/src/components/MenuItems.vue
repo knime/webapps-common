@@ -3,6 +3,7 @@ import { markRaw } from "vue";
 import CodeExample from "./demo/CodeExample.vue";
 import MenuItems from "webapps-common/ui/components/MenuItems.vue";
 import HelpIcon from "webapps-common/ui/assets/img/icons/circle-help.svg";
+import DownloadIcon from "webapps-common/ui/assets/img/icons/cloud-download.svg";
 import StarIcon from "webapps-common/ui/assets/img/icons/star.svg";
 import LeaveIcon from "webapps-common/ui/assets/img/icons/leave.svg";
 import HeartIcon from "webapps-common/ui/assets/img/icons/heart.svg";
@@ -106,6 +107,12 @@ const menuItemsData: MenuItem[] = [
   {
     text: "Item without href/to",
     icon: markRaw(HelpIcon),
+  },
+  {
+    href: "https://www.knime.com/images/knime-logo.svg",
+    text: "Item with download attribute",
+    download: true,
+    icon: markRaw(DownloadIcon),
   },
 ];
 

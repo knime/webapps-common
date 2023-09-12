@@ -57,6 +57,8 @@ export interface MenuItem {
   sectionHeadline?: boolean;
   /** visually emphasizes an item by inverting the color of the item */
   selected?: boolean;
+  /** adds a download indicator property for file links */
+  download?: boolean | string;
   /** show a separator below the item if it's not the last in the list */
   separator?: boolean;
   /** shown aligned right besides the text */

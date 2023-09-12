@@ -164,6 +164,47 @@ describe("BaseMenuItems.vue", () => {
     expect(clickableItems[2].classes()).not.toContain("selected");
   });
 
+  it("renders with download attribute", () => {
+    const items = [
+      {
+        text: "Apples",
+        download: true,
+      },
+      {
+        text: "Oranges",
+        href: "some/file/oranges.pdf",
+        download: true,
+      },
+      {
+        text: "Pineapples",
+        hotkeyText: "F9",
+      },
+      {
+        text: "Kiwis",
+        href: "some/file/kiwis.pdf",
+      },
+      {
+        text: "Honey",
+        href: "some/file/honey.pdf",
+        download: "badger",
+      },
+    ];
+    const wrapper = mount(BaseMenuItems, {
+      props: {
+        menuAriaLabel: "label",
+        items,
+      },
+    });
+    expect(wrapper.html()).toBeTruthy();
+    const clickableItems = wrapper.findAll(".clickable-item");
+    expect(clickableItems[0].attributes("download")).toBeUndefined();
+    expect(clickableItems[1].attributes("download")).toBeDefined();
+    expect(clickableItems[1].attributes("download")).toBe("");
+    expect(clickableItems[2].attributes("download")).toBeUndefined();
+    expect(clickableItems[3].attributes("download")).toBeUndefined();
+    expect(clickableItems[4].attributes("download")).toBe("badger");
+  });
+
   it("has a function returning the enabled element and its index", () => {
     const items = [
       {
