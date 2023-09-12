@@ -112,9 +112,9 @@ public class NodeDialogTest {
     @Test
     public void testInitialSettingsForUnconnectedNode() throws Exception {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
-        var nnc = WorkflowManagerUtil.createAndAddNode(wfm,
-            new NodeDialogNodeFactory(() -> createNodeDialog(Page.builder(() -> "test", "test.html").build(),
-                createNodeSettingsService(), null), 1));
+        var nnc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeDialogNodeFactory(
+            () -> createNodeDialog(Page.builder(() -> "test", "test.html").build(), createNodeSettingsService(), null),
+            1));
         var nncWrapper = NodeWrapper.of(nnc);
         var nodeDialogManager = NodeDialogManager.getInstance();
 
@@ -648,7 +648,7 @@ public class NodeDialogTest {
             public void toNodeSettings(final String textSettings,
                 final Map<SettingsType, NodeAndVariableSettingsWO> settings) {
                 stringToSettings(textSettings, settings.get(SettingsType.MODEL), settings.get(SettingsType.VIEW));
-                if(variableSettingsWriter != null) {
+                if (variableSettingsWriter != null) {
                     variableSettingsWriter.accept(
                         settings.entrySet().stream().map(e -> Map.entry(e.getKey(), (VariableSettingsWO)e.getValue()))
                             .collect(Collectors.toMap(Entry::getKey, Entry::getValue)));
@@ -802,6 +802,32 @@ public class NodeDialogTest {
     public static NodeAndVariableSettingsWO createNodeAndVariableSettingsWO(final NodeSettings nodeSettings) {
         return NodeAndVariableSettingsProxy.createWOProxy(nodeSettings,
             new VariableSettings(new NodeSettings("ignored"), nodeSettings));
+    }
+
+    /**
+     * Creates an instance of {@link NodeAndVariableSettingsRO} by proxing all the calls to the given
+     * {@link NodeSettings}- and {@link VariableSettings}-instance.
+     *
+     * @param nodeSettings
+     * @param variableSettings
+     * @return a new instance
+     */
+    public static NodeAndVariableSettingsRO createNodeAndVariableSettingsRO(final NodeSettings nodeSettings,
+        final VariableSettings variableSettings) {
+        return NodeAndVariableSettingsProxy.createROProxy(nodeSettings, variableSettings);
+    }
+
+    /**
+     * Creates an instance of {@link NodeAndVariableSettingsWO} by proxing all the calls to the given
+     * {@link NodeSettings}- and {@link VariableSettings}-instance.
+     *
+     * @param nodeSettings
+     * @param variableSettings
+     * @return a new instance
+     */
+    public static NodeAndVariableSettingsWO createNodeAndVariableSettingsWO(final NodeSettings nodeSettings,
+        final VariableSettings variableSettings) {
+        return NodeAndVariableSettingsProxy.createWOProxy(nodeSettings, variableSettings);
     }
 
 }

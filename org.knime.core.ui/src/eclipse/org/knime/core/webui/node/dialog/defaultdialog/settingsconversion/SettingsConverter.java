@@ -156,6 +156,22 @@ public final class SettingsConverter {
     }
 
     /**
+     * Transforms textSettings from the front-end to variableSettings and writes them to the given
+     * {@link VariableSettingsWO} objects.
+     *
+     * @param textSettings with a key {@link SettingsConverter#FLOW_VARIABLE_SETTINGS_KEY "flowVariableSettings"}
+     *            containing the current controlling/exposed flow variables in the schema as created in
+     *            {@link VariableSettingsUtil#fromVariableSettingsToJson}.
+     * @param settings the map of objects which the result of the extraction is written to. Note that the keys of this
+     *            map define which types of nodeSettings are extracted.
+     */
+    public static void textSettingsToVariableSettings(final String textSettings,
+        final Map<SettingsType, VariableSettingsWO> settings) {
+        final var root = textToJson(textSettings);
+        rootJsonToVariableSettings(root, settings);
+    }
+
+    /**
      * Transforms textSettings form the front-end to node settings with an associated variables mask of a certain type.
      *
      * @param textSettings with a key {@link JsonFormsConsts#FIELD_NAME_DATA "data"} with a nested
