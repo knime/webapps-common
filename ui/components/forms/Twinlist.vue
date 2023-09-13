@@ -59,6 +59,11 @@ export default {
       default: true,
       type: Boolean,
     },
+    hideOptions: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     /**
      * Labels
      */
@@ -91,10 +96,19 @@ export default {
       required: false,
       default: "Unknown values",
     },
+    /**
+     * Is only used when emptyStateComponent is null
+     */
     emptyStateLabel: {
-      type: String,
-      required: false,
       default: "No entries in this list",
+      type: String,
+    },
+    /**
+     * this component is displayed centered in the middle of the box in case it is empty
+     */
+    emptyStateComponent: {
+      default: null,
+      type: Object,
     },
     /**
      * Controls the size of the list.
@@ -484,13 +498,14 @@ export default {
         ref="left"
         :with-is-empty-state="showEmptyState"
         :empty-state-label="emptyStateLabel"
+        :empty-state-component="emptyStateComponent"
         :size="listSize"
         class="list-box"
         :model-value="leftSelected"
         :with-bottom-value="showUnknownValuesLeft"
         :bottom-value="{ id: unknownValuesId, text: unknownValuesText }"
         :is-valid="isValid"
-        :possible-values="leftItems"
+        :possible-values="hideOptions ? [] : leftItems"
         :aria-label="leftLabel"
         :disabled="disabled"
         @double-click-on-item="onLeftListBoxDoubleClick"
@@ -548,7 +563,8 @@ export default {
         :bottom-value="{ id: unknownValuesId, text: unknownValuesText }"
         :with-is-empty-state="showEmptyState"
         :empty-state-label="emptyStateLabel"
-        :possible-values="rightItems"
+        :empty-state-component="emptyStateComponent"
+        :possible-values="hideOptions ? [] : rightItems"
         :size="listSize"
         :aria-label="rightLabel"
         :disabled="disabled"
@@ -593,6 +609,7 @@ export default {
       font-size: 8px;
       font-weight: 300;
       white-space: nowrap;
+      display: flex;
     }
   }
 

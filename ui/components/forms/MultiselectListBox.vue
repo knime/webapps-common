@@ -26,9 +26,19 @@ export default {
       default: false,
       type: Boolean,
     },
+    /**
+     * Is only used when emptyStateComponent is null
+     */
     emptyStateLabel: {
       default: "No entries in this list",
       type: String,
+    },
+    /**
+     * this component is displayed centered in the middle of the box in case it is empty
+     */
+    emptyStateComponent: {
+      default: null,
+      type: Object,
     },
     /**
      * If enabled the single click will allow the user to select multiple items, otherwise this only works with
@@ -525,7 +535,8 @@ export default {
         />
       </ul>
       <div v-if="showEmptyState" class="empty-state">
-        <span>
+        <component :is="emptyStateComponent" v-if="emptyStateComponent" />
+        <span v-else>
           {{ emptyStateLabel }}
         </span>
       </div>
