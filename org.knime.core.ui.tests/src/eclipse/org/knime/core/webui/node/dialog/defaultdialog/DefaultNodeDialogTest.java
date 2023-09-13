@@ -151,7 +151,8 @@ public class DefaultNodeDialogTest {
         initNodeSettings(m_nnc, defModelSettings, defViewSettings);
         m_nnc.getFlowObjectStack().push(new FlowVariable("flow variable 2", "test"));
 
-        var initialData = NodeDialogManager.getInstance().callInitialDataService(NodeWrapper.of(m_nnc));
+        var initialData =
+            NodeDialogManager.getInstance().getDataServiceManager().callInitialDataService(NodeWrapper.of(m_nnc));
 
         var mapper = new ObjectMapper();
         var initialDataJson = mapper.readTree(initialData);
@@ -226,7 +227,7 @@ public class DefaultNodeDialogTest {
                   }
                 }
                 """;
-        NodeDialogManager.getInstance().callApplyDataService(NodeWrapper.of(m_nnc), applyData);
+        NodeDialogManager.getInstance().getDataServiceManager().callApplyDataService(NodeWrapper.of(m_nnc), applyData);
 
         var nodeSettingsToCheck = m_nnc.getNodeSettings();
 
@@ -258,7 +259,8 @@ public class DefaultNodeDialogTest {
                 }
                 """;
 
-        NodeDialogManager.getInstance().callApplyDataService(NodeWrapper.of(m_nnc), initialApplyData);
+        NodeDialogManager.getInstance().getDataServiceManager().callApplyDataService(NodeWrapper.of(m_nnc),
+            initialApplyData);
         m_wfm.executeAllAndWaitUntilDone();
 
         /**
@@ -290,7 +292,8 @@ public class DefaultNodeDialogTest {
                   }
                 }
                 """;
-        NodeDialogManager.getInstance().callApplyDataService(NodeWrapper.of(m_nnc), applyViewVariablesData);
+        NodeDialogManager.getInstance().getDataServiceManager().callApplyDataService(NodeWrapper.of(m_nnc),
+            applyViewVariablesData);
 
         var nodeSettingsToCheck = m_nnc.getNodeSettings();
         var expectedNodeSettings = new NodeSettings("configuration");

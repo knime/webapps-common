@@ -135,10 +135,10 @@ public class NodeDialogManagerTest {
         assertThat(NodeDialogManager.hasNodeDialog(nc)).as("node expected to have a node dialog").isTrue();
         var nodeDialog = NodeDialogManager.getInstance().getNodeDialog(nc);
         assertThat(nodeDialog.getPage() == page).isTrue();
-        assertThat(NodeDialogManager.getInstance().getPageId(NodeWrapper.of(nc)))
+        assertThat(NodeDialogManager.getInstance().getPageResourceManager().getPageId(NodeWrapper.of(nc)))
             .isEqualTo(nc.getID().toString().replace(":", "_"));
 
-        assertThat(NodeDialogManager.getInstance().callInitialDataService(NodeWrapper.of(nc)))
+        assertThat(NodeDialogManager.getInstance().getDataServiceManager().callInitialDataService(NodeWrapper.of(nc)))
             .isEqualTo("{\"result\":\"test settings\"}");
         assertThat(nodeDialog.getPage().isCompletelyStatic()).isFalse();
 
@@ -203,12 +203,13 @@ public class NodeDialogManagerTest {
             var nodeDialog = NodeDialogManager.getInstance().getNodeDialog(component);
             assertThat(nodeDialog.getPage().getRelativePath()).isEqualTo("NodeDialog.umd.js");
 
-            var pageId = NodeDialogManager.getInstance().getPageId(NodeWrapper.of(component));
+            var pageId = NodeDialogManager.getInstance().getPageResourceManager().getPageId(NodeWrapper.of(component));
             assertThat(pageId).isEqualTo("defaultdialog");
 
             // The jsonforms dialog cannot be built from our test node, because it is no valid/known DialogNodeRepresentation,
             // So we just check for the error here.
-            var result = NodeDialogManager.getInstance().callInitialDataService(NodeWrapper.of(component));
+            var result = NodeDialogManager.getInstance().getDataServiceManager()
+                .callInitialDataService(NodeWrapper.of(component));
             assertThat(result).contains(
                 "Could not read dialog node org.knime.core.webui.node.dialog.TestConfigurationNodeFactory$TestConfigNodeModel");
         } finally {
@@ -232,12 +233,12 @@ public class NodeDialogManagerTest {
         var nnc = NodeWrapper.of(createNodeWithNodeDialog(m_wfm, () -> createNodeDialog(staticPage)));
         var nnc2 = NodeWrapper.of(createNodeWithNodeDialog(m_wfm, () -> createNodeDialog(staticPage)));
         var nnc3 = NodeWrapper.of(createNodeWithNodeDialog(m_wfm, () -> createNodeDialog(dynamicPage)));
-        var nodeDialogManager = NodeDialogManager.getInstance();
-        String path = nodeDialogManager.getPagePath(nnc);
-        String path2 = nodeDialogManager.getPagePath(nnc2);
-        nodeDialogManager.clearCaches();
-        String path3 = nodeDialogManager.getPagePath(nnc3);
-        String path4 = nodeDialogManager.getPagePath(nnc3);
+        var pageResourceManager = NodeDialogManager.getInstance().getPageResourceManager();
+        String path = pageResourceManager.getPagePath(nnc);
+        String path2 = pageResourceManager.getPagePath(nnc2);
+        pageResourceManager.clearPageCache();
+        String path3 = pageResourceManager.getPagePath(nnc3);
+        String path4 = pageResourceManager.getPagePath(nnc3);
         assertThat(path).as("url of static pages not expected to change").isEqualTo(path2);
         assertThat(path).as("url of dynamic pages expected to change between node instances").isNotEqualTo(path3);
         assertThat(path3).as("url of dynamic pages not expected for same node instance (without node state change)")
@@ -296,14 +297,14 @@ public class NodeDialogManagerTest {
         var nc = NodeDialogManagerTest.createNodeWithNodeDialog(m_wfm, nodeDialogSupplier);
         var nncWrapper = NodeWrapper.of(nc);
 
-        var nodeDialogManager = NodeDialogManager.getInstance();
-        assertThat(nodeDialogManager.callInitialDataService(nncWrapper))
+        var dataServiceManager = NodeDialogManager.getInstance().getDataServiceManager();
+        assertThat(dataServiceManager.callInitialDataService(nncWrapper))
             .isEqualTo("{\"result\":\"the node settings\"}");
         assertThat(
-            nodeDialogManager.callRpcDataService(nncWrapper, RpcDataService.jsonRpcRequest("method", "test param")))
+            dataServiceManager.callRpcDataService(nncWrapper, RpcDataService.jsonRpcRequest("method", "test param")))
                 .contains("\"result\":\"test param\"");
         // apply data, i.e. settings
-        nodeDialogManager.callApplyDataService(nncWrapper, "key,node settings value");
+        dataServiceManager.callApplyDataService(nncWrapper, "key,node settings value");
 
         // check node model settings
         var modelSettings = ((NodeDialogNodeModel)nc.getNode().getNodeModel()).getLoadNodeSettings();
@@ -319,7 +320,7 @@ public class NodeDialogManagerTest {
         assertThat(nc.getNodeSettings().getNodeSettings("view").getString("key")).isEqualTo("node settings value");
 
         // check error on apply settings
-        Assertions.assertThatThrownBy(() -> nodeDialogManager.callApplyDataService(nncWrapper, "ERROR,invalid"))
+        Assertions.assertThatThrownBy(() -> dataServiceManager.callApplyDataService(nncWrapper, "ERROR,invalid"))
             .isInstanceOf(IOException.class).hasMessage("Invalid node settings: validation expected to fail");
     }
 
@@ -335,7 +336,7 @@ public class NodeDialogManagerTest {
             () -> NodeDialogTest.createNodeDialog(Page.builder(() -> "page content", "index.html").build()), 1));
         metanode.addConnection(metanode.getID(), 0, nnc.getID(), 1);
 
-        assertThat(NodeDialogManager.getInstance().callInitialDataService(NodeWrapper.of(nnc)))
+        assertThat(NodeDialogManager.getInstance().getDataServiceManager().callInitialDataService(NodeWrapper.of(nnc)))
             .isEqualTo("{\"result\":\"test settings\"}");
     }
 

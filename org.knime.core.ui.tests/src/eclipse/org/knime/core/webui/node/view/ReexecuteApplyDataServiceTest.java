@@ -77,7 +77,8 @@ class ReexecuteApplyDataServiceTest {
             NodeViewManagerTest.createNodeWithNodeView(wfm, m -> NodeViewTest.createNodeView(page, m));
         wfm.executeAllAndWaitUntilDone();
 
-        NodeViewManager.getInstance().callApplyDataService(NodeWrapper.of(nnc), "data to apply");
+        NodeViewManager.getInstance().getDataServiceManager().callApplyDataService(NodeWrapper.of(nnc),
+            "data to apply");
         NodeViewNodeModel model = (NodeViewNodeModel)nnc.getNodeModel();
         Awaitility.await().untilAsserted(() -> {
             assertThat(model.getPreReexecuteData()).isEqualTo("data to apply");

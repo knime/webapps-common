@@ -68,7 +68,8 @@ public class NodeDialogEnt extends NodeUIExtensionEnt<NodeWrapper> {
      * @param nc
      */
     public NodeDialogEnt(final SingleNodeContainer nc) {
-        super(NodeWrapper.of(nc), NodeDialogManager.getInstance(), NodeDialogManager.getInstance(), PageType.DIALOG);
+        super(NodeWrapper.of(nc), NodeDialogManager.getInstance().getPageResourceManager(),
+            NodeDialogManager.getInstance().getDataServiceManager(), PageType.DIALOG);
         CheckUtils.checkArgument(NodeDialogManager.hasNodeDialog(nc), "The provided node doesn't have a node dialog");
         NodeViewManager.getInstance();
         m_hasNodeView = NodeViewManager.hasNodeView(nc);

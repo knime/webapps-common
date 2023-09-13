@@ -49,18 +49,66 @@
 package org.knime.core.webui.node;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Optional;
+import java.util.WeakHashMap;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
+import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.webui.data.ApplyDataService;
+import org.knime.core.webui.data.DataServiceProvider;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
+import org.knime.core.webui.node.util.NodeCleanUpCallback;
 
 /**
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @param <N> the node wrapper this manager operates on
  */
-public interface DataServiceManager<N extends NodeWrapper> {
+public final class DataServiceManager<N extends NodeWrapper> {
+
+    private final Map<N, InitialDataService<?>> m_initialDataServices = new WeakHashMap<>();
+
+    private final Map<N, RpcDataService> m_dataServices = new WeakHashMap<>();
+
+    private final Map<N, ApplyDataService<?>> m_applyDataServices = new WeakHashMap<>();
+
+    private final Function<N, DataServiceProvider> m_getDataServiceProvider;
+
+    private final boolean m_shouldCleanUpDataServicesOnNodeStateChange;
+
+    private final Consumer<N> m_pushContext;
+
+    private final Runnable m_removeContext;
+
+    /**
+     * TODO
+     *
+     * @param getDataServiceProvider
+     */
+    public DataServiceManager(final Function<N, DataServiceProvider> getDataServiceProvider) {
+        this(getDataServiceProvider, false, nw -> NodeContext.pushContext(nw.get()), NodeContext::removeLastContext);
+    }
+
+    /**
+     * TODO
+     *
+     * @param getDataServiceProvider
+     * @param shouldCleanUpDataServicesOnNodeStateChange
+     * @param pushContext
+     * @param removeContext
+     */
+    public DataServiceManager(final Function<N, DataServiceProvider> getDataServiceProvider,
+        final boolean shouldCleanUpDataServicesOnNodeStateChange, final Consumer<N> pushContext,
+        final Runnable removeContext) {
+        m_getDataServiceProvider = getDataServiceProvider;
+        m_shouldCleanUpDataServicesOnNodeStateChange = shouldCleanUpDataServicesOnNodeStateChange;
+        m_pushContext = pushContext;
+        m_removeContext = removeContext;
+    }
 
     /**
      * Returns data service instance of the given type or an empty optional of no data service of that type is
@@ -72,7 +120,20 @@ public interface DataServiceManager<N extends NodeWrapper> {
      *            {@link ApplyDataService}.
      * @return the data service instance or an empty optional if no data service is available
      */
-    <S> Optional<S> getDataServiceOfType(N nodeWrapper, Class<S> dataServiceClass);
+    public <S> Optional<S> getDataServiceOfType(final N nodeWrapper, final Class<S> dataServiceClass) {
+        Object ds = null;
+        if (InitialDataService.class.isAssignableFrom(dataServiceClass)) {
+            ds = getInitialDataService(nodeWrapper).orElse(null);
+        } else if (RpcDataService.class.isAssignableFrom(dataServiceClass)) {
+            ds = getRpcDataService(nodeWrapper).orElse(null);
+        } else if (ApplyDataService.class.isAssignableFrom(dataServiceClass)) {
+            ds = getApplyDataService(nodeWrapper).orElse(null);
+        }
+        if (ds != null && !dataServiceClass.isAssignableFrom(ds.getClass())) {
+            ds = null;
+        }
+        return Optional.ofNullable((S)ds);
+    }
 
     /**
      * Helper to call the {@link InitialDataService}.
@@ -81,7 +142,30 @@ public interface DataServiceManager<N extends NodeWrapper> {
      * @return the initial data
      * @throws IllegalStateException if there is not initial data service available
      */
-    String callInitialDataService(N nodeWrapper);
+    public String callInitialDataService(final N nodeWrapper) {
+        return getInitialDataService(nodeWrapper) //
+            .filter(InitialDataService.class::isInstance) //
+            .orElseThrow(() -> new IllegalStateException("No initial data service available")) //
+            .getInitialData();
+    }
+
+    private Optional<InitialDataService<?>> getInitialDataService(final N nodeWrapper) {
+        InitialDataService<?> ds;
+        if (!m_initialDataServices.containsKey(nodeWrapper)) {
+            ds = getWithContext(nodeWrapper,
+                () -> m_getDataServiceProvider.apply(nodeWrapper).createInitialDataService().orElse(null));
+            m_initialDataServices.put(nodeWrapper, ds);
+            NodeCleanUpCallback.builder(nodeWrapper.get(), () -> {
+                var dataService = m_initialDataServices.remove(nodeWrapper);
+                if (dataService != null) {
+                    dataService.dispose();
+                }
+            }).cleanUpOnNodeStateChange(m_shouldCleanUpDataServicesOnNodeStateChange).build();
+        } else {
+            ds = m_initialDataServices.get(nodeWrapper);
+        }
+        return Optional.ofNullable(ds);
+    }
 
     /**
      * Helper to call the {@link RpcDataService}.
@@ -91,7 +175,32 @@ public interface DataServiceManager<N extends NodeWrapper> {
      * @return the data service response
      * @throws IllegalStateException if there is no text data service
      */
-    String callRpcDataService(N nodeWrapper, String request);
+    public String callRpcDataService(final N nodeWrapper, final String request) {
+        var service = getRpcDataService(nodeWrapper).filter(RpcDataService.class::isInstance).orElse(null);
+        if (service != null) {
+            return service.handleRpcRequest(request);
+        } else {
+            throw new IllegalStateException("No rpc data service available");
+        }
+    }
+
+    private Optional<RpcDataService> getRpcDataService(final N nodeWrapper) {
+        RpcDataService ds;
+        if (!m_dataServices.containsKey(nodeWrapper)) {
+            ds = getWithContext(nodeWrapper,
+                () -> m_getDataServiceProvider.apply(nodeWrapper).createRpcDataService().orElse(null));
+            m_dataServices.put(nodeWrapper, ds);
+            NodeCleanUpCallback.builder(nodeWrapper.get(), () -> {
+                var dataService = m_dataServices.remove(nodeWrapper);
+                if (dataService != null) {
+                    dataService.dispose();
+                }
+            }).cleanUpOnNodeStateChange(m_shouldCleanUpDataServicesOnNodeStateChange).build();
+        } else {
+            ds = m_dataServices.get(nodeWrapper);
+        }
+        return Optional.ofNullable(ds);
+    }
 
     /**
      * Helper to call the {@link ApplyDataService}.
@@ -101,6 +210,69 @@ public interface DataServiceManager<N extends NodeWrapper> {
      * @throws IOException if applying the data failed
      * @throws IllegalStateException if there is no text apply data service
      */
-    void callApplyDataService(N nodeWrapper, String request) throws IOException;
+    public void callApplyDataService(final N nodeWrapper, final String request) throws IOException {
+        var service = getApplyDataService(nodeWrapper).orElse(null);
+        if (service == null) {
+            throw new IllegalStateException("No apply data service available");
+        } else if (service.shallReExecute()) {
+            service.reExecute(request);
+        } else {
+            service.applyData(request);
+        }
+    }
+
+    private Optional<ApplyDataService<?>> getApplyDataService(final N nodeWrapper) {
+        ApplyDataService<?> ds;
+        if (!m_applyDataServices.containsKey(nodeWrapper)) {
+            ds = m_getDataServiceProvider.apply(nodeWrapper).createApplyDataService().orElse(null);
+            m_applyDataServices.put(nodeWrapper, ds);
+            NodeCleanUpCallback.builder(nodeWrapper.get(), () -> {
+                var dataService = m_applyDataServices.remove(nodeWrapper);
+                if (dataService != null) {
+                    dataService.dispose();
+                }
+            }).cleanUpOnNodeStateChange(m_shouldCleanUpDataServicesOnNodeStateChange).build();
+        } else {
+            ds = m_applyDataServices.get(nodeWrapper);
+        }
+        return Optional.ofNullable(ds);
+    }
+
+    /**
+     * Calls {@code deactivate} on a data service if there is a data service instance available for the given node
+     * (wrapper).
+     *
+     * @param nodeWrapper
+     */
+    public final void deactivateDataServices(final N nodeWrapper) {
+        if (m_initialDataServices.containsKey(nodeWrapper)) {
+            m_initialDataServices.get(nodeWrapper).deactivate();
+        }
+        if (m_dataServices.containsKey(nodeWrapper)) {
+            m_dataServices.get(nodeWrapper).deactivate();
+        }
+        if (m_applyDataServices.containsKey(nodeWrapper)) {
+            m_applyDataServices.get(nodeWrapper).deactivate();
+        }
+    }
+
+    /**
+     * Calls a {@link Supplier} with a certain context (a {@link NodeContext} by default - but can be overwritten by
+     * sub-classes).
+     *
+     * @param <T>
+     *
+     * @param nodeWrapper
+     * @param supplier
+     * @return the result of the supplier
+     */
+    private <T> T getWithContext(final N nodeWrapper, final Supplier<T> supplier) {
+        m_pushContext.accept(nodeWrapper);
+        try {
+            return supplier.get();
+        } finally {
+            m_removeContext.run();
+        }
+    }
 
 }

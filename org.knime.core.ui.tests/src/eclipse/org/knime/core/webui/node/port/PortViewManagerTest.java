@@ -116,10 +116,11 @@ class PortViewManagerTest {
             List.of(0, 2), List.of(1, 2));
 
         // page properties
-        assertThat(portViewManager.getBaseUrl()).isEqualTo("http://org.knime.core.ui.port/");
+        assertThat(portViewManager.getPageResourceManager().getBaseUrl()).isEqualTo("http://org.knime.core.ui.port/");
         var npw = NodePortWrapper.of(nnc, 0, 0);
-        assertThat(portViewManager.getPagePath(npw)).isEqualTo("uiext/port_view_page_name/page.js");
-        assertThat(portViewManager.getPageId(npw)).isEqualTo("port_view_page_name");
+        assertThat(portViewManager.getPageResourceManager().getPagePath(npw))
+            .isEqualTo("uiext/port_view_page_name/page.js");
+        assertThat(portViewManager.getPageResourceManager().getPageId(npw)).isEqualTo("port_view_page_name");
 
         // assert that view instance is reused
         var portView = portViewManager.getPortView(NodePortWrapper.of(nnc, 0, 0));

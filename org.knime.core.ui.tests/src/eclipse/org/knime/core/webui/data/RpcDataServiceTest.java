@@ -58,8 +58,6 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 import org.knime.core.node.workflow.NativeNodeContainer;
-import org.knime.core.webui.data.DataServiceException;
-import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.data.rpc.json.impl.ObjectMapperUtil;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.view.NodeView;
@@ -90,7 +88,8 @@ class RpcDataServiceTest {
         wfm.executeAllAndWaitUntilDone();
 
         var jsonRpcRequest = jsonRpcRequest("myMethod");
-        String response = NodeViewManager.getInstance().callRpcDataService(NodeWrapper.of(nnc), jsonRpcRequest);
+        String response = NodeViewManager.getInstance().getDataServiceManager().callRpcDataService(NodeWrapper.of(nnc),
+            jsonRpcRequest);
         assertThat(response).isEqualTo("{\"jsonrpc\":\"2.0\",\"id\":1,\"result\":\"my service method result\"}\n");
 
         WorkflowManagerUtil.disposeWorkflow(wfm);
@@ -113,7 +112,8 @@ class RpcDataServiceTest {
         wfm.executeAllAndWaitUntilDone();
 
         var jsonRpcRequest = jsonRpcRequest("erroneusMethod", "foo");
-        String response = NodeViewManager.getInstance().callRpcDataService(NodeWrapper.of(nnc), jsonRpcRequest);
+        String response = NodeViewManager.getInstance().getDataServiceManager().callRpcDataService(NodeWrapper.of(nnc),
+            jsonRpcRequest);
         final var root = ObjectMapperUtil.getInstance().getObjectMapper().readTree(response);
         assertTrue(root.has("error"));
         final var error = root.get("error");
@@ -144,7 +144,8 @@ class RpcDataServiceTest {
         wfm.executeAllAndWaitUntilDone();
 
         var jsonRpcRequest = jsonRpcRequest("erroneusMethod", "foo", "bar");
-        String response = NodeViewManager.getInstance().callRpcDataService(NodeWrapper.of(nnc), jsonRpcRequest);
+        String response = NodeViewManager.getInstance().getDataServiceManager().callRpcDataService(NodeWrapper.of(nnc),
+            jsonRpcRequest);
         final var root = ObjectMapperUtil.getInstance().getObjectMapper().readTree(response);
         assertTrue(root.has("error"));
         final var error = root.get("error");

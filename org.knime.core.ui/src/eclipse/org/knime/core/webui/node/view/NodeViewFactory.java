@@ -86,8 +86,8 @@ public interface NodeViewFactory<T extends NodeModel> extends WizardPageContribu
      */
     @Override
     default Optional<String> validateViewValue(final NativeNodeContainer nnc, final String value) throws IOException {
-        var ds =
-            NodeViewManager.getInstance().getDataServiceOfType(NodeWrapper.of(nnc), ApplyDataService.class);
+        var ds = NodeViewManager.getInstance().getDataServiceManager().getDataServiceOfType(NodeWrapper.of(nnc),
+            ApplyDataService.class);
         if (ds.isPresent()) {
             return ds.get().validateData(value);
         }
@@ -100,7 +100,8 @@ public interface NodeViewFactory<T extends NodeModel> extends WizardPageContribu
     @Override
     default void loadViewValue(final NativeNodeContainer nnc, final String value) throws IOException {
         var ds =
-            NodeViewManager.getInstance().getDataServiceOfType(NodeWrapper.of(nnc), ApplyDataService.class);
+            NodeViewManager.getInstance().getDataServiceManager().getDataServiceOfType(NodeWrapper.of(nnc),
+                ApplyDataService.class);
         if (ds.isPresent()) {
             ds.get().applyData(value);
         }
@@ -111,7 +112,8 @@ public interface NodeViewFactory<T extends NodeModel> extends WizardPageContribu
      */
     @Override
     default Optional<String> getInitialViewValue(final NativeNodeContainer nnc) {
-        return NodeViewManager.getInstance().getDataServiceOfType(NodeWrapper.of(nnc), InitialDataService.class)
+        return NodeViewManager.getInstance().getDataServiceManager()
+            .getDataServiceOfType(NodeWrapper.of(nnc), InitialDataService.class)
             .map(InitialDataService::getInitialData);
     }
 }

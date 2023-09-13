@@ -56,15 +56,14 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.WeakHashMap;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.knime.core.node.port.PortType;
-import org.knime.core.webui.data.DataServiceProvider;
-import org.knime.core.webui.node.AbstractNodeUIManager;
+import org.knime.core.webui.node.DataServiceManager;
 import org.knime.core.webui.node.NodePortWrapper;
+import org.knime.core.webui.node.PageResourceManager;
+import org.knime.core.webui.node.PageResourceManager.PageType;
 import org.knime.core.webui.node.util.NodeCleanUpCallback;
-import org.knime.core.webui.page.Page;
 
 /**
  * Manages (web-ui) port view instances and provides associated functionality.
@@ -72,13 +71,20 @@ import org.knime.core.webui.page.Page;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany
  */
-public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper> {
+public final class PortViewManager {
 
     private static PortViewManager instance;
 
     private static final Map<Class<?>, PortViews> m_portViews = new HashMap<>();
 
     private final Map<NodePortWrapper, PortView> m_portViewMap = new WeakHashMap<>();
+
+    private final PageResourceManager<NodePortWrapper> m_pageResourceManager =
+        new PageResourceManager<>(PageType.PORT, nw -> getPortView(nw).getPage(), null, null, true);
+
+    private final DataServiceManager<NodePortWrapper> m_dataServiceManager = new DataServiceManager<>(
+        nw -> getPortView(nw), true, nw -> PortContext.pushContext(nw.get().getOutPort(nw.getPortIdx())),
+        PortContext::removeLastContext);
 
     /**
      * Associate a {@link PortType} with one or several {@link PortViewDescriptor}s.
@@ -155,30 +161,6 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected Page createPage(final NodePortWrapper nodePortWrapper) {
-        return getPortView(nodePortWrapper).getPage();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected DataServiceProvider getDataServiceProvider(final NodePortWrapper nodePortWrapper) {
-        return getPortView(nodePortWrapper);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PageType getPageType() {
-        return PageType.PORT;
-    }
-
-    /**
      * Obtain the {@link PortView} as identified by...
      * <ul>
      * <li>Node container</li>
@@ -230,12 +212,19 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
         }
     }
 
+
     /**
-     * {@inheritDoc}
+     * @return the {@link DataServiceManager} instance
      */
-    @Override
-    protected boolean shouldCleanUpPageAndDataServicesOnNodeStateChange() {
-        return true;
+    public DataServiceManager<NodePortWrapper> getDataServiceManager() {
+        return m_dataServiceManager;
+    }
+
+    /**
+     * @return the {@link PageResourceManager} instance
+     */
+    public PageResourceManager<NodePortWrapper> getPageResourceManager() {
+        return m_pageResourceManager;
     }
 
     /**
@@ -243,19 +232,6 @@ public final class PortViewManager extends AbstractNodeUIManager<NodePortWrapper
      */
     int getPortViewMapSize() {
         return m_portViewMap.size();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected <T> T getWithContext(final NodePortWrapper nodeWrapper, final Supplier<T> supplier) {
-        PortContext.pushContext(nodeWrapper.get().getOutPort(nodeWrapper.getPortIdx()));
-        try {
-            return supplier.get();
-        } finally {
-            PortContext.removeLastContext();
-        }
     }
 
     /**

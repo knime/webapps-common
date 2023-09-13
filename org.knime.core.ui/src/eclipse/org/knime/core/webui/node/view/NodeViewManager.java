@@ -62,13 +62,13 @@ import org.knime.core.node.NodeModel;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContext;
-import org.knime.core.webui.data.DataServiceProvider;
-import org.knime.core.webui.node.AbstractNodeUIManager;
+import org.knime.core.webui.node.DataServiceManager;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.PagePathSegments;
+import org.knime.core.webui.node.PageResourceManager;
+import org.knime.core.webui.node.PageResourceManager.PageType;
 import org.knime.core.webui.node.util.NodeCleanUpCallback;
 import org.knime.core.webui.node.view.selection.SelectionTranslationService;
-import org.knime.core.webui.page.Page;
 
 /**
  * Manages (web-ui) node view instances and provides associated functionality.
@@ -78,13 +78,20 @@ import org.knime.core.webui.page.Page;
  *
  * @since 4.5
  */
-public final class NodeViewManager extends AbstractNodeUIManager<NodeWrapper> {
+public final class NodeViewManager {
 
     private static NodeViewManager instance;
 
     private final Map<NodeContainer, NodeView> m_nodeViewMap = new WeakHashMap<>();
 
     private final Map<NodeContainer, SelectionTranslationService> m_selectionServices = new WeakHashMap<>();
+
+    private final PageResourceManager<NodeWrapper> m_pageResourceManager =
+        new PageResourceManager<>(PageType.VIEW, nw -> getNodeView(nw.get()).getPage(), this::getPagePathSegments,
+            this::decomposePagePath, false);
+
+    private final DataServiceManager<NodeWrapper> m_dataServiceManager =
+        new DataServiceManager<>(nw -> getNodeView(nw.get()));
 
     /**
      * Returns the singleton instance for this class.
@@ -236,7 +243,7 @@ public final class NodeViewManager extends AbstractNodeUIManager<NodeWrapper> {
     void clearCaches() {
         m_nodeViewMap.clear();
         m_selectionServices.clear();
-        clearPageCache();
+        m_pageResourceManager.clearPageCache();
     }
 
     /**
@@ -249,36 +256,21 @@ public final class NodeViewManager extends AbstractNodeUIManager<NodeWrapper> {
     }
 
     /**
-     * {@inheritDoc}
+     * @return the {@link DataServiceManager} instance
      */
-    @Override
-    protected DataServiceProvider getDataServiceProvider(final NodeWrapper nc) {
-        return getNodeView(nc.get());
+    public DataServiceManager<NodeWrapper> getDataServiceManager() {
+        return m_dataServiceManager;
     }
 
     /**
-     * {@inheritDoc}
+     * @return the {@link PageResourceManager} instance
      */
-    @Override
-    public Page createPage(final NodeWrapper nc) {
-        return getNodeView(nc.get()).getPage();
+    public PageResourceManager<NodeWrapper> getPageResourceManager() {
+        return m_pageResourceManager;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PageType getPageType() {
-        return PageType.VIEW;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected PagePathSegments getPagePathSegments(final NodeWrapper nodeWrapper) {
-        var segments = super.getPagePathSegments(nodeWrapper);
-        var page = getPage(segments.pageId());
+    private PagePathSegments getPagePathSegments(final NodeWrapper nodeWrapper, final PagePathSegments segments) {
+        var page = m_pageResourceManager.getPage(segments.pageId());
         if (page.isCompletelyStatic()) {
             return segments;
         } else {
@@ -296,16 +288,8 @@ public final class NodeViewManager extends AbstractNodeUIManager<NodeWrapper> {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected PagePathSegments decomposePagePath(final String path) {
-        var segments = super.decomposePagePath(path);
-        if (segments == null) {
-            return null;
-        }
-        var page = getPage(segments.pageId());
+    private PagePathSegments decomposePagePath(final String path, final PagePathSegments segments) {
+        var page = m_pageResourceManager.getPage(segments.pageId());
         if (page == null) {
             return null;
         }
@@ -321,14 +305,6 @@ public final class NodeViewManager extends AbstractNodeUIManager<NodeWrapper> {
 
     static int getIdForNodeExecutionCycle(final NativeNodeContainer nnc) {
         return System.identityHashCode(nnc.getNodeAndBundleInformation());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getPageCacheSize() {
-        return super.getPageCacheSize();
     }
 
 }

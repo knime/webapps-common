@@ -235,25 +235,27 @@ class TableViewTest {
         var mapper = new ObjectMapper();
 
         // request rows to create the 'image renderers' whose images are later access as 'page resources'
-        var dataServiceResult = mapper.readTree(nodeViewManager.callRpcDataService(NodeWrapper.of(nnc),
-            jsonRpcRequest("getTable", "image", "0", "2", "", "true", "true", "false", "false")));
+        var dataServiceResult =
+            mapper.readTree(nodeViewManager.getDataServiceManager().callRpcDataService(NodeWrapper.of(nnc),
+                jsonRpcRequest("getTable", "image", "0", "2", "", "true", "true", "false", "false")));
         var imgPath = dataServiceResult.get("result").get("rows").get(0).get(2).asText();
         var imgPath2 = dataServiceResult.get("result").get("rows").get(1).get(2).asText();
         assertThat(TableViewUtil.RENDERER_REGISTRY.numRegisteredRenderers(tableId)).isEqualTo(2);
 
         // get page path to 'register' the page
-        nodeViewManager.getPagePath(NodeWrapper.of(nnc));
+        nodeViewManager.getPageResourceManager().getPagePath(NodeWrapper.of(nnc));
 
         // request a cell image resource
-        var img = toString(nodeViewManager.getPageResource(imgPath).orElse(null));
+        var img = toString(nodeViewManager.getPageResourceManager().getPageResource(imgPath).orElse(null));
         assertThat(img).startsWith("�PNG");
         // request same image again
-        img = toString(nodeViewManager.getPageResource(imgPath).orElse(null));
+        img = toString(nodeViewManager.getPageResourceManager().getPageResource(imgPath).orElse(null));
         assertThat(img).startsWith("�PNG");
         assertThat(TableViewUtil.RENDERER_REGISTRY.numRegisteredRenderers(tableId)).isEqualTo(2);
 
         // request cell image resource with custom dimension
-        try (final var is = nodeViewManager.getPageResource(imgPath2 + "?w=12&h=13").get().getInputStream()) {
+        try (final var is =
+            nodeViewManager.getPageResourceManager().getPageResource(imgPath2 + "?w=12&h=13").get().getInputStream()) {
             var bufferedImage = ImageIO.read(is);
             assertThat(bufferedImage.getWidth()).isEqualTo(12);
             assertThat(bufferedImage.getHeight()).isEqualTo(13);
@@ -261,7 +263,7 @@ class TableViewTest {
 
         // request an image through an invalid path
         var invalidImgPath = imgPath.substring(0, imgPath.lastIndexOf("/") + 1) + "0.png";
-        var emptyImg = toString(nodeViewManager.getPageResource(invalidImgPath).orElse(null));
+        var emptyImg = toString(nodeViewManager.getPageResourceManager().getPageResource(invalidImgPath).orElse(null));
         assertThat(emptyImg).isEmpty();
 
         WorkflowManagerUtil.disposeWorkflow(wfm);
@@ -323,7 +325,7 @@ class TableViewTest {
 
     private static void callDataServiceToRegisterRenderes(final NativeNodeContainer nnc,
         final NodeViewManager nodeViewManager) {
-        nodeViewManager.callRpcDataService(NodeWrapper.of(nnc),
+        nodeViewManager.getDataServiceManager().callRpcDataService(NodeWrapper.of(nnc),
             jsonRpcRequest("getTable", "image", "0", "2", "", "true", "true", "false", "false"));
     }
 

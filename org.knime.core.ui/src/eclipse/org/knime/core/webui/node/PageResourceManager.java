@@ -49,7 +49,13 @@
 package org.knime.core.webui.node;
 
 import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.regex.Pattern;
 
+import org.knime.core.node.NodeFactory;
+import org.knime.core.node.workflow.NativeNodeContainer;
+import org.knime.core.util.Pair;
 import org.knime.core.webui.node.PageCache.PageIdType;
 import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.core.webui.page.Page;
@@ -62,7 +68,7 @@ import org.knime.core.webui.page.Resource;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @param <N> the node wrapper this manager operates on
  */
-public interface PageResourceManager<N extends NodeWrapper> {
+public final class PageResourceManager<N extends NodeWrapper> {
 
     /**
      * Returns a page path prefix for the path returned by {@link #getPagePath(NodeWrapper)}. The page path prefix helps
@@ -75,14 +81,14 @@ public interface PageResourceManager<N extends NodeWrapper> {
      *
      * @return the path prefix
      */
-    static String getPagePathPrefix(final PageType type) {
+    public static String getPagePathPrefix(final PageType type) {
         return type == null ? "uiext" : ("uiext-" + type);
     }
 
     /**
      * The page kinds, i.e. defines what a page is supposed to represent.
      */
-    public enum PageType {
+    public static enum PageType {
             /**
              * A node dialog.
              */
@@ -103,10 +109,69 @@ public interface PageResourceManager<N extends NodeWrapper> {
 
     }
 
+    private final PageCache<N> m_pageCache = new PageCache<>();
+
+    private final PageType m_pageType;
+
+    /*
+     * Domain name used to identify resources requested for a node view, node dialog or node port.
+     */
+    private final String m_domainName;
+
+    private final String m_baseUrl;
+
+    private final String m_nodeDebugPatternProp;
+
+    private final String m_nodeDebugUrlProp;
+
+    private final Function<N, Page> m_createPage;
+
+    private final BiFunction<N, PagePathSegments, PagePathSegments> m_modifyPagePathSegments;
+
+    private final BiFunction<String, PagePathSegments, PagePathSegments> m_decomposePagePath;
+
+    private final boolean m_shouldCleanUpPageOnNodeStateChange;
+
+    /**
+     * TODO
+     *
+     * @param pageType
+     * @param createPage
+     */
+    public PageResourceManager(final PageType pageType, final Function<N, Page> createPage) {
+        this(pageType, createPage, null, null, false);
+    }
+
+    /**
+     * TODO
+     *
+     * @param pageType
+     * @param createPage
+     * @param modifyPagePathSegments
+     * @param decomposePagePath
+     * @param shouldCleanUpPageOnNodeStateChange
+     */
+    public PageResourceManager(final PageType pageType, final Function<N, Page> createPage,
+        final BiFunction<N, PagePathSegments, PagePathSegments> modifyPagePathSegments,
+        final BiFunction<String, PagePathSegments, PagePathSegments> decomposePagePath,
+        final boolean shouldCleanUpPageOnNodeStateChange) {
+        m_pageType = pageType;
+        m_createPage = createPage;
+        m_modifyPagePathSegments = modifyPagePathSegments;
+        m_decomposePagePath = decomposePagePath;
+        m_shouldCleanUpPageOnNodeStateChange = shouldCleanUpPageOnNodeStateChange;
+        m_domainName = "org.knime.core.ui." + m_pageType.toString();
+        m_baseUrl = "http://" + m_domainName + "/";
+        m_nodeDebugPatternProp = "org.knime.ui.dev.node." + m_pageType.toString() + ".url.factory-class";
+        m_nodeDebugUrlProp = "org.knime.ui.dev.node." + m_pageType.toString() + ".url";
+    }
+
     /**
      * @return a unique domain name used to identify page resources of this kind
      */
-    String getDomainName();
+    public String getDomainName() {
+        return m_domainName;
+    }
 
     /**
      * @param nodeWrapper the node to get the page for
@@ -114,18 +179,27 @@ public interface PageResourceManager<N extends NodeWrapper> {
      * @return the page for the given node
      * @throws IllegalArgumentException if there is no page given for the node
      */
-    Page getPage(N nodeWrapper);
+    public Page getPage(final N nodeWrapper) {
+        var pageId = getPageId(nodeWrapper);
+        return getPage(pageId);
+    }
 
     /**
-     * @return the page type
+     * @param pageId
+     * @return the page for the given page-id or {@code null} if there is none
      */
-    PageType getPageType();
+    public final Page getPage(final String pageId) {
+        return m_pageCache.getPage(pageId);
+    }
 
     /**
      * @param nodeWrapper the node to get the id for
      * @return the page type
      */
-    String getPageId(N nodeWrapper);
+    public String getPageId(final N nodeWrapper) {
+        return m_pageCache.getOrCreatePageAndReturnPageId(nodeWrapper, m_createPage,
+            m_shouldCleanUpPageOnNodeStateChange);
+    }
 
     /**
      * The base url for the page and associated resources. It is only required if the AP is run as a desktop application
@@ -136,7 +210,9 @@ public interface PageResourceManager<N extends NodeWrapper> {
      *
      * @return the base url
      */
-    String getBaseUrl();
+    public String getBaseUrl() {
+        return m_baseUrl;
+    }
 
     /**
      * Optionally returns a debug url for a view (dialog etc.) which is controlled by a system property.
@@ -144,7 +220,26 @@ public interface PageResourceManager<N extends NodeWrapper> {
      * @param nodeWrapper the node to get the debug url for
      * @return a debug url or an empty optional if none is set
      */
-    Optional<String> getDebugUrl(N nodeWrapper);
+    public Optional<String> getDebugUrl(final N nodeWrapper) {
+        String pattern = System.getProperty(m_nodeDebugPatternProp);
+        String url = System.getProperty(m_nodeDebugUrlProp);
+        if (url == null) {
+            return Optional.empty();
+        }
+        var nodeContainer = nodeWrapper.get();
+        if (nodeContainer instanceof NativeNodeContainer) {
+            @SuppressWarnings("rawtypes")
+            final Class<? extends NodeFactory> nodeFactoryClass =
+                ((NativeNodeContainer)nodeContainer).getNode().getFactory().getClass();
+            if (pattern == null || Pattern.matches(pattern, nodeFactoryClass.getName())) {
+                return Optional.of(url);
+            } else {
+                return Optional.empty();
+            }
+        } else {
+            return Optional.of(url);
+        }
+    }
 
     /**
      * Provides the relative path for a page. A page path is assembled of various path-segments, see
@@ -164,7 +259,36 @@ public interface PageResourceManager<N extends NodeWrapper> {
      * @param nodeWrapper the node which provides the page
      * @return the relative page path
      */
-    String getPagePath(N nodeWrapper);
+    public String getPagePath(final N nodeWrapper) {
+        return composePagePath(getPagePathSegments(nodeWrapper));
+    }
+
+    private static String composePagePath(final PagePathSegments segments) {
+        if (segments.pageContentId() == null) {
+            return String.format("%s/%s/%s", segments.pathPrefix(), segments.pageId(), segments.relativePagePath());
+        } else {
+            return String.format("%s/%s/%s/%s", segments.pathPrefix(), segments.pageId(), segments.pageContentId(),
+                segments.relativePagePath());
+        }
+    }
+
+    /**
+     * Determines the {@link PagePathSegments} for the given node-wrapper.
+     *
+     * @param nodeWrapper
+     * @return the segments
+     */
+    private PagePathSegments getPagePathSegments(final N nodeWrapper) {
+        var pageId = getPageId(nodeWrapper);
+        var page = m_pageCache.getPage(pageId);
+        var pagePathPrefix = page.getPageIdForReusablePage().isPresent() ? PageResourceManager.getPagePathPrefix(null)
+            : PageResourceManager.getPagePathPrefix(m_pageType);
+        var segments = new PagePathSegments(pagePathPrefix, pageId, null, page.getRelativePath());
+        if (m_modifyPagePathSegments != null) {
+            segments = m_modifyPagePathSegments.apply(nodeWrapper, segments);
+        }
+        return segments;
+    }
 
     /**
      * Gives access to page resources. NOTE: Only those resources are available that belong to a page whose path has
@@ -173,7 +297,60 @@ public interface PageResourceManager<N extends NodeWrapper> {
      * @param resourceId the id of the resource
      * @return the resource or an empty optional if there is no resource for the given id available
      */
-    Optional<Resource> getPageResource(String resourceId);
+    public Optional<Resource> getPageResource(final String resourceId) {
+        var pageIdAndRelativeResourcePath = getPageAndRelativeResourcePath(resourceId);
+        if (pageIdAndRelativeResourcePath == null) {
+            return Optional.empty();
+        }
+
+        var page = pageIdAndRelativeResourcePath.getFirst();
+        if (page == null) {
+            return Optional.empty();
+        }
+
+        var relPath = pageIdAndRelativeResourcePath.getSecond();
+        if (page.getRelativePath().equals(relPath)) {
+            return Optional.of(page);
+        } else {
+            return page.getResource(relPath);
+        }
+    }
+
+    /**
+     * Extracts the page and the relative resource path from a path which is constructed via
+     * {@link #getPagePath(NodeWrapper)}.
+     *
+     * @param path the path to extract it from
+     * @return a pair of page and path or {@code null}
+     */
+    private Pair<Page, String> getPageAndRelativeResourcePath(final String path) {
+        var segments = decomposePagePath(path);
+        if (segments == null) {
+            return null;
+        }
+        assert segments.pathPrefix().startsWith("uiext-" + m_pageType.toString())
+            || segments.pathPrefix().equals("uiext");
+        var page = m_pageCache.getPage(segments.pageId());
+        return page == null ? null : Pair.create(page, segments.relativePagePath());
+    }
+
+    /**
+     * Decomposes a string-path into its {@link PagePathSegments}.
+     *
+     * @param path
+     * @return the segments or {@code null} if the path couldn't be decomposed
+     */
+    private PagePathSegments decomposePagePath(final String path) {
+        var split = path.split("/", 3);
+        if (split.length != 3) {
+            return null;
+        }
+        var segments = new PagePathSegments(split[0], split[1], null, split[2]);
+        if (m_decomposePagePath != null) {
+            segments = m_decomposePagePath.apply(path, segments);
+        }
+        return segments;
+    }
 
     /**
      * Gives access to page resources via a full URL. NOTE: Only those resources are available that belong to a page
@@ -182,6 +359,28 @@ public interface PageResourceManager<N extends NodeWrapper> {
      * @param url the resource url
      * @return the resource or an empty optional if there is no resource available at the given URL
      */
-    Optional<Resource> getPageResourceFromUrl(String url);
+    public Optional<Resource> getPageResourceFromUrl(final String url) {
+        return getPageResource(getResourceIdFromUrl(url));
+    }
+
+    private String getResourceIdFromUrl(final String url) {
+        return url.replace(m_baseUrl, "");
+    }
+
+    /**
+     * Clears the page cache.
+     */
+    public final void clearPageCache() {
+        m_pageCache.clear();
+    }
+
+    /**
+     * For testing purposes only.
+     *
+     * @return the page cache size
+     */
+    public int getPageCacheSize() {
+        return m_pageCache.size();
+    }
 
 }

@@ -66,7 +66,7 @@ public class PortViewEnt extends NodeUIExtensionEnt<NodePortWrapper> {
      * @param manager
      */
     public PortViewEnt(final NodePortWrapper wrapper, final PortViewManager manager) {
-        super(wrapper, manager, manager, PageType.PORT);
+        super(wrapper, manager.getPageResourceManager(), manager.getDataServiceManager(), PageType.PORT);
         m_info = new NodeInfoEnt(wrapper.get());
     }
 

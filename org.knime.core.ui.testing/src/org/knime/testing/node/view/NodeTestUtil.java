@@ -123,7 +123,7 @@ public final class NodeTestUtil {
 
         // check for presence of initial data service
         final var initialDataService =
-            nodeViewManager.getDataServiceOfType(nodeWrapper, InitialDataService.class);
+            nodeViewManager.getDataServiceManager().getDataServiceOfType(nodeWrapper, InitialDataService.class);
         if (initialDataType != null) {
             assertThat(initialDataService).isNotEmpty();
             assertThat(initialDataService.get().getInitialData()).startsWith("{\"result\":");
@@ -132,7 +132,8 @@ public final class NodeTestUtil {
         }
 
         // check for presence of data service
-        final var rpcDataService = nodeViewManager.getDataServiceOfType(nodeWrapper, RpcDataService.class);
+        final var rpcDataService =
+            nodeViewManager.getDataServiceManager().getDataServiceOfType(nodeWrapper, RpcDataService.class);
         if (dataServiceType != null) {
             assertThat(rpcDataService).isNotEmpty();
             assertThat(rpcDataService.get().getRpcServer().getHandler(dataServiceType)).isNotNull();
@@ -144,7 +145,7 @@ public final class NodeTestUtil {
         assertThat(nodeViewManager.callSelectionTranslationService(node, Set.of(RowKey.createRowKey(0L)))).isNotNull();
         assertThat(nodeViewManager.callSelectionTranslationService(node, Collections.emptyList())).isNotNull();
 
-        return nodeViewManager.getPage(nodeWrapper);
+        return nodeViewManager.getPageResourceManager().getPage(nodeWrapper);
     }
 
 }

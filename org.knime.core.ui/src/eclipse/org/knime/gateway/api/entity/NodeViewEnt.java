@@ -179,8 +179,8 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
     NodeViewEnt(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection,
         final NodeViewManager nodeViewManager, final String customErrorMessage, final String generatedImageActionId,
         final Function<NodeTableView, DataTableSpec> specProvider, final boolean isUsedForImageOrReportGeneration) {
-        super(NodeWrapper.of(nnc), nodeViewManager, nodeViewManager, PageType.VIEW,
-            isRunAsDesktopApplication() || isUsedForImageOrReportGeneration);
+        super(NodeWrapper.of(nnc), nodeViewManager.getPageResourceManager(), nodeViewManager.getDataServiceManager(),
+            PageType.VIEW, isRunAsDesktopApplication() || isUsedForImageOrReportGeneration);
         CheckUtils.checkArgument(NodeViewManager.hasNodeView(nnc), "The provided node doesn't have a node view");
         m_initialSelection = initialSelection == null ? null : initialSelection.get();
         m_info = new NodeInfoEnt(nnc, customErrorMessage);

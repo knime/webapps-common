@@ -57,11 +57,11 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.SubNodeContainer;
-import org.knime.core.webui.data.DataServiceProvider;
-import org.knime.core.webui.node.AbstractNodeUIManager;
+import org.knime.core.webui.node.DataServiceManager;
 import org.knime.core.webui.node.NodeWrapper;
+import org.knime.core.webui.node.PageResourceManager;
+import org.knime.core.webui.node.PageResourceManager.PageType;
 import org.knime.core.webui.node.util.NodeCleanUpCallback;
-import org.knime.core.webui.page.Page;
 
 /**
  * Manages (web-ui) node dialog instances and provides associated functionality.
@@ -70,11 +70,17 @@ import org.knime.core.webui.page.Page;
  *
  * @since 4.5
  */
-public final class NodeDialogManager extends AbstractNodeUIManager<NodeWrapper> {
+public final class NodeDialogManager {
 
     private static NodeDialogManager instance;
 
     private final Map<NodeContainer, NodeDialogAdapter> m_nodeDialogAdapterMap = new WeakHashMap<>();
+
+    private final PageResourceManager<NodeWrapper> m_pageResourceManager =
+        new PageResourceManager<>(PageType.DIALOG, nw -> getNodeDialog(nw.get()).getPage());
+
+    private final DataServiceManager<NodeWrapper> m_dataServiceManager =
+        new DataServiceManager<>(nw -> getNodeDialog(nw.get()));
 
     /**
      * Returns the singleton instance for this class.
@@ -155,36 +161,27 @@ public final class NodeDialogManager extends AbstractNodeUIManager<NodeWrapper> 
         }
     }
 
+
+    /**
+     * @return the {@link DataServiceManager} instance
+     */
+    public DataServiceManager<NodeWrapper> getDataServiceManager() {
+        return m_dataServiceManager;
+    }
+
+    /**
+     * @return the {@link PageResourceManager} instance
+     */
+    public PageResourceManager<NodeWrapper> getPageResourceManager() {
+        return m_pageResourceManager;
+    }
+
     /**
      * For testing purposes only.
      */
     void clearCaches() {
         m_nodeDialogAdapterMap.clear();
-        clearPageCache();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected DataServiceProvider getDataServiceProvider(final NodeWrapper nw) {
-        return getNodeDialog(nw.get());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected Page createPage(final NodeWrapper nodeWrapper) {
-        return getNodeDialog(nodeWrapper.get()).getPage();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PageType getPageType() {
-        return PageType.DIALOG;
+        m_pageResourceManager.clearPageCache();
     }
 
     /**
