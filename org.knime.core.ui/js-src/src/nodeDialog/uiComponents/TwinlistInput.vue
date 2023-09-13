@@ -258,6 +258,7 @@ export default TwinlistInput;
         :initial-include-unknown-values="
           control.data.manualFilter.includeUnknownColumns
         "
+        :filter-chosen-values-on-possible-values-change="false"
         mode-label="Selection mode"
         :possible-values="possibleValues"
         :size="twinlistSize"
