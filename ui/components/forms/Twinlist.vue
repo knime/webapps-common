@@ -136,6 +136,16 @@ export default {
         );
       },
     },
+    /**
+     * If this setting is true, on a change of possible values, the currently
+     * chosen values which are missing with respect to the new possible values
+     * are removed.
+     */
+    filterChosenValuesOnPossibleValuesChange: {
+      type: Boolean,
+      default: true,
+      required: false,
+    },
   },
   emits: ["update:modelValue", "includeUnknownValuesInput"],
   data() {
@@ -264,15 +274,17 @@ export default {
       }
     },
     possibleValues(newPossibleValues) {
-      // Required to prevent invalid values from appearing (e.g. missing b/c of upstream filtering)
-      let allValues = newPossibleValues.reduce((arr, valObj) => {
-        arr.push(...Object.values(valObj));
-        return arr;
-      }, []);
-      // Reset chosenValues as subset of original to prevent re-execution from resetting value
-      this.chosenValues = this.chosenValues.filter((item) =>
-        allValues.includes(item),
-      );
+      if (this.filterChosenValuesOnPossibleValuesChange) {
+        // Required to prevent invalid values from appearing (e.g. missing b/c of upstream filtering)
+        let allValues = newPossibleValues.reduce((arr, valObj) => {
+          arr.push(...Object.values(valObj));
+          return arr;
+        }, []);
+        // Reset chosenValues as subset of original to prevent re-execution from resetting value
+        this.chosenValues = this.chosenValues.filter((item) =>
+          allValues.includes(item),
+        );
+      }
     },
     chosenValues(newVal, oldVal) {
       if (

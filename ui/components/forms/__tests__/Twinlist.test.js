@@ -163,6 +163,39 @@ describe("Twinlist.vue", () => {
     expect(wrapper.vm.chosenValues).toStrictEqual(["test1"]);
   });
 
+  it("does not remove invalid chosen values on possible values change if desired", async () => {
+    let props = {
+      filterChosenValuesOnPossibleValuesChange: false,
+      possibleValues: [
+        {
+          id: "test1",
+          text: "Text",
+        },
+        {
+          id: "test2",
+          text: "Some Text",
+        },
+      ],
+      modelValue: ["invalidId", "test1"],
+      leftLabel: "Choose",
+      rightLabel: "The value",
+    };
+    const wrapper = mount(Twinlist, {
+      props,
+    });
+    expect(wrapper.vm.chosenValues).toStrictEqual(["invalidId", "test1"]);
+
+    await wrapper.setProps({
+      possibleValues: [
+        {
+          id: "test1",
+          text: "validValue",
+        },
+      ],
+    });
+    expect(wrapper.vm.chosenValues).toStrictEqual(["invalidId", "test1"]);
+  });
+
   it("provides a valid hasSelection method", async () => {
     const wrapper = mount(Twinlist, {
       props: {
