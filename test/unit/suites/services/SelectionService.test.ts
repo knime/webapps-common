@@ -164,7 +164,7 @@ describe("SelectionService", () => {
       });
     });
 
-    describe("onSelectionChange", () => {
+    describe("publishOnSelectionChange", () => {
       let knime,
         selectionService,
         onSelectionChangeCallback,
@@ -172,11 +172,13 @@ describe("SelectionService", () => {
         selectedRowKeys,
         replaceSpy;
 
+      const callbackServiceResult = { result: "[]" };
+
       beforeEach(() => {
         const callableService = jest
           .fn()
           .mockReturnValue(
-            Promise.resolve(new Promise((res) => res({ result: "[]" }))),
+            Promise.resolve(new Promise((res) => res(callbackServiceResult))),
           );
         knime = new KnimeService(extensionConfig, callableService);
         selectionService = new SelectionService(knime);
@@ -186,24 +188,26 @@ describe("SelectionService", () => {
         replaceSpy = jest.spyOn(selectionService, "replace");
       });
 
-      it("calls the given mode with the given rowKeys when publishSelection is checked", () => {
+      it("calls the given mode with the given rowKeys when publishSelection is checked", async () => {
         selectionService.onInit(onSelectionChangeCallback, true, false);
-        selectionService.publishOnSelectionChange(
+        const result = await selectionService.publishOnSelectionChange(
           selectionMode,
           selectedRowKeys,
         );
 
         expect(replaceSpy).toHaveBeenCalledWith(selectedRowKeys);
+        expect(result).toStrictEqual(callbackServiceResult);
       });
 
-      it("calls nothing when publishSelection is not checked", () => {
+      it("calls nothing when publishSelection is not checked", async () => {
         selectionService.onInit(onSelectionChangeCallback, false, false);
-        selectionService.publishOnSelectionChange(
+        const result = await selectionService.publishOnSelectionChange(
           selectionMode,
           selectedRowKeys,
         );
 
         expect(replaceSpy).not.toHaveBeenCalled();
+        expect(result).toBeUndefined();
       });
     });
 

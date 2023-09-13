@@ -145,12 +145,13 @@ export class SelectionService<T = any> {
    * Handles publishing selection on selection change.
    * @param {SelectionModes} selectionMode - with which the selection should be updates
    * @param {array} rowKeys - data with which the selection should be updated
-   * @returns {void}
+   * @returns {Promise<any>}
    */
   publishOnSelectionChange(selectionMode: SelectionModes, rowKeys: string[]) {
     if (this.currentPublishSelection) {
-      this[selectionMode.toLowerCase()](rowKeys);
+      return this[selectionMode.toLowerCase()](rowKeys);
     }
+    return Promise.resolve();
   }
 
   /**
