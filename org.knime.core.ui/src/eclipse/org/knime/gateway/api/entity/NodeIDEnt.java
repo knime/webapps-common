@@ -97,16 +97,16 @@ public final class NodeIDEnt {
     }
 
     private static int[] extractNodeIDs(final NodeID nodeID, final boolean hasComponentProjectParent) {
-        String s = nodeID.toString();
+        final var s = nodeID.toString();
         return extractNodeIDs(s, hasComponentProjectParent);
     }
 
     private static int[] extractNodeIDs(final String s, final boolean hasComponentProjectParent) {
-        int index = s.indexOf(':');
-        int start = hasComponentProjectParent ? 1 : 0;
+        final int index = s.indexOf(':');
+        final int start = hasComponentProjectParent ? 1 : 0;
         if (index >= start) {
-            String[] split = s.substring(index + 1).split(":");
-            int[] ids = new int[split.length - start];
+            final var split = s.substring(index + 1).split(":");
+            final var ids = new int[split.length - start];
             for (int i = start; i < split.length; i++) {
                 ids[i - start] = Integer.parseInt(split[i]);
             }
@@ -122,7 +122,7 @@ public final class NodeIDEnt {
      * @return the node id entity
      */
     public static NodeIDEnt getRootID() {
-        return new NodeIDEnt(new int[0]);
+        return new NodeIDEnt();
     }
 
     /**
@@ -132,7 +132,7 @@ public final class NodeIDEnt {
      * @return a new node id entity
      */
     public NodeIDEnt appendNodeID(final int id) {
-        int[] ids = new int[m_ids.length + 1];
+        final var ids = new int[m_ids.length + 1];
         System.arraycopy(m_ids, 0, ids, 0, m_ids.length);
         ids[m_ids.length] = id;
         return new NodeIDEnt(ids);
@@ -183,14 +183,5 @@ public final class NodeIDEnt {
     @Override
     public boolean equals(final Object obj) {
         return obj instanceof NodeIDEnt other && Arrays.equals(m_ids, other.m_ids);
-    }
-
-    /**
-     * @param subtreeRootId potential subtree root id
-     * @return {@code true} if this node id is in the subtree of the given node id
-     */
-    public boolean isInSubtreeOf(final NodeIDEnt subtreeRootId) {
-        final var otherLen = subtreeRootId.m_ids.length;
-        return m_ids.length >= otherLen && Arrays.equals(subtreeRootId.m_ids, 0, otherLen, m_ids, 0, otherLen);
     }
 }
