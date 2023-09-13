@@ -175,7 +175,7 @@ public final class PortViewManager {
      * @throws NoSuchElementException if there is no port view for the given node-port combination
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public PortView getPortView(final NodePortWrapper nodePortWrapper) {
+    PortView getPortView(final NodePortWrapper nodePortWrapper) {
         var portView = m_portViewMap.get(nodePortWrapper); // NOSONAR
         if (portView != null) {
             return portView;

@@ -565,7 +565,6 @@ class NodeViewEntTest {
         colorModels.put(numericColorColumnName, numericColorModel);
         colorModels.put(nominalColorColumnName, new ColorModelNominal(nominalColorModel, new ColorAttr[0]));
 
-        Function<NodeViewNodeModel, NodeView> nodeViewCreator;
         var ent = createNodeViewEntWithColorModels(wfm, colorModels);
         var colorModelsEnt = ent.getColorModels();
         assertThat(String.valueOf(colorModelsEnt.get(numericColorColumnName).getType())).isEqualTo("NUMERIC");
@@ -592,18 +591,15 @@ class NodeViewEntTest {
             return creator.createSpec();
         }).toArray(DataColumnSpec[]::new);
 
-        final Function<NodeTableView, DataTableSpec> specProvider = _ntv -> new DataTableSpec(dataColumnSpecs);
-
-        return createNodeViewEntWithSpecProvider(wfm, specProvider);
+        return createNodeViewEntWithInputSpec(wfm, new DataTableSpec(dataColumnSpecs));
     }
 
-    private static NodeViewEnt createNodeViewEntWithSpecProvider(final WorkflowManager wfm,
-        final Function<NodeTableView, DataTableSpec> specProvider) {
+    private static NodeViewEnt createNodeViewEntWithInputSpec(final WorkflowManager wfm, final DataTableSpec spec) {
         Function<NodeViewNodeModel, NodeView> nodeViewCreator =
             m -> NodeViewTest.createTableView(Page.builder(() -> "blub", "index.html").build(), null, null, null, null);
         NativeNodeContainer nnc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(nodeViewCreator));
-        return new NodeViewEnt(nnc, () -> Collections.emptyList(), NodeViewManager.getInstance(), "", "", specProvider,
-            true);
+        // TODO
+        return new NodeViewEnt(nnc, () -> Collections.emptyList(), NodeViewManager.getInstance(), "", "", true);
     }
 
     /**

@@ -120,7 +120,7 @@ public final class NodeDialogManager {
      * @return a node dialog instance
      * @throws IllegalArgumentException if the passed node does not provide a node dialog
      */
-    public NodeDialogAdapter getNodeDialog(final NodeContainer nc) {
+    NodeDialogAdapter getNodeDialog(final NodeContainer nc) {
         if (!hasNodeDialog(nc)) {
             throw new IllegalArgumentException("The node " + nc.getNameWithID() + " doesn't provide a node dialog");
         }
@@ -192,6 +192,14 @@ public final class NodeDialogManager {
     public static NodeDialogPane createLegacyFlowVariableNodeDialog(final NodeDialog dialog) {
         return new NodeDialogAdapter((SingleNodeContainer)NodeContext.getContext().getNodeContainer(), dialog)
             .createLegacyFlowVariableNodeDialog();
+    }
+
+    /**
+     * @param snc
+     * @return see {@link NodeDialog#canBeEnlarged()}
+     */
+    public boolean canBeEnlarged(final NodeContainer snc) {
+        return getNodeDialog(snc).getNodeDialog().canBeEnlarged();
     }
 
 }

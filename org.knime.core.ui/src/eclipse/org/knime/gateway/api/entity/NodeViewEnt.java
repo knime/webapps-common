@@ -50,7 +50,6 @@ package org.knime.gateway.api.entity;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -62,7 +61,6 @@ import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.PageResourceManager.PageType;
-import org.knime.core.webui.node.view.NodeTableView;
 import org.knime.core.webui.node.view.NodeViewManager;
 
 /**
@@ -109,7 +107,7 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
                     isUsedForImageOrReportGeneration);
             }
         } else {
-            return new NodeViewEnt(nnc, null, null, null, generatedImageActionId, null,
+            return new NodeViewEnt(nnc, null, null, generatedImageActionId, null,
                 isUsedForImageOrReportGeneration);
         }
     }
@@ -133,7 +131,7 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
      */
     public static NodeViewEnt create(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection,
         final boolean isUsedForReportGeneration) {
-        boolean canBeUsedInReport = NodeViewManager.getInstance().getNodeView(nnc).canBeUsedInReport();
+        boolean canBeUsedInReport = NodeViewManager.getInstance().canBeUsedInReport(nnc);
         // NOTE on the 'generatingReportContent'-constant:
         // this is a shortcut to inform the respective node view frontend that it's part of a report such that it can
         // optionally do things differently. It's a shortcut because this information is already provided to the frontend
@@ -155,42 +153,21 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
         return create(nnc, null);
     }
 
-    private NodeViewEnt(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection,
-        final NodeViewManager nodeViewManager, final String customErrorMessage, final String generatedImageActionId,
-        final boolean isUsedForImageOrReportGeneration) {
-        this(nnc, initialSelection, nodeViewManager, customErrorMessage, generatedImageActionId,
-            createSpecProvider(nnc), isUsedForImageOrReportGeneration);
-    }
-
-    private static Function<NodeTableView, DataTableSpec> createSpecProvider(final NativeNodeContainer nnc) {
-        return ntv -> {
-            var inPortIdx = ntv.getInPortIndex();
-            var wfm = nnc.getParent();
-            // plus 1 because the inPortIdx excludes the flow variable port
-            var conn = wfm.getIncomingConnectionFor(nnc.getID(), inPortIdx + 1);
-            return (DataTableSpec)wfm.getNodeContainer(conn.getSource()).getOutPort(conn.getSourcePort())
-                .getPortObjectSpec();
-        };
-    }
-
     /**
      * Package scoped for testing purposes only
      */
     NodeViewEnt(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection,
         final NodeViewManager nodeViewManager, final String customErrorMessage, final String generatedImageActionId,
-        final Function<NodeTableView, DataTableSpec> specProvider, final boolean isUsedForImageOrReportGeneration) {
+        final boolean isUsedForImageOrReportGeneration) {
         super(NodeWrapper.of(nnc), nodeViewManager.getPageResourceManager(), nodeViewManager.getDataServiceManager(),
             PageType.VIEW, isRunAsDesktopApplication() || isUsedForImageOrReportGeneration);
         CheckUtils.checkArgument(NodeViewManager.hasNodeView(nnc), "The provided node doesn't have a node view");
         m_initialSelection = initialSelection == null ? null : initialSelection.get();
         m_info = new NodeInfoEnt(nnc, customErrorMessage);
         m_generatedImageActionId = generatedImageActionId;
-        if (nodeViewManager != null) {
-            final var nodeView = nodeViewManager.getNodeView(nnc);
-            if (nodeView instanceof NodeTableView ntv && specProvider != null) {
-                final var spec = specProvider.apply(ntv);
-                m_colorModelsEnt = getColorHandlerColumns(spec);
-            }
+        final var spec = nodeViewManager.getInputDataTableSpecIfTableView(nnc).orElse(null);
+        if (spec != null) {
+            m_colorModelsEnt = getColorHandlerColumns(spec);
         }
     }
 

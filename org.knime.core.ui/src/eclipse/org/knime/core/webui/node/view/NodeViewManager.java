@@ -56,9 +56,12 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.stream.Collectors;
 
+import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.RowKey;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeModel;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.node.property.hilite.HiLiteHandler;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContext;
@@ -129,7 +132,7 @@ public final class NodeViewManager {
      * @return a new node view instance
      * @throws IllegalArgumentException if the passed node container does not provide a node view
      */
-    public NodeView getNodeView(final NodeContainer nc) {
+    NodeView getNodeView(final NodeContainer nc) {
         if (!hasNodeView(nc)) {
             throw new IllegalArgumentException("The node " + nc.getNameWithID() + " doesn't provide a node view");
         }
@@ -305,6 +308,68 @@ public final class NodeViewManager {
 
     static int getIdForNodeExecutionCycle(final NativeNodeContainer nnc) {
         return System.identityHashCode(nnc.getNodeAndBundleInformation());
+    }
+
+    /**
+     * @param nnc
+     * @return see {@link NodeView#canBeUsedInReport()}
+     */
+    public boolean canBeUsedInReport(final NativeNodeContainer nnc) {
+        return getNodeView(nnc).canBeUsedInReport();
+    }
+
+
+
+    /**
+     * @return the {@link DataTableSpec} if the node view is also a {@link TableView} otherwise an empty optional
+     */
+    public Optional<DataTableSpec> getInputDataTableSpecIfTableView(final NodeContainer nc) {
+        var nodeView = getNodeView(nc);
+        if (nodeView instanceof NodeTableView tnv) {
+            var wfm = nc.getParent();
+            var inPortIndex = tnv.getInPortIndex();
+            // plus 1 because the inPortIdx excludes the flow variable port
+            var conn = wfm.getIncomingConnectionFor(nc.getID(), inPortIndex + 1);
+            return Optional.of((DataTableSpec)wfm.getNodeContainer(conn.getSource()).getOutPort(conn.getSourcePort())
+                .getPortObjectSpec());
+        } else {
+            return Optional.empty();
+        }
+
+    }
+
+    /**
+     * @return the {@link HiLiteHandler} if the node view is also a {@link TableView} and the node a native node;
+     *         otherwise an empty optional
+     */
+    public Optional<HiLiteHandler> getInHiliteHandlerIfTableView(final NodeContainer nc) {
+        var nodeView = getNodeView(nc);
+        if (nc instanceof NativeNodeContainer nnc && nodeView instanceof NodeTableView tnv) {
+            // TODO see UIEXT-51
+            return Optional.of(nnc.getNodeModel().getInHiLiteHandler(tnv.getInPortIndex()));
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Calls {@link NodeView#validateSettings(org.knime.core.node.NodeSettingsRO)}.
+     *
+     * @param nc
+     * @param viewSettings
+     * @throws InvalidSettingsException
+     */
+    public void validateSettings(final NodeContainer nc, final NodeSettings viewSettings)
+        throws InvalidSettingsException {
+        getNodeView(nc).validateSettings(viewSettings);
+    }
+
+    /**
+     * @param nc
+     * @return see {@link NodeView#getDefaultPageFormat()}
+     */
+    public PageFormat getDefaultPageFormat(final NodeContainer nc) {
+        return getNodeView(nc).getDefaultPageFormat();
     }
 
 }

@@ -66,7 +66,6 @@ import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.util.Pair;
-import org.knime.core.webui.node.view.NodeTableView;
 import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
 
@@ -112,13 +111,10 @@ public class SelectionEventSource extends EventSource<NativeNodeContainer, Selec
         if (!NodeViewManager.hasNodeView(nnc)) {
             return Optional.empty();
         }
-        var nodeView = NodeViewManager.getInstance().getNodeView(nnc);
-        if (!(nodeView instanceof NodeTableView)) {
+        var handler = NodeViewManager.getInstance().getInHiliteHandlerIfTableView(nnc).orElse(null);
+        if (handler == null) {
             return Optional.empty();
         }
-        var nodeTableView = (NodeTableView)nodeView;
-        // TODO see UIEXT-51
-        var handler = nnc.getNodeModel().getInHiLiteHandler(nodeTableView.getInPortIndex());
         synchronized (handler) {
             var hiLitKeys = handler.getHiLitKeys();
             var listener = new PerNodeHiliteListener(this::sendEvent, nnc);

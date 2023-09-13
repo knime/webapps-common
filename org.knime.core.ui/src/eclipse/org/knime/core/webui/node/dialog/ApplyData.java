@@ -128,8 +128,7 @@ final class ApplyData {
                 }
 
                 // validate settings
-                var nodeView = NodeViewManager.getInstance().getNodeView(m_nc);
-                nodeView.validateSettings(viewSettings); // NOSONAR: viewSettingsChanged is false if viewSettings are null
+                NodeViewManager.getInstance().validateSettings(m_nc, viewSettings);
             }
 
             if (modelSettingsChanged) {

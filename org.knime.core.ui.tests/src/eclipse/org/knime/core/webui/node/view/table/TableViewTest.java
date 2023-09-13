@@ -621,8 +621,7 @@ class TableViewTest {
         ((NodeViewNodeModel)nnc.getNodeModel())
             .setInternalTables(new BufferedDataTable[]{createDefaultTestTable(2).get()});
 
-        var nodeView = NodeViewManager.getInstance().getNodeView(nnc);
-        var pageFormat = nodeView.getDefaultPageFormat();
+        var pageFormat = NodeViewManager.getInstance().getDefaultPageFormat(nnc);
         assertThat(pageFormat).isEqualTo(PageFormat.ASPECT_RATIO_4BY3);
 
         WorkflowManagerUtil.disposeWorkflow(wfm);

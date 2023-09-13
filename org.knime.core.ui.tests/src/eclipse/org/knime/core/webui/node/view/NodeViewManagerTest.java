@@ -467,4 +467,14 @@ public class NodeViewManagerTest {
 
     }
 
+    /**
+     * Helper to give access to a node's {@link NodeView} for testing.
+     *
+     * @param nc
+     * @return the node view instance
+     */
+    public static NodeView getNodeView(final NodeContainer nc) {
+        return NodeViewManager.getInstance().getNodeView(nc);
+    }
+
 }

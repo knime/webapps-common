@@ -81,7 +81,7 @@ import org.knime.core.webui.page.Page;
  *
  * @since 5.2
  */
-public final class NodeDialogAdapter implements UIExtension, DataServiceProvider {
+final class NodeDialogAdapter implements UIExtension, DataServiceProvider {
 
     private final SingleNodeContainer m_snc;
 

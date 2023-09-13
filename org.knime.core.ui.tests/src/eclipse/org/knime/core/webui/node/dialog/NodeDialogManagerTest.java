@@ -86,6 +86,7 @@ import org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFacto
 import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.view.NodeViewManager;
+import org.knime.core.webui.node.view.NodeViewManagerTest;
 import org.knime.core.webui.page.Page;
 import org.knime.testing.node.dialog.NodeDialogNodeFactory;
 import org.knime.testing.node.dialog.NodeDialogNodeModel;
@@ -133,14 +134,15 @@ public class NodeDialogManagerTest {
         NativeNodeContainer nc = createNodeWithNodeDialog(m_wfm, () -> createNodeDialog(page), hasDialog::get);
 
         assertThat(NodeDialogManager.hasNodeDialog(nc)).as("node expected to have a node dialog").isTrue();
-        var nodeDialog = NodeDialogManager.getInstance().getNodeDialog(nc);
-        assertThat(nodeDialog.getPage() == page).isTrue();
+        var nodeDialogManager = NodeDialogManager.getInstance();
+        assertThat(nodeDialogManager.getPageResourceManager().getPage(NodeWrapper.of(nc)) == page).isTrue();
         assertThat(NodeDialogManager.getInstance().getPageResourceManager().getPageId(NodeWrapper.of(nc)))
             .isEqualTo(nc.getID().toString().replace(":", "_"));
 
         assertThat(NodeDialogManager.getInstance().getDataServiceManager().callInitialDataService(NodeWrapper.of(nc)))
             .isEqualTo("{\"result\":\"test settings\"}");
-        assertThat(nodeDialog.getPage().isCompletelyStatic()).isFalse();
+        assertThat(nodeDialogManager.getPageResourceManager().getPage(NodeWrapper.of(nc)).isCompletelyStatic())
+            .isFalse();
 
         hasDialog.set(false);
         assertThat(NodeDialogManager.hasNodeDialog(nc)).as("node not expected to have a node dialog").isFalse();
@@ -200,8 +202,9 @@ public class NodeDialogManagerTest {
             var component = wfm.getNodeContainer(componentId);
 
             assertThat(NodeDialogManager.hasNodeDialog(component)).as("node expected to have a node dialog").isTrue();
-            var nodeDialog = NodeDialogManager.getInstance().getNodeDialog(component);
-            assertThat(nodeDialog.getPage().getRelativePath()).isEqualTo("NodeDialog.umd.js");
+            var nodeDialogManager = NodeDialogManager.getInstance();
+            assertThat(nodeDialogManager.getPageResourceManager().getPage(NodeWrapper.of(component)).getRelativePath())
+                .isEqualTo("NodeDialog.umd.js");
 
             var pageId = NodeDialogManager.getInstance().getPageResourceManager().getPageId(NodeWrapper.of(component));
             assertThat(pageId).isEqualTo("defaultdialog");
@@ -255,7 +258,7 @@ public class NodeDialogManagerTest {
     void testNodeWithoutNodeDialog() {
         NativeNodeContainer nc = createAndAddNode(m_wfm, new VirtualSubNodeInputNodeFactory(null, new PortType[0]));
         assertThat(NodeDialogManager.hasNodeDialog(nc)).as("node not expected to have a node dialog").isFalse();
-        Assertions.assertThatThrownBy(() -> NodeDialogManager.getInstance().getNodeDialog(nc))
+        Assertions.assertThatThrownBy(() -> NodeDialogManager.hasNodeDialog(nc))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -341,7 +344,7 @@ public class NodeDialogManagerTest {
     }
 
     private static NodeSettingsRO getNodeViewSettings(final NodeContainer nc) {
-        return ((NodeDialogNodeView)NodeViewManager.getInstance().getNodeView(nc)).getLoadNodeSettings();
+        return ((NodeDialogNodeView)NodeViewManagerTest.getNodeView(nc)).getLoadNodeSettings();
     }
 
     /**
