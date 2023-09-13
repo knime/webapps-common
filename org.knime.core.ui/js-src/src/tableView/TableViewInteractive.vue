@@ -796,9 +796,10 @@ export default {
         this.updateCurrentSelectedRowKeys(addOrDelete, selection);
       }
       this.transformSelection();
-      this.totalSelected = await this.requestTotalSelected();
       if (this.settings.showOnlySelectedRows) {
-        this.refreshTable({ resetPage: true });
+        await this.refreshTable({ resetPage: true, updateTotalSelected: true });
+      } else {
+        this.totalSelected = await this.requestTotalSelected();
       }
     },
     requestTotalSelected() {
@@ -808,18 +809,19 @@ export default {
         return this.currentSelectedRowKeys.size;
       }
     },
-    onRowSelect(selected, rowInd, _groupInd, isTop) {
+    async onRowSelect(selected, rowInd, _groupInd, isTop) {
       const rowKey = isTop
         ? this.table.rows[rowInd][1]
         : this.bottomRows[rowInd][1];
       this.totalSelected += selected ? 1 : -1;
-      this.updateSelection(selected, [rowKey]);
+      await this.updateSelection(selected, [rowKey]);
       if (this.settings.showOnlySelectedRows) {
         this.refreshTable({ resetPage: true });
       }
     },
     async onSelectAll(selected) {
       const filterActive = this.currentRowCount !== this.totalRowCount;
+      let backendSelectionPromise;
       if (selected) {
         const currentRowKeys = await this.performRequest(
           "getCurrentRowKeys",
@@ -830,26 +832,30 @@ export default {
         } else {
           this.currentSelectedRowKeys = new Set(currentRowKeys);
         }
-        this.selectionService.publishOnSelectionChange("add", currentRowKeys);
+        backendSelectionPromise =
+          this.selectionService.publishOnSelectionChange("add", currentRowKeys);
       } else if (filterActive) {
         const currentRowKeys = await this.performRequest(
           "getCurrentRowKeys",
           [],
         );
         this.updateCurrentSelectedRowKeys("delete", currentRowKeys);
-        this.selectionService.publishOnSelectionChange(
-          "remove",
-          currentRowKeys,
-        );
+        backendSelectionPromise =
+          this.selectionService.publishOnSelectionChange(
+            "remove",
+            currentRowKeys,
+          );
       } else {
         this.currentSelectedRowKeys = new Set();
-        this.selectionService.publishOnSelectionChange("replace", []);
+        backendSelectionPromise =
+          this.selectionService.publishOnSelectionChange("replace", []);
       }
       this.transformSelection();
-      this.totalSelected = selected ? this.currentRowCount : 0;
       if (this.settings.showOnlySelectedRows) {
-        this.refreshTable({ resetPage: true });
+        await backendSelectionPromise;
+        await this.refreshTable({ resetPage: true });
       }
+      this.totalSelected = selected ? this.currentRowCount : 0;
     },
     onSearch(input) {
       this.searchTerm = input;
@@ -877,12 +883,12 @@ export default {
       });
     },
     updateSelection(selected, rowKeys) {
-      this.selectionService.publishOnSelectionChange(
+      this.updateCurrentSelectedRowKeys(selected ? "add" : "delete", rowKeys);
+      this.transformSelection();
+      return this.selectionService.publishOnSelectionChange(
         selected ? "add" : "remove",
         rowKeys,
       );
-      this.updateCurrentSelectedRowKeys(selected ? "add" : "delete", rowKeys);
-      this.transformSelection();
     },
     updateCurrentSelectedRowKeys(addOrDelete, selectedRowKeys) {
       selectedRowKeys.forEach((selectedRowKey) =>

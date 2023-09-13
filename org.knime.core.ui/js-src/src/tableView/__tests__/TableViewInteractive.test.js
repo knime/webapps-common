@@ -1819,6 +1819,19 @@ describe("TableViewInteractive.vue", () => {
   });
 
   describe("selection", () => {
+    const mockPublishSelectionOnce = (wrapper) => {
+      let resolveBackendPromise;
+      vi.spyOn(
+        wrapper.vm.selectionService,
+        "publishOnSelectionChange",
+      ).mockReturnValueOnce(
+        new Promise((resolve) => {
+          resolveBackendPromise = resolve;
+        }),
+      );
+      return resolveBackendPromise;
+    };
+
     it("resets the selection on clearSelection", async () => {
       const wrapper = await shallowMountInteractive(context);
 
@@ -1929,13 +1942,19 @@ describe("TableViewInteractive.vue", () => {
         expect(wrapper.vm.totalSelected).toBe(0);
       });
 
-      it("refrehses Table if row is selected", async () => {
+      it("refrehses table on row select if showOnlySelectedRows is true", async () => {
         initialDataMock.settings.showOnlySelectedRows = true;
         const wrapper = await shallowMountInteractive(context);
         const tableComponent = findTableComponent(wrapper);
-        // select row
         const refreshTableSpy = vi.spyOn(wrapper.vm, "refreshTable");
+
+        const resolveBackendPromise = mockPublishSelectionOnce(wrapper);
+        // select row
         await tableComponent.vm.$emit("rowSelect", true, 1, 0, true);
+        await flushPromises();
+        expect(refreshTableSpy).not.toHaveBeenCalled();
+        resolveBackendPromise();
+        await flushPromises();
         expect(refreshTableSpy).toHaveBeenCalledWith({ resetPage: true });
       });
 
@@ -2036,7 +2055,11 @@ describe("TableViewInteractive.vue", () => {
           const wrapper = await shallowMountInteractive(context);
           const tableComponent = findTableComponent(wrapper);
           const refreshTableSpy = vi.spyOn(wrapper.vm, "refreshTable");
+          const resolveBackendPromise = mockPublishSelectionOnce(wrapper);
           await tableComponent.vm.$emit("selectAll", true);
+          await flushPromises();
+          expect(refreshTableSpy).not.toHaveBeenCalled();
+          resolveBackendPromise();
           await flushPromises();
           expect(refreshTableSpy).toHaveBeenCalledWith({ resetPage: true });
         });
@@ -2129,7 +2152,10 @@ describe("TableViewInteractive.vue", () => {
 
         await flushPromises();
 
-        expect(refreshTableSpy).toHaveBeenCalledWith({ resetPage: true });
+        expect(refreshTableSpy).toHaveBeenCalledWith({
+          resetPage: true,
+          updateTotalSelected: true,
+        });
       });
     });
   });
