@@ -73,9 +73,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  *
  * @author Paul Bärnreuther
  */
-public class DefaultNodeSettingsServiceWithVariables implements NodeSettingsService {
+public final class DefaultNodeSettingsServiceWithVariables implements NodeSettingsService {
 
-    final NodeSettingsService m_delegate;
+    private final NodeSettingsService m_delegate;
 
     /**
      * Constructor
