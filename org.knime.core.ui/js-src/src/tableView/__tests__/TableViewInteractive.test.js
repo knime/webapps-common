@@ -2411,13 +2411,13 @@ describe("TableViewInteractive.vue", () => {
     });
 
     it.each([
-      [true, true, ["col1", "col2"], [INDEX.name, ROW_ID.name]],
-      [true, false, ["col1", "col2", "col3"], [INDEX.name]],
-      [false, true, ["col1", "col2", "col3"], [ROW_ID.name]],
-      [false, false, ["col1", "col2", "col3", "col4"], []],
+      [true, true, ["col1", "col2"]],
+      [true, false, ["col1", "col2", "col3"]],
+      [false, true, ["col1", "col2", "col3"]],
+      [false, false, ["col1", "col2", "col3", "col4"]],
     ])(
       "copies table content when showIndices is %s and showRowKeys is %s",
-      async (showRowIndices, showRowKeys, otherColumns, specialColumnNames) => {
+      async (showRowIndices, showRowKeys, otherColumns) => {
         await wrapper.setData({
           settings: {
             ...initialDataMock.settings,
@@ -2429,11 +2429,10 @@ describe("TableViewInteractive.vue", () => {
         expect(wrapper.vm.jsonDataService.data).toHaveBeenCalledWith({
           method: "getCopyContent",
           options: [
-            showRowIndices,
-            showRowKeys,
+            { isIncluded: showRowIndices, columnName: INDEX.name },
+            { isIncluded: showRowKeys, columnName: ROW_ID.name },
             false,
             otherColumns,
-            specialColumnNames,
             1,
             4,
           ],
@@ -2529,7 +2528,14 @@ describe("TableViewInteractive.vue", () => {
       );
       expect(wrapper.vm.jsonDataService.data).toHaveBeenCalledWith({
         method: "getCopyContent",
-        options: [false, false, false, ["col3", "col4"], [], 1, 2],
+        options: [
+          { isIncluded: false, columnName: INDEX.name },
+          { isIncluded: false, columnName: ROW_ID.name },
+          false,
+          ["col3", "col4"],
+          1,
+          2,
+        ],
       });
     });
   });

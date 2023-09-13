@@ -65,11 +65,11 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
 /**
- * A utility class for converting table data into a single string in a format suitable to be copied into the clipboard.
+ * A class for converting table data into a single string in a format suitable to be copied into the clipboard.
  *
  * @author Paul Bärnreuther
  */
-public class TableDataToStringUtil {
+public class TableDataToStringConverter {
 
     private final List<String> m_columnHeaders;
 
@@ -83,7 +83,7 @@ public class TableDataToStringUtil {
      * @param rows the table data
      * @param withHeaders whether to include the column headers
      */
-    public TableDataToStringUtil(final List<String> columnHeaders, final List<List<String>> rows,
+    public TableDataToStringConverter(final List<String> columnHeaders, final List<List<String>> rows,
         final boolean withHeaders) {
         m_columnHeaders = columnHeaders;
         m_rows = rows;

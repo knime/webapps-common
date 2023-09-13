@@ -109,6 +109,7 @@ import org.knime.core.webui.node.view.table.data.Cell;
 import org.knime.core.webui.node.view.table.data.MissingCellWithMessage;
 import org.knime.core.webui.node.view.table.data.Renderer;
 import org.knime.core.webui.node.view.table.data.TableViewDataService;
+import org.knime.core.webui.node.view.table.data.TableViewDataService.SpecialColumnConfig;
 import org.knime.core.webui.node.view.table.data.TableViewDataServiceImpl;
 import org.knime.core.webui.node.view.table.data.TableViewInitialDataImpl;
 import org.knime.core.webui.node.view.table.data.render.DataValueImageRenderer.ImageDimension;
@@ -721,7 +722,8 @@ class TableViewTest {
 
         @Test
         void testGetCopyContent() throws IOException {
-            final var selectedSpecialColumnNames = new String[0];
+            final var rowIndexConfig = new SpecialColumnConfig(false, "#");
+            final var rowKeyConfig = new SpecialColumnConfig(false, "RowID");
             final var expectedResult = new TableViewDataService.HTMLAndCSV(//
                 "<html><body><table>" //
                     + "<tr><td>11</td><td>1.0</td></tr>" //
@@ -733,13 +735,14 @@ class TableViewTest {
                     + "33\t3.0");
 
             final var copyContent =
-                dataService.getCopyContent(false, false, false, selectedTestColumns, selectedSpecialColumnNames, 1, 3);
+                dataService.getCopyContent(rowIndexConfig, rowKeyConfig, false, selectedTestColumns, 1, 3);
             assertThat(copyContent).isEqualTo(expectedResult);
         }
 
         @Test
         void testGetCopyContentWithRowKeys() throws IOException {
-            final var selectedSpecialColumnNames = new String[]{"RowID"};
+            final var rowIndexConfig = new SpecialColumnConfig(false, "#");
+            final var rowKeyConfig = new SpecialColumnConfig(true, "RowID");
             final var expectedResult = new TableViewDataService.HTMLAndCSV(//
                 "<html><body><table>" //
                     + "<tr><td>rowkey 1</td><td>11</td><td>1.0</td></tr>" //
@@ -751,13 +754,14 @@ class TableViewTest {
                     + "rowkey 3\t33\t3.0");
 
             final var copyContent =
-                dataService.getCopyContent(false, true, false, selectedTestColumns, selectedSpecialColumnNames, 1, 3);
+                dataService.getCopyContent(rowIndexConfig, rowKeyConfig, false, selectedTestColumns, 1, 3);
             assertThat(copyContent).isEqualTo(expectedResult);
         }
 
         @Test
         void testGetCopyContentWithIndices() throws IOException {
-            final var selectedSpecialColumnNames = new String[]{"RowID"};
+            final var rowIndexConfig = new SpecialColumnConfig(true, "#");
+            final var rowKeyConfig = new SpecialColumnConfig(false, "RowID");
             final var expectedResult = new TableViewDataService.HTMLAndCSV(//
                 "<html><body><table>" //
                     + "<tr><td>2</td><td>11</td><td>1.0</td></tr>" //
@@ -769,13 +773,14 @@ class TableViewTest {
                 + "4\t33\t3.0");
 
             final var copyContent =
-                dataService.getCopyContent(true, false, false, selectedTestColumns, selectedSpecialColumnNames, 1, 3);
+                dataService.getCopyContent(rowIndexConfig, rowKeyConfig, false, selectedTestColumns, 1, 3);
             assertThat(copyContent).isEqualTo(expectedResult);
         }
 
         @Test
         void testGetCopyContentWithHeaders() throws IOException {
-            final var selectedSpecialColumnNames = new String[]{"#", "RowID"};
+            final var rowIndexConfig = new SpecialColumnConfig(true, "#");
+            final var rowKeyConfig = new SpecialColumnConfig(true, "RowID");
             final var expectedResult = new TableViewDataService.HTMLAndCSV(//
                 "<html><body><table>" //
                     + "<tr><th>#</th><th>RowID</th><th>long</th><th>double</th></tr>" //
@@ -786,16 +791,17 @@ class TableViewTest {
                 "\"#\"\tRowID\tlong\tdouble\r\n" //
                     + "2\trowkey 1\t11\t1.0\r\n" //
                     + "3\trowkey 2\t22\t2.0\r\n" //
-                    + "4\trowkey 3\t33\t3.0\r\n");
+                    + "4\trowkey 3\t33\t3.0");
 
             final var copyContent =
-                dataService.getCopyContent(true, true, true, selectedTestColumns, selectedSpecialColumnNames, 1, 3);
+                dataService.getCopyContent(rowIndexConfig, rowKeyConfig, true, selectedTestColumns, 1, 3);
             assertThat(copyContent).isEqualTo(expectedResult);
         }
 
         @Test
         void testGetCopyContentForFilteredAndSortedTable() throws IOException {
-            final var selectedSpecialColumnNames = new String[0];
+            final var rowIndexConfig = new SpecialColumnConfig(false, "#");
+            final var rowKeyConfig = new SpecialColumnConfig(false, "RowID");
             final var expectedResult = new TableViewDataService.HTMLAndCSV(//
                 "<html><body><table>" //
                     + "<tr><td>1034</td><td>94.0</td></tr>"//
@@ -810,7 +816,7 @@ class TableViewTest {
             dataService.getFilteredAndSortedTable(selectedTestColumns, 1, 1, selectedTestColumns[0], false, "3", null,
                 false, null, false, false, false, false, false);
             final var copyContent =
-                dataService.getCopyContent(false, false, false, selectedTestColumns, selectedSpecialColumnNames, 0, 1);
+                dataService.getCopyContent(rowIndexConfig, rowKeyConfig, false, selectedTestColumns, 0, 1);
             assertThat(copyContent).isEqualTo(expectedResult);
         }
 

@@ -86,7 +86,7 @@ import org.knime.core.webui.node.view.table.data.render.internal.RowRendererWith
 import org.knime.core.webui.node.view.table.data.render.internal.RowRendererWithIndicesFromColumn;
 import org.knime.core.webui.node.view.table.data.render.internal.RowRendererWithRowKeys;
 import org.knime.core.webui.node.view.table.data.render.internal.SimpleRowRenderer;
-import org.knime.core.webui.node.view.table.data.render.internal.TableDataToStringUtil;
+import org.knime.core.webui.node.view.table.data.render.internal.TableDataToStringConverter;
 import org.knime.core.webui.node.view.table.data.render.internal.TableRenderer;
 import org.knime.core.webui.node.view.table.data.render.internal.TableSectionRenderer;
 
@@ -571,29 +571,40 @@ public class TableViewDataServiceImpl implements TableViewDataService {
     }
 
     @Override
-    public HTMLAndCSV getCopyContent(final boolean withIndices, final boolean withRowKeys, final boolean withHeaders,
-        final String[] dataColumns, final String[] specialColumnNames, final int fromIndex, final int toIndex)
+    public HTMLAndCSV getCopyContent(final SpecialColumnConfig rowIndexConfig, final SpecialColumnConfig rowKeyConfig,
+        final boolean withHeaders, final String[] dataColumns, final int fromIndex, final int toIndex)
         throws IOException {
         final var cachedProcessedTable = getCachedProcessedTable();
         final var toBeRenderedTable = cachedProcessedTable.orElseGet(m_tableSupplier);
         final var colIndices = toBeRenderedTable.getSpec().columnsToIndices(dataColumns);
         final var rowRenderer =
-            getCopyContentRowRenderer(withIndices, withRowKeys, colIndices, cachedProcessedTable.isEmpty());
+            getCopyContentRowRenderer(rowIndexConfig, rowKeyConfig, colIndices, cachedProcessedTable.isEmpty());
         final var tableRenderer = new TableSectionRenderer<String>(rowRenderer, fromIndex, toIndex);
         final var rows = tableRenderer.renderRows(toBeRenderedTable);
-        final var columnHeaders =
-            Stream.concat(Arrays.asList(specialColumnNames).stream(), Arrays.asList(dataColumns).stream()).toList();
-        final var tableDataToStringUtil = new TableDataToStringUtil(columnHeaders, rows, withHeaders);
+        final var columnHeaders = getCopyContentColumnHeaders(rowIndexConfig, rowKeyConfig, dataColumns);
+        final var tableDataToStringUtil = new TableDataToStringConverter(columnHeaders, rows, withHeaders);
         return new HTMLAndCSV(tableDataToStringUtil.toHTML(), tableDataToStringUtil.toCSV());
     }
 
-    private static RowRenderer<String> getCopyContentRowRenderer(final boolean withIndices, final boolean withRowKeys,
-        final int[] colIndices, final boolean isRawInputTable) {
+    private static List<String> getCopyContentColumnHeaders(final SpecialColumnConfig rowIndexConfig,
+        final SpecialColumnConfig rowKeyConfig, final String[] dataColumns) {
+        final var columnHeaders = new ArrayList<String>(Arrays.asList(dataColumns));
+        if (rowKeyConfig.isIncluded()) {
+            columnHeaders.add(0, rowKeyConfig.columnName());
+        }
+        if (rowIndexConfig.isIncluded()) {
+            columnHeaders.add(0, rowIndexConfig.columnName());
+        }
+        return columnHeaders;
+    }
+
+    private static RowRenderer<String> getCopyContentRowRenderer(final SpecialColumnConfig rowIndexConfig,
+        final SpecialColumnConfig rowKeyConfig, final int[] colIndices, final boolean isRawInputTable) {
         RowRenderer<String> rowRenderer = new SimpleRowRenderer<>(colIndices, i -> DataCell::toString);
-        if (withRowKeys) {
+        if (rowKeyConfig.isIncluded()) {
             rowRenderer = new RowRendererWithRowKeys<>(rowRenderer, RowKey::toString);
         }
-        if (withIndices) {
+        if (rowIndexConfig.isIncluded()) {
             if (isRawInputTable) {
                 rowRenderer = new RowRendererWithIndicesCounter<>(rowRenderer, l -> Long.toString(l));
             } else {

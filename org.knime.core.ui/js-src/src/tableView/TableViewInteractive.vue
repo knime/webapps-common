@@ -1035,21 +1035,22 @@ export default {
         : this.bottomScrollIndexToIndex(rect.toIndex);
       document.body.style.cursor = "wait";
       const { withRowIndices, withRowKeys } = rect;
-      const specialColumnNames = [];
-      if (withRowIndices) {
-        specialColumnNames.push(INDEX.name);
-      }
-      if (withRowKeys) {
-        specialColumnNames.push(ROW_ID.name);
-      }
+
+      const rowIndexConfig = {
+        isIncluded: withRowIndices,
+        columnName: INDEX.name,
+      };
+      const rowKeyConfig = {
+        isIncluded: withRowKeys,
+        columnName: ROW_ID.name,
+      };
 
       try {
         const copyContent = await this.performRequest("getCopyContent", [
-          withRowIndices,
-          withRowKeys,
+          rowIndexConfig,
+          rowKeyConfig,
           rect.withHeaders,
           rect.columnNames,
-          specialColumnNames,
           fromIndex,
           toIndex,
         ]);
