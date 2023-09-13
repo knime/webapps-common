@@ -714,7 +714,7 @@ class TableViewTest {
         void testGetCopyContent() throws IOException {
             final var expectedResult = "11\t1.0\r\n" //
                 + "22\t2.0\r\n" //
-                + "33\t3.0\r\n";
+                + "33\t3.0";
 
             final var copyContent = dataService.getCopyContent(false, false, selectedTestColumns, 1, 3);
             assertThat(copyContent).isEqualTo(expectedResult);
@@ -724,7 +724,7 @@ class TableViewTest {
         void testGetCopyContentWithRowKeys() throws IOException {
             final var expectedResult = "rowkey 1\t11\t1.0\r\n" //
                 + "rowkey 2\t22\t2.0\r\n" //
-                + "rowkey 3\t33\t3.0\r\n";
+                + "rowkey 3\t33\t3.0";
 
             final var copyContent = dataService.getCopyContent(false, true, selectedTestColumns, 1, 3);
             assertThat(copyContent).isEqualTo(expectedResult);
@@ -734,7 +734,7 @@ class TableViewTest {
         void testGetCopyContentWithIndices() throws IOException {
             final var expectedResult = "2\t11\t1.0\r\n" //
                 + "3\t22\t2.0\r\n" //
-                + "4\t33\t3.0\r\n";
+                + "4\t33\t3.0";
 
             final var copyContent = dataService.getCopyContent(true, false, selectedTestColumns, 1, 3);
             assertThat(copyContent).isEqualTo(expectedResult);
@@ -743,7 +743,7 @@ class TableViewTest {
         @Test
         void testGetCopyContentForFilteredAndSortedTable() throws IOException {
             final var expectedResult = "1034\t94.0\r\n"//
-                + "1023\t93.0\r\n";
+                + "1023\t93.0";
 
             dataService =
                 new TableViewDataServiceImpl(createDefaultTestTable(100), null, new SwingBasedRendererFactory(), null);

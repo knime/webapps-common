@@ -78,6 +78,6 @@ public class TableDataToStringUtil {
                 printer.printRecord(row);
             }
         }
-        return out.toString();
+        return out.toString().stripTrailing();
     }
 }
