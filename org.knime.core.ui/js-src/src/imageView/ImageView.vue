@@ -36,3 +36,9 @@ export default {
     <img :src="getImageUrl" alt="" />
   </div>
 </template>
+
+<style scoped>
+.scroll-container {
+  overflow: auto;
+}
+</style>
