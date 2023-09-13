@@ -2,6 +2,8 @@
 import CodeExample from "./demo/CodeExample.vue";
 import Dropdown from "webapps-common/ui/components/forms/Dropdown.vue";
 import code from "webapps-common/ui/components/forms/Dropdown.vue?raw";
+import LoadingIcon from "webapps-common/ui/components/LoadingIcon.vue";
+import Smiley from "webapps-common/ui/assets/img/icons/emoticon-smile.svg";
 
 const codeExample = `<Dropdown
   v-model="selected"
@@ -22,6 +24,8 @@ export default {
   components: {
     Dropdown,
     CodeExample,
+    LoadingIcon,
+    Smiley,
   },
   data() {
     return {
@@ -29,6 +33,7 @@ export default {
       selected: "bar",
       placeholderModel: "",
       disabledSelected: "",
+      withSlotsSelected: "",
     };
   },
   computed: {
@@ -249,7 +254,38 @@ export default {
             disabled
           />
         </div>
-        <div class="grid-item-2">selected id: {{ placeholderModel }}</div>
+        <div class="grid-item-2">selected id: {{ disabledSelected }}</div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-5">
+          <Dropdown
+            v-model="withSlotsSelected"
+            placeholder="With slots..."
+            aria-label="A List"
+            :possible-values="[
+              {
+                id: 'foo',
+                text: 'Foo',
+              },
+              {
+                id: 'bar',
+                text: 'Bar',
+              },
+              {
+                id: 'baz',
+                text: 'Baz',
+              },
+            ]"
+          >
+            <template #icon-left
+              ><LoadingIcon :style="{ height: '14px' }"
+            /></template>
+            <template #icon-right
+              ><Smiley :style="{ height: '18px' }"
+            /></template>
+          </Dropdown>
+        </div>
+        <div class="grid-item-2">selected id: {{ withSlotsSelected }}</div>
       </div>
     </section>
     <section>

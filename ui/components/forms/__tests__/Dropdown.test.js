@@ -53,6 +53,18 @@ describe("Dropdown.vue", () => {
     );
   });
 
+  it("renders icon slots", () => {
+    props.modelValue = "test1";
+    const wrapper = mount(Dropdown, {
+      props,
+      slots: {
+        "icon-left": "<div>Left</div>",
+        "icon-right": "<div>Rigth</div>",
+      },
+    });
+    expect(wrapper.find("[role=button]").text()).toBe("Left Text 1 Rigth");
+  });
+
   it("sets the correct aria-* attributes", () => {
     const wrapper = mount(Dropdown, {
       props,

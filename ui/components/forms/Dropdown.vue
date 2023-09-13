@@ -293,8 +293,10 @@ export default {
       @click="toggleExpanded"
       @keydown="handleKeyDownButton"
     >
+      <slot name="icon-left" />
       {{ displayText }}
       <DropdownIcon class="icon" />
+      <slot name="icon-right" />
     </div>
     <ul
       v-show="isExpanded"
@@ -370,10 +372,12 @@ export default {
     padding: 0 38px 0 10px;
     font-size: 13px;
     height: 40px;
-    line-height: 40px; /* to center text vertically */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 
     &:focus {
       outline: none;
