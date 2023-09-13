@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent, type Ref } from "vue";
+import { defineComponent, markRaw, type Ref } from "vue";
 import { rendererProps } from "@jsonforms/vue";
 import {
   mergeDeep,
@@ -14,6 +14,7 @@ import inject from "../utils/inject";
 import type { IdAndText, PossibleValue } from "../types/ChoicesUiSchemaOptions";
 import type Control from "../types/Control";
 import type { PartialDeep } from "type-fest";
+import TwinlistLoadingInfo from "./loading/TwinlistLoadingInfo.vue";
 
 const defaultTwinlistSize = 7;
 const defaultTwinlistLeftLabel = "Excludes";
@@ -77,7 +78,8 @@ const TwinlistInput = defineComponent({
   },
   data() {
     return {
-      possibleValues: [] as PossibleValue[],
+      TwinlistLoadingInfo: markRaw(TwinlistLoadingInfo),
+      possibleValues: null as null | PossibleValue[],
       previouslySelectedTypes: null as null | IdAndText[],
     };
   },
@@ -95,7 +97,10 @@ const TwinlistInput = defineComponent({
       );
     },
     withTypes() {
-      return this.possibleValues?.[0]?.hasOwnProperty("type");
+      return (
+        this.possibleValues !== null &&
+        Boolean(this.possibleValues[0]?.hasOwnProperty("type"))
+      );
     },
     showMode() {
       return (
@@ -253,14 +258,16 @@ export default TwinlistInput;
         :initial-case-sensitive-pattern="
           control.data.patternFilter.isCaseSensitive
         "
+        :empty-state-component="possibleValues ? null : TwinlistLoadingInfo"
         :initial-inverse-pattern="control.data.patternFilter.isInverted"
         :initial-manually-selected="control.data.manualFilter.manuallySelected"
         :initial-include-unknown-values="
           control.data.manualFilter.includeUnknownColumns
         "
+        :hide-options="possibleValues === null"
         :filter-chosen-values-on-possible-values-change="false"
         mode-label="Selection mode"
-        :possible-values="possibleValues"
+        :possible-values="possibleValues ?? []"
         :size="twinlistSize"
         :left-label="twinlistLeftLabel"
         :right-label="twinlistRightLabel"

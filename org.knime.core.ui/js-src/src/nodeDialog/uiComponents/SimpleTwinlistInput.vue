@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, markRaw } from "vue";
 import { rendererProps } from "@jsonforms/vue";
 import { getFlowVariablesMap, isModelSettingAndHasNodeView } from "../utils";
 import Twinlist from "webapps-common/ui/components/forms/Twinlist.vue";
@@ -7,6 +7,7 @@ import LabeledInput from "./LabeledInput.vue";
 import DialogComponentWrapper from "./DialogComponentWrapper.vue";
 import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
 import inject from "../utils/inject";
+import TwinlistLoadingInfo from "./loading/TwinlistLoadingInfo.vue";
 import type { IdAndText } from "../types/ChoicesUiSchemaOptions";
 
 const defaultTwinlistSize = 7;
@@ -52,6 +53,7 @@ const SimpleTwinlistInput = defineComponent({
   data() {
     return {
       possibleValues: null as null | IdAndText[],
+      TwinlistLoadingInfo: markRaw(TwinlistLoadingInfo),
     };
   },
   computed: {
@@ -104,14 +106,18 @@ export default SimpleTwinlistInput;
       @controlling-flow-variable-set="onChange"
     >
       <Twinlist
-        v-if="possibleValues"
         :id="labelForId"
         :disabled="disabled"
         :model-value="control.data"
-        :possible-values="possibleValues"
+        :possible-values="possibleValues ?? []"
+        :empty-state-component="
+          possibleValues === null ? TwinlistLoadingInfo : null
+        "
+        :hide-options="possibleValues === null"
         :size="twinlistSize"
         :left-label="twinlistLeftLabel"
         :right-label="twinlistRightLabel"
+        :filter-chosen-values-on-possible-values-change="false"
         @update:model-value="onChange"
       />
     </LabeledInput>

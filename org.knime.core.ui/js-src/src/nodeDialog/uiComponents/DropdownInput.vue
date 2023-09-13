@@ -2,7 +2,7 @@
 import { defineComponent, type PropType } from "vue";
 import { rendererProps } from "@jsonforms/vue";
 import { getFlowVariablesMap, isModelSettingAndHasNodeView } from "../utils";
-import Dropdown from "./dropdown/LoadingDropdown.vue";
+import Dropdown from "./loading/LoadingDropdown.vue";
 import LabeledInput from "./LabeledInput.vue";
 import DialogComponentWrapper from "./DialogComponentWrapper.vue";
 import { AlertTypes } from "@knime/ui-extension-service";
@@ -175,7 +175,6 @@ export default DropdownInput;
       @controlling-flow-variable-set="onChange"
     >
       <Dropdown
-        v-if="labelForId"
         :id="labelForId"
         :aria-label="control.label"
         :disabled="disabled"

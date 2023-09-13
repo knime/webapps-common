@@ -13,9 +13,11 @@ import {
   initializesJsonFormsControl,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import TwinlistInput from "../TwinlistInput.vue";
+import TwinlistLoadingInfo from "../loading/TwinlistLoadingInfo.vue";
 import LabeledInput from "../LabeledInput.vue";
 import MultiModeTwinlist from "webapps-common/ui/components/forms/MultiModeTwinlist.vue";
 import Twinlist from "webapps-common/ui/components/forms/Twinlist.vue";
+import MultiselectListBox from "webapps-common/ui/components/forms/MultiselectListBox.vue";
 import { mergeDeep } from "@/nodeDialog/utils";
 import flushPromises from "flush-promises";
 
@@ -205,6 +207,41 @@ describe("TwinlistInput.vue", () => {
 
   it("initializes jsonforms", () => {
     initializesJsonFormsControl(component);
+  });
+
+  it("renders TwinlistLoadingInfo when the possible values are being loaded", async () => {
+    delete props.control.uischema.options.possibleValues;
+    props.control.uischema.options.choicesProviderClass =
+      "dummyChoicesProvider";
+    const asyncChoicesResult = [{ id: "id", text: "text" }];
+    let resolveChoices;
+    const asyncChoicesProviderMock = vi.fn().mockReturnValue(
+      new Promise((resolve) => {
+        resolveChoices = resolve;
+      }),
+    );
+    const { wrapper } = mountJsonFormsComponent(TwinlistInput, {
+      props,
+      provide: { asyncChoicesProviderMock },
+    });
+    expect(wrapper.findComponent(TwinlistLoadingInfo).exists()).toBeTruthy();
+    expect(wrapper.findComponent(Twinlist).props().hideOptions).toBeTruthy();
+    expect(
+      wrapper.findComponent(Twinlist).props().possibleValues,
+    ).toStrictEqual([]);
+    expect(
+      wrapper.findAllComponents(MultiselectListBox).at(1).find("li").exists(),
+    ).toBeFalsy();
+    resolveChoices({ result: asyncChoicesResult, state: "SUCCESS" });
+    await flushPromises();
+    expect(wrapper.findComponent(TwinlistLoadingInfo).exists()).toBeFalsy();
+    expect(wrapper.findComponent(Twinlist).props().hideOptions).toBeFalsy();
+    expect(
+      wrapper.findComponent(Twinlist).props().possibleValues,
+    ).toStrictEqual(asyncChoicesResult);
+    expect(
+      wrapper.findAllComponents(MultiselectListBox).at(1).find("li").exists(),
+    ).toBeTruthy();
   });
 
   it("calls onChange when twinlist input is changed", async () => {
