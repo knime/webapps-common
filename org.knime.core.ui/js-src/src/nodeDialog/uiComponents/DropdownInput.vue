@@ -2,7 +2,7 @@
 import { defineComponent, type PropType } from "vue";
 import { rendererProps } from "@jsonforms/vue";
 import { getFlowVariablesMap, isModelSettingAndHasNodeView } from "../utils";
-import Dropdown from "webapps-common/ui/components/forms/Dropdown.vue";
+import Dropdown from "./dropdown/LoadingDropdown.vue";
 import LabeledInput from "./LabeledInput.vue";
 import DialogComponentWrapper from "./DialogComponentWrapper.vue";
 import { AlertTypes } from "@knime/ui-extension-service";
@@ -57,7 +57,7 @@ const DropdownInput = defineComponent({
   },
   data() {
     return {
-      options: [] as IdAndText[],
+      options: null as null | IdAndText[],
       widgetId: uuidv4(),
     };
   },
@@ -71,14 +71,8 @@ const DropdownInput = defineComponent({
     disabled() {
       return (
         !this.control.enabled ||
-        Boolean(this.flowSettings?.controllingFlowVariableName) ||
-        this.options.length === 0
+        Boolean(this.flowSettings?.controllingFlowVariableName)
       );
-    },
-    placeholderText() {
-      return this.options.length > 0
-        ? "No value selected"
-        : "No values present";
     },
     dropdownValue() {
       return this.controlDataToDropdownValue(this.control.data);
@@ -181,12 +175,12 @@ export default DropdownInput;
       @controlling-flow-variable-set="onChange"
     >
       <Dropdown
+        v-if="labelForId"
         :id="labelForId"
         :aria-label="control.label"
         :disabled="disabled"
         :model-value="dropdownValue"
         :possible-values="options"
-        :placeholder="placeholderText"
         @update:model-value="onChange"
       />
     </LabeledInput>

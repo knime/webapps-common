@@ -183,17 +183,30 @@ describe("DropdownInput.vue", () => {
     expect(wrapper.find("label").text()).toBe(props.control.label);
   });
 
-  it("checks that placeholder text is correctly set if no possible values are present", () => {
+  it("sets placeholder text correctly if possible values are not yet available", async () => {
     props.control.uischema.options.possibleValues = [];
+    props.asyncInitialOptions = new Promise((_resolve) => {});
     const { wrapper } = mountJsonFormsComponent(DropdownInput, { props });
-    expect(wrapper.vm.placeholderText).toBe("No values present");
+    await flushPromises();
+    expect(wrapper.findComponent(Dropdown).props().placeholder).toBe("Loading");
   });
 
-  it("checks that placeholder text is correctly set if there are possible values present", async () => {
+  it("sets placeholder text correctly if possible values are empty", async () => {
+    props.control.uischema.options.possibleValues = [];
+    const { wrapper } = mountJsonFormsComponent(DropdownInput, { props });
+    await flushPromises();
+    expect(wrapper.findComponent(Dropdown).props().placeholder).toBe(
+      "No values present",
+    );
+  });
+
+  it("sets placeholder text correctly if there are possible values present", async () => {
     props.control.data = "";
     const { wrapper } = mountJsonFormsComponent(DropdownInput, { props });
     await flushPromises();
-    expect(wrapper.vm.placeholderText).toBe("No value selected");
+    expect(wrapper.findComponent(Dropdown).props().placeholder).toBe(
+      "No value selected",
+    );
   });
 
   it("disables dropdown when controlled by a flow variable", () => {
