@@ -137,6 +137,7 @@ export default {
       return getPossibleValuesFromUiSchema(
         control,
         getChoices(this.callDataService.bind(this)),
+        this.sendAlert.bind(this),
       );
     },
     sendAlert({ type, message }: Parameters<ProvidedMethods["sendAlert"]>[0]) {

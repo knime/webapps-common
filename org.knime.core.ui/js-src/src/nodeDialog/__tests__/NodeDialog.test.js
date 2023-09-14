@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { shallowMount } from "@vue/test-utils";
 import { JsonForms } from "@jsonforms/vue";
-import { JsonDataService } from "@knime/ui-extension-service";
+import { AlertTypes, JsonDataService } from "@knime/ui-extension-service";
 import {
   dialogApplyData,
   dialogInitialData,
@@ -200,7 +200,7 @@ describe("NodeDialog.vue", () => {
     const sendWarningMock = vi.fn();
     const options = getOptions({ createAlertMock, sendWarningMock });
     const wrapper = shallowMount(NodeDialog, options);
-    const callParams = { type: "error", message: "message" };
+    const callParams = { type: AlertTypes.ERROR, message: "message" };
     wrapper.vm.sendAlert(callParams);
     expect(createAlertMock).toHaveBeenCalledWith(callParams);
     expect(sendWarningMock).toHaveBeenCalledWith("myAlert");
@@ -250,23 +250,65 @@ describe("NodeDialog.vue", () => {
         ["path", "to", "my", "setting"],
       ],
     });
+  });
 
+  describe("getPossibleValuesFromUiSchema", () => {
     it("provides 'getPossibleValuesFromUiSchema' method", async () => {
       const mockChoices = [{ id: "foo", text: "bar" }];
       const wrapper = shallowMount(NodeDialog, getOptions());
       const getDataSpy = vi
         .spyOn(wrapper.vm.jsonDataService, "data")
         .mockResolvedValue({ state: "SUCCESS", result: mockChoices });
+      const choicesProviderClass = "myChoicesProviderClass";
+      const choices = await wrapper.vm.getPossibleValuesFromUiSchema({
+        uischema: {
+          options: { choicesProviderClass },
+        },
+      });
+      expect(getDataSpy).toHaveBeenCalledWith({
+        method: "getChoices",
+        options: [choicesProviderClass],
+      });
+      expect(choices).toStrictEqual(mockChoices);
+    });
+
+    it("displays an error when getChoices returns state 'FAIL'", async () => {
+      const myMessage = "MyMessage";
+      const createAlertMock = vi.fn();
+      const wrapper = shallowMount(NodeDialog, getOptions({ createAlertMock }));
+      vi.spyOn(wrapper.vm.jsonDataService, "data").mockResolvedValue({
+        state: "FAIL",
+        message: myMessage,
+      });
       const choices = await wrapper.vm.getPossibleValuesFromUiSchema({
         uischema: {
           options: { choicesProviderClass: "myChoicesProviderClass" },
         },
       });
-      expect(getDataSpy).toHaveBeenCalledWith({
-        method: "getChoices",
-        options: ["myChoicesProviderClass"],
+      expect(choices).toStrictEqual([]);
+      expect(createAlertMock).toHaveBeenCalledWith({
+        type: AlertTypes.ERROR,
+        message: `Failed to fetch possible values: ${myMessage}`,
       });
-      expect(choices).toStrictEqual(mockChoices);
+    });
+
+    it("displays an error when getChoices returns state 'CANCELLED'", async () => {
+      const createAlertMock = vi.fn();
+      const wrapper = shallowMount(NodeDialog, getOptions({ createAlertMock }));
+      vi.spyOn(wrapper.vm.jsonDataService, "data").mockResolvedValue({
+        state: "CANCELED",
+      });
+      const choicesProviderClass = "myChoicesProviderClass";
+      const choices = await wrapper.vm.getPossibleValuesFromUiSchema({
+        uischema: {
+          options: { choicesProviderClass },
+        },
+      });
+      expect(choices).toStrictEqual([]);
+      expect(createAlertMock).toHaveBeenCalledWith({
+        type: AlertTypes.ERROR,
+        message: `Receiving possible values from ${choicesProviderClass} canceled.`,
+      });
     });
   });
 

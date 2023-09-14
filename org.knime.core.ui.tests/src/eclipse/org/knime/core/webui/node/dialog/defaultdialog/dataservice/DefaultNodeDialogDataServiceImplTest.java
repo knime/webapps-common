@@ -212,15 +212,23 @@ class DefaultNodeDialogDataServiceImplTest {
 
         }
 
+        static class TestChoicesProviderWithError implements ChoicesProvider {
+
+            public static final String MY_ERROR = "MyError";
+
+            @Override
+            public String[] choices(final DefaultNodeSettingsContext context) {
+                throw new WidgetHandlerException(MY_ERROR);
+            }
+
+        }
+
         @Test
-        void testGetChoices() throws ExecutionException, InterruptedException {
+        void testGetChoicesWithError() throws ExecutionException, InterruptedException {
 
             class ChoicesSettings implements DefaultNodeSettings {
-                @ChoicesWidget(choices = TestChoicesProvider.class)
+                @ChoicesWidget(choices = TestChoicesProviderWithError.class)
                 String m_foo;
-
-                @ChoicesWidget(choices = TestColumnChoicesProvider.class)
-                String m_bar;
             }
 
             final var asyncChoicesHolder = new AsyncChoicesHolder();

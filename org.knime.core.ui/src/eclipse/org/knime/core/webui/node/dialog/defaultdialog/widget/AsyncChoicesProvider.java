@@ -48,11 +48,14 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.widget;
 
+import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
+
 /**
  * Marker interface to be implemented by to be implemented by a {@link ChoicesProvider}. If it does, the choices values
  * are supplied asynchronously such that node dialog can already be displayed while the possible values are still being
  * determined (a respective loading indicator is shown within the respective widget). This is, e.g., useful when a
- * http-request needs to be made in order to determine the possible values.
+ * http-request needs to be made in order to determine the possible values. In case of an expected error, one can throw
+ * a {@link WidgetHandlerException}, to display an error cause message to the user and use empty options as a result.
  *
  * @author Paul Bärnreuther
  */

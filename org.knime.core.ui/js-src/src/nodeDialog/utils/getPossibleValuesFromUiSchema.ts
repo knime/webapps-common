@@ -1,3 +1,4 @@
+import { AlertTypes, type KnimeService } from "@knime/ui-extension-service";
 import type Result from "../api/types/Result";
 import type {
   ChoicesUiSchemaOptions,
@@ -18,6 +19,7 @@ export default async (
   getAsyncPossibleValues: (
     choicesProviderClass: string,
   ) => Promise<Result<PossibleValue[]>>,
+  sendAlert: (params: Parameters<KnimeService["createAlert"]>[0]) => void,
 ) => {
   let normalPossibleValues = extractFromUiSchemaOptions(
     control,
@@ -30,10 +32,23 @@ export default async (
     );
     if (typeof choicesProviderClass === "string") {
       const asyncResult = await getAsyncPossibleValues(choicesProviderClass);
+      const { state } = asyncResult;
       if (asyncResult.state === "SUCCESS") {
         normalPossibleValues = asyncResult.result;
       } else {
-        normalPossibleValues = []; // TODO: UIEXT-1285 Handle/display error
+        normalPossibleValues = [];
+        if (state === "CANCELED") {
+          sendAlert({
+            type: AlertTypes.ERROR,
+            message: `Receiving possible values from ${choicesProviderClass} canceled.`,
+          });
+        }
+        if (state === "FAIL") {
+          sendAlert({
+            type: AlertTypes.ERROR,
+            message: `Failed to fetch possible values: ${asyncResult.message}`,
+          });
+        }
       }
     } else {
       normalPossibleValues = [];

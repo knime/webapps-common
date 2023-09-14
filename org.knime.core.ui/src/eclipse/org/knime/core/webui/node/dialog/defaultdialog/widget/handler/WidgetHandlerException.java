@@ -52,7 +52,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.widget.handler;
  *
  * @author Paul Bärnreuther
  */
-public class WidgetHandlerException extends Exception {
+public class WidgetHandlerException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
