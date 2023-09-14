@@ -60,6 +60,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.awt.Color;
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Collections;
@@ -85,9 +86,17 @@ import org.knime.core.data.property.ColorHandler;
 import org.knime.core.data.property.ColorModel;
 import org.knime.core.data.property.ColorModelNominal;
 import org.knime.core.data.property.ColorModelRange;
+import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.CanceledExecutionException;
+import org.knime.core.node.ExecutionContext;
+import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeDialogPane;
+import org.knime.core.node.NodeFactory;
+import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.config.base.JSONConfig.WriterConfig;
 import org.knime.core.node.extension.InvalidNodeFactoryExtensionException;
@@ -123,6 +132,7 @@ import org.knime.testing.util.WorkflowManagerUtil;
  */
 @SuppressWarnings("java:S2698") // we accept assertions without messages
 class NodeViewEntTest {
+
 
     private static final String JAVA_AWT_HEADLESS = "java.awt.headless";
 
@@ -597,8 +607,10 @@ class NodeViewEntTest {
     private static NodeViewEnt createNodeViewEntWithInputSpec(final WorkflowManager wfm, final DataTableSpec spec) {
         Function<NodeViewNodeModel, NodeView> nodeViewCreator =
             m -> NodeViewTest.createTableView(Page.builder(() -> "blub", "index.html").build(), null, null, null, null);
-        NativeNodeContainer nnc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(nodeViewCreator));
-        // TODO
+        var nnc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(1, 0, nodeViewCreator));
+        var source = WorkflowManagerUtil.createAndAddNode(wfm, new TestNodeFactory(spec));
+        wfm.addConnection(source.getID(), 1, nnc.getID(), 1);
+        wfm.executeAllAndWaitUntilDone();
         return new NodeViewEnt(nnc, () -> Collections.emptyList(), NodeViewManager.getInstance(), "", "", true);
     }
 
@@ -614,6 +626,87 @@ class NodeViewEntTest {
         } finally {
             System.clearProperty(JAVA_AWT_HEADLESS);
         }
+    }
+
+    private static class TestNodeFactory extends NodeFactory<NodeModel> {
+
+        private final DataTableSpec m_outputSpec;
+
+        public TestNodeFactory(final DataTableSpec outputSpec) {
+            m_outputSpec = outputSpec;
+        }
+
+        @Override
+        public NodeModel createNodeModel() {
+            return new NodeModel(0, 1) {
+
+                @Override
+                protected DataTableSpec[] configure(final DataTableSpec[] inSpecs) throws InvalidSettingsException {
+                    return new DataTableSpec[]{m_outputSpec};
+                }
+
+                @Override
+                protected BufferedDataTable[] execute(final BufferedDataTable[] inData, final ExecutionContext exec)
+                    throws Exception {
+                    var con = exec.createDataContainer(m_outputSpec);
+                    con.close();
+                    return new BufferedDataTable[]{con.getTable()};
+                }
+
+                @Override
+                protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+                    //
+                }
+
+                @Override
+                protected void saveSettingsTo(final NodeSettingsWO settings) {
+                    //
+                }
+
+                @Override
+                protected void saveInternals(final File nodeInternDir, final ExecutionMonitor exec)
+                    throws IOException, CanceledExecutionException {
+                    //
+                }
+
+                @Override
+                protected void reset() {
+                    //
+                }
+
+                @Override
+                protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
+                    //
+                }
+
+                @Override
+                protected void loadInternals(final File nodeInternDir, final ExecutionMonitor exec)
+                    throws IOException, CanceledExecutionException {
+                    //
+                }
+            };
+        }
+
+        @Override
+        protected int getNrNodeViews() {
+            return 0;
+        }
+
+        @Override
+        public org.knime.core.node.NodeView<NodeModel> createNodeView(final int viewIndex, final NodeModel nodeModel) {
+            return null;
+        }
+
+        @Override
+        protected boolean hasDialog() {
+            return false;
+        }
+
+        @Override
+        protected NodeDialogPane createNodeDialogPane() {
+            return null;
+        }
+
     }
 
 

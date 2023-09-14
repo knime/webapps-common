@@ -107,8 +107,7 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
                     isUsedForImageOrReportGeneration);
             }
         } else {
-            return new NodeViewEnt(nnc, null, null, generatedImageActionId, null,
-                isUsedForImageOrReportGeneration);
+            return new NodeViewEnt(nnc, null, null, null, generatedImageActionId, isUsedForImageOrReportGeneration);
         }
     }
 
@@ -159,13 +158,15 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
     NodeViewEnt(final NativeNodeContainer nnc, final Supplier<List<String>> initialSelection,
         final NodeViewManager nodeViewManager, final String customErrorMessage, final String generatedImageActionId,
         final boolean isUsedForImageOrReportGeneration) {
-        super(NodeWrapper.of(nnc), nodeViewManager.getPageResourceManager(), nodeViewManager.getDataServiceManager(),
-            PageType.VIEW, isRunAsDesktopApplication() || isUsedForImageOrReportGeneration);
+        super(NodeWrapper.of(nnc), nodeViewManager == null ? null : nodeViewManager.getPageResourceManager(),
+            nodeViewManager == null ? null : nodeViewManager.getDataServiceManager(), PageType.VIEW,
+            isRunAsDesktopApplication() || isUsedForImageOrReportGeneration);
         CheckUtils.checkArgument(NodeViewManager.hasNodeView(nnc), "The provided node doesn't have a node view");
         m_initialSelection = initialSelection == null ? null : initialSelection.get();
         m_info = new NodeInfoEnt(nnc, customErrorMessage);
         m_generatedImageActionId = generatedImageActionId;
-        final var spec = nodeViewManager.getInputDataTableSpecIfTableView(nnc).orElse(null);
+        final var spec =
+            nodeViewManager == null ? null : nodeViewManager.getInputDataTableSpecIfTableView(nnc).orElse(null);
         if (spec != null) {
             m_colorModelsEnt = getColorHandlerColumns(spec);
         }

@@ -318,9 +318,8 @@ public final class NodeViewManager {
         return getNodeView(nnc).canBeUsedInReport();
     }
 
-
-
     /**
+     * @param nc
      * @return the {@link DataTableSpec} if the node view is also a {@link TableView} otherwise an empty optional
      */
     public Optional<DataTableSpec> getInputDataTableSpecIfTableView(final NodeContainer nc) {

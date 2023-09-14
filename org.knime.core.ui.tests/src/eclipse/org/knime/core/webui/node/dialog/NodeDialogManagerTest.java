@@ -258,7 +258,7 @@ public class NodeDialogManagerTest {
     void testNodeWithoutNodeDialog() {
         NativeNodeContainer nc = createAndAddNode(m_wfm, new VirtualSubNodeInputNodeFactory(null, new PortType[0]));
         assertThat(NodeDialogManager.hasNodeDialog(nc)).as("node not expected to have a node dialog").isFalse();
-        Assertions.assertThatThrownBy(() -> NodeDialogManager.hasNodeDialog(nc))
+        Assertions.assertThatThrownBy(() -> NodeDialogManager.getInstance().getNodeDialog(nc))
             .isInstanceOf(IllegalArgumentException.class);
     }
 

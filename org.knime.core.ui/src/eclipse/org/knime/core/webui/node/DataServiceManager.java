@@ -52,11 +52,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.WeakHashMap;
-import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
-import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.webui.data.ApplyDataService;
 import org.knime.core.webui.data.DataServiceProvider;
 import org.knime.core.webui.data.InitialDataService;
@@ -64,6 +61,7 @@ import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.util.NodeCleanUpCallback;
 
 /**
+ * Manages data service instances created by {@link DataServiceProvider}-implementations.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @param <N> the node wrapper this manager operates on
@@ -80,34 +78,23 @@ public final class DataServiceManager<N extends NodeWrapper> {
 
     private final boolean m_shouldCleanUpDataServicesOnNodeStateChange;
 
-    private final Consumer<N> m_pushContext;
-
-    private final Runnable m_removeContext;
-
     /**
-     * TODO
-     *
-     * @param getDataServiceProvider
+     * @param getDataServiceProvider function that returns the {@link DataServiceProvider}-instance for the given node
+     *            wrapper
      */
     public DataServiceManager(final Function<N, DataServiceProvider> getDataServiceProvider) {
-        this(getDataServiceProvider, false, nw -> NodeContext.pushContext(nw.get()), NodeContext::removeLastContext);
+        this(getDataServiceProvider, false);
     }
 
     /**
-     * TODO
-     *
-     * @param getDataServiceProvider
+     * @param getDataServiceProvider function that returns the {@link DataServiceProvider}-instance for the given node
+     *            wrapper
      * @param shouldCleanUpDataServicesOnNodeStateChange
-     * @param pushContext
-     * @param removeContext
      */
     public DataServiceManager(final Function<N, DataServiceProvider> getDataServiceProvider,
-        final boolean shouldCleanUpDataServicesOnNodeStateChange, final Consumer<N> pushContext,
-        final Runnable removeContext) {
+        final boolean shouldCleanUpDataServicesOnNodeStateChange) {
         m_getDataServiceProvider = getDataServiceProvider;
         m_shouldCleanUpDataServicesOnNodeStateChange = shouldCleanUpDataServicesOnNodeStateChange;
-        m_pushContext = pushContext;
-        m_removeContext = removeContext;
     }
 
     /**
@@ -152,7 +139,7 @@ public final class DataServiceManager<N extends NodeWrapper> {
     private Optional<InitialDataService<?>> getInitialDataService(final N nodeWrapper) {
         InitialDataService<?> ds;
         if (!m_initialDataServices.containsKey(nodeWrapper)) {
-            ds = getWithContext(nodeWrapper,
+            ds = nodeWrapper.getWithContext(
                 () -> m_getDataServiceProvider.apply(nodeWrapper).createInitialDataService().orElse(null));
             m_initialDataServices.put(nodeWrapper, ds);
             NodeCleanUpCallback.builder(nodeWrapper.get(), () -> {
@@ -187,8 +174,8 @@ public final class DataServiceManager<N extends NodeWrapper> {
     private Optional<RpcDataService> getRpcDataService(final N nodeWrapper) {
         RpcDataService ds;
         if (!m_dataServices.containsKey(nodeWrapper)) {
-            ds = getWithContext(nodeWrapper,
-                () -> m_getDataServiceProvider.apply(nodeWrapper).createRpcDataService().orElse(null));
+            ds = nodeWrapper
+                .getWithContext(() -> m_getDataServiceProvider.apply(nodeWrapper).createRpcDataService().orElse(null));
             m_dataServices.put(nodeWrapper, ds);
             NodeCleanUpCallback.builder(nodeWrapper.get(), () -> {
                 var dataService = m_dataServices.remove(nodeWrapper);
@@ -253,25 +240,6 @@ public final class DataServiceManager<N extends NodeWrapper> {
         }
         if (m_applyDataServices.containsKey(nodeWrapper)) {
             m_applyDataServices.get(nodeWrapper).deactivate();
-        }
-    }
-
-    /**
-     * Calls a {@link Supplier} with a certain context (a {@link NodeContext} by default - but can be overwritten by
-     * sub-classes).
-     *
-     * @param <T>
-     *
-     * @param nodeWrapper
-     * @param supplier
-     * @return the result of the supplier
-     */
-    private <T> T getWithContext(final N nodeWrapper, final Supplier<T> supplier) {
-        m_pushContext.accept(nodeWrapper);
-        try {
-            return supplier.get();
-        } finally {
-            m_removeContext.run();
         }
     }
 

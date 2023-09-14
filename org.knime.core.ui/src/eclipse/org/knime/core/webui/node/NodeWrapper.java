@@ -48,10 +48,14 @@
  */
 package org.knime.core.webui.node;
 
+import java.util.function.Supplier;
+
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.SubNodeContainer;
+import org.knime.core.webui.node.port.PortContext;
 
 /**
  * Wrapper for a node ({@link NodeContainer}). The only purpose is to be able to represent a node <i>and</i> optionally
@@ -74,6 +78,16 @@ public interface NodeWrapper {
      *         E.g. the node type (~'data generator') or the port type (~'table').
      */
     String getNodeWrapperTypeId();
+
+    /**
+     * Runs an operation within the context 'compatible' with this node wrapper (e.g. {@link NodeContext} or
+     * {@link PortContext})
+     * @param <T>
+     *
+     * @param supplier the operation to run
+     * @return the object the supplier returns
+     */
+    <T> T getWithContext(Supplier<T> supplier);
 
     /**
      * Convenience method to create a {@link NodeWrapper}-instance.
@@ -102,6 +116,16 @@ public interface NodeWrapper {
                     return snc.getClass().getName();
                 } else {
                     throw new UnsupportedOperationException();
+                }
+            }
+
+            @Override
+            public <T> T getWithContext(final Supplier<T> supplier) {
+                NodeContext.pushContext(nc);
+                try {
+                    return supplier.get();
+                } finally {
+                    NodeContext.removeLastContext();
                 }
             }
 

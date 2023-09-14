@@ -82,9 +82,8 @@ public final class PortViewManager {
     private final PageResourceManager<NodePortWrapper> m_pageResourceManager =
         new PageResourceManager<>(PageType.PORT, nw -> getPortView(nw).getPage(), null, null, true);
 
-    private final DataServiceManager<NodePortWrapper> m_dataServiceManager = new DataServiceManager<>(
-        nw -> getPortView(nw), true, nw -> PortContext.pushContext(nw.get().getOutPort(nw.getPortIdx())),
-        PortContext::removeLastContext);
+    private final DataServiceManager<NodePortWrapper> m_dataServiceManager =
+        new DataServiceManager<>(nw -> getPortView(nw), true);
 
     /**
      * Associate a {@link PortType} with one or several {@link PortViewDescriptor}s.

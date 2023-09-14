@@ -133,23 +133,19 @@ public final class PageResourceManager<N extends NodeWrapper> {
     private final boolean m_shouldCleanUpPageOnNodeStateChange;
 
     /**
-     * TODO
-     *
      * @param pageType
-     * @param createPage
+     * @param createPage function that creates a new page for a given node wrapper
      */
     public PageResourceManager(final PageType pageType, final Function<N, Page> createPage) {
         this(pageType, createPage, null, null, false);
     }
 
     /**
-     * TODO
-     *
      * @param pageType
      * @param createPage
-     * @param modifyPagePathSegments
-     * @param decomposePagePath
-     * @param shouldCleanUpPageOnNodeStateChange
+     * @param modifyPagePathSegments optional function to modify the {@link PagePathSegments}; can be {@code null}
+     * @param decomposePagePath an optional function to decompose the {@link PagePathSegments}; can be {@code null}
+     * @param shouldCleanUpPageOnNodeStateChange whether to remove the page from the cache on node state change
      */
     public PageResourceManager(final PageType pageType, final Function<N, Page> createPage,
         final BiFunction<N, PagePathSegments, PagePathSegments> modifyPagePathSegments,

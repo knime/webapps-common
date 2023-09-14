@@ -48,8 +48,11 @@
  */
 package org.knime.core.webui.node;
 
+import java.util.function.Supplier;
+
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.webui.node.port.PortContext;
 
 import com.google.common.base.Objects;
 
@@ -90,6 +93,16 @@ public interface NodePortWrapper extends NodeWrapper {
             @Override
             public int getViewIdx() {
                 return viewIdx;
+            }
+
+            @Override
+            public <T> T getWithContext(final Supplier<T> supplier) {
+                PortContext.pushContext(nc.getOutPort(portIdx));
+                try {
+                    return supplier.get();
+                } finally {
+                    PortContext.removeLastContext();
+                }
             }
 
             @Override
