@@ -56,7 +56,8 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.webui.data.ApplyDataService;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
-import org.knime.core.webui.node.view.selection.SelectionTranslationService;
+import org.knime.core.webui.node.view.table.TableView;
+import org.knime.core.webui.node.view.table.selection.SelectionTranslationService;
 import org.knime.core.webui.page.Page;
 import org.knime.testing.node.view.NodeViewNodeModel;
 
@@ -159,6 +160,11 @@ public final class NodeViewTest {
             public Page getPage() {
                 return page;
             }
+
+            @Override
+            public int getPortIndex() {
+                return 0;
+            }
         };
     }
 
@@ -204,7 +210,7 @@ public final class NodeViewTest {
             }
 
             @Override
-            public int getInPortIndex() {
+            public int getPortIndex() {
                 return inPortIdx;
             }
         };

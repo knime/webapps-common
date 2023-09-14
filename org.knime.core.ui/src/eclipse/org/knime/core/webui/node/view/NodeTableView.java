@@ -48,7 +48,7 @@
  */
 package org.knime.core.webui.node.view;
 
-import org.knime.core.node.BufferedDataTable;
+import org.knime.core.webui.node.view.table.TableView;
 
 /**
  * Represents a view of a node which views a single table given in one of the input ports.
@@ -57,12 +57,4 @@ import org.knime.core.node.BufferedDataTable;
  */
 public interface NodeTableView extends TableView, NodeView {
 
-    /**
-     * @return the index of the input port supplying the table to be viewed. Hereby the flow variable port is not
-     *         counted, i.e. this defaults to the first input port after the flow variables port. This input port has to
-     *         be a {@link BufferedDataTable}.
-     */
-    default int getInPortIndex() {
-        return 0;
-    }
 }

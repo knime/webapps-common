@@ -90,7 +90,7 @@ import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.DataServiceManager;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.PageResourceManager;
-import org.knime.core.webui.node.view.selection.SelectionTranslationService;
+import org.knime.core.webui.node.view.table.selection.SelectionTranslationService;
 import org.knime.core.webui.page.Page;
 import org.knime.testing.node.view.NodeViewNodeFactory;
 import org.knime.testing.node.view.NodeViewNodeModel;
@@ -427,12 +427,11 @@ public class NodeViewManagerTest {
         });
         var nc = NodeViewManagerTest.createNodeWithNodeView(m_wfm, m -> nodeView);
 
-        assertThatThrownBy(
-            () -> NodeViewManager.getInstance().callSelectionTranslationService(nc, Collections.singletonList("foo")))
-                .isInstanceOf(IOException.class).hasMessage("[foo]");
-        assertThatThrownBy(
-            () -> NodeViewManager.getInstance().callSelectionTranslationService(nc, Set.of(new RowKey("bar"))))
-                .isInstanceOf(IOException.class).hasMessage("[bar]");
+        var nw = NodeWrapper.of(nc);
+        assertThatThrownBy(() -> NodeViewManager.getInstance().getTableViewManager().callSelectionTranslationService(nw,
+            Collections.singletonList("foo"))).isInstanceOf(IOException.class).hasMessage("[foo]");
+        assertThatThrownBy(() -> NodeViewManager.getInstance().getTableViewManager().callSelectionTranslationService(nw,
+            Set.of(new RowKey("bar")))).isInstanceOf(IOException.class).hasMessage("[bar]");
 
     }
 
@@ -446,12 +445,11 @@ public class NodeViewManagerTest {
         var nodeView = createNodeView(page);
         var nc = NodeViewManagerTest.createNodeWithNodeView(m_wfm, m -> nodeView);
 
-        assertThatThrownBy(
-            () -> NodeViewManager.getInstance().callSelectionTranslationService(nc, Collections.singletonList("foo")))
-                .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(
-            () -> NodeViewManager.getInstance().callSelectionTranslationService(nc, Set.of(new RowKey("bar"))))
-                .isInstanceOf(IllegalArgumentException.class);
+        var nw = NodeWrapper.of(nc);
+        assertThatThrownBy(() -> NodeViewManager.getInstance().getTableViewManager().callSelectionTranslationService(nw,
+            Collections.singletonList("foo"))).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> NodeViewManager.getInstance().getTableViewManager().callSelectionTranslationService(nw,
+            Set.of(new RowKey("bar")))).isInstanceOf(IllegalArgumentException.class);
 
     }
 

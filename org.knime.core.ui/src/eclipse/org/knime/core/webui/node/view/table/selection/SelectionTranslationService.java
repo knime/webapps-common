@@ -46,7 +46,7 @@
  * History
  *   12 Apr 2022 (marcbux): created
  */
-package org.knime.core.webui.node.view.selection;
+package org.knime.core.webui.node.view.table.selection;
 
 import java.io.IOException;
 import java.util.List;

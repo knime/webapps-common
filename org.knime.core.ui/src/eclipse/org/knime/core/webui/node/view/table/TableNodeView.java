@@ -175,7 +175,7 @@ public final class TableNodeView implements NodeTableView {
     }
 
     @Override
-    public int getInPortIndex() {
+    public int getPortIndex() {
         return m_inputPortIndex;
     }
 

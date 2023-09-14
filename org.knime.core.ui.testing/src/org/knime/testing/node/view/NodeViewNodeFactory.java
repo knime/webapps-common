@@ -259,6 +259,11 @@ public class NodeViewNodeFactory extends NodeFactory<NodeViewNodeModel>
                     return page;
                 }
 
+                @Override
+                public int getPortIndex() {
+                    return 0;
+                }
+
             };
         } else {
             return createNodeView(page, initDataService, rpcDataService, applyDataService);

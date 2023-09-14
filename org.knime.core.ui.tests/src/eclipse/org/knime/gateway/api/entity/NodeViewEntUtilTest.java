@@ -134,6 +134,11 @@ class NodeViewEntUtilTest {
                     return Optional.empty();
                 }
 
+                @Override
+                public int getPortIndex() {
+                    return 0;
+                }
+
             };
         };
 
@@ -147,7 +152,7 @@ class NodeViewEntUtilTest {
         BiConsumer<String, Object> eventConsumer = Mockito.mock(BiConsumer.class);
 
         /* assert that the selection event source is properly set up */
-        var eventSource = NodeViewEntUtil.createNodeViewEntAndEventSources(nnc, eventConsumer, false).getSecond()[0];
+        var eventSource = NodeViewEnt.createNodeViewEntAndEventSources(nnc, eventConsumer, false).getSecond()[0];
         fireHiLiteEvent(hlh, "test");
         verify(eventConsumer).accept(eq("SelectionEvent"),
             argThat(se -> verifySelectionEvent((SelectionEvent)se, "test")));
@@ -163,7 +168,7 @@ class NodeViewEntUtilTest {
         /* test the selection event source in combination with the node view state event source */
         // test selection events
         wfm.executeAllAndWaitUntilDone();
-        NodeViewEntUtil.createNodeViewEntAndEventSources(nnc, eventConsumer, true);
+        NodeViewEnt.createNodeViewEntAndEventSources(nnc, eventConsumer, true);
         fireHiLiteEvent(hlh, "test3");
         verify(eventConsumer).accept(eq("SelectionEvent"),
             argThat(se -> verifySelectionEvent((SelectionEvent)se, "test3")));

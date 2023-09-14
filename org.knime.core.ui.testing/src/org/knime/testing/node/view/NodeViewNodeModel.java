@@ -79,8 +79,6 @@ public class NodeViewNodeModel extends NodeModel implements ReExecutable<String>
 
     private BufferedDataTable[] m_tables;
 
-    private boolean m_hasTableInputPort;
-
     /**
      * Allows test to check the data set at {@link #preReExecute(String, boolean)}.
      *
@@ -114,9 +112,6 @@ public class NodeViewNodeModel extends NodeModel implements ReExecutable<String>
     protected DataTableSpec[] configure(final DataTableSpec[] inSpecs) throws InvalidSettingsException {
         DataTableSpec[] outSpecs = new DataTableSpec[getNrOutPorts()];
         Arrays.fill(outSpecs, new DataTableSpec());
-        if (inSpecs.length > 0) {
-            m_hasTableInputPort = true;
-        }
         return outSpecs;
     }
 
@@ -140,7 +135,6 @@ public class NodeViewNodeModel extends NodeModel implements ReExecutable<String>
         container.close();
         Arrays.fill(outData, container.getTable());
         if (inData.length > 0) {
-            m_hasTableInputPort = true;
             m_tables = inData;
         } else if (outData.length > 0) {
             m_tables = outData;
@@ -216,7 +210,7 @@ public class NodeViewNodeModel extends NodeModel implements ReExecutable<String>
 
     @SuppressWarnings("javadoc")
     public boolean hasTableInputPort() {
-        return m_hasTableInputPort;
+        return getNrInPorts() > 0;
     }
 
 }

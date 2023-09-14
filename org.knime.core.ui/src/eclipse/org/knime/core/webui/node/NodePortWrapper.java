@@ -57,7 +57,7 @@ import org.knime.core.webui.node.port.PortContext;
 import com.google.common.base.Objects;
 
 /**
- * A {@link NodeWrapper} that identifies a port view on an instantiated node.
+ * A {@link NodeWrapper} that identifies an output port on an instantiated node.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Benjamin Moser, KNIME GmbH, Konstanz, Germany

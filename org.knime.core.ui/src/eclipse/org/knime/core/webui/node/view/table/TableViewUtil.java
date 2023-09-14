@@ -126,22 +126,13 @@ public final class TableViewUtil {
     }
 
     /**
-     * @param tableSupplier the supplier for the table to create the data service for
-     * @param tableId a globally unique id to be able to uniquely identify the images belong to the table used here
-     * @return a new table view data service instance
-     */
-    public static TableViewDataService createTableViewDataService(final Supplier<BufferedDataTable> tableSupplier,
-        final String tableId) {
-        return new TableViewDataServiceImpl(tableSupplier, tableId, new SwingBasedRendererFactory(), RENDERER_REGISTRY);
-    }
-
-    /**
      * @param tableSupplier supplying the input table
-     * @param selectionSupplier supplying the currently selected row keys (for update of totalSelected when filtering)
+     * @param selectionSupplier supplying the currently selected row keys (for update of totalSelected when filtering);
+     *            or {@code null} if no selecting is shown
      * @param tableId
      * @return the {@link TableViewDataService} associated to the node
      */
-    static TableViewDataService createTableViewDataService(final Supplier<BufferedDataTable> tableSupplier,
+    public static TableViewDataService createTableViewDataService(final Supplier<BufferedDataTable> tableSupplier,
         final Supplier<Set<RowKey>> selectionSupplier, final String tableId) {
         return new TableViewDataServiceImpl(tableSupplier, selectionSupplier, tableId, new SwingBasedRendererFactory(),
             RENDERER_REGISTRY);
@@ -162,18 +153,6 @@ public final class TableViewUtil {
     static TableViewInitialData createInitialData(final TableViewViewSettings settings, final BufferedDataTable table,
         final TableViewDataService dataService) {
         return new TableViewInitialDataImpl(settings, () -> table, dataService);
-    }
-
-    /**
-     * @param settingsSupplier
-     * @param tableSupplier
-     * @param tableId
-     * @return the table view initial data service
-     */
-    public static InitialDataService<TableViewInitialData> createInitialDataService(
-        final Supplier<TableViewViewSettings> settingsSupplier, final Supplier<BufferedDataTable> tableSupplier,
-        final String tableId) {
-        return createInitialDataService(settingsSupplier, tableSupplier, null, tableId, null, null);
     }
 
     /**

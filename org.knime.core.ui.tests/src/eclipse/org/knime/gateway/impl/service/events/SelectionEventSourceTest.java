@@ -88,9 +88,11 @@ import org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFacto
 import org.knime.core.webui.data.ApplyDataService;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
+import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.view.NodeTableView;
 import org.knime.core.webui.node.view.NodeView;
-import org.knime.core.webui.node.view.selection.SelectionTranslationService;
+import org.knime.core.webui.node.view.NodeViewManager;
+import org.knime.core.webui.node.view.table.selection.SelectionTranslationService;
 import org.knime.core.webui.page.Page;
 import org.knime.gateway.impl.service.events.SelectionEventSource.SelectionEventMode;
 import org.knime.testing.node.view.NodeViewNodeFactory;
@@ -153,13 +155,18 @@ public class SelectionEventSourceTest {
                 return Optional.empty();
             }
 
+            @Override
+            public int getPortIndex() {
+                return 0;
+            }
+
         };
     };
 
     @BeforeEach
     public void setup() throws IOException {
         m_wfm = WorkflowManagerUtil.createEmptyWorkflow();
-        m_nnc = WorkflowManagerUtil.createAndAddNode(m_wfm, new NodeViewNodeFactory(viewCreator));
+        m_nnc = WorkflowManagerUtil.createAndAddNode(m_wfm, new NodeViewNodeFactory(1, 0, viewCreator));
         m_hlh = m_nnc.getNodeModel().getInHiLiteHandler(0);
     }
 
@@ -233,14 +240,15 @@ public class SelectionEventSourceTest {
     @Test
     public void testProcessSelectionEventAsync() {
         var hiLiteHandler = m_nnc.getNodeModel().getInHiLiteHandler(0);
+        var nodeId = m_nnc.getID();
         var hiLiteListener = new TestHiLiteListener();
         hiLiteHandler.addHiLiteListener(hiLiteListener);
 
         // async call
         var rowKeys = stringListToRowKeySet(List.of("1"));
-        SelectionEventSource.processSelectionEvent(m_nnc, SelectionEventMode.ADD, true, rowKeys);
-        SelectionEventSource.processSelectionEvent(m_nnc, SelectionEventMode.REMOVE, true, rowKeys);
-        SelectionEventSource.processSelectionEvent(m_nnc, SelectionEventMode.REPLACE, true, rowKeys);
+        SelectionEventSource.processSelectionEvent(hiLiteHandler, nodeId, SelectionEventMode.ADD, true, rowKeys);
+        SelectionEventSource.processSelectionEvent(hiLiteHandler, nodeId, SelectionEventMode.REMOVE, true, rowKeys);
+        SelectionEventSource.processSelectionEvent(hiLiteHandler, nodeId, SelectionEventMode.REPLACE, true, rowKeys);
         Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(200, TimeUnit.MILLISECONDS)
             .untilAsserted(() -> assertThat(hiLiteListener.m_callerThreadName).isNotNull());
         assertThat(hiLiteListener.m_callerThreadName).isNotEqualTo("INVALID");
@@ -249,9 +257,9 @@ public class SelectionEventSourceTest {
 
         // sync call
         rowKeys = stringListToRowKeySet(List.of("2"));
-        SelectionEventSource.processSelectionEvent(m_nnc, SelectionEventMode.ADD, false, rowKeys);
-        SelectionEventSource.processSelectionEvent(m_nnc, SelectionEventMode.REMOVE, false, rowKeys);
-        SelectionEventSource.processSelectionEvent(m_nnc, SelectionEventMode.REPLACE, false, rowKeys);
+        SelectionEventSource.processSelectionEvent(hiLiteHandler, nodeId, SelectionEventMode.ADD, false, rowKeys);
+        SelectionEventSource.processSelectionEvent(hiLiteHandler, nodeId, SelectionEventMode.REMOVE, false, rowKeys);
+        SelectionEventSource.processSelectionEvent(hiLiteHandler, nodeId, SelectionEventMode.REPLACE, false, rowKeys);
         assertThat(hiLiteListener.m_callerThreadName).isEqualTo(Thread.currentThread().getName());
     }
 
@@ -324,9 +332,14 @@ public class SelectionEventSourceTest {
                     return Page.builder(() -> "foo", "bar").build();
                 }
 
+                @Override
+                public int getPortIndex() {
+                    return 0;
+                }
+
             };
         };
-        var nnc = WorkflowManagerUtil.createAndAddNode(m_wfm, new NodeViewNodeFactory(viewCreator));
+        var nnc = WorkflowManagerUtil.createAndAddNode(m_wfm, new NodeViewNodeFactory(1, 0, viewCreator));
 
         @SuppressWarnings("unchecked")
         final BiConsumer<String, SelectionEvent> consumerMock = mock(BiConsumer.class);
@@ -378,14 +391,15 @@ public class SelectionEventSourceTest {
         return keys.stream().map(RowKey::new).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    public static SelectionEventSource
+    public static SelectionEventSource<NodeWrapper>
         createSelectionEventSource(final BiConsumer<String, SelectionEvent> selectionEventConsumer) {
-        return new SelectionEventSource((s, o) -> selectionEventConsumer.accept(s, (SelectionEvent)o));
+        return new SelectionEventSource<>((s, o) -> selectionEventConsumer.accept(s, (SelectionEvent)o),
+            NodeViewManager.getInstance().getTableViewManager());
     }
 
     private static void registerSelectionEventSource(final BiConsumer<String, SelectionEvent> selectionEventConsumer,
         final NativeNodeContainer node) {
-        createSelectionEventSource(selectionEventConsumer).addEventListenerFor(node);
+        createSelectionEventSource(selectionEventConsumer).addEventListenerFor(NodeWrapper.of(node));
     }
 
 }

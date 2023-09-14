@@ -48,20 +48,14 @@
  */
 package org.knime.core.webui.node.view;
 
-import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.WeakHashMap;
-import java.util.stream.Collectors;
 
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.RowKey;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettings;
-import org.knime.core.node.property.hilite.HiLiteHandler;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContext;
@@ -71,7 +65,8 @@ import org.knime.core.webui.node.PagePathSegments;
 import org.knime.core.webui.node.PageResourceManager;
 import org.knime.core.webui.node.PageResourceManager.PageType;
 import org.knime.core.webui.node.util.NodeCleanUpCallback;
-import org.knime.core.webui.node.view.selection.SelectionTranslationService;
+import org.knime.core.webui.node.view.table.TableView;
+import org.knime.core.webui.node.view.table.TableViewManager;
 
 /**
  * Manages (web-ui) node view instances and provides associated functionality.
@@ -87,14 +82,14 @@ public final class NodeViewManager {
 
     private final Map<NodeContainer, NodeView> m_nodeViewMap = new WeakHashMap<>();
 
-    private final Map<NodeContainer, SelectionTranslationService> m_selectionServices = new WeakHashMap<>();
-
     private final PageResourceManager<NodeWrapper> m_pageResourceManager =
         new PageResourceManager<>(PageType.VIEW, nw -> getNodeView(nw.get()).getPage(), this::getPagePathSegments,
             this::decomposePagePath, false);
 
     private final DataServiceManager<NodeWrapper> m_dataServiceManager =
         new DataServiceManager<>(nw -> getNodeView(nw.get()));
+
+    private final TableViewManager<NodeWrapper> m_tableViewManager = new TableViewManager<>(this::getTableView);
 
     /**
      * Returns the singleton instance for this class.
@@ -144,58 +139,16 @@ public final class NodeViewManager {
         return createAndRegisterNodeView(nnc);
     }
 
-    /**
-     * Helper to call the {@link SelectionTranslationService#toRowKeys(List)}.
-     *
-     * @param nc the node to call the data service for
-     * @param selection the selection to translate
-     * @return the result of the translation, i.e., an array of row keys
-     * @throws IOException if applying the selection failed
-     */
-    public Set<RowKey> callSelectionTranslationService(final NodeContainer nc, final List<String> selection)
-        throws IOException {
-        var service = getSelectionTranslationService(nc).orElse(null);
-        if (service != null) {
-            return service.toRowKeys(selection);
-        } else {
-            // if no selection translation service is available,
-            // turn the list of strings directly into a list of row keys
-            return selection.stream().map(RowKey::new).collect(Collectors.toSet());
+    private TableView getTableView(final NodeWrapper n) {
+        var nc = n.get();
+        if (!hasNodeView(nc)) {
+            return null;
         }
-    }
-
-    /**
-     * Helper to call the {@link SelectionTranslationService#fromRowKeys(Set)}.
-     *
-     * @param nnc the node to call the data service for
-     * @param rowKeys the row keys to translate
-     * @return the result of the translation, i.e., a text-representation of the selection
-     * @throws IOException if the translation failed
-     */
-    public List<String> callSelectionTranslationService(final NativeNodeContainer nnc, final Set<RowKey> rowKeys)
-        throws IOException {
-        var service =
-            getSelectionTranslationService(nnc).filter(SelectionTranslationService.class::isInstance).orElse(null);
-        if (service != null) {
-            return service.fromRowKeys(rowKeys);
-        } else {
-            // if no selection translation service is available, we just turn the row keys into strings
-            return rowKeys.stream().map(RowKey::toString).toList();
-        }
-    }
-
-    private Optional<SelectionTranslationService> getSelectionTranslationService(final NodeContainer nc) {
-        return Optional.ofNullable(
-            m_selectionServices.computeIfAbsent(nc, k -> createSelectionTranslationService(nc).orElse(null)));
-    }
-
-    private Optional<? extends SelectionTranslationService> createSelectionTranslationService(final NodeContainer nc) {
-        final var nodeView = getNodeView(nc);
+        var nodeView = getNodeView(nc);
         if (nodeView instanceof TableView tv) {
-            return tv.createSelectionTranslationService();
+            return tv;
         } else {
-            throw new IllegalArgumentException(
-                "Trying to call a selection translation service of a node view which is not a table view.");
+            return null;
         }
     }
 
@@ -245,8 +198,8 @@ public final class NodeViewManager {
      */
     void clearCaches() {
         m_nodeViewMap.clear();
-        m_selectionServices.clear();
         m_pageResourceManager.clearPageCache();
+        m_tableViewManager.clearCaches();
     }
 
     /**
@@ -270,6 +223,13 @@ public final class NodeViewManager {
      */
     public PageResourceManager<NodeWrapper> getPageResourceManager() {
         return m_pageResourceManager;
+    }
+
+    /**
+     * @return the {@link TableViewManager} instance
+     */
+    public TableViewManager<NodeWrapper> getTableViewManager() {
+        return m_tableViewManager;
     }
 
     private PagePathSegments getPagePathSegments(final NodeWrapper nodeWrapper, final PagePathSegments segments) {
@@ -326,7 +286,7 @@ public final class NodeViewManager {
         var nodeView = getNodeView(nc);
         if (nodeView instanceof NodeTableView tnv) {
             var wfm = nc.getParent();
-            var inPortIndex = tnv.getInPortIndex();
+            var inPortIndex = tnv.getPortIndex();
             // plus 1 because the inPortIdx excludes the flow variable port
             var conn = wfm.getIncomingConnectionFor(nc.getID(), inPortIndex + 1);
             return Optional.of((DataTableSpec)wfm.getNodeContainer(conn.getSource()).getOutPort(conn.getSourcePort())
@@ -335,20 +295,6 @@ public final class NodeViewManager {
             return Optional.empty();
         }
 
-    }
-
-    /**
-     * @return the {@link HiLiteHandler} if the node view is also a {@link TableView} and the node a native node;
-     *         otherwise an empty optional
-     */
-    public Optional<HiLiteHandler> getInHiliteHandlerIfTableView(final NodeContainer nc) {
-        var nodeView = getNodeView(nc);
-        if (nc instanceof NativeNodeContainer nnc && nodeView instanceof NodeTableView tnv) {
-            // TODO see UIEXT-51
-            return Optional.of(nnc.getNodeModel().getInHiLiteHandler(tnv.getInPortIndex()));
-        } else {
-            return Optional.empty();
-        }
     }
 
     /**

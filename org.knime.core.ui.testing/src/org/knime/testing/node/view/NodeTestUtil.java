@@ -142,8 +142,12 @@ public final class NodeTestUtil {
         }
 
         // check for presence of selection translation service
-        assertThat(nodeViewManager.callSelectionTranslationService(node, Set.of(RowKey.createRowKey(0L)))).isNotNull();
-        assertThat(nodeViewManager.callSelectionTranslationService(node, Collections.emptyList())).isNotNull();
+        var nw = NodeWrapper.of(node);
+        assertThat(
+            nodeViewManager.getTableViewManager().callSelectionTranslationService(nw, Set.of(RowKey.createRowKey(0L))))
+                .isNotNull();
+        assertThat(nodeViewManager.getTableViewManager().callSelectionTranslationService(nw, Collections.emptyList()))
+            .isNotNull();
 
         return nodeViewManager.getPageResourceManager().getPage(nodeWrapper);
     }

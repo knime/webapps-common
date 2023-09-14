@@ -48,8 +48,10 @@
  */
 package org.knime.gateway.api.entity;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -59,9 +61,17 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.NativeNodeContainer;
+import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.NodeStateChangeListener;
+import org.knime.core.node.workflow.NodeStateEvent;
+import org.knime.core.util.Pair;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.PageResourceManager.PageType;
 import org.knime.core.webui.node.view.NodeViewManager;
+import org.knime.gateway.impl.service.events.EventSource;
+import org.knime.gateway.impl.service.events.NodeViewStateEventSource;
+import org.knime.gateway.impl.service.events.SelectionEvent;
+import org.knime.gateway.impl.service.events.SelectionEventSource;
 
 /**
  * Node view entity containing the info required by the UI (i.e. frontend) to be able display a node view.
@@ -150,6 +160,62 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
      */
     public static NodeViewEnt create(final NativeNodeContainer nnc) {
         return create(nnc, null);
+    }
+
+    /**
+     * Creates a new {@link NodeViewEnt}-instance and initializes associated {@link EventSource EventSources}.
+     *
+     * Associated event sources are {@link SelectionEventSource} and {@link NodeViewStateEventSource}.
+     *
+     * @param nnc the node to create the node view entity from
+     * @param eventConsumer the event consumer that will receive the events emitted by the initialized event sources
+     * @param createNodeViewStateEventSource if {@code true} the {@link NodeViewStateEventSource} will be initialized,
+     *            too; otherwise it won't
+     * @return the new {@link NodeViewEnt}-instance and the initialized event source(s)
+     */
+    @SuppressWarnings({"rawtypes", "unused"})
+    public static Pair<NodeViewEnt, EventSource[]> createNodeViewEntAndEventSources(final NativeNodeContainer nnc,
+        final BiConsumer<String, Object> eventConsumer, final boolean createNodeViewStateEventSource) {
+        // TODO only to this if the node view actually has (table) node view
+        var selectionEventSource =
+            new SelectionEventSource<>(eventConsumer, NodeViewManager.getInstance().getTableViewManager());
+        Supplier<List<String>> initialSelectionSupplier =
+            () -> selectionEventSource.addEventListenerAndGetInitialEventFor(NodeWrapper.of(nnc))
+                .map(SelectionEvent::getSelection).orElse(Collections.emptyList());
+
+        EventSource[] eventSources;
+        if (createNodeViewStateEventSource) {
+            var nodeViewStateEventSource = new NodeViewStateEventSource(eventConsumer,
+                selectionEventSource::removeAllEventListeners, initialSelectionSupplier);
+            nodeViewStateEventSource.addEventListenerAndGetInitialEventFor(nnc);
+            eventSources = new EventSource[]{selectionEventSource, nodeViewStateEventSource};
+        } else {
+            new RemoveAllEventListenersOnNodeStateChange(nnc, selectionEventSource);
+            eventSources = new EventSource[]{selectionEventSource};
+        }
+
+        return Pair.create(NodeViewEnt.create(nnc, initialSelectionSupplier), eventSources);
+    }
+
+    static class RemoveAllEventListenersOnNodeStateChange implements NodeStateChangeListener {
+
+        private final NodeContainer m_nc;
+
+        private SelectionEventSource<? extends NodeWrapper> m_eventSource;
+
+        public RemoveAllEventListenersOnNodeStateChange(final NodeContainer nc,
+            final SelectionEventSource<? extends NodeWrapper> eventSource) {
+            m_eventSource = eventSource;
+            m_nc = nc;
+            nc.addNodeStateChangeListener(this); // NOSONAR
+        }
+
+        @Override
+        public void stateChanged(final NodeStateEvent state) {
+            m_eventSource.removeAllEventListeners();
+            m_nc.removeNodeStateChangeListener(this);
+        }
+
     }
 
     /**

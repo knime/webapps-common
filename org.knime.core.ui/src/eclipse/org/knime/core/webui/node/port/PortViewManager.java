@@ -64,6 +64,8 @@ import org.knime.core.webui.node.NodePortWrapper;
 import org.knime.core.webui.node.PageResourceManager;
 import org.knime.core.webui.node.PageResourceManager.PageType;
 import org.knime.core.webui.node.util.NodeCleanUpCallback;
+import org.knime.core.webui.node.view.table.TableView;
+import org.knime.core.webui.node.view.table.TableViewManager;
 
 /**
  * Manages (web-ui) port view instances and provides associated functionality.
@@ -84,6 +86,9 @@ public final class PortViewManager {
 
     private final DataServiceManager<NodePortWrapper> m_dataServiceManager =
         new DataServiceManager<>(nw -> getPortView(nw), true);
+
+    private final TableViewManager<NodePortWrapper> m_tableViewManager = new TableViewManager<>(this::getTableView);
+
 
     /**
      * Associate a {@link PortType} with one or several {@link PortViewDescriptor}s.
@@ -211,6 +216,15 @@ public final class PortViewManager {
         }
     }
 
+    private TableView getTableView(final NodePortWrapper n) {
+        var nodeView = getPortView(n);
+        if (nodeView instanceof TableView tv) {
+            return tv;
+        } else {
+            return null;
+        }
+    }
+
 
     /**
      * @return the {@link DataServiceManager} instance
@@ -224,6 +238,13 @@ public final class PortViewManager {
      */
     public PageResourceManager<NodePortWrapper> getPageResourceManager() {
         return m_pageResourceManager;
+    }
+
+    /**
+     * @return the {@link TableViewManager} instance
+     */
+    public TableViewManager<NodePortWrapper> getTableViewManager() {
+        return m_tableViewManager;
     }
 
     /**

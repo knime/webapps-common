@@ -46,12 +46,15 @@
  * History
  *   May 4, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.view;
+package org.knime.core.webui.node.view.table;
 
 import java.util.Optional;
 
+import org.knime.core.node.BufferedDataTable;
 import org.knime.core.webui.node.port.PortView;
-import org.knime.core.webui.node.view.selection.SelectionTranslationService;
+import org.knime.core.webui.node.view.NodeTableView;
+import org.knime.core.webui.node.view.NodeView;
+import org.knime.core.webui.node.view.table.selection.SelectionTranslationService;
 
 /**
  * Represents a view of a table. Note that there is the {@link NodeTableView} annotation which pairs this annotation
@@ -59,7 +62,7 @@ import org.knime.core.webui.node.view.selection.SelectionTranslationService;
  *
  * @author Paul Bärnreuther
  */
-interface TableView {
+public interface TableView {
     /**
      * @return optional service to translate selection requests
      *
@@ -68,5 +71,12 @@ interface TableView {
     default Optional<? extends SelectionTranslationService> createSelectionTranslationService() {
         return Optional.empty();
     }
+
+    /**
+     * @return the index of the input (or output) port supplying the table to be viewed. Hereby the flow variable port
+     *         is not counted, i.e. this defaults to the first input port after the flow variables port. This input port
+     *         has to be a {@link BufferedDataTable}.
+     */
+    int getPortIndex();
 
 }

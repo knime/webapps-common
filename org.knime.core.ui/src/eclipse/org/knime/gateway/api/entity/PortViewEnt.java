@@ -48,9 +48,16 @@
  */
 package org.knime.gateway.api.entity;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
+
 import org.knime.core.webui.node.NodePortWrapper;
 import org.knime.core.webui.node.PageResourceManager.PageType;
 import org.knime.core.webui.node.port.PortViewManager;
+import org.knime.gateway.impl.service.events.SelectionEvent;
+import org.knime.gateway.impl.service.events.SelectionEventSource;
 
 /**
  * Port view entity containing the info required by the UI (i.e. frontend) to be able to display a port view.
@@ -61,13 +68,41 @@ public class PortViewEnt extends NodeUIExtensionEnt<NodePortWrapper> {
 
     private final NodeInfoEnt m_info;
 
+    private final List<String> m_initialSelection;
+
+    /**
+     * Creates a new initial selection supplier and initializes associated {@link PortViewSelectionEventSource}.
+     *
+     * @param npw the port to create the selection event source from
+     * @param viewIndex TODFO
+     * @param eventConsumer the event consumer that will receive the events emitted by the initialized event source
+     * @return the initial selection supplier
+     */
+    @SuppressWarnings("unused")
+    public static Supplier<List<String>> createInitialSelectionSupplierAndInitSelectionEventSource(
+        final NodePortWrapper npw, final int viewIndex, final BiConsumer<String, Object> eventConsumer) {
+        var selectionEventSource =
+            new SelectionEventSource<>(eventConsumer, PortViewManager.getInstance().getTableViewManager());
+        Supplier<List<String>> initialSelectionSupplier =
+            () -> selectionEventSource.addEventListenerAndGetInitialEventFor(npw).map(SelectionEvent::getSelection)
+                .orElse(Collections.emptyList());
+
+        new NodeViewEnt.RemoveAllEventListenersOnNodeStateChange(npw.get(), selectionEventSource);
+
+        return initialSelectionSupplier;
+    }
+
     /**
      * @param wrapper
      * @param manager
+     * @param initialSelectionSupplier supplies the initial selection; can be {@code null} if selection is not supported
+     *            by the port view
      */
-    public PortViewEnt(final NodePortWrapper wrapper, final PortViewManager manager) {
+    public PortViewEnt(final NodePortWrapper wrapper, final PortViewManager manager,
+        final Supplier<List<String>> initialSelectionSupplier) {
         super(wrapper, manager.getPageResourceManager(), manager.getDataServiceManager(), PageType.PORT);
         m_info = new NodeInfoEnt(wrapper.get());
+        m_initialSelection = initialSelectionSupplier == null ? null : initialSelectionSupplier.get();
     }
 
     /**
@@ -84,4 +119,10 @@ public class PortViewEnt extends NodeUIExtensionEnt<NodePortWrapper> {
         return m_info;
     }
 
+    /**
+     * @return the initial selection (e.g. a list of row keys)
+     */
+    public List<String> getInitialSelection() {
+        return m_initialSelection;
+    }
 }

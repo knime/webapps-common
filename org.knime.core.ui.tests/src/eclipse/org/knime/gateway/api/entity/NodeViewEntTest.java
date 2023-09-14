@@ -111,6 +111,7 @@ import org.knime.core.util.Pair;
 import org.knime.core.webui.data.ApplyDataService;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
+import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.view.NodeTableView;
 import org.knime.core.webui.node.view.NodeView;
 import org.knime.core.webui.node.view.NodeViewManager;
@@ -444,7 +445,7 @@ class NodeViewEntTest {
         @SuppressWarnings("unchecked")
         final BiConsumer<String, SelectionEvent> consumerMock = mock(BiConsumer.class);
         var selectionEventSource = SelectionEventSourceTest.createSelectionEventSource(consumerMock);
-        var initialSelection = selectionEventSource.addEventListenerAndGetInitialEventFor(nnc)
+        var initialSelection = selectionEventSource.addEventListenerAndGetInitialEventFor(NodeWrapper.of(nnc))
             .map(SelectionEvent::getSelection).orElse(Collections.emptyList());
         var nodeViewEnt = NodeViewEnt.create(nnc, () -> initialSelection);
 

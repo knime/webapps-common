@@ -55,6 +55,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import org.knime.core.data.RowKey;
@@ -62,11 +63,12 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.property.hilite.HiLiteHandler;
 import org.knime.core.node.property.hilite.HiLiteListener;
 import org.knime.core.node.property.hilite.KeyEvent;
-import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.util.Pair;
-import org.knime.core.webui.node.view.NodeViewManager;
+import org.knime.core.webui.node.NodeWrapper;
+import org.knime.core.webui.node.view.table.TableViewManager;
 import org.knime.gateway.api.entity.NodeIDEnt;
 
 /**
@@ -74,9 +76,11 @@ import org.knime.gateway.api.entity.NodeIDEnt;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
+ * @param <N>
+ *
  * @since 4.5
  */
-public class SelectionEventSource extends EventSource<NativeNodeContainer, SelectionEvent> {
+public final class SelectionEventSource<N extends NodeWrapper> extends EventSource<N, SelectionEvent> {
 
     /**
      * The mode of selection event.
@@ -88,11 +92,16 @@ public class SelectionEventSource extends EventSource<NativeNodeContainer, Selec
 
     private final Map<NodeID, Pair<HiLiteHandler, HiLiteListener>> m_hiLiteListeners = new HashMap<>();
 
+    private final TableViewManager<N> m_tableViewManager;
+
     /**
      * @param eventConsumer selection events will be forwarded to this consumer
+     * @param tableViewManager
      */
-    public SelectionEventSource(final BiConsumer<String, Object> eventConsumer) {
+    public SelectionEventSource(final BiConsumer<String, Object> eventConsumer,
+        final TableViewManager<N> tableViewManager) {
         super(eventConsumer);
+        m_tableViewManager = tableViewManager;
     }
 
     /**
@@ -107,25 +116,34 @@ public class SelectionEventSource extends EventSource<NativeNodeContainer, Selec
      * {@inheritDoc}
      */
     @Override
-    public Optional<SelectionEvent> addEventListenerAndGetInitialEventFor(final NativeNodeContainer nnc) {
-        if (!NodeViewManager.hasNodeView(nnc)) {
-            return Optional.empty();
-        }
-        var handler = NodeViewManager.getInstance().getInHiliteHandlerIfTableView(nnc).orElse(null);
+    public Optional<SelectionEvent> addEventListenerAndGetInitialEventFor(final N nw) {
+        var handler = m_tableViewManager.getHiLiteHandler(nw).orElse(null);
         if (handler == null) {
             return Optional.empty();
         }
+        var snc = (SingleNodeContainer) nw.get();
         synchronized (handler) {
             var hiLitKeys = handler.getHiLitKeys();
-            var listener = new PerNodeHiliteListener(this::sendEvent, nnc);
+            var listener =
+                new PerNodeWrapperHiliteListener(this::sendEvent, nw, (snc2, keys) -> translateSelections(snc2, keys));
             SelectionEvent selectionEvent = null;
             selectionEvent = listener.createSelectionEvent(SelectionEventMode.ADD, hiLitKeys);
-            var nodeID = nnc.getID();
+            var nodeID = snc.getID();
             if (!m_hiLiteListeners.containsKey(nodeID)) {
                 handler.addHiLiteListener(listener);
-                m_hiLiteListeners.put(nnc.getID(), Pair.create(handler, listener));
+                m_hiLiteListeners.put(snc.getID(), Pair.create(handler, listener));
             }
             return Optional.of(selectionEvent);
+        }
+    }
+
+    private SelectionTranslationResult translateSelections(final N nw, final Set<RowKey> rowKeys) {
+        try {
+            return new SelectionTranslationResult(m_tableViewManager.callSelectionTranslationService(nw, rowKeys),
+                null);
+        } catch (IOException ex) {
+            NodeLogger.getLogger(this.getClass()).error("Selection event couldn't be created", ex);
+            return new SelectionTranslationResult(null, ex.getMessage());
         }
     }
 
@@ -142,8 +160,9 @@ public class SelectionEventSource extends EventSource<NativeNodeContainer, Selec
      * {@inheritDoc}
      */
     @Override
-    public void removeEventListener(final NativeNodeContainer nnc) {
-        var nodeId = nnc.getID();
+    public void removeEventListener(final N nw) {
+        var snc = nw.get();
+        var nodeId = snc.getID();
         var p = m_hiLiteListeners.get(nodeId);
         p.getFirst().removeHiLiteListener(p.getSecond());
         m_hiLiteListeners.remove(nodeId);
@@ -159,19 +178,18 @@ public class SelectionEventSource extends EventSource<NativeNodeContainer, Selec
     }
 
     /**
-     * Forwards selection events to the hilite-handler associated with the given node.
+     * Forwards selection events to the given hilite-handler.
      *
-     * @param nc the node to use the hilite handler for
+     * @param hiLiteHandler hilite-handler to use
+     * @param nodeId the id of the node the hilite-handler is associated with
      * @param selectionEventMode the selection event mode
      * @param async if {@code true}, it will return immediately; if {@code false} it will return once the selection has
      *            been processed completely (i.e. once all associated nodes have received the selection change, too).
      * @param rowKeys the keys to be (un-)selected
      */
-    public static void processSelectionEvent(final NativeNodeContainer nc, final SelectionEventMode selectionEventMode,
-        final boolean async, final Set<RowKey> rowKeys) {
-        final var keyEvent = new KeyEvent(nc.getID(), rowKeys);
-        // TODO see UIEXT-51
-        var hiLiteHandler = nc.getNodeModel().getInHiLiteHandler(0);
+    public static void processSelectionEvent(final HiLiteHandler hiLiteHandler, final NodeID nodeId,
+        final SelectionEventMode selectionEventMode, final boolean async, final Set<RowKey> rowKeys) {
+        final var keyEvent = new KeyEvent(nodeId, rowKeys);
         switch (selectionEventMode) {
             case ADD:
                 hiLiteHandler.fireHiLiteEvent(keyEvent, async);
@@ -186,7 +204,7 @@ public class SelectionEventSource extends EventSource<NativeNodeContainer, Selec
         }
     }
 
-    private static class PerNodeHiliteListener implements HiLiteListener {
+    private class PerNodeWrapperHiliteListener implements HiLiteListener {
 
         private final Consumer<SelectionEvent> m_eventConsumer;
 
@@ -198,18 +216,23 @@ public class SelectionEventSource extends EventSource<NativeNodeContainer, Selec
 
         private final String m_nodeIdString;
 
-        private final NativeNodeContainer m_nnc;
+        private final N m_nw;
 
-        PerNodeHiliteListener(final Consumer<SelectionEvent> eventConsumer, final NativeNodeContainer nnc) {
+        private final BiFunction<N, Set<RowKey>, SelectionTranslationResult> m_translateSelection;
+
+        PerNodeWrapperHiliteListener(final Consumer<SelectionEvent> eventConsumer, final N nw,
+            final BiFunction<N, Set<RowKey>, SelectionTranslationResult> translateSelection) {
             m_eventConsumer = eventConsumer;
-            m_nnc = nnc;
-            var parent = nnc.getParent();
+            m_nw = nw;
+            m_translateSelection = translateSelection;
+            var snc = m_nw.get();
+            var parent = snc.getParent();
             var projectWfm = parent.getProjectWFM();
             m_projectId = projectWfm.getNameWithID();
             NodeID ncParentId = parent.getDirectNCParent() instanceof SubNodeContainer
                 ? ((SubNodeContainer)parent.getDirectNCParent()).getID() : parent.getID();
             m_workflowId = new NodeIDEnt(ncParentId).toString();
-            m_nodeId = nnc.getID();
+            m_nodeId = snc.getID();
             m_nodeIdString = new NodeIDEnt(m_nodeId).toString();
         }
 
@@ -235,21 +258,14 @@ public class SelectionEventSource extends EventSource<NativeNodeContainer, Selec
 
         private void consumeSelectionEvent(final KeyEvent event, final SelectionEventMode mode) {
             // do not consume selection events that have been fired by the node this listener is registered on
-            if (!m_nodeId.equals(event.getSource()) && NodeViewManager.hasNodeView(m_nnc)) {
+            if (!m_nodeId.equals(event.getSource())) {
                 m_eventConsumer.accept(createSelectionEvent(mode, event.keys()));
             }
         }
 
         private SelectionEvent createSelectionEvent(final SelectionEventMode mode, final Set<RowKey> keys) {
-            List<String> selection = null;
-            String error = null;
-            try {
-                selection = NodeViewManager.getInstance().callSelectionTranslationService(m_nnc, keys);
-            } catch (IOException ex) {
-                NodeLogger.getLogger(SelectionEventSource.class).error("Selection event couldn't be created", ex);
-                error = ex.getMessage();
-            }
-            return createSelectionEvent(mode, selection, error);
+            SelectionTranslationResult result = m_translateSelection.apply(m_nw, keys);
+            return createSelectionEvent(mode, result.selection, result.error);
         }
 
         private SelectionEvent createSelectionEvent(final SelectionEventMode mode, final List<String> selection,
@@ -290,6 +306,8 @@ public class SelectionEventSource extends EventSource<NativeNodeContainer, Selec
         }
     }
 
+    public static record SelectionTranslationResult(List<String> selection, String error) {
 
+    }
 
 }
