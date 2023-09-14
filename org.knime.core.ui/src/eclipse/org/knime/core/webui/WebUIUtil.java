@@ -48,6 +48,10 @@
  */
 package org.knime.core.webui;
 
+import java.util.Collection;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.program.Program;
 import org.knime.core.node.NodeLogger;
 
@@ -79,17 +83,19 @@ public final class WebUIUtil {
         return Boolean.getBoolean(DEV_MODE_SYSTEM_PROPERTY);
     }
 
+    private static final Collection<String> URL_PREFIXES_TO_OPEN_EXTERNALLY = List.of("http:", "https:", "mailto:");
+
     /**
-     * Tries to open the given url in an external browser. But only if it's a http(s) url. Will also output respective
-     * debug log messages.
+     * Tries to open the given URL in an external browser, but only if its prefix is contained in the list above. Will
+     * also output respective debug log messages.
      *
      * @param url
      * @param classForLogging
      *
      */
     public static void openURLInExternalBrowserAndAddToDebugLog(final String url, final Class<?> classForLogging) {
-        if (url.startsWith("http")) {
-            // open http-urls in the system browser
+        if (URL_PREFIXES_TO_OPEN_EXTERNALLY.stream().anyMatch(p -> StringUtils.startsWithIgnoreCase(url, p))) {
+            // open link in external application
             if (Program.launch(url)) {
                 NodeLogger.getLogger(classForLogging).debugWithFormat("Opening URL '%s' with external browser ...",
                     url);
