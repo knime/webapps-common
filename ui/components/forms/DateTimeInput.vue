@@ -210,28 +210,28 @@ export default {
                 return;
             }
             if (['min', 'max'].includes(bounds.type)) {
-                this.emitInput(setHours(new Date(this.localValue), bounds.input));
+                this.emitInput(setHours(new Date(this.localValue), bounds.value));
             } else {
                 this.emitInput(this.localValue);
             }
         },
         onTimeMinutesBounds(bounds) {
             if (['min', 'max'].includes(bounds.type)) {
-                this.emitInput(setMinutes(new Date(this.localValue), bounds.input));
+                this.emitInput(setMinutes(new Date(this.localValue), bounds.value));
             } else {
                 this.emitInput(this.localValue);
             }
         },
         onTimeSecondsBounds(bounds) {
             if (['min', 'max'].includes(bounds.type)) {
-                this.emitInput(setSeconds(new Date(this.localValue), bounds.input));
+                this.emitInput(setSeconds(new Date(this.localValue), bounds.value));
             } else {
                 this.emitInput(this.localValue);
             }
         },
         onTimeMillisecondsBounds(bounds) {
             if (['min', 'max'].includes(bounds.type)) {
-                this.emitInput(setMilliseconds(new Date(this.localValue), bounds.input));
+                this.emitInput(setMilliseconds(new Date(this.localValue), bounds.value));
             } else {
                 this.emitInput(this.localValue);
             }
