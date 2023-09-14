@@ -8,6 +8,7 @@
     "dev:NodeDialog:standalone": "vite",
     "dev:TableView": "npm run _dev TableView 4000",
     "dev:TextView": "npm run _dev TextView 4000",
+    "dev:ImageView": "npm run _dev ImageView 4000",
     "_dev": "run-p \"_dev:build -- --mode {1} --watch\" \"_dev:serve -- --port {2}\" --",
     "_dev:build": "vite build",
     "_dev:serve": "vite preview",
