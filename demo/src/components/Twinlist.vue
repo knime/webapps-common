@@ -1,4 +1,5 @@
 <script>
+import { markRaw } from "vue";
 import CodeExample from "./demo/CodeExample.vue";
 import Twinlist from "webapps-common/ui/components/forms/Twinlist.vue";
 import code from "webapps-common/ui/components/forms/Twinlist.vue?raw";
@@ -71,7 +72,7 @@ export default {
       selectedMissing: ["foo", "I am missing", "bar"],
       selectedUnknown: [],
       selectedSearchLabel: [],
-      LoadingIcon,
+      loadingIconRef: markRaw(LoadingIcon),
     };
   },
   computed: {
@@ -278,7 +279,9 @@ export default {
             :model-value="[]"
             :size="7"
             :possible-values="demoValues"
-            :empty-state-component="LoadingIcon"
+            left-label="Select from the visible items"
+            right-label="The selected stuff"
+            :empty-state-component="loadingIconRef"
           />
         </div>
         <div class="grid-item-6">selected ids: {{ selectedSearchLabel }}</div>

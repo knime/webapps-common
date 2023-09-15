@@ -558,6 +558,7 @@ export default {
       <MultiselectListBox
         ref="right"
         class="list-box"
+        :class="{ 'with-empty-state-icon': emptyStateComponent }"
         :model-value="rightSelected"
         :with-bottom-value="showUnknownValuesRight"
         :bottom-value="{ id: unknownValuesId, text: unknownValuesText }"
@@ -629,6 +630,10 @@ export default {
   & .list-box {
     flex: 3 1 auto;
     max-width: calc(50% - (var(--button-bar-width) / 2));
+  }
+
+  & .with-empty-state-icon :deep(svg) {
+    height: 13px;
   }
 
   & .list-box {

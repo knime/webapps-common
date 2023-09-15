@@ -58,11 +58,10 @@ describe("Dropdown.vue", () => {
     const wrapper = mount(Dropdown, {
       props,
       slots: {
-        "icon-left": "<div>Left</div>",
-        "icon-right": "<div>Rigth</div>",
+        "icon-right": "<div>Right</div>",
       },
     });
-    expect(wrapper.find("[role=button]").text()).toBe("Left Text 1 Rigth");
+    expect(wrapper.find("[role=button]").text()).toBe("Text 1 Right");
   });
 
   it("sets the correct aria-* attributes", () => {
