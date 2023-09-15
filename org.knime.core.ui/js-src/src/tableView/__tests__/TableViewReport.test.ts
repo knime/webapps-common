@@ -149,6 +149,7 @@ describe("TableViewReport.vue", () => {
         true,
         true,
         false,
+        false,
       ],
     });
 
