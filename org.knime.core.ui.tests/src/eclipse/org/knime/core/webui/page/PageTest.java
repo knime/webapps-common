@@ -114,7 +114,7 @@ public class PageTest {
     }
 
     /**
-     * Tests page resources added via {@link PageBuilder#addResources(Function, String)}.
+     * Tests page resources added via {@link PageBuilder#addResources(Function, String, boolean)}.
      *
      * @throws IOException
      */
@@ -148,6 +148,27 @@ public class PageTest {
             .isEqualTo("resource supplier 2 - path/to/another/resource");
         assertThat(page.getResource("path/prefix/2/path/to/another/resource").get().isStatic()).isFalse();
         assertThat(page.getResource("path/to/nonexisting/resource")).isEmpty();
+    }
+
+    /**
+     * Tests page resources added via {@link PageBuilder#addResources(Function, String, boolean)} but with an empty
+     * relative path prefix.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testCreateResourcesWithDynamicEmptyPathPrefix() throws IOException {
+        Function<String, InputStream> resourceSupplier = relativePath -> {
+            if (relativePath.equals("resource")) {
+                return stringToInputStream("resource supplier - known path");
+            } else {
+                return stringToInputStream("resource supplier - another path");
+            }
+        };
+        var page = Page.builder(BUNDLE_ID, "files", "page.html") //
+            .addResources(resourceSupplier, "", true) //
+            .build();
+        assertThat(resourceToString(page.getResource("resource").get())).isEqualTo("resource supplier - known path");
     }
 
     /**

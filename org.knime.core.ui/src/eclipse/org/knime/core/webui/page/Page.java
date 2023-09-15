@@ -120,7 +120,16 @@ public final class Page implements Resource {
         }
         return m_dynamicResources.entrySet().stream()//
             .filter(e -> relativePath.startsWith(e.getKey()))//
-            .map(e -> e.getValue().apply(relativePath.substring(e.getKey().length() + 1)))//
+            .map(e -> {
+                var pathPrefix = e.getKey();
+                String relativePathWithoutPrefix;
+                if (pathPrefix.isEmpty()) {
+                    relativePathWithoutPrefix = relativePath;
+                } else {
+                    relativePathWithoutPrefix = relativePath.substring(e.getKey().length() + 1);
+                }
+                return e.getValue().apply(relativePathWithoutPrefix);
+            })//
             .filter(Objects::nonNull)//
             .findFirst();
     }
