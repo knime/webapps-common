@@ -126,6 +126,64 @@ export default {
         </div>
         <div class="grid-item-2">selected id: {{ selected }}</div>
       </div>
+      <div class="grid-container">
+        <div class="grid-item-12">
+          <p>Horizontal and vertical layout with bold options and subtext</p>
+        </div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-5">
+          <div class="grid-item-5">
+            <RadioButtons
+              v-model="selected"
+              :bold="true"
+              :possible-values="[
+                {
+                  id: 'foo',
+                  text: 'Foo',
+                  subtext: 'Subtext',
+                },
+                {
+                  id: 'bar',
+                  text: 'Bar',
+                  subtext: 'Even longer subtext',
+                },
+                {
+                  id: 'baz',
+                  text: 'Baz',
+                  subtext: 'Very very looooong subtext below the option',
+                },
+              ]"
+            />
+          </div>
+        </div>
+        <div class="grid-item-5">
+          <div class="grid-item-5">
+            <RadioButtons
+              v-model="selected"
+              alignment="vertical"
+              :bold="true"
+              :possible-values="[
+                {
+                  id: 'foo',
+                  text: 'Foo',
+                  subtext: 'Subtext',
+                },
+                {
+                  id: 'bar',
+                  text: 'Bar',
+                  subtext: 'Even longer subtext',
+                },
+                {
+                  id: 'baz',
+                  text: 'Baz',
+                  subtext: 'Very very looooong subtext below the option',
+                },
+              ]"
+            />
+          </div>
+        </div>
+      </div>
     </section>
     <section>
       <div class="grid-container">
