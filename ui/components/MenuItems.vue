@@ -47,6 +47,8 @@ export interface MenuItem {
   text: string;
   icon?: FunctionalComponent<SVGAttributes>;
   disabled?: boolean;
+  /** longer description text that will be displayed below the menu entry but still is part of it */
+  description?: string;
   /** shown on menu items on hover */
   title?: string;
   /** for router-links */

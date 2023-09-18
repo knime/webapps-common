@@ -147,7 +147,7 @@ export default {
       });
     },
     menuItemsWithChildren() {
-      return menuItemsData.slice().concat({
+      const submenuItem = {
         text: "Sub menu",
         icon: markRaw(LeaveIcon),
         children: [
@@ -171,7 +171,21 @@ export default {
             ],
           },
         ],
-      });
+      };
+      const [first, second, third] = menuItemsData;
+      const withDescription = {
+        ...second,
+        separator: true,
+        description:
+          "… some long text that explains the action of this item in" +
+          "a way the user can better understand what happens if he click it.",
+      };
+      return [
+        { ...first, separator: true },
+        withDescription,
+        third,
+        submenuItem,
+      ];
     },
     menuItemsWithSelectedEntries() {
       return menuItemsData.map((item, index) => {
@@ -295,7 +309,9 @@ export default {
           </div>
 
           <div class="menu-item-wrapper">
-            <div class="menu-name">With submenu (children)</div>
+            <div class="menu-name">
+              With submenu (children) and a long description
+            </div>
             <div class="card">
               <MenuItems
                 id="WITH_CHILDREN"

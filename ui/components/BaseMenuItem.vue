@@ -50,11 +50,16 @@ const dynamicAttributes = (item: MenuItem) => {
   >
     <Component :is="item.icon" v-if="item.icon" class="item-icon" />
     <div class="label">
-      <span :class="['text', { truncate: useMaxMenuWidth }]">
-        {{ item.text }}
-      </span>
-      <span v-if="item.hotkeyText" class="hotkey">{{ item.hotkeyText }}</span>
-      <slot name="submenu" :item-element="$refs.listItemComponent" />
+      <div class="text-and-hotkey">
+        <span :class="['text', { truncate: useMaxMenuWidth }]">
+          {{ item.text }}
+        </span>
+        <span v-if="item.hotkeyText" class="hotkey">{{ item.hotkeyText }}</span>
+        <slot name="submenu" :item-element="$refs.listItemComponent" />
+      </div>
+      <div v-if="item.description" class="description">
+        {{ item.description }}
+      </div>
     </div>
   </Component>
 </template>
@@ -105,23 +110,39 @@ const dynamicAttributes = (item: MenuItem) => {
 
     & .label {
       display: flex;
-      text-align: left;
+      flex-direction: column;
+      align-content: flex-start;
       width: 100%;
-      height: calc(var(--icon-size) * 1px);
-      align-items: center;
 
-      & .text {
-        flex-shrink: 1;
-        flex-basis: 100%;
+      & .text-and-hotkey {
+        display: flex;
+        text-align: left;
+        width: 100%;
+        height: calc(var(--icon-size) * 1px);
+        align-items: center;
 
-        &.truncate {
-          overflow: hidden;
-          text-overflow: ellipsis;
+        & .text {
+          flex-shrink: 1;
+          flex-basis: 100%;
+
+          &.truncate {
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+
+        & .hotkey {
+          margin-left: 40px;
         }
       }
 
-      & .hotkey {
-        margin-left: 40px;
+      & .description {
+        max-width: 250px;
+        width: 100%;
+        text-align: left;
+        white-space: normal;
+        font-size: 11px;
+        font-weight: 300;
       }
     }
 
@@ -163,6 +184,7 @@ const dynamicAttributes = (item: MenuItem) => {
     line-height: 15px;
     display: flex;
     align-items: center;
+    text-align: left;
 
     &:hover,
     &:focus,
