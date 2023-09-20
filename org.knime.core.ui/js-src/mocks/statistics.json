@@ -70,7 +70,6 @@
         "showColumnDataType": false,
         "showRowIndices": false,
         "title": "Statistics",
-        "showTitle": true,
         "enablePagination": false,
         "pageSize": 10,
         "compactMode": false,
@@ -530,12 +529,6 @@
               "type": "boolean",
               "title": "Show RowIDs",
               "description": "Whether to display the RowIDs or not",
-              "default": true
-            },
-            "showTitle": {
-              "type": "boolean",
-              "title": "Show title",
-              "description": "Whether to display the title or not.",
               "default": true
             },
             "subscribeToSelection": {

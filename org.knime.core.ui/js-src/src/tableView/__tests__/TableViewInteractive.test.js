@@ -129,10 +129,10 @@ describe("TableViewInteractive.vue", () => {
         displayedColumns: { selected: ["col1", "col2", "col3", "col4"] },
         enableRendererSelection: true,
         showRowKeys: false,
+        title: "testTitle",
         showColumnDataType: false,
         showRowIndices: false,
         showTableSize: true,
-        showTitle: true,
         enableColumnSearch: true,
         enableGlobalSearch: true,
         enablePagination: true,
@@ -1343,7 +1343,6 @@ describe("TableViewInteractive.vue", () => {
       ["enableSortingByHeader", false],
       ["enableColumnSearch", false],
       ["enableGlobalSearch", false],
-      ["showTitle", false],
       ["compactMode", true],
       ["showTableSize", true],
     ])(
@@ -1372,7 +1371,7 @@ describe("TableViewInteractive.vue", () => {
     it("hides title", async () => {
       expect(wrapper.find(".table-title").exists()).toBeTruthy();
 
-      changeViewSetting(wrapper, "showTitle", false);
+      changeViewSetting(wrapper, "title", "");
       await wrapper.vm.$nextTick();
 
       expect(wrapper.find(".table-title").exists()).toBeFalsy();

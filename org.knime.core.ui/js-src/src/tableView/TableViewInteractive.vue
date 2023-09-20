@@ -103,9 +103,6 @@ export default {
         this.columnSortColumnName !== null && this.columnSortIndex !== null
       );
     },
-    showTitle() {
-      return this.settings.showTitle;
-    },
     useLazyLoading() {
       return !this.settings.enablePagination;
     },

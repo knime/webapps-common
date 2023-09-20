@@ -20,10 +20,9 @@
       },
       "showRowIndices" : false,
       "showRowKeys" : true,
-      "showColumnDataType" : true,
-      "showTableSize" : true,
       "title" : "Table View",
-      "showTitle" : true,
+      "showTableSize" : true,
+      "showColumnDataType" : true,
       "enablePagination" : false,
       "pageSize" : 10,
       "autoSizeColumnsToContent" : "FIXED",
@@ -254,7 +253,7 @@
           },
           "showColumnDataType" : {
             "type" : "boolean",
-            "title" : "Show column data type in header",
+            "title" : "Show column data types in header",
             "description" : "Whether to display the data type of the columns in the header or not",
             "default" : true,
             "configKeys" : [ "showColumnDataType" ]
@@ -286,13 +285,6 @@
             "description" : "Whether to display the number of rows and columns above the table or not.",
             "default" : true,
             "configKeys" : [ "showTableSize" ]
-          },
-          "showTitle" : {
-            "type" : "boolean",
-            "title" : "Show title",
-            "description" : "Whether to display the title or not.",
-            "default" : true,
-            "configKeys" : [ "showTitle" ]
           },
           "skipRemainingColumns" : {
             "type" : "boolean",
@@ -359,12 +351,14 @@
         "options" : {
           "format" : "checkbox"
         }
-      }, {
+      } ]
+    }, {
+      "label" : "View",
+      "type" : "Section",
+      "elements" : [ {
         "type" : "Control",
-        "scope" : "#/properties/view/properties/showColumnDataType",
-        "options" : {
-          "format" : "checkbox"
-        }
+        "scope" : "#/properties/view/properties/title",
+        "options" : { }
       }, {
         "type" : "Control",
         "scope" : "#/properties/view/properties/showTableSize",
@@ -380,17 +374,9 @@
             }
           }
         }
-      } ]
-    }, {
-      "label" : "View",
-      "type" : "Section",
-      "elements" : [ {
-        "type" : "Control",
-        "scope" : "#/properties/view/properties/title",
-        "options" : { }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/view/properties/showTitle",
+        "scope" : "#/properties/view/properties/showColumnDataType",
         "options" : {
           "format" : "checkbox"
         }

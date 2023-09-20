@@ -117,25 +117,6 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     public boolean m_showRowKeys = true;
 
     /**
-     * Whether to show the data type of every column in the header or not
-     */
-    @Widget(title = "Show column data type in header",
-        description = "Whether to display the data type of the columns in the header or not")
-    @Persist(optional = true)
-    @Layout(DataSection.class)
-    public boolean m_showColumnDataType = true;
-
-    /**
-     * Whether to show the number of rows and columns above the table or or not
-     */
-    @Widget(title = "Show table size",
-        description = "Whether to display the number of rows " + "and columns above the table or not.")
-    @Persist(optional = true)
-    @Effect(signals = IsPaginationEnabled.class, type = EffectType.HIDE)
-    @Layout(DataSection.class)
-    public boolean m_showTableSize = true;
-
-    /**
      * The title of the table
      */
     @Widget(title = "Title",
@@ -144,12 +125,23 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     public String m_title = "Table View";
 
     /**
-     * whether to display the title or not
+     * Whether to show the number of rows and columns above the table or or not
      */
-    @Widget(title = "Show title", description = "Whether to display the title or not.")
+    @Widget(title = "Show table size",
+        description = "Whether to display the number of rows " + "and columns above the table or not.")
+    @Persist(optional = true)
+    @Effect(signals = IsPaginationEnabled.class, type = EffectType.HIDE)
+    @Layout(ViewSection.class)
+    public boolean m_showTableSize = true;
+
+    /**
+     * Whether to show the data type of every column in the header or not
+     */
+    @Widget(title = "Show column data types in header",
+        description = "Whether to display the data type of the columns in the header or not")
     @Persist(optional = true)
     @Layout(ViewSection.class)
-    public boolean m_showTitle = true;
+    public boolean m_showColumnDataType = true;
 
     interface IsPaginationEnabled {
     }

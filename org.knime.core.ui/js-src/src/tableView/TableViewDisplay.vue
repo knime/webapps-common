@@ -200,7 +200,7 @@ const onCopySelection = ({
 
 <template>
   <div ref="root" class="table-view-wrapper">
-    <h4 v-if="settings?.showTitle" class="table-title">
+    <h4 v-if="settings?.title" class="table-title">
       {{ settings.title }}
     </h4>
     <TableUIWithAutoSizeCalculation
