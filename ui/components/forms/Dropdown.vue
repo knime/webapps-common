@@ -108,6 +108,9 @@ export default {
         this.modelValue && !this.displayTextMap.hasOwnProperty(this.modelValue)
       );
     },
+    hasRightIcon() {
+      return this.$slots["icon-right"]?.().length;
+    },
   },
   created() {
     this.typingTimeout = null;
@@ -294,6 +297,9 @@ export default {
       @keydown="handleKeyDownButton"
     >
       {{ displayText }}
+      <div v-if="hasRightIcon" class="loading-icon">
+        <slot name="icon-right" />
+      </div>
       <DropdownIcon class="icon" />
     </div>
     <ul
@@ -370,10 +376,12 @@ export default {
     padding: 0 38px 0 10px;
     font-size: 13px;
     height: 40px;
-    line-height: 40px; /* to center text vertically */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 
     &:focus {
       outline: none;
@@ -402,6 +410,23 @@ export default {
     top: 11px;
     pointer-events: none;
     transition: transform 0.2s ease-in-out;
+  }
+
+  & .loading-icon {
+    --icon-size: 18;
+
+    display: flex;
+    pointer-events: none;
+
+    & :slotted(svg) {
+      vertical-align: top;
+      width: calc(var(--icon-size) * 1px);
+      height: calc(var(--icon-size) * 1px);
+
+      /* TODO: See ticket UIEXT-590, the stroke-width mixin should be used here. */
+      stroke-width: calc(32px / var(--icon-size));
+      stroke: var(--knime-masala);
+    }
   }
 
   &:not(.collapsed) .icon {

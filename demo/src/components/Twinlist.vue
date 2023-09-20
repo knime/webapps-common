@@ -1,7 +1,9 @@
 <script>
+import { markRaw } from "vue";
 import CodeExample from "./demo/CodeExample.vue";
 import Twinlist from "webapps-common/ui/components/forms/Twinlist.vue";
 import code from "webapps-common/ui/components/forms/Twinlist.vue?raw";
+import LoadingIcon from "webapps-common/ui/components/LoadingIcon.vue";
 
 const codeExample = `<Twinlist
   v-model="selected"
@@ -70,6 +72,7 @@ export default {
       selectedMissing: ["foo", "I am missing", "bar"],
       selectedUnknown: [],
       selectedSearchLabel: [],
+      loadingIconRef: markRaw(LoadingIcon),
     };
   },
   computed: {
@@ -261,6 +264,24 @@ export default {
             search-placeholder="Placeholder"
             :with-search-label="true"
             :possible-values="demoValues"
+          />
+        </div>
+        <div class="grid-item-6">selected ids: {{ selectedSearchLabel }}</div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-6">
+          <p>The content visible in empty boxes is customizable.</p>
+        </div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-6">
+          <Twinlist
+            :model-value="[]"
+            :size="7"
+            :possible-values="demoValues"
+            left-label="Select from the visible items"
+            right-label="The selected stuff"
+            :empty-state-component="loadingIconRef"
           />
         </div>
         <div class="grid-item-6">selected ids: {{ selectedSearchLabel }}</div>
