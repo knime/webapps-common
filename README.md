@@ -1,4 +1,4 @@
-# ![Image](https://www.knime.com/files/knime_logo_github_40x40_4layers.png) KNIME UI Extension Service for KNIME® Analytics Platform
+# ![Image](https://www.knime.com/sites/default/files/knime_logo_github_40x40_4layers.png) KNIME UI Extension Service for KNIME® Analytics Platform
 
 This folder contains the frontend wrapper that implements adapter pattern between data providers (back-end services) and
 data consumers (e.g. KNIME Views).
