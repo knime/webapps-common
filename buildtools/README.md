@@ -1,4 +1,4 @@
-# ![Image](https://www.knime.com/files/knime_logo_github_40x40_4layers.png) KNIME® knime-build-tools
+# ![Image](https://www.knime.com/sites/default/files/knime_logo_github_40x40_4layers.png) KNIME® knime-build-tools
 
 This internally developed and maintained NPM package is included in the `webapps-common` repository and contains build
 utilities for various KNIME Web Projects. Because this package is a dependency of `webapps-common`, the scripts
