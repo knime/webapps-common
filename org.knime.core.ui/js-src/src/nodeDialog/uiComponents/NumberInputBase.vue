@@ -78,13 +78,3 @@ export default NumberInputBase;
     </LabeledInput>
   </DialogComponentWrapper>
 </template>
-
-<style lang="postcss" scoped>
-.number-input {
-  height: 40px;
-
-  & :deep(input[type="number"]) {
-    height: 38px;
-  }
-}
-</style>
