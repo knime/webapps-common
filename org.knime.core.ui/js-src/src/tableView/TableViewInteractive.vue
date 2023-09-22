@@ -1054,6 +1054,11 @@ export default {
         );
       }
     },
+    async onShowOnlySelectedRows() {
+      this.settings.showOnlySelectedRows = !this.settings.showOnlySelectedRows;
+      await this.refreshTable({ resetPage: true });
+      this.$refs.tableViewDisplay.triggerCalculationOfAutoColumnSizes();
+    },
   },
 };
 </script>
@@ -1120,6 +1125,7 @@ export default {
     @header-sub-menu-item-selection="onHeaderSubMenuItemSelection"
     @lazyload="onScroll"
     @copy-selection="onCopySelection"
+    @show-only-selected-rows="onShowOnlySelectedRows"
   />
 </template>
 
