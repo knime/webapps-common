@@ -53,7 +53,7 @@ import org.knime.core.webui.node.view.image.ImageViewViewSettings;
 public interface ImageViewInitialData {
 
     /**
-     * @return the initial image path
+     * @return the path of the image to be displayed
      */
     String getImagePath();
 

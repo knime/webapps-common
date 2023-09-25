@@ -93,24 +93,25 @@ public final class ImageViewUtil {
     /**
      * @param imageValueSupplier the supplier of the {@link ImageValue}
      * @param imageIdSupplier the supplier of the (unique) image Id
-     * @param settings image view settings to be included with the initial data
+     * @param settingsSupplier the supplier of the image view settings to be included with the initial data
      * @return a new initial data service
      */
     public static final InitialDataService<ImageViewInitialData> createInitialDataService(
         final Supplier<ImageValue> imageValueSupplier, final Supplier<String> imageIdSupplier,
-        final ImageViewViewSettings settings) {
-        return InitialDataService.builder(() -> createInitialData(imageValueSupplier, imageIdSupplier, settings)) //
+        final Supplier<ImageViewViewSettings> settingsSupplier) {
+        return InitialDataService
+            .builder(() -> createInitialData(imageValueSupplier, imageIdSupplier, settingsSupplier)) //
             .serializer(new DefaultNodeSettingsSerializer<>()) //
             .build();
     }
 
     static final ImageViewInitialData createInitialData(final Supplier<ImageValue> imageValueSupplier,
-        final Supplier<String> imageIdSupplier, final ImageViewViewSettings settings) {
+        final Supplier<String> imageIdSupplier, final Supplier<ImageViewViewSettings> settingsSupplier) {
         final var imageValue = imageValueSupplier.get();
         final var imageId = imageIdSupplier.get() + "." + imageValue.getImageExtension();
         IMAGE_DATA_MAP.put(imageId, getImageData(imageValue));
         final var imagePath = PageResourceManager.getPagePathPrefix(null) + "/imageview/img/" + imageId;
-        return new ImageViewInitialDataImpl(imagePath, settings);
+        return new ImageViewInitialDataImpl(imagePath, settingsSupplier.get());
     }
 
     private static byte[] getImageData(final ImageValue imgValue) {

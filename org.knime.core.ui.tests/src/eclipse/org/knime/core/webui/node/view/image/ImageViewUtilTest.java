@@ -86,7 +86,8 @@ public class ImageViewUtilTest {
         var imageValue = (ImageValue)portObject.toDataCell();
 
         var initialData = ImageViewUtil
-            .createInitialDataService(() -> imageValue, () -> imageId, new ImageViewViewSettings()).getInitialData();
+            .createInitialDataService(() -> imageValue, () -> imageId,
+                () -> new ImageViewViewSettings()).getInitialData();
         assertThat(initialData).contains("\"imagePath\":\"uiext/imageview/img/" + imageId + ".png\"");
         assertThat(ImageViewUtil.IMAGE_DATA_MAP.size()).isEqualTo(1);
         assertThat(ImageViewUtil.IMAGE_DATA_MAP.get(imageId + ".png")).isEqualTo(pngImageData);
