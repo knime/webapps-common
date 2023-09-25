@@ -14,11 +14,36 @@ const extractFromUiSchemaOptions = <Key extends keyof ChoicesUiSchemaOptions>(
   return options ? options[key] : false;
 };
 
+const extractPossibleValues = (
+  asyncResult: Result<PossibleValue[]>,
+  sendAlert: (params: Parameters<KnimeService["createAlert"]>[0]) => void,
+  choicesProviderClass: string,
+) => {
+  const { state } = asyncResult;
+  if (state === "SUCCESS") {
+    return asyncResult.result;
+  } else {
+    if (state === "CANCELED") {
+      sendAlert({
+        type: AlertTypes.ERROR,
+        message: `Receiving possible values from ${choicesProviderClass} canceled.`,
+      });
+    }
+    if (state === "FAIL") {
+      sendAlert({
+        type: AlertTypes.ERROR,
+        message: `Failed to fetch possible values: ${asyncResult.message}`,
+      });
+    }
+    return [];
+  }
+};
+
 export default async (
   control: { uischema: ChoicesUiSchema },
   getAsyncPossibleValues: (
     choicesProviderClass: string,
-  ) => Promise<Result<PossibleValue[]>>,
+  ) => Promise<Result<PossibleValue[]> | undefined>,
   sendAlert: (params: Parameters<KnimeService["createAlert"]>[0]) => void,
 ) => {
   let normalPossibleValues = extractFromUiSchemaOptions(
@@ -32,24 +57,9 @@ export default async (
     );
     if (typeof choicesProviderClass === "string") {
       const asyncResult = await getAsyncPossibleValues(choicesProviderClass);
-      const { state } = asyncResult;
-      if (asyncResult.state === "SUCCESS") {
-        normalPossibleValues = asyncResult.result;
-      } else {
-        normalPossibleValues = [];
-        if (state === "CANCELED") {
-          sendAlert({
-            type: AlertTypes.ERROR,
-            message: `Receiving possible values from ${choicesProviderClass} canceled.`,
-          });
-        }
-        if (state === "FAIL") {
-          sendAlert({
-            type: AlertTypes.ERROR,
-            message: `Failed to fetch possible values: ${asyncResult.message}`,
-          });
-        }
-      }
+      normalPossibleValues = asyncResult
+        ? extractPossibleValues(asyncResult, sendAlert, choicesProviderClass)
+        : [];
     } else {
       normalPossibleValues = [];
     }

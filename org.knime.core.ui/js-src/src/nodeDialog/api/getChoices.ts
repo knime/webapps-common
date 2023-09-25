@@ -9,7 +9,7 @@ type GetChoices = (params: {
      */
     string,
   ];
-}) => Promise<Result<PossibleValue[]>>;
+}) => Promise<Result<PossibleValue[]> | undefined>;
 
 export default (getChoices: GetChoices) => (choicesProviderClass: string) => {
   return getChoices({

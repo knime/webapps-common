@@ -11,10 +11,15 @@ describe("generatePossibleValues", () => {
   const control = { uischema: { options: { possibleValues } } };
   const dummyAsyncChoicesProvider = () =>
     Promise.reject(new Error("Should not be called"));
+  const dummySendAlert = vi.fn();
 
   it("uses optionsMapper per default", async () => {
     expect(
-      await getPossibleValuesFromUiSchema(control, dummyAsyncChoicesProvider),
+      await getPossibleValuesFromUiSchema(
+        control,
+        dummyAsyncChoicesProvider,
+        dummySendAlert,
+      ),
     ).toStrictEqual(possibleValues);
   });
 
@@ -30,6 +35,7 @@ describe("generatePossibleValues", () => {
           },
         },
         dummyAsyncChoicesProvider,
+        dummySendAlert,
       ),
     ).toEqual(
       expect.arrayContaining([
@@ -50,6 +56,7 @@ describe("generatePossibleValues", () => {
           },
         },
         dummyAsyncChoicesProvider,
+        dummySendAlert,
       ),
     ).toEqual(
       expect.arrayContaining([
@@ -61,37 +68,68 @@ describe("generatePossibleValues", () => {
     );
   });
 
-  it("fetches async choices if no possible values are provided", async () => {
-    const successResultChoices = [{ id: "foo", text: "bar" }];
-    const successfulAsyncChoicesProvider: () => Promise<
-      Result<PossibleValue[]>
-    > = vi.fn(() =>
-      Promise.resolve({ state: "SUCCESS", result: successResultChoices }),
-    );
-    const choicesProviderClass = "myChoicesProviderClass";
+  describe("async choices", () => {
+    it("fetches async choices if no possible values are provided", async () => {
+      const successResultChoices = [{ id: "foo", text: "bar" }];
+      const successfulAsyncChoicesProvider: () => Promise<
+        Result<PossibleValue[]>
+      > = vi.fn(() =>
+        Promise.resolve({ state: "SUCCESS", result: successResultChoices }),
+      );
+      const choicesProviderClass = "myChoicesProviderClass";
 
-    expect(
-      await getPossibleValuesFromUiSchema(
-        {
-          uischema: {
-            options: {
-              showRowKeys: true,
-              choicesProviderClass,
+      expect(
+        await getPossibleValuesFromUiSchema(
+          {
+            uischema: {
+              options: {
+                showRowKeys: true,
+                choicesProviderClass,
+              },
             },
           },
+          successfulAsyncChoicesProvider,
+          dummySendAlert,
+        ),
+      ).toEqual([
+        {
+          id: "<row-keys>",
+          text: "RowIDs",
         },
-        successfulAsyncChoicesProvider,
-      ),
-    ).toEqual([
-      {
-        id: "<row-keys>",
-        text: "RowIDs",
-      },
-      ...successResultChoices,
-    ]);
+        ...successResultChoices,
+      ]);
 
-    expect(successfulAsyncChoicesProvider).toHaveBeenCalledWith(
-      choicesProviderClass,
-    );
+      expect(successfulAsyncChoicesProvider).toHaveBeenCalledWith(
+        choicesProviderClass,
+      );
+    });
+
+    /**
+     * Due to the autohandling of errors which are not handled in the backend, the result of an async choices request can be undefined.
+     */
+    it("returns empty possible values if asnychronous result is undefined", async () => {
+      const undefinedAsyncChoicesProvider: () => Promise<
+        Result<PossibleValue[]> | undefined
+      > = vi.fn(() => Promise.resolve(undefined));
+      const choicesProviderClass = "myChoicesProviderClass";
+
+      expect(
+        await getPossibleValuesFromUiSchema(
+          {
+            uischema: {
+              options: {
+                choicesProviderClass,
+              },
+            },
+          },
+          undefinedAsyncChoicesProvider,
+          dummySendAlert,
+        ),
+      ).toEqual([]);
+
+      expect(undefinedAsyncChoicesProvider).toHaveBeenCalledWith(
+        choicesProviderClass,
+      );
+    });
   });
 });
