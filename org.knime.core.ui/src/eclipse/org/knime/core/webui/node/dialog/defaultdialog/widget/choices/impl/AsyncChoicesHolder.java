@@ -50,12 +50,10 @@ package org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl;
 
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.RunnableFuture;
 
-import org.knime.core.node.KNIMEConstants;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 
 /**
@@ -65,7 +63,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
  *
  * @author Paul Bärnreuther
  */
-public final class AsyncChoicesHolder {
+public final class AsyncChoicesHolder implements AsyncChoicesAdder, AsyncChoicesGetter {
 
     /**
      * A map from the class name of a choices provider to its choices.
@@ -77,51 +75,6 @@ public final class AsyncChoicesHolder {
      */
     public AsyncChoicesHolder() {
         m_choicesMap = new ConcurrentHashMap<>();
-    }
-
-    private static class ChoicesFutureHolder {
-        private final Future<Object[]> m_future;
-
-        private final CompletableFuture<Void> m_futureCompleted;
-
-        private int m_numberOfExpectedCalls;
-
-        public ChoicesFutureHolder(final Callable<Object[]> choicesCallable) {
-            m_futureCompleted = new CompletableFuture<>();
-            final Callable<Object[]> getChoicesAndComplete = () -> {
-                final var result = choicesCallable.call();
-                m_futureCompleted.complete(null);
-                return result;
-            };
-            m_future = KNIMEConstants.GLOBAL_THREAD_POOL.enqueue(getChoicesAndComplete);
-            m_numberOfExpectedCalls = 1;
-        }
-
-        void incrementExpectedCalls() {
-            m_numberOfExpectedCalls += 1;
-        }
-
-        Future<Object[]> get() {
-            m_numberOfExpectedCalls -= 1;
-            return m_future;
-        }
-
-        int getNumberOfExpectedCalls() {
-            return m_numberOfExpectedCalls;
-        }
-
-        /**
-         * @return A future that is completed when m_future is completed. It can be used to run code after the
-         *         completion of the future even if the future is awaited elsewhere.
-         */
-        CompletableFuture<Void> getCompleted() {
-            return m_futureCompleted;
-        }
-
-        void cancel() {
-            m_future.cancel(true);
-        }
-
     }
 
     /**
@@ -139,15 +92,21 @@ public final class AsyncChoicesHolder {
      *            called with the same string since the last initialization, the choices will not be computed again but
      *            instead the existing entry is informed that one more get call is to be expected.
      * @param choicesCallable the computation of the choices that is triggered with the computation of the initial data.
+     * @return the stored representation of the choices. This is a package scoped class as it should only be used for
+     *         creating decorators of {@link AsyncChoicesAdder}.
      */
-    public synchronized void addChoices(final String choicesProviderClassName,
+    @Override
+    public ChoicesFutureHolder addChoices(final String choicesProviderClassName,
         final Callable<Object[]> choicesCallable) {
         if (m_choicesMap.containsKey(choicesProviderClassName)) {
-            m_choicesMap.get(choicesProviderClassName).incrementExpectedCalls();
+            final var existingChoicesFutureHolder = m_choicesMap.get(choicesProviderClassName);
+            existingChoicesFutureHolder.addAnother();
+            return existingChoicesFutureHolder;
         } else {
-            m_choicesMap.put(choicesProviderClassName, new ChoicesFutureHolder(choicesCallable));
+            final var newChoicesFutureHolder = new ChoicesFutureHolder(choicesCallable);
+            m_choicesMap.put(choicesProviderClassName, newChoicesFutureHolder);
+            return newChoicesFutureHolder;
         }
-
     }
 
     /**
@@ -159,10 +118,11 @@ public final class AsyncChoicesHolder {
      *            {@link AsyncChoicesHolder#addChoices}.
      * @return the future holding the result of the started computation.
      */
+    @Override
     public synchronized Future<Object[]> getChoices(final String choicesProviderClassName) {
         final var choices = m_choicesMap.get(choicesProviderClassName);
         final RunnableFuture<Object[]> future = (RunnableFuture<Object[]>)choices.get();
-        if (choices.getNumberOfExpectedCalls() == 0) {
+        if (!choices.expectsGet()) {
             choices.getCompleted().thenRun(() -> m_choicesMap.remove(choicesProviderClassName));
         }
         return future;

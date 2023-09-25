@@ -71,7 +71,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.Setting
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.UpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesGetter;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -97,22 +97,22 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
 
     private final SettingsConverter m_converter;
 
-    private final AsyncChoicesHolder m_asyncChoicesHolder;
+    private final AsyncChoicesGetter m_asyncChoicesGetter;
 
     /**
      * @param converter used to transform between text settings from the front-end to {@link NodeSettings} and back
-     * @param asyncChoicesHolder holding those choices whose computation was triggered during the determination of the
-     *            initial data.
+     * @param asyncChoicesGetter for retrieving those choices whose computation was triggered during the determination
+     *            of the initial data.
      */
     public DefaultNodeDialogDataServiceImpl(final SettingsConverter converter,
-        final AsyncChoicesHolder asyncChoicesHolder) {
+        final AsyncChoicesGetter asyncChoicesGetter) {
         m_converter = converter;
         var settingsClasses = converter.getSettingsClasses();
         m_buttonActionHandlers = new ButtonWidgetActionHandlerHolder(settingsClasses);
         m_buttonUpdateHandlers = new ButtonWidgetUpdateHandlerHolder(settingsClasses);
         m_choicesUpdateHandlers = new ChoicesWidgetUpdateHandlerHolder(settingsClasses);
         m_requestHandler = new DataServiceRequestHandler();
-        m_asyncChoicesHolder = asyncChoicesHolder;
+        m_asyncChoicesGetter = asyncChoicesGetter;
     }
 
     @Override
@@ -173,7 +173,7 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
 
     @Override
     public Result<?> getChoices(final String className) throws InterruptedException, ExecutionException {
-        return m_requestHandler.handleRequestFuture(m_asyncChoicesHolder.getChoices(className));
+        return m_requestHandler.handleRequestFuture(m_asyncChoicesGetter.getChoices(className));
     }
 
     private static Object convertDependencies(final Object objectSettings, final DependencyHandler<?> handler) {

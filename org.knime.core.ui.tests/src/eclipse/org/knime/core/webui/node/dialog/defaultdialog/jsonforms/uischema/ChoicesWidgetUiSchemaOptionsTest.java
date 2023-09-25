@@ -320,6 +320,42 @@ class ChoicesWidgetUiSchemaOptionsTest {
 
         }
 
+        static class TestAsyncChoicesProviderForArrayLayout extends TestAsyncChoicesProvider {
+        }
+
+        class ArrayLayoutElementWithChoices {
+
+            @ChoicesWidget(choices = TestAsyncChoicesProviderForArrayLayout.class)
+            String m_elementChoices;
+
+        }
+
+        class AsyncChoicesArrayLayoutSettings {
+
+            ArrayLayoutElementWithChoices[] m_withinArrayLayout;
+        }
+
+        @Test
+        void testChoicesWidgetWithAsyncChoicesProviderWithinArrayLayout()
+            throws InterruptedException, ExecutionException {
+            DefaultNodeSettingsContext defaultNodeSettingsContext = createDefaultNodeSettingsContext();
+            final var asyncChoicesHolder = new AsyncChoicesHolder();
+
+            var response = buildTestUiSchema(AsyncChoicesArrayLayoutSettings.class, defaultNodeSettingsContext,
+                asyncChoicesHolder);
+
+            assertThatJson(response).inPath("$.elements[0].scope").isString().contains("withinArrayLayout");
+
+            /**
+             * Although there is only one field, fields within an array layout will never throw an exception
+             */
+            for (int i = 0; i < 5; i++) {
+                assertThat(asyncChoicesHolder.getChoices(TestAsyncChoicesProviderForArrayLayout.class.getName()).get())
+                    .isEqualTo(new IdAndText[]{new IdAndText("id1", "text1"), new IdAndText("id2", "text2")});
+            }
+
+        }
+
     }
 
     @Test

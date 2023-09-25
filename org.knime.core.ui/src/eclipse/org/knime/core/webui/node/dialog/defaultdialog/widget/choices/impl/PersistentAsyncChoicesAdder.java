@@ -44,61 +44,40 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 21, 2023 (Paul Bärnreuther): created
+ *   Sep 25, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
+package org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl;
 
-import java.util.Map;
-
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.LayoutNodesGenerator.LayoutSkeleton;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesAdder;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.concurrent.Callable;
 
 /**
- * Class for creating ui schema content from a settings POJO class.
- *
- *
- * The UiSchema generation follows these steps:
- * <ol type="1">
- * <li>Collect all {@link Layout} and {@link Signal} annotations and register all controls (see
- * {@link UiSchemaDefaultNodeSettingsTraverser})</li>
- * <li>Use order annotations (see e.g. {@link After}) and class hierarchies to determine a tree structure (see
- * {@link LayoutTree})</li>
- * <li>Generate the layout parts starting from the root and add the mapped controls (see
- * {@link LayoutNodesGenerator})</li>
- * </ol>
+ * This is a decorator for the {@link AsyncChoicesAdder} which is used in cases where an added choice needs to be kept
+ * indefinitely regardless of the number of times it was already retrieved (e.g. when inside an array layout).
  *
  * @author Paul Bärnreuther
  */
-public final class JsonFormsUiSchemaUtil {
+public final class PersistentAsyncChoicesAdder implements AsyncChoicesAdder {
 
-    private JsonFormsUiSchemaUtil() {
-        // utility class
+    private final AsyncChoicesAdder m_delegate;
+
+    /**
+     * @param delegate to which any newly added choices will be added.
+     */
+    public PersistentAsyncChoicesAdder(final AsyncChoicesAdder delegate) {
+        m_delegate = delegate;
     }
 
     /**
-     * @param settings
-     * @param mapper
-     * @param context
-     * @param asyncChoicesAdder
-     * @return the ui schema resolved by the mapper from the given settings
+     * The added choices will be kept regardless of how many times they are requested.
+     *
+     * {@inheritDoc}
      */
-    public static ObjectNode buildUISchema(final Map<String, Class<?>> settings, final ObjectMapper mapper,
-        final DefaultNodeSettingsContext context, final AsyncChoicesAdder asyncChoicesAdder) {
-        final var layoutSkeleton = resolveLayout(settings, mapper);
-        return new LayoutNodesGenerator(layoutSkeleton, mapper, context, asyncChoicesAdder).build();
+    @Override
+    public ChoicesFutureHolder addChoices(final String choicesProviderClassName,
+        final Callable<Object[]> choicesCallable) {
+        final var addedChoice = m_delegate.addChoices(choicesProviderClassName, choicesCallable);
+        addedChoice.setToAlwaysExpectGet();
+        return addedChoice;
     }
 
-    private static LayoutSkeleton resolveLayout(final Map<String, Class<?>> settings, final ObjectMapper mapper) {
-        final var traverser = new UiSchemaDefaultNodeSettingsTraverser(mapper);
-        final var traversalResult = traverser.traverse(settings);
-        final var layoutTreeRoot = new LayoutTree(traversalResult.layoutPartToControls()).getRootNode();
-        return new LayoutSkeleton(layoutTreeRoot, traversalResult.signals(), traversalResult.fields());
-    }
 }

@@ -100,8 +100,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonAction
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonState;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.NoopButtonUpdateHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesAdder;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.NoopChoicesUpdateHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.PersistentAsyncChoicesAdder;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DeclaringDefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.WidgetAnnotation;
@@ -134,7 +135,7 @@ final class UiSchemaOptionsGenerator {
 
     private final String m_scope;
 
-    private final AsyncChoicesHolder m_asyncChoicesHolder;
+    private final AsyncChoicesAdder m_asyncChoicesAdder;
 
     private static final int ASYNC_CHOICES_THRESHOLD = 100;
 
@@ -150,10 +151,10 @@ final class UiSchemaOptionsGenerator {
      */
     UiSchemaOptionsGenerator(final ObjectMapper mapper, final PropertyWriter field,
         final DefaultNodeSettingsContext context, final Collection<JsonFormsControl> fields, final String scope,
-        final AsyncChoicesHolder asyncChoicesHolder) {
+        final AsyncChoicesAdder asyncChoicesAdder) {
         m_mapper = mapper;
         m_field = field;
-        m_asyncChoicesHolder = asyncChoicesHolder;
+        m_asyncChoicesAdder = asyncChoicesAdder;
         m_fieldType = field.getType();
         m_fieldClass = field.getType().getRawClass();
         m_fieldName = field.getName();
@@ -303,7 +304,7 @@ final class UiSchemaOptionsGenerator {
         final Class<? extends ChoicesProvider> choicesProviderClass, final Callable<Object[]> getChoices) {
         String choicesProviderClassName = choicesProviderClass.getName();
         options.put("choicesProviderClass", choicesProviderClassName);
-        m_asyncChoicesHolder.addChoices(choicesProviderClassName, getChoices);
+        m_asyncChoicesAdder.addChoices(choicesProviderClassName, getChoices);
     }
 
     private Object[] generatePossibleValues(final Class<? extends ChoicesProvider> choicesProviderClass) {
@@ -437,8 +438,14 @@ final class UiSchemaOptionsGenerator {
 
         Map<String, Class<?>> arraySettings = new HashMap<>();
         arraySettings.put(null, componentType);
+        /**
+         * We need a persistent async choices adder in case of settings nested inside an array layout, since the
+         * frontend fetches the choices for every element in it individually and one can add more than initially
+         * present.
+         */
+        final var persistentAsyncChoicesAdder = new PersistentAsyncChoicesAdder(m_asyncChoicesAdder);
         var details = JsonFormsUiSchemaUtil
-            .buildUISchema(arraySettings, m_mapper, m_defaultNodeSettingsContext, m_asyncChoicesHolder)
+            .buildUISchema(arraySettings, m_mapper, m_defaultNodeSettingsContext, persistentAsyncChoicesAdder)
             .get(TAG_ELEMENTS);
         options.set(TAG_ARRAY_LAYOUT_DETAIL, details);
 
