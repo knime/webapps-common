@@ -90,7 +90,7 @@ export default {
 
 <style lang="postcss" scoped>
 .breadcrumb {
-  color: var(--knime-dove-gray);
+  color: var(--texts-text-primary);
   font-family: var(--theme-text-bold-font-family);
   font-size: 13px;
   line-height: 18px;
@@ -131,7 +131,7 @@ export default {
   & svg {
     position: relative;
     vertical-align: top;
-    stroke: var(--theme-text-bold-color);
+    stroke: var(--texts-text-primary);
     bottom: 1px;
   }
 
@@ -153,10 +153,10 @@ export default {
 
   /* Unlinked breadcrumb item */
   & span {
-    color: var(--theme-text-bold-color);
+    color: var(--texts-text-primary);
 
     & svg {
-      stroke: var(--theme-text-bold-color);
+      stroke: var(--texts-text-primary);
     }
   }
 
@@ -170,16 +170,16 @@ export default {
     &:hover,
     &:focus {
       outline: none;
-      color: var(--theme-text-bold-color);
+      color: var(--texts-text-primary);
 
       & svg {
-        stroke: var(--theme-text-bold-color);
+        stroke: var(--texts-text-primary);
       }
     }
   }
 
   &.grey-style {
-    color: var(--theme-text-bold-color);
+    color: var(--texts-text-primary);
 
     /* Linked breadcrumb item */
     & a:hover,
