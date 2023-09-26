@@ -6,6 +6,7 @@ let count = 0;
 export type BaseRadioButtonItem = {
   id: string;
   text: string;
+  icon: string;
   subtext?: string;
   disabled?: boolean;
 };
@@ -40,7 +41,9 @@ export default defineComponent({
           return false;
         }
         return values.every(
-          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text"),
+          (item) =>
+            item.hasOwnProperty("id") &&
+            (item.hasOwnProperty("text") || item.hasOwnProperty("icon")),
         );
       },
     },
@@ -87,7 +90,12 @@ export default defineComponent({
         type="radio"
         @change="onInput"
       />
-      <span :title="item.text" :class="{ bold }">{{ item.text }}</span>
+      <span v-if="item.icon" class="item-content">
+        <Component :is="item.icon" />
+      </span>
+      <span v-else class="item-content" :title="item.text" :class="{ bold }">{{
+        item.text
+      }}</span>
       <slot :item="item" />
       <br v-if="item.subtext" /><span v-if="item.subtext">
         {{ item.subtext }}</span
@@ -107,5 +115,12 @@ label {
 
 .with-subtext {
   margin-bottom: 30px;
+}
+
+svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: calc(32px / 18px);
+  stroke: white;
 }
 </style>

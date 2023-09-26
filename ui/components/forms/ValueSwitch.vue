@@ -75,7 +75,7 @@ export default defineComponent({
   width: max-content;
   height: calc(var(--wrapper-height) * 1px);
 
-  & :deep(span) {
+  & :deep(.item-content) {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -101,7 +101,7 @@ export default defineComponent({
     --wrapper-height: 20;
   }
 
-  & :deep(input[disabled]) + span {
+  & :deep(input[disabled]) + .item-content {
     opacity: 0.5;
     pointer-events: none;
   }
@@ -110,14 +110,18 @@ export default defineComponent({
     user-select: none;
     display: none;
 
-    & + span:hover {
+    & + .item-content:hover {
       background-color: var(--theme-value-switch-background-color-hover);
     }
 
-    &:checked + span {
+    &:checked + .item-content {
       background-color: var(--theme-value-switch-background-color-checked);
       color: var(--theme-value-switch-background-color);
       pointer-events: none;
+
+      & svg {
+        stroke: var(--knime-masala);
+      }
     }
   }
 }
