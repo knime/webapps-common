@@ -94,9 +94,12 @@ public interface VariableSettingsWO {
      *
      * @param settingsKey
      * @param usedVariable the name of the variable which should be used
+     * @param isControllingFlowVariableFlawed whether overriding the corresponding setting with this variable in a valid
+     *            way is currently not possible
      * @throws InvalidSettingsException if there is no setting with the given key
      */
-    void addUsedVariable(String settingsKey, String usedVariable) throws InvalidSettingsException;
+    void addUsedVariable(String settingsKey, String usedVariable, boolean isControllingFlowVariableFlawed)
+        throws InvalidSettingsException;
 
     /**
      * Set that the setting with the given key is exposed as a variable.

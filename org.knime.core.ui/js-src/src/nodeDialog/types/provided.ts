@@ -25,7 +25,11 @@ type ProvidedFlowVariablesApi = {
   getAvailableFlowVariables: (
     persistPath: string,
   ) => Promise<Record<string, PossibleFlowVariable[]>>;
-  getFlowVariableOverrideValue: (dataPath: string) => Promise<any>;
+  getFlowVariableOverrideValue: (
+    persistPath: string,
+    dataPath: string,
+  ) => Promise<any>;
+  unsetControllingFlowVariable: (persistPath: string) => void;
 };
 
 type Provided = {

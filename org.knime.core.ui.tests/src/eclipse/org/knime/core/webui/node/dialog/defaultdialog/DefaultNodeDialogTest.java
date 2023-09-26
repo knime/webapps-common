@@ -50,6 +50,7 @@ package org.knime.core.webui.node.dialog.defaultdialog;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -58,6 +59,7 @@ import java.util.function.Supplier;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
@@ -88,6 +90,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+@SuppressWarnings("java:S2698") // we accept assertions without messages
 public class DefaultNodeDialogTest {
 
     static class ModelSettings implements DefaultNodeSettings {
@@ -97,9 +100,14 @@ public class DefaultNodeDialogTest {
     }
 
     static class ViewSettings implements DefaultNodeSettings {
+
+        enum MyEnum {
+                A, B, C
+        }
+
         @Widget
         @Persist(configKey = "view setting")
-        String m_viewSetting = "2";
+        MyEnum m_viewSetting = MyEnum.A;
 
         @Widget
         @Persist(configKey = "nested")
@@ -141,175 +149,273 @@ public class DefaultNodeDialogTest {
         WorkflowManagerUtil.disposeWorkflow(m_wfm);
     }
 
-    @Test
-    void testInitialDataWithFlowVariableSettings() throws InvalidSettingsException, IOException {
-        var defModelSettings = new NodeSettings("model");
-        var defViewSettings = new NodeSettings("view");
-        m_defaultNodeSettingsService.getDefaultNodeSettings(
-            Map.of(SettingsType.MODEL, defModelSettings, SettingsType.VIEW, defViewSettings),
-            new DataTableSpec[]{new DataTableSpec()});
-        initNodeSettings(m_nnc, defModelSettings, defViewSettings);
-        m_nnc.getFlowObjectStack().push(new FlowVariable("flow variable 2", "test"));
+    @Nested
+    class InitialDataTest {
 
-        var initialData =
-            NodeDialogManager.getInstance().getDataServiceManager().callInitialDataService(NodeWrapper.of(m_nnc));
+        @BeforeEach
+        void createWorkflowAndAddNode() throws InvalidSettingsException {
+            var defModelSettings = new NodeSettings("model");
+            var defViewSettings = new NodeSettings("view");
+            m_defaultNodeSettingsService.getDefaultNodeSettings(
+                Map.of(SettingsType.MODEL, defModelSettings, SettingsType.VIEW, defViewSettings),
+                new DataTableSpec[]{new DataTableSpec()});
+            initNodeSettings(m_nnc, defModelSettings, defViewSettings);
+            m_nnc.getFlowObjectStack().push(new FlowVariable("flow variable 1", "foo"));
+            m_nnc.getFlowObjectStack().push(new FlowVariable("flow variable 3", "bar"));
+        }
 
-        var mapper = new ObjectMapper();
-        var initialDataJson = mapper.readTree(initialData);
-        assertFlowVariableSettings(initialDataJson, mapper);
-    }
+        @Test
+        void testInitialDataWithFlowVariableSettings() throws InvalidSettingsException, IOException {
+            // "B" is valid, as we overwrite "MyEnum" above
+            m_nnc.getFlowObjectStack().push(new FlowVariable("flow variable 2", "B"));
 
-    private static void assertFlowVariableSettings(final JsonNode initialData, final ObjectMapper mapper)
-        throws JsonMappingException, JsonProcessingException {
-        var expectedFlowVariableSettings = """
-                {
-                  "model.model setting": {
-                    "controllingFlowVariableAvailable": false,
-                    "controllingFlowVariableName": "flow variable 1"
-                  },
-                  "view.view setting": {
-                    "controllingFlowVariableAvailable": true,
-                    "controllingFlowVariableName": "flow variable 2"
-                  },
-                  "view.nested.nested view setting 3": {
-                    "exposedFlowVariableName": "exposed var name"
-                  },
-                  "view.nested.nested view setting 2": {
-                    "exposedFlowVariableName": "exposed var name"
-                  },
-                  "view.nested.nested view setting": {
-                    "controllingFlowVariableAvailable": false,
-                    "controllingFlowVariableName": "flow variable 3",
-                    "exposedFlowVariableName": "exposed var name"
-                  }
-                }
-                """;
-        var expectedJson = mapper.readTree(expectedFlowVariableSettings);
-        assertThatJson(initialData.get("result").get("flowVariableSettings")).isEqualTo(expectedJson);
-    }
+            var initialData = getInitialData();
 
-    @Test
-    void testApplyDataWithFlowVariableSettings() throws IOException, InvalidSettingsException {
-        var applyData = """
-                {
-                  "data": {
-                    "model": {
-                      "model setting": "2"
-                    },
-                    "view": {
-                      "view setting": "3",
-                      "nested": {
-                        "nested view setting": "4",
-                        "nested view setting 2": "5"
+            var mapper = new ObjectMapper();
+            var initialDataJson = mapper.readTree(initialData);
+            assertFlowVariableSettings(initialDataJson, mapper);
+            assertOverwrittenNodeSettings(initialDataJson, mapper);
+        }
+
+        @Test
+        void testInitialDataWithFlawedFlowVariableSettings() throws InvalidSettingsException, IOException {
+            // "NOT_A_B_OR_C" is flawed, as we overwrite "MyEnum" above
+            m_nnc.getFlowObjectStack().push(new FlowVariable("flow variable 2", "NOT_A_B_OR_C"));
+
+            var initialData = getInitialData();
+
+            var mapper = new ObjectMapper();
+            var initialDataJson = mapper.readTree(initialData);
+            assertNonOverwrittenNodeSettings(initialDataJson, mapper);
+        }
+
+        private String getInitialData() {
+            var initialData =
+                NodeDialogManager.getInstance().getDataServiceManager().callInitialDataService(NodeWrapper.of(m_nnc));
+            return initialData;
+        }
+
+        private static void assertFlowVariableSettings(final JsonNode initialData, final ObjectMapper mapper)
+            throws JsonMappingException, JsonProcessingException {
+            var expectedFlowVariableSettings = """
+                    {
+                      "model.model setting": {
+                        "controllingFlowVariableAvailable": true,
+                        "controllingFlowVariableFlawed": false,
+                        "controllingFlowVariableName": "flow variable 1"
+                      },
+                      "view.view setting": {
+                        "controllingFlowVariableAvailable": true,
+                        "controllingFlowVariableFlawed": false,
+                        "controllingFlowVariableName": "flow variable 2"
+                      },
+                      "view.nested.nested view setting 3": {
+                        "controllingFlowVariableFlawed": false,
+                        "exposedFlowVariableName": "exposed var name"
+                      },
+                      "view.nested.nested view setting 2": {
+                        "controllingFlowVariableFlawed": false,
+                        "exposedFlowVariableName": "exposed var name"
+                      },
+                      "view.nested.nested view setting": {
+                        "controllingFlowVariableAvailable": true,
+                        "controllingFlowVariableName": "flow variable 3",
+                        "controllingFlowVariableFlawed": false,
+                        "exposedFlowVariableName": "exposed var name"
                       }
                     }
-                  },
-                  "flowVariableSettings": {
-                    "model.model setting": {
-                      "controllingFlowVariableAvailable": false,
-                      "controllingFlowVariableName": "flow variable 1"
-                    },
-                    "view.view setting": {
-                      "controllingFlowVariableAvailable": true,
-                      "controllingFlowVariableName": "flow variable 2"
-                    },
-                    "view.nested.nested view setting 3": {
-                      "exposedFlowVariableName": "exposed var name"
-                    },
-                    "view.nested.nested view setting 2": {
-                      "exposedFlowVariableName": "exposed var name"
-                    },
-                    "view.nested.nested view setting": {
-                      "controllingFlowVariableAvailable": false,
-                      "controllingFlowVariableName": "flow variable 3",
-                      "exposedFlowVariableName": "exposed var name"
-                    }
-                  }
-                }
-                """;
-        NodeDialogManager.getInstance().getDataServiceManager().callApplyDataService(NodeWrapper.of(m_nnc), applyData);
+                    """;
+            var expectedJson = mapper.readTree(expectedFlowVariableSettings);
+            assertThatJson(initialData.get("result").get("flowVariableSettings")).isEqualTo(expectedJson);
+        }
 
-        var nodeSettingsToCheck = m_nnc.getNodeSettings();
+        private static void assertOverwrittenNodeSettings(final JsonNode initialData, final ObjectMapper mapper)
+            throws JsonMappingException, JsonProcessingException {
+            var expectedData =
+                """
+                        {
+                          "model": {"modelSetting":"foo"},
+                          "view": {"nestedViewSetting":{"nestedViewSettings":"bar","nestedViewSettings2":"4"},"viewSetting":"B"}
+                        }
+                        """;
 
-        var expectedNodeSettings = new NodeSettings("configuration");
-        var modelSettings = expectedNodeSettings.addNodeSettings("model");
-        var viewSettings = expectedNodeSettings.addNodeSettings("view");
-        m_defaultNodeSettingsService.getDefaultNodeSettings(
-            Map.of(SettingsType.MODEL, modelSettings, SettingsType.VIEW, viewSettings),
-            new DataTableSpec[]{new DataTableSpec()});
-        initModelVariableSettings(expectedNodeSettings);
-        initViewVariableSettings(expectedNodeSettings, false);
+            var expectedJson = mapper.readTree(expectedData);
+            assertThatJson(initialData.get("result").get("data")).isEqualTo(expectedJson);
+        }
 
-        assertSubNodeSettingsForKey(nodeSettingsToCheck, expectedNodeSettings, "model");
-        assertSubNodeSettingsForKey(nodeSettingsToCheck, expectedNodeSettings, "variables");
-        assertSubNodeSettingsForKey(nodeSettingsToCheck, expectedNodeSettings, "view");
-        assertSubNodeSettingsForKey(nodeSettingsToCheck, expectedNodeSettings, "view_variables");
+        private static void assertNonOverwrittenNodeSettings(final JsonNode initialData, final ObjectMapper mapper)
+            throws JsonMappingException, JsonProcessingException {
+            var expectedData =
+                """
+                        {
+                          "model": {"modelSetting":"1"},
+                          "view": {"nestedViewSetting":{"nestedViewSettings":"3","nestedViewSettings2":"4"},"viewSetting":"A"}
+                        }
+                        """;
+            var expectedJson = mapper.readTree(expectedData);
+            assertThatJson(initialData.get("result").get("data")).isEqualTo(expectedJson);
+        }
     }
 
-    @Test
-    void testApplyDataWithOnlyViewFlowVariableSettings() throws IOException, InvalidSettingsException {
+    @Nested
+    class ApplyDataTest {
 
-        var initialApplyData = """
-                {
-                  "data": {
-                    "model": {},
-                    "view": {}
-                  },
-                  "flowVariableSettings": {}
-                }
-                """;
-
-        NodeDialogManager.getInstance().getDataServiceManager().callApplyDataService(NodeWrapper.of(m_nnc),
-            initialApplyData);
-        m_wfm.executeAllAndWaitUntilDone();
-
-        /**
-         * Essential here is that the settings and the model variables did not change, i.e. only new view variables get
-         * applied.
-         */
-        var applyViewVariablesData = """
-                {
-                  "data": {
-                    "model": {},
-                    "view": {}
-                   },
-                  "flowVariableSettings": {
-                    "view.view setting": {
-                      "controllingFlowVariableAvailable": true,
-                      "controllingFlowVariableName": "flow variable 2"
-                    },
-                    "view.nested.nested view setting 3": {
-                      "exposedFlowVariableName": "exposed var name"
-                    },
-                    "view.nested.nested view setting 2": {
-                      "exposedFlowVariableName": "exposed var name"
-                    },
-                    "view.nested.nested view setting": {
-                      "controllingFlowVariableAvailable": false,
-                      "controllingFlowVariableName": "flow variable 3",
-                      "exposedFlowVariableName": "exposed var name"
+        @Test
+        void testApplyDataWithFlowVariableSettings() throws IOException, InvalidSettingsException {
+            var applyData = """
+                    {
+                      "data": {
+                        "model": {
+                          "model setting": "2"
+                        },
+                        "view": {
+                          "view setting": "3",
+                          "nested": {
+                            "nested view setting": "4",
+                            "nested view setting 2": "5"
+                          }
+                        }
+                      },
+                      "flowVariableSettings": {
+                        "model.model setting": {
+                          "controllingFlowVariableAvailable": false,
+                          "controllingFlowVariableName": "flow variable 1"
+                        },
+                        "view.view setting": {
+                          "controllingFlowVariableAvailable": true,
+                          "controllingFlowVariableName": "flow variable 2"
+                        },
+                        "view.nested.nested view setting 3": {
+                          "exposedFlowVariableName": "exposed var name"
+                        },
+                        "view.nested.nested view setting 2": {
+                          "exposedFlowVariableName": "exposed var name"
+                        },
+                        "view.nested.nested view setting": {
+                          "controllingFlowVariableAvailable": false,
+                          "controllingFlowVariableName": "flow variable 3",
+                          "exposedFlowVariableName": "exposed var name"
+                        }
+                      }
                     }
-                  }
-                }
-                """;
-        NodeDialogManager.getInstance().getDataServiceManager().callApplyDataService(NodeWrapper.of(m_nnc),
-            applyViewVariablesData);
+                    """;
+            callApplyData(applyData);
 
-        var nodeSettingsToCheck = m_nnc.getNodeSettings();
-        var expectedNodeSettings = new NodeSettings("configuration");
-        var modelSettings = expectedNodeSettings.addNodeSettings("model");
-        var viewSettings = expectedNodeSettings.addNodeSettings("view");
-        m_defaultNodeSettingsService.getDefaultNodeSettings(
-            Map.of(SettingsType.MODEL, modelSettings, SettingsType.VIEW, viewSettings),
-            new DataTableSpec[]{new DataTableSpec()});
-        initViewVariableSettings(expectedNodeSettings, false);
-        assertTrue(m_nnc.getNodeContainerState().isExecuted());
-        assertSubNodeSettingsForKey(nodeSettingsToCheck, expectedNodeSettings, "view_variables");
-    }
+            var nodeSettingsToCheck = m_nnc.getNodeSettings();
 
-    private static void assertSubNodeSettingsForKey(final NodeSettings test, final NodeSettings expected,
-        final String key) throws InvalidSettingsException {
-        assertThat(test.getNodeSettings(key)).isEqualTo(expected.getNodeSettings(key));
+            var expectedNodeSettings = new NodeSettings("configuration");
+            var modelSettings = expectedNodeSettings.addNodeSettings("model");
+            var viewSettings = expectedNodeSettings.addNodeSettings("view");
+            m_defaultNodeSettingsService.getDefaultNodeSettings(
+                Map.of(SettingsType.MODEL, modelSettings, SettingsType.VIEW, viewSettings),
+                new DataTableSpec[]{new DataTableSpec()});
+            initModelVariableSettings(expectedNodeSettings);
+            initViewVariableSettings(expectedNodeSettings, false);
+
+            assertSubNodeSettingsForKey(nodeSettingsToCheck, expectedNodeSettings, "model");
+            assertSubNodeSettingsForKey(nodeSettingsToCheck, expectedNodeSettings, "variables");
+            assertSubNodeSettingsForKey(nodeSettingsToCheck, expectedNodeSettings, "view");
+            assertSubNodeSettingsForKey(nodeSettingsToCheck, expectedNodeSettings, "view_variables");
+        }
+
+        @Test
+        void testApplyDataWithOnlyViewFlowVariableSettings() throws IOException, InvalidSettingsException {
+
+            initializeViewSettingsForApplyTest();
+
+            /**
+             * Essential here is that the settings and the model variables did not change, i.e. only new view variables
+             * get applied.
+             */
+            var applyViewVariablesData = """
+                    {
+                      "data": {
+                        "model": {},
+                        "view": {}
+                       },
+                      "flowVariableSettings": {
+                        "view.view setting": {
+                          "controllingFlowVariableAvailable": true,
+                          "controllingFlowVariableName": "flow variable 2"
+                        },
+                        "view.nested.nested view setting 3": {
+                          "exposedFlowVariableName": "exposed var name"
+                        },
+                        "view.nested.nested view setting 2": {
+                          "exposedFlowVariableName": "exposed var name"
+                        },
+                        "view.nested.nested view setting": {
+                          "controllingFlowVariableAvailable": false,
+                          "controllingFlowVariableName": "flow variable 3",
+                          "exposedFlowVariableName": "exposed var name"
+                        }
+                      }
+                    }
+                    """;
+            callApplyData(applyViewVariablesData);
+
+            var nodeSettingsToCheck = m_nnc.getNodeSettings();
+            var expectedNodeSettings = new NodeSettings("configuration");
+            var modelSettings = expectedNodeSettings.addNodeSettings("model");
+            var viewSettings = expectedNodeSettings.addNodeSettings("view");
+            m_defaultNodeSettingsService.getDefaultNodeSettings(
+                Map.of(SettingsType.MODEL, modelSettings, SettingsType.VIEW, viewSettings),
+                new DataTableSpec[]{new DataTableSpec()});
+            initViewVariableSettings(expectedNodeSettings, false);
+            assertTrue(m_nnc.getNodeContainerState().isExecuted());
+            assertSubNodeSettingsForKey(nodeSettingsToCheck, expectedNodeSettings, "view_variables");
+        }
+
+        @Test
+        void testApplyDataResetsNodeOnFlawedViewVariables() throws IOException, InvalidSettingsException {
+
+            initializeViewSettingsForApplyTest();
+
+            var flawedViewVariablesData = """
+                    {
+                      "data": {
+                        "model": {},
+                        "view": {}
+                       },
+                      "flowVariableSettings": {
+                        "view.view setting": {
+                          "controllingFlowVariableFlawed": true,
+                          "controllingFlowVariableAvailable": true,
+                          "controllingFlowVariableName": "flow variable 2"
+                        }
+                      }
+                    }
+                    """;
+            callApplyData(flawedViewVariablesData);
+
+            assertFalse(m_nnc.getNodeContainerState().isExecuted());
+        }
+
+        private void initializeViewSettingsForApplyTest() throws IOException {
+            var initialApplyData = """
+                    {
+                      "data": {
+                        "model": {},
+                        "view": {}
+                      },
+                      "flowVariableSettings": {}
+                    }
+                    """;
+
+            callApplyData(initialApplyData);
+            m_wfm.executeAllAndWaitUntilDone();
+        }
+
+        private void callApplyData(final String applyData) throws IOException {
+            NodeDialogManager.getInstance().getDataServiceManager().callApplyDataService(NodeWrapper.of(m_nnc),
+                applyData);
+        }
+
+        private static void assertSubNodeSettingsForKey(final NodeSettings test, final NodeSettings expected,
+            final String key) throws InvalidSettingsException {
+            assertThat(test.getNodeSettings(key)).isEqualTo(expected.getNodeSettings(key));
+        }
+
     }
 
     private static void initNodeSettings(final NativeNodeContainer nnc, final NodeSettings defaultModelSettings,
@@ -333,6 +439,7 @@ public class DefaultNodeDialogTest {
         var variableTree = modelVariables.addNodeSettings("tree");
         var variableTreeNode = variableTree.addNodeSettings("model setting");
         variableTreeNode.addString("used_variable", "flow variable 1");
+        variableTreeNode.addBoolean("used_variable_flawed", false);
         variableTreeNode.addString("exposed_variable", null);
     }
 
@@ -343,20 +450,24 @@ public class DefaultNodeDialogTest {
         var variableTree = viewVariables.addNodeSettings("tree");
         var variableTreeNode1 = variableTree.addNodeSettings("view setting");
         variableTreeNode1.addString("used_variable", "flow variable 2");
+        variableTreeNode1.addBoolean("used_variable_flawed", false);
         variableTreeNode1.addString("exposed_variable", null);
 
         var nested = variableTree.addNodeSettings("nested");
         var variableTreeNode2 = nested.addNodeSettings("nested view setting");
         variableTreeNode2.addString("used_variable", "flow variable 3");
+        variableTreeNode2.addBoolean("used_variable_flawed", false);
         variableTreeNode2.addString("exposed_variable", "exposed var name");
 
         var variableTreeNode3 = nested.addNodeSettings("nested view setting 2");
         variableTreeNode3.addString("used_variable", null);
+        variableTreeNode3.addBoolean("used_variable_flawed", false);
         variableTreeNode3.addString("exposed_variable", "exposed var name");
 
         if (includeVariableSettingForNonexistentNodeSetting) {
             var variableTreeNode4 = nested.addNodeSettings("nested view setting 3");
             variableTreeNode4.addString("used_variable", null);
+            variableTreeNode4.addBoolean("used_variable_flawed", false);
             variableTreeNode4.addString("exposed_variable", "exposed var name");
         }
     }

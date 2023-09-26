@@ -102,6 +102,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+@SuppressWarnings("java:S2698") // we accept assertions without messages
 public class NodeDialogTest {
 
     /**
@@ -111,7 +112,7 @@ public class NodeDialogTest {
      * @throws Exception
      */
     @Test
-    public void testInitialSettingsForUnconnectedNode() throws Exception {
+    void testInitialSettingsForUnconnectedNode() throws Exception {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var nnc = WorkflowManagerUtil.createAndAddNode(wfm, new NodeDialogNodeFactory(
             () -> createNodeDialog(Page.builder(() -> "test", "test.html").build(), createNodeSettingsService(), null),
@@ -121,8 +122,7 @@ public class NodeDialogTest {
 
         // make sure that the default settings are properly provided with the initial settings
         var initalDefaultSettings = dataServiceManager.callInitialDataService(nncWrapper);
-        assertThat(initalDefaultSettings).contains("a default model setting");
-        assertThat(initalDefaultSettings).contains("a default view setting");
+        assertThat(initalDefaultSettings).contains("a default model setting").contains("a default view setting");
 
         // make sure that new settings (i.e. default settings are changed) are properly provided with
         // the initial settings
@@ -132,8 +132,8 @@ public class NodeDialogTest {
         viewSettings.addString("view_key1", "view_setting_value");
         dataServiceManager.callApplyDataService(nncWrapper, settingsToString(modelSettings, viewSettings));
         var initialSettings = parseResult(dataServiceManager.callInitialDataService(nncWrapper), false);
-        assertThat(initialSettings).contains("\"view_key1\":{\"type\":\"string\",\"value\":\"view_setting_value\"}");
-        assertThat(initialSettings).contains("\"model_key1\":{\"type\":\"string\",\"value\":\"model_setting_value\"}");
+        assertThat(initialSettings).contains("\"view_key1\":{\"type\":\"string\",\"value\":\"view_setting_value\"}")
+            .contains("\"model_key1\":{\"type\":\"string\",\"value\":\"model_setting_value\"}");
     }
 
     /**
@@ -143,7 +143,7 @@ public class NodeDialogTest {
      * @throws Exception
      */
     @Test
-    public void testApplyChangedSettings() throws Exception {
+    void testApplyChangedSettings() throws Exception {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var nnc = WorkflowManagerUtil.createAndAddNode(wfm,
             new NodeDialogNodeFactory(() -> createNodeDialog(Page.builder(() -> "test", "test.html").build(),
@@ -252,7 +252,8 @@ public class NodeDialogTest {
         var initialModelSettings = new NodeSettings("model");
         var initialViewSettings = new NodeSettings("view");
         var dataServiceManager = NodeDialogManager.getInstance().getDataServiceManager();
-        dataServiceManager.callApplyDataService(nncWrapper, settingsToString(initialModelSettings, initialViewSettings));
+        dataServiceManager.callApplyDataService(nncWrapper,
+            settingsToString(initialModelSettings, initialViewSettings));
         onApplyModifier.setExpected(nnc, initialModelSettings, initialModelSettings, initialViewSettings,
             initialViewSettings);
         dataServiceManager.deactivateDataServices(nncWrapper); // clean up data services (simulate closing of the dialog)
@@ -264,10 +265,12 @@ public class NodeDialogTest {
         updatedModelSettings.addString("key", "updatedOnce");
         var updatedViewSettings = new NodeSettings("view");
         updatedViewSettings.addString("key", "updatedOnce");
-        dataServiceManager.callApplyDataService(nncWrapper, settingsToString(updatedModelSettings, updatedViewSettings));
+        dataServiceManager.callApplyDataService(nncWrapper,
+            settingsToString(updatedModelSettings, updatedViewSettings));
         updatedModelSettings.addString("key", "updatedTwice");
         updatedViewSettings.addString("key", "updatedTwice");
-        dataServiceManager.callApplyDataService(nncWrapper, settingsToString(updatedModelSettings, updatedViewSettings));
+        dataServiceManager.callApplyDataService(nncWrapper,
+            settingsToString(updatedModelSettings, updatedViewSettings));
         onApplyModifier.setExpected(nnc, initialModelSettings, updatedModelSettings, initialViewSettings,
             updatedViewSettings);
         dataServiceManager.deactivateDataServices(nncWrapper); // clean up data services (simulate closing of the dialog)
@@ -291,7 +294,8 @@ public class NodeDialogTest {
         wfm.loadNodeSettings(nnc.getID(), nodeSettings);
         nnc.getFlowObjectStack().push(new FlowVariable("view_variable", "view_variable_value"));
         nnc.getFlowObjectStack().push(new FlowVariable("model_variable", "model_variable_value"));
-        dataServiceManager.callApplyDataService(nncWrapper, settingsToString(initialModelSettings, initialViewSettings));
+        dataServiceManager.callApplyDataService(nncWrapper,
+            settingsToString(initialModelSettings, initialViewSettings));
         onApplyModifier.setExpected(nnc, updatedModelSettings, updatedModelSettings, updatedViewSettings,
             updatedViewSettings);
         dataServiceManager.deactivateDataServices(nncWrapper); // clean up data services (simulate closing of the dialog)
@@ -307,7 +311,7 @@ public class NodeDialogTest {
      * @throws InvalidSettingsException
      */
     @Test
-    public void testGetAndApplySettingsControlledByFlowVariables() throws IOException, InvalidSettingsException {
+    void testGetAndApplySettingsControlledByFlowVariables() throws IOException, InvalidSettingsException {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var nnc = WorkflowManagerUtil.createAndAddNode(wfm,
             new NodeDialogNodeFactory(() -> createNodeDialog(Page.builder(() -> "test", "test.html").build(),
@@ -327,8 +331,8 @@ public class NodeDialogTest {
         // apply node settings that are controlled by a flow variable -> the flow variable must not end up in the settings
         wfm.loadNodeSettings(nnc.getID(), nodeSettings);
         var initialSettings = parseResult(dataServiceManager.callInitialDataService(nncWrapper), false);
-        assertThat(initialSettings).contains("\"view_key1\":{\"type\":\"string\",\"value\":\"view_setting_value\"}");
-        assertThat(initialSettings).contains("\"model_key1\":{\"type\":\"string\",\"value\":\"model_setting_value\"}");
+        assertThat(initialSettings).contains("\"view_key1\":{\"type\":\"string\",\"value\":\"view_setting_value\"}")
+            .contains("\"model_key1\":{\"type\":\"string\",\"value\":\"model_setting_value\"}");
 
         var viewVariables = nodeSettings.addNodeSettings("view_variables");
         viewVariables.addString("version", "V_2019_09_13");
@@ -346,8 +350,8 @@ public class NodeDialogTest {
 
         // make sure that the flow variable value is part of the initial data
         initialSettings = parseResult(dataServiceManager.callInitialDataService(nncWrapper), false);
-        assertThat(initialSettings).contains("\"view_key1\":{\"type\":\"string\",\"value\":\"view_variable_value\"}");
-        assertThat(initialSettings).contains("\"model_key1\":{\"type\":\"string\",\"value\":\"model_variable_value\"}");
+        assertThat(initialSettings).contains("\"view_key1\":{\"type\":\"string\",\"value\":\"view_variable_value\"}")
+            .contains("\"model_key1\":{\"type\":\"string\",\"value\":\"model_variable_value\"}");
 
         // make sure that any applied settings that are controlled by a flow variable, are ignored
         // (i.e. aren't 'persisted' with the node settings)
@@ -368,26 +372,26 @@ public class NodeDialogTest {
      * @throws InvalidSettingsException
      */
     @Test
-    public void testSettingWithFlowVariables() throws IOException, InvalidSettingsException {
+    void testSettingWithFlowVariables() throws IOException, InvalidSettingsException {
         Consumer<Map<SettingsType, VariableSettingsWO>> varSettingsWriter = (settings) -> { // NOSONAR: The lambda is easy to understand
             try {
                 // First level settings
-                settings.get(SettingsType.MODEL).addUsedVariable("model_key1", "model_variable");
+                settings.get(SettingsType.MODEL).addUsedVariable("model_key1", "model_variable", false);
                 settings.get(SettingsType.MODEL).addExposedVariable("model_key2", "exp_model_variable");
-                settings.get(SettingsType.VIEW).addUsedVariable("view_key1", "view_variable");
+                settings.get(SettingsType.VIEW).addUsedVariable("view_key1", "view_variable", false); //TODO true
                 settings.get(SettingsType.VIEW).addExposedVariable("view_key2", "exp_view_variable");
 
                 // Nested settings
                 settings.get(SettingsType.MODEL) //
                     .getOrCreateVariableSettings("settings_group") //
-                    .addUsedVariable("child_key1", "child1_variable");
+                    .addUsedVariable("child_key1", "child1_variable", false);
                 settings.get(SettingsType.MODEL) //
                     .getOrCreateVariableSettings("settings_group") //
                     .addExposedVariable("child_key2", "exp_child2_variable");
                 settings.get(SettingsType.VIEW) //
                     .getOrCreateVariableSettings("deep_settings_group") //
                     .getOrCreateVariableSettings("inner_settings_group") //
-                    .addUsedVariable("child_key3", "child3_variable");
+                    .addUsedVariable("child_key3", "child3_variable", false);
                 settings.get(SettingsType.VIEW) //
                     .getOrCreateVariableSettings("deep_settings_group") //
                     .getOrCreateVariableSettings("inner_settings_group") //
@@ -470,10 +474,10 @@ public class NodeDialogTest {
      * @throws IOException
      */
     @Test
-    public void testFailingSettingWithFlowVariables() throws IOException {
+    void testFailingSettingWithFlowVariables() throws IOException {
         Consumer<Map<SettingsType, VariableSettingsWO>> varSettingsWriter = (settings) -> { // NOSONAR: The lambda is easy to understand
             try {
-                settings.get(SettingsType.MODEL).addUsedVariable("key1", "var1");
+                settings.get(SettingsType.MODEL).addUsedVariable("key1", "var1", false);
             } catch (final InvalidSettingsException ex) { // NOSONAR
                 throw new Key1Exception();
             }
@@ -539,7 +543,7 @@ public class NodeDialogTest {
      * @throws NotConfigurableException
      */
     @Test
-    public void testCreateLegacyFlowVariableNodeDialog() throws IOException, NotConfigurableException {
+    void testCreateLegacyFlowVariableNodeDialog() throws IOException, NotConfigurableException {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var nnc = WorkflowManagerUtil.createAndAddNode(wfm,
             new NodeDialogNodeFactory(() -> createNodeDialog(Page.builder(() -> "test", "test.html").build(),
@@ -599,7 +603,7 @@ public class NodeDialogTest {
      * @throws NotConfigurableException
      */
     @Test
-    public void testLegacyFlowVariableDialogModelSettingsOnClose()
+    void testLegacyFlowVariableDialogModelSettingsOnClose()
         throws IOException, InvalidSettingsException, NotConfigurableException {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var nc = WorkflowManagerUtil.createAndAddNode(wfm,

@@ -50,11 +50,14 @@ package org.knime.core.webui.node.dialog;
 
 import static org.knime.core.webui.data.util.InputSpecUtil.getInputSpecsExcludingVariablePort;
 
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiFunction;
 
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.workflow.NativeNodeContainer;
@@ -69,6 +72,8 @@ import org.knime.core.webui.node.dialog.internal.VariableSettings;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 final class InitialData {
+
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(InitialData.class);
 
     private final NodeContainer m_nc;
 
@@ -88,21 +93,49 @@ final class InitialData {
 
         NodeContext.pushContext(m_nc);
         try {
-            Map<SettingsType, NodeAndVariableSettingsRO> settings = new EnumMap<>(SettingsType.class);
-            getSettings(SettingsType.MODEL, specs, settings);
-            getSettings(SettingsType.VIEW, specs, settings);
+            Map<SettingsType, NodeAndVariableSettingsRO> settings = getSettingsOverwrittenByVariables(specs);
+            revertOverridesIfInvalid(specs, settings);
             return m_nodeSettingsService.fromNodeSettings(settings, specs);
         } finally {
             NodeContext.removeLastContext();
         }
     }
 
+    private Map<SettingsType, NodeAndVariableSettingsRO>
+        getSettingsOverwrittenByVariables(final PortObjectSpec[] specs) {
+        Map<SettingsType, NodeAndVariableSettingsRO> settings = new EnumMap<>(SettingsType.class);
+        Arrays.asList(SettingsType.values()).forEach(type -> loadSettingsOverwrittenByVariables(type, specs, settings));
+        return settings;
+    }
+
+    private void revertOverridesIfInvalid(final PortObjectSpec[] specs,
+        final Map<SettingsType, NodeAndVariableSettingsRO> settings) {
+        try {
+            m_nodeSettingsService.validateNodeSettingsAndVariables(settings);
+        } catch (InvalidSettingsException ex) {
+            LOGGER.error(String.format("Settiungs overwritten by flow variables are invalid. "
+                + "So the flow variables are ignored. Error message is: %s.", ex.getMessage()), ex);
+            Arrays.asList(SettingsType.values()).forEach(type -> loadRawSettings(type, specs, settings));
+        }
+    }
+
+    private void loadSettingsOverwrittenByVariables(final SettingsType type, final PortObjectSpec[] specs,
+        final Map<SettingsType, NodeAndVariableSettingsRO> settings) {
+        getSettings(type, specs, settings, InitialData::getSettingsOverwrittenByFlowVariablesOrNull);
+    }
+
+    private void loadRawSettings(final SettingsType type, final PortObjectSpec[] specs,
+        final Map<SettingsType, NodeAndVariableSettingsRO> settings) {
+        getSettings(type, specs, settings, InitialData::getSettingsWithoutFlowVariableOverridesOrNull);
+    }
+
     private void getSettings(final SettingsType settingsType, final PortObjectSpec[] specs,
-        final Map<SettingsType, NodeAndVariableSettingsRO> resultSettings) {
+        final Map<SettingsType, NodeAndVariableSettingsRO> resultSettings,
+        final BiFunction<SettingsType, NativeNodeContainer, NodeSettings> getNodeSettings) {
         if (m_settingsTypes.contains(settingsType)) {
             NodeSettings settings = null;
             if (m_nc instanceof NativeNodeContainer nnc) {
-                settings = getSettingsFromNativeNodeContainer(settingsType, nnc);
+                settings = getNodeSettings.apply(settingsType, nnc);
 
                 // fallback to default settings
                 if (settings == null) {
@@ -116,6 +149,7 @@ final class InitialData {
                     m_nodeSettingsService.getDefaultNodeSettings(Map.of(settingsType, NodeAndVariableSettingsProxy
                         .createWOProxy(settings, new VariableSettings(settings, settingsType))), specs);
                 }
+
                 resultSettings.put(settingsType, NodeAndVariableSettingsProxy.createROProxy(settings,
                     new VariableSettings(nnc.getNodeSettings(), settingsType)));
             }
@@ -124,10 +158,16 @@ final class InitialData {
         }
     }
 
+    private static NodeSettings getSettingsOverwrittenByFlowVariablesOrNull(final SettingsType settingsType,
+        final NativeNodeContainer nnc) {
+        return getSettingsFromNativeNodeContainer(settingsType, nnc);
+
+    }
+
     private static NodeSettings getSettingsFromNativeNodeContainer(final SettingsType settingsType,
         final NativeNodeContainer nnc) {
-        try {
-            if (nnc.getFlowObjectStack() != null) {
+        if (nnc.getFlowObjectStack() != null) {
+            try {
                 // a flow object stack is available (usually in case the node is connected)
                 if (settingsType == SettingsType.VIEW) {
                     return nnc.getViewSettingsUsingFlowObjectStack()
@@ -135,17 +175,29 @@ final class InitialData {
                 } else {
                     return nnc.getModelSettingsUsingFlowObjectStack();
                 }
-            } else {
-                // node is not connected
-                var settings = nnc.getNodeSettings().getNodeSettings(settingsType.getConfigKey());
-                if (settings.getChildCount() == 0) {
-                    // if no settings are stored, return null in order to fall back to the default settings
-                    return null;
-                } else {
-                    return settings;
-                }
+            } catch (InvalidSettingsException e) {
+                LOGGER.error(String.format("Error overwriting settings of type %s with flow variables. "
+                    + "So the flow variables are ignored. Error message is: %s.", settingsType, e.getMessage()), e);
+                return getSettingsWithoutFlowVariableOverridesOrNull(settingsType, nnc);
             }
-        } catch (InvalidSettingsException ex) { // NOSONAR
+        } else {
+            // node is not connected
+            var settings = getSettingsWithoutFlowVariableOverridesOrNull(settingsType, nnc);
+            if (settings == null || settings.getChildCount() == 0) {
+                // if no settings are stored, return null in order to fall back to the default settings
+                return null;
+            } else {
+                return settings;
+            }
+        }
+    }
+
+    private static NodeSettings getSettingsWithoutFlowVariableOverridesOrNull(final SettingsType settingsType,
+        final NativeNodeContainer nnc) {
+        try {
+            return nnc.getNodeSettings().getNodeSettings(settingsType.getConfigKey());
+        } catch (InvalidSettingsException ex) { //NOSONAR
+            // return null in order to fall back to the default settings
             return null;
         }
     }

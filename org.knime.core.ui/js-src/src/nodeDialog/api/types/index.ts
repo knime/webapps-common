@@ -8,4 +8,5 @@ export type FlowSettings = {
   controllingFlowVariableName: string | null;
   exposedFlowVariableName: string | null;
   controllingFlowVariableAvailable: boolean;
+  controllingFlowVariableFlawed?: boolean;
 };

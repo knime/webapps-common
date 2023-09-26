@@ -59,6 +59,7 @@ export default {
       flowVariablesApi: {
         getAvailableFlowVariables: this.getAvailableFlowVariables,
         getFlowVariableOverrideValue: this.getFlowVariableOverrideValue,
+        unsetControllingFlowVariable: this.unsetControllingFlowVariable,
       },
     } as ProvidedMethods;
   },
@@ -70,6 +71,7 @@ export default {
       jsonDataService: null as JsonDataService | null,
       dialogService: null as DialogService | null,
       originalModelSettings: null as any,
+      flawedControllingVariablePaths: new Set() as Set<string>,
       renderers: Object.freeze(renderers),
       registeredWatchers: [] as RegisteredWatcher[],
       currentData: {} as SettingsData,
@@ -194,12 +196,44 @@ export default {
         this.getData(),
       );
     },
-    getFlowVariableOverrideValue(dataPath: string) {
-      return flowVariablesApi.getFlowVariableOverrideValue(
+    async getFlowVariableOverrideValue(persistPath: string, dataPath: string) {
+      const { data, flowVariableSettings } = cloneDeep(this.getData());
+      this.flawedControllingVariablePaths.forEach((path) => {
+        if (path !== persistPath) {
+          delete flowVariableSettings[path];
+        }
+      });
+      const overrideValue = await flowVariablesApi.getFlowVariableOverrideValue(
         this.callDataService.bind(this),
         dataPath,
-        this.getData(),
+        { data, flowVariableSettings },
       );
+      const valid = typeof overrideValue !== "undefined";
+      const flowSettings = this.schema.flowVariablesMap[persistPath];
+      if (valid) {
+        if (flowSettings) {
+          delete flowSettings.controllingFlowVariableFlawed;
+        }
+      } else {
+        // @ts-ignore
+        this.$store.dispatch("pagebuilder/dialog/dirtySettings", true);
+        if (flowSettings) {
+          flowSettings.controllingFlowVariableFlawed = true;
+        }
+      }
+      this.flawedControllingVariablePaths[valid ? "delete" : "add"](
+        persistPath,
+      );
+      this.cleanIfNecessary();
+      return overrideValue;
+    },
+    unsetControllingFlowVariable(persistPath: string) {
+      this.flawedControllingVariablePaths.delete(persistPath);
+      flowVariablesApi.unsetControllingFlowVariable(
+        this.schema.flowVariablesMap,
+        { path: persistPath },
+      );
+      this.cleanIfNecessary();
     },
     onSettingsChanged({ data }: { data: SettingsData }) {
       if (data) {
@@ -208,17 +242,23 @@ export default {
         Object.keys(data).forEach((key: string) => {
           this.currentData[key] = data[key];
         });
-        if (this.hasOriginalModelSettings(this.currentData)) {
-          // @ts-ignore
-          this.$store.dispatch(
-            "pagebuilder/dialog/cleanSettings",
-            cloneDeep(this.currentData),
-          );
-        }
+        this.cleanIfNecessary();
         // TODO: UIEXT-236 Move to dialog service
         if (!this.dirtyModelSettings) {
           this.publishData();
         }
+      }
+    },
+    cleanIfNecessary() {
+      if (
+        this.hasOriginalModelSettings(this.currentData) &&
+        this.flawedControllingVariablePaths.size === 0
+      ) {
+        // @ts-ignore
+        this.$store.dispatch(
+          "pagebuilder/dialog/cleanSettings",
+          cloneDeep(this.currentData),
+        );
       }
     },
     applySettings() {

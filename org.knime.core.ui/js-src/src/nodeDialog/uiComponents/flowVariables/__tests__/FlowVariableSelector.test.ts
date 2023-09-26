@@ -39,6 +39,7 @@ describe("FlowVariableSelector.vue", () => {
     props,
     getAvailableFlowVariables,
     getFlowVariableOverrideValue,
+    unsetControllingFlowVariable,
   }: {
     props: FlowVariableSelectorProps;
   } & MockedMethods<Provided["flowVariablesApi"]>) => {
@@ -53,6 +54,8 @@ describe("FlowVariableSelector.vue", () => {
             getFlowVariableOverrideValue:
               getFlowVariableOverrideValue ||
               vi.fn((_flowVar) => Promise.resolve("value")),
+            unsetControllingFlowVariable:
+              unsetControllingFlowVariable || vi.fn(),
           },
         },
       },
@@ -138,7 +141,7 @@ describe("FlowVariableSelector.vue", () => {
 
   it("sets controlling flow variable on selection", async () => {
     const flowVarValue = "Value_fetched_from_backend";
-    const getFlowVariableOverrideValueMock = vi.fn((_flowVar) =>
+    const getFlowVariableOverrideValueMock = vi.fn((_persistPath, _dataPath) =>
       Promise.resolve(flowVarValue),
     );
     const wrapper = mountFlowVariableSelector({
@@ -156,7 +159,10 @@ describe("FlowVariableSelector.vue", () => {
       controllingFlowVariableAvailable: true,
       controllingFlowVariableName: flowVar2.name,
     });
-    expect(getFlowVariableOverrideValueMock).toHaveBeenCalledWith(props.path);
+    expect(getFlowVariableOverrideValueMock).toHaveBeenCalledWith(
+      props.path,
+      props.path,
+    );
     expect(wrapper.emitted("controllingFlowVariableSet")?.[0]?.[0]).toBe(
       flowVarValue,
     );
@@ -169,18 +175,16 @@ describe("FlowVariableSelector.vue", () => {
       controllingFlowVariableName: "foo",
       exposedFlowVariableName,
     };
+    const unsetControllingFlowVariableMock = vi.fn((_persistPath) => {});
     const wrapper = mountFlowVariableSelector({
       props,
       getAvailableFlowVariables: getAvailableFlowVariablesMock,
+      unsetControllingFlowVariable: unsetControllingFlowVariableMock,
     });
     await flushPromises();
     const noneOption = wrapper.findComponent(Dropdown).find("li");
     await noneOption.trigger("click");
-    expect(props.flowVariablesMap[props.path]).toStrictEqual({
-      controllingFlowVariableAvailable: false,
-      controllingFlowVariableName: null,
-      exposedFlowVariableName,
-    });
+    expect(unsetControllingFlowVariableMock).toHaveBeenCalledWith(props.path);
     expect(wrapper.emitted("controllingFlowVariableSet")).toBeUndefined();
   });
 
@@ -229,9 +233,11 @@ describe("FlowVariableSelector.vue", () => {
     it("sets controlling flow variable using config key", async () => {
       props.path = "path.to.parent.value";
       props.configKeys = ["myConfigKey"];
+      const persistPath = "path.to.parent.myConfigKey";
       const flowVarValue = "Value_fetched_from_backend";
-      const getFlowVariableOverrideValueMock = vi.fn((_flowVar) =>
-        Promise.resolve(flowVarValue),
+      const getFlowVariableOverrideValueMock = vi.fn(
+        (_persistPath: string, _dataPath: string) =>
+          Promise.resolve(flowVarValue),
       );
       const wrapper = mountFlowVariableSelector({
         props,
@@ -244,13 +250,14 @@ describe("FlowVariableSelector.vue", () => {
         .findAll("li")
         .find((li) => li.text() === flowVar2.name)!;
       await scondFlowVariableOptionElement.trigger("click");
-      expect(
-        props.flowVariablesMap["path.to.parent.myConfigKey"],
-      ).toStrictEqual({
+      expect(props.flowVariablesMap[persistPath]).toStrictEqual({
         controllingFlowVariableAvailable: true,
         controllingFlowVariableName: flowVar2.name,
       });
-      expect(getFlowVariableOverrideValueMock).toHaveBeenCalledWith(props.path);
+      expect(getFlowVariableOverrideValueMock).toHaveBeenCalledWith(
+        persistPath,
+        props.path,
+      );
       expect(wrapper.emitted("controllingFlowVariableSet")?.[0]?.[0]).toBe(
         flowVarValue,
       );
@@ -265,20 +272,18 @@ describe("FlowVariableSelector.vue", () => {
         controllingFlowVariableName: "foo",
         exposedFlowVariableName,
       };
+      const unsetControllingFlowVariableMock = vi.fn((_persistPath) => {});
       const wrapper = mountFlowVariableSelector({
         props,
         getAvailableFlowVariables: getAvailableFlowVariablesMock,
+        unsetControllingFlowVariable: unsetControllingFlowVariableMock,
       });
       await flushPromises();
       const noneOption = wrapper.findComponent(Dropdown).find("li");
       await noneOption.trigger("click");
-      expect(
-        props.flowVariablesMap["path.to.parent.myConfigKey"],
-      ).toStrictEqual({
-        controllingFlowVariableAvailable: false,
-        controllingFlowVariableName: null,
-        exposedFlowVariableName,
-      });
+      expect(unsetControllingFlowVariableMock).toHaveBeenCalledWith(
+        "path.to.parent.myConfigKey",
+      );
       expect(wrapper.emitted("controllingFlowVariableSet")).toBeUndefined();
     });
   });

@@ -48,8 +48,7 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.settingsconversion;
 
-import static org.knime.core.webui.node.dialog.defaultdialog.util.MapValuesUtil.mapValuesWithKeys;
-
+import java.util.HashMap;
 import java.util.Map;
 
 import org.knime.core.node.InvalidSettingsException;
@@ -83,20 +82,88 @@ final class NodeSettingsToJsonFormsSettings {
         m_context = context;
     }
 
-    JsonFormsSettings nodeSettingsToJsonFormsSettings(final Map<SettingsType, NodeSettingsRO> settings) {
-        final var loadedSettings = mapValuesWithKeys(settings, this::fromNodeSettingsToDefaultNodeSettings);
+    JsonFormsSettings nodeSettingsToJsonFormsSettings(final Map<SettingsType, NodeSettingsRO> settings)
+        throws InvalidSettingsException {
+        try {
+            return allNodeSettingsToJsonFormsSettings(settings, this::fromNodeSettingsToDefaultNodeSettings);
+        } catch (GetSettings.UncheckedExceptionCausedByInvalidSettings ex) { //NOSONAR
+            throw ex.getInvalidSettingsException();
+        }
+    }
+
+    JsonFormsSettings nodeSettingsToJsonFormsSettingsOrDefault(final Map<SettingsType, NodeSettingsRO> settings) {
+        return allNodeSettingsToJsonFormsSettings(settings, this::fromNodeSettingsToDefaultNodeSettingsOrDefault);
+    }
+
+    private JsonFormsSettings allNodeSettingsToJsonFormsSettings(final Map<SettingsType, NodeSettingsRO> settings,
+        final GetSettings getSettings) throws GetSettings.UncheckedExceptionCausedByInvalidSettings {
+        final Map<SettingsType, DefaultNodeSettings> loadedSettings = new HashMap<>();
+        for (var entry : settings.entrySet()) {
+            final var type = entry.getKey();
+            final var nodeSettings = entry.getValue();
+            loadedSettings.put(type, getSettings.getDefaultNodeSettingsUnchecked(type, nodeSettings));
+        }
         return new JsonFormsSettingsImpl(loadedSettings, m_context);
     }
 
     private DefaultNodeSettings fromNodeSettingsToDefaultNodeSettings(final SettingsType type,
+        final NodeSettingsRO nodeSettings) throws InvalidSettingsException {
+        return DefaultNodeSettings.loadSettings(nodeSettings, m_settingsClasses.get(type));
+    }
+
+    private DefaultNodeSettings fromNodeSettingsToDefaultNodeSettingsOrDefault(final SettingsType type,
         final NodeSettingsRO nodeSettings) {
         try {
-            return DefaultNodeSettings.loadSettings(nodeSettings, m_settingsClasses.get(type));
+            return fromNodeSettingsToDefaultNodeSettings(type, nodeSettings);
         } catch (InvalidSettingsException ex) {
             LOGGER.error(String.format("Failed to load settings ('%s'). New settings are created for the dialog.",
                 ex.getMessage()), ex);
             return DefaultNodeSettings.createSettings(m_settingsClasses.get(type), m_context);
         }
+    }
+
+    /**
+     * Convenience interface for enabling running getDefaultNodeSettings unchecked helping with de-duplication
+     */
+    @FunctionalInterface
+    private interface GetSettings {
+        DefaultNodeSettings getDefaultNodeSettings(SettingsType type, NodeSettingsRO nodeSettings)
+            throws InvalidSettingsException;
+
+        default DefaultNodeSettings getDefaultNodeSettingsUnchecked(final SettingsType type,
+            final NodeSettingsRO nodeSettings) throws UncheckedExceptionCausedByInvalidSettings {
+            try {
+                return getDefaultNodeSettings(type, nodeSettings);
+            } catch (InvalidSettingsException ex) {
+                /**
+                 * Transform into unchecked exception in order to be transformed back or caught to apply defaults later,
+                 * while allowing different signatures in these methods.
+                 */
+                throw new UncheckedExceptionCausedByInvalidSettings(ex);
+            }
+        }
+
+        /**
+         * A simple wrapper for making {@link InvalidSettingsException} temporarily unchecked in order to help
+         * de-duplicate the code in this class.
+         */
+        final class UncheckedExceptionCausedByInvalidSettings extends RuntimeException {
+
+            private final InvalidSettingsException m_ex;
+
+            private static final long serialVersionUID = 1L;
+
+            UncheckedExceptionCausedByInvalidSettings(final InvalidSettingsException ex) {
+                super(ex);
+                m_ex = ex;
+            }
+
+            InvalidSettingsException getInvalidSettingsException() {
+                return m_ex;
+            }
+
+        }
+
     }
 
 }

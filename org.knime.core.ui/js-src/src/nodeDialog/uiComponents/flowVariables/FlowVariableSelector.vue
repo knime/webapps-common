@@ -4,15 +4,15 @@ import MulitpleConfigKeysNotYetSupported from "./MultipleConfigKeysNotYetSupport
 import type FlowVariableSelectorProps from "./types/FlowVariableSelectorProps";
 import { computed, onMounted, ref, type Ref } from "vue";
 import type { PossibleFlowVariable } from "@/nodeDialog/api/types";
-import {
-  setControllingFlowVariable,
-  unsetControllingFlowVariable,
-} from "@/nodeDialog/api/flowVariables";
+import { setControllingFlowVariable } from "@/nodeDialog/api/flowVariables";
 import { getConfigPaths } from "@/nodeDialog/utils";
 import inject from "@/nodeDialog/utils/inject";
 
-const { getAvailableFlowVariables, getFlowVariableOverrideValue } =
-  inject("flowVariablesApi")!;
+const {
+  getAvailableFlowVariables,
+  getFlowVariableOverrideValue,
+  unsetControllingFlowVariable,
+} = inject("flowVariablesApi")!;
 
 const props = defineProps<FlowVariableSelectorProps>();
 
@@ -83,9 +83,7 @@ const selectValue = async (selectedId: string | number) => {
     return;
   }
   if (selectedId === noFlowVariableOption.id) {
-    unsetControllingFlowVariable(props.flowVariablesMap, {
-      path: singlePath.value,
-    });
+    unsetControllingFlowVariable(singlePath.value);
     return;
   }
   const flowVar = nameToFlowVariable.value[selectedId];
@@ -93,8 +91,13 @@ const selectValue = async (selectedId: string | number) => {
     path: singlePath.value,
     flowVariableName: flowVar.name,
   });
-  const value = await getFlowVariableOverrideValue(props.path);
-  emit("controllingFlowVariableSet", value);
+  const value = await getFlowVariableOverrideValue(
+    singlePath.value,
+    props.path,
+  );
+  if (typeof value !== "undefined") {
+    emit("controllingFlowVariableSet", value);
+  }
 };
 
 const ariaLabel = computed(() => `controlling-flow-variables-${props.path}`);

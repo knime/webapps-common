@@ -54,7 +54,6 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.knime.core.node.NodeLogger;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
@@ -95,8 +94,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
 public final class JsonFormsDataUtil {
-
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(JsonFormsDataUtil.class);
 
     private static ObjectMapper MAPPER; // NOSONAR
 
@@ -173,16 +170,11 @@ public final class JsonFormsDataUtil {
      * @param jsonFormsData a json representation of the default node settings
      * @param clazz the specific class of the default node settings
      * @return an instance of type <T> deserialized from the json representation.
+     * @throws JsonProcessingException
      */
     public static <T extends DefaultNodeSettings> T toDefaultNodeSettings(final JsonNode jsonFormsData,
-        final Class<T> clazz) {
-        try {
-            return getMapper().treeToValue(jsonFormsData, clazz);
-        } catch (JsonProcessingException e) {
-            LOGGER.error(String.format("Error when creating class %s from settings. Error message is: %s.",
-                clazz.getName(), e.getMessage()), e);
-            return null;
-        }
+        final Class<T> clazz) throws JsonProcessingException {
+        return getMapper().treeToValue(jsonFormsData, clazz);
     }
 
     private static class BigDecimalSerializer extends JsonSerializer<BigDecimal> {

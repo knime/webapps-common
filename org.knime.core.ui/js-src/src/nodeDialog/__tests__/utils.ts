@@ -6,16 +6,19 @@ export const getOptions = ({
   createAlertMock,
   sendWarningMock,
   cleanSettingsMock,
+  dirtySettingsMock,
 }: {
   setApplySettingsMock?: Mock;
   createAlertMock?: Mock;
   sendWarningMock?: Mock;
   cleanSettingsMock?: Mock;
+  dirtySettingsMock?: Mock;
 } = {}) => {
   const dialogStoreOptions = {
     actions: {
       setApplySettings: setApplySettingsMock || vi.fn(),
       cleanSettings: cleanSettingsMock || vi.fn(),
+      dirtySettings: dirtySettingsMock || vi.fn(),
     },
     namespaced: true,
   };

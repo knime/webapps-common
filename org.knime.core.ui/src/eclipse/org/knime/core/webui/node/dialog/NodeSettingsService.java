@@ -50,6 +50,7 @@ package org.knime.core.webui.node.dialog;
 
 import java.util.Map;
 
+import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObjectSpec;
@@ -101,5 +102,19 @@ public interface NodeSettingsService {
      *            e.g., in case the input port is not connected
      */
     void getDefaultNodeSettings(Map<SettingsType, NodeSettingsWO> settings, PortObjectSpec[] specs);
+
+    /**
+     * An optional validation method which is meant to be called before {@link NodeSettingsService#fromNodeSettings} in
+     * order to adjust the node settings (e.g. to not overwrite with flow variables when the overwritten settings do not
+     * validate).
+     *
+     * Per default, there is no validation.
+     *
+     * @param settings the settings to read from
+     * @throws InvalidSettingsException in case the validation fails
+     */
+    default void validateNodeSettingsAndVariables(final Map<SettingsType, NodeAndVariableSettingsRO> settings)
+        throws InvalidSettingsException {
+    }
 
 }

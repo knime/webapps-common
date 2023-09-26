@@ -290,10 +290,12 @@ public final class SettingsConverter {
      * @param context used to construct fresh {@link DefaultNodeSettings} if necessary and supplied to the output
      *            {@link JsonFormsSettings}
      * @return The resulting representation as {@link JsonFormsSettings}.
+     * @throws InvalidSettingsException
      */
     public JsonFormsSettings nodeSettingsToJsonFormsSettings(final SettingsType type, final NodeSettingsRO nodeSettings,
-        final DefaultNodeSettingsContext context) {
-        return nodeSettingsToJsonFormsSettings(Map.of(type, nodeSettings), context);
+        final DefaultNodeSettingsContext context) throws InvalidSettingsException {
+        return getNodeSettingsToJsonFormsSettingsConverter(context)
+            .nodeSettingsToJsonFormsSettings(Map.of(type, nodeSettings));
     }
 
     /**
@@ -305,10 +307,27 @@ public final class SettingsConverter {
      *            {@link JsonFormsSettings}
      * @return The resulting representation as {@link JsonFormsSettings}.
      */
-    public JsonFormsSettings nodeSettingsToJsonFormsSettings(final Map<SettingsType, NodeSettingsRO> settings,
+    public JsonFormsSettings nodeSettingsToJsonFormsSettingsOrDefault(final Map<SettingsType, NodeSettingsRO> settings,
         final DefaultNodeSettingsContext context) {
-        return new NodeSettingsToJsonFormsSettings(context, m_settingsClasses)
-            .nodeSettingsToJsonFormsSettings(settings);
+        return getNodeSettingsToJsonFormsSettingsConverter(context).nodeSettingsToJsonFormsSettingsOrDefault(settings);
+    }
+
+    private NodeSettingsToJsonFormsSettings
+        getNodeSettingsToJsonFormsSettingsConverter(final DefaultNodeSettingsContext context) {
+        return new NodeSettingsToJsonFormsSettings(context, m_settingsClasses);
+    }
+
+    /**
+     * A wrapper of {@link DefaultNodeSettings#loadSettings}
+     *
+     * @param type the type of settings that is used
+     * @param nodeSettings the input node settings of the given type
+     * @return the loaded {@link DefaultNodeSettings}
+     * @throws InvalidSettingsException
+     */
+    public DefaultNodeSettings nodeSettingsToDefaultNodeSettings(final SettingsType type,
+        final NodeSettingsRO nodeSettings) throws InvalidSettingsException {
+        return DefaultNodeSettings.loadSettings(nodeSettings, m_settingsClasses.get(type));
     }
 
     /**

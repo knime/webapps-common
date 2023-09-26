@@ -155,7 +155,8 @@ final class ApplyData {
                 // to settings controlled by flow variables are ignored by the close modifier. In other words, if a
                 // setting is controlled by a flow variable, its previous and updated values, as passed to the close
                 // modifier, are always identical.
-                m_onApplyModifierWrapper.onApply(modelSettings, viewSettings, previousModelSettings, previousViewSettings);
+                m_onApplyModifierWrapper.onApply(modelSettings, viewSettings, previousModelSettings,
+                    previousViewSettings);
             }
         } catch (InvalidSettingsException ex) {
             throw new IOException("Invalid node settings: " + ex.getMessage(), ex);
@@ -175,25 +176,61 @@ final class ApplyData {
         m_nodeSettingsService.toNodeSettings(data, settingsMap);
     }
 
-    private static void loadViewSettingsIntoNode(final WorkflowManager wfm, final NodeID nodeID,
+    private void loadViewSettingsIntoNode(final WorkflowManager wfm, final NodeID nodeID,
         final NodeSettings viewVariables, final NodeSettings viewSettings, final NodeSettings previousViewSettings,
         final NodeSettings nodeSettings) throws InvalidSettingsException {
-        // if there are any view variables, i.e., variables controlling or exposing settings
-        if (viewVariables != null && exposedSettingsChanged(viewVariables, viewSettings, previousViewSettings)) {
-            // 'persist' settings and reset the node (i.e., do as if model settings had changed)
+        /**
+         * We reset the node and trigger configure when
+         * <ul>
+         * <li>There are any flawed controlling view variables set in the dialog</li>
+         * <li>The value of an exposed view setting changed</li>
+         * <li>The node is idle. Here we need to trigger the configure again in case configure errors were resolved by
+         * changing view variables.
+         * </ul>
+         */
+        if (m_nc.getNodeContainerState().isIdle()
+            || (viewVariables != null && variablesInduceReset(viewVariables, viewSettings, previousViewSettings))) {
+            /** 'persist' settings and reset the node (i.e., do as if model settings had changed) */
             wfm.loadNodeSettings(nodeID, nodeSettings);
         } else {
-            // 'persist' view settings only (without resetting the node)
+            /** 'persist' view settings only (without resetting the node) */
             wfm.loadNodeViewSettings(nodeID, nodeSettings);
         }
     }
 
-    // Helper method to recursively determine whether there is any setting that has changed and that is exposed as a variable
+    private static boolean variablesInduceReset(final NodeSettingsRO variables, final NodeSettings settings,
+        final NodeSettingsRO previousSettings) throws InvalidSettingsException {
+        return exposedSettingsChanged(variables, settings, previousSettings) || variableSettingsFlawed(variables);
+
+    }
+
+    /**
+     * Helper method to recursively determine whether there is any setting that has changed and that is exposed as a
+     * variable
+     */
     private static boolean exposedSettingsChanged(final NodeSettingsRO variables, final NodeSettings settings,
         final NodeSettingsRO previousSettings) {
         return traverseSettingsTrees(variables, settings, previousSettings,
             (variable, setting, previousSetting) -> isExposedAsVariableButNotControlledByAVariable(variable)
                 && !setting.isIdentical(previousSetting));
+    }
+
+    private static String IS_FLAWED_CFG_KEY = VariableSettings.USED_VARIABLE_FLAWED_CFG_KEY;
+
+    private static boolean variableSettingsFlawed(final NodeSettingsRO varSettings) throws InvalidSettingsException {
+
+        if (varSettings.getBoolean(IS_FLAWED_CFG_KEY, false)) {
+            return true;
+        }
+        for (var children = varSettings.children(); children.hasMoreElements();) {
+            final var child = children.nextElement();
+
+            if (child instanceof NodeSettingsRO nodeSettingsRO && variableSettingsFlawed(nodeSettingsRO)) {
+                return true;
+            }
+        }
+        return false;
+
     }
 
     private static void replaceVariableControlledSettingsWithPreviousSettings(final NodeSettingsRO variables,
@@ -208,10 +245,10 @@ final class ApplyData {
         });
     }
 
-    /*
-     * Traverses the variable-settings-tree (i.e. whether a setting is controlled by a variable or exposed as a variable)
-     * and a settings tree at the same time and evaluates the 'stopCriterion' at every leaf.
-     * Returns 'true' if the stop criterion has been evaluated to 'true' during the traversal.
+    /**
+     * Traverses the variable-settings-tree (i.e. whether a setting is controlled by a variable or exposed as a
+     * variable) and a settings tree at the same time and evaluates the 'stopCriterion' at every leaf. Returns 'true' if
+     * the stop criterion has been evaluated to 'true' during the traversal.
      */
     private static boolean traverseSettingsTrees(final NodeSettingsRO variables, final NodeSettings settings,
         final NodeSettingsRO previousSettings, final StopCriterion stopCriterion) {
@@ -242,7 +279,7 @@ final class ApplyData {
         return false;
     }
 
-    private static interface StopCriterion {
+    private interface StopCriterion {
         boolean stop(NodeSettingsRO variable, AbstractConfigEntry setting, AbstractConfigEntry previousSetting);
     }
 
@@ -262,13 +299,13 @@ final class ApplyData {
     }
 
     private static boolean isVariableControllingSetting(final NodeSettingsRO variable) {
-        return variable.getString("used_variable", null) != null;
+        return variable.getString(VariableSettings.USED_VARIABLE_CFG_KEY, null) != null;
     }
 
     // Helper method to determine whether a given setting is exposed as a variable
     private static boolean isExposedAsVariableButNotControlledByAVariable(final NodeSettingsRO variable) {
-        return variable.getString("exposed_variable", null) != null
-            && variable.getString("used_variable", null) == null;
+        return variable.getString(VariableSettings.EXPOSED_VARIABLE_CFG_KEY, null) != null
+            && variable.getString(VariableSettings.USED_VARIABLE_CFG_KEY, null) == null;
     }
 
     private static boolean settingsChanged(final NodeSettings settings, final NodeSettings previousSettings) {
@@ -301,7 +338,6 @@ final class ApplyData {
         }
         return null;
     }
-
 
     private static NodeSettings cloneSettings(final NodeSettings s, final String key) {
         var res = new NodeSettings(key);

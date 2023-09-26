@@ -206,19 +206,6 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
             .collect(toMap(VariableType::getIdentifier, type -> getPossibleFlowVariables(context, type)));
     }
 
-    private static SettingsType extractSettingsType(final String firstPathElement) {
-        final SettingsType settingsType;
-        if (SettingsType.MODEL.getConfigKey().equals(firstPathElement)) {
-            settingsType = SettingsType.MODEL;
-        } else if (SettingsType.VIEW.getConfigKey().equals(firstPathElement)) {
-            settingsType = SettingsType.VIEW;
-        } else {
-            throw new IllegalArgumentException(String
-                .format("First element of the path must be either 'view' or 'model' but was %s", firstPathElement));
-        }
-        return settingsType;
-    }
-
     private static List<PossibleFlowVariable> getPossibleFlowVariables(final DefaultNodeSettingsContext context,
         final VariableType<?> type) {
         return context.getAvailableInputFlowVariables(type).values().stream()
@@ -254,6 +241,19 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
         return valueNode.isTextual() //
             ? valueNode.textValue() //
             : JsonFormsDataUtil.getMapper().writeValueAsString(jsonData.at(jsonPointer));
+    }
+
+    private static SettingsType extractSettingsType(final String firstPathElement) {
+        final SettingsType settingsType;
+        if (SettingsType.MODEL.getConfigKey().equals(firstPathElement)) {
+            settingsType = SettingsType.MODEL;
+        } else if (SettingsType.VIEW.getConfigKey().equals(firstPathElement)) {
+            settingsType = SettingsType.VIEW;
+        } else {
+            throw new IllegalArgumentException(String
+                .format("First element of the path must be either 'view' or 'model' but was %s", firstPathElement));
+        }
+        return settingsType;
     }
 
 }

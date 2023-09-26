@@ -44,58 +44,41 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Aug 30, 2023 (Paul Bärnreuther): created
+ *   Sep 27, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.settingsconversion;
+package org.knime.core.webui.node.dialog.defaultdialog;
 
-import java.util.Map;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.knime.core.node.NodeLogger;
+import org.junit.jupiter.api.Test;
+import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
-import org.knime.core.webui.node.dialog.SettingsType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 
 /**
- * Used to de-serialize JSON data to {@link DefaultNodeSettings} to be further transformed to {@link NodeSettings}. The
- * JSON data input to all of the methods needs to be of the form
- *
- * <pre>
- * {
- *      "model": ...,
- *      "view":...
- * }
- * </pre>
  *
  * @author Paul Bärnreuther
  */
-final class JsonDataToNodeSettings extends ToNodeSettings<JsonNode> {
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(JsonDataToNodeSettings.class);
+public class DefaultViewSettingsValidatorTest {
 
-    JsonDataToNodeSettings(final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses) {
-        super(settingsClasses);
+    static class TestViewSettings implements DefaultNodeSettings {
+        String m_viewSetting;
     }
 
-    @Override
-    protected JsonNode getInputForType(final JsonNode data, final SettingsType type) {
-        return data.get(type.getConfigKey());
+    @Test
+    void testValidatesViewSettings() {
+        final var validatingNodeModel = new DefaultViewSettingsValidator(TestViewSettings.class);
+        final var validNodeSettings = new NodeSettings("ignored");
+        validNodeSettings.addString("viewSetting", "value");
+        assertDoesNotThrow(() -> validatingNodeModel.validateViewSettings(validNodeSettings));
     }
 
-    @Override
-    protected DefaultNodeSettings constructDefaultNodeSettings(final JsonNode node,
-        final Class<? extends DefaultNodeSettings> settingsClass) {
-        try {
-            return JsonFormsDataUtil.toDefaultNodeSettings(node, settingsClass);
-        } catch (JsonProcessingException e) {
-            LOGGER.error(String.format("Error when creating class %s from settings. Error message is: %s.",
-                settingsClass.getName(), e.getMessage()), e);
-            return null;
-
-        }
-
+    @Test
+    void testInvalidatesViewSettings() {
+        final var validatingNodeModel = new DefaultViewSettingsValidator(TestViewSettings.class);
+        final var invalidNodeSettings = new NodeSettings("ignored");
+        assertThrows(InvalidSettingsException.class,
+            () -> validatingNodeModel.validateViewSettings(invalidNodeSettings));
     }
 
 }

@@ -56,6 +56,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonNodeSettings
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.JsonFormsSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
@@ -86,7 +87,11 @@ public final class JsonBasedNodeSettingsPersistor<S extends DefaultNodeSettings>
         }
         final var node = JsonFormsDataUtil.getMapper().createObjectNode();
         JsonNodeSettingsMapperUtil.nodeSettingsToJsonObject(nodeSettings, node);
-        return JsonFormsDataUtil.toDefaultNodeSettings(node, m_settingsClass);
+        try {
+            return JsonFormsDataUtil.toDefaultNodeSettings(node, m_settingsClass);
+        } catch (JsonProcessingException ex) {
+            throw new InvalidSettingsException(ex);
+        }
     }
 
     @Override

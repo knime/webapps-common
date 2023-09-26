@@ -88,8 +88,10 @@ import org.knime.core.webui.node.dialog.NodeDialogTest;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.defaultdialog.JsonBasedNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DefaultNodeDialogDataService.PossibleFlowVariable;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.Persistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.SettingsConverter;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
@@ -107,6 +109,7 @@ import org.knime.core.webui.page.Page;
 import org.knime.testing.util.WorkflowManagerUtil;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 /**
  * Tests DefaultNodeSettingsService.
@@ -684,6 +687,62 @@ class DefaultNodeDialogDataServiceImplTest {
                     () -> dataService.getFlowVariableOverrideValue(STRING_OVERRIDES_BOOLEAN_DATA, dataPath));
                 assertThat(invalidSettingsException.getMessage()).isEqualTo(
                     "Unable to parse \"stringvar1_value\" (variable \"stringVar1\") as boolean expression (settings parameter \"myModelSettingConfigKey\")");
+            }
+
+            static final String WRONG_ENUM_VALUE_OVERRIDE = "{" //
+                + "\"data\": {" + "\"model\": {" //
+                + "\"enumField\": \"A\"" + "}" //
+                + "}," //
+                + "\"flowVariableSettings\": {" //
+                + "\"model.enumField\": {" //
+                + String.format("\"controllingFlowVariableName\": \"%s\"", stringVar1.getName()) //
+                + "}" //
+                + "}" //
+                + "}";
+
+            static class TestSettingsWithEnum implements DefaultNodeSettings {
+                enum MyEnum {
+                        A, B, C
+                }
+
+                MyEnum m_enumField = MyEnum.A;
+            }
+
+            @Test
+            void testThrowsOnLoadError() throws JsonProcessingException, InvalidSettingsException {
+                final var dataPath = new LinkedList<String>(List.of("model", "enumField"));
+                final var dataService =
+                    getDataServiceWithConverter(Map.of(SettingsType.MODEL, TestSettingsWithEnum.class));
+                final var invalidSettingsException = assertThrows(InvalidSettingsException.class,
+                    () -> dataService.getFlowVariableOverrideValue(WRONG_ENUM_VALUE_OVERRIDE, dataPath));
+                assertThat(invalidSettingsException.getMessage()).isEqualTo(
+                    String.format("There is no enum constant with name 'stringVar1_value' in enum 'class %s'.",
+                        TestSettingsWithEnum.MyEnum.class.getName()));
+            }
+
+            @Persistor(JsonBasedNodeSettingsPersistor.class)
+            static class JsonBasedTestSettingsWithEnum implements DefaultNodeSettings {
+                enum MyEnum {
+                        A, B, C
+                }
+
+                MyEnum m_enumField = MyEnum.A;
+            }
+
+            @Test
+            void testThrowsOnLoadErrorWithJsonBaseNodeSettingsPersistor()
+                throws JsonProcessingException, InvalidSettingsException {
+                final var dataPath = new LinkedList<String>(List.of("model", "enumField"));
+                final var dataService =
+                    getDataServiceWithConverter(Map.of(SettingsType.MODEL, JsonBasedTestSettingsWithEnum.class));
+                final var invalidSettingsException = assertThrows(InvalidSettingsException.class,
+                    () -> dataService.getFlowVariableOverrideValue(WRONG_ENUM_VALUE_OVERRIDE, dataPath));
+                assertThat(invalidSettingsException.getMessage()).isEqualTo(String.format(
+                    "%s: Cannot deserialize value of type `%s` from String \"stringVar1_value\": "
+                        + "not one of the values accepted for Enum class: [A, B, C]\n"
+                        + " at [Source: UNKNOWN; byte offset: #UNKNOWN] (through reference chain: %s[\"enumField\"])",
+                    InvalidFormatException.class.getName(), JsonBasedTestSettingsWithEnum.MyEnum.class.getName(),
+                    JsonBasedTestSettingsWithEnum.class.getName()));
             }
 
         }

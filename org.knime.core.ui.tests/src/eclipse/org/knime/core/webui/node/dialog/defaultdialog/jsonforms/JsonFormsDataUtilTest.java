@@ -61,6 +61,8 @@ import org.knime.core.data.def.StringCell;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 /**
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
@@ -113,7 +115,7 @@ class JsonFormsDataUtilTest {
     }
 
     @Test
-    void testToDefaultNodeSettings() {
+    void testToDefaultNodeSettings() throws JsonProcessingException {
         assertThat(JsonFormsDataUtil.toDefaultNodeSettings(getMapper().createObjectNode().put("fromSettings", "foo"),
             TestSettings.class)).isEqualTo(new TestSettings("foo"));
     }

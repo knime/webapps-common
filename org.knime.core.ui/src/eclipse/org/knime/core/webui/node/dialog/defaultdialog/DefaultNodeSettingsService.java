@@ -55,6 +55,7 @@ import static org.knime.core.webui.node.dialog.defaultdialog.util.MapValuesUtil.
 
 import java.util.Map;
 
+import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObjectSpec;
@@ -80,6 +81,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 final class DefaultNodeSettingsService implements NodeSettingsService {
 
     private final SettingsConverter m_converter;
+
     private final AsyncChoicesHolder m_asyncChoicesHolder;
 
     /**
@@ -100,14 +102,23 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
     public String fromNodeSettings(final Map<SettingsType, NodeAndVariableSettingsRO> settings,
         final PortObjectSpec[] specs) {
         var context = DefaultNodeSettings.createDefaultNodeSettingsContext(specs);
-        final var jsonFormsSettings = m_converter.nodeSettingsToJsonFormsSettings(mapValues(settings, v -> v), context);
+        final var jsonFormsSettings =
+            m_converter.nodeSettingsToJsonFormsSettingsOrDefault(mapValues(settings, v -> v), context);
         final var flowVariablesMapJsonObject =
             SettingsConverter.variableSettingsToJsonObject(mapValues(settings, v -> v), context);
         return toString(jsonFormsSettings, flowVariablesMapJsonObject);
     }
 
-    private String toString(final JsonFormsSettings jsonFormsSettings,
-        final ObjectNode flowVariablesMapJsonObject) {
+    @Override
+    public void validateNodeSettingsAndVariables(final Map<SettingsType, NodeAndVariableSettingsRO> settings)
+        throws InvalidSettingsException {
+        for (var entry : settings.entrySet()) {
+            m_converter.nodeSettingsToDefaultNodeSettings(entry.getKey(), entry.getValue());
+        }
+
+    }
+
+    private String toString(final JsonFormsSettings jsonFormsSettings, final ObjectNode flowVariablesMapJsonObject) {
         final var mapper = JsonFormsDataUtil.getMapper();
         final var root = mapper.createObjectNode();
         root.set(FIELD_NAME_DATA, jsonFormsSettings.getData());

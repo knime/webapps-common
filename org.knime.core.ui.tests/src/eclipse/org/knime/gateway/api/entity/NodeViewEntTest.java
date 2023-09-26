@@ -86,6 +86,7 @@ import org.knime.core.data.property.ColorHandler;
 import org.knime.core.data.property.ColorModel;
 import org.knime.core.data.property.ColorModelNominal;
 import org.knime.core.data.property.ColorModelRange;
+import org.knime.core.internal.KNIMEPath;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -190,7 +191,7 @@ class NodeViewEntTest {
 
         overwriteViewSettingWithFlowVariable(nnc);
         ent = NodeViewEnt.create(nnc, null);
-        checkViewSettings(ent, "flow variable value");
+        checkViewSettings(ent, KNIMEPath.getWorkspaceDirPath().getAbsolutePath());
         checkOutgoingFlowVariable(nnc, "exposed_flow_variable", "exposed view settings value");
 
         nnc.setNodeMessage(NodeMessage.newWarning("node message"));
@@ -363,7 +364,7 @@ class NodeViewEntTest {
         var variableTree = viewVariables.addNodeSettings("tree");
 
         var variableTreeNode = variableTree.addNodeSettings("view setting key");
-        variableTreeNode.addString("used_variable", "flow variable");
+        variableTreeNode.addString("used_variable", "knime.workspace");
         variableTreeNode.addString("exposed_variable", null);
 
         var exposedVariableTreeNode = variableTree.addNodeSettings("exposed view setting key");
@@ -373,7 +374,6 @@ class NodeViewEntTest {
         parent.loadNodeSettings(nnc.getID(), nodeSettings);
         parent.executeAllAndWaitUntilDone();
 
-        nnc.getFlowObjectStack().push(new FlowVariable("flow variable", "flow variable value"));
     }
 
     private static void checkViewSettings(final NodeViewEnt ent, final String expectedSettingValue)

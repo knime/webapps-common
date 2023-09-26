@@ -44,58 +44,46 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Aug 30, 2023 (Paul Bärnreuther): created
+ *   Sep 26, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.settingsconversion;
+package org.knime.core.webui.node.dialog.defaultdialog;
 
-import java.util.Map;
-
-import org.knime.core.node.NodeLogger;
-import org.knime.core.node.NodeSettings;
-import org.knime.core.webui.node.dialog.SettingsType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeModel;
+import org.knime.core.node.NodeModel.ViewSettingsValidator;
+import org.knime.core.node.NodeSettingsRO;
 
 /**
- * Used to de-serialize JSON data to {@link DefaultNodeSettings} to be further transformed to {@link NodeSettings}. The
- * JSON data input to all of the methods needs to be of the form
- *
- * <pre>
- * {
- *      "model": ...,
- *      "view":...
- * }
- * </pre>
+ * Set this {@link ViewSettingsValidator} for a node model (using {@link NodeModel#setViewSettingsValidator} for a node
+ * using {@link DefaultNodeSettings} view variables in order to validate that view settings that are overwritten by flow
+ * variables can loaded as DefaultNodeSettings. As a typical example where this validation is useful: When overwriting
+ * an enum field with a string flow variable which does not have one of the string values, overwriting the node settings
+ * with the default node settings does not throw an error. This error is only thrown when loading the node settings to
+ * {@link DefaultNodeSettings} which, in case of view settings, is not caught unless this class is used as node model.
  *
  * @author Paul Bärnreuther
  */
-final class JsonDataToNodeSettings extends ToNodeSettings<JsonNode> {
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(JsonDataToNodeSettings.class);
+public final class DefaultViewSettingsValidator implements ViewSettingsValidator {
 
-    JsonDataToNodeSettings(final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses) {
-        super(settingsClasses);
+    private Class<? extends DefaultNodeSettings> m_viewSettingsClass;
+
+    /**
+     * @param viewSettingsClass the class of the view settings. Although it is odd, that any information regarding view
+     *            settings is part of the node model, it is wanted here, as view settings should be treated as model
+     *            settings when loading them is erroneous. But this class is and should only be used for the validation
+     *            here within the node model.
+     */
+    public DefaultViewSettingsValidator(final Class<? extends DefaultNodeSettings> viewSettingsClass) {
+        m_viewSettingsClass = viewSettingsClass;
     }
 
+    /**
+     * Try to load the view settings (already overwritten by flow variables) to {@link DefaultNodeSettings}.
+     * {@inheritDoc}
+     */
     @Override
-    protected JsonNode getInputForType(final JsonNode data, final SettingsType type) {
-        return data.get(type.getConfigKey());
-    }
-
-    @Override
-    protected DefaultNodeSettings constructDefaultNodeSettings(final JsonNode node,
-        final Class<? extends DefaultNodeSettings> settingsClass) {
-        try {
-            return JsonFormsDataUtil.toDefaultNodeSettings(node, settingsClass);
-        } catch (JsonProcessingException e) {
-            LOGGER.error(String.format("Error when creating class %s from settings. Error message is: %s.",
-                settingsClass.getName(), e.getMessage()), e);
-            return null;
-
-        }
-
+    public void validateViewSettings(final NodeSettingsRO viewSettings) throws InvalidSettingsException {
+        DefaultNodeSettings.loadSettings(viewSettings, m_viewSettingsClass);
     }
 
 }

@@ -200,12 +200,15 @@ public class DefaultNodeSettingsServiceWithVariablesTest {
         TestNodeSettingsService.setAddedNodeAndVariableSettingsValue(textSettings, createWOSettings(settings));
         settings.addString("model setting", "dummyData");
         final var variableSettings = new VariableSettings(new NodeSettings("variables"), settings);
-        variableSettings.addUsedVariable("model setting", "flowVar1");
+        variableSettings.addUsedVariable("model setting", "flowVar1", false);
         assertThat(service.fromNodeSettings(createROSettings(settings, variableSettings), new PortObjectSpec[0]))
             .isEqualTo("""
                     {"data":{"model":{"model setting":"1"}},""" + """
                     "flowVariableSettings":{"model.model setting":{""" + """
-                    "controllingFlowVariableName":"flowVar1","controllingFlowVariableAvailable":false}}}""");
+                    "controllingFlowVariableName":"flowVar1",""" + """
+                    "controllingFlowVariableFlawed":false,""" + """
+                    "controllingFlowVariableAvailable":false""" + """
+                    }}}""");
     }
 
 }

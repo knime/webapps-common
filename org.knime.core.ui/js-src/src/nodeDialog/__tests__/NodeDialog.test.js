@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { shallowMount } from "@vue/test-utils";
 import { JsonForms } from "@jsonforms/vue";
@@ -226,9 +227,13 @@ describe("NodeDialog.vue", () => {
     });
   });
 
-  it("provides 'getFlowVariableOverrideValue' method", () => {
+  it("provides 'getFlowVariableOverrideValue' method", async () => {
     const wrapper = shallowMount(NodeDialog, getOptions());
-    const dataPath = "path.to.my.setting";
+    const expectedResult = "value";
+    const getDataSpy = vi
+      .spyOn(wrapper.vm.jsonDataService, "data")
+      .mockResolvedValue(expectedResult);
+    const path = "path.to.my.setting";
     const currentData = { foo: "bar" };
     const flowVariablesMap = {
       myPath: {
@@ -239,8 +244,11 @@ describe("NodeDialog.vue", () => {
     };
     wrapper.vm.currentData = currentData;
     wrapper.vm.schema = { flowVariablesMap };
-    wrapper.vm.getFlowVariableOverrideValue(dataPath);
-    expect(wrapper.vm.jsonDataService.data).toHaveBeenCalledWith({
+    const result = await wrapper.vm.getFlowVariableOverrideValue(
+      "_persistPath",
+      path,
+    );
+    expect(getDataSpy).toHaveBeenCalledWith({
       method: "getFlowVariableOverrideValue",
       options: [
         JSON.stringify({
@@ -249,6 +257,27 @@ describe("NodeDialog.vue", () => {
         }),
         ["path", "to", "my", "setting"],
       ],
+    });
+    expect(result).toStrictEqual(expectedResult);
+  });
+
+  it("provides 'unsetControllingFlowVariable' method", async () => {
+    const wrapper = shallowMount(NodeDialog, getOptions());
+    const persistPath = "path.to.my.setting";
+    await flushPromises();
+    const flowVariablesMap = {
+      [persistPath]: {
+        controllingFlowVariableAvailable: true,
+        controllingFlowVariableName: "myVar",
+        exposedFlowVariableName: null,
+      },
+    };
+    wrapper.vm.schema = { flowVariablesMap };
+    wrapper.vm.unsetControllingFlowVariable(persistPath);
+    expect(flowVariablesMap[persistPath]).toStrictEqual({
+      controllingFlowVariableAvailable: false,
+      controllingFlowVariableName: null,
+      exposedFlowVariableName: null,
     });
   });
 
@@ -445,6 +474,182 @@ describe("NodeDialog.vue", () => {
         ...wrapper.vm.getData().data,
         arrayLayoutSetting: [{ value: "some data" }, { value: "second" }],
       });
+    });
+  });
+
+  describe("flawed controlling variable paths", () => {
+    it("sets variable path to flawed if 'getFlowVariableOverrideValue' returns undefined", async () => {
+      const dirtySettingsMock = vi.fn();
+      const wrapper = shallowMount(
+        NodeDialog,
+        getOptions({ dirtySettingsMock }),
+      );
+      vi.spyOn(wrapper.vm.jsonDataService, "data").mockResolvedValue(undefined);
+      const persistPath = "my.path";
+      const flowSettings = {};
+      await flushPromises();
+      wrapper.vm.schema.flowVariablesMap[persistPath] = flowSettings;
+
+      await wrapper.vm.getFlowVariableOverrideValue(persistPath, "_dataPath");
+
+      expect(wrapper.vm.flawedControllingVariablePaths).toStrictEqual(
+        new Set([persistPath]),
+      );
+      expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
+      expect(flowSettings.controllingFlowVariableFlawed).toBeTruthy();
+    });
+
+    it("excludes flawed overwritten variables from subsequent 'getFlowVariableOverrideValue' requests of other settings", async () => {
+      const dirtySettingsMock = vi.fn();
+      const wrapper = shallowMount(
+        NodeDialog,
+        getOptions({ dirtySettingsMock }),
+      );
+      const getDataSpy = vi
+        .spyOn(wrapper.vm.jsonDataService, "data")
+        .mockResolvedValue("not_undefined");
+      const persistPathFlawedSetting = "flawed";
+      const persistPathOtherSetting = "other";
+      await flushPromises();
+      wrapper.vm.schema.flowVariablesMap = {
+        [persistPathFlawedSetting]: {
+          controllingFlowVariableName: "flawedSettingVariable",
+          controllingFlowVariableFlawed: true,
+        },
+        [persistPathOtherSetting]: {
+          controllingFlowVariableName: "otherSettingsVariable",
+          controllingFlowVariableFlawed: false,
+        },
+      };
+      wrapper.vm.flawedControllingVariablePaths.add(persistPathFlawedSetting);
+
+      wrapper.vm.currentData = {};
+      await wrapper.vm.getFlowVariableOverrideValue(
+        persistPathOtherSetting,
+        "_dataPath",
+      );
+      expect(getDataSpy).toHaveBeenCalledWith({
+        method: "getFlowVariableOverrideValue",
+        options: [
+          `{"data":{},"flowVariableSettings":${JSON.stringify({
+            [persistPathOtherSetting]: {
+              controllingFlowVariableName: "otherSettingsVariable",
+              controllingFlowVariableFlawed: false,
+            },
+          })}}`,
+          ["_dataPath"],
+        ],
+      });
+    });
+
+    it("does not exclude flawed overwritten variable from subsequent 'getFlowVariableOverrideValue' request of the same setting", async () => {
+      const dirtySettingsMock = vi.fn();
+      const wrapper = shallowMount(
+        NodeDialog,
+        getOptions({ dirtySettingsMock }),
+      );
+      const getDataSpy = vi
+        .spyOn(wrapper.vm.jsonDataService, "data")
+        .mockResolvedValue("not_undefined");
+      const persistPathFlawedSetting = "flawed";
+      await flushPromises();
+      const variableSettingsMap = {
+        [persistPathFlawedSetting]: {
+          controllingFlowVariableName: "flawedSettingVariable",
+          controllingFlowVariableFlawed: true,
+        },
+      };
+      const variableSettingsMapBeforeRequest =
+        JSON.stringify(variableSettingsMap);
+      wrapper.vm.schema.flowVariablesMap = variableSettingsMap;
+      wrapper.vm.flawedControllingVariablePaths.add(persistPathFlawedSetting);
+
+      wrapper.vm.currentData = {};
+      await wrapper.vm.getFlowVariableOverrideValue(
+        persistPathFlawedSetting,
+        "_dataPath",
+      );
+      expect(getDataSpy).toHaveBeenCalledWith({
+        method: "getFlowVariableOverrideValue",
+        options: [
+          `{"data":{},"flowVariableSettings":${variableSettingsMapBeforeRequest}}`,
+          ["_dataPath"],
+        ],
+      });
+    });
+
+    it("unsets flawed variable path if 'getFlowVariableOverrideValue' returns a value", async () => {
+      const wrapper = shallowMount(NodeDialog, getOptions());
+      vi.spyOn(wrapper.vm.jsonDataService, "data").mockResolvedValue(
+        "notUndefined",
+      );
+      const persistPath = "my.path";
+      const flowSettings = { controllingFlowVariableFlawed: true };
+      await flushPromises();
+      wrapper.vm.schema.flowVariablesMap[persistPath] = flowSettings;
+      wrapper.vm.flawedControllingVariablePaths.add(persistPath);
+
+      await wrapper.vm.getFlowVariableOverrideValue(persistPath, "_dataPath");
+
+      expect(wrapper.vm.flawedControllingVariablePaths).toStrictEqual(
+        new Set([]),
+      );
+      expect(flowSettings.controllingFlowVariableFlawed).toBeFalsy();
+    });
+
+    it("dispatched 'cleanSettings' when the last flawed path is cleaned", async () => {
+      const cleanSettingsMock = vi.fn();
+      const wrapper = shallowMount(
+        NodeDialog,
+        getOptions({ cleanSettingsMock }),
+      );
+      vi.spyOn(wrapper.vm.jsonDataService, "data").mockResolvedValue(
+        "notUndefined",
+      );
+      const persistPaths = ["path1", "path2", "path3"];
+      await flushPromises();
+      wrapper.vm.flawedControllingVariablePaths = new Set(persistPaths);
+
+      await wrapper.vm.getFlowVariableOverrideValue(
+        persistPaths[0],
+        "_dataPath",
+      );
+      await wrapper.vm.getFlowVariableOverrideValue(
+        persistPaths[1],
+        "_dataPath",
+      );
+
+      expect(cleanSettingsMock).not.toHaveBeenCalled();
+
+      await wrapper.vm.getFlowVariableOverrideValue(
+        persistPaths[2],
+        "_dataPath",
+      );
+
+      expect(cleanSettingsMock).toHaveBeenCalled();
+    });
+
+    it("unsets flawed variable path if 'unsetControllingFlowVariable' is called", async () => {
+      const cleanSettingsMock = vi.fn();
+      const wrapper = shallowMount(
+        NodeDialog,
+        getOptions({ cleanSettingsMock }),
+      );
+      const persistPath = "path.to.my.setting";
+      await flushPromises();
+      const flowVariablesMap = {
+        [persistPath]: {
+          controllingFlowVariableFlawed: true,
+        },
+      };
+      wrapper.vm.schema.flowVariablesMap = flowVariablesMap;
+
+      wrapper.vm.unsetControllingFlowVariable(persistPath);
+
+      expect(
+        flowVariablesMap[persistPath].controllingFlowVariableFlawed,
+      ).toBeFalsy();
+      expect(cleanSettingsMock).toHaveBeenCalled();
     });
   });
 });

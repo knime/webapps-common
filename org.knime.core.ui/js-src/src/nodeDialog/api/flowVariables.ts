@@ -67,6 +67,7 @@ export const unsetControllingFlowVariable = (
   { path }: { path: string },
 ) => {
   if (flowVariableMap[path]) {
+    delete flowVariableMap[path].controllingFlowVariableFlawed;
     flowVariableMap[path].controllingFlowVariableAvailable = false;
     flowVariableMap[path].controllingFlowVariableName = null;
   }

@@ -69,9 +69,21 @@ public final class VariableSettings implements VariableSettingsWO, VariableSetti
 
     private static final String VERSION_CFG_KEY = "version";
 
-    private static final String EXPOSED_VARIABLE_CFG_KEY = "exposed_variable";
+    /**
+     * Config key for the exposed variable.
+     */
+    public static final String EXPOSED_VARIABLE_CFG_KEY = "exposed_variable";
 
-    private static final String USED_VARIABLE_CFG_KEY = "used_variable";
+    /**
+     * Config key for the used variable.
+     */
+    public static final String USED_VARIABLE_CFG_KEY = "used_variable";
+
+    /**
+     * Config key for a boolean indicating whether the used variable is flawed in the sense that overriding the
+     * corresponding node setting with it will lead to an error.
+     */
+    public static final String USED_VARIABLE_FLAWED_CFG_KEY = "used_variable_flawed";
 
     private final Supplier<NodeSettings> m_variableSettingsCreator;
 
@@ -83,6 +95,7 @@ public final class VariableSettings implements VariableSettingsWO, VariableSetti
 
     /**
      * Internal use only
+     *
      * @param nodeSettings
      * @param type
      * @throws InvalidSettingsException
@@ -117,6 +130,7 @@ public final class VariableSettings implements VariableSettingsWO, VariableSetti
 
     /**
      * Internal use only
+     *
      * @param variableSettings
      * @param nodeSettings
      */
@@ -187,7 +201,8 @@ public final class VariableSettings implements VariableSettingsWO, VariableSetti
     }
 
     @Override
-    public void addUsedVariable(final String settingsKey, final String usedVariable) throws InvalidSettingsException {
+    public void addUsedVariable(final String settingsKey, final String usedVariable,
+        final boolean isControllingFlowVariableFlawed) throws InvalidSettingsException {
         if (!m_nodeSettings.containsKey(settingsKey)) {
             throw new InvalidSettingsException("Cannot overwrite the setting '" + settingsKey
                 + "' with the flow variable '" + usedVariable + "' because the setting does not exist.");
@@ -195,6 +210,7 @@ public final class VariableSettings implements VariableSettingsWO, VariableSetti
 
         final var s = getOrCreateSubSettings(getOrCreateVariableSettings(), settingsKey);
         s.addString(USED_VARIABLE_CFG_KEY, usedVariable);
+        s.addBoolean(USED_VARIABLE_FLAWED_CFG_KEY, isControllingFlowVariableFlawed);
         addStringIfNotPresent(s, EXPOSED_VARIABLE_CFG_KEY, null);
     }
 
