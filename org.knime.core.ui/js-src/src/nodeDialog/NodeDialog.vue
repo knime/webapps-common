@@ -72,6 +72,7 @@ export default {
       dialogService: null as DialogService | null,
       originalModelSettings: null as any,
       flawedControllingVariablePaths: new Set() as Set<string>,
+      possiblyFlawedControllingVariablePaths: new Set() as Set<string>,
       renderers: Object.freeze(renderers),
       registeredWatchers: [] as RegisteredWatcher[],
       currentData: {} as SettingsData,
@@ -95,7 +96,7 @@ export default {
     this.dialogService = new DialogService(this.getKnimeService());
     const initialSettings = await this.jsonDataService.initialData();
     const { schema } = initialSettings;
-    schema.flowVariablesMap = initialSettings.flowVariableSettings;
+    schema.flowVariablesMap = this.initializeFlowVariablesMap(initialSettings);
     schema.hasNodeView = this.dialogService.hasNodeView();
     schema.showAdvancedSettings = false;
     this.schema = schema;
@@ -196,9 +197,29 @@ export default {
         this.getData(),
       );
     },
+    initializeFlowVariablesMap({
+      flowVariableSettings,
+    }: {
+      flowVariableSettings: Record<string, FlowSettings>;
+    }) {
+      Object.keys(flowVariableSettings).forEach((persistPath) => {
+        if (flowVariableSettings[persistPath].controllingFlowVariableName) {
+          this.possiblyFlawedControllingVariablePaths.add(persistPath);
+          /**
+           * The variable could be valid again since the last time it has been applied.
+           */
+          delete flowVariableSettings[persistPath]
+            .controllingFlowVariableFlawed;
+        }
+      });
+      return flowVariableSettings;
+    },
     async getFlowVariableOverrideValue(persistPath: string, dataPath: string) {
       const { data, flowVariableSettings } = cloneDeep(this.getData());
-      this.flawedControllingVariablePaths.forEach((path) => {
+      [
+        ...this.flawedControllingVariablePaths,
+        ...this.possiblyFlawedControllingVariablePaths,
+      ].forEach((path) => {
         if (path !== persistPath) {
           delete flowVariableSettings[path];
         }
@@ -215,8 +236,7 @@ export default {
           delete flowSettings.controllingFlowVariableFlawed;
         }
       } else {
-        // @ts-ignore
-        this.$store.dispatch("pagebuilder/dialog/dirtySettings", true);
+        this.setDirty();
         if (flowSettings) {
           flowSettings.controllingFlowVariableFlawed = true;
         }
@@ -224,11 +244,17 @@ export default {
       this.flawedControllingVariablePaths[valid ? "delete" : "add"](
         persistPath,
       );
+      this.possiblyFlawedControllingVariablePaths.delete(persistPath);
       this.cleanIfNecessary();
       return overrideValue;
     },
+    setDirty() {
+      // @ts-ignore
+      this.$store.dispatch("pagebuilder/dialog/dirtySettings", true);
+    },
     unsetControllingFlowVariable(persistPath: string) {
       this.flawedControllingVariablePaths.delete(persistPath);
+      this.possiblyFlawedControllingVariablePaths.delete(persistPath);
       flowVariablesApi.unsetControllingFlowVariable(
         this.schema.flowVariablesMap,
         { path: persistPath },

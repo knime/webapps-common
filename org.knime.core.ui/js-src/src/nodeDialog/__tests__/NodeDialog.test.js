@@ -16,11 +16,15 @@ import { getOptions } from "./utils";
 window.closeCEFWindow = () => {};
 
 describe("NodeDialog.vue", () => {
+  let initialDataSpy;
+
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.spyOn(JsonDataService.prototype, "initialData").mockResolvedValue({
-      ...dialogInitialData,
-    });
+    initialDataSpy = vi
+      .spyOn(JsonDataService.prototype, "initialData")
+      .mockResolvedValue({
+        ...dialogInitialData,
+      });
     vi.spyOn(JsonDataService.prototype, "applyData").mockResolvedValue();
     vi.spyOn(JsonDataService.prototype, "publishData").mockResolvedValue();
   });
@@ -573,6 +577,69 @@ describe("NodeDialog.vue", () => {
         method: "getFlowVariableOverrideValue",
         options: [
           `{"data":{},"flowVariableSettings":${variableSettingsMapBeforeRequest}}`,
+          ["_dataPath"],
+        ],
+      });
+    });
+
+    it("excludes initially set paths from 'getFlowVariableOverrideValue' request until the controlling variable is are changed", async () => {
+      const initialSetting1 = "first";
+      const initialSetting2 = "second";
+      const flowSettings1 = {
+        [initialSetting1]: {
+          controllingFlowVariableName: "var1",
+          controllingFlowVariableFlawed: true,
+        },
+      };
+      const flowSettings2 = {
+        [initialSetting2]: {
+          controllingFlowVariableName: "var2",
+          controllingFlowVariableFlawed: false,
+        },
+      };
+      initialDataSpy.mockResolvedValue({
+        data: {},
+        schema: {},
+        flowVariableSettings: {
+          ...flowSettings1,
+          ...flowSettings2,
+        },
+      });
+
+      const wrapper = shallowMount(NodeDialog, getOptions());
+
+      await flushPromises();
+      expect(wrapper.vm.possiblyFlawedControllingVariablePaths).toStrictEqual(
+        new Set([initialSetting1, initialSetting2]),
+      );
+      expect(flowSettings1.controllingFlowVariableFlawed).toBeUndefined();
+      expect(flowSettings2.controllingFlowVariableFlawed).toBeUndefined();
+      const getDataSpy = vi
+        .spyOn(wrapper.vm.jsonDataService, "data")
+        .mockResolvedValue("not_undefined");
+
+      wrapper.vm.currentData = {};
+      await wrapper.vm.getFlowVariableOverrideValue(
+        initialSetting1,
+        "_dataPath",
+      );
+      expect(getDataSpy).toHaveBeenCalledWith({
+        method: "getFlowVariableOverrideValue",
+        options: [
+          `{"data":{},"flowVariableSettings":${JSON.stringify(flowSettings1)}}`,
+          ["_dataPath"],
+        ],
+      });
+
+      /**
+       * After the first request, flowSetting1 is known to be not flawed anymore,
+       * so it will also be used for subsequent requests.
+       */
+      await wrapper.vm.getFlowVariableOverrideValue("other", "_dataPath");
+      expect(getDataSpy).toHaveBeenCalledWith({
+        method: "getFlowVariableOverrideValue",
+        options: [
+          `{"data":{},"flowVariableSettings":${JSON.stringify(flowSettings1)}}`,
           ["_dataPath"],
         ],
       });
