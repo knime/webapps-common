@@ -2004,6 +2004,17 @@ describe("TableViewInteractive.vue", () => {
         ).toBe(0);
       });
 
+      it("refreshes the table on showOnlySelectedRows view settings emit", async () => {
+        initialDataMock.settings.showOnlySelectedRows = true;
+        const wrapper = await shallowMountInteractive(context);
+        const tableComponent = findTableComponent(wrapper);
+        const refreshTableSpy = vi.spyOn(wrapper.vm, "refreshTable");
+
+        await tableComponent.vm.$emit("showOnlySelectedRows");
+        await flushPromises();
+        expect(refreshTableSpy).toHaveBeenCalledWith({ resetPage: true });
+      });
+
       describe("onSelectAll", () => {
         it("calls the selection service and updates local selection on selectAll rows", async () => {
           const currentRowCount = 2;
