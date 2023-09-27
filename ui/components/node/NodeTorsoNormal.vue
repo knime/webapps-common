@@ -49,6 +49,11 @@ export default {
       default: null,
       validator: (url) => url.startsWith("data:image/"),
     },
+
+    dark: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     backgroundPath() {
@@ -74,6 +79,7 @@ export default {
   <g>
     <path
       class="bg"
+      :class="{ dark }"
       :d="backgroundPath"
       :fill="isComponent ? componentColor : backgroundColor"
     />
@@ -81,6 +87,7 @@ export default {
     <path
       v-if="isComponent && type"
       class="bg"
+      :class="{ dark }"
       :d="backgroundPath"
       :fill="backgroundColor"
       :transform="componentBackgroundTransformation"
@@ -96,3 +103,9 @@ export default {
     />
   </g>
 </template>
+
+<style scoped>
+.bg.dark {
+  filter: saturate(70%);
+}
+</style>
