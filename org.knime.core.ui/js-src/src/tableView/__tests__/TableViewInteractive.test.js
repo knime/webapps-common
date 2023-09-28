@@ -1957,7 +1957,7 @@ describe("TableViewInteractive.vue", () => {
         expect(refreshTableSpy).toHaveBeenCalledWith({ resetPage: true });
       });
 
-      it("requests new sorted data on changing showOnlySelectedRows", () => {
+      it("requests new data on changing showOnlySelectedRows", async () => {
         changeViewSetting(wrapper, "showOnlySelectedRows", true);
 
         expect(getData).toBeCalledWith({
@@ -1973,6 +1973,13 @@ describe("TableViewInteractive.vue", () => {
             true,
           ],
         });
+        expect(
+          findTableComponent(wrapper).props().tableConfig.pageConfig.tableSize,
+        ).toBe(4);
+        await flushPromises();
+        expect(
+          findTableComponent(wrapper).props().tableConfig.pageConfig.tableSize,
+        ).toBe(0);
       });
 
       describe("onSelectAll", () => {

@@ -1099,7 +1099,9 @@ export default {
     }"
     :page="{
       currentRowCount,
-      totalRowCount,
+      totalRowCount: settings.showOnlySelectedRows
+        ? totalSelected
+        : totalRowCount,
       currentPage,
       columnCount,
     }"
