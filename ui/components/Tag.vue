@@ -32,7 +32,7 @@ export default {
 
 <style lang="postcss" scoped>
 .tag {
-  border: 1px solid var(--knime-dove-gray);
+  border: 1px solid var(--buttons-button-tertiary);
   margin-right: 5px;
   margin-bottom: 5px;
   padding: 3px 5px;
@@ -42,7 +42,7 @@ export default {
   justify-content: center;
   align-items: center;
   font-weight: 500;
-  color: var(--knime-dove-gray);
+  color: var(--buttons-button-tertiary);
 
   & svg {
     position: relative;
