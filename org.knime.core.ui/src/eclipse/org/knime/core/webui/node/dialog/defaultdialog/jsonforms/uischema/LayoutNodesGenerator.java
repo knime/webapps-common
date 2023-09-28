@@ -57,6 +57,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil.LayoutSkeleton;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaDefaultNodeSettingsTraverser.JsonFormsControl;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.JsonFormsExpression;
@@ -83,10 +84,6 @@ final class LayoutNodesGenerator {
     private final Collection<JsonFormsControl> m_fields;
 
     private final AsyncChoicesAdder m_asyncChoicesAdder;
-
-    static record LayoutSkeleton(LayoutTreeNode layoutTreeRoot, Map<Class<?>, JsonFormsExpression> signals,
-        Collection<JsonFormsControl> fields) {
-    }
 
     /**
      * @param layout a record containing controls (as a mapping between layout parts and their contained settings

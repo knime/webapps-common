@@ -48,12 +48,14 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
+import java.util.Collection;
 import java.util.Map;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.LayoutNodesGenerator.LayoutSkeleton;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaDefaultNodeSettingsTraverser.JsonFormsControl;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.JsonFormsExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesAdder;
 
@@ -95,10 +97,28 @@ public final class JsonFormsUiSchemaUtil {
         return new LayoutNodesGenerator(layoutSkeleton, mapper, context, asyncChoicesAdder).build();
     }
 
-    private static LayoutSkeleton resolveLayout(final Map<String, Class<?>> settings, final ObjectMapper mapper) {
+    /**
+     * Resolves a map of default node settings classes to a tree structure representing the layout of the node dialog
+     *
+     * @param settings the map of default node settings classes
+     * @param mapper
+     * @return the resolved tree structure and some additional information which is necessary to generator the uischema
+     *         from that
+     */
+    public static LayoutSkeleton resolveLayout(final Map<String, Class<?>> settings, final ObjectMapper mapper) {
         final var traverser = new UiSchemaDefaultNodeSettingsTraverser(mapper);
         final var traversalResult = traverser.traverse(settings);
         final var layoutTreeRoot = new LayoutTree(traversalResult.layoutPartToControls()).getRootNode();
         return new LayoutSkeleton(layoutTreeRoot, traversalResult.signals(), traversalResult.fields());
+    }
+
+    /**
+     * @param layoutTreeRoot a tree structure representation of the node dialogs layout. Its leafs represent controls
+     *            and other nodes can be visible layout elements or just structural placeholders.
+     * @param signals a map of all present  {@link Signal} annotations.
+     * @param fields a collection of all traversed fields (the leaves of the tree)
+     */
+    public static record LayoutSkeleton(LayoutTreeNode layoutTreeRoot, Map<Class<?>, JsonFormsExpression> signals,
+        Collection<JsonFormsControl> fields) {
     }
 }

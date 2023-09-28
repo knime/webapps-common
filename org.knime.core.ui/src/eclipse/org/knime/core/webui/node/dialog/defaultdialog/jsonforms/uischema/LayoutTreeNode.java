@@ -68,7 +68,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.Inside;
  *
  * @author Paul Bärnreuther
  */
-final class LayoutTreeNode {
+public final class LayoutTreeNode {
     private final Class<?> m_value;
 
     private final Collection<LayoutTreeNode> m_isAfter = new HashSet<>();
@@ -152,6 +152,9 @@ final class LayoutTreeNode {
         m_children = new HashSet<>();
     }
 
+    /**
+     * @return the child layout nodes
+     */
     public Collection<LayoutTreeNode> getChildren() {
         return m_children;
     }

@@ -80,7 +80,14 @@ public class UiSchemaDefaultNodeSettingsTraverser {
         m_mapper = mapper;
     }
 
-    static record JsonFormsControl(String scope, PropertyWriter field, Class<?> rootClass) {
+    /**
+     * A record representing a single control within a node dialog
+     *
+     * @param scope of the control
+     * @param field the associated property writer of the java field
+     * @param rootClass the class from which the control originated from
+     */
+    public static record JsonFormsControl(String scope, PropertyWriter field, Class<?> rootClass) {
     }
 
     private static record TraversalConsumerPayload(String scope, TraversedField field, Class<?> rootClass) {
