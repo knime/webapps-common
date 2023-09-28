@@ -566,8 +566,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
 
     @Override
     public String[] getCurrentRowKeys() {
-        final var filteredAndSortedTable =
-            m_filteredAndSortedTableCache.getCachedTable().orElseGet(m_tableSupplier::get);
+        final var filteredAndSortedTable = getFilteredAndSortedTableFromCache();
         final var size = (int)filteredAndSortedTable.size();
         final var rowKeys = new String[size];
         final var filter = new TableFilter.Builder();

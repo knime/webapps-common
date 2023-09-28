@@ -72,6 +72,7 @@ import org.awaitility.Awaitility;
 import org.awaitility.core.ThrowingRunnable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.knime.core.data.RowKey;
 import org.knime.core.node.InvalidSettingsException;
@@ -86,6 +87,7 @@ import org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFacto
 import org.knime.core.webui.data.ApplyDataService;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
+import org.knime.core.webui.node.DataServiceManager;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.PageResourceManager;
 import org.knime.core.webui.node.view.selection.SelectionTranslationService;
@@ -358,23 +360,51 @@ public class NodeViewManagerTest {
      * {@link DataServiceManager#callRpcDataService(NodeWrapper, String))} and
      * {@link DataServiceManager#callApplyDataService(NodeWrapper, String))}
      */
-    @Test
-    public void testCallDataServices() {
-        var page = Page.builder(() -> "test page content", "index.html").build();
-        Function<NodeViewNodeModel, NodeView> nodeViewCreator =
-            m -> createNodeView(page, InitialDataService.builder(() -> "init service").build(),
-                RpcDataService.builder(new TestService()).build(), ApplyDataService.builder((ReExecutable)(d, b) -> {
-                    throw new UnsupportedOperationException("re-execute data service");
-                }).build());
+    @Nested
+    class DataServiceCallsTest {
 
-        var nc = NodeWrapper.of(NodeViewManagerTest.createNodeWithNodeView(m_wfm, nodeViewCreator));
+        private NodeWrapper m_nc;
 
-        var dataServiceManager = NodeViewManager.getInstance().getDataServiceManager();
-        assertThat(dataServiceManager.callInitialDataService(nc)).isEqualTo("{\"result\":\"init service\"}");
-        assertThat(dataServiceManager.callRpcDataService(nc, RpcDataService.jsonRpcRequest("method", "test param")))
-            .contains("\"result\":\"test param\"");
-        Assertions.assertThatThrownBy(() -> dataServiceManager.callApplyDataService(nc, "ERROR,test"))
-            .isInstanceOf(IllegalArgumentException.class).hasMessage("Can't reexecute executing nodes.");
+        @BeforeEach
+        @SuppressWarnings({"unchecked", "rawtypes"})
+        void constructNodeWrapperWithDataServices() {
+            var page = Page.builder(() -> "test page content", "index.html").build();
+            Function<NodeViewNodeModel, NodeView> nodeViewCreator =
+                m -> createNodeView(page, InitialDataService.builder(() -> "init service").build(),
+                    () -> RpcDataService.builder(new TestService()).build(),
+                    ApplyDataService.builder((ReExecutable)(d, b) -> {
+                        throw new UnsupportedOperationException("re-execute data service");
+                    }).build());
+
+            m_nc = NodeWrapper.of(NodeViewManagerTest.createNodeWithNodeView(m_wfm, nodeViewCreator));
+        }
+
+        @Test
+        public void testCallDataServices() {
+            var dataServiceManager = NodeViewManager.getInstance().getDataServiceManager();
+            assertThat(dataServiceManager.callInitialDataService(m_nc)).isEqualTo("{\"result\":\"init service\"}");
+            assertRpcDataServiceCall(dataServiceManager, m_nc, "test param", 1);
+            Assertions.assertThatThrownBy(() -> dataServiceManager.callApplyDataService(m_nc, "ERROR,test"))
+                .isInstanceOf(IllegalArgumentException.class).hasMessage("Can't reexecute executing nodes.");
+        }
+
+        @Test
+        public void testResetsRpcDataServiceOnInitialDataServiceCall() {
+            var dataServiceManager = NodeViewManager.getInstance().getDataServiceManager();
+            dataServiceManager.callInitialDataService(m_nc);
+            assertRpcDataServiceCall(dataServiceManager, m_nc, "test param", 1);
+            assertRpcDataServiceCall(dataServiceManager, m_nc, "test param", 2);
+            dataServiceManager.callInitialDataService(m_nc);
+            assertRpcDataServiceCall(dataServiceManager, m_nc, "test param", 1);
+        }
+
+        private static void assertRpcDataServiceCall(final DataServiceManager<NodeWrapper> dataServiceManager,
+            final NodeWrapper nc, final String param, final int expectedNumberOfCalls) {
+            assertThat(dataServiceManager.callRpcDataService(nc, RpcDataService.jsonRpcRequest("method", param)))
+                .contains(
+                    String.format("\"result\":\"%s\"", TestService.methodWithNumber(param, expectedNumberOfCalls)));
+        }
+
     }
 
     /**
@@ -461,8 +491,15 @@ public class NodeViewManagerTest {
 
     public static class TestService {
 
+        int methodCalls;
+
         public String method(final String param) {
-            return param;
+            methodCalls += 1;
+            return methodWithNumber(param, methodCalls);
+        }
+
+        public static String methodWithNumber(final String param, final int numMethodCalls) {
+            return String.format("param: %s, methodCalls: %s", param, numMethodCalls);
         }
 
     }

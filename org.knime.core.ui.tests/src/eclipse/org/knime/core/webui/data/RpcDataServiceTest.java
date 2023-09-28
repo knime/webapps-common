@@ -84,7 +84,7 @@ class RpcDataServiceTest {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var page = Page.builder(() -> "content", "index.html").build();
         NativeNodeContainer nnc = NodeViewManagerTest.createNodeWithNodeView(wfm,
-            m -> NodeViewTest.createNodeView(page, null, RpcDataService.builder(new MyService()).build(), null));
+            m -> NodeViewTest.createNodeView(page, null, () -> RpcDataService.builder(new MyService()).build(), null));
         wfm.executeAllAndWaitUntilDone();
 
         var jsonRpcRequest = jsonRpcRequest("myMethod");
@@ -106,9 +106,8 @@ class RpcDataServiceTest {
     void testJsonRpcDataServiceInternalError() throws IOException {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var page = Page.builder(() -> "content", "index.html").build();
-        NativeNodeContainer nnc =
-            NodeViewManagerTest.createNodeWithNodeView(wfm, m -> NodeViewTest.createNodeView(page, null,
-                RpcDataService.builder(new ServiceThrowingInternalError()).build(), null));
+        NativeNodeContainer nnc = NodeViewManagerTest.createNodeWithNodeView(wfm, m -> NodeViewTest.createNodeView(page,
+            null, () -> RpcDataService.builder(new ServiceThrowingInternalError()).build(), null));
         wfm.executeAllAndWaitUntilDone();
 
         var jsonRpcRequest = jsonRpcRequest("erroneusMethod", "foo");
@@ -140,7 +139,7 @@ class RpcDataServiceTest {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var page = Page.builder(() -> "content", "index.html").build();
         NativeNodeContainer nnc = NodeViewManagerTest.createNodeWithNodeView(wfm, m -> NodeViewTest.createNodeView(page,
-            null, RpcDataService.builder(new ServiceThrowingUserError()).build(), null));
+            null, () -> RpcDataService.builder(new ServiceThrowingUserError()).build(), null));
         wfm.executeAllAndWaitUntilDone();
 
         var jsonRpcRequest = jsonRpcRequest("erroneusMethod", "foo", "bar");

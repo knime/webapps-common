@@ -49,6 +49,7 @@
 package org.knime.core.webui.node.view;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
@@ -82,7 +83,7 @@ public final class NodeViewTest {
 
     @SuppressWarnings("javadoc")
     public static NodeView createNodeView(final Page page, final InitialDataService<?> initDataService,
-        final RpcDataService dataService, final ApplyDataService<?> applyDataService) {
+        final Supplier<RpcDataService> dataService, final ApplyDataService<?> applyDataService) {
         return new NodeView() { // NOSONAR
 
             @Override
@@ -92,7 +93,7 @@ public final class NodeViewTest {
 
             @Override
             public Optional<RpcDataService> createRpcDataService() {
-                return Optional.ofNullable(dataService);
+                return Optional.ofNullable(dataService).map(Supplier::get);
             }
 
             @Override

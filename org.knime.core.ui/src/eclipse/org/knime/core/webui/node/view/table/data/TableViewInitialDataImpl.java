@@ -86,11 +86,22 @@ public final class TableViewInitialDataImpl implements TableViewInitialData {
      * @param selectionSupplier supplying the currently selected row keys (for update of totalSelected when filtering)
      */
     public TableViewInitialDataImpl(final TableViewViewSettings settings, final Supplier<BufferedDataTable> table,
-        final Supplier<Set<RowKey>> selectionSupplier, final String tableId, final DataValueRendererFactory rendererFactory,
-        final DataValueImageRendererRegistry rendererRegistry) {
+        final Supplier<Set<RowKey>> selectionSupplier, final String tableId,
+        final DataValueRendererFactory rendererFactory, final DataValueImageRendererRegistry rendererRegistry) {
+        this(settings, table,
+            new TableViewDataServiceImpl(table, selectionSupplier, tableId, rendererFactory, rendererRegistry));
+    }
+
+    /**
+     * @param settings
+     * @param table
+     * @param dataService
+     */
+    public TableViewInitialDataImpl(final TableViewViewSettings settings, final Supplier<BufferedDataTable> table,
+        final TableViewDataService dataService) {
         m_settings = settings;
         m_table = table;
-        m_dataService = new TableViewDataServiceImpl(table, selectionSupplier, tableId, rendererFactory, rendererRegistry);
+        m_dataService = dataService;
     }
 
     @Override

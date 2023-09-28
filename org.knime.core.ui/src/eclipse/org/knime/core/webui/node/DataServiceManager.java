@@ -130,6 +130,7 @@ public final class DataServiceManager<N extends NodeWrapper> {
      * @throws IllegalStateException if there is not initial data service available
      */
     public String callInitialDataService(final N nodeWrapper) {
+        removeRpcDataService(nodeWrapper).ifPresent(RpcDataService::deactivate);
         return getInitialDataService(nodeWrapper) //
             .filter(InitialDataService.class::isInstance) //
             .orElseThrow(() -> new IllegalStateException("No initial data service available")) //
@@ -187,6 +188,10 @@ public final class DataServiceManager<N extends NodeWrapper> {
             ds = m_dataServices.get(nodeWrapper);
         }
         return Optional.ofNullable(ds);
+    }
+
+    private Optional<RpcDataService> removeRpcDataService(final N nodeWrapper) {
+        return Optional.ofNullable(m_dataServices.remove(nodeWrapper));
     }
 
     /**

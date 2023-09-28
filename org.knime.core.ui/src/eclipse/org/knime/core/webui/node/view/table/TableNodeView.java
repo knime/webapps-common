@@ -84,6 +84,8 @@ public final class TableNodeView implements NodeTableView {
 
     private final int m_inputPortIndex;
 
+    private Supplier<RpcDataService> m_rpcDataServiceSupplier;
+
     /**
      * @param tableSupplier supplier of the table which this view visualizes
      * @param selectionSupplier supplier of currently selected rowKeys
@@ -138,11 +140,17 @@ public final class TableNodeView implements NodeTableView {
         if (m_settings == null) {
             m_settings = new TableViewViewSettings(m_tableSupplier.get().getSpec());
         }
-        return Optional.of(TableViewUtil.createInitialDataService(() -> m_settings, m_tableSupplier, m_selectionSupplier, m_tableId));
+        final var pair = TableViewUtil.createInitialDataServiceWithRPCDataService(() -> m_settings, m_tableSupplier,
+            m_selectionSupplier, m_tableId, null);
+        m_rpcDataServiceSupplier = pair.getSecond();
+        return Optional.of(pair.getFirst());
     }
 
     @Override
     public Optional<RpcDataService> createRpcDataService() {
+        if (m_rpcDataServiceSupplier != null) {
+            return Optional.of(m_rpcDataServiceSupplier.get());
+        }
         return Optional.of(TableViewUtil.createRpcDataService(
             TableViewUtil.createTableViewDataService(m_tableSupplier, m_selectionSupplier, m_tableId), m_tableId));
     }

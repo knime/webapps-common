@@ -58,6 +58,7 @@ import org.knime.core.data.RowKey;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
+import org.knime.core.util.Pair;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettingsSerializer;
@@ -152,10 +153,15 @@ public final class TableViewUtil {
      * @param tableId a globally unique id to be able to uniquely identify the images belonging to the table used here
      * @return the table view's initial data object
      */
-    static TableViewInitialData createInitialData(final TableViewViewSettings settings,
-        final BufferedDataTable table, final Supplier<Set<RowKey>> selectionSupplier, final String tableId) {
-        return new TableViewInitialDataImpl(settings, () -> table, selectionSupplier, tableId, new SwingBasedRendererFactory(),
-            RENDERER_REGISTRY);
+    static TableViewInitialData createInitialData(final TableViewViewSettings settings, final BufferedDataTable table,
+        final Supplier<Set<RowKey>> selectionSupplier, final String tableId) {
+        return new TableViewInitialDataImpl(settings, () -> table, selectionSupplier, tableId,
+            new SwingBasedRendererFactory(), RENDERER_REGISTRY);
+    }
+
+    static TableViewInitialData createInitialData(final TableViewViewSettings settings, final BufferedDataTable table,
+        final TableViewDataService dataService) {
+        return new TableViewInitialDataImpl(settings, () -> table, dataService);
     }
 
     /**
@@ -194,8 +200,66 @@ public final class TableViewUtil {
     public static InitialDataService<TableViewInitialData> createInitialDataService(
         final Supplier<TableViewViewSettings> settingsSupplier, final Supplier<BufferedDataTable> tableSupplier,
         final Supplier<Set<RowKey>> selectionSupplier, final String tableId, final Runnable onDispose) {
+        final Supplier<TableViewInitialData> initialDataSupplier =
+            () -> createInitialData(settingsSupplier.get(), tableSupplier.get(), selectionSupplier, tableId);
+        return createInitialDataService(initialDataSupplier, tableId, onDispose);
+    }
+
+    /**
+     *
+     * This method must be used instead of constructing the initial data service and the RPC data service individually
+     * if there are settings which influence what tables are cached within the {@link TableViewDataService}. E.g. the
+     * first of such settings is "showSelectedRowsOnly". The returned pair uses the same instance of
+     * {@link TableViewDataServiceImpl} so that the RPC data service caches stay in sync with the initial data supplied
+     * to the front-end. Otherwise methods which rely on these caches like {@link TableViewDataService#getCopyContent}
+     * and {@link TableViewDataService#getCurrentRowKeys} can return wrong data.
+     *
+     * @param settingsSupplier
+     * @param tableSupplier
+     * @param selectionSupplier
+     * @param tableId
+     * @param onDispose
+     * @return the table view initial data service
+     */
+    public static Pair<InitialDataService<TableViewInitialData>, Supplier<RpcDataService>>
+        createInitialDataServiceWithRPCDataService(final Supplier<TableViewViewSettings> settingsSupplier,
+            final Supplier<BufferedDataTable> tableSupplier, final Supplier<Set<RowKey>> selectionSupplier,
+            final String tableId, final Runnable onDispose) {
+
+        DataServiceCache dataServiceCache = new DataServiceCache() {
+            @Override
+            protected TableViewDataService initialize() {
+                return createTableViewDataService(tableSupplier, selectionSupplier, tableId);
+            }
+        };
+
+        final Supplier<RpcDataService> rpcDataServiceSupplier =
+            () -> createRpcDataService(dataServiceCache.get(), tableId);
+        final Supplier<TableViewInitialData> initialDataSupplier =
+            () -> createInitialData(settingsSupplier.get(), tableSupplier.get(), dataServiceCache.get());
+        final var initialDataService = createInitialDataService(initialDataSupplier, tableId, onDispose);
+        return new Pair<>(initialDataService, rpcDataServiceSupplier);
+    }
+
+    static private abstract class DataServiceCache {
+
+        TableViewDataService m_dataService = null;
+
+        abstract TableViewDataService initialize();
+
+        TableViewDataService get() {
+            if (m_dataService == null) {
+                m_dataService = initialize();
+            }
+            return m_dataService;
+        }
+
+    }
+
+    private static InitialDataService<TableViewInitialData> createInitialDataService(
+        final Supplier<TableViewInitialData> initialDataSupplier, final String tableId, final Runnable onDispose) {
         Runnable clearImageData = () -> TableViewUtil.RENDERER_REGISTRY.clearImageDataCache(tableId);
-        return InitialDataService.builder(() -> createInitialData(settingsSupplier.get(), tableSupplier.get(), selectionSupplier, tableId)) //
+        return InitialDataService.builder(initialDataSupplier::get) //
             .onDeactivate(clearImageData) //
             .onDispose(() -> {
                 clearImageData.run();
