@@ -50,9 +50,9 @@ package org.knime.core.webui.node.impl;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -73,12 +73,18 @@ import org.knime.core.webui.node.dialog.NodeDialogManager;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialog;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.LayoutTreeNode;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaDefaultNodeSettingsTraverser.JsonFormsControl;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import com.fasterxml.jackson.databind.ser.PropertyWriter;
 
 /**
  * A convenience class for simple WebUI nodes, i.e., nodes making use of the {@link DefaultNodeSettings} and
@@ -192,20 +198,7 @@ public abstract class WebUINodeFactory<M extends NodeModel> extends NodeFactory<
         node.appendChild(shortDesc);
         node.appendChild(fullDesc);
 
-        // create options tab
-        var tab = doc.createElement("tab");
-        tab.setAttribute("name", "Options");
-        if (modelSettingsClass != null) {
-            createOptions(modelSettingsClass.getDeclaredFields(), tab, docBuilder, doc);
-        }
-        if (viewSettingsClass != null) {
-            createOptions(viewSettingsClass.getDeclaredFields(), tab, docBuilder, doc);
-        }
-        if (modelSettingsClass != null) {
-            // We want common fields of common subclasses to appear at the end of the description
-            createOptions(getParentFields(modelSettingsClass), tab, docBuilder, doc);
-        }
-        fullDesc.appendChild(tab);
+        fullDesc.appendChild(getOptionsTab(modelSettingsClass, viewSettingsClass, docBuilder, doc));
 
         // create ports
         var ports = doc.createElement("ports");
@@ -242,12 +235,43 @@ public abstract class WebUINodeFactory<M extends NodeModel> extends NodeFactory<
         }
     }
 
-    private static Field[] getParentFields(final Class<?> clazz) {
-        final var superclasses = new ArrayList<Class<?>>();
-        for (Class<?> c = clazz.getSuperclass(); c != null; c = c.getSuperclass()) {
-            superclasses.add(c);
+    private static Element getOptionsTab(final Class<? extends DefaultNodeSettings> modelSettingsClass,
+        final Class<? extends DefaultNodeSettings> viewSettingsClass, final DocumentBuilder docBuilder,
+        final Document doc) {
+        var tab = doc.createElement("tab");
+        tab.setAttribute("name", "Options");
+        addOptions(modelSettingsClass, viewSettingsClass, field -> createOption(field, tab, docBuilder, doc));
+        return tab;
+    }
+
+    private static void addOptions(final Class<?> modelSettingsClass, final Class<?> viewSettingsClass,
+        final Consumer<PropertyWriter> addField) {
+        final Map<String, Class<?>> settings = new HashMap<>();
+        if (modelSettingsClass != null) {
+            settings.put(SettingsType.MODEL.getConfigKey(), modelSettingsClass);
         }
-        return superclasses.stream().map(Class::getDeclaredFields).flatMap(Arrays::stream).toArray(Field[]::new);
+        if (viewSettingsClass != null) {
+            settings.put(SettingsType.VIEW.getConfigKey(), viewSettingsClass);
+        }
+        final var layoutTree =
+            JsonFormsUiSchemaUtil.resolveLayout(settings, JsonFormsDataUtil.getMapper()).layoutTreeRoot();
+        applyToAllLeaves(layoutTree, addField);
+    }
+
+    private static void applyToAllLeaves(final LayoutTreeNode layoutTree, final Consumer<PropertyWriter> addField) {
+        layoutTree.getControls().stream().map(JsonFormsControl::field).forEach(addField);
+        layoutTree.getChildren().forEach(childNode -> applyToAllLeaves(childNode, addField));
+    }
+
+    private static final void createOption(final PropertyWriter field, final Element tab,
+        final DocumentBuilder docBuilder, final Document doc) {
+        final var widget = field.getAnnotation(Widget.class);
+        if (widget != null) {
+            var option = doc.createElement("option");
+            option.setAttribute("name", widget.title());
+            option.appendChild(parseDocumentFragment(widget.description(), docBuilder, doc));
+            tab.appendChild(option);
+        }
     }
 
     private static void addPorts(final DocumentBuilder docBuilder, final Document doc, final Element ports,
@@ -289,20 +313,6 @@ public abstract class WebUINodeFactory<M extends NodeModel> extends NodeFactory<
             fragment.appendChild(child);
         }
         return fragment;
-    }
-
-    private static final void createOptions(final Field[] fields, final Element tab, final DocumentBuilder docBuilder,
-        final Document doc) {
-        for (var field : fields) {
-            if (field.isAnnotationPresent(Widget.class)) {
-                var option = doc.createElement("option");
-                final var title = field.getAnnotationsByType(Widget.class)[0].title();
-                final var description = field.getAnnotationsByType(Widget.class)[0].description();
-                option.setAttribute("name", title);
-                option.appendChild(parseDocumentFragment(description, docBuilder, doc));
-                tab.appendChild(option);
-            }
-        }
     }
 
     @Override

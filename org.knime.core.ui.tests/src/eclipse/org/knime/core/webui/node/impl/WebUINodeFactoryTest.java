@@ -47,6 +47,7 @@
  *   10 Nov 2022 (marcbux): created
  */
 package org.knime.core.webui.node.impl;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -121,20 +122,21 @@ class WebUINodeFactoryTest {
         // given the a node description
         final var name = "Node name";
         final var icon = "some/icon path.png";
-        final var inPortDescriptions = new PortDescription[] {new PortDescription("In1", BufferedDataTable.TYPE_OPTIONAL, "Input port description")};
-        final var outPortDescriptions = new PortDescription[] {new PortDescription("Out1", BufferedDataTable.TYPE, "Output port description")};
+        final var inPortDescriptions = new PortDescription[]{
+            new PortDescription("In1", BufferedDataTable.TYPE_OPTIONAL, "Input port description")};
+        final var outPortDescriptions =
+            new PortDescription[]{new PortDescription("Out1", BufferedDataTable.TYPE, "Output port description")};
         final var shortDescription = "Short description";
         final var longDescription = "Long description";
-        final Class<DefaultNodeSettings> modelSettingsClass = DefaultNodeSettings.class;
-        final Class<DefaultNodeSettings> viewSettingsClass = DefaultNodeSettings.class;
+        final Class<? extends DefaultNodeSettings> modelSettingsClass = TestWebUINodeModelSettings.class;
         final var viewDescription = "View description";
         final var nodeType = NodeType.Sink;
         final var keywords = new String[]{"keyword1", "keyword2"};
 
         // when creating a node description via the static constructor
-        final var nodeDescription = WebUINodeFactory.createNodeDescription(name, icon, inPortDescriptions,
-            outPortDescriptions, shortDescription, longDescription, modelSettingsClass, viewSettingsClass,
-            viewDescription, nodeType, keywords);
+        final var nodeDescription =
+            WebUINodeFactory.createNodeDescription(name, icon, inPortDescriptions, outPortDescriptions,
+                shortDescription, longDescription, modelSettingsClass, null, viewDescription, nodeType, keywords);
 
         // then we get the same values back
         assertEquals(name, nodeDescription.getNodeName(), "Name is not set correctly.");
@@ -151,6 +153,8 @@ class WebUINodeFactoryTest {
             "Output port name is not set correctly.");
         assertEquals(outPortDescriptions[0].getDescription(), nodeDescription.getOutportDescription(0),
             "Output description is not set correctly.");
+        assertEquals("Some Model Setting", nodeDescription.getDialogOptionGroups().get(0).getOptions().get(0).getName(),
+            "Option description is not set correctly");
         final var nodeKeywords = nodeDescription.getKeywords();
         assertEquals(keywords.length, nodeKeywords.length, "Number of keywords is not set correctly.");
         for (int i = 0; i < keywords.length; i++) {
@@ -175,7 +179,7 @@ class WebUINodeFactoryTest {
         // test that settings are initialized and correctly saved when node is configured
         model.configure(testSpecs);
         model.saveSettingsTo(nodeSettings);
-        assertThat(nodeSettings.getChildCount()).isEqualTo(1);
+        assertThat(nodeSettings.getChildCount()).isEqualTo(2);
 
         // test that modified settings are loaded correctly
         final var modelSettings = new TestWebUINodeModelSettings();

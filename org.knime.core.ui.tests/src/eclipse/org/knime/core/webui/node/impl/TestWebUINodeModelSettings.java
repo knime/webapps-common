@@ -49,6 +49,8 @@
 package org.knime.core.webui.node.impl;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.Before;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
 /**
@@ -56,7 +58,17 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
  */
 public final class TestWebUINodeModelSettings implements DefaultNodeSettings {
 
+    @Before(Second.class)
+    interface First {}
+
+    interface Second {}
+
+    @Widget(title = "Some other setting", description="Some other description")
+    @Layout(Second.class)
+    int m_secondSetting;
+
     @Widget(title = "Some Model Setting", description = "Some Description")
+    @Layout(First.class)
     int m_someModelSetting;
 
 }
