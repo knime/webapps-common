@@ -95,11 +95,7 @@ public final class DefaultNodeDialog implements NodeDialog {
      */
     public DefaultNodeDialog(final SettingsType settingsType,
         final Class<? extends DefaultNodeSettings> settingsClass) {
-        m_settingsTypes = Set.of(settingsType);
-        m_settingsConverter = new SettingsConverter(Map.of(settingsType, settingsClass));
-        m_asyncChoicesHolder = new AsyncChoicesHolder();
-        m_settingsDataService = new DefaultNodeSettingsService(m_settingsConverter, m_asyncChoicesHolder);
-        m_onApplyModifier = null;
+        this(settingsType, settingsClass, null);
     }
 
     /**
@@ -108,13 +104,16 @@ public final class DefaultNodeDialog implements NodeDialog {
      * @param settingsType the type of settings this dialog provides
      * @param settingsClass the class which defining the dialog
      * @param onApplyModifier an {@link org.knime.core.webui.node.dialog.NodeDialog.OnApplyNodeModifier} that will be
-     *            invoked when cleaning up the {@link ApplyDataService} created in {@link #createApplyDataService()}
+     *            invoked when cleaning up the {@link ApplyDataService} created in
+     *            {@link NodeDialogAdapter#createApplyDataService()}
      */
-    public DefaultNodeDialog(final SettingsType settingsType, final Class<? extends DefaultNodeSettings> settingsClass,
-        final OnApplyNodeModifier onApplyModifier) {
-        super(onApplyModifier, settingsType);
-        m_settingsClasses = List.of(settingsClass);
-        m_settingsDataService = new DefaultNodeSettingsService(Map.of(settingsType, settingsClass));
+    public DefaultNodeDialog(final SettingsType settingsType,
+        final Class<? extends DefaultNodeSettings> settingsClass, final OnApplyNodeModifier onApplyModifier) {
+        m_settingsTypes = Set.of(settingsType);
+        m_settingsConverter = new SettingsConverter(Map.of(settingsType, settingsClass));
+        m_asyncChoicesHolder = new AsyncChoicesHolder();
+        m_settingsDataService = new DefaultNodeSettingsService(m_settingsConverter, m_asyncChoicesHolder);
+        m_onApplyModifier = onApplyModifier;
     }
 
     /**

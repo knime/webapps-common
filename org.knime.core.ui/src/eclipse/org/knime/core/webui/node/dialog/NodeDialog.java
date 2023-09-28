@@ -104,7 +104,7 @@ public interface NodeDialog extends UIExtension {
      * and view {@link DefaultNodeSettings settings}.
      */
     @FunctionalInterface
-    interface OnApplyNodeModifier {
+    public interface OnApplyNodeModifier {
         /**
          * Called when the dialog is closed. May optionally modify the node based on the difference difference between
          * previous and updated model and view {@link DefaultNodeSettings settings}. Note that for any settings
