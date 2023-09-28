@@ -106,6 +106,6 @@ export default {
 
 <style scoped>
 .bg.dark {
-  filter: saturate(70%);
+  filter: saturate(85%);
 }
 </style>

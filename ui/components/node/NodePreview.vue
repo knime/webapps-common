@@ -66,6 +66,11 @@ export default {
       default: null,
       validator: (url) => url.startsWith("data:image/"),
     },
+
+    dark: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -103,7 +108,12 @@ export default {
 
 <template>
   <svg :viewBox="viewBox">
-    <NodeTorsoNormal :type="type" :icon="icon" :is-component="isComponent" />
+    <NodeTorsoNormal
+      :type="type"
+      :icon="icon"
+      :is-component="isComponent"
+      :dark="dark"
+    />
     <PortIcon
       v-for="(port, index) in inPorts"
       :key="`in-${index}`"
