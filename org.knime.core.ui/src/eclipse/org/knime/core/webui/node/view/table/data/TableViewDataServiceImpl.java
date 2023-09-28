@@ -131,7 +131,8 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         m_rendererRegistry = rendererRegistry;
         m_selectionSupplier = null;
         CLEANER.register(this, () -> { // NOSONAR exposing a partially constructed instance is no problem here
-            m_sortedTableCache.clear(); // because it's not really used (just to determine whether 'this' is phantom-reachable)
+            /** because it's not really used (just to determine whether 'this' is phantom-reachable) */
+            m_sortedTableCache.clear();
             m_filteredAndSortedTableCache.clear();
         });
     }
@@ -156,14 +157,16 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         m_rendererFactory = rendererFactory;
         m_rendererRegistry = rendererRegistry;
         CLEANER.register(this, () -> { // NOSONAR exposing a partially constructed instance is no problem here
-            m_sortedTableCache.clear(); // because it's not really used (just to determine whether 'this' is phantom-reachable)
+            /** because it's not really used (just to determine whether 'this' is phantom-reachable) */
+            m_sortedTableCache.clear();
             m_filteredAndSortedTableCache.clear();
         });
     }
 
     @Override
     public Table getTable(final String[] columns, final long fromIndex, final int numRows, final String[] rendererIds,
-        final boolean updateDisplayedColumns, final boolean forceClearImageDataCache, final boolean trimColumns, final boolean showOnlySelectedRows) {
+        final boolean updateDisplayedColumns, final boolean forceClearImageDataCache, final boolean trimColumns,
+        final boolean showOnlySelectedRows) {
         return getFilteredAndSortedTable(columns, fromIndex, numRows, null, false, null, null, false, rendererIds,
             updateDisplayedColumns, false, forceClearImageDataCache, trimColumns, showOnlySelectedRows);
     }
@@ -175,7 +178,6 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         final boolean updateDisplayedColumns, final boolean updateTotalSelected, final boolean forceClearImageDataCache,
         final boolean trimColumns, final boolean showOnlySelectedRows) {
         var bufferedDataTable = getInputTable();
-        var currentSelection = getCurrentSelection();
         if (bufferedDataTable == null) {
             return createEmptyTable();
         }
@@ -186,33 +188,38 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         final String[] displayedColumns =
             trimColumns ? getTrimmedColumns(numDisplayedColumns, allDisplayedColumns) : allDisplayedColumns;
 
-        // we sort first (even though it is more expensive) because filtering happens more frequently
-        // and therefore we do not have to re-sort every time we filter
+        /**
+         * we sort first (even though it is more expensive) because filtering happens more frequently and therefore we
+         * do not have to re-sort every time we filter
+         */
         m_sortedTableCache.conditionallyUpdateCachedTable(() ->
 
         sortTable(bufferedDataTable, sortColumn, sortAscending), sortColumn == null || bufferedDataTable.size() <= 1,
             sortColumn, sortAscending);
         final var sortedTable = getSortedTableFromCache();
-        // Keys are only interesting if showOnlySelected is true otherwise we don't want to reset the cache
+        var currentSelection = getCurrentSelection();
+        /** Keys are only interesting if showOnlySelected is true otherwise we don't want to reset the cache */
         final var currentSelectedKeys = showOnlySelectedRows ? currentSelection : Set.of();
         m_filteredAndSortedTableCache.conditionallyUpdateCachedTable(
             () -> filterTable(sortedTable, columns, globalSearchTerm, columnFilterValue, filterRowKeys,
                 showOnlySelectedRows),
-            (globalSearchTerm == null && columnFilterValue == null) && !showOnlySelectedRows, globalSearchTerm, columnFilterValue, columns,
-            sortColumn, sortAscending, showOnlySelectedRows, currentSelectedKeys);
+            (globalSearchTerm == null && columnFilterValue == null) && !showOnlySelectedRows, globalSearchTerm,
+            columnFilterValue, columns, sortColumn, sortAscending, showOnlySelectedRows, currentSelectedKeys);
         final var filteredAndSortedTable = getFilteredAndSortedTableFromCache();
         if (m_rendererRegistry != null) {
             if (forceClearImageDataCache || m_sortedTableCache.wasUpdated()
                 || m_filteredAndSortedTableCache.wasUpdated()) {
-                // Clears the image data cache if it's forced to be cleared. That's usually done when 'pagination' is enabled because in that
-                // case a new batch of rows is request with every page change and the is no need to keep the older one.
-                // If, however, 'pagination' is disabled (i.e. 'infinite scrolling' is used instead), then it's almost certain
-                // that images of two different consecutive(!) 'row-batches' are being requested at the same time. I.e. we must
-                // _not_ clear previous row-batches too early.
-                // However, we _can_ clear the image data cache if 'pagination' is disabled or if the entire table is being
-                // updated/replaced (e.g. because it's sorted or filtered). Because images of row-batches of different tables
-                // won't be requested at the same time (e.g. a row-batch of the sorted table won't be displayed together with a
-                // row-batch of the un-sorted table).
+                /**
+                 * Clears the image data cache if it's forced to be cleared. That's usually done when 'pagination' is
+                 * enabled because in that case a new batch of rows is request with every page change and the is no need
+                 * to keep the older one. If, however, 'pagination' is disabled (i.e. 'infinite scrolling' is used
+                 * instead), then it's almost certain that images of two different consecutive(!) 'row-batches' are
+                 * being requested at the same time. I.e. we must _not_ clear previous row-batches too early. However,
+                 * we _can_ clear the image data cache if 'pagination' is disabled or if the entire table is being
+                 * updated/replaced (e.g. because it's sorted or filtered). Because images of row-batches of different
+                 * tables won't be requested at the same time (e.g. a row-batch of the sorted table won't be displayed
+                 * together with a row-batch of the un-sorted table).
+                 */
                 m_rendererRegistry.clearImageDataCache(m_tableId);
             }
             if (numRows > 0) {
@@ -230,8 +237,8 @@ public class TableViewDataServiceImpl implements TableViewDataService {
             }
         }
 
-        final var tableDataRendererUtil = new TableRenderer(m_rendererFactory, spec, displayedColumns,
-            rendererIds, m_rendererRegistry, m_tableId);
+        final var tableDataRendererUtil =
+            new TableRenderer(m_rendererFactory, spec, displayedColumns, rendererIds, m_rendererRegistry, m_tableId);
 
         final var rows =
             tableDataRendererUtil.renderTableContent(getFilteredAndSortedTableFromCache(), fromIndex, numRows);
@@ -369,15 +376,16 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         }
     }
 
-    private BufferedDataTable filterTable(final DataTable table, final String[] columns,
-        final String globalSearchTerm, final String[][] columnFilterValue, final boolean filterRowKeys, final boolean showOnlySelectedRows) {
+    private BufferedDataTable filterTable(final DataTable table, final String[] columns, final String globalSearchTerm,
+        final String[][] columnFilterValue, final boolean filterRowKeys, final boolean showOnlySelectedRows) {
         final var spec = table.getDataTableSpec();
         var exec = DataServiceContext.get().getExecutionContext();
         var resultContainer = exec.createDataContainer(spec);
         try (final var iterator = (CloseableRowIterator)table.iterator()) {
             while (iterator.hasNext()) {
                 final var row = iterator.next();
-                if (filtersMatch(row, spec, globalSearchTerm, columnFilterValue, columns, filterRowKeys, showOnlySelectedRows)) {
+                if (filtersMatch(row, spec, globalSearchTerm, columnFilterValue, columns, filterRowKeys,
+                    showOnlySelectedRows)) {
                     resultContainer.addRowToTable(row);
                 }
             }
@@ -415,12 +423,11 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         final String[][] columnFilterValue, final String[] columns, final boolean filterRowKeys,
         final boolean showOnlySelectedRows) {
 
-        var globalMatch = false;
-
         if (showOnlySelectedRows && !isSelected(row)) {
             return false;
         }
 
+        var globalMatch = false;
         if (filterRowKeys) {
             final var rowKeyValue = row.getKey().toString().toLowerCase();
             if (matchesGlobalSearchTerm(rowKeyValue, globalSearchTerm)) {
@@ -440,10 +447,12 @@ public class TableViewDataServiceImpl implements TableViewDataService {
             if (matchesGlobalSearchTerm(cellStringValue, globalSearchTerm)) {
                 globalMatch = true;
             }
-            // if the domain values exists we want an exact match, otherwise we
-            // just check if the cell value matches the search term
+            /**
+             * if the domain values exists we want an exact match, otherwise we just check if the cell value matches the
+             * search term
+             */
             var needsExactMatch = spec.getColumnSpec(colIndex).getDomain().getValues() != null;
-            // The first entry of the columnFilters is for row keys. Thus we have an offset of one for the others.
+            /** The first entry of the columnFilters is for row keys. Thus we have an offset of one for the others. */
             final var columnFilterIndex = i + 1;
             if (!matchesColumnFilter(cellStringValue, columnFilterValue, columnFilterIndex, needsExactMatch)) {
                 return false;
@@ -484,17 +493,17 @@ public class TableViewDataServiceImpl implements TableViewDataService {
 
     private Map<String, ImageDimension> getFirstRowImageDimensions(final List<List<Object>> rows,
         final String[] contentTypes, final String[] displayedColumns) {
-        if (rows.size() == 0) {
+        if (rows.isEmpty()) {
             return new HashMap<>(0);
         }
         final var firstRow = rows.get(0);
 
         final var firstRowImageDimensions = new HashMap<String, ImageDimension>(firstRow.size());
         IntStream.range(0, contentTypes.length).forEach(index -> {
-            final var imageCell = firstRow.get(index + 2);
             if (!contentTypes[index].equals(DataCellContentType.IMG_PATH.toString())) {
                 return;
             }
+            final var imageCell = firstRow.get(index + 2);
             String imageCellContent = null;
             if (imageCell instanceof String imageCellString) {
                 imageCellContent = imageCellString;
@@ -596,14 +605,14 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         return TableDataToStringUtil.toCSV(rows);
     }
 
-    private static RowRenderer<String> getCopyContentRowRenderer(final boolean withIndices,
-        final boolean withRowKeys, final int[] colIndices) {
-        RowRenderer<String> rowRenderer = new SimpleRowRenderer<String>(colIndices, i -> DataCell::toString);
+    private static RowRenderer<String> getCopyContentRowRenderer(final boolean withIndices, final boolean withRowKeys,
+        final int[] colIndices) {
+        RowRenderer<String> rowRenderer = new SimpleRowRenderer<>(colIndices, i -> DataCell::toString);
         if (withRowKeys) {
-            rowRenderer = new RowRendererWithRowKeys<String>(rowRenderer, RowKey::toString);
+            rowRenderer = new RowRendererWithRowKeys<>(rowRenderer, RowKey::toString);
         }
         if (withIndices) {
-            rowRenderer = new RowRendererWithIndices<String>(rowRenderer, DataCell::toString);
+            rowRenderer = new RowRendererWithIndices<>(rowRenderer, DataCell::toString);
         }
         return rowRenderer;
     }

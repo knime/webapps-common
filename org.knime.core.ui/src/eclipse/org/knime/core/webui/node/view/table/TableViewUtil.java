@@ -241,9 +241,9 @@ public final class TableViewUtil {
         return new Pair<>(initialDataService, rpcDataServiceSupplier);
     }
 
-    static private abstract class DataServiceCache {
+    private abstract static class DataServiceCache {
 
-        TableViewDataService m_dataService = null;
+        TableViewDataService m_dataService;
 
         abstract TableViewDataService initialize();
 

@@ -110,7 +110,7 @@ public final class TableViewInitialDataImpl implements TableViewInitialData {
         final var displayedColumns = m_settings.getDisplayedColumns(spec);
         final var trimColumns = m_settings.m_skipRemainingColumns;
         final var pageSize = m_settings.m_enablePagination ? m_settings.m_pageSize : 0;
-        final var showOnlySelectedRows = m_settings.m_showOnlySelectedRows ? m_settings.m_showOnlySelectedRows : false;
+        final var showOnlySelectedRows = m_settings.m_showOnlySelectedRows;
         return m_dataService.getTable(displayedColumns, 0, pageSize, new String[displayedColumns.length], true, true,
             trimColumns, showOnlySelectedRows);
     }

@@ -131,7 +131,7 @@ public class NodeViewManagerTest {
      * Tests multiple {@link NodeViewManager}-methods using a simple node view.
      */
     @Test
-    public void testSimpleNodeViewNode() {
+    void testSimpleNodeViewNode() {
         var page = Page.builder(() -> "test page content", "index.html").build();
         var hasView = new AtomicBoolean(true);
         NativeNodeContainer nc = createNodeWithNodeView(m_wfm, m -> createNodeView(page), hasView::get);
@@ -159,7 +159,7 @@ public class NodeViewManagerTest {
      * @throws InvalidSettingsException
      */
     @Test
-    public void testLoadViewSettingsOnViewCreation() throws InvalidSettingsException {
+    void testLoadViewSettingsOnViewCreation() throws InvalidSettingsException {
         var page = Page.builder(() -> "test page content", "index.html").build();
         AtomicReference<NodeSettingsRO> loadedNodeSettings = new AtomicReference<>();
         NativeNodeContainer nc = createNodeWithNodeView(m_wfm, m -> new NodeView() { // NOSONAR
@@ -214,7 +214,7 @@ public class NodeViewManagerTest {
      * Tests {@link NodeViewManager#getPagePath(NodeWrapper)}.
      */
     @Test
-    public void testGetNodeViewPagePath() {
+    void testGetNodeViewPagePath() {
         var staticPage = Page.builder(BUNDLE_ID, "files", "page.html").addResourceFile("resource.html").build();
         var dynamicPage = Page.builder(() -> "page content", "page.html")
             .addResourceFromString(() -> "resource content", "resource.html").build();
@@ -243,7 +243,7 @@ public class NodeViewManagerTest {
      * Tests {@link PageResourceManager#getPagePath(NodeWrapper)}.
      */
     @Test
-    public void testGetNodeViewPageResource() {
+    void testGetNodeViewPageResource() {
         var staticPage = Page.builder(BUNDLE_ID, "files", "page.html").addResourceFile("resource.html").build();
         var dynamicPage = Page.builder(() -> "page content", "page.html")
             .addResourceFromString(() -> "resource content", "resource.html").build();
@@ -290,7 +290,7 @@ public class NodeViewManagerTest {
      * {@link NodeViewManager#getNodeView(org.knime.core.node.workflow.NodeContainer)} for a node without a node view.
      */
     @Test
-    public void testNodeWithoutNodeView() {
+    void testNodeWithoutNodeView() {
         NativeNodeContainer nc = createAndAddNode(m_wfm, new VirtualSubNodeInputNodeFactory(null, new PortType[0]));
         assertThat(NodeViewManager.hasNodeView(nc)).as("node not expected to have a node view").isFalse();
         Assertions.assertThatThrownBy(() -> NodeViewManager.getInstance().getNodeView(nc))
@@ -303,7 +303,7 @@ public class NodeViewManagerTest {
      * @throws URISyntaxException
      */
     @Test
-    public void testNodeCleanUpDynamicPage() throws URISyntaxException {
+    void testNodeCleanUpDynamicPage() throws URISyntaxException {
         var page = Page.builder(() -> "test page content", "index.html").build();
         var nc = NodeWrapper.of(createNodeWithNodeView(m_wfm, m -> createNodeView(page)));
         var nodeViewManager = NodeViewManager.getInstance();
@@ -333,7 +333,7 @@ public class NodeViewManagerTest {
      * Makes sure that the page-cache is cleaned up after node removal or closing the workflow for static pages.
      */
     @Test
-    public void testNodeCleanUpStaticPage() {
+    void testNodeCleanUpStaticPage() {
         var staticPage = Page.builder(BUNDLE_ID, "files", "page.html").build();
         var nc = NodeWrapper.of(createNodeWithNodeView(m_wfm, m -> createNodeView(staticPage)));
         var pageResourceManager = NodeViewManager.getInstance().getPageResourceManager();
@@ -380,7 +380,7 @@ public class NodeViewManagerTest {
         }
 
         @Test
-        public void testCallDataServices() {
+        void testCallDataServices() {
             var dataServiceManager = NodeViewManager.getInstance().getDataServiceManager();
             assertThat(dataServiceManager.callInitialDataService(m_nc)).isEqualTo("{\"result\":\"init service\"}");
             assertRpcDataServiceCall(dataServiceManager, m_nc, "test param", 1);
@@ -389,7 +389,7 @@ public class NodeViewManagerTest {
         }
 
         @Test
-        public void testResetsRpcDataServiceOnInitialDataServiceCall() {
+        void testResetsRpcDataServiceOnInitialDataServiceCall() {
             var dataServiceManager = NodeViewManager.getInstance().getDataServiceManager();
             dataServiceManager.callInitialDataService(m_nc);
             assertRpcDataServiceCall(dataServiceManager, m_nc, "test param", 1);
@@ -412,7 +412,7 @@ public class NodeViewManagerTest {
      * {@link NodeViewManager#callSelectionTranslationService(NodeContainer, List)}.
      */
     @Test
-    public void testCallSelectionTranslationService() {
+    void testCallSelectionTranslationService() {
         var page = Page.builder(() -> "test page content", "index.html").build();
         var nodeView = createTableView(page, null, null, null, new SelectionTranslationService() {
             @Override
@@ -441,7 +441,7 @@ public class NodeViewManagerTest {
      * {@link NodeViewManager#callSelectionTranslationService(NodeContainer, List)}.
      */
     @Test
-    public void testCallSelectionTranslationServiceThrowsIfNotATableView() {
+    void testCallSelectionTranslationServiceThrowsIfNotATableView() {
         var page = Page.builder(() -> "test page content", "index.html").build();
         var nodeView = createNodeView(page);
         var nc = NodeViewManagerTest.createNodeWithNodeView(m_wfm, m -> nodeView);
