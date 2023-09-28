@@ -105,3 +105,10 @@ export default {
     v-bind="$attrs"
   />
 </template>
+
+<style scoped>
+* polygon {
+  fill: var(--ports-table-color);
+  stroke: var(--ports-table-color);
+}
+</style>

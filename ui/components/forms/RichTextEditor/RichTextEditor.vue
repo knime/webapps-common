@@ -246,6 +246,7 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length);
   --toolbar-height: 48px;
   --rich-text-editor-font-size: 13px;
   --rich-text-editor-padding: 10px;
+  --rich-text-editor-background: var(--knime-white);
 
   &.with-border {
     border: 1px solid var(--knime-stone-gray);
@@ -302,7 +303,7 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length);
 
   &.editable {
     cursor: text;
-    background: var(--knime-white);
+    background: var(--rich-text-editor-background);
 
     /* stylelint-disable-next-line selector-class-pattern */
     & :deep(.ProseMirror) {
