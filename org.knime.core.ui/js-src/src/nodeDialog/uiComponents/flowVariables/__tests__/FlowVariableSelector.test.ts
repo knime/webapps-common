@@ -74,6 +74,22 @@ describe("FlowVariableSelector.vue", () => {
     });
   });
 
+  it("does not disable the control if there is a value set", async () => {
+    const flowVariableName = "myVariable";
+    props.flowSettings = {
+      controllingFlowVariableName: flowVariableName,
+      controllingFlowVariableAvailable: false,
+      exposedFlowVariableName: null,
+    };
+    const wrapper = mountFlowVariableSelector({ props });
+    expect(wrapper.findComponent(Dropdown).exists()).toBeTruthy();
+    await flushPromises();
+    expect(wrapper.findComponent(Dropdown).props()).toMatchObject({
+      modelValue: flowVariableName,
+      disabled: false,
+    });
+  });
+
   const constructValue = (name: string) => `${name}_test_value`;
 
   const constructFlowVar = (name: string) => {
@@ -124,7 +140,6 @@ describe("FlowVariableSelector.vue", () => {
       ],
       placeholder: "No flow variable selected",
     });
-    expect(wrapper.findComponent(Dropdown).props().possibleValues);
   });
 
   it("sets the initial model value", async () => {

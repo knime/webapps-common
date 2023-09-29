@@ -101,8 +101,9 @@ const selectValue = async (selectedId: string | number) => {
 };
 
 const ariaLabel = computed(() => `controlling-flow-variables-${props.path}`);
-const noOptionsPresent = computed(() =>
-  Boolean(dropdownPossibleValues.value.length === 1),
+const noOptionsPresent = computed(
+  () =>
+    Boolean(dropdownPossibleValues.value.length === 1) && !selectedValue.value,
 );
 const placeholder = computed(() => {
   if (!availableVariablesLoaded.value) {
