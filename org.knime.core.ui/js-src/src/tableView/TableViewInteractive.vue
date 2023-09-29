@@ -799,8 +799,7 @@ export default {
         enablePaginationChanged ||
         showOnlySelectedRowsChanged
       ) {
-        await this.refreshTable({ resetPage: true });
-        this.$refs.tableViewDisplay.triggerCalculationOfAutoColumnSizes();
+        await this.resetTableAndComputeSizes();
       }
 
       this.deleteColumnSizeOverrides({
@@ -1056,6 +1055,9 @@ export default {
     },
     async onShowOnlySelectedRows() {
       this.settings.showOnlySelectedRows = !this.settings.showOnlySelectedRows;
+      await this.resetTableAndComputeSizes();
+    },
+    async resetTableAndComputeSizes() {
       await this.refreshTable({ resetPage: true });
       this.$refs.tableViewDisplay.triggerCalculationOfAutoColumnSizes();
     },
