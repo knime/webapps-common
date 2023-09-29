@@ -1,0 +1,60 @@
+{
+  "result": {
+    "name": "Text Dialog",
+    "data": {
+      "view": {
+        "title": "title",
+        "altText": "altText",
+        "caption": "caption"
+      }
+    },
+    "schema": {
+      "type": "object",
+      "properties": {
+        "view": {
+          "type": "object",
+          "properties": {
+            "altText": {
+              "type": "string",
+              "title": "Alternate text",
+              "description": "The alternate text of the image, if for whatever reason the image cannot be displayed.",
+              "default": ""
+            },
+            "caption": {
+              "type": "string",
+              "title": "Caption",
+              "description": "The caption of the image.",
+              "default": ""
+            },
+            "title": {
+              "type": "string",
+              "title": "Title",
+              "description": "The title of the image.",
+              "default": ""
+            }
+          }
+        }
+      }
+    },
+    "ui_schema": {
+      "elements": [
+        {
+          "type": "Control",
+          "scope": "#/properties/view/properties/title",
+          "options": {}
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/view/properties/altText",
+          "options": {}
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/view/properties/caption",
+          "options": {}
+        }
+      ]
+    },
+    "flowVariableSettings": {}
+  }
+}
