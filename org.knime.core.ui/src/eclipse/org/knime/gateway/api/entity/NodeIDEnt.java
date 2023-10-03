@@ -171,6 +171,26 @@ public final class NodeIDEnt {
         return sb.toString();
     }
 
+    /**
+     * @param id the id to check agains
+     * @return {@code true} if this node id is equal or a parent node id of the passed id; otherwise {@code false}
+     */
+    public boolean isEqualOrParentOf(final NodeIDEnt id) {
+        if (this.equals(id)) {
+            return true;
+        }
+        if (m_ids.length >= id.m_ids.length) {
+            // a parent node id (where we already know it's unequal) must be strictly shorter
+            return false;
+        }
+        for (int i = 0; i < m_ids.length; i++) {
+            if (m_ids[i] != id.m_ids[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private String toStringWithoutRoot() {
         return toString().substring(ROOT_MARKER.length() + 1);
     }
