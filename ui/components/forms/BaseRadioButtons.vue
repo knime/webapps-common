@@ -20,10 +20,6 @@ export default defineComponent({
       type: String,
       default: null,
     },
-    bold: {
-      type: Boolean,
-      default: false,
-    },
     name: {
       type: String,
       default: null,
@@ -76,7 +72,7 @@ export default defineComponent({
     <label
       v-for="item of possibleValues"
       :key="`radio-${item.id}`"
-      :class="{ 'with-subtext': item.subtext }"
+      class="radio-group-label"
     >
       <input
         ref="input"
@@ -87,11 +83,11 @@ export default defineComponent({
         type="radio"
         @change="onInput"
       />
-      <span :title="item.text" :class="{ bold }">{{ item.text }}</span>
+      <span :title="item.text">{{ item.text }}</span>
       <slot :item="item" />
-      <br v-if="item.subtext" /><span v-if="item.subtext">
-        {{ item.subtext }}</span
-      >
+      <template v-if="item.subtext">
+        <br /><span> {{ item.subtext }}</span>
+      </template>
     </label>
   </div>
 </template>
@@ -101,11 +97,7 @@ label {
   display: flex;
 }
 
-.bold {
-  font-weight: bold;
-}
-
-.with-subtext {
-  margin-bottom: 30px;
+.radio-group-label {
+  margin: var(--radio-button-margin, 0);
 }
 </style>
