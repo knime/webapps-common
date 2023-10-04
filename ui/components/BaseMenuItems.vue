@@ -159,11 +159,16 @@ export default {
         return;
       }
 
-      let isButton = !(item.href || item.to);
+      const isButton = !(item.href || item.to);
       if (isButton) {
         event.preventDefault();
         event.stopPropagation();
         event.stopImmediatePropagation();
+      }
+      if (item.checkbox) {
+        const toggledValue = !item.checkbox.checked;
+        item.checkbox.setBoolean(toggledValue);
+        return;
       }
       this.$emit("item-click", event, item, id);
     },

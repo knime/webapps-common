@@ -114,6 +114,16 @@ const menuItemsData: MenuItem[] = [
     download: true,
     icon: markRaw(DownloadIcon),
   },
+  {
+    text: "Item with checkbox",
+    checkbox: {
+      checked: true,
+      setBoolean: (checked: boolean) =>
+        window.alert(
+          `You clicked on a checkbox item calling its callback method with the value: ${checked}`,
+        ),
+    },
+  },
 ];
 
 export default {

@@ -136,8 +136,10 @@ const dynamicAttributes = (item: MenuItem) => {
         align-items: center;
 
         & .checkbox {
+          padding-left: 23px; /* Align text horizontally with other items with icons */
+
+          /* center-align text + checkbox in item vertically */
           margin-top: 7px;
-          padding-left: 23px;
           padding-top: 2px;
         }
 

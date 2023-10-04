@@ -127,6 +127,16 @@ const subMenuItems = [
       },
     ],
   },
+  {
+    text: "Item with checkbox",
+    checkbox: {
+      checked: false,
+      setBoolean: (checked) =>
+        window.alert(
+          `Checkbox item clicked. Sub menu is not closed. Instead the setBoolean method of this item was called with the value: ${checked}`,
+        ),
+    },
+  },
 ];
 
 export default {
