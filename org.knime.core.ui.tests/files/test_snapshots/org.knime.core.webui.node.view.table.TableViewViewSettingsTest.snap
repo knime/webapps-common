@@ -35,6 +35,7 @@
       "enableCellCopying" : true,
       "selectionMode" : "EDIT",
       "showOnlySelectedRows" : false,
+      "showOnlySelectedRowsConfigurable" : true,
       "skipRemainingColumns" : false
     }
   },
@@ -293,6 +294,13 @@
             "default" : false,
             "configKeys" : [ "showOnlySelectedRows" ]
           },
+          "showOnlySelectedRowsConfigurable" : {
+            "type" : "boolean",
+            "title" : "Enable toggle 'Show only selected rows'",
+            "description" : "When checked, it is possible to configure from within the view whether only the selected rows are shown.",
+            "default" : true,
+            "configKeys" : [ "showOnlySelectedRowsConfigurable" ]
+          },
           "showRowIndices" : {
             "type" : "boolean",
             "title" : "Show row numbers",
@@ -490,6 +498,12 @@
       }, {
         "type" : "Control",
         "scope" : "#/properties/view/properties/showOnlySelectedRows",
+        "options" : {
+          "format" : "checkbox"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/view/properties/showOnlySelectedRowsConfigurable",
         "options" : {
           "format" : "checkbox"
         }

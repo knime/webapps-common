@@ -84,6 +84,7 @@ export default {
       // a counter which is used to ignore all requests which were not the last sent one
       lastUpdateHash: 0,
       link: "",
+      showOnlySelectedRows: false,
     };
   },
   computed: {
@@ -177,6 +178,23 @@ export default {
     indicateRemainingColumnsSkipped() {
       return this.displayedColumns.length < this.columnCount;
     },
+    showOnlySelectedRowsSettingsItem() {
+      return {
+        text: "Show only selected rows",
+        checkbox: {
+          checked: this.showOnlySelectedRows,
+          setBoolean: (checked) => {
+            this.showOnlySelectedRows = checked;
+            this.resetTableAndComputeSizes();
+          },
+        },
+      };
+    },
+    settingsItems() {
+      return this.settings.showOnlySelectedRowsConfigurable
+        ? [this.showOnlySelectedRowsSettingsItem]
+        : [];
+    },
   },
   async mounted() {
     this.jsonDataService = new JsonDataService(this.knimeService);
@@ -199,7 +217,7 @@ export default {
       this.columnDomainValues = columnDomainValues;
       this.totalRowCount = table.rowCount;
       this.currentRowCount = table.rowCount;
-      this.settings = settings;
+      this.setSettings(settings);
       this.setRowHeightSettings(settings);
       if (this.useLazyLoading) {
         await this.initializeLazyLoading();
@@ -218,6 +236,10 @@ export default {
     }
   },
   methods: {
+    setSettings(settings) {
+      this.settings = settings;
+      this.showOnlySelectedRows = settings.showOnlySelectedRows;
+    },
     async initializeLazyLoading(params) {
       const { updateDisplayedColumns = false, updateTotalSelected = true } =
         params || {};
@@ -587,7 +609,7 @@ export default {
         updateTotalSelected,
         clearImageDataCache,
         this.skipRemainingColumns,
-        this.settings.showOnlySelectedRows,
+        this.showOnlySelectedRows,
       ]);
     },
     // eslint-disable-next-line max-params
@@ -607,7 +629,7 @@ export default {
         updateDisplayedColumns,
         clearImageDataCache,
         this.skipRemainingColumns,
-        this.settings.showOnlySelectedRows,
+        this.showOnlySelectedRows,
       ]);
     },
     getColumnsForRequest(updateDisplayedColumns) {
@@ -765,7 +787,7 @@ export default {
         this.$refs.tableViewDisplay.deleteColumnSizeOverrides();
       }
 
-      this.settings = newSettings;
+      this.setSettings(newSettings);
 
       const numberOfDisplayedColsChanged =
         displayedColumnsChanged || showRowKeysChanged || showRowIndicesChanged;
@@ -827,7 +849,7 @@ export default {
     },
     async onSelectionChange() {
       this.transformSelection();
-      if (this.settings.showOnlySelectedRows) {
+      if (this.showOnlySelectedRows) {
         await this.refreshTable({ resetPage: true, updateTotalSelected: true });
       } else {
         this.totalSelected = await this.requestTotalSelected();
@@ -850,7 +872,7 @@ export default {
         [rowKey],
       );
       this.transformSelection();
-      if (this.settings.showOnlySelectedRows) {
+      if (this.showOnlySelectedRows) {
         this.refreshTable({ resetPage: true });
       }
     },
@@ -868,7 +890,7 @@ export default {
         backendSelectionPromise = this.selectionService.replace([]);
       }
       this.transformSelection();
-      if (this.settings.showOnlySelectedRows) {
+      if (this.showOnlySelectedRows) {
         await backendSelectionPromise;
         await this.refreshTable({ resetPage: true });
       }
@@ -1053,10 +1075,6 @@ export default {
         );
       }
     },
-    async onShowOnlySelectedRows() {
-      this.settings.showOnlySelectedRows = !this.settings.showOnlySelectedRows;
-      await this.resetTableAndComputeSizes();
-    },
     async resetTableAndComputeSizes() {
       await this.refreshTable({ resetPage: true });
       this.$refs.tableViewDisplay.triggerCalculationOfAutoColumnSizes();
@@ -1116,6 +1134,7 @@ export default {
     :knime-service="knimeService"
     :force-hide-table-sizes="forceHideTableSizes"
     :first-row-image-dimensions="table.firstRowImageDimensions || {}"
+    :settings-items="settingsItems"
     @page-change="onPageChange"
     @column-sort="onColumnSort"
     @row-select="onRowSelect"
@@ -1127,7 +1146,6 @@ export default {
     @header-sub-menu-item-selection="onHeaderSubMenuItemSelection"
     @lazyload="onScroll"
     @copy-selection="onCopySelection"
-    @show-only-selected-rows="onShowOnlySelectedRows"
   />
 </template>
 

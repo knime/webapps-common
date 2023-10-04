@@ -36,6 +36,7 @@ onMounted(async () => {
       enableSortingByHeader: false,
       enableGlobalSearch: false,
       enableRendererSelection: false,
+      showOnlySelectedRowsConfigurable: false,
     };
     setRowHeightSettings(settings.value);
     table.value = initialData.settings.enablePagination

@@ -35,7 +35,6 @@ const emit = defineEmits([
   "row-height-update",
   "table-is-ready",
   "copy-selection",
-  "show-only-selected-rows",
 ]);
 
 const props = defineProps<TableViewDisplayProps>();
@@ -115,12 +114,12 @@ const tableConfig = computed(() =>
     settings: props.settings,
     pageParams: props.page,
     sortParams: props.sorting,
-
     globalSearchQuery: props.globalSearchQuery,
     enableVirtualScrolling: props.enableVirtualScrolling,
     enableCellSelection: props.enableCellSelection,
     enableColumnResizing: props.enableColumnResizing,
     forceHideTableSizes: props.forceHideTableSizes || false,
+    settingsItems: props.settingsItems,
   }),
 );
 
@@ -246,7 +245,6 @@ const onCopySelection = ({
       @row-height-update="$emit('row-height-update', $event)"
       @ready="onTableIsReady"
       @copy-selection="onCopySelection"
-      @show-only-selected-rows="$emit('show-only-selected-rows')"
     >
       <template
         v-for="index in numberOfUsedColumns"

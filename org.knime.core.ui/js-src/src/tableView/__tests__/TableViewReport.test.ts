@@ -97,6 +97,7 @@ describe("TableViewReport.vue", () => {
         enableSortingByHeader: false,
         enableGlobalSearch: false,
         enableRendererSelection: false,
+        showOnlySelectedRowsConfigurable: false,
       },
       page: {
         columnCount: 0,
@@ -109,6 +110,7 @@ describe("TableViewReport.vue", () => {
         indicateRemainingColumnsSkipped: false,
       }),
       rows: expect.anything(),
+      settingsItems: undefined,
     });
   });
 

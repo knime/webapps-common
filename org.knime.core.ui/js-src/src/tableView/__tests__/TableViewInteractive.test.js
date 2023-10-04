@@ -149,6 +149,7 @@ describe("TableViewInteractive.vue", () => {
         skipRemainingColumns: false,
         autoSizeColumnsToContent: AutoSizeColumnsToContent.FIXED,
         showOnlySelectedRows: false,
+        showOnlySelectedRowsConfigurable: true,
         enableCellCopying: true,
       },
     };
@@ -315,6 +316,15 @@ describe("TableViewInteractive.vue", () => {
         disableSelection: false,
         enableColumnResizing: true,
         showColumnFilters: true,
+        settingsItems: [
+          {
+            checkbox: {
+              checked: false,
+              setBoolean: expect.anything(),
+            },
+            text: "Show only selected rows",
+          },
+        ],
       });
       const expectedColumnSize = DEFAULT_COLUMN_SIZE;
       const headline = {
@@ -389,6 +399,14 @@ describe("TableViewInteractive.vue", () => {
       expect(findTableComponent(wrapper).exists()).toBe(true);
       expect(tableConfig).toMatchObject({
         showSelection: true,
+      });
+    });
+
+    it("disables showOnlySelectedRows configuration by setting", async () => {
+      initialDataMock.settings.showOnlySelectedRowsConfigurable = false;
+      const wrapper = await shallowMountInteractive(context);
+      expect(findTableComponent(wrapper).vm.$props.tableConfig).toMatchObject({
+        settingsItems: [],
       });
     });
 
@@ -2004,15 +2022,22 @@ describe("TableViewInteractive.vue", () => {
         ).toBe(0);
       });
 
-      it("refreshes the table on showOnlySelectedRows view settings emit", async () => {
+      it("refreshes the table on showOnlySelectedRows settings change from within view", async () => {
         initialDataMock.settings.showOnlySelectedRows = true;
         const wrapper = await shallowMountInteractive(context);
         const tableComponent = findTableComponent(wrapper);
         const refreshTableSpy = vi.spyOn(wrapper.vm, "refreshTable");
-
-        await tableComponent.vm.$emit("showOnlySelectedRows");
+        expect(
+          tableComponent.props().tableConfig.settingsItems[0].checkbox.checked,
+        ).toBeTruthy();
+        tableComponent
+          .props()
+          .tableConfig.settingsItems[0].checkbox.setBoolean(false);
         await flushPromises();
         expect(refreshTableSpy).toHaveBeenCalledWith({ resetPage: true });
+        expect(
+          tableComponent.props().tableConfig.settingsItems[0].checkbox.checked,
+        ).toBeFalsy();
       });
 
       describe("onSelectAll", () => {

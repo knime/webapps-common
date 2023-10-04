@@ -59,4 +59,5 @@ export interface TableViewDisplayProps {
   knimeService: KnimeService;
   forceHideTableSizes?: boolean;
   firstRowImageDimensions: Record<string, ImageDimension>;
+  settingsItems?: object[];
 }

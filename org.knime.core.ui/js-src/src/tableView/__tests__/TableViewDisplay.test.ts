@@ -507,19 +507,6 @@ describe("TableViewDisplay.vue", () => {
     expect(tableViewDisplay.emitted()).toHaveProperty("table-is-ready");
   });
 
-  it("emits showOnlySelectedRows", () => {
-    const wrapper = shallowMountDisplay({ props });
-    const tableViewDisplay = wrapper.findComponent(TableViewDisplay);
-    const tableUIWithAutoSizeCalculation = wrapper.findComponent(
-      TableUIWithAutoSizeCalculation,
-    );
-
-    tableUIWithAutoSizeCalculation.vm.$emit("showOnlySelectedRows");
-    expect(tableViewDisplay.emitted()).toHaveProperty(
-      "show-only-selected-rows",
-    );
-  });
-
   describe("column size composables", () => {
     it("uses useAutoColumnSizes with correct values", () => {
       (useAutoColumnSizes as any).reset();

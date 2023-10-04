@@ -32,6 +32,7 @@ export default ({
   enableCellSelection,
   enableColumnResizing,
   forceHideTableSizes,
+  settingsItems,
 }: {
   settings: TableViewViewSettings;
   pageParams: PageParams;
@@ -44,6 +45,7 @@ export default ({
   enableCellSelection: boolean;
   enableColumnResizing: boolean;
   forceHideTableSizes: boolean;
+  settingsItems?: object[];
 }) => {
   const {
     enableSortingByHeader,
@@ -79,5 +81,6 @@ export default ({
         searchQuery: globalSearchQuery,
       },
     }),
+    settingsItems,
   };
 };

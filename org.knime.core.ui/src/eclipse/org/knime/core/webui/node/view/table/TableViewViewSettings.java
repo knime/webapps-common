@@ -337,6 +337,15 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     public boolean m_showOnlySelectedRows = false;
 
     /**
+     * If true only the selected rows are shown
+     */
+    @Widget(title = "Enable toggle 'Show only selected rows'",
+        description = "When checked, it is possible to configure from within the view whether only the selected rows are shown.")
+    @Persist(optional = true)
+    @Layout(InteractivitySection.class)
+    public boolean m_showOnlySelectedRowsConfigurable = true;
+
+    /**
      * If there should be a limit on rendered Columns
      */
     @Hidden
