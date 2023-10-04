@@ -141,7 +141,7 @@ public final class TableNodeView implements NodeTableView {
             m_settings = new TableViewViewSettings(m_tableSupplier.get().getSpec());
         }
         final var pair = TableViewUtil.createInitialDataServiceWithRPCDataService(() -> m_settings, m_tableSupplier,
-            m_selectionSupplier, m_tableId, null);
+            m_selectionSupplier, m_tableId, null, null);
         m_rpcDataServiceSupplier = pair.getSecond();
         return Optional.of(pair.getFirst());
     }

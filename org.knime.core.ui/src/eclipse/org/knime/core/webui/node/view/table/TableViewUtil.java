@@ -173,7 +173,7 @@ public final class TableViewUtil {
     public static InitialDataService<TableViewInitialData> createInitialDataService(
         final Supplier<TableViewViewSettings> settingsSupplier, final Supplier<BufferedDataTable> tableSupplier,
         final String tableId) {
-        return createInitialDataService(settingsSupplier, tableSupplier, null, tableId, null);
+        return createInitialDataService(settingsSupplier, tableSupplier, null, tableId, null, null);
     }
 
     /**
@@ -186,7 +186,7 @@ public final class TableViewUtil {
     public static InitialDataService<TableViewInitialData> createInitialDataService(
         final Supplier<TableViewViewSettings> settingsSupplier, final Supplier<BufferedDataTable> tableSupplier,
         final Supplier<Set<RowKey>> selectionSupplier, final String tableId) {
-        return createInitialDataService(settingsSupplier, tableSupplier, selectionSupplier, tableId, null);
+        return createInitialDataService(settingsSupplier, tableSupplier, selectionSupplier, tableId, null, null);
     }
 
     /**
@@ -194,15 +194,16 @@ public final class TableViewUtil {
      * @param tableSupplier
      * @param selectionSupplier
      * @param tableId
+     * @param onDeactivate
      * @param onDispose
      * @return the table view initial data service
      */
     public static InitialDataService<TableViewInitialData> createInitialDataService(
         final Supplier<TableViewViewSettings> settingsSupplier, final Supplier<BufferedDataTable> tableSupplier,
-        final Supplier<Set<RowKey>> selectionSupplier, final String tableId, final Runnable onDispose) {
+        final Supplier<Set<RowKey>> selectionSupplier, final String tableId, final Runnable onDeactivate, final Runnable onDispose) {
         final Supplier<TableViewInitialData> initialDataSupplier =
             () -> createInitialData(settingsSupplier.get(), tableSupplier.get(), selectionSupplier, tableId);
-        return createInitialDataService(initialDataSupplier, tableId, onDispose);
+        return createInitialDataService(initialDataSupplier, tableId, onDeactivate, onDispose);
     }
 
     /**
@@ -218,13 +219,14 @@ public final class TableViewUtil {
      * @param tableSupplier
      * @param selectionSupplier
      * @param tableId
+     * @param onDeactivate
      * @param onDispose
      * @return the table view initial data service
      */
     public static Pair<InitialDataService<TableViewInitialData>, Supplier<RpcDataService>>
         createInitialDataServiceWithRPCDataService(final Supplier<TableViewViewSettings> settingsSupplier,
             final Supplier<BufferedDataTable> tableSupplier, final Supplier<Set<RowKey>> selectionSupplier,
-            final String tableId, final Runnable onDispose) {
+            final String tableId, final Runnable onDeactivate, final Runnable onDispose) {
 
         DataServiceCache dataServiceCache = new DataServiceCache() {
             @Override
@@ -237,7 +239,7 @@ public final class TableViewUtil {
             () -> createRpcDataService(dataServiceCache.get(), tableId);
         final Supplier<TableViewInitialData> initialDataSupplier =
             () -> createInitialData(settingsSupplier.get(), tableSupplier.get(), dataServiceCache.get());
-        final var initialDataService = createInitialDataService(initialDataSupplier, tableId, onDispose);
+        final var initialDataService = createInitialDataService(initialDataSupplier, tableId, onDeactivate, onDispose);
         return new Pair<>(initialDataService, rpcDataServiceSupplier);
     }
 
@@ -257,10 +259,15 @@ public final class TableViewUtil {
     }
 
     private static InitialDataService<TableViewInitialData> createInitialDataService(
-        final Supplier<TableViewInitialData> initialDataSupplier, final String tableId, final Runnable onDispose) {
+        final Supplier<TableViewInitialData> initialDataSupplier, final String tableId,  final Runnable onDeactivate, final Runnable onDispose) {
         Runnable clearImageData = () -> TableViewUtil.RENDERER_REGISTRY.clearImageDataCache(tableId);
         return InitialDataService.builder(initialDataSupplier::get) //
-            .onDeactivate(clearImageData) //
+            .onDeactivate(() -> {
+                clearImageData.run();
+                if (onDeactivate != null) {
+                    onDeactivate.run();
+                }
+            }) //
             .onDispose(() -> {
                 clearImageData.run();
                 if (onDispose != null) {
