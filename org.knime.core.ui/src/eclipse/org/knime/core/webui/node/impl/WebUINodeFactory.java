@@ -114,10 +114,8 @@ public abstract class WebUINodeFactory<M extends NodeModel> extends NodeFactory<
     }
 
     /**
-     * TODO
-     *
-     * @param configuration
-     * @return
+     * @param configuration the config to create the node description for
+     * @return a new {@link NodeDescription}-instance derived from the given {@link WebUINodeConfiguration}
      */
     public static NodeDescription createNodeDescription(final WebUINodeConfiguration configuration) {
         return createNodeDescription(configuration.getName(), configuration.getIcon(),
