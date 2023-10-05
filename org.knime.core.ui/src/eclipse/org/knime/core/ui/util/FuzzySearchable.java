@@ -49,6 +49,7 @@
 package org.knime.core.ui.util;
 
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -77,10 +78,10 @@ public final class FuzzySearchable {
      * @param keywords keywords (or null)
      */
     public FuzzySearchable(final String name, final String[] keywords) {
-        String capsName = CheckUtils.checkArgumentNotNull(name).toUpperCase();
+        String capsName = CheckUtils.checkArgumentNotNull(name).toUpperCase(Locale.ROOT);
         String[] capsKeywords = Stream.of(ArrayUtils.nullToEmpty(keywords)) //
             .map(CheckUtils::checkArgumentNotNull) //
-            .map(String::toUpperCase) //
+            .map(s -> s.toUpperCase(Locale.ROOT)) //
             .toArray(String[]::new);
         m_name = capsName;
         m_keywords = capsKeywords;
@@ -145,7 +146,7 @@ public final class FuzzySearchable {
      * @return the distance value [0, 1]
      */
     public static double computeTanimotoBiGramDistance(final String textA, final String textB) {
-        return 1.0 - computeTanimotoBiGramSimilarity(textA.toUpperCase(), textB.toUpperCase());
+        return 1.0 - computeTanimotoBiGramSimilarity(textA.toUpperCase(Locale.ROOT), textB.toUpperCase(Locale.ROOT));
     }
 
     /**

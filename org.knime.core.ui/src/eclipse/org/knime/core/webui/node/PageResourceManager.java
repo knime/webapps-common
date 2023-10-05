@@ -48,6 +48,7 @@
  */
 package org.knime.core.webui.node;
 
+import java.util.Locale;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -104,7 +105,7 @@ public final class PageResourceManager<N extends NodeWrapper> {
 
         @Override
         public String toString() {
-            return super.toString().toLowerCase();
+            return super.toString().toLowerCase(Locale.ROOT);
         }
 
     }
