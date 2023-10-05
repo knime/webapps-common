@@ -4,7 +4,7 @@
 import { mount } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createStore } from "vuex";
-import * as imagesModule from "../utils/images";
+import * as imagesModule from "../../utils/images";
 
 import ImageRenderer from "../ImageRenderer.vue";
 import flushPromises from "flush-promises";

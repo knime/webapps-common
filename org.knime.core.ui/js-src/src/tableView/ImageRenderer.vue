@@ -10,7 +10,7 @@ import {
   watchEffect,
   nextTick,
 } from "vue";
-import { fetchImage } from "./utils/images";
+import { fetchImage, getImageUrl } from "@/utils/images";
 import { useStore } from "vuex";
 
 const props = defineProps<{
@@ -36,14 +36,11 @@ const emit = defineEmits(["pending", "rendered"]);
 
 const inlinedSrc: Ref<false | string> = ref(false);
 
-// TODO: UIEXT-887 We don't want to have to access the store here.
 const store = useStore();
 const imageUrl = computed(() =>
-  store.getters["api/uiExtResourceLocation"]({
-    resourceInfo: {
-      baseUrl: props.baseUrl,
-      path: props.path,
-    },
+  getImageUrl(store, {
+    baseUrl: props.baseUrl,
+    path: props.path,
   }),
 );
 const urlWithDimensions = computed(() =>

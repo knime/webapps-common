@@ -6,7 +6,7 @@ import HTMLRenderer from "../HtmlRenderer.vue";
 import { TableUIWithAutoSizeCalculation } from "@knime/knime-ui-table";
 import type { TableViewDisplayProps } from "../types";
 import * as vuexModule from "vuex";
-import * as imagesModule from "../utils/images";
+import * as imagesModule from "../../utils/images";
 
 // TODO: UIEXT-1073 Reactivate tests
 describe.skip("slot rendering", () => {

@@ -1,14 +1,25 @@
-import { describe, it, beforeEach, expect, vi, afterEach } from "vitest";
+import {
+  describe,
+  it,
+  beforeEach,
+  expect,
+  vi,
+  afterEach,
+  type Mock,
+} from "vitest";
 import ImageView from "../ImageView.vue";
 import { JsonDataService, ReportingService } from "@knime/ui-extension-service";
 import Label from "webapps-common/ui/components/forms/Label.vue";
-import * as fetchImage from "../../tableView/utils/images";
 import flushPromises from "flush-promises";
 import { createStore } from "vuex";
-import { mount } from "@vue/test-utils";
+import { VueWrapper, mount } from "@vue/test-utils";
+import * as fetchImage from "@/utils/images";
 
 describe("ImageView.vue", () => {
-  let store, initialDataSpy, addOnDataChangeCallbackSpy, fetchImageSpy;
+  let jsonDataServiceMock: {
+    initialData: Mock<any>;
+    addOnDataChangeCallback: Mock<any, any>;
+  };
 
   const defaultBaseUrl = "defaultBaseUrl";
   const defaultImagePath = "defaultImagePath";
@@ -29,17 +40,6 @@ describe("ImageView.vue", () => {
     })),
     addOnDataChangeCallback: vi.fn(),
   });
-
-  const createSpies = () => {
-    const jsonDataServiceMock = createJsonDataServiceMock();
-    JsonDataService.mockImplementation(() => jsonDataServiceMock);
-    initialDataSpy = vi.spyOn(jsonDataServiceMock, "initialData");
-    addOnDataChangeCallbackSpy = vi.spyOn(
-      jsonDataServiceMock,
-      "addOnDataChangeCallback",
-    );
-    fetchImageSpy = vi.spyOn(fetchImage, "fetchImage");
-  };
 
   const storeOptions = {
     modules: {
@@ -67,10 +67,7 @@ describe("ImageView.vue", () => {
               },
             },
           }),
-          store,
-        },
-        mocks: {
-          $store: store,
+          store: createStore(storeOptions),
         },
       },
     };
@@ -80,14 +77,13 @@ describe("ImageView.vue", () => {
   };
 
   beforeEach(() => {
-    createSpies();
+    jsonDataServiceMock = createJsonDataServiceMock();
+    (JsonDataService as Mock).mockImplementation(() => jsonDataServiceMock);
     const setRenderCompleted = vi.fn();
-    // eslint-disable-next-line no-extra-parens
-    ReportingService.mockImplementation((knimeService) => ({
+    (ReportingService as Mock).mockImplementation((knimeService) => ({
       isReportingActive: () => knimeService.isReport,
       setRenderCompleted,
     }));
-    store = createStore(storeOptions);
   });
 
   afterEach(() => {
@@ -95,26 +91,34 @@ describe("ImageView.vue", () => {
   });
 
   const checkWrapper = (
-    imageViewWrapper,
-    settings,
+    imageView: VueWrapper<any>,
+    settings: { title: string; altText: string; caption: string },
     imageSrc = defaultBaseUrl + defaultImagePath,
   ) => {
-    expect(imageViewWrapper.vm.title).toStrictEqual(settings.title);
-    expect(imageViewWrapper.vm.altText).toStrictEqual(settings.altText);
-    expect(imageViewWrapper.vm.caption).toStrictEqual(settings.caption);
-    let wrapper = imageViewWrapper;
+    expect(imageView.vm.viewSettings.title).toStrictEqual(settings.title);
+    expect(imageView.vm.viewSettings.altText).toStrictEqual(settings.altText);
+    expect(imageView.vm.viewSettings.caption).toStrictEqual(settings.caption);
+    const label = imageView.findComponent(Label);
+    let id;
     if (settings.title) {
-      wrapper = wrapper.findComponent(Label);
-      expect(wrapper.exists()).toBeTruthy();
-      expect(wrapper.text()).toContain(settings.title);
+      expect(label.exists()).toBeTruthy();
+      expect(label.text()).toContain(settings.title);
+      id = label.find("label").attributes().for;
+    } else {
+      expect(label.exists()).toBeFalsy();
     }
+    const figure = imageView.find("figure");
+    const img = imageView.find("img");
     if (settings.caption) {
-      wrapper = wrapper.find("figure");
-      expect(wrapper.exists()).toBeTruthy();
-      const figcaption = wrapper.find("figcaption");
+      expect(figure.exists()).toBeTruthy();
+      expect(figure.attributes().id).toStrictEqual(id);
+      expect(img.attributes().id).toBeUndefined();
+      const figcaption = figure.find("figcaption");
       expect(figcaption.text()).toStrictEqual(settings.caption);
+    } else {
+      expect(figure.exists()).toBeFalsy();
+      expect(img.attributes().id).toStrictEqual(id);
     }
-    const img = wrapper.find("img");
     expect(img.exists()).toBeTruthy();
     expect(img.attributes().src).toStrictEqual(imageSrc);
     expect(img.attributes().alt).toStrictEqual(settings.altText);
@@ -126,22 +130,32 @@ describe("ImageView.vue", () => {
   });
 
   it("renders image view when reporting enabled", async () => {
-    fetchImageSpy.mockResolvedValue(defaultFetchImageValue);
+    const fetchImageSpy = vi
+      .spyOn(fetchImage, "fetchImage")
+      .mockResolvedValue(defaultFetchImageValue);
     const wrapper = await mountComponent(true);
     expect(fetchImageSpy).toHaveBeenCalled();
     checkWrapper(wrapper, defaultSettings, defaultFetchImageValue);
   });
 
   it("calls initial data on mount", async () => {
+    const initialDataSpy = vi.spyOn(jsonDataServiceMock, "initialData");
     const wrapper = await mountComponent();
     expect(initialDataSpy).toHaveBeenCalled();
-    expect(wrapper.vm.imagePath).toStrictEqual(defaultImagePath);
-    expect(wrapper.vm.title).toStrictEqual(defaultSettings.title);
-    expect(wrapper.vm.altText).toStrictEqual(defaultSettings.altText);
-    expect(wrapper.vm.caption).toStrictEqual(defaultSettings.caption);
+    expect(wrapper.vm.viewSettings.title).toStrictEqual(defaultSettings.title);
+    expect(wrapper.vm.viewSettings.altText).toStrictEqual(
+      defaultSettings.altText,
+    );
+    expect(wrapper.vm.viewSettings.caption).toStrictEqual(
+      defaultSettings.caption,
+    );
   });
 
   it("adds on data change callback on mount", () => {
+    const addOnDataChangeCallbackSpy = vi.spyOn(
+      jsonDataServiceMock,
+      "addOnDataChangeCallback",
+    );
     mountComponent();
     expect(addOnDataChangeCallbackSpy).toHaveBeenCalled();
   });
