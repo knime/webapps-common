@@ -367,8 +367,7 @@ export default {
   justify-content: space-between;
   height: 100vh;
   background-color: var(--knime-gray-ultra-light);
-  border-left: 1px solid var(--knime-silver-sand);
-  padding: 11px 0; /* Padding set at 11px to align with the commons "Messages" component */
+  padding-bottom: 11px; /* Padding set at 11px to align with the commons "Messages" component */
 
   & .form {
     display: flex;
@@ -377,6 +376,18 @@ export default {
     padding: 0 20px;
     overflow: hidden;
     overflow-y: auto;
+
+    /* if a dialog starts with a section header we don't need extra top padding, otherwise adding it here */
+    &:not(
+        :has(
+            > .vertical-layout
+              > .vertical-layout-item:first-child
+              > div
+              > .section:first-child
+          )
+      ) {
+      padding-top: 11px;
+    }
 
     /* TODO: UIEXT-1061 workaround to make the last dialog element fill the remaining height, used in RichTextInput */
 
@@ -397,8 +408,8 @@ export default {
     display: flex;
     justify-content: space-between;
     height: var(--controls-height);
-    padding: 13px 20px 5px;
-    background-color: var(--knime-gray-light-semi);
+    padding: 14px 20px 4px;
+    background-color: var(--knime-gray-ultra-light);
     border-top: 1px solid var(--knime-silver-sand);
   }
 
