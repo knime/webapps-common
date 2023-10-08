@@ -80,7 +80,9 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.scroll-container {
+/* div is required here to make the selector more specific than a pagebuilder selector that sets overflow to hidden */
+div.scroll-container {
   overflow: auto;
+  height: 100%;
 }
 </style>
