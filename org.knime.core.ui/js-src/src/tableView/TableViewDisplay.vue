@@ -280,9 +280,10 @@ const onCopySelection = ({
 <style lang="postcss" scoped>
 .table-title {
   margin: 0;
-  padding: 13px 0 5px;
+  padding: 10px 0 5px;
   color: rgb(70 70 70);
-  font-size: 18px;
+  font-size: 16px;
+  line-height: 20px;
 }
 
 .no-columns {
@@ -294,7 +295,7 @@ const onCopySelection = ({
 
   & h4 {
     color: rgb(70 70 70);
-    font-size: 18px;
+    font-size: 16px;
   }
 }
 
