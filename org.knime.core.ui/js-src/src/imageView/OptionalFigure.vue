@@ -1,16 +1,8 @@
-<script lang="ts">
-export default {
-  props: {
-    caption: {
-      type: String,
-      default: "",
-    },
-    id: {
-      type: String,
-      default: null,
-    },
-  },
-};
+<script setup lang="ts">
+defineProps<{
+  caption: string;
+  id: undefined | string;
+}>();
 </script>
 
 <template>
@@ -18,7 +10,7 @@ export default {
     <slot />
     <figcaption>{{ caption }}</figcaption>
   </figure>
-  <slot v-else />
+  <slot v-else :id="id" />
 </template>
 
 <style scoped>

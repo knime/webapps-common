@@ -1,24 +1,13 @@
-<script lang="ts">
+<script setup lang="ts">
 import Label from "webapps-common/ui/components/forms/Label.vue";
-
-export default {
-  components: {
-    Label,
-  },
-  props: {
-    title: {
-      type: String,
-      default: "",
-    },
-  },
-};
+defineProps<{ title: string }>();
 </script>
 
 <template>
   <Label v-if="title" #default="{ labelForId }" :text="title" large>
     <slot :label-for-id="labelForId" />
   </Label>
-  <slot v-else :label-for-id="null" />
+  <slot v-else :label-for-id="undefined" />
 </template>
 
 <style scoped></style>

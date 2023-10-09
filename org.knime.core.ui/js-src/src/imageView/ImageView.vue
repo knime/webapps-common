@@ -66,14 +66,11 @@ onMounted(async () => {
   <div class="scroll-container">
     <OptionalLabel #default="{ labelForId }" :title="viewSettings.title">
       <OptionalFigure
-        :id="viewSettings.caption ? labelForId : null"
+        :id="labelForId"
+        #default="{ id }"
         :caption="viewSettings.caption"
       >
-        <img
-          :id="viewSettings.caption ? null : labelForId"
-          :src="imgSrc"
-          :alt="viewSettings.altText"
-        />
+        <img :id="id" :src="imgSrc" :alt="viewSettings.altText" />
       </OptionalFigure>
     </OptionalLabel>
   </div>
