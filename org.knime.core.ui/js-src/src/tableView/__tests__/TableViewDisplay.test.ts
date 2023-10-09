@@ -10,6 +10,7 @@ import TableViewDisplay from "../TableViewDisplay.vue";
 import { ref, unref } from "vue";
 import useColumnSizes from "../composables/useColumnSizes";
 import useAutoColumnSizes from "../composables/useAutoColumnSizes";
+import { RowHeightMode } from "../types/ViewSettings";
 
 const useColumnSizesMock: { [key: string]: any } = {
   columnSizes: ref([50, 50, 50]),
@@ -314,16 +315,20 @@ describe("TableViewDisplay.vue", () => {
           expect(getRowConfig(wrapper).enableResizing).toBeFalsy();
         });
 
-        it("sets rowHeight to 80 if images are present", () => {
-          props.header.columnContentTypes[1] = "img_path";
-          const wrapper = shallowMountDisplay({ props });
-          expect(getRowConfig(wrapper).rowHeight).toBe(80);
-        });
-
-        it("sets compactMode", () => {
-          props.settings.compactMode = true;
+        it("sets compact row height", () => {
+          props.settings.rowHeightMode = RowHeightMode.COMPACT;
           const wrapper = shallowMountDisplay({ props });
           expect(getRowConfig(wrapper).compactMode).toBeTruthy();
+        });
+
+        it("sets custom row height", () => {
+          const customRowHeight = 80;
+          props.settings.rowHeightMode = RowHeightMode.CUSTOM;
+          props.settings.customRowHeight = customRowHeight;
+          const wrapper = shallowMountDisplay({ props });
+          const rowConfig = getRowConfig(wrapper);
+          expect(rowConfig.compactMode).toBeFalsy();
+          expect(rowConfig.rowHeight).toBe(80);
         });
 
         it("enables row resizing", () => {

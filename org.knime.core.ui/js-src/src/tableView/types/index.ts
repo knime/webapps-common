@@ -1,4 +1,5 @@
 import type { KnimeService } from "@knime/ui-extension-service";
+import type TableViewViewSettings from "./ViewSettings";
 
 export interface DataType {
   name: string;
@@ -17,16 +18,10 @@ export interface ImageDimension {
   heightInPx: number;
 }
 
-export enum AutoSizeColumnsToContent {
-  FIXED = "FIXED",
-  FIT_CONTENT = "FIT_CONTENT",
-  FIT_CONTENT_AND_HEADER = "FIT_CONTENT_AND_HEADER",
-}
-
 export type ColumnSizes = Record<string | symbol, number>;
 
 export interface TableViewDisplayProps {
-  settings: any;
+  settings: TableViewViewSettings;
   rows: {
     loaded: boolean;
     top: any[][];

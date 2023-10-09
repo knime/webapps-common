@@ -3,6 +3,10 @@ import useAutoColumnSizes, {
   type UseAutoColumnSizesOptions,
 } from "../useAutoColumnSizes";
 import { ref } from "vue";
+import {
+  AutoSizeColumnsToContent,
+  RowHeightMode,
+} from "@/tableView/types/ViewSettings";
 
 describe("useColumnSizes", () => {
   let initialDataMock: UseAutoColumnSizesOptions;
@@ -10,14 +14,17 @@ describe("useColumnSizes", () => {
   beforeEach(() => {
     initialDataMock = {
       settings: ref({
-        autoSizeColumnsToContent: "FIT_CONTENT",
+        autoSizeColumnsToContent: AutoSizeColumnsToContent.FIT_CONTENT,
+        customRowHeight: 80,
+        rowHeightMode: RowHeightMode.CUSTOM,
       }),
       firstRowImageDimensions: ref({}),
     };
   });
 
   it("creates the correct auto size options when using FIXED", () => {
-    initialDataMock.settings.value.autoSizeColumnsToContent = "FIXED";
+    initialDataMock.settings.value.autoSizeColumnsToContent =
+      AutoSizeColumnsToContent.FIXED;
     const { autoColumnSizesActive, autoColumnSizesOptions } =
       useAutoColumnSizes(initialDataMock);
 
@@ -43,7 +50,7 @@ describe("useColumnSizes", () => {
 
   it("creates the correct auto size options when using FIT_CONTENT_AND_HEADER", () => {
     initialDataMock.settings.value.autoSizeColumnsToContent =
-      "FIT_CONTENT_AND_HEADER";
+      AutoSizeColumnsToContent.FIT_CONTENT_AND_HEADER;
     const { autoColumnSizesActive, autoColumnSizesOptions } =
       useAutoColumnSizes(initialDataMock);
 
@@ -56,7 +63,8 @@ describe("useColumnSizes", () => {
   });
 
   it("updates the auto sizes and sets the initial update to true when calling onAutoColumnSizesUpdate", () => {
-    initialDataMock.settings.value.autoSizeColumnsToContent = "FIT_CONTENT";
+    initialDataMock.settings.value.autoSizeColumnsToContent =
+      AutoSizeColumnsToContent.FIT_CONTENT;
     const { autoColumnSizes, onAutoColumnSizesUpdate } =
       useAutoColumnSizes(initialDataMock);
 
@@ -66,35 +74,76 @@ describe("useColumnSizes", () => {
     expect(autoColumnSizes.value).toStrictEqual(newAutoSizes);
   });
 
-  it("creates the correct column size of image columns based on the rowHeight and their initial dimension", () => {
-    initialDataMock.firstRowImageDimensions = ref({
-      col1: { widthInPx: 150, heightInPx: 150 },
-      col2: { widthInPx: 120, heightInPx: 150 },
-      col3: { widthInPx: 150, heightInPx: 120 },
-    });
-    const { autoColumnSizesOptions, onRowHeightUpdate } =
-      useAutoColumnSizes(initialDataMock);
-
-    expect(autoColumnSizesOptions.value).toStrictEqual({
-      calculateForBody: true,
-      calculateForHeader: false,
-      fixedSizes: {
-        col1: 80,
-        col2: 64,
-        col3: 100,
-      },
+  describe("correct column size of image columns based on the rowHeight and their initial dimension", () => {
+    beforeEach(() => {
+      initialDataMock.firstRowImageDimensions = ref({
+        col1: { widthInPx: 150, heightInPx: 150 },
+        col2: { widthInPx: 120, heightInPx: 150 },
+        col3: { widthInPx: 150, heightInPx: 120 },
+      });
     });
 
-    const newRowHeight = 120;
-    onRowHeightUpdate(newRowHeight);
-    expect(autoColumnSizesOptions.value).toStrictEqual({
-      calculateForBody: true,
-      calculateForHeader: false,
-      fixedSizes: {
-        col1: 120,
-        col2: 96,
-        col3: 150,
-      },
+    it("creates the correct column sizes of image columns with small row height", () => {
+      initialDataMock.settings.value.rowHeightMode = RowHeightMode.COMPACT;
+      const { autoColumnSizesOptions } = useAutoColumnSizes(initialDataMock);
+
+      expect(autoColumnSizesOptions.value).toStrictEqual({
+        calculateForBody: true,
+        calculateForHeader: false,
+        fixedSizes: {
+          col1: 24,
+          col2: 19,
+          col3: 30,
+        },
+      });
+    });
+
+    it("creates the correct column sizes of image columns with default row height", () => {
+      initialDataMock.settings.value.rowHeightMode = RowHeightMode.DEFAULT;
+      const { autoColumnSizesOptions } = useAutoColumnSizes(initialDataMock);
+
+      expect(autoColumnSizesOptions.value).toStrictEqual({
+        calculateForBody: true,
+        calculateForHeader: false,
+        fixedSizes: {
+          col1: 40,
+          col2: 32,
+          col3: 50,
+        },
+      });
+    });
+
+    it("creates the correct column sizes of image columns with custom row height", () => {
+      initialDataMock.settings.value.rowHeightMode = RowHeightMode.CUSTOM;
+      initialDataMock.settings.value.customRowHeight = 80;
+      const { autoColumnSizesOptions } = useAutoColumnSizes(initialDataMock);
+
+      expect(autoColumnSizesOptions.value).toStrictEqual({
+        calculateForBody: true,
+        calculateForHeader: false,
+        fixedSizes: {
+          col1: 80,
+          col2: 64,
+          col3: 100,
+        },
+      });
+    });
+
+    it("sets the correct column sizes of image columns on row height update", () => {
+      const { autoColumnSizesOptions, onRowHeightUpdate } =
+        useAutoColumnSizes(initialDataMock);
+
+      const newRowHeight = 120;
+      onRowHeightUpdate(newRowHeight);
+      expect(autoColumnSizesOptions.value).toStrictEqual({
+        calculateForBody: true,
+        calculateForHeader: false,
+        fixedSizes: {
+          col1: 120,
+          col2: 96,
+          col3: 150,
+        },
+      });
     });
   });
 

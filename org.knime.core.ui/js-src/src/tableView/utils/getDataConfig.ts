@@ -1,9 +1,10 @@
 const isImage = (contentType: string) => contentType === "img_path";
 const isHtml = (contentType: string) => contentType === "html";
 
+import type TableViewViewSettings from "../types/ViewSettings";
+import { RowHeightMode } from "../types/ViewSettings";
 import specialColumns from "./specialColumns";
 const { INDEX, ROW_ID, SKIPPED_REMAINING_COLUMNS_COLUMN } = specialColumns;
-export const DEFAULT_IMAGE_ROW_HEIGHT = 80;
 
 export default ({
   settings,
@@ -18,7 +19,7 @@ export default ({
   indicateRemainingColumnsSkipped,
   enableRowResizing,
 }: {
-  settings: any;
+  settings: TableViewViewSettings;
   columnSizes: number[];
   columnFiltersMap?: Map<symbol | string, any>;
   displayedColumns: string[];
@@ -39,7 +40,8 @@ export default ({
   const {
     showRowKeys,
     showRowIndices,
-    compactMode,
+    rowHeightMode,
+    customRowHeight,
     showColumnDataType,
     enableRendererSelection,
   } = settings;
@@ -163,14 +165,12 @@ export default ({
       }),
     );
   }
-
-  const specContainsImages = columnContentTypes?.some((contentType) =>
-    isImage(contentType),
-  );
+  const compactMode = rowHeightMode === RowHeightMode.COMPACT;
+  const customMode = rowHeightMode === RowHeightMode.CUSTOM;
   return {
     columnConfigs,
     rowConfig: {
-      ...(specContainsImages && { rowHeight: DEFAULT_IMAGE_ROW_HEIGHT }),
+      ...(customMode && { rowHeight: customRowHeight }),
       compactMode,
       enableResizing: enableRowResizing,
     },

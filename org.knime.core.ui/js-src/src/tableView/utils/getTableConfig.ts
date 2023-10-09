@@ -1,4 +1,5 @@
 import type { PageParams } from "../types";
+import type TableViewViewSettings from "../types/ViewSettings";
 
 const getPageConfig = (
   pageParams: PageParams,
@@ -31,7 +32,7 @@ export default ({
   enableColumnResizing,
   forceHideTableSizes,
 }: {
-  settings: any;
+  settings: TableViewViewSettings;
   pageParams: PageParams;
   sortParams?: {
     columnSortIndex: number;

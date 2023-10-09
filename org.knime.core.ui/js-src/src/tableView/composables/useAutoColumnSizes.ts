@@ -1,27 +1,50 @@
-import { DEFAULT_IMAGE_ROW_HEIGHT } from "@/tableView/utils/getDataConfig";
-import {
-  type TableViewDisplayProps,
-  type ImageDimension,
-  AutoSizeColumnsToContent,
-  type ColumnSizes,
+import { constants } from "@knime/knime-ui-table";
+import type {
+  TableViewDisplayProps,
+  ImageDimension,
+  ColumnSizes,
 } from "../types";
-import { computed, ref, type Ref } from "vue";
+import { computed, ref, watch, type Ref } from "vue";
+import { AutoSizeColumnsToContent, RowHeightMode } from "../types/ViewSettings";
+import type TableViewViewSettings from "../types/ViewSettings";
 
+type RelevantViewSettings = Pick<
+  TableViewViewSettings,
+  "autoSizeColumnsToContent" | "customRowHeight" | "rowHeightMode"
+>;
 export interface UseAutoColumnSizesOptions {
-  settings: Ref<
-    Pick<TableViewDisplayProps["settings"], "autoSizeColumnsToContent">
-  >;
+  settings: Ref<RelevantViewSettings>;
   firstRowImageDimensions: Ref<
     TableViewDisplayProps["firstRowImageDimensions"]
   >;
 }
 
+const getInitialRowHeight = (settings: RelevantViewSettings) => {
+  switch (settings.rowHeightMode) {
+    case RowHeightMode.COMPACT:
+      return constants.COMPACT_ROW_HEIGHT;
+    case RowHeightMode.CUSTOM:
+      return settings.customRowHeight;
+    default:
+      return constants.DEFAULT_ROW_HEIGHT;
+  }
+};
+
 export default ({
   settings,
   firstRowImageDimensions,
 }: UseAutoColumnSizesOptions) => {
-  const currentRowHeight = ref(DEFAULT_IMAGE_ROW_HEIGHT);
+  const currentRowHeight = ref(0);
+  const initialRowHeight = computed(() => getInitialRowHeight(settings.value));
   const autoColumnSizes: Ref<ColumnSizes> = ref({});
+
+  watch(
+    () => initialRowHeight.value,
+    () => {
+      currentRowHeight.value = initialRowHeight.value;
+    },
+    { immediate: true },
+  );
 
   const autoColumnSizesActive = computed(() => {
     return (

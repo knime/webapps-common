@@ -2,6 +2,10 @@ import { mount, shallowMount, type VueWrapper } from "@vue/test-utils";
 import type { TableViewDisplayProps } from "../../types";
 import TableViewDisplay from "../../TableViewDisplay.vue";
 import flushPromises from "flush-promises";
+import {
+  AutoSizeColumnsToContent,
+  RowHeightMode,
+} from "@/tableView/types/ViewSettings";
 
 export const mountDisplay = async ({
   props,
@@ -71,6 +75,19 @@ export const getDefaultProps = (): TableViewDisplayProps => {
       showRowKeys: false,
       showRowIndices: false,
       showTableSize: false,
+      rowHeightMode: RowHeightMode.DEFAULT,
+      customRowHeight: 80,
+      showColumnDataType: false,
+      enableRendererSelection: false,
+      publishSelection: false,
+      subscribeToSelection: false,
+      enableColumnSearch: false,
+      enableGlobalSearch: false,
+      enablePagination: false,
+      pageSize: 10,
+      enableSortingByHeader: false,
+      autoSizeColumnsToContent: AutoSizeColumnsToContent.FIXED,
+      title: "Title",
     },
     page: {
       currentRowCount: 4,

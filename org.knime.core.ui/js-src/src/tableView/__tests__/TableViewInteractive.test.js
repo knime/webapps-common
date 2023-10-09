@@ -15,7 +15,7 @@ import {
   TableUIWithAutoSizeCalculation,
 } from "@knime/knime-ui-table";
 import specialColumns from "../utils/specialColumns";
-import { AutoSizeColumnsToContent } from "../types";
+import { AutoSizeColumnsToContent, RowHeightMode } from "../types/ViewSettings";
 import consolaGlobalInstance from "consola";
 
 const { MIN_COLUMN_SIZE } = tableUIConstants;
@@ -139,9 +139,9 @@ describe("TableViewInteractive.vue", () => {
         enableSortingByHeader: true,
         publishSelection: true,
         subscribeToSelection: true,
-        compactMode: false,
+        rowHeightMode: RowHeightMode.DEFAULT,
         skipRemainingColumns: false,
-        autoSizeColumnsToContent: "FIXED",
+        autoSizeColumnsToContent: AutoSizeColumnsToContent.FIXED,
         showOnlySelectedRows: false,
         enableCellCopying: true,
       },
@@ -367,7 +367,6 @@ describe("TableViewInteractive.vue", () => {
           },
         ],
         rowConfig: {
-          rowHeight: 80,
           compactMode: false,
         },
       });
@@ -1354,7 +1353,7 @@ describe("TableViewInteractive.vue", () => {
       },
     );
 
-    it('view setting "compactMode" change causes table to be refreshed if useLazyLoading is true', async () => {
+    it('view setting "rowHeightMode" change causes table to be refreshed if useLazyLoading is true', async () => {
       // TODO: Remove this with https://knime-com.atlassian.net/browse/UIEXT-527
       await wrapper.setData({
         settings: {
@@ -1363,9 +1362,10 @@ describe("TableViewInteractive.vue", () => {
         },
       });
 
-      changeViewSetting(wrapper, "compactMode", true);
+      changeViewSetting(wrapper, "rowHeightMode", RowHeightMode.CUSTOM);
+      changeViewSetting(wrapper, "customRowHeight", 100);
 
-      expect(refreshTableSpy).toHaveBeenCalled();
+      expect(refreshTableSpy).toHaveBeenCalledTimes(2);
     });
 
     it("hides title", async () => {

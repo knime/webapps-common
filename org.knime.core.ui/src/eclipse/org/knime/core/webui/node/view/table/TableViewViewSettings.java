@@ -253,7 +253,7 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     @Widget(title = "Row height", description = "Set the initial height of the rows:" //
         + "<ul> " //
         + "<li><b>Compact</b>, reduces white space around rows to a minimum. Choose this option to show as many rows as possible in given space.</li>" //
-        + "<li><b>Default</b>,  shows one line of text, visually well separated by whitespace.</li>" //
+        + "<li><b>Default</b>, shows one line of text, visually well separated by whitespace.</li>" //
         + "<li><b>Custom</b>, shows as much as you need. For instance, show images at a size that enables to grasp their gist.</li>" //
         + "</ul>")
     @ValueSwitchWidget

@@ -3,7 +3,7 @@
 import { JsonDataService, SelectionService } from "@knime/ui-extension-service";
 import TableViewDisplay from "./TableViewDisplay.vue";
 import { createDefaultFilterConfig, arrayEquals } from "@/tableView/utils";
-import { AutoSizeColumnsToContent } from "./types";
+import { AutoSizeColumnsToContent } from "./types/ViewSettings";
 import specialColumns from "./utils/specialColumns";
 const { ROW_ID, INDEX, SKIPPED_REMAINING_COLUMNS_COLUMN } = specialColumns;
 // -1 is the backend representation (columnName) for sorting the table by rowKeys
@@ -688,27 +688,40 @@ export default {
       await this.refreshTable();
       this.$refs.tableViewDisplay.triggerCalculationOfAutoColumnSizes();
     },
+    settingsChanged(newSettings, key) {
+      return newSettings[key] !== this.settings[key];
+    },
     async onViewSettingsChange(event) {
       const newSettings = event.data.data.view;
-      const enablePaginationChanged =
-        newSettings.enablePagination !== this.settings.enablePagination;
+      const enablePaginationChanged = this.settingsChanged(
+        newSettings,
+        "enablePagination",
+      );
       const displayedColumnsChanged = !arrayEquals(
         newSettings.displayedColumns.selected,
         this.settings.displayedColumns.selected,
       );
-      const showRowKeysChanged =
-        newSettings.showRowKeys !== this.settings.showRowKeys;
-      const showRowIndicesChanged =
-        newSettings.showRowIndices !== this.settings.showRowIndices;
-      const pageSizeChanged = newSettings.pageSize !== this.settings.pageSize;
-      const compactModeChangeInducesRefresh =
+      const showRowKeysChanged = this.settingsChanged(
+        newSettings,
+        "showRowKeys",
+      );
+      const showRowIndicesChanged = this.settingsChanged(
+        newSettings,
+        "showRowIndices",
+      );
+      const pageSizeChanged = this.settingsChanged(newSettings, "pageSize");
+      const rowHeightChangeInducesRefresh =
         this.useLazyLoading &&
-        newSettings.compactMode !== this.settings.compactMode;
-      const autoSizeColumnsToContentChanged =
-        newSettings.autoSizeColumnsToContent !==
-        this.settings.autoSizeColumnsToContent;
-      const showOnlySelectedRowsChanged =
-        newSettings.showOnlySelectedRows !== this.settings.showOnlySelectedRows;
+        (this.settingsChanged(newSettings, "rowHeightMode") ||
+          this.settingsChanged(newSettings, "customRowHeight"));
+      const autoSizeColumnsToContentChanged = this.settingsChanged(
+        newSettings,
+        "autoSizeColumnsToContent",
+      );
+      const showOnlySelectedRowsChanged = this.settingsChanged(
+        newSettings,
+        "showOnlySelectedRows",
+      );
 
       const oldDisplayedColumns = this.settings.displayedColumns.selected;
 
@@ -738,7 +751,7 @@ export default {
           updateTotalSelected: true,
         });
       } else if (
-        compactModeChangeInducesRefresh ||
+        rowHeightChangeInducesRefresh ||
         sortingParamsReseted ||
         (autoSizeColumnsToContentChanged &&
           this.settings.autoSizeColumnsToContent !==
