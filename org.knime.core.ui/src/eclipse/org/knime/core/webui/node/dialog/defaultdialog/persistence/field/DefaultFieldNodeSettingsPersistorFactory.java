@@ -161,35 +161,6 @@ final class DefaultFieldNodeSettingsPersistorFactory {
         return new EnumFieldPersistor<>(configKey, (Class)fieldType);
     }
 
-    private static final class EnumFieldPersistor<E extends Enum<E>> implements NodeSettingsPersistor<E> {
-
-        private final String m_configKey;
-
-        private final Class<E> m_enumClass;
-
-        EnumFieldPersistor(final String configKey, final Class<E> enumClass) {
-            m_enumClass = enumClass;
-            m_configKey = configKey;
-        }
-
-        @Override
-        public E load(final NodeSettingsRO settings) throws InvalidSettingsException {
-            var name = settings.getString(m_configKey);
-            try {
-                return name == null ? null : Enum.valueOf(m_enumClass, name);
-            } catch (IllegalArgumentException ex) {
-                throw new InvalidSettingsException(
-                    String.format("There is no enum constant with name '%s' in enum '%s'.", name, m_enumClass), ex);
-            }
-        }
-
-        @Override
-        public void save(final E obj, final NodeSettingsWO settings) {
-            settings.addString(m_configKey, obj == null ? null : obj.name());
-        }
-
-    }
-
     private static NodeSettingsPersistor<LocalDate> createLocalDatePersistor(final String configKey) {
         return new LocalDatePersistor(configKey);
     }

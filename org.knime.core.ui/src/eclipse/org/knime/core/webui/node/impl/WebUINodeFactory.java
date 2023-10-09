@@ -150,7 +150,7 @@ public abstract class WebUINodeFactory<M extends NodeModel> extends NodeFactory<
      * @param viewSettingsClass the type of the view settings, or null, if the node has no view settings
      * @param viewDescription the view description, or null, if the node has no view
      * @param type the type of the node, or null, if it should be determined automatically
-     * @param keywords the keywords for serach, or null.
+     * @param keywords the keywords for search, or null.
      * @param sinceVersion the KNIME AP version since which this node is available, or null
      * @return a description for this node
      */

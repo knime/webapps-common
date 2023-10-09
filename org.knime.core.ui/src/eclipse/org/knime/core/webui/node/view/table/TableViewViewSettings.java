@@ -50,11 +50,18 @@ package org.knime.core.webui.node.view.table;
 
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.EnumFieldPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect.EffectType;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.OneOfEnumCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.TrueCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
@@ -69,6 +76,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.view.table.TableViewLayout.DataSection;
 import org.knime.core.webui.node.view.table.TableViewLayout.InteractivitySection;
 import org.knime.core.webui.node.view.table.TableViewLayout.ViewSection;
+import org.knime.core.webui.node.view.table.TableViewViewSettings.RowHeightMode.CompactModeToRowHeightModePersistor;
+import org.knime.core.webui.node.view.table.TableViewViewSettings.RowHeightMode.RowHeightIsCustom;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -188,13 +197,80 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     @ValueSwitchWidget
     public AUTO_SIZE_COLUMNS m_autoSizeColumnsToContent = AUTO_SIZE_COLUMNS.FIXED;
 
+    @SuppressWarnings("javadoc")
+    public enum RowHeightMode {
+            @Label("Compact")
+            COMPACT, //
+            @Label("Default")
+            DEFAULT, //
+            @Label("Custom")
+            CUSTOM; //
+
+
+        public static final class RowHeightIsCustom extends OneOfEnumCondition<RowHeightMode> {
+
+            @Override
+            public RowHeightMode[] oneOf() {
+                return new RowHeightMode[]{CUSTOM};
+            }
+
+        }
+
+        static final class CompactModeToRowHeightModePersistor
+            extends NodeSettingsPersistorWithConfigKey<RowHeightMode> {
+
+            private NodeSettingsPersistor<RowHeightMode> m_persistor;
+
+            @Override
+            public void setConfigKey(final String configKey) {
+                super.setConfigKey(configKey);
+                m_persistor = new EnumFieldPersistor<>(configKey, RowHeightMode.class);
+            }
+
+            @Override
+            public RowHeightMode load(final NodeSettingsRO settings) throws InvalidSettingsException {
+
+                if (!settings.containsKey(getConfigKey())) {
+                    if (settings.containsKey("compactMode")) {
+                        final var compactModeLegacySetting = settings.getBoolean("compactMode");
+                        return compactModeLegacySetting ? COMPACT : DEFAULT;
+                    }
+                    return DEFAULT;
+                }
+                return m_persistor.load(settings);
+            }
+
+            @Override
+            public void save(final RowHeightMode obj, final NodeSettingsWO settings) {
+                m_persistor.save(obj, settings);
+            }
+        }
+    }
+
     /**
-     * See annotation.
+     * The mode of the row height. Either a compact small height, a default height or a custom larger height.
      */
-    @Widget(title = "Compact rows", description = "Whether to display the rows in a more compact form or not")
-    @Persist(optional = true)
+    @Widget(title = "Row height", description = "Set the initial height of the rows:" //
+        + "<ul> " //
+        + "<li><b>Compact</b>, reduces white space around rows to a minimum. Choose this option to show as many rows as possible in given space.</li>" //
+        + "<li><b>Default</b>,  shows one line of text, visually well separated by whitespace.</li>" //
+        + "<li><b>Custom</b>, shows as much as you need. For instance, show images at a size that enables to grasp their gist.</li>" //
+        + "</ul>")
+    @ValueSwitchWidget
     @Layout(ViewSection.class)
-    public boolean m_compactMode;
+    @Persist(customPersistor = CompactModeToRowHeightModePersistor.class)
+    @Signal(condition = RowHeightIsCustom.class)
+    public RowHeightMode m_rowHeightMode = RowHeightMode.DEFAULT;
+
+    /**
+     *
+     */
+    @Widget(title = "Custom row height", description = "Set the initial height of the rows.")
+    @NumberInputWidget(min = 40)
+    @Layout(ViewSection.class)
+    @Persist(optional = true)
+    @Effect(signals = RowHeightIsCustom.class, type = EffectType.SHOW)
+    public int m_customRowHeight = 80;
 
     /**
      * If global search is enabled

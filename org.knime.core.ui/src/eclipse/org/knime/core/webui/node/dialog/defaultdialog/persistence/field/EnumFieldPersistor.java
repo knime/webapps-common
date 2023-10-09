@@ -42,40 +42,53 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
+ *
+ * History
+ *   Oct 9, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.persistence;
+package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistor;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 
 /**
- * Extend this persistor in order to write custom persistors which need to access the configKey of a field during save
- * or load. See {@link Persist}
+ * This field persistor transforms {@link String} node settings to enum values and vice versa by matching the enum
+ * constant.
  *
  * @author Paul Bärnreuther
- * @param <T> type of object loaded by the persistor
+ * @param <E> The enum that should be persisted
  */
-public abstract class NodeSettingsPersistorWithConfigKey<T> implements FieldNodeSettingsPersistor<T> {
+public final class EnumFieldPersistor<E extends Enum<E>> implements NodeSettingsPersistor<E> {
 
-    private String m_configKey;
+    private final String m_configKey;
 
-    /**
-     * @return the configKey. Note that this method yields null when run from the constructor, as the setter method
-     *         below is called afterwards.
-     */
-    protected String getConfigKey() {
-        return m_configKey;
-    }
+    private final Class<E> m_enumClass;
 
     /**
-     * @param configKey the configKey to set
+     * @param configKey under which the string is to be stored
+     * @param enumClass the class of the to be persisted enum
      */
-    public void setConfigKey(final String configKey) {
+    public EnumFieldPersistor(final String configKey, final Class<E> enumClass) {
+        m_enumClass = enumClass;
         m_configKey = configKey;
     }
 
     @Override
-    public String[] getConfigKeys() {
-        return new String[]{m_configKey};
+    public E load(final NodeSettingsRO settings) throws InvalidSettingsException {
+        var name = settings.getString(m_configKey);
+        try {
+            return name == null ? null : Enum.valueOf(m_enumClass, name);
+        } catch (IllegalArgumentException ex) {
+            throw new InvalidSettingsException(
+                String.format("There is no enum constant with name '%s' in enum '%s'.", name, m_enumClass), ex);
+        }
     }
+
+    @Override
+    public void save(final E obj, final NodeSettingsWO settings) {
+        settings.addString(m_configKey, obj == null ? null : obj.name());
+    }
+
 }

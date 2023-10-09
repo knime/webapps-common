@@ -26,7 +26,8 @@
       "enablePagination" : false,
       "pageSize" : 10,
       "autoSizeColumnsToContent" : "FIXED",
-      "compactMode" : false,
+      "rowHeightMode" : "DEFAULT",
+      "customRowHeight" : 80,
       "enableGlobalSearch" : true,
       "enableColumnSearch" : true,
       "enableSortingByHeader" : true,
@@ -60,12 +61,14 @@
             "default" : "FIXED",
             "configKeys" : [ "autoSizeColumnsToContent" ]
           },
-          "compactMode" : {
-            "type" : "boolean",
-            "title" : "Compact rows",
-            "description" : "Whether to display the rows in a more compact form or not",
-            "default" : false,
-            "configKeys" : [ "compactMode" ]
+          "customRowHeight" : {
+            "type" : "integer",
+            "format" : "int32",
+            "title" : "Custom row height",
+            "description" : "Set the initial height of the rows.",
+            "default" : 80,
+            "minimum" : 40.0,
+            "configKeys" : [ "customRowHeight" ]
           },
           "displayedColumns" : {
             "type" : "object",
@@ -251,6 +254,22 @@
             "default" : true,
             "configKeys" : [ "publishSelection" ]
           },
+          "rowHeightMode" : {
+            "oneOf" : [ {
+              "const" : "COMPACT",
+              "title" : "Compact"
+            }, {
+              "const" : "DEFAULT",
+              "title" : "Default"
+            }, {
+              "const" : "CUSTOM",
+              "title" : "Custom"
+            } ],
+            "title" : "Row height",
+            "description" : "Set the initial height of the rows:<ul> <li><b>Compact</b>, reduces white space around rows to a minimum. Choose this option to show as many rows as possible in given space.</li><li><b>Default</b>, shows one line of text, visually well separated by whitespace.</li><li><b>Custom</b>, shows as much as you need. For instance, show images at a size that enables to grasp their gist.</li></ul>",
+            "default" : "DEFAULT",
+            "configKeys" : [ "rowHeightMode" ]
+          },
           "showColumnDataType" : {
             "type" : "boolean",
             "title" : "Show column data types in header",
@@ -407,9 +426,24 @@
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/view/properties/compactMode",
+        "scope" : "#/properties/view/properties/rowHeightMode",
         "options" : {
-          "format" : "checkbox"
+          "format" : "valueSwitch"
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/view/properties/customRowHeight",
+        "options" : { },
+        "rule" : {
+          "effect" : "SHOW",
+          "condition" : {
+            "scope" : "#/properties/view/properties/rowHeightMode",
+            "schema" : {
+              "oneOf" : [ {
+                "const" : "CUSTOM"
+              } ]
+            }
+          }
         }
       } ]
     }, {
