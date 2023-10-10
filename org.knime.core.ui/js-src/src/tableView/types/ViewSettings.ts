@@ -10,6 +10,12 @@ export enum AutoSizeColumnsToContent {
   FIT_CONTENT_AND_HEADER = "FIT_CONTENT_AND_HEADER",
 }
 
+export enum SelectionMode {
+  SHOW = "SHOW",
+  HIDE = "HIDE",
+  SHOW_AND_PUBLISH = "SHOW_AND_PUBLISH",
+}
+
 type TableViewViewSettings = {
   showRowKeys: boolean;
   showRowIndices: boolean;
@@ -18,8 +24,7 @@ type TableViewViewSettings = {
   showTableSize: boolean;
   rowHeightMode: RowHeightMode;
   customRowHeight: number;
-  subscribeToSelection: boolean;
-  publishSelection: boolean;
+  selectionMode: SelectionMode;
   enableColumnSearch: boolean;
   enablePagination: boolean;
   pageSize: number;

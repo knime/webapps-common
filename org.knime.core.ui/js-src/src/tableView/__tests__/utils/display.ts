@@ -5,6 +5,7 @@ import flushPromises from "flush-promises";
 import {
   AutoSizeColumnsToContent,
   RowHeightMode,
+  SelectionMode,
 } from "@/tableView/types/ViewSettings";
 
 export const mountDisplay = async ({
@@ -79,8 +80,7 @@ export const getDefaultProps = (): TableViewDisplayProps => {
       customRowHeight: 80,
       showColumnDataType: false,
       enableRendererSelection: false,
-      publishSelection: false,
-      subscribeToSelection: false,
+      selectionMode: SelectionMode.HIDE,
       enableColumnSearch: false,
       enableGlobalSearch: false,
       enablePagination: false,

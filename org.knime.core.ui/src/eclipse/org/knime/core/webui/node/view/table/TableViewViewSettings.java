@@ -66,6 +66,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.TrueCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.StringArrayToColumnFilterPersistor;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.selection.SelectionCheckboxesToSelectionModePersistor;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.selection.SelectionMode;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Hidden;
@@ -315,24 +317,13 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     public boolean m_enableCellCopying = true;
 
     /**
-     * If this view notifies other views when the users do a selection action
+     * Whether selection should be shown and/or interactive
      */
-    @Widget(title = "Publish selection",
-        description = "When checked, the view notifies other interactive views when the user changes the selection in"
-            + " the current view.")
-    @Persist(optional = true)
+    @Widget(title = "Selection", description = "TODO")
+    @ValueSwitchWidget
     @Layout(InteractivitySection.class)
-    public boolean m_publishSelection = true;
-
-    /**
-     * If this view should react on selection events from other views
-     */
-    @Widget(title = "Subscribe to selection",
-        description = "When checked, the view reacts on notifications from other interactive views that the selection"
-            + " has been changed.")
-    @Persist(optional = true)
-    @Layout(InteractivitySection.class)
-    public boolean m_subscribeToSelection = true;
+    @Persist(customPersistor = SelectionCheckboxesToSelectionModePersistor.class)
+    public SelectionMode m_selectionMode = SelectionMode.SHOW_AND_PUBLISH;
 
     /**
      * If true only the selected rows are shown

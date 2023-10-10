@@ -5,6 +5,7 @@ import TableViewReport from "../TableViewReport.vue";
 import TableViewDisplay from "../TableViewDisplay.vue";
 import flushPromises from "flush-promises";
 import type { DataType } from "../types";
+import { SelectionMode } from "../types/ViewSettings";
 
 describe("TableViewReport.vue", () => {
   let initialDataMock: {
@@ -45,6 +46,7 @@ describe("TableViewReport.vue", () => {
       },
       settings: {
         enablePagination: true,
+        selectionMode: SelectionMode.EDIT,
       },
     };
     // eslint-disable-next-line no-extra-parens
@@ -89,8 +91,7 @@ describe("TableViewReport.vue", () => {
       firstRowImageDimensions: {},
       settings: {
         ...initialDataMock.settings,
-        publishSelection: false,
-        subscribeToSelection: false,
+        selectionMode: SelectionMode.OFF,
         enableColumnSearch: false,
         enableSortingByHeader: false,
         enableGlobalSearch: false,

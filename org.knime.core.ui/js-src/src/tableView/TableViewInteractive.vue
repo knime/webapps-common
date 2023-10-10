@@ -1,10 +1,12 @@
 <!-- eslint-disable max-lines -->
 <script>
-import { JsonDataService, SelectionService } from "@knime/ui-extension-service";
+import { JsonDataService } from "@knime/ui-extension-service";
 import TableViewDisplay from "./TableViewDisplay.vue";
 import { createDefaultFilterConfig, arrayEquals } from "@/tableView/utils";
 import { AutoSizeColumnsToContent } from "./types/ViewSettings";
 import specialColumns from "./utils/specialColumns";
+import { inject } from "vue";
+import useSelectionCache from "./composables/useSelectionCache";
 const { ROW_ID, INDEX, SKIPPED_REMAINING_COLUMNS_COLUMN } = specialColumns;
 // -1 is the backend representation (columnName) for sorting the table by rowKeys
 const ROW_KEYS_SORT_COL_NAME = "-1";
@@ -33,6 +35,10 @@ export default {
       required: false,
     },
   },
+  setup() {
+    const knimeService = inject("getKnimeService")();
+    return useSelectionCache(knimeService);
+  },
   data() {
     return {
       dataLoaded: false,
@@ -44,14 +50,11 @@ export default {
       columnSortIndex: null,
       columnSortDirection: null,
       columnSortColumnName: null,
-      currentSelection: null,
-      currentBottomSelection: null,
       totalSelected: 0,
       table: {},
       colNameSelectedRendererId: {},
       dataTypes: {},
       columnDomainValues: {},
-      currentSelectedRowKeys: new Set(),
       totalRowCount: 0,
       currentRowCount: 0,
       settings: {},
@@ -153,7 +156,6 @@ export default {
       this.initialData === null
         ? await this.jsonDataService.initialData()
         : this.initialData;
-    this.selectionService = new SelectionService(this.knimeService);
     this.baseUrl = this.knimeService?.extensionConfig?.resourceInfo?.baseUrl;
     if (initialData) {
       const { table, dataTypes, columnDomainValues, settings } = initialData;
@@ -174,11 +176,8 @@ export default {
         this.dataLoaded = true;
       }
       await this.handleInitialSelection();
-      const { publishSelection, subscribeToSelection } = settings;
-      this.selectionService.onInit(
+      this.selectionService.addOnSelectionChangeCallback(
         this.onSelectionChange,
-        publishSelection,
-        subscribeToSelection,
       );
       this.selectionLoaded = true;
       this.columnFiltersMap = this.getDefaultFilterConfigsMap(
@@ -405,7 +404,7 @@ export default {
         ) {
           this.totalSelected = getFromTopOrBottom("totalSelected");
         } else {
-          this.totalSelected = this.currentSelectedRowKeys.size;
+          this.totalSelected = this.getCurrentSelectedRowKeys().size;
         }
       }
       if (updateColumnContentTypes || updateDisplayedColumns) {
@@ -773,13 +772,6 @@ export default {
         displayedColumnsChanged,
         oldDisplayedColumns,
       });
-
-      this.selectionService.onSettingsChange(
-        () => Array.from(this.currentSelectedRowKeys),
-        this.clearSelection,
-        newSettings.publishSelection,
-        newSettings.subscribeToSelection,
-      );
     },
     onColumnSort(newColumnSortIndex, newColumnSortId) {
       // if columnSortIndex equals newColumnSortIndex sorting is ascending as default is descending
@@ -797,14 +789,7 @@ export default {
           : newColumnSortId;
       this.refreshTable();
     },
-    async onSelectionChange(rawEvent) {
-      const { selection, mode } = rawEvent;
-      if (mode === "REPLACE") {
-        this.currentSelectedRowKeys = new Set(selection);
-      } else {
-        const addOrDelete = mode === "ADD" ? "add" : "delete";
-        this.updateCurrentSelectedRowKeys(addOrDelete, selection);
-      }
+    async onSelectionChange() {
       this.transformSelection();
       if (this.settings.showOnlySelectedRows) {
         await this.refreshTable({ resetPage: true, updateTotalSelected: true });
@@ -816,7 +801,7 @@ export default {
       if (this.searchTerm || this.colFilterActive) {
         return this.performRequest("getTotalSelected");
       } else {
-        return this.currentSelectedRowKeys.size;
+        return this.getCurrentSelectedRowKeys().size;
       }
     },
     async onRowSelect(selected, rowInd, _groupInd, isTop) {
@@ -824,7 +809,11 @@ export default {
         ? this.table.rows[rowInd][1]
         : this.bottomRows[rowInd][1];
       this.totalSelected += selected ? 1 : -1;
-      await this.updateSelection(selected, [rowKey]);
+      await this.selectionService.publishOnSelectionChange(
+        selected ? "add" : "remove",
+        [rowKey],
+      );
+      this.transformSelection();
       if (this.settings.showOnlySelectedRows) {
         this.refreshTable({ resetPage: true });
       }
@@ -832,33 +821,15 @@ export default {
     async onSelectAll(selected) {
       const filterActive = this.currentRowCount !== this.totalRowCount;
       let backendSelectionPromise;
-      if (selected) {
+      if (selected || filterActive) {
         const currentRowKeys = await this.performRequest(
           "getCurrentRowKeys",
           [],
         );
-        if (filterActive) {
-          this.updateCurrentSelectedRowKeys("add", currentRowKeys);
-        } else {
-          this.currentSelectedRowKeys = new Set(currentRowKeys);
-        }
         backendSelectionPromise =
-          this.selectionService.publishOnSelectionChange("add", currentRowKeys);
-      } else if (filterActive) {
-        const currentRowKeys = await this.performRequest(
-          "getCurrentRowKeys",
-          [],
-        );
-        this.updateCurrentSelectedRowKeys("delete", currentRowKeys);
-        backendSelectionPromise =
-          this.selectionService.publishOnSelectionChange(
-            "remove",
-            currentRowKeys,
-          );
+          this.selectionService[selected ? "add" : "remove"](currentRowKeys);
       } else {
-        this.currentSelectedRowKeys = new Set();
-        backendSelectionPromise =
-          this.selectionService.publishOnSelectionChange("replace", []);
+        backendSelectionPromise = this.selectionService.replace([]);
       }
       this.transformSelection();
       if (this.settings.showOnlySelectedRows) {
@@ -892,49 +863,16 @@ export default {
         updateColumnContentTypes: true,
       });
     },
-    updateSelection(selected, rowKeys) {
-      this.updateCurrentSelectedRowKeys(selected ? "add" : "delete", rowKeys);
-      this.transformSelection();
-      return this.selectionService.publishOnSelectionChange(
-        selected ? "add" : "remove",
-        rowKeys,
-      );
-    },
-    updateCurrentSelectedRowKeys(addOrDelete, selectedRowKeys) {
-      selectedRowKeys.forEach((selectedRowKey) =>
-        this.currentSelectedRowKeys[addOrDelete](selectedRowKey),
-      );
-    },
     transformSelection() {
-      if (typeof this.table.rows === "undefined") {
-        return;
-      }
-      const getRowKey = (row) => row[1];
-      const rowKeysTop = this.table.rows
-        .map(getRowKey)
-        .filter((x) => typeof x !== "undefined");
-      const rowKeysBottom = this.bottomRows.map(getRowKey);
-      this.currentSelection = rowKeysTop.map((rowKey) =>
-        this.currentSelectedRowKeys.has(rowKey),
-      );
-      this.currentBottomSelection = rowKeysBottom.map((rowKey) =>
-        this.currentSelectedRowKeys.has(rowKey),
-      );
-    },
-    clearSelection() {
-      this.currentSelectedRowKeys = new Set();
-      this.totalSelected = 0;
-      this.transformSelection();
+      this.mapSelectionToRows({
+        topRows: this.table.rows,
+        bottomRows: this.bottomRows,
+      });
     },
     async handleInitialSelection() {
-      if (this.settings.subscribeToSelection) {
-        const initialSelection = await this.selectionService.initialSelection();
-        this.currentSelectedRowKeys = new Set(initialSelection);
-        this.totalSelected = initialSelection.length;
-        this.transformSelection();
-      } else {
-        this.clearSelection();
-      }
+      const initialSelection = await this.selectionService.initialSelection();
+      this.totalSelected = initialSelection.length;
+      this.transformSelection();
     },
     createHeaderSubMenuItems(columnName, renderers) {
       const headerSubMenuItems = [];

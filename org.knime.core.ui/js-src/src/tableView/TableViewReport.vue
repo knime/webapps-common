@@ -4,6 +4,7 @@ import { ref, type Ref, onMounted, onUpdated, computed, watch } from "vue";
 import TableViewDisplay from "./TableViewDisplay.vue";
 import getKnimeService from "./utils/getKnimeService";
 import type { ImageDimension } from "./types";
+import { SelectionMode } from "./types/ViewSettings";
 
 const knimeService = getKnimeService();
 const settings: Ref<any> = ref({});
@@ -28,8 +29,7 @@ onMounted(async () => {
 
     settings.value = {
       ...initialData.settings,
-      publishSelection: false,
-      subscribeToSelection: false,
+      selectionMode: SelectionMode.HIDE,
       enableColumnSearch: false,
       enableSortingByHeader: false,
       enableGlobalSearch: false,

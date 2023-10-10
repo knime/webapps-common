@@ -10,7 +10,7 @@ import TableViewDisplay from "../TableViewDisplay.vue";
 import { ref, unref } from "vue";
 import useColumnSizes from "../composables/useColumnSizes";
 import useAutoColumnSizes from "../composables/useAutoColumnSizes";
-import { RowHeightMode } from "../types/ViewSettings";
+import { RowHeightMode, SelectionMode } from "../types/ViewSettings";
 
 const useColumnSizesMock: { [key: string]: any } = {
   columnSizes: ref([50, 50, 50]),
@@ -359,26 +359,25 @@ describe("TableViewDisplay.vue", () => {
           },
           showColumnFilters: false,
           showSelection: false,
+          disableSelection: true,
           subMenuItems: [],
         });
       });
 
-      it("enables selection when subscribing to selection", () => {
-        props.settings.subscribeToSelection = true;
+      it("shows selection when selectionMode is 'SHOW'", () => {
+        props.settings.selectionMode = SelectionMode.SHOW;
         const wrapper = shallowMountDisplay({ props });
         const tableConfig = getTableConfig(wrapper);
-        expect(tableConfig).toMatchObject({
-          showSelection: true,
-        });
+        expect(tableConfig?.showSelection).toBeTruthy();
+        expect(tableConfig?.disableSelection).toBeTruthy();
       });
 
-      it("enables selection when publishing selection", () => {
-        props.settings.publishSelection = true;
+      it("enables selection when selectionMode is 'SHOW_AND_PUBLISH'", () => {
+        props.settings.selectionMode = SelectionMode.SHOW_AND_PUBLISH;
         const wrapper = shallowMountDisplay({ props });
         const tableConfig = getTableConfig(wrapper);
-        expect(tableConfig).toMatchObject({
-          showSelection: true,
-        });
+        expect(tableConfig?.showSelection).toBeTruthy();
+        expect(tableConfig?.disableSelection).toBeFalsy();
       });
 
       it("enables column filters", () => {

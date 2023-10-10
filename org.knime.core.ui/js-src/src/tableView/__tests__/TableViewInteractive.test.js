@@ -3,7 +3,10 @@
 /* eslint-disable max-lines */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { JsonDataService, SelectionService } from "@knime/ui-extension-service";
+import {
+  JsonDataService,
+  CachingSelectionService,
+} from "@knime/ui-extension-service";
 import {
   shallowMountInteractive,
   changeViewSetting,
@@ -15,7 +18,11 @@ import {
   TableUIWithAutoSizeCalculation,
 } from "@knime/knime-ui-table";
 import specialColumns from "../utils/specialColumns";
-import { AutoSizeColumnsToContent, RowHeightMode } from "../types/ViewSettings";
+import {
+  AutoSizeColumnsToContent,
+  RowHeightMode,
+  SelectionMode,
+} from "../types/ViewSettings";
 import consolaGlobalInstance from "consola";
 
 const { MIN_COLUMN_SIZE } = tableUIConstants;
@@ -31,7 +38,7 @@ describe("TableViewInteractive.vue", () => {
     initialDataMock,
     dataRequestResult,
     getData,
-    onInit,
+    cachedSelection,
     getTotalSelectedResult,
     getCurrentRowKeysResult;
 
@@ -137,8 +144,7 @@ describe("TableViewInteractive.vue", () => {
         enableGlobalSearch: true,
         enablePagination: true,
         enableSortingByHeader: true,
-        publishSelection: true,
-        subscribeToSelection: true,
+        selectionMode: SelectionMode.SHOW_AND_PUBLISH,
         rowHeightMode: RowHeightMode.DEFAULT,
         skipRemainingColumns: false,
         autoSizeColumnsToContent: AutoSizeColumnsToContent.FIXED,
@@ -176,17 +182,26 @@ describe("TableViewInteractive.vue", () => {
       knimeService: {},
     }));
 
-    onInit = vi.fn();
+    cachedSelection = new Set();
+    const cachingMethods = {
+      add: vi.fn((rows) => rows.forEach((row) => cachedSelection.add(row))),
+      remove: vi.fn((rows) =>
+        rows.forEach((row) => cachedSelection.delete(row)),
+      ),
+      replace: vi.fn((rows) => {
+        cachedSelection = new Set(rows);
+      }),
+    };
 
-    SelectionService.mockImplementation(() => ({
-      add: vi.fn(),
-      remove: vi.fn(),
-      replace: vi.fn(),
+    CachingSelectionService.mockImplementation(() => ({
+      ...cachingMethods,
       addOnSelectionChangeCallback: vi.fn(),
       initialSelection: vi.fn().mockResolvedValue([]),
-      onInit,
-      publishOnSelectionChange: vi.fn(),
+      publishOnSelectionChange: vi.fn((mode, rows) =>
+        cachingMethods[mode](rows),
+      ),
       onSettingsChange: vi.fn(),
+      getCachedSelection: vi.fn(() => cachedSelection),
     }));
 
     context = {
@@ -266,8 +281,7 @@ describe("TableViewInteractive.vue", () => {
     });
 
     it("renders the TableUIWithAutoSizeCalculation and passes the correct props", async () => {
-      initialDataMock.settings.publishSelection = true;
-      initialDataMock.settings.subscribeToSelection = true;
+      initialDataMock.settings.selectionMode = SelectionMode.SHOW_AND_PUBLISH;
 
       const wrapper = await shallowMountInteractive(context);
       const tableComponent = findTableComponent(wrapper);
@@ -298,6 +312,7 @@ describe("TableViewInteractive.vue", () => {
         enableCellSelection: true,
         enableVirtualScrolling: true,
         showSelection: true,
+        disableSelection: false,
         enableColumnResizing: true,
         showColumnFilters: true,
       });
@@ -455,9 +470,8 @@ describe("TableViewInteractive.vue", () => {
       });
     });
 
-    it("passes the correct tableConfig when publishSelection and subscribeToSelection are disabled", async () => {
-      initialDataMock.settings.publishSelection = false;
-      initialDataMock.settings.subscribeToSelection = false;
+    it("passes the correct tableConfig when selectionMode is 'HIDE'", async () => {
+      initialDataMock.settings.selectionMode = SelectionMode.HIDE;
 
       const wrapper = await shallowMountInteractive(context);
 
@@ -1818,12 +1832,9 @@ describe("TableViewInteractive.vue", () => {
   });
 
   describe("selection", () => {
-    const mockPublishSelectionOnce = (wrapper) => {
+    const mockSelectionMethodOnce = (wrapper, methodName) => {
       let resolveBackendPromise;
-      vi.spyOn(
-        wrapper.vm.selectionService,
-        "publishOnSelectionChange",
-      ).mockReturnValueOnce(
+      vi.spyOn(wrapper.vm.selectionService, methodName).mockReturnValueOnce(
         new Promise((resolve) => {
           resolveBackendPromise = resolve;
         }),
@@ -1831,51 +1842,30 @@ describe("TableViewInteractive.vue", () => {
       return resolveBackendPromise;
     };
 
-    it("resets the selection on clearSelection", async () => {
-      const wrapper = await shallowMountInteractive(context);
-
-      await wrapper.setData({
-        currentSelection: [false, false, true, false],
-      });
-
-      expect(wrapper.vm.currentSelection).toEqual([false, false, true, false]);
-
-      wrapper.vm.clearSelection();
-
-      expect(wrapper.vm.currentSelection).toEqual([false, false, false, false]);
-      expect(wrapper.vm.currentSelectedRowKeys).toEqual(new Set());
-      expect(wrapper.vm.totalSelected).toBe(0);
-    });
-
-    it("calls selectionService.onInit with correct parameters when mounting the view", async () => {
-      await shallowMountInteractive(context);
-
-      const { publishSelection, subscribeToSelection } =
-        initialDataMock.settings;
-      expect(onInit).toHaveBeenCalledWith(
-        expect.any(Function),
-        publishSelection,
-        subscribeToSelection,
-      );
-    });
-
     describe("emit selection", () => {
-      let wrapper, publishOnSelectionChangeSpy, tableViewDisplay;
+      let wrapper,
+        publishOnSelectionChangeSpy,
+        addSpy,
+        removeSpy,
+        replaceSpy,
+        tableViewDisplay;
 
       beforeEach(async () => {
-        initialDataMock.settings.publishSelection = true;
+        initialDataMock.settings.selectionMode = SelectionMode.SHOW_AND_PUBLISH;
         wrapper = await shallowMountInteractive(context);
         publishOnSelectionChangeSpy = vi.spyOn(
           wrapper.vm.selectionService,
           "publishOnSelectionChange",
         );
+        addSpy = vi.spyOn(wrapper.vm.selectionService, "add");
+        replaceSpy = vi.spyOn(wrapper.vm.selectionService, "replace");
+        removeSpy = vi.spyOn(wrapper.vm.selectionService, "remove");
         tableViewDisplay = findTableComponent(wrapper);
       });
 
       it("calls the selection service and updates local selection on select single row", async () => {
         // select row
         await tableViewDisplay.vm.$emit("rowSelect", true, 1, 0, true);
-
         expect(publishOnSelectionChangeSpy).toHaveBeenCalledWith("add", [
           "row2",
         ]);
@@ -1947,8 +1937,10 @@ describe("TableViewInteractive.vue", () => {
         const tableComponent = findTableComponent(wrapper);
         const refreshTableSpy = vi.spyOn(wrapper.vm, "refreshTable");
 
-        const resolveBackendPromise = mockPublishSelectionOnce(wrapper);
-        // select row
+        const resolveBackendPromise = mockSelectionMethodOnce(
+          wrapper,
+          "publishOnSelectionChange",
+        );
         await tableComponent.vm.$emit("rowSelect", true, 1, 0, true);
         await flushPromises();
         expect(refreshTableSpy).not.toHaveBeenCalled();
@@ -1992,10 +1984,7 @@ describe("TableViewInteractive.vue", () => {
           await tableViewDisplay.vm.$emit("selectAll", true);
           await flushPromises();
 
-          expect(publishOnSelectionChangeSpy).toHaveBeenCalledWith(
-            "add",
-            getCurrentRowKeysResult,
-          );
+          expect(addSpy).toHaveBeenCalledWith(getCurrentRowKeysResult);
           expect(wrapper.vm.currentSelection).toEqual([
             true,
             false,
@@ -2007,11 +1996,7 @@ describe("TableViewInteractive.vue", () => {
           await tableViewDisplay.vm.$emit("selectAll", false);
           await flushPromises();
 
-          expect(publishOnSelectionChangeSpy).toHaveBeenNthCalledWith(
-            2,
-            "remove",
-            getCurrentRowKeysResult,
-          );
+          expect(removeSpy).toHaveBeenCalledWith(getCurrentRowKeysResult);
           expect(wrapper.vm.currentSelection).toEqual([
             false,
             false,
@@ -2032,21 +2017,14 @@ describe("TableViewInteractive.vue", () => {
           await tableViewDisplay.vm.$emit("selectAll", true);
           await flushPromises();
 
-          expect(publishOnSelectionChangeSpy).toHaveBeenCalledWith(
-            "add",
-            getCurrentRowKeysResult,
-          );
+          expect(addSpy).toHaveBeenCalledWith(getCurrentRowKeysResult);
           expect(wrapper.vm.currentSelection).toEqual([true, true, true, true]);
           expect(wrapper.vm.totalSelected).toEqual(currentRowCount);
 
           await tableViewDisplay.vm.$emit("selectAll", false);
           await flushPromises();
 
-          expect(publishOnSelectionChangeSpy).toHaveBeenNthCalledWith(
-            2,
-            "replace",
-            [],
-          );
+          expect(replaceSpy).toHaveBeenCalledWith([]);
           expect(wrapper.vm.currentSelection).toEqual([
             false,
             false,
@@ -2061,7 +2039,7 @@ describe("TableViewInteractive.vue", () => {
           const wrapper = await shallowMountInteractive(context);
           const tableComponent = findTableComponent(wrapper);
           const refreshTableSpy = vi.spyOn(wrapper.vm, "refreshTable");
-          const resolveBackendPromise = mockPublishSelectionOnce(wrapper);
+          const resolveBackendPromise = mockSelectionMethodOnce(wrapper, "add");
           await tableComponent.vm.$emit("selectAll", true);
           await flushPromises();
           expect(refreshTableSpy).not.toHaveBeenCalled();
@@ -2081,7 +2059,8 @@ describe("TableViewInteractive.vue", () => {
         rowKey2 = initialDataMock.table.rows[1][1];
       });
 
-      it("updates the local selection on addSelection", async () => {
+      it("updates the local selection", async () => {
+        cachedSelection = new Set([rowKey2]);
         wrapper.vm.onSelectionChange({ mode: "ADD", selection: [rowKey2] });
         await flushPromises();
 
@@ -2092,62 +2071,6 @@ describe("TableViewInteractive.vue", () => {
           false,
         ]);
         expect(wrapper.vm.totalSelected).toBe(1);
-        expect(wrapper.vm.currentSelectedRowKeys).toEqual(new Set([rowKey2]));
-      });
-
-      it("updates the local selection on removeSelection", async () => {
-        wrapper.vm.onSelectionChange({
-          mode: "ADD",
-          selection: [rowKey1, rowKey2],
-        });
-        wrapper.vm.onSelectionChange({ mode: "REMOVE", selection: [rowKey2] });
-        await flushPromises();
-
-        expect(wrapper.vm.currentSelection).toEqual([
-          true,
-          false,
-          false,
-          false,
-        ]);
-        expect(wrapper.vm.currentSelectedRowKeys).toEqual(new Set([rowKey1]));
-        expect(wrapper.vm.totalSelected).toBe(1);
-      });
-
-      it("updates the local selection on replace with subscribe to selection", async () => {
-        wrapper.vm.onSelectionChange({ mode: "ADD", selection: [rowKey1] });
-        wrapper.vm.onSelectionChange({ mode: "REPLACE", selection: [rowKey2] });
-        await flushPromises();
-
-        expect(wrapper.vm.currentSelection).toEqual([
-          false,
-          true,
-          false,
-          false,
-        ]);
-        expect(wrapper.vm.currentSelectedRowKeys).toEqual(new Set([rowKey2]));
-        expect(wrapper.vm.totalSelected).toBe(1);
-      });
-
-      it("calls selectionService.onSettingsChange with the correct parameters on settings change", () => {
-        const selectionServiceOnSettingsChangeSpy = vi.spyOn(
-          wrapper.vm.selectionService,
-          "onSettingsChange",
-        );
-        const publishSelection = initialDataMock.settings.publishSelection;
-        const subscribeToSelection = false;
-
-        changeViewSetting(
-          wrapper,
-          "subscribeToSelection",
-          subscribeToSelection,
-        );
-
-        expect(selectionServiceOnSettingsChangeSpy).toHaveBeenCalledWith(
-          expect.any(Function),
-          expect.any(Function),
-          publishSelection,
-          subscribeToSelection,
-        );
       });
 
       it("refreshes table if showOnlySelectedRows is true", async () => {

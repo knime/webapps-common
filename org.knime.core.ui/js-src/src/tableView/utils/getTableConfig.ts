@@ -1,5 +1,6 @@
 import type { PageParams } from "../types";
 import type TableViewViewSettings from "../types/ViewSettings";
+import { SelectionMode } from "../types/ViewSettings";
 
 const getPageConfig = (
   pageParams: PageParams,
@@ -48,15 +49,15 @@ export default ({
     enableSortingByHeader,
     enableGlobalSearch,
     enableColumnSearch,
-    publishSelection,
-    subscribeToSelection,
+    selectionMode,
     pageSize,
     enablePagination,
     showTableSize,
   } = settings;
   return {
     subMenuItems: [],
-    showSelection: publishSelection || subscribeToSelection || false,
+    showSelection: selectionMode !== SelectionMode.HIDE,
+    disableSelection: selectionMode !== SelectionMode.SHOW_AND_PUBLISH,
     enableCellSelection,
     enableColumnResizing,
     showColumnFilters: enableColumnSearch || false,

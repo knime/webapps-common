@@ -61,4 +61,5 @@ public enum SelectionMode {
         SHOW, //
         @Label("Show and Publish")
         SHOW_AND_PUBLISH;
+
 }
