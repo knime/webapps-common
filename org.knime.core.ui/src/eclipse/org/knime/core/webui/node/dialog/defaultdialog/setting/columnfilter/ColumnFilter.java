@@ -70,7 +70,7 @@ public class ColumnFilter implements PersistableSettings {
     /**
      * The setting representing the selected columns
      */
-    @Persist(hidden = true)
+    @Persist(hidden = true, optional = true)
     public String[] m_selected;
 
     /**
