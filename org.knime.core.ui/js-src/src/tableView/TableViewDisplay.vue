@@ -303,10 +303,6 @@ const onCopySelection = ({
   display: flex;
   flex-direction: column;
 
-  & :deep(.table-header) {
-    background-color: var(--knime-porcelain);
-  }
-
   & :deep(.row) {
     border-bottom: v-bind(BORDER_BOTTOM_WIDTH + "px") solid
       var(--knime-porcelain);
