@@ -14,7 +14,7 @@ export class CachingSelectionService extends SelectionService {
     this.addOnSelectionChangeCallback(this.addBackendSelection.bind(this));
   }
 
-  addBackendSelection({
+  private addBackendSelection({
     mode,
     selection,
   }: Pick<Event["payload"], "selection" | "mode">) {
@@ -43,7 +43,7 @@ export class CachingSelectionService extends SelectionService {
     return super.add(selection);
   }
 
-  addToChache(selection: string[]) {
+  private addToChache(selection: string[]) {
     selection.forEach((selectedKey) => {
       this.cachedSelection.add(selectedKey);
     });
@@ -54,7 +54,7 @@ export class CachingSelectionService extends SelectionService {
     return super.remove(selection);
   }
 
-  removeFromCache(selection: string[]) {
+  private removeFromCache(selection: string[]) {
     selection.forEach((selectedKey) => {
       this.cachedSelection.delete(selectedKey);
     });
@@ -65,7 +65,11 @@ export class CachingSelectionService extends SelectionService {
     return super.replace(selection);
   }
 
-  replaceCache(selection: string[]) {
+  private replaceCache(selection: string[]) {
     this.cachedSelection = new Set(selection);
+  }
+
+  getCachedSelection() {
+    return this.cachedSelection;
   }
 }

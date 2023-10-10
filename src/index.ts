@@ -4,6 +4,7 @@ export {
   IFrameKnimeService,
   IFrameKnimeServiceAdapter,
   SelectionService,
+  CachingSelectionService,
   DialogService,
   ReportingService,
   ColorService,
