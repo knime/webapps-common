@@ -206,14 +206,16 @@ describe("NodeDialog.vue", () => {
   });
 
   it("provides 'sendAlert' method", () => {
-    const createAlertMock = vi.fn(() => "myAlert");
+    const createAlertMock = vi.fn(() => ({ nodeInfo: {} }));
     const sendWarningMock = vi.fn();
     const options = getOptions({ createAlertMock, sendWarningMock });
     const wrapper = shallowMount(NodeDialog, options);
     const callParams = { type: AlertTypes.ERROR, message: "message" };
     wrapper.vm.sendAlert(callParams);
     expect(createAlertMock).toHaveBeenCalledWith(callParams);
-    expect(sendWarningMock).toHaveBeenCalledWith("myAlert");
+    expect(sendWarningMock).toHaveBeenCalledWith({
+      nodeInfo: { nodeName: " " },
+    });
   });
 
   it("provides 'getAvailableFlowVariables' method", () => {

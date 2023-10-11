@@ -147,7 +147,9 @@ export default {
     },
     sendAlert({ type, message }: Parameters<ProvidedMethods["sendAlert"]>[0]) {
       const knimeService = this.getKnimeService();
-      knimeService.sendWarning(knimeService.createAlert({ type, message }));
+      const alert = knimeService.createAlert({ type, message });
+      alert.nodeInfo.nodeName = " ";
+      knimeService.sendWarning(alert);
     },
     /**
      * @param {Function} handleChange The handler function that is used to handle the change of a dialog setting
