@@ -71,16 +71,32 @@ public class PortViewEnt extends NodeUIExtensionEnt<NodePortWrapper> {
     private final List<String> m_initialSelection;
 
     /**
-     * Creates a new initial selection supplier and initializes associated {@link PortViewSelectionEventSource}.
+     * Helper to create a port with and at the same time initialize the {@link SelectionEventSource} while also
+     * determining the initial selection.
+     *
+     * The listeners for the {@link SelectionEventSource} on the node are removed on node state change.
+     *
+     * @param npw
+     * @param manager
+     * @param eventConsumer consumer of the {@link SelectionEventSource}-events
+     * @return a new port view ent instance
+     */
+    public static PortViewEnt createPortViewEntAndInitSelectionEventSource(final NodePortWrapper npw,
+        final PortViewManager manager, final BiConsumer<String, Object> eventConsumer) {
+        var initialSelectionSupplier = createInitialSelectionSupplierAndInitSelectionEventSource(npw, eventConsumer);
+        return new PortViewEnt(npw, manager, initialSelectionSupplier);
+    }
+
+    /**
+     * Creates a new initial selection supplier and initializes associated {@link SelectionEventSource}.
      *
      * @param npw the port to create the selection event source from
-     * @param viewIndex TODFO
      * @param eventConsumer the event consumer that will receive the events emitted by the initialized event source
      * @return the initial selection supplier
      */
     @SuppressWarnings("unused")
-    public static Supplier<List<String>> createInitialSelectionSupplierAndInitSelectionEventSource(
-        final NodePortWrapper npw, final int viewIndex, final BiConsumer<String, Object> eventConsumer) {
+    private static Supplier<List<String>> createInitialSelectionSupplierAndInitSelectionEventSource(
+        final NodePortWrapper npw, final BiConsumer<String, Object> eventConsumer) {
         var selectionEventSource =
             new SelectionEventSource<>(eventConsumer, PortViewManager.getInstance().getTableViewManager());
         Supplier<List<String>> initialSelectionSupplier =

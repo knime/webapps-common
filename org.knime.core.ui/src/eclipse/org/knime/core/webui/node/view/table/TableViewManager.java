@@ -184,7 +184,7 @@ public final class TableViewManager<N extends NodeWrapper> {
             return Optional.empty();
         }
         if (nc instanceof SingleNodeContainer snc) {
-            return Optional.of(snc.getOutputHiLiteHandler(portIndex + 1));
+            return Optional.ofNullable(snc.getOutputHiLiteHandler(portIndex + 1));
         }
         return Optional.empty();
     }

@@ -176,7 +176,6 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
     @SuppressWarnings({"rawtypes", "unused"})
     public static Pair<NodeViewEnt, EventSource[]> createNodeViewEntAndEventSources(final NativeNodeContainer nnc,
         final BiConsumer<String, Object> eventConsumer, final boolean createNodeViewStateEventSource) {
-        // TODO only to this if the node view actually has (table) node view
         var selectionEventSource =
             new SelectionEventSource<>(eventConsumer, NodeViewManager.getInstance().getTableViewManager());
         Supplier<List<String>> initialSelectionSupplier =

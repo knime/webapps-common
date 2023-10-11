@@ -57,8 +57,9 @@ import org.knime.core.webui.node.view.NodeView;
 import org.knime.core.webui.node.view.table.selection.SelectionTranslationService;
 
 /**
- * Represents a view of a table. Note that there is the {@link NodeTableView} annotation which pairs this annotation
- * with a {@link NodeView}. Another use case would be the {@link PortView} of a table input port.
+ * Represents a view of on a table (which is not necessarily rendered as a table!). Note that there is the
+ * {@link NodeTableView} interface which pairs this interface with a {@link NodeView}. Another use case would be the
+ * {@link PortView} of a table output port.
  *
  * @author Paul Bärnreuther
  */

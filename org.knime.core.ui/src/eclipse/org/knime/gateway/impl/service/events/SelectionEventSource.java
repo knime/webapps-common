@@ -121,6 +121,10 @@ public final class SelectionEventSource<N extends NodeWrapper> extends EventSour
         if (handler == null) {
             return Optional.empty();
         }
+        // guaranteed to be a single node container because
+        // * node views (and, hence, selection) only available for native nodes
+        // * in case of port views on metanode output ports, the actual original node the port belongs to is provided
+        //   (see CEFNodeView(NodeContainer), ...)
         var snc = (SingleNodeContainer) nw.get();
         synchronized (handler) {
             var hiLitKeys = handler.getHiLitKeys();
