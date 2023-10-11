@@ -158,15 +158,15 @@ const focusButton = () => {
 
   --button-size: 15px;
 
-  & :deep(.function-button) {
+  & :deep(.function-button.single) {
     width: var(--button-size);
     height: var(--button-size);
     padding: 0;
-  }
 
-  & :deep(svg) {
-    width: var(--button-size);
-    height: var(--button-size);
+    & svg {
+      width: var(--button-size);
+      height: var(--button-size);
+    }
   }
 }
 
