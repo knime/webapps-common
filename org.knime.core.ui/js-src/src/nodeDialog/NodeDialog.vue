@@ -145,9 +145,9 @@ export default {
         this.sendAlert.bind(this),
       );
     },
-    sendAlert({ type, message }: Parameters<ProvidedMethods["sendAlert"]>[0]) {
+    sendAlert(params: Parameters<ProvidedMethods["sendAlert"]>[0]) {
       const knimeService = this.getKnimeService();
-      const alert = knimeService.createAlert({ type, message });
+      const alert = knimeService.createAlert(params);
       alert.nodeInfo.nodeName = " ";
       knimeService.sendWarning(alert);
     },

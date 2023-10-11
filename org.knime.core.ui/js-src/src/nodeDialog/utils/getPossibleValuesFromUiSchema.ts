@@ -26,13 +26,14 @@ const extractPossibleValues = (
     if (state === "CANCELED") {
       sendAlert({
         type: AlertTypes.ERROR,
-        message: `Receiving possible values from ${choicesProviderClass} canceled.`,
+        subtitle: `Receiving possible values from ${choicesProviderClass} canceled.`,
       });
     }
     if (state === "FAIL") {
       sendAlert({
         type: AlertTypes.ERROR,
-        message: `Failed to fetch possible values: ${asyncResult.message}`,
+        subtitle: "Failed to fetch possible values.",
+        message: asyncResult.message,
       });
     }
     return [];
