@@ -372,8 +372,8 @@ describe("TableViewDisplay.vue", () => {
         expect(tableConfig?.disableSelection).toBeTruthy();
       });
 
-      it("enables selection when selectionMode is 'SHOW_AND_PUBLISH'", () => {
-        props.settings.selectionMode = SelectionMode.SHOW_AND_PUBLISH;
+      it("enables selection when selectionMode is 'EDIT'", () => {
+        props.settings.selectionMode = SelectionMode.EDIT;
         const wrapper = shallowMountDisplay({ props });
         const tableConfig = getTableConfig(wrapper);
         expect(tableConfig?.showSelection).toBeTruthy();

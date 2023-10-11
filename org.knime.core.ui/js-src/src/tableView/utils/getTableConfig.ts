@@ -56,8 +56,8 @@ export default ({
   } = settings;
   return {
     subMenuItems: [],
-    showSelection: selectionMode !== SelectionMode.HIDE,
-    disableSelection: selectionMode !== SelectionMode.SHOW_AND_PUBLISH,
+    showSelection: selectionMode !== SelectionMode.OFF,
+    disableSelection: selectionMode !== SelectionMode.EDIT,
     enableCellSelection,
     enableColumnResizing,
     showColumnFilters: enableColumnSearch || false,

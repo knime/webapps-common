@@ -55,11 +55,21 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
  * @author Paul Bärnreuther
  */
 public enum SelectionMode {
-        @Label("Hide")
-        HIDE, //
+
+        /**
+         * Selection is shown and editable.
+         */
+        @Label("Edit")
+        EDIT,
+        /**
+         * Selection is only shown but not editable
+         */
         @Label("Show")
         SHOW, //
-        @Label("Show and Publish")
-        SHOW_AND_PUBLISH;
+        /**
+         * No selection is visible
+         */
+        @Label("Off")
+        OFF; //
 
 }

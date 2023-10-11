@@ -80,7 +80,7 @@ export const getDefaultProps = (): TableViewDisplayProps => {
       customRowHeight: 80,
       showColumnDataType: false,
       enableRendererSelection: false,
-      selectionMode: SelectionMode.HIDE,
+      selectionMode: SelectionMode.OFF,
       enableColumnSearch: false,
       enableGlobalSearch: false,
       enablePagination: false,

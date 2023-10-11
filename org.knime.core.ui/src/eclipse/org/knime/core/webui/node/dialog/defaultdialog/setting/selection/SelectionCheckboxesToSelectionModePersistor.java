@@ -81,14 +81,14 @@ public class SelectionCheckboxesToSelectionModePersistor extends NodeSettingsPer
              * also subscribe to the selection.
              */
             if (publish) {
-                return SelectionMode.SHOW_AND_PUBLISH;
+                return SelectionMode.EDIT;
             }
             if (show) {
                 return SelectionMode.SHOW;
             }
-            return SelectionMode.HIDE;
+            return SelectionMode.OFF;
         }
-        return SelectionMode.SHOW_AND_PUBLISH;
+        return SelectionMode.EDIT;
     }
 
     @Override

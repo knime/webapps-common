@@ -29,7 +29,7 @@ onMounted(async () => {
 
     settings.value = {
       ...initialData.settings,
-      selectionMode: SelectionMode.HIDE,
+      selectionMode: SelectionMode.OFF,
       enableColumnSearch: false,
       enableSortingByHeader: false,
       enableGlobalSearch: false,

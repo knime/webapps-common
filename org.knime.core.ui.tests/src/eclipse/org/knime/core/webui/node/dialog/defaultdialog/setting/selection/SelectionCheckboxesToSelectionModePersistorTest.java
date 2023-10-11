@@ -77,9 +77,9 @@ class SelectionCheckboxesToSelectionModePersistorTest {
     static Stream<Arguments> publishAndSubscribeAndModeSource() {
         return Stream.of( //
             Arguments.of(false, true, SelectionMode.SHOW), //
-            Arguments.of(false, false, SelectionMode.HIDE), //
-            Arguments.of(true, false, SelectionMode.SHOW_AND_PUBLISH), //
-            Arguments.of(true, true, SelectionMode.SHOW_AND_PUBLISH) //
+            Arguments.of(false, false, SelectionMode.OFF), //
+            Arguments.of(true, false, SelectionMode.EDIT), //
+            Arguments.of(true, true, SelectionMode.EDIT) //
         );
     }
 
@@ -107,7 +107,7 @@ class SelectionCheckboxesToSelectionModePersistorTest {
         final var loaded = persistor.load(savedSettings);
 
         final var expected = new TestSettings();
-        expected.m_selectionMode = SelectionMode.SHOW_AND_PUBLISH;
+        expected.m_selectionMode = SelectionMode.EDIT;
         assertResults(expected, loaded);
     }
 

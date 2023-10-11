@@ -12,8 +12,8 @@ export enum AutoSizeColumnsToContent {
 
 export enum SelectionMode {
   SHOW = "SHOW",
-  HIDE = "HIDE",
-  SHOW_AND_PUBLISH = "SHOW_AND_PUBLISH",
+  OFF = "OFF",
+  EDIT = "EDIT",
 }
 
 type TableViewViewSettings = {

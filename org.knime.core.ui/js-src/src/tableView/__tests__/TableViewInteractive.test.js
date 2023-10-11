@@ -144,7 +144,7 @@ describe("TableViewInteractive.vue", () => {
         enableGlobalSearch: true,
         enablePagination: true,
         enableSortingByHeader: true,
-        selectionMode: SelectionMode.SHOW_AND_PUBLISH,
+        selectionMode: SelectionMode.EDIT,
         rowHeightMode: RowHeightMode.DEFAULT,
         skipRemainingColumns: false,
         autoSizeColumnsToContent: AutoSizeColumnsToContent.FIXED,
@@ -281,7 +281,7 @@ describe("TableViewInteractive.vue", () => {
     });
 
     it("renders the TableUIWithAutoSizeCalculation and passes the correct props", async () => {
-      initialDataMock.settings.selectionMode = SelectionMode.SHOW_AND_PUBLISH;
+      initialDataMock.settings.selectionMode = SelectionMode.EDIT;
 
       const wrapper = await shallowMountInteractive(context);
       const tableComponent = findTableComponent(wrapper);
@@ -470,8 +470,8 @@ describe("TableViewInteractive.vue", () => {
       });
     });
 
-    it("passes the correct tableConfig when selectionMode is 'HIDE'", async () => {
-      initialDataMock.settings.selectionMode = SelectionMode.HIDE;
+    it("passes the correct tableConfig when selectionMode is 'OFF'", async () => {
+      initialDataMock.settings.selectionMode = SelectionMode.OFF;
 
       const wrapper = await shallowMountInteractive(context);
 
@@ -1851,7 +1851,7 @@ describe("TableViewInteractive.vue", () => {
         tableViewDisplay;
 
       beforeEach(async () => {
-        initialDataMock.settings.selectionMode = SelectionMode.SHOW_AND_PUBLISH;
+        initialDataMock.settings.selectionMode = SelectionMode.EDIT;
         wrapper = await shallowMountInteractive(context);
         publishOnSelectionChangeSpy = vi.spyOn(
           wrapper.vm.selectionService,

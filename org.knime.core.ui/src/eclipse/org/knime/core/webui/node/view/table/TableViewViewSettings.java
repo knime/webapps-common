@@ -208,7 +208,6 @@ public class TableViewViewSettings implements DefaultNodeSettings {
             @Label("Custom")
             CUSTOM; //
 
-
         public static final class RowHeightIsCustom extends OneOfEnumCondition<RowHeightMode> {
 
             @Override
@@ -319,11 +318,14 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     /**
      * Whether selection should be shown and/or interactive
      */
-    @Widget(title = "Selection", description = "TODO")
+    @Widget(title = "Selection",
+        description = "“Show” makes this view receive notifications about changes of the selection. "
+            + "“Edit” also allows you to change the selection and propagate any changes you make here"
+            + " to other views that show the selection.")
     @ValueSwitchWidget
     @Layout(InteractivitySection.class)
     @Persist(customPersistor = SelectionCheckboxesToSelectionModePersistor.class)
-    public SelectionMode m_selectionMode = SelectionMode.SHOW_AND_PUBLISH;
+    public SelectionMode m_selectionMode = SelectionMode.EDIT;
 
     /**
      * If true only the selected rows are shown

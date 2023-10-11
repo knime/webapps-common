@@ -33,8 +33,7 @@
       "enableSortingByHeader" : true,
       "enableRendererSelection" : true,
       "enableCellCopying" : true,
-      "publishSelection" : true,
-      "subscribeToSelection" : true,
+      "selectionMode" : "EDIT",
       "showOnlySelectedRows" : false,
       "skipRemainingColumns" : false
     }
@@ -247,13 +246,6 @@
             "minimum" : 1,
             "configKeys" : [ "pageSize" ]
           },
-          "publishSelection" : {
-            "type" : "boolean",
-            "title" : "Publish selection",
-            "description" : "When checked, the view notifies other interactive views when the user changes the selection in the current view.",
-            "default" : true,
-            "configKeys" : [ "publishSelection" ]
-          },
           "rowHeightMode" : {
             "oneOf" : [ {
               "const" : "COMPACT",
@@ -269,6 +261,22 @@
             "description" : "Set the initial height of the rows:<ul> <li><b>Compact</b>, reduces white space around rows to a minimum. Choose this option to show as many rows as possible in given space.</li><li><b>Default</b>, shows one line of text, visually well separated by whitespace.</li><li><b>Custom</b>, shows as much as you need. For instance, show images at a size that enables to grasp their gist.</li></ul>",
             "default" : "DEFAULT",
             "configKeys" : [ "rowHeightMode" ]
+          },
+          "selectionMode" : {
+            "oneOf" : [ {
+              "const" : "EDIT",
+              "title" : "Edit"
+            }, {
+              "const" : "SHOW",
+              "title" : "Show"
+            }, {
+              "const" : "OFF",
+              "title" : "Off"
+            } ],
+            "title" : "Selection",
+            "description" : "“Show” makes this view receive notifications about changes of the selection. “Edit” also allows you to change the selection and propagate any changes you make here to other views that show the selection.",
+            "default" : "EDIT",
+            "configKeys" : [ "selectionMode" ]
           },
           "showColumnDataType" : {
             "type" : "boolean",
@@ -309,13 +317,6 @@
             "type" : "boolean",
             "default" : false,
             "configKeys" : [ "skipRemainingColumns_Internals" ]
-          },
-          "subscribeToSelection" : {
-            "type" : "boolean",
-            "title" : "Subscribe to selection",
-            "description" : "When checked, the view reacts on notifications from other interactive views that the selection has been changed.",
-            "default" : true,
-            "configKeys" : [ "subscribeToSelection" ]
           },
           "title" : {
             "type" : "string",
@@ -481,15 +482,9 @@
         }
       }, {
         "type" : "Control",
-        "scope" : "#/properties/view/properties/publishSelection",
+        "scope" : "#/properties/view/properties/selectionMode",
         "options" : {
-          "format" : "checkbox"
-        }
-      }, {
-        "type" : "Control",
-        "scope" : "#/properties/view/properties/subscribeToSelection",
-        "options" : {
-          "format" : "checkbox"
+          "format" : "valueSwitch"
         }
       }, {
         "type" : "Control",
