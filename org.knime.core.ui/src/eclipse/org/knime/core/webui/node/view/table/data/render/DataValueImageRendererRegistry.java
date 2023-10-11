@@ -138,7 +138,7 @@ public final class DataValueImageRendererRegistry {
 
     private static String[] extractTableIdAndImgKey(final String imgPath) {
         var tableIdAndKey = imgPath.replace(".png", "").split("/");
-        return new String[] {tableIdAndKey[tableIdAndKey.length - 2], tableIdAndKey[tableIdAndKey.length - 1]};
+        return new String[]{tableIdAndKey[tableIdAndKey.length - 2], tableIdAndKey[tableIdAndKey.length - 1]};
     }
 
     private Image getImageByImgPath(final String imgPath) {
@@ -374,7 +374,12 @@ public final class DataValueImageRendererRegistry {
             m_renderer = renderer;
         }
 
-        byte[] getData(final int width, final int height) {
+        byte[] getData(final int maxWidth, final int maxHeight) {
+
+            final var dimensions = getDimensions();
+
+            final var width = Math.min(dimensions.widthInPx(), maxWidth);
+            final var height = Math.min(dimensions.heightInPx(), maxHeight);
 
             String key = width + ":" + height;
             if (m_dataCache.containsKey(key)) {

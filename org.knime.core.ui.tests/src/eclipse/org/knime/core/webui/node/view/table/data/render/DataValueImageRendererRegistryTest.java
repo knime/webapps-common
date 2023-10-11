@@ -57,6 +57,7 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.knime.core.webui.data.DataServiceContextTest;
 import org.knime.core.webui.node.view.table.data.TableViewDataServiceImpl;
@@ -240,34 +241,68 @@ public class DataValueImageRendererRegistryTest {
 
     }
 
-    /**
-     * Test that images are cached with respect to dimension parameters.
-     */
-    @Test
-    void testImageDataCachedPerDimension() {
-        var tableSupplier = createDefaultTestTable(15);
+    @Nested
+    final class RenderImageTest {
 
-        var imgReg = new DataValueImageRendererRegistry(() -> "test_page_id");
-        var tableId = "test_table_id";
-        var dataService = new TableViewDataServiceImpl(tableSupplier, tableId, new SwingBasedRendererFactory(), imgReg);
-        var pathPrefix = "uiext/test_page_id/images/";
+        private static String imgPath;
 
-        var table = dataService.getTable(new String[]{"image"}, 0, 15, null, false, false, false, false);
-        imgReg.clearImageDataCache("test_table_id");
+        private static DataValueImageRendererRegistry imgReg;
 
-        // access the same image multiple times (within the same chunk/page of rows)
-        table = dataService.getTable(new String[]{"image"}, 0, 5, null, false, false, false, false);
-        var imgPath = ((String)table.getRows().get(3).get(2)).replace(pathPrefix, "");
-        var res1 = imgReg.renderImage(imgPath);
-        var res2 = imgReg.renderImage(imgPath + "?w=20&h=30");
-        var res3 = imgReg.renderImage(imgPath);
-        var res4 = imgReg.renderImage(imgPath + "?w=30&h=20");
-        var res5 = imgReg.renderImage(imgPath + "?w=20&h=30");
-        var numCalls = imgReg.getStatsPerTable(tableId).numRenderImageCalls();
-        assertThat(res3).as("Requests without width and heigt parameter should be cached").isEqualTo(res1);
-        assertThat(res5).as("Requests with width and heigt parameter should be cached").isEqualTo(res2);
-        assertThat(res4).as("Requests with different inputs should yield different output").isNotEqualTo(res2);
-        assertThat(numCalls).as("Correct number of calls in total").isEqualTo(3);
+        private static String tableId = "test_table_id";
+
+        @BeforeEach
+        void setUp() {
+            var tableSupplier = createDefaultTestTable(15);
+
+            imgReg = new DataValueImageRendererRegistry(() -> "test_page_id");
+            var dataService =
+                new TableViewDataServiceImpl(tableSupplier, tableId, new SwingBasedRendererFactory(), imgReg);
+            var pathPrefix = "uiext/test_page_id/images/";
+
+            var table = dataService.getTable(new String[]{"image"}, 0, 15, null, false, false, false, false);
+            imgReg.clearImageDataCache("test_table_id");
+
+            table = dataService.getTable(new String[]{"image"}, 0, 5, null, false, false, false, false);
+            imgPath = ((String)table.getRows().get(3).get(2)).replace(pathPrefix, "");
+
+        }
+
+        /**
+         * Test that images are cached with respect to dimension parameters.
+         */
+        @Test
+        void testImageDataCachedPerDimension() {
+            var res1 = imgReg.renderImage(imgPath);
+            var res2 = imgReg.renderImage(imgPath + "?w=2&h=3");
+            var res3 = imgReg.renderImage(imgPath);
+            var res4 = imgReg.renderImage(imgPath + "?w=3&h=2");
+            var res5 = imgReg.renderImage(imgPath + "?w=2&h=3");
+            var numCalls = imgReg.getStatsPerTable(tableId).numRenderImageCalls();
+            assertThat(res3).as("Requests without width and heigt parameter should be cached").isEqualTo(res1);
+            assertThat(res5).as("Requests with width and heigt parameter should be cached").isEqualTo(res2);
+            assertThat(res4).as("Requests with different inputs should yield different output").isNotEqualTo(res2);
+            assertThat(numCalls).as("Correct number of calls in total").isEqualTo(3);
+        }
+
+        /**
+         * Test that if the requested height or width is larger than the preferred one, the preferred one is used
+         * instead.
+         */
+        @Test
+        void testReducesImagesToTheirPreferredImageSize() {
+            var res1 = imgReg.renderImage(imgPath);
+            var res2 = imgReg.renderImage(imgPath + "?w=100&h=100");
+            var res3 = imgReg.renderImage(imgPath + "?w=1&h=100");
+            var res4 = imgReg.renderImage(imgPath + "?w=1&h=11");
+            var res5 = imgReg.renderImage(imgPath + "?w=100&h=1");
+            var res6 = imgReg.renderImage(imgPath + "?w=11&h=1");
+            var numCalls = imgReg.getStatsPerTable(tableId).numRenderImageCalls();
+            assertThat(res2).as("Requests without width and heigt parameter should yield the"
+                + " same result as with large width and height").isEqualTo(res1);
+            assertThat(res4).as("Large heights should be trimmed to the preferred one.").isEqualTo(res3);
+            assertThat(res6).as("Large widths should be trimmed to the preferred one.").isEqualTo(res5);
+            assertThat(numCalls).as("Correct number of calls in total").isEqualTo(3);
+        }
     }
 
 }
