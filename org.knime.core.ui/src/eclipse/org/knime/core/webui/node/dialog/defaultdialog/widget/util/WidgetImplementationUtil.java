@@ -59,6 +59,7 @@ import java.util.stream.Collectors;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ComboBoxWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
@@ -105,7 +106,7 @@ public final class WidgetImplementationUtil {
      */
     @SuppressWarnings("javadoc")
     public enum DefaultWidgetType {
-            CHECKBOX, COLUMN_FILTER, COLUMN_SELECTION, LOCAL_DATE, STRING_ARRAY
+            CHECKBOX, COLUMN_FILTER, COLUMN_SELECTION, LOCAL_DATE, STRING_ARRAY, CREDENTIALS
     }
 
     /**
@@ -143,6 +144,7 @@ public final class WidgetImplementationUtil {
         new DefaultWidget(List.of(ColumnSelection.class), DefaultWidgetType.COLUMN_SELECTION), //
         new DefaultWidget(List.of(LocalDate.class), DefaultWidgetType.LOCAL_DATE), //
         new DefaultWidget(List.of(String[].class), DefaultWidgetType.STRING_ARRAY), //
+        new DefaultWidget(List.of(Credentials.class), DefaultWidgetType.CREDENTIALS), //
     };
 
     /**

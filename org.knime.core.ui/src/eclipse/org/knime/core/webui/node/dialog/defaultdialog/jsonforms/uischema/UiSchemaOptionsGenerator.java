@@ -195,6 +195,10 @@ final class UiSchemaOptionsGenerator {
                     break;
                 case STRING_ARRAY:
                     options.put(TAG_FORMAT, Format.COMBO_BOX);
+                    break;
+                case CREDENTIALS:
+                    options.put(TAG_FORMAT, Format.CREDENTIALS);
+                    break;
             }
         }
 

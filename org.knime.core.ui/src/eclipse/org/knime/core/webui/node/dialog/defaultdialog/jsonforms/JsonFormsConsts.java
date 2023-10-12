@@ -210,6 +210,8 @@ public final class JsonFormsConsts {
             public static final String DATE_TIME = "date-time";
 
             public static final String RICH_TEXT_INPUT = "richTextInput";
+
+            public static final String CREDENTIALS = "credentials";
         }
 
         /**
