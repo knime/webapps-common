@@ -2,11 +2,16 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { shallowMount } from "@vue/test-utils";
 import { JsonForms } from "@jsonforms/vue";
-import { AlertTypes, JsonDataService } from "@knime/ui-extension-service";
+import {
+  AlertTypes,
+  JsonDataService,
+  DialogService,
+} from "@knime/ui-extension-service";
 import {
   dialogApplyData,
   dialogInitialData,
 } from "@@/test-setup/mocks/dialogData";
+import Button from "webapps-common/ui/components/Button.vue";
 
 import NodeDialog from "../NodeDialog.vue";
 import flushPromises from "flush-promises";
@@ -718,5 +723,13 @@ describe("NodeDialog.vue", () => {
       ).toBeFalsy();
       expect(cleanSettingsMock).toHaveBeenCalled();
     });
+  });
+
+  it("disables the ok-button if dialog is write-protected", async () => {
+    vi.spyOn(DialogService.prototype, "isWriteProtected").mockReturnValue(true);
+    const wrapper = shallowMount(NodeDialog, getOptions());
+    await flushPromises();
+    const button = wrapper.findAllComponents(Button).at(1);
+    expect(button.props("disabled")).toBe(true);
   });
 });
