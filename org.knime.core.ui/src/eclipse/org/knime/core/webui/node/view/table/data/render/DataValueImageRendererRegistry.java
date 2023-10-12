@@ -87,10 +87,6 @@ public final class DataValueImageRendererRegistry {
      */
     public static final String RENDERED_CELL_IMAGES_PATH_PREFIX = "images";
 
-    private static final int DEFAULT_CELL_IMAGE_WIDTH = 100;
-
-    private static final int DEFAULT_CELL_IMAGE_HEIGHT = 100;
-
     private static final Pattern WIDTH_AND_HEIGHT_PATTERN = Pattern.compile("w=(\\d+)&h=(\\d+)");
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(DataValueImageRendererRegistry.class);
@@ -162,13 +158,16 @@ public final class DataValueImageRendererRegistry {
      * Renders the image for the given relative image path and removes the respective renderer (and data value) from the
      * registry.
      *
-     * @param imgPath the relative image path
+     * @param imgPath the relative image path. Can have optional 'w' and 'h' query parameters (e.g.
+     *            {@code ../img.png?w=10&h=10}) which define the maximal width and height the image is to be scaled down
+     *            to (the returned image will never be scaled up, though). If not given, it will be returned in its
+     *            original size.
      * @return the image data or an empty array if the image data can't be accessed (anymore)
      */
     public byte[] renderImage(final String imgPath) {
         var split = imgPath.split("\\?", 2);
-        int width = DEFAULT_CELL_IMAGE_WIDTH;
-        int height = DEFAULT_CELL_IMAGE_HEIGHT;
+        int width = Integer.MAX_VALUE;
+        int height = Integer.MAX_VALUE;
         if (split.length == 2) {
             var matcher = WIDTH_AND_HEIGHT_PATTERN.matcher(split[1]);
             if (matcher.matches()) {
