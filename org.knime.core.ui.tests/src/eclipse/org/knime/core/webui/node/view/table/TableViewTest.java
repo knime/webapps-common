@@ -255,10 +255,18 @@ class TableViewTest {
 
         // request cell image resource with custom dimension
         try (final var is =
-            nodeViewManager.getPageResourceManager().getPageResource(imgPath2 + "?w=12&h=13").get().getInputStream()) {
+            nodeViewManager.getPageResourceManager().getPageResource(imgPath2 + "?w=8&h=7").get().getInputStream()) {
             var bufferedImage = ImageIO.read(is);
-            assertThat(bufferedImage.getWidth()).isEqualTo(12);
-            assertThat(bufferedImage.getHeight()).isEqualTo(13);
+            assertThat(bufferedImage.getWidth()).isEqualTo(8);
+            assertThat(bufferedImage.getHeight()).isEqualTo(7);
+        }
+
+        // request cell image resource with a dimension larger than the original one
+        try (final var is =
+            nodeViewManager.getPageResourceManager().getPageResource(imgPath2 + "?w=15&h=16").get().getInputStream()) {
+            var bufferedImage = ImageIO.read(is);
+            assertThat(bufferedImage.getWidth()).isEqualTo(11);
+            assertThat(bufferedImage.getHeight()).isEqualTo(11);
         }
 
         // request an image through an invalid path

@@ -278,9 +278,9 @@ public class DataValueImageRendererRegistryTest {
             var res4 = imgReg.renderImage(imgPath + "?w=3&h=2");
             var res5 = imgReg.renderImage(imgPath + "?w=2&h=3");
             var numCalls = imgReg.getStatsPerTable(tableId).numRenderImageCalls();
-            assertThat(res3).as("Requests without width and heigt parameter should be cached").isEqualTo(res1);
-            assertThat(res5).as("Requests with width and heigt parameter should be cached").isEqualTo(res2);
-            assertThat(res4).as("Requests with different inputs should yield different output").isNotEqualTo(res2);
+            assertThat(res3).as("Requests without width and heigt parameter should be cached").isSameAs(res1);
+            assertThat(res5).as("Requests with width and heigt parameter should be cached").isSameAs(res2);
+            assertThat(res4).as("Requests with different inputs should yield different output").isNotSameAs(res2);
             assertThat(numCalls).as("Correct number of calls in total").isEqualTo(3);
         }
 
@@ -298,9 +298,9 @@ public class DataValueImageRendererRegistryTest {
             var res6 = imgReg.renderImage(imgPath + "?w=11&h=1");
             var numCalls = imgReg.getStatsPerTable(tableId).numRenderImageCalls();
             assertThat(res2).as("Requests without width and heigt parameter should yield the"
-                + " same result as with large width and height").isEqualTo(res1);
-            assertThat(res4).as("Large heights should be trimmed to the preferred one.").isEqualTo(res3);
-            assertThat(res6).as("Large widths should be trimmed to the preferred one.").isEqualTo(res5);
+                + " same result as with large width and height").isSameAs(res1);
+            assertThat(res4).as("Large heights should be trimmed to the preferred one.").isSameAs(res3);
+            assertThat(res6).as("Large widths should be trimmed to the preferred one.").isSameAs(res5);
             assertThat(numCalls).as("Correct number of calls in total").isEqualTo(3);
         }
     }
