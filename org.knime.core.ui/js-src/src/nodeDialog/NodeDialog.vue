@@ -82,6 +82,7 @@ export default {
       },
       uischema: {} as UISchemaElement,
       ready: false,
+      isWriteProtected: false,
     };
   },
   // TODO: UIEXT-236 Move to dialog service
@@ -108,6 +109,7 @@ export default {
     this.$store.dispatch("pagebuilder/dialog/setApplySettings", {
       applySettings: this.applySettings,
     });
+    this.isWriteProtected = this.dialogService.isWriteProtected();
     this.ready = true;
   },
   methods: {
@@ -341,7 +343,12 @@ export default {
     </div>
     <div class="controls">
       <Button with-border compact @click="closeDialog"> Cancel</Button>
-      <Button primary compact @click.prevent="applySettingsCloseDialog">
+      <Button
+        :disabled="isWriteProtected"
+        primary
+        compact
+        @click.prevent="applySettingsCloseDialog"
+      >
         Ok
       </Button>
     </div>
