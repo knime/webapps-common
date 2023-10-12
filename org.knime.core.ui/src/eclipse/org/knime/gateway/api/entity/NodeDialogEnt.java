@@ -64,6 +64,8 @@ public class NodeDialogEnt extends NodeUIExtensionEnt<NodeWrapper> {
 
     private final boolean m_hasNodeView;
 
+    private final boolean m_isWriteProtected;
+
     /**
      * @param nc
      */
@@ -73,6 +75,7 @@ public class NodeDialogEnt extends NodeUIExtensionEnt<NodeWrapper> {
         CheckUtils.checkArgument(NodeDialogManager.hasNodeDialog(nc), "The provided node doesn't have a node dialog");
         NodeViewManager.getInstance();
         m_hasNodeView = NodeViewManager.hasNodeView(nc);
+        m_isWriteProtected = nc.getParent().isWriteProtected();
     }
 
     /**
@@ -80,6 +83,14 @@ public class NodeDialogEnt extends NodeUIExtensionEnt<NodeWrapper> {
      */
     public boolean getHasNodeView() { // NOSONAR won't be serialized otherwise
         return m_hasNodeView;
+    }
+
+    /**
+     * @return {@code true} if the dialog settings can't be saved (e.g. meaning that the OK-button is disabled);
+     *         otherwise {@code false}
+     */
+    public boolean isWriteProtected() {
+        return m_isWriteProtected;
     }
 
 }
