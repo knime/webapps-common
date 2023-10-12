@@ -9,6 +9,7 @@ describe("DialogService", () => {
       const dialogService = new DialogService(knimeService);
 
       expect(dialogService).toHaveProperty("hasNodeView");
+      expect(dialogService).toHaveProperty("isWriteProtected");
     });
   });
 });

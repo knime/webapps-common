@@ -21,4 +21,12 @@ export class DialogService<T = any> {
   hasNodeView() {
     return this.knimeService.extensionConfig?.hasNodeView;
   }
+
+  /**
+   * @returns {boolean} - true, if the dialog settings can't be saved (e.g. meaning that the OK-button is disabled);
+   *         otherwise false
+   */
+  isWriteProtected() {
+    return this.knimeService.extensionConfig?.writeProtected;
+  }
 }

@@ -44,4 +44,5 @@ export type ExtensionConfig<T = any> = {
   hasNodeView: boolean;
   generatedImageActionId?: string;
   colorModels?: Record<string, ColorModel>;
+  writeProtected?: boolean;
 };
