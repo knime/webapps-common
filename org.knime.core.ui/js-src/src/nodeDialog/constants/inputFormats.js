@@ -13,4 +13,5 @@ export const inputFormats = {
   comboBox: "comboBox",
   button: "button",
   textArea: "textArea",
+  credentials: "credentials",
 };

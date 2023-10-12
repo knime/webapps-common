@@ -17,6 +17,7 @@ import { richTextInputRenderer } from "./richTextInputRenderer";
 import { twinlistRenderer, simpleTwinlistRenderer } from "./twinlistRenderer";
 import { valueSwitchRenderer } from "./valueSwitchRenderer";
 import { textAreaRenderer } from "./textAreaRenderer";
+import { credentialsRenderer } from "./credentialsRenderer";
 
 export const defaultRenderers = [
   /* layout renderers */
@@ -41,4 +42,5 @@ export const defaultRenderers = [
   twinlistRenderer,
   valueSwitchRenderer,
   textAreaRenderer,
+  credentialsRenderer,
 ];
