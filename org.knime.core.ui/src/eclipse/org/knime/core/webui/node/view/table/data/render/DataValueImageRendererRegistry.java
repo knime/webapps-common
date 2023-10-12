@@ -375,10 +375,11 @@ public final class DataValueImageRendererRegistry {
 
         byte[] getData(final int maxWidth, final int maxHeight) {
 
-            final var dimensions = getDimensions();
 
-            final var width = Math.min(dimensions.widthInPx(), maxWidth);
-            final var height = Math.min(dimensions.heightInPx(), maxHeight);
+            final var targetDimension = getTargetWidthAndHeight(maxWidth, maxHeight);
+            final var width = targetDimension.widthInPx();
+            final var height = targetDimension.heightInPx();
+
 
             String key = width + ":" + height;
             if (m_dataCache.containsKey(key)) {
@@ -388,6 +389,23 @@ public final class DataValueImageRendererRegistry {
             final var data = m_renderer.renderImage(m_cell, width, height);
             m_dataCache.put(key, data);
             return data;
+        }
+
+        private ImageDimension getTargetWidthAndHeight(final int maxWidth, final int maxHeight) {
+            final var preferredDimensions = getDimensions();
+            final var preferredWidth = preferredDimensions.widthInPx();
+            final var preferredHeight = preferredDimensions.heightInPx();
+
+            if (maxWidth >= preferredWidth && maxHeight >= preferredHeight) {
+                return preferredDimensions;
+            }
+
+            final var scalingRatio = Math.min(((float)maxHeight)/preferredHeight, ((float)maxWidth)/preferredWidth);
+
+            final var width = Math.round(preferredWidth * scalingRatio);
+            final var height = Math.round(preferredHeight * scalingRatio);
+
+            return new ImageDimension(width, height);
         }
 
         DataCell getDataCell() {

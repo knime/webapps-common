@@ -275,7 +275,7 @@ public class DataValueImageRendererRegistryTest {
             var res1 = imgReg.renderImage(imgPath);
             var res2 = imgReg.renderImage(imgPath + "?w=2&h=3");
             var res3 = imgReg.renderImage(imgPath);
-            var res4 = imgReg.renderImage(imgPath + "?w=3&h=2");
+            var res4 = imgReg.renderImage(imgPath + "?w=3&h=1");
             var res5 = imgReg.renderImage(imgPath + "?w=2&h=3");
             var numCalls = imgReg.getStatsPerTable(tableId).numRenderImageCalls();
             assertThat(res3).as("Requests without width and heigt parameter should be cached").isSameAs(res1);
@@ -297,11 +297,11 @@ public class DataValueImageRendererRegistryTest {
             var res5 = imgReg.renderImage(imgPath + "?w=100&h=1");
             var res6 = imgReg.renderImage(imgPath + "?w=11&h=1");
             var numCalls = imgReg.getStatsPerTable(tableId).numRenderImageCalls();
-            assertThat(res2).as("Requests without width and heigt parameter should yield the"
-                + " same result as with large width and height").isSameAs(res1);
-            assertThat(res4).as("Large heights should be trimmed to the preferred one.").isSameAs(res3);
-            assertThat(res6).as("Large widths should be trimmed to the preferred one.").isSameAs(res5);
-            assertThat(numCalls).as("Correct number of calls in total").isEqualTo(3);
+            assertThat(res1).as("Requests without width and heigt parameter should yield the"
+                + " same result as with large width and height").isSameAs(res2);
+            assertThat(res3).as("Too large dimensions should be scaled to the preferred one at max.").isSameAs(res4)
+                .isSameAs(res5).isSameAs(res6);
+            assertThat(numCalls).as("Correct number of calls in total").isEqualTo(2);
         }
     }
 

@@ -257,7 +257,7 @@ class TableViewTest {
         try (final var is =
             nodeViewManager.getPageResourceManager().getPageResource(imgPath2 + "?w=8&h=7").get().getInputStream()) {
             var bufferedImage = ImageIO.read(is);
-            assertThat(bufferedImage.getWidth()).isEqualTo(8);
+            assertThat(bufferedImage.getWidth()).isEqualTo(7);
             assertThat(bufferedImage.getHeight()).isEqualTo(7);
         }
 
