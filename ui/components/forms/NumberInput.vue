@@ -305,7 +305,7 @@ export default {
     font-size: 13px;
     font-weight: 300;
     letter-spacing: inherit;
-    height: 40px;
+    height: 38px;
     line-height: normal;
     border: 0;
     margin: 0;

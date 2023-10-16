@@ -348,7 +348,7 @@ export default defineComponent({
 
     & .summary-input-wrapper {
       max-width: 100%;
-      padding: 11px;
+      padding: 10px;
       cursor: text;
       display: flex;
       flex-wrap: wrap;
@@ -357,7 +357,7 @@ export default defineComponent({
 
       &.with-icon-right {
         max-width: calc(100% - 40px);
-        padding: 11px 0 11px 11px;
+        padding: 10px 0 10px 10px;
       }
 
       & .search-input {
