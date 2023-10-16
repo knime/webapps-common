@@ -1,50 +1,30 @@
-import { constants } from "@knime/knime-ui-table";
 import type {
   TableViewDisplayProps,
   ImageDimension,
   ColumnSizes,
 } from "../types";
-import { computed, ref, watch, type Ref } from "vue";
-import { AutoSizeColumnsToContent, RowHeightMode } from "../types/ViewSettings";
+import { computed, ref, type Ref } from "vue";
+import { AutoSizeColumnsToContent } from "../types/ViewSettings";
 import type TableViewViewSettings from "../types/ViewSettings";
 
 type RelevantViewSettings = Pick<
   TableViewViewSettings,
-  "autoSizeColumnsToContent" | "customRowHeight" | "rowHeightMode"
+  "autoSizeColumnsToContent"
 >;
 export interface UseAutoColumnSizesOptions {
   settings: Ref<RelevantViewSettings>;
   firstRowImageDimensions: Ref<
     TableViewDisplayProps["firstRowImageDimensions"]
   >;
+  currentRowHeight: Ref<number>;
 }
-
-const getInitialRowHeight = (settings: RelevantViewSettings) => {
-  switch (settings.rowHeightMode) {
-    case RowHeightMode.COMPACT:
-      return constants.COMPACT_ROW_HEIGHT;
-    case RowHeightMode.CUSTOM:
-      return settings.customRowHeight;
-    default:
-      return constants.DEFAULT_ROW_HEIGHT;
-  }
-};
 
 export default ({
   settings,
   firstRowImageDimensions,
+  currentRowHeight,
 }: UseAutoColumnSizesOptions) => {
-  const currentRowHeight = ref(0);
-  const initialRowHeight = computed(() => getInitialRowHeight(settings.value));
   const autoColumnSizes: Ref<ColumnSizes> = ref({});
-
-  watch(
-    () => initialRowHeight.value,
-    () => {
-      currentRowHeight.value = initialRowHeight.value;
-    },
-    { immediate: true },
-  );
 
   const autoColumnSizesActive = computed(() => {
     return (
@@ -77,10 +57,6 @@ export default ({
     autoColumnSizes.value = newAutoColumnSizes;
   };
 
-  const onRowHeightUpdate = (rowHeight: number) => {
-    currentRowHeight.value = rowHeight;
-  };
-
   const autoColumnSizesOptions = computed(() => ({
     calculateForBody: autoColumnSizesActive.value,
     calculateForHeader: includeHeadersInAutoColumnSizes.value,
@@ -92,6 +68,5 @@ export default ({
     autoColumnSizesActive,
     autoColumnSizesOptions,
     onAutoColumnSizesUpdate,
-    onRowHeightUpdate,
   };
 };

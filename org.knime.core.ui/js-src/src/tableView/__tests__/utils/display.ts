@@ -99,6 +99,7 @@ export const getDefaultProps = (): TableViewDisplayProps => {
     enableVirtualScrolling: false,
     enableColumnResizing: false,
     enableRowResizing: false,
+    currentRowHeight: 50,
     includeImageResources: false,
     knimeService: {
       extensionConfig: { resourceInfo: { baseUrl: "baseUrl" } },

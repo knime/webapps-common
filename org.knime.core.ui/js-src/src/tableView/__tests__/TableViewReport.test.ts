@@ -78,6 +78,7 @@ describe("TableViewReport.vue", () => {
     const wrapper = await shallowMountTableViewReportAndWait();
     expect(wrapper.findComponent(TableViewDisplay).exists()).toBeTruthy();
     expect(wrapper.findComponent(TableViewDisplay).props()).toStrictEqual({
+      currentRowHeight: 40,
       enableColumnResizing: false,
       enableRowResizing: false,
       enableCellSelection: false,

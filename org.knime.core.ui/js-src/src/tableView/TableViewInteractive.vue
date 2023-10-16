@@ -7,11 +7,18 @@ import { AutoSizeColumnsToContent } from "./types/ViewSettings";
 import specialColumns from "./utils/specialColumns";
 import { inject } from "vue";
 import useSelectionCache from "./composables/useSelectionCache";
+import useRowHeight from "./composables/useRowHeight";
 const { ROW_ID, INDEX, SKIPPED_REMAINING_COLUMNS_COLUMN } = specialColumns;
 // -1 is the backend representation (columnName) for sorting the table by rowKeys
 const ROW_KEYS_SORT_COL_NAME = "-1";
-const MIN_SCOPE_SIZE = 200;
-const MIN_BUFFER_SIZE = 50;
+
+/** We want to support firefox at least, see https://stackoverflow.com/questions/51890286/need-to-increase-the-allowable-maximum-height-for-a-div-element */
+const MAX_NUM_PXL_BROWSER_LIMITATION = 17000000; // < 17.895.697 (px)
+const DEFAULT_SCOPE_SIZE = 200;
+const SMALL_SCOPE_SIZE = 2;
+const DEFAULT_BUFFER_SIZE = 50;
+const SMALL_BUFFER_SIZE = 1;
+const DEFAULT_NUM_ROWS_BOTTOM = 1000;
 
 export default {
   components: {
@@ -36,8 +43,9 @@ export default {
     },
   },
   setup() {
-    const knimeService = inject("getKnimeService")();
-    return useSelectionCache(knimeService);
+    const selectionCache = useSelectionCache(inject("getKnimeService")());
+    const rowHeight = useRowHeight();
+    return { ...selectionCache, ...rowHeight };
   },
   data() {
     return {
@@ -65,11 +73,9 @@ export default {
       searchTerm: "",
       columnFiltersMap: new Map(),
       baseUrl: null,
-      scopeSize: MIN_SCOPE_SIZE,
-      bufferSize: MIN_BUFFER_SIZE,
+      scopeSize: 0,
       numRowsAbove: 0,
       numRowsBelow: 0,
-      maxNumRows: 200000,
       bottomRows: [],
       columnDataTypeIds: null,
       columnFormatterDescriptions: null,
@@ -128,8 +134,28 @@ export default {
     bottomRowsMode() {
       return this.currentNumRowsOnPage > this.maxNumRows;
     },
+    maxNumRows() {
+      return Math.floor(MAX_NUM_PXL_BROWSER_LIMITATION / this.currentRowHeight);
+    },
+    minScopeSize() {
+      return this.maxNumRows < DEFAULT_SCOPE_SIZE
+        ? SMALL_SCOPE_SIZE
+        : DEFAULT_SCOPE_SIZE;
+    },
+    bufferSize() {
+      return this.maxNumRows < DEFAULT_SCOPE_SIZE
+        ? SMALL_BUFFER_SIZE
+        : DEFAULT_BUFFER_SIZE;
+    },
     numRowsBottom() {
-      return this.bottomRowsMode ? 1000 : 0;
+      if (!this.bottomRowsMode) {
+        return 0;
+      }
+      // If it is no longer possible to display 1000 rows at the top AND at the bottom.
+      if (this.maxNumRows <= 2 * DEFAULT_NUM_ROWS_BOTTOM) {
+        return 1;
+      }
+      return DEFAULT_NUM_ROWS_BOTTOM;
     },
     numRowsTop() {
       // minus 1 due to the additional "…" row
@@ -169,6 +195,7 @@ export default {
       this.totalRowCount = table.rowCount;
       this.currentRowCount = table.rowCount;
       this.settings = settings;
+      this.setRowHeightSettings(settings);
       if (this.useLazyLoading) {
         await this.initializeLazyLoading();
       } else {
@@ -190,6 +217,7 @@ export default {
       const { updateDisplayedColumns = false, updateTotalSelected = true } =
         params || {};
       this.currentScopeStartIndex = 0;
+      this.scopeSize = this.minScopeSize;
       this.currentScopeEndIndex = Math.min(
         this.scopeSize,
         this.currentRowCount,
@@ -281,7 +309,7 @@ export default {
     computeScopeSize(startIndex, endIndex) {
       return Math.max(
         endIndex - startIndex + 2 * this.bufferSize,
-        MIN_SCOPE_SIZE,
+        this.minScopeSize,
       );
     },
 
@@ -709,10 +737,14 @@ export default {
         "showRowIndices",
       );
       const pageSizeChanged = this.settingsChanged(newSettings, "pageSize");
+      const rowHeightChanged =
+        this.settingsChanged(newSettings, "rowHeightMode") ||
+        this.settingsChanged(newSettings, "customRowHeight");
+      if (rowHeightChanged) {
+        this.setRowHeightSettings(newSettings);
+      }
       const rowHeightChangeInducesRefresh =
-        this.useLazyLoading &&
-        (this.settingsChanged(newSettings, "rowHeightMode") ||
-          this.settingsChanged(newSettings, "customRowHeight"));
+        rowHeightChanged && this.useLazyLoading;
       const autoSizeColumnsToContentChanged = this.settingsChanged(
         newSettings,
         "autoSizeColumnsToContent",
@@ -1064,6 +1096,7 @@ export default {
     :enable-virtual-scrolling="true"
     :enable-column-resizing="true"
     :enable-row-resizing="true"
+    :current-row-height="currentRowHeight"
     :include-image-resources="false"
     :enable-cell-selection="
       enableCellSelection && Boolean(settings.enableCellCopying)
@@ -1074,6 +1107,7 @@ export default {
     @page-change="onPageChange"
     @column-sort="onColumnSort"
     @row-select="onRowSelect"
+    @row-height-update="onRowHeightChange"
     @select-all="onSelectAll"
     @search="onSearch"
     @column-filter="onColumnFilter"

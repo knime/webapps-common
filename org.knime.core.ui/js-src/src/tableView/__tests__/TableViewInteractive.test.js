@@ -594,6 +594,11 @@ describe("TableViewInteractive.vue", () => {
         });
       });
 
+      const setMaxNumRows = (wrapper, maxNumRows) => {
+        /** same pixel upper bound that is used in the component to compute the maxNumRows from the row height */
+        wrapper.vm.onRowHeightChange(Math.floor(17000000 / maxNumRows));
+      };
+
       describe("on data update", () => {
         beforeEach(() => {
           expect.extend({
@@ -645,9 +650,7 @@ describe("TableViewInteractive.vue", () => {
         describe("bottomRowsMode", () => {
           it("determines the number of top and bottom rows", async () => {
             const maxNumRows = 5000;
-            await wrapper.setData({
-              maxNumRows,
-            });
+            setMaxNumRows(wrapper, maxNumRows);
             expect(wrapper.vm.numRowsTotal).toBe(dataRequestResult.rowCount);
             expect(wrapper.vm.numRowsBottom).toBe(0);
             expect(wrapper.vm.numRowsTop).toBe(dataRequestResult.rowCount);
@@ -661,10 +664,20 @@ describe("TableViewInteractive.vue", () => {
             );
           });
 
+          it("determines the number of top and bottom rows for large row heights", async () => {
+            const maxNumRows = 100;
+            setMaxNumRows(wrapper, maxNumRows);
+            await wrapper.setData({
+              currentRowCount: maxNumRows + 1,
+            });
+            expect(wrapper.vm.numRowsBottom).toBe(1);
+            expect(wrapper.vm.numRowsTop).toBe(wrapper.vm.maxNumRows - 1 - 1);
+          });
+
           it("requests only top table if no bottom rows are required", async () => {
             const maxNumRows = 5000;
+            setMaxNumRows(wrapper, maxNumRows);
             await wrapper.setData({
-              maxNumRows,
               currentRowCount: maxNumRows + 1,
             });
             vi.clearAllMocks();
@@ -694,8 +707,8 @@ describe("TableViewInteractive.vue", () => {
 
           it("requests only bottom table if no top rows are required", async () => {
             const maxNumRows = 5000;
+            setMaxNumRows(wrapper, maxNumRows);
             await wrapper.setData({
-              maxNumRows,
               currentRowCount: maxNumRows + 1,
             });
             vi.clearAllMocks();
@@ -725,8 +738,8 @@ describe("TableViewInteractive.vue", () => {
 
           it("requests both top and bottom table if required", async () => {
             const maxNumRows = 5000;
+            setMaxNumRows(wrapper, maxNumRows);
             await wrapper.setData({
-              maxNumRows,
               currentRowCount: maxNumRows + 1,
             });
             vi.clearAllMocks();
@@ -769,8 +782,8 @@ describe("TableViewInteractive.vue", () => {
 
           it("requests top table if zero rows are to be fetched", async () => {
             const maxNumRows = 5000;
+            setMaxNumRows(wrapper, maxNumRows);
             await wrapper.setData({
-              maxNumRows,
               currentRowCount: maxNumRows + 1,
             });
             vi.clearAllMocks();
@@ -793,8 +806,8 @@ describe("TableViewInteractive.vue", () => {
           describe("appends buffer from previously fetched bottom rows", () => {
             beforeEach(async () => {
               const maxNumRows = 5000;
+              setMaxNumRows(wrapper, maxNumRows);
               await wrapper.setData({
-                maxNumRows,
                 currentRowCount: maxNumRows + 1,
               });
             });
@@ -894,13 +907,13 @@ describe("TableViewInteractive.vue", () => {
 
           describe("with pagination", () => {
             beforeEach(async () => {
+              setMaxNumRows(wrapper, 5000);
               await wrapper.setData({
                 settings: {
                   ...wrapper.vm.settings,
                   enablePagination: true,
                 },
                 currentRowCount: 11000,
-                maxNumRows: 5000,
               });
             });
 
@@ -1190,6 +1203,21 @@ describe("TableViewInteractive.vue", () => {
                   bufferStart: 200,
                   bufferEnd: 400,
                   numRows: 20,
+                },
+              }),
+            );
+          });
+
+          it("sets small scope size for large row heights", () => {
+            setMaxNumRows(wrapper, 10);
+            wrapper.vm.initializeLazyLoading();
+
+            expect(updateDataSpy).toHaveBeenCalledWith(
+              expect.objectContaining({
+                lazyLoad: {
+                  loadFromIndex: 0,
+                  newScopeStart: 0,
+                  numRows: 2,
                 },
               }),
             );

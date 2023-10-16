@@ -54,6 +54,7 @@ export interface TableViewDisplayProps {
   enableCellSelection: boolean;
   enableColumnResizing: boolean;
   enableRowResizing: boolean;
+  currentRowHeight: number;
   includeImageResources: boolean;
   knimeService: KnimeService;
   forceHideTableSizes?: boolean;

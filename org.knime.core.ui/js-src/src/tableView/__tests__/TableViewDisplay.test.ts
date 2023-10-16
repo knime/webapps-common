@@ -31,7 +31,6 @@ const useAutoColumnSizesMock: { [key: string]: any } = {
     fixedSizes: { col1: 77 },
   },
   onAutoColumnSizesUpdate: vi.fn(),
-  onRowHeightUpdate: vi.fn(),
 };
 vi.mock("../composables/useAutoColumnSizes", () => ({
   default: vi.fn(() => useAutoColumnSizesMock),
@@ -506,14 +505,14 @@ describe("TableViewDisplay.vue", () => {
         col1: { widthInPx: 20, heightInPx: 50 },
       };
       shallowMountDisplay({ props });
-      const [{ settings, firstRowImageDimensions }] = (
+      const [{ settings, firstRowImageDimensions, currentRowHeight }] = (
         useAutoColumnSizes as any
       ).mock.calls[0];
-
       expect(unref(settings)).toStrictEqual(props.settings);
       expect(unref(firstRowImageDimensions)).toStrictEqual(
         props.firstRowImageDimensions,
       );
+      expect(unref(currentRowHeight)).toBe(props.currentRowHeight);
     });
 
     it("uses useColumnSizes with correct values", () => {
@@ -559,7 +558,6 @@ describe("TableViewDisplay.vue", () => {
         { col1: 55, col2: 66, col3: 77 },
         { col1: 55, col2: 66, col3: 77 },
       ],
-      ["onRowHeightUpdate", "row-height-update", 99, 98],
     ])(
       "calls the method %s within useAutoColumnSizes on emit of %s",
       (composableMethodName, emitMethodName, emitParams, calledWithParams) => {

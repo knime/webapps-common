@@ -72,15 +72,15 @@ const numberOfUsedColumns = computed(
     numberOfDisplayedRemainingColumns.value,
 );
 
-const { header, settings, firstRowImageDimensions } = toRefs(props);
+const { header, settings, firstRowImageDimensions, currentRowHeight } =
+  toRefs(props);
 
 const {
   autoColumnSizes,
   autoColumnSizesActive,
   autoColumnSizesOptions,
   onAutoColumnSizesUpdate,
-  onRowHeightUpdate,
-} = useAutoColumnSizes({ settings, firstRowImageDimensions });
+} = useAutoColumnSizes({ settings, firstRowImageDimensions, currentRowHeight });
 
 const {
   columnSizes,
@@ -243,10 +243,7 @@ const onCopySelection = ({
           $emit('header-sub-menu-item-selection', item, getColumnId(colIndex))
       "
       @auto-column-sizes-update="onAutoColumnSizesUpdate"
-      @row-height-update="
-        (newRowHeight: number) =>
-          onRowHeightUpdate(newRowHeight - BORDER_BOTTOM_WIDTH)
-      "
+      @row-height-update="$emit('row-height-update', $event)"
       @ready="onTableIsReady"
       @copy-selection="onCopySelection"
     >

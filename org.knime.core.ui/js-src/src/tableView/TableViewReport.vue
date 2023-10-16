@@ -5,6 +5,7 @@ import TableViewDisplay from "./TableViewDisplay.vue";
 import getKnimeService from "./utils/getKnimeService";
 import type { ImageDimension } from "./types";
 import { SelectionMode } from "./types/ViewSettings";
+import useRowHeight from "./composables/useRowHeight";
 
 const knimeService = getKnimeService();
 const settings: Ref<any> = ref({});
@@ -19,6 +20,7 @@ const table: Ref<{
   columnContentTypes: ("txt" | "img_path" | "html")[];
   firstRowImageDimensions: Record<string, ImageDimension>;
 } | null> = ref(null);
+const { currentRowHeight, setRowHeightSettings } = useRowHeight();
 
 onMounted(async () => {
   const jsonDataService = new JsonDataService(knimeService);
@@ -35,6 +37,7 @@ onMounted(async () => {
       enableGlobalSearch: false,
       enableRendererSelection: false,
     };
+    setRowHeightSettings(settings.value);
     table.value = initialData.settings.enablePagination
       ? initialData.table
       : await jsonDataService.data({
@@ -97,6 +100,7 @@ watch(ready, () => ready.value && emit("rendered"));
     :enable-virtual-scrolling="false"
     :enable-column-resizing="false"
     :enable-row-resizing="false"
+    :current-row-height="currentRowHeight"
     global-search-query=""
     :include-image-resources="true"
     :knime-service="knimeService"
