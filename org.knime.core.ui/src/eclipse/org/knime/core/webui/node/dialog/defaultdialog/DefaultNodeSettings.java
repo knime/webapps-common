@@ -72,6 +72,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPe
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
@@ -178,6 +179,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * <td>{@link ColumnFilter}</td>
  * <td></td>
  * <td>{@link ChoicesWidget} (twin-list)</td>
+ * </tr>
+ * <tr>
+ * <td>{@link Credentials}</td>
+ * <td>Credentials Input</td>
+ * <td></td>
  * </tr>
  * <tr>
  * <td>Any type</td>

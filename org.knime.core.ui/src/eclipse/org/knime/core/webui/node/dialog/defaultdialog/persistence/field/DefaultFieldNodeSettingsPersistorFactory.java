@@ -61,6 +61,7 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.config.base.ConfigBaseRO;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 
 /**
  * Factory for default persistors that store values directly in NodeSettings.
@@ -95,6 +96,8 @@ final class DefaultFieldNodeSettingsPersistorFactory {
             return createEnumPersistor(configKey, fieldType);
         } else if (fieldType.equals(LocalDate.class)) {
             return (NodeSettingsPersistor<T>)createLocalDatePersistor(configKey);
+        } else if (fieldType.equals(Credentials.class)) {
+            return (NodeSettingsPersistor<T>)createCredentialsPersistor(configKey);
         } else {
             throw new IllegalArgumentException(
                 String.format("No default persistor available for type '%s'.", fieldType));
@@ -189,6 +192,57 @@ final class DefaultFieldNodeSettingsPersistorFactory {
             settings.addString(m_configKey, date == null ? null : date.format(DATE_FMT));
         }
 
+    }
+
+    private static NodeSettingsPersistor<Credentials> createCredentialsPersistor(final String configKey) {
+        return new CredentialsPersistor(configKey);
+    }
+
+    static final class CredentialsPersistor implements NodeSettingsPersistor<Credentials> {
+
+        /**
+         * These constants are identical to the ones in org.knime.core.node.workflow.CredentialsStore on branch
+         * AP-20902-add-support-for-credentials-nod. The SECRET here needs to be identical. Otherwise, there will be an
+         * error when exposing credentials as flow variable, since, in that case, the credentials are saved in node
+         * settings with the secret here, but when exposed as flow variable, are loaded from these node settings with
+         * the secret in the CredentialsStore.
+         */
+        private static final String CFG_NAME = "name";
+
+        private static final String CFG_LOGIN = "login";
+
+        private static final String CFG_PWD = "password";
+
+        private static final String SECRET = "XKdPobvbDEBZEJmBsbMq";
+
+        private final String m_configKey;
+
+        CredentialsPersistor(final String configKey) {
+            m_configKey = configKey;
+        }
+
+        @Override
+        public Credentials load(final NodeSettingsRO settings) throws InvalidSettingsException {
+            final var credentialsConfig = settings.getNodeSettings(m_configKey);
+            if (credentialsConfig.getString(CFG_NAME) != null) {
+                final var username = credentialsConfig.getString(CFG_LOGIN);
+                final var password = credentialsConfig.getPassword(CFG_PWD, SECRET);
+                return new Credentials(username, password);
+            }
+            return null;
+        }
+
+        @Override
+        public void save(final Credentials credentials, final NodeSettingsWO settings) {
+            final var credentialsConfig = settings.addNodeSettings(m_configKey);
+            if (credentials != null) {
+                credentialsConfig.addString(CFG_NAME, "");
+                credentialsConfig.addString(CFG_LOGIN, credentials.getUsername());
+                credentialsConfig.addPassword(CFG_PWD, SECRET, credentials.getPassword());
+            } else {
+                credentialsConfig.addString(CFG_NAME, null);
+            }
+        }
     }
 
     private DefaultFieldNodeSettingsPersistorFactory() {
