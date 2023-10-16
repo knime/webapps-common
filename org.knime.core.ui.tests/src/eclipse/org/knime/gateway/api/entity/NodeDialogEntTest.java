@@ -51,8 +51,17 @@ package org.knime.gateway.api.entity;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.knime.core.node.port.PortType;
+import org.knime.core.node.workflow.MetaNodeTemplateInformation;
+import org.knime.core.node.workflow.SingleNodeContainer;
+import org.knime.core.node.workflow.SubNodeContainer;
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.webui.node.dialog.NodeDialogTest;
 import org.knime.core.webui.page.Page;
 import org.knime.testing.node.dialog.NodeDialogNodeFactory;
@@ -65,6 +74,18 @@ import org.knime.testing.util.WorkflowManagerUtil;
  */
 public class NodeDialogEntTest {
 
+    private WorkflowManager m_wfm;
+
+    @BeforeEach
+    void createWorkflow() throws IOException {
+        m_wfm = WorkflowManagerUtil.createEmptyWorkflow();
+    }
+
+    @AfterEach
+    void disposeWorkflow() {
+        WorkflowManagerUtil.disposeWorkflow(m_wfm);
+    }
+
     /**
      * Tests that {@link NodeDialogEnt}-instances can be created without problems even if the input ports of a node are
      * not connected.
@@ -72,18 +93,43 @@ public class NodeDialogEntTest {
      * @throws IOException
      */
     @Test
-    public void testOpenDialogWithoutConnectedInput() throws IOException {
-        var wfm = WorkflowManagerUtil.createEmptyWorkflow();
-        var nc = WorkflowManagerUtil.createAndAddNode(wfm,
-            new NodeDialogNodeFactory(
-                () -> NodeDialogTest.createNodeDialog(Page.builder(() -> "test", "test.html").build(),
-                    NodeDialogTest.createNodeSettingsService(), null),
-                1));
+    void testOpenDialogWithoutConnectedInput() throws IOException {
+        var nc =
+            WorkflowManagerUtil.createAndAddNode(m_wfm,
+                new NodeDialogNodeFactory(
+                    () -> NodeDialogTest.createNodeDialog(Page.builder(() -> "test", "test.html").build(),
+                        NodeDialogTest.createNodeSettingsService(), null),
+                    1));
 
         var nodeDialogEnt = new NodeDialogEnt(nc);
         assertThat(nodeDialogEnt.getInitialData()).containsSequence("a default model setting");
 
-        WorkflowManagerUtil.disposeWorkflow(wfm);
+    }
+
+    /**
+     * Tests {@link NodeDialogEnt#isWriteProtected()}
+     *
+     * @throws URISyntaxException
+     */
+    @Test
+    public void testIsWriteProtected() throws URISyntaxException {
+        var metanode = m_wfm.createAndAddSubWorkflow(new PortType[0], new PortType[0], "component");
+        var nc =
+            WorkflowManagerUtil.createAndAddNode(metanode,
+                new NodeDialogNodeFactory(
+                    () -> NodeDialogTest.createNodeDialog(Page.builder(() -> "test", "test.html").build(),
+                        NodeDialogTest.createNodeSettingsService(), null),
+                    1));
+
+        var componentId = m_wfm.convertMetaNodeToSubNode(metanode.getID()).getConvertedNodeID();
+        assertThat(new NodeDialogEnt(nc).isWriteProtected()).isFalse();
+
+        var component = (SubNodeContainer)m_wfm.getNodeContainer(componentId);
+        component.setTemplateInformation(
+            MetaNodeTemplateInformation.createNewTemplate(SubNodeContainer.class).createLink(new URI("file://test")));
+        assertThat(
+            new NodeDialogEnt((SingleNodeContainer)component.getWorkflowManager().getNodeContainers().iterator().next())
+                .isWriteProtected()).isTrue();
     }
 
 }
