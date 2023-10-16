@@ -267,7 +267,7 @@ public class TableViewViewSettings implements DefaultNodeSettings {
      *
      */
     @Widget(title = "Custom row height", description = "Set the initial height of the rows.")
-    @NumberInputWidget(min = 40)
+    @NumberInputWidget(min = 40, max = 1000000)
     @Layout(ViewSection.class)
     @Persist(optional = true)
     @Effect(signals = RowHeightIsCustom.class, type = EffectType.SHOW)
