@@ -248,11 +248,11 @@
           },
           "rowHeightMode" : {
             "oneOf" : [ {
-              "const" : "COMPACT",
-              "title" : "Compact"
-            }, {
               "const" : "DEFAULT",
               "title" : "Default"
+            }, {
+              "const" : "COMPACT",
+              "title" : "Compact"
             }, {
               "const" : "CUSTOM",
               "title" : "Custom"

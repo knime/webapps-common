@@ -201,10 +201,10 @@ public class TableViewViewSettings implements DefaultNodeSettings {
 
     @SuppressWarnings("javadoc")
     public enum RowHeightMode {
-            @Label("Compact")
-            COMPACT, //
             @Label("Default")
             DEFAULT, //
+            @Label("Compact")
+            COMPACT, //
             @Label("Custom")
             CUSTOM; //
 
