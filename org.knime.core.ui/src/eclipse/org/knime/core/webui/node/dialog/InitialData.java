@@ -113,7 +113,7 @@ final class InitialData {
         try {
             m_nodeSettingsService.validateNodeSettingsAndVariables(settings);
         } catch (InvalidSettingsException ex) {
-            LOGGER.error(String.format("Settiungs overwritten by flow variables are invalid. "
+            LOGGER.error(String.format("Settings overwritten by flow variables are invalid. "
                 + "So the flow variables are ignored. Error message is: %s.", ex.getMessage()), ex);
             Arrays.asList(SettingsType.values()).forEach(type -> loadRawSettings(type, specs, settings));
         }
