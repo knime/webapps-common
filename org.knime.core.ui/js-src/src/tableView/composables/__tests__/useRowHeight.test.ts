@@ -37,6 +37,16 @@ describe("useColumnSizes", () => {
 
       expect(comp.currentRowHeight.value).toBe(customRowHeight);
     });
+
+    it("applies default value as minimum for small custom row heights", () => {
+      const customRowHeight = 1;
+      comp.setRowHeightSettings({
+        customRowHeight,
+        rowHeightMode: RowHeightMode.CUSTOM,
+      });
+
+      expect(comp.currentRowHeight.value).toBe(40);
+    });
   });
 
   it("sets row height on update", () => {

@@ -18,14 +18,14 @@ import ErrorMessage from "../ErrorMessage.vue";
 import LabeledInput from "../LabeledInput.vue";
 
 describe("NumberInput.vue", () => {
-  let defaultProps, wrapper, onChangeSpy, component;
+  let props, wrapper, onChangeSpy, component;
 
   beforeAll(() => {
     onChangeSpy = vi.spyOn(NumberInputBase.methods, "onChange");
   });
 
   beforeEach(() => {
-    defaultProps = {
+    props = {
       control: {
         path: "test",
         enabled: true,
@@ -53,7 +53,7 @@ describe("NumberInput.vue", () => {
       },
     };
 
-    component = mountJsonFormsComponent(NumberInput, { props: defaultProps });
+    component = mountJsonFormsComponent(NumberInput, { props });
     wrapper = component.wrapper;
   });
 
@@ -94,7 +94,7 @@ describe("NumberInput.vue", () => {
   it("calls onChange of NumberInputBase when number input is changed", () => {
     const dirtySettingsMock = vi.fn();
     const { wrapper } = mountJsonFormsComponent(NumberInput, {
-      props: defaultProps,
+      props,
       modules: {
         "pagebuilder/dialog": {
           actions: { dirtySettings: dirtySettingsMock },
@@ -109,17 +109,9 @@ describe("NumberInput.vue", () => {
 
   it("indicates model settings change when model setting is changed", () => {
     const dirtySettingsMock = vi.fn();
+    props.control.uischema.scope = "#/properties/model/properties/yAxisColumn";
     const { wrapper } = mountJsonFormsComponent(NumberInput, {
-      props: {
-        ...defaultProps,
-        control: {
-          ...defaultProps.control,
-          uischema: {
-            ...defaultProps.control.schema,
-            scope: "#/properties/model/properties/yAxisColumn",
-          },
-        },
-      },
+      props,
       modules: {
         "pagebuilder/dialog": {
           actions: { dirtySettings: dirtySettingsMock },
@@ -132,14 +124,11 @@ describe("NumberInput.vue", () => {
   });
 
   it("sets correct label", () => {
-    expect(wrapper.find("label").text()).toBe(defaultProps.control.label);
+    expect(wrapper.find("label").text()).toBe(props.control.label);
   });
 
   it("disables numberInputBase when controlled by a flow variable", () => {
-    const localDefaultProps = JSON.parse(JSON.stringify(defaultProps));
-    localDefaultProps.control.rootSchema.flowVariablesMap[
-      defaultProps.control.path
-    ] = {
+    props.control.rootSchema.flowVariablesMap[props.control.path] = {
       controllingFlowVariableAvailable: true,
       controllingFlowVariableName: "knime.test",
       exposedFlowVariableName: "test",
@@ -147,33 +136,53 @@ describe("NumberInput.vue", () => {
     };
 
     const { wrapper } = mountJsonFormsComponent(NumberInput, {
-      props: localDefaultProps,
+      props,
     });
     expect(wrapper.findComponent(NumberInputBase).vm.disabled).toBeTruthy();
   });
 
   it("does not render content of NumberInputBase when visible is false", async () => {
     wrapper.findComponent(NumberInputBase).vm.control = {
-      ...defaultProps.control,
+      ...props.control,
       visible: false,
     };
     await wrapper.vm.$nextTick(); // wait until pending promises are resolved
     expect(wrapper.findComponent(LabeledInput).exists()).toBe(false);
   });
 
+  it("rounds to minimum on focusout", () => {
+    const minimum = 100;
+    props.control.schema.minimum = minimum;
+    props.control.data = minimum - 1;
+    const component = mountJsonFormsComponent(NumberInput, { props });
+    const wrapper = component.wrapper;
+    wrapper.findComponent(NumberInputComponent).vm.$emit("focusout");
+    expect(onChangeSpy).toHaveBeenCalledWith(minimum);
+  });
+
+  it("rounds to maximum on focusout", () => {
+    const maximum = 100;
+    props.control.schema.maximum = maximum;
+    props.control.data = maximum + 1;
+    const component = mountJsonFormsComponent(NumberInput, { props });
+    const wrapper = component.wrapper;
+    wrapper.findComponent(NumberInputComponent).vm.$emit("focusout");
+    expect(onChangeSpy).toHaveBeenCalledWith(maximum);
+  });
+
   it("checks that it is not rendered if it is an advanced setting", () => {
-    defaultProps.control.uischema.options.isAdvanced = true;
+    props.control.uischema.options.isAdvanced = true;
     const { wrapper } = mountJsonFormsComponent(NumberInput, {
-      props: defaultProps,
+      props,
     });
     expect(wrapper.getComponent(NumberInputBase).isVisible()).toBe(false);
   });
 
   it("checks that it is rendered if it is an advanced setting and advanced settings are shown", () => {
-    defaultProps.control.rootSchema.showAdvancedSettings = true;
-    defaultProps.control.uischema.options.isAdvanced = true;
+    props.control.rootSchema.showAdvancedSettings = true;
+    props.control.uischema.options.isAdvanced = true;
     const { wrapper } = mountJsonFormsComponent(NumberInput, {
-      props: defaultProps,
+      props,
     });
     expect(wrapper.getComponent(NumberInputBase).isVisible()).toBe(true);
   });

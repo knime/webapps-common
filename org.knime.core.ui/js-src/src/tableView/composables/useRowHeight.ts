@@ -8,15 +8,18 @@ type RelevantViewSettings = Pick<
   "customRowHeight" | "rowHeightMode"
 >;
 
-export const getInitialRowHeight = ({
-  rowHeightMode,
+export const getCustomRowHeight = ({
   customRowHeight,
-}: RelevantViewSettings) => {
-  switch (rowHeightMode) {
+}: Pick<RelevantViewSettings, "customRowHeight">) => {
+  return Math.max(customRowHeight, constants.DEFAULT_ROW_HEIGHT);
+};
+
+export const getInitialRowHeight = (settings: RelevantViewSettings) => {
+  switch (settings.rowHeightMode) {
     case RowHeightMode.COMPACT:
       return constants.COMPACT_ROW_HEIGHT;
     case RowHeightMode.CUSTOM:
-      return customRowHeight;
+      return getCustomRowHeight(settings);
     default:
       return constants.DEFAULT_ROW_HEIGHT;
   }

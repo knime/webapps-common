@@ -32,6 +32,12 @@ const NumberInputBase = defineComponent({
     flowSettings() {
       return getFlowVariablesMap(this.control);
     },
+    min() {
+      return this.control.schema.minimum;
+    },
+    max() {
+      return this.control.schema.maximum;
+    },
     disabled() {
       return (
         !this.control.enabled ||
@@ -40,11 +46,25 @@ const NumberInputBase = defineComponent({
     },
   },
   methods: {
-    onChange(event) {
-      this.handleChange(this.control.path, event);
+    onChange(number) {
+      this.handleChange(this.control.path, number);
       if (this.isModelSettingAndHasNodeView) {
         this.$store.dispatch("pagebuilder/dialog/dirtySettings", true);
       }
+    },
+    onFocusOut() {
+      const number = this.control.data;
+      if (this.isSmallerThanMin(number)) {
+        this.onChange(this.min);
+      } else if (this.isGreaterThanMax(number)) {
+        this.onChange(this.max);
+      }
+    },
+    isSmallerThanMin(number) {
+      return typeof this.min === "number" && number < this.min;
+    },
+    isGreaterThanMax(number) {
+      return typeof this.max === "number" && number > this.max;
     },
   },
 });
@@ -74,6 +94,7 @@ export default NumberInputBase;
         :min="control.schema.minimum"
         :max="control.schema.maximum"
         @update:model-value="onChange"
+        @focusout="onFocusOut"
       />
     </LabeledInput>
   </DialogComponentWrapper>

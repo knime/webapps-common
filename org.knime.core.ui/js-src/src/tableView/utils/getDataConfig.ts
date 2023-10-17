@@ -1,6 +1,7 @@
 const isImage = (contentType: string) => contentType === "img_path";
 const isHtml = (contentType: string) => contentType === "html";
 
+import { getCustomRowHeight } from "../composables/useRowHeight";
 import type TableViewViewSettings from "../types/ViewSettings";
 import { RowHeightMode } from "../types/ViewSettings";
 import specialColumns from "./specialColumns";
@@ -170,7 +171,7 @@ export default ({
   return {
     columnConfigs,
     rowConfig: {
-      ...(customMode && { rowHeight: customRowHeight }),
+      ...(customMode && { rowHeight: getCustomRowHeight({ customRowHeight }) }),
       compactMode,
       enableResizing: enableRowResizing,
     },

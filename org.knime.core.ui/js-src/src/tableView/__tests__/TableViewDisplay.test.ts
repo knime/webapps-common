@@ -330,6 +330,15 @@ describe("TableViewDisplay.vue", () => {
           expect(rowConfig.rowHeight).toBe(80);
         });
 
+        it("aplies default value for small custom row height", () => {
+          const customRowHeight = 1;
+          props.settings.rowHeightMode = RowHeightMode.CUSTOM;
+          props.settings.customRowHeight = customRowHeight;
+          const wrapper = shallowMountDisplay({ props });
+          const rowConfig = getRowConfig(wrapper);
+          expect(rowConfig.rowHeight).toBe(40);
+        });
+
         it("enables row resizing", () => {
           props.enableRowResizing = true;
           const wrapper = shallowMountDisplay({ props });
