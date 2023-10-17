@@ -5,11 +5,12 @@
 			<attribute name="test" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/byte-buddy-1.11.12.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/byte-buddy-1.14.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/byte-buddy-agent-1.11.12.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/equalsverifier-3.15.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/mockito-core-3.12.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/mockito-inline-3.12.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/objenesis-3.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/objenesis-3.3.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17"/>
 	<classpathentry kind="output" path="bin/eclipse"/>
