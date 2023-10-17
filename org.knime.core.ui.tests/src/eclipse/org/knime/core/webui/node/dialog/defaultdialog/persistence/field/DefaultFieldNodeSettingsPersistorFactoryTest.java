@@ -58,6 +58,7 @@ import org.junit.jupiter.api.Test;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 
 /**
  * Contains unit tests for the {@link DefaultFieldNodeSettingsPersistorFactory}.
@@ -189,6 +190,12 @@ class DefaultFieldNodeSettingsPersistorFactoryTest {
     void testByteArray() throws InvalidSettingsException {
         var array = new byte[]{3, 4, 5};
         assertArrayEquals(array, saveLoad(byte[].class, array));
+    }
+
+    @Test
+    void testCredentials() throws InvalidSettingsException {
+        testSaveLoadNullable(Credentials.class, new Credentials());
+        testSaveLoadNullable(Credentials.class, new Credentials("foo", "bar"));
     }
 
     private static <T> void testSaveLoadNullable(final Class<T> type, final T value) throws InvalidSettingsException {
