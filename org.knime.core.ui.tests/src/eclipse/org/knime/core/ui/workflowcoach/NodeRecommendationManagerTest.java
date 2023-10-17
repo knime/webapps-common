@@ -55,7 +55,6 @@ import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -65,7 +64,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.knime.core.node.NodeInfo;
+import org.knime.core.node.NodeFactory.NodeType;
 import org.knime.core.node.exec.dataexchange.in.PortObjectInNodeFactory;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.ui.node.workflow.NativeNodeContainerUI;
@@ -86,15 +85,10 @@ class NodeRecommendationManagerTest {
 
     private IUpdateListener m_updateListener;
 
-    private final Predicate<NodeInfo> m_isSourceNode =
-        ni -> ni.getFactory().equals("org.knime.core.node.exec.dataexchange.in.PortObjectInNodeFactory");
-
-    private final Function<NodeInfo, Optional<String>> m_getNameFromRepository = ni -> {
-        if (ni.getFactory().startsWith("test_") || m_isSourceNode.test(ni)) {
-            var name = ni.getName().replace("(to_be_stripped)", "").strip(); // Test name replacement
-            return Optional.of(name);
-        }
-        return Optional.empty();
+    private final Function<String, NodeType> m_getNodeType = id -> {
+        var type = id.startsWith("org.knime.core.node.exec.dataexchange.in.PortObjectInNodeFactory") ? NodeType.Source
+            : NodeType.Manipulator;
+        return type;
     };
 
     /**
@@ -102,7 +96,7 @@ class NodeRecommendationManagerTest {
      */
     @BeforeEach
     public void setup() {
-        NodeRecommendationManager.getInstance().initialize(m_isSourceNode, m_getNameFromRepository);
+        NodeRecommendationManager.getInstance().initialize(m_getNodeType);
         m_updateListener = mock(IUpdateListener.class);
         NodeRecommendationManager.getInstance().addUpdateListener(m_updateListener);
         assertThat(NodeRecommendationManager.isEnabled()).as("Node recommendation manager not enabled").isTrue();
@@ -135,10 +129,8 @@ class NodeRecommendationManagerTest {
         recommendations.forEach(nr -> {
             assertThat(nr).as("Item is not a node recommendation").isInstanceOf(NodeRecommendation.class);
             assertThat(nr.getTotalFrequency()).as("Could not retrieve the total frequency").isNotNegative();
-            assertThat(nr.getNodeFactoryClassName()).as("Could not retrieve factory class name").isNotEmpty()
+            assertThat(nr.getFactoryId()).as("Could not retrieve factory id").isNotEmpty()
                 .isNotNull();
-            assertThat(nr.getNodeName()).as("Node recommendation is not a <Test Row Filter> or <Test Row Splitter>")
-                .contains("Test Row");
         });
 
         // No recommendations for more than one node
@@ -163,8 +155,6 @@ class NodeRecommendationManagerTest {
         assertThat(recommendations).as("Response is not a list").isInstanceOf(List.class);
         recommendations.forEach(nr -> {
             assertThat(nr).as("Item is not a node recommendation").isInstanceOf(NodeRecommendation.class);
-            assertThat(nr.getNodeName()).as("Node recommendation is not a <PortObject Reference Reader>")
-                .isEqualTo("PortObject Reference Reader");
         });
 
         NodeRecommendationManager.getInstance().loadRecommendations();
@@ -207,17 +197,8 @@ class NodeRecommendationManagerTest {
     @Test
     void testRemainingMethods() throws IOException {
         // Cannot initialize again
-        assertThat(NodeRecommendationManager.getInstance().initialize(ni -> true, ni -> Optional.empty()))
+        assertThat(NodeRecommendationManager.getInstance().initialize(id -> null))
             .as("This should be true since recommendations were loaded before").isTrue();
-        verify(m_updateListener, times(0)).updated();
-
-        // Will not load recommendations with incomplete predicates
-        assertThat(NodeRecommendationManager.getInstance().initialize(null, ni -> Optional.empty()))
-            .as("This initialization should return false").isFalse();
-        assertThat(NodeRecommendationManager.getInstance().initialize(ni -> true, null))
-            .as("This initialization should return false").isFalse();
-        assertThat(NodeRecommendationManager.getInstance().initialize(null, null))
-            .as("This initialization should return false").isFalse();
         verify(m_updateListener, times(0)).updated();
 
         // Reload the node recommendations two times

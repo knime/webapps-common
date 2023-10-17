@@ -57,11 +57,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -74,9 +72,12 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.knime.core.node.NodeFactory;
+import org.knime.core.node.NodeFactory.NodeType;
 import org.knime.core.node.NodeInfo;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeTriple;
+import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.ConnectionContainer.ConnectionType;
 import org.knime.core.ui.node.workflow.NativeNodeContainerUI;
 import org.knime.core.ui.node.workflow.NodeContainerUI;
@@ -127,9 +128,7 @@ public final class NodeRecommendationManager {
 
     private static List<NodeTripleProvider> nodeTripleProviders;
 
-    private Predicate<NodeInfo> m_isSourceNode;
-
-    private Function<NodeInfo, Optional<String>> m_getNameFromRepository;
+    private Function<String, NodeType> m_nodeTypeSupplier;
 
     static {
         // Adds preference change listener for community node triple provider
@@ -162,27 +161,14 @@ public final class NodeRecommendationManager {
     /**
      * Initialize the node recommendation manager by setting the predicates necessary to load node recommendations
      *
-     * @param isSourceNode Checks whether a node is a source node
-     * @param getNameFromRepository Gets the node name from the node repository
-     * @return True if {@code loadRecommendations()} recommendations were loaded, false otherwise
+     * @param getNodeType gets the node type for the given node-factory-id; will return {@code null} if there is no node
+     *            for the id
+     * @return true if {@code loadRecommendations()} recommendations were loaded, false otherwise
      */
-    public boolean initialize(final Predicate<NodeInfo> isSourceNode,
-        final Function<NodeInfo, Optional<String>> getNameFromRepository) {
-        if (isSourceNode == null || getNameFromRepository == null) {
-            LOGGER.error("Cannot inintialize without both predicates");
-            return false;
-        }
-        // Set the predicates
-        if (m_isSourceNode == null) {
-            m_isSourceNode = isSourceNode;
-        } else {
-            LOGGER.debug("No need to reset the `isSourceNode`");
-        }
-        if (m_getNameFromRepository == null) {
-            m_getNameFromRepository = getNameFromRepository;
-        } else {
-            LOGGER.debug("No need to reset the `getNameFromRepository`");
-        }
+    public boolean initialize(final Function<String, NodeType> getNodeType) {
+        CheckUtils.checkNotNull(getNodeType);
+        m_nodeTypeSupplier = getNodeType;
+
         // Initially load the recommendations
         try {
             if (cachedRecommendations == null) {
@@ -223,8 +209,8 @@ public final class NodeRecommendationManager {
      * @see #getNodeTripleProviders()
      */
     public void loadRecommendations() throws IOException {
-        if (m_isSourceNode == null || m_getNameFromRepository == null) {
-            LOGGER.debug("Cannot load recommendations yet, since not all predicates are set");
+        if (m_nodeTypeSupplier == null) {
+            LOGGER.debug("Cannot load recommendations yet. No node name/type supplier available.");
             return;
         }
 
@@ -239,7 +225,7 @@ public final class NodeRecommendationManager {
                 recommendations.add(recommendationMap);
 
                 provider.getNodeTriples().forEach(
-                    nf -> fillRecommendationsMap(recommendationMap, nf, m_isSourceNode, m_getNameFromRepository));
+                    nf -> fillRecommendationsMap(recommendationMap, nf, m_nodeTypeSupplier));
 
                 // Aggregate multiple occurring id's but apply a different aggregation method to source nodes
                 BiConsumer<NodeRecommendation, NodeRecommendation> avgAggr =
@@ -266,32 +252,62 @@ public final class NodeRecommendationManager {
     }
 
     private static void fillRecommendationsMap(final Map<String, List<NodeRecommendation>> recommendationMap,
-        final NodeTriple nt, final Predicate<NodeInfo> isSourceNode,
-        final Function<NodeInfo, Optional<String>> getNameFromRepository) {
+        final NodeTriple nt, final Function<String, NodeType> getNodeType) {
+
+        var successor = getInternalNodeInfo(nt.getSuccessor(), getNodeType);
+        var node = getInternalNodeInfo(nt.getNode().orElse(null), getNodeType);
+        var predecessor = getInternalNodeInfo(nt.getPredecessor().orElse(null), getNodeType);
+
         /* considering the successor only, i.e. for all entries where the predecessor and the node
          * itself is not present
          */
-        if (!nt.getNode().isPresent() && !nt.getPredecessor().isPresent() && isSourceNode.test(nt.getSuccessor())) {
-            add(recommendationMap, SOURCE_NODES_KEY, nt.getSuccessor(), nt.getCount(), getNameFromRepository);
+        if (node == null && predecessor == null && successor != null && successor.isSource()) {
+            add(recommendationMap, SOURCE_NODES_KEY, successor.id, nt.getCount());
         }
 
         /* considering the the node itself as successor, but only for those nodes that don't have a
          * predecessor -> source nodes, i.e. nodes without an input port
          */
-        if (!nt.getPredecessor().isPresent()) {
-            nt.getNode().filter(isSourceNode).ifPresent( // Only add if it is a source node
-                node -> add(recommendationMap, SOURCE_NODES_KEY, node, nt.getCount(), getNameFromRepository));
+        if (predecessor == null && node != null && node.isSource()) {
+            add(recommendationMap, SOURCE_NODES_KEY, node.id, nt.getCount());
         }
 
         /* without predecessor but with the node, if given */
-        nt.getNode().ifPresent( // Only add if node is present
-            node -> add(recommendationMap, getKey(node), nt.getSuccessor(), nt.getCount(), getNameFromRepository));
+        if (node != null && successor != null //
+            && node.isKnown() && successor.isKnown()) {
+            add(recommendationMap, node.id, successor.id, nt.getCount());
+        }
 
         /* considering predecessor, if given */
-        nt.getPredecessor().ifPresent( // Only continue if predecessor is present
-            predecessor -> nt.getNode().ifPresent( // Only add if node is present
-                node -> add(recommendationMap, getKey(predecessor) + NODE_NAME_SEP + getKey(node), nt.getSuccessor(),
-                    nt.getCount(), getNameFromRepository)));
+        if (predecessor != null && node != null && successor != null //
+            && predecessor.isKnown() && node.isKnown() && successor.isKnown()) {
+            add(recommendationMap, predecessor.id + NODE_NAME_SEP + node.id, successor.id, nt.getCount());
+        }
+    }
+
+    private static InternalNodeInfo getInternalNodeInfo(final NodeInfo ni,
+        final Function<String, NodeType> getNodeType) {
+        if (ni == null) {
+            return null;
+        }
+        var id = ni.getFactory();
+        var type = getNodeType.apply(id);
+        if (type == null) {
+            // dynamic node factories before 5.2
+            id = ni.getFactory() + NODE_NAME_SEP + ni.getName();
+            type = getNodeType.apply(id);
+        }
+        return new InternalNodeInfo(type == null ? null :id, type);
+    }
+
+    private static record InternalNodeInfo(String id, NodeType type) {
+        boolean isSource() {
+            return type == NodeType.Source;
+        }
+
+        boolean isKnown() {
+            return id != null;
+        }
     }
 
     /**
@@ -310,9 +326,9 @@ public final class NodeRecommendationManager {
      * avoiding duplicated appearances and NPEs.
      */
     private static void add(final Map<String, List<NodeRecommendation>> recommendation, final String key,
-        final NodeInfo ni, final int count, final Function<NodeInfo, Optional<String>> getNameFromRepository) {
+        final String factoryId, final int count) {
         List<NodeRecommendation> p = recommendation.computeIfAbsent(key, k -> new ArrayList<>());
-        getNameFromRepository.apply(ni).ifPresent(name -> p.add(new NodeRecommendation(ni.getFactory(), name, count)));
+        p.add(new NodeRecommendation(factoryId, count));
     }
 
     /**
@@ -381,7 +397,7 @@ public final class NodeRecommendationManager {
                     res[idx] = Collections.emptyList();
                 }
             } else if (nnc.length == 1) {
-                String nodeID = getKey(nnc[0]);
+                String nodeID = nnc[0].getNodeFactoryId();
                 /* recommendations based on the given node and possible predecessors */
                 var set = processNodeRecommendationsForAllPorts(idx, nnc);
                 /* recommendation based on the given node only */
@@ -404,7 +420,7 @@ public final class NodeRecommendationManager {
                 // in order to match the nodes [NodeFactory]#[NodeName] needs to be compared,
                 // otherwise it won't work with dynamically generated nodes
                 res[idx] = res[idx].stream()//
-                    .filter(nr -> !getKey(nr.m_nodeFactoryClassName, nr.m_nodeName).equals(getKey(nnc[0])))//
+                    .filter(nr -> !nr.m_factoryId.equals(nnc[0].getNodeFactoryId()))//
                     .collect(Collectors.toList());
             }
 
@@ -429,7 +445,7 @@ public final class NodeRecommendationManager {
             NodeContainerUI predecessor = wfm.getNodeContainer(cc.getSource());
             if (predecessor instanceof NativeNodeContainerUI nncUI) {
                 var map = cachedRecommendations.get(idx);
-                var key = getKey(nncUI) + NODE_NAME_SEP + getKey(nnc[0]);
+                var key = nncUI.getNodeFactoryId() + NODE_NAME_SEP + nnc[0].getNodeFactoryId();
                 if(map.containsKey(key)) {
                     set.addAll(map.get(key));
                 }
@@ -461,33 +477,6 @@ public final class NodeRecommendationManager {
     }
 
     /**
-     * @param nnc the native node container to create the key for
-     * @return the key to be used to look up the node recommendations
-     */
-    private static String getKey(final NativeNodeContainerUI nnc) {
-        return getKey(nnc.getNodeFactoryClassName(), nnc.getName());
-    }
-
-    /**
-     * @param ni the node info to create the key for
-     * @return the key to be used to look up the node recommendations
-     */
-    private static String getKey(final NodeInfo ni) {
-        return getKey(ni.getFactory(), ni.getName());
-    }
-
-    /**
-     * Internal key to map node recommendations in {@link #cachedRecommendations}
-     *
-     * @param nodeFactoryClassName
-     * @param nodeName
-     * @return The internal node recommendation key
-     */
-    private static String getKey(final String nodeFactoryClassName, final String nodeName) {
-        return nodeFactoryClassName + NODE_NAME_SEP + nodeName;
-    }
-
-    /**
      * Object representing one node recommendation, including the node template itself and a frequency as a measure of a
      * certainty for the given recommendation.
      *
@@ -496,9 +485,7 @@ public final class NodeRecommendationManager {
     public static class NodeRecommendation implements Comparable<NodeRecommendation> {
         private int m_frequency;
 
-        private String m_nodeFactoryClassName;
-
-        private String m_nodeName;
+        private String m_factoryId;
 
         private int m_totalFrequency;
 
@@ -507,12 +494,11 @@ public final class NodeRecommendationManager {
         /**
          * Creates a new node recommendation for the given node.
          *
-         * @param nodeTemplateId the node template id
+         * @param factoryId
          * @param frequency a frequency of usage
          */
-        NodeRecommendation(final String nodeFactoryClassName, final String nodeName, final int frequency) {
-            m_nodeFactoryClassName = nodeFactoryClassName;
-            m_nodeName = nodeName;
+        NodeRecommendation(final String factoryId, final int frequency) {
+            m_factoryId = factoryId;
             m_frequency = frequency;
             m_totalFrequency = frequency;
         }
@@ -562,21 +548,10 @@ public final class NodeRecommendationManager {
         }
 
         /**
-         * Returns the node factory class name
-         *
-         * @return The node factory class name
+         * @return the id as per {@link NodeFactory#getFactoryId()}
          */
-        public String getNodeFactoryClassName() {
-            return m_nodeFactoryClassName;
-        }
-
-        /**
-         * Returns the node name
-         *
-         * @return The node name
-         */
-        public String getNodeName() {
-            return m_nodeName;
+        public String getFactoryId() {
+            return m_factoryId;
         }
 
         /**
@@ -591,20 +566,8 @@ public final class NodeRecommendationManager {
          * {@inheritDoc}
          */
         @Override
-        public String toString() {
-            return String.format("Factory Class Name: <%s>, Node Name: <%s>", m_nodeFactoryClassName, m_nodeName);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
         public int hashCode() {
-            final var prime = 31;
-            var result = 1;
-            result = prime * result + ((m_nodeFactoryClassName == null || m_nodeName == null) ? 0
-                : getKey(m_nodeFactoryClassName, m_nodeName).hashCode());
-            return result;
+            return m_factoryId.hashCode();
         }
 
         /**
@@ -622,8 +585,7 @@ public final class NodeRecommendationManager {
                 return false;
             }
             NodeRecommendation other = (NodeRecommendation)obj;
-            return Objects.equals(this.m_nodeName, other.m_nodeName)
-                && Objects.equals(this.m_nodeFactoryClassName, other.m_nodeFactoryClassName);
+            return Objects.equals(this.m_factoryId, other.m_factoryId);
         }
     }
 

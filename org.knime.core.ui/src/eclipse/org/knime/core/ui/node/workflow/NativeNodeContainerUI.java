@@ -48,6 +48,7 @@ package org.knime.core.ui.node.workflow;
 
 import java.util.Optional;
 
+import org.knime.core.node.NodeFactory;
 import org.knime.core.node.context.ModifiableNodeCreationConfiguration;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.ui.UI;
@@ -83,5 +84,10 @@ public interface NativeNodeContainerUI extends SingleNodeContainerUI, UI {
      * @return false for "standard nodes", otherwise the property of the configurable nodes.
      */
     boolean isPortConfigurableViaMenu();
+
+    /**
+     * @return see {@link NodeFactory#getFactoryId()}
+     */
+    String getNodeFactoryId();
 
 }

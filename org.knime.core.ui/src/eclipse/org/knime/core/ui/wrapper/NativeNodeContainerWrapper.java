@@ -100,4 +100,9 @@ public final class NativeNodeContainerWrapper extends SingleNodeContainerWrapper
         return f instanceof ConfigurableNodeFactory && ((ConfigurableNodeFactory<?>)f).isPortConfigurableViaMenu();
     }
 
+    @Override
+    public String getNodeFactoryId() {
+        return unwrap().getNode().getFactory().getFactoryId();
+    }
+
 }
