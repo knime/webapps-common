@@ -67,6 +67,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.TestBut
 import org.knime.core.webui.node.dialog.defaultdialog.layout.LayoutGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ComboBoxWidget;
@@ -110,6 +111,8 @@ class UiSchemaOptionsTest {
             ColumnSelection m_columnSelection;
 
             LocalDate m_localDate;
+
+            Credentials m_credentials;
         }
         var response = buildTestUiSchema(DefaultStylesSettings.class);
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("string");
@@ -127,6 +130,8 @@ class UiSchemaOptionsTest {
         assertThatJson(response).inPath("$.elements[5].options.showTime").isBoolean().isFalse();
         assertThatJson(response).inPath("$.elements[5].options.showSeconds").isBoolean().isFalse();
         assertThatJson(response).inPath("$.elements[5].options.showMilliseconds").isBoolean().isFalse();
+        assertThatJson(response).inPath("$.elements[6].scope").isString().contains("credentials");
+        assertThatJson(response).inPath("$.elements[6].options.format").isString().isEqualTo("credentials");
     }
 
     @Test
