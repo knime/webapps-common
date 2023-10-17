@@ -166,8 +166,13 @@ public final class DataValueImageRendererRegistry {
      */
     public byte[] renderImage(final String imgPath) {
         var split = imgPath.split("\\?", 2);
-        int width = Integer.MAX_VALUE;
-        int height = Integer.MAX_VALUE;
+        final var image = getImageByImgPath(split[0]);
+        if (image == null) {
+            return new byte[0];
+        }
+        final var dimensions = image.getDimensions();
+        int width = dimensions.widthInPx();
+        int height = dimensions.heightInPx();
         if (split.length == 2) {
             var matcher = WIDTH_AND_HEIGHT_PATTERN.matcher(split[1]);
             if (matcher.matches()) {
@@ -176,10 +181,6 @@ public final class DataValueImageRendererRegistry {
             }
         }
 
-        final var image = getImageByImgPath(split[0]);
-        if (image == null) {
-            return new byte[0];
-        }
         return image.getData(width, height);
     }
 
@@ -373,14 +374,7 @@ public final class DataValueImageRendererRegistry {
             m_renderer = renderer;
         }
 
-        byte[] getData(final int maxWidth, final int maxHeight) {
-
-
-            final var targetDimension = getTargetWidthAndHeight(maxWidth, maxHeight);
-            final var width = targetDimension.widthInPx();
-            final var height = targetDimension.heightInPx();
-
-
+        byte[] getData(final int width, final int height) {
             String key = width + ":" + height;
             if (m_dataCache.containsKey(key)) {
                 return m_dataCache.get(key);
@@ -389,23 +383,6 @@ public final class DataValueImageRendererRegistry {
             final var data = m_renderer.renderImage(m_cell, width, height);
             m_dataCache.put(key, data);
             return data;
-        }
-
-        private ImageDimension getTargetWidthAndHeight(final int maxWidth, final int maxHeight) {
-            final var preferredDimensions = getDimensions();
-            final var preferredWidth = preferredDimensions.widthInPx();
-            final var preferredHeight = preferredDimensions.heightInPx();
-
-            if (maxWidth >= preferredWidth && maxHeight >= preferredHeight) {
-                return preferredDimensions;
-            }
-
-            final var scalingRatio = Math.min(((float)maxHeight)/preferredHeight, ((float)maxWidth)/preferredWidth);
-
-            final var width = Math.round(preferredWidth * scalingRatio);
-            final var height = Math.round(preferredHeight * scalingRatio);
-
-            return new ImageDimension(width, height);
         }
 
         DataCell getDataCell() {

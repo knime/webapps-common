@@ -51,9 +51,14 @@ package org.knime.core.webui.node.view.table.data.render;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.knime.testing.util.TableTestUtil.createDefaultTestTable;
 
+import java.awt.Dimension;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.stream.Collectors;
+
+import javax.imageio.ImageIO;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -287,21 +292,28 @@ public class DataValueImageRendererRegistryTest {
         /**
          * Test that if the requested height or width is larger than the preferred one, the preferred one is used
          * instead.
+         * @throws IOException
          */
         @Test
-        void testReducesImagesToTheirPreferredImageSize() {
-            var res1 = imgReg.renderImage(imgPath);
-            var res2 = imgReg.renderImage(imgPath + "?w=100&h=100");
-            var res3 = imgReg.renderImage(imgPath + "?w=1&h=100");
-            var res4 = imgReg.renderImage(imgPath + "?w=1&h=11");
-            var res5 = imgReg.renderImage(imgPath + "?w=100&h=1");
-            var res6 = imgReg.renderImage(imgPath + "?w=11&h=1");
+        void testReducesImagesToTheirPreferredImageSize() throws IOException {
+            var res1 = getImageDimensions(imgReg.renderImage(imgPath));
+            var res2 = getImageDimensions(imgReg.renderImage(imgPath + "?w=100&h=100"));
+            var res3 = getImageDimensions(imgReg.renderImage(imgPath + "?w=1&h=100"));
+            var res4 = getImageDimensions(imgReg.renderImage(imgPath + "?w=1&h=11"));
+            var res5 = getImageDimensions(imgReg.renderImage(imgPath + "?w=100&h=1"));
+            var res6 = getImageDimensions(imgReg.renderImage(imgPath + "?w=11&h=1"));
             var numCalls = imgReg.getStatsPerTable(tableId).numRenderImageCalls();
             assertThat(res1).as("Requests without width and heigt parameter should yield the"
-                + " same result as with large width and height").isSameAs(res2);
-            assertThat(res3).as("Too large dimensions should be scaled to the preferred one at max.").isSameAs(res4)
-                .isSameAs(res5).isSameAs(res6);
-            assertThat(numCalls).as("Correct number of calls in total").isEqualTo(2);
+                + " same result as with large width and height").isEqualTo(res2);
+            assertThat(res3).as("Too large dimensions should be scaled to the preferred one at max.").isEqualTo(res4)
+                .isEqualTo(res5).isEqualTo(res6);
+            // TODO UIEXT-1361 ideally the number of calls would be the same as the number of different results.
+            assertThat(numCalls).as("Correct number of calls in total").isEqualTo(6);
+        }
+
+        private Dimension getImageDimensions(final byte[] byteImage) throws IOException {
+            final var image = ImageIO.read(new ByteArrayInputStream(byteImage));
+            return new Dimension(image.getHeight(), image.getWidth());
         }
     }
 

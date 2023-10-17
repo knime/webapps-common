@@ -179,9 +179,13 @@ public final class SwingBasedRendererFactory implements DataValueRendererFactory
 
         @Override
         public byte[] renderImage(final DataValue value, final int width, final int height) {
+
             // NOTE: mostly copied from Renderer2ImageNodeModel#createPngCell
             var comp = getRendererComponent(value, m_renderer);
             var size = new Dimension(width, height);
+            if (m_renderer instanceof AbstractPainterDataValueRenderer apdvr) {
+                size = apdvr.getPreferredSize(size);
+            }
             comp.setSize(size);
             var image = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
             // create graphics object to paint in
