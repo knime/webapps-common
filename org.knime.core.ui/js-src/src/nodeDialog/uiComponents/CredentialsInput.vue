@@ -76,14 +76,16 @@ export default CredentialsInput;
       :flow-settings="flowSettings"
       @controlling-flow-variable-set="onChange"
     >
-      <div :id="labelForId">
+      <div :id="labelForId" class="input-fields-wrapper">
         <InputField
+          class="input-field-username"
           :model-value="control.data.username"
           :disabled="disabled"
           type="text"
           @update:model-value="onChangeUsername"
         />
         <InputField
+          class="input-field-password"
           :model-value="control.data.password"
           :disabled="disabled"
           type="password"
