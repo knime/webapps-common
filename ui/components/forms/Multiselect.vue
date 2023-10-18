@@ -1,4 +1,5 @@
 <script>
+import "./variables.css";
 import Checkbox from "../forms/Checkbox.vue";
 import DropdownIcon from "../../assets/img/icons/arrow-dropdown.svg";
 
@@ -366,12 +367,12 @@ export default {
 
   & [role="button"] {
     margin: 0;
-    border: 1px solid var(--knime-stone-gray);
+    border: var(--form-border-width) solid var(--knime-stone-gray);
     padding: 0 38px 0 10px;
     font-size: 13px;
     font-weight: 300;
-    height: 40px;
-    line-height: 40px; /* to center text vertically */
+    height: var(--single-line-form-height);
+    line-height: var(--single-line-form-height); /* to center text vertically */
     cursor: pointer;
     white-space: nowrap;
     overflow: hidden;
@@ -396,13 +397,15 @@ export default {
   }
 
   & .icon {
-    width: 18px;
-    height: 18px;
+    --icon-size: 18px;
+
+    width: var(--icon-size);
+    height: var(--icon-size);
     stroke-width: calc(32px / 18);
     stroke: var(--knime-masala);
     position: absolute;
     right: 10px;
-    top: 11px;
+    top: calc((var(--single-line-form-height) - var(--icon-size)) / 2);
     pointer-events: none;
     transition: transform 0.2s ease-in-out;
   }
