@@ -13,8 +13,7 @@ import useAutoColumnSizes from "./composables/useAutoColumnSizes";
 import type { TableViewDisplayProps } from "./types";
 import useBoolean from "./utils/useBoolean";
 import { separateSpecialColumns } from "./utils/specialColumns";
-
-const BORDER_BOTTOM_WIDTH = 1;
+import { BORDER_BOTTOM_WIDTH } from "./constants";
 
 const emit = defineEmits([
   "page-change",

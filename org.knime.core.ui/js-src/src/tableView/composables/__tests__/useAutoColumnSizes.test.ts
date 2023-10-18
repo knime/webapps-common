@@ -89,9 +89,9 @@ describe("useColumnSizes", () => {
         calculateForBody: true,
         calculateForHeader: false,
         fixedSizes: {
-          col1: 120,
-          col2: 96,
-          col3: 150,
+          col1: 119,
+          col2: 95,
+          col3: 148,
         },
       });
     });
@@ -121,7 +121,7 @@ describe("useColumnSizes", () => {
       calculateForBody: true,
       calculateForHeader: false,
       fixedSizes: {
-        col1: 40,
+        col1: 39,
         col2: 150,
         col3: 70,
       },

@@ -25,7 +25,7 @@ import {
 } from "../types/ViewSettings";
 import consolaGlobalInstance from "consola";
 
-const { MIN_COLUMN_SIZE } = tableUIConstants;
+const { MIN_COLUMN_SIZE, ROW_MARGIN_BOTTOM } = tableUIConstants;
 const DEFAULT_COLUMN_SIZE = 100;
 
 const GET_EMPTY_BOTTOM_DATA_FLAG = 11000;
@@ -596,7 +596,9 @@ describe("TableViewInteractive.vue", () => {
 
       const setMaxNumRows = (wrapper, maxNumRows) => {
         /** same pixel upper bound that is used in the component to compute the maxNumRows from the row height */
-        wrapper.vm.onRowHeightChange(Math.floor(17000000 / maxNumRows));
+        wrapper.vm.onRowHeightChange(
+          Math.floor(17000000 / maxNumRows) - ROW_MARGIN_BOTTOM,
+        );
       };
 
       describe("on data update", () => {

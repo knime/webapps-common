@@ -6,6 +6,7 @@ import type {
 import { computed, ref, type Ref } from "vue";
 import { AutoSizeColumnsToContent } from "../types/ViewSettings";
 import type TableViewViewSettings from "../types/ViewSettings";
+import { BORDER_BOTTOM_WIDTH } from "../constants";
 
 type RelevantViewSettings = Pick<
   TableViewViewSettings,
@@ -26,6 +27,14 @@ export default ({
 }: UseAutoColumnSizesOptions) => {
   const autoColumnSizes: Ref<ColumnSizes> = ref({});
 
+  /**
+   * The TableUI sets a custom border at the bottom of each row decreasing the
+   * available space for the cell.
+   */
+  const innerRowHeight = computed(
+    () => currentRowHeight.value - BORDER_BOTTOM_WIDTH,
+  );
+
   const autoColumnSizesActive = computed(() => {
     return (
       settings.value.autoSizeColumnsToContent !== AutoSizeColumnsToContent.FIXED
@@ -45,7 +54,7 @@ export default ({
       ([columnName, imageDimension]: [string, ImageDimension]) => {
         const { widthInPx, heightInPx } = imageDimension;
         const autoSizeWidth = Math.floor(
-          (widthInPx * currentRowHeight.value) / heightInPx,
+          (widthInPx * innerRowHeight.value) / heightInPx,
         );
         fixedColumnSizes[columnName] = Math.min(autoSizeWidth, widthInPx);
       },

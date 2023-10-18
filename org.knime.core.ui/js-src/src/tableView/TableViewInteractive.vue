@@ -8,6 +8,7 @@ import specialColumns from "./utils/specialColumns";
 import { inject } from "vue";
 import useSelectionCache from "./composables/useSelectionCache";
 import useRowHeight from "./composables/useRowHeight";
+import { constants as tableConstants } from "@knime/knime-ui-table";
 const { ROW_ID, INDEX, SKIPPED_REMAINING_COLUMNS_COLUMN } = specialColumns;
 // -1 is the backend representation (columnName) for sorting the table by rowKeys
 const ROW_KEYS_SORT_COL_NAME = "-1";
@@ -135,7 +136,11 @@ export default {
       return this.currentNumRowsOnPage > this.maxNumRows;
     },
     maxNumRows() {
-      return Math.floor(MAX_NUM_PXL_BROWSER_LIMITATION / this.currentRowHeight);
+      // The current row height does not contain the margin each row has to the next row.
+      return Math.floor(
+        MAX_NUM_PXL_BROWSER_LIMITATION /
+          (this.currentRowHeight + tableConstants.ROW_MARGIN_BOTTOM),
+      );
     },
     minScopeSize() {
       return this.maxNumRows < DEFAULT_SCOPE_SIZE
