@@ -1,4 +1,5 @@
 <script>
+import "./variables.css";
 export default {
   props: {
     modelValue: {
@@ -138,9 +139,9 @@ export default {
   display: flex;
   align-items: center;
   position: relative;
-  border: 1px solid var(--knime-stone-gray);
+  border: var(--form-border-width) solid var(--knime-stone-gray);
   background-color: var(--theme-input-field-background-color);
-  height: 40px;
+  height: var(--single-line-form-height);
   padding: 0 5px;
 
   &:focus {
@@ -219,9 +220,9 @@ input {
     pointer-events: none; /* otherwise :hover of the field doesn't work when hovering the marker */
 
     /* "Outside" location corresponds to wrapper border. */
-    left: -1px;
-    top: -1px;
-    bottom: -1px;
+    left: calc(-1 * var(--form-border-width));
+    top: calc(-1 * var(--form-border-width));
+    bottom: calc(-1 * var(--form-border-width));
   }
 }
 

@@ -1,4 +1,5 @@
 <script>
+import "./variables.css";
 import {
   parse,
   isValid,
@@ -540,7 +541,7 @@ export default {
     min-width: 7.5rem;
     margin-right: 20px;
     position: relative;
-    border: 1px solid var(--theme-date-input-border-color);
+    border: var(--form-border-width) solid var(--theme-date-input-border-color);
 
     &:focus-within {
       border-color: var(--theme-date-input-border-focus-color);
@@ -550,7 +551,9 @@ export default {
       font-size: 13px;
       font-weight: 300;
       letter-spacing: inherit;
-      height: 38px;
+      height: calc(
+        var(--single-line-form-height) - 2 * var(--form-border-width)
+      );
       line-height: normal;
       border: 0;
       margin: 0;
@@ -589,7 +592,9 @@ export default {
       position: absolute;
       z-index: 1;
       width: 32px;
-      height: 38px;
+      height: calc(
+        var(--single-line-form-height) - 2 * var(--form-border-width)
+      );
       padding-left: 10px;
       padding-right: 9px;
 

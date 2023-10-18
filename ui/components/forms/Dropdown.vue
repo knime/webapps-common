@@ -1,4 +1,5 @@
 <script>
+import "./variables.css";
 import { mixin as VueClickAway } from "vue3-click-away";
 
 import DropdownIcon from "../../assets/img/icons/arrow-dropdown.svg";
@@ -372,10 +373,10 @@ export default {
 
   & [role="button"] {
     margin: 0;
-    border: 1px solid var(--knime-stone-gray);
+    border: var(--form-border-width) solid var(--knime-stone-gray);
     padding: 0 38px 0 10px;
     font-size: 13px;
-    height: 40px;
+    height: var(--single-line-form-height);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -401,13 +402,15 @@ export default {
   }
 
   & .icon {
-    width: 18px;
-    height: 18px;
+    --icon-size: 18px;
+
+    width: var(--icon-size);
+    height: var(--icon-size);
     stroke-width: calc(32px / 18);
     stroke: var(--knime-masala);
     position: absolute;
     right: 10px;
-    top: 11px;
+    top: calc((var(--single-line-form-height) - var(--icon-size)) / 2);
     pointer-events: none;
     transition: transform 0.2s ease-in-out;
   }
