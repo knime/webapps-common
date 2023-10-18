@@ -290,14 +290,23 @@ public final class NodeRecommendationManager {
         if (ni == null) {
             return null;
         }
-        var id = ni.getFactory();
-        var type = getNodeType.apply(id);
-        if (type == null) {
-            // dynamic node factories before 5.2
-            id = ni.getFactory() + NODE_NAME_SEP + ni.getName();
+        String id = ni.getFactoryId();
+        NodeType type = null;
+        if (id != null) {
             type = getNodeType.apply(id);
+        } else {
+            // fallback to id-determination prior AP 5.2
+            id = ni.getFactory();
+            type = getNodeType.apply(id);
+            if (type == null) {
+                // dynamic node factories before 5.2
+                // (doesn't maintain full backwards-compatibility
+                //  - new dynamic nodes created for AP >=5.2 won't be found)
+                id = id + NODE_NAME_SEP + ni.getName();
+                type = getNodeType.apply(id);
+            }
         }
-        return new InternalNodeInfo(type == null ? null :id, type);
+        return new InternalNodeInfo(type == null ? null : id, type);
     }
 
     private static record InternalNodeInfo(String id, NodeType type) {
