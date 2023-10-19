@@ -1,12 +1,4 @@
-import {
-  afterEach,
-  beforeEach,
-  beforeAll,
-  describe,
-  expect,
-  it,
-  vi,
-} from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   mountJsonFormsComponent,
   initializesJsonFormsControl,
@@ -16,18 +8,7 @@ import LabeledInput from "../LabeledInput.vue";
 import { inputFormats } from "@/nodeDialog/constants";
 
 describe("CredentialsInput.vue", () => {
-  let props, wrapper, onChangeUsernameSpy, onChangePasswordSpy, component;
-
-  beforeAll(() => {
-    onChangeUsernameSpy = vi.spyOn(
-      CredentialsInput.methods,
-      "onChangeUsername",
-    );
-    onChangePasswordSpy = vi.spyOn(
-      CredentialsInput.methods,
-      "onChangePassword",
-    );
-  });
+  let props, wrapper, component;
 
   beforeEach(() => {
     props = {
@@ -155,7 +136,6 @@ describe("CredentialsInput.vue", () => {
     wrapper
       .getComponent(".input-field-username")
       .vm.$emit("update:modelValue", username);
-    expect(onChangeUsernameSpy).toHaveBeenCalledWith(username);
     expect(updateData).toHaveBeenCalledWith(
       expect.anything(),
       props.control.path,
@@ -179,7 +159,6 @@ describe("CredentialsInput.vue", () => {
     wrapper
       .getComponent(".input-field-password")
       .vm.$emit("update:modelValue", password);
-    expect(onChangePasswordSpy).toHaveBeenCalledWith(password);
     expect(updateData).toHaveBeenCalledWith(
       expect.anything(),
       props.control.path,
@@ -192,7 +171,7 @@ describe("CredentialsInput.vue", () => {
     props.control.uischema.scope = "#/properties/model/properties/credentials";
 
     const dirtySettingsMock = vi.fn();
-    const { wrapper, updateData } = mountJsonFormsComponent(CredentialsInput, {
+    const { wrapper } = mountJsonFormsComponent(CredentialsInput, {
       props,
       modules: {
         "pagebuilder/dialog": {
@@ -206,10 +185,5 @@ describe("CredentialsInput.vue", () => {
       .getComponent(".input-field-username")
       .vm.$emit("update:modelValue", username);
     expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
-    expect(updateData).toHaveBeenCalledWith(
-      expect.anything(),
-      props.control.path,
-      { username, password: props.control.data.password },
-    );
   });
 });
