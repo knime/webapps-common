@@ -51,6 +51,8 @@ package org.knime.core.webui.node.dialog.defaultdialog.jsonforms;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil.getMapper;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -59,7 +61,11 @@ import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.NodeContext;
+import org.knime.core.node.workflow.NodeID;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -130,6 +136,28 @@ class JsonFormsDataUtilTest {
     void testCreateDefaultNodeSettingsWithSpecsDefault() {
         assertThat(DefaultNodeSettings.createSettings(TestSettings.class, createSpecs("bar")))
             .isEqualTo(new TestSettings());
+    }
+
+    @Test
+    void registersCredentialsSerializersToHidePassword() {
+        @SuppressWarnings("unused")
+        final class TestCredentialsSettings implements DefaultNodeSettings {
+            Credentials m_credentials = new Credentials("username", "password");
+        }
+
+        final var nodeContainerMock = mock(NodeContainer.class);
+        when(nodeContainerMock.getID()).thenReturn(new NodeID(0));
+
+        NodeContext.pushContext(nodeContainerMock);
+        try {
+            assertThatJson(JsonFormsDataUtil.toJsonData(new TestCredentialsSettings()))//
+            .inPath("credentials").isObject()//
+                .containsEntry("username", "username")//
+                .containsEntry("isHiddenPassword", true) //
+                .doesNotContainKey("password");
+        } finally {
+            NodeContext.removeLastContext();
+        }
     }
 
 }

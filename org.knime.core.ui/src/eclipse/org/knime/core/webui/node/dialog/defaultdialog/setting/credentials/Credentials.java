@@ -48,12 +48,33 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.setting.credentials;
 
+import java.io.IOException;
 import java.util.Objects;
+
+import com.fasterxml.jackson.core.JacksonException;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.BeanProperty;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 
 /**
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
 public final class Credentials {
+
+    private static final String IS_HIDDEN_PASSWORD_KEY = "isHiddenPassword";
+
+    private static final String PASSWORD_KEY = "password";
+
+    private static final String USERNAME_KEY = "username";
 
     String m_username;
 
@@ -107,6 +128,90 @@ public final class Credentials {
     @Override
     public int hashCode() {
         return Objects.hash(m_username, m_password);
+    }
+
+    /**
+     * Adds custom serialization logic to not send any passwords to the frontend
+     *
+     * @param module
+     */
+    public static void addSerializerAndDeserializer(final SimpleModule module) {
+        module.addSerializer(Credentials.class, new Credentials.CredentialsSerializer());
+        module.addDeserializer(Credentials.class, new Credentials.CredentialsDeserializer());
+    }
+
+    static final class CredentialsSerializer extends JsonSerializer<Credentials> implements ContextualSerializer {
+
+        private String m_fieldId;
+
+        @Override
+        public void serialize(final Credentials value, final JsonGenerator gen, final SerializerProvider serializers)
+            throws IOException {
+            gen.writeStartObject();
+            final var password = value.getPassword();
+            addPassword(gen, password);
+            serializers.defaultSerializeField(USERNAME_KEY, value.getUsername(), gen);
+            gen.writeEndObject();
+        }
+
+        private void addPassword(final JsonGenerator gen, final String password) throws IOException {
+            if (password.isEmpty()) {
+                gen.writeBooleanField(IS_HIDDEN_PASSWORD_KEY, false);
+            } else {
+                PasswordHolder.addPassword(m_fieldId, password);
+                gen.writeBooleanField(IS_HIDDEN_PASSWORD_KEY, true);
+            }
+        }
+
+        @Override
+        public JsonSerializer<?> createContextual(final SerializerProvider prov, final BeanProperty property)
+            throws JsonMappingException {
+            m_fieldId = getFieldId(property);
+            return this;
+        }
+
+        private static String getFieldId(final BeanProperty property) {
+            if (property == null) {
+                return null;
+            }
+            return property.getMember().getFullName();
+        }
+    }
+
+    static final class CredentialsDeserializer extends JsonDeserializer<Credentials> implements ContextualDeserializer {
+
+        private String m_fieldPath;
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Credentials deserialize(final JsonParser p, final DeserializationContext ctxt)
+            throws IOException, JacksonException {
+            final var node = (JsonNode)p.getCodec().readTree(p);
+            final var username = node.get(USERNAME_KEY).asText();
+            final var password = getPassword(node);
+            return new Credentials(username, password);
+        }
+
+        private String getPassword(final JsonNode node) {
+            final var isHiddenPassword = node.get(IS_HIDDEN_PASSWORD_KEY);
+            if (isHiddenPassword != null && !isHiddenPassword.asBoolean()) {
+                final var password = node.get(PASSWORD_KEY);
+                if (password == null || password.isNull()) {
+                    return "";
+                }
+                return password.asText();
+            }
+            return PasswordHolder.get(m_fieldPath);
+        }
+
+        @Override
+        public JsonDeserializer<?> createContextual(final DeserializationContext ctxt, final BeanProperty property)
+            throws JsonMappingException {
+            m_fieldPath = CredentialsSerializer.getFieldId(property);
+            return this;
+        }
     }
 
 }

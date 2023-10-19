@@ -55,6 +55,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -136,6 +137,7 @@ public final class JsonFormsDataUtil {
     private static SimpleModule createDialogModule() {
         final var module = new SimpleModule();
         module.addSerializer(BigDecimal.class, new BigDecimalSerializer());
+        Credentials.addSerializerAndDeserializer(module);
         return module;
     }
 

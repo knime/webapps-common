@@ -69,6 +69,10 @@
  * setting C, an update of setting C does not influence A. In order to circumvent this, it is currently necessary to
  * have a direct dependency from A to C, too.</li>
  * <li>The order in which updates due to dependencies between settings are resolved is non-deterministic.</li>
+ * <li>It is not possible at the moment to have the same combination of settings name and containing class for two
+ * separate {@link Credentials}. I.e. for a single dialog it is not possible to reuse a common class containing
+ * credentials twice. The same holds for multiple dialogs and in particular it will not work to open a dialog which
+ * contains credentials twice at the same time currently. (TODO: UIEXT-1375 resolve this limitation)</li>
  * </ol>
  *
  * @see org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsSettingsImpl

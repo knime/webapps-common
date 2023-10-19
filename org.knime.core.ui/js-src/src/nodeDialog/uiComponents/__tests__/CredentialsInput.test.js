@@ -117,6 +117,14 @@ describe("CredentialsInput.vue", () => {
     );
   });
 
+  it("sets magic password", async () => {
+    wrapper.vm.control.data.isHiddenPassword = true;
+    await wrapper.vm.$nextTick();
+    expect(wrapper.getComponent(".input-field-password").vm.modelValue).toBe(
+      "*****************",
+    );
+  });
+
   it("sets correct label", () => {
     expect(wrapper.find("label").text()).toBe(props.control.label);
   });
@@ -162,7 +170,11 @@ describe("CredentialsInput.vue", () => {
     expect(updateData).toHaveBeenCalledWith(
       expect.anything(),
       props.control.path,
-      { username: props.control.data.username, password },
+      {
+        username: props.control.data.username,
+        password,
+        isHiddenPassword: false,
+      },
     );
     expect(dirtySettingsMock).not.toHaveBeenCalled();
   });

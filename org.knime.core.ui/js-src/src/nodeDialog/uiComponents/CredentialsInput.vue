@@ -42,6 +42,11 @@ const CredentialsInput = defineComponent({
         Boolean(this.flowSettings?.controllingFlowVariableName)
       );
     },
+    displayedPassword() {
+      return this.control.data.isHiddenPassword
+        ? "*****************"
+        : this.control.data.password;
+    },
   },
   methods: {
     onChange(credentials: Credentials) {
@@ -55,7 +60,9 @@ const CredentialsInput = defineComponent({
       this.onChange(mergeDeep(this.control.data, { username }));
     },
     onChangePassword(password: string) {
-      this.onChange(mergeDeep(this.control.data, { password }));
+      this.onChange(
+        mergeDeep(this.control.data, { password, isHiddenPassword: false }),
+      );
     },
   },
 });
@@ -86,7 +93,7 @@ export default CredentialsInput;
         />
         <InputField
           class="input-field-password"
-          :model-value="control.data.password"
+          :model-value="displayedPassword"
           :disabled="disabled"
           type="password"
           @update:model-value="onChangePassword"
