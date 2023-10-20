@@ -57,11 +57,11 @@ describe("Toast.vue", () => {
     });
 
     it("renders a button with a callback", () => {
+      const callbackMock = vi.fn();
       const button = {
         text: "button text",
-        callback: () => "button clicked",
+        callback: callbackMock,
       };
-      const callbackSpy = vi.spyOn(button, "callback");
 
       const wrapper = mount(Toast, {
         propsData: {
@@ -70,7 +70,7 @@ describe("Toast.vue", () => {
       });
 
       wrapper.find(".toast-button").trigger("click");
-      expect(callbackSpy).toHaveBeenCalled();
+      expect(callbackMock).toHaveBeenCalled();
     });
   });
 

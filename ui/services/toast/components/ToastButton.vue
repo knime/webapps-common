@@ -16,6 +16,13 @@ const target = computed(() => {
   }
   return null;
 });
+
+const callback = computed(() => {
+  if (typeof props.callback === "function") {
+    return props.callback;
+  }
+  return null;
+});
 </script>
 
 <template>
@@ -24,7 +31,7 @@ const target = computed(() => {
     :to="to"
     :href="href"
     :target="target"
-    @click="callback ? callback : undefined"
+    @click="callback"
   >
     <Component :is="icon || LinkExternal" v-if="to || href" />
     <Component :is="icon" v-else-if="icon" />
