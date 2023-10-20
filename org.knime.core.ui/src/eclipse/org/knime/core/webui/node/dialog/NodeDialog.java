@@ -100,8 +100,8 @@ public interface NodeDialog extends UIExtension {
 
     /**
      * Can be implemented and provided to the NodeDialog upon creation. Provides a method that is called when settings
-     * are applied. May optionally modify the node based on the difference between previous and updated model
-     * and view {@link DefaultNodeSettings settings}.
+     * are applied. May optionally modify the node based on the difference between previous and updated model and view
+     * {@link DefaultNodeSettings settings}.
      */
     @FunctionalInterface
     interface OnApplyNodeModifier {

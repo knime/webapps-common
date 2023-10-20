@@ -128,18 +128,23 @@ public final class NodeDialogManager {
         if (nc instanceof NativeNodeContainer) {
             var nnc = (NativeNodeContainer)nc;
             return m_nodeDialogAdapterMap.computeIfAbsent(nc, id -> {
-                NodeCleanUpCallback.builder(nnc, () -> m_nodeDialogAdapterMap.remove(nnc)).build();
+                NodeCleanUpCallback.builder(nnc, () -> removeNodeDialogAdapter(nnc)).build();
                 return createNativeNodeDialog(nnc);
             });
         } else if (nc instanceof SubNodeContainer) {
             var snc = (SubNodeContainer)nc;
             return m_nodeDialogAdapterMap.computeIfAbsent(nc, id -> {
-                NodeCleanUpCallback.builder(nc, () -> m_nodeDialogAdapterMap.remove(nc)).build();
+                NodeCleanUpCallback.builder(nc, () -> removeNodeDialogAdapter(nc)).build();
                 return createSubNodeContainerDialog(snc);
             });
         } else {
             throw new IllegalArgumentException("The node " + nc.getNameWithID() + " is no supported node container");
         }
+    }
+
+    private void removeNodeDialogAdapter(final NodeContainer nnc) {
+        m_nodeDialogAdapterMap.remove(nnc).deactivate();
+
     }
 
     private static NodeDialogAdapter createNativeNodeDialog(final NativeNodeContainer nnc) {
@@ -200,6 +205,19 @@ public final class NodeDialogManager {
      */
     public boolean canBeEnlarged(final NodeContainer snc) {
         return getNodeDialog(snc).getNodeDialog().canBeEnlarged();
+    }
+
+    /**
+     * deactivates the node dialog associated to the node container;
+     * @param nc
+     */
+    public void deactivateDialog(final NodeContainer nc) {
+        NodeContext.pushContext(nc);
+        try {
+            m_nodeDialogAdapterMap.get(nc).deactivate();
+        } finally {
+            NodeContext.removeLastContext();
+        }
     }
 
 }

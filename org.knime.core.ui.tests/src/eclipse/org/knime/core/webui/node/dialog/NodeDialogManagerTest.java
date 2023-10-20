@@ -52,6 +52,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.knime.core.webui.node.dialog.NodeDialogTest.createNodeDialog;
 import static org.knime.core.webui.page.PageTest.BUNDLE_ID;
 import static org.knime.testing.util.WorkflowManagerUtil.createAndAddNode;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -76,6 +80,7 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.NodeID.NodeIDSuffix;
 import org.knime.core.node.workflow.SubNodeContainer;
@@ -92,6 +97,8 @@ import org.knime.testing.node.dialog.NodeDialogNodeFactory;
 import org.knime.testing.node.dialog.NodeDialogNodeModel;
 import org.knime.testing.node.dialog.NodeDialogNodeView;
 import org.knime.testing.util.WorkflowManagerUtil;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.osgi.framework.FrameworkUtil;
 
 /**
@@ -146,6 +153,23 @@ public class NodeDialogManagerTest {
 
         hasDialog.set(false);
         assertThat(NodeDialogManager.hasNodeDialog(nc)).as("node not expected to have a node dialog").isFalse();
+
+    }
+
+    @Test
+    void deactivatesNodeSettingsServiceOnDeactivate() {
+        final var nodeSettingsService = mock(NodeSettingsService.class);
+        var page = Page.builder(() -> "test page content", "index.html").build();
+        NativeNodeContainer nc = createNodeWithNodeDialog(m_wfm, () -> createNodeDialog(page, nodeSettingsService, null));
+        NodeDialogManager.getInstance().getNodeDialog(nc);
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(final InvocationOnMock invocation) {
+                assertThat(NodeContext.getContext().getNodeContainer()).isSameAs(nc);
+                return null;
+            }}).when(nodeSettingsService).deactivate();
+        NodeDialogManager.getInstance().deactivateDialog(nc);
+        verify(nodeSettingsService, times(1)).deactivate();
     }
 
     /**

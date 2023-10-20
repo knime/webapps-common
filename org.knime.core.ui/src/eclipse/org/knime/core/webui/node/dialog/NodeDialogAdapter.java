@@ -120,8 +120,7 @@ final class NodeDialogAdapter implements UIExtension, DataServiceProvider {
 
     @Override
     public final Optional<ApplyDataService<String>> createApplyDataService() {
-        var applyData =
-            new ApplyData(m_snc, m_settingsTypes, m_nodeSettingsService, m_onApplyModifier);
+        var applyData = new ApplyData(m_snc, m_settingsTypes, m_nodeSettingsService, m_onApplyModifier);
         return Optional.of(ApplyDataService.builder(applyData::applyData) //
             .onDeactivate(applyData::cleanUp) //
             .build());
@@ -177,8 +176,7 @@ final class NodeDialogAdapter implements UIExtension, DataServiceProvider {
         protected NodeSettingsRO getDefaultViewSettings(final PortObjectSpec[] specs) {
             if (hasViewSettings()) {
                 var ns = new NodeSettings("default_view_settings");
-                m_nodeSettingsService.getDefaultNodeSettings(
-                    Map.of(SettingsType.VIEW, ns), specs);
+                m_nodeSettingsService.getDefaultNodeSettings(Map.of(SettingsType.VIEW, ns), specs);
                 return ns;
             } else {
                 return super.getDefaultViewSettings(specs);
@@ -198,6 +196,14 @@ final class NodeDialogAdapter implements UIExtension, DataServiceProvider {
             setSelected(FLOW_VARIABLES_TAB_NAME);
         }
 
+    }
+
+    /**
+     * This method is called when the node dialog is deactivated (temporarily or also permanently when the node is
+     * removed).
+     */
+    void deactivate() {
+        m_nodeSettingsService.deactivate();
     }
 
 }

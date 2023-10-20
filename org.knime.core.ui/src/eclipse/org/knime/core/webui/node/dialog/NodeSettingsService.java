@@ -54,6 +54,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.workflow.NodeContext;
 
 /**
  * Functionality around {@link NodeSettings} as required by the {@link NodeDialog}.
@@ -115,6 +116,13 @@ public interface NodeSettingsService {
      */
     default void validateNodeSettingsAndVariables(final Map<SettingsType, NodeAndVariableSettingsRO> settings)
         throws InvalidSettingsException {
+    }
+
+    /**
+     * TODO UIEXT-1376 rethink if this method is necessary and if we can avoid the use of singletons here. Method called
+     * on deactivation of the dialog. The {@link NodeContext} provides the current node container here.
+     */
+    default void deactivate() {
     }
 
 }
