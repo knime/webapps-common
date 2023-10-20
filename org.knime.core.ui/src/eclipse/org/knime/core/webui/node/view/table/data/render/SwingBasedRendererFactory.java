@@ -183,7 +183,7 @@ public final class SwingBasedRendererFactory implements DataValueRendererFactory
             // NOTE: mostly copied from Renderer2ImageNodeModel#createPngCell
             var comp = getRendererComponent(value, m_renderer);
             var size = new Dimension(width, height);
-            if (m_renderer instanceof AbstractPainterDataValueRenderer apdvr) {
+            if (comp instanceof AbstractPainterDataValueRenderer apdvr) {
                 size = apdvr.getPreferredSize(size);
             }
             comp.setSize(size);
