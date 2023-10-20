@@ -51,6 +51,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.Schema.TAG_CONST;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.Schema.TAG_ITEMS_MIN;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.Schema.TAG_ONEOF;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.Schema.TAG_PATTERN;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.Schema.TAG_PROPERTIES;
 
 import org.knime.core.webui.node.dialog.defaultdialog.rule.ConditionVisitor;
@@ -58,6 +59,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.rule.FalseCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.HasMultipleItemsCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.IsSpecificStringCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.OneOfEnumCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.PatternCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.TrueCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.IsSpecificColumnCondition;
 
@@ -117,6 +119,12 @@ class JsonFormsConditionResolver implements ConditionVisitor<ObjectNode> {
     public ObjectNode visit(final IsSpecificStringCondition isSpecificStringCondition) {
         return m_mapper.createObjectNode() //
             .put(TAG_CONST, isSpecificStringCondition.getValue());
+    }
+
+    @Override
+    public ObjectNode visit(final PatternCondition patternCondition) {
+        return m_mapper.createObjectNode() //
+            .put(TAG_PATTERN, patternCondition.getPattern());
     }
 
 }

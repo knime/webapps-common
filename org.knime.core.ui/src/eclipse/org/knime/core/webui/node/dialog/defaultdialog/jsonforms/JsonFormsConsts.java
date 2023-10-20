@@ -129,6 +129,8 @@ public final class JsonFormsConsts {
 
         public static final String TAG_CONST = SchemaKeyword.TAG_CONST.forVersion(VERSION);
 
+        public static final String TAG_PATTERN = SchemaKeyword.TAG_PATTERN.forVersion(VERSION);
+
         public static final String TAG_ITEMS_MIN = SchemaKeyword.TAG_ITEMS_MIN.forVersion(VERSION);
     }
 

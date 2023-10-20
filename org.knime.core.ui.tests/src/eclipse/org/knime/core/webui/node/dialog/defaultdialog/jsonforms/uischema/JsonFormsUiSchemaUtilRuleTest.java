@@ -68,6 +68,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.rule.IsNoneColumnStringCon
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Not;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.OneOfEnumCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Or;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.PatternCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.TrueCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
@@ -777,6 +778,37 @@ class JsonFormsUiSchemaUtilRuleTest {
         assertThatJson(response).inPath("$.elements[1].rule.condition.scope").isString()
             .isEqualTo(response.get("elements").get(0).get("scope").asText());
         assertThatJson(response).inPath("$.elements[1].rule.condition.schema.const").isString().isEqualTo("<none>");
+    }
+
+    final static class TestPatternCondition extends PatternCondition {
+        static String PATTERN = "myPattern$";
+
+        @Override
+        public String getPattern() {
+            return PATTERN;
+        }
+    }
+
+    @Test
+    void testPatternCondition() {
+
+        final class PatternConditionTestSettings implements DefaultNodeSettings {
+
+            @Signal(condition = TestPatternCondition.class)
+            String patternSetting;
+
+            @Effect(signals = TestPatternCondition.class, type = EffectType.SHOW)
+            boolean effectSetting;
+        }
+        final var response = buildTestUiSchema(PatternConditionTestSettings.class);
+        assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
+        assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Control");
+        assertThatJson(response).inPath("$.elements[1].type").isString().isEqualTo("Control");
+        assertThatJson(response).inPath("$.elements[1].rule.effect").isString().isEqualTo("SHOW");
+        assertThatJson(response).inPath("$.elements[1].rule.condition.scope").isString()
+            .isEqualTo(response.get("elements").get(0).get("scope").asText());
+        assertThatJson(response).inPath("$.elements[1].rule.condition.schema.pattern").isString()
+            .isEqualTo(TestPatternCondition.PATTERN);
     }
 
 }

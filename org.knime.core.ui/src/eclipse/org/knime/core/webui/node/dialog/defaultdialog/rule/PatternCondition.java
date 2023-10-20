@@ -44,34 +44,25 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 6, 2023 (Paul Bärnreuther): created
+ *   Oct 20, 2023 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.rule;
 
-import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.IsSpecificColumnCondition;
-
 /**
- * A visitor visiting all permitted implementations of {@link Condition} which is used to translate the condition to a
- * implementation dependent format.
+ * Use this annotation for text inputs in order to trigger an effect when the supplied pattern is met.
  *
  * @author Paul Bärnreuther
- * @param <T> the type of the returned value on visiting a {@link Condition}
  */
-@SuppressWarnings("javadoc")
-public interface ConditionVisitor<T> {
+public abstract class PatternCondition implements Condition {
 
-    <E extends Enum<E>> T visit(OneOfEnumCondition<E> oneOfEnumCondition);
+    /**
+     * @return a regular expression which triggers the condition.
+     */
+    public abstract String getPattern();
 
-    T visit(TrueCondition trueCondition);
-
-    T visit(FalseCondition falseCondition);
-
-    T visit(HasMultipleItemsCondition hasMultipleItemsCondition);
-
-    T visit(IsSpecificColumnCondition isSpecificColumnCondition);
-
-    T visit(IsSpecificStringCondition isSpecificStringCondition);
-
-    T visit(PatternCondition patternCondition);
+    @Override
+    public <T> T accept(final ConditionVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 
 }
