@@ -24,7 +24,7 @@ const target = computed(() => {
     :to="to"
     :href="href"
     :target="target"
-    @click="callback"
+    @click="callback ? callback : undefined"
   >
     <Component :is="icon || LinkExternal" v-if="to || href" />
     <Component :is="icon" v-else-if="icon" />
