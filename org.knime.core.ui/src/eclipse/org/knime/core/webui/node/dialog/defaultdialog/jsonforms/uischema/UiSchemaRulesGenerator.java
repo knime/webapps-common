@@ -83,9 +83,8 @@ final class UiSchemaRulesGenerator {
     /**
      * @param mapper an object mapper used to resolve given conditions
      * @param field a field for which the effect of a rule is to be determined
-     * @param signalsMap the map of all signals in the settings context at hand. It maps the ids of
-     *            {@link Signal} annotations to a construct holding the respective condition and the scope of the
-     *            associated field.
+     * @param signalsMap the map of all signals in the settings context at hand. It maps the ids of {@link Signal}
+     *            annotations to a construct holding the respective condition and the scope of the associated field.
      */
     UiSchemaRulesGenerator(final ObjectMapper mapper, final Effect effect,
         final Map<Class<?>, JsonFormsExpression> signalsMap) {
@@ -106,11 +105,23 @@ final class UiSchemaRulesGenerator {
         if (m_effect == null) {
             return;
         }
+        final var signalClasses = m_effect.signals();
+        final var signals =
+            Arrays.asList(signalClasses).stream().map(m_signalsMap::get).toArray(JsonFormsExpression[]::new);
+        for (int signalIndex = 0; signalIndex < signals.length; signalIndex++) {
+            if (signals[signalIndex] == null) {
+                if (m_effect.ignoreOnMissingSignals()) {
+                    return;
+                }
+                throw new UiSchemaGenerationException(String.format(
+                    "Missing source annotation: %s. If this is wanted and the rule should be ignored instead of throwing this error, use the respective flag in the @Effect annotation.",
+                    signalClasses[signalIndex].getName()));
+            }
+        }
         final var rule = control.putObject(TAG_RULE).put(TAG_EFFECT, String.valueOf(m_effect.type()));
-        final var sources = Arrays.asList(m_effect.signals()).stream().map(m_signalsMap::get)
-            .toArray(JsonFormsExpression[]::new);
+
         final var operationClass = m_effect.operation();
-        rule.set(TAG_CONDITION, instantiateOperation(operationClass, sources).accept(m_visitor));
+        rule.set(TAG_CONDITION, instantiateOperation(operationClass, signals).accept(m_visitor));
     }
 
     @SuppressWarnings("unchecked")

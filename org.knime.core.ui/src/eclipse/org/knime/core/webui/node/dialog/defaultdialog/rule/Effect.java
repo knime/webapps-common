@@ -51,12 +51,14 @@ package org.knime.core.webui.node.dialog.defaultdialog.rule;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.HorizontalLayout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
 
 /**
- * With this annotation a field or a whole layout part (i.e. {@link Section} or {@link HorizontalLayout}) can be
- * disabled or hidden depending on the values of other fields which are annotated by {@link Signal} themselves.
+ * With this annotation a field, all fields in a class, or a whole layout part (i.e. {@link Section} or
+ * {@link HorizontalLayout}) can be disabled or hidden depending on the values of other fields which are annotated by
+ * {@link Signal} themselves.
  *
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
@@ -93,6 +95,17 @@ public @interface Effect {
      *         number of ids has to fit a suitable constructor of the given operation.
      */
     Class<?>[] signals();
+
+    /**
+     * When set to false, the code will fail on runtime when there is a signal with no corresponding {@link Signal}
+     * annotation within the node settings. It can be set to true in case multiple {@link DefaultNodeSettings} use the
+     * annotated field but the effect should only apply to one of them. In this case, there will be no error if signals
+     * are missing but instead this {@link Effect} annotation has no effect.
+     *
+     * @return if the annotation is ignored when signals without a corresponding {@link Signal} annotation are
+     *         specified.
+     */
+    boolean ignoreOnMissingSignals() default false;
 
     /**
      * @return the effect that the rule has on the targeted setting

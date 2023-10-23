@@ -57,6 +57,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.JsonFormsExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Signals;
@@ -81,13 +82,23 @@ public class UiSchemaDefaultNodeSettingsTraverser {
     }
 
     /**
+     * package scoped since this is meant to be used internally only.
+     *
+     * @author Paul Bärnreuther
+     */
+    static record TrackedAnnotations(Effect effect) {
+    }
+
+    /**
      * A record representing a single control within a node dialog
      *
      * @param scope of the control
      * @param field the associated property writer of the java field
      * @param rootClass the class from which the control originated from
+     * @param trackedAnnotations tracked during the traversal.
      */
-    public static record JsonFormsControl(String scope, PropertyWriter field, Class<?> rootClass) {
+    public static record JsonFormsControl(String scope, PropertyWriter field, Class<?> rootClass,
+        TrackedAnnotations trackedAnnotations) {
     }
 
     private static record TraversalConsumerPayload(String scope, TraversedField field, Class<?> rootClass) {
@@ -124,7 +135,7 @@ public class UiSchemaDefaultNodeSettingsTraverser {
             final var payload = new TraversalConsumerPayload(scope, field, setting);
             addField.accept(payload);
             addSignal.accept(payload);
-        }, List.of(Layout.class, Hidden.class));
+        }, List.of(Layout.class, Hidden.class, Effect.class));
     }
 
     private static Consumer<TraversalConsumerPayload>
@@ -167,13 +178,14 @@ public class UiSchemaDefaultNodeSettingsTraverser {
     private static Consumer<TraversalConsumerPayload> getAddFieldConsumer(final Collection<JsonFormsControl> fields,
         final Map<Class<?>, List<JsonFormsControl>> layoutControls) {
         return payload -> {
-            if (payload.field().trackedAnnotations().getInstance(Hidden.class).isPresent()) {
+            final var trackedAnnotations = payload.field().trackedAnnotations();
+            if (trackedAnnotations.getInstance(Hidden.class).isPresent()) {
                 return;
             }
-            final var layout =
-                payload.field().trackedAnnotations().getInstance(Layout.class).map(Layout::value).orElse(null);
-            final var newJsonFormsControl =
-                new JsonFormsControl(payload.scope(), payload.field().propertyWriter(), payload.rootClass());
+            final var layout = trackedAnnotations.getInstance(Layout.class).map(Layout::value).orElse(null);
+            final var effect = trackedAnnotations.getInstance(Effect.class).orElse(null);
+            final var newJsonFormsControl = new JsonFormsControl(payload.scope(), payload.field().propertyWriter(),
+                payload.rootClass(), new TrackedAnnotations(effect));
             fields.add(newJsonFormsControl);
             layoutControls.compute(layout, (k, previous) -> {
                 final var newControls = previous == null ? new ArrayList<JsonFormsControl>() : previous;

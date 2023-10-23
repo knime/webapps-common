@@ -49,6 +49,7 @@
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtilTest.buildTestUiSchema;
 
@@ -56,6 +57,7 @@ import org.junit.jupiter.api.Test;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.HorizontalLayout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.LayoutGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.And;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect.EffectType;
@@ -603,6 +605,100 @@ class JsonFormsUiSchemaUtilRuleTest {
         assertThatJson(response).inPath("$.elements[2].rule.condition.schema.oneOf[1].const").isString().isEqualTo("B");
     }
 
+    @Test
+    void testIgnoreOnMissingSignals() {
+        final class EffectWithoutSignalsSettings {
+
+            interface UnmetCondition {
+            }
+
+            @Effect(signals = UnmetCondition.class, type = EffectType.HIDE, ignoreOnMissingSignals = true)
+            boolean m_setting;
+
+        }
+
+        final var response = buildTestUiSchema(EffectWithoutSignalsSettings.class);
+        assertThatJson(response).inPath("$.elements").isArray().hasSize(1);
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("setting");
+        assertThatJson(response).inPath("$.elements[0]").isObject().doesNotContainKey("rule");
+
+    }
+
+    @Test
+    void testThrowsIfMissingSignalsAreNotIgnored() {
+        final class EffectWithoutSignalsSettings {
+
+            interface UnmetCondition {
+            }
+
+            @Effect(signals = UnmetCondition.class, type = EffectType.HIDE)
+            boolean m_setting;
+
+        }
+
+        assertThat(
+            assertThrows(UiSchemaGenerationException.class, () -> buildTestUiSchema(EffectWithoutSignalsSettings.class))
+                .getMessage())
+                    .isEqualTo(String.format(
+                        "Error when resolving @Effect annotation for #/properties/test/properties/setting.:"
+                            + " Missing source annotation: %s. "
+                            + "If this is wanted and the rule should be ignored instead of throwing this error,"
+                            + " use the respective flag in the @Effect annotation.",
+                        EffectWithoutSignalsSettings.UnmetCondition.class.getName()));
+
+    }
+
+    @Test
+    @SuppressWarnings("unused")
+    void testEffectAnnotationOnClass() {
+
+        final class SubSubSettings implements LayoutGroup {
+            String m_subSubEffectSetting;
+        }
+
+        @Effect(signals = TrueCondition.class, type = EffectType.HIDE)
+        class SubSettings implements LayoutGroup {
+
+            String m_subEffectSetting;
+
+            SubSubSettings m_subSubSettings;
+        }
+
+        final class ExtendingSubSettings extends SubSettings {
+            String m_extendingSetting;
+        }
+
+        @Effect(signals = TrueCondition.class, type = EffectType.HIDE)
+        final class ExtendingSubSettingsWithExtraAnnotation extends SubSettings {
+            String m_extendingWithExtraEffectSetting;
+        }
+
+        final class EffectOnClassSettings {
+
+            @Signal(condition = TrueCondition.class)
+            boolean m_signalSetting;
+
+            SubSettings m_subSettings;
+
+            ExtendingSubSettings m_extendingSubSettings;
+
+            ExtendingSubSettingsWithExtraAnnotation m_extendingSubSettingsWithExtraAnnotation;
+
+        }
+
+        final var response = buildTestUiSchema(EffectOnClassSettings.class);
+        assertThatJson(response).inPath("$.elements").isArray().hasSize(9);
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("signalSetting");
+        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("subEffectSetting");
+        assertThatJson(response).inPath("$.elements[1].rule").isObject();
+        assertThatJson(response).inPath("$.elements[2].scope").isString().contains("subSubEffectSetting");
+        assertThatJson(response).inPath("$.elements[2].rule").isObject();
+        assertThatJson(response).inPath("$.elements[5].scope").isString().contains("extendingSetting");
+        assertThatJson(response).inPath("$.elements[5]").isObject().doesNotContainKey("rule");
+        assertThatJson(response).inPath("$.elements[8].scope").isString().contains("extendingWithExtraEffectSetting");
+        assertThatJson(response).inPath("$.elements[8].rule").isObject();
+    }
+
     static class IsTestColumnCondition extends IsSpecificColumnCondition {
         @Override
         public String getColumnName() {
@@ -680,8 +776,7 @@ class JsonFormsUiSchemaUtilRuleTest {
         assertThatJson(response).inPath("$.elements[1].rule.effect").isString().isEqualTo("SHOW");
         assertThatJson(response).inPath("$.elements[1].rule.condition.scope").isString()
             .isEqualTo(response.get("elements").get(0).get("scope").asText());
-        assertThatJson(response).inPath("$.elements[1].rule.condition.schema.const").isString()
-            .isEqualTo("<none>");
+        assertThatJson(response).inPath("$.elements[1].rule.condition.schema.const").isString().isEqualTo("<none>");
     }
 
 }

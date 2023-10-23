@@ -59,13 +59,13 @@ import java.util.Map;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil.LayoutSkeleton;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaDefaultNodeSettingsTraverser.JsonFormsControl;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.JsonFormsExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesAdder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.ser.PropertyWriter;
 
 /**
  *
@@ -119,8 +119,29 @@ final class LayoutNodesGenerator {
         final var scope = controlElement.scope();
         final var control = root.addObject().put(TAG_TYPE, TYPE_CONTROL).put(TAG_SCOPE, scope);
         final var field = controlElement.field();
-        new UiSchemaOptionsGenerator(m_mapper, field, m_defaultNodeSettingsContext, m_fields, scope, m_asyncChoicesAdder)
-            .addOptionsTo(control);
-        new UiSchemaRulesGenerator(m_mapper, field.getAnnotation(Effect.class), m_signals).applyRulesTo(control);
+        addOptions(controlElement, control, field);
+        addRule(controlElement, control);
+    }
+
+    private void addOptions(final JsonFormsControl controlElement, final ObjectNode control,
+        final PropertyWriter field) {
+        final var scope = controlElement.scope();
+        try {
+            new UiSchemaOptionsGenerator(m_mapper, field, m_defaultNodeSettingsContext, m_fields, scope,
+                m_asyncChoicesAdder).addOptionsTo(control);
+        } catch (UiSchemaGenerationException ex) {
+            throw new UiSchemaGenerationException(
+                String.format("Error when generating the options of %s.: %s", scope, ex.getMessage()), ex);
+        }
+    }
+
+    private void addRule(final JsonFormsControl controlElement, final ObjectNode control) {
+        try {
+            new UiSchemaRulesGenerator(m_mapper, controlElement.trackedAnnotations().effect(), m_signals)
+                .applyRulesTo(control);
+        } catch (UiSchemaGenerationException ex) {
+            throw new UiSchemaGenerationException(String.format("Error when resolving @Effect annotation for %s.: %s",
+                controlElement.scope(), ex.getMessage()), ex);
+        }
     }
 }
