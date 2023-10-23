@@ -16,7 +16,7 @@ export default (
   let stop: (() => void) | undefined;
 
   const addEventListeners = () => {
-    stop = onClickOutside("dummyTarget" as any, callback, { ignore: targets });
+    stop = onClickOutside(targets[0], callback, { ignore: targets });
   };
 
   const disposeEventListeners = () => {
