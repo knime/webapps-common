@@ -5,6 +5,7 @@ import {
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import CredentialsInput from "../CredentialsInput.vue";
 import LabeledInput from "../LabeledInput.vue";
+import InputField from "webapps-common/ui/components/forms/InputField.vue";
 import { inputFormats } from "@/nodeDialog/constants";
 
 describe("CredentialsInput.vue", () => {
@@ -61,13 +62,14 @@ describe("CredentialsInput.vue", () => {
   it("renders", () => {
     expect(wrapper.getComponent(CredentialsInput).exists()).toBeTruthy();
     expect(wrapper.findComponent(LabeledInput).exists()).toBeTruthy();
-    expect(wrapper.getComponent(".input-field-username").exists()).toBeTruthy();
-    expect(wrapper.getComponent(".input-field-password").exists()).toBeTruthy();
+    const inputFieldWrappers = wrapper.findAllComponents(InputField);
+    expect(inputFieldWrappers[0].exists()).toBeTruthy();
+    expect(inputFieldWrappers[1].exists()).toBeTruthy();
   });
 
   it("sets labelForId", () => {
     const labeledInput = wrapper.findComponent(LabeledInput);
-    expect(labeledInput.get(".input-fields-wrapper").attributes().id).toBe(
+    expect(labeledInput.get(".credentials-input-wrapper").attributes().id).toBe(
       labeledInput.vm.labelForId,
     );
     expect(labeledInput.vm.labeledElement).toBeDefined();
@@ -109,10 +111,11 @@ describe("CredentialsInput.vue", () => {
   });
 
   it("sets correct initial value", () => {
-    expect(wrapper.getComponent(".input-field-username").vm.modelValue).toBe(
+    const inputFieldWrappers = wrapper.findAllComponents(InputField);
+    expect(inputFieldWrappers[0].vm.modelValue).toBe(
       props.control.data.username,
     );
-    expect(wrapper.getComponent(".input-field-password").vm.modelValue).toBe(
+    expect(inputFieldWrappers[1].vm.modelValue).toBe(
       props.control.data.password,
     );
   });
@@ -120,16 +123,23 @@ describe("CredentialsInput.vue", () => {
   it("sets magic password", async () => {
     wrapper.vm.control.data.isHiddenPassword = true;
     await wrapper.vm.$nextTick();
-    expect(wrapper.getComponent(".input-field-password").vm.modelValue).toBe(
+    expect(wrapper.findAllComponents(InputField)[1].vm.modelValue).toBe(
       "*****************",
     );
   });
 
-  it("sets correct label", () => {
+  it("sets correct labels", () => {
     expect(wrapper.find("label").text()).toBe(props.control.label);
+    const inputFieldWrappers = wrapper.findAllComponents(InputField);
+    expect(inputFieldWrappers[0].get("input").attributes().placeholder).toBe(
+      "Username",
+    );
+    expect(inputFieldWrappers[1].get("input").attributes().placeholder).toBe(
+      "Password",
+    );
   });
 
-  it("calls onChangeUsername when username input is changed", () => {
+  it("updates data when username input is changed", () => {
     const dirtySettingsMock = vi.fn();
     const { wrapper, updateData } = mountJsonFormsComponent(CredentialsInput, {
       props,
@@ -142,7 +152,7 @@ describe("CredentialsInput.vue", () => {
     });
     const username = "new user";
     wrapper
-      .getComponent(".input-field-username")
+      .findAllComponents(InputField)[0]
       .vm.$emit("update:modelValue", username);
     expect(updateData).toHaveBeenCalledWith(
       expect.anything(),
@@ -152,7 +162,7 @@ describe("CredentialsInput.vue", () => {
     expect(dirtySettingsMock).not.toHaveBeenCalled();
   });
 
-  it("calls onChangePassword when password input is changed", () => {
+  it("updates data when password input is changed", () => {
     const dirtySettingsMock = vi.fn();
     const { wrapper, updateData } = mountJsonFormsComponent(CredentialsInput, {
       props,
@@ -165,7 +175,7 @@ describe("CredentialsInput.vue", () => {
     });
     const password = "new password";
     wrapper
-      .getComponent(".input-field-password")
+      .findAllComponents(InputField)[1]
       .vm.$emit("update:modelValue", password);
     expect(updateData).toHaveBeenCalledWith(
       expect.anything(),
@@ -194,8 +204,44 @@ describe("CredentialsInput.vue", () => {
     });
     const username = "new user";
     wrapper
-      .getComponent(".input-field-username")
+      .findAllComponents(InputField)[0]
       .vm.$emit("update:modelValue", username);
     expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
+  });
+
+  it("hides username input field when configured to do so", () => {
+    props.control.uischema.options.hideUsername = true;
+    const { wrapper } = mountJsonFormsComponent(CredentialsInput, { props });
+    const inputFieldWrappers = wrapper.findAllComponents(InputField);
+    expect(inputFieldWrappers).toHaveLength(1);
+    expect(inputFieldWrappers[0].get("input").attributes().type).toBe(
+      "password",
+    );
+  });
+
+  it("hides password input field when configured to do so", () => {
+    props.control.uischema.options.hidePassword = true;
+    const { wrapper } = mountJsonFormsComponent(CredentialsInput, { props });
+    const inputFieldWrappers = wrapper.findAllComponents(InputField);
+    expect(inputFieldWrappers).toHaveLength(1);
+    expect(inputFieldWrappers[0].get("input").attributes().type).toBe("text");
+  });
+
+  it("uses a custom username label if provided with one", () => {
+    props.control.uischema.options.usernameLabel = "Custom Username";
+    const { wrapper } = mountJsonFormsComponent(CredentialsInput, { props });
+    expect(
+      wrapper.findAllComponents(InputField)[0].get("input").attributes()
+        .placeholder,
+    ).toBe(props.control.uischema.options.usernameLabel);
+  });
+
+  it("uses a custom password label if provided with one", () => {
+    props.control.uischema.options.passwordLabel = "Custom Password";
+    const { wrapper } = mountJsonFormsComponent(CredentialsInput, { props });
+    expect(
+      wrapper.findAllComponents(InputField)[1].get("input").attributes()
+        .placeholder,
+    ).toBe(props.control.uischema.options.passwordLabel);
   });
 });

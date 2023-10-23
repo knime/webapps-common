@@ -47,6 +47,18 @@ const CredentialsInput = defineComponent({
         ? "*****************"
         : this.control.data.password;
     },
+    hideUsername() {
+      return this.control.uischema.options?.hideUsername ?? false;
+    },
+    hidePassword() {
+      return this.control.uischema.options?.hidePassword ?? false;
+    },
+    usernameLabel() {
+      return this.control.uischema.options?.usernameLabel ?? "Username";
+    },
+    passwordLabel() {
+      return this.control.uischema.options?.passwordLabel ?? "Password";
+    },
   },
   methods: {
     onChange(credentials: Credentials) {
@@ -83,16 +95,19 @@ export default CredentialsInput;
       :flow-settings="flowSettings"
       @controlling-flow-variable-set="onChange"
     >
-      <div :id="labelForId" class="input-fields-wrapper">
+      <div :id="labelForId" class="credentials-input-wrapper">
         <InputField
-          class="input-field-username"
+          v-if="!hideUsername"
+          :placeholder="usernameLabel"
           :model-value="control.data.username"
           :disabled="disabled"
           type="text"
           @update:model-value="onChangeUsername"
         />
         <InputField
-          class="input-field-password"
+          v-if="!hidePassword"
+          :class="{ password: !hideUsername }"
+          :placeholder="passwordLabel"
           :model-value="displayedPassword"
           :disabled="disabled"
           type="password"
@@ -102,3 +117,9 @@ export default CredentialsInput;
     </LabeledInput>
   </DialogComponentWrapper>
 </template>
+
+<style lang="postcss" scoped>
+.password {
+  margin-top: 10px;
+}
+</style>
