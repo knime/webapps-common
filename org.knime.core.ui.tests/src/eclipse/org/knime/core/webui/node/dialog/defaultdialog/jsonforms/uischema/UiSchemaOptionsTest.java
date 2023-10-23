@@ -80,6 +80,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonChange;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.CredentialsWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.PasswordWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.UsernameWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DeclaringDefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
 
@@ -95,6 +98,7 @@ class UiSchemaOptionsTest {
 
     @Test
     void testDefaultFormats() {
+        @SuppressWarnings("unused")
         class DefaultStylesSettings implements DefaultNodeSettings {
             String m_string;
 
@@ -237,6 +241,7 @@ class UiSchemaOptionsTest {
 
         @Test
         void testShowSortButtonsTest() {
+            @SuppressWarnings("unused")
             class ArrayElement {
                 String m_field1;
 
@@ -604,6 +609,47 @@ class UiSchemaOptionsTest {
         assertThatJson(response).inPath("$.elements[0]").isObject().containsKey("options");
         assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("richTextInput");
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("richTextContent");
+    }
+
+
+
+    @Test
+    void testCredentials() {
+        class CredentialsWidgetSettings {
+            @CredentialsWidget(passwordLabel = "myPasswordLabel", usernameLabel = "myUsernameLabel")
+            Credentials m_credentials;
+            @PasswordWidget("myPasswordLabel")
+            Credentials m_password;
+            @UsernameWidget("myUsernameLabel")
+            Credentials m_username;
+        }
+
+        var response = buildTestUiSchema(CredentialsWidgetSettings.class);
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("credentials");
+        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("credentials");
+        assertThatJson(response).inPath("$.elements[0].options.passwordLabel").isString().isEqualTo("myPasswordLabel");
+        assertThatJson(response).inPath("$.elements[0].options.usernameLabel").isString().isEqualTo("myUsernameLabel");
+        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("password");
+        assertThatJson(response).inPath("$.elements[1].options.format").isString().isEqualTo("credentials");
+        assertThatJson(response).inPath("$.elements[1].options.passwordLabel").isString().isEqualTo("myPasswordLabel");
+        assertThatJson(response).inPath("$.elements[1].options.hideUsername").isBoolean().isTrue();
+        assertThatJson(response).inPath("$.elements[2].scope").isString().contains("username");
+        assertThatJson(response).inPath("$.elements[2].options.format").isString().isEqualTo("credentials");
+        assertThatJson(response).inPath("$.elements[2].options.usernameLabel").isString().isEqualTo("myUsernameLabel");
+        assertThatJson(response).inPath("$.elements[2].options.hidePassword").isBoolean().isTrue();
+
+    }
+
+    @Test
+    void testThrowsIfUsernameWidget() {
+        class CredentialsWidgetSettings {
+            @PasswordWidget("myPasswordLabel")
+            @UsernameWidget("myUsernameLabel")
+            Credentials m_credentials;
+        }
+
+        assertThrows(UiSchemaGenerationException.class, () ->  buildTestUiSchema(CredentialsWidgetSettings.class));
+
     }
 
 }

@@ -86,6 +86,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.CredentialsWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.PasswordWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.UsernameWidget;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -182,8 +185,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * </tr>
  * <tr>
  * <td>{@link Credentials}</td>
- * <td>Credentials Input</td>
- * <td></td>
+ * <td>Credentials Input (username + password)</td>
+ * <td>{@link CredentialsWidget} (for customizing username + password)<br>
+ * {@link PasswordWidget} (password only)<br>
+ * {@link UsernameWidget} (username only)</td>
  * </tr>
  * <tr>
  * <td>Any type</td>

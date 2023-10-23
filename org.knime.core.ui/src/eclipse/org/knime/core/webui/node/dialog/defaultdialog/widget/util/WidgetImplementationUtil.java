@@ -69,6 +69,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.RichTextInputWidget
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.CredentialsWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.PasswordWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.UsernameWidget;
 
 /**
  * This utility class defines defaults and registers additional annotations used to define the format of an ui element.
@@ -130,7 +133,10 @@ public final class WidgetImplementationUtil {
         new WidgetAnnotation(ButtonWidget.class), //
         new WidgetAnnotation(List.of(String.class), DateTimeWidget.class), //
         new WidgetAnnotation(List.of(LocalDate.class), DateWidget.class), //
-        new WidgetAnnotation(List.of(String.class), RichTextInputWidget.class) //
+        new WidgetAnnotation(List.of(String.class), RichTextInputWidget.class), //
+        new WidgetAnnotation(List.of(Credentials.class), CredentialsWidget.class), //
+        new WidgetAnnotation(List.of(Credentials.class), PasswordWidget.class), //
+        new WidgetAnnotation(List.of(Credentials.class), UsernameWidget.class) //
     };
 
     /**

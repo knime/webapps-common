@@ -103,6 +103,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.button.NoopButtonUp
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesAdder;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.NoopChoicesUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.PersistentAsyncChoicesAdder;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.CredentialsWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.PasswordWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.UsernameWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DeclaringDefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.WidgetAnnotation;
@@ -266,6 +269,31 @@ final class UiSchemaOptionsGenerator {
             } else {
                 options.put("radioLayout", "vertical");
             }
+        }
+
+        final var hasCredentialsWidgetAnnotation = annotatedWidgets.contains(CredentialsWidget.class);
+        final var hasUsernameWidgetAnnotation = annotatedWidgets.contains(UsernameWidget.class);
+        final var hasPasswordWidgetAnnotation = annotatedWidgets.contains(PasswordWidget.class);
+        if (Stream.of(hasCredentialsWidgetAnnotation, hasUsernameWidgetAnnotation, hasPasswordWidgetAnnotation)
+            .filter(b -> b).count() > 1) {
+            throw new UiSchemaGenerationException(
+                "@UsernameWidget, @PasswordWidget and @CredentialsWidget should not be used together in one place.");
+        }
+        if (hasCredentialsWidgetAnnotation) {
+            final var credentialsWidget = m_field.getAnnotation(CredentialsWidget.class);
+            options.put("usernameLabel", credentialsWidget.usernameLabel());
+            options.put("passwordLabel", credentialsWidget.passwordLabel());
+        }
+        if (hasUsernameWidgetAnnotation) {
+            final var usernameWidget = m_field.getAnnotation(UsernameWidget.class);
+            options.put("hidePassword", true);
+            options.put("usernameLabel", usernameWidget.value());
+
+        }
+        if (hasPasswordWidgetAnnotation) {
+            final var passwordWidget = m_field.getAnnotation(PasswordWidget.class);
+            options.put("hideUsername", true);
+            options.put("passwordLabel", passwordWidget.value());
         }
 
         if (annotatedWidgets.contains(ChoicesWidget.class)) {
