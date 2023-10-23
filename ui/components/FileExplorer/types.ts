@@ -13,7 +13,7 @@ export type FileExplorerItem<T = Record<string, any>> = {
 };
 
 export type ItemIconRenderer = (
-  item: FileExplorerItem
+  item: FileExplorerItem,
 ) => FunctionalComponent<SVGAttributes>;
 
 export namespace FileExplorerContextMenu {
@@ -31,8 +31,10 @@ export namespace FileExplorerContextMenu {
 
   export type CreateDefaultMenuOption = (
     item: FileExplorerItem,
-    customProps?: Partial<BaseMenuItem>
+    customProps?: Partial<BaseMenuItem>,
   ) => MenuItem;
+
+  export type ItemClickHandler = (menuItem: MenuItem) => void;
 
   export type ItemClickPayload = {
     contextMenuItem: MenuItem;

@@ -17,7 +17,7 @@ const COLORS = {
  */
 const applyStyles = (
   element: HTMLElement,
-  styles: Partial<CSSStyleDeclaration>
+  styles: Partial<CSSStyleDeclaration>,
 ): void => {
   Object.entries(styles).forEach(([property, value]) => {
     // @ts-ignore
@@ -259,6 +259,15 @@ export const createDragGhosts = ({
 }: CreateDragGhostsParams): CreateDragGhostsReturnType => {
   removeNativeDragGhost(dragStartEvent);
 
+  const ensureCleanState = () => {
+    const maybeGhosts = document.querySelectorAll('[data-id="drag-ghost"]');
+    if (maybeGhosts.length) {
+      maybeGhosts.forEach((el) => el.parentNode?.removeChild(el));
+    }
+  };
+
+  ensureCleanState();
+
   // separate the first target and use it to create the badge
   const [firstTarget, ...otherTargets] = selectedTargets;
   const { ghost: firstGhost, badge } = createGhostElement({
@@ -303,13 +312,19 @@ export const createDragGhosts = ({
     };
 
   const removeGhosts: CreateDragGhostsReturnType["removeGhosts"] = (
-    animateOut = true
+    animateOut = true,
   ) => {
     const removeGhost = ({ ghost }: { ghost: HTMLElement }) => {
       if (!animateOut) {
         ghost.style.display = "none";
       }
-      document.body.removeChild(ghost);
+      try {
+        document.body.removeChild(ghost);
+      } catch (error) {
+        // mute exception trying to delete ghost.
+        // this could happen if the `removeGhosts` function is called more than one
+        // in which case
+      }
       document.removeEventListener("drag", updatePosition);
     };
 

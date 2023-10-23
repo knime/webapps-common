@@ -18,10 +18,12 @@ interface Props {
   isDragging: boolean;
   isRenameActive: boolean;
   itemIconRenderer?: ItemIconRenderer | null;
+  isDraggingEnabled?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   itemIconRenderer: null,
+  isDraggingDisabled: true,
 });
 
 const defaultIconRenderer: ItemIconRenderer = (item) => {
@@ -35,6 +37,7 @@ interface Emits {
   (e: "click", nativeEvent: MouseEvent): void;
   (e: "dragstart", nativeEvent: DragEvent): void;
   (e: "dragenter", nativeEvent: DragEvent): void;
+  (e: "dragover", nativeEvent: DragEvent): void;
   (e: "drag", nativeEvent: DragEvent): void;
   (e: "dragleave", nativeEvent: DragEvent): void;
   (e: "dragend", nativeEvent: DragEvent): void;
@@ -97,10 +100,10 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
     class="file-explorer-item"
     :is-dragging="isDragging"
     :is-selected="isSelected"
-    :draggable="!isRenameActive"
+    :draggable="isDraggingEnabled && !isRenameActive"
     @dragstart="!isRenameActive && emit('dragstart', $event)"
     @dragenter="!isRenameActive && emit('dragenter', $event)"
-    @dragover.prevent
+    @dragover="emit('dragover', $event)"
     @dragleave="!isRenameActive && emit('dragleave', $event)"
     @dragend="!isRenameActive && emit('dragend', $event)"
     @drag="emit('drag', $event)"

@@ -10,7 +10,7 @@ type UseItemDraggingOptions = {
   itemBACK: Ref<HTMLElement | null>;
   multiSelection: UseMultiSelectionReturn;
   shouldUseCustomDragPreview: Ref<boolean>;
-  draggingAnimationMode: "auto" | "manual" | "disabled";
+  draggingAnimationMode: Ref<"auto" | "manual" | "disabled">;
   getCustomPreviewEl: () => HTMLElement;
   isDirectory: (item: FileExplorerItem) => boolean;
 };
@@ -37,15 +37,15 @@ export const useItemDragging = (options: UseItemDraggingOptions) => {
   const startDragItemIndex = ref<number | null>(null);
 
   const selectedItems = computed(() =>
-    multiSelection.selectedIndexes.value.map((index) => items.value[index])
+    multiSelection.selectedIndexes.value.map((index) => items.value[index]),
   );
   const selectedItemIds = computed(() =>
-    selectedItems.value.map((item) => item.id)
+    selectedItems.value.map((item) => item.id),
   );
 
   const getItemElementByRefIndex = (
     index: number,
-    isGoBackItem = false
+    isGoBackItem = false,
   ): HTMLElement =>
     isGoBackItem
       ? itemBACK.value!
@@ -62,9 +62,13 @@ export const useItemDragging = (options: UseItemDraggingOptions) => {
       multiSelection.handleSelectionClick(index);
     }
 
+    if (options.draggingAnimationMode.value === "disabled") {
+      return;
+    }
+
     // get all items that are selected, except the one that initiated the drag
     const otherSelectedIndexes = multiSelection.selectedIndexes.value.filter(
-      (selectedIndex) => index !== selectedIndex
+      (selectedIndex) => index !== selectedIndex,
     );
 
     // map an index to an object that will be used to generate the ghost
@@ -90,7 +94,15 @@ export const useItemDragging = (options: UseItemDraggingOptions) => {
     __replaceGhostPreview = dragGhostHelpers.replaceGhostPreview;
   };
 
-  const onDragEnter = (index: number, isGoBackItem = false) => {
+  const onDragEnter = (
+    event: DragEvent,
+    index: number,
+    isGoBackItem = false,
+  ) => {
+    if (!isDragging.value) {
+      return;
+    }
+
     if (multiSelection.isSelected(index) && !isGoBackItem) {
       return;
     }
@@ -101,10 +113,22 @@ export const useItemDragging = (options: UseItemDraggingOptions) => {
     }
   };
 
+  const onDragOver = (event: DragEvent) => {
+    if (isDragging.value) {
+      event.preventDefault();
+    }
+  };
+
   const onDrag = (
     event: DragEvent,
-    item: FileExplorerItem
+    item: FileExplorerItem,
   ): { event: DragEvent; item: FileExplorerItem } => ({ event, item });
+
+  watch(options.draggingAnimationMode, (next, prev) => {
+    if (next !== prev && prev === "disabled") {
+      __removeGhosts?.();
+    }
+  });
 
   watch(shouldUseCustomDragPreview, () => {
     if (isDragging.value) {
@@ -116,19 +140,25 @@ export const useItemDragging = (options: UseItemDraggingOptions) => {
     }
   });
 
-  const onDragLeave = (index: number, isGoBackItem = false) => {
+  const onDragLeave = (
+    event: DragEvent,
+    index: number,
+    isGoBackItem = false,
+  ) => {
     const draggedOverEl = getItemElementByRefIndex(index, isGoBackItem);
     draggedOverEl.classList.remove("dragging-over");
   };
 
-  const onDragEnd = (
-    event: DragEvent,
-    item: FileExplorerItem
-  ): {
+  type DragEndReturn = {
     event: DragEvent;
     sourceItem: FileExplorerItem;
     onComplete: (isSuccess: boolean) => void;
-  } | null => {
+  } | null;
+
+  const onDragEnd = (
+    event: DragEvent,
+    item: FileExplorerItem,
+  ): DragEndReturn => {
     isDragging.value = false;
 
     if (event.dataTransfer?.dropEffect === "none") {
@@ -143,24 +173,26 @@ export const useItemDragging = (options: UseItemDraggingOptions) => {
 
       // animate ghosts back if drop was unsuccessful
       __removeGhosts?.(!isSuccessfulDrop);
-      __removeGhosts = null;
     };
 
-    if (options.draggingAnimationMode === "auto") {
+    if (options.draggingAnimationMode.value === "auto") {
       onComplete(true);
     }
 
     return { event, sourceItem: item, onComplete };
   };
 
-  const onDrop = (
-    index: number,
-    isGoBackItem = false
-  ): {
+  type DropReturn = {
     sourceItems: Array<string>;
     targetItem: string;
     onComplete: (isSuccess: boolean) => void;
-  } | null => {
+  } | null;
+
+  const onDrop = (
+    event: DragEvent,
+    index: number,
+    isGoBackItem = false,
+  ): DropReturn => {
     const droppedEl = getItemElementByRefIndex(index, isGoBackItem);
     droppedEl.classList.remove("dragging-over");
 
@@ -186,7 +218,7 @@ export const useItemDragging = (options: UseItemDraggingOptions) => {
       __removeGhosts = null;
     };
 
-    if (options.draggingAnimationMode === "auto") {
+    if (options.draggingAnimationMode.value === "auto") {
       onComplete(true);
     }
 
@@ -201,6 +233,7 @@ export const useItemDragging = (options: UseItemDraggingOptions) => {
     isDragging,
     onDragStart,
     onDragEnter,
+    onDragOver,
     onDrag,
     onDragLeave,
     onDragEnd,
