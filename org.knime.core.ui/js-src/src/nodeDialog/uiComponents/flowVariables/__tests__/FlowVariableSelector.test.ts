@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import type Provided from "@/nodeDialog/types/provided";
 import Dropdown from "webapps-common/ui/components/forms/Dropdown.vue";
-import MulitpleConfigKeysNotYetSupported from "../MultipleConfigKeysNotYetSupported.vue";
 import { mount } from "@vue/test-utils";
 import {
   beforeEach,
@@ -27,7 +26,8 @@ describe("FlowVariableSelector.vue", () => {
   beforeEach(() => {
     props = {
       flowVariablesMap: {},
-      path: "model.myPath",
+      dataPath: "model.myPath",
+      persistPath: "persist.path.to.setting",
     };
   });
 
@@ -120,7 +120,9 @@ describe("FlowVariableSelector.vue", () => {
       props,
       getAvailableFlowVariables: getAvailableFlowVariablesMock,
     });
-    expect(getAvailableFlowVariablesMock).toHaveBeenCalledWith(props.path);
+    expect(getAvailableFlowVariablesMock).toHaveBeenCalledWith(
+      props.persistPath,
+    );
     expect(wrapper.findComponent(Dropdown).props()).toMatchObject({
       modelValue: "",
       placeholder: "Fetching available flow variables...",
@@ -170,13 +172,13 @@ describe("FlowVariableSelector.vue", () => {
       .findAll("li")
       .find((li) => li.text() === flowVar2.name)!;
     await scondFlowVariableOptionElement.trigger("click");
-    expect(props.flowVariablesMap[props.path]).toStrictEqual({
+    expect(props.flowVariablesMap[props.persistPath]).toStrictEqual({
       controllingFlowVariableAvailable: true,
       controllingFlowVariableName: flowVar2.name,
     });
     expect(getFlowVariableOverrideValueMock).toHaveBeenCalledWith(
-      props.path,
-      props.path,
+      props.persistPath,
+      props.dataPath,
     );
     expect(wrapper.emitted("controllingFlowVariableSet")?.[0]?.[0]).toBe(
       flowVarValue,
@@ -185,7 +187,7 @@ describe("FlowVariableSelector.vue", () => {
 
   it("unsets controlling flow variable on none selection", async () => {
     const exposedFlowVariableName = "exposed";
-    props.flowVariablesMap[props.path] = {
+    props.flowVariablesMap[props.dataPath] = {
       controllingFlowVariableAvailable: true,
       controllingFlowVariableName: "foo",
       exposedFlowVariableName,
@@ -199,7 +201,9 @@ describe("FlowVariableSelector.vue", () => {
     await flushPromises();
     const noneOption = wrapper.findComponent(Dropdown).find("li");
     await noneOption.trigger("click");
-    expect(unsetControllingFlowVariableMock).toHaveBeenCalledWith(props.path);
+    expect(unsetControllingFlowVariableMock).toHaveBeenCalledWith(
+      props.persistPath,
+    );
     expect(wrapper.emitted("controllingFlowVariableSet")).toBeUndefined();
   });
 
@@ -211,95 +215,7 @@ describe("FlowVariableSelector.vue", () => {
     await flushPromises();
     const noneOption = wrapper.findComponent(Dropdown).find("li");
     await noneOption.trigger("click");
-    expect(props.flowVariablesMap[props.path]).toBeUndefined();
+    expect(props.flowVariablesMap[props.dataPath]).toBeUndefined();
     expect(wrapper.emitted("controllingFlowVariableSet")).toBeUndefined();
-  });
-
-  describe("configKeys", () => {
-    it("fetches the possible values using config key", () => {
-      props.path = "path.to.parent.value";
-      props.configKeys = ["myConfigKey"];
-      mountFlowVariableSelector({
-        props,
-        getAvailableFlowVariables: getAvailableFlowVariablesMock,
-      });
-      expect(getAvailableFlowVariablesMock).toHaveBeenCalledWith(
-        "path.to.parent.myConfigKey",
-      );
-    });
-
-    it("does not fetch values in case of multiple config keys", () => {
-      props.configKeys = ["myConfigKey1", "myConfigKey2"];
-      const wrapper = mountFlowVariableSelector({
-        props,
-        getAvailableFlowVariables: getAvailableFlowVariablesMock,
-      });
-      expect(getAvailableFlowVariablesMock).not.toHaveBeenCalled();
-      expect(
-        wrapper.findComponent(MulitpleConfigKeysNotYetSupported).exists(),
-      ).toBeTruthy();
-      const message = wrapper
-        .findComponent(MulitpleConfigKeysNotYetSupported)
-        .text();
-      expect(message).toContain(props.configKeys[0]);
-      expect(message).toContain(props.configKeys[1]);
-    });
-
-    it("sets controlling flow variable using config key", async () => {
-      props.path = "path.to.parent.value";
-      props.configKeys = ["myConfigKey"];
-      const persistPath = "path.to.parent.myConfigKey";
-      const flowVarValue = "Value_fetched_from_backend";
-      const getFlowVariableOverrideValueMock = vi.fn(
-        (_persistPath: string, _dataPath: string) =>
-          Promise.resolve(flowVarValue),
-      );
-      const wrapper = mountFlowVariableSelector({
-        props,
-        getAvailableFlowVariables: getAvailableFlowVariablesMock,
-        getFlowVariableOverrideValue: getFlowVariableOverrideValueMock,
-      });
-      await flushPromises();
-      const scondFlowVariableOptionElement = wrapper
-        .findComponent(Dropdown)
-        .findAll("li")
-        .find((li) => li.text() === flowVar2.name)!;
-      await scondFlowVariableOptionElement.trigger("click");
-      expect(props.flowVariablesMap[persistPath]).toStrictEqual({
-        controllingFlowVariableAvailable: true,
-        controllingFlowVariableName: flowVar2.name,
-      });
-      expect(getFlowVariableOverrideValueMock).toHaveBeenCalledWith(
-        persistPath,
-        props.path,
-      );
-      expect(wrapper.emitted("controllingFlowVariableSet")?.[0]?.[0]).toBe(
-        flowVarValue,
-      );
-    });
-
-    it("unsets controlling flow variable on none selection using config key", async () => {
-      props.path = "path.to.parent.value";
-      props.configKeys = ["myConfigKey"];
-      const exposedFlowVariableName = "exposed";
-      props.flowVariablesMap["path.to.parent.myConfigKey"] = {
-        controllingFlowVariableAvailable: true,
-        controllingFlowVariableName: "foo",
-        exposedFlowVariableName,
-      };
-      const unsetControllingFlowVariableMock = vi.fn((_persistPath) => {});
-      const wrapper = mountFlowVariableSelector({
-        props,
-        getAvailableFlowVariables: getAvailableFlowVariablesMock,
-        unsetControllingFlowVariable: unsetControllingFlowVariableMock,
-      });
-      await flushPromises();
-      const noneOption = wrapper.findComponent(Dropdown).find("li");
-      await noneOption.trigger("click");
-      expect(unsetControllingFlowVariableMock).toHaveBeenCalledWith(
-        "path.to.parent.myConfigKey",
-      );
-      expect(wrapper.emitted("controllingFlowVariableSet")).toBeUndefined();
-    });
   });
 });

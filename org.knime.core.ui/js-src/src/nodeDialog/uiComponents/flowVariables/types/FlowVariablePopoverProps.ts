@@ -1,10 +1,10 @@
 import type { FlowSettings } from "@/nodeDialog/api/types";
 
-type FlowVariableSelectorProps = {
+type FlowVariablePopoverProps = {
   flowSettings?: FlowSettings;
   flowVariablesMap: Record<string, FlowSettings>;
-  persistPath: string;
-  dataPath: string;
+  path: string;
+  configKeys?: string[];
 };
 
-export default FlowVariableSelectorProps;
+export default FlowVariablePopoverProps;

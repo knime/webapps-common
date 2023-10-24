@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
 import FlowVariableIcon from "../FlowVariableIcon.vue";
-import FlowVariableSelector from "../FlowVariableSelector.vue";
+import FlowVariablePopover from "../FlowVariablePopover.vue";
+
 import DialogPopover from "@/nodeDialog/popover/DialogPopover.vue";
 
 import { mount } from "@vue/test-utils";
@@ -42,8 +43,7 @@ describe("FlowVariableButton.vue", () => {
       props,
       global: {
         stubs: {
-          FlowVariableIcon: true,
-          FlowVariableSelector: true,
+          FlowVariablePopover: true,
         },
       },
     });
@@ -55,7 +55,7 @@ describe("FlowVariableButton.vue", () => {
     // Components
     expect(wrapper.findComponent(DialogPopover).exists()).toBeTruthy();
     expect(wrapper.findComponent(FlowVariableIcon).exists()).toBeTruthy();
-    expect(wrapper.findComponent(FlowVariableSelector).exists()).toBeFalsy();
+    expect(wrapper.findComponent(FlowVariablePopover).exists()).toBeFalsy();
 
     // Props
     expect(wrapper.findComponent(DialogPopover).props()).toStrictEqual({
@@ -103,14 +103,13 @@ describe("FlowVariableButton.vue", () => {
     );
   });
 
-  it("opens FlowVariableSelector on button click", async () => {
+  it("opens FlowVariablePopover on button click", async () => {
     const wrapper = mountFlowVariableButton({ props });
     await wrapper.find(".function-button").trigger("mouseup");
     const box = wrapper.find(".box");
-    expect(box.text()).toBe("Select variable");
-    const selector = box.findComponent(FlowVariableSelector);
-    expect(selector.exists()).toBeTruthy();
-    expect(selector.props()).toStrictEqual({
+    const popover = box.findComponent(FlowVariablePopover);
+    expect(popover.exists()).toBeTruthy();
+    expect(popover.props()).toStrictEqual({
       configKeys: props.configKeys,
       flowSettings: props.flowSettings,
       flowVariablesMap: props.flowVariablesMap,

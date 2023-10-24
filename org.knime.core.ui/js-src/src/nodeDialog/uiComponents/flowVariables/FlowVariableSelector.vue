@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import Dropdown from "webapps-common/ui/components/forms/Dropdown.vue";
-import MulitpleConfigKeysNotYetSupported from "./MultipleConfigKeysNotYetSupported.vue";
 import type FlowVariableSelectorProps from "./types/FlowVariableSelectorProps";
 import { computed, onMounted, ref, type Ref } from "vue";
 import type { PossibleFlowVariable } from "@/nodeDialog/api/types";
 import { setControllingFlowVariable } from "@/nodeDialog/api/flowVariables";
-import { getConfigPaths } from "@/nodeDialog/utils";
+
 import inject from "@/nodeDialog/utils/inject";
 
 const {
@@ -15,16 +14,6 @@ const {
 } = inject("flowVariablesApi")!;
 
 const props = defineProps<FlowVariableSelectorProps>();
-
-/**
- * Either the single path under which the flow variables are stored within the
- * flowVariablesMap for this setting or false if there are multiple config keys
- * present (which is not yet supported).
- */
-const singlePath = computed(() => {
-  const paths = getConfigPaths(props.path, props.configKeys);
-  return paths.length === 1 ? paths[0] : false;
-});
 
 const dropdownPossibleValues: Ref<
   {
@@ -58,18 +47,16 @@ const fetchAllPossibleValues = async (path: string) => {
 let availableVariablesLoaded = ref(false);
 
 onMounted(async () => {
-  if (singlePath.value) {
-    const allPossibleValues = await fetchAllPossibleValues(singlePath.value);
-    nameToFlowVariable.value = allPossibleValues.reduce(
-      (lookupMap, flowVar) => {
-        lookupMap[flowVar.name] = flowVar;
-        return lookupMap;
-      },
-      {} as Record<string, PossibleFlowVariable>,
-    );
-    dropdownPossibleValues.value = toDropdownValues(allPossibleValues);
-    availableVariablesLoaded.value = true;
-  }
+  const allPossibleValues = await fetchAllPossibleValues(props.persistPath);
+  nameToFlowVariable.value = allPossibleValues.reduce(
+    (lookupMap, flowVar) => {
+      lookupMap[flowVar.name] = flowVar;
+      return lookupMap;
+    },
+    {} as Record<string, PossibleFlowVariable>,
+  );
+  dropdownPossibleValues.value = toDropdownValues(allPossibleValues);
+  availableVariablesLoaded.value = true;
 });
 
 const selectedValue = computed(
@@ -79,28 +66,27 @@ const selectedValue = computed(
 const emit = defineEmits(["controllingFlowVariableSet"]);
 
 const selectValue = async (selectedId: string | number) => {
-  if (!singlePath.value) {
-    return;
-  }
   if (selectedId === noFlowVariableOption.id) {
-    unsetControllingFlowVariable(singlePath.value);
+    unsetControllingFlowVariable(props.persistPath);
     return;
   }
   const flowVar = nameToFlowVariable.value[selectedId];
   setControllingFlowVariable(props.flowVariablesMap, {
-    path: singlePath.value,
+    path: props.persistPath,
     flowVariableName: flowVar.name,
   });
   const value = await getFlowVariableOverrideValue(
-    singlePath.value,
-    props.path,
+    props.persistPath,
+    props.dataPath,
   );
   if (typeof value !== "undefined") {
     emit("controllingFlowVariableSet", value);
   }
 };
 
-const ariaLabel = computed(() => `controlling-flow-variables-${props.path}`);
+const ariaLabel = computed(
+  () => `controlling-flow-variables-${props.dataPath}`,
+);
 const noOptionsPresent = computed(
   () =>
     Boolean(dropdownPossibleValues.value.length === 1) && !selectedValue.value,
@@ -118,7 +104,6 @@ const placeholder = computed(() => {
 <!-- eslint-disable vue/attribute-hyphenation typescript complains with ':aria-label' instead of ':ariaLabel'-->
 <template>
   <Dropdown
-    v-if="singlePath"
     :ariaLabel="ariaLabel"
     :possible-values="dropdownPossibleValues"
     :model-value="availableVariablesLoaded ? selectedValue : ''"
@@ -126,5 +111,4 @@ const placeholder = computed(() => {
     :disabled="!availableVariablesLoaded || noOptionsPresent"
     @update:model-value="selectValue"
   />
-  <MulitpleConfigKeysNotYetSupported v-else :config-keys="configKeys!" />
 </template>
