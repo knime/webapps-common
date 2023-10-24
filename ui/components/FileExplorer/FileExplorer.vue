@@ -18,7 +18,7 @@ import type {
  *
  * NOTE: Do not add store bindings to component to keep it as reusable as possible
  */
-interface Props {
+export interface Props {
   mode?: "normal" | "mini";
   /**
    * full path of the currently displayed directory. This can be used to

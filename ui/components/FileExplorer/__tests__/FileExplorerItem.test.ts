@@ -1,8 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { mount } from "@vue/test-utils";
 
-import InputField from "webapps-common/ui/components/forms/InputField.vue";
-import { SpaceItem } from "@/api/gateway-api/generated-api";
+import InputField from "../../forms/InputField.vue";
 
 import FileExplorerItemComponent from "../FileExplorerItem.vue";
 import FileExplorerItemBase from "../FileExplorerItemBase.vue";
@@ -20,7 +19,7 @@ describe("FileExplorerItem.vue", () => {
       canBeDeleted: true,
       canBeRenamed: true,
       meta: {
-        type: SpaceItem.TypeEnum.Workflow,
+        type: "Workflow",
       },
     } satisfies FileExplorerItem,
     isSelected: false,
@@ -40,17 +39,17 @@ describe("FileExplorerItem.vue", () => {
     const { wrapper } = doMount();
 
     expect(wrapper.find(".item-content").text()).toMatch(
-      defaultProps.item.name
+      defaultProps.item.name,
     );
     expect(wrapper.find(".item-content").attributes("title")).toEqual(
-      defaultProps.item.name
+      defaultProps.item.name,
     );
   });
 
   it("should set the light class for Workflow type items", () => {
     const { wrapper } = doMount({
       props: {
-        item: { ...defaultProps.item, type: SpaceItem.TypeEnum.Workflow },
+        item: { ...defaultProps.item, type: "Workflow" },
       },
     });
 
@@ -66,10 +65,10 @@ describe("FileExplorerItem.vue", () => {
     });
 
     expect(
-      wrapper.findComponent(FileExplorerItemBase).props("isDragging")
+      wrapper.findComponent(FileExplorerItemBase).props("isDragging"),
     ).toBe(true);
     expect(
-      wrapper.findComponent(FileExplorerItemBase).props("isSelected")
+      wrapper.findComponent(FileExplorerItemBase).props("isSelected"),
     ).toBe(true);
   });
 
@@ -98,7 +97,7 @@ describe("FileExplorerItem.vue", () => {
       wrapper.find("input").setValue("new name");
       await wrapper.find("input").trigger("keyup", { key: "Enter" });
 
-      expect(wrapper.emitted("rename:submit")[0][0]).toEqual({
+      expect(wrapper.emitted("rename:submit")![0][0]).toEqual({
         itemId: defaultProps.item.id,
         newName: "new name",
       });

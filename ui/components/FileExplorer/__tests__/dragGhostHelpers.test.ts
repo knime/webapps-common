@@ -4,6 +4,7 @@ import { createDragGhosts } from "../dragGhostHelpers";
 
 vi.mock("gsap", () => ({
   gsap: {
+    // @ts-ignore
     to: (_, { onComplete }) => {
       onComplete();
     },
@@ -12,7 +13,15 @@ vi.mock("gsap", () => ({
 }));
 
 describe("dragGhostHelpers", () => {
-  const setup = ({ selectedTargets = [], badgeCount = null } = {}) => {
+  type SetupOptions = {
+    selectedTargets?: Array<{ targetEl: HTMLElement; textContent: string }>;
+    badgeCount?: number | null;
+  };
+
+  const setup = ({
+    selectedTargets = [],
+    badgeCount = null,
+  }: SetupOptions = {}) => {
     const dragTarget =
       selectedTargets.length > 0
         ? selectedTargets[0].targetEl
@@ -41,7 +50,8 @@ describe("dragGhostHelpers", () => {
     return { ...result, dataTransfer };
   };
 
-  const getBadgeElement = (ghost) => ghost.querySelector("#drag-ghost-badge");
+  const getBadgeElement = (ghost: HTMLElement) =>
+    ghost.querySelector("#drag-ghost-badge") as HTMLElement;
 
   it("should add the proper text in the ghost", () => {
     const selectedTargets = [
@@ -92,7 +102,7 @@ describe("dragGhostHelpers", () => {
       ];
       const { ghosts } = setup({ selectedTargets, badgeCount: 10 });
 
-      expect(getBadgeElement(ghosts[0]).innerText).toBe("10");
+      expect(getBadgeElement(ghosts[0])?.innerText).toBe("10");
     });
 
     it("should display the proper badge count (>99)", () => {
@@ -101,7 +111,7 @@ describe("dragGhostHelpers", () => {
       ];
       const { ghosts } = setup({ selectedTargets, badgeCount: 150 });
 
-      expect(getBadgeElement(ghosts[0]).innerText).toBe("99+");
+      expect(getBadgeElement(ghosts[0])?.innerText).toBe("99+");
     });
   });
 
@@ -111,7 +121,7 @@ describe("dragGhostHelpers", () => {
     expect(dataTransfer.setDragImage).toHaveBeenCalledWith(
       expect.any(Image),
       0,
-      0
+      0,
     );
   });
 

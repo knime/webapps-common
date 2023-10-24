@@ -33,7 +33,7 @@ export const useNameValidator = (options: UseNameValidatorOptions) => {
   });
 
   const isNameAvailable = computed(
-    () => !options.blacklistedNames.value.includes(options.name.value)
+    () => !options.blacklistedNames.value.includes(options.name.value),
   );
 
   const isValid = computed(() => isValidName.value && isNameAvailable.value);

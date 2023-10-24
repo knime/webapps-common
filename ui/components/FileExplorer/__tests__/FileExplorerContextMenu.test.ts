@@ -1,17 +1,16 @@
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { mount } from "@vue/test-utils";
+import { nextTick } from "vue";
 
-import MenuItems from "webapps-common/ui/components/MenuItems.vue";
-import { SpaceItem } from "@/api/gateway-api/generated-api";
+import MenuItems from "../../components/MenuItems.vue";
 
 import FileExplorerContextMenu from "../FileExplorerContextMenu.vue";
 import type { FileExplorerItem } from "../types";
-import { nextTick } from "vue";
-import { MockIntersectionObserver } from "@/test/utils/mockIntersectionObserver";
+import { MockIntersectionObserver } from "./utils";
 
 const setOptions = vi.fn();
 
-vi.mock("webapps-common/ui/composables/usePopper", () => {
+vi.mock("../../composables/usePopper", () => {
   return {
     default: () => ({
       popperInstance: {
@@ -39,7 +38,8 @@ describe("FileExplorerContextMenu.vue", () => {
     canBeRenamed: true,
     canBeDeleted: true,
     isOpen: false,
-    type: SpaceItem.TypeEnum.Workflow,
+    isOpenableFile: false,
+    isDirectory: true,
   } satisfies FileExplorerItem;
 
   const defaultProps = {
@@ -156,14 +156,14 @@ describe("FileExplorerContextMenu.vue", () => {
       const menuItem = wrapper
         .findComponent(MenuItems)
         .findAll("li")
-        .at(optionIndex);
+        .at(optionIndex)!;
       await menuItem.trigger("click");
 
-      expect(wrapper.emitted("itemClick")[0][0]).toEqual({
+      expect(wrapper.emitted("itemClick")![0][0]).toEqual({
         contextMenuItem: expect.objectContaining(optionId),
         anchorItem: defaultProps.anchor.item,
         ...payloadProps,
       });
-    }
+    },
   );
 });

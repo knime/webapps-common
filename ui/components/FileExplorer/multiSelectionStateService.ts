@@ -23,7 +23,7 @@ export const getInitialState = (): MultiSelectionState => ({
  */
 const mergeStates = (
   initialState: MultiSelectionState,
-  newState: Partial<MultiSelectionState>
+  newState: Partial<MultiSelectionState>,
 ): MultiSelectionState => ({ ...initialState, ...newState });
 
 /**
@@ -31,7 +31,7 @@ const mergeStates = (
  */
 export const isMultipleSelectionActive = (
   state: MultiSelectionState,
-  initialElement: number
+  initialElement: number,
 ) => {
   const { selectionRanges } = state;
 
@@ -56,7 +56,7 @@ export const isMultipleSelectionActive = (
 export const isItemSelected = (state: MultiSelectionState, item: number) => {
   const { selectionRanges, anchorExceptions } = state;
   const isInRange = selectionRanges.find(
-    (range) => range.from <= item && range.to >= item
+    (range) => range.from <= item && range.to >= item,
   );
 
   return Boolean(isInRange) && !anchorExceptions.includes(item);
@@ -70,7 +70,7 @@ export const isItemSelected = (state: MultiSelectionState, item: number) => {
  */
 export const ctrlClick = (
   state: MultiSelectionState,
-  clickedItem: number
+  clickedItem: number,
 ): MultiSelectionState => {
   const { anchorHistory, selectionRanges, anchorExceptions } = state;
 
@@ -92,7 +92,7 @@ export const ctrlClick = (
     };
 
     const alreadyInRange = selectionRanges.find(
-      ({ from, to }) => from <= newRange.from && newRange.to <= to
+      ({ from, to }) => from <= newRange.from && newRange.to <= to,
     );
 
     // We also have to make sure not to add the range if it would already be included
@@ -132,7 +132,7 @@ export const ctrlClick = (
  */
 export const shiftClick = (
   state: MultiSelectionState,
-  clickedItem: number
+  clickedItem: number,
 ): MultiSelectionState => {
   const { anchorHistory, selectionRanges, anchorExceptions } = state;
 
@@ -171,7 +171,7 @@ export const shiftClick = (
   // Try to find an existing selection range that includes this lastAnchor
   // in either the "from" or the "to" property
   const isRangeFound = selectionRanges.find(
-    ({ from, to }) => from === lastAnchor || to === lastAnchor
+    ({ from, to }) => from === lastAnchor || to === lastAnchor,
   );
 
   // If such a range exists, then we need to update it, to either
@@ -237,13 +237,13 @@ export const click = (clickedItem: number): MultiSelectionState => {
  *     include items 2 and 8
  */
 const sliceOnExceptions = (
-  state: MultiSelectionState
+  state: MultiSelectionState,
 ): Array<SelectionRange> => {
   const { anchorExceptions, selectionRanges } = state;
 
   const rawOutput = anchorExceptions.reduce((ranges, exception) => {
     const rangeContainingException = ranges.find(
-      ({ from, to }) => from <= exception && exception <= to
+      ({ from, to }) => from <= exception && exception <= to,
     );
 
     // everytime a range is found that includes an exception,
@@ -295,7 +295,7 @@ const sliceOnExceptions = (
   return rawOutput.filter(
     (range) =>
       !anchorExceptions.includes(range.from) &&
-      !anchorExceptions.includes(range.to)
+      !anchorExceptions.includes(range.to),
   );
 };
 
@@ -306,7 +306,7 @@ const sliceOnExceptions = (
  * e.g: Given two ranges: (1-6) and (2-4), the latter would be "included" in the first one
  */
 const removeSubRanges = (
-  ranges: Array<SelectionRange>
+  ranges: Array<SelectionRange>,
 ): Array<SelectionRange> =>
   ranges.reduce((acc, range, _, arr) => {
     const isIncluded = arr.find((subRange) => {
@@ -333,7 +333,7 @@ const removeSubRanges = (
  * @returns contiguous ranges without overlap
  */
 const removeOverlappingRanges = (
-  ranges: Array<SelectionRange>
+  ranges: Array<SelectionRange>,
 ): Array<SelectionRange> => {
   if (ranges.length <= 1) {
     return ranges;
@@ -385,7 +385,7 @@ const removeOverlappingRanges = (
  * - no subranges
  */
 export const normalizeRanges = (
-  state: MultiSelectionState
+  state: MultiSelectionState,
 ): Array<SelectionRange> => {
   const slicedByExceptions = sliceOnExceptions(state);
   const withoutSubRanges = removeSubRanges(slicedByExceptions);
@@ -413,7 +413,7 @@ export const selectionSize = (state: MultiSelectionState): number => {
  * @returns selected indexes
  */
 export const getSelectedIndexes = (
-  state: MultiSelectionState
+  state: MultiSelectionState,
 ): Array<number> => {
   const selectionRanges = normalizeRanges(state);
 
@@ -428,7 +428,7 @@ export const getSelectedIndexes = (
         const [previous] = acc.slice(-1);
         return acc.concat(previous + 1);
       },
-      [from]
+      [from],
     );
 
     return acc.concat(indexesInRange);
