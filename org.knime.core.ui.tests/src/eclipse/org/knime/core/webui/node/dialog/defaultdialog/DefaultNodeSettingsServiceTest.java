@@ -65,7 +65,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUti
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonNodeSettingsMapperUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.JsonFormsSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.SettingsConverter;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -126,7 +125,7 @@ class DefaultNodeSettingsServiceTest {
 
         // create settings service and obtain initial data using node settings and specs
         final var settingsService = new DefaultNodeSettingsService(
-            new SettingsConverter(SettingsType.VIEW, TestSettings.class), new AsyncChoicesHolder());
+            Map.of(SettingsType.VIEW, TestSettings.class), new AsyncChoicesHolder());
         final var initialData = MAPPER.readTree(settingsService.fromNodeSettings(
             Map.of(SettingsType.VIEW, NodeDialogTest.createNodeAndVariableSettingsRO(nodeSettings)), specs));
 
@@ -156,7 +155,7 @@ class DefaultNodeSettingsServiceTest {
 
         // create settings service and apply wrapped "foo" view data into node settings
         final var settingsService = new DefaultNodeSettingsService(
-            new SettingsConverter(SettingsType.VIEW, TestSettings.class), new AsyncChoicesHolder());
+            Map.of(SettingsType.VIEW, TestSettings.class), new AsyncChoicesHolder());
         final var wrappedViewData = MAPPER.createObjectNode().set("data",
             MAPPER.createObjectNode().set(SettingsType.VIEW.getConfigKey(), viewData));
         settingsService.toNodeSettings(wrappedViewData.toString(),

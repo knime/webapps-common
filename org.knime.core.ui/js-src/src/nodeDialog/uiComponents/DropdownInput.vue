@@ -110,7 +110,7 @@ const DropdownInput = defineComponent({
     },
     async updateOptions(newSettings: SettingsData, setNewValue = true) {
       const { result, state, message } = await this.getData({
-        method: "update",
+        method: "settings.update",
         options: [
           this.widgetId,
           this.choicesUpdateHandler,

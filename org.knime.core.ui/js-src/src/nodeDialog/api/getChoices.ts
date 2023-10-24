@@ -2,7 +2,7 @@ import type { PossibleValue } from "../types/ChoicesUiSchema";
 import type Result from "./types/Result";
 
 type GetChoices = (params: {
-  method: "getChoices";
+  method: "settings.getChoices";
   options: [
     /**
      * name of the class of the ChoicesProvider
@@ -13,7 +13,7 @@ type GetChoices = (params: {
 
 export default (getChoices: GetChoices) => (choicesProviderClass: string) => {
   return getChoices({
-    method: "getChoices",
+    method: "settings.getChoices",
     options: [choicesProviderClass],
   });
 };

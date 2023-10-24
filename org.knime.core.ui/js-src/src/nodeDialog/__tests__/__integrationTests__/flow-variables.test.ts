@@ -95,10 +95,10 @@ describe("flow variables", () => {
     dataServiceSpy = vi
       .spyOn(JsonDataService.prototype, "data")
       .mockImplementation((params) => {
-        if (params?.method === "getAvailableFlowVariables") {
+        if (params?.method === "flowVariables.getAvailableFlowVariables") {
           return Promise.resolve(possibleFlowVariables);
         }
-        if (params?.method === "getFlowVariableOverrideValue") {
+        if (params?.method === "flowVariables.getFlowVariableOverrideValue") {
           return Promise.resolve(fetchedFlowVariableValue);
         }
         return Promise.resolve();
@@ -110,7 +110,7 @@ describe("flow variables", () => {
   it("displays available flow variables", async () => {
     // Data service is called to receive the possible flow variables
     expect(dataServiceSpy).toHaveBeenNthCalledWith(1, {
-      method: "getAvailableFlowVariables",
+      method: "flowVariables.getAvailableFlowVariables",
       options: [
         JSON.stringify({
           data: { model: { value: "initialValue" } },
@@ -136,7 +136,7 @@ describe("flow variables", () => {
 
     // Data service is called to get the value of the flow variable
     expect(dataServiceSpy).toHaveBeenNthCalledWith(2, {
-      method: "getFlowVariableOverrideValue",
+      method: "flowVariables.getFlowVariableOverrideValue",
       options: [
         JSON.stringify({
           data: { model: { value: "initialValue" } },

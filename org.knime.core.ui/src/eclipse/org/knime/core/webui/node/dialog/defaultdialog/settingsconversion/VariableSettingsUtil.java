@@ -57,23 +57,59 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.VariableSettingsRO;
 import org.knime.core.webui.node.dialog.VariableSettingsWO;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Utilities around {@link VariableSettingsRO} and {@link VariableSettingsWO}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-final class VariableSettingsUtil {
+public final class VariableSettingsUtil {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(VariableSettingsUtil.class);
 
     private VariableSettingsUtil() {
         // utility
+    }
+
+    static final String FLOW_VARIABLE_SETTINGS_KEY = "flowVariableSettings";
+
+    /**
+     * This method reads the JSON representation of variables from the key {@link #FLOW_VARIABLE_SETTINGS_KEY} and
+     * transforms them to node settings.
+     *
+     * @param root the root JSON received from the frontend
+     * @param variableSettings to write to
+     */
+    public static void rootJsonToVariableSettings(final JsonNode root,
+        final Map<SettingsType, VariableSettingsWO> variableSettings) {
+        VariableSettingsUtil.fromJsonToVariableSettings(root.get(FLOW_VARIABLE_SETTINGS_KEY), variableSettings,
+            JsonFormsDataUtil.getMapper());
+    }
+
+    /**
+     * Transforms the given variable settings to an object node which is to be provide within the top-level node of the
+     * data provided to the front-end and adds it to the given root.
+     *
+     * @param root JSON object
+     * @param settings a map of variable settings
+     * @param context used to get the available flow variables
+     */
+    public static void addVariableSettingsToRootJson(final ObjectNode root,
+        final Map<SettingsType, VariableSettingsRO> settings, final DefaultNodeSettingsContext context) {
+        final var mapper = JsonFormsDataUtil.getMapper();
+        final var objectNode = mapper.createObjectNode();
+        final var variableSettingsJson = VariableSettingsUtil.fromVariableSettingsToJson(settings,
+            Set.of(context.getAvailableFlowVariableNames()), mapper);
+        objectNode.set(FLOW_VARIABLE_SETTINGS_KEY, variableSettingsJson);
+        root.setAll(objectNode);
     }
 
     /**
@@ -84,7 +120,7 @@ final class VariableSettingsUtil {
      * @param mapper the mapper used to create the resulting {@link JsonNode}s
      * @return a new JsonNode-instance
      */
-    static JsonNode fromVariableSettingsToJson(final Map<SettingsType, VariableSettingsRO> variableSettings,
+    private static JsonNode fromVariableSettingsToJson(final Map<SettingsType, VariableSettingsRO> variableSettings,
         final Set<String> availableFlowVariableNames, final ObjectMapper mapper) {
         var flowVariableSettingsMap = new HashMap<String, FlowVariableSetting>();
         for (SettingsType settingsType : SettingsType.values()) {
@@ -134,7 +170,7 @@ final class VariableSettingsUtil {
      * @param variableSettings
      * @param mapper
      */
-    static void fromJsonToVariableSettings(final JsonNode json,
+    private static void fromJsonToVariableSettings(final JsonNode json,
         final Map<SettingsType, VariableSettingsWO> variableSettings, final ObjectMapper mapper) {
         if (json == null) {
             return;

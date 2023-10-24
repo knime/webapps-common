@@ -44,51 +44,41 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Aug 30, 2023 (Paul Bärnreuther): created
+ *   Oct 24, 2023 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.settingsconversion;
 
-import java.util.Map;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialog;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 
-import org.knime.core.node.NodeSettings;
-import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.webui.node.dialog.SettingsType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * This class is used to construct new {@link NodeSettings} to initialize them. For this the constructor of the given
- * {@link DefaultNodeSettings} classes is called with the given context.
+ * Used to transform string parameters from the front-end to JSON in a consistent way
  *
  * @author Paul Bärnreuther
  */
-public final class DefaultNodeSettingsClassToNodeSettings extends ToNodeSettings<Void> {
+public final class TextToJsonUtil {
 
-    private final DefaultNodeSettingsContext m_context;
-
-    /**
-     * @param context
-     * @param settingsClasses a map associating settings types with {@link DefaultNodeSettings}
-     */
-    public DefaultNodeSettingsClassToNodeSettings(final DefaultNodeSettingsContext context,
-        final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses) {
-        super(settingsClasses);
-        m_context = context;
-    }
-
-    @Override
-    protected DefaultNodeSettings constructDefaultNodeSettings(final Void _input,
-        final Class<? extends DefaultNodeSettings> settingsClass) {
-        return DefaultNodeSettings.createSettings(settingsClass, m_context);
+    private TextToJsonUtil() {
+        // Utility class
     }
 
     /**
-     * Constructs new default {@link DefaultNodeSettings} and persists them in the given nodeSettings
+     * Transforms text to JSON using the global {@link ObjectMapper} used for the {@link DefaultNodeDialog}
      *
-     * @param nodeSettings
+     * @param textSettings
+     * @return a JSON representation.
      */
-    public void saveDefaultNodeSetting(final Map<SettingsType, NodeSettingsWO> nodeSettings) {
-        toNodeSettings(null, nodeSettings);
+    public static JsonNode textToJson(final String textSettings) {
+        var mapper = JsonFormsDataUtil.getMapper();
+        try {
+            return mapper.readTree(textSettings);
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException(
+                String.format("Exception when parsing JSON from text setting: %s", e.getMessage()), e);
+        }
     }
-
 }

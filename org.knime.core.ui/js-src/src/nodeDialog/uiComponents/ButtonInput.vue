@@ -70,14 +70,14 @@ const ButtonInput = defineComponent({
     async initialize(newSettings) {
       this.saveCurrentSettings(newSettings);
       await this.performRequest({
-        method: "initializeButton",
+        method: "settings.initializeButton",
         options: [this.control.data],
         handler: this.control.uischema.options.actionHandler,
       });
     },
     onUpdate(newSettings) {
       this.performRequest({
-        method: "update",
+        method: "settings.update",
         options: [getFlattenedSettings(newSettings)],
         handler: this.control.uischema.options.updateOptions.updateHandler,
       });
@@ -98,7 +98,7 @@ const ButtonInput = defineComponent({
       }
       await this.performRequest(
         {
-          method: "invokeButtonAction",
+          method: "settings.invokeButtonAction",
           options: [id, this.currentSettings],
           handler: this.control.uischema.options.actionHandler,
         },

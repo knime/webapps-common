@@ -44,38 +44,47 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Aug 31, 2023 (Paul Bärnreuther): created
+ *   Oct 24, 2023 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
-import java.util.Collection;
-import java.util.Optional;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
+ * A settings converter as used by the {@link FlowVariableDataServiceImpl}
  *
  * @author Paul Bärnreuther
  */
-public class ChoicesWidgetChoicesProviderHoder extends WidgetHandlerHolder<ChoicesProvider> {
+public interface FlowVariableSettingsConverter {
 
-    ChoicesWidgetChoicesProviderHoder(final Collection<Class<? extends DefaultNodeSettings>> settingsClasses) {
-        super(settingsClasses);
-    }
+    /**
+     * Transforms the JSON representation of the settings form the front-end to node settings of a certain settings
+     * type.
+     *
+     * @param root with a key {@link JsonFormsConsts#FIELD_NAME_DATA "data"} and a nested
+     *            {@link SettingsType#getConfigKey() configKey} of the type ("model" or "view")
+     * @param type the type of the to be extracted node settings
+     * @return the node settings of the given type
+     */
+    NodeSettings rootJsonToNodeSettings(final JsonNode root, final SettingsType type);
 
-    @Override
-    Optional<Class<? extends ChoicesProvider>> getHandlerClass(final TraversedField field) {
-        final var choicesWidget = field.propertyWriter().getAnnotation(ChoicesWidget.class);
-        if (choicesWidget != null) {
-            final var choicesProviderClass = choicesWidget.choices();
-            if (choicesProviderClass != ChoicesProvider.class) {
-                return Optional.of(choicesProviderClass);
-            }
-        }
-        return Optional.empty();
-    }
+    /**
+     * Transforms node settings to the data representation given to the front-end.
+     *
+     * @param type the type of settings that is used
+     * @param nodeSettings the input node settings of the given type
+     * @param context
+     * @return The resulting representation of the data as JSON.
+     * @throws InvalidSettingsException
+     */
+    JsonNode nodeSettingsToDataJson(SettingsType type, NodeSettingsRO nodeSettings, DefaultNodeSettingsContext context)
+        throws InvalidSettingsException;
 
 }

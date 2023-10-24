@@ -48,35 +48,19 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
-import static java.util.stream.Collectors.toMap;
-
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import org.apache.commons.lang3.StringUtils;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettings;
-import org.knime.core.node.workflow.FlowVariable;
-import org.knime.core.node.workflow.VariableType;
 import org.knime.core.webui.data.DataServiceContext;
-import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.PasswordHolder;
-import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.SettingsConverter;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.UpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesGetter;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * Implementation of the {@link DefaultNodeDialogDataService}.
@@ -84,9 +68,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  * @author Paul Bärnreuther
  */
 @SuppressWarnings({"java:S1452"}) //Allow wildcard return values
-public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataService {
-
-    private static final int ABBREVIATION_THRESHOLD = 50;
+public final class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataService {
 
     private final ButtonWidgetUpdateHandlerHolder m_buttonUpdateHandlers;
 
@@ -96,19 +78,15 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
 
     private final DataServiceRequestHandler m_requestHandler;
 
-    private final SettingsConverter m_converter;
-
     private final AsyncChoicesGetter m_asyncChoicesGetter;
 
     /**
-     * @param converter used to transform between text settings from the front-end to {@link NodeSettings} and back
+     * @param settingsClasses the classes of the {@link DefaultNodeSettings} associated to the dialog.
      * @param asyncChoicesGetter for retrieving those choices whose computation was triggered during the determination
      *            of the initial data.
      */
-    public DefaultNodeDialogDataServiceImpl(final SettingsConverter converter,
+    public DefaultNodeDialogDataServiceImpl(final Collection<Class<? extends DefaultNodeSettings>> settingsClasses,
         final AsyncChoicesGetter asyncChoicesGetter) {
-        m_converter = converter;
-        var settingsClasses = converter.getSettingsClasses();
         m_buttonActionHandlers = new ButtonWidgetActionHandlerHolder(settingsClasses);
         m_buttonUpdateHandlers = new ButtonWidgetUpdateHandlerHolder(settingsClasses);
         m_choicesUpdateHandlers = new ChoicesWidgetUpdateHandlerHolder(settingsClasses);
@@ -116,7 +94,7 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
         m_asyncChoicesGetter = asyncChoicesGetter;
     }
 
-    private static DefaultNodeSettingsContext createContext() {
+    static DefaultNodeSettingsContext createContext() {
         return DefaultNodeSettings.createDefaultNodeSettingsContext(DataServiceContext.get().getInputSpecs());
     }
 
@@ -199,68 +177,6 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
         NoHandlerFoundException(final String widgetId) {
             super(String.format("No handler found for component %s. Most likely an implementation error.", widgetId));
         }
-    }
-
-    @Override
-    public Map<String, Collection<PossibleFlowVariable>> getAvailableFlowVariables(final String textSettings,
-        final LinkedList<String> path) throws InvalidSettingsException {
-        final var firstPathElement = path.pollFirst();
-        final SettingsType settingsType = extractSettingsType(firstPathElement);
-        final var nodeSettings = m_converter.textSettingsToNodeSettings(textSettings, settingsType);
-        final var variableTypes = FlowVariableTypesExtractorUtil.getTypes(nodeSettings, path);
-        final var context = createContext();
-        return Arrays.asList(variableTypes).stream()
-            .collect(toMap(VariableType::getIdentifier, type -> getPossibleFlowVariables(context, type)));
-    }
-
-    private static List<PossibleFlowVariable> getPossibleFlowVariables(final DefaultNodeSettingsContext context,
-        final VariableType<?> type) {
-        return context.getAvailableInputFlowVariables(type).values().stream()
-            .map(DefaultNodeDialogDataServiceImpl::toPossibleFlowVariable).toList();
-    }
-
-    static PossibleFlowVariable toPossibleFlowVariable(final FlowVariable flowVariable) {
-        var value = flowVariable.getValueAsString();
-        boolean abbreviated = false;
-        if (value != null && value.length() > ABBREVIATION_THRESHOLD) {
-            value = StringUtils.abbreviate(value, ABBREVIATION_THRESHOLD);
-            abbreviated = true;
-        }
-        return new PossibleFlowVariable(flowVariable.getName(), value, abbreviated);
-    }
-
-    @Override
-    public String getFlowVariableOverrideValue(final String textSettings, final LinkedList<String> dataPath)
-        throws InvalidSettingsException, JsonProcessingException {
-        var context = createContext();
-        final var settingsType = extractSettingsType(dataPath.get(0));
-        final var nodeSettingsWithVariableMask =
-            m_converter.textSettingsToNodeAndVariableSettings(textSettings, settingsType);
-        final var settingsTree = nodeSettingsWithVariableMask.getOverwrittenSettingsTree(context);
-        final var jsonFormsSettings = m_converter.nodeSettingsToJsonFormsSettings(settingsType, settingsTree, context);
-        return jsonAtPath(dataPath, jsonFormsSettings.getData());
-    }
-
-    private static String jsonAtPath(final LinkedList<String> path, final JsonNode jsonData)
-        throws JsonProcessingException {
-        final var jsonPointer = "/" + String.join("/", path);
-        final var valueNode = jsonData.at(jsonPointer);
-        return valueNode.isTextual() //
-            ? valueNode.textValue() //
-            : JsonFormsDataUtil.getMapper().writeValueAsString(jsonData.at(jsonPointer));
-    }
-
-    private static SettingsType extractSettingsType(final String firstPathElement) {
-        final SettingsType settingsType;
-        if (SettingsType.MODEL.getConfigKey().equals(firstPathElement)) {
-            settingsType = SettingsType.MODEL;
-        } else if (SettingsType.VIEW.getConfigKey().equals(firstPathElement)) {
-            settingsType = SettingsType.VIEW;
-        } else {
-            throw new IllegalArgumentException(String
-                .format("First element of the path must be either 'view' or 'model' but was %s", firstPathElement));
-        }
-        return settingsType;
     }
 
 }

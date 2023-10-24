@@ -44,51 +44,73 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Aug 30, 2023 (Paul Bärnreuther): created
+ *   Oct 25, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.settingsconversion;
+package org.knime.core.webui.node.dialog.defaultdialog;
+
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.FIELD_NAME_DATA;
 
 import java.util.Map;
 
+import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
-import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.webui.node.dialog.SettingsType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.FlowVariableDataServiceImpl;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.FlowVariableSettingsConverter;
+import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.JsonDataToNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.NodeSettingsToJsonFormsSettings;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
- * This class is used to construct new {@link NodeSettings} to initialize them. For this the constructor of the given
- * {@link DefaultNodeSettings} classes is called with the given context.
+ * The converter used in the {@link FlowVariableDataServiceImpl} of the {@link DefaultNodeDialog}.
  *
  * @author Paul Bärnreuther
  */
-public final class DefaultNodeSettingsClassToNodeSettings extends ToNodeSettings<Void> {
+public final class DefaultNodeSettingsFlowVariableSettingsConverter implements FlowVariableSettingsConverter {
 
-    private final DefaultNodeSettingsContext m_context;
+    private final Map<SettingsType, Class<? extends DefaultNodeSettings>> m_settingsClasses;
 
     /**
-     * @param context
-     * @param settingsClasses a map associating settings types with {@link DefaultNodeSettings}
+     * @param settingsClasses the classes of the {@link DefaultNodeSettings} associated to the settings types (model
+     *            and/or view).
      */
-    public DefaultNodeSettingsClassToNodeSettings(final DefaultNodeSettingsContext context,
+    public DefaultNodeSettingsFlowVariableSettingsConverter(
         final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses) {
-        super(settingsClasses);
-        m_context = context;
-    }
+        m_settingsClasses = settingsClasses;
 
-    @Override
-    protected DefaultNodeSettings constructDefaultNodeSettings(final Void _input,
-        final Class<? extends DefaultNodeSettings> settingsClass) {
-        return DefaultNodeSettings.createSettings(settingsClass, m_context);
     }
 
     /**
-     * Constructs new default {@link DefaultNodeSettings} and persists them in the given nodeSettings
+     * Converter for only converting one type of settings. Note that some of its conversion methods might fail when they
+     * are used with a different type.
      *
-     * @param nodeSettings
+     * @param type the type of the settings
+     * @param settingsClass the default node setting of this type
      */
-    public void saveDefaultNodeSetting(final Map<SettingsType, NodeSettingsWO> nodeSettings) {
-        toNodeSettings(null, nodeSettings);
+    public DefaultNodeSettingsFlowVariableSettingsConverter(final SettingsType type,
+        final Class<? extends DefaultNodeSettings> settingsClass) {
+        this(Map.of(type, settingsClass));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeSettings rootJsonToNodeSettings(final JsonNode root, final SettingsType type) {
+        return new JsonDataToNodeSettings(m_settingsClasses).toNodeSettings(root.get(FIELD_NAME_DATA), type);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JsonNode nodeSettingsToDataJson(final SettingsType type, final NodeSettingsRO nodeSettings,
+        final DefaultNodeSettingsContext context) throws InvalidSettingsException {
+        return new NodeSettingsToJsonFormsSettings(context, m_settingsClasses)
+            .nodeSettingsToJsonFormsSettings(Map.of(type, nodeSettings)).getData();
     }
 
 }

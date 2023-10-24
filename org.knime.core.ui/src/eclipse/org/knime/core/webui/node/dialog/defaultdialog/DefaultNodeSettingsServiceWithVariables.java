@@ -48,6 +48,9 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog;
 
+import static org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.TextToJsonUtil.textToJson;
+import static org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.VariableSettingsUtil.addVariableSettingsToRootJson;
+import static org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.VariableSettingsUtil.rootJsonToVariableSettings;
 import static org.knime.core.webui.node.dialog.defaultdialog.util.MapValuesUtil.mapValues;
 
 import java.util.Map;
@@ -62,7 +65,6 @@ import org.knime.core.webui.node.dialog.NodeSettingsService;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.VariableSettingsRO;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.SettingsConverter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -88,7 +90,7 @@ public final class DefaultNodeSettingsServiceWithVariables implements NodeSettin
 
     @Override
     public void toNodeSettings(final String textSettings, final Map<SettingsType, NodeAndVariableSettingsWO> settings) {
-        SettingsConverter.textSettingsToVariableSettings(textSettings, mapValues(settings, v -> v));
+        rootJsonToVariableSettings(textToJson(textSettings), mapValues(settings, v -> v));
         m_delegate.toNodeSettings(textSettings, settings);
     }
 
@@ -99,21 +101,19 @@ public final class DefaultNodeSettingsServiceWithVariables implements NodeSettin
         try {
             final var mapper = JsonFormsDataUtil.getMapper();
             final var parsed = mapper.readTree(delegateResult);
-            final var variablesObjectNode = getVariablesObjectNode(settings, specs);
-            ((ObjectNode)parsed).setAll(variablesObjectNode);
+            addVariablesObjectNode((ObjectNode)parsed, settings, specs);
             return mapper.writeValueAsString(parsed);
         } catch (JsonProcessingException ex) {
             throw new IllegalStateException(ex);
         }
     }
 
-    private static ObjectNode getVariablesObjectNode(final Map<SettingsType, NodeAndVariableSettingsRO> settings,
-        final PortObjectSpec[] specs) {
+    private static void addVariablesObjectNode(final ObjectNode root,
+        final Map<SettingsType, NodeAndVariableSettingsRO> settings, final PortObjectSpec[] specs) {
         final Map<SettingsType, VariableSettingsRO> variableSettings = settings.entrySet().stream()//
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         final var context = DefaultNodeSettings.createDefaultNodeSettingsContext(specs);
-        final var variablesObjectNode = SettingsConverter.variableSettingsToJsonObject(variableSettings, context);
-        return variablesObjectNode;
+        addVariableSettingsToRootJson(root, variableSettings, context);
     }
 
     @Override

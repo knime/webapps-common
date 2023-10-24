@@ -1,6 +1,6 @@
 export default (rpcRequest: { method: string; params: any[] }) => {
   switch (rpcRequest.method) {
-    case "getAvailableFlowVariables":
+    case "flowVariables.getAvailableFlowVariables":
       return {
         STRING: [
           {
@@ -14,7 +14,7 @@ export default (rpcRequest: { method: string; params: any[] }) => {
         ],
         NUMBER: [{ name: "numberVariable", value: "100", abbreviated: false }],
       };
-    case "getFlowVariableOverrideValue":
+    case "flowVariables.getFlowVariableOverrideValue":
       switch (
         JSON.parse(rpcRequest.params[0]).flowVariableSettings[
           rpcRequest.params[1].join(".")
@@ -29,7 +29,7 @@ export default (rpcRequest: { method: string; params: any[] }) => {
         default:
           return "someValue";
       }
-    case "getChoices":
+    case "settings.getChoices":
       if (rpcRequest.params[0] === "successfulChoicesProvider") {
         return {
           result: [

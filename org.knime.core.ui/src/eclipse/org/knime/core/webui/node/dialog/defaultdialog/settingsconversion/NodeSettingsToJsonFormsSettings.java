@@ -68,7 +68,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsSetting
  *
  * @author Paul Bärnreuther
  */
-final class NodeSettingsToJsonFormsSettings {
+public final class NodeSettingsToJsonFormsSettings {
 
     private static final NodeLogger LOGGER = NodeLogger.getLogger(NodeSettingsToJsonFormsSettings.class);
 
@@ -76,13 +76,25 @@ final class NodeSettingsToJsonFormsSettings {
 
     private final Map<SettingsType, Class<? extends DefaultNodeSettings>> m_settingsClasses;
 
-    NodeSettingsToJsonFormsSettings(final DefaultNodeSettingsContext context,
+    /**
+     * @param context
+     * @param settingsClasses a map associating settings types with {@link DefaultNodeSettings}
+     */
+    public NodeSettingsToJsonFormsSettings(final DefaultNodeSettingsContext context,
         final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses) {
         m_settingsClasses = settingsClasses;
         m_context = context;
     }
 
-    JsonFormsSettings nodeSettingsToJsonFormsSettings(final Map<SettingsType, NodeSettingsRO> settings)
+    /**
+     * Transforms the given node settings to {@link JsonFormsSettings}.
+     *
+     * @param settings
+     * @return the JSON forms representation of the settings
+     * @throws InvalidSettingsException if the intermediate transformation of the settings to
+     *             {@link DefaultNodeSettings} failed.
+     */
+    public JsonFormsSettings nodeSettingsToJsonFormsSettings(final Map<SettingsType, NodeSettingsRO> settings)
         throws InvalidSettingsException {
         try {
             return allNodeSettingsToJsonFormsSettings(settings, this::fromNodeSettingsToDefaultNodeSettings);
@@ -91,7 +103,15 @@ final class NodeSettingsToJsonFormsSettings {
         }
     }
 
-    JsonFormsSettings nodeSettingsToJsonFormsSettingsOrDefault(final Map<SettingsType, NodeSettingsRO> settings) {
+    /**
+     * Transforms the given node settings to {@link JsonFormsSettings} using a default for the intermediate
+     * transformation to {@link DefaultNodeSettings} in case it fails.
+     *
+     * @param settings
+     * @return the JSON forms representation of the settings
+     */
+    public JsonFormsSettings
+        nodeSettingsToJsonFormsSettingsOrDefault(final Map<SettingsType, NodeSettingsRO> settings) {
         return allNodeSettingsToJsonFormsSettings(settings, this::fromNodeSettingsToDefaultNodeSettingsOrDefault);
     }
 

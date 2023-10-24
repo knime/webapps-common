@@ -58,7 +58,7 @@ import org.knime.core.webui.node.dialog.NodeDialog;
 import org.knime.core.webui.node.dialog.NodeSettingsService;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DefaultNodeDialogDataServiceImpl;
-import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.SettingsConverter;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.FlowVariableDataServiceImpl;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
 import org.knime.core.webui.page.Page;
 
@@ -83,9 +83,9 @@ public final class DefaultNodeDialog implements NodeDialog {
 
     private final OnApplyNodeModifier m_onApplyModifier;
 
-    private final SettingsConverter m_settingsConverter;
-
     private final AsyncChoicesHolder m_asyncChoicesHolder;
+
+    private final Map<SettingsType, Class<? extends DefaultNodeSettings>> m_settingsClasses;
 
     /**
      * Creates a new instance.
@@ -107,12 +107,12 @@ public final class DefaultNodeDialog implements NodeDialog {
      *            invoked when cleaning up the {@link ApplyDataService} created in
      *            {@link NodeDialogAdapter#createApplyDataService()}
      */
-    public DefaultNodeDialog(final SettingsType settingsType,
-        final Class<? extends DefaultNodeSettings> settingsClass, final OnApplyNodeModifier onApplyModifier) {
+    public DefaultNodeDialog(final SettingsType settingsType, final Class<? extends DefaultNodeSettings> settingsClass,
+        final OnApplyNodeModifier onApplyModifier) {
         m_settingsTypes = Set.of(settingsType);
-        m_settingsConverter = new SettingsConverter(Map.of(settingsType, settingsClass));
+        m_settingsClasses = Map.of(settingsType, settingsClass);
         m_asyncChoicesHolder = new AsyncChoicesHolder();
-        m_settingsDataService = new DefaultNodeSettingsService(m_settingsConverter, m_asyncChoicesHolder);
+        m_settingsDataService = new DefaultNodeSettingsService(m_settingsClasses, m_asyncChoicesHolder);
         m_onApplyModifier = onApplyModifier;
     }
 
@@ -146,10 +146,9 @@ public final class DefaultNodeDialog implements NodeDialog {
         final Class<? extends DefaultNodeSettings> settingsClass1, final SettingsType settingsType2,
         final Class<? extends DefaultNodeSettings> settingsClass2, final OnApplyNodeModifier onApplyModifier) {
         m_settingsTypes = Set.of(settingsType1, settingsType2);
-        m_settingsConverter =
-            new SettingsConverter(Map.of(settingsType1, settingsClass1, settingsType2, settingsClass2));
+        m_settingsClasses = Map.of(settingsType1, settingsClass1, settingsType2, settingsClass2);
         m_asyncChoicesHolder = new AsyncChoicesHolder();
-        m_settingsDataService = new DefaultNodeSettingsService(m_settingsConverter, m_asyncChoicesHolder);
+        m_settingsDataService = new DefaultNodeSettingsService(m_settingsClasses, m_asyncChoicesHolder);
         m_onApplyModifier = onApplyModifier;
     }
 
@@ -165,9 +164,13 @@ public final class DefaultNodeDialog implements NodeDialog {
 
     @Override
     public Optional<RpcDataService> createRpcDataService() {
-        final var dataService = new DefaultNodeDialogDataServiceImpl(m_settingsConverter, m_asyncChoicesHolder);
-        return Optional
-            .ofNullable(RpcDataService.builder(dataService).onDeactivate(m_asyncChoicesHolder::clear).build());
+        final var dataService = new DefaultNodeDialogDataServiceImpl(m_settingsClasses.values(), m_asyncChoicesHolder);
+        final var flowVariablesDataService =
+            new FlowVariableDataServiceImpl(new DefaultNodeSettingsFlowVariableSettingsConverter(m_settingsClasses));
+        return Optional.ofNullable(RpcDataService.builder() //
+            .addService("settings", dataService) //
+            .addService("flowVariables", flowVariablesDataService) //
+            .onDeactivate(m_asyncChoicesHolder::clear).build());
     }
 
     @Override

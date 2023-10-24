@@ -1,7 +1,7 @@
 import type { FlowSettings, PossibleFlowVariable } from "./types";
 
 type GetAvailableFlowVariables = (params: {
-  method: "getAvailableFlowVariables";
+  method: "flowVariables.getAvailableFlowVariables";
   options: [
     /**
      * The current stringified data
@@ -20,13 +20,13 @@ export const getAvailableFlowVariables = (
   currentData: object,
 ) => {
   return dataService({
-    method: "getAvailableFlowVariables",
+    method: "flowVariables.getAvailableFlowVariables",
     options: [JSON.stringify(currentData), persistPath.split(".")],
   });
 };
 
 type GetFlowVariableOverrideValue = (params: {
-  method: "getFlowVariableOverrideValue";
+  method: "flowVariables.getFlowVariableOverrideValue";
   options: [
     /**
      * The stringified current data of the dialog as it is sent on apply
@@ -47,7 +47,7 @@ export const getFlowVariableOverrideValue = (
   currentData: object,
 ) => {
   return dataService({
-    method: "getFlowVariableOverrideValue",
+    method: "flowVariables.getFlowVariableOverrideValue",
     options: [JSON.stringify(currentData), dataPath.split(".")],
   });
 };

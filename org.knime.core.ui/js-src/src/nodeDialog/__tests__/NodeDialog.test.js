@@ -227,7 +227,7 @@ describe("NodeDialog.vue", () => {
     wrapper.vm.schema = { flowVariablesMap };
     wrapper.vm.getAvailableFlowVariables(path);
     expect(wrapper.vm.jsonDataService.data).toHaveBeenCalledWith({
-      method: "getAvailableFlowVariables",
+      method: "flowVariables.getAvailableFlowVariables",
       options: [
         JSON.stringify({
           data: currentData,
@@ -260,7 +260,7 @@ describe("NodeDialog.vue", () => {
       path,
     );
     expect(getDataSpy).toHaveBeenCalledWith({
-      method: "getFlowVariableOverrideValue",
+      method: "flowVariables.getFlowVariableOverrideValue",
       options: [
         JSON.stringify({
           data: currentData,
@@ -306,7 +306,7 @@ describe("NodeDialog.vue", () => {
         },
       });
       expect(getDataSpy).toHaveBeenCalledWith({
-        method: "getChoices",
+        method: "settings.getChoices",
         options: [choicesProviderClass],
       });
       expect(choices).toStrictEqual(mockChoices);
@@ -541,7 +541,7 @@ describe("NodeDialog.vue", () => {
         "_dataPath",
       );
       expect(getDataSpy).toHaveBeenCalledWith({
-        method: "getFlowVariableOverrideValue",
+        method: "flowVariables.getFlowVariableOverrideValue",
         options: [
           `{"data":{},"flowVariableSettings":${JSON.stringify({
             [persistPathOtherSetting]: {
@@ -582,7 +582,7 @@ describe("NodeDialog.vue", () => {
         "_dataPath",
       );
       expect(getDataSpy).toHaveBeenCalledWith({
-        method: "getFlowVariableOverrideValue",
+        method: "flowVariables.getFlowVariableOverrideValue",
         options: [
           `{"data":{},"flowVariableSettings":${variableSettingsMapBeforeRequest}}`,
           ["_dataPath"],
@@ -632,7 +632,7 @@ describe("NodeDialog.vue", () => {
         "_dataPath",
       );
       expect(getDataSpy).toHaveBeenCalledWith({
-        method: "getFlowVariableOverrideValue",
+        method: "flowVariables.getFlowVariableOverrideValue",
         options: [
           `{"data":{},"flowVariableSettings":${JSON.stringify(flowSettings1)}}`,
           ["_dataPath"],
@@ -645,7 +645,7 @@ describe("NodeDialog.vue", () => {
        */
       await wrapper.vm.getFlowVariableOverrideValue("other", "_dataPath");
       expect(getDataSpy).toHaveBeenCalledWith({
-        method: "getFlowVariableOverrideValue",
+        method: "flowVariables.getFlowVariableOverrideValue",
         options: [
           `{"data":{},"flowVariableSettings":${JSON.stringify(flowSettings1)}}`,
           ["_dataPath"],

@@ -44,51 +44,61 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Aug 30, 2023 (Paul Bärnreuther): created
+ *   Oct 24, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.settingsconversion;
+package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 
+import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
-import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.webui.node.dialog.SettingsType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.internal.VariableSettings;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
- * This class is used to construct new {@link NodeSettings} to initialize them. For this the constructor of the given
- * {@link DefaultNodeSettings} classes is called with the given context.
+ * An instance of this interface is used as a named RPCDataService for calls regarding flow variables.
  *
  * @author Paul Bärnreuther
  */
-public final class DefaultNodeSettingsClassToNodeSettings extends ToNodeSettings<Void> {
-
-    private final DefaultNodeSettingsContext m_context;
+interface FlowVariableDataService {
 
     /**
-     * @param context
-     * @param settingsClasses a map associating settings types with {@link DefaultNodeSettings}
+     * @param name the name of the flow variable
+     * @param value an abbreviated string representation of the variables value
+     * @param abbreviated whether the value is the actual value or was abbreviated
      */
-    public DefaultNodeSettingsClassToNodeSettings(final DefaultNodeSettingsContext context,
-        final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses) {
-        super(settingsClasses);
-        m_context = context;
-    }
-
-    @Override
-    protected DefaultNodeSettings constructDefaultNodeSettings(final Void _input,
-        final Class<? extends DefaultNodeSettings> settingsClass) {
-        return DefaultNodeSettings.createSettings(settingsClass, m_context);
+    record PossibleFlowVariable(String name, String value, boolean abbreviated) {
     }
 
     /**
-     * Constructs new default {@link DefaultNodeSettings} and persists them in the given nodeSettings
+     * @param textSettings the state of the settings in JSON format for which the available flow variables are to be
+     *            fetched
+     * @param persistPath the path leading to the setting as it is stored in the node settings, i.e. including its
+     *            settings type ("view" or "model") and its (possibly custom) config key
+     * @return a map from the possible types of the specified setting to the present flow variables.
+     * @throws InvalidSettingsException if the path does not start with "model" or "view"
+     */
+    Map<String, Collection<PossibleFlowVariable>> getAvailableFlowVariables(final String textSettings,
+        final LinkedList<String> persistPath) throws InvalidSettingsException;
+
+    /**
      *
-     * @param nodeSettings
+     * This method first transforms the given text settings to {@link NodeSettings} and {@link VariableSettings} only to
+     * then overwrite the node settings with the variables and transform them back to JSON. Hereby only those setting
+     * (model or view) are transformed which are necessary as defined by the first entry of the dataPath.
+     *
+     * @param textSettings the front-end representation of the current settings in JSON format containing data and flow
+     *            variable settings.
+     * @param dataPath the path of the setting as it is stored in the data within the front-end JSON representation. In
+     *            particular this has to start with its settings type ("view" or "model").
+     * @return The string representation of the value of the resulting JSON at the given data path.
+     * @throws InvalidSettingsException
+     * @throws JsonProcessingException
      */
-    public void saveDefaultNodeSetting(final Map<SettingsType, NodeSettingsWO> nodeSettings) {
-        toNodeSettings(null, nodeSettings);
-    }
+    String getFlowVariableOverrideValue(final String textSettings, final LinkedList<String> dataPath)
+        throws InvalidSettingsException, JsonProcessingException;
 
 }

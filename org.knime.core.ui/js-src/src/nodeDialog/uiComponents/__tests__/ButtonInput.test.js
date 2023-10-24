@@ -162,7 +162,7 @@ describe("ButtonInput", () => {
       });
       await getButtonComponent(wrapper).trigger("click");
       expect(getData).toHaveBeenCalledWith({
-        method: "invokeButtonAction",
+        method: "settings.invokeButtonAction",
         options: [
           widgetId,
           uischema.options.actionHandler,
@@ -369,7 +369,7 @@ describe("ButtonInput", () => {
         view: { baz: 3 },
       });
       expect(getData).toHaveBeenCalledWith({
-        method: "update",
+        method: "settings.update",
         options: [widgetId, updateHandler, { foo: 2, bar: 1, baz: 3 }],
       });
       expect(wrapper.vm.currentState).toBe(nextState);

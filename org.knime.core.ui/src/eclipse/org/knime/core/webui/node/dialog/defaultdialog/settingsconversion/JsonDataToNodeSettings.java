@@ -72,10 +72,13 @@ import com.fasterxml.jackson.databind.JsonNode;
  *
  * @author Paul Bärnreuther
  */
-final class JsonDataToNodeSettings extends ToNodeSettings<JsonNode> {
+public final class JsonDataToNodeSettings extends ToNodeSettings<JsonNode> {
     private static final NodeLogger LOGGER = NodeLogger.getLogger(JsonDataToNodeSettings.class);
 
-    JsonDataToNodeSettings(final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses) {
+    /**
+     * @param settingsClasses a map associating settings types with {@link DefaultNodeSettings}
+     */
+    public JsonDataToNodeSettings(final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses) {
         super(settingsClasses);
     }
 

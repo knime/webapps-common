@@ -309,7 +309,7 @@ describe("DropdownInput.vue", () => {
         model: { baz: "baz" },
       });
       expect(getDataMock).toHaveBeenCalledWith({
-        method: "update",
+        method: "settings.update",
         options: [
           widgetId,
           updateHandler,

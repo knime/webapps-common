@@ -48,7 +48,6 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
-import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -56,52 +55,27 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Supplier;
 
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.def.StringCell;
-import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.Node;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.workflow.CredentialsProvider;
-import org.knime.core.node.workflow.FlowObjectStack;
-import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.ICredentials;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContext;
-import org.knime.core.node.workflow.NodeID;
-import org.knime.core.node.workflow.VariableType;
-import org.knime.core.node.workflow.VariableType.BooleanType;
-import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.webui.data.DataServiceContextTest;
-import org.knime.core.webui.node.dialog.NodeDialog;
-import org.knime.core.webui.node.dialog.NodeDialogManagerTest;
-import org.knime.core.webui.node.dialog.NodeDialogTest;
-import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.JsonBasedNodeSettingsPersistor;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DefaultNodeDialogDataService.PossibleFlowVariable;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.Persistor;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
-import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.SettingsConverter;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesProvider;
@@ -113,12 +87,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesUpda
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.IdAndText;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
-import org.knime.core.webui.page.Page;
-import org.knime.testing.util.WorkflowManagerUtil;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-
 /**
  * Tests DefaultNodeSettingsService.
  *
@@ -136,7 +104,6 @@ class DefaultNodeDialogDataServiceImplTest {
     @BeforeAll
     static void initDataServiceContext() {
         DataServiceContextTest.initDataServiceContext(null, () -> PORT_OBJECT_SPECS);
-
     }
 
     @AfterAll
@@ -151,21 +118,14 @@ class DefaultNodeDialogDataServiceImplTest {
 
     private static DefaultNodeDialogDataServiceImpl getDataServiceWithAsyncChoices(
         final Class<? extends DefaultNodeSettings> modelSettingsClass, final AsyncChoicesHolder asyncChoicesHolder) {
-        return new DefaultNodeDialogDataServiceImpl(
-            new SettingsConverter(Map.of(SettingsType.MODEL, modelSettingsClass)), asyncChoicesHolder);
+        return new DefaultNodeDialogDataServiceImpl(List.of(modelSettingsClass), asyncChoicesHolder);
     }
 
     private static DefaultNodeDialogDataServiceImpl getDataService(
         final Class<? extends DefaultNodeSettings> modelSettingsClass,
         final Class<? extends DefaultNodeSettings> viewSettingsClass) {
-        return new DefaultNodeDialogDataServiceImpl(
-            new SettingsConverter(Map.of(SettingsType.MODEL, modelSettingsClass, SettingsType.VIEW, viewSettingsClass)),
+        return new DefaultNodeDialogDataServiceImpl(List.of(modelSettingsClass, viewSettingsClass),
             new AsyncChoicesHolder());
-    }
-
-    private static DefaultNodeDialogDataServiceImpl
-        getDataServiceWithConverter(final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses) {
-        return new DefaultNodeDialogDataServiceImpl(new SettingsConverter(settingsClasses), new AsyncChoicesHolder());
     }
 
     @Nested
@@ -584,270 +544,6 @@ class DefaultNodeDialogDataServiceImplTest {
             dataService.update("widgetId", DefaultNodeSettingsContextHandler.class.getName(), null).result();
             /** Assertion happens inside {@link DefaultNodeSettingsContextHandler#update} */
         }
-    }
-
-    @Nested
-    class FlowVariablesTest {
-
-        private static FlowVariable stringVar1 = new FlowVariable("stringVar1", "stringVar1_value");
-
-        private static FlowVariable stringVar2 = new FlowVariable("stringVar2", "stringVar2_value");
-
-        private static FlowVariable doubleVar = new FlowVariable("doubleVar", 1.0);
-
-        private static FlowVariable intVar = new FlowVariable("intVar", 1);
-
-        private static FlowVariable booleanVar = new FlowVariable("booleanVar", BooleanType.INSTANCE, true);
-
-        private static WorkflowManager m_wfm;
-
-        @BeforeEach
-        void initNodeContextWithFlowStack() throws IOException {
-            m_wfm = WorkflowManagerUtil.createEmptyWorkflow();
-            Supplier<NodeDialog> nodeDialogCreator =
-                () -> NodeDialogTest.createNodeDialog(Page.builder(() -> "page content", "page.html").build());
-            NativeNodeContainer nnc = NodeDialogManagerTest.createNodeWithNodeDialog(m_wfm, nodeDialogCreator);
-            nnc.getNode().setFlowObjectStack(getContextWithFlowVariables(), null);
-            NodeContext.pushContext(nnc);
-        }
-
-        private static FlowObjectStack getContextWithFlowVariables() {
-            final var flowVariables = List.of(stringVar1, stringVar2, doubleVar, intVar, booleanVar);
-            return FlowObjectStack.createFromFlowVariableList(flowVariables, new NodeID(0));
-        }
-
-        @AfterEach
-        void disposeWorkflow() {
-            WorkflowManagerUtil.disposeWorkflow(m_wfm);
-            NodeContext.removeLastContext();
-        }
-
-        static class TestViewSettings implements DefaultNodeSettings {
-            String m_myViewSetting;
-        }
-
-        static class NestedSetting implements PersistableSettings {
-            @Persist(configKey = "myModelSettingConfigKey")
-            boolean m_myModelSetting;
-        }
-
-        static class TestModelSettings implements DefaultNodeSettings {
-            NestedSetting m_nestedSetting;
-        }
-
-        static Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses =
-            Map.of(SettingsType.MODEL, TestModelSettings.class, SettingsType.VIEW, TestViewSettings.class);
-
-        @Test
-        void testGetPossibleFlowVariables() throws InvalidSettingsException {
-
-            final var dataService = getDataServiceWithConverter(settingsClasses);
-            final var viewSettingsFlowVariables = dataService.getAvailableFlowVariables("{\"data\":{\"view\": {}}}",
-                new LinkedList<String>(List.of("view", "myViewSetting")));
-            final var modelSettingsFlowVariables =
-                dataService.getAvailableFlowVariables("{\"data\":{\"model\": {\"nestedSetting\": {}}}}",
-                    new LinkedList<String>(List.of("model", "nestedSetting", "myModelSettingConfigKey")));
-            assertPossibleFlowVariables( //
-                Set.of(stringVar1, stringVar2), //
-                viewSettingsFlowVariables.get(VariableType.StringType.INSTANCE.getIdentifier()) //
-            );
-            assertPossibleFlowVariables( //
-                Set.of(doubleVar), //
-                viewSettingsFlowVariables.get(VariableType.DoubleType.INSTANCE.getIdentifier()) //
-            );
-            assertPossibleFlowVariables( //
-                Set.of(intVar), //
-                viewSettingsFlowVariables.get(VariableType.IntType.INSTANCE.getIdentifier()) //
-            );
-            assertThat(viewSettingsFlowVariables.get(VariableType.StringArrayType.INSTANCE.getIdentifier()))
-                .isNullOrEmpty();
-
-            assertPossibleFlowVariables( //
-                Set.of(stringVar1, stringVar2), //
-                modelSettingsFlowVariables.get(VariableType.StringType.INSTANCE.getIdentifier()) //
-            );
-            assertPossibleFlowVariables( //
-                Collections.emptySet(), //
-                modelSettingsFlowVariables.get(VariableType.BooleanType.INSTANCE.getIdentifier()) //
-            );
-            assertThat(modelSettingsFlowVariables.get(VariableType.StringArrayType.INSTANCE.getIdentifier()))
-                .isNullOrEmpty();
-        }
-
-        private void assertPossibleFlowVariables(final Collection<FlowVariable> expected,
-            final Collection<PossibleFlowVariable> actual) {
-            assertThat(actual).containsAll(
-                expected.stream().map(DefaultNodeDialogDataServiceImpl::toPossibleFlowVariable).collect(toSet()));
-        }
-
-        @Nested
-        class ToPossibleFlowVariableTest {
-
-            @Test
-            void testShortStringFlowVariable() {
-                final var name = "shortString";
-                final var value = "short";
-                final var possibleFlowVariable =
-                    DefaultNodeDialogDataServiceImpl.toPossibleFlowVariable(new FlowVariable(name, value));
-                assertThat(possibleFlowVariable.name()).isEqualTo(name);
-                assertThat(possibleFlowVariable.value()).isEqualTo(value);
-                assertThat(possibleFlowVariable.abbreviated()).isFalse();
-            }
-
-            @Test
-            void testLongStringFlowVariable() {
-                final var name = "longString";
-                final var value =
-                    "longVariableNamelongVariableNamelongVariableNamelongVariableNamelongVariableNamelongVariableNamelongVariableNamelongVariableName ( > 50 characters)";
-                final var possibleFlowVariable =
-                    DefaultNodeDialogDataServiceImpl.toPossibleFlowVariable(new FlowVariable(name, value));
-                assertThat(possibleFlowVariable.name()).isEqualTo(name);
-                assertThat(possibleFlowVariable.value())
-                    .isEqualTo("longVariableNamelongVariableNamelongVariableNam...");
-                assertThat(possibleFlowVariable.abbreviated()).isTrue();
-            }
-
-            @Test
-            void testIntFlowVariable() {
-                final var name = "int";
-                final var value = 1;
-                final var possibleFlowVariable =
-                    DefaultNodeDialogDataServiceImpl.toPossibleFlowVariable(new FlowVariable(name, value));
-                assertThat(possibleFlowVariable.name()).isEqualTo(name);
-                assertThat(possibleFlowVariable.value()).isEqualTo("1");
-                assertThat(possibleFlowVariable.abbreviated()).isFalse();
-            }
-
-            @Test
-            void testDoubleFlowVariable() {
-                final var name = "double";
-                final var value = 1.0;
-                final var possibleFlowVariable =
-                    DefaultNodeDialogDataServiceImpl.toPossibleFlowVariable(new FlowVariable(name, value));
-                assertThat(possibleFlowVariable.name()).isEqualTo(name);
-                assertThat(possibleFlowVariable.value()).isEqualTo("1.0");
-                assertThat(possibleFlowVariable.abbreviated()).isFalse();
-            }
-
-        }
-
-        @Nested
-        class GetFlowVartiableOverrideValueTest {
-
-            static final String DATA = "{" //
-                + "\"data\": {" + "\"model\": {" //
-                + "\"nestedSetting\": {}" //
-                + "}," //
-                + "\"view\": {" //
-                + "}" //
-                + "}," //
-                + "\"flowVariableSettings\": {" //
-                + "\"model.nestedSetting.myModelSettingConfigKey\": {" //
-                + String.format("\"controllingFlowVariableName\": \"%s\"", booleanVar.getName()) //
-                + "}," //
-                + "\"view.myViewSetting\": {" //
-                + String.format("\"controllingFlowVariableName\": \"%s\"", stringVar1.getName()) //
-                + "}" //
-                + "}" //
-                + "}";
-
-            @Test
-            void testGetFlowVariableOverrideValue() throws JsonProcessingException, InvalidSettingsException {
-                final var dataPath = new LinkedList<String>(List.of("view", "myViewSetting"));
-                final var dataService = getDataServiceWithConverter(settingsClasses);
-                assertThat(dataService.getFlowVariableOverrideValue(DATA, dataPath))
-                    .isEqualTo(stringVar1.getValueAsString());
-            }
-
-            @Test
-            void testGetFlowVariableOverrideValueWithConfigKey()
-                throws JsonProcessingException, InvalidSettingsException {
-                final var dataPath = new LinkedList<String>(List.of("model", "nestedSetting", "myModelSetting"));
-                final var dataService = getDataServiceWithConverter(settingsClasses);
-                assertThat(dataService.getFlowVariableOverrideValue(DATA, dataPath))
-                    .isEqualTo(booleanVar.getValueAsString());
-            }
-
-            static final String STRING_OVERRIDES_BOOLEAN_DATA = "{" //
-                + "\"data\": {" + "\"model\": {" //
-                + "\"nestedSetting\": {}" //
-                + "}" //
-                + "}," //
-                + "\"flowVariableSettings\": {" //
-                + "\"model.nestedSetting.myModelSettingConfigKey\": {" //
-                + String.format("\"controllingFlowVariableName\": \"%s\"", stringVar1.getName()) //
-                + "}" //
-                + "}" //
-                + "}";
-
-            @Test
-            void testThrowsOnOverrideError() throws JsonProcessingException, InvalidSettingsException {
-                final var dataPath = new LinkedList<String>(List.of("model", "nestedSetting", "myModelSetting"));
-                final var dataService = getDataServiceWithConverter(settingsClasses);
-                final var invalidSettingsException = assertThrows(InvalidSettingsException.class,
-                    () -> dataService.getFlowVariableOverrideValue(STRING_OVERRIDES_BOOLEAN_DATA, dataPath));
-                assertThat(invalidSettingsException.getMessage()).isEqualTo(
-                    "Unable to parse \"stringvar1_value\" (variable \"stringVar1\") as boolean expression (settings parameter \"myModelSettingConfigKey\")");
-            }
-
-            static final String WRONG_ENUM_VALUE_OVERRIDE = "{" //
-                + "\"data\": {" + "\"model\": {" //
-                + "\"enumField\": \"A\"" + "}" //
-                + "}," //
-                + "\"flowVariableSettings\": {" //
-                + "\"model.enumField\": {" //
-                + String.format("\"controllingFlowVariableName\": \"%s\"", stringVar1.getName()) //
-                + "}" //
-                + "}" //
-                + "}";
-
-            static class TestSettingsWithEnum implements DefaultNodeSettings {
-                enum MyEnum {
-                        A, B, C
-                }
-
-                MyEnum m_enumField = MyEnum.A;
-            }
-
-            @Test
-            void testThrowsOnLoadError() throws JsonProcessingException, InvalidSettingsException {
-                final var dataPath = new LinkedList<String>(List.of("model", "enumField"));
-                final var dataService =
-                    getDataServiceWithConverter(Map.of(SettingsType.MODEL, TestSettingsWithEnum.class));
-                final var invalidSettingsException = assertThrows(InvalidSettingsException.class,
-                    () -> dataService.getFlowVariableOverrideValue(WRONG_ENUM_VALUE_OVERRIDE, dataPath));
-                assertThat(invalidSettingsException.getMessage()).isEqualTo(
-                    String.format("There is no enum constant with name 'stringVar1_value' in enum 'class %s'.",
-                        TestSettingsWithEnum.MyEnum.class.getName()));
-            }
-
-            @Persistor(JsonBasedNodeSettingsPersistor.class)
-            static class JsonBasedTestSettingsWithEnum implements DefaultNodeSettings {
-                enum MyEnum {
-                        A, B, C
-                }
-
-                MyEnum m_enumField = MyEnum.A;
-            }
-
-            @Test
-            void testThrowsOnLoadErrorWithJsonBaseNodeSettingsPersistor()
-                throws JsonProcessingException, InvalidSettingsException {
-                final var dataPath = new LinkedList<String>(List.of("model", "enumField"));
-                final var dataService =
-                    getDataServiceWithConverter(Map.of(SettingsType.MODEL, JsonBasedTestSettingsWithEnum.class));
-                final var invalidSettingsException = assertThrows(InvalidSettingsException.class,
-                    () -> dataService.getFlowVariableOverrideValue(WRONG_ENUM_VALUE_OVERRIDE, dataPath));
-                assertThat(invalidSettingsException.getMessage()).isEqualTo(String.format(
-                    "%s: Cannot deserialize value of type `%s` from String \"stringVar1_value\": "
-                        + "not one of the values accepted for Enum class: [A, B, C]\n"
-                        + " at [Source: UNKNOWN; byte offset: #UNKNOWN] (through reference chain: %s[\"enumField\"])",
-                    InvalidFormatException.class.getName(), JsonBasedTestSettingsWithEnum.MyEnum.class.getName(),
-                    JsonBasedTestSettingsWithEnum.class.getName()));
-            }
-
-        }
-
     }
 
 }

@@ -51,6 +51,9 @@ package org.knime.core.webui.node.dialog.defaultdialog;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.FIELD_NAME_DATA;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.FIELD_NAME_SCHEMA;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.FIELD_NAME_UI_SCHEMA;
+import static org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.TextToJsonUtil.textToJson;
+import static org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.VariableSettingsUtil.addVariableSettingsToRootJson;
+import static org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.VariableSettingsUtil.rootJsonToVariableSettings;
 import static org.knime.core.webui.node.dialog.defaultdialog.util.MapValuesUtil.mapValues;
 
 import java.util.Map;
@@ -64,13 +67,17 @@ import org.knime.core.webui.node.dialog.NodeAndVariableSettingsRO;
 import org.knime.core.webui.node.dialog.NodeAndVariableSettingsWO;
 import org.knime.core.webui.node.dialog.NodeSettingsService;
 import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.PasswordHolder;
-import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.SettingsConverter;
+import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.DefaultNodeSettingsClassToNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.JsonDataToNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.NodeSettingsToJsonFormsSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
@@ -82,51 +89,49 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 final class DefaultNodeSettingsService implements NodeSettingsService {
 
-    private final SettingsConverter m_converter;
-
     private final AsyncChoicesHolder m_asyncChoicesHolder;
 
+    private final Map<SettingsType, Class<? extends DefaultNodeSettings>> m_settingsClasses;
+
     /**
-     * @param converter map that associates a {@link DefaultNodeSettings} class-with a {@link SettingsType}
+     * @param settingsClasses map that associates a {@link DefaultNodeSettings} class-with a {@link SettingsType}
      * @param asyncChoicesHolder used to start asynchronous computations of choices during the ui-schema generation.
      */
-    public DefaultNodeSettingsService(final SettingsConverter converter, final AsyncChoicesHolder asyncChoicesHolder) {
-        m_converter = converter;
+    public DefaultNodeSettingsService(final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses,
+        final AsyncChoicesHolder asyncChoicesHolder) {
+        m_settingsClasses = settingsClasses;
         m_asyncChoicesHolder = asyncChoicesHolder;
     }
 
     @Override
     public void toNodeSettings(final String textSettings, final Map<SettingsType, NodeAndVariableSettingsWO> settings) {
-        m_converter.textSettingsToNodeAndVariableSettings(textSettings, settings);
+        final var root = textToJson(textSettings);
+        new JsonDataToNodeSettings(m_settingsClasses).toNodeSettings(root.get(FIELD_NAME_DATA),
+            mapValues(settings, v -> v));
+        rootJsonToVariableSettings(root, mapValues(settings, v -> v));
     }
 
     @Override
     public String fromNodeSettings(final Map<SettingsType, NodeAndVariableSettingsRO> settings,
         final PortObjectSpec[] specs) {
-        var context = DefaultNodeSettings.createDefaultNodeSettingsContext(specs);
-        final var jsonFormsSettings =
-            m_converter.nodeSettingsToJsonFormsSettingsOrDefault(mapValues(settings, v -> v), context);
-        final var flowVariablesMapJsonObject =
-            SettingsConverter.variableSettingsToJsonObject(mapValues(settings, v -> v), context);
-        return toString(jsonFormsSettings, flowVariablesMapJsonObject);
-    }
-
-    @Override
-    public void validateNodeSettingsAndVariables(final Map<SettingsType, NodeAndVariableSettingsRO> settings)
-        throws InvalidSettingsException {
-        for (var entry : settings.entrySet()) {
-            m_converter.nodeSettingsToDefaultNodeSettings(entry.getKey(), entry.getValue());
-        }
-
-    }
-
-    private String toString(final JsonFormsSettings jsonFormsSettings, final ObjectNode flowVariablesMapJsonObject) {
+        var context = createContext(specs);
+        final var jsonFormsSettings = new NodeSettingsToJsonFormsSettings(context, m_settingsClasses)
+            .nodeSettingsToJsonFormsSettingsOrDefault(mapValues(settings, v -> v));
         final var mapper = JsonFormsDataUtil.getMapper();
+        final var root = jsonFormsSettingsToJson(jsonFormsSettings, mapper);
+        addVariableSettingsToRootJson(root, mapValues(settings, v -> v), context);
+        return jsonToString(root, mapper);
+    }
+
+    private ObjectNode jsonFormsSettingsToJson(final JsonFormsSettings jsonFormsSettings, final ObjectMapper mapper) {
         final var root = mapper.createObjectNode();
         root.set(FIELD_NAME_DATA, jsonFormsSettings.getData());
         root.set(FIELD_NAME_SCHEMA, jsonFormsSettings.getSchema());
         root.putRawValue(FIELD_NAME_UI_SCHEMA, jsonFormsSettings.getUiSchema(m_asyncChoicesHolder));
-        root.setAll(flowVariablesMapJsonObject);
+        return root;
+    }
+
+    private static String jsonToString(final ObjectNode root, final ObjectMapper mapper) {
         try {
             return mapper.writeValueAsString(root);
         } catch (JsonProcessingException e) {
@@ -136,14 +141,29 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
     }
 
     @Override
-    public void getDefaultNodeSettings(final Map<SettingsType, NodeSettingsWO> settings, final PortObjectSpec[] specs) {
-        var context = DefaultNodeSettings.createDefaultNodeSettingsContext(specs);
-        m_converter.saveDefaultNodeSettings(settings, context);
+    public void validateNodeSettingsAndVariables(final Map<SettingsType, NodeAndVariableSettingsRO> settings)
+        throws InvalidSettingsException {
+        for (var entry : settings.entrySet()) {
+            DefaultNodeSettings.loadSettings(entry.getValue(), m_settingsClasses.get(entry.getKey()));
+        }
     }
+
+    @Override
+    public void getDefaultNodeSettings(final Map<SettingsType, NodeSettingsWO> settings, final PortObjectSpec[] specs) {
+        var context = createContext(specs);
+        new DefaultNodeSettingsClassToNodeSettings(context, m_settingsClasses).saveDefaultNodeSetting(settings);
+    }
+
+    private static DefaultNodeSettingsContext createContext(final PortObjectSpec[] specs) {
+        var context = DefaultNodeSettings.createDefaultNodeSettingsContext(specs);
+        return context;
+    }
+
 
     @Override
     public void deactivate() {
         final var nodeId = NodeContext.getContext().getNodeContainer().getID();
         PasswordHolder.removeAllPasswordsOfDialog(nodeId);
     }
+
 }
