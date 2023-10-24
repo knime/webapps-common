@@ -5,6 +5,7 @@ import FlowVariableSelector from "./FlowVariableSelector.vue";
 import { getConfigPaths } from "@/nodeDialog/utils";
 import { computed } from "vue";
 import type FlowVariablePopoverProps from "./types/FlowVariablePopoverProps";
+import FlowVariableExposer from "./FlowVariableExposer.vue";
 
 const props = defineProps<FlowVariablePopoverProps>();
 /**
@@ -22,20 +23,37 @@ const emit = defineEmits(["controllingFlowVariableSet"]);
 
 <template>
   <template v-if="singlePath">
-    <Label #default="{ labelForId }" text="Select variable" class="label">
-      <FlowVariableSelector
-        :id="labelForId"
-        :data-path="path"
-        :persist-path="singlePath"
-        :config-keys="configKeys"
-        :flow-settings="flowSettings"
-        :flow-variables-map="flowVariablesMap"
-        @controlling-flow-variable-set="
-          emit('controllingFlowVariableSet', $event)
-        "
-      />
-    </Label>
+    <div class="popover">
+      <Label #default="{ labelForId }" text="Select variable" class="label">
+        <FlowVariableSelector
+          :id="labelForId"
+          :data-path="path"
+          :persist-path="singlePath"
+          :flow-settings="flowSettings"
+          :flow-variables-map="flowVariablesMap"
+          @controlling-flow-variable-set="
+            emit('controllingFlowVariableSet', $event)
+          "
+        />
+      </Label>
+      <Label #default="{ labelForId }" text="Expose variable" class="label">
+        <FlowVariableExposer
+          :id="labelForId"
+          :persist-path="singlePath"
+          :flow-settings="flowSettings"
+          :flow-variables-map="flowVariablesMap"
+        />
+      </Label>
+    </div>
   </template>
   <MulitpleConfigKeysNotYetSupported v-else :config-keys="configKeys!" />
 </template>
 >
+
+<style lang="postcss" scoped>
+.popover {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+</style>

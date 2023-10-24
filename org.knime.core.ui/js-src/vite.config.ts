@@ -65,7 +65,7 @@ const getIncludedTestFiles = (mode: "integration" | "unit") => {
     return ["src/**/__tests__/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"];
   } else {
     return [
-      "**/__integrationTests__/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
+      "src/**/__integrationTests__/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
     ];
   }
 };

@@ -62,6 +62,16 @@ export const setControllingFlowVariable = (
   flowVariableMap[path] = flowVarAtPath;
 };
 
+export const setExposedFlowVariable = (
+  flowVariableMap: Record<string, FlowSettings>,
+  { path, flowVariableName }: { path: string; flowVariableName: string },
+) => {
+  const flowVarAtPath = flowVariableMap[path] || {};
+  flowVarAtPath.exposedFlowVariableName =
+    flowVariableName === "" ? null : flowVariableName;
+  flowVariableMap[path] = flowVarAtPath;
+};
+
 export const unsetControllingFlowVariable = (
   flowVariableMap: Record<string, FlowSettings>,
   { path }: { path: string },

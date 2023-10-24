@@ -1,8 +1,10 @@
 import { shallowMount } from "@vue/test-utils";
 import { beforeEach, describe, expect, it } from "vitest";
 import Label from "webapps-common/ui/components/forms/Label.vue";
+import Fieldset from "webapps-common/ui/components/forms/Fieldset.vue";
 import FlowVariablePopover from "../FlowVariablePopover.vue";
 import FlowVariableSelector from "../FlowVariableSelector.vue";
+import FlowVariableExposer from "../FlowVariableExposer.vue";
 import MulitpleConfigKeysNotYetSupported from "../MultipleConfigKeysNotYetSupported.vue";
 import type FlowVariablePopoverProps from "../types/FlowVariablePopoverProps";
 
@@ -22,7 +24,7 @@ describe("FlowVariablePopover", () => {
     return shallowMount(FlowVariablePopover, {
       ...options,
       global: {
-        stubs: { MulitpleConfigKeysNotYetSupported, Label },
+        stubs: { MulitpleConfigKeysNotYetSupported, Label, Fieldset },
       },
     });
   };
@@ -36,6 +38,14 @@ describe("FlowVariablePopover", () => {
     expect(selector.exists()).toBeTruthy();
     expect(selector.attributes().id).toBe(
       labelForSelector.find("label").attributes().for,
+    );
+
+    const labelForExposer = wrapper.findAllComponents(Label).at(1)!;
+    const exposer = wrapper.findComponent(FlowVariableExposer);
+    expect(labelForExposer.text()).toBe("Expose variable");
+    expect(exposer.exists()).toBeTruthy();
+    expect(exposer.attributes().id).toBe(
+      labelForExposer.find("label").attributes().for,
     );
   });
 

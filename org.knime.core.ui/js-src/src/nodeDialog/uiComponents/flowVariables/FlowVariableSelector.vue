@@ -85,7 +85,7 @@ const selectValue = async (selectedId: string | number) => {
 };
 
 const ariaLabel = computed(
-  () => `controlling-flow-variables-${props.dataPath}`,
+  () => `controlling-flow-variables-${props.persistPath}`,
 );
 const noOptionsPresent = computed(
   () =>

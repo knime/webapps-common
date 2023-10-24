@@ -67,7 +67,7 @@ describe("FlowVariableSelector.vue", () => {
     expect(wrapper.findComponent(Dropdown).exists()).toBeTruthy();
     await flushPromises();
     expect(wrapper.findComponent(Dropdown).props()).toMatchObject({
-      ariaLabel: "controlling-flow-variables-model.myPath",
+      ariaLabel: "controlling-flow-variables-persist.path.to.setting",
       modelValue: "",
       placeholder: "No suitable variable present",
       disabled: true,
