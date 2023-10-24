@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { h, reactive, ref } from "vue";
+import { h, onMounted, reactive, ref } from "vue";
 import Checkbox from "webapps-common/ui/components/forms/Checkbox.vue";
 import Dropdown from "webapps-common/ui/components/forms/Dropdown.vue";
+import Button from "webapps-common/ui/components/Button.vue";
 import FileExplorer from "webapps-common/ui/components/FileExplorer/FileExplorer.vue";
 import type {
   FileExplorerItem,
@@ -35,14 +36,14 @@ const items = [
   },
   {
     id: "2",
-    name: "File 1",
+    name: "This item cannot be renamed",
     meta: {
       type: "Workflow",
     },
     isDirectory: false,
     isOpenableFile: true,
     isOpen: false,
-    canBeRenamed: true,
+    canBeRenamed: false,
     canBeDeleted: true,
   },
   {
@@ -71,7 +72,7 @@ const items = [
   },
   {
     id: "5",
-    name: "File 3",
+    name: "File 3 (this item cannot be deleted)",
     meta: {
       type: "Metanode",
     },
@@ -79,7 +80,7 @@ const items = [
     isOpenableFile: false,
     isOpen: false,
     canBeRenamed: true,
-    canBeDeleted: true,
+    canBeDeleted: false,
   },
 ];
 
@@ -94,15 +95,33 @@ const draggingAnimationMode = ref<"auto" | "manual" | "disabled">("auto");
 
 const customDragPreviewTarget = ref<HTMLDivElement | null>(null);
 const shouldRenderCustomPreview = ref(false);
+const shouldRenderCustomPreviewRect = ref<DOMRect | null>(null);
+
+const activeRenamedItemId = ref<string | null>(null);
+
+const toggleRemoteRenaming = () => {
+  if (activeRenamedItemId.value) {
+    activeRenamedItemId.value = null;
+  } else {
+    // item with id '1'
+    activeRenamedItemId.value = "1";
+  }
+};
+
+onMounted(() => {
+  shouldRenderCustomPreviewRect.value =
+    customDragPreviewTarget.value.getBoundingClientRect();
+});
 
 const onDrag = ({ event }: { event: DragEvent; item: FileExplorerItem }) => {
-  const elementBelowDrag = document.elementFromPoint(
-    event.clientX,
-    event.clientX,
-  );
+  const { clientX, clientY } = event;
+  const isInside =
+    clientX >= shouldRenderCustomPreviewRect.value.left &&
+    clientX < shouldRenderCustomPreviewRect.value.right &&
+    clientY >= shouldRenderCustomPreviewRect.value.top &&
+    clientY < shouldRenderCustomPreviewRect.value.bottom;
 
-  shouldRenderCustomPreview.value =
-    customDragPreviewTarget.value.contains(elementBelowDrag);
+  shouldRenderCustomPreview.value = isInside;
 };
 
 // This would ideally go into a separate component, but for DEMO PURPOSES
@@ -127,22 +146,32 @@ const customContextMenuComponent = ({
 }) => {
   return {
     render() {
-      const renameOption = createRenameOption(anchor.item);
-      const deleteOption = createDeleteOption(anchor.item);
+      const options = this.items.map((item) => {
+        const onClick = () => {
+          if (item.id === "custom-option") {
+            window.alert("Rejoice! you clicked a custom context menu option");
+            return;
+          }
 
-      const renameElement = h(
-        "li",
-        { onClick: () => onItemClick(renameOption) },
-        renameOption.text,
-      );
+          onItemClick(item);
+        };
 
-      const deleteElement = h(
-        "li",
-        { onClick: () => onItemClick(deleteOption) },
-        deleteOption.text,
-      );
+        return h("li", { onClick }, item.text);
+      });
 
-      return h("ul", [renameElement, deleteElement]);
+      return h("ul", options);
+    },
+    computed: {
+      items() {
+        const renameOption = createRenameOption(anchor.item);
+        const deleteOption = createDeleteOption(anchor.item);
+        const customOption: FileExplorerContextMenu.MenuItem = {
+          id: "custom-option",
+          text: "My awesome custom option",
+        };
+
+        return [renameOption, deleteOption, customOption];
+      },
     },
   };
 };
@@ -171,24 +200,34 @@ const onDelete = (item) => {
         <Checkbox v-model="options.useCustomContextMenu">
           Custom context menu
         </Checkbox>
-        <Dropdown
-          v-model="draggingAnimationMode"
-          :aria-label="'A List'"
-          :possible-values="[
-            {
-              id: 'auto',
-              text: 'Auto',
-            },
-            {
-              id: 'manual',
-              text: 'Manual',
-            },
-            {
-              id: 'disabled',
-              text: 'Disabled',
-            },
-          ]"
-        />
+
+        <div>
+          Dragging animation mode
+          <Dropdown
+            v-model="draggingAnimationMode"
+            :aria-label="'A List'"
+            :possible-values="[
+              {
+                id: 'auto',
+                text: 'Auto',
+              },
+              {
+                id: 'manual',
+                text: 'Manual',
+              },
+              {
+                id: 'disabled',
+                text: 'Disabled',
+              },
+            ]"
+          />
+        </div>
+        <div>
+          Toggle programmatic rename
+          <Button compact primary @click="toggleRemoteRenaming">{{
+            activeRenamedItemId ? "Deactivate" : "Activate"
+          }}</Button>
+        </div>
       </div>
     </div>
     <div class="grid-container">
@@ -200,12 +239,13 @@ const onDelete = (item) => {
           :disable-dragging="options.disableDragging"
           :dragging-animation-mode="draggingAnimationMode"
           :is-root-folder="false"
+          :active-renamed-item-id="activeRenamedItemId"
           @drag="onDrag"
           @rename-file="onRename"
           @delete-items="onDelete"
         >
           <template v-if="shouldRenderCustomPreview" #customDragPreview>
-            <div class="custom-preview-element">I am a cutom drag preview</div>
+            <div class="custom-preview-element">I am a custom drag preview</div>
           </template>
 
           <template
@@ -261,7 +301,15 @@ const onDelete = (item) => {
 
 .options {
   display: flex;
-  gap: 0.5rem;
+  gap: 1.5rem;
+  align-items: center;
+  margin-bottom: 2rem;
+
+  & div {
+    display: flex;
+    gap: 0.2rem;
+    align-items: center;
+  }
 }
 
 .custom-drag-preview-target {
@@ -277,12 +325,12 @@ const onDelete = (item) => {
 }
 
 .custom-preview-element {
-  width: 150px;
+  min-width: 300px;
   height: 150px;
   border-radius: 4px;
   background-color: var(--knime-masala);
   color: white;
-  padding: 12px;
+  padding: 4px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -308,6 +356,11 @@ const onDelete = (item) => {
         background: var(--knime-masala);
         color: white;
       }
+    }
+
+    & :deep(li[disabled="true"]) {
+      color: var(--knime-silver-sand);
+      cursor: not-allowed;
     }
   }
 

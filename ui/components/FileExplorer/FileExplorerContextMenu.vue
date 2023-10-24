@@ -159,10 +159,10 @@ const onItemClick = (menuItem: BaseMenuItem) => {
   });
 };
 
-const items: Array<FileExplorerContextMenu.MenuItem> = [
+const items = computed(() => [
   createRenameOption(props.anchor.item),
   createDeleteOption(props.anchor.item),
-];
+]);
 
 const closeMenu = () => {
   popperInstance.value?.destroy();
