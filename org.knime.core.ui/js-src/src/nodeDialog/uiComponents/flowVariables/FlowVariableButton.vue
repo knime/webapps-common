@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import FlowVariableIcon from "./FlowVariableIcon.vue";
-import FlowVariableSelector from "./FlowVariableSelector.vue";
+import FlowVariablePopover from "./FlowVariablePopover.vue";
+
 import DialogPopover from "@/nodeDialog/popover/DialogPopover.vue";
-import Label from "webapps-common/ui/components/forms/Label.vue";
 
 import type FlowVariableButtonProps from "./types/FlowVariableButtonProps";
 
@@ -34,8 +34,7 @@ const tooltip = computed(() => {
       />
     </template>
     <template #popover>
-      <Label text="Select variable" class="label" />
-      <FlowVariableSelector
+      <FlowVariablePopover
         :path="path"
         :config-keys="configKeys"
         :flow-settings="flowSettings"
