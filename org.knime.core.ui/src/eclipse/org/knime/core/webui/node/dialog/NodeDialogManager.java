@@ -128,23 +128,18 @@ public final class NodeDialogManager {
         if (nc instanceof NativeNodeContainer) {
             var nnc = (NativeNodeContainer)nc;
             return m_nodeDialogAdapterMap.computeIfAbsent(nc, id -> {
-                NodeCleanUpCallback.builder(nnc, () -> removeNodeDialogAdapter(nnc)).build();
+                NodeCleanUpCallback.builder(nnc, () -> deactivateDialog(nnc)).build();
                 return createNativeNodeDialog(nnc);
             });
         } else if (nc instanceof SubNodeContainer) {
             var snc = (SubNodeContainer)nc;
             return m_nodeDialogAdapterMap.computeIfAbsent(nc, id -> {
-                NodeCleanUpCallback.builder(nc, () -> removeNodeDialogAdapter(nc)).build();
+                NodeCleanUpCallback.builder(nc, () -> deactivateDialog(nc)).build();
                 return createSubNodeContainerDialog(snc);
             });
         } else {
             throw new IllegalArgumentException("The node " + nc.getNameWithID() + " is no supported node container");
         }
-    }
-
-    private void removeNodeDialogAdapter(final NodeContainer nnc) {
-        m_nodeDialogAdapterMap.remove(nnc).deactivate();
-
     }
 
     private static NodeDialogAdapter createNativeNodeDialog(final NativeNodeContainer nnc) {
