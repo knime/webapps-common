@@ -67,6 +67,7 @@ import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.PasswordHolder;
 import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.SettingsConverter;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.UpdateHandler;
@@ -115,19 +116,18 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
         m_asyncChoicesGetter = asyncChoicesGetter;
     }
 
+    private static DefaultNodeSettingsContext createContext() {
+        return DefaultNodeSettings.createDefaultNodeSettingsContext(DataServiceContext.get().getInputSpecs());
+    }
+
     @Override
     public Result<?> invokeButtonAction(final String widgetId, final String handlerClass, final String buttonState,
         final Object objectSettings) throws ExecutionException, InterruptedException {
         final var handler = getButtonActionHandler(handlerClass);
-        final var convertedSettings = convertDependencies(objectSettings, handler);
         final var context = createContext();
+        final var convertedSettings = convertDependencies(objectSettings, handler, context);
         return m_requestHandler.handleRequest(widgetId,
             () -> handler.castAndInvoke(buttonState, convertedSettings, context));
-
-    }
-
-    private static DefaultNodeSettingsContext createContext() {
-        return DefaultNodeSettings.createDefaultNodeSettingsContext(DataServiceContext.get().getInputSpecs());
     }
 
     @Override
@@ -135,8 +135,8 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
         throws InterruptedException, ExecutionException {
         final var handler = getButtonActionHandler(handlerClass);
         final var resultType = GenericTypeFinderUtil.getFirstGenericType(handler.getClass(), ButtonActionHandler.class);
-        final var convertedCurrentValue = convertValue(currentValue, resultType);
         final var context = createContext();
+        final var convertedCurrentValue = convertValue(currentValue, resultType, context);
         return m_requestHandler.handleRequest(widgetId,
             () -> handler.castAndInitialize(convertedCurrentValue, context));
 
@@ -154,8 +154,8 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
     public Result<?> update(final String widgetId, final String handlerClass, final Object objectSettings)
         throws InterruptedException, ExecutionException {
         final var handler = getUpdateHandler(handlerClass);
-        final var convertedSettings = convertDependencies(objectSettings, handler);
         final var context = createContext();
+        final var convertedSettings = convertDependencies(objectSettings, handler, context);
         return m_requestHandler.handleRequest(widgetId, () -> handler.castAndUpdate(convertedSettings, context));
     }
 
@@ -176,13 +176,20 @@ public class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialogDataSe
         return m_requestHandler.handleRequestFuture(m_asyncChoicesGetter.getChoices(className));
     }
 
-    private static Object convertDependencies(final Object objectSettings, final DependencyHandler<?> handler) {
+    private static Object convertDependencies(final Object objectSettings, final DependencyHandler<?> handler,
+        final DefaultNodeSettingsContext context) {
         final var settingsType = GenericTypeFinderUtil.getFirstGenericType(handler.getClass(), DependencyHandler.class);
-        return convertValue(objectSettings, settingsType);
+        return convertValue(objectSettings, settingsType, context);
     }
 
-    private static Object convertValue(final Object objectSettings, final Class<?> settingsType) {
-        return JsonFormsDataUtil.getMapper().convertValue(objectSettings, settingsType);
+    private static Object convertValue(final Object objectSettings, final Class<?> settingsType,
+        final DefaultNodeSettingsContext context) {
+        PasswordHolder.setCredentialsProvider(context.getCredentialsProvider().orElse(null));
+        try {
+            return JsonFormsDataUtil.getMapper().convertValue(objectSettings, settingsType);
+        } finally {
+            PasswordHolder.removeCredentialsProvider();
+        }
 
     }
 

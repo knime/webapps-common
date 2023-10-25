@@ -56,7 +56,7 @@ describe("flow variables", () => {
     flowVariablesMap = wrapper.vm.schema.flowVariablesMap;
   };
 
-  const expandFlowVariabledPopover = async () => {
+  const expandFlowVariablesPopover = async () => {
     flowVarButton = wrapper.findComponent(FlowVariableButton);
     await flowVarButton.find("button").trigger("mouseup");
     await flushPromises();
@@ -104,7 +104,7 @@ describe("flow variables", () => {
         return Promise.resolve();
       });
     await mountNodeDialog();
-    await expandFlowVariabledPopover();
+    await expandFlowVariablesPopover();
   });
 
   it("displays available flow variables", async () => {
@@ -179,5 +179,104 @@ describe("flow variables", () => {
     expect(wrapper.vm.getData().data.model.value).toBe(
       fetchedFlowVariableValue,
     );
+  });
+
+  describe("credentials", () => {
+    beforeEach(async () => {
+      vi.clearAllMocks();
+
+      const uiSchemaKey = "ui_schema";
+      vi.spyOn(JsonDataService.prototype, "initialData").mockResolvedValue({
+        data: {
+          model: {
+            value: {
+              username: "myUsername",
+              isHiddenPassword: true,
+            },
+          },
+        },
+        schema: {
+          type: "object",
+          properties: {
+            model: {
+              type: "object",
+              properties: {
+                value: {
+                  type: "object",
+                  properties: {
+                    username: {
+                      type: "string",
+                    },
+                    password: {
+                      type: "string",
+                    },
+                    isHiddenPassword: {
+                      type: "boolean",
+                    },
+                    flowVariableName: {
+                      type: "string",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        [uiSchemaKey]: {
+          elements: [
+            {
+              scope: "#/properties/model/properties/value",
+              type: "Control",
+              options: {
+                format: "credentials",
+              },
+            },
+          ],
+        },
+        flowVariableSettings: {},
+      });
+      dataServiceSpy = vi
+        .spyOn(JsonDataService.prototype, "data")
+        .mockImplementation((params) => {
+          if (params?.method === "getAvailableFlowVariables") {
+            return Promise.resolve(possibleFlowVariables);
+          }
+          if (params?.method === "getFlowVariableOverrideValue") {
+            return Promise.resolve({
+              username: "flowVarUsername",
+              isHiddenPassword: true,
+            });
+          }
+          return Promise.resolve();
+        });
+      await mountNodeDialog();
+      await expandFlowVariablesPopover();
+    });
+
+    it("sets flow variable name in data when controlling flow variable is set", async () => {
+      // Click on "flowVar1"
+      listItems.at(1)?.trigger("click");
+      await flushPromises();
+
+      expect(wrapper.vm.getData().data.model.value).toStrictEqual({
+        flowVariableName: flowVar1.name,
+        isHiddenPassword: true,
+        username: "flowVarUsername",
+      });
+    });
+
+    it("unsets flow variable name from data when controlling flow variable is unset", async () => {
+      // Click on "flowVar1"
+      listItems.at(1)?.trigger("click");
+      await flushPromises();
+      listItems.at(0)?.trigger("click");
+      await flushPromises();
+
+      expect(wrapper.vm.getData().data.model.value).toStrictEqual({
+        flowVariableName: null,
+        isHiddenPassword: true,
+        username: "flowVarUsername",
+      });
+    });
   });
 });

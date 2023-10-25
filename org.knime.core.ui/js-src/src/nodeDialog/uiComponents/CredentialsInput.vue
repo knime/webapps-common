@@ -14,6 +14,8 @@ import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsContro
 interface Credentials {
   username: string;
   password: string;
+  isHiddenPassword?: boolean;
+  flowVariableName?: string | null;
 }
 
 const CredentialsInput = defineComponent({
@@ -35,6 +37,9 @@ const CredentialsInput = defineComponent({
     },
     flowSettings() {
       return getFlowVariablesMap(this.control);
+    },
+    controllingFlowVariableName() {
+      return this.flowSettings?.controllingFlowVariableName;
     },
     disabled() {
       return (
@@ -63,6 +68,11 @@ const CredentialsInput = defineComponent({
       return this.control.uischema.options?.passwordLabel ?? "Password";
     },
   },
+  watch: {
+    controllingFlowVariableName(flowVariableName) {
+      this.onChange(mergeDeep(this.data, { flowVariableName }));
+    },
+  },
   methods: {
     onChange(credentials: Credentials) {
       this.handleChange(this.control.path, credentials);
@@ -70,6 +80,9 @@ const CredentialsInput = defineComponent({
         // @ts-ignore
         this.$store.dispatch("pagebuilder/dialog/dirtySettings", true);
       }
+    },
+    onControllingFlowVariableSet(value: Credentials) {
+      this.onChange(mergeDeep(this.data, value));
     },
     onChangeUsername(username: string) {
       this.onChange(mergeDeep(this.data, { username }));
@@ -96,7 +109,7 @@ export default CredentialsInput;
       :errors="[control.errors]"
       :show-reexecution-icon="isModelSettingAndHasNodeView"
       :flow-settings="flowSettings"
-      @controlling-flow-variable-set="onChange"
+      @controlling-flow-variable-set="onControllingFlowVariableSet"
     >
       <div :id="labelForId" class="credentials-input-wrapper">
         <InputField

@@ -53,7 +53,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.knime.core.node.workflow.NodeContext;
+import org.knime.core.node.workflow.CredentialsProvider;
 import org.knime.core.node.workflow.NodeID;
 
 /**
@@ -68,6 +68,8 @@ public final class PasswordHolder {
 
     private static final ThreadLocal<NodeID> currentNodeID = new ThreadLocal<NodeID>();
 
+    private static final ThreadLocal<CredentialsProvider> credentialsProvider = new ThreadLocal<CredentialsProvider>();
+
     private PasswordHolder() {
         // Cannot be instantiated
     }
@@ -75,7 +77,6 @@ public final class PasswordHolder {
     private static final Map<String, String> PASSWORDS = new HashMap<>();
 
     private static final Map<NodeID, Set<String>> PASSWORD_IDS_PER_NODE_ID = new HashMap<>();
-
 
     /**
      * Call this method in order to allow writing passwords to the password holder. The passwords are associated with
@@ -112,49 +113,52 @@ public final class PasswordHolder {
         passwordIds.stream().forEach(PasswordHolder::remove);
     }
 
-
     /**
      * This method throws an exception if {@link #activate} has not been called.
      */
-    static synchronized void addPassword(final String id, final String password) {
-        final var nodeId = getCurrentNodeId();
-        validateAgainstKnownLimitations(id, password, nodeId);
-        accociatePasswordIdToNode(id, nodeId);
-        PASSWORDS.put(id, password);
+    static synchronized void addPassword(final String passwordId, final String password) {
+        final var nodeID = currentNodeID.get();
+        if (nodeID == null) {
+            return;
+        }
+        validateAgainstKnownLimitations(passwordId, password, nodeID);
+        accociatePasswordIdToNode(passwordId, nodeID);
+        PASSWORDS.put(passwordId, password);
     }
 
     /**
      * Currently, it is a known limitation, that we cannot associate the nodeId with the saved passwords, as this is not
      * known during deserialization. Thus, only one active node dialog is allowed to hold passwords with the same
-     * fieldId at a time. TODO: UIEXT-1375 resolve this limitation
+     * passwordId at a time. TODO: UIEXT-1375 resolve this limitation
      *
-     * @param id associated to the field. It entails only the name of the field and the full name of its containing
-     *            class.
+     * @param passwordId associated to the field. It entails only the name of the field and the full name of its
+     *            containing class.
      * @param password
      * @param nodeId
      */
-    private static void validateAgainstKnownLimitations(final String id, final String password, final NodeID nodeId) {
-        if (isAlreadySet(id) && isNotAlreadySetForNode(id, nodeId)) {
+    private static void validateAgainstKnownLimitations(final String passwordId, final String password,
+        final NodeID nodeId) {
+        if (isAlreadySet(passwordId) && isNotAlreadySetForNode(passwordId, nodeId)) {
             throw new IllegalStateException(
                 "Multiple active node dialogs containing credentials at the same time are not supported yet.");
         }
     }
 
-    private static boolean isAlreadySet(final String id) {
-        return get(id) != null;
+    private static boolean isAlreadySet(final String passwordId) {
+        return get(passwordId) != null;
     }
 
-    private static boolean isNotAlreadySetForNode(final String id, final NodeID nodeId) {
+    private static boolean isNotAlreadySetForNode(final String passwordId, final NodeID nodeId) {
         final var alreadySetIdsForNode = PASSWORD_IDS_PER_NODE_ID.get(nodeId);
-        return alreadySetIdsForNode == null || !alreadySetIdsForNode.contains(id);
+        return alreadySetIdsForNode == null || !alreadySetIdsForNode.contains(passwordId);
     }
 
-    static synchronized String get(final String id) {
-        return PASSWORDS.get(id);
+    static synchronized String get(final String passwordId) {
+        return PASSWORDS.get(passwordId);
     }
 
-    private static void remove(final String id) {
-        PASSWORDS.remove(id);
+    private static void remove(final String passwordId) {
+        PASSWORDS.remove(passwordId);
     }
 
     private static void accociatePasswordIdToNode(final String passwordId, final NodeID nodeId) {
@@ -167,13 +171,29 @@ public final class PasswordHolder {
         });
     }
 
-    private static NodeID getCurrentNodeId() {
-        final var nodeContext = NodeContext.getContext();
-        if (nodeContext == null) {
-            throw new IllegalStateException(
-                "Serializing credentials failed: Node context is expected to be available here.");
-        }
-        final var nodeId = nodeContext.getNodeContainer().getID();
-        return nodeId;
+    /**
+     * Set a credentials provider temporarily in order to enable deserializing credential input fields overwritten by
+     * flow variables.
+     *
+     * @param cp a credentialsProvider accessible vie {@link #getSuppliedCredentialsProvider}
+     */
+    public static void setCredentialsProvider(final CredentialsProvider cp) {
+        credentialsProvider.set(cp);
     }
+
+    /**
+     * Remove the temporarily set credentials provider set with {@link #setCredentialsProvider(CredentialsProvider)}
+     */
+    public static void removeCredentialsProvider() {
+        credentialsProvider.remove();
+    }
+
+    static boolean hasCredentialsProvider() {
+        return credentialsProvider.get() != null;
+    }
+
+    static CredentialsProvider getSuppliedCredentialsProvider() {
+        return credentialsProvider.get();
+    }
+
 }

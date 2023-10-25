@@ -50,6 +50,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.setting.credentials;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
 
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -68,6 +69,8 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 public final class Credentials {
 
     private static final String IS_HIDDEN_PASSWORD_KEY = "isHiddenPassword";
+
+    private static final String FLOW_VAR_NAME_KEY = "flowVariableName";
 
     private static final String PASSWORD_KEY = "password";
 
@@ -191,11 +194,15 @@ public final class Credentials {
         }
 
         private static String getPassword(final JsonNode node, final String fieldId) {
+            final var flowVariableName = extractString(node, FLOW_VAR_NAME_KEY);
+            if (!flowVariableName.isEmpty() && PasswordHolder.hasCredentialsProvider()) {
+                return PasswordHolder.getSuppliedCredentialsProvider().get(flowVariableName).getPassword();
+            }
             final var isHiddenPassword = node.get(IS_HIDDEN_PASSWORD_KEY);
             if (isHiddenPassword != null && !isHiddenPassword.asBoolean()) {
                 return extractString(node, PASSWORD_KEY);
             }
-            return PasswordHolder.get(fieldId);
+            return Optional.ofNullable(PasswordHolder.get(fieldId)).orElse("");
         }
 
         private static String extractString(final JsonNode node, final String key) {

@@ -52,15 +52,18 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.knime.core.node.workflow.CredentialsProvider;
+import org.knime.core.node.workflow.ICredentials;
 import org.knime.core.node.workflow.NodeContainer;
-import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.NodeID;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
@@ -173,11 +176,11 @@ public class CredentialsTest {
 
         private JsonNode serialize(final Object settings, final NodeContainer nc) {
 
-            NodeContext.pushContext(nc);
+            PasswordHolder.activate(nc.getID());
             try {
                 return objectMapper.valueToTree(settings);
             } finally {
-                NodeContext.removeLastContext();
+                PasswordHolder.deactivate();
             }
         }
 
@@ -221,6 +224,65 @@ public class CredentialsTest {
                 objectMapper.treeToValue(result, DeserializeEmptyPasswordTestSettings.class);
             assertThat(settings.credentials.getPassword()).isEqualTo(newPassword);
             assertThat(settings.credentials.getUsername()).isEqualTo("username");
+        }
+
+        static class DeserializeFlowVariableTestSettings {
+            Credentials credentials = new Credentials("username", "password");
+        }
+
+        @Test
+        void testDeserializeFlowVariableWithCredentialsProvider() throws JsonProcessingException, IllegalArgumentException {
+
+            final var flowVarName = "myFlowVariable";
+            final var flowVarPassword = "myFlowVarPassword";
+            final var credentialsProvider = constructCredentialsProvider(flowVarPassword);
+
+            final var result = serialize(new DeserializeFlowVariableTestSettings());
+            final var credentialsJson = (ObjectNode)result.get("credentials");
+            credentialsJson.put("flowVariableName", flowVarName);
+
+            PasswordHolder.setCredentialsProvider(credentialsProvider);
+            try {
+                final DeserializeFlowVariableTestSettings settings =
+                        objectMapper.treeToValue(result, DeserializeFlowVariableTestSettings.class);
+                verify(credentialsProvider).get(flowVarName);
+                assertThat(settings.credentials.getPassword()).isEqualTo(flowVarPassword);
+            } finally {
+                PasswordHolder.removeCredentialsProvider();
+            }
+        }
+
+        private CredentialsProvider constructCredentialsProvider(final String flowVarPassword) {
+            final var credentialsProvider = mock(CredentialsProvider.class);
+            when(credentialsProvider.get(anyString())).thenReturn(new ICredentials() {
+
+                @Override
+                public String getPassword() {
+                    return flowVarPassword;
+                }
+
+                @Override
+                public String getName() {
+                    return null;
+                }
+
+                @Override
+                public String getLogin() {
+                    return null;
+                }
+            });
+            return credentialsProvider;
+        }
+
+        @Test
+        void testDeserializeFlowVariableWithoutCredentialsProvider() throws JsonProcessingException, IllegalArgumentException {
+            final var result = serialize(new DeserializeEmptyPasswordTestSettings());
+            final var credentialsJson = (ObjectNode)result.get("credentials");
+            credentialsJson.put("flowVariableName", "myFlowVariable");
+
+            final DeserializeFlowVariableTestSettings settings =
+                objectMapper.treeToValue(result, DeserializeFlowVariableTestSettings.class);
+            assertThat(settings.credentials.getPassword()).isEqualTo("");
         }
 
     }

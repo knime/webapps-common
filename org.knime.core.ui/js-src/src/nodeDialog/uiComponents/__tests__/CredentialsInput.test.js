@@ -7,6 +7,7 @@ import CredentialsInput from "../CredentialsInput.vue";
 import LabeledInput from "../LabeledInput.vue";
 import InputField from "webapps-common/ui/components/forms/InputField.vue";
 import { inputFormats } from "@/nodeDialog/constants";
+import flushPromises from "flush-promises";
 
 describe("CredentialsInput.vue", () => {
   let props, wrapper, component;
@@ -220,6 +221,65 @@ describe("CredentialsInput.vue", () => {
       .findAllComponents(InputField)[0]
       .vm.$emit("update:modelValue", username);
     expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
+  });
+
+  it("sets flow variable value in data if controlling flow variable is set", async () => {
+    await wrapper
+      .findComponent(LabeledInput)
+      .vm.$emit("controllingFlowVariableSet", {
+        username: "flowVarUsername",
+        isHiddenPassword: true,
+      });
+    expect(component.updateData).toHaveBeenCalledWith(
+      expect.anything(),
+      "credentials",
+      {
+        isHiddenPassword: true,
+        password: props.control.data.password,
+        username: "flowVarUsername",
+      },
+    );
+  });
+
+  it("sets flow variable name in data if controlling flow variable is set", async () => {
+    const flowVariablesMap = {
+      credentials: {
+        controllingFlowVariableName: null,
+      },
+    };
+    props.control.rootSchema.flowVariablesMap = flowVariablesMap;
+    const { wrapper, updateData } = mountJsonFormsComponent(CredentialsInput, {
+      props,
+    });
+    const flowVarName = "flowVar1";
+    flowVariablesMap.credentials.controllingFlowVariableName = flowVarName;
+    wrapper.vm.control = { ...wrapper.vm.control };
+    await flushPromises();
+    expect(updateData).toHaveBeenCalledWith(expect.anything(), "credentials", {
+      flowVariableName: flowVarName,
+      password: "password",
+      username: "username",
+    });
+  });
+
+  it("unsets flow variable name in data if controlling flow variable is unset", async () => {
+    const flowVariablesMap = {
+      credentials: {
+        controllingFlowVariableName: "flowVar1",
+      },
+    };
+    props.control.rootSchema.flowVariablesMap = flowVariablesMap;
+    const { wrapper, updateData } = mountJsonFormsComponent(CredentialsInput, {
+      props,
+    });
+    flowVariablesMap.credentials.controllingFlowVariableName = null;
+    wrapper.vm.control = { ...wrapper.vm.control };
+    await flushPromises();
+    expect(updateData).toHaveBeenCalledWith(expect.anything(), "credentials", {
+      flowVariableName: null,
+      password: "password",
+      username: "username",
+    });
   });
 
   it("hides username input field when configured to do so", () => {

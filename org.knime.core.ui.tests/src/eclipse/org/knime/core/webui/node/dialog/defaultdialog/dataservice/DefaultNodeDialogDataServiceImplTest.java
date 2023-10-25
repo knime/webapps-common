@@ -51,6 +51,10 @@ package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -72,9 +76,12 @@ import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.Node;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.workflow.CredentialsProvider;
 import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.FlowVariable;
+import org.knime.core.node.workflow.ICredentials;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.NodeID;
@@ -93,6 +100,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DefaultNodeDia
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.Persistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.SettingsConverter;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
@@ -128,6 +136,7 @@ class DefaultNodeDialogDataServiceImplTest {
     @BeforeAll
     static void initDataServiceContext() {
         DataServiceContextTest.initDataServiceContext(null, () -> PORT_OBJECT_SPECS);
+
     }
 
     @AfterAll
@@ -330,6 +339,98 @@ class DefaultNodeDialogDataServiceImplTest {
             final var buttonChange = (ButtonChange<String, TestButtonStates>)result.result();
             assertThat(buttonChange.buttonState()).isEqualTo(TestButtonStates.FIRST);
             assertThat(buttonChange.settingValue()).isEqualTo(testDepenenciesFooValue);
+        }
+
+        static class ButtonAndCredentialsSettings implements DefaultNodeSettings {
+
+            Credentials m_credentials;
+
+            @ButtonWidget(actionHandler = CredentialsButtonTestHandler.class)
+            String m_button;
+        }
+
+        static class CredentialsButtonTestHandler
+            implements ButtonActionHandler<String, ButtonAndCredentialsSettings, TestButtonStates> {
+
+            static String EXPECTED_PASSWORD = "myFlowVarPassword";
+
+            @Override
+            public ButtonChange<String, TestButtonStates> initialize(final String currentValue,
+                final DefaultNodeSettingsContext context) throws WidgetHandlerException {
+                return null;
+            }
+
+            @Override
+            public ButtonChange<String, TestButtonStates> invoke(final TestButtonStates state,
+                final ButtonAndCredentialsSettings settings, final DefaultNodeSettingsContext context)
+                throws WidgetHandlerException {
+                assertThat(settings.m_credentials.getPassword()).isEqualTo(EXPECTED_PASSWORD);
+                return new ButtonChange<>(TestButtonStates.FIRST);
+            }
+
+            @Override
+            public Class<TestButtonStates> getStateMachine() {
+                return TestButtonStates.class;
+            }
+
+        }
+
+        @Test
+        void testInvokeButtonActionWithCredentialsDependencies() throws ExecutionException, InterruptedException {
+
+            String flowVarName = "myFlowVariable";
+
+            final var nodeContainer = mock(NativeNodeContainer.class);
+            final var credentialsProvider = mockCredentialsProvider(nodeContainer);
+            mockPasswordResult(CredentialsButtonTestHandler.EXPECTED_PASSWORD, credentialsProvider);
+            final var dataService = getDataService(ButtonAndCredentialsSettings.class);
+
+            NodeContext.pushContext(nodeContainer);
+            try {
+                dataService.invokeButtonAction("widgetId", CredentialsButtonTestHandler.class.getName(), "FIRST",
+                    Map.of("credentials", Map.of("flowVariableName", flowVarName), //
+                        "button", "buttonValue"));
+
+            } finally {
+                NodeContext.removeLastContext();
+            }
+
+            verify(credentialsProvider).get(flowVarName);
+        }
+
+        private void mockPasswordResult(final String credentialsFlowVariablePassword,
+            final CredentialsProvider credentialsProvider) {
+            final var iCredentials = createICredentials(credentialsFlowVariablePassword);
+            when(credentialsProvider.get(anyString())).thenReturn(iCredentials);
+        }
+
+        private CredentialsProvider mockCredentialsProvider(final NativeNodeContainer nodeContainer) {
+            final var node = mock(Node.class);
+            when(nodeContainer.getNode()).thenReturn(node);
+            final var credentialsProvider = mock(CredentialsProvider.class);
+            when(node.getCredentialsProvider()).thenReturn(credentialsProvider);
+            return credentialsProvider;
+        }
+
+        private static ICredentials createICredentials(final String password) {
+            final var iCredentials = new ICredentials() {
+
+                @Override
+                public String getPassword() {
+                    return password;
+                }
+
+                @Override
+                public String getName() {
+                    return null;
+                }
+
+                @Override
+                public String getLogin() {
+                    return null;
+                }
+            };
+            return iCredentials;
         }
 
         @Test
