@@ -150,6 +150,7 @@ const customContextMenuComponent = ({
 }) => {
   return {
     render() {
+      // @ts-ignore
       const options = this.items.map((item) => {
         const onClick = () => {
           if (item.id === "custom-option") {
