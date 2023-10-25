@@ -67,6 +67,19 @@ describe("CredentialsInput.vue", () => {
     expect(inputFieldWrappers[1].exists()).toBeTruthy();
   });
 
+  it("renders with empty data", () => {
+    props.control.data = {};
+    component = mountJsonFormsComponent(CredentialsInput, { props });
+    const wrapper = component.wrapper;
+    expect(wrapper.getComponent(CredentialsInput).exists()).toBeTruthy();
+    expect(wrapper.findComponent(LabeledInput).exists()).toBeTruthy();
+    const inputFieldWrappers = wrapper.findAllComponents(InputField);
+    expect(inputFieldWrappers[0].exists()).toBeTruthy();
+    expect(inputFieldWrappers[0].props().modelValue).toBe("");
+    expect(inputFieldWrappers[1].exists()).toBeTruthy();
+    expect(inputFieldWrappers[1].props().modelValue).toBe("");
+  });
+
   it("sets labelForId", () => {
     const labeledInput = wrapper.findComponent(LabeledInput);
     expect(labeledInput.get(".credentials-input-wrapper").attributes().id).toBe(

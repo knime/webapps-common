@@ -133,7 +133,7 @@ public class CredentialsTest {
                 .containsEntry("username", "username")//
                 .containsEntry("isHiddenPassword", true) //
                 .containsOnlyKeys("username", "isHiddenPassword");
-            assertThat(PasswordHolder.get(String.format("%s#credentials", CredentialsTestSettings.class.getName())))
+            assertThat(PasswordHolder.get(String.format("%s.credentials", CredentialsTestSettings.class.getName())))
                 .isEqualTo("password");
         }
 
@@ -148,7 +148,7 @@ public class CredentialsTest {
                 .containsEntry("username", "username")//
                 .containsEntry("isHiddenPassword", false) //
                 .containsOnlyKeys("username", "isHiddenPassword");
-            assertThat(PasswordHolder.get(String.format("%s#credentials", CredentialsTestSettings.class.getName())))
+            assertThat(PasswordHolder.get(String.format("%s.credentials", CredentialsTestSettings.class.getName())))
                 .isNull();
         }
 
@@ -164,29 +164,6 @@ public class CredentialsTest {
             when(secondNodeContainerMock.getID()).thenReturn(new NodeID(getCurrentId() + 1));
             assertThrows(IllegalArgumentException.class,
                 () -> serialize(new CredentialsTestSettings(), secondNodeContainerMock));
-        }
-
-        static class NestedCredentials {
-
-            Credentials credentials = new Credentials("username", "password");
-
-        }
-
-        static class NestedCredentialsTestSettings {
-
-            NestedCredentialsTestSettings() {
-                first.credentials = new Credentials("username", "pw1");
-                second.credentials = new Credentials("username", "pw2");
-            }
-
-            NestedCredentials first = new NestedCredentials();
-
-            NestedCredentials second = new NestedCredentials();
-        }
-
-        @Test
-        void throwsIfOneNodeHasTheSameNestedFieldTwice() {
-            assertThrows(IllegalArgumentException.class, () -> serialize(new NestedCredentialsTestSettings()));
         }
 
         private JsonNode serialize(final Object settings) {

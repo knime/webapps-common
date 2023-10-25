@@ -66,6 +66,8 @@ import org.knime.core.node.workflow.NodeID;
  */
 public final class PasswordHolder {
 
+    private static final ThreadLocal<NodeID> currentNodeID = new ThreadLocal<NodeID>();
+
     private PasswordHolder() {
         // Cannot be instantiated
     }
@@ -74,8 +76,45 @@ public final class PasswordHolder {
 
     private static final Map<NodeID, Set<String>> PASSWORD_IDS_PER_NODE_ID = new HashMap<>();
 
+
     /**
-     * The {@link NodeContext} is required to be available for this method.
+     * Call this method in order to allow writing passwords to the password holder. The passwords are associated with
+     * the given nodeID to be removed later using {@link #removeAllPasswordsOfDialog}.
+     *
+     * @param nodeID
+     */
+    public static final void activate(final NodeID nodeID) {
+        final var current = currentNodeID.get();
+        if (current != null && !nodeID.equals(current)) {
+            throw new IllegalStateException(
+                "PasswordHolder is activated for two different nodes within the same thread.");
+        }
+        currentNodeID.set(nodeID);
+    }
+
+    /**
+     * Deactivate writing new passwords to the password holder
+     */
+    public static final void deactivate() {
+        currentNodeID.remove();
+    }
+
+    /**
+     * Tear down method to remove all passwords from the global map when they are not necessary anymore.
+     *
+     * @param nodeId the id of node container associated to the dialog.
+     */
+    public static synchronized void removeAllPasswordsOfDialog(final NodeID nodeId) {
+        final var passwordIds = PASSWORD_IDS_PER_NODE_ID.remove(nodeId);
+        if (passwordIds == null) {
+            return;
+        }
+        passwordIds.stream().forEach(PasswordHolder::remove);
+    }
+
+
+    /**
+     * This method throws an exception if {@link #activate} has not been called.
      */
     static synchronized void addPassword(final String id, final String password) {
         final var nodeId = getCurrentNodeId();
@@ -85,9 +124,9 @@ public final class PasswordHolder {
     }
 
     /**
-     * Currently, it is a known limitation, that credentials cannot be stored twice with the same combination of field
-     * name and containing class. This might occur when either multiple dialogs are opened or one node uses the same
-     * nested setting twice. TODO: UIEXT-1375 resolve this limitation
+     * Currently, it is a known limitation, that we cannot associate the nodeId with the saved passwords, as this is not
+     * known during deserialization. Thus, only one active node dialog is allowed to hold passwords with the same
+     * fieldId at a time. TODO: UIEXT-1375 resolve this limitation
      *
      * @param id associated to the field. It entails only the name of the field and the full name of its containing
      *            class.
@@ -95,25 +134,19 @@ public final class PasswordHolder {
      * @param nodeId
      */
     private static void validateAgainstKnownLimitations(final String id, final String password, final NodeID nodeId) {
-        final var alreadySetIdForNode = PASSWORD_IDS_PER_NODE_ID.get(nodeId);
-        final var alreadySetPassword = get(id);
-        if (alreadySetIdForNode != null && alreadySetIdForNode.contains(id)) {
-            /**
-             * Since we serialize multiple times when opening a dialog (e.g. when using the
-             * {@link JsonBasedNodeSettingsPersistor}), we cannot throw in any case. But if the passwords are different,
-             * we also know that there are two distinct credentials.
-             */
-            if (alreadySetPassword != password) {
-                throw new IllegalStateException(
-                    String.format("The same node dialog contains two credentials inputs with the same"
-                        + " field name and containing java path %s. This is not supported yet.", id));
-            }
-            return;
-        }
-        if (alreadySetPassword != null) {
+        if (isAlreadySet(id) && isNotAlreadySetForNode(id, nodeId)) {
             throw new IllegalStateException(
-                "Multiple node dialogs containing credentials at the same time are not supported yet.");
+                "Multiple active node dialogs containing credentials at the same time are not supported yet.");
         }
+    }
+
+    private static boolean isAlreadySet(final String id) {
+        return get(id) != null;
+    }
+
+    private static boolean isNotAlreadySetForNode(final String id, final NodeID nodeId) {
+        final var alreadySetIdsForNode = PASSWORD_IDS_PER_NODE_ID.get(nodeId);
+        return alreadySetIdsForNode == null || !alreadySetIdsForNode.contains(id);
     }
 
     static synchronized String get(final String id) {
@@ -142,18 +175,5 @@ public final class PasswordHolder {
         }
         final var nodeId = nodeContext.getNodeContainer().getID();
         return nodeId;
-    }
-
-    /**
-     * Tear down method to remove all passwords from the global map when they are not necessary anymore.
-     *
-     * @param nodeId the id of node container associated to the dialog.
-     */
-    public static synchronized void removeAllPasswordsOfDialog(final NodeID nodeId) {
-        final var passwordIds = PASSWORD_IDS_PER_NODE_ID.remove(nodeId);
-        if (passwordIds == null) {
-            return;
-        }
-        passwordIds.stream().forEach(PasswordHolder::remove);
     }
 }

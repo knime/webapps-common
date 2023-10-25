@@ -54,16 +54,13 @@ import java.util.Objects;
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.BeanProperty;
+import com.fasterxml.jackson.core.JsonStreamContext;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 
 /**
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
@@ -140,47 +137,45 @@ public final class Credentials {
         module.addDeserializer(Credentials.class, new Credentials.CredentialsDeserializer());
     }
 
-    static final class CredentialsSerializer extends JsonSerializer<Credentials> implements ContextualSerializer {
-
-        private String m_fieldId;
+    static final class CredentialsSerializer extends JsonSerializer<Credentials> {
 
         @Override
         public void serialize(final Credentials value, final JsonGenerator gen, final SerializerProvider serializers)
             throws IOException {
+            final var fieldId = toFieldId(gen.getOutputContext());
             gen.writeStartObject();
             final var password = value.getPassword();
-            addPassword(gen, password);
+            addPassword(gen, password, fieldId);
             serializers.defaultSerializeField(USERNAME_KEY, value.getUsername(), gen);
             gen.writeEndObject();
         }
 
-        private void addPassword(final JsonGenerator gen, final String password) throws IOException {
-            if (password.isEmpty()) {
+        private static String toFieldId(final JsonStreamContext context) {
+            final var parent = context.getParent();
+            String parentFieldId;
+            if (parent.inRoot()) {
+                parentFieldId = context.getCurrentValue().getClass().getName();
+            } else {
+                parentFieldId = toFieldId(parent);
+            }
+            if (context.hasCurrentName()) {
+                return parentFieldId + "." + context.getCurrentName();
+            }
+            return parentFieldId;
+        }
+
+        private static void addPassword(final JsonGenerator gen, final String password, final String fieldId)
+            throws IOException {
+            if (password == null || password.isEmpty()) {
                 gen.writeBooleanField(IS_HIDDEN_PASSWORD_KEY, false);
             } else {
-                PasswordHolder.addPassword(m_fieldId, password);
+                PasswordHolder.addPassword(fieldId, password);
                 gen.writeBooleanField(IS_HIDDEN_PASSWORD_KEY, true);
             }
         }
-
-        @Override
-        public JsonSerializer<?> createContextual(final SerializerProvider prov, final BeanProperty property)
-            throws JsonMappingException {
-            m_fieldId = getFieldId(property);
-            return this;
-        }
-
-        private static String getFieldId(final BeanProperty property) {
-            if (property == null) {
-                return null;
-            }
-            return property.getMember().getFullName();
-        }
     }
 
-    static final class CredentialsDeserializer extends JsonDeserializer<Credentials> implements ContextualDeserializer {
-
-        private String m_fieldPath;
+    static final class CredentialsDeserializer extends JsonDeserializer<Credentials> {
 
         /**
          * {@inheritDoc}
@@ -188,29 +183,27 @@ public final class Credentials {
         @Override
         public Credentials deserialize(final JsonParser p, final DeserializationContext ctxt)
             throws IOException, JacksonException {
+            final var fieldId = CredentialsSerializer.toFieldId(p.getParsingContext());
             final var node = (JsonNode)p.getCodec().readTree(p);
-            final var username = node.get(USERNAME_KEY).asText();
-            final var password = getPassword(node);
+            final var username = extractString(node, USERNAME_KEY);
+            final var password = getPassword(node, fieldId);
             return new Credentials(username, password);
         }
 
-        private String getPassword(final JsonNode node) {
+        private static String getPassword(final JsonNode node, final String fieldId) {
             final var isHiddenPassword = node.get(IS_HIDDEN_PASSWORD_KEY);
             if (isHiddenPassword != null && !isHiddenPassword.asBoolean()) {
-                final var password = node.get(PASSWORD_KEY);
-                if (password == null || password.isNull()) {
-                    return "";
-                }
-                return password.asText();
+                return extractString(node, PASSWORD_KEY);
             }
-            return PasswordHolder.get(m_fieldPath);
+            return PasswordHolder.get(fieldId);
         }
 
-        @Override
-        public JsonDeserializer<?> createContextual(final DeserializationContext ctxt, final BeanProperty property)
-            throws JsonMappingException {
-            m_fieldPath = CredentialsSerializer.getFieldId(property);
-            return this;
+        private static String extractString(final JsonNode node, final String key) {
+            final var value = node.get(key);
+            if (value == null || value.isNull()) {
+                return "";
+            }
+            return value.asText();
         }
     }
 

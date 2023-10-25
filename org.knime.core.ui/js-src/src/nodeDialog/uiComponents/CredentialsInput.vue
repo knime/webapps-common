@@ -42,10 +42,13 @@ const CredentialsInput = defineComponent({
         Boolean(this.flowSettings?.controllingFlowVariableName)
       );
     },
+    data() {
+      return this.control.data ?? { password: "", username: "" };
+    },
     displayedPassword() {
-      return this.control.data.isHiddenPassword
+      return this.data.isHiddenPassword
         ? "*****************"
-        : this.control.data.password;
+        : this.data.password;
     },
     hideUsername() {
       return this.control.uischema.options?.hideUsername ?? false;
@@ -69,11 +72,11 @@ const CredentialsInput = defineComponent({
       }
     },
     onChangeUsername(username: string) {
-      this.onChange(mergeDeep(this.control.data, { username }));
+      this.onChange(mergeDeep(this.data, { username }));
     },
     onChangePassword(password: string) {
       this.onChange(
-        mergeDeep(this.control.data, { password, isHiddenPassword: false }),
+        mergeDeep(this.data, { password, isHiddenPassword: false }),
       );
     },
   },
@@ -99,7 +102,7 @@ export default CredentialsInput;
         <InputField
           v-if="!hideUsername"
           :placeholder="usernameLabel"
-          :model-value="control.data.username"
+          :model-value="data.username"
           :disabled="disabled"
           type="text"
           @update:model-value="onChangeUsername"
