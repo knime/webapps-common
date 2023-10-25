@@ -2,7 +2,7 @@ import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { mount } from "@vue/test-utils";
 import { nextTick } from "vue";
 
-import MenuItems from "../../components/MenuItems.vue";
+import MenuItems from "../../MenuItems.vue";
 
 import FileExplorerContextMenu from "../FileExplorerContextMenu.vue";
 import type { FileExplorerItem } from "../types";
@@ -10,7 +10,7 @@ import { MockIntersectionObserver } from "./utils";
 
 const setOptions = vi.fn();
 
-vi.mock("../../composables/usePopper", () => {
+vi.mock("../../../composables/usePopper", () => {
   return {
     default: () => ({
       popperInstance: {

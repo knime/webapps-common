@@ -21,7 +21,7 @@ import type {
 export interface Props {
   mode?: "normal" | "mini";
   /**
-   * full path of the currently displayed directory. This can be used to
+   * full path of the currently displayed directory. This is used to
    * track when the path has changed and do actions based on that. e.g reset the
    * selection, close menus, etc
    */
