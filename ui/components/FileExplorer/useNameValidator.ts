@@ -1,18 +1,10 @@
 import { computed, type Ref } from "vue";
 
 const INVALID_NAME_CHARACTERS = /[*?#:"<>%~|/\\]/;
-/**
- * "/", "\" and "." are non-valid preffixes and will be auto-removed
- */
-const INVALID_PREFIX = /^(\.)+|^(\\)+|^(\/)+/;
-/**
- * "/", "\" and "." are non-valid suffixes and will be auto-removed
- */
-const INVALID_SUFFIX = /(\.)+$|(\\)+$|(\/)+$/;
 
 const NAME_CHAR_LIMIT = 255;
 
-const UNAVAILABLE_NAME_DEFAULT_MSG = "Name is already taken";
+const UNAVAILABLE_NAME_DEFAULT_MSG = "Name is already in use";
 
 type UseNameValidatorOptions = {
   name: Ref<string>;
@@ -21,14 +13,17 @@ type UseNameValidatorOptions = {
 };
 
 export const useNameValidator = (options: UseNameValidatorOptions) => {
-  const cleanName = (value: string) =>
-    value.trim().replace(INVALID_PREFIX, "").replace(INVALID_SUFFIX, "");
+  const cleanName = (value: string) => value.trim();
+
+  const startsWithDot = computed(() => options.name.value.startsWith("."));
+  const endsWithDot = computed(() => options.name.value.endsWith("."));
 
   const isValidName = computed(() => {
-    const newValue = cleanName(options.name.value);
     return (
-      !INVALID_NAME_CHARACTERS.test(newValue) &&
-      newValue.length <= NAME_CHAR_LIMIT
+      !startsWithDot.value &&
+      !endsWithDot.value &&
+      !INVALID_NAME_CHARACTERS.test(options.name.value) &&
+      options.name.value.length <= NAME_CHAR_LIMIT
     );
   });
 
@@ -39,8 +34,16 @@ export const useNameValidator = (options: UseNameValidatorOptions) => {
   const isValid = computed(() => isValidName.value && isNameAvailable.value);
 
   const errorMessage = computed(() => {
+    if (startsWithDot.value) {
+      return "Name cannot start with a dot (.)";
+    }
+
+    if (endsWithDot.value) {
+      return "Name cannot end with a dot (.)";
+    }
+
     if (!isValidName.value) {
-      return 'Name contains invalid characters *?#:"<>%~|/ or exceeds 255 characters';
+      return 'Name contains invalid characters *?#:"<>%~|/\\ or exceeds 255 characters';
     }
 
     if (!isNameAvailable.value) {
