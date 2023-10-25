@@ -116,10 +116,14 @@ onMounted(() => {
 const onDrag = ({ event }: { event: DragEvent; item: FileExplorerItem }) => {
   const { clientX, clientY } = event;
   const isInside =
-    clientX >= shouldRenderCustomPreviewRect.value.left &&
-    clientX < shouldRenderCustomPreviewRect.value.right &&
-    clientY >= shouldRenderCustomPreviewRect.value.top &&
-    clientY < shouldRenderCustomPreviewRect.value.bottom;
+    clientX + document.documentElement.scrollLeft >=
+      shouldRenderCustomPreviewRect.value.left &&
+    clientX + document.documentElement.scrollLeft <
+      shouldRenderCustomPreviewRect.value.right &&
+    clientY + document.documentElement.scrollTop >=
+      shouldRenderCustomPreviewRect.value.top &&
+    clientY + document.documentElement.scrollTop <
+      shouldRenderCustomPreviewRect.value.bottom;
 
   shouldRenderCustomPreview.value = isInside;
 };

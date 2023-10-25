@@ -79,6 +79,13 @@ const createGhostIcon = (target: HTMLElement): HTMLElement | null => {
   return iconEl;
 };
 
+const applyPositionOffsets = (position: { x: number; y: number }) => {
+  return {
+    x: position.x + document.documentElement.scrollLeft,
+    y: position.y + document.documentElement.scrollTop,
+  };
+};
+
 type CreateGhostElementParams = {
   /**
    * text to display in the ghost
@@ -115,14 +122,16 @@ const createGhostElement = ({
   const fontSize = getComputedStyle(target).getPropertyValue("font-size");
   const { x, y, width, height } = target.getBoundingClientRect();
 
+  const withOffset = applyPositionOffsets({ x, y });
+
   const ghostStyles: Partial<CSSStyleDeclaration> = {
     background: COLORS.dragGhostContainer.background,
     color: COLORS.dragGhostContainer.font,
 
     // use the original target's position to initialize the ghost
     position: "absolute",
-    top: `${y}px`,
-    left: `${x}px`,
+    top: `${withOffset.y}px`,
+    left: `${withOffset.x}px`,
     width: `${width}px`,
     height: `${height}px`,
     zIndex: "9",
@@ -181,10 +190,15 @@ const createGhostPositionUpdateHandler =
       return;
     }
 
+    const { x: left, y: top } = applyPositionOffsets({
+      x: clientX,
+      y: clientY,
+    });
+
     ghosts.forEach((g) => {
       gsap.to(g, {
-        left: clientX,
-        top: clientY,
+        left,
+        top,
         width: "200px",
         duration: 0.35,
       });
@@ -322,8 +336,9 @@ export const createDragGhosts = ({
         document.body.removeChild(ghost);
       } catch (error) {
         // mute exception trying to delete ghost.
-        // this could happen if the `removeGhosts` function is called more than one
-        // in which case
+        // this could happen if the `removeGhosts` function is called more than once
+        // in which case it would result in an exception when attempting to remove
+        // an element that no longer exists
       }
       document.removeEventListener("drag", updatePosition);
     };
@@ -348,9 +363,11 @@ export const createDragGhosts = ({
         });
       }
 
+      const { x: left, y: top } = applyPositionOffsets({ x, y });
+
       gsap.to(ghost, {
-        left: x,
-        top: y,
+        left,
+        top,
         width,
         duration: 0.2,
         onComplete: () => {
