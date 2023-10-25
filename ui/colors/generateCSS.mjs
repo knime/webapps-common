@@ -14,7 +14,7 @@ const camelToSnake = (str) =>
   str.replace(
     /(.?)([A-Z])/g,
     (_, before, letter) =>
-      `${before}${before ? "-" : ""}${letter.toLowerCase()}`
+      `${before}${before ? "-" : ""}${letter.toLowerCase()}`,
   );
 
 /* ['filename', css variable prefix, output file] */
@@ -69,7 +69,7 @@ const generateCss = async () => {
     const contents = generateCSSFromObject(
       fileContentJS,
       prefix,
-      filePath.replace(/.*webapps-common\//, "")
+      filePath.replace(/.*webapps-common\//, ""),
     );
     fs.writeFileSync(path.join(__dirname, output), contents);
   }

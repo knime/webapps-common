@@ -13,7 +13,7 @@ const popoverRef = ref(null);
 
 const { updatePopper } = usePopper(
   { referenceEl: toggleRef, popperTarget: popoverRef },
-  props.options
+  props.options,
 );
 defineExpose({ updatePopper });
 </script>

@@ -63,7 +63,7 @@ if (!skip) {
     }
     // convert collected packages to array and merge with manually added packages
     let allPackages = Object.values(collectedPackages).concat(
-      config.manualPackages
+      config.manualPackages,
     );
 
     // keep only the needed props
@@ -82,7 +82,7 @@ if (!skip) {
           firstPkg.name.toLowerCase() === pkg.name.toLowerCase() &&
           firstPkg.repository.toLowerCase() === pkg.repository.toLowerCase() &&
           firstPkg.licenseText.replace(/\s+/g, "") ===
-            pkg.licenseText.replace(/\s+/g, "")
+            pkg.licenseText.replace(/\s+/g, ""),
       );
 
       if (!alreadyExists) {

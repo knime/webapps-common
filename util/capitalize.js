@@ -17,7 +17,7 @@ const formats = {
         .match(/([A-Z]?[^A-Z]*)/g)
         .slice(0, -1)
         .join(" ")
-        .toLowerCase()
+        .toLowerCase(),
     ),
   [undefined]: (str) => capitalize(str), // eslint-disable-line no-undefined
 };

@@ -34,10 +34,12 @@ describe("RadioButtons.vue", () => {
 
   it("renders and passes props to BaseRadioButtons", () => {
     let modelValue = "test3";
+    let bold = true;
     const wrapper = mount(RadioButtons, {
       props: {
         possibleValues,
         modelValue,
+        bold,
       },
     });
     expect(wrapper.html()).toBeTruthy();
@@ -46,6 +48,7 @@ describe("RadioButtons.vue", () => {
     const baseComponent = wrapper.findComponent(BaseRadioButtons);
     expect(baseComponent.props("possibleValues")).toStrictEqual(possibleValues);
     expect(baseComponent.props("modelValue")).toBe(modelValue);
+    expect(baseComponent.props("bold")).toBe(bold);
   });
 
   it("passes-through all listeners", () => {
@@ -55,7 +58,7 @@ describe("RadioButtons.vue", () => {
       },
     });
     expect(
-      wrapper.findComponent(BaseRadioButtons).attributes("onfakeevent")
+      wrapper.findComponent(BaseRadioButtons).attributes("onfakeevent"),
     ).toBeDefined();
   });
 

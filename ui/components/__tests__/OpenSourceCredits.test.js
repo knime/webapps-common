@@ -33,7 +33,7 @@ describe("OpenSourceCredits.vue", () => {
 
   it("renders", () => {
     expect(wrapper.getComponent(Description).props("text")).toContain(
-      "This project uses open source software components."
+      "This project uses open source software components.",
     );
   });
 

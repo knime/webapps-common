@@ -21,7 +21,7 @@ describe("Button.vue", () => {
     });
     expect(wrapper.findComponent(BaseButton).exists()).toBeTruthy();
     expect(wrapper.findComponent(BaseButton).props("preventDefault")).toBe(
-      true
+      true,
     );
     expect(wrapper.findComponent(BaseButton).props("to")).toBe("test-to");
     expect(wrapper.findComponent(BaseButton).props("href")).toBe("test-href");
@@ -37,7 +37,7 @@ describe("Button.vue", () => {
       },
     });
     expect(wrapper.classes().sort()).toEqual(
-      ["button", "primary", "compact", "with-border", "on-dark"].sort()
+      ["button", "primary", "compact", "with-border", "on-dark"].sort(),
     );
   });
 
@@ -51,7 +51,7 @@ describe("Button.vue", () => {
       },
     });
     expect(wrapper.classes().sort()).toEqual(
-      ["button", "primary", "compact", "with-border", "with-warning"].sort()
+      ["button", "primary", "compact", "with-border", "with-warning"].sort(),
     );
   });
 

@@ -10,7 +10,7 @@ type ElementTemplateRef = HTMLElement | { $el: HTMLElement };
 
 // eslint-disable-next-line func-style
 function isNativeHTMLElement(
-  element: ElementTemplateRef
+  element: ElementTemplateRef,
 ): element is HTMLElement {
   return !("$el" in element);
 }
@@ -71,7 +71,7 @@ export default {
         strategy: "fixed",
         placement: "right-start",
         modifiers: [],
-      }
+      },
     );
     return {
       listContainer,
@@ -113,7 +113,7 @@ export default {
 
       return listItems
         .map((element, index) => {
-          const firstChild = element.firstChild as ElementTemplateRef;
+          const firstChild = element.children[0] as ElementTemplateRef;
 
           return {
             element,
@@ -151,7 +151,7 @@ export default {
         "item-hovered",
         item.disabled || item.sectionHeadline ? null : item,
         this.id,
-        index
+        index,
       );
     },
     onItemClick(event: Event, item: MenuItem, id?: string) {
@@ -159,11 +159,16 @@ export default {
         return;
       }
 
-      let isButton = !(item.href || item.to);
+      const isButton = !(item.href || item.to);
       if (isButton) {
         event.preventDefault();
         event.stopPropagation();
         event.stopImmediatePropagation();
+      }
+      if (item.checkbox) {
+        const toggledValue = !item.checkbox.checked;
+        item.checkbox.setBoolean(toggledValue);
+        return;
       }
       this.$emit("item-click", event, item, id);
     },
@@ -191,7 +196,7 @@ export default {
     <li
       v-for="(item, index) in items"
       :key="index"
-      :ref="(el:any) => updateItem(el, index)"
+      :ref="(el: any) => updateItem(el, index)"
       :data-index="index"
       :class="[{ separator: item.separator }]"
       :style="useMaxMenuWidth ? { 'max-width': `${maxMenuWidth}px` } : {}"

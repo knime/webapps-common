@@ -29,7 +29,7 @@ const props = defineProps<Props>();
 
 const registerTool = (
   toolName: keyof BaseExtensionsConfig,
-  tool: EditorToolItem
+  tool: EditorToolItem,
 ) => {
   if ("all" in props.baseExtensions) {
     return [tool];

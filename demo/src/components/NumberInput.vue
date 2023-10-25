@@ -45,7 +45,7 @@ export default {
       max: 10000000,
       inputValue1: 0,
       inputValue2: "4.5324526E6",
-      inputValue3: -15,
+      inputValue3: -15000000,
       isValid1: true,
       isValid2: true,
       isValid3: true,
@@ -157,9 +157,9 @@ export default {
         <div class="grid-item-2">
           <u>All</u>
           <br />
-          min: -10
+          min: {{ min }}
           <br />
-          max = 10
+          max = {{ max }}
         </div>
         <div class="grid-item-2" />
       </div>

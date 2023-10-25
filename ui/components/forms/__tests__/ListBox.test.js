@@ -172,7 +172,7 @@ describe("ListBox.vue", () => {
     let input = wrapper.findAll("li[role=option]").at(newValueIndex);
     input.trigger("click");
     expect(wrapper.emitted("update:modelValue")[0][0]).toEqual(
-      props.possibleValues[newValueIndex].id
+      props.possibleValues[newValueIndex].id,
     );
   });
 

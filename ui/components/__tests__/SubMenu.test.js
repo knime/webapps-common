@@ -58,14 +58,30 @@ describe("SubMenu.vue", () => {
       },
     });
     expect(
-      wrapper.findComponent(FunctionButton).find("svg").exists()
+      wrapper.findComponent(FunctionButton).find("svg").exists(),
     ).toBeTruthy();
     expect(wrapper.findComponent(FunctionButton).text()).toContain(
-      "click me please right there"
+      "click me please right there",
     );
     expect(wrapper.findComponent(FunctionButton).attributes("title")).toBe(
-      "test button title"
+      "test button title",
     );
+  });
+
+  it("adds expanded classes to root and toggle button", async () => {
+    const wrapper = mount(SubMenu, { props });
+
+    expect(wrapper.findComponent(FunctionButton).classes()).not.toContain(
+      "expanded",
+    );
+    expect(wrapper.classes()).not.toContain("expanded");
+
+    await wrapper.find(".submenu-toggle").trigger("click"); // open
+
+    expect(wrapper.findComponent(FunctionButton).classes()).toContain(
+      "expanded",
+    );
+    expect(wrapper.classes()).toContain("expanded");
   });
 
   it("exposes expanded prop in slot", () => {
@@ -95,6 +111,27 @@ describe("SubMenu.vue", () => {
     expect(wrapper.findComponent(MenuItems).exists()).toBeTruthy();
     await wrapper.findComponent(MenuItems).vm.$emit("close");
     expect(wrapper.findComponent(MenuItems).exists()).toBeFalsy();
+  });
+
+  it("does not close menu on item-click if item is checkbox", async () => {
+    const items = [
+      {
+        checkbox: {
+          checked: true,
+        },
+      },
+    ];
+    const id = "test";
+
+    const wrapper = mount(SubMenu, {
+      props: { items, id },
+    });
+
+    expect(wrapper.findComponent(MenuItems).exists()).toBeFalsy();
+    await wrapper.find(".submenu-toggle").trigger("click");
+    expect(wrapper.findComponent(MenuItems).exists()).toBeTruthy();
+    wrapper.find(".submenu").trigger("click");
+    expect(wrapper.findComponent(MenuItems).exists()).toBeTruthy();
   });
 
   it("does not toggle the menu if disabled", async () => {
@@ -131,7 +168,7 @@ describe("SubMenu.vue", () => {
 
     expect(unref(targets[0])).toStrictEqual(wrapper.find(".submenu").element);
     expect(unref(targets[1]).$el).toStrictEqual(
-      wrapper.findComponent(MenuItems).element
+      wrapper.findComponent(MenuItems).element,
     );
 
     expect(wrapper.findComponent(MenuItems).exists()).toBeTruthy();
@@ -159,12 +196,12 @@ describe("SubMenu.vue", () => {
     await wrapper.findComponent(MenuItems).vm.$emit("item-focused", testId);
     expect(wrapper.find(".submenu").attributes("aria-owns")).toBe(testId);
     expect(wrapper.find(".submenu").attributes("aria-activedescendant")).toBe(
-      testId
+      testId,
     );
     await wrapper.findComponent(MenuItems).vm.$emit("item-focused", null);
     expect(wrapper.find(".submenu").attributes("aria-owns")).toBeUndefined();
     expect(
-      wrapper.find(".submenu").attributes("aria-activedescendant")
+      wrapper.find(".submenu").attributes("aria-activedescendant"),
     ).toBeUndefined();
   });
 
@@ -176,10 +213,10 @@ describe("SubMenu.vue", () => {
       const [{ popperTarget, referenceEl }, options] = usePopper.mock.calls[0];
 
       expect(unref(referenceEl)).toStrictEqual(
-        wrapper.find(".submenu").element
+        wrapper.find(".submenu").element,
       );
       expect(unref(popperTarget)).toStrictEqual(
-        wrapper.find(".menu-wrapper").element
+        wrapper.find(".menu-wrapper").element,
       );
 
       expect(unref(options)).toStrictEqual({

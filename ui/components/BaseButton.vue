@@ -71,10 +71,17 @@ export default defineComponent({
         e.preventDefault();
       }
     },
-    // This can be called from outside via focus on a $ref
+    /**
+     * This can be called from outside via focus on a $ref
+     */
     focus() {
-      // eslint-disable-next-line no-extra-parens
-      (this.$refs.button as HTMLButtonElement)?.focus();
+      this.getComponent()?.focus();
+    },
+    /**
+     * This can be called from outside via getComponent on a $ref
+     */
+    getComponent() {
+      return this.$refs.button as HTMLButtonElement;
     },
   },
 });

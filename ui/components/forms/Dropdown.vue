@@ -1,4 +1,5 @@
 <script>
+import "./variables.css";
 import { mixin as VueClickAway } from "vue3-click-away";
 
 import DropdownIcon from "../../assets/img/icons/arrow-dropdown.svg";
@@ -68,7 +69,7 @@ export default {
           return false;
         }
         return values.every(
-          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text")
+          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text"),
         );
       },
     },
@@ -107,6 +108,9 @@ export default {
       return (
         this.modelValue && !this.displayTextMap.hasOwnProperty(this.modelValue)
       );
+    },
+    hasRightIcon() {
+      return this.$slots["icon-right"]?.().length;
     },
   },
   created() {
@@ -241,7 +245,7 @@ export default {
       consola.trace(`Searching for ${this.searchQuery}`);
 
       const candidate = this.possibleValues.find((item) =>
-        item.text.toLowerCase().startsWith(this.searchQuery.toLowerCase())
+        item.text.toLowerCase().startsWith(this.searchQuery.toLowerCase()),
       );
       if (candidate) {
         this.setSelected(candidate.id);
@@ -294,6 +298,9 @@ export default {
       @keydown="handleKeyDownButton"
     >
       {{ displayText }}
+      <div v-if="hasRightIcon" class="loading-icon">
+        <slot name="icon-right" />
+      </div>
       <DropdownIcon class="icon" />
     </div>
     <ul
@@ -312,7 +319,7 @@ export default {
         :key="`listbox-${item.id}`"
         ref="options"
         role="option"
-        :title="item.text"
+        :title="typeof item.title === 'undefined' ? item.text : item.title"
         :class="{
           focused: isCurrentValue(item.id),
           noselect: true,
@@ -366,14 +373,16 @@ export default {
 
   & [role="button"] {
     margin: 0;
-    border: 1px solid var(--knime-stone-gray);
+    border: var(--form-border-width) solid var(--knime-stone-gray);
     padding: 0 38px 0 10px;
     font-size: 13px;
-    height: 40px;
-    line-height: 40px; /* to center text vertically */
+    height: var(--single-line-form-height);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 
     &:focus {
       outline: none;
@@ -393,15 +402,34 @@ export default {
   }
 
   & .icon {
-    width: 18px;
-    height: 18px;
+    --icon-size: 18px;
+
+    width: var(--icon-size);
+    height: var(--icon-size);
     stroke-width: calc(32px / 18);
     stroke: var(--knime-masala);
     position: absolute;
     right: 10px;
-    top: 11px;
+    top: calc((var(--single-line-form-height) - var(--icon-size)) / 2);
     pointer-events: none;
     transition: transform 0.2s ease-in-out;
+  }
+
+  & .loading-icon {
+    --icon-size: 18;
+
+    display: flex;
+    pointer-events: none;
+
+    & :slotted(svg) {
+      vertical-align: top;
+      width: calc(var(--icon-size) * 1px);
+      height: calc(var(--icon-size) * 1px);
+
+      /* TODO: See ticket UIEXT-590, the stroke-width mixin should be used here. */
+      stroke-width: calc(32px / var(--icon-size));
+      stroke: var(--knime-masala);
+    }
   }
 
   &:not(.collapsed) .icon {

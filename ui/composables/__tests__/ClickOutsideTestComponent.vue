@@ -8,7 +8,7 @@ const props = withDefaults(
     callback: (event: PointerEvent) => void;
     active?: boolean;
   }>(),
-  { active: true }
+  { active: true },
 );
 
 const { active } = toRefs(props);

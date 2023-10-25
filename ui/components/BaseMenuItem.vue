@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { MenuItem } from "./MenuItems.vue";
+import Checkbox from "./forms/Checkbox.vue";
+import BaseMenuItemText from "./BaseMenuItemText.vue";
 
 type Props = {
   item: MenuItem;
@@ -19,6 +21,15 @@ const linkTagByType = (item: MenuItem) => {
 };
 
 defineProps<Props>();
+
+const dynamicAttributes = (item: MenuItem) => {
+  if (item.href && item.download) {
+    return {
+      download: typeof item.download === "boolean" ? "" : item.download,
+    };
+  }
+  return null;
+};
 </script>
 
 <template>
@@ -37,19 +48,37 @@ defineProps<Props>();
     ]"
     :to="item.to || null"
     :href="item.href || null"
+    v-bind="dynamicAttributes(item)"
   >
     <Component :is="item.icon" v-if="item.icon" class="item-icon" />
     <div class="label">
-      <span :class="['text', { truncate: useMaxMenuWidth }]">
-        {{ item.text }}
-      </span>
-      <span v-if="item.hotkeyText" class="hotkey">{{ item.hotkeyText }}</span>
-      <slot name="submenu" :item-element="$refs.listItemComponent" />
+      <div class="text-and-hotkey">
+        <template v-if="item.checkbox">
+          <Checkbox :model-value="item.checkbox.checked" class="checkbox">
+            <BaseMenuItemText
+              :text="item.text"
+              :use-max-menu-width="useMaxMenuWidth"
+              :hotkey-text="item.hotkeyText"
+            />
+          </Checkbox>
+        </template>
+        <template v-else>
+          <BaseMenuItemText
+            :text="item.text"
+            :use-max-menu-width="useMaxMenuWidth"
+            :hotkey-text="item.hotkeyText"
+          />
+          <slot name="submenu" :item-element="$refs.listItemComponent" />
+        </template>
+      </div>
+      <div v-if="item.description" class="description">
+        {{ item.description }}
+      </div>
     </div>
   </Component>
 </template>
 
-<style lang="postcss">
+<style lang="postcss" scoped>
 .list-item {
   --icon-size: 18;
 
@@ -95,23 +124,47 @@ defineProps<Props>();
 
     & .label {
       display: flex;
-      text-align: left;
+      flex-direction: column;
+      align-content: flex-start;
       width: 100%;
-      height: calc(var(--icon-size) * 1px);
-      align-items: center;
 
-      & .text {
-        flex-shrink: 1;
-        flex-basis: 100%;
+      & .text-and-hotkey {
+        display: flex;
+        text-align: left;
+        width: 100%;
+        height: calc(var(--icon-size) * 1px);
+        align-items: center;
 
-        &.truncate {
-          overflow: hidden;
-          text-overflow: ellipsis;
+        & .checkbox {
+          padding-left: 23px; /* Align text horizontally with other items with icons */
+
+          /* center-align text + checkbox in item vertically */
+          margin-top: 7px;
+          padding-top: 2px;
+        }
+
+        & .text {
+          flex-shrink: 1;
+          flex-basis: 100%;
+
+          &.truncate {
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+
+        & .hotkey {
+          margin-left: 40px;
         }
       }
 
-      & .hotkey {
-        margin-left: 40px;
+      & .description {
+        max-width: 250px;
+        width: 100%;
+        text-align: left;
+        white-space: normal;
+        font-size: 11px;
+        font-weight: 300;
       }
     }
 
@@ -153,6 +206,7 @@ defineProps<Props>();
     line-height: 15px;
     display: flex;
     align-items: center;
+    text-align: left;
 
     &:hover,
     &:focus,

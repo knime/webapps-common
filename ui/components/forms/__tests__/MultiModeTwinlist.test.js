@@ -63,19 +63,19 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
     expect(wrapper.isVisible()).toBeTruthy();
     expect(
       wrapper.findComponent(Twinlist).findAllComponents(MultiselectListBox)
-        .length
+        .length,
     ).toBe(2);
     expect(
       wrapper
         .findComponent(Twinlist)
         .findAllComponents(MultiselectListBox)
-        .at(0).vm.$props.possibleValues.length
+        .at(0).vm.$props.possibleValues.length,
     ).toBe(2);
     expect(
       wrapper
         .findComponent(Twinlist)
         .findAllComponents(MultiselectListBox)
-        .at(1).vm.$props.possibleValues
+        .at(1).vm.$props.possibleValues,
     ).toStrictEqual([defaultPossibleValues[2]]);
   });
 
@@ -214,17 +214,17 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
     it("shows search by default if mode is manual", async () => {
       const wrapper = mount(MultiModeTwinlist, { propsData });
       expect(
-        wrapper.findComponent(Twinlist).findComponent(SearchInput).exists()
+        wrapper.findComponent(Twinlist).findComponent(SearchInput).exists(),
       ).toBeTruthy();
       expect(
         wrapper
           .findComponent(Twinlist)
           .findComponent(SearchInput)
-          .findAll("label").length
+          .findAll("label").length,
       ).toBe(0);
       await wrapper.setData({ mode: "regex" });
       expect(
-        wrapper.findComponent(Twinlist).findComponent(SearchInput).exists()
+        wrapper.findComponent(Twinlist).findComponent(SearchInput).exists(),
       ).toBeFalsy();
     });
 
@@ -232,7 +232,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
       propsData.showSearch = false;
       const wrapper = mount(MultiModeTwinlist, { propsData });
       expect(
-        wrapper.findComponent(Twinlist).findComponent(SearchInput).exists()
+        wrapper.findComponent(Twinlist).findComponent(SearchInput).exists(),
       ).toBeFalsy();
     });
   });
@@ -280,7 +280,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
         .findAllComponents(Label)
         .filter((l) => l.find("label").exists());
       expect(
-        Array.from(labels).map((l) => l.find("label").text())
+        Array.from(labels).map((l) => l.find("label").text()),
       ).not.toContain("Filter options");
     });
 
@@ -297,7 +297,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
         .findAllComponents(Label)
         .filter((l) => l.find("label").exists());
       expect(Array.from(labels).map((l) => l.find("label").text())).toContain(
-        "Filter options"
+        "Filter options",
       );
     });
 
@@ -311,7 +311,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
       });
       expect(wrapper.findComponent(ValueSwitch).exists()).toBeTruthy();
       expect(
-        wrapper.findAll("div.label label").map((l) => l.text())
+        wrapper.findAll("div.label label").map((l) => l.text()),
       ).not.toContain("Type");
     });
 
@@ -475,11 +475,11 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
       });
       await wrapper.setData({ mode: "wildcard" });
       expect(wrapper.find("input[type=text]").attributes("placeholder")).toBe(
-        "Pattern"
+        "Pattern",
       );
       await wrapper.setData({ mode: "regex" });
       expect(wrapper.find("input[type=text]").attributes("placeholder")).toBe(
-        "Pattern"
+        "Pattern",
       );
     });
   });
@@ -613,7 +613,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
       propsData.showUnknownValues = true;
       const wrapper = mount(MultiModeTwinlist, { propsData });
       expect(
-        wrapper.findComponent(Twinlist).vm.initialIncludeUnknownValues
+        wrapper.findComponent(Twinlist).vm.initialIncludeUnknownValues,
       ).toBeFalsy();
     });
 

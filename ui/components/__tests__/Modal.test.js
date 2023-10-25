@@ -95,7 +95,7 @@ describe("Modal", () => {
         },
       });
       expect(
-        wrapper.findComponent(BaseModal).attributes("onfakeevent")
+        wrapper.findComponent(BaseModal).attributes("onfakeevent"),
       ).toBeDefined();
     });
   });

@@ -6,6 +6,7 @@ let count = 0;
 export type BaseRadioButtonItem = {
   id: string;
   text: string;
+  subtext?: string;
   disabled?: boolean;
 };
 
@@ -18,6 +19,10 @@ export default defineComponent({
     modelValue: {
       type: String,
       default: null,
+    },
+    bold: {
+      type: Boolean,
+      default: false,
     },
     name: {
       type: String,
@@ -35,7 +40,7 @@ export default defineComponent({
           return false;
         }
         return values.every(
-          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text")
+          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text"),
         );
       },
     },
@@ -68,7 +73,11 @@ export default defineComponent({
 
 <template>
   <div :id="id" role="radiogroup">
-    <label v-for="item of possibleValues" :key="`radio-${item.id}`">
+    <label
+      v-for="item of possibleValues"
+      :key="`radio-${item.id}`"
+      :class="{ 'with-subtext': item.subtext }"
+    >
       <input
         ref="input"
         :checked="modelValue === item.id"
@@ -78,7 +87,25 @@ export default defineComponent({
         type="radio"
         @change="onInput"
       />
-      <span :title="item.text">{{ item.text }}</span>
+      <span :title="item.text" :class="{ bold }">{{ item.text }}</span>
+      <slot :item="item" />
+      <br v-if="item.subtext" /><span v-if="item.subtext">
+        {{ item.subtext }}</span
+      >
     </label>
   </div>
 </template>
+
+<style type="postcss" scoped>
+label {
+  display: flex;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.with-subtext {
+  margin-bottom: 30px;
+}
+</style>

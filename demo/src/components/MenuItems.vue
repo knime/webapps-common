@@ -3,6 +3,7 @@ import { markRaw } from "vue";
 import CodeExample from "./demo/CodeExample.vue";
 import MenuItems from "webapps-common/ui/components/MenuItems.vue";
 import HelpIcon from "webapps-common/ui/assets/img/icons/circle-help.svg";
+import DownloadIcon from "webapps-common/ui/assets/img/icons/cloud-download.svg";
 import StarIcon from "webapps-common/ui/assets/img/icons/star.svg";
 import LeaveIcon from "webapps-common/ui/assets/img/icons/leave.svg";
 import HeartIcon from "webapps-common/ui/assets/img/icons/heart.svg";
@@ -107,6 +108,22 @@ const menuItemsData: MenuItem[] = [
     text: "Item without href/to",
     icon: markRaw(HelpIcon),
   },
+  {
+    href: "https://www.knime.com/images/knime-logo.svg",
+    text: "Item with download attribute",
+    download: true,
+    icon: markRaw(DownloadIcon),
+  },
+  {
+    text: "Item with checkbox",
+    checkbox: {
+      checked: true,
+      setBoolean: (checked: boolean) =>
+        window.alert(
+          `You clicked on a checkbox item calling its callback method with the value: ${checked}`,
+        ),
+    },
+  },
 ];
 
 export default {
@@ -116,11 +133,15 @@ export default {
   },
   data() {
     return {
-      MenuItems,
       menuItemsData,
       codeExampleStandalone,
       code,
       hoveredItem: null,
+    } as {
+      menuItemsData: MenuItem[];
+      codeExampleStandalone: string;
+      code: string;
+      hoveredItem: null | MenuItem;
     };
   },
   computed: {
@@ -136,7 +157,7 @@ export default {
       });
     },
     menuItemsWithChildren() {
-      return menuItemsData.slice().concat({
+      const submenuItem = {
         text: "Sub menu",
         icon: markRaw(LeaveIcon),
         children: [
@@ -160,7 +181,21 @@ export default {
             ],
           },
         ],
-      });
+      };
+      const [first, second, third] = menuItemsData;
+      const withDescription = {
+        ...second,
+        separator: true,
+        description:
+          "… some long text that explains the action of this item in" +
+          "a way the user can better understand what happens if he click it.",
+      };
+      return [
+        { ...first, separator: true },
+        withDescription,
+        third,
+        submenuItem,
+      ];
     },
     menuItemsWithSelectedEntries() {
       return menuItemsData.map((item, index) => {
@@ -181,14 +216,14 @@ export default {
     },
   },
   methods: {
-    onItemClick(event, item, id) {
+    onItemClick(_event: MouseEvent, item: MenuItem, id: string) {
       window.alert(
         `You clicked on menu ${id} on an item with a value of: ${JSON.stringify(
-          item
-        )}`
+          item,
+        )}`,
       );
     },
-    onItemActive(item) {
+    onItemActive(item: MenuItem | null) {
       this.hoveredItem = item;
     },
   },
@@ -284,7 +319,9 @@ export default {
           </div>
 
           <div class="menu-item-wrapper">
-            <div class="menu-name">With submenu (children)</div>
+            <div class="menu-name">
+              With submenu (children) and a long description
+            </div>
             <div class="card">
               <MenuItems
                 id="WITH_CHILDREN"

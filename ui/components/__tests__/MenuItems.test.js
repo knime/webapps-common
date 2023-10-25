@@ -71,7 +71,7 @@ describe("MenuItems.vue", () => {
       });
       const currentfocusedIndex = dropdownNavigation.currentIndex.value;
       expect(wrapper.findComponent(BaseMenuItems).vm.focusedItemIndex).toBe(
-        currentfocusedIndex
+        currentfocusedIndex,
       );
     });
 

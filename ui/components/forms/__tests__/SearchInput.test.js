@@ -41,7 +41,7 @@ describe("SearchInput", () => {
     doMount();
 
     expect(wrapper.find("input").attributes("placeholder")).toBe(
-      "type something"
+      "type something",
     );
   });
 
@@ -138,7 +138,7 @@ describe("SearchInput", () => {
         .findAllComponents(FunctionButton)
         .at(0);
       expect(
-        caseSensitiveButton.findComponent(UpperLowerCaseIcon).exists()
+        caseSensitiveButton.findComponent(UpperLowerCaseIcon).exists(),
       ).toBeTruthy();
 
       await caseSensitiveButton.vm.$emit("click");
@@ -158,7 +158,7 @@ describe("SearchInput", () => {
         .findAllComponents(FunctionButton)
         .at(0);
       expect(
-        inverseSearchButton.findComponent(InverseSearchIcon).exists()
+        inverseSearchButton.findComponent(InverseSearchIcon).exists(),
       ).toBeTruthy();
 
       await inverseSearchButton.vm.$emit("click");

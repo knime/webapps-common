@@ -140,7 +140,7 @@ export default {
           return false;
         }
         return values.every(
-          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text")
+          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text"),
         );
       },
     },
@@ -155,7 +155,7 @@ export default {
           return false;
         }
         return values.every(
-          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text")
+          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text"),
         );
       },
     },
@@ -187,7 +187,7 @@ export default {
       // convert [{id: "key1", text: "asdf"}, ...] to {"key1": {id:"key1", text: "asdf"} ... }
       return Object.assign(
         {},
-        ...this.possibleValues.map((obj) => ({ [obj.id]: obj }))
+        ...this.possibleValues.map((obj) => ({ [obj.id]: obj })),
       );
     },
     possibleValueIds() {
@@ -199,7 +199,7 @@ export default {
         .filter((type) => type);
       const possibleTypesIds = possibleTypes.map((type) => type.id);
       const additionalTypes = this.additionalPossibleTypes.filter(
-        (type) => type && !possibleTypesIds.includes(type.id)
+        (type) => type && !possibleTypesIds.includes(type.id),
       );
       const allTypes = [...additionalTypes, ...possibleTypes];
       return allTypes
@@ -208,7 +208,7 @@ export default {
           // remove duplicates
           (val, index, self) =>
             index ===
-            self.findIndex((t) => t.id === val.id && t.text === val.text)
+            self.findIndex((t) => t.id === val.id && t.text === val.text),
         );
     },
     matchingValueIds() {
@@ -220,9 +220,8 @@ export default {
       return this.mode === "manual" ? this.chosenValues : this.matchingValueIds;
     },
     deselectedValues() {
-      return this.possibleValueIds.filter(
-        (id) => !this.selectedValues.includes(id)
-      );
+      const selectedValuesSet = new Set(this.selectedValues);
+      return this.possibleValueIds.filter((id) => !selectedValuesSet.has(id));
     },
     selectionDisabled() {
       return this.disabled || this.mode !== "manual";
@@ -233,7 +232,7 @@ export default {
       }
       return filters[this.mode].normalize(
         this.mode === "type" ? this.chosenTypes : this.chosenPattern,
-        this.caseSensitivePattern
+        this.caseSensitivePattern,
       );
     },
     possibleModes() {
@@ -327,7 +326,7 @@ export default {
         this.mode === "type" ? optionalItemType : item.text,
         this.normalizedSearchTerm,
         this.caseSensitivePattern,
-        this.inversePattern
+        this.inversePattern,
       );
     },
   },

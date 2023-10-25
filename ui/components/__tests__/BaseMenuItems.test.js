@@ -28,16 +28,16 @@ describe("BaseMenuItems.vue", () => {
     // Test texts
     items.forEach((item, index) => {
       expect(wrapper.find(`li:nth-child(${index + 1})`).text()).toBe(
-        items[index].text
+        items[index].text,
       );
     });
 
     // Test links
     expect(wrapper.find("li:nth-child(1) a").attributes("href")).toBe(
-      items[0].href
+      items[0].href,
     );
     expect(wrapper.find("li:nth-child(2) a").attributes("href")).toBe(
-      items[1].href
+      items[1].href,
     );
     expect(wrapper.findComponent(NuxtLink).props("to")).toBe(items[2].to);
   });
@@ -164,6 +164,47 @@ describe("BaseMenuItems.vue", () => {
     expect(clickableItems[2].classes()).not.toContain("selected");
   });
 
+  it("renders with download attribute", () => {
+    const items = [
+      {
+        text: "Apples",
+        download: true,
+      },
+      {
+        text: "Oranges",
+        href: "some/file/oranges.pdf",
+        download: true,
+      },
+      {
+        text: "Pineapples",
+        hotkeyText: "F9",
+      },
+      {
+        text: "Kiwis",
+        href: "some/file/kiwis.pdf",
+      },
+      {
+        text: "Honey",
+        href: "some/file/honey.pdf",
+        download: "badger",
+      },
+    ];
+    const wrapper = mount(BaseMenuItems, {
+      props: {
+        menuAriaLabel: "label",
+        items,
+      },
+    });
+    expect(wrapper.html()).toBeTruthy();
+    const clickableItems = wrapper.findAll(".clickable-item");
+    expect(clickableItems[0].attributes("download")).toBeUndefined();
+    expect(clickableItems[1].attributes("download")).toBeDefined();
+    expect(clickableItems[1].attributes("download")).toBe("");
+    expect(clickableItems[2].attributes("download")).toBeUndefined();
+    expect(clickableItems[3].attributes("download")).toBeUndefined();
+    expect(clickableItems[4].attributes("download")).toBe("badger");
+  });
+
   it("has a function returning the enabled element and its index", () => {
     const items = [
       {
@@ -268,13 +309,43 @@ describe("BaseMenuItems.vue", () => {
       },
     });
     expect(wrapper.findAll("li")[0].attributes("title")).toMatch(
-      "This is an example title"
+      "This is an example title",
     );
     expect(wrapper.findAll("li")[1].attributes("title")).toBeUndefined();
   });
 
+  it("renders checkboxes correctly", () => {
+    const items = [
+      {
+        text: "Apples",
+        download: true,
+      },
+      {
+        text: "Checkbox1",
+        checkbox: {
+          checked: true,
+        },
+      },
+      {
+        text: "Checkbox2",
+        checkbox: {
+          checked: false,
+        },
+      },
+    ];
+    const wrapper = mount(BaseMenuItems, {
+      props: {
+        menuAriaLabel: "label",
+        items,
+      },
+    });
+    const checkboxItems = wrapper.findAll(".checkbox");
+    expect(checkboxItems.length).toBe(2);
+  });
+
   describe("clicking menu items", () => {
     let wrapper;
+    const setCheckboxValue = vi.fn();
     const items = [
       { text: "Button" },
       {
@@ -285,6 +356,10 @@ describe("BaseMenuItems.vue", () => {
       { to: "/testing-nuxt-link", text: "Nuxt link", anotherProp: "foo" },
       { text: "Disabled", disabled: true },
       { text: "Section Headline", sectionHeadline: true },
+      {
+        text: "Checkbox",
+        checkbox: { checked: false, setBoolean: setCheckboxValue },
+      },
     ];
     const id = "testfoobar543";
 
@@ -329,6 +404,12 @@ describe("BaseMenuItems.vue", () => {
     it("does nothing if item is section headline", () => {
       wrapper.findAll("li")[4].trigger("click");
       expect(wrapper.emitted("item-click")).toBeFalsy();
+    });
+
+    it("does not emit item-click and instead calls setBoolean for checkbox items", async () => {
+      await wrapper.findAll("li")[5].trigger("click");
+      expect(wrapper.emitted("item-click")).toBeUndefined();
+      expect(setCheckboxValue).toHaveBeenCalledWith(true);
     });
 
     it("prevents default on button click", () => {

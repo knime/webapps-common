@@ -23,6 +23,7 @@ describe("Label.vue", () => {
     expect(wrapper.isVisible()).toBeTruthy();
     expect(wrapper.text()).toContain(props.text);
     expect(wrapper.text()).toContain("slot content");
+    expect(wrapper.emitted("labelForId")[0][0]).toBe(wrapper.vm.labelFor);
   });
 
   it("renders large class if prop set", () => {

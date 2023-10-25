@@ -1,4 +1,5 @@
 <script>
+import "./variables.css";
 import ArrowIcon from "../../assets/img/icons/arrow-dropdown.svg";
 import numIntegerDigits from "../../../util/numIntegerDigits";
 
@@ -342,7 +343,7 @@ export default {
   position: relative;
   isolation: isolate;
   width: 100%;
-  border: 1px solid var(--knime-stone-gray);
+  border: var(--form-border-width) solid var(--knime-stone-gray);
 
   &.disabled {
     opacity: 0.5;
@@ -356,7 +357,7 @@ export default {
     font-size: 13px;
     font-weight: 300;
     letter-spacing: inherit;
-    height: 38px;
+    height: calc(var(--single-line-form-height) - 2 * var(--form-border-width));
     line-height: normal;
     border: 0;
     margin: 0;
@@ -395,7 +396,7 @@ export default {
     position: absolute;
     display: block;
     width: 3px;
-    left: -1px;
+    left: calc(-1 * var(--form-border-width));
     top: 0;
     bottom: 0;
     background-color: var(--theme-color-error);

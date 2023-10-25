@@ -1,4 +1,5 @@
 <script>
+import "./variables.css";
 import {
   parse,
   isValid,
@@ -216,13 +217,13 @@ export default {
         date,
         this.min,
         this.showDate,
-        this.showTime
+        this.showTime,
       );
       this.isAfterMax = isAfterMaxDate(
         date,
         this.max,
         this.showDate,
-        this.showTime
+        this.showTime,
       );
 
       if (this.isBeforeMin || this.isAfterMax) {
@@ -259,7 +260,7 @@ export default {
     onTimeMillisecondsBounds(bounds) {
       if (["min", "max"].includes(bounds.type)) {
         this.emitInput(
-          setMilliseconds(new Date(this.localValue), bounds.input)
+          setMilliseconds(new Date(this.localValue), bounds.input),
         );
       } else {
         this.emitInput(this.localValue);
@@ -304,14 +305,14 @@ export default {
         isValid = false;
         // eslint-disable-next-line max-len
         errorMessage = `${this.formatDate(
-          this.invalidValue
+          this.invalidValue,
         )} is after maximum ${this.formatDate(this.max)}`;
       }
       if (this.isBeforeMin) {
         isValid = false;
         // eslint-disable-next-line max-len
         errorMessage = `${this.formatDate(
-          this.invalidValue
+          this.invalidValue,
         )} is before minimum ${this.formatDate(this.min)}`;
       }
       return {
@@ -540,7 +541,7 @@ export default {
     min-width: 7.5rem;
     margin-right: 20px;
     position: relative;
-    border: 1px solid var(--theme-date-input-border-color);
+    border: var(--form-border-width) solid var(--theme-date-input-border-color);
 
     &:focus-within {
       border-color: var(--theme-date-input-border-focus-color);
@@ -550,7 +551,9 @@ export default {
       font-size: 13px;
       font-weight: 300;
       letter-spacing: inherit;
-      height: 38px;
+      height: calc(
+        var(--single-line-form-height) - 2 * var(--form-border-width)
+      );
       line-height: normal;
       border: 0;
       margin: 0;
@@ -589,7 +592,9 @@ export default {
       position: absolute;
       z-index: 1;
       width: 32px;
-      height: 38px;
+      height: calc(
+        var(--single-line-form-height) - 2 * var(--form-border-width)
+      );
       padding-left: 10px;
       padding-right: 9px;
 

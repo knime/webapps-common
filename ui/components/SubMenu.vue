@@ -116,7 +116,7 @@ export default {
 
     useClickOutside(
       { targets: [submenu, menuItems], callback: closeMenu },
-      expanded
+      expanded,
     );
 
     const { popperInstance, updatePopper } = usePopper(
@@ -135,7 +135,7 @@ export default {
             },
           },
         ],
-      }))
+      })),
     );
 
     watch(orientation, (value) => {
@@ -185,6 +185,10 @@ export default {
     },
     onItemClick(event: Event, item: any) {
       this.$emit("item-click", event, item, this.id);
+      if (item.checkbox) {
+        item.checkbox.setBoolean(!item.checkbox.checked);
+        return;
+      }
       this.toggleMenu(event);
     },
     onKeydown(event: KeyboardEvent) {
@@ -208,7 +212,7 @@ export default {
 <template>
   <div
     ref="submenu"
-    :class="['submenu', { disabled }]"
+    :class="['submenu', { expanded }, { disabled }]"
     :aria-owns="activeDescendant"
     :aria-activedescendant="activeDescendant"
     @keydown="onKeydown"

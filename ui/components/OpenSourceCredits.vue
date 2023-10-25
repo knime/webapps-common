@@ -1,4 +1,5 @@
 <script>
+// @ts-ignore
 import packages from "../../buildtools/opensourcecredits/used-packages.json";
 import Description from "../components/Description.vue";
 import ArrowNextIcon from "../assets/img/icons/arrow-next.svg";
@@ -50,7 +51,7 @@ export default {
             firstPkg.repository.toLowerCase() ===
               pkg.repository.toLowerCase() &&
             firstPkg.licenseText.replace(/\s+/g, "") ===
-              pkg.licenseText.replace(/\s+/g, "")
+              pkg.licenseText.replace(/\s+/g, ""),
         );
 
         if (!alreadyExists) {

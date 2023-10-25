@@ -139,7 +139,7 @@ describe("Multiselect.vue", () => {
       expect(wrapper.vm.collapsed).toBe(true);
       expect(toggleFocusMock).toHaveBeenCalled();
       expect(document.activeElement).toBe(
-        wrapper.find({ ref: "toggle" }).wrapperElement
+        wrapper.find({ ref: "toggle" }).wrapperElement,
       );
     });
 

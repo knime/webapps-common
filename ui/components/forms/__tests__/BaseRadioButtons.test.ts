@@ -66,7 +66,7 @@ describe("BaseRadioButtons.vue", () => {
 
     expect(wrapper1.vm.count).not.toBe(wrapper2.vm.count);
     expect(wrapper1.find("input").attributes().name).not.toBe(
-      wrapper2.find("input").attributes().name
+      wrapper2.find("input").attributes().name,
     );
   });
 
@@ -84,7 +84,7 @@ describe("BaseRadioButtons.vue", () => {
       const expectedCheckedValue = option.id === modelValue;
       // eslint-disable-next-line no-extra-parens
       expect((radioInputs[i].element as HTMLInputElement).checked).toBe(
-        expectedCheckedValue
+        expectedCheckedValue,
       );
     });
   });
@@ -120,5 +120,57 @@ describe("BaseRadioButtons.vue", () => {
 
     const input = wrapper.find("input[value=test6]");
     expect(input.attributes("disabled")).toBeDefined();
+  });
+
+  it("does not display bold option text per default", () => {
+    const wrapper = mount(BaseRadioButtons, {
+      props: {
+        possibleValues,
+      },
+    });
+
+    const labels = wrapper.findAll("label");
+    expect(labels.length).toBe(5);
+    labels.forEach((label) => {
+      const boldOptionText = label.find(".bold");
+      expect(boldOptionText.exists()).toBeFalsy();
+    });
+  });
+
+  it("displays option text in bold", () => {
+    const wrapper = mount(BaseRadioButtons, {
+      props: {
+        possibleValues,
+        bold: true,
+      },
+    });
+
+    const labels = wrapper.findAll("label");
+    expect(labels.length).toBe(5);
+    labels.forEach((label) => {
+      const boldOptionText = label.find(".bold");
+      expect(boldOptionText.exists()).toBeTruthy();
+    });
+  });
+
+  it("displays subtext below option", () => {
+    const possibleValuesWithSubtext = possibleValues.map(
+      (possibleValue, index) => ({
+        ...possibleValue,
+        subtext: `Subtext ${index + 1}`,
+      }),
+    );
+    const wrapper = mount(BaseRadioButtons, {
+      props: {
+        possibleValues: possibleValuesWithSubtext,
+      },
+    });
+    const labels = wrapper.findAll("label");
+    expect(labels.length).toBe(5);
+    labels.forEach((label, index) => {
+      expect(label.find("br").exists()).toBeTruthy();
+      expect(label.text()).toContain(`Subtext ${index + 1}`);
+      expect(label.classes()).toContain("with-subtext");
+    });
   });
 });

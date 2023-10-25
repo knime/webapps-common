@@ -71,7 +71,7 @@ export const loadComponentLibrary = async ({
   const component = window[componentName];
   if (!component) {
     throw new Error(
-      `Component "${componentName}" loading failed. Script invalid.`
+      `Component "${componentName}" loading failed. Script invalid.`,
     );
   }
 

@@ -15,7 +15,7 @@ export type PopperTargets = {
 
 export default (
   { popperTarget, referenceEl }: PopperTargets,
-  options: Ref<Options> | Options
+  options: Ref<Options> | Options,
 ) => {
   const popperInstance: Ref<Instance | null> = ref(null);
 
@@ -24,7 +24,7 @@ export default (
       popperInstance.value = createPopper(
         referenceEl.value,
         popperTarget.value,
-        unref(options)
+        unref(options),
       ) as Instance;
     }
   };

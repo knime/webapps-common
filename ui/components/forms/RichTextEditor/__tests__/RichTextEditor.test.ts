@@ -113,17 +113,24 @@ describe("RichTextEditor.vue", () => {
         extensions: expect.any(Array),
         editable: true,
         onUpdate: expect.any(Function),
-      })
+      }),
     );
 
     expect(mockEditor.value.params.extensions.length).toBe(3);
     expect(wrapper.classes("with-border")).toBeTruthy();
+    expect(wrapper.classes("disabled")).toBeFalsy();
   });
 
   it("renders without border", () => {
     const { wrapper } = doMount({ props: { withBorder: false } });
 
     expect(wrapper.classes("with-border")).toBeFalsy();
+  });
+
+  it("renders disabled", () => {
+    const { wrapper } = doMount({ props: { disabled: true } });
+
+    expect(wrapper.classes("disabled")).toBeTruthy();
   });
 
   it("should emit an 'update:modelValue' event", () => {
@@ -156,12 +163,12 @@ describe("RichTextEditor.vue", () => {
       });
 
       const underlineExtension = mockEditor.value.params.extensions.find(
-        (extension: any) => extension.name === "underline"
+        (extension: any) => extension.name === "underline",
       );
       expect(underlineExtension).toBeUndefined();
 
       const textAlignExtension = mockEditor.value.params.extensions.find(
-        (extension: any) => extension.name === "textAlign"
+        (extension: any) => extension.name === "textAlign",
       );
       expect(textAlignExtension).toBeUndefined();
     });
@@ -182,7 +189,7 @@ describe("RichTextEditor.vue", () => {
         const [starterKitExtension] = mockEditor.value.params.extensions;
         // undefined means enabled
         expect(starterKitExtension.options[toolName]).toBeUndefined();
-      }
+      },
     );
 
     it("should enable the underline tool", () => {
@@ -191,7 +198,7 @@ describe("RichTextEditor.vue", () => {
       });
 
       const underlineExtension = mockEditor.value.params.extensions.find(
-        (extension: any) => extension.name === "underline"
+        (extension: any) => extension.name === "underline",
       );
       expect(underlineExtension).toBeDefined();
     });
@@ -203,7 +210,7 @@ describe("RichTextEditor.vue", () => {
         });
 
         const textAlignExtension = mockEditor.value.params.extensions.find(
-          (extension: any) => extension.name === "textAlign"
+          (extension: any) => extension.name === "textAlign",
         );
 
         expect(textAlignExtension).toBeDefined();
@@ -219,7 +226,7 @@ describe("RichTextEditor.vue", () => {
         });
 
         const textAlignExtension = mockEditor.value.params.extensions.find(
-          (extension: any) => extension.name === "textAlign"
+          (extension: any) => extension.name === "textAlign",
         );
         expect(textAlignExtension).toBeDefined();
         expect(textAlignExtension.options.types).toEqual(["paragraph"]);
@@ -233,18 +240,65 @@ describe("RichTextEditor.vue", () => {
     expect(useEditor).toHaveBeenCalledWith(
       expect.objectContaining({
         editable: true,
-      })
+      }),
     );
 
     await wrapper.setProps({ editable: false });
+    expect(mockEditor.value.setEditable).toHaveBeenCalledWith(false);
+  });
 
-    expect(mockEditor.value.setEditable).toHaveBeenCalled();
+  it("is not editable if editor is in disabled state", async () => {
+    const { wrapper } = doMount({
+      props: {
+        baseExtensions: { all: true },
+        disabled: true,
+      },
+    });
+
+    expect(useEditor).toHaveBeenCalledWith(
+      expect.objectContaining({
+        editable: false,
+      }),
+    );
+
+    await wrapper.setProps({ editable: true });
+    expect(mockEditor.value.setEditable).not.toHaveBeenCalled();
+    await wrapper.setProps({ disabled: false });
+    expect(mockEditor.value.setEditable).toHaveBeenCalledWith(true);
+  });
+
+  it("disabled state also sets not editable state", async () => {
+    const { wrapper } = doMount({ props: { baseExtensions: { all: true } } });
+
+    expect(useEditor).toHaveBeenCalledWith(
+      expect.objectContaining({
+        editable: true,
+      }),
+    );
+    await wrapper.setProps({ disabled: true });
+    expect(mockEditor.value.setEditable).toHaveBeenCalledWith(false);
   });
 
   it("should focus editor on mount", async () => {
     doMount({ props: { autofocus: true, baseExtensions: { all: true } } });
 
     await new Promise((r) => setTimeout(r, 0));
+
+    expect(mockEditor.value.commands.focus).toHaveBeenCalled();
+  });
+
+  it("should focus editor if editable prop changes", async () => {
+    const { wrapper } = doMount({
+      props: {
+        editable: false,
+        autofocus: true,
+        baseExtensions: { all: true },
+      },
+    });
+
+    expect(mockEditor.value.commands.focus).not.toHaveBeenCalled();
+
+    await wrapper.setProps({ editable: true });
 
     expect(mockEditor.value.commands.focus).toHaveBeenCalled();
   });
@@ -271,10 +325,10 @@ describe("RichTextEditor.vue", () => {
       const { wrapper } = doMount({ props: { baseExtensions: { all: true } } });
 
       expect(findToolComponentById(wrapper, "bold")?.props("active")).toBe(
-        true
+        true,
       );
       expect(findToolComponentById(wrapper, "italic")?.props("active")).toBe(
-        false
+        false,
       );
     });
 
@@ -315,7 +369,7 @@ describe("RichTextEditor.vue", () => {
 
         // another tool is not
         expect(
-          mockEditor.value.chain().focus().toggleBulletList
+          mockEditor.value.chain().focus().toggleBulletList,
         ).not.toHaveBeenCalled();
       });
 
@@ -336,12 +390,12 @@ describe("RichTextEditor.vue", () => {
           });
 
           expect(
-            mockEditor.value.chain().focus().setTextAlign
+            mockEditor.value.chain().focus().setTextAlign,
           ).toHaveBeenCalled();
           expect(
-            mockEditor.value.chain().focus()[commandName]
+            mockEditor.value.chain().focus()[commandName],
           ).toHaveBeenCalled();
-        }
+        },
       );
 
       it.each([
@@ -361,12 +415,12 @@ describe("RichTextEditor.vue", () => {
           });
 
           expect(
-            mockEditor.value.chain().focus().setTextAlign
+            mockEditor.value.chain().focus().setTextAlign,
           ).not.toHaveBeenCalled();
           expect(
-            mockEditor.value.chain().focus()[commandName]
+            mockEditor.value.chain().focus()[commandName],
           ).toHaveBeenCalled();
-        }
+        },
       );
     });
   });
@@ -413,11 +467,11 @@ describe("RichTextEditor.vue", () => {
       });
 
       expect(getSlottedStubProp({ wrapper, propName: "editor" })).toEqual(
-        mockEditor.value
+        mockEditor.value,
       );
 
       expect(getSlottedStubProp({ wrapper, propName: "tools" })).toEqual(
-        expect.any(Array)
+        expect.any(Array),
       );
     });
   });

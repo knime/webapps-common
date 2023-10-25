@@ -10,7 +10,7 @@ describe("Error.vue", () => {
     expect(wrapper.find("h2").text()).toBe("Something went wrong!");
     expect(wrapper.find(".error-status").exists()).toBe(false); // use icon instead of text
     expect(wrapper.find(".error-message").text()).toBe(
-      "An error occurred. Please try again."
+      "An error occurred. Please try again.",
     );
   });
 

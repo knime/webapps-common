@@ -6,7 +6,7 @@ export default {
     BaseRadioButtons,
   },
   props: {
-    // this props are passed to BaseRadioButtons
+    // these props are passed to BaseRadioButtons
     id: {
       type: String,
       default: null,
@@ -14,6 +14,10 @@ export default {
     modelValue: {
       type: String,
       default: "",
+    },
+    bold: {
+      default: false,
+      type: Boolean,
     },
     disabled: {
       default: false,
@@ -58,6 +62,7 @@ export default {
   <BaseRadioButtons
     :id="id"
     ref="radioButton"
+    :bold="bold"
     :possible-values="possibleValues"
     :model-value="modelValue"
     :disabled="disabled"

@@ -34,7 +34,7 @@ export default {
     const preEl = h(
       "pre",
       { ...this.$attrs, class: [this.$attrs.class, className] },
-      [h("code", { class: className, innerHTML: prismOutput })]
+      [h("code", { class: className, innerHTML: prismOutput })],
     );
     return h("details", [summaryEl, preEl]);
   },

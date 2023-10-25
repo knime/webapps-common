@@ -1,3 +1,3 @@
-import config from "./config/lint-staged.config.mjs";
+import config from "@knime/eslint-config/lint-staged.config.mjs";
 
 export default config;

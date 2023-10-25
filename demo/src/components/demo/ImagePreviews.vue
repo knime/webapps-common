@@ -62,7 +62,9 @@ export default {
       linear-gradient(45deg, transparent 75%, var(--checkerboard-color) 75%),
       linear-gradient(-45deg, transparent 75%, var(--checkerboard-color) 75%);
     background-size: var(--checkerboard-size) var(--checkerboard-size);
-    background-position: 0 0, 0 calc(var(--checkerboard-size) / 2),
+    background-position:
+      0 0,
+      0 calc(var(--checkerboard-size) / 2),
       calc(var(--checkerboard-size) / 2) calc(var(--checkerboard-size) / 2 * -1),
       calc(var(--checkerboard-size) / 2 * -1) 0;
   }

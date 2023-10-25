@@ -1,4 +1,5 @@
 <script lang="ts">
+import "./variables.css";
 import { defineComponent, type PropType } from "vue";
 import { kebabCase, uniq } from "lodash";
 
@@ -48,7 +49,7 @@ export default defineComponent({
           return false;
         }
         return values.every(
-          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text")
+          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text"),
         );
       },
     },
@@ -119,11 +120,11 @@ export default defineComponent({
 
     searchResults() {
       const hasExactSearchMatch = this.allPossibleItems.some(
-        ({ text }) => text.toLowerCase() === this.searchValue.toLowerCase()
+        ({ text }) => text.toLowerCase() === this.searchValue.toLowerCase(),
       );
 
       const fuzzyMatchedItems = this.allPossibleItems.filter(({ text }) =>
-        text.toLowerCase().includes(this.searchValue.toLowerCase())
+        text.toLowerCase().includes(this.searchValue.toLowerCase()),
       );
 
       if (this.allowNewValues && !hasExactSearchMatch && !this.isSearchEmpty) {
@@ -227,7 +228,7 @@ export default defineComponent({
       };
 
       const isDuplicateItem = this.allPossibleItems.some(
-        (item) => item.id === newItem.id
+        (item) => item.id === newItem.id,
       );
 
       if (isDuplicateItem) {
@@ -237,13 +238,13 @@ export default defineComponent({
       this.allPossibleItems.push(newItem);
 
       setSelectedIds(
-        selectedIds.map((id) => (id === DRAFT_ITEM_ID ? newItem.id : id))
+        selectedIds.map((id) => (id === DRAFT_ITEM_ID ? newItem.id : id)),
       );
     },
 
     removeTag(idToRemove: string) {
       this.updateSelectedIds(
-        this.selectedIds.filter((id) => id !== idToRemove)
+        this.selectedIds.filter((id) => id !== idToRemove),
       );
       this.closeOptions();
     },
@@ -333,7 +334,7 @@ export default defineComponent({
 <style lang="postcss" scoped>
 .multiselect {
   & .summary-input-icon-wrapper {
-    border: 1px solid var(--knime-stone-gray);
+    border: var(--form-border-width) solid var(--knime-stone-gray);
     display: flex;
     justify-content: space-between;
     max-width: 100%;
@@ -348,21 +349,30 @@ export default defineComponent({
 
     & .summary-input-wrapper {
       max-width: 100%;
-      padding: 11px;
       cursor: text;
       display: flex;
       flex-wrap: wrap;
       gap: 5px;
       flex: 1;
 
+      /** The height of the input field and tags inside the summary */
+      --inner-height: 18px;
+
+      padding: calc(
+        (
+            var(--single-line-form-height) - 2 * var(--form-border-width) -
+              var(--inner-height)
+          ) / 2
+      );
+
       &.with-icon-right {
         max-width: calc(100% - 40px);
-        padding: 11px 0 11px 11px;
+        padding-right: 0;
       }
 
       & .search-input {
         all: unset;
-        height: 18px;
+        height: var(--inner-height);
         font-size: 13px;
         font-weight: 300;
         line-height: normal;
@@ -370,7 +380,7 @@ export default defineComponent({
       }
 
       & .tag {
-        height: 18px;
+        height: var(--inner-height);
         max-width: 100%;
         overflow: hidden;
         padding: 2px 2px 2px 5px;

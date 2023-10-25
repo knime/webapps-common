@@ -38,9 +38,17 @@ export default {
     },
   },
   methods: {
+    /**
+     * This can be called from outside via focus on a $ref
+     */
     focus() {
-      // This can be called from outside via focus on a $ref */
       this.$refs.baseButton.focus();
+    },
+    /**
+     * This can be called from outside via getComponent on a $ref
+     */
+    getComponent() {
+      return this.$refs.baseButton.getComponent();
     },
   },
 };

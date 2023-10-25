@@ -4,6 +4,8 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { mount } from "@vue/test-utils";
 
 import MultiselectListBox from "../MultiselectListBox.vue";
+import LoadingIcon from "../../LoadingIcon.vue";
+import { markRaw } from "vue";
 
 vi.useFakeTimers();
 
@@ -365,10 +367,10 @@ describe("MultiselectListBox.vue", () => {
       expect(propPossibleValues.required).toBeFalsy();
       expect(propPossibleValues.type).toBe(Array);
       expect(
-        propPossibleValues.validator && propPossibleValues.validator("str")
+        propPossibleValues.validator && propPossibleValues.validator("str"),
       ).toBeFalsy();
       expect(
-        propPossibleValues.validator && propPossibleValues.validator([])
+        propPossibleValues.validator && propPossibleValues.validator([]),
       ).toBeTruthy();
     });
 
@@ -591,7 +593,7 @@ describe("MultiselectListBox.vue", () => {
       propsData.withIsEmptyState = true;
       const wrapper = mount(MultiselectListBox, { propsData });
       expect(wrapper.find(".empty-state").text()).toBe(
-        "No entries in this list"
+        "No entries in this list",
       );
       const emptyStateLabel = "Custom label";
       await wrapper.setProps({ emptyStateLabel });
@@ -610,6 +612,19 @@ describe("MultiselectListBox.vue", () => {
       propsData.withBottomValue = true;
       const wrapper = mount(MultiselectListBox, { propsData });
       expect(wrapper.find(".empty-state").exists()).toBeTruthy();
+    });
+
+    it("displays an empty state component if wanted", async () => {
+      propsData.withIsEmptyState = true;
+      propsData.emptyStateComponent = markRaw(LoadingIcon);
+      const wrapper = mount(MultiselectListBox, { propsData });
+      expect(wrapper.findComponent(MultiselectListBox).exists()).toBeTruthy();
+      const emptyStateLabel = "Custom label";
+      await wrapper.setProps({ emptyStateLabel });
+      // Cusom label is ignores if there is an emptyStateComponent
+      expect(wrapper.find(".empty-state").text()).not.toContain(
+        "No entries in this list",
+      );
     });
   });
 
@@ -649,7 +664,7 @@ describe("MultiselectListBox.vue", () => {
       const wrapper = mount(MultiselectListBox, { propsData });
       expect(wrapper.find('[role="bottom-box"]').exists()).toBeTruthy();
       expect(
-        wrapper.find('[role="bottom-box"]').find('[role="option"]').text()
+        wrapper.find('[role="bottom-box"]').find('[role="option"]').text(),
       ).toBe(bottomValue.text);
     });
 

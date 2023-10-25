@@ -49,8 +49,19 @@ describe("Dropdown.vue", () => {
     expect(wrapper.html()).toBeTruthy();
     expect(wrapper.isVisible()).toBeTruthy();
     expect(wrapper.findAll("[role=option]").length).toBe(
-      props.possibleValues.length
+      props.possibleValues.length,
     );
+  });
+
+  it("renders icon slots", () => {
+    props.modelValue = "test1";
+    const wrapper = mount(Dropdown, {
+      props,
+      slots: {
+        "icon-right": "<div>Right</div>",
+      },
+    });
+    expect(wrapper.find("[role=button]").text()).toBe("Text 1 Right");
   });
 
   it("sets the correct aria-* attributes", () => {
@@ -60,6 +71,31 @@ describe("Dropdown.vue", () => {
 
     let button = wrapper.find("[role=button]");
     expect(button.attributes("aria-label")).toBe(props.ariaLabel);
+  });
+
+  it("sets titles from text or optional titles of items", () => {
+    const wrapper = mount(Dropdown, {
+      props: {
+        possibleValues: [
+          {
+            id: "test1",
+            text: "Text 1",
+            title: "custom title",
+          },
+          {
+            id: "test2",
+            text: "Text 2",
+          },
+        ],
+        ariaLabel: "Test Label",
+      },
+    });
+
+    const options = wrapper.findAll("[role=option]");
+    expect(options.map((li) => li.attributes().title)).toStrictEqual([
+      "custom title",
+      "Text 2",
+    ]);
   });
 
   it("renders value text or placeholder if no or empty value set", async () => {
@@ -147,7 +183,7 @@ describe("Dropdown.vue", () => {
     await input.trigger("click");
 
     expect(wrapper.emitted("update:modelValue")[0][0]).toEqual(
-      props.possibleValues[newValueIndex].id
+      props.possibleValues[newValueIndex].id,
     );
 
     // listbox closed

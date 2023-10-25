@@ -25,7 +25,7 @@ describe("PlusButton.vue", () => {
       },
     });
     expect(
-      wrapper.findComponent(Button).attributes("onfakeevent")
+      wrapper.findComponent(Button).attributes("onfakeevent"),
     ).toBeDefined();
   });
 

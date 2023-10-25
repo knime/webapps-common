@@ -1,0 +1,6 @@
+:root {
+  /* The height of all forms with only one line of text */
+  --single-line-form-height: 40px;
+  /* The default border width of all forms */
+  --form-border-width: 1px;
+}

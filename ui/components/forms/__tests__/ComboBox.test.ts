@@ -6,7 +6,7 @@ import Multiselect from "../Multiselect.vue";
 
 const doMount = (
   dynamicProps?: Record<string, any>,
-  options?: { attachTo: HTMLElement }
+  options?: { attachTo: HTMLElement },
 ) =>
   mount(ComboBox, {
     props: {
@@ -55,7 +55,7 @@ describe("ComboBox.vue", () => {
     const wrapper = doMount();
     const updateFocusSpy = vi.spyOn(
       wrapper.findComponent(Multiselect).vm,
-      "updateFocusOptions"
+      "updateFocusOptions",
     );
     await wrapper.find({ ref: "searchInput" }).setValue("te");
     expect(updateFocusSpy).toHaveBeenCalled();
@@ -79,11 +79,11 @@ describe("ComboBox.vue", () => {
       const wrapper = doMount({}, { attachTo: document.body });
       const toggleSpy = vi.spyOn(
         wrapper.findComponent(Multiselect).vm,
-        "toggle"
+        "toggle",
       );
       const updateFocusSpy = vi.spyOn(
         wrapper.findComponent(Multiselect).vm,
-        "updateFocusOptions"
+        "updateFocusOptions",
       );
       await wrapper.find(".search-input").trigger("focus");
       expect(toggleSpy).toHaveBeenCalled();
@@ -91,7 +91,7 @@ describe("ComboBox.vue", () => {
       expect(wrapper.vm.inputOrOptionsFocussed).toBeTruthy();
       expect(wrapper.findComponent(Multiselect).vm.showOptions).toBeTruthy();
       expect(wrapper.findComponent(Multiselect).findAll(".boxes")).toHaveLength(
-        3
+        3,
       );
     });
 
@@ -118,18 +118,18 @@ describe("ComboBox.vue", () => {
 
       vi.runAllTimers();
       expect(wrapper.find(".summary-input-icon-wrapper").element).toBe(
-        document.activeElement
+        document.activeElement,
       );
     });
 
     it("closes the dropdown when focussing a remove-tag-button", async () => {
       const wrapper = doMount(
         { initialSelectedIds: ["test1"] },
-        { attachTo: document.body }
+        { attachTo: document.body },
       );
       const closeOptionsSpy = vi.spyOn(
         wrapper.findComponent(Multiselect).vm,
-        "closeOptions"
+        "closeOptions",
       );
       await wrapper.find(".search-input").trigger("focus");
       expect(wrapper.findComponent(Multiselect).vm.showOptions).toBeTruthy();
@@ -141,11 +141,11 @@ describe("ComboBox.vue", () => {
     it("closes the dropdown when focussing the remove-all-tags-button", async () => {
       const wrapper = doMount(
         { initialSelectedIds: ["test1"] },
-        { attachTo: document.body }
+        { attachTo: document.body },
       );
       const closeOptionsSpy = vi.spyOn(
         wrapper.findComponent(Multiselect).vm,
-        "closeOptions"
+        "closeOptions",
       );
       await wrapper.find(".search-input").trigger("focus");
       await wrapper.find(".remove-all-tags-button").trigger("click");
@@ -227,7 +227,7 @@ describe("ComboBox.vue", () => {
     it("clears all selected values and focusses the listBox on click of removeAllTags button", async () => {
       const wrapper = doMount(
         { initialSelectedIds: ["test2", "test3"] },
-        { attachTo: document.body }
+        { attachTo: document.body },
       );
       const updateSelectedIdsSpy = vi.spyOn(wrapper.vm, "updateSelectedIds");
       await wrapper.find(".remove-all-tags-button").trigger("click");
@@ -243,7 +243,7 @@ describe("ComboBox.vue", () => {
       const wrapper = doMount();
       const onDownSpy = vi.spyOn(
         wrapper.findComponent(Multiselect).vm,
-        "onDown"
+        "onDown",
       );
       await wrapper.find({ ref: "searchInput" }).trigger("keydown.down");
       expect(onDownSpy).toHaveBeenCalled();

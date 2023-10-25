@@ -78,7 +78,7 @@ describe("Messages.vue", () => {
       }
       if (message.icon) {
         expect(messageComponent.findComponent(message.icon).exists()).toBe(
-          true
+          true,
         );
       }
       if (message.details) {
@@ -177,7 +177,7 @@ describe("Messages.vue", () => {
     for (let i of [0, 1, 2]) {
       expect(messageComponents[i].find("a").exists()).toBe(false);
       expect(messageComponents[i].findComponent(RouterLinkStub).exists()).toBe(
-        false
+        false,
       );
     }
 

@@ -48,7 +48,7 @@ describe("Checkboxes.vue", () => {
     });
     // current value
     expect(wrapper.findAllComponents(Checkbox)[0].props("modelValue")).toBe(
-      true
+      true,
     );
     expect(wrapper.vm.hasSelection()).toBe(true);
 
@@ -81,10 +81,10 @@ describe("Checkboxes.vue", () => {
 
     const propPossibleValues = wrapper.vm.$options.props.possibleValues;
     expect(
-      propPossibleValues.validator && propPossibleValues.validator("str")
+      propPossibleValues.validator && propPossibleValues.validator("str"),
     ).toBeFalsy();
     expect(
-      propPossibleValues.validator && propPossibleValues.validator([])
+      propPossibleValues.validator && propPossibleValues.validator([]),
     ).toBeTruthy();
   });
 });

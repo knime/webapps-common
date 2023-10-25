@@ -45,7 +45,7 @@ describe("DialogOptions.vue", () => {
       },
     });
     expect(wrapper.find(".option-field-name").text()).toMatch(
-      /^foo\s+\(optional\)$/
+      /^foo\s+\(optional\)$/,
     );
   });
 
@@ -103,13 +103,13 @@ describe("DialogOptions.vue", () => {
     expect(wrapper.findAll(".option-field-name")[1].text()).toBe("baz");
     expect(wrapper.findAll(".option-field-name")[2].text()).toBe("bla");
     expect(wrapper.findAll(".option-description")[0].attributes("text")).toBe(
-      "bar"
+      "bar",
     );
     expect(wrapper.findAll(".option-description")[1].attributes("text")).toBe(
-      "qux"
+      "qux",
     );
     expect(wrapper.findAll(".option-description")[2].attributes("text")).toBe(
-      "quux"
+      "quux",
     );
   });
 

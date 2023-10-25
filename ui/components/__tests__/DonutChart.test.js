@@ -41,33 +41,33 @@ describe("DonutChart.vue", () => {
 
     // data
     expect(wrapper.vm.backgroundStrokeOffset).toBe(
-      expectedValues.backgroundStrokeOffset
+      expectedValues.backgroundStrokeOffset,
     );
     expect(wrapper.vm.smallLabelFontSize).toBe(
-      expectedValues.smallLabelFontSize
+      expectedValues.smallLabelFontSize,
     );
     expect(wrapper.vm.regularLabelFontSize).toBe(
-      expectedValues.regularLabelFontSize
+      expectedValues.regularLabelFontSize,
     );
     expect(wrapper.vm.regularLabelMaxValue).toBe(
-      expectedValues.regularLabelMaxValue
+      expectedValues.regularLabelMaxValue,
     );
 
     // computed
     expect(wrapper.vm.clippedValue).toBe(defaultValue);
     expect(wrapper.vm.strokeWidth).toBe(expectedValues.strokeWidth);
     expect(wrapper.vm.backgroundStrokeWidth).toBe(
-      expectedValues.backgroundStrokeWidth
+      expectedValues.backgroundStrokeWidth,
     );
     expect(wrapper.vm.r).toBe(expectedValues.r);
     expect(wrapper.vm.diameter).toBe(expectedValues.diameter);
     expect(wrapper.vm.circumference).toBeCloseTo(
       defaultCircumference,
-      precision
+      precision,
     );
     expect(wrapper.vm.strokeDashOffset).toBeCloseTo(
       expectedValues.strokeDashOffset,
-      precision
+      precision,
     );
     expect(wrapper.vm.transformWedge).toBe(expectedValues.transform);
     expect(wrapper.vm.displayLabel).toBe(false);
@@ -81,7 +81,7 @@ describe("DonutChart.vue", () => {
     expect(bgCircle.attributes("cy")).toBe(String(expectedValues.radius));
     expect(bgCircle.attributes("r")).toBe(String(expectedValues.r));
     expect(bgCircle.attributes("stroke-width")).toBe(
-      String(expectedValues.backgroundStrokeWidth)
+      String(expectedValues.backgroundStrokeWidth),
     );
     let wedge = wrapper.find("circle.value-wedge");
     expect(wedge.exists()).toBe(true);
@@ -89,15 +89,15 @@ describe("DonutChart.vue", () => {
     expect(wedge.attributes("cy")).toBe(String(expectedValues.radius));
     expect(wedge.attributes("r")).toBe(String(expectedValues.r));
     expect(wedge.attributes("stroke-width")).toBe(
-      String(expectedValues.strokeWidth)
+      String(expectedValues.strokeWidth),
     );
     expect(Number(wedge.attributes("stroke-dasharray"))).toBeCloseTo(
       defaultCircumference,
-      precision
+      precision,
     );
     expect(Number(wedge.attributes("stroke-dashoffset"))).toBeCloseTo(
       expectedValues.strokeDashOffset,
-      precision
+      precision,
     );
     expect(wedge.attributes("transform")).toBe(expectedValues.transform);
     expect(wrapper.find("div.value-label").exists()).toBe(false);
@@ -105,6 +105,46 @@ describe("DonutChart.vue", () => {
 
     expect(wrapper.find("circle.disabled-circle").exists()).toBe(false);
     expect(wrapper.find("circle.inner-disabled-circle").exists()).toBe(false);
+  });
+
+  it("renders with extended values and animation", () => {
+    const primaryValue = {
+      value: 25,
+      color: "#252525",
+    };
+    const secondaryValue = {
+      value: 35,
+      color: "#353535",
+    };
+    const wrapper = mount(DonutChart, {
+      propsData: {
+        value: primaryValue,
+        secondaryValue,
+        animate: true,
+        maxValue: 100,
+      },
+    });
+    expect(wrapper.find("svg").exists()).toBe(true);
+    let primaryWedge = wrapper.findAll(".value-wedge").at(1);
+    let secondaryWedge = wrapper.findAll(".value-wedge").at(0);
+
+    expect(primaryWedge.attributes("stroke")).toBe(primaryValue.color);
+    expect(primaryWedge.classes()).toContain("animate");
+    expect(secondaryWedge.attributes("stroke")).toBe(secondaryValue.color);
+    expect(secondaryWedge.classes()).toContain("animate");
+  });
+
+  it("does not animate if prop is set to false", () => {
+    const wrapper = mount(DonutChart, {
+      propsData: {
+        value: 45,
+        animate: false,
+        maxValue: 100,
+      },
+    });
+    expect(wrapper.find("svg").exists()).toBe(true);
+    let primaryWedge = wrapper.findAll(".value-wedge").at(1);
+    expect(primaryWedge.classes()).not.toContain("animate");
   });
 
   it("sets radius", () => {
@@ -257,16 +297,16 @@ describe("DonutChart.vue", () => {
 
     expect(wrapper.find("circle.disabled-circle").exists()).toBe(true);
     expect(wrapper.find("circle.disabled-circle").attributes("r")).toBe(
-      `${radius - 0.5}`
+      `${radius - 0.5}`,
     );
     expect(
-      wrapper.find("circle.disabled-circle").attributes("stroke-width")
+      wrapper.find("circle.disabled-circle").attributes("stroke-width"),
     ).toBe("1");
     expect(wrapper.find("circle.disabled-inner-circle").attributes("r")).toBe(
-      `${innerRadius + 0.5}`
+      `${innerRadius + 0.5}`,
     );
     expect(
-      wrapper.find("circle.disabled-inner-circle").attributes("stroke-width")
+      wrapper.find("circle.disabled-inner-circle").attributes("stroke-width"),
     ).toBe("1");
   });
 
@@ -304,7 +344,7 @@ describe("DonutChart.vue", () => {
     let wedge = wrapper.find("circle.value-wedge");
     expect(Number(wedge.attributes("stroke-dashoffset"))).toBeCloseTo(
       defaultCircumference,
-      precision
+      precision,
     );
   });
 
@@ -324,7 +364,7 @@ describe("DonutChart.vue", () => {
     let wedge = wrapper.find("circle.value-wedge");
     expect(Number(wedge.attributes("stroke-dashoffset"))).toBeCloseTo(
       defaultCircumference,
-      precision
+      precision,
     );
   });
 });

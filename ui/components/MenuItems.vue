@@ -47,6 +47,8 @@ export interface MenuItem {
   text: string;
   icon?: FunctionalComponent<SVGAttributes>;
   disabled?: boolean;
+  /** longer description text that will be displayed below the menu entry but still is part of it */
+  description?: string;
   /** shown on menu items on hover */
   title?: string;
   /** for router-links */
@@ -57,12 +59,22 @@ export interface MenuItem {
   sectionHeadline?: boolean;
   /** visually emphasizes an item by inverting the color of the item */
   selected?: boolean;
+  /** adds a download indicator property for file links */
+  download?: boolean | string;
   /** show a separator below the item if it's not the last in the list */
   separator?: boolean;
   /** shown aligned right besides the text */
   hotkeyText?: string;
   /** sub menu */
   children?: Array<MenuItem>;
+  /** any typed field that can be used to put any data in the item by users of this component */
+  metadata?: any;
+  /** If this field is set, the item will be displayed as a checkbox with initial state checkbox.checked, triggering
+  checkbox.setBoolean on toggle */
+  checkbox?: {
+    checked: boolean;
+    setBoolean: (checked: boolean) => void;
+  };
 }
 
 type Props = {
@@ -85,7 +97,7 @@ interface Emits {
     e: "item-hovered",
     item: MenuItem | null,
     menuId: string,
-    index: number
+    index: number,
   ): void;
   (e: "close-submenu"): void;
 }
@@ -113,7 +125,7 @@ const getNextElement = (current: number | null, direction: 1 | -1) => {
   }
   const nextIndex = getWrappedAroundIndex(
     currentIndexInEnabled + direction,
-    listItems.length
+    listItems.length,
   );
 
   const { element, index, onClick } = listItems[nextIndex];

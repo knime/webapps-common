@@ -59,6 +59,11 @@ export default {
       default: true,
       type: Boolean,
     },
+    hideOptions: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     /**
      * Labels
      */
@@ -91,10 +96,19 @@ export default {
       required: false,
       default: "Unknown values",
     },
+    /**
+     * Is only used when emptyStateComponent is null
+     */
     emptyStateLabel: {
-      type: String,
-      required: false,
       default: "No entries in this list",
+      type: String,
+    },
+    /**
+     * this component is displayed centered in the middle of the box in case it is empty
+     */
+    emptyStateComponent: {
+      default: null,
+      type: Object,
     },
     /**
      * Controls the size of the list.
@@ -132,9 +146,19 @@ export default {
           return false;
         }
         return values.every(
-          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text")
+          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text"),
         );
       },
+    },
+    /**
+     * If this setting is true, on a change of possible values, the currently
+     * chosen values which are missing with respect to the new possible values
+     * are removed.
+     */
+    filterChosenValuesOnPossibleValuesChange: {
+      type: Boolean,
+      default: true,
+      required: false,
     },
   },
   emits: ["update:modelValue", "includeUnknownValuesInput"],
@@ -155,38 +179,45 @@ export default {
       // convert [{id: "key1", text: "asdf"}, ...] to {"key1": {id:"key1", text: "asdf"} ... }
       return Object.assign(
         {},
-        ...this.possibleValues.map((obj) => ({ [obj.id]: obj }))
+        ...this.possibleValues.map((obj) => ({ [obj.id]: obj })),
       );
     },
     possibleValueIds() {
       return this.possibleValues.map((x) => x.id);
     },
     invalidValueIds() {
-      return this.modelValue.filter((x) => !this.possibleValueMap[x]);
+      return this.chosenValues.filter((x) => !this.possibleValueMap[x]);
     },
-    visibleValueIds() {
-      const matchingInvalidValueIds = this.invalidValueIds.filter((item) =>
-        this.itemMatchesSearch(this.generateInvalidItem(item))
+    matchingInvalidValueIds() {
+      return this.invalidValueIds.filter((item) =>
+        this.itemMatchesSearch(this.generateInvalidItem(item)),
       );
-      const matchingValidIds = this.possibleValues
+    },
+    matchingValidIds() {
+      return this.possibleValues
         .filter((possibleValue) => this.itemMatchesSearch(possibleValue))
         .map((possibleValue) => possibleValue.id);
-      return [...matchingValidIds, ...matchingInvalidValueIds];
+    },
+    visibleValueIds() {
+      return new Set([
+        ...this.matchingValidIds,
+        ...this.matchingInvalidValueIds,
+      ]);
     },
     leftItems() {
+      const chosenValuesSet = new Set(this.chosenValues);
       return this.possibleValues.filter(
         (value) =>
-          this.visibleValueIds.includes(value.id) &&
-          !this.chosenValues.includes(value.id)
+          this.visibleValueIds.has(value.id) && !chosenValuesSet.has(value.id),
       );
     },
     rightItems() {
       return this.chosenValues
         .map(
           (value) =>
-            this.possibleValueMap[value] || this.generateInvalidItem(value)
+            this.possibleValueMap[value] || this.generateInvalidItem(value),
         )
-        .filter((value) => this.visibleValueIds.includes(value.id));
+        .filter((value) => this.visibleValueIds.has(value.id));
     },
     listSize() {
       // fixed size even when showing all to prevent height jumping when moving items between lists
@@ -218,7 +249,7 @@ export default {
       }
       return filters.search.normalize(
         this.searchTerm,
-        this.caseSensitiveSearch
+        this.caseSensitiveSearch,
       );
     },
     numAllItems() {
@@ -252,18 +283,22 @@ export default {
   },
   watch: {
     modelValue(newValue) {
-      this.chosenValues = newValue;
+      if (JSON.stringify(newValue) !== JSON.stringify(this.chosenValues)) {
+        this.chosenValues = newValue;
+      }
     },
     possibleValues(newPossibleValues) {
-      // Required to prevent invalid values from appearing (e.g. missing b/c of upstream filtering)
-      let allValues = newPossibleValues.reduce((arr, valObj) => {
-        arr.push(...Object.values(valObj));
-        return arr;
-      }, []);
-      // Reset chosenValues as subset of original to prevent re-execution from resetting value
-      this.chosenValues = this.chosenValues.filter((item) =>
-        allValues.includes(item)
-      );
+      if (this.filterChosenValuesOnPossibleValuesChange) {
+        // Required to prevent invalid values from appearing (e.g. missing b/c of upstream filtering)
+        let allValues = newPossibleValues.reduce((arr, valObj) => {
+          arr.push(...Object.values(valObj));
+          return arr;
+        }, []);
+        // Reset chosenValues as subset of original to prevent re-execution from resetting value
+        this.chosenValues = this.chosenValues.filter((item) =>
+          allValues.includes(item),
+        );
+      }
     },
     chosenValues(newVal, oldVal) {
       if (
@@ -405,7 +440,7 @@ export default {
         item.text,
         this.normalizedSearchTerm,
         this.caseSensitiveSearch,
-        false
+        false,
       );
     },
     getInfoText(numShownItems, numAllItems) {
@@ -463,13 +498,14 @@ export default {
         ref="left"
         :with-is-empty-state="showEmptyState"
         :empty-state-label="emptyStateLabel"
+        :empty-state-component="emptyStateComponent"
         :size="listSize"
         class="list-box"
         :model-value="leftSelected"
         :with-bottom-value="showUnknownValuesLeft"
         :bottom-value="{ id: unknownValuesId, text: unknownValuesText }"
         :is-valid="isValid"
-        :possible-values="leftItems"
+        :possible-values="hideOptions ? [] : leftItems"
         :aria-label="leftLabel"
         :disabled="disabled"
         @double-click-on-item="onLeftListBoxDoubleClick"
@@ -522,12 +558,14 @@ export default {
       <MultiselectListBox
         ref="right"
         class="list-box"
+        :class="{ 'with-empty-state-icon': emptyStateComponent }"
         :model-value="rightSelected"
         :with-bottom-value="showUnknownValuesRight"
         :bottom-value="{ id: unknownValuesId, text: unknownValuesText }"
         :with-is-empty-state="showEmptyState"
         :empty-state-label="emptyStateLabel"
-        :possible-values="rightItems"
+        :empty-state-component="emptyStateComponent"
+        :possible-values="hideOptions ? [] : rightItems"
         :size="listSize"
         :aria-label="rightLabel"
         :disabled="disabled"
@@ -572,6 +610,7 @@ export default {
       font-size: 8px;
       font-weight: 300;
       white-space: nowrap;
+      display: flex;
     }
   }
 
@@ -591,6 +630,10 @@ export default {
   & .list-box {
     flex: 3 1 auto;
     max-width: calc(50% - (var(--button-bar-width) / 2));
+  }
+
+  & .with-empty-state-icon :deep(svg) {
+    height: 13px;
   }
 
   & .list-box {
