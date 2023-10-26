@@ -5,7 +5,8 @@
       "view": {
         "title": "title",
         "altText": "altText",
-        "caption": "caption"
+        "caption": "caption",
+        "shrinkToFit": true
       }
     },
     "schema": {
@@ -25,6 +26,12 @@
               "title": "Caption",
               "description": "The caption of the image.",
               "default": ""
+            },
+            "shrinkToFit": {
+              "type": "boolean",
+              "title": "Shrink to fit available space",
+              "description": "If selected, the image will be scaled down to fit if it is larger than its available space. When scaling, the original aspect ratio of the image is retained. Note that most KNIME nodes capable of generating images allow to configure the image resolution.",
+              "default": true
             },
             "title": {
               "type": "string",
@@ -52,6 +59,11 @@
           "type": "Control",
           "scope": "#/properties/view/properties/caption",
           "options": {}
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/view/properties/shrinkToFit",
+          "options": { "format": "checkbox" }
         }
       ]
     },

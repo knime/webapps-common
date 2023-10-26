@@ -63,4 +63,10 @@ public final class ImageViewViewSettings implements DefaultNodeSettings {
     @Widget(title = "Caption", description = "The caption of the image.")
     String m_caption = "";
 
+    @Widget(title = "Shrink to fit available space",
+        description = "If selected, the image will be scaled down to fit if it is larger than its available space. "
+            + "When scaling, the original aspect ratio of the image is retained. "
+            + "Note that most KNIME nodes capable of generating images allow to configure the image resolution.")
+    boolean m_shrinkToFit = true;
+
 }
