@@ -51,6 +51,7 @@ export default {
   inject: ["getKnimeService"],
   provide() {
     return {
+      getJsonDataService: () => this.jsonDataService,
       registerWatcher: this.registerWatcher,
       updateData: this.updateData,
       getData: this.callDataService,

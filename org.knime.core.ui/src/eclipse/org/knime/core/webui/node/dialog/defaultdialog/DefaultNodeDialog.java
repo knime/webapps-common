@@ -59,6 +59,7 @@ import org.knime.core.webui.node.dialog.NodeSettingsService;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DefaultNodeDialogDataServiceImpl;
 import org.knime.core.webui.node.dialog.defaultdialog.dataservice.FlowVariableDataServiceImpl;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.filechooser.FileChooserDataService;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
 import org.knime.core.webui.page.Page;
 
@@ -167,10 +168,15 @@ public final class DefaultNodeDialog implements NodeDialog {
         final var dataService = new DefaultNodeDialogDataServiceImpl(m_settingsClasses.values(), m_asyncChoicesHolder);
         final var flowVariablesDataService =
             new FlowVariableDataServiceImpl(new DefaultDialogDataConverterImpl(m_settingsClasses));
-        return Optional.ofNullable(RpcDataService.builder() //
+        final var fileChooserService = new FileChooserDataService();
+        return Optional.of(RpcDataService.builder() //
             .addService("settings", dataService) //
             .addService("flowVariables", flowVariablesDataService) //
-            .onDeactivate(m_asyncChoicesHolder::clear).build());
+            .addService("fileChooser", fileChooserService) //
+            .onDeactivate(() -> {
+                m_asyncChoicesHolder.clear();
+                fileChooserService.clear();
+            }).build());
     }
 
     @Override

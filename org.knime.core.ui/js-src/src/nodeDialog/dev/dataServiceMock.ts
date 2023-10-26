@@ -58,6 +58,26 @@ export default (rpcRequest: { method: string; params: any[] }) => {
           message: "Async choices fetching failed because xyz",
         };
       }
+    case "fileChooser.listItems":
+      return {
+        items: [
+          {
+            isDirectory: true,
+            name: "I am a directory",
+          },
+          {
+            isDirectory: true,
+            name: "I am another directory",
+          },
+          {
+            isDirectory: false,
+            name: "I am a file, select me!",
+          },
+        ],
+        path: "/path/to/folder",
+      };
+    case "fileChooser.getFilePath":
+      return "/path/to/folder/selectedFile.txt";
     default:
       return null;
   }
