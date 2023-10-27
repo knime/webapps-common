@@ -210,13 +210,15 @@
             "type" : "boolean",
             "title" : "Enable column search",
             "description" : "Enables or disables the ability to perform a column search inside the table.",
-            "default" : true
+            "default" : true,
+            "configKeys" : [ "enableColumnSearch" ]
           },
           "enableGlobalSearch" : {
             "type" : "boolean",
             "title" : "Enable global search",
             "description" : "Enables or disables the ability to perform a global search inside the table.",
-            "default" : true
+            "default" : true,
+            "configKeys" : [ "enableGlobalSearch" ]
           },
           "enablePagination" : {
             "type" : "boolean",
@@ -331,7 +333,8 @@
             "type" : "string",
             "title" : "Title",
             "description" : "The title of the table shown above the generated image. If left blank, no title will be shown.",
-            "default" : "Table View"
+            "default" : "Table View",
+            "configKeys" : [ "title" ]
           }
         }
       }

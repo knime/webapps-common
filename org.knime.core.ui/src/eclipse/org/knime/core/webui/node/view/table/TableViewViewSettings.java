@@ -132,6 +132,7 @@ public class TableViewViewSettings implements DefaultNodeSettings {
      */
     @Widget(title = "Title",
         description = "The title of the table shown above the generated image. If left blank, no title will be shown.")
+    @Persist(optional = true)
     @Layout(ViewSection.class)
     public String m_title = "Table View";
 
@@ -278,6 +279,7 @@ public class TableViewViewSettings implements DefaultNodeSettings {
      */
     @Widget(title = "Enable global search",
         description = "Enables or disables the ability to perform a global search inside the table.")
+    @Persist(optional = true)
     @Layout(InteractivitySection.class)
     public boolean m_enableGlobalSearch = true;
 
@@ -286,6 +288,7 @@ public class TableViewViewSettings implements DefaultNodeSettings {
      */
     @Widget(title = "Enable column search",
         description = "Enables or disables the ability to perform a column search inside the table.")
+    @Persist(optional = true)
     @Layout(InteractivitySection.class)
     public boolean m_enableColumnSearch = true;
 
