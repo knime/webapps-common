@@ -207,10 +207,75 @@ const onDelete = (item) => {
         </Checkbox>
 
         <div>
+          Toggle programmatic rename
+          <Button compact primary @click="toggleRemoteRenaming">{{
+            activeRenamedItemId ? "Deactivate" : "Activate"
+          }}</Button>
+        </div>
+      </div>
+    </div>
+    <div class="grid-container">
+      <div class="grid-item-6">
+        <div>
+          The FileExplorer has built-in custom behavior when handling drag
+          operations. When an item is dropped in an invalid target, the ghost
+          will animate back to the original position. However, there are
+          exceptions to this behavior which are controlled by the animation
+          modes.
+        </div>
+
+        <span v-if="draggingAnimationMode === 'auto'">
+          AUTO:
+          <ul>
+            <li>
+              When dropping an item to a directory (aka a move), the ghosts will
+              be automatically removed, as if the move was successful
+            </li>
+            <li>
+              When dropping an item to an element outside the FileExplorer, if
+              said element handles drag events (prevents browser defaults), then
+              the ghosts will be automatically removed because the component
+              assumes the drop was successful
+            </li>
+          </ul>
+        </span>
+        <span v-if="draggingAnimationMode === 'manual'">
+          MANUAL:
+          <ul>
+            <li>
+              When dropping an item to a directory (aka a move) the ghosts will
+              NOT be removed. Instead the consumer will have to call an
+              <code>onComplete</code> callback provided in the
+              <strong>drop</strong> event payload to determine whether the move
+              was successful or not. (Useful for async operations)
+            </li>
+            <li>
+              Similarly, when dropping an item to an element outside the
+              FileExplorer the ghosts will also NOT be removed unless the
+              <code>onComplete</code> provided in the
+              <strong>dragend</strong> event is called and stating whether
+              dropping on this external element is valid or not
+            </li>
+          </ul>
+        </span>
+        <span v-if="draggingAnimationMode === 'disabled'">
+          DISABLED:
+          <ul>
+            <li>
+              This mode will disable the custom drag ghosts and revert to using
+              the native browser drag ghosts.
+            </li>
+            <li>This will also disable the custom preview feature</li>
+          </ul>
+        </span>
+      </div>
+      <div class="grid-item-6">
+        <div>
           Dragging animation mode
+          <!-- eslint-disable vue/attribute-hyphenation -->
           <Dropdown
             v-model="draggingAnimationMode"
-            :aria-label="'A List'"
+            ariaLabel="A List"
             :possible-values="[
               {
                 id: 'auto',
@@ -226,15 +291,12 @@ const onDelete = (item) => {
               },
             ]"
           />
-        </div>
-        <div>
-          Toggle programmatic rename
-          <Button compact primary @click="toggleRemoteRenaming">{{
-            activeRenamedItemId ? "Deactivate" : "Activate"
-          }}</Button>
+          <!-- eslint-enable vue/attribute-hyphenation -->
         </div>
       </div>
     </div>
+  </section>
+  <section class="demo">
     <div class="grid-container">
       <div class="grid-item-6 wrapper">
         <FileExplorer
@@ -304,6 +366,10 @@ const onDelete = (item) => {
 </template>
 
 <style lang="postcss" scoped>
+.demo {
+  margin-top: 3rem;
+}
+
 .wrapper {
   background: var(--knime-silver-sand);
   padding: 10px;

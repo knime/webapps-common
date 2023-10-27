@@ -180,7 +180,9 @@ const {
   // when default slot element (customDragPreviewPlaceholder ref) is not present, then
   // it means the slot has an element inside, so we should use a custom preview
   shouldUseCustomDragPreview: computed(
-    () => !customDragPreviewPlaceholder.value,
+    () =>
+      !customDragPreviewPlaceholder.value &&
+      props.draggingAnimationMode !== "disabled",
   ),
   // we then can obtain the element by using the container
   getCustomPreviewEl: () => document.querySelector(".custom-preview")!,
@@ -331,7 +333,11 @@ const onItemDoubleClick = (item: FileExplorerItemType) => {
       </tr>
     </tbody>
 
-    <div ref="customPreviewContainer" class="custom-preview">
+    <div
+      v-if="draggingAnimationMode !== 'disabled'"
+      ref="customPreviewContainer"
+      class="custom-preview"
+    >
       <slot name="customDragPreview">
         <div ref="customDragPreviewPlaceholder" />
       </slot>
