@@ -458,19 +458,24 @@ describe("FileExplorer.vue", () => {
       });
     });
 
-    it('should emit a "dragend" event', async () => {
+    it('should emit a "dragend" event when dropping outside the FileExplorer', async () => {
       const { wrapper } = doMount();
 
       // workflow-group item
       const firstItem = getRenderedItems(wrapper).at(0)!;
-      // workflow-group item
-      const secondItem = getRenderedItems(wrapper).at(1)!;
 
-      await dragAndDropItem(secondItem, firstItem);
+      const dataTransfer = { setDragImage: vi.fn() };
+      await firstItem.trigger("dragstart", { dataTransfer });
+
+      // trigger dragend only with some dropEffect -> aka no drop over any other item
+      // but some other element did set a dropEffect
+      await firstItem.trigger("dragend", {
+        dataTransfer: { dropEffect: "move" },
+      });
 
       expect(wrapper.emitted("dragend")?.[0][0]).toEqual({
         event: expect.anything(),
-        sourceItem: MOCK_DATA[1], // second item
+        sourceItem: MOCK_DATA[0], // first item
         onComplete: expect.any(Function),
       });
     });

@@ -290,7 +290,12 @@ const onDelete = (item) => {
       </div>
       <div class="grid-item-6">
         <strong>Output:</strong><br />
-        <div ref="customDragPreviewTarget" class="custom-drag-preview-target">
+        <div
+          ref="customDragPreviewTarget"
+          dropzone="copy"
+          class="custom-drag-preview-target"
+          @dragover.prevent
+        >
           Drag an item from the file explorer over me to see something nice 😉
         </div>
       </div>

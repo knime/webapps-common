@@ -187,6 +187,7 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
       pointer-events: auto;
       height: 26px;
       padding: 0;
+      margin: 4px 0 5px;
 
       & :deep(input) {
         font-size: var(--item-font-size);

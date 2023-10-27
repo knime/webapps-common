@@ -149,37 +149,11 @@ export const useItemDragging = (options: UseItemDraggingOptions) => {
     draggedOverEl.classList.remove("dragging-over");
   };
 
-  type DragEndReturn = {
-    event: DragEvent;
-    sourceItem: FileExplorerItem;
-    onComplete: (isSuccess: boolean) => void;
-  } | null;
+  const hasDroppedInside = ref(false);
 
-  const onDragEnd = (
-    event: DragEvent,
-    item: FileExplorerItem,
-  ): DragEndReturn => {
-    isDragging.value = false;
-
-    if (event.dataTransfer?.dropEffect === "none") {
-      __removeGhosts?.();
-      return null;
-    }
-
-    const onComplete = (isSuccessfulDrop: boolean) => {
-      if (isSuccessfulDrop) {
-        multiSelection.resetSelection();
-      }
-
-      // animate ghosts back if drop was unsuccessful
-      __removeGhosts?.(!isSuccessfulDrop);
-    };
-
-    if (options.draggingAnimationMode.value === "auto") {
-      onComplete(true);
-    }
-
-    return { event, sourceItem: item, onComplete };
+  const doRemoveGhosts = (animateOut: boolean) => {
+    __removeGhosts?.(animateOut);
+    __removeGhosts = null;
   };
 
   type DropReturn = {
@@ -196,7 +170,19 @@ export const useItemDragging = (options: UseItemDraggingOptions) => {
     const droppedEl = getItemElementByRefIndex(index, isGoBackItem);
     droppedEl.classList.remove("dragging-over");
 
+    hasDroppedInside.value = true;
+
+    const onComplete = (isSuccessful: boolean) => {
+      if (isSuccessful) {
+        multiSelection.resetSelection();
+      }
+
+      // animate ghosts back if move was unsuccessful
+      doRemoveGhosts(!isSuccessful);
+    };
+
     if (!isGoBackItem && !isDirectory(items.value[index])) {
+      doRemoveGhosts(true);
       return null;
     }
 
@@ -205,18 +191,9 @@ export const useItemDragging = (options: UseItemDraggingOptions) => {
     const isTargetSelected = selectedItemIds.value.includes(targetItem);
 
     if (isTargetSelected) {
+      doRemoveGhosts(true);
       return null;
     }
-
-    const onComplete = (isSuccessfulMove: boolean) => {
-      if (isSuccessfulMove) {
-        multiSelection.resetSelection();
-      }
-
-      // animate ghosts back if move was unsuccessful
-      __removeGhosts?.(!isSuccessfulMove);
-      __removeGhosts = null;
-    };
 
     if (options.draggingAnimationMode.value === "auto") {
       onComplete(true);
@@ -229,6 +206,46 @@ export const useItemDragging = (options: UseItemDraggingOptions) => {
     };
   };
 
+  type DragEndReturn = {
+    event: DragEvent;
+    sourceItem: FileExplorerItem;
+    onComplete: (isSuccess: boolean) => void;
+  } | null;
+
+  const onDragEnd = (
+    event: DragEvent,
+    item: FileExplorerItem,
+  ): DragEndReturn => {
+    isDragging.value = false;
+
+    if (event.dataTransfer?.dropEffect === "none") {
+      doRemoveGhosts(true);
+      return null;
+    }
+
+    if (hasDroppedInside.value) {
+      hasDroppedInside.value = false;
+      // since hasDroopedInside was true we can ignore removing the ghosts
+      // because this was taken care of by the `onDrop` handler
+      return null;
+    }
+
+    const onComplete = (isSuccessfulDrop: boolean) => {
+      if (isSuccessfulDrop) {
+        multiSelection.resetSelection();
+      }
+
+      // animate ghosts back if drop was unsuccessful
+      doRemoveGhosts(!isSuccessfulDrop);
+    };
+
+    if (options.draggingAnimationMode.value === "auto") {
+      onComplete(true);
+    }
+
+    return { event, sourceItem: item, onComplete };
+  };
+
   return {
     isDragging,
     onDragStart,
@@ -236,7 +253,7 @@ export const useItemDragging = (options: UseItemDraggingOptions) => {
     onDragOver,
     onDrag,
     onDragLeave,
-    onDragEnd,
     onDrop,
+    onDragEnd,
   };
 };
