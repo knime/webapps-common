@@ -326,7 +326,9 @@ export default {
             :key="category + name"
           >
             <HeadlineWithAnchorLink :title="name" />
-            <component :is="name" class="component" />
+            <div class="component">
+              <component :is="name" />
+            </div>
           </div>
         </div>
       </template>
