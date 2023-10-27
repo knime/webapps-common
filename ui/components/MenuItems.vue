@@ -187,6 +187,14 @@ const onKeydown = (event: KeyboardEvent) => {
 };
 
 defineExpose({ onKeydown, resetNavigation, focusIndex });
+
+const hasSelectedChildItem = (item: MenuItem) => {
+  if (!item.children || item.children.length === 0) {
+    return false;
+  }
+
+  return Boolean(item.children.find(({ selected }) => selected));
+};
 </script>
 
 <template>
@@ -217,11 +225,15 @@ defineExpose({ onKeydown, resetNavigation, focusIndex });
         :index="index"
         :use-max-menu-width="Boolean(maxMenuWidth)"
         :has-focus="index === focusedItemIndex"
+        class="base-item"
       >
         <template #submenu="{ itemElement }">
           <span
             v-if="item.children && item.children.length"
-            class="sub-menu-indicator"
+            :class="[
+              'sub-menu-indicator',
+              { highlight: hasSelectedChildItem(item) },
+            ]"
           >
             <ArrowNextIcon class="icon" />
             <MenuItems
@@ -247,14 +259,49 @@ defineExpose({ onKeydown, resetNavigation, focusIndex });
 </template>
 
 <style>
-.sub-menu-indicator {
-  & .icon {
-    width: 12px;
-    height: 12px;
-    stroke-width: calc(32px / 12);
-    pointer-events: none;
-    stroke: var(--theme-dropdown-foreground-color);
-    vertical-align: middle;
+.base-item {
+  /* base styles for the submenu-indicator */
+  & .sub-menu-indicator {
+    & .icon {
+      width: 12px;
+      height: 12px;
+      stroke-width: calc(32px / 12);
+      pointer-events: none;
+      stroke: var(--theme-dropdown-foreground-color);
+      vertical-align: middle;
+    }
+  }
+
+  /* target the base item when it has sub-items  */
+  &:has(.sub-menu-indicator.highlight) {
+    background-color: var(--theme-dropdown-foreground-color);
+    color: var(--theme-dropdown-background-color);
+
+    /* apply styles only for the immediate icon */
+    & > .item-icon {
+      stroke: var(--theme-dropdown-background-color);
+    }
+
+    & .sub-menu-indicator {
+      & .icon {
+        stroke: var(--theme-dropdown-background-color);
+      }
+    }
+  }
+
+  &:hover:has(.sub-menu-indicator.highlight),
+  &.focused:has(.sub-menu-indicator.highlight) {
+    color: var(--theme-dropdown-foreground-color-hover);
+
+    & > .item-icon {
+      stroke: var(--theme-dropdown-foreground-color-hover);
+    }
+
+    & .sub-menu-indicator {
+      & .icon {
+        stroke: var(--theme-dropdown-foreground-color-hover);
+      }
+    }
   }
 }
 </style>

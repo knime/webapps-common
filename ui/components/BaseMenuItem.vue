@@ -111,14 +111,40 @@ const dynamicAttributes = (item: MenuItem) => {
       margin-right: 7px;
     }
 
+    &:hover {
+      background-color: var(--theme-dropdown-background-color-hover);
+    }
+
+    &.focused {
+      outline: transparent;
+      background-color: var(--theme-dropdown-background-color-focus);
+      color: var(--theme-dropdown-foreground-color-focus);
+
+      & .item-icon {
+        stroke: var(--theme-dropdown-foreground-color-focus);
+      }
+
+      &:hover {
+        background-color: var(--theme-dropdown-background-color-hover);
+        color: var(--theme-dropdown-foreground-color-hover);
+      }
+    }
+
     &.selected {
       background-color: var(--theme-dropdown-foreground-color);
-      color: var(
-        --theme-dropdown-background-color
-      ); /* background and foreground are switched on selection */
+      color: var(--theme-dropdown-background-color);
 
       & .item-icon {
         stroke: var(--theme-dropdown-background-color);
+      }
+
+      &:hover {
+        background-color: var(--theme-dropdown-background-color-hover);
+        color: var(--theme-dropdown-foreground-color-hover);
+
+        & .item-icon {
+          stroke: var(--theme-dropdown-foreground-color-hover);
+        }
       }
     }
 
@@ -165,34 +191,6 @@ const dynamicAttributes = (item: MenuItem) => {
         white-space: normal;
         font-size: 11px;
         font-weight: 300;
-      }
-    }
-
-    &:hover {
-      outline: none;
-      background-color: var(--theme-dropdown-background-color-hover);
-      color: var(--theme-dropdown-foreground-color-hover);
-
-      & .item-icon {
-        stroke: var(--theme-dropdown-foreground-color-hover);
-
-        & .text {
-          stroke: var(--theme-dropdown-foreground-color-hover);
-        }
-      }
-    }
-
-    &.focused {
-      outline: none;
-      background-color: var(--theme-dropdown-background-color-focus);
-      color: var(--theme-dropdown-foreground-color-focus);
-
-      & .item-icon {
-        stroke: var(--theme-dropdown-foreground-color-focus);
-
-        & .text {
-          stroke: var(--theme-dropdown-foreground-color-focus);
-        }
       }
     }
   }
