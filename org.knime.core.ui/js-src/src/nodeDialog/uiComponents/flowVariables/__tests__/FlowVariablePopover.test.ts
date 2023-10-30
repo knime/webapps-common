@@ -34,7 +34,7 @@ describe("FlowVariablePopover", () => {
 
     const labelForSelector = wrapper.findComponent(Label);
     const selector = wrapper.findComponent(FlowVariableSelector);
-    expect(labelForSelector.text()).toBe("Select variable");
+    expect(labelForSelector.text()).toBe("Overwrite with flow variable");
     expect(selector.exists()).toBeTruthy();
     expect(selector.attributes().id).toBe(
       labelForSelector.find("label").attributes().for,
@@ -42,7 +42,7 @@ describe("FlowVariablePopover", () => {
 
     const labelForExposer = wrapper.findAllComponents(Label).at(1)!;
     const exposer = wrapper.findComponent(FlowVariableExposer);
-    expect(labelForExposer.text()).toBe("Expose variable");
+    expect(labelForExposer.text()).toBe("Output as flow variable");
     expect(exposer.exists()).toBeTruthy();
     expect(exposer.attributes().id).toBe(
       labelForExposer.find("label").attributes().for,

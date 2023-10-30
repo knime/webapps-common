@@ -50,7 +50,7 @@ describe("FlowVariableIcon.vue", () => {
     const wrapper = mountFlowVariableIcon({ props });
     expect(wrapper.findComponent(BothFlowVariables).exists()).toBeTruthy();
     expect(wrapper.emitted("tooltip")?.[0]?.[0]).toBe(
-      "Config is overwritten by flow variable and exposes a flow variable.",
+      "Config is overwritten by and output as a flow variable.",
     );
   });
 
@@ -63,7 +63,7 @@ describe("FlowVariableIcon.vue", () => {
     const wrapper = mountFlowVariableIcon({ props });
     expect(wrapper.findComponent(ExposeFlowVariable).exists()).toBeTruthy();
     expect(wrapper.emitted("tooltip")?.[0]?.[0]).toBe(
-      "Config exposes a flow variable.",
+      "Config is output as a flow variable.",
     );
   });
 

@@ -17,7 +17,9 @@ const onUpdate = (value: string) => {
   });
 };
 
-const ariaLabel = computed(() => `exposed-flow-variables-${props.persistPath}`);
+const ariaLabel = computed(
+  () => `outputted-flow-variable-${props.persistPath}`,
+);
 </script>
 
 <!-- eslint-disable vue/attribute-hyphenation typescript complains with ':aria-label' instead of ':ariaLabel'-->
@@ -25,7 +27,7 @@ const ariaLabel = computed(() => `exposed-flow-variables-${props.persistPath}`);
   <InputField
     :ariaLabel="ariaLabel"
     :model-value="exposedVariableName"
-    placeholder="No flow variable exposed"
+    placeholder="“No flow variable set"
     @update:model-value="onUpdate"
   />
 </template>

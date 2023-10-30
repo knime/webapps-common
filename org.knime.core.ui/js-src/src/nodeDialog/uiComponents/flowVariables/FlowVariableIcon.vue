@@ -2,6 +2,7 @@
 import OnlyFlowVariable from "webapps-common/ui/assets/img/icons/only-flow-variables.svg";
 import ExposeFlowVariable from "webapps-common/ui/assets/img/icons/expose-flow-variables.svg";
 import BothFlowVariables from "webapps-common/ui/assets/img/icons/both-flow-variables.svg";
+
 import type FlowVariableIconProps from "./types/FlowVariableIconProps";
 import { computed, watch } from "vue";
 
@@ -22,11 +23,9 @@ watch(
   () => [isExposed.value, isControlled.value],
   ([exposed, controlled]) => {
     if (exposed && controlled) {
-      emitTooltip(
-        "Config is overwritten by flow variable and exposes a flow variable.",
-      );
+      emitTooltip("Config is overwritten by and output as a flow variable.");
     } else if (exposed) {
-      emitTooltip("Config exposes a flow variable.");
+      emitTooltip("Config is output as a flow variable.");
     } else if (controlled) {
       emitTooltip("Config is overwritten by a flow variable.");
     } else {

@@ -24,7 +24,11 @@ const emit = defineEmits(["controllingFlowVariableSet"]);
 <template>
   <template v-if="singlePath">
     <div class="popover">
-      <Label #default="{ labelForId }" text="Select variable" class="label">
+      <Label
+        #default="{ labelForId }"
+        text="Overwrite with flow variable"
+        class="label"
+      >
         <FlowVariableSelector
           :id="labelForId"
           :data-path="path"
@@ -36,7 +40,11 @@ const emit = defineEmits(["controllingFlowVariableSet"]);
           "
         />
       </Label>
-      <Label #default="{ labelForId }" text="Expose variable" class="label">
+      <Label
+        #default="{ labelForId }"
+        text="Output as flow variable"
+        class="label"
+      >
         <FlowVariableExposer
           :id="labelForId"
           :persist-path="singlePath"

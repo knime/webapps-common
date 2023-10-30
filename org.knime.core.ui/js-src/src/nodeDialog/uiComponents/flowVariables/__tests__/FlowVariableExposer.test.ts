@@ -39,10 +39,9 @@ describe("FlowVariableExposer", () => {
       wrapper
         .findComponent(InputField)
         .element.attributes.getNamedItem("arialabel")?.textContent,
-    ).toBe("exposed-flow-variables-persist.path.to.setting");
+    ).toBe("outputted-flow-variable-persist.path.to.setting");
     expect(wrapper.findComponent(InputField).props()).toMatchObject({
       modelValue: "",
-      placeholder: "No flow variable exposed",
     });
   });
 

@@ -15,7 +15,7 @@ const tooltipPrefix: Ref<string | null> = ref(null);
 const setTooltipPrefix = (prefix: string) => {
   tooltipPrefix.value = prefix;
 };
-const buttonTooltip = "Click to set controlling variable.";
+const buttonTooltip = "Click to overwrite with or output as flow variable.";
 const tooltip = computed(() => {
   if (tooltipPrefix.value === null) {
     return buttonTooltip;

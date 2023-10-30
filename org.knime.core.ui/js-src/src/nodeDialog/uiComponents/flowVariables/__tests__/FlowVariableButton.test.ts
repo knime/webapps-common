@@ -60,7 +60,7 @@ describe("FlowVariableButton.vue", () => {
     // Props
     expect(wrapper.findComponent(DialogPopover).props()).toStrictEqual({
       ignoredClickOutsideTarget: null,
-      tooltip: "Click to set controlling variable.",
+      tooltip: "Click to overwrite with or output as flow variable.",
     });
     expect(wrapper.findComponent(FlowVariableIcon).props()).toStrictEqual({
       flowSettings: props.flowSettings,
@@ -99,7 +99,7 @@ describe("FlowVariableButton.vue", () => {
       .findComponent(FlowVariableIcon)
       .vm.$emit("tooltip", tooltipPrefix);
     expect(wrapper.findComponent(DialogPopover).props().tooltip).toBe(
-      "myTooltipPrefix Click to set controlling variable.",
+      "myTooltipPrefix Click to overwrite with or output as flow variable.",
     );
   });
 
