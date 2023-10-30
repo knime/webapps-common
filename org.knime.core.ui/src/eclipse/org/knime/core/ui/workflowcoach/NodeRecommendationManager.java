@@ -273,7 +273,7 @@ public final class NodeRecommendationManager {
         }
 
         /* without predecessor but with the node, if given */
-        if (node != null && successor != null //
+        if (predecessor == null && node != null && successor != null //
             && node.isKnown() && successor.isKnown()) {
             add(recommendationMap, node.id, successor.id, nt.getCount());
         }
