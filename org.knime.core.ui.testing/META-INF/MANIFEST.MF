@@ -7,9 +7,9 @@ Bundle-ClassPath: knime-core-ui-testing.jar
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
 Export-Package: org.knime.testing.node.dialog,
  org.knime.testing.node.view
-Require-Bundle: org.knime.core;bundle-version="[4.7.0,6.0.0)",
- org.knime.core.ui;bundle-version="[4.7.0,6.0.0)",
- org.knime.testing;bundle-version="[4.7.0,6.0.0)",
+Require-Bundle: org.knime.core;bundle-version="[5.2.0,6.0.0)",
+ org.knime.core.ui;bundle-version="[5.2.0,6.0.0)",
+ org.knime.testing;bundle-version="[5.2.0,6.0.0)",
  assertj-core;bundle-version="[3.19.0,4.0.0)",
  com.fasterxml.jackson.core.jackson-databind;bundle-version="[2.13.2,3.0.0)",
  com.fasterxml.jackson.core.jackson-core;bundle-version="[2.13.2,3.0.0)",
