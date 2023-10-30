@@ -166,21 +166,6 @@ const createGhostElement = ({
 };
 
 /**
- * Removes the browser native drag ghost by replacing it with a transparent image
- */
-const removeNativeDragGhost = (dragEvent: DragEvent) => {
-  const img = new Image();
-  img.src =
-    "data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=";
-
-  if (dragEvent.dataTransfer) {
-    dragEvent.dataTransfer.dropEffect = "move";
-    dragEvent.dataTransfer.effectAllowed = "move";
-    dragEvent.dataTransfer.setDragImage(img, 0, 0);
-  }
-};
-
-/**
  * Returns a function to serve as an event handler to update the ghost's position
  */
 const createGhostPositionUpdateHandler =
@@ -233,11 +218,11 @@ type CreateDragGhostsParams = {
    */
   selectedTargets: Array<{
     /**
-     * Element itself
+     * Text content to display in each ghost
      */
     textContent: string;
     /**
-     * Text content to display in each ghost
+     * Element itself
      */
     targetEl: HTMLElement;
   }>;
@@ -267,12 +252,9 @@ type CreateDragGhostsReturnType = {
  * Creates the drag ghosts for the FileExplorer drag operations
  */
 export const createDragGhosts = ({
-  dragStartEvent,
   badgeCount = null,
   selectedTargets,
 }: CreateDragGhostsParams): CreateDragGhostsReturnType => {
-  removeNativeDragGhost(dragStartEvent);
-
   const ensureCleanState = () => {
     const maybeGhosts = document.querySelectorAll('[data-id="drag-ghost"]');
     if (maybeGhosts.length) {

@@ -115,16 +115,6 @@ describe("dragGhostHelpers", () => {
     });
   });
 
-  it("should clear the default drag ghost image", () => {
-    const { dataTransfer } = setup();
-
-    expect(dataTransfer.setDragImage).toHaveBeenCalledWith(
-      expect.any(Image),
-      0,
-      0,
-    );
-  });
-
   it("should remove the ghosts, badge and cleaup animations", () => {
     const selectedTargets = [
       { textContent: "MOCK1", targetEl: document.createElement("div") },

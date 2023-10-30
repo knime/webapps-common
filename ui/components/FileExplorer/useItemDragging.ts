@@ -22,6 +22,10 @@ let __replaceGhostPreview:
   | ReturnType<typeof createDragGhosts>["replaceGhostPreview"]
   | null = null;
 
+export const EMPTY_DRAG_IMAGE = new Image(1, 1);
+EMPTY_DRAG_IMAGE.src =
+  "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
+
 export const useItemDragging = (options: UseItemDraggingOptions) => {
   const {
     items,
@@ -56,6 +60,16 @@ export const useItemDragging = (options: UseItemDraggingOptions) => {
   const onDragStart = (event: DragEvent, index: number) => {
     isDragging.value = true;
     startDragItemIndex.value = index;
+
+    // remove native drag image for custom animation modes
+    if (
+      EMPTY_DRAG_IMAGE.complete &&
+      options.draggingAnimationMode.value !== "disabled"
+    ) {
+      event.dataTransfer!.dropEffect = "move";
+      event.dataTransfer!.effectAllowed = "move";
+      event.dataTransfer!.setDragImage(EMPTY_DRAG_IMAGE, 0, 0);
+    }
 
     if (!multiSelection.isSelected(index)) {
       multiSelection.resetSelection();
