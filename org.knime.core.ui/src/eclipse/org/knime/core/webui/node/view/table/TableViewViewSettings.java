@@ -191,7 +191,7 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     /**
      * If the column widths should be calculated from the first rows
      */
-    @Widget(title = "Columns sizing", description = "Fixed, the column sizing is fixed."
+    @Widget(title = "Column width", description = "Fixed, the column sizing is fixed."
         + " Fit content, the columns are sized according to the largest element in the column within the first 10"
         + " rows or within the current page when the page size is smaller than 10."
         + " Fit content and header, the content and the headers are considered for the size calculation of the columns.")
@@ -254,8 +254,8 @@ public class TableViewViewSettings implements DefaultNodeSettings {
      */
     @Widget(title = "Row height", description = "Set the initial height of the rows:" //
         + "<ul> " //
-        + "<li><b>Compact</b>, reduces white space around rows to a minimum. Choose this option to show as many rows as possible in given space.</li>" //
         + "<li><b>Default</b>, shows one line of text, visually well separated by whitespace.</li>" //
+        + "<li><b>Compact</b>, reduces white space around rows to a minimum. Choose this option to show as many rows as possible in given space.</li>" //
         + "<li><b>Custom</b>, shows as much as you need. For instance, show images at a size that enables to grasp their gist.</li>" //
         + "</ul>")
     @ValueSwitchWidget
