@@ -59,7 +59,7 @@ import java.util.Map;
 
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Expression;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.JsonFormsExpression;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.DefaultExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Operator;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
 
@@ -74,11 +74,11 @@ final class UiSchemaRulesGenerator {
 
     private final ObjectMapper m_mapper;
 
-    private final Map<Class<?>, JsonFormsExpression> m_signalsMap;
+    private final Map<Class<?>, DefaultExpression> m_signalsMap;
 
     private final Effect m_effect;
 
-    private JsonFormsExpressionResolver m_visitor;
+    private DefaultExpressionResolver m_visitor;
 
     /**
      * @param mapper an object mapper used to resolve given conditions
@@ -87,11 +87,11 @@ final class UiSchemaRulesGenerator {
      *            annotations to a construct holding the respective condition and the scope of the associated field.
      */
     UiSchemaRulesGenerator(final ObjectMapper mapper, final Effect effect,
-        final Map<Class<?>, JsonFormsExpression> signalsMap) {
+        final Map<Class<?>, DefaultExpression> signalsMap) {
         m_mapper = mapper;
         m_effect = effect;
         m_signalsMap = signalsMap;
-        m_visitor = new JsonFormsExpressionResolver(m_mapper);
+        m_visitor = new DefaultExpressionResolver(m_mapper);
     }
 
     /**
@@ -107,7 +107,7 @@ final class UiSchemaRulesGenerator {
         }
         final var signalClasses = m_effect.signals();
         final var signals =
-            Arrays.asList(signalClasses).stream().map(m_signalsMap::get).toArray(JsonFormsExpression[]::new);
+            Arrays.asList(signalClasses).stream().map(m_signalsMap::get).toArray(DefaultExpression[]::new);
         for (int signalIndex = 0; signalIndex < signals.length; signalIndex++) {
             if (signals[signalIndex] == null) {
                 if (m_effect.ignoreOnMissingSignals()) {
@@ -125,9 +125,9 @@ final class UiSchemaRulesGenerator {
     }
 
     @SuppressWarnings("unchecked")
-    private static Expression<JsonFormsExpression> instantiateOperation(
+    private static Expression<DefaultExpression> instantiateOperation(
         @SuppressWarnings("rawtypes") final Class<? extends Operator> operationClass,
-        final JsonFormsExpression[] expressions) {
+        final DefaultExpression[] expressions) {
         try {
             return instantiateWithSuitableConstructor(operationClass, expressions);
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
@@ -138,19 +138,19 @@ final class UiSchemaRulesGenerator {
     }
 
     @SuppressWarnings("unchecked")
-    private static Operator<JsonFormsExpression> instantiateWithSuitableConstructor(
+    private static Operator<DefaultExpression> instantiateWithSuitableConstructor(
         @SuppressWarnings("rawtypes") final Class<? extends Operator> operationClass,
-        final JsonFormsExpression[] expressions)
+        final DefaultExpression[] expressions)
         throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         final var constructors = operationClass.getDeclaredConstructors();
         final var multiParameterConstructor = getMultiParameterConstructor(constructors, expressions.length);
         if (multiParameterConstructor != null) {
-            return (Operator<JsonFormsExpression>)multiParameterConstructor.newInstance((Object[])expressions);
+            return (Operator<DefaultExpression>)multiParameterConstructor.newInstance((Object[])expressions);
         }
         final var arrayConstructor = getArrayConstructor(constructors);
         if (arrayConstructor != null) {
             final Object[] parameters = new Object[]{expressions};
-            return (Operator<JsonFormsExpression>)arrayConstructor.newInstance(parameters);
+            return (Operator<DefaultExpression>)arrayConstructor.newInstance(parameters);
         }
         throw new UiSchemaGenerationException(
             String.format("No valid constructor found for operation %s with %s expressions",

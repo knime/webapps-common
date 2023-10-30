@@ -56,7 +56,7 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import org.knime.core.webui.node.dialog.defaultdialog.rule.And;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Expression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.ExpressionVisitor;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.JsonFormsExpression;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.DefaultExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Not;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Or;
 
@@ -68,28 +68,28 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  *
  * @author Paul Bärnreuther
  */
-class JsonFormsExpressionResolver implements ExpressionVisitor<ObjectNode, JsonFormsExpression> {
+class DefaultExpressionResolver implements ExpressionVisitor<ObjectNode, DefaultExpression> {
 
     private final ObjectMapper m_mapper;
 
     private final JsonFormsConditionResolver m_conditionVisitor;
 
-    private final JsonFormsExpressionNegator m_negator;
+    private final DefaultExpressionNegator m_negator;
 
     /**
      * @param mapper
      */
-    public JsonFormsExpressionResolver(final ObjectMapper mapper) {
+    public DefaultExpressionResolver(final ObjectMapper mapper) {
         m_mapper = mapper;
         m_conditionVisitor = new JsonFormsConditionResolver(m_mapper);
-        m_negator = new JsonFormsExpressionNegator(this, m_mapper);
+        m_negator = new DefaultExpressionNegator(this, m_mapper);
     }
 
     /**
      * @example { "type": "AND", "conditions": { ... } }
      */
     @Override
-    public ObjectNode visit(final And<JsonFormsExpression> and) {
+    public ObjectNode visit(final And<DefaultExpression> and) {
         final var conditionNode = m_mapper.createObjectNode();
         conditionNode.put(TAG_TYPE, "AND");
         addAllConditions(conditionNode, and.getChildren());
@@ -100,7 +100,7 @@ class JsonFormsExpressionResolver implements ExpressionVisitor<ObjectNode, JsonF
      * @example { "type": "OR", "conditions": { ... } }
      */
     @Override
-    public ObjectNode visit(final Or<JsonFormsExpression> or) {
+    public ObjectNode visit(final Or<DefaultExpression> or) {
         final var conditionNode = m_mapper.createObjectNode();
         conditionNode.put(TAG_TYPE, "OR");
         addAllConditions(conditionNode, or.getChildren());
@@ -108,7 +108,7 @@ class JsonFormsExpressionResolver implements ExpressionVisitor<ObjectNode, JsonF
     }
 
     private void addAllConditions(final ObjectNode expressionNode,
-        final Expression<JsonFormsExpression>[] expressions) {
+        final Expression<DefaultExpression>[] expressions) {
         final var node = expressionNode.putArray(TAG_CONDITIONS);
         for (var expression : expressions) {
             node.add(expression.accept(this));
@@ -119,7 +119,7 @@ class JsonFormsExpressionResolver implements ExpressionVisitor<ObjectNode, JsonF
      * The "not" operation is not resolved directly but instead applies another visitor to its child component.
      */
     @Override
-    public ObjectNode visit(final Not<JsonFormsExpression> not) {
+    public ObjectNode visit(final Not<DefaultExpression> not) {
         return not.getChildOperation().accept(m_negator);
     }
 
@@ -127,7 +127,7 @@ class JsonFormsExpressionResolver implements ExpressionVisitor<ObjectNode, JsonF
      * @example { "scope": "path/to/rule/source/setting", "schema": { "const": true} }
      */
     @Override
-    public ObjectNode visit(final JsonFormsExpression expression) {
+    public ObjectNode visit(final DefaultExpression expression) {
         final var conditionNode = m_mapper.createObjectNode();
         conditionNode.put(TAG_SCOPE, expression.scope());
         conditionNode.set(FIELD_NAME_SCHEMA, expression.condition().accept(m_conditionVisitor));

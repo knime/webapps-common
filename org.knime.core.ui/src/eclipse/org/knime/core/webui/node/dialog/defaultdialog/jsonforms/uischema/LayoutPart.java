@@ -63,7 +63,7 @@ import java.util.function.Function;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.HorizontalLayout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.JsonFormsExpression;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.DefaultExpression;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -98,7 +98,7 @@ enum LayoutPart {
     }
 
     ArrayNode create(final ArrayNode parent, final Class<?> layoutClass, final ObjectMapper mapper,
-        final Map<Class<?>, JsonFormsExpression> signals) {
+        final Map<Class<?>, DefaultExpression> signals) {
         return m_create.apply(new LayoutNodeCreationContext(parent, layoutClass, mapper, signals));
     }
 
@@ -131,6 +131,6 @@ enum LayoutPart {
     }
 
     private record LayoutNodeCreationContext(ArrayNode parent, Class<?> layoutClass, ObjectMapper mapper,
-        Map<Class<?>, JsonFormsExpression> signals) {
+        Map<Class<?>, DefaultExpression> signals) {
     }
 }

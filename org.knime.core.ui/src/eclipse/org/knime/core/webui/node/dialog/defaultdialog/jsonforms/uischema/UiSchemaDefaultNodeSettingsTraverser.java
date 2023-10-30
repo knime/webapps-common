@@ -58,7 +58,7 @@ import java.util.function.Consumer;
 
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.JsonFormsExpression;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.DefaultExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Signals;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
@@ -114,13 +114,13 @@ public class UiSchemaDefaultNodeSettingsTraverser {
      * @author Paul Bärnreuther
      */
     static record TraversalResult(Map<Class<?>, List<JsonFormsControl>> layoutPartToControls,
-        Map<Class<?>, JsonFormsExpression> signals, Collection<JsonFormsControl> fields) {
+        Map<Class<?>, DefaultExpression> signals, Collection<JsonFormsControl> fields) {
     }
 
     TraversalResult traverse(final Map<String, Class<?>> settings) {
         final Collection<JsonFormsControl> fields = new HashSet<>();
         final Map<Class<?>, List<JsonFormsControl>> layoutPartToControls = new HashMap<>();
-        final Map<Class<?>, JsonFormsExpression> signals = new HashMap<>();
+        final Map<Class<?>, DefaultExpression> signals = new HashMap<>();
         final var addField = getAddFieldConsumer(fields, layoutPartToControls);
         final var addSignal = getAddSignalConsumer(signals);
         settings.forEach((settingsKey, setting) -> traverseSettingsClass(addField, addSignal, settingsKey, setting));
@@ -139,7 +139,7 @@ public class UiSchemaDefaultNodeSettingsTraverser {
     }
 
     private static Consumer<TraversalConsumerPayload>
-        getAddSignalConsumer(final Map<Class<?>, JsonFormsExpression> signals) {
+        getAddSignalConsumer(final Map<Class<?>, DefaultExpression> signals) {
         return payload -> getSignalList(payload.field().propertyWriter()).forEach(addSignal(signals, payload.scope()));
     }
 
@@ -164,12 +164,12 @@ public class UiSchemaDefaultNodeSettingsTraverser {
         return List.of();
     }
 
-    private static Consumer<? super Signal> addSignal(final Map<Class<?>, JsonFormsExpression> signals,
+    private static Consumer<? super Signal> addSignal(final Map<Class<?>, DefaultExpression> signals,
         final String scope) {
         return signal -> {
             final var conditionClass = signal.condition();
             final var condition = InstantiationUtil.createInstance(conditionClass);
-            final var scopedSignal = new JsonFormsExpression(scope, condition);
+            final var scopedSignal = new DefaultExpression(scope, condition);
             final var signalId = signal.id();
             signals.put(signalId.equals(Class.class) ? conditionClass : signalId, scopedSignal);
         };
