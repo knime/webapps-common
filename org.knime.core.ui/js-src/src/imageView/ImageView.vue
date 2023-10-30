@@ -14,12 +14,14 @@ type Settings = {
   title: string;
   altText: string;
   caption: string;
+  shrinkToFit: boolean;
 };
 
 const viewSettings: Settings = reactive({
   title: "",
   altText: "",
   caption: "",
+  shrinkToFit: true,
 });
 
 const setData = (settings: Settings) => {
@@ -70,7 +72,12 @@ onMounted(async () => {
         #default="{ id }"
         :caption="viewSettings.caption"
       >
-        <img :id="id" :src="imgSrc" :alt="viewSettings.altText" />
+        <img
+          :id="id"
+          :class="[{ scale: viewSettings.shrinkToFit }]"
+          :src="imgSrc"
+          :alt="viewSettings.altText"
+        />
       </OptionalFigure>
     </OptionalLabel>
   </div>
@@ -81,5 +88,16 @@ onMounted(async () => {
 div.scroll-container {
   overflow: auto;
   height: 100%;
+}
+
+/* 
+ * height -4px due to collapsing margins,
+ * see https://stackoverflow.com/questions/12989931/body-height-100-displaying-vertical-scrollbar
+ */
+.scale {
+  width: 100%;
+  height: calc(100% - 4px);
+  object-fit: scale-down;
+  object-position: top left;
 }
 </style>

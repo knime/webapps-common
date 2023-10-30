@@ -27,6 +27,7 @@ describe("ImageView.vue", () => {
     title: "defaultTitle",
     altText: "defaultAltText",
     caption: "defaultCaption",
+    shrinkToFit: false,
   };
   const defaultFetchImageValue = "defaultFetchImageValue";
 
@@ -92,12 +93,20 @@ describe("ImageView.vue", () => {
 
   const checkWrapper = (
     imageView: VueWrapper<any>,
-    settings: { title: string; altText: string; caption: string },
+    settings: {
+      title: string;
+      altText: string;
+      caption: string;
+      shrinkToFit: boolean;
+    },
     imageSrc = defaultBaseUrl + defaultImagePath,
   ) => {
     expect(imageView.vm.viewSettings.title).toStrictEqual(settings.title);
     expect(imageView.vm.viewSettings.altText).toStrictEqual(settings.altText);
     expect(imageView.vm.viewSettings.caption).toStrictEqual(settings.caption);
+    expect(imageView.vm.viewSettings.shrinkToFit).toStrictEqual(
+      settings.shrinkToFit,
+    );
     const label = imageView.findComponent(Label);
     let id;
     if (settings.title) {
@@ -122,6 +131,11 @@ describe("ImageView.vue", () => {
     expect(img.exists()).toBeTruthy();
     expect(img.attributes().src).toStrictEqual(imageSrc);
     expect(img.attributes().alt).toStrictEqual(settings.altText);
+    if (settings.shrinkToFit) {
+      expect(img.classes()).toContain("scale");
+    } else {
+      expect(img.classes()).not.toContain("scale");
+    }
   };
 
   it("renders image view", async () => {
@@ -149,6 +163,9 @@ describe("ImageView.vue", () => {
     expect(wrapper.vm.viewSettings.caption).toStrictEqual(
       defaultSettings.caption,
     );
+    expect(wrapper.vm.viewSettings.shrinkToFit).toStrictEqual(
+      defaultSettings.shrinkToFit,
+    );
   });
 
   it("adds on data change callback on mount", () => {
@@ -169,6 +186,7 @@ describe("ImageView.vue", () => {
             title: "foo",
             altText: "bar",
             caption: "baz",
+            shrinkToFit: true,
           },
         },
       };

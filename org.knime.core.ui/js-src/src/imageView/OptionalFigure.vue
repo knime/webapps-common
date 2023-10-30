@@ -16,5 +16,6 @@ defineProps<{
 <style scoped>
 .image-view-figure {
   margin: 0;
+  height: calc(100% - 19px);
 }
 </style>

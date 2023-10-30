@@ -4,10 +4,20 @@ defineProps<{ title: string }>();
 </script>
 
 <template>
-  <Label v-if="title" #default="{ labelForId }" :text="title" large>
+  <Label
+    v-if="title"
+    #default="{ labelForId }"
+    class="image-view-label"
+    :text="title"
+    large
+  >
     <slot :label-for-id="labelForId" />
   </Label>
   <slot v-else :label-for-id="undefined" />
 </template>
 
-<style scoped></style>
+<style scoped>
+.image-view-label {
+  height: calc(100% - 30px);
+}
+</style>
