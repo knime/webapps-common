@@ -79,6 +79,7 @@ import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DataTableSpecCreator;
 import org.knime.core.data.RowKey;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.data.property.ColorAttr;
@@ -102,7 +103,6 @@ import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.config.base.JSONConfig.WriterConfig;
 import org.knime.core.node.extension.InvalidNodeFactoryExtensionException;
 import org.knime.core.node.port.PortType;
-import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeMessage;
 import org.knime.core.node.workflow.WorkflowManager;
@@ -134,7 +134,6 @@ import org.knime.testing.util.WorkflowManagerUtil;
  */
 @SuppressWarnings("java:S2698") // we accept assertions without messages
 class NodeViewEntTest {
-
 
     private static final String JAVA_AWT_HEADLESS = "java.awt.headless";
 
@@ -205,6 +204,7 @@ class NodeViewEntTest {
         assertThat(ent.getGeneratedImageActionId()).isNull();
         assertThat(ent.getInitialSelection()).isNull();
         assertThat(ent.getColorModels()).isNull();
+        assertThat(ent.getColumnNamesColorModel()).isNull();
         var resourceInfo = ent.getResourceInfo();
         assertThat(resourceInfo.getPath()).endsWith("index.html");
         assertThat(resourceInfo.getBaseUrl()).isEqualTo("http://org.knime.core.ui.view/");
@@ -404,6 +404,7 @@ class NodeViewEntTest {
         var nodeViewEnt = NodeViewEnt.create(nnc);
 
         assertThat(nodeViewEnt.getColorModels()).isEmpty();
+        assertThat(nodeViewEnt.getColumnNamesColorModel()).isNull();
 
         WorkflowManagerUtil.disposeWorkflow(wfm);
     }
@@ -423,6 +424,7 @@ class NodeViewEntTest {
         var nodeViewEnt = NodeViewEnt.create(nnc);
 
         assertThat(nodeViewEnt.getColorModels()).isEmpty();
+        assertThat(nodeViewEnt.getColumnNamesColorModel()).isNull();
 
         WorkflowManagerUtil.disposeWorkflow(wfm);
     }
@@ -570,16 +572,26 @@ class NodeViewEntTest {
         nominalColorModel.put(new StringCell(cell1), ColorAttr.getInstance(green));
         nominalColorModel.put(new StringCell(cell2), ColorAttr.getInstance(blue));
 
+        var columnName1 = "ColumnName1";
+        var columnName2 = "ColumnName2";
+        Map<DataCell, ColorAttr> columnNamesColorMap = new HashMap<>();
+        columnNamesColorMap.put(new StringCell(columnName1), ColorAttr.getInstance(blue));
+        columnNamesColorMap.put(new StringCell(columnName2), ColorAttr.getInstance(green));
+        var columnNamesColorModel = new ColorModelNominal(columnNamesColorMap, new ColorAttr[0]);
+
         var numericColorColumnName = "numericColumn";
         var nominalColorColumnName = "nominalColumn";
         final Map<String, ColorModel> colorModels = new HashMap<>();
         colorModels.put(numericColorColumnName, numericColorModel);
         colorModels.put(nominalColorColumnName, new ColorModelNominal(nominalColorModel, new ColorAttr[0]));
 
-        var ent = createNodeViewEntWithColorModels(wfm, colorModels);
+        var ent = createNodeViewEntWithColorModels(wfm, colorModels, columnNamesColorModel);
         var colorModelsEnt = ent.getColorModels();
         assertThat(String.valueOf(colorModelsEnt.get(numericColorColumnName).getType())).isEqualTo("NUMERIC");
         assertThat(String.valueOf(colorModelsEnt.get(nominalColorColumnName).getType())).isEqualTo("NOMINAL");
+
+        var columnNamesColorModelEnt = ent.getColumnNamesColorModel();
+        assertThat(String.valueOf(columnNamesColorModelEnt.getType())).isEqualTo("NOMINAL");
 
         var numericModel = (NumericColorModelEnt)(colorModelsEnt.get(numericColorColumnName).getModel());
         assertThat(numericModel.getMinValue()).isEqualTo(minValue);
@@ -590,11 +602,14 @@ class NodeViewEntTest {
         var nominalModel = (Map<String, String>)(colorModelsEnt.get(nominalColorColumnName).getModel());
         assertThat(nominalModel).containsEntry(cell1, greenHex).containsEntry(cell2, blueHex);
 
+        assertThat(columnNamesColorModel.equals(columnNamesColorModelEnt.getModel()));
+
         WorkflowManagerUtil.disposeWorkflow(wfm);
     }
 
     private static NodeViewEnt createNodeViewEntWithColorModels(final WorkflowManager wfm,
-        final Map<String, ColorModel> colorModels) throws InvalidSettingsException {
+        final Map<String, ColorModel> colorModels, final ColorModel columnNamesColorModel)
+        throws InvalidSettingsException {
 
         final DataColumnSpec[] dataColumnSpecs = colorModels.entrySet().stream().map(e -> {
             final var creator = new DataColumnSpecCreator(e.getKey(), StringCell.TYPE);
@@ -602,7 +617,13 @@ class NodeViewEntTest {
             return creator.createSpec();
         }).toArray(DataColumnSpec[]::new);
 
-        return createNodeViewEntWithInputSpec(wfm, new DataTableSpec(dataColumnSpecs));
+        final var sc = new DataTableSpecCreator();
+        final var columnNamesColorHandler = new ColorHandler(columnNamesColorModel);
+        sc.setColumnNamesColorHandler(columnNamesColorHandler);
+        sc.addColumns(dataColumnSpecs);
+        final var spec = sc.createSpec();
+
+        return createNodeViewEntWithInputSpec(wfm, spec);
     }
 
     private static NodeViewEnt createNodeViewEntWithInputSpec(final WorkflowManager wfm, final DataTableSpec spec) {
@@ -676,7 +697,8 @@ class NodeViewEntTest {
                 }
 
                 @Override
-                protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
+                protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
+                    throws InvalidSettingsException {
                     //
                 }
 
@@ -709,6 +731,5 @@ class NodeViewEntTest {
         }
 
     }
-
 
 }

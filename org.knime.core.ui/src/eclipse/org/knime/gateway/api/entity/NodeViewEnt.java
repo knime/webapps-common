@@ -88,6 +88,8 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
 
     private Map<String, ColorModelEnt> m_colorModelsEnt;
 
+    private ColorModelEnt m_columnNamesColorModelEnt;
+
     /**
      * @param nnc the Native node container to create the node view entity for
      * @param initialSelection the initial selection (e.g. a list of row keys or something else), supplied lazily (will
@@ -142,9 +144,12 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
         final boolean isUsedForReportGeneration) {
         boolean canBeUsedInReport = NodeViewManager.getInstance().canBeUsedInReport(nnc);
         // NOTE on the 'generatingReportContent'-constant:
-        // this is a shortcut to inform the respective node view frontend that it's part of a report such that it can
-        // optionally do things differently. It's a shortcut because this information is already provided to the frontend
-        // via 'JSONWebNodePageConfiguration.getGeneratedReportActionId' such that the frontend could actually take care
+        // this is a shortcut to inform the respective node view frontend that it's part
+        // of a report such that it can
+        // optionally do things differently. It's a shortcut because this information is
+        // already provided to the frontend
+        // via 'JSONWebNodePageConfiguration.getGeneratedReportActionId' such that the
+        // frontend could actually take care
         // of distributing the info to the individual views itself.
         return create(nnc, initialSelection,
             isUsedForReportGeneration && canBeUsedInReport ? "generatingReportContent" : null,
@@ -234,7 +239,20 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
             nodeViewManager == null ? null : nodeViewManager.getInputDataTableSpecIfTableView(nnc).orElse(null);
         if (spec != null) {
             m_colorModelsEnt = getColorHandlerColumns(spec);
+            m_columnNamesColorModelEnt = getColumnNamesColorHandler(spec);
         }
+    }
+
+    /**
+     *
+     * @return the color model containing colors for the column names
+     */
+    private static ColorModelEnt getColumnNamesColorHandler(final DataTableSpec spec) {
+        final var columnNamesColorHandler = spec.getColumnNamesColorHandler();
+        if (columnNamesColorHandler.isPresent()) {
+            return new ColorModelEnt(columnNamesColorHandler.get().getColorModel());
+        }
+        return null;
     }
 
     /**
@@ -287,6 +305,15 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
      */
     public Map<String, ColorModelEnt> getColorModels() {
         return m_colorModelsEnt;
+    }
+
+    /**
+     *
+     * @return the color model to be used by the frontend to translate column names to hex colors. Can be null if no
+     *         color model was provided.
+     */
+    public ColorModelEnt getColumnNamesColorModel() {
+        return m_columnNamesColorModelEnt;
     }
 
 }
