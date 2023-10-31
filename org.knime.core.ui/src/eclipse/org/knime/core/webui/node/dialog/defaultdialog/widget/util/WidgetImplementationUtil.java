@@ -64,6 +64,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ComboBoxWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileChooserWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RichTextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
@@ -136,13 +137,14 @@ public final class WidgetImplementationUtil {
         new WidgetAnnotation(List.of(String.class), RichTextInputWidget.class), //
         new WidgetAnnotation(List.of(Credentials.class), CredentialsWidget.class), //
         new WidgetAnnotation(List.of(Credentials.class), PasswordWidget.class), //
-        new WidgetAnnotation(List.of(Credentials.class), UsernameWidget.class) //
+        new WidgetAnnotation(List.of(Credentials.class), UsernameWidget.class), //
+        new WidgetAnnotation(List.of(String.class), LocalFileChooserWidget.class) //
     };
 
     /**
      *
-     * Extend this for every fields type which has default format set.
-     * !!! WHEN ADDING A NEW ELEMENT HERE, ALSO ADD TO THE DOCUMENTATION OF {@link DefaultNodeSettings} !!!
+     * Extend this for every fields type which has default format set. !!! WHEN ADDING A NEW ELEMENT HERE, ALSO ADD TO
+     * THE DOCUMENTATION OF {@link DefaultNodeSettings} !!!
      */
     private static DefaultWidget[] defaultWidgets = new DefaultWidget[]{//
         new DefaultWidget(List.of(boolean.class, Boolean.class), DefaultWidgetType.CHECKBOX), //

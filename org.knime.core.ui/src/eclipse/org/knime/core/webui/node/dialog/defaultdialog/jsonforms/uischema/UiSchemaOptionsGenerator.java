@@ -92,6 +92,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ComboBoxWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileChooserWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RichTextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
@@ -235,6 +236,11 @@ final class UiSchemaOptionsGenerator {
             options.put(TAG_FORMAT, Format.RICH_TEXT_INPUT);
         }
 
+        if (annotatedWidgets.contains(LocalFileChooserWidget.class)) {
+            options.put(TAG_FORMAT, Format.LOCAL_FILE_CHOOSER);
+            final var localFileChooserWidget = m_field.getAnnotation(LocalFileChooserWidget.class);
+            options.put("placeholder", localFileChooserWidget.placeholder());
+        }
         if (annotatedWidgets.contains(ButtonWidget.class)) {
             final var buttonWidget = m_field.getAnnotation(ButtonWidget.class);
             final var handler = buttonWidget.actionHandler();

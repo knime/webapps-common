@@ -1,0 +1,66 @@
+{
+  "result": {
+    "name": "File Chooser Inputs",
+    "data": {
+      "view": {
+        "localFile": "/home/InitialValue.txt",
+        "disabled": "/home/InitialValue.txt",
+        "withPlaceholder": ""
+      }
+    },
+    "schema": {
+      "type": "object",
+      "properties": {
+        "view": {
+          "type": "object",
+          "properties": {
+            "localFile": {
+              "type": "string",
+              "title": "Local file chooser"
+            },
+            "disabled": {
+              "type": "string",
+              "title": "Disabled"
+            },
+            "withPlaceholder": {
+              "type": "string",
+              "title": "With Placeholder"
+            }
+          }
+        }
+      }
+    },
+    "ui_schema": {
+      "type": "VerticalLayout",
+      "elements": [
+        {
+          "type": "Control",
+          "scope": "#/properties/view/properties/localFile",
+          "options": {
+            "format": "localFileChooser"
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/view/properties/disabled",
+          "options": {
+            "format": "localFileChooser"
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/view/properties/withPlaceholder",
+          "options": {
+            "format": "localFileChooser",
+            "placeholder": "I am a placeholder"
+          }
+        }
+      ]
+    },
+    "flowVariableSettings": {
+      "view.disabled": {
+        "controllingFlowVariableName": "initiallySetFlowVariable"
+      }
+    }
+  }
+}

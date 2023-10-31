@@ -14,4 +14,5 @@ export const inputFormats = {
   button: "button",
   textArea: "textArea",
   credentials: "credentials",
+  localFileChooser: "localFileChooser",
 };

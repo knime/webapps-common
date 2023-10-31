@@ -79,6 +79,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileChooserWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RichTextInputWidget;
@@ -151,6 +152,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * <td>{@link ChoicesWidget} (twin-list)<br>
  * {@link TextInputWidget}<br>
  * {@link DateTimeWidget}<br>
+ * {@link LocalFileChooserWidget}<br>
  * {@link RichTextInputWidget}</td>
  * </tr>
  * <tr>

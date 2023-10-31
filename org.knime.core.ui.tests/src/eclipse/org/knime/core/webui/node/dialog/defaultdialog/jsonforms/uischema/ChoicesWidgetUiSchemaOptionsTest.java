@@ -73,6 +73,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.AsyncChoicesProvide
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileChooserWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.IdAndText;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.PossibleColumnValue;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
@@ -428,6 +429,26 @@ class ChoicesWidgetUiSchemaOptionsTest {
         assertThatJson(response).inPath("$.elements[0].options.showMode").isBoolean().isFalse();
         assertThatJson(response).inPath("$.elements[1].scope").isString().contains("bar");
         assertThatJson(response).inPath("$.elements[1].options.showMode").isBoolean().isTrue();
+    }
+
+    @Test
+    void testLocalFileChooserWidget() {
+        class LocalFileChooserWidgetTestSettings implements DefaultNodeSettings {
+
+            @LocalFileChooserWidget
+            String m_defaultOptions;
+
+            @LocalFileChooserWidget(placeholder = "myPlaceholder")
+            String m_specialOptions;
+
+        }
+        var response = buildTestUiSchema(LocalFileChooserWidgetTestSettings.class);
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("defaultOptions");
+        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("localFileChooser");
+        assertThatJson(response).inPath("$.elements[0].options.placeholder").isString().isEqualTo("");
+        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("specialOptions");
+        assertThatJson(response).inPath("$.elements[1].options.format").isString().isEqualTo("localFileChooser");
+        assertThatJson(response).inPath("$.elements[1].options.placeholder").isString().isEqualTo("myPlaceholder");
     }
 
 }
