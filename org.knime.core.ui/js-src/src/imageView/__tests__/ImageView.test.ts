@@ -14,6 +14,7 @@ import flushPromises from "flush-promises";
 import { createStore } from "vuex";
 import { VueWrapper, mount } from "@vue/test-utils";
 import * as fetchImage from "@/utils/images";
+import type ImageViewSettings from "../types/ImageViewSettings";
 
 describe("ImageView.vue", () => {
   let jsonDataServiceMock: {
@@ -74,7 +75,14 @@ describe("ImageView.vue", () => {
     };
     const wrapper = mount(ImageView, mountOptions);
     await flushPromises();
-    return wrapper;
+    return wrapper as VueWrapper & {
+      vm: {
+        onViewSettingsChange: (param: {
+          data: { data: { view: Partial<ImageViewSettings> } };
+        }) => void;
+        viewSettings: ImageViewSettings;
+      };
+    };
   };
 
   beforeEach(() => {
@@ -141,6 +149,16 @@ describe("ImageView.vue", () => {
   it("renders image view", async () => {
     const wrapper = await mountComponent();
     checkWrapper(wrapper, defaultSettings);
+  });
+
+  it("sets image max height to natural height on load", async () => {
+    const wrapper = await mountComponent();
+    const image = wrapper.find("img");
+    expect(image.element.onload).toBeTypeOf("function");
+    Object.defineProperty(image.element, "naturalHeight", { value: 100 });
+    image.element.onload!(new Event("load"));
+    await wrapper.vm.$nextTick();
+    expect(image.element.style.maxHeight).toBe("100px");
   });
 
   it("renders image view when reporting enabled", async () => {

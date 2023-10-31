@@ -6,16 +6,18 @@ import {
 } from "@/utils/images";
 import OptionalLabel from "./OptionalLabel.vue";
 import OptionalFigure from "./OptionalFigure.vue";
-import { inject, nextTick, onMounted, reactive, ref } from "vue";
+import type Settings from "./types/ImageViewSettings";
+import {
+  inject,
+  nextTick,
+  onMounted,
+  reactive,
+  ref,
+  toRef,
+  type Ref,
+} from "vue";
 import type { Event, KnimeService } from "@knime/ui-extension-service";
 import { useStore } from "vuex";
-
-type Settings = {
-  title: string;
-  altText: string;
-  caption: string;
-  shrinkToFit: boolean;
-};
 
 const viewSettings: Settings = reactive({
   title: "",
@@ -42,6 +44,9 @@ const getImageUrl = (path: string, baseUrl: string) => {
 };
 
 const imgSrc = ref("");
+const image: Ref<HTMLImageElement> = ref(null as any);
+const naturalHeight = ref(0);
+const loaded = ref(false);
 
 onMounted(async () => {
   const knimeService = inject<() => KnimeService>("getKnimeService")!();
@@ -50,6 +55,7 @@ onMounted(async () => {
   const initialData = await jsonDataService.initialData();
   setData(initialData.settings);
   const reportingService = new ReportingService(knimeService);
+
   // @ts-ignore
   const baseUrl = knimeService.extensionConfig?.resourceInfo?.baseUrl;
   const imageUrl = getImageUrl(initialData.imagePath, baseUrl);
@@ -61,20 +67,35 @@ onMounted(async () => {
   } else {
     imgSrc.value = imageUrl;
   }
+  nextTick(() => {
+    image.value.onload = () => {
+      naturalHeight.value = image.value.naturalHeight;
+      loaded.value = true;
+    };
+  });
 });
+
+const scale = toRef(viewSettings, "shrinkToFit");
 </script>
 
 <template>
-  <div class="scroll-container">
-    <OptionalLabel #default="{ labelForId }" :title="viewSettings.title">
+  <div v-show="loaded" class="scroll-container">
+    <OptionalLabel
+      #default="{ labelForId }"
+      :scale="scale"
+      :title="viewSettings.title"
+    >
       <OptionalFigure
         :id="labelForId"
         #default="{ id }"
+        :scale="scale"
         :caption="viewSettings.caption"
       >
         <img
           :id="id"
-          :class="[{ scale: viewSettings.shrinkToFit }]"
+          ref="image"
+          :class="[{ scale }]"
+          :style="naturalHeight ? { maxHeight: `${naturalHeight}px` } : {}"
           :src="imgSrc"
           :alt="viewSettings.altText"
         />
@@ -88,16 +109,23 @@ onMounted(async () => {
 div.scroll-container {
   overflow: auto;
   height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-/* 
- * height -4px due to collapsing margins,
- * see https://stackoverflow.com/questions/12989931/body-height-100-displaying-vertical-scrollbar
+/** 
+ * There is a gap of 4px to the figcaption because img is an inline element. 
+ * But since we also want this gap when using the image inside a flexbox, we style this gap ourselves.
  */
-.scale {
-  width: 100%;
-  height: calc(100% - 4px);
-  object-fit: scale-down;
-  object-position: top left;
+img {
+  display: block;
+  margin-bottom: 4px;
+
+  &.scale {
+    flex: 1;
+    min-height: 0;
+    object-fit: scale-down;
+    object-position: top left;
+  }
 }
 </style>

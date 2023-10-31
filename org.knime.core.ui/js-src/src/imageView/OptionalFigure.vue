@@ -2,11 +2,12 @@
 defineProps<{
   caption: string;
   id: undefined | string;
+  scale: boolean;
 }>();
 </script>
 
 <template>
-  <figure v-if="caption" :id="id" class="image-view-figure">
+  <figure v-if="caption" :id="id" :class="['image-view-figure', { scale }]">
     <slot />
     <figcaption>{{ caption }}</figcaption>
   </figure>
@@ -16,6 +17,12 @@ defineProps<{
 <style scoped>
 .image-view-figure {
   margin: 0;
-  height: calc(100% - 19px);
+
+  &.scale {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
 }
 </style>

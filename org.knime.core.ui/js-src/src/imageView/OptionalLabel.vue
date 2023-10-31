@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import Label from "webapps-common/ui/components/forms/Label.vue";
-defineProps<{ title: string }>();
+defineProps<{
+  title: string;
+  scale: boolean;
+}>();
 </script>
 
 <template>
   <Label
     v-if="title"
     #default="{ labelForId }"
-    class="image-view-label"
+    :class="{ scale }"
     :text="title"
     large
   >
@@ -16,8 +19,14 @@ defineProps<{ title: string }>();
   <slot v-else :label-for-id="undefined" />
 </template>
 
-<style scoped>
-.image-view-label {
-  height: calc(100% - 30px);
+<style scoped lang="postcss">
+.scale {
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  & :deep(label) {
+    flex-shrink: 0;
+  }
 }
 </style>
