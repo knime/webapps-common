@@ -197,7 +197,7 @@ class NodeRecommendationManagerTest {
     @Test
     void testRemainingMethods() throws IOException {
         // Cannot initialize again
-        assertThat(NodeRecommendationManager.getInstance().initialize(id -> null))
+        assertThat(NodeRecommendationManager.getInstance().initialize(m_getNodeType))
             .as("This should be true since recommendations were loaded before").isTrue();
         verify(m_updateListener, times(0)).updated();
 
