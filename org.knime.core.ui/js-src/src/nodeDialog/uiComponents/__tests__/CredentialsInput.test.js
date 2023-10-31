@@ -224,12 +224,13 @@ describe("CredentialsInput.vue", () => {
   });
 
   it("sets flow variable value in data if controlling flow variable is set", async () => {
-    await wrapper
-      .findComponent(LabeledInput)
-      .vm.$emit("controllingFlowVariableSet", {
+    await wrapper.findComponent(LabeledInput).vm.$emit(
+      "controllingFlowVariableSet",
+      JSON.stringify({
         username: "flowVarUsername",
         isHiddenPassword: true,
-      });
+      }),
+    );
     expect(component.updateData).toHaveBeenCalledWith(
       expect.anything(),
       "credentials",

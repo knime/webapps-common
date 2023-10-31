@@ -224,24 +224,25 @@ final class DefaultFieldNodeSettingsPersistorFactory {
         @Override
         public Credentials load(final NodeSettingsRO settings) throws InvalidSettingsException {
             final var credentialsConfig = settings.getNodeSettings(m_configKey);
-            if (credentialsConfig.getString(CFG_NAME) != null) {
-                final var username = credentialsConfig.getString(CFG_LOGIN);
-                final var password = credentialsConfig.getPassword(CFG_PWD, SECRET);
-                return new Credentials(username, password);
-            }
-            return null;
+            final var username = credentialsConfig.getString(CFG_LOGIN);
+            final var password = credentialsConfig.getPassword(CFG_PWD, SECRET);
+            return new Credentials(username, password);
         }
 
         @Override
         public void save(final Credentials credentials, final NodeSettingsWO settings) {
             final var credentialsConfig = settings.addNodeSettings(m_configKey);
+            credentialsConfig.addString(CFG_NAME, "");
             if (credentials != null) {
-                credentialsConfig.addString(CFG_NAME, "");
-                credentialsConfig.addString(CFG_LOGIN, credentials.getUsername());
-                credentialsConfig.addPassword(CFG_PWD, SECRET, credentials.getPassword());
+                persistCredentials(credentials, credentialsConfig);
             } else {
-                credentialsConfig.addString(CFG_NAME, null);
+                persistCredentials(new Credentials(), credentialsConfig);
             }
+        }
+
+        private static void persistCredentials(final Credentials credentials, final NodeSettingsWO credentialsConfig) {
+            credentialsConfig.addString(CFG_LOGIN, credentials.getUsername());
+            credentialsConfig.addPassword(CFG_PWD, SECRET, credentials.getPassword());
         }
     }
 

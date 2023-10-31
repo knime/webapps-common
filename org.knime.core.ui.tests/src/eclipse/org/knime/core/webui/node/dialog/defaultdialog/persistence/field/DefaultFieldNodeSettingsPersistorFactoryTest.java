@@ -194,8 +194,9 @@ class DefaultFieldNodeSettingsPersistorFactoryTest {
 
     @Test
     void testCredentials() throws InvalidSettingsException {
-        testSaveLoadNullable(Credentials.class, new Credentials());
-        testSaveLoadNullable(Credentials.class, new Credentials("foo", "bar"));
+        testSaveLoad(Credentials.class, new Credentials());
+        testSaveLoad(Credentials.class, new Credentials("foo", "bar"));
+        assertEquals(new Credentials(), saveLoad(Credentials.class, null));
     }
 
     private static <T> void testSaveLoadNullable(final Class<T> type, final T value) throws InvalidSettingsException {
