@@ -83,7 +83,7 @@ import org.knime.core.webui.node.dialog.NodeDialogManagerTest;
 import org.knime.core.webui.node.dialog.NodeDialogTest;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettingsFlowVariableSettingsConverter;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultDialogDataConverterImpl;
 import org.knime.core.webui.node.dialog.defaultdialog.JsonBasedNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.dataservice.FlowVariableDataService.PossibleFlowVariable;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
@@ -115,7 +115,7 @@ public class FlowVariableDataServiceTest {
 
     private static FlowVariableDataService
         getDataServiceWithConverter(final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses) {
-        return new FlowVariableDataServiceImpl(new DefaultNodeSettingsFlowVariableSettingsConverter(settingsClasses));
+        return new FlowVariableDataServiceImpl(new DefaultDialogDataConverterImpl(settingsClasses));
     }
 
     private static FlowVariable stringVar1 = new FlowVariable("stringVar1", "stringVar1_value");

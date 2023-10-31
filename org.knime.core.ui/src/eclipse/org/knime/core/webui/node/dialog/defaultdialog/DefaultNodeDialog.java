@@ -166,7 +166,7 @@ public final class DefaultNodeDialog implements NodeDialog {
     public Optional<RpcDataService> createRpcDataService() {
         final var dataService = new DefaultNodeDialogDataServiceImpl(m_settingsClasses.values(), m_asyncChoicesHolder);
         final var flowVariablesDataService =
-            new FlowVariableDataServiceImpl(new DefaultNodeSettingsFlowVariableSettingsConverter(m_settingsClasses));
+            new FlowVariableDataServiceImpl(new DefaultDialogDataConverterImpl(m_settingsClasses));
         return Optional.ofNullable(RpcDataService.builder() //
             .addService("settings", dataService) //
             .addService("flowVariables", flowVariablesDataService) //

@@ -44,47 +44,70 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Oct 24, 2023 (Paul Bärnreuther): created
+ *   Oct 25, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
+package org.knime.core.webui.node.dialog.defaultdialog;
+
+import java.util.Map;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DefaultDialogDataConverter;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.FlowVariableDataServiceImpl;
+import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.JsonDataToNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.NodeSettingsToJsonFormsSettings;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
- * A settings converter as used by the {@link FlowVariableDataServiceImpl}
+ * The converter used in the {@link FlowVariableDataServiceImpl} of the {@link DefaultNodeDialog}.
  *
  * @author Paul Bärnreuther
  */
-public interface FlowVariableSettingsConverter {
+public final class DefaultDialogDataConverterImpl implements DefaultDialogDataConverter {
+
+    private final Map<SettingsType, Class<? extends DefaultNodeSettings>> m_settingsClasses;
 
     /**
-     * Transforms the JSON representation of the settings form the front-end to node settings of a certain settings
-     * type.
-     *
-     * @param root with a key {@link JsonFormsConsts#FIELD_NAME_DATA "data"} and a nested
-     *            {@link SettingsType#getConfigKey() configKey} of the type ("model" or "view")
-     * @param type the type of the to be extracted node settings
-     * @return the node settings of the given type
+     * @param settingsClasses the classes of the {@link DefaultNodeSettings} associated to the settings types (model
+     *            and/or view).
      */
-    NodeSettings rootJsonToNodeSettings(final JsonNode root, final SettingsType type);
+    public DefaultDialogDataConverterImpl(
+        final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses) {
+        m_settingsClasses = settingsClasses;
+    }
 
     /**
-     * Transforms node settings to the data representation given to the front-end.
+     * Converter for only converting one type of settings. Note that some of its conversion methods might fail when they
+     * are used with a different type.
      *
-     * @param type the type of settings that is used
-     * @param nodeSettings the input node settings of the given type
-     * @param context
-     * @return The resulting representation of the data as JSON.
-     * @throws InvalidSettingsException
+     * @param type the type of the settings
+     * @param settingsClass the default node setting of this type
      */
-    JsonNode nodeSettingsToDataJson(SettingsType type, NodeSettingsRO nodeSettings, DefaultNodeSettingsContext context)
-        throws InvalidSettingsException;
+    public DefaultDialogDataConverterImpl(final SettingsType type,
+        final Class<? extends DefaultNodeSettings> settingsClass) {
+        this(Map.of(type, settingsClass));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public NodeSettings dataJsonToNodeSettings(final JsonNode root, final SettingsType type) {
+        return new JsonDataToNodeSettings(m_settingsClasses).toNodeSettings(root, type);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JsonNode nodeSettingsToDataJson(final SettingsType type, final NodeSettingsRO nodeSettings,
+        final DefaultNodeSettingsContext context) throws InvalidSettingsException {
+        return new NodeSettingsToJsonFormsSettings(context, m_settingsClasses)
+            .nodeSettingsToJsonFormsSettings(Map.of(type, nodeSettings)).getData();
+    }
 
 }

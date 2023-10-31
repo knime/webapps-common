@@ -50,6 +50,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
 import static java.util.stream.Collectors.toMap;
 import static org.knime.core.webui.node.dialog.defaultdialog.dataservice.DefaultNodeDialogDataServiceImpl.createContext;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.FIELD_NAME_DATA;
 import static org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.TextToJsonUtil.textToJson;
 import static org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.VariableSettingsUtil.rootJsonToVariableSettings;
 
@@ -85,12 +86,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 public final class FlowVariableDataServiceImpl implements FlowVariableDataService {
     private static final int ABBREVIATION_THRESHOLD = 50;
 
-    private final FlowVariableSettingsConverter m_converter;
+    private final DefaultDialogDataConverter m_converter;
 
     /**
      * @param converter used to transform between text settings from the front-end to {@link NodeSettings} and back
      */
-    public FlowVariableDataServiceImpl(final FlowVariableSettingsConverter converter) {
+    public FlowVariableDataServiceImpl(final DefaultDialogDataConverter converter) {
         m_converter = converter;
     }
 
@@ -99,7 +100,8 @@ public final class FlowVariableDataServiceImpl implements FlowVariableDataServic
         final LinkedList<String> path) throws InvalidSettingsException {
         final var firstPathElement = path.pollFirst();
         final SettingsType settingsType = extractSettingsType(firstPathElement);
-        final var nodeSettings = m_converter.rootJsonToNodeSettings(textToJson(textSettings), settingsType);
+        final var nodeSettings =
+            m_converter.dataJsonToNodeSettings(textToJson(textSettings).get(FIELD_NAME_DATA), settingsType);
         final var variableTypes = FlowVariableTypesExtractorUtil.getTypes(nodeSettings, path);
         final var context = createContext();
         return Arrays.asList(variableTypes).stream()
@@ -135,7 +137,7 @@ public final class FlowVariableDataServiceImpl implements FlowVariableDataServic
     private NodeSettings textSettingsToNodeAndVariableSettings(final String textSettings, final SettingsType type,
         final DefaultNodeSettingsContext context) throws InvalidSettingsException {
         final var root = textToJson(textSettings);
-        final var nodeSettings = m_converter.rootJsonToNodeSettings(root, type);
+        final var nodeSettings = m_converter.dataJsonToNodeSettings(root.get(FIELD_NAME_DATA), type);
         final var variableNodeSettings = new NodeSettings(type.getVariablesConfigKey());
         final var variableSettings = new VariableSettings(variableNodeSettings, nodeSettings);
         rootJsonToVariableSettings(root, Map.of(type, variableSettings));
