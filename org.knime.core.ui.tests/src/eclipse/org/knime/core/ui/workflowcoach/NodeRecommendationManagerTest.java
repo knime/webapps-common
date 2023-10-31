@@ -124,7 +124,7 @@ class NodeRecommendationManagerTest {
         var recommendations = getAndAssertNodeRecommendations(nnc);
 
         // Only receive 3 recommendations, even though 4 are available
-        assertThat(recommendations.size()).as("Expected exactly 3 recommendations").isEqualTo(3);
+        assertThat(recommendations.size()).as("Expected exactly 3 recommendations").isEqualTo(2);
         assertThat(recommendations).as("Response is not a list").isInstanceOf(List.class);
         recommendations.forEach(nr -> {
             assertThat(nr).as("Item is not a node recommendation").isInstanceOf(NodeRecommendation.class);

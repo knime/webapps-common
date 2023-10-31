@@ -103,8 +103,7 @@ public class TestNodeTripleProviderFactory implements NodeTripleProviderFactory 
         @Override
         public Stream<NodeTriple> getNodeTriples() throws IOException {
             var portObjectIn = new NodeInfo(//
-                "org.knime.core.node.exec.dataexchange.in.PortObjectInNodeFactory", //
-                "PortObject Reference Reader");
+                "org.knime.core.node.exec.dataexchange.in.PortObjectInNodeFactory", null, null);
             var rowFilter = new NodeInfo(//
                 "test_org.knime.base.node.preproc.filter.row.RowFilterNodeFactory", // Added "test_" to avoid side effects
                 "Test Row Filter");
@@ -166,7 +165,7 @@ public class TestNodeTripleProviderFactory implements NodeTripleProviderFactory 
                 "PortObject Reference Reader");
             var rowFilter = new NodeInfo(//
                 "test_org.knime.base.node.preproc.filter.row.RowFilterNodeFactory", // Added "test_" to avoid side effects
-                "Test Row Filter");
+                null, null);
             var rowFilterStripped = new NodeInfo(//
                 "test_org.knime.base.node.preproc.filter.row.RowFilterNodeFactory", // Added "test_" to avoid side effects
                 "Test Row Filter (to_be_stripped)"); // To test name replacement
