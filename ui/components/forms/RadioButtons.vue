@@ -15,10 +15,6 @@ export default {
       type: String,
       default: "",
     },
-    bold: {
-      default: false,
-      type: Boolean,
-    },
     disabled: {
       default: false,
       type: Boolean,
@@ -62,7 +58,6 @@ export default {
   <BaseRadioButtons
     :id="id"
     ref="radioButton"
-    :bold="bold"
     :possible-values="possibleValues"
     :model-value="modelValue"
     :disabled="disabled"
