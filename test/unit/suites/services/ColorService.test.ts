@@ -8,6 +8,15 @@ import {
 import { ColorModelType } from "src/types/ColorModel";
 import { extensionConfig } from "test/mocks";
 
+const createServices = ({ colorModels = {}, columnNamesColorModel = null }) => {
+  const config = { ...extensionConfig, colorModels, columnNamesColorModel };
+  const knimeService = new KnimeService(config);
+  knimeService.sendWarning = jest.fn();
+  const colorService = new ColorService(knimeService);
+
+  return { config, knimeService, colorService };
+};
+
 describe("ColorService", () => {
   const numericColumnName = "nominalColumn";
   const nominalColumnName = "numericColumn";
@@ -35,10 +44,7 @@ describe("ColorService", () => {
   };
 
   beforeEach(() => {
-    const config = { ...extensionConfig, colorModels };
-    knimeService = new KnimeService(config);
-    knimeService.sendWarning = jest.fn();
-    colorService = new ColorService(knimeService);
+    ({ knimeService, colorService } = createServices({ colorModels }));
   });
 
   const defaultColor = "#D3D3D3";
@@ -75,6 +81,41 @@ describe("ColorService", () => {
       expect(colorHandler.getColor(100)).toBe("#FF0000");
       expect(colorHandler.getColor(200)).toBe("#FF0000");
       expect(colorHandler.getColor(-100)).toBe("#0000FF");
+    });
+  });
+
+  describe("getColumnNamesColorHandler", () => {
+    it("returns null if no column names color model is given", () => {
+      expect(colorService.getColumnNamesColorHandler()).toBeNull();
+    });
+
+    it("returns the given column names color model", () => {
+      const columnNamesColorModel = {
+        type: ColorModelType.NOMINAL as const,
+        model: {
+          column1: "#FF0000",
+          column2: "#00FF00",
+          column3: "#0000FF",
+        },
+      };
+      ({ knimeService, colorService } = createServices({
+        columnNamesColorModel,
+      }));
+
+      const colorHandler =
+        colorService.getColumnNamesColorHandler() as NominalColorHandler;
+      expect(colorHandler.getColor("column1")).toBe("#FF0000");
+      expect(colorHandler.getColor("column2")).toBe("#00FF00");
+      expect(colorHandler.getColor("column3")).toBe("#0000FF");
+      expect(colorHandler.getColor("other")).toBe(defaultColor);
+    });
+
+    it("throws an Error in case the model is not nominal", () => {
+      ({ knimeService, colorService } = createServices({
+        columnNamesColorModel: colorModels[numericColumnName],
+      }));
+
+      expect(() => colorService.getColumnNamesColorHandler()).toThrowError();
     });
   });
 });

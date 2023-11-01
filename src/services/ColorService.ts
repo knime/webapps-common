@@ -80,6 +80,7 @@ export class ColorService {
    * Mapping from column name to attached color model given by the extension config.
    */
   private colorModels: Record<string, ColorModel> | undefined;
+  private columnNamesColorModel: ColorModel | undefined;
   private knimeService: KnimeService;
 
   /**
@@ -91,6 +92,8 @@ export class ColorService {
     if (!this.colorModels) {
       throw new Error("No color models present in the given extension config.");
     }
+    this.columnNamesColorModel =
+      knimeService.extensionConfig?.columnNamesColorModel;
     this.knimeService = knimeService;
   }
 
@@ -110,6 +113,20 @@ export class ColorService {
           message: `No color handler found for the given column name "${columnName}".`,
         }),
       );
+    }
+    return null;
+  }
+
+  public getColumnNamesColorHandler() {
+    if (this.columnNamesColorModel) {
+      const { model, type } = this.columnNamesColorModel;
+      if (type === ColorModelType.NOMINAL) {
+        return new NominalColorHandler(model);
+      } else {
+        throw new Error(
+          "The type of the column name color model is not correct.",
+        );
+      }
     }
     return null;
   }

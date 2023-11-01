@@ -28,6 +28,8 @@ import { ResourceInfo } from "./ResourceInfo";
  *  should either be unified or separated.
  * @property {Record<string, ColorModel>} colorModels - optional color model per column used to map data cell values
  * (numeric xor nominal) of a column to hexadecimal color codes
+ * @property {ColorModel} columnNamesColorModel - optional color model used to map column names to hexadecimal color
+ * codes
  * @template T
  */
 export type ExtensionConfig<T = any> = {
@@ -44,5 +46,6 @@ export type ExtensionConfig<T = any> = {
   hasNodeView: boolean;
   generatedImageActionId?: string;
   colorModels?: Record<string, ColorModel>;
+  columnNamesColorModel?: ColorModel;
   writeProtected?: boolean;
 };
