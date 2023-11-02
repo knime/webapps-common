@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { mount } from "@vue/test-utils";
+import { VueWrapper, mount } from "@vue/test-utils";
 
 import BaseRadioButtons from "../BaseRadioButtons.vue";
 
@@ -57,12 +57,12 @@ describe("BaseRadioButtons.vue", () => {
       props: {
         possibleValues,
       },
-    });
+    }) as VueWrapper<any>;
     const wrapper2 = mount(BaseRadioButtons, {
       props: {
         possibleValues,
       },
-    });
+    }) as VueWrapper<any>;
 
     expect(wrapper1.vm.count).not.toBe(wrapper2.vm.count);
     expect(wrapper1.find("input").attributes().name).not.toBe(
