@@ -4,7 +4,7 @@ import { isValid, getYear, getMonth, getDate, set } from "date-fns";
  * time, offset (timezone) and so on will be left untouched.
  *
  * @param {Date} base - Date which will be used (copied) to set day, month and year.
- * @param {Date} date - Extract day, month and year from this date object.
+ * @param {Date | null} date - Extract day, month and year from this date object.
  * @returns {Date} Copy of base with day, month and year of date.
  */
 export default (base, date) => {

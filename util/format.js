@@ -2,7 +2,7 @@
  * Converts the specified date String to human readable text containing the day, month, and year.
  * Example: '2018-07-31T09:44:31+00:00' => 'Jul 31, 2018'
  *
- * @param {String} dateString String representation of the Date to format
+ * @param {String | number} dateString String representation of the Date to format
  * @returns {String} human readable date String
  */
 export const formatDateString = (dateString) => {
@@ -22,7 +22,7 @@ export const formatDateString = (dateString) => {
  * Converts the specified time String to human readable text containing the hour (12-hour) and minute.
  * Example: '2018-07-31T09:44:31+00:00' => '9:44 AM'
  *
- * @param {String} timeString String representation of the Date (including time) to format
+ * @param {String | number} timeString String representation of the Date (including time) to format
  * @returns {String} human readable time String
  */
 export const formatTimeString = (timeString) => {
@@ -42,7 +42,7 @@ export const formatTimeString = (timeString) => {
  * minute; 12-hour).
  * Example: '2018-07-31T09:44:31+00:00' => 'Jul 31, 2018 9:44 AM'
  *
- * @param {String} dateTimeString String representation of the Date (including time and date) to format
+ * @param {String | number} dateTimeString String representation of the Date (including time and date) to format
  * @returns {String} human readable date/time String
  */
 export const formatDateTimeString = (dateTimeString) =>
