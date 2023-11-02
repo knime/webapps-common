@@ -207,7 +207,7 @@ const hasSelectedChildItem = (item: MenuItem) => {
     @keydown="props.registerKeydown && onKeydown($event)"
     @item-click="(event, item, id) => $emit('item-click', event, item, id)"
     @item-hovered="(item, id, index) => onItemHovered(item, id, index)"
-    @item-focused="(...args) => $emit('item-focused', ...args)"
+    @item-focused="(id, item) => $emit('item-focused', id, item)"
   >
     <template
       #item="{
