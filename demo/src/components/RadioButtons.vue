@@ -128,7 +128,11 @@ export default {
       </div>
       <div class="grid-container">
         <div class="grid-item-12">
-          <p>Horizontal and vertical layout with bold options and subtext</p>
+          <p>
+            Horizontal and vertical layout with subtext. Optionally, a margin
+            can be specified by setting the CSS variable
+            <code>--radio-button-margin</code>, which defaults to 0.
+          </p>
         </div>
       </div>
       <div class="grid-container">
@@ -136,7 +140,6 @@ export default {
           <div class="grid-item-5">
             <RadioButtons
               v-model="selected"
-              :bold="true"
               :possible-values="[
                 {
                   id: 'foo',
@@ -162,7 +165,7 @@ export default {
             <RadioButtons
               v-model="selected"
               alignment="vertical"
-              :bold="true"
+              class="radio-button-margin"
               :possible-values="[
                 {
                   id: 'foo',
@@ -199,3 +202,9 @@ export default {
     </section>
   </div>
 </template>
+
+<style scoped lang="postcss">
+.radio-button-margin {
+  --radio-button-margin: 0 0 30px 0; /* optionally a margin can be specified */
+}
+</style>
