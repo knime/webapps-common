@@ -181,8 +181,7 @@ describe("flow variables", () => {
     );
   });
 
-  /** TODO: UIEXT-1396 unskip */
-  describe.skip("credentials", () => {
+  describe("credentials", () => {
     beforeEach(async () => {
       vi.clearAllMocks();
 
@@ -239,10 +238,10 @@ describe("flow variables", () => {
       dataServiceSpy = vi
         .spyOn(JsonDataService.prototype, "data")
         .mockImplementation((params) => {
-          if (params?.method === "getAvailableFlowVariables") {
+          if (params?.method === "flowVariables.getAvailableFlowVariables") {
             return Promise.resolve(possibleFlowVariables);
           }
-          if (params?.method === "getFlowVariableOverrideValue") {
+          if (params?.method === "flowVariables.getFlowVariableOverrideValue") {
             return Promise.resolve({
               username: "flowVarUsername",
               isHiddenPassword: true,
