@@ -17,6 +17,7 @@ import {
   type Ref,
 } from "vue";
 import type { Event, KnimeService } from "@knime/ui-extension-service";
+// @ts-ignore
 import { useStore } from "vuex";
 
 const viewSettings: Settings = reactive({

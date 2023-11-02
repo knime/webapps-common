@@ -11,7 +11,7 @@ import DialogComponentWrapper from "./DialogComponentWrapper.vue";
 import MultiModeTwinlist from "webapps-common/ui/components/forms/MultiModeTwinlist.vue";
 import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
 import inject from "../utils/inject";
-import type { IdAndText, PossibleValue } from "../types/ChoicesUiSchemaOptions";
+import type { IdAndText, PossibleValue } from "../types/ChoicesUiSchema";
 import type Control from "../types/Control";
 import type { PartialDeep } from "type-fest";
 import TwinlistLoadingInfo from "./loading/TwinlistLoadingInfo.vue";

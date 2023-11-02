@@ -2,9 +2,9 @@ import { beforeEach, describe, expect, it, vi, afterEach } from "vitest";
 import { getDefaultProps, mountDisplay } from "./utils/display";
 import ImageRenderer from "../ImageRenderer.vue";
 import HTMLRenderer from "../HtmlRenderer.vue";
-// @ts-ignore
 import { TableUIWithAutoSizeCalculation } from "@knime/knime-ui-table";
 import type { TableViewDisplayProps } from "../types";
+// @ts-ignore
 import * as vuexModule from "vuex";
 import * as imagesModule from "../../utils/images";
 

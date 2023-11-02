@@ -8,7 +8,7 @@ import DialogComponentWrapper from "./DialogComponentWrapper.vue";
 import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
 import inject from "../utils/inject";
 import TwinlistLoadingInfo from "./loading/TwinlistLoadingInfo.vue";
-import type { IdAndText } from "../types/ChoicesUiSchemaOptions";
+import type { IdAndText } from "../types/ChoicesUiSchema";
 
 const defaultTwinlistSize = 7;
 const defaultTwinlistLeftLabel = "Excludes";

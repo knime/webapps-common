@@ -1,4 +1,5 @@
 import { vi, type Mock } from "vitest";
+// @ts-ignore
 import { createStore } from "vuex";
 
 export const getOptions = ({

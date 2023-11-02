@@ -5,10 +5,12 @@ import { vi } from "vitest";
 export default (component: any, isReport: boolean = false) => {
   const setRenderCompleted = vi.fn();
   // eslint-disable-next-line no-extra-parens
-  (ReportingService as any).mockImplementation((knimeService) => ({
-    isReportingActive: () => knimeService.isReport,
-    setRenderCompleted,
-  }));
+  (ReportingService as any).mockImplementation(
+    ({ isReport }: { isReport: boolean }) => ({
+      isReportingActive: () => isReport,
+      setRenderCompleted,
+    }),
+  );
   const wrapper = shallowMount(component, {
     global: {
       provide: {

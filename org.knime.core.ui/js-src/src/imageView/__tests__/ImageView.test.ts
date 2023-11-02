@@ -11,6 +11,7 @@ import ImageView from "../ImageView.vue";
 import { JsonDataService, ReportingService } from "@knime/ui-extension-service";
 import Label from "webapps-common/ui/components/forms/Label.vue";
 import flushPromises from "flush-promises";
+// @ts-ignore
 import { createStore } from "vuex";
 import { VueWrapper, mount } from "@vue/test-utils";
 import * as fetchImage from "@/utils/images";

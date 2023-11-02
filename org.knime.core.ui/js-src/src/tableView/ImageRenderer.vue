@@ -11,6 +11,8 @@ import {
   nextTick,
 } from "vue";
 import { fetchImage, getImageUrl } from "@/utils/images";
+
+// @ts-ignore
 import { useStore } from "vuex";
 
 const props = defineProps<{

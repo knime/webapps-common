@@ -45,7 +45,10 @@ export default {
             name: file.replace("/mocks/", ""),
             config: {
               ...mocks[file],
-              result: { flowVariableSettings: {}, ...mocks[file].result },
+              result: {
+                flowVariableSettings: {},
+                ...mocks[file].result,
+              } as any,
             },
           };
         });
@@ -132,9 +135,9 @@ export default {
     },
     applySettings() {
       let message = "Current dialog does not have an apply data method.";
-      if (typeof this.currentKS?.dataGetter === "function") {
+      if (typeof (this.currentKS as any)?.dataGetter === "function") {
         message = `Dialog returned value: \n${JSON.stringify(
-          this.currentKS.dataGetter(),
+          (this.currentKS as any)?.dataGetter(),
         )}`;
       }
       // eslint-disable-next-line no-console

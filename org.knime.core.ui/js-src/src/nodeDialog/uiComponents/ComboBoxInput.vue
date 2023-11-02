@@ -6,6 +6,7 @@ import ComboBox from "webapps-common/ui/components/forms/ComboBox.vue";
 import LabeledInput from "./LabeledInput.vue";
 import DialogComponentWrapper from "./DialogComponentWrapper.vue";
 import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
+import type { PossibleValue } from "../types/ChoicesUiSchema";
 
 const ComboBoxInput = defineComponent({
   name: "ComboBoxInput",
@@ -22,7 +23,7 @@ const ComboBoxInput = defineComponent({
     return useJsonFormsControlWithUpdate(props);
   },
   data(): {
-    options: string[] | undefined;
+    options: PossibleValue[] | undefined;
     initialSelectedIds: string[];
     loaded: boolean;
   } {

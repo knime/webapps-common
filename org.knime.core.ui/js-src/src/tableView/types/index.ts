@@ -40,8 +40,8 @@ export interface TableViewDisplayProps {
     indicateRemainingColumnsSkipped: boolean;
   };
   selection?: {
-    top: any[][];
-    bottom: any[][];
+    top: boolean[];
+    bottom: boolean[];
     totalSelected: boolean;
   };
   page: PageParams;

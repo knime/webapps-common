@@ -47,7 +47,7 @@ describe("DescriptionPopover.vue", () => {
   }: {
     props: DialogPopoverProps;
     popoverElement?: string;
-  }) => {
+  }): VueWrapper<any> => {
     return mount(DialogPopover as any, {
       props,
       slots: {

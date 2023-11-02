@@ -2,14 +2,12 @@ import getPossibleValuesFromUiSchema from "./getPossibleValuesFromUiSchema";
 export { getPossibleValuesFromUiSchema };
 import type { FlowSettings } from "../api/types";
 import type Control from "../types/Control";
+import type { JsonSchema4, JsonSchema7 } from "@jsonforms/core";
 
 export const optionsMapper = ({
   const: id,
   title: text,
-}: {
-  const: string;
-  title: string;
-}) => ({ id, text });
+}: JsonSchema4 | JsonSchema7) => ({ id: id as string, text: text! });
 
 const isObject = (item: any) =>
   item && typeof item === "object" && !Array.isArray(item);
