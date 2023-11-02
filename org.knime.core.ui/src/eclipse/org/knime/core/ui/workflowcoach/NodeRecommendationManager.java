@@ -159,7 +159,8 @@ public final class NodeRecommendationManager {
     }
 
     /**
-     * Initialize the node recommendation manager by setting the predicates necessary to load node recommendations
+     * Initializes the node recommendation manager. I.e. loads the recommendations (if that haven't been loaded, yet)
+     * using the 'getNodeType' callback to check for node-presence and determine the node type.
      *
      * @param getNodeType gets the node type for the given node-factory-id; will return {@code null} if there is no node
      *            for the id
@@ -210,7 +211,7 @@ public final class NodeRecommendationManager {
      */
     public void loadRecommendations() throws IOException {
         if (m_nodeTypeSupplier == null) {
-            LOGGER.debug("Cannot load recommendations yet. No node name/type supplier available.");
+            LOGGER.debug("Cannot load recommendations yet. No node type supplier available.");
             return;
         }
 
