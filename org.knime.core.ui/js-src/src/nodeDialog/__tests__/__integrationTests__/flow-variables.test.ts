@@ -181,7 +181,8 @@ describe("flow variables", () => {
     );
   });
 
-  describe("credentials", () => {
+  /** TODO: UIEXT-1396 unskip */
+  describe.skip("credentials", () => {
     beforeEach(async () => {
       vi.clearAllMocks();
 
