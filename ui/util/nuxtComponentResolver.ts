@@ -11,7 +11,7 @@ export const resolveClientOnlyComponent = () => {
   const app = getAppInstance();
 
   // only works when ClientOnly is registered globally, which it's not by default
-  const clientOnlyComponent = app.component("ClientOnly");
+  const clientOnlyComponent = app?.component("ClientOnly");
   if (clientOnlyComponent) {
     return clientOnlyComponent;
   }
@@ -19,7 +19,7 @@ export const resolveClientOnlyComponent = () => {
   // fallback component when ClientOnly not available
   const fallbackComponent = defineComponent({
     render() {
-      return useSlots().default();
+      return useSlots().default?.();
     },
   });
 
@@ -30,12 +30,12 @@ export const resolveNuxtLinkComponent = () => {
   const app = getAppInstance();
 
   // only works when NuxtLink is registered globally, which it's not by default
-  const nuxtLinkComponent = app.component("NuxtLink");
+  const nuxtLinkComponent = app?.component("NuxtLink");
   if (nuxtLinkComponent) {
     return nuxtLinkComponent;
   }
 
-  const routerLinkComponent = app.component("RouterLink");
+  const routerLinkComponent = app?.component("RouterLink");
   if (routerLinkComponent) {
     return routerLinkComponent;
   }
@@ -50,7 +50,7 @@ export const resolveNuxtLinkComponent = () => {
     },
 
     render() {
-      return h("a", { href: this.to }, [useSlots().default()]);
+      return h("a", { href: this.to }, [useSlots().default?.()]);
     },
   });
 
