@@ -1,9 +1,13 @@
 {
   "extends": "./tsconfig.app.json",
-  "exclude": [],
+  "exclude": ["webapps-common/**/__tests__/*"],
   "compilerOptions": {
     "composite": true,
     "lib": [],
-    "types": ["node", "jsdom"]
+    "types": ["node", "jsdom"],
+    "jsx": "preserve",
+    "allowJs": true,
+    "noEmit": true,
+    "verbatimModuleSyntax": false
   }
 }

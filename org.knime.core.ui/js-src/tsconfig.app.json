@@ -1,7 +1,7 @@
 {
-  "extends": "@vue/tsconfig/tsconfig.web.json",
-  "include": ["env.d.ts", "**/*", "**/*.vue"],
-  "exclude": ["src/**/__tests__/*"],
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
+  "include": ["env.d.ts", "src/**/*", "webapps-common/**/*.ts"],
+  "exclude": ["src/**/__tests__/*", "webapps-common/**/__tests__/*"],
   "compilerOptions": {
     "composite": true,
     "baseUrl": ".",
@@ -10,6 +10,8 @@
       "@@/*": ["./*"]
     },
     "allowJs": true,
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "noEmit": true,
+    "verbatimModuleSyntax": false
   }
 }
