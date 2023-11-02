@@ -59,8 +59,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 /**
  * A settings converter as used by the {@link FlowVariableDataServiceImpl}
  *
- * @noimplement
- * @noreference
+ * @noimplement because it leaks implementation details (jackson)
+ * @noreference because it leaks implementation details (jackson)
  *
  * @author Paul Bärnreuther
  */

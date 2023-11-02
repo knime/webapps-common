@@ -65,6 +65,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 /**
  * The converter used in the {@link FlowVariableDataServiceImpl} of the {@link DefaultNodeDialog}.
  *
+ * @noreference because it leaks implementation details (jackson)
+ *
  * @author Paul Bärnreuther
  */
 public final class DefaultDialogDataConverterImpl implements DefaultDialogDataConverter {

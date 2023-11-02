@@ -81,6 +81,8 @@ import com.fasterxml.jackson.databind.JsonNode;
  * A data service used in the {@link DefaultNodeDialog} or any other {@link NodeDialog} using the same page and having
  * flow variables.
  *
+ * @noreference because it indirectly leaks implementation details (jackson)
+ *
  * @author Paul Bärnreuther
  */
 public final class FlowVariableDataServiceImpl implements FlowVariableDataService {
