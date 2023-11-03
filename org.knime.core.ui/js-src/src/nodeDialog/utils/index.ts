@@ -2,6 +2,7 @@ import getPossibleValuesFromUiSchema from "./getPossibleValuesFromUiSchema";
 export { getPossibleValuesFromUiSchema };
 import type { FlowSettings } from "../api/types";
 import type Control from "../types/Control";
+import type { PartialDeep } from "type-fest";
 import type { JsonSchema4, JsonSchema7 } from "@jsonforms/core";
 
 export const optionsMapper = ({
@@ -14,7 +15,7 @@ const isObject = (item: any) =>
 
 // Merge two objects deeply while overwriting only keys of obj1 if necessary. This can be used to alter the data
 // in the dialog settings in a more simple way for complex data structures.
-export const mergeDeep = (obj1: any, obj2: any) => {
+const mergeDeepUntyped = (obj1: any, obj2: any) => {
   const output = { ...obj1 };
   if (isObject(obj2)) {
     Object.keys(obj2).forEach((key) => {
@@ -22,7 +23,7 @@ export const mergeDeep = (obj1: any, obj2: any) => {
         if (isObject(obj1) && !(key in obj1)) {
           Object.assign(output, { [key]: obj2[key] });
         } else {
-          output[key] = mergeDeep(obj1[key], obj2[key]);
+          output[key] = mergeDeepUntyped(obj1[key], obj2[key]);
         }
       } else {
         Object.assign(output, { [key]: obj2[key] });
@@ -30,6 +31,13 @@ export const mergeDeep = (obj1: any, obj2: any) => {
     });
   }
   return output;
+};
+
+export const mergeDeep = <T extends object>(
+  obj1: T,
+  obj2: PartialDeep<T>,
+): T => {
+  return mergeDeepUntyped(obj1, obj2);
 };
 
 export const isModelSettingAndHasNodeView = (control: Control) =>

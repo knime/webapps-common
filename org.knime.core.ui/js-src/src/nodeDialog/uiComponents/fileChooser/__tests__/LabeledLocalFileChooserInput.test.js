@@ -11,15 +11,15 @@ import {
   mountJsonFormsComponent,
   initializesJsonFormsControl,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
-import LocalFileChooserInput from "../LocalFileChooserInput.vue";
+import LabeledLocalFileChooserInput from "../LabeledLocalFileChooserInput.vue";
 import LabeledInput from "../../LabeledInput.vue";
-import LocalFileChooser from "../LocalFileChooser.vue";
+import LocalFileChooserInput from "../LocalFileChooserInput.vue";
 
-describe("LocalFileChooserInput.vue", () => {
+describe("LabeledLocalFileChooserInput.vue", () => {
   let defaultProps, wrapper, onChangeSpy, component;
 
   beforeAll(() => {
-    onChangeSpy = vi.spyOn(LocalFileChooserInput.methods, "onChange");
+    onChangeSpy = vi.spyOn(LabeledLocalFileChooserInput.methods, "onChange");
   });
 
   beforeEach(async () => {
@@ -52,7 +52,7 @@ describe("LocalFileChooserInput.vue", () => {
       },
     };
 
-    component = await mountJsonFormsComponent(LocalFileChooserInput, {
+    component = await mountJsonFormsComponent(LabeledLocalFileChooserInput, {
       props: defaultProps,
     });
     wrapper = component.wrapper;
@@ -63,14 +63,16 @@ describe("LocalFileChooserInput.vue", () => {
   });
 
   it("renders", () => {
-    expect(wrapper.getComponent(LocalFileChooserInput).exists()).toBe(true);
+    expect(wrapper.getComponent(LabeledLocalFileChooserInput).exists()).toBe(
+      true,
+    );
     expect(wrapper.findComponent(LabeledInput).exists()).toBe(true);
-    expect(wrapper.findComponent(LocalFileChooser).exists()).toBe(true);
+    expect(wrapper.findComponent(LocalFileChooserInput).exists()).toBe(true);
   });
 
   it("sets labelForId", () => {
     const labeldInput = wrapper.findComponent(LabeledInput);
-    expect(wrapper.getComponent(LocalFileChooser).props().id).toBe(
+    expect(wrapper.getComponent(LocalFileChooserInput).props().id).toBe(
       labeldInput.vm.labelForId,
     );
     expect(labeldInput.vm.labeledElement).toBeDefined();
@@ -84,7 +86,7 @@ describe("LocalFileChooserInput.vue", () => {
   it("calls onChange when text input is changed", () => {
     const dirtySettingsMock = vi.fn();
     const { wrapper, updateData } = mountJsonFormsComponent(
-      LocalFileChooserInput,
+      LabeledLocalFileChooserInput,
       {
         props: defaultProps,
         modules: {
@@ -97,7 +99,7 @@ describe("LocalFileChooserInput.vue", () => {
     );
     const changedTextInput = "Shaken not stirred";
     wrapper
-      .findComponent(LocalFileChooser)
+      .findComponent(LocalFileChooserInput)
       .vm.$emit("update:modelValue", changedTextInput);
     expect(onChangeSpy).toHaveBeenCalledWith(changedTextInput);
     expect(updateData).toHaveBeenCalledWith(
@@ -111,7 +113,7 @@ describe("LocalFileChooserInput.vue", () => {
   it("indicates model settings change when model setting is changed", () => {
     const dirtySettingsMock = vi.fn();
     const { wrapper, updateData } = mountJsonFormsComponent(
-      LocalFileChooserInput,
+      LabeledLocalFileChooserInput,
       {
         props: {
           ...defaultProps,
@@ -133,7 +135,7 @@ describe("LocalFileChooserInput.vue", () => {
     );
     const changedTextInput = "Shaken not stirred";
     wrapper
-      .findComponent(LocalFileChooser)
+      .findComponent(LocalFileChooserInput)
       .vm.$emit("update:modelValue", changedTextInput);
     expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
     expect(updateData).toHaveBeenCalledWith(
@@ -144,7 +146,7 @@ describe("LocalFileChooserInput.vue", () => {
   });
 
   it("sets correct initial value", () => {
-    expect(wrapper.findComponent(LocalFileChooser).vm.modelValue).toBe(
+    expect(wrapper.findComponent(LocalFileChooserInput).vm.modelValue).toBe(
       defaultProps.control.data,
     );
   });
@@ -159,7 +161,7 @@ describe("LocalFileChooserInput.vue", () => {
       exposedFlowVariableName: "test",
       leaf: true,
     };
-    const { wrapper } = mountJsonFormsComponent(LocalFileChooserInput, {
+    const { wrapper } = mountJsonFormsComponent(LabeledLocalFileChooserInput, {
       props: localDefaultProps,
     });
     expect(wrapper.vm.disabled).toBeTruthy();
@@ -173,18 +175,22 @@ describe("LocalFileChooserInput.vue", () => {
 
   it("does not render if it is an advanced setting", () => {
     defaultProps.control.uischema.options.isAdvanced = true;
-    const { wrapper } = mountJsonFormsComponent(LocalFileChooserInput, {
+    const { wrapper } = mountJsonFormsComponent(LabeledLocalFileChooserInput, {
       props: defaultProps,
     });
-    expect(wrapper.getComponent(LocalFileChooserInput).isVisible()).toBe(false);
+    expect(wrapper.getComponent(LabeledLocalFileChooserInput).isVisible()).toBe(
+      false,
+    );
   });
 
   it("renders if it is an advanced setting and advanced settings are shown", () => {
     defaultProps.control.rootSchema.showAdvancedSettings = true;
     defaultProps.control.uischema.options.isAdvanced = true;
-    const { wrapper } = mountJsonFormsComponent(LocalFileChooserInput, {
+    const { wrapper } = mountJsonFormsComponent(LabeledLocalFileChooserInput, {
       props: defaultProps,
     });
-    expect(wrapper.getComponent(LocalFileChooserInput).isVisible()).toBe(true);
+    expect(wrapper.getComponent(LabeledLocalFileChooserInput).isVisible()).toBe(
+      true,
+    );
   });
 });

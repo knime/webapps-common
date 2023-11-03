@@ -214,6 +214,8 @@ public final class JsonFormsConsts {
 
             public static final String LOCAL_FILE_CHOOSER = "localFileChooser";
 
+            public static final String FILE_CHOOSER = "fileChooser";
+
             public static final String CREDENTIALS = "credentials";
         }
 

@@ -59,6 +59,9 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FileChooser;
+import org.knime.filehandling.core.connections.FSCategory;
+import org.knime.filehandling.core.connections.FSLocation;
 
 /**
  * Contains unit tests for the {@link DefaultFieldNodeSettingsPersistorFactory}.
@@ -123,7 +126,6 @@ class DefaultFieldNodeSettingsPersistorFactoryTest {
         testSaveLoad(TestEnum.class, TestEnum.BAR);
         testSaveLoad(TestEnum.class, null);
     }
-
 
     @Test
     void testInvalidEnumConstant() throws InvalidSettingsException {
@@ -198,6 +200,12 @@ class DefaultFieldNodeSettingsPersistorFactoryTest {
         testSaveLoad(Credentials.class, new Credentials("foo", "bar"));
         testSaveLoad(Credentials.class, new Credentials("foo", "bar", "baz"));
         assertEquals(new Credentials(), saveLoad(Credentials.class, null));
+    }
+
+    @Test
+    void testFileChooser() throws InvalidSettingsException {
+        testSaveLoad(FileChooser.class, new FileChooser());
+        testSaveLoad(FileChooser.class, new FileChooser(new FSLocation(FSCategory.CUSTOM_URL, "1000", "path")));
     }
 
     private static <T> void testSaveLoadNullable(final Class<T> type, final T value) throws InvalidSettingsException {

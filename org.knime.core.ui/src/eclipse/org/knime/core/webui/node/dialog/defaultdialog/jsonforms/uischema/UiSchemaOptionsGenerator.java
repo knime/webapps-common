@@ -203,6 +203,9 @@ final class UiSchemaOptionsGenerator {
                 case CREDENTIALS:
                     options.put(TAG_FORMAT, Format.CREDENTIALS);
                     break;
+                case FILE_CHOOSER:
+                    options.put(TAG_FORMAT, Format.FILE_CHOOSER);
+                    break;
             }
         }
 

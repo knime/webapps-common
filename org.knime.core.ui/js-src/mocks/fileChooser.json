@@ -5,7 +5,16 @@
       "view": {
         "localFile": "/home/InitialValue.txt",
         "disabled": "/home/InitialValue.txt",
-        "withPlaceholder": ""
+        "withPlaceholder": "",
+        "disabledPath": {
+          "fsCategory": "LOCAL",
+          "path": ""
+        },
+        "pathCustom": {
+          "fsCategory": "CUSTOM_URL",
+          "path": "",
+          "timeout": 1000
+        }
       }
     },
     "schema": {
@@ -16,7 +25,7 @@
           "properties": {
             "localFile": {
               "type": "string",
-              "title": "Local file chooser"
+              "title": "Default"
             },
             "disabled": {
               "type": "string",
@@ -25,6 +34,17 @@
             "withPlaceholder": {
               "type": "string",
               "title": "With Placeholder"
+            },
+            "empty": {
+              "title": "Default"
+            },
+            "disabledPath": {
+              "type": "string",
+              "title": "Disabled"
+            },
+            "pathCustom": {
+              "type": "string",
+              "title": "Custom URL"
             }
           }
         }
@@ -34,31 +54,67 @@
       "type": "VerticalLayout",
       "elements": [
         {
-          "type": "Control",
-          "scope": "#/properties/view/properties/localFile",
-          "options": {
-            "format": "localFileChooser"
-          }
+          "type": "Section",
+          "label": "Local File Chooser",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/localFile",
+              "options": {
+                "format": "localFileChooser"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/disabled",
+              "options": {
+                "format": "localFileChooser"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/withPlaceholder",
+              "options": {
+                "format": "localFileChooser",
+                "placeholder": "I am a placeholder"
+              }
+            }
+          ]
         },
         {
-          "type": "Control",
-          "scope": "#/properties/view/properties/disabled",
-          "options": {
-            "format": "localFileChooser"
-          }
-        },
-        {
-          "type": "Control",
-          "scope": "#/properties/view/properties/withPlaceholder",
-          "options": {
-            "format": "localFileChooser",
-            "placeholder": "I am a placeholder"
-          }
+          "type": "Section",
+          "label": "File Chooser",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/empty",
+              "options": {
+                "format": "fileChooser"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/disabledPath",
+              "options": {
+                "format": "fileChooser"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/pathCustom",
+              "options": {
+                "format": "fileChooser"
+              }
+            }
+          ]
         }
       ]
     },
     "flowVariableSettings": {
       "view.disabled": {
+        "controllingFlowVariableName": "initiallySetFlowVariable"
+      },
+      "view.disabledPath": {
         "controllingFlowVariableName": "initiallySetFlowVariable"
       }
     }

@@ -1,14 +1,11 @@
-import { rankWith, isStringControl, and } from "@jsonforms/core";
-import FileChooserInput from "../uiComponents/fileChooser/LocalFileChooserInput.vue";
+import { rankWith } from "@jsonforms/core";
+import LabeledFileChooserInput from "../uiComponents/fileChooser/LabeledFileChooserInput.vue";
 import { priorityRanks, inputFormats } from "../constants";
 
-export const fileChooserTester = and(
-  isStringControl,
-  (uischema, _schema) =>
-    uischema.options?.format === inputFormats.localFileChooser,
-);
+export const fileChooserTester = (uischema, _schema) =>
+  uischema.options?.format === inputFormats.fileChooser;
 
 export const fileChooserRenderer = {
-  renderer: FileChooserInput,
+  renderer: LabeledFileChooserInput,
   tester: rankWith(priorityRanks.default, fileChooserTester),
 };

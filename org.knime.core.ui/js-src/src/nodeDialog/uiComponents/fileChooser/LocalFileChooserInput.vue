@@ -1,75 +1,65 @@
-<script>
-import { defineComponent } from "vue";
-import { rendererProps } from "@jsonforms/vue";
-import { isModelSettingAndHasNodeView, getFlowVariablesMap } from "../../utils";
-import LocalFileChooser from "./LocalFileChooser.vue";
-import LabeledInput from "../LabeledInput.vue";
-import DialogComponentWrapper from "../DialogComponentWrapper.vue";
-import { useJsonFormsControlWithUpdate } from "../../composables/useJsonFormsControlWithUpdate";
+<script setup lang="ts">
+import FileChooser from "./FileChooser.vue";
+import { ref } from "vue";
+import InputField from "webapps-common/ui/components/forms/InputField.vue";
+import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
+import FolderLenseIcon from "webapps-common/ui/assets/img/icons/folder-lense.svg";
+import type LocalFileChooserProps from "./types/LocalFileChooserProps";
 
-const LocalFileChooserInput = defineComponent({
-  name: "LocalFileChooserInput",
-  components: {
-    LocalFileChooser,
-    LabeledInput,
-    DialogComponentWrapper,
-  },
-  props: {
-    ...rendererProps(),
-  },
-  setup(props) {
-    return useJsonFormsControlWithUpdate(props);
-  },
-  computed: {
-    placeholder() {
-      return this.control.uischema.options?.placeholder ?? "";
-    },
-    isModelSettingAndHasNodeView() {
-      return isModelSettingAndHasNodeView(this.control);
-    },
-    flowSettings() {
-      return getFlowVariablesMap(this.control);
-    },
-    disabled() {
-      return (
-        !this.control.enabled ||
-        Boolean(this.flowSettings?.controllingFlowVariableName)
-      );
-    },
-  },
-  methods: {
-    onChange(event) {
-      this.handleChange(this.control.path, event);
-      if (this.isModelSettingAndHasNodeView) {
-        this.$store.dispatch("pagebuilder/dialog/dirtySettings", true);
-      }
-    },
-  },
-});
-export default LocalFileChooserInput;
+defineProps<LocalFileChooserProps>();
+const emit = defineEmits(["update:modelValue"]);
+
+const active = ref(false);
+const deactivateFileChooser = () => {
+  active.value = false;
+};
+const activateFileChooser = () => {
+  active.value = true;
+};
+
+const onChange = (file: string) => {
+  emit("update:modelValue", file);
+};
+
+const chooseFile = (chosen: string) => {
+  onChange(chosen);
+  deactivateFileChooser();
+};
 </script>
 
 <template>
-  <DialogComponentWrapper :control="control" style="min-width: 0">
-    <LabeledInput
-      #default="{ labelForId }"
-      :config-keys="control?.schema?.configKeys"
-      :flow-variables-map="control.rootSchema.flowVariablesMap"
-      :path="control.path"
-      :text="control.label"
-      :description="control.description"
-      :errors="[control.errors]"
-      :show-reexecution-icon="isModelSettingAndHasNodeView"
-      :flow-settings="flowSettings"
-      @controlling-flow-variable-set="onChange"
-    >
-      <LocalFileChooser
-        :id="labelForId"
+  <InputField
+    :id="id"
+    :disabled="disabled"
+    :model-value="modelValue"
+    :placeholder="placeholder"
+    @update:model-value="onChange"
+  >
+    <template #iconRight>
+      <FunctionButton
         :disabled="disabled"
-        :placeholder="placeholder"
-        :model-value="control.data"
-        @update:model-value="onChange"
-      />
-    </LabeledInput>
-  </DialogComponentWrapper>
+        title="Browse local file system"
+        @click="activateFileChooser"
+      >
+        <FolderLenseIcon />
+      </FunctionButton>
+    </template>
+  </InputField>
+  <div v-if="active" class="modal-overlay">
+    <FileChooser
+      :initial-file-path="modelValue"
+      @choose-file="chooseFile"
+      @cancel="deactivateFileChooser"
+    />
+  </div>
 </template>
+
+<style scoped lang="postcss">
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  padding: 20px;
+  z-index: 100;
+  background-color: var(--knime-white);
+}
+</style>

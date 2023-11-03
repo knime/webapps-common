@@ -1,12 +1,12 @@
 import { shallowMount, VueWrapper } from "@vue/test-utils";
 import { beforeEach, describe, expect, it } from "vitest";
-import LocalFileChooser from "../LocalFileChooser.vue";
+import LocalFileChooserInput from "../LocalFileChooserInput.vue";
 import FileChooser from "../FileChooser.vue";
 import InputField from "webapps-common/ui/components/forms/InputField.vue";
 import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
 import type LocalFileChooserProps from "../types/LocalFileChooserProps";
 
-describe("LocalFileChooser.vue", () => {
+describe("LocalFileChooserInput.vue", () => {
   let props: LocalFileChooserProps;
 
   beforeEach(() => {
@@ -19,7 +19,7 @@ describe("LocalFileChooser.vue", () => {
   });
 
   const shallowMountLocalFileChooser = () => {
-    return shallowMount(LocalFileChooser, {
+    return shallowMount(LocalFileChooserInput, {
       props,
       global: { stubs: { InputField } },
     });
