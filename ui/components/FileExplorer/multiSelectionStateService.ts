@@ -283,7 +283,7 @@ const sliceOnExceptions = (
         }
 
         return acc.concat(range);
-      }, []);
+      }, [] as SelectionRange[]);
 
       return newRanges;
     }
@@ -319,7 +319,7 @@ const removeSubRanges = (
     });
 
     return isIncluded ? acc : acc.concat(range);
-  }, []);
+  }, [] as SelectionRange[]);
 
 /**
  * Removes any ranges that could be overlapping inside the input joining them as required.

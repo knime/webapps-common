@@ -124,7 +124,7 @@ describe("FileExplorer.vue", () => {
       contextMenu: null,
     },
   }: DoMountOptions = {}) => {
-    const defaultProps = {
+    const defaultProps: Props = {
       items: MOCK_DATA,
       isRootFolder: true,
       mode: "normal",

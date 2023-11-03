@@ -110,20 +110,20 @@ const toggleRemoteRenaming = () => {
 
 onMounted(() => {
   shouldRenderCustomPreviewRect.value =
-    customDragPreviewTarget.value.getBoundingClientRect();
+    customDragPreviewTarget.value!.getBoundingClientRect();
 });
 
 const onDrag = ({ event }: { event: DragEvent; item: FileExplorerItem }) => {
   const { clientX, clientY } = event;
   const isInside =
     clientX + document.documentElement.scrollLeft >=
-      shouldRenderCustomPreviewRect.value.left &&
+      shouldRenderCustomPreviewRect.value!.left &&
     clientX + document.documentElement.scrollLeft <
-      shouldRenderCustomPreviewRect.value.right &&
+      shouldRenderCustomPreviewRect.value!.right &&
     clientY + document.documentElement.scrollTop >=
-      shouldRenderCustomPreviewRect.value.top &&
+      shouldRenderCustomPreviewRect.value!.top &&
     clientY + document.documentElement.scrollTop <
-      shouldRenderCustomPreviewRect.value.bottom;
+      shouldRenderCustomPreviewRect.value!.bottom;
 
   shouldRenderCustomPreview.value = isInside;
 };
@@ -149,9 +149,9 @@ const customContextMenuComponent = ({
   createDeleteOption: FileExplorerContextMenu.CreateDefaultMenuOption;
 }) => {
   return {
-    render() {
-      // @ts-ignore
-      const options = this.items.map((item) => {
+    render(): any {
+      // @ts-expect-error
+      const options = this.items.map((item: any) => {
         const onClick = () => {
           if (item.id === "custom-option") {
             window.alert("Rejoice! you clicked a custom context menu option");
@@ -181,10 +181,10 @@ const customContextMenuComponent = ({
   };
 };
 
-const onRename = (item) => {
+const onRename = (item: object) => {
   window.alert(`You renamed: >> ${JSON.stringify(item)}`);
 };
-const onDelete = (item) => {
+const onDelete = (item: object) => {
   window.alert(`You deleted: >> ${JSON.stringify(item)}`);
 };
 </script>

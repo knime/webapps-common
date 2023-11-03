@@ -1,4 +1,5 @@
 import { gsap } from "gsap";
+// @ts-ignore
 import * as knimeColors from "../../colors/knimeColors.mjs";
 
 const COLORS = {
