@@ -83,5 +83,9 @@ export default {
   & p:empty::after {
     content: "\00A0";
   }
+
+  & p.small-text {
+    font-size: 7px;
+  }
 }
 </style>
