@@ -48,28 +48,34 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.dataservice.filechooser;
 
+import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.knime.core.webui.node.dialog.defaultdialog.dataservice.filechooser.FileSystemConnector.FileChooserBackend;
-import org.knime.filehandling.core.connections.FSFileSystem;
+import org.knime.filehandling.core.connections.DefaultFSConnectionFactory;
+import org.knime.filehandling.core.connections.FSConnection;
 
 /**
  * An implementation of a file chooser backend for simple file systems.
  *
  * @author Paul Bärnreuther
  */
-final class DefaultFileChooserBackend implements FileChooserBackend {
-    private final FSFileSystem<?> m_fsFileSystem;
+final class LocalFileChooserBackend implements FileChooserBackend {
+    private final FSConnection m_fsConnection;
 
-    DefaultFileChooserBackend(final FSFileSystem<?> fsFileSystem) {
-        m_fsFileSystem = fsFileSystem;
+    LocalFileChooserBackend() {
+        m_fsConnection = createLocalConnection();
+    }
+
+    private static FSConnection createLocalConnection() {
+        return DefaultFSConnectionFactory.createLocalFSConnection();
     }
 
     @Override
     public FileSystem getFileSystem() {
-        return m_fsFileSystem;
+        return m_fsConnection.getFileSystem();
     }
 
     /**
@@ -82,6 +88,11 @@ final class DefaultFileChooserBackend implements FileChooserBackend {
     public Item pathToObject(final Path path) {
         return new Item(Files.isDirectory(path),
             path.getFileName() == null ? path.toString() : path.getFileName().toString());
+    }
+
+    @Override
+    public void close() throws IOException {
+        m_fsConnection.close();
     }
 
 }

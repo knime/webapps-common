@@ -52,30 +52,23 @@ import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
-
-import org.knime.filehandling.core.connections.DefaultFSConnectionFactory;
-import org.knime.filehandling.core.connections.FSConnection;
-import org.knime.filehandling.core.connections.FSFileSystem;
 
 /**
  * An instance of this class manages the open file connections of the {@link FileChooserDataService} and provides the
  * respective functionality depending on a String id per file system.
  *
  */
-@SuppressWarnings("resource")
 final class FileSystemConnector {
 
     final Map<String, FileChooserBackend> m_fileChooserBackends = new HashMap<String, FileChooserBackend>();
-
-    final Set<FSConnection> m_connections = new HashSet<>();
 
     interface FileChooserBackend {
         FileSystem getFileSystem();
 
         Object pathToObject(Path path);
+
+        void close() throws IOException;
     }
 
     FileChooserBackend getFileChooserBackend(final String fileSystemId) {
@@ -84,29 +77,22 @@ final class FileSystemConnector {
 
     private FileChooserBackend createFileChooserBackend(final String fileSystemId) {
         if (fileSystemId.equals("local")) {
-            return new DefaultFileChooserBackend(createLocalFileSystem());
+            return new LocalFileChooserBackend();
         }
         throw new IllegalArgumentException(String.format("%s is not a valid file system id", fileSystemId));
-    }
-
-    private FSFileSystem<?> createLocalFileSystem() {
-        final var connection = DefaultFSConnectionFactory.createLocalFSConnection();
-        m_connections.add(connection);
-        return connection.getFileSystem();
     }
 
     /**
      * Closes all connections and clears the state.
      */
     public void clear() {
-        for (final var conn : m_connections) {
+        for (final var backend : m_fileChooserBackends.values()) {
             try {
-                conn.close();
+                backend.close();
             } catch (IOException ex) {
                 throw new IllegalStateException(ex);
             }
         }
-        m_connections.clear();
         m_fileChooserBackends.clear();
     }
 

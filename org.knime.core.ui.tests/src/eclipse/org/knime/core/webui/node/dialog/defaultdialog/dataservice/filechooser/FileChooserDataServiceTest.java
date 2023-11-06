@@ -65,7 +65,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.filechooser.DefaultFileChooserBackend.Item;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.filechooser.LocalFileChooserBackend.Item;
 import org.mockito.ArgumentMatchers;
 import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
@@ -87,7 +87,7 @@ public class FileChooserDataServiceTest {
      */
     private Path m_subFolder;
 
-    private MockedConstruction<DefaultFileChooserBackend> fileChooserBackendMock;
+    private MockedConstruction<LocalFileChooserBackend> fileChooserBackendMock;
 
     private FileSystem m_fileSystem;
 
@@ -96,7 +96,7 @@ public class FileChooserDataServiceTest {
         m_subFolder = Files.createTempDirectory(m_tempRootFolder, "directoryPath");
         m_fileSystem = mock(FileSystem.class);
         when(m_fileSystem.getRootDirectories()).thenReturn(List.of(m_tempRootFolder));
-        fileChooserBackendMock = Mockito.mockConstruction(DefaultFileChooserBackend.class, (mock, context) -> {
+        fileChooserBackendMock = Mockito.mockConstruction(LocalFileChooserBackend.class, (mock, context) -> {
             when(mock.getFileSystem()).thenReturn(m_fileSystem);
             when(mock.pathToObject(ArgumentMatchers.any())).thenCallRealMethod();
         });
@@ -183,6 +183,7 @@ public class FileChooserDataServiceTest {
         final var dataService = new FileChooserDataService();
         dataService.listItems("local", null, null);
         dataService.clear();
+        verify(fileChooserBackendMock.constructed().get(0)).close();
         dataService.listItems("local", null, null);
         assertThat(fileChooserBackendMock.constructed()).hasSize(2);
     }
