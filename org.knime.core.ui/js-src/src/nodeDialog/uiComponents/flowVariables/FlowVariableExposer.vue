@@ -27,7 +27,7 @@ const ariaLabel = computed(
   <InputField
     :ariaLabel="ariaLabel"
     :model-value="exposedVariableName"
-    placeholder="“No flow variable set"
+    placeholder="No flow variable set"
     @update:model-value="onUpdate"
   />
 </template>
