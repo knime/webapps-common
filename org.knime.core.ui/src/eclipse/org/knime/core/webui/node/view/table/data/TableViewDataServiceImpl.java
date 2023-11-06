@@ -57,6 +57,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -66,11 +67,9 @@ import java.util.stream.Stream;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataRow;
-import org.knime.core.data.DataTable;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.RowKey;
 import org.knime.core.data.StringValue;
-import org.knime.core.data.container.CloseableRowIterator;
 import org.knime.core.data.container.filter.TableFilter;
 import org.knime.core.data.sort.BufferedDataTableSorter;
 import org.knime.core.data.sort.RowComparator;
@@ -83,7 +82,8 @@ import org.knime.core.webui.node.view.table.data.render.DataValueImageRenderer.I
 import org.knime.core.webui.node.view.table.data.render.DataValueImageRendererRegistry;
 import org.knime.core.webui.node.view.table.data.render.DataValueRendererFactory;
 import org.knime.core.webui.node.view.table.data.render.internal.RowRenderer;
-import org.knime.core.webui.node.view.table.data.render.internal.RowRendererWithIndices;
+import org.knime.core.webui.node.view.table.data.render.internal.RowRendererWithIndicesCounter;
+import org.knime.core.webui.node.view.table.data.render.internal.RowRendererWithIndicesFromColumn;
 import org.knime.core.webui.node.view.table.data.render.internal.RowRendererWithRowKeys;
 import org.knime.core.webui.node.view.table.data.render.internal.SimpleRowRenderer;
 import org.knime.core.webui.node.view.table.data.render.internal.TableDataToStringUtil;
@@ -97,7 +97,9 @@ import org.knime.core.webui.node.view.table.data.render.internal.TableSectionRen
  */
 public class TableViewDataServiceImpl implements TableViewDataService {
 
-    private final TableWithIndicesSupplier m_tableSupplier;
+    private final Supplier<BufferedDataTable> m_tableSupplier;
+
+    private final TableWithIndicesSupplier m_tableWithIndicesSupplier;
 
     private final TableCache m_sortedTableCache = new TableCache();
 
@@ -125,7 +127,8 @@ public class TableViewDataServiceImpl implements TableViewDataService {
     public TableViewDataServiceImpl(final Supplier<BufferedDataTable> tableSupplier, final String tableId,
         final DataValueRendererFactory rendererFactory, final DataValueImageRendererRegistry rendererRegistry) {
         Objects.requireNonNull(tableSupplier, () -> "Table supplier must not be null.");
-        m_tableSupplier = new TableWithIndicesSupplier(tableSupplier);
+        m_tableSupplier = tableSupplier;
+        m_tableWithIndicesSupplier = new TableWithIndicesSupplier(tableSupplier);
         m_tableId = tableId;
         m_rendererFactory = rendererFactory;
         m_rendererRegistry = rendererRegistry;
@@ -134,6 +137,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
             /** because it's not really used (just to determine whether 'this' is phantom-reachable) */
             m_sortedTableCache.clear();
             m_filteredAndSortedTableCache.clear();
+            m_tableWithIndicesSupplier.clear();
         });
     }
 
@@ -152,7 +156,8 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         final DataValueRendererFactory rendererFactory, final DataValueImageRendererRegistry rendererRegistry) {
         m_selectionSupplier = selectionSupplier;
         Objects.requireNonNull(tableSupplier, () -> "Table supplier must not be null.");
-        m_tableSupplier = new TableWithIndicesSupplier(tableSupplier);
+        m_tableSupplier = tableSupplier;
+        m_tableWithIndicesSupplier = new TableWithIndicesSupplier(tableSupplier);
         m_tableId = tableId;
         m_rendererFactory = rendererFactory;
         m_rendererRegistry = rendererRegistry;
@@ -160,6 +165,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
             /** because it's not really used (just to determine whether 'this' is phantom-reachable) */
             m_sortedTableCache.clear();
             m_filteredAndSortedTableCache.clear();
+            m_tableWithIndicesSupplier.clear();
         });
     }
 
@@ -177,13 +183,13 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         final String[][] columnFilterValue, final boolean filterRowKeys, final String[] rendererIdsParam,
         final boolean updateDisplayedColumns, final boolean updateTotalSelected, final boolean forceClearImageDataCache,
         final boolean trimColumns, final boolean showOnlySelectedRows) {
-        var bufferedDataTable = getInputTable();
+        var bufferedDataTable = m_tableSupplier.get();
         if (bufferedDataTable == null) {
             return createEmptyTable();
         }
-        final var spec = bufferedDataTable.getSpec();
 
-        final var allDisplayedColumns = updateDisplayedColumns ? filterInvalids(columns, spec) : columns;
+        final var allDisplayedColumns =
+            updateDisplayedColumns ? filterInvalids(columns, bufferedDataTable.getSpec()) : columns;
         final var numDisplayedColumns = allDisplayedColumns.length;
         final String[] displayedColumns =
             trimColumns ? getTrimmedColumns(numDisplayedColumns, allDisplayedColumns) : allDisplayedColumns;
@@ -194,18 +200,19 @@ public class TableViewDataServiceImpl implements TableViewDataService {
          */
         m_sortedTableCache.conditionallyUpdateCachedTable(() ->
 
-        sortTable(bufferedDataTable, sortColumn, sortAscending), sortColumn == null || bufferedDataTable.size() <= 1,
-            sortColumn, sortAscending);
-        final var sortedTable = getSortedTableFromCache();
+        sortTable(m_tableWithIndicesSupplier, sortColumn, sortAscending),
+            sortColumn == null || bufferedDataTable.size() <= 1, sortColumn, sortAscending);
+        final Optional<BufferedDataTable> cachedSortedTable = m_sortedTableCache.getCachedTable();
+        final Supplier<BufferedDataTable> sortedTableSupplier =
+            cachedSortedTable.isPresent() ? cachedSortedTable::get : m_tableWithIndicesSupplier;
         var currentSelection = getCurrentSelection();
         /** Keys are only interesting if showOnlySelected is true otherwise we don't want to reset the cache */
         final var currentSelectedKeys = showOnlySelectedRows ? currentSelection : Set.of();
         m_filteredAndSortedTableCache.conditionallyUpdateCachedTable(
-            () -> filterTable(sortedTable, columns, globalSearchTerm, columnFilterValue, filterRowKeys,
+            () -> filterTable(sortedTableSupplier, columns, globalSearchTerm, columnFilterValue, filterRowKeys,
                 showOnlySelectedRows),
             (globalSearchTerm == null && columnFilterValue == null) && !showOnlySelectedRows, globalSearchTerm,
             columnFilterValue, columns, sortColumn, sortAscending, showOnlySelectedRows, currentSelectedKeys);
-        final var filteredAndSortedTable = getFilteredAndSortedTableFromCache();
         if (m_rendererRegistry != null) {
             if (forceClearImageDataCache || m_sortedTableCache.wasUpdated()
                 || m_filteredAndSortedTableCache.wasUpdated()) {
@@ -237,14 +244,15 @@ public class TableViewDataServiceImpl implements TableViewDataService {
             }
         }
 
-        final var tableDataRendererUtil =
-            new TableRenderer(m_rendererFactory, spec, displayedColumns, rendererIds, m_rendererRegistry, m_tableId);
-
-        final var rows =
-            tableDataRendererUtil.renderTableContent(getFilteredAndSortedTableFromCache(), fromIndex, numRows);
+        final var cachedProcessedTable = getCachedProcessedTable();
+        final var toBeRenderedTable = cachedProcessedTable.orElseGet(m_tableSupplier);
+        final var tableDataRendererUtil = new TableRenderer(m_rendererFactory, toBeRenderedTable.getSpec(),
+            displayedColumns, rendererIds, m_rendererRegistry, m_tableId);
+        final var rows = tableDataRendererUtil.renderTableContent(toBeRenderedTable, fromIndex, numRows,
+            cachedProcessedTable.isEmpty());
         final var contentTypes = tableDataRendererUtil.getColumnContentTypes();
         final var firstRowImageDimensions = getFirstRowImageDimensions(rows, contentTypes, displayedColumns);
-
+        final var spec = toBeRenderedTable.getSpec();
         return new Table() {
 
             @Override
@@ -277,7 +285,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
 
             @Override
             public long getRowCount() {
-                return filteredAndSortedTable.size();
+                return toBeRenderedTable.size();
             }
 
             @Override
@@ -288,7 +296,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
             @Override
             public Long getTotalSelected() {
                 return m_filteredAndSortedTableCache.getCachedTable().isEmpty() ? currentSelection.size()
-                    : countSelectedRows(filteredAndSortedTable, currentSelection);
+                    : countSelectedRows(toBeRenderedTable, currentSelection);
             }
 
             @Override
@@ -299,16 +307,15 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         };
     }
 
-    private BufferedDataTable getInputTable() {
-        return m_tableSupplier.get();
-    }
-
-    private BufferedDataTable getSortedTableFromCache() {
-        return m_sortedTableCache.getCachedTable().orElseGet(this::getInputTable);
-    }
-
-    private BufferedDataTable getFilteredAndSortedTableFromCache() {
-        return m_filteredAndSortedTableCache.getCachedTable().orElseGet(this::getSortedTableFromCache);
+    /**
+     * @return the cached filtered and sorted table or an empty optional if not filtered or sorted
+     */
+    private Optional<BufferedDataTable> getCachedProcessedTable() {
+        final var filteredAndSortedTable = m_filteredAndSortedTableCache.getCachedTable();
+        if (filteredAndSortedTable.isPresent()) {
+            return filteredAndSortedTable;
+        }
+        return m_sortedTableCache.getCachedTable();
     }
 
     private static String[] getTrimmedColumns(final int numDisplayedColumns, final String[] allDisplayedColumns) {
@@ -337,7 +344,6 @@ public class TableViewDataServiceImpl implements TableViewDataService {
     public void clearCache() {
         m_sortedTableCache.clear();
         m_filteredAndSortedTableCache.clear();
-        m_tableSupplier.clear();
     }
 
     private static String[] filterInvalids(final String[] columns, final DataTableSpec spec) {
@@ -354,8 +360,9 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         return partition.get(true).stream().toArray(String[]::new);
     }
 
-    private static BufferedDataTable sortTable(final BufferedDataTable table, final String sortColumn,
+    private static BufferedDataTable sortTable(final Supplier<BufferedDataTable> tableSupplier, final String sortColumn,
         final boolean sortAscending) {
+        final var table = tableSupplier.get();
         final var dts = table.getSpec();
         final var sortColIndex = dts.findColumnIndex(sortColumn);
         final var rc = RowComparator.on(dts);
@@ -376,12 +383,14 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         }
     }
 
-    private BufferedDataTable filterTable(final DataTable table, final String[] columns, final String globalSearchTerm,
-        final String[][] columnFilterValue, final boolean filterRowKeys, final boolean showOnlySelectedRows) {
+    private BufferedDataTable filterTable(final Supplier<BufferedDataTable> tableSupplier, final String[] columns,
+        final String globalSearchTerm, final String[][] columnFilterValue, final boolean filterRowKeys,
+        final boolean showOnlySelectedRows) {
+        final var table = tableSupplier.get();
         final var spec = table.getDataTableSpec();
         var exec = DataServiceContext.get().getExecutionContext();
         var resultContainer = exec.createDataContainer(spec);
-        try (final var iterator = (CloseableRowIterator)table.iterator()) {
+        try (final var iterator = table.iterator()) {
             while (iterator.hasNext()) {
                 final var row = iterator.next();
                 if (filtersMatch(row, spec, globalSearchTerm, columnFilterValue, columns, filterRowKeys,
@@ -575,7 +584,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
 
     @Override
     public String[] getCurrentRowKeys() {
-        final var filteredAndSortedTable = getFilteredAndSortedTableFromCache();
+        final var filteredAndSortedTable = getCachedProcessedTable().orElseGet(m_tableSupplier);
         final var size = (int)filteredAndSortedTable.size();
         final var rowKeys = new String[size];
         final var filter = new TableFilter.Builder();
@@ -598,21 +607,28 @@ public class TableViewDataServiceImpl implements TableViewDataService {
     @Override
     public String getCopyContent(final boolean withIndices, final boolean withRowKeys, final String[] dataColumns,
         final int fromIndex, final int toIndex) throws IOException {
-        final var colIndices = getInputTable().getSpec().columnsToIndices(dataColumns);
-        final var rowRenderer = getCopyContentRowRenderer(withIndices, withRowKeys, colIndices);
+        final var cachedProcessedTable = getCachedProcessedTable();
+        final var toBeRenderedTable = cachedProcessedTable.orElseGet(m_tableSupplier);
+        final var colIndices = toBeRenderedTable.getSpec().columnsToIndices(dataColumns);
+        final var rowRenderer =
+            getCopyContentRowRenderer(withIndices, withRowKeys, colIndices, cachedProcessedTable.isEmpty());
         final var tableRenderer = new TableSectionRenderer<String>(rowRenderer, fromIndex, toIndex);
-        final var rows = tableRenderer.renderRows(getFilteredAndSortedTableFromCache());
+        final var rows = tableRenderer.renderRows(toBeRenderedTable);
         return TableDataToStringUtil.toCSV(rows);
     }
 
     private static RowRenderer<String> getCopyContentRowRenderer(final boolean withIndices, final boolean withRowKeys,
-        final int[] colIndices) {
+        final int[] colIndices, final boolean isRawInputTable) {
         RowRenderer<String> rowRenderer = new SimpleRowRenderer<>(colIndices, i -> DataCell::toString);
         if (withRowKeys) {
             rowRenderer = new RowRendererWithRowKeys<>(rowRenderer, RowKey::toString);
         }
         if (withIndices) {
-            rowRenderer = new RowRendererWithIndices<>(rowRenderer, DataCell::toString);
+            if (isRawInputTable) {
+                rowRenderer = new RowRendererWithIndicesCounter<>(rowRenderer, l -> Long.toString(l));
+            } else {
+                rowRenderer = new RowRendererWithIndicesFromColumn<>(rowRenderer, DataCell::toString);
+            }
         }
         return rowRenderer;
     }

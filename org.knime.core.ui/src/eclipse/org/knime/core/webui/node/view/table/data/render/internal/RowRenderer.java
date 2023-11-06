@@ -62,9 +62,10 @@ public interface RowRenderer<R> {
 
     /**
      * @param row
+     * @param rowIndex the index of the row in the current (possibly filtered or sorted) table
      * @return a list of the output type
      */
-    LinkedList<R> renderRow(final DataRow row);
+    LinkedList<R> renderRow(final DataRow row, long rowIndex);
 
     /**
      * @return the indices which have to be materialized in order to render the row.

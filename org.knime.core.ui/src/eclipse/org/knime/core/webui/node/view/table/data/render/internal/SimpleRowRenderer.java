@@ -79,7 +79,7 @@ public final class SimpleRowRenderer<R> implements RowRenderer<R> {
     }
 
     @Override
-    public LinkedList<R> renderRow(final DataRow row) {
+    public LinkedList<R> renderRow(final DataRow row, final long rowIndex) {
         final var out = new LinkedList<R>();
         for (var entry : m_colIndexToCellRenderer.entrySet()) {
             final var cell = row.getCell(entry.getKey());

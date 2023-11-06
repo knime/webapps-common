@@ -79,8 +79,6 @@ public class TableRenderer {
 
     private final String[] m_rendererIds;
 
-    private final DataTableSpec m_spec;
-
     private Map<Pair<String, String>, DataValueRenderer> m_renderersMap;
 
     private final DataValueImageRendererRegistry m_rendererRegistry;
@@ -98,21 +96,20 @@ public class TableRenderer {
     public TableRenderer(final DataValueRendererFactory rendererFactory, final DataTableSpec spec,
         final String[] displayedColumns, final String[] rendererIds,
         final DataValueImageRendererRegistry rendererRegistry, final String tableId) {
-        m_spec = spec;
         m_displayedColumns = displayedColumns;
         m_rendererIds = rendererIds;
         m_rendererFactory = rendererFactory;
-        m_renderersMap = createRenderers();
+        m_renderersMap = createRenderers(spec);
         m_rendererRegistry = rendererRegistry;
         m_tableId = tableId;
     }
 
-    private Map<Pair<String, String>, DataValueRenderer> createRenderers() {
+    private Map<Pair<String, String>, DataValueRenderer> createRenderers(final DataTableSpec spec) {
         var result = new HashMap<Pair<String, String>, DataValueRenderer>();
         for (var i = 0; i < m_displayedColumns.length; i++) {
             var key = getRendererKey(i);
-            var renderer = m_rendererFactory.createDataValueRenderer(m_spec.getColumnSpec(m_displayedColumns[i]),
-                m_rendererIds[i]);
+            var renderer =
+                m_rendererFactory.createDataValueRenderer(spec.getColumnSpec(m_displayedColumns[i]), m_rendererIds[i]);
             result.put(key, renderer);
         }
         return result;
@@ -131,14 +128,18 @@ public class TableRenderer {
      * @param table the table from which a section should be rendered
      * @param fromIndex index to start from
      * @param numRows index to end (inclusive)
+     * @param isRawInputTable whether the given table is the input table or a processed one. This is important since the
+     *            input table contains no indices while processed ones do.
      * @return a list containing rendered rows, where these rendered rows start with index and row key followed by the
      *         rendered cells for the displayed columns.
      */
-    public List<List<Object>> renderTableContent(final BufferedDataTable table, final long fromIndex,
-        final int numRows) {
+    public List<List<Object>> renderTableContent(final BufferedDataTable table, final long fromIndex, final int numRows,
+        final boolean isRawInputTable) {
 
-        final var rowRenderer = getRowRenderer();
-        final var rowRendererWithRowKeysAndIndices = addRowKeysAndIndices(rowRenderer);
+        final var rowRenderer = getRowRenderer(table.getSpec());
+        final var rowRendererWithRowKeys = new RowRendererWithRowKeys<Object>(rowRenderer, RowKey::toString);
+        final RowRenderer<Object> rowRendererWithRowKeysAndIndices =
+            addIndices(rowRendererWithRowKeys, !isRawInputTable);
 
         final var tableSize = table.size();
         final var toIndex = Math.min(fromIndex + numRows, tableSize) - 1;
@@ -148,16 +149,18 @@ public class TableRenderer {
         return tableSelectionRenderer.renderRows(table);
     }
 
-    private RowRenderer<Object> getRowRenderer() {
-        final var colIndices = m_spec.columnsToIndices(m_displayedColumns);
+    private RowRenderer<Object> getRowRenderer(final DataTableSpec spec) {
+        final var colIndices = spec.columnsToIndices(m_displayedColumns);
         return new SimpleRowRenderer<Object>(colIndices,
-            indexInDisplayedColumns -> getCellRenderer(indexInDisplayedColumns, colIndices[indexInDisplayedColumns]));
+            indexInDisplayedColumns -> getCellRenderer(indexInDisplayedColumns, colIndices[indexInDisplayedColumns],
+                spec));
     }
 
-    private CellRenderer<Object> getCellRenderer(final int indexInDisplayedColumns, final int colIndex) {
+    private CellRenderer<Object> getCellRenderer(final int indexInDisplayedColumns, final int colIndex,
+        final DataTableSpec spec) {
         final var renderer = getConstructedDataValueRenderer(indexInDisplayedColumns);
         final var cellContentRenderer = new DataValueRendererAdapter(renderer);
-        return new MetadataCellRenderer(cellContentRenderer, m_spec.getColumnSpec(colIndex).getColorHandler());
+        return new MetadataCellRenderer(cellContentRenderer, spec.getColumnSpec(colIndex).getColorHandler());
     }
 
     /**
@@ -184,11 +187,13 @@ public class TableRenderer {
         }
     }
 
-    private static RowRendererWithIndices<Object> addRowKeysAndIndices(final RowRenderer<Object> dataRenderer) {
-        final var rowRendererWithRowKeys = new RowRendererWithRowKeys<Object>(dataRenderer, RowKey::toString);
-        final var rowRendererWithRowKeysAndIndices =
-            new RowRendererWithIndices<Object>(rowRendererWithRowKeys, DataCell::toString);
-        return rowRendererWithRowKeysAndIndices;
+    private static RowRenderer<Object> addIndices(final RowRenderer<Object> rowRenderer,
+        final boolean tableHasIndices) {
+        if (tableHasIndices) {
+            return new RowRendererWithIndicesFromColumn<Object>(rowRenderer, DataCell::toString);
+        } else {
+            return new RowRendererWithIndicesCounter<Object>(rowRenderer, index -> Long.toString(index));
+        }
     }
 
     /**

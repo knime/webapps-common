@@ -74,8 +74,8 @@ public final class RowRendererWithRowKeys<R> extends RowRendererDecorator<R> {
     }
 
     @Override
-    public LinkedList<R> renderRow(final DataRow row) {
-        final var linkedList = m_delegate.renderRow(row);
+    public LinkedList<R> renderRow(final DataRow row, final long rowIndex) {
+        final var linkedList = m_delegate.renderRow(row, rowIndex);
         linkedList.add(0, m_renderRowKey.apply(row.getKey()));
         return linkedList;
     }

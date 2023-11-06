@@ -44,47 +44,43 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Aug 4, 2023 (Paul Bärnreuther): created
+ *   Nov 6, 2023 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.view.table.data.render.internal;
 
 import java.util.LinkedList;
 import java.util.function.Function;
-import java.util.stream.IntStream;
 
-import org.knime.core.data.DataCell;
 import org.knime.core.data.DataRow;
 
 /**
- * Decorator row renderer which renders the index of the row as a first element. For this to work, the first column of
- * the table has to contain the row indices.
+ * This decorator adds the row Index of the currently rendered table at first position. I.e. it should not be used for
+ * filtered or sorted tables.
  *
  * @author Paul Bärnreuther
- * @param <R> output type
+ * @param <T>
  */
-public final class RowRendererWithIndices<R> extends RowRendererDecorator<R> {
-
-    private final Function<DataCell, R> m_renderIndexCell;
+public final class RowRendererWithIndicesCounter<T> extends RowRendererDecorator<T> {
+    private final Function<Long, T> m_renderRowIndex;
 
     /**
      * @param delegate
-     * @param renderIndexCell
      */
-    public RowRendererWithIndices(final RowRenderer<R> delegate, final Function<DataCell, R> renderIndexCell) {
+    public RowRendererWithIndicesCounter(final RowRenderer<T> delegate, final Function<Long, T> renderRowIndex) {
         super(delegate);
-        m_renderIndexCell = renderIndexCell;
+        m_renderRowIndex = renderRowIndex;
     }
 
     @Override
-    public LinkedList<R> renderRow(final DataRow row) {
-        final var linkedList = m_delegate.renderRow(row);
-        linkedList.add(0, m_renderIndexCell.apply(row.getCell(0)));
+    public LinkedList<T> renderRow(final DataRow row, final long rowIndex) {
+        final var linkedList = m_delegate.renderRow(row, rowIndex);
+        linkedList.add(0, m_renderRowIndex.apply(rowIndex));
         return linkedList;
     }
 
     @Override
     public int[] getMaterializedColumnIndices() {
-        return IntStream.concat(IntStream.of(0), IntStream.of(m_delegate.getMaterializedColumnIndices())).toArray();
+        return m_delegate.getMaterializedColumnIndices();
     }
 
 }

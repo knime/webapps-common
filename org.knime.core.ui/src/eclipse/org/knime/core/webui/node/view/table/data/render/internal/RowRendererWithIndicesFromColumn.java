@@ -48,70 +48,43 @@
  */
 package org.knime.core.webui.node.view.table.data.render.internal;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
+import java.util.function.Function;
+import java.util.stream.IntStream;
 
-import org.knime.core.data.container.filter.TableFilter;
-import org.knime.core.node.BufferedDataTable;
+import org.knime.core.data.DataCell;
+import org.knime.core.data.DataRow;
 
 /**
- * This class is used to apply a {@link RowRenderer} to a section from/to an index in a table.
+ * Decorator row renderer which renders the index of the row as a first element. For this to work, the first column of
+ * the table has to contain the row indices.
  *
  * @author Paul Bärnreuther
  * @param <R> output type
  */
-public final class TableSectionRenderer<R> {
+public final class RowRendererWithIndicesFromColumn<R> extends RowRendererDecorator<R> {
 
-    private final RowRenderer<R> m_rowRenderer;
-
-    private final long m_fromIndex;
-
-    private final long m_toIndex;
+    private final Function<DataCell, R> m_renderIndexCell;
 
     /**
-     * @param rowRenderer which is applied to each row
-     * @param fromIndex from which to start
-     * @param toIndex until which (inclusive) rows should be rendered
+     * @param delegate
+     * @param renderIndexCell
      */
-    public TableSectionRenderer(final RowRenderer<R> rowRenderer, final long fromIndex, final long toIndex) {
-        m_rowRenderer = rowRenderer;
-        m_fromIndex = fromIndex;
-        m_toIndex = toIndex;
+    public RowRendererWithIndicesFromColumn(final RowRenderer<R> delegate, final Function<DataCell, R> renderIndexCell) {
+        super(delegate);
+        m_renderIndexCell = renderIndexCell;
     }
 
-    /**
-     * @param table
-     * @return the result of the row renderer for all rows in the section
-     */
-    public List<List<R>> renderRows(final BufferedDataTable table) {
-        final var size = (int)getSize();
-        List<List<R>> out = new ArrayList<List<R>>(size);
-        if (size > 0) {
-            var rowIndex = m_fromIndex;
-            try (final var iterator = table.filter(getFilter()).iterator()) {
-                while (iterator.hasNext()) {
-                    rowIndex++;
-                    final var row = iterator.next();
-                    out.add(m_rowRenderer.renderRow(row, rowIndex));
-                }
-            }
-        }
-        return out;
+    @Override
+    public LinkedList<R> renderRow(final DataRow row, final long rowIndex) {
+        final var linkedList = m_delegate.renderRow(row, rowIndex);
+        linkedList.add(0, m_renderIndexCell.apply(row.getCell(0)));
+        return linkedList;
     }
 
-    private long getSize() {
-        return m_toIndex - m_fromIndex + 1;
+    @Override
+    public int[] getMaterializedColumnIndices() {
+        return IntStream.concat(IntStream.of(0), IntStream.of(m_delegate.getMaterializedColumnIndices())).toArray();
     }
 
-    private int[] getMaterializedColumnIndices() {
-        return m_rowRenderer.getMaterializedColumnIndices();
-    }
-
-    private TableFilter getFilter() {
-        final var filter = new TableFilter.Builder();
-        filter.withFromRowIndex(m_fromIndex); // will throw exception when fromIndex < 0
-        filter.withToRowIndex(m_toIndex); // will throw exception when toIndex < fromIndex
-        filter.withMaterializeColumnIndices(getMaterializedColumnIndices());
-        return filter.build();
-    }
 }
