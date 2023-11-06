@@ -49,6 +49,7 @@
 package org.knime.core.webui.node.view;
 
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.webui.UIExtension;
 import org.knime.core.webui.data.DataServiceProvider;
@@ -64,7 +65,10 @@ import org.knime.core.webui.data.DataServiceProvider;
 public interface NodeView extends UIExtension, DataServiceProvider {
 
     /**
-     * Validates the given settings before loading it via {@link #loadValidatedSettingsFrom(NodeSettingsRO)}.
+     * Validates the given settings before loading it via {@link #loadValidatedSettingsFrom(NodeSettingsRO)}. This is
+     * called as soon as new settings are applied via the node's dialog.
+     *
+     * Please also see {@link NodeModel#validateViewSettings} in order to validate view settings at configuration time.
      *
      * @param settings settings to validate
      * @throws InvalidSettingsException if the validation failed
