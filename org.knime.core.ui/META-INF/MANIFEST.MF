@@ -75,5 +75,5 @@ Require-Bundle: org.knime.shared.workflow.def;bundle-version="[5.2.0,6.0.0)",
  org.apache.commons.csv;bundle-version="[1.4.0,2.0.0)",
  org.knime.filehandling.core;bundle-version="[5.2.0,6.0.0)"
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Automatic-Module-Name: org.knime.core.ui
