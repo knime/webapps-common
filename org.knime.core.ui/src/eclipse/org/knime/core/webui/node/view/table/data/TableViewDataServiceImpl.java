@@ -200,11 +200,11 @@ public class TableViewDataServiceImpl implements TableViewDataService {
          * we sort first (even though it is more expensive) because filtering happens more frequently and therefore we
          * do not have to re-sort every time we filter
          */
-        m_sortedTableCache.conditionallyUpdateCachedTable(() ->
-
-        sortTable(m_tableWithIndicesSupplier, sortColumn, sortAscending),
+        m_sortedTableCache.conditionallyUpdateCachedTable(
+            () -> sortTable(m_tableWithIndicesSupplier.get(), sortColumn, sortAscending),
             sortColumn == null || bufferedDataTable.size() <= 1, sortColumn, sortAscending);
-        conditionallyFilterSortedTable(columns, sortColumn, sortAscending, globalSearchTerm, columnFilterValue,
+        // updates m_filteredAndSortedTableCache
+        filterSortedTableConditionally(columns, sortColumn, sortAscending, globalSearchTerm, columnFilterValue,
             filterRowKeys, showOnlySelectedRows, currentSelection);
         updateRendererRegistryIfNecessary(numRows, forceClearImageDataCache);
         String[] rendererIds =
@@ -306,9 +306,8 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         return partition.get(true).stream().toArray(String[]::new);
     }
 
-    private static BufferedDataTable sortTable(final Supplier<BufferedDataTable> tableSupplier, final String sortColumn,
+    private static BufferedDataTable sortTable(final BufferedDataTable table, final String sortColumn,
         final boolean sortAscending) {
-        final var table = tableSupplier.get();
         final var dts = table.getSpec();
         final var sortColIndex = dts.findColumnIndex(sortColumn);
         final var rc = RowComparator.on(dts);
@@ -329,7 +328,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         }
     }
 
-    private void conditionallyFilterSortedTable(final String[] columns, final String sortColumn,
+    private void filterSortedTableConditionally(final String[] columns, final String sortColumn,
         final boolean sortAscending, final String globalSearchTerm, final String[][] columnFilterValue,
         final boolean filterRowKeys, final boolean showOnlySelectedRows, final Set<RowKey> currentSelection) {
         final Optional<BufferedDataTable> cachedSortedTable = m_sortedTableCache.getCachedTable();
@@ -338,16 +337,15 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         /** Keys are only interesting if showOnlySelected is true otherwise we don't want to reset the cache */
         final var currentSelectedKeys = showOnlySelectedRows ? currentSelection : Set.of();
         m_filteredAndSortedTableCache.conditionallyUpdateCachedTable(
-            () -> filterTable(sortedTableSupplier, columns, globalSearchTerm, columnFilterValue, filterRowKeys,
+            () -> filterTable(sortedTableSupplier.get(), columns, globalSearchTerm, columnFilterValue, filterRowKeys,
                 showOnlySelectedRows),
             (globalSearchTerm == null && columnFilterValue == null) && !showOnlySelectedRows, globalSearchTerm,
             columnFilterValue, columns, sortColumn, sortAscending, showOnlySelectedRows, currentSelectedKeys);
     }
 
-    private BufferedDataTable filterTable(final Supplier<BufferedDataTable> tableSupplier, final String[] columns,
+    private BufferedDataTable filterTable(final BufferedDataTable table, final String[] columns,
         final String globalSearchTerm, final String[][] columnFilterValue, final boolean filterRowKeys,
         final boolean showOnlySelectedRows) {
-        final var table = tableSupplier.get();
         final var spec = table.getDataTableSpec();
         var exec = DataServiceContext.get().getExecutionContext();
         var resultContainer = exec.createDataContainer(spec);
