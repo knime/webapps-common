@@ -50,40 +50,37 @@ package org.knime.core.webui.node.dialog.defaultdialog;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeModel;
-import org.knime.core.node.NodeModel.ViewSettingsValidator;
 import org.knime.core.node.NodeSettingsRO;
 
 /**
- * Set this {@link ViewSettingsValidator} for a node model (using {@link NodeModel#setViewSettingsValidator} for a node
- * using {@link DefaultNodeSettings} view variables in order to validate that view settings that are overwritten by flow
- * variables can loaded as DefaultNodeSettings. As a typical example where this validation is useful: When overwriting
- * an enum field with a string flow variable which does not have one of the string values, overwriting the node settings
- * with the default node settings does not throw an error. This error is only thrown when loading the node settings to
- * {@link DefaultNodeSettings} which, in case of view settings, is not caught unless this class is used as node model.
+ * A utility class for validating view {@link DefaultNodeSettings} instances overwritten by flow variables. Use this in
+ * a node model (within {@link NodeModel#validateViewSettings}) for a node using {@link DefaultNodeSettings} view
+ * variables. As a typical example where this validation is useful: When overwriting an enum field with a string flow
+ * variable which does not have one of the string values, overwriting the node settings with the default node settings
+ * does not throw an error. This error is only thrown when loading the node settings to {@link DefaultNodeSettings}
+ * which, in case of view settings, is not caught unless this class is used as node model.
  *
  * @author Paul Bärnreuther
  */
-public final class DefaultViewSettingsValidator implements ViewSettingsValidator {
+public final class DefaultViewSettingsValidationUtil {
 
-    private Class<? extends DefaultNodeSettings> m_viewSettingsClass;
-
-    /**
-     * @param viewSettingsClass the class of the view settings. Although it is odd, that any information regarding view
-     *            settings is part of the node model, it is wanted here, as view settings should be treated as model
-     *            settings when loading them is erroneous. But this class is and should only be used for the validation
-     *            here within the node model.
-     */
-    public DefaultViewSettingsValidator(final Class<? extends DefaultNodeSettings> viewSettingsClass) {
-        m_viewSettingsClass = viewSettingsClass;
+    private DefaultViewSettingsValidationUtil() {
+        // utility
     }
 
     /**
      * Try to load the view settings (already overwritten by flow variables) to {@link DefaultNodeSettings}.
-     * {@inheritDoc}
+     *
+     * @param viewSettings the to be validated view settings
+     * @param viewSettingsClass the class of the view settings. Although it is odd, that any information regarding view
+     *            settings is part of the node model, it is wanted here, as view settings should be treated as model
+     *            settings when loading them is erroneous. But this class is and should only be used for the validation
+     *            here within the node model.
+     * @throws InvalidSettingsException
      */
-    @Override
-    public void validateViewSettings(final NodeSettingsRO viewSettings) throws InvalidSettingsException {
-        DefaultNodeSettings.loadSettings(viewSettings, m_viewSettingsClass);
+    public static void validateViewSettings(final NodeSettingsRO viewSettings,
+        final Class<? extends DefaultNodeSettings> viewSettingsClass) throws InvalidSettingsException {
+        DefaultNodeSettings.loadSettings(viewSettings, viewSettingsClass);
     }
 
 }

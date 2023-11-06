@@ -59,7 +59,7 @@ import org.knime.core.node.NodeSettings;
  *
  * @author Paul Bärnreuther
  */
-public class DefaultViewSettingsValidatorTest {
+public class DefaultViewSettingsValidationUtilTest {
 
     static class TestViewSettings implements DefaultNodeSettings {
         String m_viewSetting;
@@ -67,18 +67,16 @@ public class DefaultViewSettingsValidatorTest {
 
     @Test
     void testValidatesViewSettings() {
-        final var validatingNodeModel = new DefaultViewSettingsValidator(TestViewSettings.class);
         final var validNodeSettings = new NodeSettings("ignored");
         validNodeSettings.addString("viewSetting", "value");
-        assertDoesNotThrow(() -> validatingNodeModel.validateViewSettings(validNodeSettings));
+        assertDoesNotThrow(() -> DefaultViewSettingsValidationUtil.validateViewSettings(validNodeSettings, TestViewSettings.class));
     }
 
     @Test
     void testInvalidatesViewSettings() {
-        final var validatingNodeModel = new DefaultViewSettingsValidator(TestViewSettings.class);
         final var invalidNodeSettings = new NodeSettings("ignored");
         assertThrows(InvalidSettingsException.class,
-            () -> validatingNodeModel.validateViewSettings(invalidNodeSettings));
+            () -> DefaultViewSettingsValidationUtil.validateViewSettings(invalidNodeSettings, TestViewSettings.class));
     }
 
 }
