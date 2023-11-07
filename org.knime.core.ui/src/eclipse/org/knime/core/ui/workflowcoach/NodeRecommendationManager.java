@@ -427,8 +427,6 @@ public final class NodeRecommendationManager {
             Collections.sort(res[idx]);
             if (nnc.length == 1) {
                 // remove the node, the recommendations have been requested for, from the list
-                // in order to match the nodes [NodeFactory]#[NodeName] needs to be compared,
-                // otherwise it won't work with dynamically generated nodes
                 res[idx] = res[idx].stream()//
                     .filter(nr -> !nr.m_factoryId.equals(nnc[0].getNodeFactoryId()))//
                     .collect(Collectors.toList());
