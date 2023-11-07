@@ -244,19 +244,13 @@ public final class NodeViewEnt extends NodeUIExtensionEnt<NodeWrapper> {
     }
 
     /**
-     *
      * @return the color model containing colors for the column names
      */
     private static ColorModelEnt getColumnNamesColorHandler(final DataTableSpec spec) {
-        final var columnNamesColorHandler = spec.getColumnNamesColorHandler();
-        if (columnNamesColorHandler.isPresent()) {
-            return new ColorModelEnt(columnNamesColorHandler.get().getColorModel());
-        }
-        return null;
+        return spec.getColumnNamesColorHandler().map(h -> new ColorModelEnt(h.getColorModel())).orElse(null);
     }
 
     /**
-     *
      * @return a map from the name of a column to its attached color model
      */
     private static Map<String, ColorModelEnt> getColorHandlerColumns(final DataTableSpec spec) {
