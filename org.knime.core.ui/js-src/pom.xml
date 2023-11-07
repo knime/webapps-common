@@ -18,40 +18,47 @@
 
 	<properties>
 		<sonar.sources>src</sonar.sources>
-		<sonar.tests>test</sonar.tests>
+		<sonar.tests>src</sonar.tests>
+		<sonar.test.inclusions>src/**/__tests__/**/*</sonar.test.inclusions>
+		<sonar.exclusions>src/**/__tests__/**/*,node_modules/**/*,dist/**/*,.nyc_output/**/*,test-results/**/*,*.log,config/**/*,**/config.js,**/*.config.js,buildtools/**,webapps-common/**,src/test/**</sonar.exclusions>
 		<sonar.javascript.lcov.reportPaths>coverage/lcov.info</sonar.javascript.lcov.reportPaths>
-		<sonar.exclusions>node_modules/**/*,dist/**/*,src/dev/**/*,.nyc_output/**/*,coverage/**/*,*.log,config/**/*,**/config.js,**/*.config.js,buildtools/**,webapps-common/**</sonar.exclusions>
-		<sonar.css.stylelint.reportPaths>target/stylelint.json</sonar.css.stylelint.reportPaths>
-		<sonar.eslint.reportPaths>target/eslint.json</sonar.eslint.reportPaths>
+		<sonar.css.stylelint.reportPaths>test-results/stylelint.json</sonar.css.stylelint.reportPaths>
+		<sonar.eslint.reportPaths>test-results/eslint.json</sonar.eslint.reportPaths>
 		<node.version>v18.14.2</node.version>
 		<npm.version>9.5.0</npm.version>
 	</properties>
 
 	<build>
+	  <resources>
+			<resource>
+				<directory>${resourcedir}</directory>
+			</resource>
+		</resources>
+
 		<plugins>
-		    <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <id>git submodule update</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>git</executable>
-                            <arguments>
-                                <argument>submodule</argument>
-                                <argument>update</argument>
-                                <argument>--init</argument>
-                                <argument>--recursive</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>3.0.0</version>
+				<executions>
+					<execution>
+						<id>git submodule update</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>git</executable>
+							<arguments>
+								<argument>submodule</argument>
+								<argument>update</argument>
+								<argument>--init</argument>
+								<argument>--recursive</argument>
+							</arguments>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>com.github.eirslett</groupId>
 				<artifactId>frontend-maven-plugin</artifactId>
@@ -92,11 +99,40 @@
 							<arguments>run build</arguments>
 						</configuration>
 					</execution>
+					<execution>
+						<id>npm run coverage</id>
+						<phase>test</phase>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<configuration>
+							<arguments>run coverage</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>npm check css</id>
+						<phase>test</phase>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<configuration>
+							<arguments>run ci:lint:css</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>npm check js</id>
+						<phase>test</phase>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<configuration>
+							<arguments>run ci:lint:js</arguments>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 			<plugin>
 				<artifactId>maven-clean-plugin</artifactId>
-				<version>3.0.0</version>
 				<configuration>
 					<filesets>
 						<fileset>
