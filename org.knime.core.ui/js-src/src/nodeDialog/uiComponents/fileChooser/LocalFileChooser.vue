@@ -3,7 +3,7 @@ import FileChooser from "./FileChooser.vue";
 import { ref } from "vue";
 import InputField from "webapps-common/ui/components/forms/InputField.vue";
 import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
-import Import from "webapps-common/ui/assets/img/icons/import.svg";
+import FolderLenseIcon from "webapps-common/ui/assets/img/icons/folder-lense.svg";
 import type LocalFileChooserProps from "./types/LocalFileChooserProps";
 
 defineProps<LocalFileChooserProps>();
@@ -41,7 +41,7 @@ const chooseFile = (chosen: string) => {
         title="Browse local file system"
         @click="activateFileChooser"
       >
-        <Import />
+        <FolderLenseIcon />
       </FunctionButton>
     </template>
   </InputField>
