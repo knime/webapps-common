@@ -1,5 +1,5 @@
 import { shallowMount } from "@vue/test-utils";
-import { describe, expect, it, vi, type SpyInstance } from "vitest";
+import { describe, expect, it, vi, type SpyInstance, beforeEach } from "vitest";
 import FileChooser from "../FileChooser.vue";
 import FileExplorer from "webapps-common/ui/components/FileExplorer/FileExplorer.vue";
 import type { Folder } from "../types";
@@ -15,20 +15,26 @@ describe("FileChooser.vue", () => {
   const fileName = "aFile";
   const filePath = "/path/to/containing/folder/aFile";
   const directoryName = "aDirectory";
-
-  const rootFolder: Folder = {
+  let folderFromBackend: Folder;
+  const getNewRootFolderMock = (): Folder => ({
     items: [
       { isDirectory: true, name: directoryName },
       { isDirectory: false, name: fileName },
     ],
     path: null,
-  };
+  });
 
-  const shallowMountFileChooser = () => {
+  beforeEach(() => {
+    folderFromBackend = getNewRootFolderMock();
+  });
+
+  const shallowMountFileChooser = (
+    props: { initialFilePath?: string } = {},
+  ) => {
     dataServiceSpy = vi.fn(
       (params: { method?: string | undefined } | undefined) => {
         if (params?.method === "fileChooser.listItems") {
-          return Promise.resolve(rootFolder);
+          return Promise.resolve(folderFromBackend);
         } else if (params?.method === "fileChooser.getFilePath") {
           return Promise.resolve(filePath);
         }
@@ -36,6 +42,7 @@ describe("FileChooser.vue", () => {
       },
     );
     const context = {
+      props,
       global: {
         provide: {
           getJsonDataService: () => ({
@@ -71,20 +78,33 @@ describe("FileChooser.vue", () => {
     const wrapper = shallowMountFileChooser();
     expect(dataServiceSpy).toHaveBeenCalledWith({
       method: "fileChooser.listItems",
-      options: ["local", null, null],
+      options: ["local", null, ""],
     });
     expect(wrapper.findComponent(FileExplorer).exists()).toBeFalsy();
     expect(wrapper.findComponent(LoadingIcon).exists()).toBeTruthy();
     await flushPromises();
+    expect(wrapper.find("span").text()).toBe("Root directories");
     expect(wrapper.findComponent(FileExplorer).exists()).toBeTruthy();
     const explorerProps = wrapper.findComponent(FileExplorer).props();
     expect(explorerProps.items).toStrictEqual(
-      rootFolder.items.map(toFileExplorerItem),
+      folderFromBackend.items.map(toFileExplorerItem),
     );
     expect(explorerProps.isRootFolder).toBeTruthy();
 
     const buttons = wrapper.findAllComponents(Button);
     expect(buttons.length).toBe(1);
+  });
+
+  it("loads initial file path", async () => {
+    const initialFilePath = "myPath";
+    folderFromBackend.path = "currentPath";
+    const wrapper = shallowMountFileChooser({ initialFilePath });
+    expect(dataServiceSpy).toHaveBeenCalledWith({
+      method: "fileChooser.listItems",
+      options: ["local", null, initialFilePath],
+    });
+    await flushPromises();
+    expect(wrapper.find("span").text()).toBe(folderFromBackend.path);
   });
 
   it("shows a cancel button", async () => {
@@ -121,7 +141,7 @@ describe("FileChooser.vue", () => {
       await flushPromises();
       await wrapper
         .findComponent(FileExplorer)
-        .vm.$emit("openFile", toFileExplorerItem(rootFolder.items[1]));
+        .vm.$emit("openFile", toFileExplorerItem(folderFromBackend.items[1]));
       expect(dataServiceSpy).toHaveBeenCalledWith({
         method: "fileChooser.getFilePath",
         options: ["local", null, fileName],
@@ -145,7 +165,7 @@ describe("FileChooser.vue", () => {
       await openButton?.vm.$emit("click");
       expect(dataServiceSpy).toHaveBeenCalledWith({
         method: "fileChooser.listItems",
-        options: ["local", rootFolder.path, directoryName],
+        options: ["local", folderFromBackend.path, directoryName],
       });
     });
 
@@ -157,7 +177,7 @@ describe("FileChooser.vue", () => {
         .vm.$emit("changeDirectory", directoryName);
       expect(dataServiceSpy).toHaveBeenCalledWith({
         method: "fileChooser.listItems",
-        options: ["local", rootFolder.path, directoryName],
+        options: ["local", folderFromBackend.path, directoryName],
       });
     });
   });

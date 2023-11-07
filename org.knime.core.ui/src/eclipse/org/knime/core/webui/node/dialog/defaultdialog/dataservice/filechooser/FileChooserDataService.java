@@ -51,9 +51,14 @@ package org.knime.core.webui.node.dialog.defaultdialog.dataservice.filechooser;
 import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.knime.core.webui.node.dialog.defaultdialog.dataservice.filechooser.FileSystemConnector.FileChooserBackend;
 
@@ -97,7 +102,23 @@ public final class FileChooserDataService {
         if (nextPath == null) {
             return getRootItems(fileChooserBackend);
         }
-        return getItemsInFolder(fileChooserBackend, nextPath);
+        final Stack<Path> pathStack = toFragments(fileChooserBackend, nextPath);
+        return getItemsInFolder(fileChooserBackend, pathStack);
+    }
+
+    private static Stack<Path> toFragments(final FileChooserBackend fileChooserBackend, final Path nextPath) {
+        final Stack<Path> pathStack = new Stack<>();
+        final var pathFragments = StreamSupport.stream(nextPath.spliterator(), false).collect(Collectors.toList());
+        final var rootPath = nextPath.getRoot();
+        pathStack.add(fileChooserBackend.getFileSystem().getPath(""));
+        if (rootPath != null) {
+            pathStack.push(rootPath);
+        }
+        for (Path pathFragent : pathFragments) {
+            var lastPath = pathStack.peek();
+            pathStack.add(lastPath.resolve(pathFragent));
+        }
+        return pathStack;
     }
 
     /**
@@ -120,7 +141,7 @@ public final class FileChooserDataService {
             return nextFolder == null ? null : fileSystem.getPath(nextFolder);
         }
         if (nextFolder.equals("..")) {
-            return fileSystem.getPath(path).getParent();
+            return fileSystem.getPath(path).toAbsolutePath().getParent();
         }
         return fileSystem.getPath(path, nextFolder);
     }
@@ -132,10 +153,19 @@ public final class FileChooserDataService {
         return Folder.asRootFolder(out);
     }
 
-    private static Folder getItemsInFolder(final FileChooserBackend fileChooserBackend, final Path folder)
+    private static Folder getItemsInFolder(final FileChooserBackend fileChooserBackend, final Stack<Path> pathStack)
         throws IOException {
-        final var folderContent = Files.list(folder).map(fileChooserBackend::pathToObject).toList();
-        return Folder.asNonRootFolder(folder, folderContent);
+        while (!pathStack.isEmpty()) {
+            final var folder = pathStack.pop();
+            try {
+                final var folderContent = Files.list(folder).map(fileChooserBackend::pathToObject).toList();
+                return Folder.asNonRootFolder(folder, folderContent);
+            } catch (NoSuchFileException | NotDirectoryException ex) { //NOSONAR
+            }
+        }
+        throw new IllegalStateException(
+            "Something went wrong. There should be at least one valid path in the given stack.");
+
     }
 
     record Folder(List<Object> items, String path) {
@@ -144,7 +174,7 @@ public final class FileChooserDataService {
         }
 
         static Folder asNonRootFolder(final Path path, final List<Object> items) {
-            return new Folder(items, path.toString());
+            return new Folder(items, path.toAbsolutePath().toString());
         }
     }
 

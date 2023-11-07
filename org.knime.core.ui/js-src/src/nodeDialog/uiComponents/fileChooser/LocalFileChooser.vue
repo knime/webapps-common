@@ -46,7 +46,11 @@ const chooseFile = (chosen: string) => {
     </template>
   </InputField>
   <div v-if="active" class="modal-overlay">
-    <FileChooser @choose-file="chooseFile" @cancel="deactivateFileChooser" />
+    <FileChooser
+      :initial-file-path="modelValue"
+      @choose-file="chooseFile"
+      @cancel="deactivateFileChooser"
+    />
   </div>
 </template>
 
@@ -55,8 +59,7 @@ const chooseFile = (chosen: string) => {
   position: fixed;
   inset: 0;
   padding: 20px;
-  z-index: 1000;
+  z-index: 100;
   background-color: var(--knime-white);
-  overflow-y: auto;
 }
 </style>

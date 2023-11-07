@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, type Ref } from "vue";
+import { onMounted, ref, type Ref, computed } from "vue";
 import FileExplorer from "webapps-common/ui/components/FileExplorer/FileExplorer.vue";
 import type { FileExplorerItem } from "webapps-common/ui/components/FileExplorer/types";
 import useFileChooserBackend from "./useFileChooserBackend";
@@ -7,12 +7,19 @@ import type { Folder } from "./types";
 import { toFileExplorerItem } from "./utils";
 import Button from "webapps-common/ui/components/Button.vue";
 import LoadingIcon from "webapps-common/ui/components/LoadingIcon.vue";
+import FolderIcon from "webapps-common/ui/assets/img/icons/folder.svg";
 
 const { listItems, getFilePath } = useFileChooserBackend();
 
 const currentPath: Ref<string | null> = ref(null);
-const items: Ref<FileExplorerItem[]> = ref([]);
 
+const currentPathDisplay = computed(() => {
+  return currentPath.value === null ? "Root directories" : currentPath.value;
+});
+const items: Ref<FileExplorerItem[]> = ref([]);
+const props = withDefaults(defineProps<{ initialFilePath?: string }>(), {
+  initialFilePath: "",
+});
 const isLoading = ref(true);
 
 const setNextItems = (folder: Folder) => {
@@ -22,7 +29,7 @@ const setNextItems = (folder: Folder) => {
 };
 
 onMounted(() => {
-  listItems(null, null).then(setNextItems);
+  listItems(null, props.initialFilePath).then(setNextItems);
 });
 
 const selectedItem: Ref<FileExplorerItem | null> = ref(null);
@@ -66,18 +73,23 @@ const onCancel = () => {
     <div v-if="isLoading" class="loading-animaton">
       <LoadingIcon class="icon" />
     </div>
-    <FileExplorer
-      v-else
-      class="explorer"
-      :is-root-folder="currentPath === null"
-      :items="items"
-      :disable-context-menu="true"
-      :disable-multi-select="true"
-      :disable-dragging="true"
-      @change-directory="changeDirectory"
-      @open-file="onOpenFile"
-      @change-selection="onChangeSelection"
-    />
+    <template v-else>
+      <div class="current-path">
+        <FolderIcon />
+        <span :title="currentPathDisplay"> {{ currentPathDisplay }}</span>
+      </div>
+      <FileExplorer
+        class="explorer"
+        :is-root-folder="currentPath === null"
+        :items="items"
+        :disable-context-menu="true"
+        :disable-multi-select="true"
+        :disable-dragging="true"
+        @change-directory="changeDirectory"
+        @open-file="onOpenFile"
+        @change-selection="onChangeSelection"
+      />
+    </template>
     <div class="button-wrapper">
       <Button compact with-border @click="onCancel">Cancel</Button>
       <Button
@@ -119,9 +131,23 @@ const onCancel = () => {
     }
   }
 
+  & .current-path {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    font-size: 13px;
+    margin: 5px;
+
+    & svg {
+      width: 15px;
+      height: 15px;
+    }
+  }
+
   & .explorer {
     min-height: 0;
     overflow-y: auto;
+    flex: 1;
   }
 
   & .button-wrapper {

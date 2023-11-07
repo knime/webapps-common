@@ -149,6 +149,18 @@ public class FileChooserDataServiceTest {
     }
 
     @Test
+    void testListLocalItemsWithInvalidPath() throws IOException {
+        final var file = Files.writeString(m_subFolder.resolve("aFile"), "");
+        final var dataService = new FileChooserDataService();
+        final var correctPath = m_subFolder.toString();
+        final var invalidPath = correctPath + "/non-existing folder/file.txt";
+        when(m_fileSystem.getPath(eq(invalidPath))).thenReturn(file);
+        when(m_fileSystem.getPath(eq(correctPath))).thenReturn(m_subFolder);
+        final var listedItems = dataService.listItems("local", null, invalidPath);
+        assertThat(listedItems.path()).isEqualTo(correctPath);
+    }
+
+    @Test
     void testListLocalItemsParentPath() throws IOException {
         final var directory = Files.createTempDirectory(m_subFolder, "aDirectory");
         final var file = Files.writeString(m_subFolder.resolve("aFile"), "");
