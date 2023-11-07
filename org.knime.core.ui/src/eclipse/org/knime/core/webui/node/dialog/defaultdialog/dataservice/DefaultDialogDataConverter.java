@@ -51,6 +51,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.workflow.VariableTypeRegistry;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 
@@ -69,6 +70,15 @@ public interface DefaultDialogDataConverter {
     /**
      * Transforms the JSON representation of the data form the front-end to node settings of a certain settings type.
      *
+     * This is used by the {@link FlowVariableDataServiceImpl}
+     * <ul>
+     * <li>to find out which variables are compatible with which settings by getting the variable types that can
+     * overwrite a setting
+     * ({@link VariableTypeRegistry#getOverwritingTypes(org.knime.core.node.config.Config, String)}).</li>
+     * <li>to overwrite a setting of the {@link NodeSettings} with a variable and return the overwritten value for
+     * displaying it in the frontend.</li>
+     * </ul>
+     *
      * @param dataJson the JSON representation of the data. The top level keys are values of
      *            {@link SettingsType#getConfigKey()}, i.e. either "model" or "view" and it is given that the key for
      *            the given type exists.
@@ -79,6 +89,10 @@ public interface DefaultDialogDataConverter {
 
     /**
      * Transforms node settings to the data representation given to the front-end.
+     *
+     * This is used by the {@link FlowVariableDataServiceImpl} to get the value of settings overwritten by flow
+     * variables after the user has selected a variable. The value is returned to the frontend and displayed to the
+     * user.
      *
      * @param type the type of settings that is used
      * @param nodeSettings the input node settings of the given type
