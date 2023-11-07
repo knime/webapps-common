@@ -71,7 +71,6 @@ import org.knime.core.webui.node.dialog.NodeDialog;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialog;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.internal.VariableSettings;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -127,7 +126,7 @@ public final class FlowVariableDataServiceImpl implements FlowVariableDataServic
     }
 
     @Override
-    public String getFlowVariableOverrideValue(final String textSettings, final LinkedList<String> dataPath)
+    public Object getFlowVariableOverrideValue(final String textSettings, final LinkedList<String> dataPath)
         throws InvalidSettingsException, JsonProcessingException {
         var context = createContext();
         final var settingsType = extractSettingsType(dataPath.get(0));
@@ -150,13 +149,11 @@ public final class FlowVariableDataServiceImpl implements FlowVariableDataServic
         return nodeSettings;
     }
 
-    private static String jsonAtPath(final LinkedList<String> path, final JsonNode jsonData)
+    private static JsonNode jsonAtPath(final LinkedList<String> path, final JsonNode jsonData)
         throws JsonProcessingException {
         final var jsonPointer = "/" + String.join("/", path);
         final var valueNode = jsonData.at(jsonPointer);
-        return valueNode.isTextual() //
-            ? valueNode.textValue() //
-            : JsonFormsDataUtil.getMapper().writeValueAsString(jsonData.at(jsonPointer));
+        return valueNode;
     }
 
     private static SettingsType extractSettingsType(final String firstPathElement) {

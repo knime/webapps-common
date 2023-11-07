@@ -82,8 +82,8 @@ import org.knime.core.webui.node.dialog.NodeDialog;
 import org.knime.core.webui.node.dialog.NodeDialogManagerTest;
 import org.knime.core.webui.node.dialog.NodeDialogTest;
 import org.knime.core.webui.node.dialog.SettingsType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultDialogDataConverterImpl;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.JsonBasedNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.dataservice.FlowVariableDataService.PossibleFlowVariable;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
@@ -93,6 +93,7 @@ import org.knime.core.webui.page.Page;
 import org.knime.testing.util.WorkflowManagerUtil;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 /**
@@ -283,7 +284,7 @@ public class FlowVariableDataServiceTest {
         void testGetFlowVariableOverrideValue() throws JsonProcessingException, InvalidSettingsException {
             final var dataPath = new LinkedList<String>(List.of("view", "myViewSetting"));
             final var dataService = getDataServiceWithConverter(settingsClasses);
-            assertThat(dataService.getFlowVariableOverrideValue(DATA, dataPath))
+            assertThat(((JsonNode)dataService.getFlowVariableOverrideValue(DATA, dataPath)).textValue())
                 .isEqualTo(stringVar1.getValueAsString());
         }
 
@@ -291,8 +292,8 @@ public class FlowVariableDataServiceTest {
         void testGetFlowVariableOverrideValueWithConfigKey() throws JsonProcessingException, InvalidSettingsException {
             final var dataPath = new LinkedList<String>(List.of("model", "nestedSetting", "myModelSetting"));
             final var dataService = getDataServiceWithConverter(settingsClasses);
-            assertThat(dataService.getFlowVariableOverrideValue(DATA, dataPath))
-                .isEqualTo(booleanVar.getValueAsString());
+            assertThat(((JsonNode)dataService.getFlowVariableOverrideValue(DATA, dataPath)).asBoolean())
+                .isEqualTo(booleanVar.getValue(VariableType.BooleanType.INSTANCE));
         }
 
         static final String STRING_OVERRIDES_BOOLEAN_DATA = "{" //

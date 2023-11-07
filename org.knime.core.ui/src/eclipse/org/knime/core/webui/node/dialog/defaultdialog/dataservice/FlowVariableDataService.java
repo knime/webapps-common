@@ -94,11 +94,11 @@ interface FlowVariableDataService {
      *            variable settings.
      * @param dataPath the path of the setting as it is stored in the data within the front-end JSON representation. In
      *            particular this has to start with its settings type ("view" or "model").
-     * @return The string representation of the value of the resulting JSON at the given data path.
+     * @return the flow variable value
      * @throws InvalidSettingsException
      * @throws JsonProcessingException
      */
-    String getFlowVariableOverrideValue(final String textSettings, final LinkedList<String> dataPath)
+    Object getFlowVariableOverrideValue(final String textSettings, final LinkedList<String> dataPath)
         throws InvalidSettingsException, JsonProcessingException;
 
 }

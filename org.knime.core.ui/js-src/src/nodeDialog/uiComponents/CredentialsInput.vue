@@ -81,8 +81,8 @@ const CredentialsInput = defineComponent({
         this.$store.dispatch("pagebuilder/dialog/dirtySettings", true);
       }
     },
-    onControllingFlowVariableSet(value: string) {
-      this.onChange(mergeDeep(this.data, JSON.parse(value)));
+    onControllingFlowVariableSet(value: Credentials) {
+      this.onChange(mergeDeep(this.data, value));
     },
     onChangeUsername(username: string) {
       this.onChange(mergeDeep(this.data, { username }));

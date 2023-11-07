@@ -243,12 +243,10 @@ describe("flow variables", () => {
             return Promise.resolve(possibleFlowVariables);
           }
           if (params?.method === "getFlowVariableOverrideValue") {
-            return Promise.resolve(
-              JSON.stringify({
-                username: "flowVarUsername",
-                isHiddenPassword: true,
-              }),
-            );
+            return Promise.resolve({
+              username: "flowVarUsername",
+              isHiddenPassword: true,
+            });
           }
           return Promise.resolve();
         });
