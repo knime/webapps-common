@@ -96,7 +96,7 @@ const placeholder = computed(() => {
     return "Fetching available flow variables...";
   }
   return noOptionsPresent.value
-    ? "No suitable variable present"
+    ? "No suitable flow variable present"
     : "No flow variable selected";
 });
 </script>

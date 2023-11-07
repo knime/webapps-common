@@ -69,7 +69,7 @@ describe("FlowVariableSelector.vue", () => {
     expect(wrapper.findComponent(Dropdown).props()).toMatchObject({
       ariaLabel: "controlling-flow-variables-persist.path.to.setting",
       modelValue: "",
-      placeholder: "No suitable variable present",
+      placeholder: "No suitable flow variable present",
       disabled: true,
     });
   });
