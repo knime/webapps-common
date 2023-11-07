@@ -7,6 +7,7 @@ import { useEditor } from "@tiptap/vue-3";
 import FunctionButton from "../../../FunctionButton.vue";
 
 import RichTextEditor from "../RichTextEditor.vue";
+import SubMenu from "../../../SubMenu.vue";
 
 // mock for editor's isActive function. declared separately due to mock hoisting via vi.mock
 const mockEditorIsActive = vi.fn();
@@ -22,6 +23,8 @@ const createMockEditor = (params: any) => {
     "setTextAlign",
     "setTextAlign",
     "setHeading",
+    "setFontSize",
+    "unsetFontSize",
     "setLink",
     "unsetLink",
     "insertContent",
@@ -116,7 +119,7 @@ describe("RichTextEditor.vue", () => {
       }),
     );
 
-    expect(mockEditor.value.params.extensions.length).toBe(3);
+    expect(mockEditor.value.params.extensions.length).toBe(4);
     expect(wrapper.classes("with-border")).toBeTruthy();
     expect(wrapper.classes("disabled")).toBeFalsy();
   });
@@ -318,6 +321,9 @@ describe("RichTextEditor.vue", () => {
       const { wrapper } = doMount({ props: { baseExtensions: { all: true } } });
 
       expect(wrapper.findAll(".tool").length).toBe(8);
+      const secondaryItemsMenu = wrapper.findComponent(SubMenu);
+      expect(secondaryItemsMenu.exists()).toBeTruthy();
+      expect(secondaryItemsMenu.props().items.length).toBe(5);
     });
 
     it("should set the active state correctly", () => {

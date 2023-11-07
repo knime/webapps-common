@@ -30,12 +30,28 @@ const secondaryToolsMenuItems = computed<MenuItem[]>(() =>
     hotkeyText: props.hotkeyFormatter(tool.hotkey ?? []),
     icon: tool.icon,
     id: tool.id,
+    selected: tool.active?.(),
+    children:
+      tool.children?.map(({ item, id: childId, active }) => ({
+        ...item,
+        id: { toolId: tool.id, childId },
+        selected: active?.(),
+      })) ?? [],
   })),
 );
 
-const onSecondaryToolClick = (_: any, { id }: { id: string }) => {
-  const foundTool = secondaryTools.value.find((tool) => tool.id === id);
-  foundTool?.onClick();
+const onSecondaryToolClick = (
+  _: any,
+  { id }: { id: string | { toolId: string; childId: unknown } },
+) => {
+  const isChildElement = typeof id === "object";
+  const toolId = isChildElement ? id.toolId : id;
+  const foundTool = secondaryTools.value.find((tool) => tool.id === toolId);
+  if (isChildElement) {
+    foundTool.onChildClick?.(id.childId);
+  } else {
+    foundTool.onClick();
+  }
 };
 </script>
 

@@ -9,6 +9,7 @@ import OrderedListIcon from "../../../assets/img/icons/ordered-list.svg";
 import AlignLeftIcon from "../../../assets/img/icons/align-left.svg";
 import AlignCenterIcon from "../../../assets/img/icons/align-center.svg";
 import AlignRightIcon from "../../../assets/img/icons/align-right.svg";
+import FontSizeIcon from "../../../assets/img/icons/font-size.svg";
 import BlockquoteIcon from "../../../assets/img/icons/blockquote.svg";
 import CodeIcon from "../../../assets/img/icons/code-html.svg";
 import StrikeThroughIcon from "../../../assets/img/icons/strikethrough.svg";
@@ -29,7 +30,7 @@ const props = defineProps<Props>();
 
 const registerTool = (
   toolName: keyof BaseExtensionsConfig,
-  tool: EditorToolItem,
+  tool: EditorToolItem<unknown>,
 ) => {
   if ("all" in props.baseExtensions) {
     return [tool];
@@ -140,6 +141,19 @@ const editorTools: EditorTools = [
       !isListActive() && props.editor.isActive({ textAlign: "right" }),
     onClick: () => props.editor.chain().focus().setTextAlign("right").run(),
     disabled: () => isListActive(),
+  }),
+
+  ...registerTool("fontSize", {
+    id: "fontSize",
+    icon: FontSizeIcon,
+    name: "Small Font Size",
+    secondary: true,
+    active: () => !props.editor.isActive({ fontSize: null }),
+    onClick: () =>
+      props.editor.isActive({ fontSize: null })
+        ? // eslint-disable-next-line no-magic-numbers
+          props.editor.chain().focus().setFontSize(7).run()
+        : props.editor.chain().focus().unsetFontSize().run(),
   }),
 
   ...registerTool("blockquote", {
