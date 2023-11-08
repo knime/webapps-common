@@ -9,11 +9,15 @@ import OrderedListIcon from "../../../assets/img/icons/ordered-list.svg";
 import AlignLeftIcon from "../../../assets/img/icons/align-left.svg";
 import AlignCenterIcon from "../../../assets/img/icons/align-center.svg";
 import AlignRightIcon from "../../../assets/img/icons/align-right.svg";
-import FontSizeIcon from "../../../assets/img/icons/font-size.svg";
+import ParagraphIcon from "../../../assets/img/icons/text-style.svg";
 import BlockquoteIcon from "../../../assets/img/icons/blockquote.svg";
 import CodeIcon from "../../../assets/img/icons/code-html.svg";
 import StrikeThroughIcon from "../../../assets/img/icons/strikethrough.svg";
 import DividerIcon from "../../../assets/img/icons/divider.svg";
+
+import getParagraphStyleChildTools, {
+  type ParagrapsStyleId,
+} from "./paragraphStyle";
 
 import type {
   BaseExtensionsConfig,
@@ -30,7 +34,7 @@ const props = defineProps<Props>();
 
 const registerTool = (
   toolName: keyof BaseExtensionsConfig,
-  tool: EditorToolItem<unknown>,
+  tool: EditorToolItem<any>,
 ) => {
   if ("all" in props.baseExtensions) {
     return [tool];
@@ -143,18 +147,13 @@ const editorTools: EditorTools = [
     disabled: () => isListActive(),
   }),
 
-  ...registerTool("fontSize", {
-    id: "fontSize",
-    icon: FontSizeIcon,
-    name: "Small Font Size",
+  ...registerTool("paragraphStyle", {
+    id: "paragraphStyle",
+    icon: ParagraphIcon,
+    name: "Paragraph style",
     secondary: true,
-    active: () => !props.editor.isActive({ fontSize: null }),
-    onClick: () =>
-      props.editor.isActive({ fontSize: null })
-        ? // eslint-disable-next-line no-magic-numbers
-          props.editor.chain().focus().setFontSize(7).run()
-        : props.editor.chain().focus().unsetFontSize().run(),
-  }),
+    ...getParagraphStyleChildTools(() => props.editor),
+  } satisfies EditorToolItem<ParagrapsStyleId>),
 
   ...registerTool("blockquote", {
     id: "blockquote",

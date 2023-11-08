@@ -8,7 +8,7 @@ import RichTextEditorBaseToolbar from "./RichTextEditorBaseToolbar.vue";
 import RichTextEditorToolbar from "./RichTextEditorToolbar.vue";
 import type { BaseExtensionsConfig } from "./types";
 import { CustomTextAlign } from "./custom-text-align";
-import { FontSize } from "./font-size-paragraph";
+import { SmallFontSize } from "./paragraphStyle/extension";
 
 type BaseExtensions =
   | BaseExtensionsConfig
@@ -124,7 +124,7 @@ const extensions = [
     strike: getStarterKitExtensionConfig("strike"),
   }),
   ...(isToolEnabled("underline") ? [UnderLine] : []),
-  ...(isToolEnabled("fontSize") ? [FontSize] : []),
+  ...(isToolEnabled("paragraphStyle") ? [SmallFontSize] : []),
   ...(isToolEnabled("textAlign")
     ? [
         CustomTextAlign.configure({
@@ -246,6 +246,7 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length);
 .editor-wrapper {
   --toolbar-height: 48px;
   --rich-text-editor-font-size: 13px;
+  --rich-text-editor-small-font-size: 7px;
   --rich-text-editor-padding: 10px;
 
   &.with-border {
@@ -322,5 +323,10 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length);
 
     @mixin rich-text-editor-styles;
   }
+
+  & :deep(.small-text) {
+    font-size: var(--rich-text-editor-small-font-size);
+  }
 }
 </style>
+./paragraphStyleExtension

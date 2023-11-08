@@ -26,7 +26,7 @@ export type EditorToolItem<T> = EditorToolItemBase &
       }
   );
 
-export type EditorTools = Array<EditorToolItem<unknown>>;
+export type EditorTools = Array<EditorToolItem<any>>;
 
 export type BaseExtensionsConfig = {
   bold?: true;
@@ -36,7 +36,7 @@ export type BaseExtensionsConfig = {
   bulletList?: true;
   orderedList?: true;
   heading?: true;
-  fontSize?: true;
+  paragraphStyle?: true;
   blockquote?: true;
   code?: true;
   codeBlock?: true;

@@ -48,9 +48,9 @@ const onSecondaryToolClick = (
   const toolId = isChildElement ? id.toolId : id;
   const foundTool = secondaryTools.value.find((tool) => tool.id === toolId);
   if (isChildElement) {
-    foundTool.onChildClick?.(id.childId);
+    foundTool?.onChildClick?.(id.childId);
   } else {
-    foundTool.onClick();
+    foundTool?.onClick?.();
   }
 };
 </script>
