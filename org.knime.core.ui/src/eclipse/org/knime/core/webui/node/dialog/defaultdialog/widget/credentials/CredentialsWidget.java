@@ -75,4 +75,14 @@ public @interface CredentialsWidget {
      */
     String usernameLabel() default UsernameWidget.DEFAULT_USERNAME_LABEL;
 
+    /**
+     * @return whether this widget should provide a second authentication factor input field.
+     */
+    boolean hasSecondAuthenticationFactor() default false;
+
+    /**
+     * @return the label for the second factor input field.
+     */
+    String secondFactorLabel() default PasswordWidget.DEFAULT_SECOND_FACTOR_LABEL;
+
 }

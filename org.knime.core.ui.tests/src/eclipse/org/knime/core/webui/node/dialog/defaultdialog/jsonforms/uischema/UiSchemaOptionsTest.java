@@ -618,7 +618,7 @@ class UiSchemaOptionsTest {
         class CredentialsWidgetSettings {
             @CredentialsWidget(passwordLabel = "myPasswordLabel", usernameLabel = "myUsernameLabel")
             Credentials m_credentials;
-            @PasswordWidget("myPasswordLabel")
+            @PasswordWidget(passwordLabel = "myPasswordLabel")
             Credentials m_password;
             @UsernameWidget("myUsernameLabel")
             Credentials m_username;
@@ -643,7 +643,7 @@ class UiSchemaOptionsTest {
     @Test
     void testThrowsIfUsernameWidget() {
         class CredentialsWidgetSettings {
-            @PasswordWidget("myPasswordLabel")
+            @PasswordWidget(passwordLabel = "myPasswordLabel")
             @UsernameWidget("myUsernameLabel")
             Credentials m_credentials;
         }

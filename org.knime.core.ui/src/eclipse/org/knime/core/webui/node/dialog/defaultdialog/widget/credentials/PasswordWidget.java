@@ -68,10 +68,25 @@ public @interface PasswordWidget {
     /**
      * The default label for the password input field.
      */
-    static final String DEFAULT_PASSWORD_LABEL = "Password";
+    String DEFAULT_PASSWORD_LABEL = "Password";
+
+    /**
+     * The default label for the second factor input field.
+     */
+    String DEFAULT_SECOND_FACTOR_LABEL = "Second authentication factor";
 
     /**
      * @return the label for the password input field.
      */
-    String value() default DEFAULT_PASSWORD_LABEL;
+    String passwordLabel() default DEFAULT_PASSWORD_LABEL;
+
+    /**
+     * @return whether this widget should provide a second authentication factor input field.
+     */
+    boolean hasSecondAuthenticationFactor() default false;
+
+    /**
+     * @return the label for the second factor input field.
+     */
+    String secondFactorLabel() default DEFAULT_SECOND_FACTOR_LABEL;
 }

@@ -14,7 +14,9 @@ import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsContro
 interface Credentials {
   username: string;
   password: string;
+  secondFactor: string;
   isHiddenPassword?: boolean;
+  isHiddenSecondFactor?: boolean;
   flowVariableName?: string | null;
 }
 
@@ -48,12 +50,19 @@ const CredentialsInput = defineComponent({
       );
     },
     data() {
-      return this.control.data ?? { password: "", username: "" };
+      return (
+        this.control.data ?? { password: "", secondFactor: "", username: "" }
+      );
     },
     displayedPassword() {
       return this.data.isHiddenPassword
         ? "*****************"
         : this.data.password;
+    },
+    displayedSecondFactor() {
+      return this.data.isHiddenSecondFactor
+        ? "*****************"
+        : this.data.secondFactor;
     },
     hideUsername() {
       return this.control.uischema.options?.hideUsername ?? false;
@@ -61,11 +70,20 @@ const CredentialsInput = defineComponent({
     hidePassword() {
       return this.control.uischema.options?.hidePassword ?? false;
     },
+    showSecondFactor() {
+      return this.control.uischema.options?.showSecondFactor ?? false;
+    },
     usernameLabel() {
       return this.control.uischema.options?.usernameLabel ?? "Username";
     },
     passwordLabel() {
       return this.control.uischema.options?.passwordLabel ?? "Password";
+    },
+    secondFactorLabel() {
+      return (
+        this.control.uischema.options?.secondFactorLabel ??
+        "Second authentication factor"
+      );
     },
   },
   watch: {
@@ -90,6 +108,11 @@ const CredentialsInput = defineComponent({
     onChangePassword(password: string) {
       this.onChange(
         mergeDeep(this.data, { password, isHiddenPassword: false }),
+      );
+    },
+    onChangeSecondFactor(secondFactor: string) {
+      this.onChange(
+        mergeDeep(this.data, { secondFactor, isHiddenSecondFactor: false }),
       );
     },
   },
@@ -122,12 +145,21 @@ export default CredentialsInput;
         />
         <InputField
           v-if="!hidePassword"
-          :class="{ password: !hideUsername }"
+          :class="{ margin: !hideUsername }"
           :placeholder="passwordLabel"
           :model-value="displayedPassword"
           :disabled="disabled"
           type="password"
           @update:model-value="onChangePassword"
+        />
+        <InputField
+          v-if="showSecondFactor"
+          :class="{ margin: !hideUsername || !hidePassword }"
+          :placeholder="secondFactorLabel"
+          :model-value="displayedSecondFactor"
+          :disabled="disabled"
+          type="password"
+          @update:model-value="onChangeSecondFactor"
         />
       </div>
     </LabeledInput>
@@ -135,7 +167,7 @@ export default CredentialsInput;
 </template>
 
 <style lang="postcss" scoped>
-.password {
+.margin {
   margin-top: 10px;
 }
 </style>

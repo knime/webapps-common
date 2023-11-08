@@ -289,6 +289,10 @@ final class UiSchemaOptionsGenerator {
             final var credentialsWidget = m_field.getAnnotation(CredentialsWidget.class);
             options.put("usernameLabel", credentialsWidget.usernameLabel());
             options.put("passwordLabel", credentialsWidget.passwordLabel());
+            if (credentialsWidget.hasSecondAuthenticationFactor()) {
+                options.put("showSecondFactor", true);
+                options.put("secondFactorLabel", credentialsWidget.secondFactorLabel());
+            }
         }
         if (hasUsernameWidgetAnnotation) {
             final var usernameWidget = m_field.getAnnotation(UsernameWidget.class);
@@ -299,7 +303,11 @@ final class UiSchemaOptionsGenerator {
         if (hasPasswordWidgetAnnotation) {
             final var passwordWidget = m_field.getAnnotation(PasswordWidget.class);
             options.put("hideUsername", true);
-            options.put("passwordLabel", passwordWidget.value());
+            options.put("passwordLabel", passwordWidget.passwordLabel());
+            if (passwordWidget.hasSecondAuthenticationFactor()) {
+                options.put("showSecondFactor", true);
+                options.put("secondFactorLabel", passwordWidget.secondFactorLabel());
+            }
         }
 
         if (annotatedWidgets.contains(ChoicesWidget.class)) {

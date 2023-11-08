@@ -213,6 +213,8 @@ final class DefaultFieldNodeSettingsPersistorFactory {
 
         private static final String CFG_PWD = "password";
 
+        private static final String CFG_SECOND_FACTOR = "secondfactor";
+
         private static final String SECRET = "XKdPobvbDEBZEJmBsbMq";
 
         private final String m_configKey;
@@ -226,7 +228,8 @@ final class DefaultFieldNodeSettingsPersistorFactory {
             final var credentialsConfig = settings.getNodeSettings(m_configKey);
             final var username = credentialsConfig.getString(CFG_LOGIN);
             final var password = credentialsConfig.getPassword(CFG_PWD, SECRET);
-            return new Credentials(username, password);
+            final var secondFactor = credentialsConfig.getPassword(CFG_SECOND_FACTOR, SECRET);
+            return new Credentials(username, password, secondFactor);
         }
 
         @Override
@@ -243,6 +246,7 @@ final class DefaultFieldNodeSettingsPersistorFactory {
         private static void persistCredentials(final Credentials credentials, final NodeSettingsWO credentialsConfig) {
             credentialsConfig.addString(CFG_LOGIN, credentials.getUsername());
             credentialsConfig.addPassword(CFG_PWD, SECRET, credentials.getPassword());
+            credentialsConfig.addPassword(CFG_SECOND_FACTOR, SECRET, credentials.getSecondFactor());
         }
     }
 

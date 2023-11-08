@@ -68,7 +68,7 @@ public @interface UsernameWidget {
     /**
      * The default label for the user name input field.
      */
-    static final String DEFAULT_USERNAME_LABEL = "Username";
+    String DEFAULT_USERNAME_LABEL = "Username";
 
     /**
      * @return the label for the user name input field.

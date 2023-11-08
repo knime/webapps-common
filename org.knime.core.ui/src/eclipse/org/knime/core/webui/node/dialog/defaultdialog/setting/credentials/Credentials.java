@@ -70,9 +70,13 @@ public final class Credentials {
 
     private static final String IS_HIDDEN_PASSWORD_KEY = "isHiddenPassword";
 
+    private static final String IS_HIDDEN_SECOND_FACTOR_KEY = "isHiddenSecondFactor";
+
     private static final String FLOW_VAR_NAME_KEY = "flowVariableName";
 
     private static final String PASSWORD_KEY = "password";
+
+    private static final String SECOND_FACTOR_KEY = "secondFactor";
 
     private static final String USERNAME_KEY = "username";
 
@@ -80,11 +84,13 @@ public final class Credentials {
 
     String m_password;
 
+    String m_secondFactor;
+
     /**
      * Default constructor
      */
     public Credentials() {
-        this("", "");
+        this("", "", "");
     }
 
     /**
@@ -92,8 +98,18 @@ public final class Credentials {
      * @param password
      */
     public Credentials(final String username, final String password) {
+        this(username, password, "");
+    }
+
+    /**
+     * @param username
+     * @param password
+     * @param secondFactor
+     */
+    public Credentials(final String username, final String password, final String secondFactor) {
         m_username = username;
         m_password = password;
+        m_secondFactor = secondFactor;
     }
 
     /**
@@ -110,6 +126,13 @@ public final class Credentials {
         return m_password;
     }
 
+    /**
+     * @return the secondFactor
+     */
+    public String getSecondFactor() {
+        return m_secondFactor;
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if (this == obj) {
@@ -122,12 +145,13 @@ public final class Credentials {
             return false;
         }
         final var other = (Credentials)obj;
-        return Objects.equals(m_username, other.m_username) && Objects.equals(m_password, other.m_password);
+        return Objects.equals(m_username, other.m_username) && Objects.equals(m_password, other.m_password)
+            && Objects.equals(m_secondFactor, other.m_secondFactor);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_username, m_password);
+        return Objects.hash(m_username, m_password, m_secondFactor);
     }
 
     /**
@@ -148,7 +172,9 @@ public final class Credentials {
             final var fieldId = toFieldId(gen.getOutputContext());
             gen.writeStartObject();
             final var password = value.getPassword();
-            addPassword(gen, password, fieldId);
+            addPassword(gen, IS_HIDDEN_PASSWORD_KEY, password, fieldId + "." + PASSWORD_KEY);
+            final var secondFactor = value.getSecondFactor();
+            addPassword(gen, IS_HIDDEN_SECOND_FACTOR_KEY, secondFactor, fieldId + "." + SECOND_FACTOR_KEY);
             serializers.defaultSerializeField(USERNAME_KEY, value.getUsername(), gen);
             gen.writeEndObject();
         }
@@ -167,42 +193,47 @@ public final class Credentials {
             return parentFieldId;
         }
 
-        private static void addPassword(final JsonGenerator gen, final String password, final String fieldId)
-            throws IOException {
+        private static void addPassword(final JsonGenerator gen, final String hiddenPasswordKey, final String password,
+            final String passwordId) throws IOException {
             if (password == null || password.isEmpty()) {
-                gen.writeBooleanField(IS_HIDDEN_PASSWORD_KEY, false);
+                gen.writeBooleanField(hiddenPasswordKey, false);
             } else {
-                PasswordHolder.addPassword(fieldId, password);
-                gen.writeBooleanField(IS_HIDDEN_PASSWORD_KEY, true);
+                PasswordHolder.addPassword(passwordId, password);
+                gen.writeBooleanField(hiddenPasswordKey, true);
             }
         }
     }
 
     static final class CredentialsDeserializer extends JsonDeserializer<Credentials> {
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public Credentials deserialize(final JsonParser p, final DeserializationContext ctxt)
             throws IOException, JacksonException {
             final var fieldId = CredentialsSerializer.toFieldId(p.getParsingContext());
             final var node = (JsonNode)p.getCodec().readTree(p);
             final var username = extractString(node, USERNAME_KEY);
-            final var password = getPassword(node, fieldId);
-            return new Credentials(username, password);
-        }
-
-        private static String getPassword(final JsonNode node, final String fieldId) {
+            final String password;
+            final String secondFactor;
             final var flowVariableName = extractString(node, FLOW_VAR_NAME_KEY);
             if (!flowVariableName.isEmpty() && PasswordHolder.hasCredentialsProvider()) {
-                return PasswordHolder.getSuppliedCredentialsProvider().get(flowVariableName).getPassword();
+                final var credentials = PasswordHolder.getSuppliedCredentialsProvider().get(flowVariableName);
+                password = credentials.getPassword();
+                secondFactor = credentials.getSecondAuthenticationFactor().orElse("");
+            } else {
+                password = getPassword(node, IS_HIDDEN_PASSWORD_KEY, PASSWORD_KEY, fieldId + "." + PASSWORD_KEY);
+                secondFactor = getPassword(node, IS_HIDDEN_SECOND_FACTOR_KEY, SECOND_FACTOR_KEY,
+                    fieldId + "." + SECOND_FACTOR_KEY);
             }
-            final var isHiddenPassword = node.get(IS_HIDDEN_PASSWORD_KEY);
+            return new Credentials(username, password, secondFactor);
+        }
+
+        private static String getPassword(final JsonNode node, final String hiddenPasswordKey, final String passwordKey,
+            final String passwordId) {
+            final var isHiddenPassword = node.get(hiddenPasswordKey);
             if (isHiddenPassword != null && !isHiddenPassword.asBoolean()) {
-                return extractString(node, PASSWORD_KEY);
+                return extractString(node, passwordKey);
             }
-            return Optional.ofNullable(PasswordHolder.get(fieldId)).orElse("");
+            return Optional.ofNullable(PasswordHolder.get(passwordId)).orElse("");
         }
 
         private static String extractString(final JsonNode node, final String key) {
