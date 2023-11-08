@@ -76,12 +76,12 @@ describe("useNameValidator", () => {
   it("should return a function to clean name from leading and trailing spaces", () => {
     const name = ref("   some text    ");
 
-    const { isValid, cleanName } = useNameValidator({
+    const { isValid, cleanedName } = useNameValidator({
       blacklistedNames: ref(blacklistedNames),
       name,
     });
 
     expect(isValid.value).toBe(true);
-    expect(cleanName(name.value)).toMatch("some text");
+    expect(cleanedName.value).toMatch("some text");
   });
 });

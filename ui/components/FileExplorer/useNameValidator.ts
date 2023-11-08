@@ -14,21 +14,22 @@ type UseNameValidatorOptions = {
 
 export const useNameValidator = (options: UseNameValidatorOptions) => {
   const cleanName = (value: string) => value.trim();
+  const cleanedName = computed(() => cleanName(options.name.value));
 
-  const startsWithDot = computed(() => options.name.value.startsWith("."));
-  const endsWithDot = computed(() => options.name.value.endsWith("."));
+  const startsWithDot = computed(() => cleanedName.value.startsWith("."));
+  const endsWithDot = computed(() => cleanedName.value.endsWith("."));
 
   const isValidName = computed(() => {
     return (
       !startsWithDot.value &&
       !endsWithDot.value &&
-      !INVALID_NAME_CHARACTERS.test(options.name.value) &&
-      options.name.value.length <= NAME_CHAR_LIMIT
+      !INVALID_NAME_CHARACTERS.test(cleanedName.value) &&
+      cleanedName.value.length <= NAME_CHAR_LIMIT
     );
   });
 
   const isNameAvailable = computed(
-    () => !options.blacklistedNames.value.includes(options.name.value),
+    () => !options.blacklistedNames.value.includes(cleanedName.value),
   );
 
   const isValid = computed(() => isValidName.value && isNameAvailable.value);
@@ -56,6 +57,6 @@ export const useNameValidator = (options: UseNameValidatorOptions) => {
   return {
     isValid,
     errorMessage,
-    cleanName,
+    cleanedName,
   };
 };
