@@ -48,6 +48,9 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
@@ -81,8 +84,10 @@ public final class EnumFieldPersistor<E extends Enum<E>> implements NodeSettings
         try {
             return name == null ? null : Enum.valueOf(m_enumClass, name);
         } catch (IllegalArgumentException ex) {
+            var values =
+                Arrays.stream(m_enumClass.getEnumConstants()).map(Enum::name).collect(Collectors.joining(", "));
             throw new InvalidSettingsException(
-                String.format("There is no enum constant with name '%s' in enum '%s'.", name, m_enumClass), ex);
+                String.format("Invalid value '%s'. Possible values: %s", name, values), ex);
         }
     }
 

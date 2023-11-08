@@ -344,7 +344,7 @@ public class FlowVariableDataServiceTest {
             final var invalidSettingsException = assertThrows(InvalidSettingsException.class,
                 () -> dataService.getFlowVariableOverrideValue(WRONG_ENUM_VALUE_OVERRIDE, dataPath));
             assertThat(invalidSettingsException.getMessage())
-                .isEqualTo(String.format("There is no enum constant with name 'stringVar1_value' in enum 'class %s'.",
+                .isEqualTo(String.format("Invalid value 'stringVar1_value'. Possible values: A, B, C",
                     TestSettingsWithEnum.MyEnum.class.getName()));
         }
 
