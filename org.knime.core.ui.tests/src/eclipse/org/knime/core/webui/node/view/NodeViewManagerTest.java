@@ -82,6 +82,7 @@ import org.knime.core.node.interactive.ReExecutable;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.node.workflow.virtual.subnode.VirtualSubNodeInputNodeFactory;
 import org.knime.core.webui.data.ApplyDataService;
@@ -191,6 +192,7 @@ public class NodeViewManagerTest {
 
             @Override
             public void loadValidatedSettingsFrom(final NodeSettingsRO settings) {
+                assertThat(NodeContext.getContext().getNodeContainer()).isNotNull();
                 loadedNodeSettings.set(settings);
             }
 

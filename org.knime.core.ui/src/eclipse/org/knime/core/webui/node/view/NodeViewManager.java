@@ -170,7 +170,12 @@ public final class NodeViewManager {
         var nodeView = getNodeView(nnc);
         var viewSettings = nnc.getViewSettingsUsingFlowObjectStack();
         if (viewSettings.isPresent()) {
-            nodeView.loadValidatedSettingsFrom(viewSettings.get());
+            NodeContext.pushContext(nnc);
+            try {
+                nodeView.loadValidatedSettingsFrom(viewSettings.get());
+            } finally {
+                NodeContext.removeLastContext();
+            }
         }
     }
 
