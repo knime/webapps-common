@@ -52,7 +52,7 @@ const emit = defineEmits<Emits>();
 const renameInput: Ref<InstanceType<typeof InputField> | null> = ref(null);
 const renameValue = ref("");
 
-const { isValid, errorMessage, cleanName } = useNameValidator({
+const { isValid, errorMessage, cleanedName } = useNameValidator({
   blacklistedNames,
   name: renameValue,
 });
@@ -78,7 +78,7 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
   }
 
   if ((keyupEvent.key === "Enter" || isClickAway) && isValid.value) {
-    const newName = cleanName(renameValue.value);
+    const newName = cleanedName.value;
     const isSameName = newName === props.item.name;
 
     if (newName === "" || isSameName) {
@@ -88,7 +88,7 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
 
     emit("rename:submit", {
       itemId: props.item.id,
-      newName: renameValue.value,
+      newName,
     });
     emit("rename:clear");
   }
