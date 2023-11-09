@@ -99,6 +99,7 @@ const dataConfig = computed(() => {
     settings: props.settings,
     columnSizes: columnSizes.value,
     enableRowResizing: props.enableRowResizing,
+    dynamicRowHeight: props.dynamicRowHeight,
     ...reactive(props.header),
   });
   emit("update-column-configs", conf.columnConfigs);

@@ -111,6 +111,7 @@ describe("TableViewReport.vue", () => {
       }),
       rows: expect.anything(),
       settingsItems: undefined,
+      dynamicRowHeight: true,
     });
   });
 

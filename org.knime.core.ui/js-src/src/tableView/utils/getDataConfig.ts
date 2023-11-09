@@ -19,6 +19,7 @@ export default ({
   columnFormatterDescriptions,
   indicateRemainingColumnsSkipped,
   enableRowResizing,
+  dynamicRowHeight,
 }: {
   settings: TableViewViewSettings;
   columnSizes: number[];
@@ -37,6 +38,7 @@ export default ({
   columnFormatterDescriptions?: (string | null)[];
   indicateRemainingColumnsSkipped: any;
   enableRowResizing: boolean;
+  dynamicRowHeight: boolean;
 }) => {
   const {
     showRowKeys,
@@ -172,6 +174,7 @@ export default ({
     columnConfigs,
     rowConfig: {
       ...(customMode && { rowHeight: getCustomRowHeight({ customRowHeight }) }),
+      ...(dynamicRowHeight && { rowHeight: "dynamic" as const }),
       compactMode,
       enableResizing: enableRowResizing,
     },
