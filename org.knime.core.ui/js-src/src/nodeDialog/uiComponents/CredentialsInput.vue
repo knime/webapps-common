@@ -71,7 +71,11 @@ const CredentialsInput = defineComponent({
       return this.control.uischema.options?.hidePassword ?? false;
     },
     showSecondFactor() {
-      return this.control.uischema.options?.showSecondFactor ?? false;
+      return (
+        (!this.hidePassword &&
+          this.control.uischema.options?.showSecondFactor) ??
+        false
+      );
     },
     usernameLabel() {
       return this.control.uischema.options?.usernameLabel ?? "Username";

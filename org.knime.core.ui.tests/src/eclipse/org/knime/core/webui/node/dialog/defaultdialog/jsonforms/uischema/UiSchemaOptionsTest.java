@@ -86,6 +86,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.Usernam
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DeclaringDefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 /**
  *
  * This tests the functionality of the {@link JsonFormsSchemaUtil} to set default options depending on types of fields
@@ -611,33 +613,79 @@ class UiSchemaOptionsTest {
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("richTextContent");
     }
 
-
-
     @Test
     void testCredentials() {
         class CredentialsWidgetSettings {
             @CredentialsWidget(passwordLabel = "myPasswordLabel", usernameLabel = "myUsernameLabel")
             Credentials m_credentials;
+
             @PasswordWidget(passwordLabel = "myPasswordLabel")
             Credentials m_password;
+
             @UsernameWidget("myUsernameLabel")
             Credentials m_username;
+
+            @CredentialsWidget(hasSecondAuthenticationFactor = true, secondFactorLabel = "mySecondFactorLabel")
+            Credentials m_credentialsWithSecondFactor;
+
+            @PasswordWidget(hasSecondAuthenticationFactor = true, secondFactorLabel = "mySecondFactorLabel")
+            Credentials m_passwordWithSecondFactor;
         }
 
         var response = buildTestUiSchema(CredentialsWidgetSettings.class);
+        assertResponseCredentials(response);
+        assertResponsePassword(response);
+        assertResponseUsername(response);
+        assertResponseCredentialsWithSecondFactor(response);
+        assertResponsePasswordWithSecondFactor(response);
+    }
+
+    private static void assertResponseCredentials(final ObjectNode response) {
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("credentials");
         assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("credentials");
         assertThatJson(response).inPath("$.elements[0].options.passwordLabel").isString().isEqualTo("myPasswordLabel");
         assertThatJson(response).inPath("$.elements[0].options.usernameLabel").isString().isEqualTo("myUsernameLabel");
+        assertThatJson(response).inPath("$.elements[0].options.hidePassword").isAbsent();
+        assertThatJson(response).inPath("$.elements[0].options.showSecondFactor").isAbsent();
+        assertThatJson(response).inPath("$.elements[0].options.hideUsername").isAbsent();
+    }
+
+    private static void assertResponsePassword(final ObjectNode response) {
         assertThatJson(response).inPath("$.elements[1].scope").isString().contains("password");
         assertThatJson(response).inPath("$.elements[1].options.format").isString().isEqualTo("credentials");
         assertThatJson(response).inPath("$.elements[1].options.passwordLabel").isString().isEqualTo("myPasswordLabel");
+        assertThatJson(response).inPath("$.elements[1].options.hidePassword").isAbsent();
+        assertThatJson(response).inPath("$.elements[1].options.showSecondFactor").isAbsent();
         assertThatJson(response).inPath("$.elements[1].options.hideUsername").isBoolean().isTrue();
+    }
+
+    private static void assertResponseUsername(final ObjectNode response) {
         assertThatJson(response).inPath("$.elements[2].scope").isString().contains("username");
         assertThatJson(response).inPath("$.elements[2].options.format").isString().isEqualTo("credentials");
         assertThatJson(response).inPath("$.elements[2].options.usernameLabel").isString().isEqualTo("myUsernameLabel");
         assertThatJson(response).inPath("$.elements[2].options.hidePassword").isBoolean().isTrue();
+        assertThatJson(response).inPath("$.elements[2].options.showSecondFactor").isAbsent();
+        assertThatJson(response).inPath("$.elements[2].options.hideUsername").isAbsent();
+    }
 
+    private static void assertResponseCredentialsWithSecondFactor(final ObjectNode response) {
+        assertThatJson(response).inPath("$.elements[3].scope").isString().contains("credentialsWithSecondFactor");
+        assertThatJson(response).inPath("$.elements[3].options.format").isString().isEqualTo("credentials");
+        assertThatJson(response).inPath("$.elements[3].options.secondFactorLabel").isString()
+            .isEqualTo("mySecondFactorLabel");
+        assertThatJson(response).inPath("$.elements[3].options.hidePassword").isAbsent();
+        assertThatJson(response).inPath("$.elements[3].options.showSecondFactor").isBoolean().isTrue();
+        assertThatJson(response).inPath("$.elements[3].options.hideUsername").isAbsent();
+    }
+
+    private static void assertResponsePasswordWithSecondFactor(final ObjectNode response) {
+        assertThatJson(response).inPath("$.elements[4].scope").isString().contains("passwordWithSecondFactor");
+        assertThatJson(response).inPath("$.elements[4].options.format").isString().isEqualTo("credentials");
+        assertThatJson(response).inPath("$.elements[4].options.secondFactorLabel").isString()
+            .isEqualTo("mySecondFactorLabel");
+        assertThatJson(response).inPath("$.elements[4].options.hidePassword").isAbsent();
+        assertThatJson(response).inPath("$.elements[4].options.showSecondFactor").isBoolean().isTrue();
+        assertThatJson(response).inPath("$.elements[4].options.hideUsername").isBoolean().isTrue();
     }
 
     @Test
@@ -648,7 +696,7 @@ class UiSchemaOptionsTest {
             Credentials m_credentials;
         }
 
-        assertThrows(UiSchemaGenerationException.class, () ->  buildTestUiSchema(CredentialsWidgetSettings.class));
+        assertThrows(UiSchemaGenerationException.class, () -> buildTestUiSchema(CredentialsWidgetSettings.class));
 
     }
 

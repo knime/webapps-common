@@ -22,6 +22,7 @@ describe("CredentialsInput.vue", () => {
         data: {
           username: "username",
           password: "password",
+          secondFactor: "secondFactor",
         },
         schema: {
           properties: {
@@ -32,6 +33,9 @@ describe("CredentialsInput.vue", () => {
                   type: "string",
                 },
                 password: {
+                  type: "string",
+                },
+                secondFactor: {
                   type: "string",
                 },
               },
@@ -64,6 +68,7 @@ describe("CredentialsInput.vue", () => {
     expect(wrapper.getComponent(CredentialsInput).exists()).toBeTruthy();
     expect(wrapper.findComponent(LabeledInput).exists()).toBeTruthy();
     const inputFieldWrappers = wrapper.findAllComponents(InputField);
+    expect(inputFieldWrappers).toHaveLength(2);
     expect(inputFieldWrappers[0].exists()).toBeTruthy();
     expect(inputFieldWrappers[1].exists()).toBeTruthy();
   });
@@ -171,7 +176,11 @@ describe("CredentialsInput.vue", () => {
     expect(updateData).toHaveBeenCalledWith(
       expect.anything(),
       props.control.path,
-      { username, password: props.control.data.password },
+      {
+        username,
+        password: props.control.data.password,
+        secondFactor: props.control.data.secondFactor,
+      },
     );
     expect(dirtySettingsMock).not.toHaveBeenCalled();
   });
@@ -197,6 +206,7 @@ describe("CredentialsInput.vue", () => {
       {
         username: props.control.data.username,
         password,
+        secondFactor: props.control.data.secondFactor,
         isHiddenPassword: false,
       },
     );
@@ -236,6 +246,7 @@ describe("CredentialsInput.vue", () => {
       {
         isHiddenPassword: true,
         password: props.control.data.password,
+        secondFactor: props.control.data.secondFactor,
         username: "flowVarUsername",
       },
     );
@@ -259,6 +270,7 @@ describe("CredentialsInput.vue", () => {
       flowVariableName: flowVarName,
       password: "password",
       username: "username",
+      secondFactor: "secondFactor",
     });
   });
 
@@ -279,6 +291,7 @@ describe("CredentialsInput.vue", () => {
       flowVariableName: null,
       password: "password",
       username: "username",
+      secondFactor: "secondFactor",
     });
   });
 
@@ -316,5 +329,87 @@ describe("CredentialsInput.vue", () => {
       wrapper.findAllComponents(InputField)[1].get("input").attributes()
         .placeholder,
     ).toBe(props.control.uischema.options.passwordLabel);
+  });
+
+  it("shows second factor input field when configured to do so", () => {
+    props.control.uischema.options.showSecondFactor = true;
+    const { wrapper } = mountJsonFormsComponent(CredentialsInput, { props });
+    const inputFieldWrappers = wrapper.findAllComponents(InputField);
+    expect(inputFieldWrappers).toHaveLength(3);
+    expect(inputFieldWrappers[0].get("input").attributes().type).toBe("text");
+    expect(inputFieldWrappers[1].get("input").attributes().type).toBe(
+      "password",
+    );
+    expect(inputFieldWrappers[2].get("input").attributes().type).toBe(
+      "password",
+    );
+  });
+
+  it("does not show second factor input field when password is hidden", () => {
+    props.control.uischema.options.hidePassword = true;
+    props.control.uischema.options.showSecondFactor = true;
+    const { wrapper } = mountJsonFormsComponent(CredentialsInput, { props });
+    const inputFieldWrappers = wrapper.findAllComponents(InputField);
+    expect(inputFieldWrappers).toHaveLength(1);
+    expect(inputFieldWrappers[0].get("input").attributes().type).toBe("text");
+  });
+
+  it("updates data when second factor input is changed", () => {
+    props.control.uischema.options.showSecondFactor = true;
+    const dirtySettingsMock = vi.fn();
+    const { wrapper, updateData } = mountJsonFormsComponent(CredentialsInput, {
+      props,
+      modules: {
+        "pagebuilder/dialog": {
+          actions: { dirtySettings: dirtySettingsMock },
+          namespaced: true,
+        },
+      },
+    });
+    const secondFactor = "new second factor";
+    wrapper
+      .findAllComponents(InputField)[2]
+      .vm.$emit("update:modelValue", secondFactor);
+    expect(updateData).toHaveBeenCalledWith(
+      expect.anything(),
+      props.control.path,
+      {
+        username: props.control.data.username,
+        password: props.control.data.password,
+        secondFactor,
+        isHiddenSecondFactor: false,
+      },
+    );
+    expect(dirtySettingsMock).not.toHaveBeenCalled();
+  });
+
+  it("uses a custom second factor label if provided with one", () => {
+    props.control.uischema.options.showSecondFactor = true;
+    props.control.uischema.options.secondFactorLabel = "Custom Second Factor";
+    const { wrapper } = mountJsonFormsComponent(CredentialsInput, { props });
+    expect(
+      wrapper.findAllComponents(InputField)[2].get("input").attributes()
+        .placeholder,
+    ).toBe(props.control.uischema.options.secondFactorLabel);
+  });
+
+  it("sets magic second factor", async () => {
+    props.control.uischema.options.showSecondFactor = true;
+    const { wrapper } = mountJsonFormsComponent(CredentialsInput, { props });
+    wrapper.vm.control.data.isHiddenSecondFactor = true;
+    await wrapper.vm.$nextTick();
+    expect(wrapper.findAllComponents(InputField)[2].vm.modelValue).toBe(
+      "*****************",
+    );
+  });
+
+  it("sets correct second factor label", () => {
+    props.control.uischema.options.showSecondFactor = true;
+    const { wrapper } = mountJsonFormsComponent(CredentialsInput, { props });
+    expect(wrapper.find("label").text()).toBe(props.control.label);
+    const inputFieldWrappers = wrapper.findAllComponents(InputField);
+    expect(inputFieldWrappers[2].get("input").attributes().placeholder).toBe(
+      "Second authentication factor",
+    );
   });
 });
