@@ -60,7 +60,6 @@ import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.JsonBasedNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldBasedNodeSettingsPersistor;
 
 /**
@@ -88,13 +87,6 @@ class NodeSettingsPersistorFactoryTest {
     void testFieldBasedPersistance() throws InvalidSettingsException {
         var settings = new FieldBasedPersistorSettings();
         settings.m_foo = "foo";
-        testSaveLoad(settings);
-    }
-
-    @Test
-    void testJsonBasedPersistance() throws Exception {
-        var settings = new JsonPersistorSettings();
-        settings.m_foo = "bar";
         testSaveLoad(settings);
     }
 
@@ -179,18 +171,6 @@ class NodeSettingsPersistorFactoryTest {
         protected boolean internalEquals(final DefaultPersistorSettings other) {
             return Objects.equals(m_foo, other.m_foo);
         }
-    }
-
-    @Persistor(JsonBasedNodeSettingsPersistor.class)
-    private static final class JsonPersistorSettings extends AbstractTestSettings<JsonPersistorSettings> {
-
-        String m_foo;
-
-        @Override
-        protected boolean internalEquals(final JsonPersistorSettings other) {
-            return Objects.equals(m_foo, other.m_foo);
-        }
-
     }
 
 }
