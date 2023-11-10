@@ -17,15 +17,16 @@ declare module "@tiptap/core" {
 
 const SmallFontSize = Paragraph.extend({
   addAttributes() {
+    const smallTextClass = "small-text";
     return {
       ...this.parent?.(),
       smallText: {
         default: false,
-        parseHTML: (element) => element.style.fontSize.replace("px", ""),
+        parseHTML: (element) => element.className === smallTextClass,
         renderHTML: (attributes) => {
           return attributes.smallText
             ? {
-                class: "small-text",
+                class: smallTextClass,
               }
             : {};
         },

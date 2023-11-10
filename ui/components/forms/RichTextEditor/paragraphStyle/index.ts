@@ -33,7 +33,7 @@ export default (getEditor: () => Editor) => {
       {
         item: { text: "Small text" },
         id: "small",
-        active: () => getEditor().isActive({ fontSize: true }),
+        active: () => getEditor().isActive({ smallText: true }),
       },
       ...Array.from({ length: 6 }, (_, i) =>
         getHeadingOptionChild((i + 1) as Level, getEditor),
