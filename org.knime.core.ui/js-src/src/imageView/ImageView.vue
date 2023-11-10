@@ -80,7 +80,7 @@ const scale = toRef(viewSettings, "shrinkToFit");
 </script>
 
 <template>
-  <div v-show="loaded" class="scroll-container">
+  <div v-show="loaded" :class="['scroll-container', { scale }]">
     <OptionalLabel
       #default="{ labelForId }"
       :scale="scale"
@@ -110,9 +110,11 @@ const scale = toRef(viewSettings, "shrinkToFit");
 div.scroll-container {
   overflow: auto;
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+
+  &.scale {
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 /** 
@@ -122,12 +124,12 @@ div.scroll-container {
 img {
   display: block;
   margin-bottom: 4px;
+  object-fit: none;
+  object-position: top left;
 
   &.scale {
-    flex: 1;
     min-height: 0;
     object-fit: scale-down;
-    object-position: top left;
   }
 }
 </style>

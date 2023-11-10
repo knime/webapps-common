@@ -7,7 +7,7 @@ defineProps<{
 </script>
 
 <template>
-  <figure v-if="caption" :id="id" :class="['image-view-figure', { scale }]">
+  <figure v-if="caption" :id="id" :class="{ scale }">
     <slot />
     <figcaption>{{ caption }}</figcaption>
   </figure>
@@ -15,13 +15,12 @@ defineProps<{
 </template>
 
 <style scoped>
-.image-view-figure {
+figure {
   margin: 0;
 
   &.scale {
     display: flex;
     flex-direction: column;
-    flex: 1;
     min-height: 0;
   }
 }
