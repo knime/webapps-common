@@ -162,7 +162,6 @@ public final class NodeDialogManager {
         }
     }
 
-
     /**
      * @return the {@link DataServiceManager} instance
      */
@@ -205,6 +204,7 @@ public final class NodeDialogManager {
 
     /**
      * deactivates the node dialog associated to the node container;
+     *
      * @param nc
      */
     public void deactivateDialog(final NodeContainer nc) {

@@ -70,7 +70,8 @@ public final class RowRendererWithIndicesFromColumn<R> extends RowRendererDecora
      * @param delegate
      * @param renderIndexCell
      */
-    public RowRendererWithIndicesFromColumn(final RowRenderer<R> delegate, final Function<DataCell, R> renderIndexCell) {
+    public RowRendererWithIndicesFromColumn(final RowRenderer<R> delegate,
+        final Function<DataCell, R> renderIndexCell) {
         super(delegate);
         m_renderIndexCell = renderIndexCell;
     }

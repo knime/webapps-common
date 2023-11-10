@@ -103,6 +103,7 @@ import org.knime.testing.util.WorkflowManagerUtil;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
+@SuppressWarnings("java:S2698") // we accept assertions without messages
 public class NodeViewManagerTest {
 
     private WorkflowManager m_wfm;
@@ -142,9 +143,8 @@ public class NodeViewManagerTest {
         var nodeView = NodeViewManager.getInstance().getNodeView(nc);
         assertThat(nodeView.getPage() == page).isTrue();
 
-        Assertions
-            .assertThatThrownBy(
-                () -> NodeViewManager.getInstance().getDataServiceManager().callInitialDataService(NodeWrapper.of(nc)))
+        final var dataServiceManager = NodeViewManager.getInstance().getDataServiceManager();
+        Assertions.assertThatThrownBy(() -> dataServiceManager.callInitialDataService(NodeWrapper.of(nc)))
             .isInstanceOf(IllegalStateException.class).hasMessageContaining("No initial data service available");
         assertThat(nodeView.getPage().isCompletelyStatic()).isFalse();
         assertThat(NodeViewManager.getInstance().getPageResourceManager().getPageId(NodeWrapper.of(nc)))
@@ -316,7 +316,7 @@ public class NodeViewManagerTest {
         assertThat(nodeViewManager.getPageResourceManager().getPageCacheSize()).isEqualTo(1);
         m_wfm.removeNode(nc.get().getID());
         untilAsserted(() -> {
-            assertThat(nodeViewManager.getNodeViewMapSize()).isEqualTo(0);
+            assertThat(nodeViewManager.getNodeViewMapSize()).isZero();
             assertThat(nodeViewManager.getPageResourceManager().getPageCacheSize()).isEqualTo(0);
         });
 
@@ -326,7 +326,7 @@ public class NodeViewManagerTest {
         assertThat(nodeViewManager.getPageResourceManager().getPageCacheSize()).isEqualTo(1);
         m_wfm.getParent().removeProject(m_wfm.getID());
         untilAsserted(() -> {
-            assertThat(nodeViewManager.getNodeViewMapSize()).isEqualTo(0);
+            assertThat(nodeViewManager.getNodeViewMapSize()).isZero();
             assertThat(nodeViewManager.getPageResourceManager().getPageCacheSize()).isEqualTo(0);
         });
     }
@@ -430,10 +430,13 @@ public class NodeViewManagerTest {
         var nc = NodeViewManagerTest.createNodeWithNodeView(m_wfm, m -> nodeView);
 
         var nw = NodeWrapper.of(nc);
-        assertThatThrownBy(() -> NodeViewManager.getInstance().getTableViewManager().callSelectionTranslationService(nw,
-            Collections.singletonList("foo"))).isInstanceOf(IOException.class).hasMessage("[foo]");
-        assertThatThrownBy(() -> NodeViewManager.getInstance().getTableViewManager().callSelectionTranslationService(nw,
-            Set.of(new RowKey("bar")))).isInstanceOf(IOException.class).hasMessage("[bar]");
+        final var tableViewManager = NodeViewManager.getInstance().getTableViewManager();
+        final var invalidSelection = Collections.singletonList("foo");
+        assertThatThrownBy(() -> tableViewManager.callSelectionTranslationService(nw, invalidSelection))
+            .isInstanceOf(IOException.class).hasMessage("[foo]");
+        final var invalidRowKeys = Set.of(new RowKey("bar"));
+        assertThatThrownBy(() -> tableViewManager.callSelectionTranslationService(nw, invalidRowKeys))
+            .isInstanceOf(IOException.class).hasMessage("[bar]");
 
     }
 

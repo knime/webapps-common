@@ -87,6 +87,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author Konrad Amtenbrink, KNIME GmbH, Berlin, Germany
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
  */
+@SuppressWarnings("java:S103") // we accept too long lines
 public class TableViewViewSettings implements DefaultNodeSettings {
 
     private static final class AllColumns implements ColumnChoicesProvider {

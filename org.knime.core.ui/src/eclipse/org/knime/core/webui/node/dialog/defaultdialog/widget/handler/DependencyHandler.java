@@ -61,7 +61,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
  *
  * <pre>
  *            class OtherSettings {
- *                  &#64;DeclaringDefaultNodeSettings(MyNodeModelSettings.class) // referencing "MyNodeModelSettings#m_foo".
+ *                  // referencing "MyNodeModelSettings#m_foo".
+ *                  &#64;DeclaringDefaultNodeSettings(MyNodeModelSettings.class)
  *                  String m_bar;
  *            }
  *

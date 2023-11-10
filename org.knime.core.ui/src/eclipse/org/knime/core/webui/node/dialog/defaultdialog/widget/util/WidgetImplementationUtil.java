@@ -53,7 +53,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
@@ -163,7 +163,7 @@ public final class WidgetImplementationUtil {
      * @return a partition of the present widget annotations by whether they are applicable
      */
     public static Map<Boolean, List<WidgetAnnotation>> partitionWidgetAnnotationsByApplicability(
-        final Function<Class<? extends Annotation>, Boolean> annotationIsPresent, final Class<?> fieldType) {
+        final Predicate<Class<? extends Annotation>> annotationIsPresent, final Class<?> fieldType) {
         return getPresentWidgetAnnotations(annotationIsPresent).stream().collect(
             Collectors.partitioningBy(widgetAnnotation -> isApplicable(fieldType, widgetAnnotation.applicableFields)));
     }
@@ -178,8 +178,8 @@ public final class WidgetImplementationUtil {
     }
 
     private static List<WidgetAnnotation>
-        getPresentWidgetAnnotations(final Function<Class<? extends Annotation>, Boolean> annotationIsPresent) {
-        return Arrays.asList(widgetAnnotations).stream().filter(ann -> annotationIsPresent.apply(ann.widgetAnnotation))
+        getPresentWidgetAnnotations(final Predicate<Class<? extends Annotation>> annotationIsPresent) {
+        return Arrays.asList(widgetAnnotations).stream().filter(ann -> annotationIsPresent.test(ann.widgetAnnotation))
             .toList();
     }
 

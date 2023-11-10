@@ -473,7 +473,7 @@ class TableViewTest {
         globalSearchTerm = "NotInTable";
         resultTable = dataService.getFilteredAndSortedTable(table.getDataTableSpec().getColumnNames(), 0, 2, "string",
             true, globalSearchTerm, columnFilterValue, filterRowKeys, null, false, false, true, false, true);
-        assertThat(resultTable.getRowCount()).isEqualTo(0);
+        assertThat(resultTable.getRowCount()).isZero();
     }
 
     @Test
@@ -510,7 +510,7 @@ class TableViewTest {
                 .getFilteredAndSortedTable(filterTestTable.getDataTableSpec().getColumnNames(), 0, 2, sortColumnName,
                     true, "wrongSearchTerm", columnFilterValue, false, null, false, false, true, false, false)
                 .getRows();
-        assertThat(emptyTable.size()).as("filters and excludes all rows").isEqualTo(0);
+        assertThat(emptyTable.size()).as("filters and excludes all rows").isZero();
 
         final var table = testTable.getFilteredAndSortedTable(filterTestTable.getDataTableSpec().getColumnNames(), 0, 2,
             sortColumnName, true, "STRING1", columnFilterValue, false, null, false, false, true, false, false)
@@ -610,14 +610,14 @@ class TableViewTest {
     void testDataServiceGetDataNullTable() {
         final var rows = createTableViewDataServiceInstance(() -> null)
             .getTable(getDefaultTestSpec().getColumnNames(), 0, 2, null, false, true, false, false).getRows();
-        assertThat(rows).hasSize(0);
+        assertThat(rows).isEmpty();
     }
 
     @Test
     void testDataServiceGetDataZeroRows() {
         final var rows = createTableViewDataServiceInstance(() -> null)
             .getTable(getDefaultTestSpec().getColumnNames(), 0, 0, null, false, true, false, false).getRows();
-        assertThat(rows).hasSize(0);
+        assertThat(rows).isEmpty();
     }
 
     @Test
@@ -696,13 +696,13 @@ class TableViewTest {
         assertThat(((Cell)rows.get(0).get(2)).getColor()).isEqualTo("#00FF00");
         assertThat(((Cell)rows.get(0).get(2)).getValue()).isEqualTo("value1");
         assertThat(((Cell)rows.get(1).get(2)).getColor()).isEqualTo("#404040");
-        assertThat(((Cell)rows.get(1).get(2)).getValue()).isEqualTo(null);
+        assertThat(((Cell)rows.get(1).get(2)).getValue()).isNull();
 
         assertThat(((Cell)rows.get(0).get(3)).getColor()).isEqualTo("#404040");
-        assertThat(((Cell)rows.get(0).get(3)).getValue()).isEqualTo(null);
+        assertThat(((Cell)rows.get(0).get(3)).getValue()).isNull();
         assertThat(((MissingCellWithMessage)rows.get(0).get(3)).getMetadata()).isEqualTo("Row1_Col2");
         assertThat(((Cell)rows.get(1).get(3)).getColor()).isEqualTo("#404040");
-        assertThat(((Cell)rows.get(1).get(3)).getValue()).isEqualTo(null);
+        assertThat(((Cell)rows.get(1).get(3)).getValue()).isNull();
         assertThat(((MissingCellWithMessage)rows.get(1).get(3)).getMetadata()).isEqualTo("Row2_Col2");
     }
 

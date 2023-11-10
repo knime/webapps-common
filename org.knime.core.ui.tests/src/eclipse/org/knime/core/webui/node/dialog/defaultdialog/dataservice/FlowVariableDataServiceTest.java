@@ -97,7 +97,8 @@ import com.fasterxml.jackson.databind.JsonNode;
  *
  * @author Paul Bärnreuther
  */
-public class FlowVariableDataServiceTest {
+@SuppressWarnings("java:S2698") // we accept assertions without messages
+class FlowVariableDataServiceTest {
 
     final static PortObjectSpec[] PORT_OBJECT_SPECS = new PortObjectSpec[0];
 

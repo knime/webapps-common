@@ -99,7 +99,7 @@ class NodeViewEntUtilTest {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testCreateNodeViewEntAndSetUpEventSources() throws Exception {
+    void testCreateNodeViewEntAndSetUpEventSources() throws Exception {
 
         Function<NodeViewNodeModel, NodeView> viewCreator = m -> { // NOSONAR
             return new NodeTableView() { // NOSONAR

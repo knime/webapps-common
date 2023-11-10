@@ -151,7 +151,7 @@ public class TableRenderer {
 
     private RowRenderer<Object> getRowRenderer(final DataTableSpec spec) {
         final var colIndices = spec.columnsToIndices(m_displayedColumns);
-        return new SimpleRowRenderer<Object>(colIndices,
+        return new SimpleRowRenderer<>(colIndices,
             indexInDisplayedColumns -> getCellRenderer(indexInDisplayedColumns, colIndices[indexInDisplayedColumns],
                 spec));
     }
@@ -190,9 +190,9 @@ public class TableRenderer {
     private static RowRenderer<Object> addIndices(final RowRenderer<Object> rowRenderer,
         final boolean tableHasIndices) {
         if (tableHasIndices) {
-            return new RowRendererWithIndicesFromColumn<Object>(rowRenderer, DataCell::toString);
+            return new RowRendererWithIndicesFromColumn<>(rowRenderer, DataCell::toString);
         } else {
-            return new RowRendererWithIndicesCounter<Object>(rowRenderer, index -> Long.toString(index));
+            return new RowRendererWithIndicesCounter<>(rowRenderer, index -> Long.toString(index));
         }
     }
 

@@ -105,6 +105,7 @@ import org.osgi.framework.FrameworkUtil;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+@SuppressWarnings("java:S2698") // we accept assertions without messages
 public class NodeDialogManagerTest {
 
     private WorkflowManager m_wfm;
@@ -141,7 +142,7 @@ public class NodeDialogManagerTest {
 
         assertThat(NodeDialogManager.hasNodeDialog(nc)).as("node expected to have a node dialog").isTrue();
         var nodeDialogManager = NodeDialogManager.getInstance();
-        assertThat(nodeDialogManager.getPageResourceManager().getPage(NodeWrapper.of(nc)) == page).isTrue();
+        assertThat(nodeDialogManager.getPageResourceManager().getPage(NodeWrapper.of(nc))).isSameAs(page);
         assertThat(NodeDialogManager.getInstance().getPageResourceManager().getPageId(NodeWrapper.of(nc)))
             .isEqualTo(nc.getID().toString().replace(":", "_"));
 
@@ -281,7 +282,8 @@ public class NodeDialogManagerTest {
     void testNodeWithoutNodeDialog() {
         NativeNodeContainer nc = createAndAddNode(m_wfm, new VirtualSubNodeInputNodeFactory(null, new PortType[0]));
         assertThat(NodeDialogManager.hasNodeDialog(nc)).as("node not expected to have a node dialog").isFalse();
-        Assertions.assertThatThrownBy(() -> NodeDialogManager.getInstance().getNodeDialog(nc))
+        final var nodeDialogManager = NodeDialogManager.getInstance();
+        Assertions.assertThatThrownBy(() -> nodeDialogManager.getNodeDialog(nc))
             .isInstanceOf(IllegalArgumentException.class);
     }
 

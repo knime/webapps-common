@@ -358,8 +358,7 @@ final class UiSchemaOptionsGenerator {
 
     private Object[] generatePossibleValues(final Class<? extends ChoicesProvider> choicesProviderClass) {
         final var choicesProvider = InstantiationUtil.createInstance(choicesProviderClass);
-        final var possibleValues = ChoicesGeneratorUtil.getChoices(choicesProvider, m_defaultNodeSettingsContext);
-        return possibleValues;
+        return ChoicesGeneratorUtil.getChoices(choicesProvider, m_defaultNodeSettingsContext);
     }
 
     private static <M extends Enum<M>> void generateStates(final ArrayNode states,

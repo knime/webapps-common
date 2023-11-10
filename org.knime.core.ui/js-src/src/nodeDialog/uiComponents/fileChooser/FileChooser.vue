@@ -14,7 +14,7 @@ const { listItems, getFilePath } = useFileChooserBackend();
 const currentPath: Ref<string | null> = ref(null);
 
 const currentPathDisplay = computed(() => {
-  return currentPath.value === null ? "Root directories" : currentPath.value;
+  return currentPath.value ?? "Root directories";
 });
 const items: Ref<FileExplorerItem[]> = ref([]);
 const props = withDefaults(defineProps<{ initialFilePath?: string }>(), {

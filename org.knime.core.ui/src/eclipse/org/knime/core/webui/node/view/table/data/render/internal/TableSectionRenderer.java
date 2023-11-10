@@ -85,7 +85,7 @@ public final class TableSectionRenderer<R> {
      */
     public List<List<R>> renderRows(final BufferedDataTable table) {
         final var size = (int)getSize();
-        List<List<R>> out = new ArrayList<List<R>>(size);
+        List<List<R>> out = new ArrayList<>(size);
         if (size > 0) {
             var rowIndex = m_fromIndex;
             try (final var iterator = table.filter(getFilter()).iterator()) {

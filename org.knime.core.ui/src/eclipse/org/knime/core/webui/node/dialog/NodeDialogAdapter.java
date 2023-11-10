@@ -94,7 +94,7 @@ final class NodeDialogAdapter implements UIExtension, DataServiceProvider {
     NodeDialogAdapter(final SingleNodeContainer snc, final NodeDialog dialog) {
         m_dialog = dialog;
         m_settingsTypes = dialog.getSettingsTypes();
-        CheckUtils.checkState(m_settingsTypes.size() > 0, "At least one settings type must be provided");
+        CheckUtils.checkState(!m_settingsTypes.isEmpty(), "At least one settings type must be provided");
         m_snc = snc;
         m_onApplyModifier = dialog.getOnApplyNodeModifier().orElse(null);
         m_nodeSettingsService = dialog.getNodeSettingsService();
@@ -106,7 +106,7 @@ final class NodeDialogAdapter implements UIExtension, DataServiceProvider {
     }
 
     @Override
-    public final Optional<InitialDataService<String>> createInitialDataService() {
+    public Optional<InitialDataService<String>> createInitialDataService() {
         var initialData = new InitialData(m_snc, m_settingsTypes, m_nodeSettingsService);
         return Optional.of(InitialDataService.builder(initialData::get).build());
     }
@@ -117,7 +117,7 @@ final class NodeDialogAdapter implements UIExtension, DataServiceProvider {
     }
 
     @Override
-    public final Optional<ApplyDataService<String>> createApplyDataService() {
+    public Optional<ApplyDataService<String>> createApplyDataService() {
         var applyData = new ApplyData(m_snc, m_settingsTypes, m_nodeSettingsService, m_onApplyModifier);
         return Optional.of(ApplyDataService.builder(applyData::applyData) //
             .onDeactivate(applyData::cleanUp) //
@@ -134,7 +134,7 @@ final class NodeDialogAdapter implements UIExtension, DataServiceProvider {
     /**
      * @return a legacy flow variable node dialog
      */
-    final NodeDialogPane createLegacyFlowVariableNodeDialog() {
+    NodeDialogPane createLegacyFlowVariableNodeDialog() {
         return new LegacyFlowVariableNodeDialog();
     }
 

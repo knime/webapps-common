@@ -57,8 +57,8 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.DefaultExpression;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Signals;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
@@ -177,23 +177,25 @@ public class UiSchemaDefaultNodeSettingsTraverser {
 
     private static Consumer<TraversalConsumerPayload> getAddFieldConsumer(final Collection<JsonFormsControl> fields,
         final Map<Class<?>, List<JsonFormsControl>> layoutControls) {
-        return payload -> {
-            final var trackedAnnotations = payload.field().trackedAnnotations();
-            if (trackedAnnotations.getInstance(Hidden.class).isPresent()) {
-                return;
-            }
-            final var layout = trackedAnnotations.getInstance(Layout.class).map(Layout::value).orElse(null);
-            final var effect = trackedAnnotations.getInstance(Effect.class).orElse(null);
-            final var newJsonFormsControl = new JsonFormsControl(payload.scope(), payload.field().propertyWriter(),
-                payload.rootClass(), new TrackedAnnotations(effect));
-            fields.add(newJsonFormsControl);
-            layoutControls.compute(layout, (k, previous) -> {
-                final var newControls = previous == null ? new ArrayList<JsonFormsControl>() : previous;
-                newControls.add(newJsonFormsControl);
-                return newControls;
-            });
-        };
+        return payload -> writePayloadToFieldsAndControls(fields, layoutControls, payload);
+    }
 
+    private static void writePayloadToFieldsAndControls(final Collection<JsonFormsControl> fields,
+        final Map<Class<?>, List<JsonFormsControl>> layoutControls, final TraversalConsumerPayload payload) {
+        final var trackedAnnotations = payload.field().trackedAnnotations();
+        if (trackedAnnotations.getInstance(Hidden.class).isPresent()) {
+            return;
+        }
+        final var layout = trackedAnnotations.getInstance(Layout.class).map(Layout::value).orElse(null);
+        final var effect = trackedAnnotations.getInstance(Effect.class).orElse(null);
+        final var newJsonFormsControl = new JsonFormsControl(payload.scope(), payload.field().propertyWriter(),
+            payload.rootClass(), new TrackedAnnotations(effect));
+        fields.add(newJsonFormsControl);
+        layoutControls.compute(layout, (k, previous) -> {
+            final var newControls = previous == null ? new ArrayList<JsonFormsControl>() : previous;
+            newControls.add(newJsonFormsControl);
+            return newControls;
+        });
     }
 
     private static String toScope(final List<String> path, final String settingsKey) {

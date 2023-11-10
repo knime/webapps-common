@@ -130,7 +130,7 @@ public final class TableViewManager<N extends NodeWrapper> {
             m_selectionServices.computeIfAbsent(node, k -> createSelectionTranslationService(node).orElse(null)));
     }
 
-    private Optional<? extends SelectionTranslationService> createSelectionTranslationService(final N node) {
+    private Optional<SelectionTranslationService> createSelectionTranslationService(final N node) {
         final var tableView = m_getTableView.apply(node);
         if (tableView == null) {
             throw new IllegalArgumentException(

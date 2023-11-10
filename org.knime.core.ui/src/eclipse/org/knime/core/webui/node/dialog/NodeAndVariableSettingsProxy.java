@@ -87,15 +87,15 @@ final class NodeAndVariableSettingsProxy {
     private static Object createProxy(final NodeSettings nodeSettingsDelegate,
         final VariableSettings variableSettingsDelegate) {
         NodeSettingsWrapper nodeSettingsWrapper = () -> nodeSettingsDelegate;
-        InvocationHandler invocationHandler = (proxy, method, args) -> {
+        InvocationHandler invocationHandler = (proxy, method, args) -> { // NOSONAR
             for (Object delegate : new Object[]{nodeSettingsDelegate, variableSettingsDelegate, nodeSettingsWrapper}) {
                 try {
                     if (delegate != null) {
                         return method.invoke(delegate, args);
                     }
-                } catch (IllegalArgumentException e) {
+                } catch (IllegalArgumentException e) { // NOSONAR
                     //
-                } catch (InvocationTargetException e) {
+                } catch (InvocationTargetException e) { // NOSONAR
                     throw e.getCause();
                 }
             }

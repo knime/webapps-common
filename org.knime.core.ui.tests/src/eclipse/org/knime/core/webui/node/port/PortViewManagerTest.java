@@ -74,6 +74,7 @@ import org.mockito.Mockito;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+@SuppressWarnings("java:S2698") // we accept assertions without messages
 class PortViewManagerTest {
 
     /**
@@ -132,12 +133,14 @@ class PortViewManagerTest {
         assertThat(portViewManager.getPortView(NodePortWrapper.of(nnc, 1, 1))).isNotNull();
 
         // check absurd port index
+        final var absurdPortIndexWrapper = NodePortWrapper.of(nnc, Integer.MAX_VALUE, 0);
         assertThatExceptionOfType(NoSuchElementException.class)
-            .isThrownBy(() -> portViewManager.getPortView(NodePortWrapper.of(nnc, Integer.MAX_VALUE, 0)));
+            .isThrownBy(() -> portViewManager.getPortView(absurdPortIndexWrapper));
 
         // check absurd view index
+        final var absurdViewIndexWrapper = NodePortWrapper.of(nnc, 1, Integer.MAX_VALUE);
         assertThatExceptionOfType(NoSuchElementException.class)
-            .isThrownBy(() -> portViewManager.getPortView(NodePortWrapper.of(nnc, 1, Integer.MAX_VALUE)));
+            .isThrownBy(() -> portViewManager.getPortView(absurdViewIndexWrapper));
 
         // check that the port view cache is cleared on node reset
         assertThat(portViewManager.getPortViewMapSize()).isEqualTo(2);

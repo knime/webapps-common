@@ -74,7 +74,8 @@ import org.mockito.Mockito;
  *
  * @author Paul Bärnreuther
  */
-public class FileChooserDataServiceTest {
+@SuppressWarnings("java:S2698") // we accept assertions without messages
+class FileChooserDataServiceTest {
 
     /**
      * Simulating the root folder of this test file system

@@ -91,7 +91,7 @@ public final class RpcDataService implements DataService {
             m_rpcServer = new JsonRpcSingleServer<>(builder.m_unnamedHandler);
         } else if (hasNamedHandlers) {
             final var jsonRpcServer = new JsonRpcServer();
-            builder.m_namedHandlers.forEach((key, value) -> jsonRpcServer.addService(key, value));
+            builder.m_namedHandlers.forEach(jsonRpcServer::addService);
             m_rpcServer = jsonRpcServer;
         } else {
             throw new IllegalStateException(
@@ -183,11 +183,9 @@ public final class RpcDataService implements DataService {
     }
 
     /**
-     *
-     * @param <S>
      * @return a new builder instance
      */
-    public static <S> RpcDataServiceBuilder builder() {
+    public static RpcDataServiceBuilder builder() {
         return new RpcDataServiceBuilder();
     }
 

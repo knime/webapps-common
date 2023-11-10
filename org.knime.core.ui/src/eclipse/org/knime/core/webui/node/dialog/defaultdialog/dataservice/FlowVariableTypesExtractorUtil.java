@@ -69,7 +69,7 @@ final class FlowVariableTypesExtractorUtil {
         // Utility class
     }
 
-    static VariableType<?>[] getTypes(final NodeSettings nodeSettings, final LinkedList<String> path)
+    static VariableType[] getTypes(final NodeSettings nodeSettings, final LinkedList<String> path)
         throws InvalidSettingsException {
         final var configKey = path.pollLast();
         final var fieldNodeSetting = atPath(nodeSettings, path);

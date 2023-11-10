@@ -114,7 +114,7 @@ public final class VariableSettings implements VariableSettingsWO, VariableSetti
             try {
                 variableSettings = nodeSettings.getNodeSettings(type.getVariablesConfigKey());
                 return variableSettings.getNodeSettings("tree");
-            } catch (InvalidSettingsException ex) {
+            } catch (InvalidSettingsException ex) { // NOSONAR
                 return null;
             }
         };
@@ -123,7 +123,7 @@ public final class VariableSettings implements VariableSettingsWO, VariableSetti
     private static NodeSettings getNodeSettingsForType(final SettingsType type, final NodeSettings nodeSettings) {
         try {
             return nodeSettings.getNodeSettings(type.getConfigKey());
-        } catch (InvalidSettingsException ex) {
+        } catch (InvalidSettingsException ex) { // NOSONAR
             return new NodeSettings("empty");
         }
     }

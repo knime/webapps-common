@@ -128,11 +128,11 @@ public final class FileChooserDataService {
      * @param path of the folder containing the file
      * @param fileName the name of the to be accessed file relative to the path.
      * @return the full path of the file
-     * @throws IOException if the path or file name are invalid or cannot be accessed
      */
-    public String getFilePath(final String fileSystemId, final String path, final String fileName) throws IOException {
+    public String getFilePath(final String fileSystemId, final String path, final String fileName) {
         final var fileChooserBackend = m_fsConnector.getFileChooserBackend(fileSystemId);
-        final Path nextPath = getNextPath(path, fileName, fileChooserBackend.getFileSystem());
+        final var fileSystem = fileChooserBackend.getFileSystem();
+        final Path nextPath = path == null ? fileSystem.getPath(fileName) : fileSystem.getPath(path, fileName);
         return nextPath.toString();
     }
 

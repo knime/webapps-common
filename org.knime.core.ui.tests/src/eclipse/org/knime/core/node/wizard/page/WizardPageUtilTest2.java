@@ -80,8 +80,9 @@ import org.knime.testing.util.WorkflowManagerUtil;
 // This class actually tests class which lives in org.knime.core (knime-core repo) because the test requires
 // core-ui classes which aren't available there and can't be made available due to circular dependencies.
 // And it seems that this test can't be named exactly after the 'placeholder-test' in org.knime.core.tests
-// (this test won't execute). Hence the trailing '2'.j
-public class WizardPageUtilTest2 {
+// (this test won't execute). Hence the trailing '2'.
+@SuppressWarnings("java:S2698") // we accept assertions without messages
+class WizardPageUtilTest2 {
 
     private WorkflowManager m_wfm;
 

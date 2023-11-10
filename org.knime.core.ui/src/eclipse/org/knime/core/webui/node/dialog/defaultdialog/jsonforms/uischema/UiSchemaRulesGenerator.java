@@ -57,9 +57,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Map;
 
+import org.knime.core.webui.node.dialog.defaultdialog.rule.DefaultExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Expression;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.DefaultExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Operator;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
 
@@ -114,7 +114,9 @@ final class UiSchemaRulesGenerator {
                     return;
                 }
                 throw new UiSchemaGenerationException(String.format(
-                    "Missing source annotation: %s. If this is wanted and the rule should be ignored instead of throwing this error, use the respective flag in the @Effect annotation.",
+                    "Missing source annotation: %s. "
+                    + "If this is wanted and the rule should be ignored instead of throwing this error, "
+                    + "use the respective flag in the @Effect annotation.",
                     signalClasses[signalIndex].getName()));
             }
         }

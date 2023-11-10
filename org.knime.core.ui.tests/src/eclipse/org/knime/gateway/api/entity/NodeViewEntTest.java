@@ -590,9 +590,6 @@ class NodeViewEntTest {
         assertThat(String.valueOf(colorModelsEnt.get(numericColorColumnName).getType())).isEqualTo("NUMERIC");
         assertThat(String.valueOf(colorModelsEnt.get(nominalColorColumnName).getType())).isEqualTo("NOMINAL");
 
-        var columnNamesColorModelEnt = ent.getColumnNamesColorModel();
-        assertThat(String.valueOf(columnNamesColorModelEnt.getType())).isEqualTo("NOMINAL");
-
         var numericModel = (NumericColorModelEnt)(colorModelsEnt.get(numericColorColumnName).getModel());
         assertThat(numericModel.getMinValue()).isEqualTo(minValue);
         assertThat(numericModel.getMaxValue()).isEqualTo(maxValue);
@@ -602,7 +599,11 @@ class NodeViewEntTest {
         var nominalModel = (Map<String, String>)(colorModelsEnt.get(nominalColorColumnName).getModel());
         assertThat(nominalModel).containsEntry(cell1, greenHex).containsEntry(cell2, blueHex);
 
-        assertThat(columnNamesColorModel.equals(columnNamesColorModelEnt.getModel()));
+        var columnNamesColorModelEnt = ent.getColumnNamesColorModel();
+        assertThat(String.valueOf(columnNamesColorModelEnt.getType())).isEqualTo("NOMINAL");
+        @SuppressWarnings("unchecked")
+        var columnNamesModel = (Map<String, String>)(columnNamesColorModelEnt.getModel());
+        assertThat(columnNamesModel).containsEntry(columnName1, blueHex).containsEntry(columnName2, greenHex);
 
         WorkflowManagerUtil.disposeWorkflow(wfm);
     }

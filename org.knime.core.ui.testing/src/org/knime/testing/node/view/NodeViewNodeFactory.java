@@ -84,7 +84,7 @@ import org.xml.sax.SAXException;
 public class NodeViewNodeFactory extends NodeFactory<NodeViewNodeModel>
     implements NodeViewFactory<NodeViewNodeModel>, CustomNodeWrapperTypeIdProvider {
 
-    private static int instanceCount = 0;
+    private static int instanceCount;
 
     private final Function<NodeViewNodeModel, NodeView> m_nodeViewCreator;
 

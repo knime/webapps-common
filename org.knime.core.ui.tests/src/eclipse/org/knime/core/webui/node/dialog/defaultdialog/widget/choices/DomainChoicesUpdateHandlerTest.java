@@ -70,6 +70,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandl
  *
  * @author Paul Bärnreuther
  */
+@SuppressWarnings("java:S2698") // we accept assertions without messages
 class DomainChoicesUpdateHandlerTest {
 
     static private DefaultNodeSettingsContext createContext(final String colName, final List<String> domain) {

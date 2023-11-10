@@ -56,8 +56,6 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.webui.node.dialog.internal.VariableSettings;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 /**
  * An instance of this interface is used as a named RPCDataService for calls regarding flow variables.
  *
@@ -96,9 +94,8 @@ interface FlowVariableDataService {
      *            particular this has to start with its settings type ("view" or "model").
      * @return the flow variable value
      * @throws InvalidSettingsException
-     * @throws JsonProcessingException
      */
     Object getFlowVariableOverrideValue(final String textSettings, final LinkedList<String> dataPath)
-        throws InvalidSettingsException, JsonProcessingException;
+        throws InvalidSettingsException;
 
 }

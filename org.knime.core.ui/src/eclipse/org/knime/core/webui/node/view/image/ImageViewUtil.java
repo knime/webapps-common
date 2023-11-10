@@ -96,7 +96,7 @@ public final class ImageViewUtil {
      * @param settingsSupplier the supplier of the image view settings to be included with the initial data
      * @return a new initial data service
      */
-    public static final InitialDataService<ImageViewInitialData> createInitialDataService(
+    public static InitialDataService<ImageViewInitialData> createInitialDataService(
         final Supplier<ImageValue> imageValueSupplier, final Supplier<String> imageIdSupplier,
         final Supplier<ImageViewViewSettings> settingsSupplier) {
         return InitialDataService
@@ -105,7 +105,7 @@ public final class ImageViewUtil {
             .build();
     }
 
-    static final ImageViewInitialData createInitialData(final Supplier<ImageValue> imageValueSupplier,
+    static ImageViewInitialData createInitialData(final Supplier<ImageValue> imageValueSupplier,
         final Supplier<String> imageIdSupplier, final Supplier<ImageViewViewSettings> settingsSupplier) {
         final var imageValue = imageValueSupplier.get();
         final var imageId = imageIdSupplier.get() + "." + imageValue.getImageExtension();

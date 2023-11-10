@@ -52,13 +52,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistorFactory;
 
 /**
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  */
-@SuppressWarnings("static-method")
+@SuppressWarnings({"static-method", "java:S2698"}) // we accept assertions without messages
 final class FieldNodeSettingsPersistorFactoryTest {
 
     @Test

@@ -72,7 +72,7 @@ import org.knime.testing.util.WorkflowManagerUtil;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public class NodeDialogEntTest {
+class NodeDialogEntTest {
 
     private WorkflowManager m_wfm;
 

@@ -77,8 +77,8 @@ import org.knime.testing.util.WorkflowManagerUtil;
 public final class NodeTestUtil {
 
     /**
-     * Instantiates a given node factory, connects it to a data generator node, executes it, and checks
-     * for the presence of its services. Returns the {@link Page} of the node's view.
+     * Instantiates a given node factory, connects it to a data generator node, executes it, and checks for the presence
+     * of its services. Returns the {@link Page} of the node's view.
      *
      * @param nodeFactorySupplier a supplier for the to-be-instantiated factory
      * @param initialDataType the type of the node's initial data, or null, if the node has no initial data
@@ -92,8 +92,8 @@ public final class NodeTestUtil {
     }
 
     /**
-     * Instantiates a given node factory, connects it to a data generator node, executes it, and checks
-     * for the presence of its services. Returns the {@link Page} of the node's view.
+     * Instantiates a given node factory, connects it to a data generator node, executes it, and checks for the presence
+     * of its services. Returns the {@link Page} of the node's view.
      *
      * @param nodeFactorySupplier a supplier for the to-be-instantiated factory
      * @param initialDataType the type of the node's initial data, or null, if the node has no initial data
@@ -103,8 +103,8 @@ public final class NodeTestUtil {
      * @throws Exception
      */
     public static Page testNodeAndGetNodeViewPage(final Supplier<NodeFactory<? extends NodeModel>> nodeFactorySupplier,
-        final Class<?> initialDataType, final Class<?> dataServiceType, final Consumer<NativeNodeContainer> configureNode)
-        throws Exception {
+        final Class<?> initialDataType, final Class<?> dataServiceType,
+        final Consumer<NativeNodeContainer> configureNode) throws Exception {
 
         final var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         final var node = WorkflowManagerUtil.createAndAddNode(wfm, nodeFactorySupplier.get());

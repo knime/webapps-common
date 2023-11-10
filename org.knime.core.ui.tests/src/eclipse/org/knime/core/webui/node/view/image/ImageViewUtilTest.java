@@ -69,7 +69,7 @@ import org.knime.core.node.port.image.ImagePortObjectSpec;
  *
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
-public class ImageViewUtilTest {
+class ImageViewUtilTest {
 
     /**
      * Tests that an image is registered with the image data map on ImageViewUtil::createInitialDataService and that
@@ -78,7 +78,7 @@ public class ImageViewUtilTest {
      * @throws IOException
      */
     @Test
-    public void testImageDataMap() throws IOException {
+    void testImageDataMap() throws IOException {
 
         var imageId = "foo";
         byte[] pngImageData = createPngImageData();

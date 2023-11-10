@@ -50,6 +50,7 @@ package org.knime.core.webui.node.impl;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import org.knime.core.webui.node.dialog.SettingsType;
@@ -79,7 +80,8 @@ final class OptionsAdder {
     }
 
     static void addOptionsToTab(final Element tab, final Class<? extends DefaultNodeSettings> modelSettingsClass,
-        final Class<? extends DefaultNodeSettings> viewSettingsClass, final OptionCreator optionCreator) {
+        final Class<? extends DefaultNodeSettings> viewSettingsClass,
+        final BiFunction<String, String, Element> optionCreator) {
         addOptions(modelSettingsClass, viewSettingsClass, field -> createOption(field, tab, optionCreator));
     }
 
@@ -102,17 +104,12 @@ final class OptionsAdder {
         layoutTree.getChildren().forEach(childNode -> applyToAllLeaves(childNode, addField));
     }
 
-    private static final void createOption(final PropertyWriter field, final Element tab,
-        final OptionCreator optionCreator) {
+    private static void createOption(final PropertyWriter field, final Element tab,
+        final BiFunction<String, String, Element> optionCreator) {
         final var widget = field.getAnnotation(Widget.class);
         if (widget != null) {
-            var option = optionCreator.createOption(widget.title(), widget.description());
+            var option = optionCreator.apply(widget.title(), widget.description());
             tab.appendChild(option);
         }
-    }
-
-    @FunctionalInterface
-    interface OptionCreator {
-        Element createOption(String title, String description);
     }
 }

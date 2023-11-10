@@ -57,7 +57,7 @@ import org.knime.core.data.DataCell;
  * @param <R> output type
  */
 @FunctionalInterface
-public interface CellRenderer<R> {
+public interface CellRenderer<R> { // NOSONAR
 
     /**
      * @param cell

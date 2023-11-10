@@ -83,8 +83,8 @@ public final class ChoicesGeneratorUtil {
 
     }
 
-    private static PossibleColumnValue[] getChoicesFromColumnChoicesProvider(final ColumnChoicesProvider choicesProvider,
-        final DefaultNodeSettingsContext settingsContext) {
+    private static PossibleColumnValue[] getChoicesFromColumnChoicesProvider(
+        final ColumnChoicesProvider choicesProvider, final DefaultNodeSettingsContext settingsContext) {
         DataColumnSpec[] columnChoices = choicesProvider == null || settingsContext == null ? new DataColumnSpec[0]
             : choicesProvider.columnChoices(settingsContext);
         return Arrays.asList(columnChoices).stream().map(PossibleColumnValue::fromColSpec)

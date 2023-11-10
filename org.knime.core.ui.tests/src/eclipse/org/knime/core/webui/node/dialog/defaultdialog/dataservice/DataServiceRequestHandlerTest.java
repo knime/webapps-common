@@ -64,6 +64,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandl
  *
  * @author Paul Bärnreuther
  */
+@SuppressWarnings("java:S2698") // we accept assertions without messages
 class DataServiceRequestHandlerTest {
 
     @Test
@@ -118,7 +119,7 @@ class DataServiceRequestHandlerTest {
                 }
             }
         }));
-        Thread.sleep(100);
+        Thread.sleep(100); // NOSONAR, we are not waiting for assertions here but this is part of the test setup
         Future<Result<String>> future2 = executorService2.submit(() -> requestHandler.handleRequest("foo", () -> null));
 
         final var result1 = future1.get();

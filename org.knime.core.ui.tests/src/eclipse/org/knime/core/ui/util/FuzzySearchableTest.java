@@ -59,6 +59,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests {@link FuzzySearchable}.
  */
+@SuppressWarnings("java:S2698") // we accept assertions without messages
 class FuzzySearchableTest {
 
     /**

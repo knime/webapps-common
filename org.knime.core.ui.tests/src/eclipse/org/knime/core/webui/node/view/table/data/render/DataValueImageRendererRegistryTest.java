@@ -73,6 +73,7 @@ import org.knime.testing.util.TableTestUtil;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+@SuppressWarnings("java:S2698") // we accept assertions without messages
 public class DataValueImageRendererRegistryTest {
 
     @BeforeEach
@@ -144,12 +145,10 @@ public class DataValueImageRendererRegistryTest {
         var table = dataService.getTable(new String[]{"image"}, 0, 5, null, false, false, false, false);
         var imgPath = ((String)table.getRows().get(3).get(2)).replace(pathPrefix, "");
         var imgDims = imgReg.getImageDimensions(imgPath);
-        assertThat(imgDims).hasFieldOrPropertyWithValue("heightInPx", 11);
-        assertThat(imgDims).hasFieldOrPropertyWithValue("widthInPx", 11);
+        assertThat(imgDims).hasFieldOrPropertyWithValue("heightInPx", 11).hasFieldOrPropertyWithValue("widthInPx", 11);
 
         imgDims = imgReg.getImageDimensions(imgPath);
-        assertThat(imgDims).hasFieldOrPropertyWithValue("heightInPx", 11);
-        assertThat(imgDims).hasFieldOrPropertyWithValue("widthInPx", 11);
+        assertThat(imgDims).hasFieldOrPropertyWithValue("heightInPx", 11).hasFieldOrPropertyWithValue("widthInPx", 11);
 
         // clear image cache and access data from previous and new chunk
         table = dataService.getTable(new String[]{"image"}, 10, 5, null, false, true, false, false);
@@ -159,8 +158,7 @@ public class DataValueImageRendererRegistryTest {
 
         imgPath = ((String)table.getRows().get(3).get(2)).replace(pathPrefix, "");
         imgDims = imgReg.getImageDimensions(imgPath);
-        assertThat(imgDims).hasFieldOrPropertyWithValue("heightInPx", 11);
-        assertThat(imgDims).hasFieldOrPropertyWithValue("widthInPx", 11);
+        assertThat(imgDims).hasFieldOrPropertyWithValue("heightInPx", 11).hasFieldOrPropertyWithValue("widthInPx", 11);
 
     }
 
@@ -292,6 +290,7 @@ public class DataValueImageRendererRegistryTest {
         /**
          * Test that if the requested height or width is larger than the preferred one, the preferred one is used
          * instead.
+         *
          * @throws IOException
          */
         @Test

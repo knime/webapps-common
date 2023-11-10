@@ -140,12 +140,12 @@ public final class DataValueImageRendererRegistry {
     private Image getImageByImgPath(final String imgPath) {
         var tableIdAndKey = extractTableIdAndImgKey(imgPath);
         var tableId = tableIdAndKey[0];
-        var key = tableIdAndKey[1];
         var images = m_imagesPerTable.get(tableId);
         if (images == null) {
             LOGGER.debugWithFormat("There is no image data available anymore for table '%s'.", tableId);
             return null;
         }
+        var key = tableIdAndKey[1];
         var image = images.getImage(key);
         if (image == null) {
             LOGGER.debugWithFormat("There is no image '%s' available (anymore)", imgPath);

@@ -69,7 +69,7 @@ public interface TableView {
      *
      * @since 4.6
      */
-    default Optional<? extends SelectionTranslationService> createSelectionTranslationService() {
+    default Optional<SelectionTranslationService> createSelectionTranslationService() {
         return Optional.empty();
     }
 

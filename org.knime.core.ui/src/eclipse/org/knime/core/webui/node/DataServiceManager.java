@@ -236,7 +236,7 @@ public final class DataServiceManager<N extends NodeWrapper> {
      *
      * @param nodeWrapper
      */
-    public final void deactivateDataServices(final N nodeWrapper) {
+    public void deactivateDataServices(final N nodeWrapper) {
         if (m_initialDataServices.containsKey(nodeWrapper)) {
             m_initialDataServices.get(nodeWrapper).deactivate();
         }

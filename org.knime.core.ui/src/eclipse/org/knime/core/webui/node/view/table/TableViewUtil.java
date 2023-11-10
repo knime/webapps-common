@@ -179,7 +179,8 @@ public final class TableViewUtil {
      */
     public static InitialDataService<TableViewInitialData> createInitialDataService(
         final Supplier<TableViewViewSettings> settingsSupplier, final Supplier<BufferedDataTable> tableSupplier,
-        final Supplier<Set<RowKey>> selectionSupplier, final String tableId, final Runnable onDeactivate, final Runnable onDispose) {
+        final Supplier<Set<RowKey>> selectionSupplier, final String tableId, final Runnable onDeactivate,
+        final Runnable onDispose) {
         final Supplier<TableViewInitialData> initialDataSupplier =
             () -> createInitialData(settingsSupplier.get(), tableSupplier.get(), selectionSupplier, tableId);
         return createInitialDataService(initialDataSupplier, tableId, onDeactivate, onDispose);
@@ -238,7 +239,8 @@ public final class TableViewUtil {
     }
 
     private static InitialDataService<TableViewInitialData> createInitialDataService(
-        final Supplier<TableViewInitialData> initialDataSupplier, final String tableId,  final Runnable onDeactivate, final Runnable onDispose) {
+        final Supplier<TableViewInitialData> initialDataSupplier, final String tableId, final Runnable onDeactivate,
+        final Runnable onDispose) {
         Runnable clearImageData = () -> TableViewUtil.RENDERER_REGISTRY.clearImageDataCache(tableId);
         return InitialDataService.builder(initialDataSupplier::get) //
             .onDeactivate(() -> {

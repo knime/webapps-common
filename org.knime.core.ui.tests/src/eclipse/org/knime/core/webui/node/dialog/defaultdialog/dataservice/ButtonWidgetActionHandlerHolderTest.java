@@ -64,7 +64,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget
  *
  * @author Paul Bärnreuther
  */
-public class ButtonWidgetActionHandlerHolderTest {
+@SuppressWarnings("java:S2698") // we accept assertions without messages
+class ButtonWidgetActionHandlerHolderTest {
 
     static class TestDefaultNodeSettings {
     }

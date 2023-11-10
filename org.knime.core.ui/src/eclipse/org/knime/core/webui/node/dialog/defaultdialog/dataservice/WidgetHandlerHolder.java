@@ -77,7 +77,8 @@ abstract class WidgetHandlerHolder<H> {
         addHandlers(settingsClasses, JsonFormsDataUtil.getMapper());
     }
 
-    private void addHandlers(final Collection<Class<? extends DefaultNodeSettings>> settings, final ObjectMapper mapper) {
+    private void addHandlers(final Collection<Class<? extends DefaultNodeSettings>> settings,
+        final ObjectMapper mapper) {
         final Consumer<TraversedField> addActionHandlerClass = getAddActionHandlerClassCallback();
         settings.forEach(settingsClass -> {
             final var generator = new DefaultNodeSettingsFieldTraverser(mapper, settingsClass);
@@ -88,9 +89,8 @@ abstract class WidgetHandlerHolder<H> {
     private Consumer<TraversedField> getAddActionHandlerClassCallback() {
         return field -> {
             final var optionalHandlerClass = getHandlerClass(field);
-            optionalHandlerClass.ifPresent(handlerClass -> {
-                m_handlers.put(handlerClass.getName(), createInstance(handlerClass));
-            });
+            optionalHandlerClass
+                .ifPresent(handlerClass -> m_handlers.put(handlerClass.getName(), createInstance(handlerClass)));
         };
     }
 

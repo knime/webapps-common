@@ -61,7 +61,7 @@ import java.util.Map;
  */
 final class FileSystemConnector {
 
-    final Map<String, FileChooserBackend> m_fileChooserBackends = new HashMap<String, FileChooserBackend>();
+    final Map<String, FileChooserBackend> m_fileChooserBackends = new HashMap<>();
 
     interface FileChooserBackend {
         FileSystem getFileSystem();
@@ -72,10 +72,10 @@ final class FileSystemConnector {
     }
 
     FileChooserBackend getFileChooserBackend(final String fileSystemId) {
-        return m_fileChooserBackends.computeIfAbsent(fileSystemId, this::createFileChooserBackend);
+        return m_fileChooserBackends.computeIfAbsent(fileSystemId, FileSystemConnector::createFileChooserBackend);
     }
 
-    private FileChooserBackend createFileChooserBackend(final String fileSystemId) {
+    private static FileChooserBackend createFileChooserBackend(final String fileSystemId) {
         if (fileSystemId.equals("local")) {
             return new LocalFileChooserBackend();
         }

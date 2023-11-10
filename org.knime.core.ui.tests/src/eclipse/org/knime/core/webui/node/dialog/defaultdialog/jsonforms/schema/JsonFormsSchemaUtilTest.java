@@ -93,7 +93,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "java:S2698"})// we accept assertions without messages
 class JsonFormsSchemaUtilTest {
 
     private static final ObjectMapper MAPPER = JsonFormsDataUtil.getMapper();
@@ -513,8 +513,11 @@ class JsonFormsSchemaUtilTest {
             final var eTree = MAPPER.readTree(expected);
             assertThatJson(aTree).isEqualTo(eTree);
         } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
+            /**
+             * NOSONAR
+             */
             Assertions.fail("Problem accessing the SNAPSHOT of settings class " + settingsClass.getSimpleName()
-                + " (most likely a problem of the test implementation itself)"); // NOSONAR
+                + " (most likely a problem of the test implementation itself)");
         }
     }
 

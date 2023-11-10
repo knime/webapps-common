@@ -84,7 +84,8 @@ import nl.jqno.equalsverifier.Warning;
 /**
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
-public class CredentialsTest {
+@SuppressWarnings("java:S2698") // we accept assertions without messages
+class CredentialsTest {
 
     @Test
     void testEqualsHashCodeContracts() {
@@ -193,8 +194,8 @@ public class CredentialsTest {
 
             final var secondNodeContainerMock = mock(NodeContainer.class);
             when(secondNodeContainerMock.getID()).thenReturn(new NodeID(getCurrentId() + 1));
-            assertThrows(IllegalArgumentException.class,
-                () -> serialize(new CredentialsTestSettings(), secondNodeContainerMock));
+            final var settings = new CredentialsTestSettings();
+            assertThrows(IllegalArgumentException.class, () -> serialize(settings, secondNodeContainerMock));
         }
 
         private JsonNode serialize(final Object settings) {
@@ -234,7 +235,7 @@ public class CredentialsTest {
             final var result = serialize(new DeserializeEmptyPasswordTestSettings());
             final DeserializeEmptyPasswordTestSettings settings =
                 objectMapper.treeToValue(result, DeserializeEmptyPasswordTestSettings.class);
-            assertThat(settings.credentials.getPassword()).isEqualTo("");
+            assertThat(settings.credentials.getPassword()).isEmpty();
             assertThat(settings.credentials.getUsername()).isEqualTo("username");
         }
 
@@ -345,7 +346,7 @@ public class CredentialsTest {
 
             final DeserializeFlowVariableTestSettings settings =
                 objectMapper.treeToValue(result, DeserializeFlowVariableTestSettings.class);
-            assertThat(settings.credentials.getPassword()).isEqualTo("");
+            assertThat(settings.credentials.getPassword()).isEmpty();
             assertThat(settings.credentials.getSecondFactor()).isEmpty();
         }
 

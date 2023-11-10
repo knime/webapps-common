@@ -66,6 +66,7 @@ import org.knime.core.webui.node.port.PortContext;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+@SuppressWarnings("java:S2698") // we accept assertions without messages
 class DataServiceUtilTest {
 
     @Test

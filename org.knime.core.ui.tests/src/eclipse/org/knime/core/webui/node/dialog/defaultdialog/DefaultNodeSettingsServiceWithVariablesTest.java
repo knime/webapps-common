@@ -68,7 +68,7 @@ import org.knime.core.webui.node.dialog.internal.VariableSettings;
  *
  * @author Paul Bärnreuther
  */
-public class DefaultNodeSettingsServiceWithVariablesTest {
+class DefaultNodeSettingsServiceWithVariablesTest {
 
     class TestNodeSettingsService implements NodeSettingsService {
 

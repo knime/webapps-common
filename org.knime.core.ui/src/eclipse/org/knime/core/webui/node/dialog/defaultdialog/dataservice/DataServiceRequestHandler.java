@@ -86,7 +86,7 @@ class DataServiceRequestHandler {
     <T> Result<T> handleRequestFuture(final String widgetId, final Future<T> future)
         throws InterruptedException, ExecutionException {
         if (widgetId != null) {
-            getPendingRequest(widgetId).ifPresent(pendingFuture -> pendingFuture.cancel(true));
+            Optional.ofNullable(m_pendingRequests.get(widgetId)).ifPresent(pendingFuture -> pendingFuture.cancel(true));
             m_pendingRequests.put(widgetId, future);
         }
         try {
@@ -105,12 +105,5 @@ class DataServiceRequestHandler {
             }
             throw ex;
         }
-    }
-
-    /**
-     * package scoped for test purposes
-     */
-    Optional<Future<?>> getPendingRequest(final String widgetId) {
-        return Optional.ofNullable(m_pendingRequests.get(widgetId));
     }
 }

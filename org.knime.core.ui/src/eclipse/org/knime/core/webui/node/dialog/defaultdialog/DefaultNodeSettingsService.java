@@ -147,8 +147,7 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
     }
 
     private static DefaultNodeSettingsContext createContext(final PortObjectSpec[] specs) {
-        var context = DefaultNodeSettings.createDefaultNodeSettingsContext(specs);
-        return context;
+        return DefaultNodeSettings.createDefaultNodeSettingsContext(specs);
     }
 
 

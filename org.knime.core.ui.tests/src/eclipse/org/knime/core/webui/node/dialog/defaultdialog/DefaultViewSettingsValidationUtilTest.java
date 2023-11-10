@@ -59,7 +59,8 @@ import org.knime.core.node.NodeSettings;
  *
  * @author Paul Bärnreuther
  */
-public class DefaultViewSettingsValidationUtilTest {
+@SuppressWarnings("java:S2698") // we accept assertions without messages
+class DefaultViewSettingsValidationUtilTest {
 
     static class TestViewSettings implements DefaultNodeSettings {
         String m_viewSetting;

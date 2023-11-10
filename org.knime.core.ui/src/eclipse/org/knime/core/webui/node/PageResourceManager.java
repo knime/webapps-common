@@ -89,7 +89,7 @@ public final class PageResourceManager<N extends NodeWrapper> {
     /**
      * The page kinds, i.e. defines what a page is supposed to represent.
      */
-    public static enum PageType {
+    public enum PageType {
             /**
              * A node dialog.
              */
@@ -185,7 +185,7 @@ public final class PageResourceManager<N extends NodeWrapper> {
      * @param pageId
      * @return the page for the given page-id or {@code null} if there is none
      */
-    public final Page getPage(final String pageId) {
+    public Page getPage(final String pageId) {
         return m_pageCache.getPage(pageId);
     }
 
@@ -218,13 +218,13 @@ public final class PageResourceManager<N extends NodeWrapper> {
      * @return a debug url or an empty optional if none is set
      */
     public Optional<String> getDebugUrl(final N nodeWrapper) {
-        String pattern = System.getProperty(m_nodeDebugPatternProp);
         String url = System.getProperty(m_nodeDebugUrlProp);
         if (url == null) {
             return Optional.empty();
         }
         var nodeContainer = nodeWrapper.get();
         if (nodeContainer instanceof NativeNodeContainer) {
+            String pattern = System.getProperty(m_nodeDebugPatternProp);
             @SuppressWarnings("rawtypes")
             final Class<? extends NodeFactory> nodeFactoryClass =
                 ((NativeNodeContainer)nodeContainer).getNode().getFactory().getClass();
@@ -367,7 +367,7 @@ public final class PageResourceManager<N extends NodeWrapper> {
     /**
      * Clears the page cache.
      */
-    public final void clearPageCache() {
+    public void clearPageCache() {
         m_pageCache.clear();
     }
 

@@ -215,7 +215,7 @@ final class ApplyData {
                 && !setting.isIdentical(previousSetting));
     }
 
-    private static String IS_FLAWED_CFG_KEY = VariableSettings.USED_VARIABLE_FLAWED_CFG_KEY;
+    private static final String IS_FLAWED_CFG_KEY = VariableSettings.USED_VARIABLE_FLAWED_CFG_KEY;
 
     private static boolean variableSettingsFlawed(final NodeSettingsRO varSettings) throws InvalidSettingsException {
 

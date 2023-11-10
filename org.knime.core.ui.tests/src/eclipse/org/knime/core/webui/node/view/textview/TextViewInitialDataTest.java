@@ -62,7 +62,7 @@ import org.knime.core.node.workflow.NodeID;
  *
  * @author Rupert Ettrich
  */
-public class TextViewInitialDataTest {
+class TextViewInitialDataTest {
 
     private List<FlowVariable> flowVariables = List.of(new FlowVariable("someVariable", "replaced value"));
 
@@ -90,8 +90,7 @@ public class TextViewInitialDataTest {
             FlowObjectStack.createFromFlowVariableList(flowVariables, new NodeID(0)));
         assertThat(initialDataService.getContent()).isEqualTo(settings.m_richTextContent);
         final var flowVariablesMap = initialDataService.getFlowVariablesMap();
-        assertThat(flowVariablesMap).isNotEmpty();
-        assertThat(flowVariablesMap).containsKey("someVariable");
+        assertThat(flowVariablesMap).isNotEmpty().containsKey("someVariable");
         assertThat(flowVariablesMap.getOrDefault("someVariable", "")).isEqualTo("replaced value");
     }
 
@@ -102,8 +101,7 @@ public class TextViewInitialDataTest {
         final var initialDataService = TextViewView.createInitialData(settings,
             FlowObjectStack.createFromFlowVariableList(flowVariables, new NodeID(0)));
         final var flowVariablesMap = initialDataService.getFlowVariablesMap();
-        assertThat(flowVariablesMap).isNotEmpty();
-        assertThat(flowVariablesMap).containsKey("someVariable");
+        assertThat(flowVariablesMap).isNotEmpty().containsKey("someVariable");
         assertThat(flowVariablesMap.getOrDefault("someVariable", "")).isNotEqualTo(illegalString);
     }
 

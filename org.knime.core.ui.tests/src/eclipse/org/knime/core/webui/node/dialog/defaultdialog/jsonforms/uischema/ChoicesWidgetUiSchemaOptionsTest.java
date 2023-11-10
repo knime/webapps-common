@@ -303,21 +303,24 @@ class ChoicesWidgetUiSchemaOptionsTest {
                     .isEqualTo(new IdAndText[]{new IdAndText("id1", "text1"), new IdAndText("id2", "text2")});
             }
 
+            final var testAsyncChoicesProvider =  TestAsyncChoicesProvider.class.getName();
             assertThrows(NullPointerException.class,
-                () -> asyncChoicesHolder.getChoices(TestAsyncChoicesProvider.class.getName()));
+                () -> asyncChoicesHolder.getChoices(testAsyncChoicesProvider));
 
-            assertThat(asyncChoicesHolder.getChoices(TestAsyncColumnChoicesProvider.class.getName()).get())
+            final var testAsyncColumnChoicesProvider =  TestAsyncColumnChoicesProvider.class.getName();
+            assertThat(asyncChoicesHolder.getChoices(testAsyncColumnChoicesProvider).get())
                 .isEqualTo(IntStream.range(0, columnSpecs.length).mapToObj(i -> columnSpecs[i])
                     .map(PossibleColumnValue::fromColSpec).toArray(PossibleColumnValue[]::new));
 
             assertThrows(NullPointerException.class,
-                () -> asyncChoicesHolder.getChoices(TestAsyncColumnChoicesProvider.class.getName()));
+                () -> asyncChoicesHolder.getChoices(testAsyncColumnChoicesProvider));
 
-            assertThat(asyncChoicesHolder.getChoices(TestChoicesProviderWithManyChoices.class.getName()).get())
+            final var testChoicesProviderWithManyChoices =  TestChoicesProviderWithManyChoices.class.getName();
+            assertThat(asyncChoicesHolder.getChoices(testChoicesProviderWithManyChoices).get())
                 .isEqualTo(TestChoicesProviderWithManyChoices.manyChoices);
 
             assertThrows(NullPointerException.class,
-                () -> asyncChoicesHolder.getChoices(TestChoicesProviderWithManyChoices.class.getName()));
+                () -> asyncChoicesHolder.getChoices(testChoicesProviderWithManyChoices));
 
         }
 

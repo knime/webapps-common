@@ -125,11 +125,10 @@ public final class SelectionEventSource<N extends NodeWrapper> extends EventSour
         // * node views (and, hence, selection) only available for native nodes
         // * in case of port views on metanode output ports, the actual original node the port belongs to is provided
         //   (see CEFNodeView(NodeContainer), ...)
-        var snc = (SingleNodeContainer) nw.get();
+        var snc = (SingleNodeContainer)nw.get();
         synchronized (handler) {
             var hiLitKeys = handler.getHiLitKeys();
-            var listener =
-                new PerNodeWrapperHiliteListener(this::sendEvent, nw, (snc2, keys) -> translateSelections(snc2, keys));
+            var listener = new PerNodeWrapperHiliteListener(this::sendEvent, nw, this::translateSelections);
             SelectionEvent selectionEvent = null;
             selectionEvent = listener.createSelectionEvent(SelectionEventMode.ADD, hiLitKeys);
             var nodeID = snc.getID();
