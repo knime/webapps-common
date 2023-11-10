@@ -52,7 +52,6 @@ import java.util.Map;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
-import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.workflow.NodeContext;
 
@@ -92,17 +91,6 @@ public interface NodeSettingsService {
      * @param settings the settings instances to write into
      */
     void toNodeSettings(final String textSettings, Map<SettingsType, NodeAndVariableSettingsWO> settings);
-
-    /**
-     * Saves the default settings to the given settings objects. Will be called if there are no settings stored with the
-     * node, yet, and is mainly used to be able to properly show the flow variable configuration (e.g., to overwrite
-     * settings).
-     *
-     * @param settings the settings to write into
-     * @param specs the node's input specs (includes the flow variable port). NOTE: can contain {@code null}-values,
-     *            e.g., in case the input port is not connected
-     */
-    void getDefaultNodeSettings(Map<SettingsType, NodeSettingsWO> settings, PortObjectSpec[] specs);
 
     /**
      * An optional validation method which is meant to be called before {@link NodeSettingsService#fromNodeSettings} in

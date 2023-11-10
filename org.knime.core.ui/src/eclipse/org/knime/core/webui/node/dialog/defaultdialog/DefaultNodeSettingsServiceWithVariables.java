@@ -57,7 +57,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.knime.core.node.NodeDialog;
-import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.webui.node.dialog.NodeAndVariableSettingsRO;
 import org.knime.core.webui.node.dialog.NodeAndVariableSettingsWO;
@@ -116,8 +115,4 @@ public final class DefaultNodeSettingsServiceWithVariables implements NodeSettin
         addVariableSettingsToRootJson(root, variableSettings, context);
     }
 
-    @Override
-    public void getDefaultNodeSettings(final Map<SettingsType, NodeSettingsWO> settings, final PortObjectSpec[] specs) {
-        m_delegate.getDefaultNodeSettings(settings, specs);
-    }
 }

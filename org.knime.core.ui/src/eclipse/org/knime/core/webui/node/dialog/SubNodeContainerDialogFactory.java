@@ -59,7 +59,6 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.knime.core.node.NodeLogger;
-import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.dialog.DialogNode;
 import org.knime.core.node.dialog.DialogNodeRepresentation;
 import org.knime.core.node.dialog.DialogNodeValue;
@@ -206,15 +205,6 @@ public final class SubNodeContainerDialogFactory implements NodeDialogFactory {
         @SuppressWarnings("rawtypes")
         public SubNodeContainerSettingsService(final Map<NodeID, DialogNode> dialogNodes) {
             m_dialogNodes = dialogNodes;
-        }
-
-        @Override
-        public void getDefaultNodeSettings(final Map<SettingsType, NodeSettingsWO> settings,
-            final PortObjectSpec[] specs) {
-            // Nothing to do, because we initialize the dialog from the workflow representation,
-            // not the settings directly.
-            throw new UnsupportedOperationException(
-                "Method not expected to be called by the framework (in case of components).");
         }
 
         @SuppressWarnings("unchecked")

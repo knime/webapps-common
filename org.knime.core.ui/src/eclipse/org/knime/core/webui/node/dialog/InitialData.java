@@ -173,10 +173,24 @@ final class InitialData {
      */
     private NodeSettings getDefaultSettings(final PortObjectSpec[] specs, final SettingsType type) {
         final var settings = new NodeSettings("default_settings");
-        m_nodeSettingsService.getDefaultNodeSettings(
-            Map.of(type, NodeAndVariableSettingsProxy.createWOProxy(settings, new VariableSettings(settings, type))),
-            specs);
-        return settings;
+        if (m_nc instanceof NativeNodeContainer nnc) {
+            switch (type) {
+                case MODEL -> {
+                    nnc.getNode().saveModelSettingsTo(settings);
+                }
+                case VIEW -> {
+                    nnc.getNode().saveDefaultViewSettingsTo(settings);
+                }
+            }
+            return settings;
+        } else {
+            /**
+             * Nothing to do, because we initialize the dialog from the workflow representation, not the settings
+             * directly.
+             */
+            throw new UnsupportedOperationException(
+                    "Method not expected to be called by the framework (in case of components).");
+        }
     }
 
     private void revertOverridesIfInvalid(final Map<SettingsType, NodeAndVariableSettingsRO> settings,

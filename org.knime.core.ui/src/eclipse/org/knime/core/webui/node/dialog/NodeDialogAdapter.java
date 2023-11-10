@@ -47,14 +47,12 @@
 package org.knime.core.webui.node.dialog;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.Node;
 import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
@@ -170,17 +168,6 @@ final class NodeDialogAdapter implements UIExtension, DataServiceProvider {
         @Override
         protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
             m_modelSettings.copyTo(settings);
-        }
-
-        @Override
-        protected NodeSettingsRO getDefaultViewSettings(final PortObjectSpec[] specs) {
-            if (hasViewSettings()) {
-                var ns = new NodeSettings("default_view_settings");
-                m_nodeSettingsService.getDefaultNodeSettings(Map.of(SettingsType.VIEW, ns), specs);
-                return ns;
-            } else {
-                return super.getDefaultViewSettings(specs);
-            }
         }
 
         /**
