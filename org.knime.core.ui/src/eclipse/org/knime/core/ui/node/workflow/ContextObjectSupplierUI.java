@@ -53,9 +53,11 @@ import org.knime.core.node.workflow.NodeContainerParent;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.NodeContext.ContextObjectSupplier;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.node.workflow.contextv2.WorkflowContextV2;
 import org.knime.core.ui.CoreUIPlugin;
 import org.knime.core.ui.UI;
 import org.knime.core.ui.wrapper.NodeContainerWrapper;
+import org.knime.core.ui.wrapper.WorkflowContextWrapper;
 import org.knime.core.ui.wrapper.WorkflowManagerWrapper;
 import org.knime.core.ui.wrapper.Wrapper;
 
@@ -90,6 +92,8 @@ public class ContextObjectSupplierUI implements ContextObjectSupplier, UI {
             return Optional.of((C)getProjectWFM(NodeContainerWrapper.wrap(srcObj)));
         } else if (NodeContainerUI.class.isAssignableFrom(contextObjClass)) {
             return Optional.of((C)NodeContainerWrapper.wrap(srcObj));
+        } else if (WorkflowContextV2.class.isAssignableFrom(contextObjClass)) {
+            return Optional.of((C)NodeContainerParent.getProjectWFM(srcObj).getContextV2());
         } else {
             return Optional.empty();
         }
@@ -106,6 +110,10 @@ public class ContextObjectSupplierUI implements ContextObjectSupplier, UI {
             return (Optional<C>)Wrapper.unwrapWFMOptional(getProjectWFM(srcObj));
         } else if (NodeContainer.class.isAssignableFrom(contextObjClass)) {
             return (Optional<C>)Wrapper.unwrapNCOptional(srcObj);
+        } else if(WorkflowContextV2.class.isAssignableFrom(contextObjClass)) {
+            var contextUI = getProjectWFM(srcObj).getContext();
+            return (Optional<C>)(contextUI instanceof WorkflowContextWrapper contextWrapper
+                ? Optional.of(contextWrapper.unwrap()) : ((RemoteWorkflowContext)contextUI).getWorkflowContextV2());
         } else {
             return Optional.empty();
         }
@@ -113,10 +121,6 @@ public class ContextObjectSupplierUI implements ContextObjectSupplier, UI {
 
     @SuppressWarnings("cast")
     private static WorkflowManagerUI getProjectWFM(final NodeContainerUI nc) {
-        if (nc == null) {
-            return null;
-        }
-
         if (Wrapper.wraps(nc, NodeContainer.class)) {
             return WorkflowManagerWrapper.wrap(NodeContainerParent.getProjectWFM(Wrapper.unwrapNC(nc)));
         }
