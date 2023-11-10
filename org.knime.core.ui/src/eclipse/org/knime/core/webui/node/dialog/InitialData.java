@@ -175,12 +175,8 @@ final class InitialData {
         final var settings = new NodeSettings("default_settings");
         if (m_nc instanceof NativeNodeContainer nnc) {
             switch (type) {
-                case MODEL -> {
-                    nnc.getNode().saveModelSettingsTo(settings);
-                }
-                case VIEW -> {
-                    nnc.getNode().saveDefaultViewSettingsTo(settings);
-                }
+                case MODEL -> nnc.getNode().saveModelSettingsTo(settings);
+                case VIEW -> nnc.getNode().saveDefaultViewSettingsTo(settings);
             }
             return settings;
         } else {

@@ -660,18 +660,6 @@ public class NodeDialogTest {
                             .collect(Collectors.toMap(Entry::getKey, Entry::getValue)));
                 }
             }
-
-            @Override
-            public void getDefaultNodeSettings(final Map<SettingsType, NodeSettingsWO> settings,
-                final PortObjectSpec[] specs) {
-                if (settings.containsKey(SettingsType.VIEW)) {
-                    settings.get(SettingsType.VIEW).addString("a default view setting", "a default view setting value");
-                }
-                if (settings.containsKey(SettingsType.MODEL)) {
-                    settings.get(SettingsType.MODEL).addString("a default model setting",
-                        "a default model setting value");
-                }
-            }
         };
     }
 
@@ -729,12 +717,6 @@ public class NodeDialogTest {
             public String fromNodeSettings(final Map<SettingsType, NodeAndVariableSettingsRO> settings,
                 final PortObjectSpec[] specs) {
                 return "test settings";
-            }
-
-            @Override
-            public void getDefaultNodeSettings(final Map<SettingsType, NodeSettingsWO> settings,
-                final PortObjectSpec[] specs) {
-                //
             }
 
         };

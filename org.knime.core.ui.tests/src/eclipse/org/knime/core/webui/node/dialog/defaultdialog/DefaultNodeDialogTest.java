@@ -61,7 +61,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.workflow.FlowVariable;
@@ -128,18 +127,16 @@ public class DefaultNodeDialogTest {
 
     private NativeNodeContainer m_nnc;
 
-    private DefaultNodeSettingsService m_defaultNodeSettingsService;
-
     @BeforeEach
     void createWorkflowAndAddNode() throws IOException {
         m_wfm = WorkflowManagerUtil.createEmptyWorkflow();
         final var settingsClasses =
             Map.of(SettingsType.MODEL, ModelSettings.class, SettingsType.VIEW, ViewSettings.class);
-        m_defaultNodeSettingsService =
+        final var defaultNodeSettingsService =
             new DefaultNodeSettingsService(settingsClasses, new AsyncChoicesHolder());
         Supplier<NodeDialog> nodeDialogCreator =
             () -> NodeDialogTest.createNodeDialog(Page.builder(() -> "page content", "page.html").build(),
-                m_defaultNodeSettingsService, null);
+                defaultNodeSettingsService, null);
         m_nnc = NodeDialogManagerTest.createNodeWithNodeDialog(m_wfm, nodeDialogCreator);
     }
 
@@ -155,9 +152,8 @@ public class DefaultNodeDialogTest {
         void createWorkflowAndAddNode() throws InvalidSettingsException {
             var defModelSettings = new NodeSettings("model");
             var defViewSettings = new NodeSettings("view");
-            m_defaultNodeSettingsService.getDefaultNodeSettings(
-                Map.of(SettingsType.MODEL, defModelSettings, SettingsType.VIEW, defViewSettings),
-                new DataTableSpec[]{new DataTableSpec()});
+            DefaultNodeSettings.saveSettings(ModelSettings.class, new ModelSettings(), defModelSettings);
+            DefaultNodeSettings.saveSettings(ViewSettings.class, new ViewSettings(), defViewSettings);
             initNodeSettings(m_nnc, defModelSettings, defViewSettings);
             m_nnc.getFlowObjectStack().push(new FlowVariable("flow variable 1", "foo"));
             m_nnc.getFlowObjectStack().push(new FlowVariable("flow variable 3", "bar"));
@@ -305,9 +301,8 @@ public class DefaultNodeDialogTest {
             var expectedNodeSettings = new NodeSettings("configuration");
             var modelSettings = expectedNodeSettings.addNodeSettings("model");
             var viewSettings = expectedNodeSettings.addNodeSettings("view");
-            m_defaultNodeSettingsService.getDefaultNodeSettings(
-                Map.of(SettingsType.MODEL, modelSettings, SettingsType.VIEW, viewSettings),
-                new DataTableSpec[]{new DataTableSpec()});
+            DefaultNodeSettings.saveSettings(ModelSettings.class, new ModelSettings(), modelSettings);
+            DefaultNodeSettings.saveSettings(ViewSettings.class, new ViewSettings(), viewSettings);
             initModelVariableSettings(expectedNodeSettings);
             initViewVariableSettings(expectedNodeSettings, false);
 
@@ -357,9 +352,9 @@ public class DefaultNodeDialogTest {
             var expectedNodeSettings = new NodeSettings("configuration");
             var modelSettings = expectedNodeSettings.addNodeSettings("model");
             var viewSettings = expectedNodeSettings.addNodeSettings("view");
-            m_defaultNodeSettingsService.getDefaultNodeSettings(
-                Map.of(SettingsType.MODEL, modelSettings, SettingsType.VIEW, viewSettings),
-                new DataTableSpec[]{new DataTableSpec()});
+            DefaultNodeSettings.saveSettings(ModelSettings.class, new ModelSettings(), modelSettings);
+            DefaultNodeSettings.saveSettings(ViewSettings.class, new ViewSettings(), viewSettings);
+
             initViewVariableSettings(expectedNodeSettings, false);
             assertTrue(m_nnc.getNodeContainerState().isExecuted());
             assertSubNodeSettingsForKey(nodeSettingsToCheck, expectedNodeSettings, "view_variables");

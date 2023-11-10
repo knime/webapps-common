@@ -88,12 +88,6 @@ public class DefaultNodeSettingsServiceWithVariablesTest {
             setAddedNodeAndVariableSettingsValue(textSettings, settings);
         }
 
-        @Override
-        public void getDefaultNodeSettings(final Map<SettingsType, NodeSettingsWO> settings,
-            final PortObjectSpec[] specs) {
-            setAddedNodeSettingsValue(NODE_SETTINGS_VALUE_FROM_DEFAULT_NODE_SETTINGS, settings);
-        }
-
         public static String getAddedNodeSettingsValue(final Map<SettingsType, NodeAndVariableSettingsRO> settings) {
             try {
                 return settings.get(SettingsType.MODEL).getString(CFG_KEY);
@@ -159,15 +153,6 @@ public class DefaultNodeSettingsServiceWithVariablesTest {
         TestNodeSettingsService.setAddedNodeAndVariableSettingsValue(textSettings, createWOSettings(settings));
         assertThat(service.fromNodeSettings(createROSettings(settings), new PortObjectSpec[0])).isEqualTo("""
                 {"data":"dummyData","flowVariableSettings":{}}""");
-    }
-
-    @Test
-    void testDelegateGetDefaultNodeSettings() {
-        final var service = getDefaultNodeSettingsServiceWithVariables();
-        final var settings = new NodeSettings("model");
-        service.getDefaultNodeSettings(Map.of(SettingsType.MODEL, settings), new PortObjectSpec[0]);
-        assertThat(TestNodeSettingsService.getAddedNodeSettingsValue(createROSettings(settings)))
-            .isEqualTo(TestNodeSettingsService.NODE_SETTINGS_VALUE_FROM_DEFAULT_NODE_SETTINGS);
     }
 
     @Test

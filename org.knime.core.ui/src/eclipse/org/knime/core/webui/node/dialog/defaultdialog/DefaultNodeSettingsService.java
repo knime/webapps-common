@@ -60,7 +60,6 @@ import java.util.Map;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
-import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.webui.node.dialog.NodeAndVariableSettingsRO;
@@ -71,7 +70,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.Defaul
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.PasswordHolder;
-import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.DefaultNodeSettingsClassToNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.JsonDataToNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.NodeSettingsToJsonFormsSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
@@ -146,12 +144,6 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
         for (var entry : settings.entrySet()) {
             DefaultNodeSettings.loadSettings(entry.getValue(), m_settingsClasses.get(entry.getKey()));
         }
-    }
-
-    @Override
-    public void getDefaultNodeSettings(final Map<SettingsType, NodeSettingsWO> settings, final PortObjectSpec[] specs) {
-        var context = createContext(specs);
-        new DefaultNodeSettingsClassToNodeSettings(context, m_settingsClasses).saveDefaultNodeSetting(settings);
     }
 
     private static DefaultNodeSettingsContext createContext(final PortObjectSpec[] specs) {

@@ -131,7 +131,12 @@ public class NodeDialogNodeModel extends NodeModel {
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
-        //
+        settings.addString("a default model setting", "a default model setting value");
+    }
+
+    @Override
+    protected void saveDefaultViewSettingsTo(final NodeSettingsWO settings) {
+        settings.addString("a default view setting", "a default view setting value");
     }
 
     /**

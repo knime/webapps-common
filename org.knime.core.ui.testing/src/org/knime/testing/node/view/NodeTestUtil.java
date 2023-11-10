@@ -120,7 +120,7 @@ public final class NodeTestUtil {
         }
 
         final var nodeViewManager = NodeViewManager.getInstance();
-
+        nodeViewManager.updateNodeViewSettings(node);
         // check for presence of initial data service
         final var initialDataService =
             nodeViewManager.getDataServiceManager().getDataServiceOfType(nodeWrapper, InitialDataService.class);

@@ -73,7 +73,6 @@ import org.junit.jupiter.api.Test;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.dialog.DialogNode;
 import org.knime.core.node.dialog.util.DefaultConfigurationLayoutCreator;
 import org.knime.core.node.port.PortObjectSpec;
@@ -311,12 +310,6 @@ public class NodeDialogManagerTest {
                 final PortObjectSpec[] specs) {
                 assertThat(settings.size()).isEqualTo(2);
                 return "the node settings";
-            }
-
-            @Override
-            public void getDefaultNodeSettings(final Map<SettingsType, NodeSettingsWO> settings,
-                final PortObjectSpec[] specs) {
-                //
             }
 
         }, RpcDataService.builder(new TestService()).build());

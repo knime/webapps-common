@@ -359,6 +359,7 @@ public class TableViewViewSettings implements DefaultNodeSettings {
      * Create a new {@link TableViewViewSettings} with default values
      */
     protected TableViewViewSettings() {
+        this((DataTableSpec)null);
     }
 
     /**
