@@ -49,6 +49,7 @@
 package org.knime.core.webui.node.dialog;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.WeakHashMap;
 
 import org.knime.core.node.NodeDialogPane;
@@ -209,7 +210,7 @@ public final class NodeDialogManager {
     public void deactivateDialog(final NodeContainer nc) {
         NodeContext.pushContext(nc);
         try {
-            m_nodeDialogAdapterMap.get(nc).deactivate();
+            Optional.ofNullable(m_nodeDialogAdapterMap.get(nc)).ifPresent(NodeDialogAdapter::deactivate);
         } finally {
             NodeContext.removeLastContext();
         }
