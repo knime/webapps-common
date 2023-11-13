@@ -1,4 +1,4 @@
-import type { Folder } from "./types";
+import type { FolderAndError } from "./types";
 import { injectJsonDataService } from "@/nodeDialog/utils/inject";
 
 type ListItems = (params: {
@@ -18,7 +18,7 @@ type ListItems = (params: {
      */
     string | null,
   ];
-}) => Promise<Folder>;
+}) => Promise<FolderAndError>;
 
 type GetFilePath = (params: {
   method: "fileChooser.getFilePath";

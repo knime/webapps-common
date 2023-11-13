@@ -49,14 +49,18 @@
 package org.knime.core.webui.node.dialog.defaultdialog.dataservice.filechooser;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Deque;
 import java.util.List;
-import java.util.Stack;
+import java.util.Optional;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -86,39 +90,67 @@ public final class FileChooserDataService {
         m_fsConnector.clear();
     }
 
+    record Folder(List<Object> items, String path) {
+        static FolderAndError asRootFolder(final List<Object> items) {
+            return new FolderAndError(new Folder(items, null), Optional.empty());
+        }
+
+        static FolderAndError asNonRootFolder(final Path path, final List<Object> items, final String errorMessage) {
+            final var folder = new Folder(items, path.toAbsolutePath().toString());
+            return new FolderAndError(folder, Optional.ofNullable(errorMessage));
+        }
+    }
+
     /**
-     * Get the items of the specified file system at the specified pair of path and folder name
+     * @param folder a representation of the path and the to be displayed items
+     * @param errorMessage which if present explains why the folder is not the requested one (e.g. when the requested
+     *            one does not exist)
+     */
+    record FolderAndError(Folder folder, Optional<String> errorMessage) {
+    }
+
+    /**
+     * Get the items of the specified file system at the specified pair of path and folder name. If the requested path
+     * is not accessible or does not exist, the next valid parent folder up to the root directory is used instead
+     * together and returned with an appropriate error message.
      *
      * @param fileSystemId specifying the file system.
      * @param path the current path or null to reference the root level.
      * @param nextFolder - the name of the to be accessed folder relative to the path or ".." if the parent folder
      *            should be accessed. Set to null in order to access the path directly.
-     * @return A list of items in the next folder
-     * @throws IOException if the folder is invalid or cannot be accessed
+     * @return A list of items in the next folder possibly together with an error message explaining why the returned
+     *         folder is not the requested one.
+     *
+     *
+     * @throws IOException
      */
-    public Folder listItems(final String fileSystemId, final String path, final String nextFolder) throws IOException {
+    public FolderAndError listItems(final String fileSystemId, final String path, final String nextFolder)
+        throws IOException {
         final var fileChooserBackend = m_fsConnector.getFileChooserBackend(fileSystemId);
         final Path nextPath = getNextPath(path, nextFolder, fileChooserBackend.getFileSystem());
         if (nextPath == null) {
-            return getRootItems(fileChooserBackend);
+            return Folder.asRootFolder(getRootItems(fileChooserBackend));
         }
-        final Stack<Path> pathStack = toFragments(fileChooserBackend, nextPath);
+        final Deque<Path> pathStack = toFragments(fileChooserBackend, nextPath);
         return getItemsInFolder(fileChooserBackend, pathStack);
     }
 
-    private static Stack<Path> toFragments(final FileChooserBackend fileChooserBackend, final Path nextPath) {
-        final Stack<Path> pathStack = new Stack<>();
+    private static Deque<Path> toFragments(final FileChooserBackend fileChooserBackend, final Path nextPath) {
+        final Deque<Path> subPaths = new LinkedBlockingDeque<>();
         final var pathFragments = StreamSupport.stream(nextPath.spliterator(), false).collect(Collectors.toList());
+        final var emptyPath = fileChooserBackend.getFileSystem().getPath("");
+        if (emptyPath != null) {
+            subPaths.push(emptyPath);
+        }
         final var rootPath = nextPath.getRoot();
-        pathStack.add(fileChooserBackend.getFileSystem().getPath(""));
         if (rootPath != null) {
-            pathStack.push(rootPath);
+            subPaths.push(rootPath);
         }
         for (Path pathFragent : pathFragments) {
-            var lastPath = pathStack.peek();
-            pathStack.add(lastPath.resolve(pathFragent));
+            var lastPath = subPaths.peek();
+            subPaths.push(lastPath.resolve(pathFragent));
         }
-        return pathStack;
+        return subPaths;
     }
 
     /**
@@ -146,36 +178,59 @@ public final class FileChooserDataService {
         return fileSystem.getPath(path, nextFolder);
     }
 
-    private static Folder getRootItems(final FileChooserBackend fileChooserBackend) {
+    private static List<Object> getRootItems(final FileChooserBackend fileChooserBackend) {
         final List<Object> out = new ArrayList<>();
         fileChooserBackend.getFileSystem().getRootDirectories()
             .forEach(p -> out.add(fileChooserBackend.pathToObject(p)));
-        return Folder.asRootFolder(out);
+        return out;
     }
 
-    private static Folder getItemsInFolder(final FileChooserBackend fileChooserBackend, final Stack<Path> pathStack)
-        throws IOException {
+    private static FolderAndError getItemsInFolder(final FileChooserBackend fileChooserBackend,
+        final Deque<Path> pathStack) throws IOException {
+        String errorMessage = null;
         while (!pathStack.isEmpty()) {
             final var folder = pathStack.pop();
             try {
-                final var folderContent = Files.list(folder).map(fileChooserBackend::pathToObject).toList();
-                return Folder.asNonRootFolder(folder, folderContent);
-            } catch (NoSuchFileException | NotDirectoryException ex) { //NOSONAR
+                final var folderContent = listFilteredAndSortedItems(folder) //
+                        .stream().map(fileChooserBackend::pathToObject).toList();
+                return Folder.asNonRootFolder(folder, folderContent, errorMessage);
+            } catch (NotDirectoryException ex) { //NOSONAR
+                /**
+                 * Do not set an error message in this case, since we intentionally get here when opening the file
+                 * chooser with a preselected file path which we pass as folder path to get to the containing folder
+                 * instead
+                 */
+            } catch (NoSuchFileException ex) { //NOSONAR
+                if (errorMessage == null) {
+                    errorMessage = String.format("The selected path %s does not exist", ex.getMessage());
+                }
+            } catch (AccessDeniedException ex) { //NOSONAR
+                if (errorMessage == null) {
+                    errorMessage = String.format("Access to the selected path %s is denied", ex.getMessage());
+                }
             }
         }
         throw new IllegalStateException(
             "Something went wrong. There should be at least one valid path in the given stack.");
-
     }
 
-    record Folder(List<Object> items, String path) {
-        static Folder asRootFolder(final List<Object> items) {
-            return new Folder(items, null);
-        }
+    private static List<Path> listFilteredAndSortedItems(final Path folder) throws IOException {
+        return Files.list(folder) //
+            .filter(Files::isReadable) //
+            .filter(t -> {
+                try {
+                    return !Files.isHidden(t);
+                } catch (IOException ex) { // NOSONAR
+                    return true;
+                }
+            }) //
+            .sorted(
+                Comparator.comparingInt(FileChooserDataService::getFileTypeOrdinal).thenComparing(Path::getFileName))
+            .toList();
+    }
 
-        static Folder asNonRootFolder(final Path path, final List<Object> items) {
-            return new Folder(items, path.toAbsolutePath().toString());
-        }
+    private static int getFileTypeOrdinal(final Path file) {
+        return Files.isDirectory(file) ? 0 : 1;
     }
 
 }

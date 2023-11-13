@@ -113,8 +113,9 @@ class FileChooserDataServiceTest {
         final var dataService = new FileChooserDataService();
         final var rootItems = dataService.listItems("local", null, null);
         verify(fileChooserBackendMock.constructed().get(0)).pathToObject(eq(m_tempRootFolder));
-        assertThat(rootItems.items()).hasSize(1);
-        final var rootItem = (Item)rootItems.items().get(0);
+        assertThat(rootItems.folder().items()).hasSize(1);
+        assertThat(rootItems.errorMessage()).isEmpty();
+        final var rootItem = (Item)rootItems.folder().items().get(0);
         assertThat(rootItem.isDirectory()).isTrue();
     }
 
@@ -129,7 +130,8 @@ class FileChooserDataServiceTest {
         final var rootItems = dataService.listItems("local", path, folderName);
         final var fileChooserBackend = fileChooserBackendMock.constructed().get(0);
         verify(fileChooserBackend).pathToObject(eq(subDirectory));
-        final var items = rootItems.items();
+        assertThat(rootItems.errorMessage()).isEmpty();
+        final var items = rootItems.folder().items();
         assertThat(items).hasSize(1);
     }
 
@@ -144,21 +146,25 @@ class FileChooserDataServiceTest {
         final var fileChooserBackend = fileChooserBackendMock.constructed().get(0);
         verify(fileChooserBackend).pathToObject(eq(directory));
         verify(fileChooserBackend).pathToObject(eq(file));
-        final var items = rootItems.items();
+        assertThat(rootItems.errorMessage()).isEmpty();
+        final var items = rootItems.folder().items();
         assertThat(items).hasSize(2);
         assertThat(items.stream().map(item -> ((Item)item).isDirectory()).count()).isEqualTo(2);
     }
 
     @Test
     void testListLocalItemsWithInvalidPath() throws IOException {
-        final var file = Files.writeString(m_subFolder.resolve("aFile"), "");
+        final var deletedFolder = Files.createTempDirectory(m_subFolder, "aDirectory");
+        Files.delete(deletedFolder);
         final var dataService = new FileChooserDataService();
         final var correctPath = m_subFolder.toString();
         final var invalidPath = correctPath + "/non-existing folder/file.txt";
-        when(m_fileSystem.getPath(eq(invalidPath))).thenReturn(file);
+        when(m_fileSystem.getPath(eq(invalidPath))).thenReturn(deletedFolder);
         when(m_fileSystem.getPath(eq(correctPath))).thenReturn(m_subFolder);
         final var listedItems = dataService.listItems("local", null, invalidPath);
-        assertThat(listedItems.path()).isEqualTo(correctPath);
+        assertThat(listedItems.errorMessage().get())
+            .isEqualTo(String.format("The selected path %s does not exist", deletedFolder.toAbsolutePath()));
+        assertThat(listedItems.folder().path()).isEqualTo(correctPath);
     }
 
     @Test
@@ -172,7 +178,7 @@ class FileChooserDataServiceTest {
         final var fileChooserBackend = fileChooserBackendMock.constructed().get(0);
         verify(fileChooserBackend).pathToObject(eq(directory));
         verify(fileChooserBackend).pathToObject(eq(file));
-        final var items = rootItems.items();
+        final var items = rootItems.folder().items();
         assertThat(items).hasSize(2);
         assertThat(items.stream().map(item -> ((Item)item).isDirectory()).count()).isEqualTo(2);
     }

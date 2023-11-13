@@ -3,7 +3,7 @@ import { onMounted, ref, type Ref, computed } from "vue";
 import FileExplorer from "webapps-common/ui/components/FileExplorer/FileExplorer.vue";
 import type { FileExplorerItem } from "webapps-common/ui/components/FileExplorer/types";
 import useFileChooserBackend from "./useFileChooserBackend";
-import type { Folder } from "./types";
+import type { Folder, FolderAndError } from "./types";
 import { toFileExplorerItem } from "./utils";
 import Button from "webapps-common/ui/components/Button.vue";
 import LoadingIcon from "webapps-common/ui/components/LoadingIcon.vue";
@@ -28,8 +28,18 @@ const setNextItems = (folder: Folder) => {
   items.value = folder.items.map(toFileExplorerItem);
 };
 
+const displayedError: Ref<string | null> = ref(null);
+const setErrorMessage = (errorMessage: string | undefined) => {
+  displayedError.value = errorMessage ?? null;
+};
+
+const handleListItemsResult = (folderAndError: FolderAndError) => {
+  setNextItems(folderAndError.folder);
+  setErrorMessage(folderAndError.errorMessage);
+};
+
 onMounted(() => {
-  listItems(null, props.initialFilePath).then(setNextItems);
+  listItems(null, props.initialFilePath).then(handleListItemsResult);
 });
 
 const selectedItem: Ref<FileExplorerItem | null> = ref(null);
@@ -37,7 +47,7 @@ const selectedItem: Ref<FileExplorerItem | null> = ref(null);
 const changeDirectory = (nextFolder: string) => {
   selectedItem.value = null;
   isLoading.value = true;
-  listItems(currentPath.value, nextFolder).then(setNextItems);
+  listItems(currentPath.value, nextFolder).then(handleListItemsResult);
 };
 
 const emit = defineEmits<{
@@ -77,6 +87,9 @@ const onCancel = () => {
       <div class="current-path">
         <FolderIcon />
         <span :title="currentPathDisplay"> {{ currentPathDisplay }}</span>
+        <span v-if="displayedError !== null" class="error"
+          >({{ displayedError }})</span
+        >
       </div>
       <FileExplorer
         class="explorer"
@@ -141,6 +154,10 @@ const onCancel = () => {
     & svg {
       width: 15px;
       height: 15px;
+    }
+
+    & span.error {
+      color: var(--theme-color-error);
     }
   }
 

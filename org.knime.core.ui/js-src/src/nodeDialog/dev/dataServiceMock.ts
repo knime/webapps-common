@@ -1,3 +1,5 @@
+const errorFolder = "Open me to see an error message!";
+
 export default (rpcRequest: { method: string; params: any[] }) => {
   switch (rpcRequest.method) {
     case "flowVariables.getAvailableFlowVariables":
@@ -60,21 +62,26 @@ export default (rpcRequest: { method: string; params: any[] }) => {
       }
     case "fileChooser.listItems":
       return {
-        items: [
-          {
-            isDirectory: true,
-            name: "I am a directory",
-          },
-          {
-            isDirectory: true,
-            name: "I am another directory",
-          },
-          {
-            isDirectory: false,
-            name: "I am a file, select me!",
-          },
-        ],
-        path: "/path/to/folder",
+        folder: {
+          items: [
+            {
+              isDirectory: true,
+              name: "I am a directory",
+            },
+            {
+              isDirectory: true,
+              name: errorFolder,
+            },
+            {
+              isDirectory: false,
+              name: "I am a file, select me!",
+            },
+          ],
+          path: "/path/to/folder",
+        },
+        ...(rpcRequest.params[2] === errorFolder
+          ? { errorMessage: "I am an error message" }
+          : {}),
       };
     case "fileChooser.getFilePath":
       return "/path/to/folder/selectedFile.txt";

@@ -10,3 +10,8 @@ export interface Folder {
   items: Item[];
   path: string | null;
 }
+
+export type FolderAndError = {
+  folder: Folder;
+  errorMessage?: string;
+};

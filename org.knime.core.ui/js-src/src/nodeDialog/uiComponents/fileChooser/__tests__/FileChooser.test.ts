@@ -30,17 +30,18 @@ describe("FileChooser.vue", () => {
 
   const shallowMountFileChooser = (
     props: { initialFilePath?: string } = {},
+    customDataServiceMethod?: SpyInstance,
   ) => {
-    dataServiceSpy = vi.fn(
-      (params: { method?: string | undefined } | undefined) => {
+    dataServiceSpy =
+      customDataServiceMethod ??
+      vi.fn((params: { method?: string | undefined } | undefined) => {
         if (params?.method === "fileChooser.listItems") {
-          return Promise.resolve(folderFromBackend);
+          return Promise.resolve({ folder: folderFromBackend });
         } else if (params?.method === "fileChooser.getFilePath") {
           return Promise.resolve(filePath);
         }
         return Promise.resolve(null);
-      },
-    );
+      });
     const context = {
       props,
       global: {
@@ -105,6 +106,17 @@ describe("FileChooser.vue", () => {
     });
     await flushPromises();
     expect(wrapper.find("span").text()).toBe(folderFromBackend.path);
+  });
+
+  it("shows error message", async () => {
+    const errorMessage = "myErrorMessage";
+    const errorReturningDataService = vi
+      .fn()
+      .mockResolvedValue({ folder: folderFromBackend, errorMessage });
+    const wrapper = shallowMountFileChooser({}, errorReturningDataService);
+    await flushPromises();
+    const errorMessageSpan = wrapper.find("span.error");
+    expect(errorMessageSpan.text()).toBe(`(${errorMessage})`);
   });
 
   it("shows a cancel button", async () => {
