@@ -195,7 +195,7 @@ describe("TableViewDisplay.vue", () => {
           const wrapper = shallowMountDisplay({ props });
           const columnConfigs = getColumnConfigs(wrapper);
 
-          expect(columnConfigs[1]).toStrictEqual({
+          expect(columnConfigs?.[1]).toStrictEqual({
             filterConfig: { is: "", modelValue: "" },
             formatter: expect.anything(),
             hasSlotContent: false,
@@ -216,7 +216,7 @@ describe("TableViewDisplay.vue", () => {
           const wrapper = shallowMountDisplay({ props });
           const columnConfigs = getColumnConfigs(wrapper);
 
-          expect(columnConfigs[1]).toMatchObject({
+          expect(columnConfigs?.[1]).toMatchObject({
             filterConfig: customColumnFilter,
           });
         });
@@ -226,7 +226,7 @@ describe("TableViewDisplay.vue", () => {
           const wrapper = shallowMountDisplay({ props });
           const columnConfigs = getColumnConfigs(wrapper);
 
-          expect(columnConfigs[1]).toMatchObject({
+          expect(columnConfigs?.[1]).toMatchObject({
             subHeader:
               props.header.dataTypes[props.header.columnDataTypeIds[1]].name,
           });
@@ -241,7 +241,7 @@ describe("TableViewDisplay.vue", () => {
             const wrapper = shallowMountDisplay({ props });
             const columnConfigs = getColumnConfigs(wrapper);
 
-            expect(columnConfigs[1]).toMatchObject({
+            expect(columnConfigs?.[1]).toMatchObject({
               headerSubMenuItems: [
                 expect.objectContaining({ text: "Data renderer" }),
                 expect.objectContaining({ id: "t2r1" }),
@@ -256,7 +256,7 @@ describe("TableViewDisplay.vue", () => {
             };
             const wrapper = shallowMountDisplay({ props });
             const columnConfigs = getColumnConfigs(wrapper);
-            expect(columnConfigs[1]).toMatchObject({
+            expect(columnConfigs?.[1]).toMatchObject({
               headerSubMenuItems: [
                 expect.objectContaining({ text: "Data renderer" }),
                 expect.objectContaining({ id: "t2r1", selected: false }),
@@ -273,7 +273,7 @@ describe("TableViewDisplay.vue", () => {
             ];
             const wrapper = shallowMountDisplay({ props });
             const columnConfigs = getColumnConfigs(wrapper);
-            expect(columnConfigs[0]).toMatchObject({
+            expect(columnConfigs?.[0]).toMatchObject({
               headerSubMenuItems: [
                 expect.objectContaining({ text: "Data renderer" }),
                 expect.objectContaining({ id: null, text: "Col1-Formatter" }),
@@ -283,7 +283,7 @@ describe("TableViewDisplay.vue", () => {
                 expect.objectContaining({ id: "t1r4" }),
               ],
             });
-            expect(columnConfigs[1]).toMatchObject({
+            expect(columnConfigs?.[1]).toMatchObject({
               headerSubMenuItems: [
                 expect.objectContaining({ text: "Data renderer" }),
                 expect.objectContaining({ id: null, text: "Col2-Formatter" }),
@@ -291,7 +291,7 @@ describe("TableViewDisplay.vue", () => {
                 expect.objectContaining({ id: "t2r2" }),
               ],
             });
-            expect(columnConfigs[2]).toMatchObject({
+            expect(columnConfigs?.[2]).toMatchObject({
               headerSubMenuItems: [
                 expect.objectContaining({ text: "Data renderer" }),
                 expect.objectContaining({ id: "t3r1" }),
@@ -309,15 +309,15 @@ describe("TableViewDisplay.vue", () => {
 
         it("sets minimal row config", () => {
           const wrapper = shallowMountDisplay({ props });
-          expect(getRowConfig(wrapper).rowHeight).toBeFalsy();
-          expect(getRowConfig(wrapper).compactMode).toBeFalsy();
-          expect(getRowConfig(wrapper).enableResizing).toBeFalsy();
+          expect(getRowConfig(wrapper)?.rowHeight).toBeFalsy();
+          expect(getRowConfig(wrapper)?.compactMode).toBeFalsy();
+          expect(getRowConfig(wrapper)?.enableResizing).toBeFalsy();
         });
 
         it("sets compact row height", () => {
           props.settings.rowHeightMode = RowHeightMode.COMPACT;
           const wrapper = shallowMountDisplay({ props });
-          expect(getRowConfig(wrapper).compactMode).toBeTruthy();
+          expect(getRowConfig(wrapper)?.compactMode).toBeTruthy();
         });
 
         it("sets custom row height", () => {
@@ -326,8 +326,8 @@ describe("TableViewDisplay.vue", () => {
           props.settings.customRowHeight = customRowHeight;
           const wrapper = shallowMountDisplay({ props });
           const rowConfig = getRowConfig(wrapper);
-          expect(rowConfig.compactMode).toBeFalsy();
-          expect(rowConfig.rowHeight).toBe(80);
+          expect(rowConfig?.compactMode).toBeFalsy();
+          expect(rowConfig?.rowHeight).toBe(80);
         });
 
         it("aplies default value for small custom row height", () => {
@@ -336,13 +336,13 @@ describe("TableViewDisplay.vue", () => {
           props.settings.customRowHeight = customRowHeight;
           const wrapper = shallowMountDisplay({ props });
           const rowConfig = getRowConfig(wrapper);
-          expect(rowConfig.rowHeight).toBe(40);
+          expect(rowConfig?.rowHeight).toBe(40);
         });
 
         it("enables row resizing", () => {
           props.enableRowResizing = true;
           const wrapper = shallowMountDisplay({ props });
-          expect(getRowConfig(wrapper).enableResizing).toBeTruthy();
+          expect(getRowConfig(wrapper)?.enableResizing).toBeTruthy();
         });
       });
     });
