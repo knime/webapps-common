@@ -73,6 +73,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSet
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FileChooser;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
@@ -191,6 +192,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * <td>{@link CredentialsWidget} (for customizing username + password)<br>
  * {@link PasswordWidget} (password only)<br>
  * {@link UsernameWidget} (username only)</td>
+ * </tr>
+ * <tr>
+ * <td>{@link FileChooser}</td>
+ * <td>Path file chooser (currently with options "Local File System" and "Custom/KNIME URL")</td>
+ * <td></td>
  * </tr>
  * <tr>
  * <td>Any type</td>
