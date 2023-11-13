@@ -48,9 +48,21 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.setting.credentials;
 
+import static org.knime.core.node.workflow.VariableType.CredentialsType.CFG_NAME;
+import static org.knime.core.node.workflow.VariableType.CredentialsType.CFG_PASSWORD;
+import static org.knime.core.node.workflow.VariableType.CredentialsType.CFG_SECOND_FACTOR;
+import static org.knime.core.node.workflow.VariableType.CredentialsType.CFG_USERNAME;
+import static org.knime.core.node.workflow.VariableType.CredentialsType.PASSWORD_SECRET;
+import static org.knime.core.node.workflow.VariableType.CredentialsType.SECOND_FACTOR_SECRET;
+
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
+
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -242,6 +254,49 @@ public final class Credentials {
                 return "";
             }
             return value.asText();
+        }
+    }
+
+    /**
+     * A {@link NodeSettingsPersistor} for {@link Credentials} objects.
+     *
+     * @author Marc Bux, KNIME GmbH, Berlin, Germany
+     */
+    public static final class CredentialsPersistor implements NodeSettingsPersistor<Credentials> {
+
+        private final String m_configKey;
+
+        /**
+         * @param configKey the configuration key for these credentials
+         */
+        public CredentialsPersistor(final String configKey) {
+            m_configKey = configKey;
+        }
+
+        @Override
+        public Credentials load(final NodeSettingsRO settings) throws InvalidSettingsException {
+            final var credentialsConfig = settings.getNodeSettings(m_configKey);
+            final var username = credentialsConfig.getString(CFG_USERNAME);
+            final var password = credentialsConfig.getPassword(CFG_PASSWORD, PASSWORD_SECRET);
+            final var secondFactor = credentialsConfig.getPassword(CFG_SECOND_FACTOR, SECOND_FACTOR_SECRET);
+            return new Credentials(username, password, secondFactor);
+        }
+
+        @Override
+        public void save(final Credentials credentials, final NodeSettingsWO settings) {
+            final var credentialsConfig = settings.addNodeSettings(m_configKey);
+            credentialsConfig.addString(CFG_NAME, "");
+            if (credentials != null) {
+                persistCredentials(credentials, credentialsConfig);
+            } else {
+                persistCredentials(new Credentials(), credentialsConfig);
+            }
+        }
+
+        private static void persistCredentials(final Credentials credentials, final NodeSettingsWO credentialsConfig) {
+            credentialsConfig.addString(CFG_USERNAME, credentials.getUsername());
+            credentialsConfig.addPassword(CFG_PASSWORD, PASSWORD_SECRET, credentials.getPassword());
+            credentialsConfig.addPassword(CFG_SECOND_FACTOR, SECOND_FACTOR_SECRET, credentials.getSecondFactor());
         }
     }
 
