@@ -1,4 +1,12 @@
-import { describe, expect, it, vi, type Mock, afterEach } from "vitest";
+import {
+  describe,
+  expect,
+  it,
+  vi,
+  type Mock,
+  afterEach,
+  beforeEach,
+} from "vitest";
 import { mount, VueWrapper } from "@vue/test-utils";
 import { h, shallowRef, type Slot } from "vue";
 
@@ -12,18 +20,24 @@ import SubMenu from "../../../SubMenu.vue";
 // mock for editor's isActive function. declared separately due to mock hoisting via vi.mock
 const mockEditorIsActive = vi.fn();
 
-const createMockEditor = (params: any) => {
+export const createMockEditor = (params: any) => {
   const actionNames = [
     "toggleBold",
     "toggleItalic",
     "toggleUnderline",
     "toggleBulletList",
     "toggleOrderedList",
+    "toggleBlockquote",
+    "toggleCodeBlock",
+    "toggleStrike",
     "setTextAlign",
     "setTextAlign",
     "setTextAlign",
+    "setHorizontalRule",
     "setHeading",
-    "setFontSize",
+    "setSmallText",
+    "unsetSmallText",
+    "toggleHeading",
     "unsetFontSize",
     "setLink",
     "unsetLink",
@@ -428,6 +442,90 @@ describe("RichTextEditor.vue", () => {
           ).toHaveBeenCalled();
         },
       );
+
+      it.each([
+        ["blockquote", "toggleBlockquote", "blockquote"] as const,
+        ["codeBlock", "toggleCodeBlock", "codeBlock"] as const,
+        ["strike", "toggleStrike", "strikethrough"] as const,
+        ["horizontalRule", "setHorizontalRule", "horizontalRule"] as const,
+      ])(
+        "secondary tool %s should invoce %s when clicked",
+        (extensionName, commandName, toolId) => {
+          const { wrapper } = doMount({
+            props: {
+              baseExtensions: { [extensionName]: true },
+            },
+          });
+          const secondaryItemsMenu = wrapper.findComponent(SubMenu);
+          secondaryItemsMenu.vm.$emit("item-click", null, {
+            id: toolId,
+          });
+          expect(
+            mockEditor.value.chain().focus()[commandName],
+          ).toHaveBeenCalled();
+        },
+      );
+
+      // eslint-disable-next-line vitest/max-nested-describe
+      describe("paragraphStyle", () => {
+        let wrapper: VueWrapper<any>;
+        const preSelectedHeadingLevel = 3;
+
+        beforeEach(() => {
+          const component = doMount({
+            props: { baseExtensions: { paragraphStyle: true } },
+          });
+          wrapper = component.wrapper;
+          mockEditorIsActive.mockImplementation(
+            (name: any, params: { level?: number }) => {
+              // eslint-disable-next-line vitest/no-conditional-tests
+              return (
+                name === "heading" && params?.level === preSelectedHeadingLevel
+              );
+            },
+          );
+        });
+
+        const emitParagraphStyleSubmenuItemClick = (childId: any) => {
+          const secondaryItemsMenu = wrapper.findComponent(SubMenu);
+          secondaryItemsMenu.vm.$emit("item-click", null, {
+            id: { toolId: "paragraphStyle", childId },
+          });
+        };
+
+        it("sets header", () => {
+          const level = 3;
+          emitParagraphStyleSubmenuItemClick(3);
+          expect(
+            mockEditor.value.chain().focus().toggleHeading,
+          ).toHaveBeenCalledWith({ level });
+        });
+
+        it("sets small text", () => {
+          emitParagraphStyleSubmenuItemClick("small");
+          expect(
+            mockEditor.value.chain().focus().setSmallText,
+          ).toHaveBeenCalled();
+        });
+
+        it("unsets heading when setting small text", () => {
+          emitParagraphStyleSubmenuItemClick("small");
+          expect(
+            mockEditor.value.chain().focus().toggleHeading,
+          ).toHaveBeenCalledWith({ level: preSelectedHeadingLevel });
+        });
+
+        it("unsets heading and small text on 'standard'", () => {
+          const selectedHeadingLevel = 3;
+          emitParagraphStyleSubmenuItemClick("standard");
+          expect(
+            mockEditor.value.chain().focus().toggleHeading,
+          ).toHaveBeenCalledWith({ level: selectedHeadingLevel });
+          expect(
+            mockEditor.value.chain().focus().unsetSmallText,
+          ).toHaveBeenCalled();
+        });
+      });
     });
   });
 

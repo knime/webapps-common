@@ -5,7 +5,8 @@ import type { Level } from "@tiptap/extension-heading";
 export type ParagrapsStyleId = Level | "small" | "standard";
 
 const clearHeading = (editor: Editor) => {
-  for (let i = 1; i <= 6; i++) {
+  const maxLevel = 6;
+  for (let i = 1; i <= maxLevel; i++) {
     if (editor.isActive("heading", { level: i })) {
       editor
         .chain()

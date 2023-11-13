@@ -329,4 +329,3 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length);
   }
 }
 </style>
-./paragraphStyleExtension
