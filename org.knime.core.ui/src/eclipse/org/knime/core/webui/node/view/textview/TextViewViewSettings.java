@@ -74,5 +74,6 @@ public class TextViewViewSettings implements DefaultNodeSettings {
      * Create a new {@link TextViewViewSettings} with default values
      */
     public TextViewViewSettings() {
+        //
     }
 }

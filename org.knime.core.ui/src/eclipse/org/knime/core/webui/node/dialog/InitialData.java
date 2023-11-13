@@ -58,7 +58,6 @@ import java.util.Set;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettings;
-import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContext;
@@ -94,8 +93,7 @@ final class InitialData {
         NodeContext.pushContext(m_nc);
         PasswordHolder.activate(m_nc.getID());
         try {
-            Map<SettingsType, NodeAndVariableSettingsRO> settings = getSettingsOverwrittenByVariables(specs);
-
+            Map<SettingsType, NodeAndVariableSettingsRO> settings = getSettingsOverwrittenByVariables();
             return m_nodeSettingsService.fromNodeSettings(settings, specs);
         } finally {
             PasswordHolder.deactivate();
@@ -103,8 +101,7 @@ final class InitialData {
         }
     }
 
-    private Map<SettingsType, NodeAndVariableSettingsRO>
-        getSettingsOverwrittenByVariables(final PortObjectSpec[] specs) {
+    private Map<SettingsType, NodeAndVariableSettingsRO> getSettingsOverwrittenByVariables() {
         Map<SettingsType, NodeAndVariableSettingsRO> resultSettings = new EnumMap<>(SettingsType.class);
         if (m_nc instanceof NativeNodeContainer nnc) {
             var isInitialLoad = false;
@@ -114,8 +111,7 @@ final class InitialData {
                     isInitialLoad = true;
                 }
                 resultSettings.put(type,
-                    NodeAndVariableSettingsProxy.createROProxy(
-                        settings.orElseGet(() -> getDefaultSettings(specs, type)),
+                    NodeAndVariableSettingsProxy.createROProxy(settings.orElseGet(() -> getDefaultSettings(type)),
                         new VariableSettings(nnc.getNodeSettings(), type)));
             }
             if (!isInitialLoad) {
@@ -171,7 +167,7 @@ final class InitialData {
      * no settings have been applied, yet, there can also be no flow variables configured to overwrite a setting. Thus,
      * no need to merge the default settings with flow variable values (as done above).
      */
-    private NodeSettings getDefaultSettings(final PortObjectSpec[] specs, final SettingsType type) {
+    private NodeSettings getDefaultSettings(final SettingsType type) {
         final var settings = new NodeSettings("default_settings");
         if (m_nc instanceof NativeNodeContainer nnc) {
             switch (type) {
@@ -185,7 +181,7 @@ final class InitialData {
              * directly.
              */
             throw new UnsupportedOperationException(
-                    "Method not expected to be called by the framework (in case of components).");
+                "Method not expected to be called by the framework (in case of components).");
         }
     }
 
