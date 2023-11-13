@@ -8,6 +8,7 @@ import StarIcon from "webapps-common/ui/assets/img/icons/star.svg";
 import LeaveIcon from "webapps-common/ui/assets/img/icons/leave.svg";
 import HeartIcon from "webapps-common/ui/assets/img/icons/heart.svg";
 import code from "webapps-common/ui/components/MenuItems.vue?raw";
+// @ts-ignore
 import type { MenuItem } from "webapps-common/ui/components/MenuItems.vue";
 
 const codeExampleStandalone = `<script>

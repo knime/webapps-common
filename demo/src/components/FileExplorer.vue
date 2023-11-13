@@ -4,9 +4,11 @@ import Checkbox from "webapps-common/ui/components/forms/Checkbox.vue";
 import Dropdown from "webapps-common/ui/components/forms/Dropdown.vue";
 import Button from "webapps-common/ui/components/Button.vue";
 import FileExplorer from "webapps-common/ui/components/FileExplorer/FileExplorer.vue";
+
 import type {
   FileExplorerItem,
   FileExplorerContextMenu,
+  // @ts-ignore
 } from "webapps-common/ui/components/FileExplorer/types";
 
 const items = [
