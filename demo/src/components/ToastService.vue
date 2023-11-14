@@ -2,7 +2,7 @@
 import CodeExample from "./demo/CodeExample.vue";
 import Button from "webapps-common/ui/components/Button.vue";
 import Interactive from "webapps-common/ui/assets/img/icons/interactive.svg";
-
+// @ts-ignore
 import { useToasts, type Toast } from "webapps-common/ui/services/toast";
 
 import toastServiceCode from "webapps-common/ui/services/toast/toastService?raw";
