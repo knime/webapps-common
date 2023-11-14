@@ -57,6 +57,8 @@ import org.knime.core.node.workflow.NodeOutPort;
 /**
  * Utilities around a nodes input {@link PortObjectSpec}s.
  *
+ * @noreference
+ *
  * @author Paul Bärnreuther
  */
 public final class InputSpecUtil {
