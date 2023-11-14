@@ -81,6 +81,7 @@ public final class TextViewView implements NodeView {
             .allowCommonInlineFormattingElements()
             .allowCommonBlockElements()
             .allowStyling()
+            .allowAttributes("class").matching(false, "small-text").onElements("p")
             .allowElements("a", "hr", "pre", "code")
             .allowAttributes("href").onElements("a")
             .allowStandardUrlProtocols()

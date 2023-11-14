@@ -92,6 +92,10 @@ export default RichTextInput;
 <style lang="postcss" scoped>
 .editor {
   height: calc(100% - 20px);
+
+  &:deep(.tools) {
+    --item-size: 30;
+  }
 }
 
 .editor-editable {
