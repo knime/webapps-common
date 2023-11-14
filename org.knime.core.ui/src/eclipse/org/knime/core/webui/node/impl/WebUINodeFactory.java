@@ -249,16 +249,17 @@ public abstract class WebUINodeFactory<M extends NodeModel> extends NodeFactory<
 
     private static void addPorts(final DocumentBuilder docBuilder, final Document doc, final Element ports,
         final PortDescription[] portDescs, final Function<PortDescription, String> tagName) {
-        for (int i = 0; i < portDescs.length; i++) {
-            var portDesc = portDescs[i];
+        int index = 0;
+        for (final PortDescription portDesc : portDescs) {
             var port = doc.createElement(tagName.apply(portDesc));
             port.setAttribute("name", portDesc.getName());
             if (portDesc.isConfigurable()) {
-                port.setAttribute("insert-before", Integer.toString(i));
+                port.setAttribute("insert-before", Integer.toString(index));
                 port.setAttribute("group-identifier", portDesc.getName());
                 port.setAttribute("configurable-via-menu", "false");
             } else {
-                port.setAttribute("index", Integer.toString(i));
+                port.setAttribute("index", Integer.toString(index));
+                index++;
             }
             port.appendChild(parseDocumentFragment(portDesc.getDescription(), docBuilder, doc));
             ports.appendChild(port);
