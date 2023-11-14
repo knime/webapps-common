@@ -53,6 +53,12 @@ const SmallFontSize = Paragraph.extend({
         },
     };
   },
+
+  addKeyboardShortcuts() {
+    return {
+      "Mod-Alt--": () => this.editor.commands.setSmallText(),
+    };
+  },
 });
 
 export { SmallFontSize };

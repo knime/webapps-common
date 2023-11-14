@@ -21,6 +21,7 @@ const clearHeading = (editor: Editor) => {
 const getHeadingOptionChild = (level: Level, getEditor: () => Editor) => ({
   item: { text: `Heading ${level}` },
   id: level,
+  hotkey: ["Ctrl", "Alt", `${level}`],
   active: () => getEditor().isActive("heading", { level }),
 });
 
@@ -30,10 +31,12 @@ export default (getEditor: () => Editor) => {
       {
         item: { text: "Standard" },
         id: "standard",
+        hotkey: ["Ctrl", "Alt", "0"],
       },
       {
         item: { text: "Small text" },
         id: "small",
+        hotkey: ["Ctrl", "Alt", "−"], // this is a wider minus character for aesthetic reasons
         active: () => getEditor().isActive({ smallText: true }),
       },
       ...Array.from({ length: 6 }, (_, i) =>

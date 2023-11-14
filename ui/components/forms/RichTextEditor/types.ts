@@ -19,7 +19,12 @@ export type EditorToolItem<T> = EditorToolItemBase &
         onClick: () => void;
       }
     | {
-        children: { item: MenuItem; id: T; active?: () => boolean }[];
+        children: {
+          item: MenuItem;
+          id: T;
+          active?: () => boolean;
+          hotkey?: Array<string>;
+        }[];
         onChildClick: (childId: T) => void;
         onClick?: never;
         secondary: true;
