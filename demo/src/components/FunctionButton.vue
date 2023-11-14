@@ -50,7 +50,7 @@ export default {
       active3: false,
       subMenuItems: [
         {
-          href: "http://apple.com",
+          href: "https://apple.com",
           text: "Apples",
         },
         {

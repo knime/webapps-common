@@ -16,7 +16,7 @@ import MenuItems from '~/webapps-common/ui/components/MenuItems.vue';
 import MenuIcon from '~/webapps-common/ui/assets/img/icons/menu-options.svg';
 
 const items = [{
-    href: 'http://apple.com',
+    href: 'https://apple.com',
     text: 'Apples',
     icon: HelpIcon,
     hotkeyText: 'Ctrl + 1'
@@ -77,7 +77,7 @@ export default {
 
 const menuItemsData: MenuItem[] = [
   {
-    href: "http://apple.com",
+    href: "https://apple.com",
     text: "Apples",
     icon: markRaw(HelpIcon),
     hotkeyText: "Ctrl + 1",
