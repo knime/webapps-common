@@ -14,6 +14,7 @@ import type { TableViewDisplayProps } from "./types";
 import useBoolean from "./utils/useBoolean";
 import { separateSpecialColumns } from "./utils/specialColumns";
 import { BORDER_BOTTOM_WIDTH } from "./constants";
+import { RowHeightMode } from "./types/ViewSettings";
 
 const emit = defineEmits([
   "page-change",
@@ -71,15 +72,31 @@ const numberOfUsedColumns = computed(
     numberOfDisplayedRemainingColumns.value,
 );
 
-const { header, settings, firstRowImageDimensions, currentRowHeight } =
-  toRefs(props);
+const {
+  header,
+  settings,
+  firstRowImageDimensions,
+  currentRowHeight,
+  enableDynamicRowHeight,
+} = toRefs(props);
+
+const hasDynamicRowHeight = computed(
+  () =>
+    enableDynamicRowHeight.value &&
+    settings.value.rowHeightMode === RowHeightMode.DEFAULT,
+);
 
 const {
   autoColumnSizes,
   autoColumnSizesActive,
   autoColumnSizesOptions,
   onAutoColumnSizesUpdate,
-} = useAutoColumnSizes({ settings, firstRowImageDimensions, currentRowHeight });
+} = useAutoColumnSizes({
+  settings,
+  firstRowImageDimensions,
+  currentRowHeight,
+  hasDynamicRowHeight,
+});
 
 const {
   columnSizes,
@@ -99,7 +116,7 @@ const dataConfig = computed(() => {
     settings: props.settings,
     columnSizes: columnSizes.value,
     enableRowResizing: props.enableRowResizing,
-    dynamicRowHeight: props.dynamicRowHeight,
+    enableDynamicRowHeight: props.enableDynamicRowHeight,
     ...reactive(props.header),
   });
   emit("update-column-configs", conf.columnConfigs);
@@ -253,7 +270,9 @@ const onCopySelection = ({
       <template
         v-for="index in numberOfUsedColumns"
         :key="index"
-        #[`cellContent-${index}`]="{ data: { cell, width, height } }"
+        #[`cellContent-${index}`]="{
+          data: { cell, width, height, paddingTopBottom },
+        }"
       >
         <ImageRenderer
           v-if="getContentType(index) === 'img_path'"
@@ -261,14 +280,20 @@ const onCopySelection = ({
           :include-data-in-html="includeImageResources"
           :path="cell"
           :width="width"
-          :height="height - BORDER_BOTTOM_WIDTH"
+          :height="
+            typeof height === 'number' ? height - BORDER_BOTTOM_WIDTH : height
+          "
           :base-url="baseUrl"
           :update="!columnResizeActive.state"
           :table-is-ready="tableIsReady"
           @pending="(id: string) => $emit('pending-image', id)"
           @rendered="(id: string) => $emit('rendered-image', id)"
         />
-        <HtmlRenderer v-else :content="cell" />
+        <HtmlRenderer
+          v-else
+          :content="cell"
+          :padding-top-bottom="paddingTopBottom"
+        />
       </template>
     </TableUIWithAutoSizeCalculation>
     <div v-else-if="rows.loaded" class="no-columns">

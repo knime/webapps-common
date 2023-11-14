@@ -60,5 +60,5 @@ export interface TableViewDisplayProps {
   forceHideTableSizes?: boolean;
   firstRowImageDimensions: Record<string, ImageDimension>;
   settingsItems?: object[];
-  dynamicRowHeight?: boolean;
+  enableDynamicRowHeight?: boolean;
 }

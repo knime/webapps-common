@@ -5,7 +5,7 @@ import useAutoColumnSizes, {
 import { ref, type Ref } from "vue";
 import { AutoSizeColumnsToContent } from "@/tableView/types/ViewSettings";
 
-describe("useColumnSizes", () => {
+describe("useAutoColumnSizes", () => {
   let initialDataMock: UseAutoColumnSizesOptions, currentRowHeight: Ref<number>;
 
   beforeEach(() => {
@@ -16,6 +16,7 @@ describe("useColumnSizes", () => {
       }),
       currentRowHeight,
       firstRowImageDimensions: ref({}),
+      hasDynamicRowHeight: ref(false),
     };
   });
 
@@ -92,6 +93,21 @@ describe("useColumnSizes", () => {
           col1: 119,
           col2: 95,
           col3: 148,
+        },
+      });
+    });
+
+    it("sets the correct column sizes of image columns on dynamic row height", () => {
+      initialDataMock.hasDynamicRowHeight.value = true;
+      const { autoColumnSizesOptions } = useAutoColumnSizes(initialDataMock);
+
+      expect(autoColumnSizesOptions.value).toStrictEqual({
+        calculateForBody: true,
+        calculateForHeader: false,
+        fixedSizes: {
+          col1: 150,
+          col2: 120,
+          col3: 150,
         },
       });
     });

@@ -35,7 +35,6 @@ const waitForTableToBeReady = () =>
   });
 
 const emit = defineEmits(["pending", "rendered"]);
-
 const inlinedSrc: Ref<false | string> = ref(false);
 
 const store = useStore();
@@ -45,13 +44,18 @@ const imageUrl = computed(() =>
     path: props.path,
   }),
 );
-const urlWithDimensions = computed(() =>
-  props.width && props.height
+
+const urlWithDimensions = computed(() => {
+  /**
+   * Use Number.Max_VALUE to automatically get the correct height for the given
+   * width Handled in the backend
+   */
+  return props.width
     ? `${imageUrl.value}?w=${Math.floor(props.width)}&h=${Math.floor(
-        props.height,
+        typeof props.height === "number" ? props.height : Number.MAX_VALUE,
       )}`
-    : imageUrl.value,
-);
+    : imageUrl.value;
+});
 
 let uuid: string | null = null;
 onMounted(async () => {
@@ -85,6 +89,10 @@ watch(
 <template>
   <img
     v-if="!includeDataInHtml || inlinedSrc"
+    :style="{
+      ...(typeof width === 'number' && { maxWidth: width + 'px' }),
+      ...(typeof height === 'number' && { maxHeight: height + 'px' }),
+    }"
     loading="lazy"
     :src="includeDataInHtml ? inlinedSrc : fixedSrc || urlWithDimensions"
     alt=""

@@ -1,5 +1,5 @@
 /* eslint-disable vitest/max-nested-describe, max-lines */
-import type { VueWrapper } from "@vue/test-utils";
+import { VueWrapper } from "@vue/test-utils";
 import { describe, it, beforeEach, expect, vi } from "vitest";
 // @ts-ignore
 import { TableUIWithAutoSizeCalculation } from "@knime/knime-ui-table";
@@ -330,7 +330,16 @@ describe("TableViewDisplay.vue", () => {
           expect(rowConfig?.rowHeight).toBe(80);
         });
 
-        it("aplies default value for small custom row height", () => {
+        it("sets dynamic row height", () => {
+          props.settings.rowHeightMode = RowHeightMode.DEFAULT;
+          props.enableDynamicRowHeight = true;
+          const wrapper = shallowMountDisplay({ props });
+          const rowConfig = getRowConfig(wrapper);
+          expect(rowConfig?.compactMode).toBeFalsy();
+          expect(rowConfig?.rowHeight).toBe("dynamic");
+        });
+
+        it("applies default value for small custom row height", () => {
           const customRowHeight = 1;
           props.settings.rowHeightMode = RowHeightMode.CUSTOM;
           props.settings.customRowHeight = customRowHeight;
@@ -508,20 +517,28 @@ describe("TableViewDisplay.vue", () => {
   });
 
   describe("column size composables", () => {
-    it("uses useAutoColumnSizes with correct values", () => {
+    it("uses useAutoColumnSizes with correct values", async () => {
       (useAutoColumnSizes as any).reset();
       props.firstRowImageDimensions = {
         col1: { widthInPx: 20, heightInPx: 50 },
       };
-      shallowMountDisplay({ props });
-      const [{ settings, firstRowImageDimensions, currentRowHeight }] = (
-        useAutoColumnSizes as any
-      ).mock.calls[0];
+      const wrapper = shallowMountDisplay({ props });
+      const [
+        {
+          settings,
+          firstRowImageDimensions,
+          currentRowHeight,
+          hasDynamicRowHeight,
+        },
+      ] = (useAutoColumnSizes as any).mock.calls[0];
       expect(unref(settings)).toStrictEqual(props.settings);
       expect(unref(firstRowImageDimensions)).toStrictEqual(
         props.firstRowImageDimensions,
       );
       expect(unref(currentRowHeight)).toBe(props.currentRowHeight);
+      expect(unref(hasDynamicRowHeight)).toBe(false);
+      await wrapper.setProps({ enableDynamicRowHeight: true });
+      expect(unref(hasDynamicRowHeight)).toBe(true);
     });
 
     it("uses useColumnSizes with correct values", () => {

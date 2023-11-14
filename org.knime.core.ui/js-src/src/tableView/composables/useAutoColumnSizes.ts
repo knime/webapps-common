@@ -18,12 +18,14 @@ export interface UseAutoColumnSizesOptions {
     TableViewDisplayProps["firstRowImageDimensions"]
   >;
   currentRowHeight: Ref<number>;
+  hasDynamicRowHeight: Ref<boolean>;
 }
 
 export default ({
   settings,
   firstRowImageDimensions,
   currentRowHeight,
+  hasDynamicRowHeight,
 }: UseAutoColumnSizesOptions) => {
   const autoColumnSizes: Ref<ColumnSizes> = ref({});
 
@@ -53,9 +55,9 @@ export default ({
     Object.entries(firstRowImageDimensions.value).forEach(
       ([columnName, imageDimension]: [string, ImageDimension]) => {
         const { widthInPx, heightInPx } = imageDimension;
-        const autoSizeWidth = Math.floor(
-          (widthInPx * innerRowHeight.value) / heightInPx,
-        );
+        const autoSizeWidth = hasDynamicRowHeight.value
+          ? widthInPx
+          : Math.floor((widthInPx * innerRowHeight.value) / heightInPx);
         fixedColumnSizes[columnName] = Math.min(autoSizeWidth, widthInPx);
       },
     );
