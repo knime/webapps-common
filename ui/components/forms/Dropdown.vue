@@ -2,6 +2,7 @@
 import DropdownIcon from '../../assets/img/icons/arrow-dropdown.svg';
 import Vue from 'vue';
 import { mixin as clickaway } from 'vue-clickaway2';
+import { isEmpty } from 'lodash';
 
 let count = 0;
 const KEY_DOWN = 40;
@@ -50,7 +51,11 @@ export default {
             type: Boolean
         },
         /**
-         * List of possible values. Each item must have an `id` and a `text` property
+         * List of possible values. Each item must have an `id` and a `text` property. To use slots an additional
+         * slotData object must be passed which contains the data to be displayed.
+         *
+         * IMPORTANT: All values have to have a slotData object otherwise the slot will not be displayed and the
+         * usual text is rendered instead.
          * @example
          * [{
          *   id: 'pdf',
@@ -58,6 +63,14 @@ export default {
          * }, {
          *   id: 'XLS',
          *   text: 'Excel',
+         * }, {
+         *    id: 'JPG',
+         *   text: 'Jpeg',
+         *   slotData: {
+         *      fullName: 'Joint Photographic Experts Group',
+         *      year: '1992'
+         *      description: 'Commonly used method of lossy compression for digital images'
+         *  }
          * }]
          */
         possibleValues: {
@@ -102,6 +115,9 @@ export default {
         },
         isMissing() {
             return this.value && !this.displayTextMap.hasOwnProperty(this.value);
+        },
+        isSlotted() {
+            return this.possibleValues.every(value => value.slotData && !isEmpty(value.slotData));
         }
     },
     created() {
@@ -306,11 +322,23 @@ export default {
         ref="options"
         role="option"
         :title="item.text"
-        :class="{ 'focused': isCurrentValue(item.id), 'noselect': true, 'empty': item.text.trim() === '' }"
+        :class="{
+          'focused': isCurrentValue(item.id),
+          'noselect': true,
+          'empty': item.text.trim() === '',
+          'slotted': isSlotted
+        }"
         :aria-selected="isCurrentValue(item.id)"
         @click="onOptionClick(item.id)"
       >
-        {{ item.text }}
+        <template v-if="isSlotted">
+          <slot :slot-data="item.slotData" />
+        </template>
+        <template
+          v-else
+        >
+          {{ item.text }}
+        </template>
       </li>
     </ul>
     <input
@@ -418,7 +446,7 @@ export default {
     cursor: pointer;
   }
 
-  & [role="option"] {
+  & [role="option"]:not(.slotted) {
     display: block;
     width: 100%;
     padding: 0 10px 0 10px;

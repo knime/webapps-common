@@ -1,4 +1,5 @@
 import { mount, createLocalVue } from '@vue/test-utils';
+import { isUndefined, cloneDeep } from 'lodash';
 
 jest.mock('vue-clickaway2', () => ({
     mixin: {}
@@ -10,63 +11,122 @@ localVue.directive('onClickaway', () => {});
 import Dropdown from '~/ui/components/forms/Dropdown.vue';
 jest.useFakeTimers();
 
-describe('Dropdown.vue', () => {
-    let propsData;
+const POSSIBLE_VALUES_MOCK = [{
+    id: 'test1',
+    text: 'Text 1'
+}, {
+    id: 'test2',
+    text: 'Text 2'
+}, {
+    id: 'test3',
+    text: 'Text 3'
+}, {
+    id: 'test4',
+    text: 'Text 4'
+}, {
+    id: 'test5',
+    text: 'Text 5'
+}];
+const ARIA_LABEL_MOCK = 'Test Label';
+const POSSIBLE_SLOTTED_VALUES_MOCK = [{
+    id: 'test1',
+    text: 'Text 1',
+    slotData: {
+        a: 1,
+        b: 2,
+        c: 3
+    }
+}, {
+    id: 'test2',
+    text: 'Text 2',
+    slotData: {
+        a: 1,
+        b: 2,
+        c: 3
+    }
+}, {
+    id: 'test3',
+    text: 'Text 3',
+    slotData: {
+        a: 1,
+        b: 2,
+        c: 3
+    }
+}, {
+    id: 'test4',
+    text: 'Text 4',
+    slotData: {
+        a: 1,
+        b: 2,
+        c: 3
+    }
+}, {
+    id: 'test5',
+    text: 'Text 5',
+    slotData: {
+        a: 1,
+        b: 2,
+        c: 3
+    }
+}];
+const SLOT_CONTENT_MOCK = `
+<template slot-scope="slotProps">
+{{ slotProps.slotData.a }} {{ slotProps.slotData.b }} {{ slotProps.slotData.c }}
+</template>
+`;
 
-    beforeEach(() => {
-        propsData = {
-            possibleValues: [{
-                id: 'test1',
-                text: 'Text 1'
-            }, {
-                id: 'test2',
-                text: 'Text 2'
-            }, {
-                id: 'test3',
-                text: 'Text 3'
-            }, {
-                id: 'test4',
-                text: 'Text 4'
-            }, {
-                id: 'test5',
-                text: 'Text 5'
-            }],
-            ariaLabel: 'Test Label'
-        };
+const doMount = ({
+    name = null,
+    value = null,
+    placeholder = null,
+    isValid,
+    possibleValues = POSSIBLE_VALUES_MOCK,
+    ariaLabel = ARIA_LABEL_MOCK,
+    slotContent = null
+} = {}) => {
+    const propsData = {
+        possibleValues,
+        ariaLabel,
+        value,
+        placeholder,
+        name,
+        isValid: isUndefined(isValid) ? true : isValid
+    };
+    const wrapper = mount(Dropdown, {
+        propsData,
+        localVue,
+        ...slotContent
+            ? { scopedSlots: {
+                default: slotContent
+            } }
+            : {}
     });
 
+    return {
+        wrapper
+    };
+};
+
+describe('Dropdown.vue', () => {
     it('renders', () => {
-        const wrapper = mount(Dropdown, {
-            propsData,
-            localVue
-        });
+        const { wrapper } = doMount();
         expect(wrapper.html()).toBeTruthy();
         expect(wrapper.isVisible()).toBeTruthy();
-        expect(wrapper.findAll('[role=option]').length).toBe(propsData.possibleValues.length);
+        expect(wrapper.findAll('[role=option]').length).toBe(POSSIBLE_VALUES_MOCK.length);
     });
 
     it('sets the correct aria-* attributes', () => {
-        const wrapper = mount(Dropdown, {
-            propsData,
-            localVue
-        });
-
+        const { wrapper } = doMount();
         let button = wrapper.find('[role=button]');
-        expect(button.attributes('aria-label')).toBe(propsData.ariaLabel);
+        expect(button.attributes('aria-label')).toBe(ARIA_LABEL_MOCK);
     });
 
     it('renders value text or placeholder if no or empty value set', () => {
-        let placeholder = 'my-placeholder';
-        const wrapper = mount(Dropdown, {
-            propsData: {
-                ...propsData,
-                placeholder,
-                value: 'test3'
-            },
-            localVue
-        });
+        const placeholder = 'my-placeholder';
+        const value = 'test3';
+        const { wrapper } = doMount({ placeholder, value });
 
-        let button = wrapper.find('[role=button]');
+        const button = wrapper.find('[role=button]');
         expect(button.text()).toBe('Text 3');
         expect(wrapper.vm.isMissing).toBeFalsy();
 
@@ -78,63 +138,40 @@ describe('Dropdown.vue', () => {
 
     it('renders a hidden input field to be able to read form data', () => {
         let placeholder = 'my-placeholder';
-        const wrapper = mount(Dropdown, {
-            propsData: {
-                ...propsData,
-                placeholder,
-                value: 'test66',
-                name: 'test-name'
-            },
-            localVue
+        const value = 'test66';
+        const name = 'test-name';
+        const { wrapper } = doMount({
+            value, name, placeholder
         });
         expect(wrapper.find('input').exists()).toBe(true);
-        expect(wrapper.find('input').element.value).toBe('test66');
-        expect(wrapper.find('input').attributes('name')).toBe('test-name');
+        expect(wrapper.find('input').element.value).toBe(value);
+        expect(wrapper.find('input').attributes('name')).toBe(name);
     });
 
     it('renders invalid value if value is invalid', () => {
-        const wrapper = mount(Dropdown, {
-            propsData: {
-                ...propsData,
-                value: 'no'
-            },
-            localVue
-        });
-
+        const value = 'no';
+        const { wrapper } = doMount({ value });
         let button = wrapper.find('[role=button]');
-        expect(button.text()).toBe('(MISSING) no');
+        expect(button.text()).toBe(`(MISSING) ${value}`);
     });
 
     it('detects that there is a missing value', () => {
-        const wrapper = mount(Dropdown, {
-            propsData: {
-                ...propsData,
-                value: 'no'
-            },
-            localVue
-        });
-
+        const value = 'no';
+        const { wrapper } = doMount({ value });
         expect(wrapper.vm.isMissing).toBeTruthy();
     });
 
     it('renders invalid style', () => {
-        const wrapper = mount(Dropdown, {
-            propsData: {
-                ...propsData,
-                isValid: false
-            },
-            localVue
+        const isValid = false;
+        const { wrapper } = doMount({
+            isValid
         });
-
         let root = wrapper.find('div');
         expect(root.classes()).toContain('invalid');
     });
 
     it('opens the listbox on click of button and emits event for clicked value', () => {
-        const wrapper = mount(Dropdown, {
-            propsData,
-            localVue
-        });
+        const { wrapper } = doMount();
         let newValueIndex = 1;
         let listbox = wrapper.find('[role=listbox]');
 
@@ -145,30 +182,26 @@ describe('Dropdown.vue', () => {
         let input = wrapper.findAll('li[role=option]').at(newValueIndex);
         input.trigger('click');
 
-        expect(wrapper.emitted().input[0][0]).toEqual(propsData.possibleValues[newValueIndex].id);
+        expect(wrapper.emitted().input[0][0]).toEqual(POSSIBLE_VALUES_MOCK[newValueIndex].id);
 
         // listbox closed
         expect(listbox.isVisible()).toBe(false);
     });
 
     it('provides a valid hasSelection method', () => {
-        const wrapper = mount(Dropdown, {
-            propsData,
-            localVue
-        });
+        const { wrapper } = doMount();
         expect(wrapper.vm.hasSelection()).toBe(false);
         wrapper.setProps({ value: 'test2' });
         expect(wrapper.vm.hasSelection()).toBe(true);
     });
 
-    describe('keyboard navigation', () => {
-        it('opens and closes the listbox on enter/esc', () => {
-            const wrapper = mount(Dropdown, {
-                propsData,
-                localVue
-            });
-
-            let listbox = wrapper.find('[role=listbox]');
+    describe.each([
+        { possibleValues: POSSIBLE_VALUES_MOCK, type: 'dropdown' },
+        { possibleValues: POSSIBLE_SLOTTED_VALUES_MOCK, type: 'slotted dropdown' }
+    ])('keyboard navigation', ({ possibleValues, type }) => {
+        it(`opens and closes the listbox on enter/esc for a ${type}`, () => {
+            const { wrapper } = doMount({ possibleValues });
+            const listbox = wrapper.find('[role=listbox]');
 
             // open list
             wrapper.find('[role=button]').trigger('keydown.enter');
@@ -179,120 +212,74 @@ describe('Dropdown.vue', () => {
             expect(listbox.isVisible()).toBe(false);
         });
 
-        it('sets the values on keydown navigation', () => {
-            const wrapper = mount(Dropdown, {
-                propsData: {
-                    ...propsData,
-                    value: 'test2' // defines start point
-                },
-                localVue
-            });
-
-            let ul = wrapper.find('ul');
+        it(`sets the values on keydown navigation for a ${type}`, () => {
+            const value = possibleValues[1].id; // defines start point
+            const { wrapper } = doMount({ possibleValues, value });
+            const ul = wrapper.find('ul');
             ul.trigger('keydown.down');
-            expect(wrapper.emitted().input[0][0]).toEqual('test3');
+            expect(wrapper.emitted().input[0][0]).toEqual(possibleValues[2].id);
         });
 
-        it('sets the values on keyup navigation', () => {
-            const wrapper = mount(Dropdown, {
-                propsData: {
-                    ...propsData,
-                    value: 'test2' // defines start point
-                },
-                localVue
-            });
-
-            let ul = wrapper.find('ul');
+        it(`sets the values on keyup navigation for a ${type}`, () => {
+            const value = possibleValues[1].id; // defines start point
+            const { wrapper } = doMount({ possibleValues, value });
+            const ul = wrapper.find('ul');
             ul.trigger('keydown.up');
-            expect(wrapper.emitted().input[0][0]).toEqual('test1');
+            expect(wrapper.emitted().input[0][0]).toEqual(possibleValues[0].id);
         });
 
-        it('sets no values on keyup navigation at the start', () => {
-            const wrapper = mount(Dropdown, {
-                propsData: {
-                    ...propsData,
-                    value: 'test1' // defines start point
-                },
-                localVue
-            });
-
-            let ul = wrapper.find('ul');
+        it(`sets no values on keyup navigation at the start for a ${type}`, () => {
+            const value = possibleValues[0].id; // defines start point
+            const { wrapper } = doMount({ possibleValues, value });
+            const ul = wrapper.find('ul');
             ul.trigger('keydown.up');
             expect(wrapper.emitted().input).toBeFalsy();
         });
 
-        it('sets no values on keydown navigation at the end', () => {
-            const wrapper = mount(Dropdown, {
-                propsData: {
-                    ...propsData,
-                    value: 'test5' // defines start point
-                },
-                localVue
-            });
-
-            let ul = wrapper.find('ul');
+        it(`sets no values on keydown navigation at the end for a ${type}`, () => {
+            const value = possibleValues[possibleValues.length - 1].id; // defines start point
+            const { wrapper } = doMount({ possibleValues, value });
+            const ul = wrapper.find('ul');
             ul.trigger('keydown.down');
             expect(wrapper.emitted().input).toBeFalsy();
         });
 
-        it('sets the values to the first value on home key', () => {
-            const wrapper = mount(Dropdown, {
-                propsData: {
-                    ...propsData,
-                    value: 'test3' // defines start point
-                },
-                localVue
-            });
-
-            let ul = wrapper.find('ul');
+        it(`sets the values to the first value on home key for a ${type}`, () => {
+            const value = possibleValues[2].id; // defines start point
+            const { wrapper } = doMount({ possibleValues, value });
+            const ul = wrapper.find('ul');
             ul.trigger('keydown.home');
-            expect(wrapper.emitted().input[0][0]).toBe('test1');
+            expect(wrapper.emitted().input[0][0]).toBe(possibleValues[0].id);
         });
 
-        it('sets the values to the last value on end key', () => {
-            const wrapper = mount(Dropdown, {
-                propsData: {
-                    ...propsData,
-                    value: 'test3' // defines start point
-                },
-                localVue
-            });
-
-            let ul = wrapper.find('ul');
+        it(`sets the values to the last value on end key for a ${type}`, () => {
+            const value = possibleValues[2].id; // defines start point
+            const { wrapper } = doMount({ possibleValues, value });
+            const ul = wrapper.find('ul');
             ul.trigger('keydown.end');
-            expect(wrapper.emitted().input[0][0]).toBe('test5');
+            expect(wrapper.emitted().input[0][0]).toBe(possibleValues[possibleValues.length - 1].id);
         });
     });
 
-    describe('keyboard search', () => {
-        it('finds the first matching item', () => {
-            const wrapper = mount(Dropdown, {
-                propsData: {
-                    ...propsData,
-                    value: 'test2' // defines start point
-                },
-                localVue
-            });
-
-            let ul = wrapper.find('ul');
+    describe.each([
+        { possibleValues: POSSIBLE_VALUES_MOCK, type: 'dropdown' },
+        { possibleValues: POSSIBLE_SLOTTED_VALUES_MOCK, type: 'slotted dropdown' }
+    ])('keyboard search', ({ possibleValues, type }) => {
+        it(`finds the first matching item for a ${type}`, () => {
+            const value = possibleValues[2].id; // defines start point
+            const { wrapper } = doMount({ possibleValues, value });
+            const ul = wrapper.find('ul');
 
             ul.find('ul').trigger('keydown', {
                 key: 't'
             });
-
             expect(wrapper.emitted().input[0][0]).toBe('test1');
         });
 
-        it('finds a more exact matching item', () => {
-            const wrapper = mount(Dropdown, {
-                propsData: {
-                    ...propsData,
-                    value: 'test2' // defines start point
-                },
-                localVue
-            });
-
-            let ul = wrapper.find('ul');
+        it(`finds a more exact matching item for a ${type}`, () => {
+            const value = possibleValues[2].id; // defines start point
+            const { wrapper } = doMount({ possibleValues, value });
+            const ul = wrapper.find('ul');
 
             ul.trigger('keydown', { key: 't' });
             ul.trigger('keydown', { key: 'e' });
@@ -305,16 +292,10 @@ describe('Dropdown.vue', () => {
         });
 
 
-        it('resets after stop typing', () => {
-            const wrapper = mount(Dropdown, {
-                propsData: {
-                    ...propsData,
-                    value: 'test2' // defines start point
-                },
-                localVue
-            });
-
-            let ul = wrapper.find('ul');
+        it(`resets after stop typing for a ${type}`, () => {
+            const value = possibleValues[2].id; // defines start point
+            const { wrapper } = doMount({ possibleValues, value });
+            const ul = wrapper.find('ul');
 
             ul.trigger('keydown', { key: 't' });
             expect(wrapper.emitted().input[0][0]).toBe('test1');
@@ -330,6 +311,31 @@ describe('Dropdown.vue', () => {
             ul.trigger('keydown', { key: '3' });
 
             expect(wrapper.emitted().input[6][0]).toBe('test3');
+        });
+    });
+
+    describe('Slotted Dropdown', () => {
+        it('render slots if slotData is given', () => {
+            // use a single value to make look-up easier
+            const possibleValues = [cloneDeep(POSSIBLE_SLOTTED_VALUES_MOCK[0])];
+            const { wrapper } = doMount({ possibleValues, slotContent: SLOT_CONTENT_MOCK });
+            const option = wrapper.find('li');
+            expect(option.classes()).toContain('slotted');
+            expect(option.text()).not.toBe(possibleValues[0].text);
+            expect(option.text())
+                .toBe(
+                    `${possibleValues[0].slotData.a} ${possibleValues[0].slotData.b} ${possibleValues[0].slotData.c}`
+                );
+        });
+
+        it('render text slots if slotData is not given', () => {
+            // use a single value to make look-up easier
+            const possibleValues = [cloneDeep(POSSIBLE_SLOTTED_VALUES_MOCK[0])];
+            delete possibleValues[0].slotData;
+            const { wrapper } = doMount({ possibleValues, slotContent: SLOT_CONTENT_MOCK });
+            const option = wrapper.find('li');
+            expect(option.classes()).not.toContain('slotted');
+            expect(option.text()).toBe(possibleValues[0].text);
         });
     });
 });

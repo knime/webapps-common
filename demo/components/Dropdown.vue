@@ -2,6 +2,11 @@
 import CodeExample from './demo/CodeExample.vue';
 import Dropdown from '../../ui/components/forms/Dropdown.vue';
 import code from '!!raw-loader!../../ui/components/forms/Dropdown';
+import ChartPolarIcon from '../../ui/assets/img/icons/chart-polar.svg';
+import RocketIcon from '../../ui/assets/img/icons/rocket.svg';
+import DiamondIcon from '../../ui/assets/img/icons/diamond.svg';
+import EarlyBirdIcon from '../../ui/assets/img/icons/early-bird.svg';
+
 
 const codeExample = `<Dropdown
   v-model="selected"
@@ -18,17 +23,114 @@ const codeExample = `<Dropdown
   }]"
 />`;
 
+const slottedCodeExample = `<Dropdown
+  v-model="slottedSelected"
+  aria-label="A Slotted dropdown"
+  :possible-values="[{
+      id: '1',
+      text: 'The Sundering',
+      slotData: {
+          icon: ChartPolarIcon,
+          title: 'The Sundering',
+          subtitle: 'Gods of the Earth',
+          state: '2008'
+      }
+  }, {
+      id: '2',
+      text: 'Iron Swan',
+      slotData: {
+          icon: RocketIcon,
+          title: 'Iron Swan',
+          subtitle: 'Age of Winters',
+          state: '2006'
+      }
+  }, {
+      id: '3',
+      text: 'The Dreamthieves',
+      slotData: {
+          icon: DiamondIcon,
+          title: 'The Dreamthieves',
+          subtitle: 'Low Country',
+          state: '2016'
+      }
+  }, {
+      id: '4',
+      text: 'Deadly Nightshade',
+      slotData: {
+          icon: EarlyBirdIcon,
+          title: 'Deadly Nightshade',
+          subtitle: 'Used Future',
+          state: '2018'
+      }
+  }]"
+>
+  <template #default="slotProps">
+    <div class="slot-option">
+      <component :is="slotProps.slotData.icon" />
+      <div class="description">
+        <div class="title">{{ slotProps.slotData.title }}</div>
+        <div class="subtitle">{{ slotProps.slotData.subtitle }}</div>
+      </div>
+      <div class="state">{{ slotProps.slotData.state }}</div>
+    </div>
+  </template>
+</Dropdown>
+`;
+
 export default {
     components: {
         Dropdown,
-        CodeExample
+        CodeExample,
+        ChartPolarIcon,
+        RocketIcon,
+        DiamondIcon,
+        EarlyBirdIcon
     },
     data() {
         return {
+            slottedCodeExample,
             codeExample,
             selected: 'bar',
             placeholderModel: '',
-            disabledSelected: ''
+            disabledSelected: '',
+            slottedSelected: '1',
+            slottedExamplePossibleValue: [{
+                id: '1',
+                text: 'The Sundering',
+                slotData: {
+                    icon: ChartPolarIcon,
+                    title: 'The Sundering',
+                    subtitle: 'Gods of the Earth',
+                    state: '2008'
+                }
+            }, {
+                id: '2',
+                text: 'Iron Swan',
+                slotData: {
+                    icon: RocketIcon,
+                    title: 'Iron Swan',
+                    subtitle: 'Age of Winters',
+                    state: '2006'
+                }
+            }, {
+                id: '3',
+                text: 'The Dreamthieves',
+                slotData: {
+                    icon: DiamondIcon,
+                    title: 'The Dreamthieves',
+                    subtitle: 'Low Country',
+                    state: '2016'
+                }
+            }, {
+                id: '4',
+                text: 'Deadly Nightshade',
+                slotData: {
+                    icon: EarlyBirdIcon,
+                    title: 'Deadly Nightshade',
+                    subtitle: 'Used Future',
+                    state: '2018'
+                }
+            }]
         };
     },
     computed: {
@@ -218,14 +320,130 @@ export default {
           selected id: {{ placeholderModel }}
         </div>
       </div>
-    </section>
-    <section>
       <div class="grid-container">
         <div class="grid-item-12">
           <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
           <CodeExample summary="Show Dropdown.vue source code">{{ code }}</CodeExample>
         </div>
       </div>
+      <div class="grid-container">
+        <div class="grid-item-12">
+          <h4>Slotted Dropdown</h4>
+          <p>
+            The optional <code>slotData</code> property can be used to incorporate a slot into the dropdown list and
+            render additional data in a styled fashion. The local value is passed through and available as a slot prop.
+            Please keep in mind that the property names must match.
+            <br><br>
+            If a slot is used all corresponding styles for hover, focus etc. have to be implemented accordingly.
+          </p>
+        </div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-5">
+          <Dropdown
+            v-model="slottedSelected"
+            aria-label="A limited list"
+            size="3"
+            :possible-values="slottedExamplePossibleValue"
+          >
+            <template #default="slotProps">
+              <div class="slot-option">
+                <component :is="slotProps.slotData.icon" />
+                <div class="description">
+                  <div class="title">{{ slotProps.slotData.title }}</div>
+                  <div class="subtitle">{{ slotProps.slotData.subtitle }}</div>
+                </div>
+                <div class="state">{{ slotProps.slotData.state }}</div>
+              </div>
+            </template>
+          </Dropdown>
+        </div>
+        <div class="grid-item-2">
+          selected id: {{ slottedSelected }}
+        </div>
+      </div>
+      <div class="grid-item-12">
+        <CodeExample summary="Show slotted usage example">{{ slottedCodeExample }}</CodeExample>
+      </div>
     </section>
   </div>
 </template>
+
+<style lang="postcss" scoped>
+.dropdown{
+  & .slot-option {
+    background: var(--theme-dropdown-background-color);
+    color: var(--theme-dropdown-foreground-color-hover);
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+
+    & > svg{
+      flex: 0 0 18px;
+      height: 18px;
+      stroke-width: calc(32px / 18);
+      stroke: var(--theme-dropdown-foreground-color);
+    }
+
+    & .description{
+      flex: 1 1 auto;
+      padding: 0 10px;
+
+      & .title{
+        color: inherit;
+        font-size: 13px;
+        font-weight: 500;
+        line-height: 18px;
+      }
+      & .subtitle{
+        color: inherit;
+        font-size: 9px;
+        font-weight: 400;
+        line-height: 18px;
+      }
+    }
+
+    & .state{
+      color: inherit;
+      flex: 1 1 auto;
+      font-size: 13px;
+      font-weight: 400;
+      line-height: 18px;
+      text-align: right;
+    }
+
+    &:hover {
+      background: var(--theme-dropdown-background-color-hover);
+      color: var(--theme-dropdown-foreground-color-hover);
+
+      & svg{
+        stroke: var(--theme-dropdown-foreground-color-hover);
+      }
+    }
+
+    &:focus {
+      background: var(--theme-dropdown-background-color-focus);
+      color: var(--theme-dropdown-foreground-color-focus);
+
+      & svg{
+        stroke: var(--theme-dropdown-foreground-color-focus);
+      }
+    }
+  }
+
+  & .focused {
+    & .slot-option {
+      background: var(--theme-dropdown-background-color-selected);
+      color: var(--theme-dropdown-foreground-color-selected);
+
+      & svg{
+        stroke: var(--theme-dropdown-foreground-color-selected);
+      }
+    }
+  }
+
+  & .noselect {
+    user-select: none;
+  }
+}
+</style>
