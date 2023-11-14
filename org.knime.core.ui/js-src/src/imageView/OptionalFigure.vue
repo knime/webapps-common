@@ -9,7 +9,7 @@ defineProps<{
 <template>
   <figure v-if="caption" :id="id" :class="{ scale }">
     <slot />
-    <figcaption>{{ caption }}</figcaption>
+    <figcaption class="figcaption">{{ caption }}</figcaption>
   </figure>
   <slot v-else :id="id" />
 </template>
@@ -22,6 +22,11 @@ figure {
     display: flex;
     flex-direction: column;
     min-height: 0;
+  }
+
+  & .figcaption {
+    text-overflow: ellipsis;
+    font-size: 13px;
   }
 }
 </style>
