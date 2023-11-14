@@ -281,7 +281,19 @@ public final class WebUINodeConfiguration {
          * @return this build stage
          */
         public NodeOptionals addInputTable(final String name, final String description) {
-            return addInputPort(name, BufferedDataTable.TYPE, description);
+            return addInputTable(name, description, false);
+        }
+
+        /**
+         * Adds another input table to the node.
+         *
+         * @param name the name of the node's next input table
+         * @param description the description of the node's next input table
+         * @param configurable whether the port is configurable
+         * @return this build stage
+         */
+        public NodeOptionals addInputTable(final String name, final String description, final boolean configurable) {
+            return addInputPort(name, BufferedDataTable.TYPE, description, configurable);
         }
 
         /**
@@ -293,7 +305,21 @@ public final class WebUINodeConfiguration {
          * @return this build stage
          */
         public NodeOptionals addInputPort(final String name, final PortType type, final String description) {
-            m_inputPortDescriptions.add(new PortDescription(name, type, description));
+            return addInputPort(name, type, description, false);
+        }
+
+        /**
+         * Adds another input port to the node.
+         *
+         * @param name the name of the node's next input port
+         * @param type the type of the node's next input port
+         * @param description the description of the node's next input port
+         * @param configurable whether the port is configurable
+         * @return this build stage
+         */
+        public NodeOptionals addInputPort(final String name, final PortType type, final String description,
+            final boolean configurable) {
+            m_inputPortDescriptions.add(new PortDescription(name, type, description, configurable));
             return this;
         }
 
@@ -305,7 +331,19 @@ public final class WebUINodeConfiguration {
          * @return this build stage
          */
         public NodeOptionals addOutputTable(final String name, final String description) {
-            return addOutputPort(name, BufferedDataTable.TYPE, description);
+            return addOutputTable(name, description, false);
+        }
+
+        /**
+         * Adds another output table to the node.
+         *
+         * @param name the name of the node's next output table
+         * @param description the description of the node's next output table
+         * @param configurable whether the port is configurable
+         * @return this build stage
+         */
+        public NodeOptionals addOutputTable(final String name, final String description, final boolean configurable) {
+            return addOutputPort(name, BufferedDataTable.TYPE, description, configurable);
         }
 
         /**
@@ -317,7 +355,21 @@ public final class WebUINodeConfiguration {
          * @return this build stage
          */
         public NodeOptionals addOutputPort(final String name, final PortType type, final String description) {
-            m_outputPortDescriptions.add(new PortDescription(name, type, description));
+            return addOutputPort(name, type, description, false);
+        }
+
+        /**
+         * Adds another output port to the node.
+         *
+         * @param name the name of the node's next output port
+         * @param type the type of the node's next output port
+         * @param description the description of the node's next output port
+         * @param configurable whether the port is configurable
+         * @return this build stage
+         */
+        public NodeOptionals addOutputPort(final String name, final PortType type, final String description,
+            final boolean configurable) {
+            m_outputPortDescriptions.add(new PortDescription(name, type, description, configurable));
             return this;
         }
 
