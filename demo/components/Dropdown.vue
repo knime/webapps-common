@@ -2,7 +2,7 @@
 import CodeExample from './demo/CodeExample.vue';
 import Dropdown from '../../ui/components/forms/Dropdown.vue';
 import code from '!!raw-loader!../../ui/components/forms/Dropdown';
-import ChartPolarIcon from '../../ui/assets/img/icons/chart-polar.svg';
+import DisconnectIcon from '../../ui/assets/img/icons/nodes-disconnect.svg';
 import RocketIcon from '../../ui/assets/img/icons/rocket.svg';
 import DiamondIcon from '../../ui/assets/img/icons/diamond.svg';
 import EarlyBirdIcon from '../../ui/assets/img/icons/early-bird.svg';
@@ -30,10 +30,10 @@ const slottedCodeExample = `<Dropdown
       id: '1',
       text: 'The Sundering',
       slotData: {
-          icon: ChartPolarIcon,
+          icon: DisconnectIcon,
           title: 'The Sundering',
           subtitle: 'Gods of the Earth',
-          state: '2008'
+          year: '2008'
       }
   }, {
       id: '2',
@@ -42,7 +42,7 @@ const slottedCodeExample = `<Dropdown
           icon: RocketIcon,
           title: 'Iron Swan',
           subtitle: 'Age of Winters',
-          state: '2006'
+          year: '2006'
       }
   }, {
       id: '3',
@@ -51,16 +51,16 @@ const slottedCodeExample = `<Dropdown
           icon: DiamondIcon,
           title: 'The Dreamthieves',
           subtitle: 'Low Country',
-          state: '2016'
+          year: '2016'
       }
   }, {
       id: '4',
-      text: 'Deadly Nightshade',
+      text: 'Twilight Sunrise',
       slotData: {
           icon: EarlyBirdIcon,
-          title: 'Deadly Nightshade',
+          title: 'Twilight Sunrise',
           subtitle: 'Used Future',
-          state: '2018'
+          year: '2018'
       }
   }]"
 >
@@ -71,7 +71,7 @@ const slottedCodeExample = `<Dropdown
         <div class="title">{{ slotProps.slotData.title }}</div>
         <div class="subtitle">{{ slotProps.slotData.subtitle }}</div>
       </div>
-      <div class="state">{{ slotProps.slotData.state }}</div>
+      <div class="year">{{ slotProps.slotData.year }}</div>
     </div>
   </template>
 </Dropdown>
@@ -81,7 +81,7 @@ export default {
     components: {
         Dropdown,
         CodeExample,
-        ChartPolarIcon,
+        DisconnectIcon,
         RocketIcon,
         DiamondIcon,
         EarlyBirdIcon
@@ -98,10 +98,10 @@ export default {
                 id: '1',
                 text: 'The Sundering',
                 slotData: {
-                    icon: ChartPolarIcon,
+                    icon: DisconnectIcon,
                     title: 'The Sundering',
                     subtitle: 'Gods of the Earth',
-                    state: '2008'
+                    year: '2008'
                 }
             }, {
                 id: '2',
@@ -110,7 +110,7 @@ export default {
                     icon: RocketIcon,
                     title: 'Iron Swan',
                     subtitle: 'Age of Winters',
-                    state: '2006'
+                    year: '2006'
                 }
             }, {
                 id: '3',
@@ -119,16 +119,16 @@ export default {
                     icon: DiamondIcon,
                     title: 'The Dreamthieves',
                     subtitle: 'Low Country',
-                    state: '2016'
+                    year: '2016'
                 }
             }, {
                 id: '4',
-                text: 'Deadly Nightshade',
+                text: 'Twilight Sunrise',
                 slotData: {
                     icon: EarlyBirdIcon,
-                    title: 'Deadly Nightshade',
+                    title: 'Twilight Sunrise',
                     subtitle: 'Used Future',
-                    state: '2018'
+                    year: '2018'
                 }
             }]
         };
@@ -323,7 +323,6 @@ export default {
       <div class="grid-container">
         <div class="grid-item-12">
           <CodeExample summary="Show usage example">{{ codeExample }}</CodeExample>
-          <CodeExample summary="Show Dropdown.vue source code">{{ code }}</CodeExample>
         </div>
       </div>
       <div class="grid-container">
@@ -353,7 +352,7 @@ export default {
                   <div class="title">{{ slotProps.slotData.title }}</div>
                   <div class="subtitle">{{ slotProps.slotData.subtitle }}</div>
                 </div>
-                <div class="state">{{ slotProps.slotData.state }}</div>
+                <div class="year">{{ slotProps.slotData.year }}</div>
               </div>
             </template>
           </Dropdown>
@@ -362,8 +361,11 @@ export default {
           selected id: {{ slottedSelected }}
         </div>
       </div>
-      <div class="grid-item-12">
-        <CodeExample summary="Show slotted usage example">{{ slottedCodeExample }}</CodeExample>
+      <div class="grid-container">
+        <div class="grid-item-12">
+          <CodeExample summary="Show slotted usage example">{{ slottedCodeExample }}</CodeExample>
+          <CodeExample summary="Show Dropdown.vue source code">{{ code }}</CodeExample>
+        </div>
       </div>
     </section>
   </div>
@@ -403,7 +405,7 @@ export default {
       }
     }
 
-    & .state{
+    & .year{
       color: inherit;
       flex: 1 1 auto;
       font-size: 13px;
