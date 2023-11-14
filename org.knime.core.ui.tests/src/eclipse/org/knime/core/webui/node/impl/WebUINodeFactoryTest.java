@@ -53,6 +53,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 
 import org.apache.xmlbeans.XmlException;
 import org.junit.jupiter.api.Test;
@@ -60,11 +61,27 @@ import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.def.IntCell;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
+import org.knime.core.node.ConfigurableNodeFactory;
+import org.knime.core.node.ExecutionContext;
+import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeDescription;
+import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory.NodeType;
+import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettings;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.NodeView;
+import org.knime.core.node.context.NodeCreationConfiguration;
+import org.knime.core.node.context.ports.PortsConfiguration;
 import org.knime.core.node.extension.NodeFactoryProvider;
+import org.knime.core.node.port.PortObject;
+import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.webui.node.dialog.NodeDialog;
+import org.knime.core.webui.node.dialog.NodeDialogFactory;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialog;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.testing.util.TableTestUtil;
 import org.xml.sax.SAXException;
@@ -90,7 +107,7 @@ class WebUINodeFactoryTest {
      * description.
      */
     @Test
-    void testTestNodeDescription() throws SAXException, IOException, XmlException {
+    void testNodeDescription() throws SAXException, IOException, XmlException {
         // given the description of the test node factory
         final var factory = new TestWebUINodeFactory();
         final var nodeDescription = factory.createNodeDescription();
@@ -221,6 +238,150 @@ class WebUINodeFactoryTest {
         model.saveInternals(file, exec);
         model.loadInternals(file, exec);
         model.reset();
+    }
+
+    static final class TestDynamicPortsNodeModel extends NodeModel {
+
+        TestDynamicPortsNodeModel(final PortsConfiguration portsConfiguration) {
+            super(portsConfiguration.getInputPorts(), portsConfiguration.getOutputPorts());
+        }
+
+        @Override
+        protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) {
+            return new PortObjectSpec[0];
+        }
+
+        @Override
+        protected PortObject[] execute(final PortObject[] inObjects, final ExecutionContext exec) {
+            return new PortObject[0];
+        }
+
+        @Override
+        protected void loadInternals(final File nodeInternDir, final ExecutionMonitor exec) {
+            // nothing to do
+        }
+
+        @Override
+        protected void saveInternals(final File nodeInternDir, final ExecutionMonitor exec) {
+            // nothing to do
+        }
+
+        @Override
+        protected void saveSettingsTo(final NodeSettingsWO settings) {
+            // nothing to do
+        }
+
+        @Override
+        protected void validateSettings(final NodeSettingsRO settings) {
+            // nothing to do
+        }
+
+        @Override
+        protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) {
+            // nothing to do
+        }
+
+        @Override
+        protected void reset() {
+            // nothing to do
+        }
+    }
+
+    static final class TestDynamicPortsNodeFactory extends ConfigurableNodeFactory<TestDynamicPortsNodeModel>
+        implements NodeDialogFactory {
+
+        private static final String INPUT_PORT_GROUP_1 = "Foo";
+
+        private static final String INPUT_PORT_GROUP_2 = "Bar";
+
+        private static final String OUTPUT_PORT_GROUP = "Baz";
+
+        private static WebUINodeConfiguration CONFIGURATION = WebUINodeConfiguration.builder()//
+            .name("Template")//
+            .icon("./Template.png")//
+            .shortDescription("Short Description")//
+            .fullDescription("Full Description")//
+            .modelSettingsClass(TestWebUINodeModelSettings.class)//
+            .addInputTable(INPUT_PORT_GROUP_1, "Input Port Group 1 Description", true)//
+            .addInputTable(INPUT_PORT_GROUP_2, "Input Port Group 2 Description", true)//
+            .addOutputTable(OUTPUT_PORT_GROUP, "Output Port Group Description", true)//
+            .build();
+
+        @Override
+        public TestDynamicPortsNodeModel createNodeModel(final NodeCreationConfiguration creationConfig) {
+            return new TestDynamicPortsNodeModel(creationConfig.getPortConfig().orElseThrow());
+        }
+
+        @Override
+        protected NodeDescription createNodeDescription() {
+            return WebUINodeFactory.createNodeDescription(CONFIGURATION);
+        }
+
+        @Override
+        public NodeDialog createNodeDialog() {
+            return new DefaultNodeDialog(SettingsType.MODEL, TestWebUINodeModelSettings.class);
+        }
+
+        @Override
+        protected Optional<PortsConfigurationBuilder> createPortsConfigBuilder() {
+            final var builder = new PortsConfigurationBuilder();
+            builder.addOptionalInputPortGroup(INPUT_PORT_GROUP_1, BufferedDataTable.TYPE);
+            builder.addNonInteractiveExtendableInputPortGroup(INPUT_PORT_GROUP_2, BufferedDataTable.TYPE::equals);
+            builder.addNonInteractiveExtendableOutputPortGroup(OUTPUT_PORT_GROUP, BufferedDataTable.TYPE::equals);
+            return Optional.of(builder);
+        }
+
+        @Override
+        protected NodeDialogPane createNodeDialogPane(final NodeCreationConfiguration creationConfig) {
+            return null;
+        }
+
+        @Override
+        protected int getNrNodeViews() {
+            return 0;
+        }
+
+        @Override
+        public NodeView<TestDynamicPortsNodeModel> createNodeView(final int viewIndex,
+            final TestDynamicPortsNodeModel nodeModel) {
+            return null;
+        }
+
+        @Override
+        protected boolean hasDialog() {
+            return false;
+        }
+    }
+
+    @Test
+    void testNodeDescriptionWithDynamicPorts() throws SAXException, IOException, XmlException {
+        final var factory = new TestDynamicPortsNodeFactory();
+        final var nodeDescription = factory.createNodeDescription();
+        final var dynamicInputPortGroups = nodeDescription.getDynamicInPortGroups();
+        final var inputPortGroup1 = dynamicInputPortGroups.get(0);
+        final var inputPortGroup2 = dynamicInputPortGroups.get(1);
+        final var outputPortGroup = nodeDescription.getDynamicOutPortGroups().get(0);
+
+        assertEquals(TestDynamicPortsNodeFactory.INPUT_PORT_GROUP_1, inputPortGroup1.getGroupIdentifier(),
+            "Input Port Group 1 identifier is not set correctly.");
+        assertEquals(TestDynamicPortsNodeFactory.INPUT_PORT_GROUP_1, inputPortGroup1.getGroupName(),
+            "Input Port Group 1 name is not set correctly.");
+        assertEquals("Input Port Group 1 Description", inputPortGroup1.getGroupDescription(),
+            "Input Port Group 1 description is not set correctly.");
+
+        assertEquals(TestDynamicPortsNodeFactory.INPUT_PORT_GROUP_2, inputPortGroup2.getGroupIdentifier(),
+            "Input Port Group 2 identifier is not set correctly.");
+        assertEquals(TestDynamicPortsNodeFactory.INPUT_PORT_GROUP_2, inputPortGroup2.getGroupName(),
+            "Input Port Group 2 name is not set correctly.");
+        assertEquals("Input Port Group 2 Description", inputPortGroup2.getGroupDescription(),
+            "Input Port Group 2 description is not set correctly.");
+
+        assertEquals(TestDynamicPortsNodeFactory.OUTPUT_PORT_GROUP, outputPortGroup.getGroupIdentifier(),
+            "Output Port Group identifier is not set correctly.");
+        assertEquals(TestDynamicPortsNodeFactory.OUTPUT_PORT_GROUP, outputPortGroup.getGroupName(),
+            "Output Port Group name is not set correctly.");
+        assertEquals("Output Port Group Description", outputPortGroup.getGroupDescription(),
+            "Output Port Group description is not set correctly.");
     }
 
 }
