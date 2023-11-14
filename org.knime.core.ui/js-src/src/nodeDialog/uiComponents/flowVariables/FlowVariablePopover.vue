@@ -13,16 +13,25 @@ const props = defineProps<FlowVariablePopoverProps>();
  * flowVariablesMap for this setting or false if there are multiple config keys
  * present (which is not yet supported).
  */
-const singlePath = computed(() => {
-  const paths = getConfigPaths(props.path, props.configKeys);
+const singleConfigPath = computed(() => {
+  const paths = getConfigPaths(
+    props.path,
+    props.configKeys,
+    props.subConfigKeys,
+  );
   return paths.length === 1 ? paths[0] : false;
+});
+
+const dataPath = computed(() => {
+  const firstSubConfig = props.subConfigKeys?.[0];
+  return firstSubConfig ? `${props.path}.${firstSubConfig}` : props.path;
 });
 
 const emit = defineEmits(["controllingFlowVariableSet"]);
 </script>
 
 <template>
-  <template v-if="singlePath">
+  <template v-if="singleConfigPath">
     <div class="popover">
       <Label
         #default="{ labelForId }"
@@ -31,8 +40,8 @@ const emit = defineEmits(["controllingFlowVariableSet"]);
       >
         <FlowVariableSelector
           :id="labelForId"
-          :data-path="path"
-          :persist-path="singlePath"
+          :data-path="dataPath"
+          :persist-path="singleConfigPath"
           :flow-settings="flowSettings"
           :flow-variables-map="flowVariablesMap"
           @controlling-flow-variable-set="
@@ -47,14 +56,18 @@ const emit = defineEmits(["controllingFlowVariableSet"]);
       >
         <FlowVariableExposer
           :id="labelForId"
-          :persist-path="singlePath"
+          :persist-path="singleConfigPath"
           :flow-settings="flowSettings"
           :flow-variables-map="flowVariablesMap"
         />
       </Label>
     </div>
   </template>
-  <MulitpleConfigKeysNotYetSupported v-else :config-keys="configKeys!" />
+  <MulitpleConfigKeysNotYetSupported
+    v-else
+    :config-keys="configKeys"
+    :sub-config-keys="subConfigKeys"
+  />
 </template>
 >
 

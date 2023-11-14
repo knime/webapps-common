@@ -40,6 +40,10 @@ const LabeledInput = {
       type: Array,
       required: false,
     },
+    subConfigKeys: {
+      type: Array,
+      required: false,
+    },
     errors: {
       default: () => [],
       type: Array,
@@ -50,10 +54,6 @@ const LabeledInput = {
     },
     showReexecutionIcon: {
       default: false,
-      type: Boolean,
-    },
-    withFlowVariables: {
-      default: true,
       type: Boolean,
     },
     flowSettings: {
@@ -94,11 +94,11 @@ export default LabeledInput;
         <ReexecutionIcon v-if="showReexecutionIcon" class="reexecution-icon" />
       </div>
       <FlowVariableButton
-        v-if="withFlowVariables"
         :flow-settings="flowSettings"
         :flow-variables-map="flowVariablesMap"
         :path="path"
         :config-keys="configKeys"
+        :sub-config-keys="subConfigKeys"
         :hover="hover"
         @controlling-flow-variable-set="
           $emit('controllingFlowVariableSet', $event)

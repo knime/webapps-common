@@ -59,6 +59,18 @@ describe("FlowVariablePopover", () => {
     props.configKeys.forEach((key) => expect(wrapper.text()).toContain(key));
   });
 
+  it("does not render selector in case of multiple sub config keys", () => {
+    props.subConfigKeys = ["myConfigKey1", "myConfigKey2"];
+    const wrapper = mountFlowVaiablePopover({ props });
+    expect(wrapper.findComponent(FlowVariableSelector).exists()).toBeFalsy();
+    expect(
+      wrapper.findComponent(MulitpleConfigKeysNotYetSupported).exists(),
+    ).toBeTruthy();
+    props.subConfigKeys.forEach((key) =>
+      expect(wrapper.text()).not.toContain(key),
+    );
+  });
+
   describe("persist path", () => {
     it("sets persist path from data path if no config keys are given", () => {
       const wrapper = mountFlowVaiablePopover({ props });
@@ -73,6 +85,30 @@ describe("FlowVariablePopover", () => {
       expect(
         wrapper.findComponent(FlowVariableSelector).props().persistPath,
       ).toBe("model.configKey1");
+    });
+
+    it("does not add anything if there are no sub config keys", () => {
+      props.subConfigKeys = [];
+      props.configKeys = ["configKey1"];
+      const wrapper = mountFlowVaiablePopover({ props });
+      expect(
+        wrapper.findComponent(FlowVariableSelector).props().persistPath,
+      ).toBe("model.configKey1");
+      expect(wrapper.findComponent(FlowVariableSelector).props().dataPath).toBe(
+        "model.myPath",
+      );
+    });
+
+    it("adds a single sub config key to persistPath and dataPath", () => {
+      props.subConfigKeys = ["subConfigKey"];
+      props.configKeys = ["configKey1"];
+      const wrapper = mountFlowVaiablePopover({ props });
+      expect(
+        wrapper.findComponent(FlowVariableSelector).props().persistPath,
+      ).toBe("model.configKey1.subConfigKey");
+      expect(wrapper.findComponent(FlowVariableSelector).props().dataPath).toBe(
+        "model.myPath.subConfigKey",
+      );
     });
   });
 

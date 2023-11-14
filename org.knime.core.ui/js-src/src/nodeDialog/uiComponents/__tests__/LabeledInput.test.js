@@ -14,6 +14,7 @@ describe("LabeledInput.vue", () => {
     props = {
       configKeys: ["myConfigKey"],
       path: "path.to.setting",
+      subConfigKeys: ["mySubConfigKey"],
       flowSettings: {
         controllingFlowVariableName: "controlling",
         controllingFlowVariableAvailable: true,
@@ -57,6 +58,7 @@ describe("LabeledInput.vue", () => {
       flowVariablesMap: props.flowVariablesMap,
       hover: false,
       path: props.path,
+      subConfigKeys: props.subConfigKeys,
     });
   });
 

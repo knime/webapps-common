@@ -78,6 +78,7 @@ export default {
   <DropdownInput
     v-bind="{ ...$attrs, ...$props }"
     :async-initial-options="asyncInitialOptions"
+    :sub-config-keys="['selected']"
     :json-forms-control="jsonFormsControl"
     :control-data-to-dropdown-value="toValue"
     :dropdown-value-to-control-data="toData"

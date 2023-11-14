@@ -237,7 +237,18 @@ export default TwinlistInput;
       v-if="control.visible"
       #default="{ labelForId }"
       :config-keys="control?.schema?.configKeys"
-      :with-flow-variables="false"
+      :flow-variables-map="control.rootSchema.flowVariablesMap"
+      :flow-settings="flowSettings"
+      :sub-config-keys="[
+        'mode',
+        'patterFilter.pattern',
+        'patternFilter.isCaseSensitive',
+        'patternFilter.isInverted',
+        'manualFilter.manuallySelected',
+        'manualFilter.manuallyDeselected',
+        'manualFilter.includeUnknownColumns',
+        'typeFilter.selectedTypes',
+      ]"
       :path="control.path"
       :text="control.label"
       :show-reexecution-icon="isModelSettingAndHasNodeView"

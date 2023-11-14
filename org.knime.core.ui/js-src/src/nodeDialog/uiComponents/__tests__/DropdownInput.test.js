@@ -66,7 +66,7 @@ describe("DropdownInput.vue", () => {
         rootSchema: {
           hasNodeView: true,
           flowVariablesMap: {
-            test: {
+            [path]: {
               controllingFlowVariableAvailable: true,
               controllingFlowVariableName: "knime.test",
               exposedFlowVariableName: "test",
@@ -88,6 +88,32 @@ describe("DropdownInput.vue", () => {
     expect(wrapper.getComponent(DropdownInput).exists()).toBe(true);
     expect(wrapper.findComponent(LabeledInput).exists()).toBe(true);
     expect(wrapper.findComponent(Dropdown).exists()).toBe(true);
+  });
+
+  it("computed flow settings", () => {
+    expect(
+      wrapper.getComponent(LabeledInput).props().flowSettings,
+    ).toStrictEqual({
+      controllingFlowVariableAvailable: true,
+      controllingFlowVariableName: "knime.test",
+      exposedFlowVariableName: "test",
+    });
+  });
+
+  it("sets subConfigKeys for LabeledInput and computed flow settings with them", async () => {
+    const subConfigKey = "subConfigKey";
+    props.subConfigKeys = [subConfigKey];
+    const subConfigKeyFlowSetting = {
+      controllingFlowVariableAvailable: true,
+      controllingFlowVariableName: "knime.subconfig",
+      exposedFlowVariableName: "subconfig",
+    };
+    props.control.rootSchema.flowVariablesMap[`${path}.${subConfigKey}`] =
+      subConfigKeyFlowSetting;
+    const { wrapper } = await mountJsonFormsComponent(DropdownInput, { props });
+    expect(
+      wrapper.getComponent(LabeledInput).props().flowSettings,
+    ).toStrictEqual(subConfigKeyFlowSetting);
   });
 
   it("sets labelForId", () => {

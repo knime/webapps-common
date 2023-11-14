@@ -45,6 +45,11 @@ const DropdownInput = defineComponent({
       required: false,
       default: (value: string | null) => value,
     },
+    subConfigKeys: {
+      type: Array as PropType<string[] | undefined>,
+      required: false,
+      default: () => [],
+    },
   },
   setup(props) {
     return {
@@ -66,7 +71,7 @@ const DropdownInput = defineComponent({
       return isModelSettingAndHasNodeView(this.control);
     },
     flowSettings() {
-      return getFlowVariablesMap(this.control);
+      return getFlowVariablesMap(this.control, this.subConfigKeys);
     },
     disabled() {
       return (
@@ -166,8 +171,10 @@ export default DropdownInput;
   <DialogComponentWrapper :control="control" style="min-width: 0">
     <LabeledInput
       #default="{ labelForId }"
+      :flow-variables-map="control.rootSchema.flowVariablesMap"
+      :flow-settings="flowSettings"
       :config-keys="control?.schema?.configKeys"
-      :with-flow-variables="false"
+      :sub-config-keys="subConfigKeys"
       :path="control.path"
       :text="control.label"
       :show-reexecution-icon="isModelSettingAndHasNodeView"

@@ -5,6 +5,7 @@ type FlowVariablePopoverProps = {
   flowVariablesMap: Record<string, FlowSettings>;
   path: string;
   configKeys?: string[];
+  subConfigKeys?: string[];
 };
 
 export default FlowVariablePopoverProps;

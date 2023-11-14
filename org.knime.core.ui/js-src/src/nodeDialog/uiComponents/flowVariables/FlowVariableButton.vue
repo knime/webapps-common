@@ -37,6 +37,7 @@ const tooltip = computed(() => {
       <FlowVariablePopover
         :path="path"
         :config-keys="configKeys"
+        :sub-config-keys="subConfigKeys"
         :flow-settings="flowSettings"
         :flow-variables-map="flowVariablesMap"
         @controlling-flow-variable-set="

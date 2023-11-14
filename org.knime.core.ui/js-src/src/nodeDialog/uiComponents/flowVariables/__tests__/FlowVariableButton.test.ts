@@ -104,6 +104,7 @@ describe("FlowVariableButton.vue", () => {
   });
 
   it("opens FlowVariablePopover on button click", async () => {
+    props.subConfigKeys = ["sub1", "sub2"];
     const wrapper = mountFlowVariableButton({ props });
     await wrapper.find(".function-button").trigger("mouseup");
     const box = wrapper.find(".box");
@@ -114,6 +115,7 @@ describe("FlowVariableButton.vue", () => {
       flowSettings: props.flowSettings,
       flowVariablesMap: props.flowVariablesMap,
       path: props.path,
+      subConfigKeys: props.subConfigKeys,
     });
   });
 });

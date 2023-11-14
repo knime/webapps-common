@@ -75,16 +75,26 @@ const toFlowVariablesMap = (
   );
 };
 
-export const getConfigPaths = (
-  path: string,
-  configKeys: string[] | undefined,
-) => {
+const _getConfigPaths = (path: string, configKeys: string[] | undefined) => {
   if (configKeys) {
     const pathParts = path.split(".");
     const parentPath = pathParts.slice(0, -1).join(".");
     return configKeys.map((key) => [parentPath, key].join("."));
   }
   return [path];
+};
+
+export const getConfigPaths = (
+  path: string,
+  configKeys: string[] | undefined,
+  subConfigKeys: string[] = [],
+) => {
+  const configPaths = _getConfigPaths(path, configKeys);
+  return subConfigKeys.length //
+    ? configPaths.flatMap((configPath) =>
+        subConfigKeys.map((subKey) => `${configPath}.${subKey}`),
+      ) //
+    : configPaths;
 };
 
 // expects a modified root schema which includes a flowVariablesMap
@@ -95,10 +105,13 @@ export const getConfigPaths = (
 //    uischema: {},
 //    ...
 // }
-export const getFlowVariablesMap = ({ rootSchema, path, schema }: Control) => {
+export const getFlowVariablesMap = (
+  { rootSchema, path, schema }: Control,
+  subConfigKeys: string[] = [],
+) => {
   return toFlowVariablesMap(
     rootSchema,
-    getConfigPaths(path, schema.configKeys),
+    getConfigPaths(path, schema.configKeys, subConfigKeys),
   );
 };
 
