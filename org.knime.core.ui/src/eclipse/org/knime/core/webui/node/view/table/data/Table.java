@@ -80,6 +80,11 @@ public interface Table {
     String[] getColumnFormatterDescriptions();
 
     /**
+     * @return the color for each displayed column or an empty array when there is no color handler specified.
+     */
+    String[] getColumnNamesColors();
+
+    /**
      * @return the requested rows; contains {@code String}s for existing values and can contain {@code null}s or
      *         {@code Cell}s in case of missing values
      */

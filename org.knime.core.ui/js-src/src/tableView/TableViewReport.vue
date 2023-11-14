@@ -18,6 +18,7 @@ const table: Ref<{
   columnCount: number;
   displayedColumns: string[];
   columnContentTypes: ("txt" | "img_path" | "html")[];
+  columnNamesColors: string[] | null;
   firstRowImageDimensions: Record<string, ImageDimension>;
 } | null> = ref(null);
 const { currentRowHeight, setRowHeightSettings } = useRowHeight();
@@ -91,6 +92,7 @@ watch(ready, () => ready.value && emit("rendered"));
       dataTypes,
       columnDataTypeIds,
       indicateRemainingColumnsSkipped: false,
+      columnNamesColors: table?.columnNamesColors || null,
     }"
     :page="{
       currentRowCount: table?.rows.length || 0,

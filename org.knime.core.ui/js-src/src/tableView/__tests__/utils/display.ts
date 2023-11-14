@@ -71,6 +71,7 @@ export const getDefaultProps = (): TableViewDisplayProps => {
       columnDataTypeIds: ["datatype1", "datatype2", "datatype3"],
       indicateRemainingColumnsSkipped: false,
       dataTypes,
+      columnNamesColors: ["#ff0000", "#00ff00", "#0000ff"],
     },
     settings: {
       showRowKeys: false,

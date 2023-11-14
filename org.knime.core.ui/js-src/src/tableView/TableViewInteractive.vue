@@ -81,6 +81,7 @@ export default {
       columnDataTypeIds: null,
       columnFormatterDescriptions: null,
       columnContentTypes: null,
+      columnNamesColors: null,
       // a counter which is used to ignore all requests which were not the last sent one
       lastUpdateHash: 0,
       link: "",
@@ -213,6 +214,7 @@ export default {
       this.columnDataTypeIds = table.columnDataTypeIds;
       this.columnFormatterDescriptions = table.columnFormatterDescriptions;
       this.columnContentTypes = table.columnContentTypes;
+      this.columnNamesColors = table.columnNamesColors;
       this.dataTypes = dataTypes;
       this.columnDomainValues = columnDomainValues;
       this.totalRowCount = table.rowCount;
@@ -450,6 +452,7 @@ export default {
           "columnFormatterDescriptions",
         );
         this.columnCount = getFromTopOrBottom("columnCount");
+        this.columnNamesColors = getFromTopOrBottom("columnNamesColors");
       }
       if (updateTotalSelected) {
         if (
@@ -1124,6 +1127,7 @@ export default {
       dataTypes,
       columnDataTypeIds,
       columnFormatterDescriptions,
+      columnNamesColors,
       indicateRemainingColumnsSkipped,
     }"
     :selection="{

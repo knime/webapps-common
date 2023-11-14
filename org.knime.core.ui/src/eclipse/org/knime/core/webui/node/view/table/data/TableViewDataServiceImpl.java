@@ -71,6 +71,9 @@ import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.RowKey;
 import org.knime.core.data.StringValue;
 import org.knime.core.data.container.filter.TableFilter;
+import org.knime.core.data.def.StringCell;
+import org.knime.core.data.property.ColorAttr;
+import org.knime.core.data.property.ColorModel;
 import org.knime.core.data.sort.BufferedDataTableSorter;
 import org.knime.core.data.sort.RowComparator;
 import org.knime.core.node.BufferedDataTable;
@@ -242,6 +245,17 @@ public class TableViewDataServiceImpl implements TableViewDataService {
                 return Arrays.asList(displayedColumns).stream().map(spec::getColumnSpec)
                     .map(DataColumnSpec::getValueFormatHandler).map(f -> f == null ? null : "Attached formatter")
                     .toArray(String[]::new);
+            }
+
+            @Override
+            public String[] getColumnNamesColors() {
+                final var columnNamesColorHandler = spec.getColumnNamesColorHandler();
+                if (columnNamesColorHandler.isEmpty()) {
+                    return new String[0];
+                }
+                final var colorModel = columnNamesColorHandler.get().getColorModel();
+                return Arrays.asList(displayedColumns).stream().map(StringCell::new).map(colorModel::getColorAttr)
+                    .map(ColorAttr::getColor).map(ColorModel::colorToHexString).toArray(String[]::new);
             }
 
             @Override
@@ -634,6 +648,11 @@ public class TableViewDataServiceImpl implements TableViewDataService {
 
             @Override
             public String[] getColumnFormatterDescriptions() {
+                return new String[0];
+            }
+
+            @Override
+            public String[] getColumnNamesColors() {
                 return new String[0];
             }
 

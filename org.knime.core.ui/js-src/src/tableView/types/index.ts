@@ -37,6 +37,7 @@ export interface TableViewDisplayProps {
     columnDataTypeIds: string[];
     colNameSelectedRendererId?: Record<string, string>;
     columnFormatterDescriptions?: (string | null)[];
+    columnNamesColors: string[] | null;
     indicateRemainingColumnsSkipped: boolean;
   };
   selection?: {

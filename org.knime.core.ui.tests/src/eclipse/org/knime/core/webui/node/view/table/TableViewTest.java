@@ -52,6 +52,7 @@ package org.knime.core.webui.node.view.table;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.knime.core.webui.data.RpcDataService.jsonRpcRequest;
 import static org.knime.testing.util.TableTestUtil.createDefaultTestTable;
@@ -64,6 +65,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -78,8 +80,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DataTableSpecCreator;
 import org.knime.core.data.DataValue;
 import org.knime.core.data.MissingCell;
 import org.knime.core.data.RowKey;
@@ -174,6 +178,7 @@ class TableViewTest {
 
         assertThat(table.getFirstRowImageDimensions())
             .isEqualTo(Map.of("double", new ImageDimension(2, 2), "image", new ImageDimension(11, 11)));
+        assertThat(table.getColumnNamesColors()).isEmpty();
     }
 
     @Test
@@ -706,6 +711,33 @@ class TableViewTest {
         assertThat(((MissingCellWithMessage)rows.get(1).get(3)).getMetadata()).isEqualTo("Row2_Col2");
     }
 
+    @Test
+    void testDataServiceGetRowsWithColumnNameColors() {
+        final var expectedResult = new String[]{"#FF0000", "#0000FF"};
+        final var column1 = "column1";
+        final var column2 = "column2";
+        final var column3 = "column3";
+        Map<DataCell, ColorAttr> columnNamesColorMap = new HashMap<>();
+        columnNamesColorMap.put(new StringCell(column1), ColorAttr.getInstance(new Color(255, 0, 0)));
+        columnNamesColorMap.put(new StringCell(column2), ColorAttr.getInstance(new Color(0, 255, 0)));
+        columnNamesColorMap.put(new StringCell(column3), ColorAttr.getInstance(new Color(0, 0, 255)));
+        var columnNamesColorModel = new ColorModelNominal(columnNamesColorMap, new ColorAttr[0]);
+
+        final var firstColSpec = new DataColumnSpecCreator("column1", StringCell.TYPE).createSpec();
+        final var secondColSpec = new DataColumnSpecCreator("column2", DoubleCell.TYPE).createSpec();
+        final var thirdColSpec = new DataColumnSpecCreator("column3", StringCell.TYPE).createSpec();
+        final var dtsc = new DataTableSpecCreator();
+        dtsc.addColumns(firstColSpec);
+        dtsc.addColumns(secondColSpec);
+        dtsc.addColumns(thirdColSpec);
+        dtsc.setColumnNamesColorHandler(new ColorHandler(columnNamesColorModel));
+
+        final var inputTable = new TableBuilder(dtsc.createSpec()).addRow(new Object[]{"A", 0.5, "B"}).build();
+        var dataService = createTableViewDataServiceInstance(() -> inputTable.get());
+        var table = dataService.getTable(new String[]{"column1", "column3"}, 0, 1, null, false, false, false, false);
+        assertArrayEquals(table.getColumnNamesColors(), expectedResult);
+    }
+
     @Nested
     class GetCopyContentTest {
 
@@ -769,8 +801,8 @@ class TableViewTest {
                     + "<tr><td>4</td><td>33</td><td>3.0</td></tr>" //
                     + "</table></body></html>",
                 "2\t11\t1.0\r\n" //
-                + "3\t22\t2.0\r\n" //
-                + "4\t33\t3.0");
+                    + "3\t22\t2.0\r\n" //
+                    + "4\t33\t3.0");
 
             final var copyContent =
                 dataService.getCopyContent(rowIndexConfig, rowKeyConfig, false, selectedTestColumns, 1, 3);

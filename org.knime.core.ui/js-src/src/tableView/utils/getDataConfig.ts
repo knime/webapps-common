@@ -17,6 +17,7 @@ export default ({
   dataTypes,
   columnDataTypeIds,
   columnFormatterDescriptions,
+  columnNamesColors,
   indicateRemainingColumnsSkipped,
   enableRowResizing,
   enableDynamicRowHeight,
@@ -36,6 +37,7 @@ export default ({
   colNameSelectedRendererId?: Record<string, string>;
   columnDataTypeIds: any;
   columnFormatterDescriptions?: (string | null)[];
+  columnNamesColors: string[] | null;
   indicateRemainingColumnsSkipped: any;
   enableRowResizing: boolean;
   enableDynamicRowHeight: boolean;
@@ -79,6 +81,7 @@ export default ({
     contentType,
     isSortable,
     columnTypeRenderers,
+    headerColor,
   }: {
     id: symbol | string;
     index: number;
@@ -88,6 +91,7 @@ export default ({
     columnTypeName?: string;
     contentType?: any;
     columnTypeRenderers?: any;
+    headerColor?: string | null;
   }) => ({
     // the id is used to keep track of added/removed columns in the TableUIForAutoSizeCalculation
     id,
@@ -106,6 +110,7 @@ export default ({
     }),
     formatter: (val: string) => val,
     isSortable,
+    headerColor: headerColor ?? null,
   });
 
   const columnConfigs = [];
@@ -155,6 +160,7 @@ export default ({
         ],
       }),
       isSortable: true,
+      headerColor: columnNamesColors?.[index],
     };
     columnConfigs.push(createColumnConfig(columnInformation));
   });
