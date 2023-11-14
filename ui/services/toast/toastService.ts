@@ -1,7 +1,9 @@
 import { ref, provide, inject, computed, getCurrentInstance } from "vue";
-import type { App, Plugin } from "vue";
+import type { App, Plugin, Ref } from "vue";
 import { uniqueId, cloneDeep } from "lodash";
 import type {
+  DefaultToastMetadata,
+  RemoveToast,
   Toast,
   ToastService,
   ToastServiceComposableOptions,
@@ -30,10 +32,11 @@ export class ToastServiceError extends Error {
  *   in `main.js/ts`;
  * - get the toast service object directly via `getToastServiceObject` method.
  */
-export class ToastServiceProvider {
-  toasts = ref<Toast[]>([]);
+export class ToastServiceProvider<T = DefaultToastMetadata> {
+  // Requires type casting. See: https://github.com/vuejs/core/issues/1324
+  toasts = ref([]) as Ref<Array<Toast<T>>>;
 
-  show = (toast: Toast): string => {
+  show = (toast: Toast<T>): string => {
     const clonedToast = cloneDeep(toast);
     clonedToast.id = clonedToast.id
       ? `${clonedToast.id}-${uniqueId()}`
@@ -44,16 +47,20 @@ export class ToastServiceProvider {
     return clonedToast.id;
   };
 
-  remove = (id: string): void => {
-    this.toasts.value = this.toasts.value.filter(
-      (toast: Toast) => toast.id !== id,
-    );
+  remove: RemoveToast<T> = (criteria): void => {
+    if (typeof criteria === "string") {
+      this.toasts.value = this.toasts.value.filter(
+        (toast) => toast.id !== criteria,
+      );
+
+      return;
+    }
+
+    this.toasts.value = this.toasts.value.filter((toast) => !criteria(toast));
   };
 
   autoRemove = (): void => {
-    this.toasts.value = this.toasts.value.filter(
-      (toast: Toast) => !toast.autoRemove,
-    );
+    this.toasts.value = this.toasts.value.filter((toast) => !toast.autoRemove);
   };
 
   removeAll = (): void => {
@@ -62,7 +69,7 @@ export class ToastServiceProvider {
 
   readonlyToasts = computed(() => this.toasts.value);
 
-  toastServiceObject: ToastService = {
+  toastServiceObject: ToastService<T> = {
     toasts: this.readonlyToasts,
     show: this.show,
     remove: this.remove,
@@ -109,13 +116,15 @@ export class ToastServiceProvider {
   /**
    * Returns the toast service object directly.
    */
-  getToastServiceObject = (): ToastService => {
+  getToastServiceObject = (): ToastService<T> => {
     return this.toastServiceObject;
   };
 }
 
-const useToastsFromSymbol = (serviceSymbol: Symbol): ToastService => {
-  const toastService = inject<ToastService | null>(serviceSymbol, null);
+const useToastsFromSymbol = <T = DefaultToastMetadata>(
+  serviceSymbol: Symbol,
+): ToastService<T> => {
+  const toastService = inject<ToastService<T> | null>(serviceSymbol, null);
 
   if (!toastService) {
     throw new ToastServiceError(
@@ -126,7 +135,9 @@ const useToastsFromSymbol = (serviceSymbol: Symbol): ToastService => {
   return toastService;
 };
 
-const useToastsFromGlobalProperty = (propertyName: string): ToastService => {
+const useToastsFromGlobalProperty = <T = DefaultToastMetadata>(
+  propertyName: string,
+): ToastService<T> => {
   const toastService =
     getCurrentInstance()?.appContext.config.globalProperties[propertyName];
 
@@ -160,10 +171,10 @@ const useToastsFromGlobalProperty = (propertyName: string): ToastService => {
  * });
  */
 
-export const useToasts = ({
+export const useToasts = <T = DefaultToastMetadata>({
   serviceSymbol,
   propertyName,
-}: UseToastsOptions = {}): ToastService => {
+}: UseToastsOptions = {}): ToastService<T> => {
   if (serviceSymbol && propertyName) {
     throw new ToastServiceError(
       "Please provide either a custom injection key symbol or a custom global property name, but not both.",

@@ -41,7 +41,9 @@ export interface ToastStack {
   propertyName?: string | null;
 }
 
-export interface Toast {
+export type DefaultToastMetadata = Record<string, any>;
+
+export interface Toast<T = DefaultToastMetadata> {
   /**
    * Set to "info" by default.
    */
@@ -60,21 +62,26 @@ export interface Toast {
   active?: boolean;
   id?: string;
   stackId?: string;
+
+  metadata?: T;
 }
 
-export interface ToastService {
+type PredicateFn<T> = (toast: Toast<T>) => boolean;
+export type RemoveToast<T> = (criteria: string | PredicateFn<T>) => void;
+
+export interface ToastService<T> {
   /**
    * Reactive array of Toast objects.
    */
-  toasts: ComputedRef<Toast[]>;
+  toasts: ComputedRef<Toast<T>[]>;
   /**
    * Adds the provided Toast object to the `toasts` array.
    */
-  show: (toast: Toast) => string;
+  show: (toast: Toast<T>) => string;
   /**
    * Removes the specified Toast object from the `toasts` array.
    */
-  remove: (id: string) => void;
+  remove: RemoveToast<T>;
   /**
    * Removes all Toast objects with `autoRemove` set to `true` from the `toasts` array.
    */
