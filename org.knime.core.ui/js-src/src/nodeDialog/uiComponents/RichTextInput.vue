@@ -82,7 +82,7 @@ export default RichTextInput;
         codeBlock: true,
         horizontalRule: true,
         strike: true,
-        paragraphStyle: true,
+        paragraphTextStyle: true,
       }"
       @update:model-value="onChange"
     />
