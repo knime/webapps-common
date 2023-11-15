@@ -62,7 +62,7 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.config.base.ConfigBaseRO;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FileChooser;
+import org.knime.filehandling.core.connections.FSLocation;
 
 /**
  * Factory for default persistors that store values directly in NodeSettings.
@@ -99,8 +99,8 @@ final class DefaultFieldNodeSettingsPersistorFactory {
             return (NodeSettingsPersistor<T>)createLocalDatePersistor(configKey);
         } else if (fieldType.equals(Credentials.class)) {
             return (NodeSettingsPersistor<T>)createCredentialsPersistor(configKey);
-        } else if (fieldType.equals(FileChooser.class)) {
-            return (NodeSettingsPersistor<T>)createFileChooserPersistor(configKey);
+        } else if (fieldType.equals(FSLocation.class)) {
+            return (NodeSettingsPersistor<T>)createFSLocationPersistor(configKey);
         } else {
             throw new IllegalArgumentException(
                 String.format("No default persistor available for type '%s'.", fieldType));
@@ -201,8 +201,8 @@ final class DefaultFieldNodeSettingsPersistorFactory {
         return new Credentials.CredentialsPersistor(configKey);
     }
 
-    private static NodeSettingsPersistor<FileChooser> createFileChooserPersistor(final String configKey) {
-        final var persistor = new FileChooser.DefaultPersistor();
+    private static NodeSettingsPersistor<FSLocation> createFSLocationPersistor(final String configKey) {
+        final var persistor = new FSLocationPersistor();
         persistor.setConfigKey(configKey);
         return persistor;
     }

@@ -22,32 +22,39 @@ describe("LabeledFileChooserInput.vue", () => {
         enabled: true,
         visible: true,
         data: {
-          path: "myPath",
-          timeout: 1000,
-          fsCategory: "LOCAL",
+          path: {
+            path: "myPath",
+            timeout: 1000,
+            fsCategory: "LOCAL",
+          },
         },
         schema: {
           type: "object",
           title: "File path",
           properties: {
             path: {
-              type: "string",
-            },
-            fsCategory: {
-              oneOf: [
-                {
-                  const: "LOCAL",
-                  title: "LOCAL",
+              type: "object",
+              properties: {
+                path: {
+                  type: "string",
                 },
-                {
-                  const: "CUSTOM_URL",
-                  title: "CUSTOM_URL",
+                fsCategory: {
+                  oneOf: [
+                    {
+                      const: "LOCAL",
+                      title: "LOCAL",
+                    },
+                    {
+                      const: "CUSTOM_URL",
+                      title: "CUSTOM_URL",
+                    },
+                  ],
                 },
-              ],
-            },
-            timeout: {
-              type: "integer",
-              format: "int32",
+                timeout: {
+                  type: "integer",
+                  format: "int32",
+                },
+              },
             },
           },
           default: "default value",
@@ -115,9 +122,11 @@ describe("LabeledFileChooserInput.vue", () => {
       .findComponent(LocalFileChooserInput)
       .vm.$emit("update:modelValue", changedTextInput);
     const onChangePayload = {
-      fsCategory: "LOCAL",
-      path: changedTextInput,
-      timeout: 1000,
+      path: {
+        fsCategory: "LOCAL",
+        path: changedTextInput,
+        timeout: 1000,
+      },
     };
     expect(updateData).toHaveBeenCalledWith(
       expect.anything(),
@@ -156,15 +165,15 @@ describe("LabeledFileChooserInput.vue", () => {
 
   it("sets correct initial value", () => {
     expect(wrapper.findComponent(ValueSwitch).vm.modelValue).toBe(
-      props.control.data.fsCategory,
+      props.control.data.path.fsCategory,
     );
     expect(wrapper.findComponent(LocalFileChooserInput).vm.modelValue).toBe(
-      props.control.data.path,
+      props.control.data.path.path,
     );
   });
 
   it("renders with fsCategory CUSTOM_URL", async () => {
-    props.control.data.fsCategory = "CUSTOM_URL";
+    props.control.data.path.fsCategory = "CUSTOM_URL";
     component = await mountJsonFormsComponent(LabeledFileChooserInput, {
       props,
       global: { stubs: { CustomUrlFileChooser, Label } },
@@ -175,8 +184,8 @@ describe("LabeledFileChooserInput.vue", () => {
     const url = customUrlFileChooser.findComponent(InputField);
     const timeoutLabel = customUrlFileChooser.findComponent(NumberInput);
     const timeout = customUrlFileChooser.findComponent(NumberInput);
-    expect(url.props().modelValue).toBe(props.control.data.path);
-    expect(timeout.props().modelValue).toBe(props.control.data.timeout);
+    expect(url.props().modelValue).toBe(props.control.data.path.path);
+    expect(timeout.props().modelValue).toBe(props.control.data.path.timeout);
     expect(timeout.attributes().id).toBe(timeoutLabel.vm.labelForId);
 
     const newTimeout = 1001;
@@ -185,9 +194,11 @@ describe("LabeledFileChooserInput.vue", () => {
       expect.anything(),
       "test",
       {
-        fsCategory: "CUSTOM_URL",
-        path: "myPath",
-        timeout: newTimeout,
+        path: {
+          fsCategory: "CUSTOM_URL",
+          path: "myPath",
+          timeout: newTimeout,
+        },
       },
     );
 
@@ -197,22 +208,25 @@ describe("LabeledFileChooserInput.vue", () => {
       expect.anything(),
       "test",
       {
-        fsCategory: "CUSTOM_URL",
-        path: newUrl,
-        timeout: 1000,
+        path: {
+          fsCategory: "CUSTOM_URL",
+          path: newUrl,
+          timeout: 1000,
+        },
       },
     );
   });
 
   it("disables input when controlled by a flow variable", () => {
     const localDefaultProps = JSON.parse(JSON.stringify(props));
-    localDefaultProps.control.rootSchema.flowVariablesMap[props.control.path] =
-      {
-        controllingFlowVariableAvailable: true,
-        controllingFlowVariableName: "knime.test",
-        exposedFlowVariableName: "test",
-        leaf: true,
-      };
+    localDefaultProps.control.rootSchema.flowVariablesMap[
+      `${props.control.path}.path`
+    ] = {
+      controllingFlowVariableAvailable: true,
+      controllingFlowVariableName: "knime.test",
+      exposedFlowVariableName: "test",
+      leaf: true,
+    };
     const { wrapper } = mountJsonFormsComponent(LabeledFileChooserInput, {
       props: localDefaultProps,
     });

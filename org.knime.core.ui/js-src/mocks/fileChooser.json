@@ -7,13 +7,17 @@
         "disabled": "/home/InitialValue.txt",
         "withPlaceholder": "",
         "disabledPath": {
-          "fsCategory": "LOCAL",
-          "path": ""
+          "path": {
+            "fsCategory": "LOCAL",
+            "path": ""
+          }
         },
         "pathCustom": {
-          "fsCategory": "CUSTOM_URL",
-          "path": "",
-          "timeout": 1000
+          "path": {
+            "fsCategory": "CUSTOM_URL",
+            "path": "",
+            "timeout": 1000
+          }
         }
       }
     },
@@ -39,11 +43,9 @@
               "title": "Default"
             },
             "disabledPath": {
-              "type": "string",
               "title": "Disabled"
             },
             "pathCustom": {
-              "type": "string",
               "title": "Custom URL"
             }
           }

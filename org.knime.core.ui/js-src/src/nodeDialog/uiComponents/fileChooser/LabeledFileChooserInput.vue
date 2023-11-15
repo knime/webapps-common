@@ -25,11 +25,15 @@ const LabeledFileChooserInput = defineComponent({
       return isModelSettingAndHasNodeView(this.control);
     },
     flowSettings() {
-      return getFlowVariablesMap(this.control);
+      return getFlowVariablesMap(this.control, ["path"]);
     },
     data() {
       return (
-        this.control.data ?? { path: "", timeout: 1000, fsCategory: "LOCAL" }
+        this.control.data?.path ?? {
+          path: "",
+          timeout: 1000,
+          fsCategory: "LOCAL",
+        }
       );
     },
     disabled() {
@@ -41,7 +45,7 @@ const LabeledFileChooserInput = defineComponent({
   },
   methods: {
     onChange(event) {
-      this.handleChange(this.control.path, event);
+      this.handleChange(this.control.path, { path: event });
       if (this.isModelSettingAndHasNodeView) {
         this.$store.dispatch("pagebuilder/dialog/dirtySettings", true);
       }
@@ -56,6 +60,7 @@ export default LabeledFileChooserInput;
     <LabeledInput
       #default="{ labelForId }"
       :config-keys="control?.schema?.configKeys"
+      :sub-config-keys="['path']"
       :flow-variables-map="control.rootSchema.flowVariablesMap"
       :path="control.path"
       :text="control.label"

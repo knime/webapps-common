@@ -44,71 +44,34 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Nov 3, 2023 (Paul Bärnreuther): created
+ *   Nov 15, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser;
+package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 
-import java.util.Objects;
-
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
-import org.knime.filehandling.core.connections.FSCategory;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
 import org.knime.filehandling.core.connections.FSLocation;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.knime.filehandling.core.data.location.FSLocationSerializationUtils;
+import org.knime.filehandling.core.data.location.variable.FSLocationVariableType;
 
 /**
- * This settings class can be used to display a dropdown from which several file system categories can be selected
- * (currently only local and custom/KNIME URLs). Depending on the selected value, other input fields for the respective
- * selected file system category appear.
+ * This is the default persistor used for the path field of the {@link FSLocation}. The persisted keys have to match the
+ * ones recognized by {@link FSLocationVariableType}.
  *
  * @author Paul Bärnreuther
  */
-public final class FileChooser implements PersistableSettings {
+public final class FSLocationPersistor extends NodeSettingsPersistorWithConfigKey<FSLocation> {
 
-    @JsonProperty("path")
-    FSLocation m_path;
-
-    /**
-     * A local file chooser
-     */
-    public FileChooser() {
-        this(new FSLocation(FSCategory.LOCAL, ""));
-    }
-
-    /**
-     * @param fsLocation
-     */
-    public FileChooser(final FSLocation fsLocation) {
-        m_path = fsLocation;
-    }
-
-    /**
-     * @return the underlying fsLocation of the chosen file
-     */
-    @JsonIgnore
-    public FSLocation getFSLocation() {
-        return m_path;
+    @Override
+    public FSLocation load(final NodeSettingsRO settings) throws InvalidSettingsException {
+        return FSLocationSerializationUtils.loadFSLocation(settings.getNodeSettings(getConfigKey()));
     }
 
     @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final var other = (FileChooser)obj;
-        return Objects.equals(m_path, other.m_path);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(m_path);
+    public void save(final FSLocation path, final NodeSettingsWO settings) {
+        FSLocationSerializationUtils.saveFSLocation(path, settings.addNodeSettings(getConfigKey()));
     }
 
 }
