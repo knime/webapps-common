@@ -467,13 +467,13 @@ describe("RichTextEditor.vue", () => {
       );
 
       // eslint-disable-next-line vitest/max-nested-describe
-      describe("paragraphStyle", () => {
+      describe("paragraphTextStyle", () => {
         let wrapper: VueWrapper<any>;
         const preSelectedHeadingLevel = 3;
 
         beforeEach(() => {
           const component = doMount({
-            props: { baseExtensions: { paragraphStyle: true } },
+            props: { baseExtensions: { paragraphTextStyle: true } },
           });
           wrapper = component.wrapper;
           mockEditorIsActive.mockImplementation(
@@ -486,30 +486,30 @@ describe("RichTextEditor.vue", () => {
           );
         });
 
-        const emitParagraphStyleSubmenuItemClick = (childId: any) => {
+        const emitParagraphTextStyleSubmenuItemClick = (childId: any) => {
           const secondaryItemsMenu = wrapper.findComponent(SubMenu);
           secondaryItemsMenu.vm.$emit("item-click", null, {
-            id: { toolId: "paragraphStyle", childId },
+            id: { toolId: "paragraphTextStyle", childId },
           });
         };
 
         it("sets header", () => {
           const level = 3;
-          emitParagraphStyleSubmenuItemClick(3);
+          emitParagraphTextStyleSubmenuItemClick(3);
           expect(
             mockEditor.value.chain().focus().toggleHeading,
           ).toHaveBeenCalledWith({ level });
         });
 
         it("sets small text", () => {
-          emitParagraphStyleSubmenuItemClick("small");
+          emitParagraphTextStyleSubmenuItemClick("small");
           expect(
             mockEditor.value.chain().focus().setSmallText,
           ).toHaveBeenCalled();
         });
 
         it("unsets heading when setting small text", () => {
-          emitParagraphStyleSubmenuItemClick("small");
+          emitParagraphTextStyleSubmenuItemClick("small");
           expect(
             mockEditor.value.chain().focus().toggleHeading,
           ).toHaveBeenCalledWith({ level: preSelectedHeadingLevel });
@@ -517,7 +517,7 @@ describe("RichTextEditor.vue", () => {
 
         it("unsets heading and small text on 'standard'", () => {
           const selectedHeadingLevel = 3;
-          emitParagraphStyleSubmenuItemClick("standard");
+          emitParagraphTextStyleSubmenuItemClick("standard");
           expect(
             mockEditor.value.chain().focus().toggleHeading,
           ).toHaveBeenCalledWith({ level: selectedHeadingLevel });
