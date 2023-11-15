@@ -12,6 +12,15 @@
             "path": ""
           }
         },
+        "overwrittenByNonSupported": {
+          "path": {
+            "fsCategory": "RELATIVE",
+            "path": "myPath",
+            "context": {
+              "fsToString": "(RELATIVE, knime.mountpoint, myPath)"
+            }
+          }
+        },
         "pathCustom": {
           "path": {
             "fsCategory": "CUSTOM_URL",
@@ -103,6 +112,13 @@
             },
             {
               "type": "Control",
+              "scope": "#/properties/view/properties/overwrittenByNonSupported",
+              "options": {
+                "format": "fileChooser"
+              }
+            },
+            {
+              "type": "Control",
               "scope": "#/properties/view/properties/pathCustom",
               "options": {
                 "format": "fileChooser"
@@ -117,6 +133,9 @@
         "controllingFlowVariableName": "initiallySetFlowVariable"
       },
       "view.disabledPath": {
+        "controllingFlowVariableName": "initiallySetFlowVariable"
+      },
+      "view.overwrittenByNonSupported": {
         "controllingFlowVariableName": "initiallySetFlowVariable"
       }
     }

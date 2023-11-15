@@ -217,6 +217,23 @@ describe("LabeledFileChooserInput.vue", () => {
     );
   });
 
+  it("renders with non-supported fsCategory", async () => {
+    const stringRepresentation = "myStringRepresentation";
+    props.control.data.path.fsCategory = "RELATIVE";
+    props.control.data.path.context = { fsToString: stringRepresentation };
+    component = await mountJsonFormsComponent(LabeledFileChooserInput, {
+      props,
+      global: { stubs: { CustomUrlFileChooser, Label } },
+    });
+    const wrapper = component.wrapper;
+    expect(wrapper.findComponent(ValueSwitch).exists()).toBeFalsy();
+    const inputField = wrapper.findComponent(InputField);
+    expect(inputField.props()).toMatchObject({
+      disabled: true,
+      modelValue: stringRepresentation,
+    });
+  });
+
   it("disables input when controlled by a flow variable", () => {
     const localDefaultProps = JSON.parse(JSON.stringify(props));
     localDefaultProps.control.rootSchema.flowVariablesMap[

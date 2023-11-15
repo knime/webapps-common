@@ -81,6 +81,12 @@ public class FSLocationJsonSerializationUtil {
 
     private static final String CATEGORY_KEY = "fsCategory";
 
+    private static final String CONTEXT_KEY = "context";
+
+    private static final String FS_SPECIFIER_KEY = "fsSpecifier";
+
+    private static final String FS_TO_STRING_KEY = "fsToString";
+
     /**
      * Adds serialization logic for the {@link FSLocation} within a {@link FileChooser}
      *
@@ -94,8 +100,8 @@ public class FSLocationJsonSerializationUtil {
     static final class FSLocationSerializer extends JsonSerializer<FSLocation> {
 
         @Override
-        public void serialize(final FSLocation fsLocation, final JsonGenerator gen, final SerializerProvider serializers)
-            throws IOException {
+        public void serialize(final FSLocation fsLocation, final JsonGenerator gen,
+            final SerializerProvider serializers) throws IOException {
             gen.writeStartObject();
             final var fsCategory = fsLocation.getFileSystemCategory();
             gen.writeStringField(CATEGORY_KEY, fsCategory);
@@ -105,6 +111,15 @@ public class FSLocationJsonSerializationUtil {
                 .map(Integer::valueOf) //
                 .orElse(DEFAULT_TIMEOUT);
             gen.writeNumberField(TIMEOUT_KEY, timeout);
+            if (!isSupportedByFrontend(fsCategory)) {
+                gen.writeObjectFieldStart(CONTEXT_KEY);
+                final var fsSpecifier = fsLocation.getFileSystemSpecifier();
+                if (fsSpecifier.isPresent()) {
+                    gen.writeStringField(FS_SPECIFIER_KEY, fsSpecifier.get());
+                }
+                gen.writeStringField(FS_TO_STRING_KEY, fsLocation.toString());
+                gen.writeEndObject();
+            }
             gen.writeEndObject();
         }
     }
@@ -117,6 +132,10 @@ public class FSLocationJsonSerializationUtil {
             final var node = (JsonNode)p.getCodec().readTree(p);
             final var fsCategory = extractString(node, CATEGORY_KEY);
             final var path = extractString(node, PATH_KEY);
+            if (!isSupportedByFrontend(fsCategory)) {
+                final var fsSpecifier = extractString(node.get(CONTEXT_KEY), FS_SPECIFIER_KEY);
+                return new FSLocation(fsCategory, fsSpecifier, path);
+            }
             if (isCustomURL(fsCategory)) {
                 final var timeout = extractString(node, TIMEOUT_KEY);
                 return new FSLocation(fsCategory, timeout, path);
@@ -127,14 +146,22 @@ public class FSLocationJsonSerializationUtil {
         private static String extractString(final JsonNode node, final String key) {
             final var value = node.get(key);
             if (value == null || value.isNull()) {
-                return "";
+                return null;
             }
             return value.asText();
         }
     }
 
+    static boolean isLocal(final String fsCategory) {
+        return fsCategory.equals(FSCategory.LOCAL.toString());
+    }
+
     static boolean isCustomURL(final String fsCategory) {
         return fsCategory.equals(FSCategory.CUSTOM_URL.toString());
+    }
+
+    static boolean isSupportedByFrontend(final String fsCategory) {
+        return isLocal(fsCategory) || isCustomURL(fsCategory);
     }
 
 }

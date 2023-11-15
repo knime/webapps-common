@@ -60,6 +60,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.knime.filehandling.core.connections.FSCategory;
 import org.knime.filehandling.core.connections.FSLocation;
+import org.knime.filehandling.core.connections.RelativeTo;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -112,6 +113,19 @@ public class FileChooserTest {
 
     }
 
+    @Test
+    void testSerializeNonSupportedFSLocation() {
+        class TestSettings {
+            FileChooser fileChooser = new FileChooser(new FSLocation(FSCategory.MOUNTPOINT, "specifier", "myPath"));
+        }
+        final var result = objectMapper.valueToTree(new TestSettings());
+        assertThatJson(result).inPath("fileChooser.path.path").isString().isEqualTo("myPath");//
+        assertThatJson(result).inPath("fileChooser.path.fsCategory").isString().isEqualTo("MOUNTPOINT");
+        assertThatJson(result).inPath("fileChooser.path.context.fsSpecifier").isString().isEqualTo("specifier");
+        assertThatJson(result).inPath("fileChooser.path.context.fsToString").isString()
+            .isEqualTo("(MOUNTPOINT, specifier, myPath)");
+    }
+
     static class DeserializationTestSettings {
 
         DeserializationTestSettings() {
@@ -136,7 +150,11 @@ public class FileChooserTest {
     static Stream<Arguments> fsLocations() {
         return Stream.of( //
             Arguments.of(new FSLocation(FSCategory.LOCAL, "myPath")), //
-            Arguments.of(new FSLocation(FSCategory.CUSTOM_URL, "1", "myPath")));
+            Arguments.of(new FSLocation(FSCategory.CUSTOM_URL, "1", "myPath")), //
+            Arguments.of(new FSLocation(FSCategory.MOUNTPOINT, "mountpointSpecifier", "myPath")), //
+            Arguments.of(new FSLocation(FSCategory.RELATIVE, RelativeTo.SPACE.getSettingsValue(), "myPath")), //
+            Arguments.of(new FSLocation(FSCategory.HUB_SPACE, "myPath")), //
+            Arguments.of(new FSLocation(FSCategory.CONNECTED, "myPath")));
     }
 
     @ParameterizedTest
