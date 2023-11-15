@@ -48,12 +48,11 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.setting.credentials;
 
+import static org.knime.core.node.workflow.VariableType.CredentialsType.CFG_IS_CREDENTIALS_FLAG;
+import static org.knime.core.node.workflow.VariableType.CredentialsType.CFG_LOGIN;
 import static org.knime.core.node.workflow.VariableType.CredentialsType.CFG_NAME;
-import static org.knime.core.node.workflow.VariableType.CredentialsType.CFG_PASSWORD;
-import static org.knime.core.node.workflow.VariableType.CredentialsType.CFG_SECOND_FACTOR;
-import static org.knime.core.node.workflow.VariableType.CredentialsType.CFG_USERNAME;
-import static org.knime.core.node.workflow.VariableType.CredentialsType.PASSWORD_SECRET;
-import static org.knime.core.node.workflow.VariableType.CredentialsType.SECOND_FACTOR_SECRET;
+import static org.knime.core.node.workflow.VariableType.CredentialsType.CFG_TRANSIENT_PASSWORD;
+import static org.knime.core.node.workflow.VariableType.CredentialsType.CFG_TRANSIENT_SECOND_FACTOR;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -264,6 +263,11 @@ public final class Credentials {
      */
     public static final class CredentialsPersistor implements NodeSettingsPersistor<Credentials> {
 
+        private static final String CFG_PASSWORD = "weaklyEncryptedPassword";
+        private static final String CFG_SECOND_FACTOR = "weaklyEncryptedSecondFactor";
+        private static final String PASSWORD_SECRET = "XKdPobvbDEBZEJmBsbMq"; // NOSONAR (weak symmetric encryption)
+        private static final String SECOND_FACTOR_SECRET = "lLNIScQYgDJJXUrUdhSG";
+
         private final String m_configKey;
 
         /**
@@ -276,15 +280,23 @@ public final class Credentials {
         @Override
         public Credentials load(final NodeSettingsRO settings) throws InvalidSettingsException {
             final var credentialsConfig = settings.getNodeSettings(m_configKey);
-            final var username = credentialsConfig.getString(CFG_USERNAME);
-            final var password = credentialsConfig.getPassword(CFG_PASSWORD, PASSWORD_SECRET);
-            final var secondFactor = credentialsConfig.getPassword(CFG_SECOND_FACTOR, SECOND_FACTOR_SECRET);
+            final var username = credentialsConfig.getString(CFG_LOGIN);
+            final var password = credentialsConfig.containsKey(CFG_TRANSIENT_PASSWORD)
+                ? credentialsConfig.getTransientString(CFG_TRANSIENT_PASSWORD) // overwritten via variable
+                : credentialsConfig.getPassword(CFG_PASSWORD, PASSWORD_SECRET);
+
+            final var secondFactor = credentialsConfig.containsKey(CFG_TRANSIENT_SECOND_FACTOR)
+                ? credentialsConfig.getTransientString(CFG_TRANSIENT_SECOND_FACTOR) // overwritten via variable
+                : credentialsConfig.getPassword(CFG_SECOND_FACTOR, SECOND_FACTOR_SECRET);
             return new Credentials(username, password, secondFactor);
         }
 
         @Override
         public void save(final Credentials credentials, final NodeSettingsWO settings) {
             final var credentialsConfig = settings.addNodeSettings(m_configKey);
+            // only to comply to schema for variable type detection (value doesn't matter)
+            credentialsConfig.addBoolean(CFG_IS_CREDENTIALS_FLAG, true);
+
             credentialsConfig.addString(CFG_NAME, "");
             if (credentials != null) {
                 persistCredentials(credentials, credentialsConfig);
@@ -294,7 +306,11 @@ public final class Credentials {
         }
 
         private static void persistCredentials(final Credentials credentials, final NodeSettingsWO credentialsConfig) {
-            credentialsConfig.addString(CFG_USERNAME, credentials.getUsername());
+            credentialsConfig.addString(CFG_LOGIN, credentials.getUsername());
+            // when exposing variable
+            credentialsConfig.addTransientString(CFG_TRANSIENT_PASSWORD, credentials.getPassword());
+            credentialsConfig.addTransientString(CFG_TRANSIENT_SECOND_FACTOR, credentials.getSecondFactor());
+
             credentialsConfig.addPassword(CFG_PASSWORD, PASSWORD_SECRET, credentials.getPassword());
             credentialsConfig.addPassword(CFG_SECOND_FACTOR, SECOND_FACTOR_SECRET, credentials.getSecondFactor());
         }
