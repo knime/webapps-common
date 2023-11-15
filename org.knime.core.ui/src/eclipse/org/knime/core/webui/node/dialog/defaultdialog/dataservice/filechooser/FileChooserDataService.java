@@ -55,12 +55,12 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -136,7 +136,7 @@ public final class FileChooserDataService {
     }
 
     private static Deque<Path> toFragments(final FileChooserBackend fileChooserBackend, final Path nextPath) {
-        final Deque<Path> subPaths = new LinkedBlockingDeque<>();
+        final Deque<Path> subPaths = new ArrayDeque<>();
         final var pathFragments = StreamSupport.stream(nextPath.spliterator(), false).collect(Collectors.toList());
         final var emptyPath = fileChooserBackend.getFileSystem().getPath("");
         if (emptyPath != null) {
