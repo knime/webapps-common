@@ -58,6 +58,7 @@ import java.util.Optional;
 import java.util.WeakHashMap;
 import java.util.stream.Stream;
 
+import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortType;
 import org.knime.core.webui.node.DataServiceManager;
 import org.knime.core.webui.node.NodePortWrapper;
@@ -77,7 +78,7 @@ public final class PortViewManager {
 
     private static PortViewManager instance;
 
-    private static final Map<Class<?>, PortViews> m_portViews = new HashMap<>();
+    private static final Map<String, PortViews> m_portViews = new HashMap<>();
 
     private final Map<NodePortWrapper, PortView> m_portViewMap = new WeakHashMap<>();
 
@@ -106,7 +107,7 @@ public final class PortViewManager {
     }
 
     /**
-     * Associate a {@link PortType} with one or several {@link PortViewDescriptor}s.
+     * Associate a {@link PortObject}-class with one or several {@link PortViewDescriptor}s.
      *
      * @param portObjectClass The given port type.
      * @param viewDescriptors The views to associate with this port type.
@@ -117,8 +118,23 @@ public final class PortViewManager {
      */
     public static void registerPortViews(final Class<?> portObjectClass, final List<PortViewDescriptor> viewDescriptors,
         final List<Integer> configuredIndices, final List<Integer> executedIndices) {
-        m_portViews.put(portObjectClass, new PortViews(viewDescriptors, configuredIndices, executedIndices));
+        registerPortViews(portObjectClass.getName(), viewDescriptors, configuredIndices, executedIndices);
     }
+
+    /**
+     *
+     * Associate a {@link PortObject}-class-name with one or several {@link PortViewDescriptor}s.
+     * @param portObjectClassName
+     * @param viewDescriptors
+     * @param configuredIndices
+     * @param executedIndices
+     */
+    public static void registerPortViews(final String portObjectClassName,
+        final List<PortViewDescriptor> viewDescriptors, final List<Integer> configuredIndices,
+        final List<Integer> executedIndices) {
+        m_portViews.put(portObjectClassName, new PortViews(viewDescriptors, configuredIndices, executedIndices));
+    }
+
 
     /**
      * Returns the singleton instance for this class.
@@ -156,7 +172,9 @@ public final class PortViewManager {
      */
     public static PortViews getPortViews(final PortType portType) {
         var portObjectClass = portType.getPortObjectClass();
-        return Stream.concat(Stream.of(portObjectClass), Arrays.stream(portObjectClass.getInterfaces()))
+        return Stream
+            .concat(Stream.of(portObjectClass.getName()),
+                Arrays.stream(portObjectClass.getInterfaces()).map(Class::getName))
             .map(m_portViews::get).filter(Objects::nonNull).findFirst().orElse(null);
     }
 
