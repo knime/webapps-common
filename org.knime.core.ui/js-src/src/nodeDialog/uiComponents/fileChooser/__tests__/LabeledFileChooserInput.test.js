@@ -11,6 +11,7 @@ import Label from "webapps-common/ui/components/forms/Label.vue";
 import NumberInput from "webapps-common/ui/components/forms/NumberInput.vue";
 import InputField from "webapps-common/ui/components/forms/InputField.vue";
 import CustomUrlFileChooser from "../CustomUrlFileChooser.vue";
+import flushPromises from "flush-promises";
 
 describe("LabeledFileChooserInput.vue", () => {
   let props, wrapper, component;
@@ -248,6 +249,40 @@ describe("LabeledFileChooserInput.vue", () => {
       props: localDefaultProps,
     });
     expect(wrapper.vm.disabled).toBeTruthy();
+  });
+
+  it("sets default data when unsetting controlling flow variable", async () => {
+    const stringRepresentation = "myStringRepresentation";
+    props.control.data.path.fsCategory = "RELATIVE";
+    props.control.data.path.context = { fsToString: stringRepresentation };
+    const flowVariablesMap = {
+      [`${props.control.path}.path`]: {
+        controllingFlowVariableName: "flowVar1",
+      },
+    };
+    props.control.rootSchema.flowVariablesMap = flowVariablesMap;
+    const { wrapper, updateData } = await mountJsonFormsComponent(
+      LabeledFileChooserInput,
+      {
+        props,
+        global: { stubs: { CustomUrlFileChooser, Label } },
+      },
+    );
+    flowVariablesMap[`${props.control.path}.path`].controllingFlowVariableName =
+      null;
+    wrapper.vm.control = { ...wrapper.vm.control };
+    await flushPromises();
+    expect(updateData).toHaveBeenCalledWith(
+      expect.anything(),
+      props.control.path,
+      {
+        path: {
+          path: "",
+          fsCategory: "LOCAL",
+          timeout: 1000,
+        },
+      },
+    );
   });
 
   it("does not render content of TextInput when visible is false", async () => {

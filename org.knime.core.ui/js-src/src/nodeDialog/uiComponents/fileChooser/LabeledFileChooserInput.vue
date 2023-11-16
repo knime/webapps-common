@@ -27,23 +27,31 @@ const LabeledFileChooserInput = defineComponent({
     flowSettings() {
       return getFlowVariablesMap(this.control, ["path"]);
     },
+    isControlled() {
+      return Boolean(this.flowSettings?.controllingFlowVariableName);
+    },
     data() {
-      return (
-        this.control.data?.path ?? {
-          path: "",
-          timeout: 1000,
-          fsCategory: "LOCAL",
-        }
-      );
+      return this.control.data?.path ?? this.isControlled;
     },
     disabled() {
-      return (
-        !this.control.enabled ||
-        Boolean(this.flowSettings?.controllingFlowVariableName)
-      );
+      return !this.control.enabled || this.isControlled;
+    },
+  },
+  watch: {
+    isControlled(value) {
+      if (!value) {
+        this.onChange(this.getDefaultData());
+      }
     },
   },
   methods: {
+    getDefaultData() {
+      return {
+        path: "",
+        timeout: 1000,
+        fsCategory: "LOCAL",
+      };
+    },
     onChange(event) {
       this.handleChange(this.control.path, { path: event });
       if (this.isModelSettingAndHasNodeView) {
