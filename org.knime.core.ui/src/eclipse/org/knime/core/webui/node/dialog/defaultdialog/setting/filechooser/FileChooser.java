@@ -56,6 +56,7 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
 import org.knime.filehandling.core.connections.FSCategory;
 import org.knime.filehandling.core.connections.FSLocation;
+import org.knime.filehandling.core.data.location.FSLocationSerializationUtils;
 
 /**
  * This settings class can be used to display a dropdown from which several file system categories can be selected
@@ -133,13 +134,13 @@ public final class FileChooser {
         @Override
         public FileChooser load(final NodeSettingsRO settings) throws InvalidSettingsException {
             final var fsLocation =
-                FSLocationSerializationUtils2.loadFSLocation(settings.getNodeSettings(getConfigKey()));
+                FSLocationSerializationUtils.loadFSLocation(settings.getNodeSettings(getConfigKey()));
             return new FileChooser(fsLocation);
         }
 
         @Override
         public void save(final FileChooser fileChooser, final NodeSettingsWO settings) {
-            FSLocationSerializationUtils2.saveFSLocation(fileChooser.toFSLocation(),
+            FSLocationSerializationUtils.saveFSLocation(fileChooser.toFSLocation(),
                 settings.addNodeSettings(getConfigKey()));
         }
 
