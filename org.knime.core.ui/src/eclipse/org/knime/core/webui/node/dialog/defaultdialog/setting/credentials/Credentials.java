@@ -283,11 +283,11 @@ public final class Credentials {
             final var username = credentialsConfig.getString(CFG_LOGIN);
             final var password = credentialsConfig.containsKey(CFG_TRANSIENT_PASSWORD)
                 ? credentialsConfig.getTransientString(CFG_TRANSIENT_PASSWORD) // overwritten via variable
-                : credentialsConfig.getPassword(CFG_PASSWORD, PASSWORD_SECRET);
+                : credentialsConfig.getPassword(CFG_PASSWORD, PASSWORD_SECRET, "");
 
             final var secondFactor = credentialsConfig.containsKey(CFG_TRANSIENT_SECOND_FACTOR)
                 ? credentialsConfig.getTransientString(CFG_TRANSIENT_SECOND_FACTOR) // overwritten via variable
-                : credentialsConfig.getPassword(CFG_SECOND_FACTOR, SECOND_FACTOR_SECRET);
+                : credentialsConfig.getPassword(CFG_SECOND_FACTOR, SECOND_FACTOR_SECRET, "");
             return new Credentials(username, password, secondFactor);
         }
 
@@ -307,12 +307,17 @@ public final class Credentials {
 
         private static void persistCredentials(final Credentials credentials, final NodeSettingsWO credentialsConfig) {
             credentialsConfig.addString(CFG_LOGIN, credentials.getUsername());
+            final var password = credentials.getPassword();
+            final var secondFactor = credentials.getSecondFactor();
             // when exposing variable
-            credentialsConfig.addTransientString(CFG_TRANSIENT_PASSWORD, credentials.getPassword());
-            credentialsConfig.addTransientString(CFG_TRANSIENT_SECOND_FACTOR, credentials.getSecondFactor());
-
-            credentialsConfig.addPassword(CFG_PASSWORD, PASSWORD_SECRET, credentials.getPassword());
-            credentialsConfig.addPassword(CFG_SECOND_FACTOR, SECOND_FACTOR_SECRET, credentials.getSecondFactor());
+            credentialsConfig.addTransientString(CFG_TRANSIENT_PASSWORD, password);
+            credentialsConfig.addTransientString(CFG_TRANSIENT_SECOND_FACTOR, secondFactor);
+            if (password != null && !password.isEmpty()) {
+                credentialsConfig.addPassword(CFG_PASSWORD, PASSWORD_SECRET, password);
+            }
+            if (secondFactor != null && !secondFactor.isEmpty()) {
+                credentialsConfig.addPassword(CFG_SECOND_FACTOR, SECOND_FACTOR_SECRET, secondFactor);
+            }
         }
     }
 
