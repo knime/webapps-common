@@ -44,15 +44,10 @@ const CredentialsInput = defineComponent({
       return this.flowSettings?.controllingFlowVariableName;
     },
     disabled() {
-      return (
-        !this.control.enabled ||
-        Boolean(this.flowSettings?.controllingFlowVariableName)
-      );
+      return !this.control.enabled || Boolean(this.controllingFlowVariableName);
     },
     data() {
-      return (
-        this.control.data ?? { password: "", secondFactor: "", username: "" }
-      );
+      return this.control.data ?? this.getDefaultData();
     },
     displayedPassword() {
       return this.data.isHiddenPassword
@@ -92,7 +87,11 @@ const CredentialsInput = defineComponent({
   },
   watch: {
     controllingFlowVariableName(flowVariableName) {
-      this.onChange(mergeDeep(this.data, { flowVariableName }));
+      if (flowVariableName) {
+        this.onChange(mergeDeep(this.data, { flowVariableName }));
+      } else {
+        this.resetData();
+      }
     },
   },
   methods: {
@@ -102,6 +101,12 @@ const CredentialsInput = defineComponent({
         // @ts-ignore
         this.$store.dispatch("pagebuilder/dialog/dirtySettings", true);
       }
+    },
+    resetData() {
+      this.onChange(this.getDefaultData());
+    },
+    getDefaultData(): Credentials {
+      return { password: "", secondFactor: "", username: "" };
     },
     onControllingFlowVariableSet(value: Credentials) {
       this.onChange(mergeDeep(this.data, value));

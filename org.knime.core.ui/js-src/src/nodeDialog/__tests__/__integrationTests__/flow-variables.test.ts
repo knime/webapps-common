@@ -273,9 +273,9 @@ describe("flow variables", () => {
       await flushPromises();
 
       expect(wrapper.vm.getData().data.model.value).toStrictEqual({
-        flowVariableName: null,
-        isHiddenPassword: true,
-        username: "flowVarUsername",
+        username: "",
+        secondFactor: "",
+        password: "",
       });
     });
   });

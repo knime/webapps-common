@@ -274,7 +274,7 @@ describe("CredentialsInput.vue", () => {
     });
   });
 
-  it("unsets flow variable name in data if controlling flow variable is unset", async () => {
+  it("clears data if controlling flow variable is unset", async () => {
     const flowVariablesMap = {
       credentials: {
         controllingFlowVariableName: "flowVar1",
@@ -288,10 +288,9 @@ describe("CredentialsInput.vue", () => {
     wrapper.vm.control = { ...wrapper.vm.control };
     await flushPromises();
     expect(updateData).toHaveBeenCalledWith(expect.anything(), "credentials", {
-      flowVariableName: null,
-      password: "password",
-      username: "username",
-      secondFactor: "secondFactor",
+      password: "",
+      username: "",
+      secondFactor: "",
     });
   });
 

@@ -267,9 +267,11 @@ final class ApplyData {
                 continue; // unexpected (yet not unrecoverable) state: setting should be present
             }
 
-            if (setting instanceof NodeSettingsRO && previousSetting instanceof NodeSettingsRO) {
-                if (traverseSettingsTrees((NodeSettingsRO)variable, (NodeSettings)setting,
-                    (NodeSettingsRO)previousSetting, stopCriterion)) {
+            final var variableNodeSettings = (NodeSettingsRO)variable;
+            if (!isLeafVariableNodeSettings(variableNodeSettings) && setting instanceof NodeSettingsRO
+                && previousSetting instanceof NodeSettingsRO) {
+                if (traverseSettingsTrees(variableNodeSettings, (NodeSettings)setting, (NodeSettingsRO)previousSetting,
+                    stopCriterion)) {
                     return true;
                 }
             } else if (stopCriterion.stop((NodeSettingsRO)variable, setting, previousSetting)) {
@@ -296,6 +298,11 @@ final class ApplyData {
             }
         }
         return null;
+    }
+
+    private static boolean isLeafVariableNodeSettings(final NodeSettingsRO variable) {
+        return variable.containsKey(VariableSettings.USED_VARIABLE_CFG_KEY)
+            || variable.containsKey(VariableSettings.EXPOSED_VARIABLE_CFG_KEY);
     }
 
     private static boolean isVariableControllingSetting(final NodeSettingsRO variable) {
