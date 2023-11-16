@@ -93,7 +93,7 @@ public class ContextObjectSupplierUI implements ContextObjectSupplier, UI {
         } else if (NodeContainerUI.class.isAssignableFrom(contextObjClass)) {
             return Optional.of((C)NodeContainerWrapper.wrap(srcObj));
         } else if (WorkflowContextV2.class.isAssignableFrom(contextObjClass)) {
-            return Optional.of((C)NodeContainerParent.getProjectWFM(srcObj).getContextV2());
+            return Optional.ofNullable((C)NodeContainerParent.getProjectWFM(srcObj).getContextV2());
         } else {
             return Optional.empty();
         }
