@@ -12,6 +12,7 @@ Bundle-Activator: org.knime.core.ui.CoreUIPlugin
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
 Eclipse-BundleShape: dir
 Export-Package: org.knime.core.ui;x-internal:=true,
+ org.knime.core.ui.component;x-internal:=true,
  org.knime.core.ui.node.workflow;x-internal:=true,
  org.knime.core.ui.node.workflow.async;x-internal:=true,
  org.knime.core.ui.node.workflow.lazy;x-internal:=true,
