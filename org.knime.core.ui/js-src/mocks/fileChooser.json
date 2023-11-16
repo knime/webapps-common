@@ -132,10 +132,10 @@
       "view.disabled": {
         "controllingFlowVariableName": "initiallySetFlowVariable"
       },
-      "view.disabledPath": {
+      "view.disabledPath.path": {
         "controllingFlowVariableName": "initiallySetFlowVariable"
       },
-      "view.overwrittenByNonSupported": {
+      "view.overwrittenByNonSupported.path": {
         "controllingFlowVariableName": "initiallySetFlowVariable"
       }
     }
