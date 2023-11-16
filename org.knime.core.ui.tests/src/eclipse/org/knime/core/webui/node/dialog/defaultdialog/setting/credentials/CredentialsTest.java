@@ -280,6 +280,21 @@ class CredentialsTest {
             assertThat(settings.credentials.getSecondFactor()).isEqualTo(newSecondFactor);
         }
 
+        @Test
+        void testDeserializeWithNullIsHiddenPassword() throws JsonProcessingException, IllegalArgumentException {
+            final var result = serialize(new DeserializeTestSettings());
+            final var credentialsJson = (ObjectNode)result.get("credentials");
+            credentialsJson.remove("isHiddenPassword");
+            credentialsJson.remove("isHiddenSecondFactor");
+            final var newPassword = "";
+            credentialsJson.put("password", newPassword);
+            final var newSecondFactor = "";
+            credentialsJson.put("secondFactor", newSecondFactor);
+            final DeserializeTestSettings settings = objectMapper.treeToValue(result, DeserializeTestSettings.class);
+            assertThat(settings.credentials.getPassword()).isEqualTo(newPassword);
+            assertThat(settings.credentials.getSecondFactor()).isEqualTo(newSecondFactor);
+        }
+
         static class DeserializeFlowVariableTestSettings {
             Credentials credentials = new Credentials("username", "password", "second factor");
         }

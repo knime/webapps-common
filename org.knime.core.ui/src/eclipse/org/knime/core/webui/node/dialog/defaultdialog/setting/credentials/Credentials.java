@@ -241,7 +241,7 @@ public final class Credentials {
         private static String getPassword(final JsonNode node, final String hiddenPasswordKey, final String passwordKey,
             final String passwordId) {
             final var isHiddenPassword = node.get(hiddenPasswordKey);
-            if (isHiddenPassword != null && !isHiddenPassword.asBoolean()) {
+            if (isHiddenPassword == null || isHiddenPassword.isNull() || !isHiddenPassword.asBoolean()) {
                 return extractString(node, passwordKey);
             }
             return Optional.ofNullable(PasswordHolder.get(passwordId)).orElse("");
