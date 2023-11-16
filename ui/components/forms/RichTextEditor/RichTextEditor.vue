@@ -8,7 +8,7 @@ import RichTextEditorBaseToolbar from "./RichTextEditorBaseToolbar.vue";
 import RichTextEditorToolbar from "./RichTextEditorToolbar.vue";
 import type { BaseExtensionsConfig } from "./types";
 import { CustomTextAlign } from "./custom-text-align";
-import { SmallFontSize } from "./paragraphTextStyle/extension";
+import { SmallText } from "./paragraphTextStyle/extension";
 
 type BaseExtensions =
   | BaseExtensionsConfig
@@ -132,7 +132,7 @@ const extensions = [
     ...(isToolEnabled("paragraphTextStyle") && { paragraph: false }),
   }),
   ...(isToolEnabled("underline") ? [UnderLine] : []),
-  ...(isToolEnabled("paragraphTextStyle") ? [SmallFontSize] : []),
+  ...(isToolEnabled("paragraphTextStyle") ? [SmallText] : []),
   ...(isToolEnabled("textAlign")
     ? [
         CustomTextAlign.configure({
