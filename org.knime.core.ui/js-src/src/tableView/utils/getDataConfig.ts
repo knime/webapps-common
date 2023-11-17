@@ -101,6 +101,7 @@ export default ({
     key: index,
     header: columnName,
     subHeader: columnTypeName,
+    noPadding: isImage(contentType),
     hasSlotContent:
       isImage(contentType) ||
       isHtml(contentType) ||

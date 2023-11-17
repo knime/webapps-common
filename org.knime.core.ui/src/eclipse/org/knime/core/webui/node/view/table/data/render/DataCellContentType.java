@@ -63,7 +63,7 @@ public enum DataCellContentType {
         TXT,
 
         /**
-         * Multiline text from newline charakters.
+         * Multiline text from newline characters.
          */
         MULTI_LINE_TXT,
 

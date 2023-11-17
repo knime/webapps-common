@@ -167,7 +167,7 @@ class TableViewTest {
 
         // check content types
         assertThat(table.getColumnContentTypes())
-            .isEqualTo(new String[]{"txt", "txt", "txt", "img_path", "txt", "txt", "img_path"});
+            .isEqualTo(new String[]{"txt", "multi_line_txt", "txt", "img_path", "txt", "txt", "img_path"});
 
         // try out 'cell renderer'
         var cellImg = rendererRegistry.renderImage("tableId/-1084641940.png?w=1&h=2");
@@ -197,7 +197,7 @@ class TableViewTest {
         assertThat((String)rows.get(0).get(3)).endsWith("%"); // Asserting the exact string is not possible as it is locale-dependent.
         assertThat(rows.get(0).get(4)).isEqualTo("B");
 
-        assertThat(table.getColumnContentTypes()).isEqualTo(new String[]{"html", "txt", "txt"});
+        assertThat(table.getColumnContentTypes()).isEqualTo(new String[]{"html", "txt", "multi_line_txt"});
         assertThat(table.getColumnFormatterDescriptions())
             .isEqualTo(new String[]{"Attached formatter", "Attached formatter", null});
 
@@ -654,7 +654,7 @@ class TableViewTest {
         var table = dataService.getTable(new String[]{"col1", "col2"}, 0, 2, null, false, false, false, false);
 
         assertThat(table.getDisplayedColumns()).isEqualTo(new String[]{"col1", "col2"});
-        assertThat(table.getColumnContentTypes()).isEqualTo(new String[]{"txt", "txt"});
+        assertThat(table.getColumnContentTypes()).isEqualTo(new String[]{"multi_line_txt", "txt"});
         assertThat(table.getRows())
             .isEqualTo(List.of(List.of("1", "rowkey 0", "A", "1"), List.of("2", "rowkey 1", "B", "3")));
     }
