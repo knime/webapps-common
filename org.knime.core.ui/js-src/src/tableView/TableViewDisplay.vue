@@ -4,8 +4,9 @@ import {
   TableUIWithAutoSizeCalculation,
   type Rect,
 } from "@knime/knime-ui-table";
-import ImageRenderer from "./ImageRenderer.vue";
-import HtmlRenderer from "./HtmlRenderer.vue";
+import ImageRenderer from "./renderers/ImageRenderer.vue";
+import HtmlRenderer from "./renderers/HtmlRenderer.vue";
+import MultiLineTextRenderer from "./renderers/MultiLineTextRenderer.vue";
 import getDataConfig from "./utils/getDataConfig";
 import getTableConfig from "./utils/getTableConfig";
 import useColumnSizes from "./composables/useColumnSizes";
@@ -290,8 +291,13 @@ const onCopySelection = ({
           @rendered="(id: string) => $emit('rendered-image', id)"
         />
         <HtmlRenderer
-          v-else
+          v-else-if="getContentType(index) === 'html'"
           :content="cell"
+          :padding-top-bottom="paddingTopBottom"
+        />
+        <MultiLineTextRenderer
+          v-else-if="getContentType(index) === 'multi_line_txt'"
+          :text="cell"
           :padding-top-bottom="paddingTopBottom"
         />
       </template>

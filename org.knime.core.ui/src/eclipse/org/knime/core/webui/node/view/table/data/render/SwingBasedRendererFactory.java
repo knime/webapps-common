@@ -65,6 +65,7 @@ import org.knime.core.data.property.ValueFormatHandler;
 import org.knime.core.data.renderer.AbstractPainterDataValueRenderer;
 import org.knime.core.data.renderer.DefaultDataValueRenderer;
 import org.knime.core.data.renderer.ImageValueRenderer;
+import org.knime.core.data.renderer.MultiLineStringValueRenderer;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.webui.node.view.table.data.TableViewDataServiceImpl;
 
@@ -148,6 +149,9 @@ public final class SwingBasedRendererFactory implements DataValueRendererFactory
 
         @Override
         public DataCellContentType getContentType() {
+            if (m_renderer instanceof MultiLineStringValueRenderer) {
+                return DataCellContentType.MULTI_LINE_TXT;
+            }
             if (m_renderer instanceof DataValueRenderer dvr) {
                 return dvr.getContentType();
             }

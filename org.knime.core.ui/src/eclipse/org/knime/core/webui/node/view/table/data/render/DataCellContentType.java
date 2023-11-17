@@ -63,6 +63,11 @@ public enum DataCellContentType {
         TXT,
 
         /**
+         * Multiline text from newline charakters.
+         */
+        MULTI_LINE_TXT,
+
+        /**
          * Markup content.
          */
         HTML,

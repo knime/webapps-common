@@ -82,7 +82,7 @@ describe("TableViewInteractive.vue", () => {
             "view_x_y/datacell/hash4.png",
           ],
         ],
-        columnContentTypes: ["txt", "txt", "html", "img_path"],
+        columnContentTypes: ["txt", "multi_line_txt", "html", "img_path"],
         columnDataTypeIds: ["datatype1", "datatype1", "datatype2", "datatype3"],
         columnFormatterDescriptions: [
           null,
@@ -371,7 +371,7 @@ describe("TableViewInteractive.vue", () => {
             key: 3,
             header: "col2",
             size: expectedColumnSize,
-            hasSlotContent: false,
+            hasSlotContent: true,
             headerSubMenuItems: [
               headline,
               { text: "Formatter(col2)", id: null },
@@ -463,7 +463,7 @@ describe("TableViewInteractive.vue", () => {
           header: "col2",
           subHeader: "col1And2TypeName",
           size: expectedColumnSize,
-          hasSlotContent: false,
+          hasSlotContent: true,
         },
         {
           key: 4,

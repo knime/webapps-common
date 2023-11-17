@@ -1,0 +1,5 @@
+.knime-cell-content {
+  padding-top: var(--knime-cell-padding-top);
+  padding-bottom: var(--knime-cell-padding-bottom);
+  display: inline-block;
+}

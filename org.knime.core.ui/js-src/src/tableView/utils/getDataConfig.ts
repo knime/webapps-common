@@ -1,5 +1,7 @@
 const isImage = (contentType: string) => contentType === "img_path";
 const isHtml = (contentType: string) => contentType === "html";
+const isMultiLineTxt = (contentType: string) =>
+  contentType === "multi_line_txt";
 
 import { getCustomRowHeight } from "../composables/useRowHeight";
 import type TableViewViewSettings from "../types/ViewSettings";
@@ -99,7 +101,10 @@ export default ({
     key: index,
     header: columnName,
     subHeader: columnTypeName,
-    hasSlotContent: isImage(contentType) || isHtml(contentType),
+    hasSlotContent:
+      isImage(contentType) ||
+      isHtml(contentType) ||
+      isMultiLineTxt(contentType),
     size: columnSizes[index],
     filterConfig: filterConfig || { is: "", modelValue: "" },
     ...(columnTypeRenderers && {

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi, afterEach } from "vitest";
 import { getDefaultProps, mountDisplay } from "./utils/display";
-import ImageRenderer from "../ImageRenderer.vue";
-import HTMLRenderer from "../HtmlRenderer.vue";
+import ImageRenderer from "../renderers/ImageRenderer.vue";
+import HTMLRenderer from "../renderers/HtmlRenderer.vue";
 import { TableUIWithAutoSizeCalculation } from "@knime/knime-ui-table";
 import type { TableViewDisplayProps } from "../types";
 // @ts-ignore
