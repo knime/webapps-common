@@ -40,7 +40,7 @@ export default {
       default: "manual",
     },
     initialManuallySelected: {
-      type: Array as PropType<Id[]>,
+      type: Array as PropType<Id[] | Promise<Id[]>>,
       default: () => [],
     },
     initialIncludeUnknownValues: {
@@ -178,7 +178,7 @@ export default {
   ],
   data() {
     return {
-      chosenValues: this.initialManuallySelected,
+      chosenValues: null as null | Id[],
       chosenPattern: this.initialPattern,
       chosenTypes: this.initialSelectedTypes,
       invalidPossibleValueIds: new Set(),
@@ -220,7 +220,7 @@ export default {
       return this.mode === "manual" ? this.chosenValues : this.matchingValueIds;
     },
     deselectedValues() {
-      const selectedValuesSet = new Set(this.selectedValues);
+      const selectedValuesSet = new Set(this.selectedValues ?? []);
       return this.possibleValueIds.filter((id) => !selectedValuesSet.has(id));
     },
     selectionDisabled() {
@@ -252,7 +252,10 @@ export default {
   watch: {
     selectedValues: {
       immediate: true,
-      handler(newVal: Id[], oldVal: Id[]) {
+      handler(newVal: Id[] | null, oldVal: Id[] | null | undefined) {
+        if (newVal === null) {
+          return;
+        }
         if (
           !oldVal ||
           newVal.length !== oldVal.length ||
@@ -284,6 +287,11 @@ export default {
     includeUnknownValues(newVal) {
       this.$emit("includeUnknownValuesInput", newVal);
     },
+  },
+  mounted() {
+    Promise.resolve(this.initialManuallySelected).then((manuallySelected) => {
+      this.chosenValues = manuallySelected;
+    });
   },
   methods: {
     onManualInput(value: Id[]) {
@@ -320,7 +328,7 @@ export default {
       return (this.$refs.twinlist as any).validate();
     },
     hasSelection() {
-      return this.selectedValues.length > 0;
+      return Boolean(this.selectedValues?.length);
     },
     itemMatches(item: PossibleValue) {
       const mode = filters[this.mode];
@@ -401,7 +409,7 @@ export default {
       ref="twinlist"
       :disabled="selectionDisabled"
       :show-search="mode === 'manual' && showSearch"
-      :model-value="selectedValues"
+      :model-value="selectedValues ?? []"
       :possible-values="possibleValues"
       :show-unknown-values="unknownValuesVisible"
       :initial-include-unknown-values="includeUnknownValues"

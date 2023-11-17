@@ -10,6 +10,7 @@ import ValueSwitch from "../ValueSwitch.vue";
 import Checkboxes from "../Checkboxes.vue";
 import Label from "../Label.vue";
 import FilterIcon from "../../..//assets/img/icons/filter.svg";
+import flushPromises from "flush-promises";
 
 describe("MultiModeMultiModeTwinlist.vue", () => {
   let defaultPossibleValues;
@@ -48,7 +49,22 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
     ];
   });
 
-  it("renders", () => {
+  const assertLeftRightAmount = (wrapper, numLeft, numRight) => {
+    expect(
+      wrapper
+        .findComponent(Twinlist)
+        .findAllComponents(MultiselectListBox)
+        .at(0).vm.$props.possibleValues.length,
+    ).toBe(numLeft);
+    expect(
+      wrapper
+        .findComponent(Twinlist)
+        .findAllComponents(MultiselectListBox)
+        .at(1).vm.$props.possibleValues.length,
+    ).toBe(numRight);
+  };
+
+  it("renders", async () => {
     let propsData = {
       possibleValues: defaultPossibleValues,
       initialManuallySelected: ["test3"],
@@ -59,18 +75,14 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
     const wrapper = mount(MultiModeTwinlist, {
       propsData,
     });
+    await flushPromises();
     expect(wrapper.html()).toBeTruthy();
     expect(wrapper.isVisible()).toBeTruthy();
     expect(
       wrapper.findComponent(Twinlist).findAllComponents(MultiselectListBox)
         .length,
     ).toBe(2);
-    expect(
-      wrapper
-        .findComponent(Twinlist)
-        .findAllComponents(MultiselectListBox)
-        .at(0).vm.$props.possibleValues.length,
-    ).toBe(2);
+    assertLeftRightAmount(wrapper, 2, 1);
     expect(
       wrapper
         .findComponent(Twinlist)
@@ -79,7 +91,34 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
     ).toStrictEqual([defaultPossibleValues[2]]);
   });
 
-  it("emits selection on mounted", () => {
+  it("renders with async initial manually selected", async () => {
+    let setInitialSelected;
+
+    const initialManuallySelected = new Promise((resolve) => {
+      setInitialSelected = resolve;
+    });
+
+    let propsData = {
+      possibleValues: defaultPossibleValues,
+      initialManuallySelected,
+      leftLabel: "Choose",
+      rightLabel: "The value",
+      size: 3,
+    };
+    const wrapper = mount(MultiModeTwinlist, {
+      propsData,
+    });
+    await flushPromises();
+
+    assertLeftRightAmount(wrapper, 3, 0);
+
+    setInitialSelected(["test3"]);
+    await flushPromises();
+
+    assertLeftRightAmount(wrapper, 2, 1);
+  });
+
+  it("emits selection on mounted", async () => {
     let initialSelection = ["A", "B", "C"];
     let propsData = {
       possibleValues: [
@@ -96,6 +135,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
     const wrapper = mount(MultiModeTwinlist, {
       propsData,
     });
+    await flushPromises();
     expect(wrapper.emitted().input[0][0]).toStrictEqual({
       selected: initialSelection,
       isManual: true,
@@ -104,7 +144,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
     });
   });
 
-  it("has invalid state if invalid values are selected", () => {
+  it("has invalid state if invalid values are selected", async () => {
     let propsData = {
       possibleValues: [
         {
@@ -123,6 +163,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
     const wrapper = mount(MultiModeTwinlist, {
       propsData,
     });
+    await flushPromises();
     expect(wrapper.vm.validate()).toStrictEqual({
       errorMessage: "One or more of the selected items is invalid.",
       isValid: false,
@@ -148,6 +189,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
     const wrapper = mount(MultiModeTwinlist, {
       propsData,
     });
+    await flushPromises();
     expect(wrapper.vm.chosenValues).toStrictEqual(["invalidId", "test1"]);
 
     await wrapper.setProps({
@@ -161,7 +203,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
     expect(wrapper.vm.chosenValues).toStrictEqual(["test1"]);
   });
 
-  it("provides a valid hasSelection method", () => {
+  it("provides a valid hasSelection method", async () => {
     const wrapper = mount(MultiModeTwinlist, {
       propsData: {
         possibleValues: defaultPossibleValues,
@@ -169,10 +211,10 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
         rightLabel: "The value",
       },
     });
-    expect(wrapper.vm.hasSelection()).toBe(false);
+    expect(await wrapper.vm.hasSelection()).toBe(false);
 
     wrapper.setData({ chosenValues: ["test1"] });
-    expect(wrapper.vm.hasSelection()).toBe(true);
+    expect(await wrapper.vm.hasSelection()).toBe(true);
   });
 
   it("does not update manually chosen values if mode is not manual", async () => {
@@ -186,6 +228,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
         initialManuallySelected,
       },
     });
+    await flushPromises();
     expectTwinlistIncludes(wrapper, ["Text 2", "Text 3"], ["Text 1"]);
 
     // change to regex, where no columns are selected (empty pattern)
