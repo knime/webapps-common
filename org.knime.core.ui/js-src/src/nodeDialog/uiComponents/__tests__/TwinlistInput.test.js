@@ -276,6 +276,7 @@ describe("TwinlistInput.vue", () => {
       },
     });
     expect(dirtySettingsMock).not.toHaveBeenCalled();
+    await flushPromises();
     await wrapper
       .findComponent(Twinlist)
       .find({ ref: "moveAllRight" })
@@ -468,20 +469,25 @@ describe("TwinlistInput.vue", () => {
         },
       });
 
-      const { updateData } = mountJsonFormsComponent(TwinlistInput, {
+      const { wrapper, updateData } = mountJsonFormsComponent(TwinlistInput, {
         props: localProps,
       });
       await flushPromises();
+      const manuallySelected = ["A", "B"];
       expect(updateData).toHaveBeenCalledWith(
         expect.anything(),
         localProps.control.path,
         expect.objectContaining({
           manualFilter: expect.objectContaining({
-            manuallySelected: ["A", "B"],
+            manuallySelected,
             manuallyDeselected: ["D", "E"],
           }),
         }),
       );
+      expect(
+        await wrapper.findComponent(MultiModeTwinlist).props()
+          .initialManuallySelected,
+      ).toStrictEqual(manuallySelected);
     });
 
     it("includes unknown columns", async () => {
@@ -505,24 +511,29 @@ describe("TwinlistInput.vue", () => {
           },
         },
       });
-      const { updateData } = mountJsonFormsComponent(TwinlistInput, {
+      const { wrapper, updateData } = mountJsonFormsComponent(TwinlistInput, {
         props: localProps,
       });
       await flushPromises();
+      const manuallySelected = ["A", "B", "E"];
       expect(updateData).toHaveBeenCalledWith(
         expect.anything(),
         localProps.control.path,
         expect.objectContaining({
           manualFilter: expect.objectContaining({
-            manuallySelected: ["A", "B", "E"],
+            manuallySelected,
             manuallyDeselected: ["D"],
           }),
         }),
       );
+      expect(
+        await wrapper.findComponent(MultiModeTwinlist).props()
+          .initialManuallySelected,
+      ).toStrictEqual(manuallySelected);
     });
   });
 
-  it("sets correct initial value", () => {
+  it("sets correct initial value", async () => {
     expect(wrapper.findComponent(MultiModeTwinlist).vm.initialPattern).toBe(
       props.control.data.patternFilter.pattern,
     );
@@ -530,7 +541,7 @@ describe("TwinlistInput.vue", () => {
       wrapper.findComponent(MultiModeTwinlist).vm.initialSelectedTypes,
     ).toStrictEqual(props.control.data.typeFilter.selectedTypes);
     expect(
-      wrapper.findComponent(MultiModeTwinlist).vm.initialManuallySelected,
+      await wrapper.findComponent(MultiModeTwinlist).vm.initialManuallySelected,
     ).toStrictEqual(props.control.data.manualFilter.manuallySelected);
     expect(wrapper.findComponent(MultiModeTwinlist).vm.initialMode).toBe(
       "manual",
@@ -580,6 +591,7 @@ describe("TwinlistInput.vue", () => {
         },
       },
     });
+    await flushPromises();
     expect(wrapper.props().control.data.manualFilter).toMatchObject({
       manuallySelected: ["missing"],
     });

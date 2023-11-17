@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent, markRaw, type Ref } from "vue";
+import { defineComponent, markRaw, type Ref, type Raw } from "vue";
 import { rendererProps } from "@jsonforms/vue";
 import {
   mergeDeep,
@@ -77,10 +77,20 @@ const TwinlistInput = defineComponent({
     };
   },
   data() {
+    let setInitialManuallySelected: (data: TwinlistData) => void = () => {
+      throw Error("This method should not be callable.");
+    };
+    const initialManuallySelected = new Promise<string[]>((resolve) => {
+      setInitialManuallySelected = (data) =>
+        resolve(data.manualFilter.manuallySelected);
+    });
+
     return {
-      TwinlistLoadingInfo: markRaw(TwinlistLoadingInfo),
+      loadingInfo: markRaw(TwinlistLoadingInfo) as Raw<any> | null,
       possibleValues: null as null | PossibleValue[],
       previouslySelectedTypes: null as null | IdAndText[],
+      initialManuallySelected,
+      setInitialManuallySelected,
     };
   },
   computed: {
@@ -124,8 +134,9 @@ const TwinlistInput = defineComponent({
   },
   methods: {
     onChange(obj: PartialDeep<TwinlistData>) {
-      let newData = mergeDeep(this.control.data, obj);
+      const newData = mergeDeep(this.control.data, obj);
       this.handleChange(this.control.path, newData);
+      return newData as TwinlistData;
     },
     onSelectedChange({
       selected,
@@ -190,7 +201,8 @@ const TwinlistInput = defineComponent({
           ],
         };
       }
-      this.onChange(newData);
+      this.setInitialManuallySelected(this.onChange(newData));
+      this.loadingInfo = null;
     },
     getPreviouslySelectedTypes() {
       const selectedTypesIds = this.control.data.typeFilter.selectedTypes;
@@ -269,13 +281,13 @@ export default TwinlistInput;
         :initial-case-sensitive-pattern="
           control.data.patternFilter.isCaseSensitive
         "
-        :empty-state-component="possibleValues ? null : TwinlistLoadingInfo"
+        :empty-state-component="loadingInfo"
         :initial-inverse-pattern="control.data.patternFilter.isInverted"
-        :initial-manually-selected="control.data.manualFilter.manuallySelected"
+        :initial-manually-selected="initialManuallySelected"
         :initial-include-unknown-values="
           control.data.manualFilter.includeUnknownColumns
         "
-        :hide-options="possibleValues === null"
+        :hide-options="loadingInfo !== null"
         :filter-chosen-values-on-possible-values-change="false"
         mode-label="Selection mode"
         :possible-values="possibleValues ?? []"
