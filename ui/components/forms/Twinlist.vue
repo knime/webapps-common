@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import Label from "./Label.vue";
 import SearchInput from "../forms/SearchInput.vue";
 import MultiselectListBox from "../forms/MultiselectListBox.vue";
@@ -6,10 +6,19 @@ import ArrowNextIcon from "../../assets/img/icons/arrow-next.svg";
 import ArrowNextDoubleIcon from "../../assets/img/icons/arrow-next-double.svg";
 import ArrowPrevIcon from "../../assets/img/icons/arrow-prev.svg";
 import ArrowPrevDoubleIcon from "../../assets/img/icons/arrow-prev-double.svg";
-import { filters } from "../../../util/filters";
+import { filters } from "webapps-common/util/filters";
+import type { PropType } from "vue";
 
 const KEY_ENTER = 13;
 const MIN_LIST_SIZE = 5;
+
+export type Id = string | number | symbol;
+
+export interface PossibleValue {
+  id: Id;
+  text: string;
+  invalid?: boolean;
+}
 
 export default {
   components: {
@@ -23,7 +32,7 @@ export default {
   },
   props: {
     modelValue: {
-      type: Array,
+      type: Array as PropType<Id[]>,
       default: () => [],
     },
     initialCaseSensitiveSearch: {
@@ -119,7 +128,7 @@ export default {
     size: {
       type: Number,
       default: 0,
-      validator(value) {
+      validator(value: number) {
         return value >= 0;
       },
     },
@@ -139,7 +148,7 @@ export default {
      * }]
      */
     possibleValues: {
-      type: Array,
+      type: Array as PropType<PossibleValue[]>,
       default: () => [],
       validator(values) {
         if (!Array.isArray(values)) {
@@ -166,8 +175,8 @@ export default {
     return {
       chosenValues: this.modelValue,
       invalidPossibleValueIds: new Set(),
-      rightSelected: [],
-      leftSelected: [],
+      rightSelected: [] as Id[],
+      leftSelected: [] as Id[],
       searchTerm: this.initialSearchTerm,
       caseSensitiveSearch: this.initialCaseSensitiveSearch,
       includeUnknownValues: this.initialIncludeUnknownValues,
@@ -179,14 +188,14 @@ export default {
       // convert [{id: "key1", text: "asdf"}, ...] to {"key1": {id:"key1", text: "asdf"} ... }
       return Object.assign(
         {},
-        ...this.possibleValues.map((obj) => ({ [obj.id]: obj })),
-      );
+        ...this.possibleValues.map((obj: PossibleValue) => ({ [obj.id]: obj })),
+      ) satisfies Record<Id, PossibleValue>;
     },
     possibleValueIds() {
       return this.possibleValues.map((x) => x.id);
     },
     invalidValueIds() {
-      return this.chosenValues.filter((x) => !this.possibleValueMap[x]);
+      return this.chosenValues.filter((x: Id) => !this.possibleValueMap[x]);
     },
     matchingInvalidValueIds() {
       return this.invalidValueIds.filter((item) =>
@@ -287,20 +296,20 @@ export default {
         this.chosenValues = newValue;
       }
     },
-    possibleValues(newPossibleValues) {
+    possibleValues(newPossibleValues: PossibleValue[]) {
       if (this.filterChosenValuesOnPossibleValuesChange) {
         // Required to prevent invalid values from appearing (e.g. missing b/c of upstream filtering)
         let allValues = newPossibleValues.reduce((arr, valObj) => {
           arr.push(...Object.values(valObj));
           return arr;
-        }, []);
+        }, [] as Id[]);
         // Reset chosenValues as subset of original to prevent re-execution from resetting value
         this.chosenValues = this.chosenValues.filter((item) =>
           allValues.includes(item),
         );
       }
     },
-    chosenValues(newVal, oldVal) {
+    chosenValues(newVal: Id[], oldVal: Id[]) {
       if (
         newVal.length !== oldVal.length ||
         oldVal.some((item, i) => item !== newVal[i])
@@ -313,21 +322,21 @@ export default {
     },
   },
   methods: {
-    generateInvalidItem(id) {
-      return { id, text: `(MISSING) ${id}`, invalid: true };
+    generateInvalidItem(id: Id) {
+      return { id, text: `(MISSING) ${String(id)}`, invalid: true };
     },
-    compareByOriginalSorting(a, b) {
+    compareByOriginalSorting(a: Id, b: Id) {
       return (
         this.possibleValueIds.indexOf(a) - this.possibleValueIds.indexOf(b)
       );
     },
     clearSelections() {
-      this.$refs.right.clearSelection();
-      this.$refs.left.clearSelection();
+      (this.$refs.right as any).clearSelection();
+      (this.$refs.left as any).clearSelection();
     },
-    moveRight(items) {
+    moveRight(itemsParam: Id[] | null = null) {
       // add all left items to our values
-      items = items || this.leftSelected;
+      const items = itemsParam === null ? this.leftSelected : itemsParam;
       this.chosenValues = [
         ...items.filter((item) => item !== this.unknownValuesId),
         ...this.chosenValues,
@@ -337,9 +346,9 @@ export default {
       }
       this.clearSelections();
     },
-    moveLeft(items) {
+    moveLeft(itemsParam: Id[] | null = null) {
       // remove all right values from or chosenValues
-      items = items || this.rightSelected;
+      const items = itemsParam === null ? this.rightSelected : itemsParam;
       // add the invalid items to the possible items
       let invalidItems = items.filter((x) => this.invalidValueIds.includes(x));
       invalidItems.forEach((x) => this.invalidPossibleValueIds.add(x));
@@ -359,13 +368,13 @@ export default {
       this.moveRight(this.leftItems.filter((x) => !x.invalid).map((x) => x.id));
       this.includeUnknownValues = true;
     },
-    onMoveAllRightButtonKey(e) {
+    onMoveAllRightButtonKey(e: KeyboardEvent) {
       if (e.keyCode === KEY_ENTER) {
         /* ENTER */
         this.onMoveAllRightButtonClick();
       }
     },
-    onMoveRightButtonKey(e) {
+    onMoveRightButtonKey(e: KeyboardEvent) {
       if (e.keyCode === KEY_ENTER) {
         /* ENTER */
         this.moveRight();
@@ -378,39 +387,39 @@ export default {
       this.moveLeft(this.rightItems.map((x) => x.id));
       this.includeUnknownValues = false;
     },
-    onMoveLeftButtonKey(e) {
+    onMoveLeftButtonKey(e: KeyboardEvent) {
       if (e.keyCode === KEY_ENTER) {
         /* ENTER */
         this.moveLeft();
       }
     },
-    onMoveAllLeftButtonKey(e) {
+    onMoveAllLeftButtonKey(e: KeyboardEvent) {
       if (e.keyCode === KEY_ENTER) {
         /* ENTER */
         this.onMoveAllLeftButtonClick();
       }
     },
-    onLeftListBoxDoubleClick(item) {
+    onLeftListBoxDoubleClick(item: Id) {
       this.moveRight([item]);
     },
-    onLeftListBoxShiftDoubleClick(items) {
+    onLeftListBoxShiftDoubleClick(items: Id[]) {
       this.moveRight(items);
     },
-    onRightListBoxDoubleClick(item) {
+    onRightListBoxDoubleClick(item: Id) {
       this.moveLeft([item]);
     },
-    onRightListBoxShiftDoubleClick(items) {
+    onRightListBoxShiftDoubleClick(items: Id[]) {
       this.moveLeft(items);
     },
-    onLeftInput(value) {
+    onLeftInput(value: Id[]) {
       if (value.length > 0) {
-        this.$refs.right.clearSelection();
+        (this.$refs.right as any).clearSelection();
       }
       this.leftSelected = value;
     },
-    onRightInput(value) {
+    onRightInput(value: Id[]) {
       if (value.length > 0) {
-        this.$refs.left.clearSelection();
+        (this.$refs.left as any).clearSelection();
       }
       this.rightSelected = value;
     },
@@ -420,7 +429,7 @@ export default {
     onKeyLeftArrow() {
       this.moveLeft();
     },
-    onSearchInput(value) {
+    onSearchInput(value: string) {
       this.searchTerm = value;
     },
     hasSelection() {
@@ -435,7 +444,7 @@ export default {
           : "One or more of the selected items is invalid.",
       };
     },
-    itemMatchesSearch(item) {
+    itemMatchesSearch(item: PossibleValue) {
       return filters.search.test(
         item.text,
         this.normalizedSearchTerm,
@@ -443,7 +452,7 @@ export default {
         false,
       );
     },
-    getInfoText(numShownItems, numAllItems) {
+    getInfoText(numShownItems: number, numAllItems: number) {
       return this.hasActiveSearch
         ? `${numShownItems} of ${numAllItems} entries`
         : null;
@@ -471,7 +480,7 @@ export default {
         show-case-sensitive-search-button
         :disabled="disabled"
         @update:model-value="onSearchInput"
-        @toggle-case-sensitive-search="(event) => (caseSensitiveSearch = event)"
+        @toggle-case-sensitive-search="caseSensitiveSearch = $event"
       />
     </Label>
     <div class="header">
@@ -494,6 +503,7 @@ export default {
       </div>
     </div>
     <div :class="['lists', { disabled }]">
+      <!--  eslint-disable vue/attribute-hyphenation ariaLabel needs to be given like this for typescript to not complain -->
       <MultiselectListBox
         ref="left"
         :with-is-empty-state="showEmptyState"
@@ -506,13 +516,14 @@ export default {
         :bottom-value="{ id: unknownValuesId, text: unknownValuesText }"
         :is-valid="isValid"
         :possible-values="hideOptions ? [] : leftItems"
-        :aria-label="leftLabel"
+        :ariaLabel="leftLabel"
         :disabled="disabled"
         @double-click-on-item="onLeftListBoxDoubleClick"
         @double-click-shift="onLeftListBoxShiftDoubleClick"
         @key-arrow-right="onKeyRightArrow"
         @update:model-value="onLeftInput"
       />
+      <!--  eslint-enable vue/attribute-hyphenation -->
       <div class="buttons">
         <div
           ref="moveRight"
@@ -555,6 +566,7 @@ export default {
           <ArrowPrevDoubleIcon class="icon" />
         </div>
       </div>
+      <!--  eslint-disable vue/attribute-hyphenation ariaLabel needs to be given like this for typescript to not complain -->
       <MultiselectListBox
         ref="right"
         class="list-box"
@@ -567,13 +579,14 @@ export default {
         :empty-state-component="emptyStateComponent"
         :possible-values="hideOptions ? [] : rightItems"
         :size="listSize"
-        :aria-label="rightLabel"
+        :ariaLabel="rightLabel"
         :disabled="disabled"
         @double-click-on-item="onRightListBoxDoubleClick"
         @double-click-shift="onRightListBoxShiftDoubleClick"
         @key-arrow-left="onKeyLeftArrow"
         @update:model-value="onRightInput"
       />
+      <!--  eslint-enable vue/attribute-hyphenation -->
     </div>
   </div>
 </template>
