@@ -171,13 +171,19 @@ const TwinlistInput = defineComponent({
     updateManualFilter(possibleValueIds: string[]) {
       const { manuallySelected, manuallyDeselected, includeUnknownColumns } =
         this.control.data.manualFilter;
+      const manuallySelectedSet = new Set(manuallySelected);
+      const manuallyDeselectedSet = new Set(manuallyDeselected);
       const unknownColumns = possibleValueIds.filter(
         (col) =>
-          !manuallySelected.includes(col) && !manuallyDeselected.includes(col),
+          !manuallySelectedSet.has(col) && !manuallyDeselectedSet.has(col),
       );
-      const remainingManuallyDeselected = manuallyDeselected.filter((col) =>
-        possibleValueIds.includes(col),
-      );
+      let remainingManuallyDeselected: string[] = [];
+      if (manuallyDeselected.length > 0) {
+        const possibleValueIdsSet = new Set(possibleValueIds);
+        remainingManuallyDeselected = manuallyDeselected.filter((col) =>
+          possibleValueIdsSet.has(col),
+        );
+      }
       const newData = {} as any;
       if (includeUnknownColumns) {
         newData.manualFilter = {
