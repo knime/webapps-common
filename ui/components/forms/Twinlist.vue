@@ -8,6 +8,7 @@ import ArrowPrevIcon from "../../assets/img/icons/arrow-prev.svg";
 import ArrowPrevDoubleIcon from "../../assets/img/icons/arrow-prev-double.svg";
 import { filters } from "../../../util/filters";
 import type { PropType } from "vue";
+import { reactive } from "vue";
 
 const KEY_ENTER = "Enter";
 const MIN_LIST_SIZE = 5;
@@ -176,12 +177,14 @@ export default {
     };
   },
   computed: {
+    // convert [{id: "key1", text: "asdf"}, ...] to {"key1": {id:"key1", text: "asdf"} ... }
     possibleValueMap() {
-      // convert [{id: "key1", text: "asdf"}, ...] to {"key1": {id:"key1", text: "asdf"} ... }
       return Object.assign(
         {},
-        ...this.possibleValues.map((obj: PossibleValue) => ({ [obj.id]: obj })),
-      ) satisfies Record<Id, PossibleValue>;
+        ...this.possibleValues.map((obj: PossibleValue, index) => ({
+          [obj.id]: { item: obj, index },
+        })),
+      ) satisfies Record<Id, { item: PossibleValue; index: number }>;
     },
     possibleValueIds() {
       return this.possibleValues.map((x) => x.id);
@@ -228,7 +231,8 @@ export default {
       return this.chosenValues
         .map(
           (value) =>
-            this.possibleValueMap[value] || this.generateInvalidItem(value),
+            this.possibleValueMap[value]?.item ||
+            this.generateInvalidItem(value),
         )
         .filter((value) => this.visibleValueIds.has(value.id));
     },
@@ -336,10 +340,11 @@ export default {
     generateInvalidItem(id: Id) {
       return { id, text: `(MISSING) ${String(id)}`, invalid: true };
     },
+    getIndex(id: Id) {
+      return this.possibleValueMap[id]?.index ?? -1;
+    },
     compareByOriginalSorting(a: Id, b: Id) {
-      return (
-        this.possibleValueIds.indexOf(a) - this.possibleValueIds.indexOf(b)
-      );
+      return this.getIndex(a) - this.getIndex(b);
     },
     clearSelections() {
       (this.$refs.right as any).clearSelection();
@@ -363,14 +368,16 @@ export default {
       // remove all right values from or chosenValues
       const items = itemsParam ?? this.rightSelected;
       // add the invalid items to the possible items
-      let invalidItems = items.filter((x) => this.invalidValueIds.includes(x));
+      const invalidValueIdsSet = new Set(this.invalidValueIds);
+      const invalidItems = items.filter((x) => invalidValueIdsSet.has(x));
       invalidItems.forEach((x) => this.invalidPossibleValueIds.add(x));
+      const itemsSet = new Set(items);
       if (this.chosenValues !== null) {
         this.chosenValues = this.chosenValues
-          .filter((x) => !items.includes(x))
+          .filter((x) => !itemsSet.has(x))
           .sort(this.compareByOriginalSorting);
       }
-      if (items.includes(this.unknownValuesId)) {
+      if (itemsSet.has(this.unknownValuesId)) {
         this.includeUnknownValues = false;
       }
       this.clearSelections();
@@ -468,6 +475,7 @@ export default {
         ? `${numShownItems} of ${numAllItems} entries`
         : null;
     },
+    reactive,
   },
 };
 </script>
@@ -526,7 +534,7 @@ export default {
         :with-bottom-value="showUnknownValuesLeft"
         :bottom-value="{ id: unknownValuesId, text: unknownValuesText }"
         :is-valid="isValid"
-        :possible-values="leftItems"
+        :possible-values="reactive(leftItems)"
         :ariaLabel="leftLabel"
         :disabled="disabled"
         @double-click-on-item="onLeftListBoxDoubleClick"
@@ -588,7 +596,7 @@ export default {
         :with-is-empty-state="showEmptyState"
         :empty-state-label="emptyStateLabel"
         :empty-state-component="emptyStateComponent"
-        :possible-values="rightItems"
+        :possible-values="reactive(rightItems)"
         :size="listSize"
         :ariaLabel="rightLabel"
         :disabled="disabled"
