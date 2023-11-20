@@ -5,9 +5,27 @@ import { mount } from "@vue/test-utils";
 
 import MultiselectListBox from "../MultiselectListBox.vue";
 import LoadingIcon from "../../LoadingIcon.vue";
-import { markRaw } from "vue";
+import { computed, markRaw, ref } from "vue";
 
 vi.useFakeTimers();
+
+const ulRef = ref(null);
+const scrollTo = vi.fn();
+const useVirtualListMock = (possibleValues) => {
+  return {
+    list: computed(() =>
+      possibleValues.value.map((data, index) => ({ data, index })),
+    ),
+    containerProps: {
+      ref: ulRef,
+    },
+    scrollTo,
+  };
+};
+
+vi.mock("@vueuse/core", () => ({
+  useVirtualList: vi.fn((possibleValues) => useVirtualListMock(possibleValues)),
+}));
 
 describe("MultiselectListBox.vue", () => {
   let possibleValues;
@@ -90,6 +108,33 @@ describe("MultiselectListBox.vue", () => {
     });
 
     expect(wrapper.vm.$data.currentKeyNavIndex).toBe(2);
+  });
+
+  it("updated scroll position on possible values change", async () => {
+    const wrapper = mount(MultiselectListBox, {
+      props: {
+        possibleValues,
+        modelValue: ["test1", "test3"],
+        ariaLabel: "A Label",
+      },
+    });
+
+    ulRef.value = {
+      scrollTop: 24,
+    };
+
+    expect(scrollTo).not.toHaveBeenCalled();
+    await wrapper.setProps({
+      possibleValues: [
+        { id: "new1", text: "new1" },
+        { id: "new2", text: "new2" },
+      ],
+    });
+    expect(scrollTo).toHaveBeenCalledWith(1);
+    await wrapper.setProps({
+      possibleValues: [],
+    });
+    expect(scrollTo).toHaveBeenCalledWith(0);
   });
 
   describe("mouse click", () => {
@@ -245,10 +290,18 @@ describe("MultiselectListBox.vue", () => {
           ariaLabel: "A Label",
         },
       });
+      const dummyUlRef = {
+        scrollHeight: 100,
+        clientHeight: 30,
+        scrollTop: 70,
+      };
+      ulRef.value = dummyUlRef;
       await wrapper.find("[role=listbox]").trigger("keydown.up");
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
         "test2",
       ]);
+      expect(wrapper.vm.currentKeyNavIndex).toBe(1);
+      expect(dummyUlRef.scrollTop).toBe(22);
     });
 
     it("selects item by key up with shift", async () => {
@@ -276,10 +329,19 @@ describe("MultiselectListBox.vue", () => {
           ariaLabel: "A Label",
         },
       });
+      const dummyUlRef = {
+        scrollHeight: 100,
+        clientHeight: 30,
+        scrollTop: 50,
+      };
+      ulRef.value = dummyUlRef;
       await wrapper.find("[role=listbox]").trigger("keydown.down");
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
         "test4",
       ]);
+
+      expect(wrapper.vm.currentKeyNavIndex).toBe(3);
+      expect(dummyUlRef.scrollTop).toBe(58);
     });
 
     it("selects item by key down with shift", async () => {

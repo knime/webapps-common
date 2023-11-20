@@ -1,6 +1,8 @@
 <script>
 import debounce from "../../../util/debounce";
 import StyledListItem from "../StyledListItem.vue";
+import { useVirtualList } from "@vueuse/core";
+import { toRef, watch } from "vue";
 
 let count = 0;
 const CLICK_META_KEY_TIMEOUT = 250; // ms
@@ -112,6 +114,41 @@ export default {
     "keyArrowLeft",
     "keyArrowRight",
   ],
+  setup(props) {
+    const optionLineHeight = 22;
+
+    const { containerProps, wrapperProps, list, scrollTo } = useVirtualList(
+      toRef(props, "possibleValues"),
+      {
+        itemHeight: optionLineHeight,
+      },
+    );
+
+    /**
+     * Without this watcher, the scroll container will not update its scroll position if necessary
+     */
+    watch(
+      () => props.possibleValues,
+      () => {
+        scrollTo(
+          Math.max(
+            Math.min(
+              Math.floor(containerProps.ref.value.scrollTop / optionLineHeight),
+              props.possibleValues.length - 1,
+            ),
+            0,
+          ),
+        );
+      },
+    );
+
+    return {
+      optionLineHeight,
+      containerProps,
+      wrapperProps,
+      list,
+    };
+  },
   data() {
     return {
       selectedValues: this.modelValue,
@@ -120,8 +157,6 @@ export default {
       shiftStartIndex: -1,
       draggingStartIndex: -1,
       draggingInverseMode: false,
-      // visual
-      optionLineHeight: 22,
     };
   },
   computed: {
@@ -340,18 +375,15 @@ export default {
       if (this.currentKeyNavIndex === this.bottomIndex) {
         return;
       }
-      const listBoxNode = this.$refs.ul;
+      const listBoxNode = this.containerProps.ref.value;
       if (listBoxNode.scrollHeight > listBoxNode.clientHeight) {
-        // Vue does not guarantee the correct oder of $refs arrays defined in v-for.
-        // See: https://github.com/vuejs/vue/issues/4952#issuecomment-280661367
-        // To prevent this bug we use the DOM children of the parent to find the correct element.
-        const element = this.$refs.ul.children[this.currentKeyNavIndex];
         const scrollBottom = listBoxNode.clientHeight + listBoxNode.scrollTop;
-        const elementBottom = element.offsetTop + element.offsetHeight;
+        const elementTop = this.currentKeyNavIndex * this.optionLineHeight;
+        const elementBottom = elementTop + this.optionLineHeight;
         if (elementBottom > scrollBottom) {
           listBoxNode.scrollTop = elementBottom - listBoxNode.clientHeight;
-        } else if (element.offsetTop < listBoxNode.scrollTop) {
-          listBoxNode.scrollTop = element.offsetTop;
+        } else if (elementTop < listBoxNode.scrollTop) {
+          listBoxNode.scrollTop = elementTop;
         }
       }
     },
@@ -429,13 +461,14 @@ export default {
       const next = this.possibleValues.length - 1;
       this.setSelectedToIndex(next);
       this.currentKeyNavIndex = next;
-      this.$refs.ul.scrollTop = this.$refs.ul.scrollHeight;
+      this.containerProps.ref.value.scrollTop =
+        this.containerProps.ref.value.scrollHeight;
     },
     onHomeKey() {
       const next = 0;
       this.setSelectedToIndex(next);
       this.currentKeyNavIndex = next;
-      this.$refs.ul.scrollTop = 0;
+      this.containerProps.ref.value.scrollTop = 0;
     },
     onArrowLeft() {
       if (this.disabled) {
@@ -481,7 +514,7 @@ export default {
       if (this.disabled) {
         return;
       }
-      this.$refs.ul.focus();
+      this.containerProps.ref.value.focus();
     },
     clearSelection() {
       if (this.disabled) {
@@ -500,8 +533,8 @@ export default {
   >
     <div class="box">
       <ul
+        v-bind="containerProps"
         :id="id"
-        ref="ul"
         role="listbox"
         tabindex="0"
         :class="{ disabled, 'empty-box': showEmptyState }"
@@ -519,20 +552,23 @@ export default {
         @mousedown="onStartDrag"
         @mousemove="onDrag"
       >
-        <StyledListItem
-          v-for="(item, index) of possibleValues"
-          :id="generateOptionId(item)"
-          :key="`listbox-${item.id}`"
-          :text="item.text"
-          :data-option-index="index"
-          :line-height="optionLineHeight"
-          :selected="isCurrentValue(item.id)"
-          :invalid="item.invalid"
-          :disabled="disabled"
-          @click="handleClick($event, item.id, index)"
-          @dblclick-shift="handleShiftDblClick()"
-          @dblclick-exact="handleDblClick(item.id, index)"
-        />
+        <div v-bind="wrapperProps">
+          <StyledListItem
+            v-for="{ data: item, index } of list"
+            :id="generateOptionId(item)"
+            :key="`listbox-${item.id}`"
+            :ref="`listbox-item-${index}`"
+            :text="item.text"
+            :data-option-index="index"
+            :line-height="optionLineHeight"
+            :selected="isCurrentValue(item.id)"
+            :invalid="item.invalid"
+            :disabled="disabled"
+            @click="handleClick($event, item.id, index)"
+            @dblclick-shift="handleShiftDblClick()"
+            @dblclick-exact="handleDblClick(item.id, index)"
+          />
+        </div>
       </ul>
       <div v-if="showEmptyState" class="empty-state">
         <component :is="emptyStateComponent" v-if="emptyStateComponent" />
