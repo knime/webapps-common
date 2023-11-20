@@ -60,18 +60,19 @@ onMounted(async () => {
   // @ts-ignore
   const baseUrl = knimeService.extensionConfig?.resourceInfo?.baseUrl;
   const imageUrl = getImageUrl(initialData.imagePath, baseUrl);
-  if (reportingService.isReportingActive()) {
-    imgSrc.value = await fetchImage(imageUrl);
-    // wait for the render to be updated accordingly
-    await nextTick();
-    reportingService.setRenderCompleted();
-  } else {
-    imgSrc.value = imageUrl;
-  }
+  imgSrc.value = reportingService.isReportingActive()
+    ? await fetchImage(imageUrl)
+    : imageUrl;
   nextTick(() => {
     image.value.onload = () => {
       naturalHeight.value = image.value.naturalHeight;
       loaded.value = true;
+      if (reportingService.isReportingActive()) {
+        // wait for the render to be updated accordingly
+        nextTick(() => {
+          reportingService.setRenderCompleted();
+        });
+      }
     };
   });
 });
@@ -106,7 +107,10 @@ const scale = toRef(viewSettings, "shrinkToFit");
 </template>
 
 <style scoped>
-/* div is required here to make the selector more specific than a pagebuilder selector that sets overflow to hidden */
+/**
+ * div is required here to make the selector more specific than a ui-ext-component class selector in
+ * knime-js-pagebuilder that sets overflow to hidden
+ */
 div.scroll-container {
   overflow: auto;
   height: 100%;
@@ -117,7 +121,7 @@ div.scroll-container {
   }
 }
 
-/** 
+/**
  * There is a gap of 4px to the figcaption because img is an inline element. 
  * But since we also want this gap when using the image inside a flexbox, we style this gap ourselves.
  */
