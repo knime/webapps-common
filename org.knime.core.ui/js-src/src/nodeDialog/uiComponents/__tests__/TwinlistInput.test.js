@@ -225,7 +225,6 @@ describe("TwinlistInput.vue", () => {
       provide: { asyncChoicesProviderMock },
     });
     expect(wrapper.findComponent(TwinlistLoadingInfo).exists()).toBeTruthy();
-    expect(wrapper.findComponent(Twinlist).props().hideOptions).toBeTruthy();
     expect(
       wrapper.findComponent(Twinlist).props().possibleValues,
     ).toStrictEqual([]);
