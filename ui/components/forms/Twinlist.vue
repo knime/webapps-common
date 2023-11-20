@@ -32,8 +32,8 @@ export default {
   },
   props: {
     modelValue: {
-      type: Array as PropType<Id[]>,
-      default: () => [],
+      type: Array as PropType<Id[] | null>,
+      default: null,
     },
     initialCaseSensitiveSearch: {
       default: false,
@@ -187,6 +187,9 @@ export default {
       return this.possibleValues.map((x) => x.id);
     },
     invalidValueIds() {
+      if (this.chosenValues === null) {
+        return [];
+      }
       return this.chosenValues.filter((x: Id) => !this.possibleValueMap[x]);
     },
     matchingInvalidValueIds() {
@@ -200,12 +203,18 @@ export default {
         .map((possibleValue) => possibleValue.id);
     },
     visibleValueIds() {
+      if (this.hideOptions || this.chosenValues === null) {
+        return new Set();
+      }
       return new Set([
         ...this.matchingValidIds,
         ...this.matchingInvalidValueIds,
       ]);
     },
     leftItems() {
+      if (this.visibleValueIds.size === 0) {
+        return [];
+      }
       const chosenValuesSet = new Set(this.chosenValues);
       return this.possibleValues.filter(
         (value) =>
@@ -213,6 +222,9 @@ export default {
       );
     },
     rightItems() {
+      if (this.chosenValues === null) {
+        return [];
+      }
       return this.chosenValues
         .map(
           (value) =>
@@ -257,6 +269,9 @@ export default {
       return this.invalidValueIds.length + this.possibleValues.length;
     },
     numAllRightItems() {
+      if (this.chosenValues === null) {
+        return 0;
+      }
       return this.chosenValues.length;
     },
     numShownRightItems() {
@@ -284,7 +299,10 @@ export default {
   },
   watch: {
     modelValue(newValue) {
-      if (JSON.stringify(newValue) !== JSON.stringify(this.chosenValues)) {
+      if (
+        this.chosenValues?.length !== newValue.length ||
+        JSON.stringify(newValue) !== JSON.stringify(this.chosenValues)
+      ) {
         this.chosenValues = newValue;
       }
     },
@@ -296,13 +314,14 @@ export default {
           return arr;
         }, [] as Id[]);
         // Reset chosenValues as subset of original to prevent re-execution from resetting value
-        this.chosenValues = this.chosenValues.filter((item) =>
+        this.chosenValues = (this.chosenValues ?? []).filter((item) =>
           allValues.includes(item),
         );
       }
     },
-    chosenValues(newVal: Id[], oldVal: Id[]) {
+    chosenValues(newVal: Id[], oldVal: Id[] | null) {
       if (
+        oldVal === null ||
         newVal.length !== oldVal.length ||
         oldVal.some((item, i) => item !== newVal[i])
       ) {
@@ -329,10 +348,12 @@ export default {
     moveRight(itemsParam: Id[] | null = null) {
       // add all left items to our values
       const items = itemsParam ?? this.leftSelected;
-      this.chosenValues = [
-        ...items.filter((item) => item !== this.unknownValuesId),
-        ...this.chosenValues,
-      ].sort(this.compareByOriginalSorting);
+      if (this.chosenValues !== null) {
+        this.chosenValues = [
+          ...items.filter((item) => item !== this.unknownValuesId),
+          ...this.chosenValues,
+        ].sort(this.compareByOriginalSorting);
+      }
       if (items.includes(this.unknownValuesId)) {
         this.includeUnknownValues = true;
       }
@@ -344,9 +365,11 @@ export default {
       // add the invalid items to the possible items
       let invalidItems = items.filter((x) => this.invalidValueIds.includes(x));
       invalidItems.forEach((x) => this.invalidPossibleValueIds.add(x));
-      this.chosenValues = this.chosenValues
-        .filter((x) => !items.includes(x))
-        .sort(this.compareByOriginalSorting);
+      if (this.chosenValues !== null) {
+        this.chosenValues = this.chosenValues
+          .filter((x) => !items.includes(x))
+          .sort(this.compareByOriginalSorting);
+      }
       if (items.includes(this.unknownValuesId)) {
         this.includeUnknownValues = false;
       }
@@ -421,7 +444,7 @@ export default {
       this.searchTerm = value;
     },
     hasSelection() {
-      return this.chosenValues.length > 0;
+      return (this.chosenValues?.length ?? 0) > 0;
     },
     validate() {
       let isValid = !this.rightItems.some((x) => x.invalid);
@@ -503,7 +526,7 @@ export default {
         :with-bottom-value="showUnknownValuesLeft"
         :bottom-value="{ id: unknownValuesId, text: unknownValuesText }"
         :is-valid="isValid"
-        :possible-values="hideOptions ? [] : leftItems"
+        :possible-values="leftItems"
         :ariaLabel="leftLabel"
         :disabled="disabled"
         @double-click-on-item="onLeftListBoxDoubleClick"
@@ -565,7 +588,7 @@ export default {
         :with-is-empty-state="showEmptyState"
         :empty-state-label="emptyStateLabel"
         :empty-state-component="emptyStateComponent"
-        :possible-values="hideOptions ? [] : rightItems"
+        :possible-values="rightItems"
         :size="listSize"
         :ariaLabel="rightLabel"
         :disabled="disabled"

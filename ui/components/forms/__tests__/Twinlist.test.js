@@ -48,6 +48,29 @@ describe("Twinlist.vue", () => {
     ).toStrictEqual([defaultPossibleValues[2]]);
   });
 
+  it("renders with null model value", () => {
+    let props = {
+      possibleValues: defaultPossibleValues,
+      modelValue: null,
+      leftLabel: "Choose",
+      rightLabel: "The value",
+      size: 3,
+    };
+    const wrapper = mount(Twinlist, {
+      props,
+    });
+    expect(wrapper.html()).toBeTruthy();
+    expect(wrapper.isVisible()).toBeTruthy();
+    expect(
+      wrapper.findAllComponents(MultiselectListBox)[0].props("possibleValues")
+        .length,
+    ).toBe(0);
+    expect(
+      wrapper.findAllComponents(MultiselectListBox)[1].props("possibleValues")
+        .length,
+    ).toBe(0);
+  });
+
   it("actual list sizes must be 5 or bigger", async () => {
     let props = {
       possibleValues: [defaultPossibleValues[0]], // one element

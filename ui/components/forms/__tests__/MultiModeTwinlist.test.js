@@ -104,7 +104,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
     });
     await flushPromises();
 
-    assertLeftRightAmount(wrapper, 3, 0);
+    assertLeftRightAmount(wrapper, 0, 0);
 
     await wrapper.setProps({ initialManuallySelected: ["test3"] });
 

@@ -390,7 +390,7 @@ export default {
       ref="twinlist"
       :disabled="selectionDisabled"
       :show-search="mode === 'manual' && showSearch"
-      :model-value="selectedValues ?? []"
+      :model-value="selectedValues"
       :possible-values="possibleValues"
       :show-unknown-values="unknownValuesVisible"
       :initial-include-unknown-values="includeUnknownValues"
