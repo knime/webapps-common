@@ -53,8 +53,14 @@ import java.util.Collection;
 
 import org.junit.jupiter.api.Test;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesUpdateHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.IdAndText;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
+
 /**
  * Test UI schema generation with arrays.
  *
@@ -227,5 +233,49 @@ class JsonFormsUiSchemaUtilArrayTest {
 
         final var response = buildTestUiSchema(TestStringArraySettings.class);
         assertThatJson(response).inPath("elements[0].options").isObject().doesNotContainKey(TAG_ARRAY_LAYOUT_DETAIL);
+    }
+
+    @Test
+    void testResolvesDependenciesFromOutsideTheArrayLayout() {
+
+        class TestArrayLayoutWithUpdateSettings {
+
+            String m_dependency;
+
+            static class Dependency {
+                String m_dependency;
+            }
+
+            static class DependencyHandler implements ChoicesUpdateHandler<Dependency> {
+
+                @Override
+                public IdAndText[] update(final Dependency settings, final DefaultNodeSettingsContext context)
+                    throws WidgetHandlerException {
+                    throw new IllegalStateException("Should not be called within this test");
+                }
+
+            }
+
+            ArrayElements[] m_arraySetting;
+
+            class ArrayElements {
+
+                @ChoicesWidget(choicesUpdateHandler = DependencyHandler.class)
+                String m_innerSetting;
+            }
+        }
+
+        final var response = buildTestUiSchema(TestArrayLayoutWithUpdateSettings.class);
+
+        assertThatJson(response).inPath("$.elements[1].type").isString().isEqualTo("Control");
+        assertThatJson(response).inPath("$.elements[1].scope").isString()
+            .isEqualTo("#/properties/test/properties/arraySetting");
+        assertThatJson(response).inPath("$.elements[1].options.detail[0].type").isString().isEqualTo("Control");
+        assertThatJson(response).inPath("$.elements[1].options.detail[0].scope").isString()
+            .isEqualTo("#/properties/innerSetting");
+        assertThatJson(response).inPath("$.elements[1].options.detail[0].options.choicesUpdateHandler").isString()
+            .isEqualTo("org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtilArrayTest$1TestArrayLayoutWithUpdateSettings$DependencyHandler");
+        assertThatJson(response).inPath("$.elements[1].options.detail[0].options.dependencies[0]").isString()
+        .isEqualTo("#/properties/test/properties/dependency");
     }
 }

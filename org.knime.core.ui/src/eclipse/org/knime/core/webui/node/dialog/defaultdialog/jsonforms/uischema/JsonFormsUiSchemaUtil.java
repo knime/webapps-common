@@ -49,6 +49,7 @@
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
@@ -85,6 +86,20 @@ public final class JsonFormsUiSchemaUtil {
     }
 
     /**
+     * Call this method to build the uischema of sub layouts which are independent from the parent layout apart from
+     * having access to the parentFields
+     *
+     * @param parentFields the fields of the "outside" layout
+     */
+    static ObjectNode buildUISchema(final Map<String, Class<?>> settings, final ObjectMapper mapper,
+        final DefaultNodeSettingsContext context, final AsyncChoicesAdder asyncChoicesAdder,
+        final Collection<JsonFormsControl> parentFields) {
+        final var layoutSkeleton = resolveLayout(settings, mapper);
+        layoutSkeleton.fields().addAll(parentFields);
+        return new LayoutNodesGenerator(layoutSkeleton, mapper, context, asyncChoicesAdder).build();
+    }
+
+    /**
      * @param settings
      * @param mapper
      * @param context
@@ -93,8 +108,7 @@ public final class JsonFormsUiSchemaUtil {
      */
     public static ObjectNode buildUISchema(final Map<String, Class<?>> settings, final ObjectMapper mapper,
         final DefaultNodeSettingsContext context, final AsyncChoicesAdder asyncChoicesAdder) {
-        final var layoutSkeleton = resolveLayout(settings, mapper);
-        return new LayoutNodesGenerator(layoutSkeleton, mapper, context, asyncChoicesAdder).build();
+        return buildUISchema(settings, mapper, context, asyncChoicesAdder, Collections.emptyList());
     }
 
     /**
@@ -115,7 +129,7 @@ public final class JsonFormsUiSchemaUtil {
     /**
      * @param layoutTreeRoot a tree structure representation of the node dialogs layout. Its leafs represent controls
      *            and other nodes can be visible layout elements or just structural placeholders.
-     * @param signals a map of all present  {@link Signal} annotations.
+     * @param signals a map of all present {@link Signal} annotations.
      * @param fields a collection of all traversed fields (the leaves of the tree)
      */
     public static record LayoutSkeleton(LayoutTreeNode layoutTreeRoot, Map<Class<?>, DefaultExpression> signals,

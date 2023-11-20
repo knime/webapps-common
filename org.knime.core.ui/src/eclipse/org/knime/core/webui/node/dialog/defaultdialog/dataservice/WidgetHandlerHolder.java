@@ -52,12 +52,14 @@ import static org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationU
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.util.ArrayLayoutUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
 
@@ -79,19 +81,31 @@ abstract class WidgetHandlerHolder<H> {
 
     private void addHandlers(final Collection<Class<? extends DefaultNodeSettings>> settings,
         final ObjectMapper mapper) {
-        final Consumer<TraversedField> addActionHandlerClass = getAddActionHandlerClassCallback();
+        final Consumer<TraversedField> addActionHandlerClass = getAddActionHandlerClassCallback(mapper);
         settings.forEach(settingsClass -> {
             final var generator = new DefaultNodeSettingsFieldTraverser(mapper, settingsClass);
             generator.traverse(addActionHandlerClass);
         });
     }
 
-    private Consumer<TraversedField> getAddActionHandlerClassCallback() {
+    private Consumer<TraversedField> getAddActionHandlerClassCallback(final ObjectMapper mapper) {
         return field -> {
+            addHandlersForNestedFields(mapper, field);
             final var optionalHandlerClass = getHandlerClass(field);
             optionalHandlerClass
                 .ifPresent(handlerClass -> m_handlers.put(handlerClass.getName(), createInstance(handlerClass)));
         };
+
+    }
+
+    private void addHandlersForNestedFields(final ObjectMapper mapper, final TraversedField field) {
+        final var javaType = field.propertyWriter().getType();
+        if (ArrayLayoutUtil.isArrayLayoutField(javaType)) {
+            final var elementClass = javaType.getContentType().getRawClass();
+            if (DefaultNodeSettings.class.isAssignableFrom(elementClass)) {
+                addHandlers(List.of((Class<? extends DefaultNodeSettings>)elementClass), mapper);
+            }
+        }
     }
 
     /**

@@ -81,6 +81,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaDefaultNodeSettingsTraverser.JsonFormsControl;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
+import org.knime.core.webui.node.dialog.defaultdialog.util.ArrayLayoutUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
@@ -175,9 +176,8 @@ final class UiSchemaOptionsGenerator {
     void addOptionsTo(final ObjectNode control) {
         final var defaultWidgets = getApplicableDefaults(m_fieldClass);
         final var annotatedWidgets = getAnnotatedWidgets();
-        final var isArrayOfObjects =
-            (m_fieldType.isArrayType() || m_fieldType.isCollectionLikeType()) && isObject(m_fieldType.getContentType());
-        if (defaultWidgets.isEmpty() && annotatedWidgets.isEmpty() && !isArrayOfObjects) {
+        final var isArrayLayoutField = ArrayLayoutUtil.isArrayLayoutField(m_fieldType);
+        if (defaultWidgets.isEmpty() && annotatedWidgets.isEmpty() && !isArrayLayoutField) {
             return;
         }
         final var options = control.putObject(TAG_OPTIONS);
@@ -344,7 +344,7 @@ final class UiSchemaOptionsGenerator {
             }
         }
 
-        if (isArrayOfObjects) {
+        if (isArrayLayoutField) {
             applyArrayLayoutOptions(options, m_fieldType.getContentType().getRawClass());
         }
     }
@@ -493,7 +493,7 @@ final class UiSchemaOptionsGenerator {
          */
         final var persistentAsyncChoicesAdder = new PersistentAsyncChoicesAdder(m_asyncChoicesAdder);
         var details = JsonFormsUiSchemaUtil
-            .buildUISchema(arraySettings, m_mapper, m_defaultNodeSettingsContext, persistentAsyncChoicesAdder)
+            .buildUISchema(arraySettings, m_mapper, m_defaultNodeSettingsContext, persistentAsyncChoicesAdder, m_fields)
             .get(TAG_ELEMENTS);
         options.set(TAG_ARRAY_LAYOUT_DETAIL, details);
 
@@ -513,14 +513,5 @@ final class UiSchemaOptionsGenerator {
         if (arrayWidget.showSortButtons()) {
             options.put(TAG_ARRAY_LAYOUT_SHOW_SORT_BUTTONS, true);
         }
-    }
-
-    /** @return true if the type is from an POJO and not a primitive, String, Boxed type, or enum */
-    private static boolean isObject(final JavaType contentType) {
-        var boxedTypes = List.of(String.class, Double.class, Short.class, Boolean.class, Float.class, Integer.class,
-            Long.class, Character.class);
-
-        return !contentType.isPrimitive() && !contentType.isEnumType()
-            && boxedTypes.stream().allMatch(type -> !type.equals(contentType.getRawClass()));
     }
 }

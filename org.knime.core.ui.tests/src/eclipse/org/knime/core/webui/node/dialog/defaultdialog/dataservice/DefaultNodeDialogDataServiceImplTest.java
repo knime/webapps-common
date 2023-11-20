@@ -165,6 +165,26 @@ class DefaultNodeDialogDataServiceImplTest {
             assertThat(result.result()).isEqualTo(TestChoicesUpdateHandler.getResult(testDepenenciesFooValue));
         }
 
+        @Test
+        void testUpdateInsideArrayLayout() throws ExecutionException, InterruptedException {
+
+            class ChoicesSettings implements DefaultNodeSettings {
+                static class ArrayElem implements DefaultNodeSettings {
+                    @ChoicesWidget(choicesUpdateHandler = TestChoicesUpdateHandler.class)
+                    String m_choicesWidgetElement;
+                }
+
+                @SuppressWarnings("unused")
+                ArrayElem[] m_array;
+            }
+
+            final String testDepenenciesFooValue = "custom value";
+            final var dataService = getDataService(ChoicesSettings.class);
+            final var result = dataService.update("widgetId", TestChoicesUpdateHandler.class.getName(),
+                Map.of("foo", testDepenenciesFooValue));
+            assertThat(result.result()).isEqualTo(TestChoicesUpdateHandler.getResult(testDepenenciesFooValue));
+        }
+
         static class TestChoicesProvider implements ChoicesProvider {
 
             @Override
