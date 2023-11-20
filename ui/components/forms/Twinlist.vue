@@ -69,11 +69,6 @@ export default {
       default: true,
       type: Boolean,
     },
-    hideOptions: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
     /**
      * Labels
      */
@@ -206,7 +201,7 @@ export default {
         .map((possibleValue) => possibleValue.id);
     },
     visibleValueIds() {
-      if (this.hideOptions || this.chosenValues === null) {
+      if (this.chosenValues === null) {
         return new Set();
       }
       return new Set([
