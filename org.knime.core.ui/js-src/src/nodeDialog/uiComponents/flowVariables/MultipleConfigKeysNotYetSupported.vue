@@ -8,7 +8,7 @@ defineProps<{ configKeys?: string[]; subConfigKeys?: string[] }>();
     not yet possible.
   </p>
   <p>
-    To do so, select <b>"Configure Flow Variables"</b> in the context menu of
+    To do so, select <b>"Configure flow variables"</b> in the context menu of
     this node.
   </p>
   <template v-if="(configKeys ?? []).length > 1">
