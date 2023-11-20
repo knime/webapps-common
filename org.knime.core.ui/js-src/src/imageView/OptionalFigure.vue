@@ -27,6 +27,7 @@ figure {
   & .figcaption {
     text-overflow: ellipsis;
     font-size: 13px;
+    overflow-wrap: break-word;
   }
 }
 </style>
