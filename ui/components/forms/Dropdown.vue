@@ -444,6 +444,7 @@ export default {
     background: var(--theme-dropdown-background-color);
     box-shadow: 0 1px 5px 0 var(--knime-gray-dark);
     cursor: pointer;
+    outline: none;
   }
 
   & [role="option"]:not(.slotted) {
