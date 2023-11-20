@@ -387,30 +387,31 @@ export default {
       stroke: var(--theme-dropdown-foreground-color);
     }
 
-    & .description{
+    & .description {
       flex: 1 1 auto;
       padding: 0 10px;
 
-      & .title{
+      & .title {
         color: inherit;
         font-size: 13px;
         font-weight: 500;
-        line-height: 18px;
+        line-height: 150%;
       }
-      & .subtitle{
+
+      & .subtitle {
         color: inherit;
-        font-size: 9px;
-        font-weight: 400;
-        line-height: 18px;
+        font-size: 11px;
+        font-weight: 300;
+        line-height: 150%;
       }
     }
 
-    & .year{
+    & .year {
       color: inherit;
       flex: 1 1 auto;
       font-size: 13px;
-      font-weight: 400;
-      line-height: 18px;
+      font-weight: 500;
+      line-height: 150%;
       text-align: right;
     }
 
