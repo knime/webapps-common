@@ -52,6 +52,7 @@ import static java.util.stream.Collectors.toMap;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -187,7 +188,11 @@ final class DefaultFieldNodeSettingsPersistorFactory {
             if (value == null) {
                 return null;
             }
-            return LocalDate.parse(value, DATE_FMT);
+            try {
+                return LocalDate.parse(value, DATE_FMT);
+            } catch (DateTimeParseException ex) {
+                throw new InvalidSettingsException(ex);
+            }
         }
 
         @Override

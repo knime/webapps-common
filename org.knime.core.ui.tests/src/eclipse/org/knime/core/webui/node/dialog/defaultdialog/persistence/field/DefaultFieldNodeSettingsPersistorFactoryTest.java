@@ -141,8 +141,17 @@ class DefaultFieldNodeSettingsPersistorFactoryTest {
     @Test
     void testLocalDate() throws InvalidSettingsException {
         final var date = LocalDate.of(2000, 1, 1);
-        testSaveLoad(LocalDate.class, date);
-        testSaveLoad(LocalDate.class, null);
+        testSaveLoadNullable(LocalDate.class, date);
+    }
+
+
+    @Test
+    void testInvalidLocalDate() throws InvalidSettingsException {
+        var nodeSettings = new NodeSettings(KEY);
+        nodeSettings.addString(KEY, "not-a-valid-date-time");
+        var persistor = createPersistor(LocalDate.class);
+
+        assertThrows(InvalidSettingsException.class, () -> persistor.load(nodeSettings));
     }
 
     @Test
