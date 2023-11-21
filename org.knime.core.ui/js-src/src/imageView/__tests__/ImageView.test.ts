@@ -59,6 +59,14 @@ describe("ImageView.vue", () => {
   };
 
   const mountComponent = async (isReport = false) => {
+    const setRenderCompleted = vi.fn();
+    // eslint-disable-next-line no-extra-parens
+    (ReportingService as any).mockImplementation(
+      ({ isReport }: { isReport: boolean }) => ({
+        isReportingActive: () => isReport,
+        setRenderCompleted,
+      }),
+    );
     const mountOptions = {
       global: {
         provide: {
@@ -74,9 +82,7 @@ describe("ImageView.vue", () => {
         },
       },
     };
-    const wrapper = mount(ImageView, mountOptions);
-    await flushPromises();
-    return wrapper as VueWrapper & {
+    const wrapper = mount(ImageView, mountOptions) as VueWrapper & {
       vm: {
         onViewSettingsChange: (param: {
           data: { data: { view: Partial<ImageViewSettings> } };
@@ -84,6 +90,8 @@ describe("ImageView.vue", () => {
         viewSettings: ImageViewSettings;
       };
     };
+    await flushPromises();
+    return { wrapper, setRenderCompleted };
   };
 
   beforeEach(() => {
@@ -148,12 +156,12 @@ describe("ImageView.vue", () => {
   };
 
   it("renders image view", async () => {
-    const wrapper = await mountComponent();
+    const { wrapper } = await mountComponent();
     checkWrapper(wrapper, defaultSettings);
   });
 
   it("sets image max height to natural height on load", async () => {
-    const wrapper = await mountComponent();
+    const { wrapper } = await mountComponent();
     const image = wrapper.find("img");
     expect(image.element.onload).toBeTypeOf("function");
     Object.defineProperty(image.element, "naturalHeight", { value: 100 });
@@ -166,14 +174,25 @@ describe("ImageView.vue", () => {
     const fetchImageSpy = vi
       .spyOn(fetchImage, "fetchImage")
       .mockResolvedValue(defaultFetchImageValue);
-    const wrapper = await mountComponent(true);
+    const { wrapper } = await mountComponent(true);
     expect(fetchImageSpy).toHaveBeenCalled();
     checkWrapper(wrapper, defaultSettings, defaultFetchImageValue);
   });
 
+  it("notifies pagebuilder when component is mounted if it is in reporting context", async () => {
+    vi.spyOn(fetchImage, "fetchImage").mockResolvedValue(
+      defaultFetchImageValue,
+    );
+    const { wrapper, setRenderCompleted } = await mountComponent(true);
+    const image = wrapper.find("img");
+    image.element.onload!(new Event("load"));
+    await flushPromises();
+    expect(setRenderCompleted).toHaveBeenCalled();
+  });
+
   it("calls initial data on mount", async () => {
     const initialDataSpy = vi.spyOn(jsonDataServiceMock, "initialData");
-    const wrapper = await mountComponent();
+    const { wrapper } = await mountComponent();
     expect(initialDataSpy).toHaveBeenCalled();
     expect(wrapper.vm.viewSettings.title).toStrictEqual(defaultSettings.title);
     expect(wrapper.vm.viewSettings.altText).toStrictEqual(
@@ -198,7 +217,7 @@ describe("ImageView.vue", () => {
 
   describe("onViewSettingsChange", () => {
     it("updates content on view settings change", async () => {
-      const wrapper = await mountComponent();
+      const { wrapper } = await mountComponent();
       const data = {
         data: {
           view: {
@@ -215,7 +234,7 @@ describe("ImageView.vue", () => {
   });
 
   it("updates content on empty title", async () => {
-    const wrapper = await mountComponent();
+    const { wrapper } = await mountComponent();
     const data = {
       data: {
         view: { ...defaultSettings, title: "" },
@@ -226,7 +245,7 @@ describe("ImageView.vue", () => {
   });
 
   it("updates content on empty caption", async () => {
-    const wrapper = await mountComponent();
+    const { wrapper } = await mountComponent();
     const data = {
       data: {
         view: { ...defaultSettings, caption: "" },
@@ -237,7 +256,7 @@ describe("ImageView.vue", () => {
   });
 
   it("updates content on empty title and caption", async () => {
-    const wrapper = await mountComponent();
+    const { wrapper } = await mountComponent();
     const data = {
       data: {
         view: { ...defaultSettings, title: "", caption: "" },
