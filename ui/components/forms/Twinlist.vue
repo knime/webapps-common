@@ -6,7 +6,7 @@ import ArrowNextIcon from "../../assets/img/icons/arrow-next.svg";
 import ArrowNextDoubleIcon from "../../assets/img/icons/arrow-next-double.svg";
 import ArrowPrevIcon from "../../assets/img/icons/arrow-prev.svg";
 import ArrowPrevDoubleIcon from "../../assets/img/icons/arrow-prev-double.svg";
-import { filters } from "webapps-common/util/filters";
+import { filters } from "../../../util/filters";
 import type { PropType } from "vue";
 
 const KEY_ENTER = 13;
@@ -150,14 +150,6 @@ export default {
     possibleValues: {
       type: Array as PropType<PossibleValue[]>,
       default: () => [],
-      validator(values) {
-        if (!Array.isArray(values)) {
-          return false;
-        }
-        return values.every(
-          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text"),
-        );
-      },
     },
     /**
      * If this setting is true, on a change of possible values, the currently

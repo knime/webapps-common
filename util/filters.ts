@@ -3,7 +3,17 @@
  * compile any filter settings and a method "test" which takes the compiled result, additional settings and the item to
  * be matched/filtered
  * */
-const modeDefinitions = [
+interface FilterDefinition<T> {
+  id: string;
+  normalize: (searchTerm: string, caseSensitiveSearch: boolean) => T;
+  test: (
+    text: string,
+    normalizedSearchTerm: T,
+    caseSensitiveSearch: boolean,
+    inverseSearch: boolean,
+  ) => boolean;
+}
+const modeDefinitions: Array<FilterDefinition<any>> = [
   {
     id: "search",
     normalize(searchTerm, caseSensitiveSearch) {
@@ -66,7 +76,7 @@ const modeDefinitions = [
   {
     id: "type",
     normalize(selectedTypes) {
-      return { test: (type) => selectedTypes.includes(type) };
+      return { test: (type: string) => selectedTypes.includes(type) };
     },
     test(type, normalizedSearchTerm) {
       return normalizedSearchTerm.test(type);

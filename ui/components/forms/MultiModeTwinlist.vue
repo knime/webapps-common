@@ -8,7 +8,7 @@ import Twinlist, {
   type Id,
 } from "./Twinlist.vue";
 import FilterIcon from "../../assets/img/icons/filter.svg";
-import { filters } from "webapps-common/util/filters";
+import { filters } from "../../../util/filters";
 import type { PropType } from "vue";
 
 type PossibleType = { id: string; text: string };
@@ -142,14 +142,6 @@ export default {
     possibleValues: {
       type: Array as PropType<PossibleValue[]>,
       default: () => [],
-      validator(values) {
-        if (!Array.isArray(values)) {
-          return false;
-        }
-        return values.every(
-          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text"),
-        );
-      },
     },
     /**
      * List of possible types which should be selectable but are not necessarily present in the possible values.
@@ -157,14 +149,6 @@ export default {
     additionalPossibleTypes: {
       type: Array as PropType<PossibleType[]>,
       default: () => [],
-      validator(values) {
-        if (!Array.isArray(values)) {
-          return false;
-        }
-        return values.every(
-          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text"),
-        );
-      },
     },
   },
   emits: [
