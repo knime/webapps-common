@@ -333,6 +333,7 @@ export default {
       >
         <template v-if="isSlotted">
           <slot
+            name="option"
             :slot-data="item.slotData"
           />
         </template>

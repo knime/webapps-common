@@ -64,14 +64,18 @@ const slottedCodeExample = `<Dropdown
       }
   }]"
 >
-  <template #default="slotProps">
+  <template
+    #option="{ slotData: { icon, title, subtitle, year } } = {
+      slotData: {},
+    }"
+  >
     <div class="slot-option">
-      <component :is="slotProps.slotData.icon" />
+      <component :is="icon" />
       <div class="description">
-        <div class="title">{{ slotProps.slotData.title }}</div>
-        <div class="subtitle">{{ slotProps.slotData.subtitle }}</div>
+        <div class="title">{{ title }}</div>
+        <div class="subtitle">{{ subtitle }}</div>
       </div>
-      <div class="year">{{ slotProps.slotData.year }}</div>
+      <div class="year">{{ year }}</div>
     </div>
   </template>
 </Dropdown>
@@ -345,14 +349,18 @@ export default {
             size="3"
             :possible-values="slottedExamplePossibleValue"
           >
-            <template #default="slotProps">
+            <template
+              #option="{ slotData: { icon, title, subtitle, year } } = {
+                slotData: {},
+              }"
+            >
               <div class="slot-option">
-                <component :is="slotProps.slotData.icon" />
+                <component :is="icon" />
                 <div class="description">
-                  <div class="title">{{ slotProps.slotData.title }}</div>
-                  <div class="subtitle">{{ slotProps.slotData.subtitle }}</div>
+                  <div class="title">{{ title }}</div>
+                  <div class="subtitle">{{ subtitle }}</div>
                 </div>
-                <div class="year">{{ slotProps.slotData.year }}</div>
+                <div class="year">{{ year }}</div>
               </div>
             </template>
           </Dropdown>

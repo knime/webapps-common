@@ -82,7 +82,7 @@ const doMount = ({
     isValid,
     possibleValues = POSSIBLE_VALUES_MOCK,
     ariaLabel = ARIA_LABEL_MOCK,
-    slotContent = null
+    scopedSlots = null
 } = {}) => {
     const propsData = {
         possibleValues,
@@ -95,11 +95,7 @@ const doMount = ({
     const wrapper = mount(Dropdown, {
         propsData,
         localVue,
-        ...slotContent
-            ? { scopedSlots: {
-                default: slotContent
-            } }
-            : {}
+        scopedSlots
     });
 
     return {
@@ -196,11 +192,17 @@ describe('Dropdown.vue', () => {
     });
 
     describe.each([
-        { possibleValues: POSSIBLE_VALUES_MOCK, type: 'dropdown' },
-        { possibleValues: POSSIBLE_SLOTTED_VALUES_MOCK, type: 'slotted dropdown' }
-    ])('keyboard navigation', ({ possibleValues, type }) => {
+        {
+            possibleValues: POSSIBLE_VALUES_MOCK,
+            scopedSlots: null,
+            type: 'dropdown'
+        },
+        { possibleValues: POSSIBLE_SLOTTED_VALUES_MOCK,
+            scopedSlots: { option: SLOT_CONTENT_MOCK },
+            type: 'slotted dropdown' }
+    ])('keyboard navigation', ({ possibleValues, scopedSlots, type }) => {
         it(`opens and closes the listbox on enter/esc for a ${type}`, () => {
-            const { wrapper } = doMount({ possibleValues });
+            const { wrapper } = doMount({ possibleValues, scopedSlots });
             const listbox = wrapper.find('[role=listbox]');
 
             // open list
@@ -214,7 +216,7 @@ describe('Dropdown.vue', () => {
 
         it(`sets the values on keydown navigation for a ${type}`, () => {
             const value = possibleValues[1].id; // defines start point
-            const { wrapper } = doMount({ possibleValues, value });
+            const { wrapper } = doMount({ possibleValues, value, scopedSlots });
             const ul = wrapper.find('ul');
             ul.trigger('keydown.down');
             expect(wrapper.emitted().input[0][0]).toEqual(possibleValues[2].id);
@@ -222,7 +224,7 @@ describe('Dropdown.vue', () => {
 
         it(`sets the values on keyup navigation for a ${type}`, () => {
             const value = possibleValues[1].id; // defines start point
-            const { wrapper } = doMount({ possibleValues, value });
+            const { wrapper } = doMount({ possibleValues, value, scopedSlots });
             const ul = wrapper.find('ul');
             ul.trigger('keydown.up');
             expect(wrapper.emitted().input[0][0]).toEqual(possibleValues[0].id);
@@ -230,7 +232,7 @@ describe('Dropdown.vue', () => {
 
         it(`sets no values on keyup navigation at the start for a ${type}`, () => {
             const value = possibleValues[0].id; // defines start point
-            const { wrapper } = doMount({ possibleValues, value });
+            const { wrapper } = doMount({ possibleValues, value, scopedSlots });
             const ul = wrapper.find('ul');
             ul.trigger('keydown.up');
             expect(wrapper.emitted().input).toBeFalsy();
@@ -238,7 +240,7 @@ describe('Dropdown.vue', () => {
 
         it(`sets no values on keydown navigation at the end for a ${type}`, () => {
             const value = possibleValues[possibleValues.length - 1].id; // defines start point
-            const { wrapper } = doMount({ possibleValues, value });
+            const { wrapper } = doMount({ possibleValues, value, scopedSlots });
             const ul = wrapper.find('ul');
             ul.trigger('keydown.down');
             expect(wrapper.emitted().input).toBeFalsy();
@@ -246,7 +248,7 @@ describe('Dropdown.vue', () => {
 
         it(`sets the values to the first value on home key for a ${type}`, () => {
             const value = possibleValues[2].id; // defines start point
-            const { wrapper } = doMount({ possibleValues, value });
+            const { wrapper } = doMount({ possibleValues, value, scopedSlots });
             const ul = wrapper.find('ul');
             ul.trigger('keydown.home');
             expect(wrapper.emitted().input[0][0]).toBe(possibleValues[0].id);
@@ -254,7 +256,7 @@ describe('Dropdown.vue', () => {
 
         it(`sets the values to the last value on end key for a ${type}`, () => {
             const value = possibleValues[2].id; // defines start point
-            const { wrapper } = doMount({ possibleValues, value });
+            const { wrapper } = doMount({ possibleValues, value, scopedSlots });
             const ul = wrapper.find('ul');
             ul.trigger('keydown.end');
             expect(wrapper.emitted().input[0][0]).toBe(possibleValues[possibleValues.length - 1].id);
@@ -262,12 +264,18 @@ describe('Dropdown.vue', () => {
     });
 
     describe.each([
-        { possibleValues: POSSIBLE_VALUES_MOCK, type: 'dropdown' },
-        { possibleValues: POSSIBLE_SLOTTED_VALUES_MOCK, type: 'slotted dropdown' }
-    ])('keyboard search', ({ possibleValues, type }) => {
+        {
+            possibleValues: POSSIBLE_VALUES_MOCK,
+            scopedSlots: null,
+            type: 'dropdown'
+        },
+        { possibleValues: POSSIBLE_SLOTTED_VALUES_MOCK,
+            scopedSlots: { option: SLOT_CONTENT_MOCK },
+            type: 'slotted dropdown' }
+    ])('keyboard search', ({ possibleValues, scopedSlots, type }) => {
         it(`finds the first matching item for a ${type}`, () => {
             const value = possibleValues[2].id; // defines start point
-            const { wrapper } = doMount({ possibleValues, value });
+            const { wrapper } = doMount({ possibleValues, value, scopedSlots });
             const ul = wrapper.find('ul');
 
             ul.find('ul').trigger('keydown', {
@@ -278,7 +286,7 @@ describe('Dropdown.vue', () => {
 
         it(`finds a more exact matching item for a ${type}`, () => {
             const value = possibleValues[2].id; // defines start point
-            const { wrapper } = doMount({ possibleValues, value });
+            const { wrapper } = doMount({ possibleValues, value, scopedSlots });
             const ul = wrapper.find('ul');
 
             ul.trigger('keydown', { key: 't' });
@@ -294,7 +302,7 @@ describe('Dropdown.vue', () => {
 
         it(`resets after stop typing for a ${type}`, () => {
             const value = possibleValues[2].id; // defines start point
-            const { wrapper } = doMount({ possibleValues, value });
+            const { wrapper } = doMount({ possibleValues, value, scopedSlots });
             const ul = wrapper.find('ul');
 
             ul.trigger('keydown', { key: 't' });
@@ -316,9 +324,10 @@ describe('Dropdown.vue', () => {
 
     describe('Slotted Dropdown', () => {
         it('render slots if slotData is given', () => {
+            const scopedSlots = { option: SLOT_CONTENT_MOCK };
             // use a single value to make look-up easier
             const possibleValues = [cloneDeep(POSSIBLE_SLOTTED_VALUES_MOCK[0])];
-            const { wrapper } = doMount({ possibleValues, slotContent: SLOT_CONTENT_MOCK });
+            const { wrapper } = doMount({ possibleValues, scopedSlots });
             const option = wrapper.find('li');
             expect(option.classes()).toContain('slotted');
             expect(option.text()).not.toBe(possibleValues[0].text);
@@ -329,10 +338,11 @@ describe('Dropdown.vue', () => {
         });
 
         it('render text slots if slotData is not given', () => {
+            const scopedSlots = { option: SLOT_CONTENT_MOCK };
             // use a single value to make look-up easier
             const possibleValues = [cloneDeep(POSSIBLE_SLOTTED_VALUES_MOCK[0])];
             delete possibleValues[0].slotData;
-            const { wrapper } = doMount({ possibleValues, slotContent: SLOT_CONTENT_MOCK });
+            const { wrapper } = doMount({ possibleValues, scopedSlots });
             const option = wrapper.find('li');
             expect(option.classes()).not.toContain('slotted');
             expect(option.text()).toBe(possibleValues[0].text);
