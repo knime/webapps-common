@@ -332,7 +332,9 @@ export default {
         @click="onOptionClick(item.id)"
       >
         <template v-if="isSlotted">
-          <slot :slot-data="item.slotData" />
+          <slot
+            :slot-data="item.slotData"
+          />
         </template>
         <template
           v-else
@@ -447,6 +449,46 @@ export default {
     outline: none;
   }
 
+  & [role="option"] {
+    background: var(--theme-dropdown-background-color);
+    color: var(--theme-dropdown-foreground-color);
+
+    & > svg {
+      stroke: var(--theme-dropdown-foreground-color);
+    }
+
+    &.empty {
+      white-space: pre-wrap;
+    }
+
+    &:hover {
+      background: var(--theme-dropdown-background-color-hover);
+      color: var(--theme-dropdown-foreground-color-hover);
+
+      & svg {
+        stroke: var(--theme-dropdown-foreground-color-hover);
+      }
+    }
+
+    &:focus {
+      background: var(--theme-dropdown-background-color-focus);
+      color: var(--theme-dropdown-foreground-color-focus);
+
+      & svg {
+        stroke: var(--theme-dropdown-foreground-color-focus);
+      }
+    }
+
+    &.focused {
+      background: var(--theme-dropdown-background-color-selected);
+      color: var(--theme-dropdown-foreground-color-selected);
+
+      & svg {
+        stroke: var(--theme-dropdown-foreground-color-selected);
+      }
+    }
+  }
+
   & [role="option"]:not(.slotted) {
     display: block;
     width: 100%;
@@ -456,26 +498,9 @@ export default {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
-    background: var(--theme-dropdown-background-color);
-    color: var(--theme-dropdown-foreground-color);
 
     &.empty {
       white-space: pre-wrap;
-    }
-
-    &:hover {
-      background: var(--theme-dropdown-background-color-hover);
-      color: var(--theme-dropdown-foreground-color-hover);
-    }
-
-    &:focus {
-      background: var(--theme-dropdown-background-color-focus);
-      color: var(--theme-dropdown-foreground-color-focus);
-    }
-
-    &.focused {
-      background: var(--theme-dropdown-background-color-selected);
-      color: var(--theme-dropdown-foreground-color-selected);
     }
   }
 
