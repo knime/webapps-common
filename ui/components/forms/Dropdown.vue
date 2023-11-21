@@ -1,6 +1,7 @@
 <script>
 import "./variables.css";
 import { mixin as VueClickAway } from "vue3-click-away";
+import { isEmpty } from "lodash";
 
 import DropdownIcon from "../../assets/img/icons/arrow-dropdown.svg";
 
@@ -51,7 +52,11 @@ export default {
       type: Boolean,
     },
     /**
-     * List of possible values. Each item must have an `id` and a `text` property
+     * List of possible values. Each item must have an `id` and a `text` property. To use slots an additional
+     * slotData object must be passed which contains the data to be displayed.
+     *
+     * IMPORTANT: All values have to have a slotData object otherwise the slot will not be displayed and the
+     * usual text is rendered instead.
      * @example
      * [{
      *   id: 'pdf',
@@ -59,6 +64,14 @@ export default {
      * }, {
      *   id: 'XLS',
      *   text: 'Excel',
+     * }, {
+     *   id: 'JPG',
+     *   text: 'Jpeg',
+     *   slotData: {
+     *     fullName: 'Joint Photographic Experts Group',
+     *     year: '1992'
+     *     description: 'Commonly used method of lossy compression for digital images'
+     *   }
      * }]
      */
     possibleValues: {
@@ -111,6 +124,11 @@ export default {
     },
     hasRightIcon() {
       return this.$slots["icon-right"]?.().length;
+    },
+    hasOptionTemplate() {
+      return this.possibleValues.every(
+        (value) => value.slotData && !isEmpty(value.slotData),
+      );
     },
   },
   created() {
@@ -241,9 +259,7 @@ export default {
         this.searchQuery = "";
       }, TYPING_TIMEOUT);
       this.searchQuery += e.key;
-
       consola.trace(`Searching for ${this.searchQuery}`);
-
       const candidate = this.possibleValues.find((item) =>
         item.text.toLowerCase().startsWith(this.searchQuery.toLowerCase()),
       );
@@ -324,11 +340,17 @@ export default {
           focused: isCurrentValue(item.id),
           noselect: true,
           empty: item.text.trim() === '',
+          'has-option-template': hasOptionTemplate,
         }"
         :aria-selected="isCurrentValue(item.id)"
         @click="onOptionClick(item.id)"
       >
-        {{ item.text }}
+        <template v-if="hasOptionTemplate">
+          <slot name="option" :slot-data="item.slotData" />
+        </template>
+        <template v-else>
+          {{ item.text }}
+        </template>
       </li>
     </ul>
     <input :id="id" type="hidden" :name="name" :value="modelValue" />
@@ -450,9 +472,10 @@ export default {
     background: var(--theme-dropdown-background-color);
     box-shadow: var(--shadow-elevation-1);
     cursor: pointer;
+    outline: none;
   }
 
-  & [role="option"] {
+  & [role="option"]:not(.has-option-template) {
     display: block;
     width: 100%;
     padding: 0 10px;
