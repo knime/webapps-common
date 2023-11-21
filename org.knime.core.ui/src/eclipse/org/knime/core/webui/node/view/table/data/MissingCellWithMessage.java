@@ -48,6 +48,9 @@
  */
 package org.knime.core.webui.node.view.table.data;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 /**
  *
  * @author Paul Bärnreuther
@@ -57,6 +60,7 @@ public interface MissingCellWithMessage extends Cell {
      *
      * @return the error message for missing cells
      */
+    @JsonInclude(Include.ALWAYS)
     String getMetadata();
 
     @Override

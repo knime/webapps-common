@@ -83,7 +83,7 @@ class MetadataCellRenderer implements CellRenderer<Object> {
     public Object renderCell(final DataCell cell) {
         final var color = getColor(cell);
         if (cell.isMissing()) {
-            return createMetadataCell(cell, color);
+            return createMetadataCell((MissingCell)cell, color);
         }
         final var renderedValue = m_contentRenderer.renderCell(cell);
         if (color != null) {
@@ -107,8 +107,8 @@ class MetadataCellRenderer implements CellRenderer<Object> {
         };
     }
 
-    private static MissingCellWithMessage createMetadataCell(final DataCell cell, final String color) {
-        final var missingCellErrorMsg = ((MissingCell)cell).getError();
+    private static MissingCellWithMessage createMetadataCell(final MissingCell cell, final String color) {
+        var missingCellErrorMsg = cell.getError();
         return missingCellErrorMsg == null && color == null ? null : new MissingCellWithMessage() {
 
             @Override

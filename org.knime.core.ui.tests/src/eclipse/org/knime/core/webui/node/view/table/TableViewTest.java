@@ -686,7 +686,7 @@ class TableViewTest {
             new ColorModelNominal(Map.of(new StringCell("value1"), ColorAttr.getInstance(new Color(0, 255, 0))), null);
 
         final var nominalColumn = new Object[]{"value1", null};
-        final var numericColumn = new Object[]{new MissingCell("Row1_Col2"), new MissingCell("Row2_Col2")};
+        final var numericColumn = new Object[]{new MissingCell("Row1_Col2"), new MissingCell(null)};
         final var inputTable = TableTestUtil.createTableFromColumns( //
             new ObjectColumn("col1", StringCell.TYPE, new ColorHandler(nominalColorModel), nominalColumn), //
             new ObjectColumn("col2", IntCell.TYPE, new ColorHandler(numericColorModel), numericColumn) //
@@ -700,15 +700,15 @@ class TableViewTest {
 
         assertThat(((Cell)rows.get(0).get(2)).getColor()).isEqualTo("#00FF00");
         assertThat(((Cell)rows.get(0).get(2)).getValue()).isEqualTo("value1");
-        assertThat(((Cell)rows.get(1).get(2)).getColor()).isEqualTo("#404040");
+        assertThat(((Cell)rows.get(1).get(2)).getColor()).isEqualTo(missingCellsColor);
         assertThat(((Cell)rows.get(1).get(2)).getValue()).isNull();
 
-        assertThat(((Cell)rows.get(0).get(3)).getColor()).isEqualTo("#404040");
+        assertThat(((Cell)rows.get(0).get(3)).getColor()).isEqualTo(missingCellsColor);
         assertThat(((Cell)rows.get(0).get(3)).getValue()).isNull();
         assertThat(((MissingCellWithMessage)rows.get(0).get(3)).getMetadata()).isEqualTo("Row1_Col2");
-        assertThat(((Cell)rows.get(1).get(3)).getColor()).isEqualTo("#404040");
+        assertThat(((Cell)rows.get(1).get(3)).getColor()).isEqualTo(missingCellsColor);
         assertThat(((Cell)rows.get(1).get(3)).getValue()).isNull();
-        assertThat(((MissingCellWithMessage)rows.get(1).get(3)).getMetadata()).isEqualTo("Row2_Col2");
+        assertThat(((MissingCellWithMessage)rows.get(1).get(3)).getMetadata()).isNull();
     }
 
     @Test
