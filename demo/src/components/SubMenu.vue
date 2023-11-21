@@ -14,7 +14,7 @@ import SubMenu from '~/webapps-common/ui/components/SubMenu.vue';
 import MenuIcon from '~/webapps-common/ui/assets/img/icons/menu-options.svg';
 
 const subMenuItems = [{
-    href: 'http://apple.com',
+    href: 'https://apple.com',
     text: 'Apples',
     icon: HelpIcon,
     hotkeyText: 'Ctrl + 1'
@@ -85,7 +85,7 @@ nav {
 
 const subMenuItems = [
   {
-    href: "http://apple.com",
+    href: "https://apple.com",
     text: "Apples",
     icon: markRaw(HelpIcon),
     hotkeyText: "Ctrl + 1",

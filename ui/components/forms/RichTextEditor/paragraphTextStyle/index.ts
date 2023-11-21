@@ -2,7 +2,7 @@ import type { Editor } from "@tiptap/vue-3";
 import type { EditorToolItem } from "../types";
 import type { Level } from "@tiptap/extension-heading";
 
-export type ParagrapsStyleId = Level | "small" | "standard";
+export type ParagraphTextStyleId = Level | "small" | "standard";
 
 const clearHeading = (editor: Editor) => {
   const maxLevel = 6;
@@ -21,6 +21,7 @@ const clearHeading = (editor: Editor) => {
 const getHeadingOptionChild = (level: Level, getEditor: () => Editor) => ({
   item: { text: `Heading ${level}` },
   id: level,
+  hotkey: ["Ctrl", "Alt", `${level}`],
   active: () => getEditor().isActive("heading", { level }),
 });
 
@@ -30,17 +31,19 @@ export default (getEditor: () => Editor) => {
       {
         item: { text: "Standard" },
         id: "standard",
+        hotkey: ["Ctrl", "Alt", "0"],
       },
       {
         item: { text: "Small text" },
         id: "small",
+        hotkey: ["Ctrl", "Alt", "−"], // this is a wider minus character for aesthetic reasons
         active: () => getEditor().isActive({ smallText: true }),
       },
       ...Array.from({ length: 6 }, (_, i) =>
         getHeadingOptionChild((i + 1) as Level, getEditor),
       ),
     ],
-    onChildClick: (childId: ParagrapsStyleId) => {
+    onChildClick: (childId: ParagraphTextStyleId) => {
       const editor = getEditor();
       if (childId === "standard") {
         clearHeading(editor);
@@ -55,7 +58,7 @@ export default (getEditor: () => Editor) => {
       editor.chain().focus().toggleHeading({ level: childId }).run();
     },
   } satisfies Pick<
-    EditorToolItem<ParagrapsStyleId>,
+    EditorToolItem<ParagraphTextStyleId>,
     "onChildClick" | "children"
   >;
 };

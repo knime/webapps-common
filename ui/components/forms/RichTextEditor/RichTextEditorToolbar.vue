@@ -32,10 +32,11 @@ const secondaryToolsMenuItems = computed<MenuItem[]>(() =>
     id: tool.id,
     selected: tool.active?.(),
     children:
-      tool.children?.map(({ item, id: childId, active }) => ({
+      tool.children?.map(({ item, id: childId, active, hotkey }) => ({
         ...item,
         id: { toolId: tool.id, childId },
         selected: active?.(),
+        hotkeyText: props.hotkeyFormatter(hotkey ?? []),
       })) ?? [],
   })),
 );

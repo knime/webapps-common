@@ -15,9 +15,9 @@ import CodeIcon from "../../../assets/img/icons/code-html.svg";
 import StrikeThroughIcon from "../../../assets/img/icons/strikethrough.svg";
 import DividerIcon from "../../../assets/img/icons/divider.svg";
 
-import getParagraphStyleChildTools, {
-  type ParagrapsStyleId,
-} from "./paragraphStyle";
+import getParagraphTextStyleChildTools, {
+  type ParagraphTextStyleId,
+} from "./paragraphTextStyle";
 
 import type {
   BaseExtensionsConfig,
@@ -147,13 +147,13 @@ const editorTools: EditorTools = [
     disabled: () => isListActive(),
   }),
 
-  ...registerTool("paragraphStyle", {
-    id: "paragraphStyle",
+  ...registerTool("paragraphTextStyle", {
+    id: "paragraphTextStyle",
     icon: ParagraphIcon,
-    name: "Paragraph style",
+    name: "Text style",
     secondary: true,
-    ...getParagraphStyleChildTools(() => props.editor),
-  } satisfies EditorToolItem<ParagrapsStyleId>),
+    ...getParagraphTextStyleChildTools(() => props.editor),
+  } satisfies EditorToolItem<ParagraphTextStyleId>),
 
   ...registerTool("blockquote", {
     id: "blockquote",
