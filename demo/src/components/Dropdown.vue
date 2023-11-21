@@ -367,6 +367,7 @@ export default {
         </div>
         <div class="grid-item-2">selected id: {{ disabledSelected }}</div>
       </div>
+      <br />
       <div class="grid-container">
         <div class="grid-item-5">
           <Dropdown
@@ -463,8 +464,6 @@ export default {
 <style lang="postcss" scoped>
 .dropdown {
   & .slot-option {
-    background: var(--theme-dropdown-background-color);
-    color: var(--theme-dropdown-foreground-color-hover);
     display: flex;
     flex-direction: row;
     padding: 10px;
@@ -473,7 +472,6 @@ export default {
       flex: 0 0 18px;
       height: 18px;
       stroke-width: calc(32px / 18);
-      stroke: var(--theme-dropdown-foreground-color);
     }
 
     & .description {
@@ -481,14 +479,12 @@ export default {
       padding: 0 10px;
 
       & .title {
-        color: inherit;
         font-size: 13px;
         font-weight: 500;
         line-height: 150%;
       }
 
       & .subtitle {
-        color: inherit;
         font-size: 11px;
         font-weight: 300;
         line-height: 150%;
@@ -496,46 +492,12 @@ export default {
     }
 
     & .year {
-      color: inherit;
       flex: 1 1 auto;
       font-size: 13px;
       font-weight: 500;
       line-height: 150%;
       text-align: right;
     }
-
-    &:hover {
-      background: var(--theme-dropdown-background-color-hover);
-      color: var(--theme-dropdown-foreground-color-hover);
-
-      & svg {
-        stroke: var(--theme-dropdown-foreground-color-hover);
-      }
-    }
-
-    &:focus {
-      background: var(--theme-dropdown-background-color-focus);
-      color: var(--theme-dropdown-foreground-color-focus);
-
-      & svg {
-        stroke: var(--theme-dropdown-foreground-color-focus);
-      }
-    }
-  }
-
-  & .focused {
-    & .slot-option {
-      background: var(--theme-dropdown-background-color-selected);
-      color: var(--theme-dropdown-foreground-color-selected);
-
-      & svg {
-        stroke: var(--theme-dropdown-foreground-color-selected);
-      }
-    }
-  }
-
-  & .noselect {
-    user-select: none;
   }
 }
 </style>

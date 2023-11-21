@@ -475,17 +475,13 @@ export default {
     outline: none;
   }
 
-  & [role="option"]:not(.has-option-template) {
-    display: block;
-    width: 100%;
-    padding: 0 10px;
-    line-height: 22px;
-    position: relative;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
+  & [role="option"] {
     background: var(--theme-dropdown-background-color);
     color: var(--theme-dropdown-foreground-color);
+
+    & > :slotted(svg) {
+      stroke: var(--theme-dropdown-foreground-color);
+    }
 
     &.empty {
       white-space: pre-wrap;
@@ -494,16 +490,43 @@ export default {
     &:hover {
       background: var(--theme-dropdown-background-color-hover);
       color: var(--theme-dropdown-foreground-color-hover);
+
+      & :slotted(svg) {
+        stroke: var(--theme-dropdown-foreground-color-hover);
+      }
     }
 
     &:focus {
       background: var(--theme-dropdown-background-color-focus);
       color: var(--theme-dropdown-foreground-color-focus);
+
+      & :slotted(svg) {
+        stroke: var(--theme-dropdown-foreground-color-focus);
+      }
     }
 
     &.focused {
       background: var(--theme-dropdown-background-color-selected);
       color: var(--theme-dropdown-foreground-color-selected);
+
+      & :slotted(svg) {
+        stroke: var(--theme-dropdown-foreground-color-selected);
+      }
+    }
+  }
+
+  & [role="option"]:not(.slotted) {
+    display: block;
+    width: 100%;
+    padding: 0 10px;
+    line-height: 22px;
+    position: relative;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+
+    &.empty {
+      white-space: pre-wrap;
     }
   }
 
