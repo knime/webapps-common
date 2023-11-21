@@ -333,6 +333,8 @@ const onCopySelection = ({
 .table-view-wrapper {
   display: flex;
   flex-direction: column;
+  max-height: inherit;
+  min-height: inherit;
 
   & :deep(.row) {
     border-bottom: v-bind(BORDER_BOTTOM_WIDTH + "px") solid
