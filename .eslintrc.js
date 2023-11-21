@@ -6,6 +6,7 @@ module.exports = {
   extends: [
     "@knime/eslint-config/vue3-typescript",
     "@knime/eslint-config/vitest",
+    "plugin:storybook/recommended",
   ],
   env: {
     node: true,
