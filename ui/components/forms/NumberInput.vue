@@ -88,8 +88,11 @@ export default {
    */
   spinnerArrowInterval: null,
   computed: {
+    isInteger() {
+      return this.type === "integer";
+    },
     stepSize() {
-      return this.type === "integer"
+      return this.isInteger
         ? DEFAULT_STEP_SIZE_INTEGER
         : DEFAULT_STEP_SIZE_DOUBLE;
     },
@@ -99,6 +102,15 @@ export default {
         classes += " hover";
       }
       return classes;
+    },
+    inputValue() {
+      // For type double, the conversion to string is needed to ensure that the decimal separator does not disappear
+      // when the last digit behind the separator is removed. The check for NaN is needed for int and double to remove
+      // the warning of the browser that the specified value is out of range or cannot be parsed.
+      if (isNaN(this.localValue)) {
+        return "";
+      }
+      return this.isInteger ? this.localValue : this.localValue.toString();
     },
   },
   watch: {
@@ -119,7 +131,7 @@ export default {
   },
   methods: {
     parseValue(value) {
-      return this.type === "integer" ? parseInt(value, 10) : parseFloat(value);
+      return this.isInteger ? parseInt(value, 10) : parseFloat(value);
     },
     getValue() {
       return this.parseValue(this.$refs.input.value);
@@ -131,18 +143,25 @@ export default {
         return;
       }
       let inputValue;
-      if (
-        e &&
-        e.inputType === "deleteContentBackward" &&
-        this.localValue.toString().length > 1
-      ) {
-        // manually slice and parse the value (in case the new input value ends with a decimal point)
-        // in which case the number input field treats it as invalid
-        inputValue = this.parseValue(this.localValue.toString().slice(0, -1));
+      if (e && e.inputType === "deleteContentBackward" && !e.target.value) {
+        // This condition is true in two cases:
+        // 1. When the decimal separator of the system is a comma, but the user typed in a period and removes all
+        //    digits after the period. (The used separator is unknown, since it can be different than the locale,
+        //    specified by navigator.language)
+        // 2. When the user removes all digits
+        // We cannot distinguish between 1. and 2., but 2. is fulfilled for correct inputs, while 1. is fulfilled for
+        // incorrect inputs. Therefore, we just delete all digits.
+        inputValue = NaN;
+        this.$refs.input.value = "";
       } else {
         inputValue = this.getValue();
       }
       this.$emit("update:modelValue", inputValue);
+    },
+    onBlur() {
+      // Passing a number instead of a string to the input removes the decimal separator when the input field looses
+      // focus and there is no digit behind the separator
+      this.$refs.input.value = this.getValue();
     },
     validate(value) {
       let isValid = true;
@@ -257,13 +276,14 @@ export default {
       :name="name"
       type="number"
       role="spinButton"
-      :value="localValue"
+      :value="inputValue"
       :min="min"
       :max="max"
       :step="stepSize"
       :class="inputClassList"
       :disabled="disabled"
       @input="onInput"
+      @blur="onBlur"
       @mouseenter="toggleHover"
       @mouseleave="toggleHover"
     />

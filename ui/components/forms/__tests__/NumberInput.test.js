@@ -115,22 +115,16 @@ describe("NumberInput.vue", () => {
     expect(wrapper.vm.getValue()).toBe(442353.2523);
   });
 
-  it("accepts decimal point as separator", () => {
-    const mockEvent = {
-      data: "5",
-      inputType: "",
-      target: {
-        modelValue: "1.5",
-      },
-    };
-    wrapper.vm.$refs.input.value = "1.5";
+  it("accepts decimal point as separator", async () => {
+    const input = wrapper.find("input");
+    input.element.value = "1.5";
+    await input.trigger("input");
 
-    wrapper.vm.onInput(mockEvent);
     expect(wrapper.emitted("update:modelValue")).toBeTruthy();
     expect(wrapper.emitted("update:modelValue")[0][0]).toBe(1.5);
   });
 
-  it("converts invalid decimal point to number", () => {
+  it("does not emit a new value when the input is a period", () => {
     const mockEvent = {
       data: ".",
       inputType: "",
@@ -138,24 +132,31 @@ describe("NumberInput.vue", () => {
         modelValue: "",
       },
     };
-    wrapper.vm.$refs.input.value = "1.";
 
     wrapper.vm.onInput(mockEvent);
     expect(wrapper.emitted("update:modelValue")).toBeFalsy();
   });
 
-  it("accepts decimal point as separator on delete", () => {
+  it("emits NaN when last digit was deleted", () => {
     const mockEvent = {
       data: null,
       inputType: "deleteContentBackward",
       target: {
-        modelValue: "",
+        value: "",
       },
     };
-    wrapper.vm.$refs.input.value = "0";
 
     wrapper.vm.onInput(mockEvent);
     expect(wrapper.emitted("update:modelValue")).toBeTruthy();
-    expect(wrapper.emitted("update:modelValue")[0][0]).toBe(1);
+    expect(wrapper.emitted("update:modelValue")[0][0]).toBeNaN();
+  });
+
+  it("sets the value of the input as number when the input loses focus", async () => {
+    const getValueSpy = vi.spyOn(wrapper.vm, "getValue");
+    const input = wrapper.find("input");
+    input.element.value = "1.5";
+    await input.trigger("input");
+    await input.trigger("blur");
+    expect(getValueSpy).toHaveNthReturnedWith(2, 1.5);
   });
 });
