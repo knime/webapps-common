@@ -162,7 +162,7 @@ export default {
   ],
   data() {
     return {
-      chosenValues: null as null | Id[],
+      chosenValues: this.initialManuallySelected,
       chosenPattern: this.initialPattern,
       chosenTypes: this.initialSelectedTypes,
       invalidPossibleValueIds: new Set(),
@@ -271,11 +271,11 @@ export default {
     includeUnknownValues(newVal) {
       this.$emit("includeUnknownValuesInput", newVal);
     },
-  },
-  mounted() {
-    Promise.resolve(this.initialManuallySelected).then((manuallySelected) => {
-      this.chosenValues = manuallySelected;
-    });
+    initialManuallySelected(newVal, oldVal) {
+      if (newVal === null || oldVal === null) {
+        this.chosenValues = newVal;
+      }
+    },
   },
   methods: {
     onManualInput(value: Id[]) {
@@ -317,7 +317,7 @@ export default {
     itemMatches(item: PossibleValue) {
       const mode = filters[this.mode];
       return mode.test(
-        this.mode === "type" ? item.type.id : item.text,
+        this.mode === "type" ? item.type?.id : item.text,
         this.normalizedSearchTerm,
         this.caseSensitivePattern,
         this.inversePattern,

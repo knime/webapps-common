@@ -91,16 +91,10 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
     ).toStrictEqual([defaultPossibleValues[2]]);
   });
 
-  it("renders with async initial manually selected", async () => {
-    let setInitialSelected;
-
-    const initialManuallySelected = new Promise((resolve) => {
-      setInitialSelected = resolve;
-    });
-
+  it("renders with null initial manually selected", async () => {
     let propsData = {
       possibleValues: defaultPossibleValues,
-      initialManuallySelected,
+      initialManuallySelected: null,
       leftLabel: "Choose",
       rightLabel: "The value",
       size: 3,
@@ -112,8 +106,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
 
     assertLeftRightAmount(wrapper, 3, 0);
 
-    setInitialSelected(["test3"]);
-    await flushPromises();
+    await wrapper.setProps({ initialManuallySelected: ["test3"] });
 
     assertLeftRightAmount(wrapper, 2, 1);
   });
