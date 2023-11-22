@@ -932,7 +932,7 @@ export default {
     },
     async handleInitialSelection() {
       const initialSelection = await this.selectionService.initialSelection();
-      this.totalSelected = initialSelection.length;
+      this.totalSelected = initialSelection ? initialSelection.length : 0;
       this.transformSelection();
     },
     createHeaderSubMenuItems(columnName, renderers) {
