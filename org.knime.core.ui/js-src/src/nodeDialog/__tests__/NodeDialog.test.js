@@ -19,6 +19,13 @@ import flushPromises from "flush-promises";
 import { getOptions } from "./utils";
 
 window.closeCEFWindow = () => {};
+const metaOrCtrlKey = "metaKey";
+
+vi.mock("webapps-common/util/navigator", () => {
+  return {
+    getMetaOrCtrlKey: () => metaOrCtrlKey,
+  };
+});
 
 describe("NodeDialog.vue", () => {
   let initialDataSpy;
@@ -195,7 +202,78 @@ describe("NodeDialog.vue", () => {
 
     wrapper.vm.closeDialog();
 
-    expect(spy).toHaveBeenCalledWith();
+    expect(spy).toHaveBeenCalledWith(false);
+  });
+
+  describe("keyboard shortcuts", () => {
+    let wrapper, closeCEFWindowSpy, applyDataSpy;
+
+    beforeEach(() => {
+      wrapper = shallowMount(
+        NodeDialog,
+        getOptions({ stubButtonsBySlot: true }),
+      );
+      closeCEFWindowSpy = vi.spyOn(window, "closeCEFWindow");
+      applyDataSpy = vi
+        .spyOn(wrapper.vm.jsonDataService, "applyData")
+        .mockResolvedValue({});
+    });
+
+    it("executes node when metaOrCtrlKey is pressed on closeDialog", () => {
+      wrapper.trigger("keydown", { [metaOrCtrlKey]: true });
+
+      wrapper.vm.closeDialog();
+
+      expect(closeCEFWindowSpy).toHaveBeenCalledWith(true);
+    });
+
+    it("does not executes node when metaOrCtrlKey was pressed and released again on closeDialog", async () => {
+      const okButton = wrapper.findAllComponents(Button).at(1);
+      expect(okButton.html()).toBe("Ok");
+      await wrapper.trigger("keydown", { [metaOrCtrlKey]: true });
+      expect(okButton.html()).toBe("Ok and Execute");
+      await wrapper.trigger("keyup", { [metaOrCtrlKey]: false });
+      expect(okButton.html()).toBe("Ok");
+
+      wrapper.vm.closeDialog();
+
+      expect(closeCEFWindowSpy).toHaveBeenCalledWith(false);
+    });
+
+    it("triggers cancel on escape", async () => {
+      await wrapper.trigger("keydown", { key: "Escape" });
+      expect(closeCEFWindowSpy).toHaveBeenCalledWith(false);
+    });
+
+    it("triggers on window keyboard event with body as target", () => {
+      const event = new Event("keydown");
+      event.key = "Escape";
+      event[metaOrCtrlKey] = false;
+      Object.defineProperty(event, "target", { value: document.body });
+      window.dispatchEvent(event);
+      expect(closeCEFWindowSpy).toHaveBeenCalledWith(false);
+    });
+
+    it("does not trigger on window keyboard event if target is not body", () => {
+      const event = new Event("keydown");
+      event.key = "Escape";
+      event[metaOrCtrlKey] = false;
+      Object.defineProperty(event, "target", { value: "not-the-body" });
+      window.dispatchEvent(event);
+      expect(closeCEFWindowSpy).not.toHaveBeenCalled();
+    });
+
+    it("triggers apply + close on enter", async () => {
+      await wrapper.trigger("keydown", { key: "Enter" });
+      expect(applyDataSpy).toHaveBeenCalled();
+      expect(closeCEFWindowSpy).toHaveBeenCalledWith(false);
+    });
+
+    it("triggers apply + close + execute on metaOrCtrlKey + enter", async () => {
+      await wrapper.trigger("keydown", { key: "Enter", [metaOrCtrlKey]: true });
+      expect(applyDataSpy).toHaveBeenCalled();
+      expect(closeCEFWindowSpy).toHaveBeenCalledWith(true);
+    });
   });
 
   it("provides 'getData' method", () => {

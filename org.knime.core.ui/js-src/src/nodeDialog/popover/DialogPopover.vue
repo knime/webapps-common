@@ -112,6 +112,15 @@ const body = document.body;
 const focusButton = () => {
   reference.value?.focus();
 };
+
+const onEscapeOnButton = (event: KeyboardEvent) => {
+  if (expanded.value) {
+    event.stopPropagation();
+    event.preventDefault();
+    close();
+    focusButton();
+  }
+};
 </script>
 
 <template>
@@ -122,7 +131,9 @@ const focusButton = () => {
       :active="expanded"
       @mouseup.stop="toggleExpanded"
       @keydown.space.stop="toggleExpanded"
-      @keydown.esc.stop="close"
+      @keydown.enter.stop="toggleExpanded"
+      @keydown.esc="onEscapeOnButton"
+      @keydown.tab="close"
       @focus="buttonFocused = true"
       @blur="buttonFocused = false"
     >

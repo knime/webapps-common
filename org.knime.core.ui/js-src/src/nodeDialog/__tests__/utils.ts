@@ -8,12 +8,14 @@ export const getOptions = ({
   sendWarningMock,
   cleanSettingsMock,
   dirtySettingsMock,
+  stubButtonsBySlot,
 }: {
   setApplySettingsMock?: Mock;
   createAlertMock?: Mock;
   sendWarningMock?: Mock;
   cleanSettingsMock?: Mock;
   dirtySettingsMock?: Mock;
+  stubButtonsBySlot?: true;
 } = {}) => {
   const dialogStoreOptions = {
     actions: {
@@ -42,6 +44,14 @@ export const getOptions = ({
           },
         }),
       },
+      ...(stubButtonsBySlot && {
+        stubs: {
+          Button: {
+            inheritAttrs: false,
+            template: "<slot/>",
+          },
+        },
+      }),
     },
     props: {
       dialogSettings: {

@@ -153,15 +153,34 @@ describe("DescriptionPopover.vue", () => {
       modifiedExpect(wrapper).toBeCollapsed();
     });
 
+    it("displays floating element on keydown.enter", async () => {
+      const wrapper = mountDescriptionPopover({ props });
+
+      await wrapper.find(".function-button").trigger("keydown.enter");
+
+      modifiedExpect(wrapper).toBeExpanded();
+
+      await wrapper.find(".function-button").trigger("keydown.enter");
+
+      modifiedExpect(wrapper).toBeCollapsed();
+    });
+
     it("closes floating element on escape on button", async () => {
       const wrapper = mountDescriptionPopover({ props });
       await togglePopoverExpanded(wrapper);
 
       modifiedExpect(wrapper).toBeExpanded();
 
-      await wrapper.find(".function-button").trigger("keydown.esc");
+      const preventDefault = vi.fn();
+      const stopPropagation = vi.fn();
+      await wrapper
+        .find(".function-button")
+        .trigger("keydown.esc", { preventDefault, stopPropagation });
 
       modifiedExpect(wrapper).toBeCollapsed();
+      expect(preventDefault).toHaveBeenCalled();
+      expect(stopPropagation).toHaveBeenCalled();
+      expect(document.activeElement).toBe(wrapper.vm.referenceEl);
     });
 
     it("closes floating element on escape inside floating element", async () => {

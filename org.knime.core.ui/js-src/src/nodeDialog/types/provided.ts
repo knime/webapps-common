@@ -39,6 +39,7 @@ type Provided = {
   getData: getData;
   sendAlert: sendAlert;
   flowVariablesApi: ProvidedFlowVariablesApi;
+  closeDialog: () => void;
 };
 
 export default Provided;

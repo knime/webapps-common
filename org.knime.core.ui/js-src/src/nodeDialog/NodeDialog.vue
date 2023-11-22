@@ -17,6 +17,7 @@ import {
   hasAdvancedOptions,
 } from "../nodeDialog/utils";
 import Button from "webapps-common/ui/components/Button.vue";
+import { getMetaOrCtrlKey } from "webapps-common/util/navigator";
 import { cloneDeep, set, isEqual } from "lodash";
 import { inject, markRaw } from "vue";
 import type ProvidedMethods from "./types/provided";
@@ -34,7 +35,7 @@ const renderers = [
 
 declare global {
   export interface Window {
-    closeCEFWindow: Function;
+    closeCEFWindow: (executeNode: boolean) => void;
   }
 }
 
@@ -42,6 +43,13 @@ type RegisteredWatcher = {
   dataPaths: string[];
   transformSettings: (newData: SettingsData) => void;
 };
+
+const doIfBodyActive =
+  (fn: (event: KeyboardEvent) => void) => (event: KeyboardEvent) => {
+    if (event.target === document.body) {
+      fn(event);
+    }
+  };
 
 export default {
   components: {
@@ -62,6 +70,7 @@ export default {
         getFlowVariableOverrideValue: this.getFlowVariableOverrideValue,
         unsetControllingFlowVariable: this.unsetControllingFlowVariable,
       },
+      closeDialog: this.closeDialog,
     } as ProvidedMethods;
   },
   setup() {
@@ -84,6 +93,7 @@ export default {
       uischema: {} as UISchemaElement,
       ready: false,
       isWriteProtected: false,
+      isMetaKeyPressed: false,
     };
   },
   // TODO: UIEXT-236 Move to dialog service
@@ -112,6 +122,15 @@ export default {
     });
     this.isWriteProtected = this.dialogService.isWriteProtected();
     this.ready = true;
+    window.addEventListener("keydown", doIfBodyActive(this.keyDown.bind(this)));
+    window.addEventListener("keyup", doIfBodyActive(this.keyUp.bind(this)));
+  },
+  unmounted() {
+    window.removeEventListener(
+      "keydown",
+      doIfBodyActive(this.keyDown.bind(this)),
+    );
+    window.removeEventListener("keyup", doIfBodyActive(this.keyUp.bind(this)));
   },
   methods: {
     getData() {
@@ -305,7 +324,7 @@ export default {
       }
     },
     closeDialog() {
-      window.closeCEFWindow();
+      window.closeCEFWindow(this.isMetaKeyPressed);
     },
     changeAdvancedSettings() {
       if (this.schema === null) {
@@ -319,6 +338,21 @@ export default {
       }
       return hasAdvancedOptions(this.uischema);
     },
+    keyDown(e: KeyboardEvent) {
+      this.isMetaKeyPressed = e[getMetaOrCtrlKey()];
+      if (e.defaultPrevented) {
+        return;
+      }
+      if (e.key === "Enter") {
+        this.applySettingsCloseDialog();
+      }
+      if (e.key === "Escape") {
+        this.closeDialog();
+      }
+    },
+    keyUp(e: KeyboardEvent) {
+      this.isMetaKeyPressed = e[getMetaOrCtrlKey()];
+    },
     markRaw,
   },
 };
@@ -326,7 +360,7 @@ export default {
 
 <template>
   <div class="dialog">
-    <div class="form">
+    <div class="form" :tabindex="-1" @keydown="keyDown" @keyup="keyUp">
       <JsonForms
         v-if="ready"
         ref="jsonforms"
@@ -352,7 +386,7 @@ export default {
         compact
         @click.prevent="applySettingsCloseDialog"
       >
-        Ok
+        {{ isMetaKeyPressed ? "Ok and Execute" : "Ok" }}
       </Button>
     </div>
   </div>
@@ -377,6 +411,10 @@ export default {
     padding: 0 20px;
     overflow: hidden;
     overflow-y: auto;
+
+    &:focus {
+      outline: none;
+    }
 
     /* if a dialog starts with a section header we don't need extra top padding, otherwise adding it here */
     &:not(

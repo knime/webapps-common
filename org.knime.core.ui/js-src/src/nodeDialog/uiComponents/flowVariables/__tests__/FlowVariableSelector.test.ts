@@ -132,9 +132,9 @@ describe("FlowVariableSelector.vue", () => {
     expect(wrapper.findComponent(Dropdown).props()).toMatchObject({
       possibleValues: [
         {
-          id: 0,
-          text: " ",
-          title: "No controlling variable",
+          id: "",
+          text: "None",
+          title: "No flow variable selected",
         },
         constructPossibleValue("var1"),
         constructPossibleValue("var2"),

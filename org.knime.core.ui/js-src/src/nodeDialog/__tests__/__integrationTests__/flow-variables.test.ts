@@ -127,7 +127,10 @@ describe("flow variables", () => {
     await dropdownButton.trigger("click");
 
     listItems.forEach((li) => expect(li.isVisible()).toBeTruthy());
-    expect(listItems.map((li) => li.text())).toStrictEqual(["", flowVar1.name]);
+    expect(listItems.map((li) => li.text())).toStrictEqual([
+      "None",
+      flowVar1.name,
+    ]);
   });
 
   it("sets controlling flow variables", async () => {

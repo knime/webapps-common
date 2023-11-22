@@ -25,9 +25,9 @@ const dropdownPossibleValues: Ref<
 const nameToFlowVariable: Ref<Record<string, PossibleFlowVariable>> = ref({});
 
 const noFlowVariableOption = {
-  id: 0,
-  text: " ",
-  title: "No controlling variable",
+  id: "",
+  text: "None",
+  title: "No flow variable selected",
 };
 
 const toDropdownValues = (allPossibleValues: PossibleFlowVariable[]) => [
