@@ -485,7 +485,7 @@ describe("TwinlistInput.vue", () => {
         }),
       );
       expect(
-        await wrapper.findComponent(MultiModeTwinlist).props()
+        wrapper.findComponent(MultiModeTwinlist).props()
           .initialManuallySelected,
       ).toStrictEqual(manuallySelected);
     });
@@ -527,13 +527,13 @@ describe("TwinlistInput.vue", () => {
         }),
       );
       expect(
-        await wrapper.findComponent(MultiModeTwinlist).props()
+        wrapper.findComponent(MultiModeTwinlist).props()
           .initialManuallySelected,
       ).toStrictEqual(manuallySelected);
     });
   });
 
-  it("sets correct initial value", async () => {
+  it("sets correct initial value", () => {
     expect(wrapper.findComponent(MultiModeTwinlist).vm.initialPattern).toBe(
       props.control.data.patternFilter.pattern,
     );
@@ -541,7 +541,7 @@ describe("TwinlistInput.vue", () => {
       wrapper.findComponent(MultiModeTwinlist).vm.initialSelectedTypes,
     ).toStrictEqual(props.control.data.typeFilter.selectedTypes);
     expect(
-      await wrapper.findComponent(MultiModeTwinlist).vm.initialManuallySelected,
+      wrapper.findComponent(MultiModeTwinlist).vm.initialManuallySelected,
     ).toStrictEqual(props.control.data.manualFilter.manuallySelected);
     expect(wrapper.findComponent(MultiModeTwinlist).vm.initialMode).toBe(
       "manual",

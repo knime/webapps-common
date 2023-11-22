@@ -77,20 +77,11 @@ const TwinlistInput = defineComponent({
     };
   },
   data() {
-    let setInitialManuallySelected: (data: TwinlistData) => void = () => {
-      throw Error("This method should not be callable.");
-    };
-    const initialManuallySelected = new Promise<string[]>((resolve) => {
-      setInitialManuallySelected = (data) =>
-        resolve(data.manualFilter.manuallySelected);
-    });
-
     return {
       loadingInfo: markRaw(TwinlistLoadingInfo) as Raw<any> | null,
       possibleValues: null as null | PossibleValue[],
       previouslySelectedTypes: null as null | IdAndText[],
-      initialManuallySelected,
-      setInitialManuallySelected,
+      initialManuallySelected: null as null | string[],
     };
   },
   computed: {
@@ -203,6 +194,9 @@ const TwinlistInput = defineComponent({
       }
       this.setInitialManuallySelected(this.onChange(newData));
       this.loadingInfo = null;
+    },
+    setInitialManuallySelected(data: TwinlistData) {
+      this.initialManuallySelected = data.manualFilter.manuallySelected;
     },
     getPreviouslySelectedTypes() {
       const selectedTypesIds = this.control.data.typeFilter.selectedTypes;
