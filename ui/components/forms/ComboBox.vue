@@ -163,13 +163,22 @@ export default defineComponent({
         : this.sizeVisibleOptions;
     },
   },
-
+  watch: {
+    initialSelectedIds(newValue) {
+      this.changeSelectedIds(newValue);
+    },
+  },
   mounted() {
     this.focusElement = this.$refs.searchInput as HTMLInputElement;
     this.refocusElement = this.$refs.listBox as HTMLDivElement;
   },
 
   methods: {
+    changeSelectedIds(newSelected: string[]) {
+      this.selectedIds = newSelected;
+      this.$emit("update:selectedIds", this.selectedIds);
+      this.$emit("change", this.selectedValues);
+    },
     focusInput() {
       (this.$refs.searchInput as HTMLInputElement).focus();
     },
@@ -186,9 +195,7 @@ export default defineComponent({
     },
     onBackspace() {
       if (!this.searchValue) {
-        this.selectedIds = this.selectedIds.slice(0, -1);
-        this.$emit("update:selectedIds", this.selectedIds);
-        this.$emit("change", this.selectedValues);
+        this.changeSelectedIds(this.selectedIds.slice(0, -1));
       }
       // else regular backspace behavior
     },
@@ -210,9 +217,7 @@ export default defineComponent({
 
     updateSelectedIds(selectedIds: Array<string>) {
       const setSelectedIds = (value: Array<string>) => {
-        this.selectedIds = uniq(value).filter(Boolean);
-        this.$emit("update:selectedIds", this.selectedIds);
-        this.$emit("change", this.selectedValues);
+        this.changeSelectedIds(uniq(value).filter(Boolean));
       };
 
       const hasNewItem = selectedIds.includes(DRAFT_ITEM_ID);

@@ -38,6 +38,23 @@ describe("ComboBox.vue", () => {
     expect(wrapper.find(".summary-input-icon-wrapper")).toBeTruthy();
   });
 
+  it("updates the selected ids when the initialSelectedIds prop changes", async () => {
+    const wrapper = doMount({
+      initialSelectedIds: ["test1", "test2", "test3"],
+    });
+
+    const newSelectedIds = ["test1", "test3"];
+    await wrapper.setProps({
+      initialSelectedIds: newSelectedIds,
+    });
+
+    expect(wrapper.vm.selectedIds).toEqual(newSelectedIds);
+    expect(wrapper.emitted()).toHaveProperty("update:selectedIds");
+    expect(wrapper.emitted()["update:selectedIds"][0]).toEqual([
+      newSelectedIds,
+    ]);
+  });
+
   it("updates the selected ids and emits update:selectedIds when updateSelectedIds is called", async () => {
     const wrapper = doMount({
       initialSelectedIds: ["test1", "test2", "test3"],
