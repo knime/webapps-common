@@ -12,7 +12,7 @@ import { filters } from "../../../util/filters";
 import type { PropType } from "vue";
 
 type PossibleType = { id: string; text: string };
-type PossibleValue = TwinlistPossibleValue & { type: PossibleType };
+type PossibleValue = TwinlistPossibleValue & { type?: PossibleType };
 
 const allModes = {
   manual: "Manual",
@@ -40,7 +40,7 @@ export default {
       default: "manual",
     },
     initialManuallySelected: {
-      type: Array as PropType<Id[] | Promise<Id[]>>,
+      type: Array as PropType<Id[] | null>,
       default: () => [],
     },
     initialIncludeUnknownValues: {
@@ -64,7 +64,7 @@ export default {
       default: true,
     },
     initialSelectedTypes: {
-      type: Array,
+      type: Array as PropType<Array<string>>,
       default: () => [],
     },
 
@@ -179,8 +179,8 @@ export default {
     },
     possibleTypes() {
       const possibleTypes = this.possibleValues
-        .map((x) => x.type)
-        .filter((type) => type);
+        .map(({ type }) => type)
+        .filter(Boolean) as PossibleType[];
       const possibleTypesIds = possibleTypes.map((type) => type.id);
       const additionalTypes = this.additionalPossibleTypes.filter(
         (type) => type && !possibleTypesIds.includes(type.id),
@@ -316,11 +316,8 @@ export default {
     },
     itemMatches(item: PossibleValue) {
       const mode = filters[this.mode];
-      // Needed as optional chaining is currently not supported, should be removed after the switch to vue3
-      // eslint-disable-next-line no-undefined
-      const optionalItemType = item.type ? item.type.id : undefined;
       return mode.test(
-        this.mode === "type" ? optionalItemType : item.text,
+        this.mode === "type" ? item.type.id : item.text,
         this.normalizedSearchTerm,
         this.caseSensitivePattern,
         this.inversePattern,

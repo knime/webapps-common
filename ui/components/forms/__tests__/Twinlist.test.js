@@ -486,7 +486,7 @@ describe("Twinlist.vue", () => {
       let left = boxes[0];
       let right = boxes[1];
       left.vm.setSelected(["test2", "test3"]);
-      wrapper.find({ ref: "moveRight" }).trigger("keydown.enter");
+      wrapper.find({ ref: "moveRight" }).trigger("keydown", { key: "Enter" });
       await wrapper.vm.$nextTick();
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
         "test2",
@@ -564,7 +564,7 @@ describe("Twinlist.vue", () => {
       let left = boxes[0];
       let right = boxes[1];
       right.vm.setSelected(["test2", "test3"]);
-      wrapper.find({ ref: "moveLeft" }).trigger("keydown.enter");
+      wrapper.find({ ref: "moveLeft" }).trigger("keydown", { key: "Enter" });
       await wrapper.vm.$nextTick();
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([]);
       expect(left.vm.$props.possibleValues).toStrictEqual(props.possibleValues);
@@ -583,7 +583,9 @@ describe("Twinlist.vue", () => {
 
       let boxes = wrapper.findAllComponents(MultiselectListBox);
       let right = boxes[1];
-      wrapper.find({ ref: "moveAllRight" }).trigger("keydown.enter");
+      wrapper
+        .find({ ref: "moveAllRight" })
+        .trigger("keydown", { key: "Enter" });
       await wrapper.vm.$nextTick();
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
         "test1",
@@ -608,7 +610,7 @@ describe("Twinlist.vue", () => {
 
       let boxes = wrapper.findAllComponents(MultiselectListBox);
       let left = boxes[0];
-      wrapper.find({ ref: "moveAllLeft" }).trigger("keydown.enter");
+      wrapper.find({ ref: "moveAllLeft" }).trigger("keydown", { key: "Enter" });
       await wrapper.vm.$nextTick();
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([]);
       expect(left.vm.$props.possibleValues).toStrictEqual(props.possibleValues);

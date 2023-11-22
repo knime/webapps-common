@@ -9,7 +9,7 @@ import ArrowPrevDoubleIcon from "../../assets/img/icons/arrow-prev-double.svg";
 import { filters } from "../../../util/filters";
 import type { PropType } from "vue";
 
-const KEY_ENTER = 13;
+const KEY_ENTER = "Enter";
 const MIN_LIST_SIZE = 5;
 
 export type Id = string | number | symbol;
@@ -328,7 +328,7 @@ export default {
     },
     moveRight(itemsParam: Id[] | null = null) {
       // add all left items to our values
-      const items = itemsParam === null ? this.leftSelected : itemsParam;
+      const items = itemsParam ?? this.leftSelected;
       this.chosenValues = [
         ...items.filter((item) => item !== this.unknownValuesId),
         ...this.chosenValues,
@@ -340,7 +340,7 @@ export default {
     },
     moveLeft(itemsParam: Id[] | null = null) {
       // remove all right values from or chosenValues
-      const items = itemsParam === null ? this.rightSelected : itemsParam;
+      const items = itemsParam ?? this.rightSelected;
       // add the invalid items to the possible items
       let invalidItems = items.filter((x) => this.invalidValueIds.includes(x));
       invalidItems.forEach((x) => this.invalidPossibleValueIds.add(x));
@@ -361,14 +361,12 @@ export default {
       this.includeUnknownValues = true;
     },
     onMoveAllRightButtonKey(e: KeyboardEvent) {
-      if (e.keyCode === KEY_ENTER) {
-        /* ENTER */
+      if (e.key === KEY_ENTER) {
         this.onMoveAllRightButtonClick();
       }
     },
     onMoveRightButtonKey(e: KeyboardEvent) {
-      if (e.keyCode === KEY_ENTER) {
-        /* ENTER */
+      if (e.key === KEY_ENTER) {
         this.moveRight();
       }
     },
@@ -380,14 +378,12 @@ export default {
       this.includeUnknownValues = false;
     },
     onMoveLeftButtonKey(e: KeyboardEvent) {
-      if (e.keyCode === KEY_ENTER) {
-        /* ENTER */
+      if (e.key === KEY_ENTER) {
         this.moveLeft();
       }
     },
     onMoveAllLeftButtonKey(e: KeyboardEvent) {
-      if (e.keyCode === KEY_ENTER) {
-        /* ENTER */
+      if (e.key === KEY_ENTER) {
         this.onMoveAllLeftButtonClick();
       }
     },
