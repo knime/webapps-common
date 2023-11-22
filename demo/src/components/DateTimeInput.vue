@@ -70,6 +70,13 @@ export default {
               :show-milliseconds="false"
             />
           </Label>
+          <Label text="Show Milliseconds" large>
+            <DateTimeInput
+              v-model="dateBounds"
+              :show-seconds="true"
+              :show-milliseconds="true"
+            />
+          </Label>
           <Label text="With bounds on date" large>
             <DateTimeInput
               v-model="dateBounds"
@@ -79,7 +86,14 @@ export default {
               :max="new Date()"
             />
           </Label>
-          <Label text="With disabled state">
+          <Label text="Two lines" large>
+            <DateTimeInput
+              v-model="dateBounds"
+              two-lines
+              :show-seconds="true"
+            />
+          </Label>
+          <Label text="With disabled state" large>
             <DateTimeInput
               v-model="dateBounds"
               :show-seconds="true"
