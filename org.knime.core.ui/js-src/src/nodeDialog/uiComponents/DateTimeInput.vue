@@ -92,6 +92,7 @@ export default DateTimeInput;
     >
       <DateInput
         :id="labelForId"
+        two-lines
         :model-value="new Date(control.data)"
         class="date-time"
         :required="true"
@@ -108,22 +109,3 @@ export default DateTimeInput;
     </LabeledInput>
   </DialogComponentWrapper>
 </template>
-
-<style lang="postcss" scoped>
-.date-time {
-  &:deep(.date-picker) {
-    width: 100%;
-    margin-top: 0;
-    margin-right: 0;
-    max-width: unset;
-  }
-
-  &:deep(.time) {
-    width: 100%;
-
-    & .wrapper {
-      flex: 1 1;
-    }
-  }
-}
-</style>
