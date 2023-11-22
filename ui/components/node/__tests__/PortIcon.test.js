@@ -36,4 +36,16 @@ describe("PortIcon", () => {
     expect(attributes.stroke).toBe(color);
     expect(attributes.fill).toBe(color);
   });
+
+  it("renders filled port: DataType report", () => {
+    wrapper = shallowMount(PortIcon, {
+      props: {
+        type: "report",
+        filled: true,
+      },
+    });
+    expect(wrapper.find("g").exists()).toBeTruthy();
+    const attributes = wrapper.find("g").attributes();
+    expect(attributes.transform).toBe("translate(-4.5, -4.5)");
+  });
 });

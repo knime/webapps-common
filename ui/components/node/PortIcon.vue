@@ -1,21 +1,25 @@
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from "vue";
 import * as portColors from "../../colors/portColors.mjs";
 
 const portSize = 9; // 9px
 const strokeWidth = 1.4; // 1.4px
 
 /** Draws a Node's port. Either a triangle, circle or square */
-export default {
+export default defineComponent({
   props: {
     /**
      * Distinguish between 'table', 'flowVariable' and other types of ports
      * Determines the shape of the port:
      *   table -> triangle
      *   flowVariable -> circle
-     *   default -> square
+     *   other -> square
+     *   report -> square (special reporting port)
+     *
+     *   defaults to -> table
      */
     type: {
-      type: String,
+      type: String as PropType<"table" | "flowVariable" | "other" | "report">,
       default: "table",
     },
     /**
@@ -26,6 +30,9 @@ export default {
       type: String,
       default: "",
     },
+    /**
+     * Whether the port icon should be filled with the color. Transparent otherwise
+     */
     filled: {
       type: Boolean,
       default: true,
@@ -35,9 +42,11 @@ export default {
     portSize() {
       return portSize;
     },
+
     strokeWidth() {
       return strokeWidth;
     },
+
     trianglePath() {
       // draw triangle around middle point
       let [x1, y1, x2, y3] = [
@@ -64,13 +73,17 @@ export default {
       return `${x1},${y1} ${x2},${0} ${x1},${y3}`;
     },
     portColor() {
-      return portColors[this.type] || this.color;
+      if (this.type === "table" || this.type === "flowVariable") {
+        return portColors[this.type];
+      }
+
+      return this.color;
     },
     fillColor() {
       return this.filled ? this.portColor : "transparent";
     },
   },
-};
+});
 </script>
 
 <template>
@@ -92,6 +105,20 @@ export default {
     :stroke-width="strokeWidth"
     v-bind="$attrs"
   />
+  <g
+    v-else-if="type === 'report'"
+    v-bind="$attrs"
+    :transform="`translate(${-portSize / 2}, ${-portSize / 2})`"
+  >
+    <rect
+      :x="0"
+      :y="0"
+      :width="portSize"
+      :height="portSize"
+      :fill="portColor"
+    />
+    <path d="M0 9L9 0V9H0Z" fill="#C0C4C6" />
+  </g>
   <!-- other port -->
   <rect
     v-else
