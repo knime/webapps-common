@@ -5,5 +5,11 @@ defineProps<{
 </script>
 
 <template>
-  <span class="knime-cell-content" v-html="content" />
+  <div class="knime-cell-content" v-html="content" />
 </template>
+
+<style scoped>
+.knime-cell-content {
+  min-width: min-content;
+}
+</style>
