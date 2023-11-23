@@ -1,16 +1,24 @@
-<script>
+<script lang="ts">
 import "./variables.css";
 import { mixin as VueClickAway } from "vue3-click-away";
 
 import DropdownIcon from "../../assets/img/icons/arrow-dropdown.svg";
+import type { PropType } from "vue";
+
+type Id = string | number;
+interface PossibleValue {
+  id: Id;
+  text: string;
+  title?: string;
+}
 
 let count = 0;
-const KEY_DOWN = 40;
-const KEY_UP = 38;
-const KEY_HOME = 36;
-const KEY_END = 35;
-const KEY_ESC = 27;
-const KEY_ENTER = 13;
+const KEY_DOWN = "ArrowDown";
+const KEY_UP = "ArrowUp";
+const KEY_HOME = "Home";
+const KEY_END = "End";
+const KEY_ESC = "Escape";
+const KEY_ENTER = "Enter";
 
 const TYPING_TIMEOUT = 1000; // in ms
 
@@ -27,7 +35,7 @@ export default {
       },
     },
     modelValue: {
-      type: String,
+      type: String as PropType<Id>,
       default: null,
     },
     name: {
@@ -62,21 +70,14 @@ export default {
      * }]
      */
     possibleValues: {
-      type: Array,
+      type: Array as PropType<PossibleValue[]>,
       default: () => [],
-      validator(values) {
-        if (!Array.isArray(values)) {
-          return false;
-        }
-        return values.every(
-          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text"),
-        );
-      },
     },
   },
   emits: ["update:modelValue"],
   data() {
     return {
+      typingTimeout: null as null | NodeJS.Timeout,
       isExpanded: false,
       searchQuery: "",
     };
@@ -89,7 +90,7 @@ export default {
       return !this.modelValue;
     },
     displayTextMap() {
-      let map = {};
+      let map = {} as Record<Id, string>;
       for (let value of this.possibleValues) {
         map[value.id] = value.text;
       }
@@ -113,14 +114,12 @@ export default {
       return this.$slots["icon-right"]?.().length;
     },
   },
-  created() {
-    this.typingTimeout = null;
-  },
+
   methods: {
-    isCurrentValue(candidate) {
+    isCurrentValue(candidate: Id) {
       return this.modelValue === candidate;
     },
-    setSelected(id) {
+    setSelected(id: Id) {
       consola.trace("ListBox setSelected on", id);
 
       /**
@@ -128,15 +127,24 @@ export default {
        */
       this.$emit("update:modelValue", id);
     },
-    onOptionClick(id) {
+    getButtonRef() {
+      return this.$refs.button as HTMLElement;
+    },
+    getOptionsRefs() {
+      return this.$refs.options as HTMLElement[];
+    },
+    getListBoxNodeRef() {
+      return this.$refs.ul as HTMLElement;
+    },
+    onOptionClick(id: Id) {
       this.setSelected(id);
       this.isExpanded = false;
-      this.$refs.button.focus();
+      this.getButtonRef().focus();
     },
-    scrollTo(optionIndex) {
-      let listBoxNode = this.$refs.ul;
+    scrollTo(optionIndex: number) {
+      let listBoxNode = this.getListBoxNodeRef();
       if (listBoxNode.scrollHeight > listBoxNode.clientHeight) {
-        let element = this.$refs.options[optionIndex];
+        let element = this.getOptionsRefs()[optionIndex];
         let scrollBottom = listBoxNode.clientHeight + listBoxNode.scrollTop;
         let elementBottom = element.offsetTop + element.offsetHeight;
         if (elementBottom > scrollBottom) {
@@ -165,12 +173,13 @@ export default {
     onEndKey() {
       let next = this.possibleValues.length - 1;
       this.setSelected(this.possibleValues[next].id);
-      this.$refs.ul.scrollTop = this.$refs.ul.scrollHeight;
+      const listBoxNode = this.getListBoxNodeRef();
+      listBoxNode.scrollTop = listBoxNode.scrollHeight;
     },
     onHomeKey() {
       let next = 0;
       this.setSelected(this.possibleValues[next].id);
-      this.$refs.ul.scrollTop = 0;
+      this.getListBoxNodeRef().scrollTop = 0;
     },
     toggleExpanded() {
       if (this.disabled) {
@@ -178,65 +187,67 @@ export default {
       }
       this.isExpanded = !this.isExpanded;
       if (this.isExpanded) {
-        this.$nextTick(() => this.$refs.ul.focus());
+        this.$nextTick(() => this.getListBoxNodeRef().focus());
       }
     },
-    handleKeyDownList(e) {
+    handleKeyDownList(e: KeyboardEvent) {
       /* NOTE: we use a single keyDown method because @keydown.up bindings are not testable. */
-      if (e.keyCode === KEY_DOWN) {
+      if (e.key === KEY_DOWN) {
         this.onArrowDown();
         e.preventDefault();
         return;
       }
-      if (e.keyCode === KEY_UP) {
+      if (e.key === KEY_UP) {
         this.onArrowUp();
         e.preventDefault();
         return;
       }
-      if (e.keyCode === KEY_END) {
+      if (e.key === KEY_END) {
         this.onEndKey();
         e.preventDefault();
         return;
       }
-      if (e.keyCode === KEY_HOME) {
+      if (e.key === KEY_HOME) {
         this.onHomeKey();
         e.preventDefault();
         return;
       }
-      if (e.keyCode === KEY_ESC) {
+      if (e.key === KEY_ESC) {
         this.isExpanded = false;
-        this.$refs.button.focus();
+        this.getButtonRef().focus();
         e.preventDefault();
         return;
       }
-      if (e.keyCode === KEY_ENTER) {
+      if (e.key === KEY_ENTER) {
         this.isExpanded = false;
-        this.$refs.button.focus();
+        this.getButtonRef().focus();
         e.preventDefault();
         return;
       }
       this.searchItem(e);
     },
-    handleKeyDownButton(e) {
-      if (e.keyCode === KEY_ENTER) {
+    handleKeyDownButton(e: KeyboardEvent) {
+      if (e.key === KEY_ENTER) {
         this.toggleExpanded();
         e.preventDefault();
         return;
       }
-      if (e.keyCode === KEY_DOWN) {
+      if (e.key === KEY_DOWN) {
         this.onArrowDown();
         e.preventDefault();
         return;
       }
-      if (e.keyCode === KEY_UP) {
+      if (e.key === KEY_UP) {
         this.onArrowUp();
         e.preventDefault();
         return;
       }
       this.searchItem(e);
     },
-    searchItem(e) {
-      clearTimeout(this.typingTimeout);
+    searchItem(e: KeyboardEvent) {
+      if (this.typingTimeout !== null) {
+        clearTimeout(this.typingTimeout);
+      }
       this.typingTimeout = setTimeout(() => {
         this.searchQuery = "";
       }, TYPING_TIMEOUT);
@@ -261,7 +272,7 @@ export default {
         return "";
       }
     },
-    generateId(node, itemId) {
+    generateId(node: string, itemId: Id | null = null) {
       if (!itemId) {
         return `${node}-${this.id}`;
       }
@@ -301,6 +312,7 @@ export default {
       <div v-if="hasRightIcon" class="loading-icon">
         <slot name="icon-right" />
       </div>
+      <!-- @vue-ignore -->
       <DropdownIcon class="icon" />
     </div>
     <ul
@@ -309,7 +321,7 @@ export default {
       role="listbox"
       tabindex="-1"
       :aria-activedescendant="
-        isExpanded ? generateId('option', getCurrentSelectedId()) : false
+        isExpanded ? generateId('option', getCurrentSelectedId()) : undefined
       "
       @keydown="handleKeyDownList"
     >
