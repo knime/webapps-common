@@ -241,6 +241,19 @@ export default {
         }, BLUR_TIMEOUT);
       }
     },
+    /**
+     * Handle closing the options if necessary and stopping the event if so.
+     *
+     * @param {KeyboardEvent} event - the keyboard "Escape" event triggering the close.
+     * @return {undefined}
+     */
+    closeOptionsAndStop(event) {
+      if (!this.collapsed) {
+        this.closeOptions();
+        event.stopPropagation();
+        event.preventDefault();
+      }
+    },
     /* Handle arrow key "up" events. */
     onUp() {
       if (document.activeElement === this.$refs.toggle) {
@@ -299,7 +312,7 @@ export default {
   <div
     ref="multiselect"
     :class="['multiselect', { collapsed, invalid: !isValid }]"
-    @keydown.esc.stop.prevent="closeOptions"
+    @keydown.esc="closeOptionsAndStop"
     @keydown.up.stop.prevent="onUp"
     @keydown.down.stop.prevent="onDown"
     @focusout.stop="onFocusOut"

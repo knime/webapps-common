@@ -134,13 +134,32 @@ describe("Multiselect.vue", () => {
       let toggleFocusMock = vi.spyOn(wrapper.vm.$refs.toggle, "focus");
       let button = wrapper.find("[role=button]");
       wrapper.vm.collapsed = false;
-      button.trigger("keydown.esc");
+      const preventDefault = vi.fn();
+      const stopPropagation = vi.fn();
+      button.trigger("keydown.esc", { preventDefault, stopPropagation });
       vi.runAllTimers();
       expect(wrapper.vm.collapsed).toBe(true);
       expect(toggleFocusMock).toHaveBeenCalled();
       expect(document.activeElement).toBe(
         wrapper.find({ ref: "toggle" }).wrapperElement,
       );
+      expect(preventDefault).toHaveBeenCalled();
+      expect(stopPropagation).toHaveBeenCalled();
+    });
+
+    it("does not prevent the esc event when already collapsed", () => {
+      vi.useFakeTimers();
+      const wrapper = doMount({ attachTo: document.body });
+      let toggleFocusMock = vi.spyOn(wrapper.vm.$refs.toggle, "focus");
+      let button = wrapper.find("[role=button]");
+      wrapper.vm.collapsed = true;
+      const preventDefault = vi.fn();
+      const stopPropagation = vi.fn();
+      button.trigger("keydown.esc", { preventDefault, stopPropagation });
+      vi.runAllTimers();
+      expect(toggleFocusMock).not.toHaveBeenCalled();
+      expect(preventDefault).not.toHaveBeenCalled();
+      expect(stopPropagation).not.toHaveBeenCalled();
     });
 
     it("hide options when focus leaves the component when not using the custom list box", () => {

@@ -258,7 +258,9 @@ export default defineComponent({
       this.updateSelectedIds([]);
       this.closeOptions();
     },
-
+    closeOptionsAndStop(event: KeyboardEvent) {
+      (this.$refs.combobox as MultiselectRef).closeOptionsAndStop(event);
+    },
     closeOptions() {
       (this.$refs.combobox as MultiselectRef).closeOptions();
     },
@@ -319,7 +321,7 @@ export default defineComponent({
             @keydown.enter.prevent="onEnter"
             @keydown.backspace="onBackspace"
             @keydown.down.stop.prevent="onDown"
-            @keydown.esc.stop.prevent="closeOptions"
+            @keydown.esc="closeOptionsAndStop"
           />
         </div>
         <div v-show="hasSelection" class="icon-right">
