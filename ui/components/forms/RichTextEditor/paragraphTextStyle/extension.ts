@@ -15,7 +15,7 @@ declare module "@tiptap/core" {
   }
 }
 
-const SmallFontSize = Paragraph.extend({
+const SmallText = Paragraph.extend({
   addAttributes() {
     const smallTextClass = "small-text";
     return {
@@ -56,9 +56,10 @@ const SmallFontSize = Paragraph.extend({
 
   addKeyboardShortcuts() {
     return {
+      ...this.parent?.(),
       "Mod-Alt--": () => this.editor.commands.setSmallText(),
     };
   },
 });
 
-export { SmallFontSize };
+export { SmallText };

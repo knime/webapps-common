@@ -41,10 +41,7 @@ export type BaseExtensionsConfig = {
   bulletList?: true;
   orderedList?: true;
   heading?: true;
-  /**
-   * When this base extension is enabled, the
-   */
-  paragraphStyle?: true;
+  paragraphTextStyle?: true;
   blockquote?: true;
   code?: true;
   codeBlock?: true;
