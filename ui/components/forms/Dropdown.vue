@@ -205,7 +205,7 @@ export default {
       }
       if (e.keyCode === KEY_ESC) {
         this.isExpanded = false;
-        this.$refs.ul.blur();
+        this.$refs.button.focus();
         e.preventDefault();
         return;
       }
