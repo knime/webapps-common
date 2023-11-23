@@ -1,3 +1,6 @@
+import getLocalTimeZone from './localTimezone';
+import { zonedTimeToUtc } from 'date-fns-tz';
+
 /**
  * Converts the specified date String to human readable text containing the day, month, and year.
  * Example: '2018-07-31T09:44:31+00:00' => 'Jul 31, 2018'
@@ -40,4 +43,24 @@ export const formatTimeString = (timeString) => {
  */
 export const formatDateTimeString = (dateTimeString) => { // eslint-disable-line arrow-body-style
     return `${formatDateString(dateTimeString)} ${formatTimeString(dateTimeString)}`;
+};
+
+
+export const parseToLocalTime = (date, showTime) => {
+    // const dateTime = DateTime.fromISO(date, { setZone: true });
+    // date = "2023-01-23T09:15:28.000Z";
+    // date ="2023-01-23T09:15:28+00:00"
+    // date = "123"
+    const isValidUTC = (/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/).test(date);
+    const isValidTimeZone = (/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+\d{2}:\d{2}/).test(date);
+
+    if (isValidUTC || isValidTimeZone) {
+        const dateConverted = zonedTimeToUtc(date, getLocalTimeZone());     
+    
+        return showTime
+    ? formatDateTimeString(dateConverted)
+    : formatDateString(dateConverted);
+    } else {
+        throw Error('Invalid Date format');
+    }
 };
