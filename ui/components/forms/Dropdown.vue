@@ -216,6 +216,7 @@ export default {
         this.isExpanded = false;
         this.getButtonRef().focus();
         e.preventDefault();
+        e.stopPropagation();
         return;
       }
       if (e.key === KEY_ENTER) {

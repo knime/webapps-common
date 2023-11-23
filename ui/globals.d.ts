@@ -1,3 +1,3 @@
 /* eslint-disable one-var */
 
-declare let consola: import("consola").Consola;
+declare const consola: import("consola").Consola;
