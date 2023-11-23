@@ -40,7 +40,8 @@ describe("TableViewInteractive.vue", () => {
     getData,
     cachedSelection,
     getTotalSelectedResult,
-    getCurrentRowKeysResult;
+    getCurrentRowKeysResult,
+    cachingSelectionServiceMock;
 
   const rowCount = 4;
   const columnCount = 4;
@@ -194,7 +195,7 @@ describe("TableViewInteractive.vue", () => {
       }),
     };
 
-    CachingSelectionService.mockImplementation(() => ({
+    cachingSelectionServiceMock = {
       ...cachingMethods,
       addOnSelectionChangeCallback: vi.fn(),
       initialSelection: vi.fn().mockResolvedValue([]),
@@ -203,7 +204,11 @@ describe("TableViewInteractive.vue", () => {
       ),
       onSettingsChange: vi.fn(),
       getCachedSelection: vi.fn(() => cachedSelection),
-    }));
+    };
+
+    CachingSelectionService.mockImplementation(
+      () => cachingSelectionServiceMock,
+    );
 
     context = {
       global: {
@@ -500,12 +505,22 @@ describe("TableViewInteractive.vue", () => {
       });
     });
 
+    it("renders the table when there is no initial selection available", async () => {
+      CachingSelectionService.mockImplementation(() => ({
+        ...cachingSelectionServiceMock,
+        initialSelection: vi.fn().mockResolvedValue(null),
+      }));
+      const wrapper = await shallowMountInteractive(context);
+      const tableComponent = findTableComponent(wrapper);
+      expect(tableComponent.exists()).toBe(true);
+    });
+
     it("ignores obsolete requests", async () => {
       const wrapper = await shallowMountInteractive(context);
       const updateInternalsSpy = vi.spyOn(wrapper.vm, "updateInternals");
-      const firstReqeust = wrapper.vm.updateData({});
+      const firstRequest = wrapper.vm.updateData({});
       const secondRequest = wrapper.vm.updateData({});
-      await firstReqeust;
+      await firstRequest;
       await secondRequest;
       expect(updateInternalsSpy).toHaveBeenCalledTimes(1);
     });
