@@ -385,11 +385,12 @@ public class TableViewDataServiceImpl implements TableViewDataService {
             return false;
         }
 
-        var globalMatch = false;
+        final var globalSearchTermPresent = globalSearchTerm == null || globalSearchTerm.isEmpty();
+        var globalSearchTermMatch = globalSearchTermPresent;
         if (filterRowKeys) {
             final var rowKeyValue = row.getKey().toString().toLowerCase();
-            if (matchesGlobalSearchTerm(rowKeyValue, globalSearchTerm)) {
-                globalMatch = true;
+            if (!globalSearchTermMatch && matchesGlobalSearchTerm(rowKeyValue, globalSearchTerm)) {
+                globalSearchTermMatch = true;
             }
             if (!matchesColumnFilter(rowKeyValue, columnFilterValue, 0, false)) {
                 return false;
@@ -402,8 +403,8 @@ public class TableViewDataServiceImpl implements TableViewDataService {
             final var colIndex = colIndices[i];
             final var cellStringValue = row.getCell(colIndex).toString().toLowerCase();
 
-            if (matchesGlobalSearchTerm(cellStringValue, globalSearchTerm)) {
-                globalMatch = true;
+            if (!globalSearchTermMatch && matchesGlobalSearchTerm(cellStringValue, globalSearchTerm)) {
+                globalSearchTermMatch = true;
             }
             /**
              * if the domain values exists we want an exact match, otherwise we just check if the cell value matches the
@@ -416,7 +417,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
                 return false;
             }
         }
-        return globalMatch;
+        return globalSearchTermMatch;
     }
 
     private boolean isSelected(final DataRow row) {
@@ -445,8 +446,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
     }
 
     private static boolean matchesGlobalSearchTerm(final String cellStringValue, final String globalSearchTerm) {
-        return globalSearchTerm == null || globalSearchTerm.isEmpty()
-            || cellStringValue.contains(globalSearchTerm.toLowerCase());
+        return cellStringValue.contains(globalSearchTerm.toLowerCase());
     }
 
     private void updateRendererRegistryIfNecessary(final int numRows, final boolean forceClearImageDataCache) {
