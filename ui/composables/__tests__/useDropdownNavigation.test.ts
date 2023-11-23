@@ -171,13 +171,15 @@ describe("useDropdownNavigation", () => {
     describe("prevent events", () => {
       const expectEventPrevented = (eventMethodsMock: any) => {
         expect(eventMethodsMock.preventDefault).toHaveBeenCalled();
-        expect(eventMethodsMock.preventDefault).toHaveBeenCalled();
-        expect(eventMethodsMock.preventDefault).toHaveBeenCalled();
+        expect(eventMethodsMock.stopPropagation).toHaveBeenCalled();
+        expect(eventMethodsMock.stopImmediatePropagation).toHaveBeenCalled();
       };
       const expectEventNotPrevented = (eventMethodsMock: any) => {
         expect(eventMethodsMock.preventDefault).not.toHaveBeenCalled();
-        expect(eventMethodsMock.preventDefault).not.toHaveBeenCalled();
-        expect(eventMethodsMock.preventDefault).not.toHaveBeenCalled();
+        expect(eventMethodsMock.stopPropagation).not.toHaveBeenCalled();
+        expect(
+          eventMethodsMock.stopImmediatePropagation,
+        ).not.toHaveBeenCalled();
       };
 
       it("prevents ArrowDown", () => {
@@ -204,9 +206,9 @@ describe("useDropdownNavigation", () => {
         expectEventPrevented(simulateEventCall(onKeydown, "Space"));
       });
 
-      it("does not prevent Escape", () => {
+      it("prevents Escape", () => {
         const { onKeydown } = useDropdownNavigation(props);
-        expectEventNotPrevented(simulateEventCall(onKeydown, "Escape"));
+        expectEventPrevented(simulateEventCall(onKeydown, "Escape"));
       });
 
       it("does not prevent Tab", () => {
