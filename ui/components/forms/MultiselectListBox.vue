@@ -557,7 +557,6 @@ export default {
             v-for="{ data: item, index } of list"
             :id="generateOptionId(item)"
             :key="`listbox-${item.id}`"
-            :ref="`listbox-item-${index}`"
             :text="item.text"
             :data-option-index="index"
             :line-height="optionLineHeight"

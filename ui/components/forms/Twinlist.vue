@@ -8,7 +8,6 @@ import ArrowPrevIcon from "../../assets/img/icons/arrow-prev.svg";
 import ArrowPrevDoubleIcon from "../../assets/img/icons/arrow-prev-double.svg";
 import { filters } from "../../../util/filters";
 import type { PropType } from "vue";
-import { reactive } from "vue";
 
 const KEY_ENTER = "Enter";
 const MIN_LIST_SIZE = 5;
@@ -172,14 +171,13 @@ export default {
     };
   },
   computed: {
-    // convert [{id: "key1", text: "asdf"}, ...] to {"key1": {id:"key1", text: "asdf"} ... }
     possibleValueMap() {
       return Object.assign(
         {},
         ...this.possibleValues.map((obj: PossibleValue, index) => ({
           [obj.id]: { item: obj, index },
         })),
-      ) satisfies Record<Id, { item: PossibleValue; index: number }>;
+      ) as Record<Id, { item: PossibleValue; index: number }>;
     },
     possibleValueIds() {
       return this.possibleValues.map((x) => x.id);
@@ -470,7 +468,6 @@ export default {
         ? `${numShownItems} of ${numAllItems} entries`
         : null;
     },
-    reactive,
   },
 };
 </script>
@@ -529,7 +526,7 @@ export default {
         :with-bottom-value="showUnknownValuesLeft"
         :bottom-value="{ id: unknownValuesId, text: unknownValuesText }"
         :is-valid="isValid"
-        :possible-values="reactive(leftItems)"
+        :possible-values="leftItems"
         :ariaLabel="leftLabel"
         :disabled="disabled"
         @double-click-on-item="onLeftListBoxDoubleClick"
@@ -591,7 +588,7 @@ export default {
         :with-is-empty-state="showEmptyState"
         :empty-state-label="emptyStateLabel"
         :empty-state-component="emptyStateComponent"
-        :possible-values="reactive(rightItems)"
+        :possible-values="rightItems"
         :size="listSize"
         :ariaLabel="rightLabel"
         :disabled="disabled"
