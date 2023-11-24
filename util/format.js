@@ -47,19 +47,14 @@ export const formatDateTimeString = (dateTimeString) => { // eslint-disable-line
 
 
 export const parseToLocalTime = (date, showTime) => {
-    // const dateTime = DateTime.fromISO(date, { setZone: true });
-    // date = "2023-01-23T09:15:28.000Z";
-    // date ="2023-01-23T09:15:28+00:00"
-    // date = "123"
     const isValidUTC = (/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/).test(date);
     const isValidTimeZone = (/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+\d{2}:\d{2}/).test(date);
 
     if (isValidUTC || isValidTimeZone) {
-        const dateConverted = zonedTimeToUtc(date, getLocalTimeZone());     
-    
+        const dateConverted = zonedTimeToUtc(date, getLocalTimeZone());
         return showTime
-    ? formatDateTimeString(dateConverted)
-    : formatDateString(dateConverted);
+            ? formatDateTimeString(dateConverted)
+            : formatDateString(dateConverted);
     } else {
         throw Error('Invalid Date format');
     }
