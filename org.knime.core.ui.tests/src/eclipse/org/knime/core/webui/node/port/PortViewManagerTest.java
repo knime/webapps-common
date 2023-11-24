@@ -101,6 +101,9 @@ class PortViewManagerTest {
         var portViewFactory2 = mock(PortViewFactory.class);
         Mockito.when(portViewFactory2.createPortView(nnc.getOutPort(1).getPortObject()))
             .thenAnswer(i -> createPortView());
+        var portViewFactory3 = mock(PortViewFactory.class); // port view with non-static page
+        Mockito.when(portViewFactory3.createPortView(nnc.getOutPort(1).getPortObject()))
+            .thenAnswer(i -> createPortView(Page.builder(() -> "blub", "index.html").build()));
         var portSpecViewFactory1 = mock(PortSpecViewFactory.class);
         Mockito.when(portSpecViewFactory1.createPortView(nnc.getOutPort(1).getPortObjectSpec()))
             .thenAnswer(i -> createPortView());
@@ -113,8 +116,9 @@ class PortViewManagerTest {
         PortViewManager.registerPortViews(BufferedDataTable.TYPE,
             List.of(new PortViewManager.PortViewDescriptor("Foo", portSpecViewFactory1),
                 new PortViewManager.PortViewDescriptor("Bar", portViewFactory1),
-                new PortViewManager.PortViewDescriptor("Baz", portViewFactory2)),
-            List.of(0, 2), List.of(1, 2));
+                new PortViewManager.PortViewDescriptor("Baz", portViewFactory2),
+                new PortViewManager.PortViewDescriptor("non-static", portViewFactory3)),
+            List.of(0, 2), List.of(1, 2, 3));
 
         // page properties
         assertThat(portViewManager.getPageResourceManager().getBaseUrl()).isEqualTo("http://org.knime.core.ui.port/");
@@ -132,6 +136,12 @@ class PortViewManagerTest {
         // get a port view at another port
         assertThat(portViewManager.getPortView(NodePortWrapper.of(nnc, 1, 1))).isNotNull();
 
+        // check the non-static port view page path
+        var pagePath =
+            PortViewManager.getInstance().getPageResourceManager().getPagePath(NodePortWrapper.of(nnc, 1, 3));
+        var expectedPageId = nnc.getID().toString().replace(":", "_") + "_1_3";
+        assertThat(pagePath).isEqualTo("uiext-port/" + expectedPageId + "/index.html");
+
         // check absurd port index
         final var absurdPortIndexWrapper = NodePortWrapper.of(nnc, Integer.MAX_VALUE, 0);
         assertThatExceptionOfType(NoSuchElementException.class)
@@ -143,7 +153,7 @@ class PortViewManagerTest {
             .isThrownBy(() -> portViewManager.getPortView(absurdViewIndexWrapper));
 
         // check that the port view cache is cleared on node reset
-        assertThat(portViewManager.getPortViewMapSize()).isEqualTo(2);
+        assertThat(portViewManager.getPortViewMapSize()).isEqualTo(3);
         wfm.resetAndConfigureAll();
         assertThat(portViewManager.getPortViewMapSize()).isZero();
 
@@ -157,6 +167,11 @@ class PortViewManagerTest {
     }
 
     private static PortView createPortView() {
+        return createPortView(
+            Page.builder(PortViewManagerTest.class, "blub", "page.js").markAsReusable("port_view_page_name").build());
+    }
+
+    private static PortView createPortView(final Page p) {
         assertThat(PortContext.getContext().getNodePort()).isNotNull();
         return new PortView() {
 
@@ -172,8 +187,7 @@ class PortViewManagerTest {
 
             @Override
             public Page getPage() {
-                return Page.builder(PortViewManagerTest.class, "blub", "page.js").markAsReusable("port_view_page_name")
-                    .build();
+                return p;
             }
 
         };
