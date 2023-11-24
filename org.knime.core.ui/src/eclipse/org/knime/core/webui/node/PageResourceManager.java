@@ -248,9 +248,11 @@ public final class PageResourceManager<N extends NodeWrapper> {
      * <li>a static node dialog: {@code uiext-dialog/org.knime...NodeFactory/index.html}</li>
      * <li>a static-reusable view (i.e. to be re-used between ui-extension types and node instances; e.g. node or port
      * view): {@code uiext/tableview/TableView.umd.js}</li>
-     * <li>a non-static node view: {@code uiext-port/5_4_3/342342/index.html} (where {@code 5_4_3} is the node id of the
+     * <li>a non-static node view: {@code uiext-view/5_4_3/342342/index.html} (where {@code 5_4_3} is the node id of the
      * the view belongs to, and {@code 342342} the 'page-content-id' - see
      * {@link NodeViewManager#getPagePathSegments(NodeWrapper)})</li>
+     * <li>a non-static port view: uiext-port/5_4_3_1_0</li> where {@code 5_4_3...} is the node id of the node the port
+     * belongs to and {@code ..._1_0} the port-index and port-view-index (a port can have multiple views).
      * </ul>
      *
      * @param nodeWrapper the node which provides the page
