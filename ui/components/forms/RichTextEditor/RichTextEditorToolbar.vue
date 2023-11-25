@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import type { Editor } from "@tiptap/vue-3";
 
-import PlusSmallIcon from "../../../assets/img/icons/plus-small.svg";
+import MoreActionsIcon from "../../../assets/img/icons/menu-options.svg";
 import FunctionButton from "../../FunctionButton.vue";
 import type { MenuItem } from "../../MenuItems.vue";
 
@@ -77,7 +77,7 @@ const onSecondaryToolClick = (
       orientation="left"
       @item-click="onSecondaryToolClick"
     >
-      <PlusSmallIcon />
+      <MoreActionsIcon />
     </SubMenu>
   </div>
 </template>
