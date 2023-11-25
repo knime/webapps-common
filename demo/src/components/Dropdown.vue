@@ -402,9 +402,7 @@ export default {
             incorporate a slot into the dropdown list and render additional data
             in a styled fashion. The local value is passed through and available
             as a slot prop. Please keep in mind that the property names must
-            match. <br /><br />
-            If a slot is used all corresponding styles for hover, focus etc.
-            have to be implemented accordingly.
+            match.
           </p>
         </div>
       </div>
