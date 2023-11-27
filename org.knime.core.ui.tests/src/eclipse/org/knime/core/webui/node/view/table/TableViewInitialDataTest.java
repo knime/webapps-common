@@ -92,6 +92,8 @@ class TableViewInitialDataTest {
 
     private final String[] initiallySelectedColumns = new String[]{"double", "string", "date"};
 
+    private final String[] initiallySelectedColumnsInCorrectOrder = new String[]{"date", "string", "double"};
+
     private final ColumnFilter displayedColumns = new ColumnFilter(initiallySelectedColumns);
 
     private MockedConstruction<TableViewDataServiceImpl> dataServiceMock;
@@ -114,7 +116,7 @@ class TableViewInitialDataTest {
         settings.m_pageSize = 8;
         final var initialData = TableViewUtil.createInitialData(settings, table, selectionSupplier, nodeId);
         initialData.getTable();
-        verify(dataServiceMock.constructed().get(0)).getTable(aryEq(initiallySelectedColumns), eq(0L),
+        verify(dataServiceMock.constructed().get(0)).getTable(aryEq(initiallySelectedColumnsInCorrectOrder), eq(0L),
             eq(settings.m_pageSize), any(String[].class), eq(true), eq(true), eq(false), eq(false));
     }
 
@@ -125,8 +127,8 @@ class TableViewInitialDataTest {
         settings.m_enablePagination = false;
         final var initialData = TableViewUtil.createInitialData(settings, table, selectionSupplier, nodeId);
         initialData.getTable();
-        verify(dataServiceMock.constructed().get(0)).getTable(aryEq(initiallySelectedColumns), eq(0L), eq(0),
-            any(String[].class), eq(true), eq(true), eq(false), eq(false));
+        verify(dataServiceMock.constructed().get(0)).getTable(aryEq(initiallySelectedColumnsInCorrectOrder), eq(0L),
+            eq(0), any(String[].class), eq(true), eq(true), eq(false), eq(false));
     }
 
     @Test
@@ -136,8 +138,8 @@ class TableViewInitialDataTest {
         settings.m_skipRemainingColumns = true;
         final var initialData = TableViewUtil.createInitialData(settings, table, selectionSupplier, nodeId);
         initialData.getTable();
-        verify(dataServiceMock.constructed().get(0)).getTable(aryEq(initiallySelectedColumns), eq(0L), any(Integer.class),
-            any(String[].class), eq(true), eq(true), eq(true), eq(false));
+        verify(dataServiceMock.constructed().get(0)).getTable(aryEq(initiallySelectedColumnsInCorrectOrder), eq(0L),
+            any(Integer.class), any(String[].class), eq(true), eq(true), eq(true), eq(false));
     }
 
     @Test
@@ -147,8 +149,8 @@ class TableViewInitialDataTest {
         settings.m_showOnlySelectedRows = true;
         final var initialData = TableViewUtil.createInitialData(settings, table, selectionSupplier, nodeId);
         initialData.getTable();
-        verify(dataServiceMock.constructed().get(0)).getTable(aryEq(initiallySelectedColumns), eq(0L), any(Integer.class),
-            any(String[].class), eq(true), eq(true), eq(false), eq(true));
+        verify(dataServiceMock.constructed().get(0)).getTable(aryEq(initiallySelectedColumnsInCorrectOrder), eq(0L),
+            any(Integer.class), any(String[].class), eq(true), eq(true), eq(false), eq(true));
     }
 
     @Test
@@ -160,7 +162,8 @@ class TableViewInitialDataTest {
 
     @Test
     void testInitialDataGetDataTypes() {
-        final var initData = TableViewUtil.createInitialData(new TableViewViewSettings(table.getSpec()), table, selectionSupplier, nodeId);
+        final var initData = TableViewUtil.createInitialData(new TableViewViewSettings(table.getSpec()), table,
+            selectionSupplier, nodeId);
         var dataTypes = initData.getDataTypes();
 
         var stringType = dataTypes.get(String.valueOf(StringCell.TYPE.hashCode()));

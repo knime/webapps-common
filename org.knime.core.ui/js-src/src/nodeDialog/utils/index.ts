@@ -152,3 +152,20 @@ export const hasAdvancedOptions = (uischema: object) =>
     keyName: "isAdvanced",
     value: true,
   });
+
+export const partitionBy = <T, Keys extends string | number | symbol>(
+  arr: T[],
+  fn: (item: T) => Keys,
+): Record<Keys, T[] | undefined> => {
+  return arr.reduce(
+    (acc, val) => {
+      const key = fn(val);
+      if (typeof acc[key] === "undefined") {
+        acc[key] = [];
+      }
+      acc[key]!.push(val);
+      return acc;
+    },
+    {} as Record<Keys, T[] | undefined>,
+  );
+};

@@ -5,6 +5,7 @@ import {
   mergeDeep,
   getFlowVariablesMap,
   isModelSettingAndHasNodeView,
+  partitionBy,
 } from "../utils";
 import LabeledInput from "./LabeledInput.vue";
 import DialogComponentWrapper from "./DialogComponentWrapper.vue";
@@ -171,33 +172,43 @@ const TwinlistInput = defineComponent({
     updateManualFilter(possibleValueIds: string[]) {
       const { manuallySelected, manuallyDeselected, includeUnknownColumns } =
         this.control.data.manualFilter;
+
       const manuallySelectedSet = new Set(manuallySelected);
       const manuallyDeselectedSet = new Set(manuallyDeselected);
-      const unknownColumns = possibleValueIds.filter(
-        (col) =>
-          !manuallySelectedSet.has(col) && !manuallyDeselectedSet.has(col),
+
+      const partitionedChoices = includeUnknownColumns //
+        ? partitionBy(possibleValueIds, (item) =>
+            manuallyDeselectedSet.has(item) ? "excluded" : "included",
+          ) //
+        : partitionBy(possibleValueIds, (item) =>
+            manuallySelectedSet.has(item) ? "included" : "excluded",
+          );
+
+      const includedPossibleValueIdsSet = new Set(partitionedChoices.included);
+      const missingManuallySelected = manuallySelected.filter(
+        (item) => !includedPossibleValueIdsSet.has(item),
       );
-      let remainingManuallyDeselected: string[] = [];
-      if (manuallyDeselected.length > 0) {
-        const possibleValueIdsSet = new Set(possibleValueIds);
-        remainingManuallyDeselected = manuallyDeselected.filter((col) =>
-          possibleValueIdsSet.has(col),
-        );
-      }
-      const newData = {} as any;
-      if (includeUnknownColumns) {
-        newData.manualFilter = {
-          manuallySelected: [...manuallySelected, ...unknownColumns],
-          manuallyDeselected: remainingManuallyDeselected,
-        };
-      } else {
-        newData.manualFilter = {
-          manuallyDeselected: [
-            ...remainingManuallyDeselected,
-            ...unknownColumns,
-          ],
-        };
-      }
+
+      const excludedPossibleValueIdsSet = new Set(partitionedChoices.excluded);
+      const missingManuallyDesselected = manuallySelected.filter(
+        (item) => !excludedPossibleValueIdsSet.has(item),
+      );
+
+      const newSelectedValues = [
+        ...missingManuallySelected,
+        ...(partitionedChoices.included ?? []),
+      ];
+      const newDeselectedValues = [
+        ...missingManuallyDesselected,
+        ...(partitionedChoices.excluded ?? []),
+      ];
+
+      const newData = {
+        manualFilter: {
+          manuallySelected: newSelectedValues,
+          manuallyDeselected: newDeselectedValues,
+        },
+      };
       this.setInitialManuallySelected(this.onChange(newData));
       this.loadingInfo = null;
     },
