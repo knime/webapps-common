@@ -44,36 +44,34 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 6, 2023 (Paul Bärnreuther): created
+ *   Nov 27, 2023 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.rule;
 
-import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.IsSpecificColumnCondition;
-
 /**
- * A visitor visiting all permitted implementations of {@link Condition} which is used to translate the condition to a
- * implementation dependent format.
+ * Apply this condition in a signal at an array layout field (NOT to a field in the Element POJO). The signal will be
+ * triggered if one of the elements of the array satisfies the specified condition with the specified field.
+ *
+ * TODO: UIEXT-1475 make it possible to not specify the field by string reference but by another annotation on the
+ * element field.
  *
  * @author Paul Bärnreuther
- * @param <T> the type of the returned value on visiting a {@link Condition}
  */
-@SuppressWarnings("javadoc")
-public interface ConditionVisitor<T> {
+public abstract class ArrayContainsCondition implements Condition {
 
-    <E extends Enum<E>> T visit(OneOfEnumCondition<E> oneOfEnumCondition);
+    /**
+     * @return the class of the condition that should be applied to one of the fields
+     */
+    public abstract Class<? extends Condition> getItemCondition();
 
-    T visit(TrueCondition trueCondition);
+    /**
+     * @return the path of the field in the element POJO, the given condition should be applied to
+     */
+    public abstract String[] getItemFieldPath();
 
-    T visit(FalseCondition falseCondition);
-
-    T visit(HasMultipleItemsCondition hasMultipleItemsCondition);
-
-    T visit(IsSpecificColumnCondition isSpecificColumnCondition);
-
-    T visit(IsSpecificStringCondition isSpecificStringCondition);
-
-    T visit(PatternCondition patternCondition);
-
-    T visit(ArrayContainsCondition arrayContainsCondition);
+    @Override
+    public <T> T accept(final ConditionVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 
 }

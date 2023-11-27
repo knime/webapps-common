@@ -53,7 +53,9 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.Schema.TAG_ONEOF;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.Schema.TAG_PATTERN;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.Schema.TAG_PROPERTIES;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_CONTAINS;
 
+import org.knime.core.webui.node.dialog.defaultdialog.rule.ArrayContainsCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.ConditionVisitor;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.FalseCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.HasMultipleItemsCondition;
@@ -62,6 +64,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.rule.OneOfEnumCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.PatternCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.TrueCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.IsSpecificColumnCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -125,6 +128,19 @@ class JsonFormsConditionResolver implements ConditionVisitor<ObjectNode> {
     public ObjectNode visit(final PatternCondition patternCondition) {
         return m_mapper.createObjectNode() //
             .put(TAG_PATTERN, patternCondition.getPattern());
+    }
+
+    @Override
+    public ObjectNode visit(final ArrayContainsCondition arrayContainsCondition) {
+        final var itemConditionClass = arrayContainsCondition.getItemCondition();
+        final var itemCondition = InstantiationUtil.createInstance(itemConditionClass);
+        final var conditionObjectNode = m_mapper.createObjectNode();
+        var currentObjectNode = conditionObjectNode.putObject(TAG_CONTAINS);
+        for (var pathEntry : arrayContainsCondition.getItemFieldPath()) {
+            currentObjectNode = currentObjectNode.putObject(TAG_PROPERTIES).putObject(pathEntry);
+        }
+        currentObjectNode.setAll(itemCondition.accept(this));
+        return conditionObjectNode;
     }
 
 }

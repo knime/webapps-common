@@ -48,6 +48,7 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms;
 
+import org.eclipse.ui.commands.ActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesUpdateHandler;
@@ -258,6 +259,11 @@ public final class JsonFormsConsts {
          * Multiple conditions combined by a logical operation
          */
         public static final String TAG_CONDITIONS = "conditions";
+
+        /**
+         * For rule conditions on array values
+         */
+        public static final String TAG_CONTAINS = "contains";
 
         /**
          * Negation of a condition

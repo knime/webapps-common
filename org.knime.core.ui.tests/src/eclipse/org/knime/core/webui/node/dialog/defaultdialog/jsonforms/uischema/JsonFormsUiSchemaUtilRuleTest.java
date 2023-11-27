@@ -59,12 +59,15 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.HorizontalLayout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.LayoutGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.And;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.ArrayContainsCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.Condition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect.EffectType;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Expression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.FalseCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.HasMultipleItemsCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.IsNoneColumnStringCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.IsSpecificStringCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Not;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.OneOfEnumCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Or;
@@ -809,6 +812,60 @@ class JsonFormsUiSchemaUtilRuleTest {
             .isEqualTo(response.get("elements").get(0).get("scope").asText());
         assertThatJson(response).inPath("$.elements[1].rule.condition.schema.pattern").isString()
             .isEqualTo(TestPatternCondition.PATTERN);
+    }
+
+    @Test
+    void testArrayContainsCondition() {
+
+        final class ArrayContainsConditionTestSettings implements DefaultNodeSettings {
+
+            static class Element {
+
+                @SuppressWarnings("unused")
+                String m_value = "myValue";
+            }
+
+            static class IsFooCondition extends IsSpecificStringCondition {
+
+
+                static final String FOO = "Foo";
+
+                @Override
+                public String getValue() {
+                    return FOO;
+                }
+
+            }
+
+            static class ArrayContainsFooValueCondition extends ArrayContainsCondition {
+
+                @Override
+                public Class<? extends Condition> getItemCondition() {
+                    return IsFooCondition.class;
+                }
+
+                @Override
+                public String[] getItemFieldPath() {
+                    return new String[]{"value"};
+                }
+
+            }
+
+            @Signal(condition = ArrayContainsFooValueCondition.class)
+            Element[] m_array;
+
+            @Effect(signals = ArrayContainsFooValueCondition.class, type = EffectType.SHOW)
+            boolean effectSetting;
+        }
+        final var response = buildTestUiSchema(ArrayContainsConditionTestSettings.class);
+        assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
+        assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Control");
+        assertThatJson(response).inPath("$.elements[1].type").isString().isEqualTo("Control");
+        assertThatJson(response).inPath("$.elements[1].rule.effect").isString().isEqualTo("SHOW");
+        assertThatJson(response).inPath("$.elements[1].rule.condition.scope").isString()
+            .isEqualTo(response.get("elements").get(0).get("scope").asText());
+        assertThatJson(response).inPath("$.elements[1].rule.condition.schema.contains.properties.value.const").isString()
+            .isEqualTo(ArrayContainsConditionTestSettings.IsFooCondition.FOO);
     }
 
 }
