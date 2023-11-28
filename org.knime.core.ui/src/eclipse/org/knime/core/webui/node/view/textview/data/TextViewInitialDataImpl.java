@@ -49,17 +49,26 @@
 package org.knime.core.webui.node.view.textview.data;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.FlowVariable;
+import org.knime.core.node.workflow.VariableType;
+import org.knime.core.node.workflow.VariableType.BooleanArrayType;
+import org.knime.core.node.workflow.VariableType.BooleanType;
+import org.knime.core.node.workflow.VariableType.DoubleArrayType;
+import org.knime.core.node.workflow.VariableType.DoubleType;
+import org.knime.core.node.workflow.VariableType.IntArrayType;
+import org.knime.core.node.workflow.VariableType.IntType;
+import org.knime.core.node.workflow.VariableType.LongArrayType;
+import org.knime.core.node.workflow.VariableType.LongType;
 import org.knime.core.webui.node.view.textview.TextViewViewSettings;
 
 /**
- * Implementation of TextViewInitialData. Returns the initial rich text content and the escaped flow variable
- * mappings.
+ * Implementation of TextViewInitialData. Returns the initial rich text content and the escaped flow variable mappings.
  *
  * @author Rupert Ettrich
  */
@@ -67,6 +76,10 @@ public final class TextViewInitialDataImpl implements TextViewInitialData {
     private final TextViewViewSettings m_settings;
 
     private final FlowObjectStack m_flowObjectStack;
+
+    private static final List<VariableType<?>> unescapedTypes =
+        List.of(BooleanArrayType.INSTANCE, BooleanType.INSTANCE, IntArrayType.INSTANCE, IntType.INSTANCE,
+            DoubleArrayType.INSTANCE, DoubleType.INSTANCE, LongArrayType.INSTANCE, LongType.INSTANCE);
 
     /**
      * @param settings the {@link TextViewViewSettings} that contain the rich text content
@@ -83,12 +96,13 @@ public final class TextViewInitialDataImpl implements TextViewInitialData {
         }
         final var resultMap = new HashMap<String, String>();
         final var flowVarsMap = flowObjectStack.getAllAvailableFlowVariables();
-        for (Entry<String, FlowVariable> flowVar : flowVarsMap.entrySet()) {
-            var flowValue = flowVar.getValue().getStringValue();
-            if (flowValue == null) {
-                continue;
+        for (Entry<String, FlowVariable> flowVarEntry : flowVarsMap.entrySet()) {
+            final var flowVar = flowVarEntry.getValue();
+            var flowVarValue = flowVar.getValueAsString();
+            if (!unescapedTypes.contains(flowVar.getVariableType())) {
+                flowVarValue = StringEscapeUtils.escapeHtml4(flowVarValue);
             }
-            resultMap.put(flowVar.getKey(), StringEscapeUtils.escapeHtml4(flowValue));
+            resultMap.put(flowVarEntry.getKey(), flowVarValue);
         }
         return resultMap;
     }

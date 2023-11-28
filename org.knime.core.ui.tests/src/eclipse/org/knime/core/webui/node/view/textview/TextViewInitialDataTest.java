@@ -57,6 +57,7 @@ import org.junit.jupiter.api.Test;
 import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.NodeID;
+import org.knime.core.node.workflow.VariableType.BooleanType;
 
 /**
  *
@@ -64,13 +65,7 @@ import org.knime.core.node.workflow.NodeID;
  */
 class TextViewInitialDataTest {
 
-    private List<FlowVariable> flowVariables = List.of(new FlowVariable("someVariable", "replaced value"));
-
-    private String testString = "abcdefg";
-
     private String illegalString = "<button onclick='alert()'></button>";
-
-    private String flowVariableTestString = "flow variable: $$[someVariable]";
 
     @Test
     void testGetDataWithoutFlowVariables() {
@@ -84,14 +79,23 @@ class TextViewInitialDataTest {
 
     @Test
     void testGetDataWithFlowVariables() {
+        final var flowVariables =
+            List.of(new FlowVariable("stringVariable", "replaced value"), new FlowVariable("intVariable", 42),
+                new FlowVariable("doubleVariable", 3.14159), new FlowVariable("longVariable", 1234567890),
+                new FlowVariable("boolVariable", BooleanType.INSTANCE, false));
         final var settings = new TextViewViewSettings();
         settings.m_richTextContent = "test";
         final var initialDataService = TextViewView.createInitialData(settings,
             FlowObjectStack.createFromFlowVariableList(flowVariables, new NodeID(0)));
         assertThat(initialDataService.getContent()).isEqualTo(settings.m_richTextContent);
         final var flowVariablesMap = initialDataService.getFlowVariablesMap();
-        assertThat(flowVariablesMap).isNotEmpty().containsKey("someVariable");
-        assertThat(flowVariablesMap.getOrDefault("someVariable", "")).isEqualTo("replaced value");
+        assertThat(flowVariablesMap).isNotEmpty().containsKeys("stringVariable", "intVariable", "doubleVariable",
+            "longVariable", "boolVariable");
+        assertThat(flowVariablesMap.getOrDefault("stringVariable", "")).isEqualTo("replaced value");
+        assertThat(flowVariablesMap.get("intVariable")).isEqualTo("42");
+        assertThat(flowVariablesMap.get("doubleVariable")).isEqualTo("3.14159");
+        assertThat(flowVariablesMap.get("longVariable")).isEqualTo("1234567890");
+        assertThat(flowVariablesMap.get("boolVariable")).isEqualTo("false");
     }
 
     @Test
