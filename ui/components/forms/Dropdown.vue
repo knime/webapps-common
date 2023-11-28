@@ -77,7 +77,7 @@ export default {
   emits: ["update:modelValue"],
   data() {
     return {
-      typingTimeout: null as null | NodeJS.Timeout,
+      typingTimeout: null as null | ReturnType<typeof setTimeout>,
       isExpanded: false,
       searchQuery: "",
     };

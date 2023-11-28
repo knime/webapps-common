@@ -7,7 +7,8 @@
     "src/**/*.vue",
     "../ui/components/FileExplorer/types.ts",
     "../ui/services/toast.ts",
-    "../ui/components/MenuItems.vue"
+    "../ui/components/MenuItems.vue",
+    "../ui/globals.d.ts"
   ],
   "compilerOptions": {
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
