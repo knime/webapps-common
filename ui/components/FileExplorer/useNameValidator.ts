@@ -1,6 +1,6 @@
 import { computed, type Ref } from "vue";
 
-const INVALID_NAME_CHARACTERS = /[*?#:"<>%~|/\\]/;
+const INVALID_NAME_CHARACTERS = /[*?#:";<>%~|/\\]/;
 
 const NAME_CHAR_LIMIT = 255;
 
@@ -44,7 +44,7 @@ export const useNameValidator = (options: UseNameValidatorOptions) => {
     }
 
     if (!isValidName.value) {
-      return 'Name contains invalid characters *?#:"<>%~|/\\ or exceeds 255 characters';
+      return 'Name contains invalid characters *?#:";<>%~|/\\ or exceeds 255 characters';
     }
 
     if (!isNameAvailable.value) {
