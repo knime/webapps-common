@@ -180,6 +180,8 @@
   --theme-radio-foreground-color-selected-hover: var(--knime-masala);
 
   /* Value Switch */
+  --theme-value-switch-border-color: var(--knime-stone-gray);
+  --theme-value-switch-border-color-focus: var(--knime-masala);
   --theme-value-switch-background-color: var(--knime-white);
   --theme-value-switch-background-color-hover: var(--knime-silver-sand-semi);
   --theme-value-switch-background-color-checked: var(--knime-masala);

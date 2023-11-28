@@ -70,7 +70,7 @@ export default defineComponent({
 
   display: flex;
   align-items: center;
-  border: 1px solid var(--knime-stone-gray);
+  border: 1px solid var(--theme-value-switch-border-color);
   border-radius: var(--border-radius);
   width: max-content;
   height: calc(var(--wrapper-height) * 1px);
@@ -93,6 +93,10 @@ export default defineComponent({
     opacity: 0.5;
   }
 
+  &:focus-within {
+    border-color: var(--theme-value-switch-border-color-focus);
+  }
+
   &.normal {
     --wrapper-height: 30;
   }
@@ -107,8 +111,10 @@ export default defineComponent({
   }
 
   & :deep(input) {
-    user-select: none;
-    display: none;
+    opacity: 0;
+    position: absolute;
+    width: 0;
+    height: 0;
 
     & + span:hover {
       background-color: var(--theme-value-switch-background-color-hover);
