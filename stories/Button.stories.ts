@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/vue3";
 import "../ui/css/index.css";
 
 import Button from "../ui/components/Button.vue";
+import LightningIcon from "../ui/assets/img/icons/lightning.svg";
 
 // More on how to set up stories at: https://storybook.js.org/docs/vue/writing-stories/introduction
 const meta = {
@@ -10,24 +11,16 @@ const meta = {
   // This component will have an automatically generated docsPage entry: https://storybook.js.org/docs/vue/writing-docs/autodocs
   tags: ["autodocs"],
   argTypes: {},
-  args: { primary: false, compact: false, onDark: false, withBorder: false }, // default value
-  parameters: {
-    slots: { default: "Click me!" },
+  args: {
+    primary: true,
+    compact: false,
+    onDark: false,
+    withBorder: false,
   },
 } satisfies Meta<typeof Button>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
-/*
- *👇 Render functions are a framework specific feature to allow you control on how the component renders.
- * See https://storybook.js.org/docs/vue/api/csf
- * to learn how to use render functions.
- */
-/* export const Primary: Story = {
-  args: {
-    primary: true,
-  },
-}; */
 
 export const Primary: Story = {
   render: (args) => ({
@@ -35,27 +28,43 @@ export const Primary: Story = {
     setup() {
       return { args };
     },
-    template: '<Button v-bind="args"><slot /></Button>',
+    template: '<Button v-bind="args">{{ args.default }}</Button>',
   }),
   args: {
-    primary: true,
+    // @ts-expect-error
+    default: "Click me!",
   },
 };
 
-/* export const Compact: Story = {
+export const WithIcon: Story = {
+  render: (args) => ({
+    components: { Button, LightningIcon },
+    setup() {
+      return { args };
+    },
+    template:
+      '<Button v-bind="args"><LightningIcon /> {{ args.default }}</Button>',
+  }),
   args: {
-    compact: true,
+    // @ts-expect-error
+    default: "Click me too!",
   },
 };
 
-export const Large: Story = {
+export const WithWarning: Story = {
+  render: (args) => ({
+    components: { Button, LightningIcon },
+    setup() {
+      return { args };
+    },
+    template:
+      '<Button v-bind="args"><LightningIcon /> {{ args.default }}</Button>',
+  }),
   args: {
-    size: "large",
+    primary: false,
+    withBorder: true,
+    withWarning: true,
+    // @ts-expect-error
+    default: "I have a warning",
   },
 };
-
-export const Small: Story = {
-  args: {
-    size: "small",
-  },
-}; */

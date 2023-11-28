@@ -22,7 +22,6 @@
     "generate-css": "node ./ui/colors/generateCSS.mjs",
     "opensourcecredits": "npm run --prefix buildtools/ opensourcecredits",
     "preinstall": "node ./install-subDependencies",
-    "postinstall": "run-p generate-css opensourcecredits",
     "prepare": "husky install",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
