@@ -196,7 +196,7 @@ class WizardPageUtilTest2 {
         assertThat(wizardPageNodes).hasSize(2);
 
         WizardNodeModel wnm =
-            (WizardNodeModel)((NativeNodeContainer)m_wfm.findNodeContainer(component.createChild(0).createChild(2)))
+            (WizardNodeModel)((NativeNodeContainer)m_wfm.findNodeContainer(component.createChild(0).createChild(4)))
                 .getNodeModel();
         wnm.setHideInWizard(true);
 
@@ -233,8 +233,9 @@ class WizardPageUtilTest2 {
         }
         assertThat(wizardPage.getPageNodeID()).isEqualTo(component);
         assertThat(wizardPage.getPageMap()).hasSize(2);
-        assertThat(wizardPage.getPageMap().keySet()).containsExactlyInAnyOrder(NodeIDSuffix.fromString("4:0:2"),
-            NodeIDSuffix.fromString("4:0:3:0:1"));
+
+        assertThat(wizardPage.getPageMap().keySet()).containsExactlyInAnyOrder(NodeIDSuffix.fromString("4:0:3"),
+            NodeIDSuffix.fromString("4:0:4:0:3"));
         assertThat(wizardPage.getPageMap().values().stream().map(n -> n.getName()).collect(Collectors.toList()))
             .containsExactlyInAnyOrder("NodeView", "NodeView");
     }
@@ -252,8 +253,8 @@ class WizardPageUtilTest2 {
             .getCollapsedMetanodeID();
         m_wfm.convertMetaNodeToSubNode(component);
         var componentWfm = ((SubNodeContainer) m_wfm.getNodeContainer(component)).getWorkflowManager();
-        n1 = componentWfm.getID().createChild(n1.getIndex());
-        n2 = componentWfm.getID().createChild(n2.getIndex());
+        n1 = componentWfm.getID().createChild(n1.getIndex() + 2);  // component input/output have index 1 and 2
+        n2 = componentWfm.getID().createChild(n2.getIndex() + 2);  // component input/output have index 1 and 2
 
         // nested component
         NodeID n3 = WorkflowManagerUtil.createAndAddNode(componentWfm, new NodeViewNodeFactory(0, 0)).getID();

@@ -127,9 +127,12 @@ class NodeDialogEntTest {
         var component = (SubNodeContainer)m_wfm.getNodeContainer(componentId);
         component.setTemplateInformation(
             MetaNodeTemplateInformation.createNewTemplate(SubNodeContainer.class).createLink(new URI("file://test")));
-        assertThat(
-            new NodeDialogEnt((SingleNodeContainer)component.getWorkflowManager().getNodeContainers().iterator().next())
-                .isWriteProtected()).isTrue();
+        var nodeIterator = component.getWorkflowManager().getNodeContainers().iterator();
+        nodeIterator.next(); // component input
+        nodeIterator.next(); // component output
+        var snc = (SingleNodeContainer) nodeIterator.next();
+
+        assertThat(new NodeDialogEnt(snc).isWriteProtected()).isTrue();
     }
 
 }
