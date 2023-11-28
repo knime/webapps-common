@@ -59,16 +59,16 @@ describe("NumberInput.vue", () => {
   });
 
   it("prevents changing value with spinners when result would be invalid", async () => {
-    expect(wrapper.vm.getValue()).toBe(10);
+    expect(wrapper.vm.getParsedValue()).toBe(10);
     await wrapper.setProps({ modelValue: -5 });
     expect(wrapper.vm.validate()).toStrictEqual({
       errorMessage: "Current value is outside allowed range.",
       isValid: false,
     });
     wrapper.vm.changeValue(-1);
-    expect(wrapper.vm.getValue()).toBe(-5);
+    expect(wrapper.vm.getParsedValue()).toBe(-5);
     wrapper.vm.changeValue(1);
-    expect(wrapper.vm.getValue()).toBe(1);
+    expect(wrapper.vm.getParsedValue()).toBe(1);
     expect(wrapper.vm.validate().isValid).toBe(true);
     await wrapper.setProps({ modelValue: 25 });
     expect(wrapper.vm.validate()).toStrictEqual({
@@ -76,9 +76,9 @@ describe("NumberInput.vue", () => {
       isValid: false,
     });
     wrapper.vm.changeValue(1);
-    expect(wrapper.vm.getValue()).toBe(25);
+    expect(wrapper.vm.getParsedValue()).toBe(25);
     wrapper.vm.changeValue(-1);
-    expect(wrapper.vm.getValue()).toBe(19);
+    expect(wrapper.vm.getParsedValue()).toBe(19);
     expect(wrapper.vm.validate().isValid).toBe(true);
   });
 
@@ -88,15 +88,15 @@ describe("NumberInput.vue", () => {
       type: "mousedown",
     };
 
-    expect(wrapper.vm.getValue()).toBe(10);
+    expect(wrapper.vm.getParsedValue()).toBe(10);
     wrapper.vm.mouseEvent(event, "increase");
     vi.advanceTimersByTime(50);
     wrapper.vm.mouseEvent({}, "increase");
-    expect(wrapper.vm.getValue()).toBe(10.1);
+    expect(wrapper.vm.getParsedValue()).toBe(10.1);
     wrapper.vm.mouseEvent(event, "decrease");
     vi.advanceTimersByTime(50);
     wrapper.vm.mouseEvent({}, "decrease");
-    expect(wrapper.vm.getValue()).toBe(10);
+    expect(wrapper.vm.getParsedValue()).toBe(10);
   });
 
   it("applies hover class", async () => {
@@ -110,9 +110,9 @@ describe("NumberInput.vue", () => {
 
   it("transforms to (standard) scientific notation", async () => {
     await wrapper.setProps({ modelValue: "3e5" });
-    expect(wrapper.vm.getValue()).toBe(300000);
+    expect(wrapper.vm.getParsedValue()).toBe(300000);
     await wrapper.setProps({ modelValue: "4.423532523e5" });
-    expect(wrapper.vm.getValue()).toBe(442353.2523);
+    expect(wrapper.vm.getParsedValue()).toBe(442353.2523);
   });
 
   it("accepts decimal point as separator", async () => {
@@ -152,12 +152,12 @@ describe("NumberInput.vue", () => {
   });
 
   it("sets the value of the input as number when the input loses focus", async () => {
-    const getValueSpy = vi.spyOn(wrapper.vm, "getValue");
+    const getParsedValueSpy = vi.spyOn(wrapper.vm, "getParsedValue");
     const input = wrapper.find("input");
     input.element.value = "1.5";
     await input.trigger("input");
     await input.trigger("blur");
-    expect(getValueSpy).toHaveNthReturnedWith(2, 1.5);
+    expect(getParsedValueSpy).toHaveNthReturnedWith(2, 1.5);
     expect(wrapper.vm.localValue).toBe(1.5);
   });
 });

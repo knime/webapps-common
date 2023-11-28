@@ -124,6 +124,9 @@ export default {
     this.initialValue = this.localValue;
   },
   methods: {
+    getInputRef() {
+      return this.$refs.input as HTMLInputElement;
+    },
     parseValue(value: string | number) {
       return this.isInteger
         ? parseInt(value.toString(), 10)
@@ -133,13 +136,21 @@ export default {
       return this.parseValue(this.localValue);
     },
     onInput(event: InputEvent) {
-      let newValue = (event.target as InputHTMLAttributes).value;
+      const newValue = (event.target as InputHTMLAttributes).value;
       /**
        * do not emit input event when decimal point is being
        * used because number input field treats it as invalid
        */
       if (event && event.data === "." && !newValue) {
         return;
+      }
+      if (!newValue) {
+        /**
+         * This explicit update is needed when the decimal separator is a comma, but the user types a period. In that
+         * case, the input value is invalid (NaN) when all digits behind the separator are deleted, e.g. "1.3" -> "1.".
+         * We therefore delete all digits of the input field to have the same state.
+         */
+        this.getInputRef().value = "";
       }
       this.updateAndEmit({ newValue });
     },
@@ -153,7 +164,7 @@ export default {
        * Without this explicit update the decimal separator is not removed when there
        * is no digit behind the separator
        */
-      (this.$refs.input as InputHTMLAttributes).value = this.localValue;
+      this.getInputRef().valueAsNumber = this.localValue;
     },
     validate(value: undefined | number | string) {
       let isValid = true;
