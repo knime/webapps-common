@@ -67,8 +67,9 @@ export const setExposedFlowVariable = (
   { path, flowVariableName }: { path: string; flowVariableName: string },
 ) => {
   const flowVarAtPath = flowVariableMap[path] || {};
-  flowVarAtPath.exposedFlowVariableName =
-    flowVariableName === "" ? null : flowVariableName;
+  flowVarAtPath.exposedFlowVariableName = flowVariableName.trim()
+    ? flowVariableName
+    : null;
   flowVariableMap[path] = flowVarAtPath;
 };
 

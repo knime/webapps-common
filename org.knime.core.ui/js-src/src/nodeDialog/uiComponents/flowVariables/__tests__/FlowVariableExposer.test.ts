@@ -6,6 +6,7 @@ import flushPromises from "flush-promises";
 
 import FlowVariableExposer from "../FlowVariableExposer.vue";
 import type FlowVariableExposerProps from "../types/FlowVariableExposerProps";
+import ErrorMessage from "../../ErrorMessage.vue";
 
 describe("FlowVariableExposer", () => {
   let props: FlowVariableExposerProps;
@@ -67,22 +68,41 @@ describe("FlowVariableExposer", () => {
     });
   });
 
-  it("unsets exposed flow variable", async () => {
-    const exposedFlowVariableName = "exposed";
-    props.flowVariablesMap[props.persistPath] = {
-      controllingFlowVariableAvailable: true,
-      controllingFlowVariableName: null,
-      exposedFlowVariableName,
-    };
-    const wrapper = mountFlowVariableExposer({
-      props,
-    });
+  it.each([["", "  "]])(
+    "unsets exposed flow variable on blank input",
+    async (unsettingFlowVarName) => {
+      const exposedFlowVariableName = "exposed";
+      props.flowVariablesMap[props.persistPath] = {
+        controllingFlowVariableAvailable: true,
+        controllingFlowVariableName: null,
+        exposedFlowVariableName,
+      };
+      const wrapper = mountFlowVariableExposer({
+        props,
+      });
 
-    await wrapper.findComponent(InputField).vm.$emit("update:model-value", "");
-    expect(props.flowVariablesMap[props.persistPath]).toStrictEqual({
-      controllingFlowVariableAvailable: true,
-      controllingFlowVariableName: null,
-      exposedFlowVariableName: null,
-    });
+      await wrapper
+        .findComponent(InputField)
+        .vm.$emit("update:model-value", unsettingFlowVarName);
+      expect(props.flowVariablesMap[props.persistPath]).toStrictEqual({
+        controllingFlowVariableAvailable: true,
+        controllingFlowVariableName: null,
+        exposedFlowVariableName: null,
+      });
+      expect(wrapper.findComponent(InputField).props().modelValue).toBe(
+        unsettingFlowVarName,
+      );
+    },
+  );
+
+  it("shows error and invalid state in case of a blank input", async () => {
+    const wrapper = mountFlowVariableExposer({ props });
+    await wrapper.findComponent(InputField).vm.$emit("update:model-value", " ");
+    const errorMessage = wrapper.findComponent(ErrorMessage);
+    expect(errorMessage.exists()).toBeTruthy();
+    expect(errorMessage.props().errors[0].message).toBe(
+      "Flow variable name must not be blank.",
+    );
+    expect(wrapper.findComponent(InputField).props().isValid).toBe(false);
   });
 });
