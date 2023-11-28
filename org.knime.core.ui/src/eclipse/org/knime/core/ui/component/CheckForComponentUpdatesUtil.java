@@ -129,6 +129,7 @@ public final class CheckForComponentUpdatesUtil {
         Map<NodeID, UpdateStatus> nodeIdToUpdateStatus;
         Status resStatus;
         var updateList = new ArrayList<NodeID>();
+        var errorList = new ArrayList<NodeID>(); // necessary for tracking update errors
         try {
             nodeIdToUpdateStatus = TemplateUpdateUtil.fillNodeUpdateStates(nodeIdToTemplate.values(), lH, loadResult,
                 new LinkedHashMap<>());
@@ -137,7 +138,7 @@ public final class CheckForComponentUpdatesUtil {
             LOGGER.warn(ex);
             resStatus = new MultiStatus(pluginId, IStatus.ERROR, new IStatus[]{Status.error("")},
                 "Some Node Link Updates failed", ex);
-            verifyMultiStatus(resStatus, hostWFM, candidateList, updateList);
+            verifyMultiStatus(resStatus, hostWFM, candidateList, updateList, errorList);
             monitor.done();
             return new ComponentUpdatesResult(resStatus, updateList);
         }
@@ -149,7 +150,7 @@ public final class CheckForComponentUpdatesUtil {
             var tnc = nodeIdToTemplate.get(id);
 
             monitor.subTask(tnc.getNameWithID());
-            var stat = createTemplateStatus(updateStatus, tnc, updateList, pluginId);
+            var stat = createTemplateStatus(updateStatus, tnc, updateList, errorList, pluginId);
             // if at least one WARNING level status was detected, entire status will be on WARNING level
             if (stat.getSeverity() == IStatus.WARNING) {
                 overallStatus = IStatus.WARNING;
@@ -165,7 +166,7 @@ public final class CheckForComponentUpdatesUtil {
         }
         resStatus =
             new MultiStatus(pluginId, overallStatus, stats, "Some Node Link Updates failed", null);
-        verifyMultiStatus(resStatus, hostWFM, candidateList, updateList);
+        verifyMultiStatus(resStatus, hostWFM, candidateList, updateList, errorList);
         monitor.done();
         return new ComponentUpdatesResult(resStatus, updateList);
     }
@@ -181,7 +182,7 @@ public final class CheckForComponentUpdatesUtil {
      * @return status object
      */
     private static Status createTemplateStatus(final UpdateStatus updateStatus, final NodeContainerTemplate tnc,
-        final List<NodeID> updateList, final String pluginId) {
+        final List<NodeID> updateList, final List<NodeID> errorList, final String pluginId) {
         var id = tnc.getID();
         final String tncName = tnc.getNameWithID();
 
@@ -194,6 +195,7 @@ public final class CheckForComponentUpdatesUtil {
             case Error:
                 // if an update for a parent was found, ignore the child's error
                 if (!updateableParentExists(id, updateList)) {
+                    errorList.add(id);
                     final var sourceURI = tnc.getTemplateInformation().getSourceURI();
                     Optional<KNIMEURIDescription> d = ResolverUtil.toDescription(sourceURI, new NullProgressMonitor());
                     var s = d.map(KNIMEURIDescription::toDisplayString).orElse(Objects.toString(sourceURI));
@@ -228,14 +230,26 @@ public final class CheckForComponentUpdatesUtil {
      * @throws InterruptedException
      */
     private static void verifyMultiStatus(final Status resStatus, final WorkflowManager hostWFM,
-        final List<NodeID> candidateList, final List<NodeID> updateList) throws IllegalStateException {
-        // Filtering for nodes that have updates filters out shared templates in shared templates -
-        // because we don't recurse into them to look for updates and thus they are not in the list.
-        // However, when actually updating a shared template that should contain an outdated shared template,
-        // we update the inner shared template, too (workflow manager updateMetaNodeLinkInternalRecursively).
-        // This is not what a software developer would do (the inner update might render the component unusable)
-        // but it is how KNIME works - and is considered useful to reduce the number of manual updates needed.
-        var templates = candidateList.stream().filter(updateList::contains).toList();
+        final List<NodeID> candidateList, final List<NodeID> updateList, final List<NodeID> errorList)
+        throws IllegalStateException {
+        // (1) Why do we need this method? Are inner updates not affected by an outer update?
+        //   Yes, this is not what a software developer would do, but:
+        //   this is how KNIME works - in this core-workbench update logic entanglement, it considered useful.
+
+        // (2) Why can't we re-check all top-level candidates for verification (first approach)?
+        //   Filtering for top-level nodes that have updates filters out shared templates in shared templates -
+        //   because we don't recurse into them to look for updates and thus they are not in the list.
+        //   However, when actually updating a shared template that should contain an outdated shared template,
+        //   we update the inner shared template, too (workflow manager updateMetaNodeLinkInternalRecursively).
+        //   This is how the update process currently works.
+
+        // (3) Why can't we re-check all nodes in the `updateList` for verification (second approach)?
+        //   Only nodes where a) the update-check was successful and b) an update is available are placed in
+        //   the `updateList`. However, if an update error occurs, the error is not propagated to the WFM,
+        //   which notifies the user with cause and the little indicator icon (red arrow).
+        var templates = candidateList.stream()//
+            .filter(x -> updateList.contains(x) || errorList.contains(x))//
+            .toList();
 
         var updateError = resStatus.getSeverity() >= IStatus.WARNING;
         // for each of the shared metanode templates with: entry point > !shared metanode template > T
