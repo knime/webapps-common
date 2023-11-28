@@ -137,7 +137,7 @@ describe("NumberInput.vue", () => {
     expect(wrapper.emitted("update:modelValue")).toBeFalsy();
   });
 
-  it("emits NaN when last digit was deleted", () => {
+  it("emits NaN when all digits were deleted", () => {
     const mockEvent = {
       data: null,
       inputType: "deleteContentBackward",
@@ -158,5 +158,6 @@ describe("NumberInput.vue", () => {
     await input.trigger("input");
     await input.trigger("blur");
     expect(getValueSpy).toHaveNthReturnedWith(2, 1.5);
+    expect(wrapper.vm.localValue).toBe(1.5);
   });
 });

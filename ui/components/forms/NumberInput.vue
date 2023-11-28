@@ -104,19 +104,24 @@ export default {
       return classes;
     },
     inputValue() {
-      // For type double, the conversion to string is needed to ensure that the decimal separator does not disappear
-      // when the last digit behind the separator is removed. The check for NaN is needed for int and double to remove
-      // the warning of the browser that the specified value is out of range or cannot be parsed.
       if (isNaN(this.localValue)) {
         return "";
       }
+      /**
+       * For type double, the conversion to string is needed to ensure that the decimal separator does not disappear
+       * when the last digit behind the separator is removed.
+       */
       return this.isInteger ? this.localValue : this.localValue.toString();
     },
   },
   watch: {
     modelValue: {
       handler() {
-        this.localValue = this.parseValue(this.modelValue);
+        if (
+          this.parseValue(this.localValue) !== this.parseValue(this.modelValue)
+        ) {
+          this.localValue = this.parseValue(this.modelValue);
+        }
       },
       immediate: true,
     },
@@ -134,23 +139,27 @@ export default {
       return this.isInteger ? parseInt(value, 10) : parseFloat(value);
     },
     getValue() {
-      return this.parseValue(this.$refs.input.value);
+      return this.parseValue(this.localValue);
     },
     onInput(e) {
-      // do not emit input event when decimal point is being
-      // used because number input field treats it as invalid
+      /**
+       * do not emit input event when decimal point is being
+       * used because number input field treats it as invalid
+       */
       if (e && e.data === "." && !e.target.value) {
         return;
       }
+      this.localValue = e.target.value;
       let inputValue;
       if (e && e.inputType === "deleteContentBackward" && !e.target.value) {
-        // This condition is true in two cases:
-        // 1. When the decimal separator of the system is a comma, but the user typed in a period and removes all
-        //    digits after the period. (The used separator is unknown, since it can be different than the locale,
-        //    specified by navigator.language)
-        // 2. When the user removes all digits
-        // We cannot distinguish between 1. and 2., but 2. is fulfilled for correct inputs, while 1. is fulfilled for
-        // incorrect inputs. Therefore, we just delete all digits.
+        /** This condition is true in two cases:
+         * 1. When the decimal separator of the system is a comma, but the user typed in a period and removes all
+         *    digits after the period. (The used separator is unknown, since it can be different than the locale,
+         *    specified by navigator.language)
+         * 2. When the user removes all digits
+         * We cannot distinguish between 1. and 2., but 2. is fulfilled for correct inputs, while 1. is fulfilled for
+         * incorrect inputs. Therefore, we just delete all digits.
+         */
         inputValue = NaN;
         this.$refs.input.value = "";
       } else {
@@ -159,9 +168,12 @@ export default {
       this.$emit("update:modelValue", inputValue);
     },
     onBlur() {
-      // Passing a number instead of a string to the input removes the decimal separator when the input field looses
-      // focus and there is no digit behind the separator
-      this.$refs.input.value = this.getValue();
+      /**
+       * Passing a number instead of a string to the input removes the decimal separator when the input field looses
+       * focus and there is no digit behind the separator
+       */
+      this.localValue = this.getValue();
+      this.$refs.input.value = this.localValue;
     },
     validate(value) {
       let isValid = true;
@@ -214,8 +226,7 @@ export default {
        * the max, etc. This mimics native behavior.
        */
       if (this.validate(parsedVal).isValid) {
-        this.$refs.input.value = parsedVal;
-        this.onInput();
+        this.onInput({ target: { value: parsedVal } });
       }
     },
     /**
