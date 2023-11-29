@@ -1,0 +1,9 @@
+/* This is an auto-generated file.
+ * Do not change manually.
+ * Changes should go to @knime/styles/colors/portColors.js.
+*/
+
+:root {
+  --knime-port-table: hsl(0, 3%, 12%);
+  --knime-port-flow-variable: hsl(0, 100%, 64.7%);
+}

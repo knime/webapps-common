@@ -67,6 +67,7 @@ const onSecondaryToolClick = (
       :active="tool.active?.()"
       :title="hotkeyFormatter(tool.hotkey ?? [])"
       compact
+      @keydown.enter.prevent="tool.onClick"
       @click.stop="tool.onClick"
     >
       <Component :is="tool.icon" />

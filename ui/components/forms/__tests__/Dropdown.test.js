@@ -283,11 +283,11 @@ describe("Dropdown.vue", () => {
       let listbox = wrapper.find("[role=listbox]");
 
       // open list
-      await wrapper.find("[role=button]").trigger("keydown.enter");
+      await wrapper.find("[role=button]").trigger("keydown", { key: "Enter" });
       expect(listbox.isVisible()).toBe(true);
 
       // close listbox
-      await listbox.trigger("keydown.esc");
+      await listbox.trigger("keydown", { key: "Escape" });
       expect(listbox.isVisible()).toBe(false);
     });
 
@@ -295,7 +295,7 @@ describe("Dropdown.vue", () => {
       const modelValue = possibleValues[1].id; // defines start point
       const { wrapper } = doMount({ possibleValues, modelValue, slots });
       const ul = wrapper.find("ul");
-      ul.trigger("keydown.down");
+      ul.trigger("keydown", { key: "ArrowDown" });
       expect(wrapper.emitted("update:modelValue")[0][0]).toBe(
         possibleValues[2].id,
       );
@@ -305,7 +305,7 @@ describe("Dropdown.vue", () => {
       const modelValue = possibleValues[1].id; // defines start point
       const { wrapper } = doMount({ possibleValues, modelValue, slots });
       const ul = wrapper.find("ul");
-      ul.trigger("keydown.up");
+      ul.trigger("keydown", { key: "ArrowUp" });
       expect(wrapper.emitted("update:modelValue")[0][0]).toBe(
         possibleValues[0].id,
       );
@@ -331,7 +331,7 @@ describe("Dropdown.vue", () => {
       const modelValue = possibleValues[2].id; // defines start point
       const { wrapper } = doMount({ possibleValues, modelValue, slots });
       const ul = wrapper.find("ul");
-      ul.trigger("keydown.home");
+      ul.trigger("keydown", { key: "Home" });
       expect(wrapper.emitted("update:modelValue")[0][0]).toBe(
         possibleValues[0].id,
       );
@@ -341,7 +341,7 @@ describe("Dropdown.vue", () => {
       const modelValue = possibleValues[2].id; // defines start point
       const { wrapper } = doMount({ possibleValues, modelValue, slots });
       const ul = wrapper.find("ul");
-      ul.trigger("keydown.end");
+      ul.trigger("keydown", { key: "End" });
       expect(wrapper.emitted("update:modelValue")[0][0]).toBe(
         possibleValues[possibleValues.length - 1].id,
       );

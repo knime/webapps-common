@@ -1,0 +1,55 @@
+/* This is an auto-generated file.
+ * Do not change manually.
+ * Changes should go to @knime/styles/colors/knimeColors.js.
+*/
+
+:root {
+  --knime-yellow: hsl(50.8, 100%, 50%);
+  --knime-masala: hsl(12, 4.2%, 23.3%);
+  --knime-dove-gray: hsl(0, 0%, 43.1%);
+  --knime-silver-sand: hsl(200, 5%, 76.5%);
+  --knime-porcelain: hsl(200, 10.33%, 94.3%);
+  --knime-white: white;
+  --knime-aquamarine: hsl(188, 63%, 71.4%);
+  --knime-aquamarine-dark: hsl(193, 60.9%, 43.1%);
+  --knime-aquamarine-light: hsl(182, 63.3%, 88.2%);
+  --knime-avocado: hsl(78, 38.7%, 75.7%);
+  --knime-avocado-dark: hsl(60, 23%, 49.4%);
+  --knime-avocado-light: hsl(60, 50.8%, 87.3%);
+  --knime-carrot: hsl(29, 100%, 59.8%);
+  --knime-carrot-dark: hsl(24, 78.2%, 48.6%);
+  --knime-carrot-light: hsl(40, 100%, 80%);
+  --knime-coral: hsl(0, 100%, 64.7%);
+  --knime-coral-dark: hsl(0, 69.5%, 41.2%);
+  --knime-coral-light: hsl(0, 91.5%, 86.1%);
+  --knime-cornflower: hsl(206, 69.7%, 38.8%);
+  --knime-cornflower-dark: hsl(216, 64.9%, 29%);
+  --knime-cornflower-light: hsl(205, 71.9%, 74.9%);
+  --knime-hibiscus: hsl(327, 82.3%, 71.2%);
+  --knime-hibiscus-dark: hsl(329, 71.4%, 52%);
+  --knime-hibiscus-light: hsl(329, 72.3%, 87.3%);
+  --knime-lavender: hsl(305, 27.7%, 46.1%);
+  --knime-lavender-dark: hsl(295, 34.2%, 29.8%);
+  --knime-lavender-light: hsl(263, 40.4%, 77.6%);
+  --knime-meadow: hsl(128, 50%, 47.1%);
+  --knime-meadow-dark: hsl(142, 58.7%, 29.4%);
+  --knime-meadow-light: hsl(70, 78.3%, 54.9%);
+  --knime-petrol: hsl(173, 37.2%, 43.7%);
+  --knime-petrol-dark: hsl(183, 100%, 17.5%);
+  --knime-petrol-light: hsl(168, 57.4%, 78.8%);
+  --knime-stone: hsl(0, 0%, 66.7%);
+  --knime-stone-dark: hsl(60, 0.4%, 48.4%);
+  --knime-stone-light: hsl(220, 4.3%, 86.5%);
+  --knime-wood: hsl(24, 46.4%, 67.1%);
+  --knime-wood-dark: hsl(26, 33%, 35.1%);
+  --knime-wood-light: hsl(30, 100%, 85.1%);
+  --knime-black: hsl(0, 3%, 12%);
+  --knime-black-semi: hsla(0, 3%, 12%, 0.8);
+  --knime-stone-gray: hsl(0, 0%, 53.3%);
+  --knime-gray-dark: hsl(195, 1.6%, 51.8%);
+  --knime-gray-ultra-light: hsl(210, 16.7%, 97.6%);
+  --knime-masala-semi: hsla(12, 4.2%, 23.3%, 0.5);
+  --knime-gray-dark-semi: hsla(195, 1.6%, 51.8%, 0.4);
+  --knime-silver-sand-semi: hsla(200, 5%, 76.5%, 0.5);
+  --knime-gray-light-semi: hsla(200, 10%, 94%, 0.4);
+}
