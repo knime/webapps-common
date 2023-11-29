@@ -11,6 +11,9 @@ interface PossibleValue {
   id: Id;
   text: string;
   title?: string;
+  slotData?: {
+    [K in keyof any]: string | number | boolean;
+  };
 }
 
 let count = 0;
