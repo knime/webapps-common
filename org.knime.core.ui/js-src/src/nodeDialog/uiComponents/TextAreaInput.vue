@@ -54,12 +54,13 @@ export default TextAreaInput;
     <LabeledInput
       #default="{ labelForId }"
       :config-keys="control?.schema?.configKeys"
-      :with-flow-variables="false"
+      :flow-variables-map="control.rootSchema.flowVariablesMap"
       :path="control.path"
       :text="control.label"
       :show-reexecution-icon="isModelSettingAndHasNodeView"
       :description="control.description"
       :errors="[control.errors]"
+      :flow-settings="flowSettings"
       @controlling-flow-variable-set="onChange"
     >
       <TextArea
