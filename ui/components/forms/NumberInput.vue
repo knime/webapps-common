@@ -1,6 +1,7 @@
-<script>
+<script lang="ts">
 import "./variables.css";
 import ArrowIcon from "../../assets/img/icons/arrow-dropdown.svg";
+import type { PropType, InputHTMLAttributes } from "vue";
 
 const INTERVAL_TIMEOUT_DELAY = 200;
 const MOUSE_DOWN_CHANGE_INTERVAL = 50;
@@ -14,7 +15,7 @@ export default {
   props: {
     modelValue: {
       default: 0,
-      type: [Number, String],
+      type: [Number, String] as PropType<string | number>,
       validator(value) {
         if (typeof value === "string") {
           // possible scientific notation
@@ -53,10 +54,7 @@ export default {
      */
     type: {
       default: "double",
-      type: String,
-      validator(value) {
-        return ["double", "integer"].includes(value);
-      },
+      type: String as PropType<"double" | "integer">,
     },
     inputClasses: {
       default: "",
@@ -71,25 +69,19 @@ export default {
   data() {
     return {
       clicked: false, // false to prevent unintended 'mouseup' or 'mouseleave' events.
-      hovered: false, // if the input field is currently hovered or not
-      initialValue: null,
-      localValue: null,
+      hovered: false,
+      initialValue: 0,
+      localValue: "" as string | number,
+      spinnerArrowTimeout: null as null | Parameters<typeof clearInterval>[0],
+      spinnerArrowInterval: null as null | Parameters<typeof clearTimeout>[0],
     };
   },
-  /**
-   * The reference to the timeout which is set when
-   * a user clicks one of the numeric spinner wheels. This
-   * Timeout will trigger the spinnerArrowInterval.
-   */
-  spinnerArrowTimeout: null,
-  /**
-   * This interval rapid calls the change value method until the
-   * user releases the mouse.
-   */
-  spinnerArrowInterval: null,
   computed: {
+    isInteger() {
+      return this.type === "integer";
+    },
     stepSize() {
-      return this.type === "integer"
+      return this.isInteger
         ? DEFAULT_STEP_SIZE_INTEGER
         : DEFAULT_STEP_SIZE_DOUBLE;
     },
@@ -100,11 +92,25 @@ export default {
       }
       return classes;
     },
+    inputValue() {
+      if (typeof this.localValue === "number" && isNaN(this.localValue)) {
+        return "";
+      }
+      /**
+       * For type double, the conversion to string is needed to ensure that the decimal separator does not disappear
+       * when the last digit behind the separator is removed.
+       */
+      return this.isInteger ? this.localValue : this.localValue.toString();
+    },
   },
   watch: {
     modelValue: {
       handler() {
-        this.localValue = this.parseValue(this.modelValue);
+        if (
+          this.parseValue(this.localValue) !== this.parseValue(this.modelValue)
+        ) {
+          this.localValue = this.parseValue(this.modelValue);
+        }
       },
       immediate: true,
     },
@@ -118,37 +124,55 @@ export default {
     this.initialValue = this.localValue;
   },
   methods: {
-    parseValue(value) {
-      return this.type === "integer" ? parseInt(value, 10) : parseFloat(value);
+    getInputRef() {
+      return this.$refs.input as HTMLInputElement;
     },
-    getValue() {
-      return this.parseValue(this.$refs.input.value);
+    parseValue(value: string | number) {
+      return this.isInteger
+        ? parseInt(value.toString(), 10)
+        : parseFloat(value.toString());
     },
-    onInput(e) {
-      // do not emit input event when decimal point is being
-      // used because number input field treats it as invalid
-      if (e && e.data === "." && !e.target.value) {
+    getParsedValue() {
+      return this.parseValue(this.localValue);
+    },
+    onInput(event: InputEvent) {
+      const newValue = (event.target as InputHTMLAttributes).value;
+      /**
+       * do not emit input event when decimal point is being
+       * used because number input field treats it as invalid
+       */
+      if (event && event.data === "." && !newValue) {
         return;
       }
-      let inputValue;
-      if (
-        e &&
-        e.inputType === "deleteContentBackward" &&
-        this.localValue.toString().length > 1
-      ) {
-        // manually slice and parse the value (in case the new input value ends with a decimal point)
-        // in which case the number input field treats it as invalid
-        inputValue = this.parseValue(this.localValue.toString().slice(0, -1));
-      } else {
-        inputValue = this.getValue();
+      if (!newValue) {
+        /**
+         * This explicit update is needed when the decimal separator is a comma, but the user types a period. In that
+         * case, the input value is invalid (NaN) when all digits behind the separator are deleted, e.g. "1.3" -> "1.".
+         * We therefore delete all digits of the input field to have the same state.
+         */
+        this.getInputRef().value = "";
       }
-      this.$emit("update:modelValue", inputValue);
+      this.updateAndEmit({ newValue });
     },
-    validate(value) {
+    updateAndEmit({ newValue }: { newValue: string | number }) {
+      this.localValue = newValue;
+      this.$emit("update:modelValue", this.getParsedValue());
+    },
+    onBlur() {
+      this.localValue = this.getParsedValue();
+      /**
+       * Without this explicit update the decimal separator is not removed when there
+       * is no digit behind the separator
+       */
+      this.getInputRef().valueAsNumber = this.localValue;
+    },
+    validate(value: undefined | number | string) {
       let isValid = true;
       let errorMessage;
       value =
-        typeof value === "undefined" ? this.getValue() : this.parseValue(value);
+        typeof value === "undefined"
+          ? this.getParsedValue()
+          : this.parseValue(value);
       if (typeof value !== "number" || isNaN(value)) {
         isValid = false;
         errorMessage = "Current value is not a number.";
@@ -166,22 +190,10 @@ export default {
      * @param  {Number} increment - the amount by which to change the current value.
      * @returns {undefined}
      */
-    changeValue(increment) {
-      let value = this.getValue();
-      /**
-       * If value is currently invalid, find the nearest valid value.
-       */
+    changeValue(increment: number) {
+      let value = this.getParsedValue();
       if (!this.validate(value).isValid) {
-        // use the min if value too low
-        if (value < this.min) {
-          value = this.min;
-          // or use the max if value too high
-        } else if (value > this.max) {
-          value = this.max;
-          // fallback, use the initial value
-        } else {
-          value = this.initialValue;
-        }
+        value = this.findNearestValidValue(value);
       }
 
       /** Mimic stepping to nearest step with safe value rounding */
@@ -195,9 +207,17 @@ export default {
        * the max, etc. This mimics native behavior.
        */
       if (this.validate(parsedVal).isValid) {
-        this.$refs.input.value = parsedVal;
-        this.onInput();
+        this.updateAndEmit({ newValue: parsedVal });
       }
+    },
+    findNearestValidValue(value: number) {
+      if (value < this.min) {
+        return this.min;
+      }
+      if (value > this.max) {
+        return this.max;
+      }
+      return this.initialValue;
     },
     /**
      * This method is the callback handler for mouse events on the input field controls.
@@ -211,13 +231,17 @@ export default {
      * @param {String} type - the type of button pressed (either 'increased' or 'decreased').
      * @returns {undefined}
      */
-    mouseEvent(e, type) {
+    mouseEvent(e: MouseEvent, type: "increase" | "decrease") {
       if (this.disabled) {
         return;
       }
       // on any mouse event, clear existing timers and intervals
-      clearTimeout(this.spinnerArrowInterval);
-      clearInterval(this.spinnerArrowTimeout);
+      if (this.spinnerArrowInterval !== null) {
+        clearTimeout(this.spinnerArrowInterval);
+      }
+      if (this.spinnerArrowTimeout !== null) {
+        clearInterval(this.spinnerArrowTimeout);
+      }
       // set the increment size
       let valueDifference = this.stepSize;
       // if the decrease button has been selected, make negative
@@ -257,13 +281,14 @@ export default {
       :name="name"
       type="number"
       role="spinButton"
-      :value="localValue"
+      :value="inputValue"
       :min="min"
       :max="max"
       :step="stepSize"
       :class="inputClassList"
       :disabled="disabled"
-      @input="onInput"
+      @input="onInput($event as InputEvent)"
+      @blur="onBlur"
       @mouseenter="toggleHover"
       @mouseleave="toggleHover"
     />
