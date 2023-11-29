@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount } from "@vue/test-utils";
 import Dropdown from "../Dropdown.vue";
-import { isUndefined, cloneDeep } from "lodash";
+import { isUndefined, cloneDeep } from "lodash-es";
 
 vi.useFakeTimers();
 

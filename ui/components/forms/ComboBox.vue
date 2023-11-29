@@ -1,7 +1,7 @@
 <script lang="ts">
 import "./variables.css";
 import { defineComponent, type PropType } from "vue";
-import { kebabCase, uniq } from "lodash";
+import { kebabCase, uniq } from "lodash-es";
 
 import Multiselect from "./Multiselect.vue";
 import FunctionButton from "../FunctionButton.vue";

@@ -1,5 +1,5 @@
 import { ref, onMounted } from "vue";
-import { merge } from "lodash";
+import { merge } from "lodash-es";
 
 import type { Ref } from "vue";
 

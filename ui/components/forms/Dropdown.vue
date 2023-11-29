@@ -1,7 +1,7 @@
 <script lang="ts">
 import "./variables.css";
 import { mixin as VueClickAway } from "vue3-click-away";
-import { isEmpty } from "lodash";
+import { isEmpty } from "lodash-es";
 
 import DropdownIcon from "../../assets/img/icons/arrow-dropdown.svg";
 import type { PropType } from "vue";

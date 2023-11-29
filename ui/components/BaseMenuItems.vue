@@ -2,7 +2,7 @@
 import type { PropType } from "vue";
 import { onBeforeUpdate, ref, toRef } from "vue";
 import usePopper from "../composables/usePopper";
-import { uniqueId } from "lodash";
+import { uniqueId } from "lodash-es";
 import BaseMenuItem from "./BaseMenuItem.vue";
 import type { MenuItem } from "./MenuItems.vue";
 
