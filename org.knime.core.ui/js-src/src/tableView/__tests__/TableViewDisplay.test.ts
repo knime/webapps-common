@@ -11,6 +11,7 @@ import { ref, unref } from "vue";
 import useColumnSizes from "../composables/useColumnSizes";
 import useAutoColumnSizes from "../composables/useAutoColumnSizes";
 import { RowHeightMode, SelectionMode } from "../types/ViewSettings";
+import LoadingIcon from "@@/webapps-common/ui/components/LoadingIcon.vue";
 
 const useColumnSizesMock: { [key: string]: any } = {
   columnSizes: ref([50, 50, 50]),
@@ -524,6 +525,14 @@ describe("TableViewDisplay.vue", () => {
 
     tableUIWithAutoSizeCalculation.vm.$emit("ready");
     expect(tableViewDisplay.emitted()).toHaveProperty("table-is-ready");
+  });
+
+  it("shows loading animation", () => {
+    props.rows.loaded = false;
+    const wrapper = shallowMountDisplay({ props });
+    expect(
+      wrapper.find(".center").findComponent(LoadingIcon).exists(),
+    ).toBeTruthy();
   });
 
   describe("column size composables", () => {

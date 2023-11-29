@@ -283,7 +283,7 @@ describe("TableViewInteractive.vue", () => {
       initialDataMock.table.columnCount = 0;
       const wrapper = await shallowMountInteractive(context);
       expect(findTableComponent(wrapper).exists()).toBeFalsy();
-      expect(wrapper.find(".no-columns").exists()).toBeTruthy();
+      expect(wrapper.find(".center").find("h4").exists()).toBeTruthy();
     });
 
     it("renders the TableUIWithAutoSizeCalculation and passes the correct props", async () => {

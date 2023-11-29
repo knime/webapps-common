@@ -16,6 +16,7 @@ import useBoolean from "./utils/useBoolean";
 import { separateSpecialColumns } from "./utils/specialColumns";
 import { BORDER_BOTTOM_WIDTH } from "./constants";
 import { RowHeightMode } from "./types/ViewSettings";
+import LoadingIcon from "webapps-common/ui/components/LoadingIcon.vue";
 
 const emit = defineEmits([
   "page-change",
@@ -302,8 +303,12 @@ const onCopySelection = ({
         />
       </template>
     </TableUIWithAutoSizeCalculation>
-    <div v-else-if="rows.loaded" class="no-columns">
-      <h4>No data to display</h4>
+    <div v-else class="center">
+      <h4 v-if="rows.loaded">No data to display</h4>
+      <span v-else>
+        <LoadingIcon class="loading-icon" />
+        Loading data
+      </span>
     </div>
   </div>
 </template>
@@ -317,7 +322,7 @@ const onCopySelection = ({
   line-height: 20px;
 }
 
-.no-columns {
+.center {
   height: 100%;
   width: 100%;
   display: flex;
@@ -327,6 +332,23 @@ const onCopySelection = ({
   & h4 {
     color: rgb(70 70 70);
     font-size: 16px;
+  }
+
+  & span {
+    font-size: 16px;
+    text-align: center;
+    font-style: italic;
+    color: var(--knime-masala);
+
+    & .loading-icon {
+      width: 24px;
+      height: 24px;
+      stroke-width: 1px;
+      margin: auto;
+      stroke: var(--knime-masala);
+      vertical-align: -6px;
+      margin-right: 10px;
+    }
   }
 }
 
