@@ -206,7 +206,7 @@ describe("NodeDialog.vue", () => {
   });
 
   describe("keyboard shortcuts", () => {
-    let wrapper, closeCEFWindowSpy, applyDataSpy;
+    let wrapper, formWrapper, closeCEFWindowSpy, applyDataSpy;
 
     beforeEach(() => {
       wrapper = shallowMount(
@@ -217,10 +217,11 @@ describe("NodeDialog.vue", () => {
       applyDataSpy = vi
         .spyOn(wrapper.vm.jsonDataService, "applyData")
         .mockResolvedValue({});
+      formWrapper = wrapper.find(".form");
     });
 
     it("executes node when metaOrCtrlKey is pressed on closeDialog", () => {
-      wrapper.trigger("keydown", { [metaOrCtrlKey]: true });
+      formWrapper.trigger("keydown", { [metaOrCtrlKey]: true });
 
       wrapper.vm.closeDialog();
 
@@ -230,9 +231,9 @@ describe("NodeDialog.vue", () => {
     it("does not executes node when metaOrCtrlKey was pressed and released again on closeDialog", async () => {
       const okButton = wrapper.findAllComponents(Button).at(1);
       expect(okButton.html()).toBe("Ok");
-      await wrapper.trigger("keydown", { [metaOrCtrlKey]: true });
+      await formWrapper.trigger("keydown", { [metaOrCtrlKey]: true });
       expect(okButton.html()).toBe("Ok and Execute");
-      await wrapper.trigger("keyup", { [metaOrCtrlKey]: false });
+      await formWrapper.trigger("keyup", { [metaOrCtrlKey]: false });
       expect(okButton.html()).toBe("Ok");
 
       wrapper.vm.closeDialog();
@@ -241,7 +242,7 @@ describe("NodeDialog.vue", () => {
     });
 
     it("triggers cancel on escape", async () => {
-      await wrapper.trigger("keydown", { key: "Escape" });
+      await formWrapper.trigger("keydown", { key: "Escape" });
       expect(closeCEFWindowSpy).toHaveBeenCalledWith(false);
     });
 
@@ -264,13 +265,16 @@ describe("NodeDialog.vue", () => {
     });
 
     it("triggers apply + close on enter", async () => {
-      await wrapper.trigger("keydown", { key: "Enter" });
+      await formWrapper.trigger("keydown", { key: "Enter" });
       expect(applyDataSpy).toHaveBeenCalled();
       expect(closeCEFWindowSpy).toHaveBeenCalledWith(false);
     });
 
     it("triggers apply + close + execute on metaOrCtrlKey + enter", async () => {
-      await wrapper.trigger("keydown", { key: "Enter", [metaOrCtrlKey]: true });
+      await formWrapper.trigger("keydown", {
+        key: "Enter",
+        [metaOrCtrlKey]: true,
+      });
       expect(applyDataSpy).toHaveBeenCalled();
       expect(closeCEFWindowSpy).toHaveBeenCalledWith(true);
     });
