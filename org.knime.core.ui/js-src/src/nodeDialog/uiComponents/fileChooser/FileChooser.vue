@@ -8,6 +8,7 @@ import { toFileExplorerItem } from "./utils";
 import Button from "webapps-common/ui/components/Button.vue";
 import LoadingIcon from "webapps-common/ui/components/LoadingIcon.vue";
 import FolderIcon from "webapps-common/ui/assets/img/icons/folder.svg";
+import InputField from "@@/webapps-common/ui/components/forms/InputField.vue";
 
 const { listItems, getFilePath } = useFileChooserBackend();
 
@@ -17,9 +18,13 @@ const currentPathDisplay = computed(() => {
   return currentPath.value ?? "Root directories";
 });
 const items: Ref<FileExplorerItem[]> = ref([]);
-const props = withDefaults(defineProps<{ initialFilePath?: string }>(), {
-  initialFilePath: "",
-});
+const props = withDefaults(
+  defineProps<{ initialFilePath?: string; isWriter?: boolean }>(),
+  {
+    initialFilePath: "",
+    isWriter: false,
+  },
+);
 const isLoading = ref(true);
 
 const setNextItems = (folder: Folder) => {
@@ -42,10 +47,12 @@ onMounted(() => {
   listItems(null, props.initialFilePath).then(handleListItemsResult);
 });
 
-const selectedItem: Ref<FileExplorerItem | null> = ref(null);
+const selectedDirectoryName = ref("");
+const selectedFileName = ref("");
 
 const changeDirectory = (nextFolder: string) => {
-  selectedItem.value = null;
+  selectedDirectoryName.value = "";
+  selectedFileName.value = "";
   isLoading.value = true;
   listItems(currentPath.value, nextFolder).then(handleListItemsResult);
 };
@@ -59,18 +66,27 @@ const emit = defineEmits<{
   ];
   cancel: [];
 }>();
-const onOpenFile = async (item: FileExplorerItem) => {
-  const filePath = await getFilePath(currentPath.value, item.name);
+const onOpenFile = async (name: string) => {
+  const filePath = await getFilePath(currentPath.value, name);
   emit("chooseFile", filePath);
 };
 
 const onChangeSelection = (itemIds: string[]) => {
   if (itemIds.length === 0) {
-    selectedItem.value = null;
+    selectedDirectoryName.value = "";
+    if (!props.isWriter) {
+      selectedFileName.value = "";
+    }
     return;
   }
   const newSelectedItem = items.value.find(({ id }) => id === itemIds[0])!;
-  selectedItem.value = newSelectedItem;
+  if (newSelectedItem.isDirectory) {
+    selectedDirectoryName.value = newSelectedItem.name;
+    selectedFileName.value = "";
+  } else {
+    selectedDirectoryName.value = "";
+    selectedFileName.value = newSelectedItem.name;
+  }
 };
 
 const onCancel = () => {
@@ -91,6 +107,10 @@ const onCancel = () => {
           >({{ displayedError }})</span
         >
       </div>
+      <div v-if="isWriter" class="name-input-wrapper">
+        <span>Name:</span>
+        <InputField v-model="selectedFileName" />
+      </div>
       <FileExplorer
         class="explorer"
         :is-root-folder="currentPath === null"
@@ -99,24 +119,24 @@ const onCancel = () => {
         :disable-multi-select="true"
         :disable-dragging="true"
         @change-directory="changeDirectory"
-        @open-file="onOpenFile"
+        @open-file="onOpenFile($event.name)"
         @change-selection="onChangeSelection"
       />
     </template>
     <div class="button-wrapper">
       <Button compact with-border @click="onCancel">Cancel</Button>
       <Button
-        v-if="selectedItem?.isDirectory === false"
+        v-if="selectedFileName"
         compact
         primary
-        @click="() => onOpenFile(selectedItem!)"
+        @click="() => onOpenFile(selectedFileName)"
         >Choose</Button
       >
       <Button
-        v-if="selectedItem?.isDirectory === true"
+        v-if="selectedDirectoryName"
         compact
         primary
-        @click="() => changeDirectory(selectedItem!.name)"
+        @click="() => changeDirectory(selectedDirectoryName)"
         >Open</Button
       >
     </div>
@@ -129,6 +149,7 @@ const onCancel = () => {
   height: 100%;
   flex-direction: column;
   justify-content: space-between;
+  font-size: 13px;
 
   & .loading-animaton {
     align-items: center;
@@ -148,7 +169,6 @@ const onCancel = () => {
     display: flex;
     gap: 10px;
     align-items: center;
-    font-size: 13px;
     margin: 5px;
 
     & svg {
@@ -159,6 +179,14 @@ const onCancel = () => {
     & span.error {
       color: var(--theme-color-error);
     }
+  }
+
+  & .name-input-wrapper {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: baseline;
+    margin: 5px;
   }
 
   & .explorer {

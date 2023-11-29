@@ -84,7 +84,7 @@ export default (rpcRequest: { method: string; params: any[] }) => {
           : {}),
       };
     case "fileChooser.getFilePath":
-      return "/path/to/folder/selectedFile.txt";
+      return `/path/to/folder/${rpcRequest.params[2]}`;
     default:
       return null;
   }

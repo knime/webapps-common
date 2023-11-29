@@ -8,6 +8,7 @@ import { toFileExplorerItem } from "../utils";
 
 import Button from "@@/webapps-common/ui/components/Button.vue";
 import LoadingIcon from "@@/webapps-common/ui/components/LoadingIcon.vue";
+import InputField from "@@/webapps-common/ui/components/forms/InputField.vue";
 
 describe("FileChooser.vue", () => {
   let dataServiceSpy: SpyInstance;
@@ -29,7 +30,7 @@ describe("FileChooser.vue", () => {
   });
 
   const shallowMountFileChooser = (
-    props: { initialFilePath?: string } = {},
+    props: { initialFilePath?: string; isWriter?: boolean } = {},
     customDataServiceMethod?: SpyInstance,
   ) => {
     dataServiceSpy =
@@ -191,6 +192,59 @@ describe("FileChooser.vue", () => {
         method: "fileChooser.listItems",
         options: ["local", folderFromBackend.path, directoryName],
       });
+    });
+  });
+
+  describe("writer", () => {
+    it("shows an input field to write a field name and emits it on choose button click", async () => {
+      const wrapper = shallowMountFileChooser({ isWriter: true });
+      await flushPromises();
+      const inputField = wrapper.findComponent(InputField);
+      expect(inputField.exists()).toBeTruthy();
+      expect(inputField.props().modelValue).toBe("");
+      expect(wrapper.findAllComponents(Button).length).toBe(1);
+
+      const inputText = "newFile.txt";
+      await inputField.vm.$emit("update:model-value", inputText);
+      expect(inputField.props().modelValue).toBe(inputText);
+      const buttons = wrapper.findAllComponents(Button);
+      expect(buttons.length).toBe(2);
+      const chooseButton = buttons.at(1);
+      expect(chooseButton?.text()).toContain("Choose");
+      await chooseButton?.vm.$emit("click");
+      expect(dataServiceSpy).toHaveBeenCalledWith({
+        method: "fileChooser.getFilePath",
+        options: ["local", null, inputText],
+      });
+      await flushPromises();
+      expect(wrapper.emitted("chooseFile")).toStrictEqual([[filePath]]);
+    });
+
+    it("sets the value of the selected file as input", async () => {
+      const wrapper = shallowMountFileChooser({ isWriter: true });
+      await flushPromises();
+
+      await wrapper
+        .findComponent(FileExplorer)
+        .vm.$emit("changeSelection", [fileName]);
+
+      const inputField = wrapper.findComponent(InputField);
+      expect(inputField.props().modelValue).toBe(fileName);
+    });
+
+    it("unsets the value of the selected file as input", async () => {
+      const wrapper = shallowMountFileChooser({ isWriter: true });
+      await flushPromises();
+
+      const inputField = wrapper.findComponent(InputField);
+      const inputText = "newFile.txt";
+      await inputField.vm.$emit("update:model-value", inputText);
+
+      await wrapper
+        .findComponent(FileExplorer)
+        .vm.$emit("changeSelection", [directoryName]);
+
+      expect(inputField.props().modelValue).toBe("");
     });
   });
 });
