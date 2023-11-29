@@ -114,3 +114,40 @@ watch(ready, () => ready.value && emit("rendered"));
     @table-is-ready="tableIsReady = true"
   />
 </template>
+
+<style scoped>
+@media print {
+  :deep(table) {
+    display: table;
+    border-collapse: collapse;
+
+    & tr {
+      display: table-row;
+      break-inside: avoid;
+    }
+
+    & td {
+      display: table-cell;
+      vertical-align: top;
+    }
+
+    & thead.base-controls {
+      display: table-caption;
+    }
+
+    & thead.table-header {
+      display: table-header-group;
+
+      & tr {
+        display: table-row;
+        height: 41px;
+        break-inside: avoid;
+
+        & th.column-header {
+          display: table-cell;
+        }
+      }
+    }
+  }
+}
+</style>
