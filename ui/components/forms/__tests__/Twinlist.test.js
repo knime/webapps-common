@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { mount } from "@vue/test-utils";
 
 import SearchInput from "../SearchInput.vue";
@@ -509,7 +509,13 @@ describe("Twinlist.vue", () => {
       let left = boxes[0];
       let right = boxes[1];
       left.vm.setSelected(["test2", "test3"]);
-      wrapper.find({ ref: "moveRight" }).trigger("keydown", { key: "Enter" });
+      const stopPropagation = vi.fn();
+      const preventDefault = vi.fn();
+      wrapper
+        .find({ ref: "moveRight" })
+        .trigger("keydown", { key: "Enter", stopPropagation, preventDefault });
+      expect(stopPropagation).toHaveBeenCalled();
+      expect(preventDefault).toHaveBeenCalled();
       await wrapper.vm.$nextTick();
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
         "test2",
@@ -587,7 +593,13 @@ describe("Twinlist.vue", () => {
       let left = boxes[0];
       let right = boxes[1];
       right.vm.setSelected(["test2", "test3"]);
-      wrapper.find({ ref: "moveLeft" }).trigger("keydown", { key: "Enter" });
+      const stopPropagation = vi.fn();
+      const preventDefault = vi.fn();
+      wrapper
+        .find({ ref: "moveLeft" })
+        .trigger("keydown", { key: "Enter", stopPropagation, preventDefault });
+      expect(stopPropagation).toHaveBeenCalled();
+      expect(preventDefault).toHaveBeenCalled();
       await wrapper.vm.$nextTick();
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([]);
       expect(left.vm.$props.possibleValues).toStrictEqual(props.possibleValues);
@@ -606,9 +618,13 @@ describe("Twinlist.vue", () => {
 
       let boxes = wrapper.findAllComponents(MultiselectListBox);
       let right = boxes[1];
+      const stopPropagation = vi.fn();
+      const preventDefault = vi.fn();
       wrapper
         .find({ ref: "moveAllRight" })
-        .trigger("keydown", { key: "Enter" });
+        .trigger("keydown", { key: "Enter", stopPropagation, preventDefault });
+      expect(stopPropagation).toHaveBeenCalled();
+      expect(preventDefault).toHaveBeenCalled();
       await wrapper.vm.$nextTick();
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
         "test1",
@@ -633,7 +649,13 @@ describe("Twinlist.vue", () => {
 
       let boxes = wrapper.findAllComponents(MultiselectListBox);
       let left = boxes[0];
-      wrapper.find({ ref: "moveAllLeft" }).trigger("keydown", { key: "Enter" });
+      const stopPropagation = vi.fn();
+      const preventDefault = vi.fn();
+      wrapper
+        .find({ ref: "moveAllLeft" })
+        .trigger("keydown", { key: "Enter", stopPropagation, preventDefault });
+      expect(stopPropagation).toHaveBeenCalled();
+      expect(preventDefault).toHaveBeenCalled();
       await wrapper.vm.$nextTick();
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([]);
       expect(left.vm.$props.possibleValues).toStrictEqual(props.possibleValues);

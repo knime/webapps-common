@@ -386,11 +386,13 @@ export default {
     onMoveAllRightButtonKey(e: KeyboardEvent) {
       if (e.key === KEY_ENTER) {
         this.onMoveAllRightButtonClick();
+        this.stopPropagation(e);
       }
     },
     onMoveRightButtonKey(e: KeyboardEvent) {
       if (e.key === KEY_ENTER) {
         this.moveRight();
+        this.stopPropagation(e);
       }
     },
     onMoveLeftButtonClick() {
@@ -403,12 +405,18 @@ export default {
     onMoveLeftButtonKey(e: KeyboardEvent) {
       if (e.key === KEY_ENTER) {
         this.moveLeft();
+        this.stopPropagation(e);
       }
     },
     onMoveAllLeftButtonKey(e: KeyboardEvent) {
       if (e.key === KEY_ENTER) {
         this.onMoveAllLeftButtonClick();
+        this.stopPropagation(e);
       }
+    },
+    stopPropagation(e: KeyboardEvent) {
+      e.preventDefault();
+      e.stopPropagation();
     },
     onLeftListBoxDoubleClick(item: Id) {
       this.moveRight([item]);
