@@ -527,12 +527,18 @@ describe("TableViewDisplay.vue", () => {
     expect(tableViewDisplay.emitted()).toHaveProperty("table-is-ready");
   });
 
-  it("shows loading animation", () => {
+  it("shows loading animation after timeout", () => {
     props.rows.loaded = false;
+    vi.useFakeTimers();
     const wrapper = shallowMountDisplay({ props });
     expect(
       wrapper.find(".center").findComponent(LoadingIcon).exists(),
-    ).toBeTruthy();
+    ).toBeFalsy();
+    vi.runAllTimers();
+    expect(
+      wrapper.find(".center").findComponent(LoadingIcon).exists(),
+    ).toBeFalsy();
+    vi.useRealTimers();
   });
 
   describe("column size composables", () => {

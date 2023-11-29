@@ -46,9 +46,15 @@ const root: Ref<null | HTMLElement> = ref(null);
 
 const baseUrl = ref("");
 
+const loadingAnimationEnabled = ref(false);
+const TIMEOUT_HIDE_LOADING_ANIMATION = 300;
+
 onMounted(() => {
   // @ts-ignore
   baseUrl.value = props.knimeService?.extensionConfig?.resourceInfo?.baseUrl;
+  setTimeout(() => {
+    loadingAnimationEnabled.value = true;
+  }, TIMEOUT_HIDE_LOADING_ANIMATION);
 });
 
 const numberOfDisplayedIdColumns = computed(() => {
@@ -305,7 +311,7 @@ const onCopySelection = ({
     </TableUIWithAutoSizeCalculation>
     <div v-else class="center">
       <h4 v-if="rows.loaded">No data to display</h4>
-      <span v-else>
+      <span v-else-if="loadingAnimationEnabled">
         <LoadingIcon class="loading-icon" />
         Loading data
       </span>
