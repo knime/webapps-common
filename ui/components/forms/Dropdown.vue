@@ -438,7 +438,10 @@ export default {
     overflow-y: auto;
     position: absolute;
     z-index: var(--z-index-common-dropdown-expanded, 2);
-    max-height: calc(22px * 7); /* show max 7 items */
+    max-height: var(
+      --dropdown-max-height,
+      calc(22px * 7)
+    ); /* show max 7 items. override to change default */
     font-size: 14px;
     min-height: 22px;
     width: 100%;
