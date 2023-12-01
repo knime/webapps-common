@@ -92,6 +92,7 @@ module.exports = {
     "no-proto": "error",
     "no-prototype-builtins": "off",
     "no-restricted-globals": ["error", "event", "fdescribe"],
+    "no-restricted-imports": ["error", "lodash"], // please use lodash-es
     "no-restricted-syntax": ["warn", "WithStatement", "SequenceExpression"],
     "no-return-assign": "error",
     "no-return-await": "error",
