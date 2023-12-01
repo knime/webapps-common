@@ -1,6 +1,6 @@
 {
   "name": "@knime/eslint-config",
-  "version": "8.0.7",
+  "version": "8.0.8",
   "description": "ESLint/Stylelint configs designed for typical KNIME frontend projects using JavaScript/TypeScript as well as Vue2/3 and Nuxt.",
   "scripts": {
     "lint": "eslint --fix --cache --ext .js .",
@@ -20,27 +20,27 @@
   "peerDependencies": {
     "eslint": "8.x",
     "prettier": "3.x",
-    "stylelint": "14.x - 15.x"
+    "stylelint": "15.x"
   },
   "dependencies": {
-    "@nuxt/eslint-config": "^0.1.1",
-    "@rushstack/eslint-patch": "^1.2.0",
-    "@typescript-eslint/eslint-plugin": "^5.59.5",
-    "@typescript-eslint/parser": "^5.59.5",
-    "@vue/eslint-config-typescript": "^11.0.3",
-    "eslint-config-prettier": "^8.8.0",
+    "@nuxt/eslint-config": "^0.2.0",
+    "@rushstack/eslint-patch": "^1.6.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.1",
+    "@typescript-eslint/parser": "^6.13.1",
+    "@vue/eslint-config-typescript": "^12.0.0",
+    "eslint-config-prettier": "^9.0.0",
     "eslint-import-resolver-alias": "^1.1.2",
-    "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-jest": "^27.2.1",
+    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-jest": "^27.6.0",
     "eslint-plugin-jest-formatting": "^3.1.0",
-    "eslint-plugin-unused-imports": "^2.0.0",
-    "eslint-plugin-vitest": "0.2.2",
-    "eslint-plugin-vue": "^9.12.0",
+    "eslint-plugin-unused-imports": "^3.0.0",
+    "eslint-plugin-vitest": "0.3.10",
+    "eslint-plugin-vue": "^9.19.2",
     "stylelint-config-standard-vue": "^1.0.0"
   },
   "devDependencies": {
-    "eslint": "8.45.0",
-    "prettier": "3.0.0"
+    "eslint": "8.54.0",
+    "prettier": "3.1.0"
   },
   "engines": {
     "node": "18.x"
