@@ -308,8 +308,7 @@ h4 {
 }
 
 .scroll-container {
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden auto;
   height: 50px;
 }
 

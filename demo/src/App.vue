@@ -27,8 +27,8 @@ const demoComponents = {
     Colors: defineAsyncComponent(() => import("./components/Colors.vue")),
     Grid: defineAsyncComponent(() => import("./components/Grid.vue")),
     Headlines: defineAsyncComponent(() => import("./components/Headlines.vue")),
-    Description: defineAsyncComponent(() =>
-      import("./components/Description.vue"),
+    Description: defineAsyncComponent(
+      () => import("./components/Description.vue"),
     ),
   },
   images: {
@@ -36,114 +36,114 @@ const demoComponents = {
     Icons: defineAsyncComponent(() => import("./components/Icons.vue")),
   },
   interactive: {
-    Breadcrumb: defineAsyncComponent(() =>
-      import("./components/Breadcrumb.vue"),
+    Breadcrumb: defineAsyncComponent(
+      () => import("./components/Breadcrumb.vue"),
     ),
     LinkList: defineAsyncComponent(() => import("./components/LinkList.vue")),
     Button: defineAsyncComponent(() => import("./components/Button.vue")),
-    FunctionButton: defineAsyncComponent(() =>
-      import("./components/FunctionButton.vue"),
+    FunctionButton: defineAsyncComponent(
+      () => import("./components/FunctionButton.vue"),
     ),
-    SplitButton: defineAsyncComponent(() =>
-      import("./components/SplitButton.vue"),
+    SplitButton: defineAsyncComponent(
+      () => import("./components/SplitButton.vue"),
     ),
-    PlusButton: defineAsyncComponent(() =>
-      import("./components/PlusButton.vue"),
+    PlusButton: defineAsyncComponent(
+      () => import("./components/PlusButton.vue"),
     ),
     Carousel: defineAsyncComponent(() => import("./components/Carousel.vue")),
-    ExpandTransition: defineAsyncComponent(() =>
-      import("./components/transitions/ExpandTransition.vue"),
+    ExpandTransition: defineAsyncComponent(
+      () => import("./components/transitions/ExpandTransition.vue"),
     ),
     Collapser: defineAsyncComponent(() => import("./components/Collapser.vue")),
     FileLink: defineAsyncComponent(() => import("./components/FileLink.vue")),
-    IdleReadyButton: defineAsyncComponent(() =>
-      import("./components/IdleReadyButton.vue"),
+    IdleReadyButton: defineAsyncComponent(
+      () => import("./components/IdleReadyButton.vue"),
     ),
     Modal: defineAsyncComponent(() => import("./components/Modal.vue")),
     MenuItems: defineAsyncComponent(() => import("./components/MenuItems.vue")),
-    SideDrawer: defineAsyncComponent(() =>
-      import("./components/SideDrawer.vue"),
+    SideDrawer: defineAsyncComponent(
+      () => import("./components/SideDrawer.vue"),
     ),
     SubMenu: defineAsyncComponent(() => import("./components/SubMenu.vue")),
     Tooltip: defineAsyncComponent(() => import("./components/Tooltip.vue")),
     TabBar: defineAsyncComponent(() => import("./components/TabBar.vue")),
     TagList: defineAsyncComponent(() => import("./components/TagList.vue")),
-    LoadingIcon: defineAsyncComponent(() =>
-      import("./components/LoadingIcon.vue"),
+    LoadingIcon: defineAsyncComponent(
+      () => import("./components/LoadingIcon.vue"),
     ),
-    DonutChart: defineAsyncComponent(() =>
-      import("./components/DonutChart.vue"),
+    DonutChart: defineAsyncComponent(
+      () => import("./components/DonutChart.vue"),
     ),
-    FileExplorer: defineAsyncComponent(() =>
-      import("./components/FileExplorer.vue"),
+    FileExplorer: defineAsyncComponent(
+      () => import("./components/FileExplorer.vue"),
     ),
   },
   toasts: {
-    "Toast Service": defineAsyncComponent(() =>
-      import("./components/ToastService.vue"),
+    "Toast Service": defineAsyncComponent(
+      () => import("./components/ToastService.vue"),
     ),
   },
   forms: {
     Label: defineAsyncComponent(() => import("./components/Label.vue")),
     Fieldset: defineAsyncComponent(() => import("./components/Fieldset.vue")),
-    InputField: defineAsyncComponent(() =>
-      import("./components/InputField.vue"),
+    InputField: defineAsyncComponent(
+      () => import("./components/InputField.vue"),
     ),
     TextArea: defineAsyncComponent(() => import("./components/TextArea.vue")),
-    SearchInput: defineAsyncComponent(() =>
-      import("./components/SearchInput.vue"),
+    SearchInput: defineAsyncComponent(
+      () => import("./components/SearchInput.vue"),
     ),
-    NumberInput: defineAsyncComponent(() =>
-      import("./components/NumberInput.vue"),
+    NumberInput: defineAsyncComponent(
+      () => import("./components/NumberInput.vue"),
     ),
     Checkbox: defineAsyncComponent(() => import("./components/Checkbox.vue")),
-    Checkboxes: defineAsyncComponent(() =>
-      import("./components/Checkboxes.vue"),
+    Checkboxes: defineAsyncComponent(
+      () => import("./components/Checkboxes.vue"),
     ),
     ComboBox: defineAsyncComponent(() => import("./components/ComboBox.vue")),
-    RadioButtons: defineAsyncComponent(() =>
-      import("./components/RadioButtons.vue"),
+    RadioButtons: defineAsyncComponent(
+      () => import("./components/RadioButtons.vue"),
     ),
-    ValueSwitch: defineAsyncComponent(() =>
-      import("./components/ValueSwitch.vue"),
+    ValueSwitch: defineAsyncComponent(
+      () => import("./components/ValueSwitch.vue"),
     ),
-    DateTimeInput: defineAsyncComponent(() =>
-      import("./components/DateTimeInput.vue"),
+    DateTimeInput: defineAsyncComponent(
+      () => import("./components/DateTimeInput.vue"),
     ),
-    TimePartInput: defineAsyncComponent(() =>
-      import("./components/TimePartInput.vue"),
+    TimePartInput: defineAsyncComponent(
+      () => import("./components/TimePartInput.vue"),
     ),
     ListBox: defineAsyncComponent(() => import("./components/ListBox.vue")),
     Dropdown: defineAsyncComponent(() => import("./components/Dropdown.vue")),
-    Multiselect: defineAsyncComponent(() =>
-      import("./components/Multiselect.vue"),
+    Multiselect: defineAsyncComponent(
+      () => import("./components/Multiselect.vue"),
     ),
-    MultiselectListBox: defineAsyncComponent(() =>
-      import("./components/MultiselectListBox.vue"),
+    MultiselectListBox: defineAsyncComponent(
+      () => import("./components/MultiselectListBox.vue"),
     ),
-    StyledListItem: defineAsyncComponent(() =>
-      import("./components/StyledListItem.vue"),
+    StyledListItem: defineAsyncComponent(
+      () => import("./components/StyledListItem.vue"),
     ),
-    ToggleSwitch: defineAsyncComponent(() =>
-      import("./components/ToggleSwitch.vue"),
+    ToggleSwitch: defineAsyncComponent(
+      () => import("./components/ToggleSwitch.vue"),
     ),
     Twinlist: defineAsyncComponent(() => import("./components/Twinlist.vue")),
-    MultiModeTwinlist: defineAsyncComponent(() =>
-      import("./components/MultiModeTwinlist.vue"),
+    MultiModeTwinlist: defineAsyncComponent(
+      () => import("./components/MultiModeTwinlist.vue"),
     ),
-    RichTextEditor: defineAsyncComponent(() =>
-      import("./components/RichTextEditor.vue"),
+    RichTextEditor: defineAsyncComponent(
+      () => import("./components/RichTextEditor.vue"),
     ),
   },
   misc: {
-    NodePreview: defineAsyncComponent(() =>
-      import("./components/NodePreview.vue"),
+    NodePreview: defineAsyncComponent(
+      () => import("./components/NodePreview.vue"),
     ),
-    NodeFeatureList: defineAsyncComponent(() =>
-      import("./components/NodeFeatureList.vue"),
+    NodeFeatureList: defineAsyncComponent(
+      () => import("./components/NodeFeatureList.vue"),
     ),
-    OpenSourceCredits: defineAsyncComponent(() =>
-      import("./components/OpenSourceCredits.vue"),
+    OpenSourceCredits: defineAsyncComponent(
+      () => import("./components/OpenSourceCredits.vue"),
     ),
   },
   npm: {

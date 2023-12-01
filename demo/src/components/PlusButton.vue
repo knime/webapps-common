@@ -89,8 +89,7 @@ export default {
   grid-template-columns: repeat(5, max-content);
   gap: 20px;
   max-width: 100%;
-  align-items: center;
-  justify-items: center;
+  place-items: center center;
 
   @media only screen and (width <= 900px) {
     grid-template-columns: repeat(1, max-content);
