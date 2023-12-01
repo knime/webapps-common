@@ -253,6 +253,32 @@ describe("ComboBox.vue", () => {
       expect(updateSelectedIdsSpy).toHaveBeenCalledWith([]);
       expect(wrapper.emitted("change")?.[0][0]).toEqual([]);
     });
+
+    it("emits change when initialSelectedIds changed", async () => {
+      const wrapper = doMount(
+        { initialSelectedIds: ["test2", "test3"] },
+        { attachTo: document.body },
+      );
+
+      await wrapper.setProps({ initialSelectedIds: ["test1"] });
+
+      expect(wrapper.emitted("update:selectedIds")?.[0][0]).toEqual(["test1"]);
+      expect(wrapper.emitted("change")?.[0][0]).toEqual([
+        { id: "test1", text: "test1" },
+      ]);
+    });
+
+    it("skips emitting change when initialSelectedIds did not change", async () => {
+      const wrapper = doMount(
+        { initialSelectedIds: ["test2", "test3"] },
+        { attachTo: document.body },
+      );
+
+      await wrapper.setProps({ initialSelectedIds: ["test2", "test3"] });
+
+      expect(wrapper.emitted("update:selectedIds")).toBeUndefined();
+      expect(wrapper.emitted("change")).toBeUndefined();
+    });
   });
 
   describe("keyboard navigation", () => {

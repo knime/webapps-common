@@ -164,7 +164,18 @@ export default defineComponent({
     },
   },
   watch: {
-    initialSelectedIds(newValue) {
+    initialSelectedIds(newValue: string[], prevValue: string[]) {
+      const lengthIsEqual = newValue.length === prevValue?.length;
+
+      const isEqual =
+        lengthIsEqual &&
+        newValue.slice().sort().join(".") ===
+          prevValue.slice().sort().join(".");
+
+      if (isEqual) {
+        return;
+      }
+
       this.changeSelectedIds(newValue);
     },
   },
