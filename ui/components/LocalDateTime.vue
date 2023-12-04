@@ -1,5 +1,5 @@
 <script>
-import { parseToLocalTime } from './../../util/format';
+import { formatLocalDateTimeString } from './../../util/format';
 
 export default {
 
@@ -15,16 +15,37 @@ export default {
     },
     data() {
         return {
-            localDateTime: ''
+            localDateTime: this.date,
+            processing: true
         };
     },
+
+    watch: {
+        date(newDate, oldDate) {
+            if (newDate !== oldDate) {
+                this.localDateTime = formatLocalDateTimeString(newDate, this.showTime);
+            }
+        }
+    },
     mounted() {
-        this.localDateTime = parseToLocalTime(this.date, this.showTime);
+        this.localDateTime = formatLocalDateTimeString(this.date, this.showTime);
+        this.processing = false;
     }
 };
 </script>
 
 <template>
-  <span>{{ localDateTime }}</span>
+  <time
+    :title="date"
+    :datetime="date"
+    :class="{ hidden: processing }"
+  >{{ localDateTime }}</time>
 </template>
+
+<style scoped>
+.hidden{
+    visibility: hidden
+}
+
+</style>
 
