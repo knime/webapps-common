@@ -38,6 +38,9 @@ describe('format date', () => {
     let timeWithOffset = { input: '2023-11-30T11:15:00+00:00',
         expectedDateTime: 'Nov 30, 2023 5:15 AM' };
 
+    let timeFromTable = { input: '2023-09-22T08:38:36.291Z[GMT]',
+        expectedDateTime: 'Sep 22, 2023 3:38 AM' };
+
     it('formats date strings', () => {
         validFixtures.forEach(({ input, expectedDate }) => {
             expect(formatDateString(input)).toEqual(expectedDate);
@@ -83,6 +86,9 @@ describe('format date', () => {
         });
         it('formats time with offset strings', () => {
             expect(formatLocalDateTimeString(timeWithOffset.input, true)).toEqual(timeWithOffset.expectedDateTime);
+        });
+        it('formats time from Table', () => {
+            expect(formatLocalDateTimeString(timeFromTable.input, true)).toEqual(timeFromTable.expectedDateTime);
         });
     });
 });

@@ -66,6 +66,12 @@ export const formatDateTimeString = (dateTimeString, useTimeZone = false) => { /
  */
 
 export const formatLocalDateTimeString = (date, showTime) => {
+    if (date.includes('Z')) {
+    // to bring the date coming from the table in an standardized UTC date format
+        let indexOfZ = date.indexOf('Z');
+        date = date.substring(0, indexOfZ + 1);
+    }
+
     let dateTime = new Date(date);
     
     if (isNaN(dateTime)) {
