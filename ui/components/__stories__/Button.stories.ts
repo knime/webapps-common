@@ -1,12 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/vue3";
-import "../ui/css/index.css";
 
-import Button from "../ui/components/Button.vue";
-import LightningIcon from "../ui/assets/img/icons/lightning.svg";
+import Button from "../Button.vue";
+import LightningIcon from "../../assets/img/icons/lightning.svg";
 
 // More on how to set up stories at: https://storybook.js.org/docs/vue/writing-stories/introduction
 const meta = {
-  title: "Components/Button",
+  title: "UI Components/Button",
   component: Button,
   // This component will have an automatically generated docsPage entry: https://storybook.js.org/docs/vue/writing-docs/autodocs
   tags: ["autodocs"],

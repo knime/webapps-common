@@ -1,7 +1,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import BaseButton from "./BaseButton.vue";
-
+/** A KNIME Button */
 export default defineComponent({
   components: {
     BaseButton,
