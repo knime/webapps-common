@@ -27,10 +27,10 @@ definitions:
           - npm run type-check
           - npm run coverage
           # - npm run audit # TODO temporarily disabled due to unsolvable issues
-          - pipe: sonarsource/sonarcloud-scan:1.4.0
+          - pipe: sonarsource/sonarcloud-scan:2.0.0
             variables:
               SONAR_SCANNER_OPTS: -Xmx4G
-          # - pipe: sonarsource/sonarcloud-quality-gate:0.1.6
+          - pipe: sonarsource/sonarcloud-quality-gate:0.1.6
           - cd demo
           - npm ci
           - npm run build

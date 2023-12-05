@@ -14,7 +14,7 @@ import SubMenu from '~/webapps-common/ui/components/SubMenu.vue';
 import MenuIcon from '~/webapps-common/ui/assets/img/icons/menu-options.svg';
 
 const subMenuItems = [{
-    href: 'http://apple.com',
+    href: 'https://apple.com',
     text: 'Apples',
     icon: HelpIcon,
     hotkeyText: 'Ctrl + 1'
@@ -85,7 +85,7 @@ nav {
 
 const subMenuItems = [
   {
-    href: "http://apple.com",
+    href: "https://apple.com",
     text: "Apples",
     icon: markRaw(HelpIcon),
     hotkeyText: "Ctrl + 1",
@@ -126,6 +126,16 @@ const subMenuItems = [
         href: "https://example.com/woohoo",
       },
     ],
+  },
+  {
+    text: "Item with checkbox",
+    checkbox: {
+      checked: false,
+      setBoolean: (checked) =>
+        window.alert(
+          `Checkbox item clicked. Sub menu is not closed. Instead the setBoolean method of this item was called with the value: ${checked}`,
+        ),
+    },
   },
 ];
 

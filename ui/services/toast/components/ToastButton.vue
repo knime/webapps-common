@@ -16,6 +16,13 @@ const target = computed(() => {
   }
   return null;
 });
+
+const callback = computed(() => {
+  if (typeof props.callback === "function") {
+    return props.callback;
+  }
+  return null;
+});
 </script>
 
 <template>

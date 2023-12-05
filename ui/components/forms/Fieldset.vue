@@ -33,6 +33,7 @@ fieldset {
   padding: 0;
   outline: none;
   border: none;
+  min-inline-size: unset;
 
   & > legend {
     font-weight: 700;

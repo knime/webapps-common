@@ -2,7 +2,7 @@
 import type { PropType } from "vue";
 import { onBeforeUpdate, ref, toRef } from "vue";
 import usePopper from "../composables/usePopper";
-import { uniqueId } from "lodash";
+import { uniqueId } from "lodash-es";
 import BaseMenuItem from "./BaseMenuItem.vue";
 import type { MenuItem } from "./MenuItems.vue";
 
@@ -113,7 +113,7 @@ export default {
 
       return listItems
         .map((element, index) => {
-          const firstChild = element.firstChild as ElementTemplateRef;
+          const firstChild = element.children[0] as ElementTemplateRef;
 
           return {
             element,
@@ -159,11 +159,16 @@ export default {
         return;
       }
 
-      let isButton = !(item.href || item.to);
+      const isButton = !(item.href || item.to);
       if (isButton) {
         event.preventDefault();
         event.stopPropagation();
         event.stopImmediatePropagation();
+      }
+      if (item.checkbox) {
+        const toggledValue = !item.checkbox.checked;
+        item.checkbox.setBoolean(toggledValue);
+        return;
       }
       this.$emit("item-click", event, item, id);
     },

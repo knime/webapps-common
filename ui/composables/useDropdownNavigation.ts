@@ -84,6 +84,11 @@ export default ({
     setElement(getNextElement(currentIndex.value, step));
   };
 
+  const resetAndClose = () => {
+    resetNavigation();
+    close();
+  };
+
   const onKeydown = (event: KeyboardEvent) => {
     switch (event.code) {
       case "ArrowDown":
@@ -118,9 +123,11 @@ export default ({
         }
         break;
       case "Escape":
+        preventEvent(event);
+        resetAndClose();
+        break;
       case "Tab":
-        resetNavigation();
-        close();
+        resetAndClose();
         break;
     }
   };

@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import type { Editor } from "@tiptap/vue-3";
 
-import PlusSmallIcon from "../../../assets/img/icons/plus-small.svg";
+import MoreActionsIcon from "../../../assets/img/icons/menu-options.svg";
 import FunctionButton from "../../FunctionButton.vue";
 import type { MenuItem } from "../../MenuItems.vue";
 
@@ -30,12 +30,29 @@ const secondaryToolsMenuItems = computed<MenuItem[]>(() =>
     hotkeyText: props.hotkeyFormatter(tool.hotkey ?? []),
     icon: tool.icon,
     id: tool.id,
+    selected: tool.active?.(),
+    children:
+      tool.children?.map(({ item, id: childId, active, hotkey }) => ({
+        ...item,
+        id: { toolId: tool.id, childId },
+        selected: active?.(),
+        hotkeyText: props.hotkeyFormatter(hotkey ?? []),
+      })) ?? [],
   })),
 );
 
-const onSecondaryToolClick = (_: any, { id }: { id: string }) => {
-  const foundTool = secondaryTools.value.find((tool) => tool.id === id);
-  foundTool?.onClick();
+const onSecondaryToolClick = (
+  _: any,
+  { id }: { id: string | { toolId: string; childId: unknown } },
+) => {
+  const isChildElement = typeof id === "object";
+  const toolId = isChildElement ? id.toolId : id;
+  const foundTool = secondaryTools.value.find((tool) => tool.id === toolId);
+  if (isChildElement) {
+    foundTool?.onChildClick?.(id.childId);
+  } else {
+    foundTool?.onClick?.();
+  }
 };
 </script>
 
@@ -50,6 +67,7 @@ const onSecondaryToolClick = (_: any, { id }: { id: string }) => {
       :active="tool.active?.()"
       :title="hotkeyFormatter(tool.hotkey ?? [])"
       compact
+      @keydown.enter.prevent="tool.onClick"
       @click.stop="tool.onClick"
     >
       <Component :is="tool.icon" />
@@ -60,7 +78,7 @@ const onSecondaryToolClick = (_: any, { id }: { id: string }) => {
       orientation="left"
       @item-click="onSecondaryToolClick"
     >
-      <PlusSmallIcon />
+      <MoreActionsIcon />
     </SubMenu>
   </div>
 </template>

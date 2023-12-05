@@ -8,6 +8,7 @@ import RichTextEditorBaseToolbar from "./RichTextEditorBaseToolbar.vue";
 import RichTextEditorToolbar from "./RichTextEditorToolbar.vue";
 import type { BaseExtensionsConfig } from "./types";
 import { CustomTextAlign } from "./custom-text-align";
+import { SmallText } from "./paragraphTextStyle/extension";
 
 type BaseExtensions =
   | BaseExtensionsConfig
@@ -88,18 +89,25 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const slots = useSlots();
-const { modelValue, editable, disabled } = toRefs(props);
+const {
+  modelValue,
+  editable,
+  disabled,
+  baseExtensions,
+  customExtensions,
+  autofocus,
+} = toRefs(props);
 
 const emit = defineEmits<{
   (e: "update:modelValue", content: string): void;
 }>();
 
 const isToolEnabled = (extensionName: keyof BaseExtensionsConfig) => {
-  if ("all" in props.baseExtensions) {
+  if ("all" in baseExtensions.value) {
     return true;
   }
 
-  return Boolean(props.baseExtensions[extensionName]);
+  return Boolean(baseExtensions.value[extensionName]);
 };
 
 const getStarterKitExtensionConfig = (
@@ -121,14 +129,15 @@ const extensions = [
     codeBlock: getStarterKitExtensionConfig("codeBlock"),
     horizontalRule: getStarterKitExtensionConfig("horizontalRule"),
     strike: getStarterKitExtensionConfig("strike"),
+    ...(isToolEnabled("paragraphTextStyle") && { paragraph: false }),
   }),
   ...(isToolEnabled("underline") ? [UnderLine] : []),
-
+  ...(isToolEnabled("paragraphTextStyle") ? [SmallText] : []),
   ...(isToolEnabled("textAlign")
     ? [
         CustomTextAlign.configure({
           types: [
-            props.baseExtensions.heading ? "heading" : "",
+            baseExtensions.value.heading ? "heading" : "",
             "paragraph",
           ].filter(Boolean),
 
@@ -137,13 +146,13 @@ const extensions = [
       ]
     : []),
 
-  ...props.customExtensions,
+  ...customExtensions.value,
 ];
 
 const editor = useEditor({
-  content: props.modelValue,
-  editable: props.editable && !props.disabled,
-  autofocus: props.autofocus,
+  content: modelValue.value,
+  editable: editable.value && !disabled.value,
+  autofocus: autofocus.value,
   extensions,
   onUpdate: () => emit("update:modelValue", editor.value?.getHTML() ?? ""),
 });
@@ -245,6 +254,7 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length);
 .editor-wrapper {
   --toolbar-height: 48px;
   --rich-text-editor-font-size: 13px;
+  --rich-text-editor-small-font-size: 7px;
   --rich-text-editor-padding: 10px;
 
   &.with-border {
@@ -320,6 +330,10 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length);
     }
 
     @mixin rich-text-editor-styles;
+  }
+
+  & :deep(.small-text) {
+    font-size: var(--rich-text-editor-small-font-size);
   }
 }
 </style>

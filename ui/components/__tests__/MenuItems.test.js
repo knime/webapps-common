@@ -60,8 +60,8 @@ describe("MenuItems.vue", () => {
     const wrapper = shallowMount(MenuItems, {
       props: { myProp, items: [], menuAriaLabel: "" },
     });
-    wrapper.findComponent(BaseMenuItems).vm.$emit("item-focused", "id");
-    expect(wrapper.emitted("item-focused")[0]).toStrictEqual(["id"]);
+    wrapper.findComponent(BaseMenuItems).vm.$emit("item-focused", "id", "item");
+    expect(wrapper.emitted("item-focused")[0]).toStrictEqual(["id", "item"]);
   });
 
   describe("dropdown navigation", () => {

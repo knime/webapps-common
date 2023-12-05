@@ -79,26 +79,10 @@ export default {
                 id: 'baz',
                 text: 'Baz',
               },
-              {
-                id: 'baz2',
-                text: 'Baz 2',
-              },
-              {
-                id: 'baz3',
-                text: 'Baz 3',
-              },
-              {
-                id: 'baz4',
-                text: 'Baz 4',
-              },
-              {
-                id: 'baz5',
-                text: 'Baz 5',
-              },
-              {
-                id: 'baz6',
-                text: 'Baz 6',
-              },
+              ...Array.from({ length: 100 }, (_v, i) => ({
+                id: `baz${i}`,
+                text: `Baz ${i}`,
+              })),
             ]"
           />
         </div>

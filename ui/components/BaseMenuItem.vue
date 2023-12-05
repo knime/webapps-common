@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { MenuItem } from "./MenuItems.vue";
+import Checkbox from "./forms/Checkbox.vue";
+import BaseMenuItemText from "./BaseMenuItemText.vue";
 
 type Props = {
   item: MenuItem;
@@ -51,11 +53,23 @@ const dynamicAttributes = (item: MenuItem) => {
     <Component :is="item.icon" v-if="item.icon" class="item-icon" />
     <div class="label">
       <div class="text-and-hotkey">
-        <span :class="['text', { truncate: useMaxMenuWidth }]">
-          {{ item.text }}
-        </span>
-        <span v-if="item.hotkeyText" class="hotkey">{{ item.hotkeyText }}</span>
-        <slot name="submenu" :item-element="$refs.listItemComponent" />
+        <template v-if="item.checkbox">
+          <Checkbox :model-value="item.checkbox.checked" class="checkbox">
+            <BaseMenuItemText
+              :text="item.text"
+              :use-max-menu-width="useMaxMenuWidth"
+              :hotkey-text="item.hotkeyText"
+            />
+          </Checkbox>
+        </template>
+        <template v-else>
+          <BaseMenuItemText
+            :text="item.text"
+            :use-max-menu-width="useMaxMenuWidth"
+            :hotkey-text="item.hotkeyText"
+          />
+          <slot name="submenu" :item-element="$refs.listItemComponent" />
+        </template>
       </div>
       <div v-if="item.description" class="description">
         {{ item.description }}
@@ -64,7 +78,7 @@ const dynamicAttributes = (item: MenuItem) => {
   </Component>
 </template>
 
-<style lang="postcss">
+<style lang="postcss" scoped>
 .list-item {
   --icon-size: 18;
 
@@ -97,14 +111,40 @@ const dynamicAttributes = (item: MenuItem) => {
       margin-right: 7px;
     }
 
+    &:hover {
+      background-color: var(--theme-dropdown-background-color-hover);
+    }
+
+    &.focused {
+      outline: transparent;
+      background-color: var(--theme-dropdown-background-color-focus);
+      color: var(--theme-dropdown-foreground-color-focus);
+
+      & .item-icon {
+        stroke: var(--theme-dropdown-foreground-color-focus);
+      }
+
+      &:hover {
+        background-color: var(--theme-dropdown-background-color-hover);
+        color: var(--theme-dropdown-foreground-color-hover);
+      }
+    }
+
     &.selected {
       background-color: var(--theme-dropdown-foreground-color);
-      color: var(
-        --theme-dropdown-background-color
-      ); /* background and foreground are switched on selection */
+      color: var(--theme-dropdown-background-color);
 
       & .item-icon {
         stroke: var(--theme-dropdown-background-color);
+      }
+
+      &:hover {
+        background-color: var(--theme-dropdown-background-color-hover);
+        color: var(--theme-dropdown-foreground-color-hover);
+
+        & .item-icon {
+          stroke: var(--theme-dropdown-foreground-color-hover);
+        }
       }
     }
 
@@ -120,6 +160,14 @@ const dynamicAttributes = (item: MenuItem) => {
         width: 100%;
         height: calc(var(--icon-size) * 1px);
         align-items: center;
+
+        & .checkbox {
+          padding-left: 23px; /* Align text horizontally with other items with icons */
+
+          /* center-align text + checkbox in item vertically */
+          margin-top: 7px;
+          padding-top: 2px;
+        }
 
         & .text {
           flex-shrink: 1;
@@ -143,34 +191,6 @@ const dynamicAttributes = (item: MenuItem) => {
         white-space: normal;
         font-size: 11px;
         font-weight: 300;
-      }
-    }
-
-    &:hover {
-      outline: none;
-      background-color: var(--theme-dropdown-background-color-hover);
-      color: var(--theme-dropdown-foreground-color-hover);
-
-      & .item-icon {
-        stroke: var(--theme-dropdown-foreground-color-hover);
-
-        & .text {
-          stroke: var(--theme-dropdown-foreground-color-hover);
-        }
-      }
-    }
-
-    &.focused {
-      outline: none;
-      background-color: var(--theme-dropdown-background-color-focus);
-      color: var(--theme-dropdown-foreground-color-focus);
-
-      & .item-icon {
-        stroke: var(--theme-dropdown-foreground-color-focus);
-
-        & .text {
-          stroke: var(--theme-dropdown-foreground-color-focus);
-        }
       }
     }
   }

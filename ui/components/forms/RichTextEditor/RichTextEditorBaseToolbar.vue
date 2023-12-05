@@ -9,10 +9,15 @@ import OrderedListIcon from "../../../assets/img/icons/ordered-list.svg";
 import AlignLeftIcon from "../../../assets/img/icons/align-left.svg";
 import AlignCenterIcon from "../../../assets/img/icons/align-center.svg";
 import AlignRightIcon from "../../../assets/img/icons/align-right.svg";
+import ParagraphIcon from "../../../assets/img/icons/text-style.svg";
 import BlockquoteIcon from "../../../assets/img/icons/blockquote.svg";
 import CodeIcon from "../../../assets/img/icons/code-html.svg";
 import StrikeThroughIcon from "../../../assets/img/icons/strikethrough.svg";
 import DividerIcon from "../../../assets/img/icons/divider.svg";
+
+import getParagraphTextStyleChildTools, {
+  type ParagraphTextStyleId,
+} from "./paragraphTextStyle";
 
 import type {
   BaseExtensionsConfig,
@@ -29,7 +34,7 @@ const props = defineProps<Props>();
 
 const registerTool = (
   toolName: keyof BaseExtensionsConfig,
-  tool: EditorToolItem,
+  tool: EditorToolItem<any>,
 ) => {
   if ("all" in props.baseExtensions) {
     return [tool];
@@ -141,6 +146,14 @@ const editorTools: EditorTools = [
     onClick: () => props.editor.chain().focus().setTextAlign("right").run(),
     disabled: () => isListActive(),
   }),
+
+  ...registerTool("paragraphTextStyle", {
+    id: "paragraphTextStyle",
+    icon: ParagraphIcon,
+    name: "Text style",
+    secondary: true,
+    ...getParagraphTextStyleChildTools(() => props.editor),
+  } satisfies EditorToolItem<ParagraphTextStyleId>),
 
   ...registerTool("blockquote", {
     id: "blockquote",

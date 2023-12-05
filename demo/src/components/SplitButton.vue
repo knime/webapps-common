@@ -18,7 +18,7 @@ import SplitButton from '~/webapps-common/ui/components/SplitButton.vue';
 import DropdownIcon from '~/webapps-common/ui/assets/img/icons/arrow-dropdown.svg';
 
 const subMenuItems = [{
-    href: 'http://apple.com',
+    href: 'https://apple.com',
     text: 'Apples',
     icon: HelpIcon
 }, {
@@ -81,7 +81,7 @@ export default {
 
 const subMenuItems = [
   {
-    href: "http://apple.com",
+    href: "https://apple.com",
     text: "Apples",
     icon: markRaw(HelpIcon),
   },

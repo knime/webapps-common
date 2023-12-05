@@ -8,6 +8,7 @@ import StarIcon from "webapps-common/ui/assets/img/icons/star.svg";
 import LeaveIcon from "webapps-common/ui/assets/img/icons/leave.svg";
 import HeartIcon from "webapps-common/ui/assets/img/icons/heart.svg";
 import code from "webapps-common/ui/components/MenuItems.vue?raw";
+// @ts-ignore
 import type { MenuItem } from "webapps-common/ui/components/MenuItems.vue";
 
 const codeExampleStandalone = `<script>
@@ -15,7 +16,7 @@ import MenuItems from '~/webapps-common/ui/components/MenuItems.vue';
 import MenuIcon from '~/webapps-common/ui/assets/img/icons/menu-options.svg';
 
 const items = [{
-    href: 'http://apple.com',
+    href: 'https://apple.com',
     text: 'Apples',
     icon: HelpIcon,
     hotkeyText: 'Ctrl + 1'
@@ -76,7 +77,7 @@ export default {
 
 const menuItemsData: MenuItem[] = [
   {
-    href: "http://apple.com",
+    href: "https://apple.com",
     text: "Apples",
     icon: markRaw(HelpIcon),
     hotkeyText: "Ctrl + 1",
@@ -113,6 +114,16 @@ const menuItemsData: MenuItem[] = [
     text: "Item with download attribute",
     download: true,
     icon: markRaw(DownloadIcon),
+  },
+  {
+    text: "Item with checkbox",
+    checkbox: {
+      checked: true,
+      setBoolean: (checked: boolean) =>
+        window.alert(
+          `You clicked on a checkbox item calling its callback method with the value: ${checked}`,
+        ),
+    },
   },
 ];
 

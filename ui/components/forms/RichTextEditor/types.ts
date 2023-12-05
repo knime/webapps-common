@@ -1,17 +1,37 @@
+import type { MenuItem } from "../../MenuItems.vue";
 import type { FunctionalComponent, SVGAttributes } from "vue";
 
-export interface EditorToolItem {
+interface EditorToolItemBase {
   id: string;
   name: string;
   icon: FunctionalComponent<SVGAttributes>;
   hotkey?: Array<string>;
-  onClick: () => void;
   active?: () => boolean;
   disabled?: () => boolean;
   secondary?: boolean;
 }
 
-export type EditorTools = Array<EditorToolItem>;
+export type EditorToolItem<T> = EditorToolItemBase &
+  (
+    | {
+        children?: never;
+        onChildClick?: never;
+        onClick: () => void;
+      }
+    | {
+        children: {
+          item: MenuItem;
+          id: T;
+          active?: () => boolean;
+          hotkey?: Array<string>;
+        }[];
+        onChildClick: (childId: T) => void;
+        onClick?: never;
+        secondary: true;
+      }
+  );
+
+export type EditorTools = Array<EditorToolItem<any>>;
 
 export type BaseExtensionsConfig = {
   bold?: true;
@@ -21,6 +41,7 @@ export type BaseExtensionsConfig = {
   bulletList?: true;
   orderedList?: true;
   heading?: true;
+  paragraphTextStyle?: true;
   blockquote?: true;
   code?: true;
   codeBlock?: true;

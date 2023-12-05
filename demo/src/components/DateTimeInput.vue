@@ -24,7 +24,9 @@ export default {
       codeExample,
       dateDefault: new Date(),
       dateOnlyDate: new Date(),
+      dateMilliseconds: new Date(),
       dateBounds: new Date(),
+      dateTwoLines: new Date(),
     };
   },
   computed: {
@@ -70,18 +72,32 @@ export default {
               :show-milliseconds="false"
             />
           </Label>
+          <Label text="Show Milliseconds" large>
+            <DateTimeInput
+              v-model="dateMilliseconds"
+              :show-seconds="true"
+              :show-milliseconds="true"
+            />
+          </Label>
           <Label text="With bounds on date" large>
             <DateTimeInput
               v-model="dateBounds"
               :show-seconds="false"
               :show-milliseconds="false"
-              :min="new Date(new Date().setDate(new Date().getDate() - 5))"
+              :min="new Date(new Date().setDate(new Date().getDate() - 6))"
               :max="new Date()"
             />
           </Label>
-          <Label text="With disabled state">
+          <Label text="Two lines" large>
             <DateTimeInput
-              v-model="dateBounds"
+              v-model="dateTwoLines"
+              two-lines
+              :show-seconds="true"
+            />
+          </Label>
+          <Label text="With disabled state" large>
+            <DateTimeInput
+              v-model="dateDefault"
               :show-seconds="true"
               :show-milliseconds="true"
               disabled
@@ -89,9 +105,11 @@ export default {
           </Label>
         </div>
         <div class="grid-item-4">
-          <p>Default: {{ dateDefault }}</p>
+          <p>Default (and disabled): {{ dateDefault }}</p>
           <p>Date only: {{ dateOnlyDate }}</p>
-          <p>With Bounds: {{ dateBounds }}</p>
+          <p>Date with milliseconds: {{ dateMilliseconds }}</p>
+          <p>Date with bounds: {{ dateBounds }}</p>
+          <p>Date on two lines: {{ dateTwoLines }}</p>
         </div>
       </div>
     </section>

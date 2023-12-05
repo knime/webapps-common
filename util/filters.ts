@@ -3,6 +3,36 @@
  * compile any filter settings and a method "test" which takes the compiled result, additional settings and the item to
  * be matched/filtered
  * */
+interface FilterDefinition<SearchTerm, Normalized, Testable> {
+  id: string;
+  normalize: (
+    searchTerm: SearchTerm,
+    caseSensitiveSearch: boolean,
+  ) => Normalized;
+  test: (
+    text: Testable,
+    normalizedSearchTerm: Normalized,
+    caseSensitiveSearch: boolean,
+    inverseSearch: boolean,
+  ) => boolean;
+}
+
+interface StringTest {
+  test(str: string): boolean;
+}
+
+type SearchFilterDefinition = FilterDefinition<string, string, string>;
+type PatternFilterDefinition = FilterDefinition<
+  string,
+  RegExp | StringTest,
+  string
+>;
+type TypeFilterDefinition = FilterDefinition<
+  string[],
+  StringTest,
+  string | undefined
+>;
+
 const modeDefinitions = [
   {
     id: "search",
@@ -14,7 +44,7 @@ const modeDefinitions = [
       const matches = testText.includes(normalizedSearchTerm);
       return inverseSearch ? !matches : matches;
     },
-  },
+  } satisfies SearchFilterDefinition,
   {
     id: "wildcard",
     normalize(searchTerm, caseSensitiveSearch) {
@@ -38,14 +68,14 @@ const modeDefinitions = [
       } catch (error) {
         // In case of an invalid regular expression, an impossible
         // regex is returned, not matching anything.
-        return new RegExp("$^");
+        return /$^/;
       }
     },
     test(text, normalizedSearchTerm, caseSensitiveSearch, inverseSearch) {
       const matches = normalizedSearchTerm.test(text);
       return inverseSearch ? !matches : matches;
     },
-  },
+  } satisfies PatternFilterDefinition,
   {
     id: "regex",
     normalize(searchTerm, caseSensitiveSearch) {
@@ -55,27 +85,30 @@ const modeDefinitions = [
       } catch (error) {
         // In case of an invalid regular expression, an impossible
         // regex is returned, not matching anything.
-        return new RegExp("$^");
+        return /$^/;
       }
     },
     test(text, normalizedSearchTerm, caseSensitiveSearch, inverseSearch) {
       const matches = normalizedSearchTerm.test(text);
       return inverseSearch ? !matches : matches;
     },
-  },
+  } satisfies PatternFilterDefinition,
   {
     id: "type",
     normalize(selectedTypes) {
-      return { test: (type) => selectedTypes.includes(type) };
+      return { test: (type: string) => selectedTypes.includes(type) };
     },
     test(type, normalizedSearchTerm) {
+      if (typeof type === "undefined") {
+        return false;
+      }
       return normalizedSearchTerm.test(type);
     },
-  },
+  } satisfies TypeFilterDefinition,
 ];
 
 // convert [{id: "key1", text: "asdf"}, ...] to {"key1": {id:"key1", text: "asdf"} ... }
-export const filters = Object.assign(
-  {},
-  ...modeDefinitions.map((obj) => ({ [obj.id]: obj })),
-);
+export const filters: Record<
+  string,
+  FilterDefinition<any, any, any>
+> = Object.assign({}, ...modeDefinitions.map((obj) => ({ [obj.id]: obj })));

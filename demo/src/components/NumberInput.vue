@@ -93,75 +93,97 @@ export default {
         </div>
       </div>
       <div class="grid-container">
-        <div class="grid-item-6 inputs">
-          <Label #default="{ labelForId }" text="Integer (step-size = 1)" large>
-            <NumberInput
-              :id="labelForId"
-              ref="input1"
-              v-model="inputValue1"
-              :min="min"
-              :max="max"
-              :is-valid="isValid1"
-              type="integer"
-              title="I am the integer"
-              @update:model-value="validate1"
-            />
-          </Label>
-          <Label #default="{ labelForId }" text="Double (step-size = .1)" large>
-            <NumberInput
-              :id="labelForId"
-              ref="input2"
-              v-model="inputValue2"
-              :min="min"
-              :max="max"
-              :is-valid="isValid2"
-              type="double"
-              title="I am the double"
-              @update:model-value="validate2"
-            />
-          </Label>
-          <Label #default="{ labelForId }" :text="input3Text" large>
-            <NumberInput
-              :id="labelForId"
-              ref="input3"
-              v-model="inputValue3"
-              :min="min"
-              :max="max"
-              :is-valid="isValid3"
-              type="integer"
-              title="My starting value is invalid"
-              @update:model-value="validate3"
-            />
-          </Label>
-          <Label #default="{ labelForId }" text="Disabled" large>
-            <NumberInput
-              :id="labelForId"
-              v-model="inputValue1"
-              :min="min"
-              :max="max"
-              :is-valid="isValid1"
-              type="integer"
-              title="Disabled"
-              disabled
-              @update:model-value="validate1"
-            />
-          </Label>
-        </div>
-        <div class="grid-item-2">
-          Integer: {{ inputValue1 }}
-          <br />
-          Double: {{ inputValue2 }}
-          <br />
-          {{ input3Text }}: {{ inputValue3 }}
-        </div>
-        <div class="grid-item-2">
+        <div class="grid-item-4">
           <u>All</u>
           <br />
           min: {{ min }}
           <br />
-          max = {{ max }}
+          max: {{ max }}
         </div>
-        <div class="grid-item-2" />
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-8">
+          <div class="grid-container">
+            <div class="grid-item-6 inputs">
+              <Label
+                #default="{ labelForId }"
+                text="Integer (step-size = 1)"
+                large
+              >
+                <NumberInput
+                  :id="labelForId"
+                  ref="input1"
+                  v-model="inputValue1"
+                  :min="min"
+                  :max="max"
+                  :is-valid="isValid1"
+                  type="integer"
+                  title="I am the integer"
+                  @update:model-value="validate1"
+                />
+              </Label>
+            </div>
+            <div class="grid-item-2">Integer: {{ inputValue1 }}</div>
+          </div>
+          <div class="grid-container">
+            <div class="grid-item-6 inputs">
+              <Label
+                #default="{ labelForId }"
+                text="Double (step-size = .1)"
+                large
+              >
+                <NumberInput
+                  :id="labelForId"
+                  ref="input2"
+                  v-model="inputValue2"
+                  :min="min"
+                  :max="max"
+                  :is-valid="isValid2"
+                  type="double"
+                  title="I am the double"
+                  @update:model-value="validate2"
+                />
+              </Label>
+            </div>
+            <div class="grid-item-2">Double: {{ inputValue2 }}</div>
+          </div>
+          <div class="grid-container">
+            <div class="grid-item-6 inputs">
+              <Label #default="{ labelForId }" :text="input3Text" large>
+                <NumberInput
+                  :id="labelForId"
+                  ref="input3"
+                  v-model="inputValue3"
+                  :min="min"
+                  :max="max"
+                  :is-valid="isValid3"
+                  type="integer"
+                  title="My starting value is invalid"
+                  @update:model-value="validate3"
+                />
+              </Label>
+            </div>
+            <div class="grid-item-2">{{ input3Text }}: {{ inputValue3 }}</div>
+          </div>
+          <div class="grid-container">
+            <div class="grid-item-6 inputs">
+              <Label #default="{ labelForId }" text="Disabled" large>
+                <NumberInput
+                  :id="labelForId"
+                  v-model="inputValue1"
+                  :min="min"
+                  :max="max"
+                  :is-valid="isValid1"
+                  type="integer"
+                  title="Disabled"
+                  disabled
+                  @update:model-value="validate1"
+                />
+              </Label>
+            </div>
+            <div class="grid-item-2" />
+          </div>
+        </div>
       </div>
     </section>
     <section>
@@ -180,7 +202,7 @@ export default {
 </template>
 
 <style scoped lang="postcss">
-:deep(label > div) {
-  margin-bottom: 5px;
+.inputs :deep(> *) {
+  margin-bottom: 15px;
 }
 </style>

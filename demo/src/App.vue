@@ -74,6 +74,9 @@ const demoComponents = {
     DonutChart: defineAsyncComponent(() =>
       import("./components/DonutChart.vue"),
     ),
+    FileExplorer: defineAsyncComponent(() =>
+      import("./components/FileExplorer.vue"),
+    ),
   },
   toasts: {
     "Toast Service": defineAsyncComponent(() =>
@@ -323,7 +326,9 @@ export default {
             :key="category + name"
           >
             <HeadlineWithAnchorLink :title="name" />
-            <component :is="name" class="component" />
+            <div class="component">
+              <component :is="name" />
+            </div>
           </div>
         </div>
       </template>

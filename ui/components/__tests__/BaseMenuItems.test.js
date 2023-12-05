@@ -314,8 +314,38 @@ describe("BaseMenuItems.vue", () => {
     expect(wrapper.findAll("li")[1].attributes("title")).toBeUndefined();
   });
 
+  it("renders checkboxes correctly", () => {
+    const items = [
+      {
+        text: "Apples",
+        download: true,
+      },
+      {
+        text: "Checkbox1",
+        checkbox: {
+          checked: true,
+        },
+      },
+      {
+        text: "Checkbox2",
+        checkbox: {
+          checked: false,
+        },
+      },
+    ];
+    const wrapper = mount(BaseMenuItems, {
+      props: {
+        menuAriaLabel: "label",
+        items,
+      },
+    });
+    const checkboxItems = wrapper.findAll(".checkbox");
+    expect(checkboxItems.length).toBe(2);
+  });
+
   describe("clicking menu items", () => {
     let wrapper;
+    const setCheckboxValue = vi.fn();
     const items = [
       { text: "Button" },
       {
@@ -326,6 +356,10 @@ describe("BaseMenuItems.vue", () => {
       { to: "/testing-nuxt-link", text: "Nuxt link", anotherProp: "foo" },
       { text: "Disabled", disabled: true },
       { text: "Section Headline", sectionHeadline: true },
+      {
+        text: "Checkbox",
+        checkbox: { checked: false, setBoolean: setCheckboxValue },
+      },
     ];
     const id = "testfoobar543";
 
@@ -370,6 +404,12 @@ describe("BaseMenuItems.vue", () => {
     it("does nothing if item is section headline", () => {
       wrapper.findAll("li")[4].trigger("click");
       expect(wrapper.emitted("item-click")).toBeFalsy();
+    });
+
+    it("does not emit item-click and instead calls setBoolean for checkbox items", async () => {
+      await wrapper.findAll("li")[5].trigger("click");
+      expect(wrapper.emitted("item-click")).toBeUndefined();
+      expect(setCheckboxValue).toHaveBeenCalledWith(true);
     });
 
     it("prevents default on button click", () => {

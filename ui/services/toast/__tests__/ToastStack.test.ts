@@ -1,5 +1,13 @@
-import { shallowMount } from "@vue/test-utils";
-import { describe, expect, it, vi, afterEach, beforeEach } from "vitest";
+import { VueWrapper, shallowMount } from "@vue/test-utils";
+import {
+  describe,
+  expect,
+  it,
+  vi,
+  afterEach,
+  beforeEach,
+  type Mock,
+} from "vitest";
 
 import ToastStack from "../components/ToastStack.vue";
 import { useToasts } from "../toastService";
@@ -21,7 +29,7 @@ describe("ToastStack.vue", () => {
       remove: vi.fn(),
       autoRemove: vi.fn(),
     };
-    useToasts.mockReturnValue(mockToastService);
+    (useToasts as Mock).mockReturnValue(mockToastService);
   });
 
   afterEach(() => {
@@ -64,7 +72,7 @@ describe("ToastStack.vue", () => {
   });
 
   it("returns correct styles for indices less than MAX_TOAST_COUNT", () => {
-    const wrapper = shallowMount(ToastStack);
+    const wrapper = shallowMount(ToastStack) as VueWrapper<any>;
     const style = wrapper.vm.style;
     expect(style(0)).toEqual({
       zIndex: -0,
@@ -79,7 +87,7 @@ describe("ToastStack.vue", () => {
   });
 
   it("returns correct styles for indices equal to or greater than MAX_TOAST_COUNT", () => {
-    const wrapper = shallowMount(ToastStack);
+    const wrapper = shallowMount(ToastStack) as VueWrapper<any>;
     const style = wrapper.vm.style;
     expect(style(MAX_TOAST_COUNT)).toEqual({
       zIndex: -MAX_TOAST_COUNT,
@@ -90,7 +98,7 @@ describe("ToastStack.vue", () => {
   });
 
   it("returns true for isActive for the first index and false for other indices", () => {
-    const wrapper = shallowMount(ToastStack);
+    const wrapper = shallowMount(ToastStack) as VueWrapper<any>;
     const isActive = wrapper.vm.isActive;
     expect(isActive(0)).toBe(true);
     expect(isActive(1)).toBe(false);

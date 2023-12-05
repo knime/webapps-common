@@ -1,6 +1,6 @@
 import { ref, provide, inject, computed, getCurrentInstance } from "vue";
 import type { App, Plugin } from "vue";
-import { uniqueId, cloneDeep } from "lodash";
+import { uniqueId, cloneDeep } from "lodash-es";
 import type {
   Toast,
   ToastService,

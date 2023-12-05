@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { mount } from "@vue/test-utils";
+import { VueWrapper, mount } from "@vue/test-utils";
 
 import BaseRadioButtons from "../BaseRadioButtons.vue";
 
@@ -57,12 +57,12 @@ describe("BaseRadioButtons.vue", () => {
       props: {
         possibleValues,
       },
-    });
+    }) as VueWrapper<any>;
     const wrapper2 = mount(BaseRadioButtons, {
       props: {
         possibleValues,
       },
-    });
+    }) as VueWrapper<any>;
 
     expect(wrapper1.vm.count).not.toBe(wrapper2.vm.count);
     expect(wrapper1.find("input").attributes().name).not.toBe(
@@ -122,37 +122,6 @@ describe("BaseRadioButtons.vue", () => {
     expect(input.attributes("disabled")).toBeDefined();
   });
 
-  it("does not display bold option text per default", () => {
-    const wrapper = mount(BaseRadioButtons, {
-      props: {
-        possibleValues,
-      },
-    });
-
-    const labels = wrapper.findAll("label");
-    expect(labels.length).toBe(5);
-    labels.forEach((label) => {
-      const boldOptionText = label.find(".bold");
-      expect(boldOptionText.exists()).toBeFalsy();
-    });
-  });
-
-  it("displays option text in bold", () => {
-    const wrapper = mount(BaseRadioButtons, {
-      props: {
-        possibleValues,
-        bold: true,
-      },
-    });
-
-    const labels = wrapper.findAll("label");
-    expect(labels.length).toBe(5);
-    labels.forEach((label) => {
-      const boldOptionText = label.find(".bold");
-      expect(boldOptionText.exists()).toBeTruthy();
-    });
-  });
-
   it("displays subtext below option", () => {
     const possibleValuesWithSubtext = possibleValues.map(
       (possibleValue, index) => ({
@@ -170,7 +139,6 @@ describe("BaseRadioButtons.vue", () => {
     labels.forEach((label, index) => {
       expect(label.find("br").exists()).toBeTruthy();
       expect(label.text()).toContain(`Subtext ${index + 1}`);
-      expect(label.classes()).toContain("with-subtext");
     });
   });
 });

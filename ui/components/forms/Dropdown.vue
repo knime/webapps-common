@@ -1,16 +1,28 @@
-<script>
+<script lang="ts">
 import "./variables.css";
 import { mixin as VueClickAway } from "vue3-click-away";
+import { isEmpty } from "lodash-es";
 
 import DropdownIcon from "../../assets/img/icons/arrow-dropdown.svg";
+import type { PropType } from "vue";
+
+type Id = string | number;
+interface PossibleValue {
+  id: Id;
+  text: string;
+  title?: string;
+  slotData?: {
+    [K in keyof any]: string | number | boolean;
+  };
+}
 
 let count = 0;
-const KEY_DOWN = 40;
-const KEY_UP = 38;
-const KEY_HOME = 36;
-const KEY_END = 35;
-const KEY_ESC = 27;
-const KEY_ENTER = 13;
+const KEY_DOWN = "ArrowDown";
+const KEY_UP = "ArrowUp";
+const KEY_HOME = "Home";
+const KEY_END = "End";
+const KEY_ESC = "Escape";
+const KEY_ENTER = "Enter";
 
 const TYPING_TIMEOUT = 1000; // in ms
 
@@ -27,7 +39,7 @@ export default {
       },
     },
     modelValue: {
-      type: String,
+      type: String as PropType<Id>,
       default: null,
     },
     name: {
@@ -51,7 +63,11 @@ export default {
       type: Boolean,
     },
     /**
-     * List of possible values. Each item must have an `id` and a `text` property
+     * List of possible values. Each item must have an `id` and a `text` property. To use slots an additional
+     * slotData object must be passed which contains the data to be displayed.
+     *
+     * IMPORTANT: All values have to have a slotData object otherwise the slot will not be displayed and the
+     * usual text is rendered instead.
      * @example
      * [{
      *   id: 'pdf',
@@ -59,24 +75,25 @@ export default {
      * }, {
      *   id: 'XLS',
      *   text: 'Excel',
+     * }, {
+     *   id: 'JPG',
+     *   text: 'Jpeg',
+     *   slotData: {
+     *     fullName: 'Joint Photographic Experts Group',
+     *     year: '1992'
+     *     description: 'Commonly used method of lossy compression for digital images'
+     *   }
      * }]
      */
     possibleValues: {
-      type: Array,
+      type: Array as PropType<PossibleValue[]>,
       default: () => [],
-      validator(values) {
-        if (!Array.isArray(values)) {
-          return false;
-        }
-        return values.every(
-          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text"),
-        );
-      },
     },
   },
   emits: ["update:modelValue"],
   data() {
     return {
+      typingTimeout: null as null | ReturnType<typeof setTimeout>,
       isExpanded: false,
       searchQuery: "",
     };
@@ -89,7 +106,7 @@ export default {
       return !this.modelValue;
     },
     displayTextMap() {
-      let map = {};
+      let map = {} as Record<Id, string>;
       for (let value of this.possibleValues) {
         map[value.id] = value.text;
       }
@@ -112,15 +129,18 @@ export default {
     hasRightIcon() {
       return this.$slots["icon-right"]?.().length;
     },
+    hasOptionTemplate() {
+      return this.possibleValues.every(
+        (value) => value.slotData && !isEmpty(value.slotData),
+      );
+    },
   },
-  created() {
-    this.typingTimeout = null;
-  },
+
   methods: {
-    isCurrentValue(candidate) {
+    isCurrentValue(candidate: Id) {
       return this.modelValue === candidate;
     },
-    setSelected(id) {
+    setSelected(id: Id) {
       consola.trace("ListBox setSelected on", id);
 
       /**
@@ -128,15 +148,24 @@ export default {
        */
       this.$emit("update:modelValue", id);
     },
-    onOptionClick(id) {
+    getButtonRef() {
+      return this.$refs.button as HTMLElement;
+    },
+    getOptionsRefs() {
+      return this.$refs.options as HTMLElement[];
+    },
+    getListBoxNodeRef() {
+      return this.$refs.ul as HTMLElement;
+    },
+    onOptionClick(id: Id) {
       this.setSelected(id);
       this.isExpanded = false;
-      this.$refs.button.focus();
+      this.getButtonRef().focus();
     },
-    scrollTo(optionIndex) {
-      let listBoxNode = this.$refs.ul;
+    scrollTo(optionIndex: number) {
+      let listBoxNode = this.getListBoxNodeRef();
       if (listBoxNode.scrollHeight > listBoxNode.clientHeight) {
-        let element = this.$refs.options[optionIndex];
+        let element = this.getOptionsRefs()[optionIndex];
         let scrollBottom = listBoxNode.clientHeight + listBoxNode.scrollTop;
         let elementBottom = element.offsetTop + element.offsetHeight;
         if (elementBottom > scrollBottom) {
@@ -165,12 +194,13 @@ export default {
     onEndKey() {
       let next = this.possibleValues.length - 1;
       this.setSelected(this.possibleValues[next].id);
-      this.$refs.ul.scrollTop = this.$refs.ul.scrollHeight;
+      const listBoxNode = this.getListBoxNodeRef();
+      listBoxNode.scrollTop = listBoxNode.scrollHeight;
     },
     onHomeKey() {
       let next = 0;
       this.setSelected(this.possibleValues[next].id);
-      this.$refs.ul.scrollTop = 0;
+      this.getListBoxNodeRef().scrollTop = 0;
     },
     toggleExpanded() {
       if (this.disabled) {
@@ -178,72 +208,73 @@ export default {
       }
       this.isExpanded = !this.isExpanded;
       if (this.isExpanded) {
-        this.$nextTick(() => this.$refs.ul.focus());
+        this.$nextTick(() => this.getListBoxNodeRef().focus());
       }
     },
-    handleKeyDownList(e) {
+    handleKeyDownList(e: KeyboardEvent) {
       /* NOTE: we use a single keyDown method because @keydown.up bindings are not testable. */
-      if (e.keyCode === KEY_DOWN) {
+      if (e.key === KEY_DOWN) {
         this.onArrowDown();
         e.preventDefault();
         return;
       }
-      if (e.keyCode === KEY_UP) {
+      if (e.key === KEY_UP) {
         this.onArrowUp();
         e.preventDefault();
         return;
       }
-      if (e.keyCode === KEY_END) {
+      if (e.key === KEY_END) {
         this.onEndKey();
         e.preventDefault();
         return;
       }
-      if (e.keyCode === KEY_HOME) {
+      if (e.key === KEY_HOME) {
         this.onHomeKey();
         e.preventDefault();
         return;
       }
-      if (e.keyCode === KEY_ESC) {
+      if (e.key === KEY_ESC) {
         this.isExpanded = false;
-        this.$refs.ul.blur();
+        this.getButtonRef().focus();
         e.preventDefault();
+        e.stopPropagation();
         return;
       }
-      if (e.keyCode === KEY_ENTER) {
+      if (e.key === KEY_ENTER) {
         this.isExpanded = false;
-        this.$refs.button.focus();
+        this.getButtonRef().focus();
         e.preventDefault();
         return;
       }
       this.searchItem(e);
     },
-    handleKeyDownButton(e) {
-      if (e.keyCode === KEY_ENTER) {
+    handleKeyDownButton(e: KeyboardEvent) {
+      if (e.key === KEY_ENTER) {
         this.toggleExpanded();
         e.preventDefault();
         return;
       }
-      if (e.keyCode === KEY_DOWN) {
+      if (e.key === KEY_DOWN) {
         this.onArrowDown();
         e.preventDefault();
         return;
       }
-      if (e.keyCode === KEY_UP) {
+      if (e.key === KEY_UP) {
         this.onArrowUp();
         e.preventDefault();
         return;
       }
       this.searchItem(e);
     },
-    searchItem(e) {
-      clearTimeout(this.typingTimeout);
+    searchItem(e: KeyboardEvent) {
+      if (this.typingTimeout !== null) {
+        clearTimeout(this.typingTimeout);
+      }
       this.typingTimeout = setTimeout(() => {
         this.searchQuery = "";
       }, TYPING_TIMEOUT);
       this.searchQuery += e.key;
-
       consola.trace(`Searching for ${this.searchQuery}`);
-
       const candidate = this.possibleValues.find((item) =>
         item.text.toLowerCase().startsWith(this.searchQuery.toLowerCase()),
       );
@@ -261,7 +292,7 @@ export default {
         return "";
       }
     },
-    generateId(node, itemId) {
+    generateId(node: string, itemId: Id | null = null) {
       if (!itemId) {
         return `${node}-${this.id}`;
       }
@@ -301,6 +332,7 @@ export default {
       <div v-if="hasRightIcon" class="loading-icon">
         <slot name="icon-right" />
       </div>
+      <!-- @vue-ignore -->
       <DropdownIcon class="icon" />
     </div>
     <ul
@@ -309,7 +341,7 @@ export default {
       role="listbox"
       tabindex="-1"
       :aria-activedescendant="
-        isExpanded ? generateId('option', getCurrentSelectedId()) : false
+        isExpanded ? generateId('option', getCurrentSelectedId()) : undefined
       "
       @keydown="handleKeyDownList"
     >
@@ -324,11 +356,17 @@ export default {
           focused: isCurrentValue(item.id),
           noselect: true,
           empty: item.text.trim() === '',
+          'has-option-template': hasOptionTemplate,
         }"
         :aria-selected="isCurrentValue(item.id)"
         @click="onOptionClick(item.id)"
       >
-        {{ item.text }}
+        <template v-if="hasOptionTemplate">
+          <slot name="option" :slot-data="item.slotData" />
+        </template>
+        <template v-else>
+          {{ item.text }}
+        </template>
       </li>
     </ul>
     <input :id="id" type="hidden" :name="name" :value="modelValue" />
@@ -441,7 +479,11 @@ export default {
     overflow-y: auto;
     position: absolute;
     z-index: var(--z-index-common-dropdown-expanded, 2);
-    max-height: calc(22px * 7); /* show max 7 items */
+    max-height: var(
+      --dropdown-max-height,
+      calc(22px * 7)
+    ); /* show max 7 items. override to change default */
+
     font-size: 14px;
     min-height: 22px;
     width: 100%;
@@ -450,19 +492,16 @@ export default {
     background: var(--theme-dropdown-background-color);
     box-shadow: var(--shadow-elevation-1);
     cursor: pointer;
+    outline: none;
   }
 
   & [role="option"] {
-    display: block;
-    width: 100%;
-    padding: 0 10px;
-    line-height: 22px;
-    position: relative;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
     background: var(--theme-dropdown-background-color);
     color: var(--theme-dropdown-foreground-color);
+
+    & > :slotted(svg) {
+      stroke: var(--theme-dropdown-foreground-color);
+    }
 
     &.empty {
       white-space: pre-wrap;
@@ -471,16 +510,43 @@ export default {
     &:hover {
       background: var(--theme-dropdown-background-color-hover);
       color: var(--theme-dropdown-foreground-color-hover);
+
+      & :slotted(svg) {
+        stroke: var(--theme-dropdown-foreground-color-hover);
+      }
     }
 
     &:focus {
       background: var(--theme-dropdown-background-color-focus);
       color: var(--theme-dropdown-foreground-color-focus);
+
+      & :slotted(svg) {
+        stroke: var(--theme-dropdown-foreground-color-focus);
+      }
     }
 
     &.focused {
       background: var(--theme-dropdown-background-color-selected);
       color: var(--theme-dropdown-foreground-color-selected);
+
+      & :slotted(svg) {
+        stroke: var(--theme-dropdown-foreground-color-selected);
+      }
+    }
+  }
+
+  & [role="option"]:not(.slotted) {
+    display: block;
+    width: 100%;
+    padding: 0 10px;
+    line-height: 22px;
+    position: relative;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+
+    &.empty {
+      white-space: pre-wrap;
     }
   }
 

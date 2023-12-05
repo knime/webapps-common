@@ -1,11 +1,18 @@
-<script>
+<script lang="ts">
 import Label from "./Label.vue";
 import SearchInput from "./SearchInput.vue";
 import Checkboxes from "./Checkboxes.vue";
 import ValueSwitch from "./ValueSwitch.vue";
-import Twinlist from "./Twinlist.vue";
+import Twinlist, {
+  type PossibleValue as TwinlistPossibleValue,
+  type Id,
+} from "./Twinlist.vue";
 import FilterIcon from "../../assets/img/icons/filter.svg";
 import { filters } from "../../../util/filters";
+import type { PropType } from "vue";
+
+type PossibleType = { id: string; text: string };
+type PossibleValue = TwinlistPossibleValue & { type?: PossibleType };
 
 const allModes = {
   manual: "Manual",
@@ -33,7 +40,7 @@ export default {
       default: "manual",
     },
     initialManuallySelected: {
-      type: Array,
+      type: Array as PropType<Id[] | null>,
       default: () => [],
     },
     initialIncludeUnknownValues: {
@@ -57,7 +64,7 @@ export default {
       default: true,
     },
     initialSelectedTypes: {
-      type: Array,
+      type: Array as PropType<Array<string>>,
       default: () => [],
     },
 
@@ -133,31 +140,15 @@ export default {
      *  }]
      */
     possibleValues: {
-      type: Array,
+      type: Array as PropType<PossibleValue[]>,
       default: () => [],
-      validator(values) {
-        if (!Array.isArray(values)) {
-          return false;
-        }
-        return values.every(
-          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text"),
-        );
-      },
     },
     /**
      * List of possible types which should be selectable but are not necessarily present in the possible values.
      */
     additionalPossibleTypes: {
-      type: Array,
+      type: Array as PropType<PossibleType[]>,
       default: () => [],
-      validator(values) {
-        if (!Array.isArray(values)) {
-          return false;
-        }
-        return values.every(
-          (item) => item.hasOwnProperty("id") && item.hasOwnProperty("text"),
-        );
-      },
     },
   },
   emits: [
@@ -183,20 +174,13 @@ export default {
     };
   },
   computed: {
-    possibleValueMap() {
-      // convert [{id: "key1", text: "asdf"}, ...] to {"key1": {id:"key1", text: "asdf"} ... }
-      return Object.assign(
-        {},
-        ...this.possibleValues.map((obj) => ({ [obj.id]: obj })),
-      );
-    },
     possibleValueIds() {
       return this.possibleValues.map(({ id }) => id);
     },
     possibleTypes() {
       const possibleTypes = this.possibleValues
-        .map((x) => x.type)
-        .filter((type) => type);
+        .map(({ type }) => type)
+        .filter(Boolean) as PossibleType[];
       const possibleTypesIds = possibleTypes.map((type) => type.id);
       const additionalTypes = this.additionalPossibleTypes.filter(
         (type) => type && !possibleTypesIds.includes(type.id),
@@ -220,7 +204,7 @@ export default {
       return this.mode === "manual" ? this.chosenValues : this.matchingValueIds;
     },
     deselectedValues() {
-      const selectedValuesSet = new Set(this.selectedValues);
+      const selectedValuesSet = new Set(this.selectedValues ?? []);
       return this.possibleValueIds.filter((id) => !selectedValuesSet.has(id));
     },
     selectionDisabled() {
@@ -252,7 +236,10 @@ export default {
   watch: {
     selectedValues: {
       immediate: true,
-      handler(newVal, oldVal) {
+      handler(newVal: Id[] | null, oldVal: Id[] | null | undefined) {
+        if (newVal === null) {
+          return;
+        }
         if (
           !oldVal ||
           newVal.length !== oldVal.length ||
@@ -267,6 +254,11 @@ export default {
             selected: this.selectedValues,
             isManual,
             isFirstInput,
+          } as {
+            selected: Id[];
+            isManual: boolean;
+            isFirstInput: boolean;
+            deselected?: Id[];
           };
           if (isManual) {
             event.deselected = this.deselectedValues;
@@ -279,51 +271,53 @@ export default {
     includeUnknownValues(newVal) {
       this.$emit("includeUnknownValuesInput", newVal);
     },
+    initialManuallySelected(newVal, oldVal) {
+      if (newVal === null || oldVal === null) {
+        this.chosenValues = newVal;
+      }
+    },
   },
   methods: {
-    onManualInput(value) {
+    onManualInput(value: Id[]) {
       if (this.mode === "manual") {
         this.chosenValues = value;
       }
     },
-    onPatternInput(value) {
+    onPatternInput(value: string) {
       this.chosenPattern = value;
       this.$emit("patternInput", value);
     },
-    onTypeInput(value) {
+    onTypeInput(value: string[]) {
       this.chosenTypes = value;
       this.$emit("typesInput", value, this.possibleTypes);
     },
-    onModeChange(value) {
+    onModeChange(value: keyof typeof allModes) {
       if (this.possibleModeIds.indexOf(value) !== -1) {
         this.mode = value;
         this.$emit("modeInput", value);
       }
     },
-    onToggleCaseSensitivePattern(value) {
+    onToggleCaseSensitivePattern(value: boolean) {
       this.caseSensitivePattern = value;
       this.$emit("caseSensitivePatternInput", value);
     },
-    onToggleInvsersePattern(value) {
+    onToggleInvsersePattern(value: boolean) {
       this.inversePattern = value;
       this.$emit("inversePatternInput", value);
     },
-    onUnkownColumnsInput(value) {
+    onUnkownColumnsInput(value: boolean) {
       this.includeUnknownValues = value;
     },
     validate() {
-      return this.$refs.twinlist.validate();
+      return (this.$refs.twinlist as any).validate();
     },
     hasSelection() {
-      return this.selectedValues.length > 0;
+      return Boolean(this.selectedValues?.length);
     },
-    itemMatches(item) {
+    itemMatches(item: PossibleValue) {
       const mode = filters[this.mode];
-      // Needed as optional chaining is currently not supported, should be removed after the switch to vue3
-      // eslint-disable-next-line no-undefined
-      const optionalItemType = item.type ? item.type.id : undefined;
       return mode.test(
-        this.mode === "type" ? optionalItemType : item.text,
+        this.mode === "type" ? item.type?.id : item.text,
         this.normalizedSearchTerm,
         this.caseSensitivePattern,
         this.inversePattern,

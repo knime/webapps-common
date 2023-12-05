@@ -5,7 +5,7 @@ import updateDate from "./updateDate";
 /**
  * Check if date is before min.
  * @param {Date} date
- * @param {Date} min
+ * @param {Date | null} min
  * @param {Boolean} checkDate - check date part (year, day, month).
  * @param {Boolean} checkTime - check time part (hour, minutes etc.).
  * @returns {Boolean} whether limit is kept or not.
@@ -32,7 +32,7 @@ export const isBeforeMinDate = (date, min, checkDate, checkTime) => {
 /**
  * Check
  * @param {Date} date - date to check.
- * @param {Date} max - maximum date.
+ * @param {Date | null} max - maximum date.
  * @param {Boolean} checkDate - check date part (year, day, month).
  * @param {Boolean} checkTime - check time part (hour, minutes etc.).
  * @returns {Boolean} whether limit is kept or not.

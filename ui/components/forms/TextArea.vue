@@ -40,6 +40,10 @@ export default {
       default: null,
       type: String,
     },
+    disabled: {
+      default: false,
+      type: Boolean,
+    },
   },
   emits: ["update:modelValue"],
   methods: {
@@ -54,7 +58,7 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div :class="{ disabled }">
     <textarea
       :id="id"
       ref="input"
@@ -63,6 +67,7 @@ export default {
       :value="modelValue"
       :class="inputClasses"
       :cols="cols"
+      :disabled="disabled"
       :rows="rows"
       :placeholder="placeholder"
       @input="onInput"
@@ -77,6 +82,10 @@ div {
   isolation: isolate;
   display: block;
   max-width: max-content;
+
+  &.disabled {
+    opacity: 0.5;
+  }
 
   & textarea {
     font-size: 13px;

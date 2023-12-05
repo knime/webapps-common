@@ -1,7 +1,7 @@
 <script lang="ts">
 import "./variables.css";
 import { defineComponent, type PropType } from "vue";
-import { kebabCase, uniq } from "lodash";
+import { kebabCase, uniq } from "lodash-es";
 
 import Multiselect from "./Multiselect.vue";
 import FunctionButton from "../FunctionButton.vue";
@@ -163,13 +163,33 @@ export default defineComponent({
         : this.sizeVisibleOptions;
     },
   },
+  watch: {
+    initialSelectedIds(newValue: string[], prevValue: string[]) {
+      const lengthIsEqual = newValue.length === prevValue?.length;
 
+      const isEqual =
+        lengthIsEqual &&
+        newValue.slice().sort().join(".") ===
+          prevValue.slice().sort().join(".");
+
+      if (isEqual) {
+        return;
+      }
+
+      this.changeSelectedIds(newValue);
+    },
+  },
   mounted() {
     this.focusElement = this.$refs.searchInput as HTMLInputElement;
     this.refocusElement = this.$refs.listBox as HTMLDivElement;
   },
 
   methods: {
+    changeSelectedIds(newSelected: string[]) {
+      this.selectedIds = newSelected;
+      this.$emit("update:selectedIds", this.selectedIds);
+      this.$emit("change", this.selectedValues);
+    },
     focusInput() {
       (this.$refs.searchInput as HTMLInputElement).focus();
     },
@@ -186,9 +206,7 @@ export default defineComponent({
     },
     onBackspace() {
       if (!this.searchValue) {
-        this.selectedIds = this.selectedIds.slice(0, -1);
-        this.$emit("update:selectedIds", this.selectedIds);
-        this.$emit("change", this.selectedValues);
+        this.changeSelectedIds(this.selectedIds.slice(0, -1));
       }
       // else regular backspace behavior
     },
@@ -210,9 +228,7 @@ export default defineComponent({
 
     updateSelectedIds(selectedIds: Array<string>) {
       const setSelectedIds = (value: Array<string>) => {
-        this.selectedIds = uniq(value).filter(Boolean);
-        this.$emit("update:selectedIds", this.selectedIds);
-        this.$emit("change", this.selectedValues);
+        this.changeSelectedIds(uniq(value).filter(Boolean));
       };
 
       const hasNewItem = selectedIds.includes(DRAFT_ITEM_ID);
@@ -253,7 +269,9 @@ export default defineComponent({
       this.updateSelectedIds([]);
       this.closeOptions();
     },
-
+    closeOptionsAndStop(event: KeyboardEvent) {
+      (this.$refs.combobox as MultiselectRef).closeOptionsAndStop(event);
+    },
     closeOptions() {
       (this.$refs.combobox as MultiselectRef).closeOptions();
     },
@@ -314,7 +332,7 @@ export default defineComponent({
             @keydown.enter.prevent="onEnter"
             @keydown.backspace="onBackspace"
             @keydown.down.stop.prevent="onDown"
-            @keydown.esc.stop.prevent="closeOptions"
+            @keydown.esc="closeOptionsAndStop"
           />
         </div>
         <div v-show="hasSelection" class="icon-right">

@@ -4,17 +4,20 @@
     "env.d.ts",
     "../svg.d.ts", // for supporting SVG component imports; order is important
     "src/**/*",
-    "src/**/*.vue"
+    "src/**/*.vue",
+    "../ui/components/FileExplorer/types.ts",
+    "../ui/services/toast.ts",
+    "../ui/components/MenuItems.vue",
+    "../ui/globals.d.ts"
   ],
   "compilerOptions": {
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     },
-    "strict": false,
     "allowJs": true
   },
-
   "references": [
     {
       "path": "./tsconfig.config.json"

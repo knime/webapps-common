@@ -92,6 +92,13 @@ export default {
       default: true,
       type: Boolean,
     },
+    /**
+     * If true, the time input fields (if present) are displayed in a separate row
+     */
+    twoLines: {
+      default: false,
+      type: Boolean,
+    },
     required: {
       default: false,
       type: Boolean,
@@ -367,9 +374,10 @@ export default {
       </Component>
       <span v-if="!isValid" class="invalid-marker" />
     </div>
-    <div v-if="showTime" class="time">
+    <div v-if="showTime" :class="['time', { 'two-lines': twoLines }]">
       <TimePartInput
         ref="hours"
+        class="time-part"
         type="integer"
         :min="0"
         :max="23"
@@ -382,6 +390,7 @@ export default {
       <span class="time-colon">:</span>
       <TimePartInput
         ref="minutes"
+        class="time-part"
         type="integer"
         :min="0"
         :max="59"
@@ -395,6 +404,7 @@ export default {
       <TimePartInput
         v-if="showSeconds"
         ref="seconds"
+        class="time-part"
         type="integer"
         :min="0"
         :max="59"
@@ -408,6 +418,7 @@ export default {
       <TimePartInput
         v-if="showMilliseconds"
         ref="milliseconds"
+        class="time-part"
         type="integer"
         :min="0"
         :max="999"
@@ -430,10 +441,7 @@ export default {
   display: flex;
   width: auto;
   flex-wrap: wrap;
-
-  & > div {
-    margin-top: 10px;
-  }
+  gap: 10px 20px;
 
   /* time */
   & .time {
@@ -441,9 +449,14 @@ export default {
     width: auto;
     flex-wrap: wrap;
     align-items: center;
+    gap: 1px 0;
 
-    & :deep(.wrapper) {
+    & .time-part {
       width: 5rem;
+    }
+
+    &.two-lines {
+      width: 100%;
     }
 
     & .time-colon {
@@ -539,7 +552,6 @@ export default {
     /* input wrapper style */
     max-width: 9rem;
     min-width: 7.5rem;
-    margin-right: 20px;
     position: relative;
     border: var(--form-border-width) solid var(--theme-date-input-border-color);
 
