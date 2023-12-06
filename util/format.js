@@ -4,7 +4,7 @@ import getLocalTimeZone from './localTimezone';
  * Converts the specified date String to human readable text containing the day, month, and year.
  * Example: '2018-07-31T09:44:31+00:00' => 'Jul 31, 2018'
  *
- * @useTimeZone {Bolean} to set the timeZone where the user is located, and display local date and time
+ * @useTimeZone {Boolean} to set the timeZone where the user is located, and display local date and time
  * @param {String} dateString String representation of the Date to format
  * @returns {String} human readable date String
  */
@@ -26,7 +26,7 @@ export const formatDateString = (dateString, useTimeZone = false) => {
  * Converts the specified time String to human readable text containing the hour (12-hour) and minute.
  * Example: '2018-07-31T09:44:31+00:00' => '9:44 AM'
  *
- * @useTimeZone {Bolean} to set the timeZone where the user is located, and display local date and time
+ * @useTimeZone {Boolean} to set the timeZone where the user is located, and display local date and time
  * @param {String} timeString String representation of the Date (including time) to format
  * @returns {String} human readable time String
  */
@@ -50,7 +50,7 @@ export const formatTimeString = (timeString, useTimeZone = false) => {
  * minute; 12-hour).
  * Example: '2018-07-31T09:44:31+00:00' => 'Jul 31, 2018 9:44 AM'
  *
- * @useTimeZone {Bolean} to set the timeZone where the user is located, and display local date and time
+ * @useTimeZone {Boolean} to set the timeZone where the user is located, and display local date and time
  * @param {String} dateTimeString String representation of the Date (including time and date) to format
  * @returns {String} human readable date/time String
  */
