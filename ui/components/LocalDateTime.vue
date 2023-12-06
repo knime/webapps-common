@@ -15,8 +15,9 @@ export default {
     },
     data() {
         return {
-            localDateTime: this.date,
-            processing: true
+            // formatting and hiding the date first to reserve the correct space and avoid content jumping once date is mounted.
+            localDateTime: formatLocalDateTimeString(this.date, this.showTime),
+            hidden: true
         };
     },
 
@@ -29,7 +30,8 @@ export default {
     },
     mounted() {
         this.localDateTime = formatLocalDateTimeString(this.date, this.showTime);
-        this.processing = false;
+        // after mounted the date is shown and hidden set to false
+        this.hidden = false;
     }
 };
 </script>
@@ -38,7 +40,7 @@ export default {
   <time
     :title="date"
     :datetime="date"
-    :class="{ hidden: processing }"
+    :class="{ hidden: hidden }"
   >{{ localDateTime }}</time>
 </template>
 
