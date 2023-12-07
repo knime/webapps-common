@@ -1,5 +1,5 @@
 <script>
-import { formatLocalDateTimeString } from './../../util/format';
+import { formatDateTimeString, formatLocalDateTimeString } from './../../util/format';
 
 export default {
 
@@ -16,7 +16,7 @@ export default {
     data() {
         return {
             // formatting and hiding the date first to reserve the correct space and avoid content jumping once date is mounted.
-            localDateTime: formatLocalDateTimeString(this.date, this.showTime),
+            localDateTime: formatDateTimeString(this.date, this.showTime),
             hidden: true
         };
     },

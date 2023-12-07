@@ -67,19 +67,6 @@ export const formatDateTimeString = (dateTimeString, useTimeZone = false) => { /
  * @returns {String} human readable date/time String converted to user time zone
  */
 
-export const formatLocalDateTimeString = (date, showTime) => {
-    if (date.includes('Z')) {
-    // to bring the date coming from the table in an standardized UTC date format
-        let indexOfZ = date.indexOf('Z');
-        date = date.substring(0, indexOfZ + 1);
-    }
-
-    let dateTime = new Date(date);
-    
-    if (isNaN(dateTime)) {
-        throw Error('Invalid Date format');
-    }
-    return showTime
-        ? formatDateTimeString(dateTime, true)
-        : formatDateString(dateTime, true);
-};
+export const formatLocalDateTimeString = (date, showTime) => showTime
+    ? formatDateTimeString(date, true)
+    : formatDateString(date, true);
