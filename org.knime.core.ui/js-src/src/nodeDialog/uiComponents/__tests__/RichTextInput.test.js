@@ -1,12 +1,4 @@
-import {
-  afterEach,
-  beforeEach,
-  beforeAll,
-  describe,
-  expect,
-  it,
-  vi,
-} from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   mountJsonFormsComponent,
   initializesJsonFormsControl,
@@ -14,14 +6,10 @@ import {
 import RichTextEditor from "webapps-common/ui/components/forms/RichTextEditor/RichTextEditor.vue";
 import RichTextInput from "../RichTextInput.vue";
 import { inputFormats } from "@/nodeDialog/constants";
-import LabeledInput from "../LabeledInput.vue";
+import DialogLabel from "../label/DialogLabel.vue";
 
 describe("RichTextInput.vue", () => {
-  let props, wrapper, onChangeSpy, component, stubs;
-
-  beforeAll(() => {
-    onChangeSpy = vi.spyOn(RichTextInput.methods, "onChange");
-  });
+  let props, wrapper, component, stubs;
 
   beforeEach(() => {
     props = {
@@ -69,19 +57,19 @@ describe("RichTextInput.vue", () => {
   });
 
   it("sets labelForId", () => {
-    const labeldInput = wrapper.findComponent(LabeledInput);
+    const dialogLabel = wrapper.findComponent(DialogLabel);
     expect(wrapper.getComponent(RichTextEditor).attributes().id).toBe(
-      labeldInput.vm.labelForId,
+      dialogLabel.vm.labelForId,
     );
-    expect(labeldInput.vm.labeledElement).toBeDefined();
-    expect(labeldInput.vm.labeledElement).not.toBeNull();
+    expect(dialogLabel.vm.labeledElement).toBeDefined();
+    expect(dialogLabel.vm.labeledElement).not.toBeNull();
   });
 
   it("initializes jsonforms", () => {
     initializesJsonFormsControl(component);
   });
 
-  it("calls onChange when html content is changed", async () => {
+  it("calls updateData when html content is changed", async () => {
     const dirtySettingsMock = vi.fn();
     const { wrapper, updateData } = await mountJsonFormsComponent(
       RichTextInput,
@@ -102,7 +90,6 @@ describe("RichTextInput.vue", () => {
     wrapper
       .findComponent(RichTextEditor)
       .vm.$emit("update:modelValue", changedRichTextInput);
-    expect(onChangeSpy).toHaveBeenCalledWith(changedRichTextInput);
     expect(updateData).toHaveBeenCalledWith(
       expect.anything(),
       props.control.path,
@@ -123,26 +110,9 @@ describe("RichTextInput.vue", () => {
   });
 
   it("disables editor if content is overwritten by flow variable", async () => {
-    props = {
-      ...props,
-      control: {
-        ...props.control,
-        rootSchema: {
-          ...props.control.rootSchema,
-          flowVariablesMap: {
-            richTextContent: {
-              leaf: true,
-              controllingFlowVariableAvailable: true,
-              controllingFlowVariableName: "string-input",
-              exposedFlowVariableName: null,
-            },
-          },
-        },
-      },
-    };
     let localComponent = await mountJsonFormsComponent(RichTextInput, {
       props,
-      stubs,
+      withControllingFlowVariable: true,
     });
     let localWrapper = localComponent.wrapper;
     expect(localWrapper.vm.disabled).toBeTruthy();

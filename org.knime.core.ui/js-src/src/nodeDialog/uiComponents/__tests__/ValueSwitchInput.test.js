@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { mountJsonFormsComponent } from "@@/test-setup/utils/jsonFormsTestUtils";
 import RadioInputBase from "../RadioInputBase.vue";
 import ValueSwitchInput from "../ValueSwitchInput.vue";
-import LabeledInput from "../LabeledInput.vue";
+import LabeledInput from "../label/LabeledInput.vue";
 import ValueSwitch from "webapps-common/ui/components/forms/ValueSwitch.vue";
 import BaseRadioButtons from "webapps-common/ui/components/forms/BaseRadioButtons.vue";
 

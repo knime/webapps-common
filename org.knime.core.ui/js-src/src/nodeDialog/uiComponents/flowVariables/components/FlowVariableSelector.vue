@@ -1,17 +1,20 @@
 <script setup lang="ts">
 import Dropdown from "webapps-common/ui/components/forms/Dropdown.vue";
-import type FlowVariableSelectorProps from "./types/FlowVariableSelectorProps";
+import type FlowVariableSelectorProps from "../types/FlowVariableSelectorProps";
 import { computed, onMounted, ref, type Ref } from "vue";
 import type { PossibleFlowVariable } from "@/nodeDialog/api/types";
-import { setControllingFlowVariable } from "@/nodeDialog/api/flowVariables";
-
-import inject from "@/nodeDialog/utils/inject";
-
+import useControllingFlowVariable from "../composables/useControllingFlowVariable";
+import { injectForFlowVariables } from "../../../utils/inject";
+const {
+  setControllingFlowVariable,
+  unsetControllingFlowVariable,
+  controllingFlowVariableName,
+} = useControllingFlowVariable();
 const {
   getAvailableFlowVariables,
   getFlowVariableOverrideValue,
-  unsetControllingFlowVariable,
-} = inject("flowVariablesApi")!;
+  clearControllingFlowVariable,
+} = injectForFlowVariables("flowVariablesApi")!;
 
 const props = defineProps<FlowVariableSelectorProps>();
 
@@ -59,19 +62,16 @@ onMounted(async () => {
   availableVariablesLoaded.value = true;
 });
 
-const selectedValue = computed(
-  () => props.flowSettings?.controllingFlowVariableName ?? "",
-);
-
 const emit = defineEmits(["controllingFlowVariableSet"]);
 
 const selectValue = async (selectedId: string | number) => {
   if (selectedId === noFlowVariableOption.id) {
-    unsetControllingFlowVariable(props.persistPath);
+    unsetControllingFlowVariable({ path: props.persistPath });
+    clearControllingFlowVariable(props.persistPath);
     return;
   }
   const flowVar = nameToFlowVariable.value[selectedId];
-  setControllingFlowVariable(props.flowVariablesMap, {
+  setControllingFlowVariable({
     path: props.persistPath,
     flowVariableName: flowVar.name,
   });
@@ -89,7 +89,8 @@ const ariaLabel = computed(
 );
 const noOptionsPresent = computed(
   () =>
-    Boolean(dropdownPossibleValues.value.length === 1) && !selectedValue.value,
+    Boolean(dropdownPossibleValues.value.length === 1) &&
+    !controllingFlowVariableName.value,
 );
 const placeholder = computed(() => {
   if (!availableVariablesLoaded.value) {
@@ -106,7 +107,7 @@ const placeholder = computed(() => {
   <Dropdown
     :ariaLabel="ariaLabel"
     :possible-values="dropdownPossibleValues"
-    :model-value="availableVariablesLoaded ? selectedValue : ''"
+    :model-value="availableVariablesLoaded ? controllingFlowVariableName : ''"
     :placeholder="placeholder"
     :disabled="!availableVariablesLoaded || noOptionsPresent"
     @update:model-value="selectValue"

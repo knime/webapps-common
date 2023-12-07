@@ -14,6 +14,13 @@ export default (rpcRequest: { method: string; params: any[] }) => {
         BOOLEAN: [
           { name: "booleanVariable", value: "true", abbreviated: false },
         ],
+        CREDENTIALS: [
+          {
+            name: "credentialsVariable",
+            value: "Credentials (...)",
+            abbreviated: false,
+          },
+        ],
         NUMBER: [{ name: "numberVariable", value: "100", abbreviated: false }],
       };
     case "flowVariables.getFlowVariableOverrideValue":
@@ -28,6 +35,11 @@ export default (rpcRequest: { method: string; params: any[] }) => {
           return true;
         case "numberVariable":
           return 100;
+        case "credentialsVariable":
+          return {
+            username: "Hello",
+            isHiddenPassword: true,
+          };
         default:
           return "someValue";
       }

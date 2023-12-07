@@ -1,27 +1,16 @@
-import {
-  afterEach,
-  beforeEach,
-  beforeAll,
-  describe,
-  expect,
-  it,
-  vi,
-} from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   mountJsonFormsComponent,
   initializesJsonFormsControl,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import DropdownInput from "../DropdownInput.vue";
-import LabeledInput from "../LabeledInput.vue";
+import LabeledInput from "../label/LabeledInput.vue";
+import DialogLabel from "../label/DialogLabel.vue";
 import Dropdown from "webapps-common/ui/components/forms/Dropdown.vue";
 import flushPromises from "flush-promises";
 
 describe("DropdownInput.vue", () => {
-  let wrapper, onChangeSpy, props, component;
-
-  beforeAll(() => {
-    onChangeSpy = vi.spyOn(DropdownInput.methods, "onChange");
-  });
+  let wrapper, props, component;
 
   const path = "test";
 
@@ -65,18 +54,13 @@ describe("DropdownInput.vue", () => {
         },
         rootSchema: {
           hasNodeView: true,
-          flowVariablesMap: {
-            [path]: {
-              controllingFlowVariableAvailable: true,
-              controllingFlowVariableName: "knime.test",
-              exposedFlowVariableName: "test",
-              leaf: true,
-            },
-          },
         },
       },
     };
-    component = await mountJsonFormsComponent(DropdownInput, { props });
+    component = await mountJsonFormsComponent(DropdownInput, {
+      props,
+      withControllingFlowVariable: true,
+    });
     wrapper = component.wrapper;
   });
 
@@ -90,39 +74,13 @@ describe("DropdownInput.vue", () => {
     expect(wrapper.findComponent(Dropdown).exists()).toBe(true);
   });
 
-  it("computed flow settings", () => {
-    expect(
-      wrapper.getComponent(LabeledInput).props().flowSettings,
-    ).toStrictEqual({
-      controllingFlowVariableAvailable: true,
-      controllingFlowVariableName: "knime.test",
-      exposedFlowVariableName: "test",
-    });
-  });
-
-  it("sets subConfigKeys for LabeledInput and computed flow settings with them", async () => {
-    const subConfigKey = "subConfigKey";
-    props.subConfigKeys = [subConfigKey];
-    const subConfigKeyFlowSetting = {
-      controllingFlowVariableAvailable: true,
-      controllingFlowVariableName: "knime.subconfig",
-      exposedFlowVariableName: "subconfig",
-    };
-    props.control.rootSchema.flowVariablesMap[`${path}.${subConfigKey}`] =
-      subConfigKeyFlowSetting;
-    const { wrapper } = await mountJsonFormsComponent(DropdownInput, { props });
-    expect(
-      wrapper.getComponent(LabeledInput).props().flowSettings,
-    ).toStrictEqual(subConfigKeyFlowSetting);
-  });
-
   it("sets labelForId", () => {
-    const labeldInput = wrapper.findComponent(LabeledInput);
+    const dialogLabel = wrapper.findComponent(DialogLabel);
     expect(wrapper.getComponent(Dropdown).props().id).toBe(
-      labeldInput.vm.labelForId,
+      dialogLabel.vm.labelForId,
     );
-    expect(labeldInput.vm.labeledElement).toBeDefined();
-    expect(labeldInput.vm.labeledElement).not.toBeNull();
+    expect(dialogLabel.vm.labeledElement).toBeDefined();
+    expect(dialogLabel.vm.labeledElement).not.toBeNull();
   });
 
   it("initializes jsonforms", () => {
@@ -140,7 +98,7 @@ describe("DropdownInput.vue", () => {
       vi.clearAllMocks();
     });
 
-    it("calls onChange when input is changed", async () => {
+    it("calls updateData when input is changed", async () => {
       const { wrapper, updateData } = await mountJsonFormsComponent(
         DropdownInput,
         { props },
@@ -155,7 +113,6 @@ describe("DropdownInput.vue", () => {
       wrapper
         .findComponent(Dropdown)
         .vm.$emit("update:modelValue", changedDropdownInput);
-      expect(onChangeSpy).toHaveBeenCalledWith(changedDropdownInput);
       expect(updateData).toHaveBeenCalledWith(
         expect.anything(),
         props.control.path,
@@ -251,27 +208,8 @@ describe("DropdownInput.vue", () => {
   it("disables dropdown when there are no possible values", async () => {
     props.control.uischema.options.possibleValues = [];
     const { wrapper } = await mountJsonFormsComponent(DropdownInput, { props });
-    expect(wrapper.vm.disabled).toBeTruthy();
+    await flushPromises();
     expect(wrapper.findComponent(Dropdown).vm.disabled).toBeTruthy();
-  });
-
-  it("does not render content of DropdownInput when visible is false", () => {
-    props.control.visible = false;
-    const { wrapper } = mountJsonFormsComponent(DropdownInput, { props });
-    expect(wrapper.findComponent(LabeledInput).exists()).toBe(false);
-  });
-
-  it("checks that it is not rendered if it is an advanced setting", () => {
-    props.control.uischema.options.isAdvanced = true;
-    const { wrapper } = mountJsonFormsComponent(DropdownInput, { props });
-    expect(wrapper.getComponent(DropdownInput).isVisible()).toBe(false);
-  });
-
-  it("checks that it is rendered if it is an advanced setting and advanced settings are shown", () => {
-    props.control.rootSchema.showAdvancedSettings = true;
-    props.control.uischema.options.isAdvanced = true;
-    const { wrapper } = mountJsonFormsComponent(DropdownInput, { props });
-    expect(wrapper.getComponent(DropdownInput).isVisible()).toBe(true);
   });
 
   describe("dependencies to other settings", () => {
@@ -279,34 +217,31 @@ describe("DropdownInput.vue", () => {
       initialSettingsChangeCallback,
       wrapper,
       dependencies,
-      handleResultSpy,
       getDataMock,
-      sendAlert;
+      sendAlert,
+      newSettings;
 
     const dependenciesUischema = ["foo", "bar"];
     const result = [
       { id: "first", text: "First" },
       { id: "second", text: "Second" },
     ];
-    const newSettings = {
-      view: { foo: "foo", bar: "bar" },
-      model: { baz: "baz" },
-    };
-
-    beforeAll(() => {
-      handleResultSpy = vi.spyOn(DropdownInput.methods, "handleResult");
-    });
-
     const updateHandler = "UpdateHandler";
 
     beforeEach(() => {
+      newSettings = {
+        view: { foo: "foo", bar: "bar" },
+        model: { baz: "baz" },
+      };
       props.control.uischema.options.dependencies = dependenciesUischema;
       props.control.uischema.options.choicesUpdateHandler = updateHandler;
-      getDataMock = vi.fn(() => ({
-        result,
-        state: "SUCCESS",
-        message: null,
-      }));
+      getDataMock = vi.fn(() => {
+        return {
+          result,
+          state: "SUCCESS",
+          message: null,
+        };
+      });
       const comp = mountJsonFormsComponent(DropdownInput, {
         props,
         provide: { getDataMock },
@@ -328,8 +263,6 @@ describe("DropdownInput.vue", () => {
     });
 
     it("requests new data if dependencies change", () => {
-      const widgetId = "widgetId";
-      wrapper.setData({ widgetId });
       settingsChangeCallback({
         view: { foo: "foo", bar: "bar" },
         model: { baz: "baz" },
@@ -337,7 +270,7 @@ describe("DropdownInput.vue", () => {
       expect(getDataMock).toHaveBeenCalledWith({
         method: "settings.update",
         options: [
-          widgetId,
+          expect.anything(),
           updateHandler,
           {
             foo: "foo",
@@ -352,14 +285,14 @@ describe("DropdownInput.vue", () => {
       await settingsChangeCallback(newSettings);
       await flushPromises();
       expect(wrapper.vm.options).toStrictEqual(result);
-      expect(handleResultSpy).toHaveBeenCalledWith(result, newSettings, true);
+      expect(newSettings[path]).toBe(result[0].id);
     });
 
     it("sets new options without changing the data on the initial update", async () => {
       initialSettingsChangeCallback(newSettings);
       await flushPromises();
       expect(wrapper.vm.options).toStrictEqual(result);
-      expect(handleResultSpy).toHaveBeenCalledWith(result, newSettings, false);
+      expect(newSettings[path]).toBeUndefined();
     });
 
     it("selects null if the fetched options are empty", async () => {
@@ -371,8 +304,7 @@ describe("DropdownInput.vue", () => {
       settingsChangeCallback(newSettings);
       await flushPromises();
       expect(wrapper.vm.options).toStrictEqual([]);
-      expect(handleResultSpy).toHaveBeenCalledWith([], newSettings, true);
-      expect(wrapper.vm.getFirstValueFromDropdownOrNull([])).toBeNull();
+      expect(newSettings[path]).toBeNull();
     });
 
     it("sets empty options and warns about error on state FAIL", async () => {
@@ -385,19 +317,12 @@ describe("DropdownInput.vue", () => {
       settingsChangeCallback(newSettings);
       await flushPromises();
       expect(wrapper.vm.options).toStrictEqual([]);
-      expect(handleResultSpy).toHaveBeenCalledWith([], newSettings, true);
+      expect(newSettings[path]).toBeNull();
       expect(sendAlert).toHaveBeenCalledWith({
         message: "Error message",
         type: "error",
       });
     });
-  });
-
-  it("uses passed in jsonFormsControls if present", () => {
-    const customControl = { uischema: { foo: "bar" } };
-    props.jsonFormsControl = { control: customControl, handleChange: () => {} };
-    const { wrapper } = mountJsonFormsComponent(DropdownInput, { props });
-    expect(wrapper.vm.control).toStrictEqual(customControl);
   });
 
   it("sets initial options if provided", async () => {

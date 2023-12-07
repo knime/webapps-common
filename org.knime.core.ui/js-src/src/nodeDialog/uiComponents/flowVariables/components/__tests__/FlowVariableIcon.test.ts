@@ -8,12 +8,16 @@ import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";
 
 import FlowVariableIcon from "../FlowVariableIcon.vue";
 
-import type FlowVariableIconProps from "../types/FlowVariableIconProps";
+import type FlowVariableIconProps from "../../types/FlowVariableIconProps";
+import { providedKey as providedByComponentKey } from "@/nodeDialog/composables/useFlowVariables";
+import { Ref, ref } from "vue";
+import { FlowSettings } from "@/nodeDialog/api/types";
 
 describe("FlowVariableIcon.vue", () => {
-  let props: FlowVariableIconProps;
+  let props: FlowVariableIconProps, flowSettings: Ref<FlowSettings | undefined>;
 
   beforeEach(() => {
+    flowSettings = ref(undefined);
     props = {
       show: false,
     };
@@ -30,6 +34,13 @@ describe("FlowVariableIcon.vue", () => {
   }) => {
     return mount(FlowVariableIcon as any, {
       props,
+      global: {
+        provide: {
+          [providedByComponentKey]: {
+            flowSettings,
+          },
+        },
+      },
     });
   };
 
@@ -42,7 +53,7 @@ describe("FlowVariableIcon.vue", () => {
   });
 
   it("renders BothFlowVariables if both controlled and exposed", () => {
-    props.flowSettings = {
+    flowSettings.value = {
       controllingFlowVariableAvailable: true,
       controllingFlowVariableName: "foo",
       exposedFlowVariableName: "bar",
@@ -55,7 +66,7 @@ describe("FlowVariableIcon.vue", () => {
   });
 
   it("renders ExposeFlowVariable if not controlled but exposed", () => {
-    props.flowSettings = {
+    flowSettings.value = {
       controllingFlowVariableAvailable: true,
       controllingFlowVariableName: null,
       exposedFlowVariableName: "bar",
@@ -68,7 +79,7 @@ describe("FlowVariableIcon.vue", () => {
   });
 
   it("renders OnlyFlowVariable if controlled but not exposed", () => {
-    props.flowSettings = {
+    flowSettings.value = {
       controllingFlowVariableAvailable: true,
       controllingFlowVariableName: "foo",
       exposedFlowVariableName: null,

@@ -29,7 +29,7 @@ describe("TwinlistInput", () => {
     };
 
     expect(determineRenderer(uiSchema, schema, renderers)).toBe(
-      "SimpleTwinListInput",
+      "SimpleTwinlistInput",
     );
   });
 });

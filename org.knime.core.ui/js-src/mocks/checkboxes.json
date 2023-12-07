@@ -1,0 +1,106 @@
+{
+  "result": {
+    "name": "Checklist Dialog",
+    "data": {
+      "vertical": ["ADDED"],
+      "horizontal": ["ADDED"],
+      "disabled": ["ADDED"]
+    },
+    "schema": {
+      "type": "object",
+      "properties": {
+        "vertical": {
+          "title": "Action",
+          "anyOf": [
+            {
+              "const": "ADDED",
+              "title": "Added"
+            },
+            {
+              "const": "UPDATED",
+              "title": "Modified"
+            },
+            {
+              "const": "REMOVED",
+              "title": "Deleted"
+            }
+          ]
+        },
+        "horizontal": {
+          "title": "Action",
+          "anyOf": [
+            {
+              "const": "ADDED",
+              "title": "Added"
+            },
+            {
+              "const": "UPDATED",
+              "title": "Modified"
+            },
+            {
+              "const": "REMOVED",
+              "title": "Deleted"
+            }
+          ]
+        },
+        "disabled": {
+          "title": "Action",
+          "anyOf": [
+            {
+              "const": "ADDED",
+              "title": "Added"
+            },
+            {
+              "const": "UPDATED",
+              "title": "Modified"
+            },
+            {
+              "const": "REMOVED",
+              "title": "Deleted"
+            }
+          ]
+        }
+      }
+    },
+    "ui_schema": {
+      "type": "VerticalLayout",
+      "elements": [
+        {
+          "type": "Section",
+          "label": "Checkboxes",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/vertical",
+              "options": {
+                "format": "checkboxes",
+                "checkboxLayout": "vertical"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/horizontal",
+              "options": {
+                "format": "checkboxes",
+                "checkboxLayout": "horizontal"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/disabled",
+              "options": {
+                "format": "checkboxes",
+                "checkboxLayout": "vertical"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "flowVariableSettings": {
+      "disabled": {
+        "controllingFlowVariableName": "myVar"
+      }
+    }
+  }
+}

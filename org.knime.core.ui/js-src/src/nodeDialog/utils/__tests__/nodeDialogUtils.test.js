@@ -3,7 +3,6 @@ import {
   optionsMapper,
   isModelSettingAndHasNodeView,
   hasAdvancedOptions,
-  getFlowVariablesMap,
   mergeDeep,
 } from "..";
 
@@ -57,7 +56,7 @@ describe("Utils", () => {
     expect(isModelSettingAndHasNodeView(control)).toBeFalsy();
   });
 
-  it("checks that ui_schema with advanced settings returns true", () => {
+  it("returns true on ui_schema with advanced settings", () => {
     const uiSchema = {
       elements: [
         {
@@ -82,7 +81,7 @@ describe("Utils", () => {
     expect(hasAdvancedOptions(uiSchema)).toBeTruthy();
   });
 
-  it("checks that ui_schema without advanced settings returns false", () => {
+  it("returns false on ui_schema without advanced settings", () => {
     const uiSchema = {
       elements: [
         {
@@ -106,141 +105,8 @@ describe("Utils", () => {
     expect(hasAdvancedOptions(uiSchema)).not.toBeTruthy();
   });
 
-  it("checks that it does not throw errors with an empty uischema", () => {
+  it("does not throw errors with an empty uischema", () => {
     // eslint-disable-next-line no-undefined
     expect(hasAdvancedOptions(undefined)).not.toBeTruthy();
-  });
-
-  describe("getFlowVariablesMap", () => {
-    const createFlowSetting = (
-      controllingFlowVariableAvailable,
-      controllingFlowVariableName,
-      exposedFlowVariableName,
-    ) => ({
-      controllingFlowVariableAvailable,
-      controllingFlowVariableName,
-      exposedFlowVariableName,
-    });
-
-    // eslint-disable-next-line no-undefined
-    const CONTROLLING_FLOW_SETTINGS = createFlowSetting(
-      true,
-      "my_controlling_variable",
-      undefined,
-    );
-    // eslint-disable-next-line no-undefined
-    const EXPOSING_FLOW_SETTINGS = createFlowSetting(
-      false,
-      undefined,
-      "my_exposed_variable",
-    );
-    // eslint-disable-next-line no-undefined
-    const NOTHING_FLOW_SETTINGS = createFlowSetting(
-      false,
-      undefined,
-      undefined,
-    );
-    const MERGED_FLOW_SETTINGS = createFlowSetting(
-      true,
-      "my_controlling_variable",
-      "my_exposed_variable",
-    );
-
-    it("should return null for an missing flowVariablesMap", () => {
-      expect(
-        getFlowVariablesMap({ rootSchema: {}, path: "", schema: {} }),
-      ).toBeNull();
-    });
-
-    it("should return undefined for missing flow setting for path", () => {
-      expect(
-        getFlowVariablesMap({
-          path: "path.to.another_setting",
-          rootSchema: {
-            flowVariablesMap: {
-              "path.to.my_setting": CONTROLLING_FLOW_SETTINGS,
-            },
-          },
-          schema: {},
-        }),
-      ).toBeNull();
-
-      expect(
-        getFlowVariablesMap({
-          path: "path.to.another_setting",
-          rootSchema: {
-            flowVariablesMap: {
-              "path.to.my_setting": CONTROLLING_FLOW_SETTINGS,
-            },
-          },
-          schema: { configKeys: ["also_another_setting"] },
-        }),
-      ).toBeNull();
-    });
-
-    it("should use path if configKeys is undefined", () => {
-      const path = "path.to.my_setting";
-      expect(
-        getFlowVariablesMap({
-          path,
-          rootSchema: {
-            flowVariablesMap: { [path]: CONTROLLING_FLOW_SETTINGS },
-          },
-          schema: {},
-        }),
-      ).toEqual(CONTROLLING_FLOW_SETTINGS);
-    });
-
-    it("should use configKeys", () => {
-      expect(
-        getFlowVariablesMap({
-          path: "path.to.my_setting",
-          rootSchema: {
-            flowVariablesMap: {
-              "path.to.my_real_setting_name": CONTROLLING_FLOW_SETTINGS,
-            },
-          },
-          schema: { configKeys: ["my_real_setting_name"] },
-        }),
-      ).toEqual(CONTROLLING_FLOW_SETTINGS);
-    });
-
-    it("should merge flow settings for configKeys", () => {
-      expect(
-        getFlowVariablesMap({
-          path: "path.to.my_setting",
-          rootSchema: {
-            flowVariablesMap: {
-              "path.to.setting_1": EXPOSING_FLOW_SETTINGS,
-              "path.to.setting_2": CONTROLLING_FLOW_SETTINGS,
-            },
-          },
-          schema: {
-            configKeys: ["setting_1", "setting_2", "not_overwritten_setting"],
-          },
-        }),
-      ).toEqual(MERGED_FLOW_SETTINGS);
-
-      expect(
-        getFlowVariablesMap({
-          path: "path.to.my_setting",
-          rootSchema: {
-            flowVariablesMap: {
-              "path.to.setting_1": NOTHING_FLOW_SETTINGS,
-              "path.to.setting_2": CONTROLLING_FLOW_SETTINGS,
-              "path.to.setting_3": EXPOSING_FLOW_SETTINGS,
-            },
-          },
-          schema: {
-            configKeys: [
-              "setting_1",
-              "setting_2",
-              "setting_3",
-              "not_overwritten_setting",
-            ],
-          },
-        }),
-      ).toEqual(MERGED_FLOW_SETTINGS);
-    });
   });
 });

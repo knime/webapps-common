@@ -1,111 +1,46 @@
-<script>
-import { defineComponent } from "vue";
-import { rendererProps } from "@jsonforms/vue";
-import { isModelSettingAndHasNodeView, getFlowVariablesMap } from "../utils";
-import LabeledInput from "./LabeledInput.vue";
+<script setup lang="ts">
+import { computed } from "vue";
 import DateInput from "webapps-common/ui/components/forms/DateTimeInput.vue";
-import DialogComponentWrapper from "./DialogComponentWrapper.vue";
-import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
+import useDialogControl from "../composables/useDialogControl";
+import LabeledInput from "./label/LabeledInput.vue";
+import { rendererProps } from "@jsonforms/vue";
+const props = defineProps(rendererProps());
+const {
+  control,
+  disabled,
+  handleDirtyChange: onChange,
+} = useDialogControl<string>({ props });
 
-const DateTimeInput = defineComponent({
-  name: "DateTimeInput",
-  components: {
-    DateInput,
-    LabeledInput,
-    DialogComponentWrapper,
-  },
-  props: {
-    ...rendererProps(),
-  },
-  setup(props) {
-    return useJsonFormsControlWithUpdate(props);
-  },
-  computed: {
-    isModelSettingAndHasNodeView() {
-      return isModelSettingAndHasNodeView(this.control);
-    },
-    flowSettings() {
-      return getFlowVariablesMap(this.control);
-    },
-    disabled() {
-      return (
-        !this.control.enabled ||
-        Boolean(this.flowSettings?.controllingFlowVariableName)
-      );
-    },
-    options() {
-      return this.control.uischema.options;
-    },
-    minimum() {
-      const minDate = this.options?.minimum
-        ? new Date(this.options?.minimum)
-        : null;
-      return minDate;
-    },
-    maximum() {
-      const maxDate = this.options?.maximum
-        ? new Date(this.options?.maximum)
-        : null;
-      return maxDate;
-    },
-    showTime() {
-      return this.options?.showTime;
-    },
-    showSeconds() {
-      return this.options?.showSeconds;
-    },
-    showMilliseconds() {
-      return this.options?.showMilliseconds;
-    },
-    timezone() {
-      return this.options?.timezone;
-    },
-    dateFormat() {
-      return this.options?.dateFormat;
-    },
-  },
-  methods: {
-    onChange(event) {
-      this.handleChange(this.control.path, event);
-      if (this.isModelSettingAndHasNodeView) {
-        this.$store.dispatch("pagebuilder/dialog/dirtySettings", true);
-      }
-    },
-  },
-});
-export default DateTimeInput;
+const options = computed(() => control.value.uischema.options);
+const minimum = computed(() =>
+  options.value?.minimum ? new Date(options.value.minimum) : null,
+);
+const maximum = computed(() =>
+  options.value?.maximum ? new Date(options.value.maximum) : null,
+);
 </script>
 
 <template>
-  <DialogComponentWrapper :control="control" style="min-width: 0">
-    <LabeledInput
-      #default="{ labelForId }"
-      :config-keys="control?.schema?.configKeys"
-      :flow-variables-map="control.rootSchema.flowVariablesMap"
-      :path="control.path"
-      :text="control.label"
-      :description="control.description"
-      :errors="[control.errors]"
-      :show-reexecution-icon="isModelSettingAndHasNodeView"
-      :flow-settings="flowSettings"
-      @controlling-flow-variable-set="onChange"
-    >
-      <DateInput
-        :id="labelForId"
-        two-lines
-        :model-value="new Date(control.data)"
-        class="date-time"
-        :required="true"
-        :show-time="showTime"
-        :show-seconds="showSeconds"
-        :show-milliseconds="showMilliseconds"
-        :timezone="timezone"
-        :min="minimum"
-        :max="maximum"
-        :date-format="dateFormat"
-        :disabled="disabled"
-        @update:model-value="onChange"
-      />
-    </LabeledInput>
-  </DialogComponentWrapper>
+  <LabeledInput
+    #default="{ labelForId }"
+    :control="control"
+    @controlling-flow-variable-set="onChange"
+  >
+    <DateInput
+      :id="labelForId"
+      two-lines
+      :model-value="new Date(control.data)"
+      class="date-time"
+      :required="true"
+      :show-time="options?.showTime"
+      :show-seconds="options?.showSeconds"
+      :show-milliseconds="options?.showMilliseconds"
+      :timezone="options?.timezone"
+      :date-format="options?.dateFormat"
+      :min="minimum"
+      :max="maximum"
+      :disabled="disabled"
+      @update:model-value="onChange"
+    />
+  </LabeledInput>
 </template>

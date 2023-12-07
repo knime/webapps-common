@@ -60,21 +60,4 @@ describe("SectionLayout.vue", () => {
   it("initializes jsonforms", () => {
     initializesJsonFormsLayout(wrapper);
   });
-
-  it("checks that it is not rendered if it is an advanced setting", async () => {
-    defaultProps.layout.uischema.options.isAdvanced = true;
-    const { wrapper } = await mountJsonFormsComponent(SectionLayout, {
-      props: defaultProps,
-    });
-    expect(wrapper.getComponent(SectionLayout).isVisible()).toBe(false);
-  });
-
-  it("checks that it is rendered if it is an advanced setting and advanced settings are shown", async () => {
-    defaultProps.layout.uischema.options.isAdvanced = true;
-    const { wrapper } = await mountJsonFormsComponent(SectionLayout, {
-      props: defaultProps,
-      showAdvanced: true,
-    });
-    expect(wrapper.getComponent(SectionLayout).isVisible()).toBe(true);
-  });
 });

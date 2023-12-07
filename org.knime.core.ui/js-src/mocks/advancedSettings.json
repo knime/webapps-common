@@ -171,10 +171,7 @@
             },
             {
               "type": "Control",
-              "scope": "#/properties/model/properties/frequencyColumns",
-              "options": {
-                "format": "columnFilter"
-              }
+              "scope": "#/properties/model/properties/frequencyColumns"
             },
             {
               "type": "Control",

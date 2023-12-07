@@ -1,191 +1,210 @@
-<script>
-import { defineComponent } from "vue";
-import { rendererProps } from "@jsonforms/vue";
-import DialogComponentWrapper from "./DialogComponentWrapper.vue";
+<script setup lang="ts" generic="SettingValue">
+import LabeledInput from "./label/LabeledInput.vue";
 import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
-import LabeledInput from "./LabeledInput.vue";
 import LoadingIcon from "webapps-common/ui/components/LoadingIcon.vue";
-import { isModelSettingAndHasNodeView, getFlowVariablesMap } from "../utils";
-import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
-import getFlattenedSettings from "../utils/getFlattenedSettings";
 import { v4 as uuidv4 } from "uuid";
+import inject from "../utils/inject";
+import { computed, onMounted, ref } from "vue";
+import useDialogControl from "../composables/useDialogControl";
+import getFlattenedSettings from "../utils/getFlattenedSettings";
+import type SettingsData from "../types/SettingsData";
+import { rendererProps } from "@jsonforms/vue";
+type Id = string; // NOSONAR intended type alias
+interface State {
+  id: Id;
+  nextState: Id;
+  disabled: boolean;
+  primary: boolean;
+  text: string;
+}
 
-const ButtonInput = defineComponent({
-  name: "ButtonInput",
-  components: {
-    FunctionButton,
-    DialogComponentWrapper,
-    LabeledInput,
-    LoadingIcon,
+interface ButtonChange {
+  settingValue: SettingValue;
+  setSettingValue: boolean;
+  buttonState: Id;
+}
+
+interface SuccessResult {
+  result: ButtonChange;
+  state: "SUCCESS";
+}
+
+interface FailResult {
+  state: "FAIL";
+  message: string;
+}
+
+interface CanceledResult {
+  state: "CANCELED";
+}
+
+type Result = SuccessResult | FailResult | CanceledResult;
+
+const registerWatcher = inject("registerWatcher");
+const getData = inject("getData");
+const props = defineProps(rendererProps());
+const { control, handleChange } = useDialogControl({ props });
+
+const errorMessage = ref(null as null | string);
+const clearError = () => {
+  errorMessage.value = null;
+};
+
+const currentSettings = ref({});
+const saveCurrentSettings = (newSettings: SettingsData) => {
+  currentSettings.value = getFlattenedSettings(newSettings);
+};
+
+const currentState = ref({} as State);
+const states = computed(
+  () => (control.value.uischema.options?.states as State[]) ?? [],
+);
+
+const setButtonState = (newButtonStateId: Id) => {
+  clearError();
+  currentState.value = states.value.find(({ id }) => id === newButtonStateId)!;
+};
+
+const saveResult = (newVal: SettingValue) => {
+  // without setTimeout, the value is not updated when triggered via onUpdate
+  setTimeout(() => handleChange(control.value.path, newVal));
+};
+
+const setNextState = (dataServiceResult: ButtonChange) => {
+  if (dataServiceResult === null) {
+    return;
+  }
+  const { settingValue, setSettingValue, buttonState } = dataServiceResult;
+  if (setSettingValue) {
+    saveResult(settingValue);
+  }
+  setButtonState(buttonState);
+};
+
+const handleDataServiceResult = (
+  receivedData: Result,
+  resetCallback = () => {},
+) => {
+  const { state } = receivedData;
+  if (state === "SUCCESS") {
+    setNextState(receivedData.result);
+    return;
+  }
+  if (state === "FAIL") {
+    errorMessage.value = receivedData.message;
+  }
+  resetCallback();
+};
+
+const numPendingRequests = ref(0);
+const widgetId = uuidv4();
+const performRequest = async (
+  {
+    method,
+    options,
+    handler,
+  }: {
+    method:
+      | "settings.initializeButton"
+      | "settings.update"
+      | "settings.invokeButtonAction";
+    options: any[];
+    handler: string;
   },
-  inject: ["registerWatcher", "getData"],
-  inheritAttrs: false,
-  props: {
-    ...rendererProps(),
-  },
-  setup(props) {
-    return useJsonFormsControlWithUpdate(props);
-  },
-  data() {
-    return {
-      numPendingRequests: 0,
-      errorMessage: null,
-      currentSettings: {},
-      currentState: {},
-      widgetId: uuidv4(),
-    };
-  },
-  computed: {
-    states() {
-      return this.control.uischema.options?.states ?? [];
-    },
-    displayErrorMessage() {
-      return this.control.uischema.options?.displayErrorMessage ?? true;
-    },
-    showTitleAndDescription() {
-      return this.control.uischema.options?.showTitleAndDescription ?? true;
-    },
-    isModelSettingAndHasNodeView() {
-      return isModelSettingAndHasNodeView(this.control);
-    },
-    flowSettings() {
-      return getFlowVariablesMap(this.control);
-    },
-  },
-  mounted() {
-    this.registerWatcher({
-      init: this.initialize.bind(this),
-      transformSettings: this.saveCurrentSettings.bind(this),
-      dependencies: this.control.uischema.options?.dependencies || [],
-    });
-    const updateOptions = this.control.uischema?.options?.updateOptions;
-    if (typeof updateOptions !== "undefined") {
-      this.registerWatcher({
-        transformSettings: this.onUpdate.bind(this),
-        dependencies: updateOptions.dependencies,
-      });
+  resetCallback = () => {},
+) => {
+  numPendingRequests.value += 1;
+  const receivedData = await getData({
+    method,
+    options: [widgetId, handler, ...options],
+  });
+  numPendingRequests.value -= 1;
+  handleDataServiceResult(receivedData, resetCallback);
+};
+
+const initialize = async (newSettings: SettingsData) => {
+  saveCurrentSettings(newSettings);
+  await performRequest({
+    method: "settings.initializeButton",
+    options: [control.value.data],
+    handler: control.value.uischema.options!.actionHandler,
+  });
+};
+
+const onUpdate = (newSettings: SettingsData) => {
+  performRequest({
+    method: "settings.update",
+    options: [getFlattenedSettings(newSettings)],
+    handler: control.value.uischema.options!.updateOptions.updateHandler,
+  });
+};
+
+const onClick = async () => {
+  const { id, nextState } = currentState.value;
+  const lastSuccessfulState = currentState.value;
+  const resetCallback = () => {
+    if (nextState === currentState.value.id) {
+      currentState.value = lastSuccessfulState;
     }
-  },
-  methods: {
-    async initialize(newSettings) {
-      this.saveCurrentSettings(newSettings);
-      await this.performRequest({
-        method: "settings.initializeButton",
-        options: [this.control.data],
-        handler: this.control.uischema.options.actionHandler,
-      });
+  };
+  if (typeof nextState !== "undefined") {
+    setButtonState(nextState);
+  }
+  await performRequest(
+    {
+      method: "settings.invokeButtonAction",
+      options: [id, currentSettings.value],
+      handler: control.value.uischema.options!.actionHandler,
     },
-    onUpdate(newSettings) {
-      this.performRequest({
-        method: "settings.update",
-        options: [getFlattenedSettings(newSettings)],
-        handler: this.control.uischema.options.updateOptions.updateHandler,
-      });
-    },
-    saveCurrentSettings(newSettings) {
-      this.currentSettings = getFlattenedSettings(newSettings);
-    },
-    async onClick() {
-      const { id, nextState } = this.currentState;
-      const lastSuccessfulState = this.currentState;
-      const resetCallback = () => {
-        if (nextState === this.currentState.id) {
-          this.currentState = lastSuccessfulState;
-        }
-      };
-      if (typeof nextState !== "undefined") {
-        this.setButtonState(nextState);
-      }
-      await this.performRequest(
-        {
-          method: "settings.invokeButtonAction",
-          options: [id, this.currentSettings],
-          handler: this.control.uischema.options.actionHandler,
-        },
-        resetCallback,
-      );
-    },
-    async performRequest(
-      { method, options, handler },
-      resetCallback = () => {},
-    ) {
-      this.numPendingRequests += 1;
-      const receivedData = await this.getData({
-        method,
-        options: [this.widgetId, handler, ...options],
-      });
-      this.numPendingRequests -= 1;
-      this.handleDataServiceResult(receivedData, resetCallback);
-    },
-    handleDataServiceResult(receivedData, resetCallback = () => {}) {
-      const { state, message, result } = receivedData;
-      if (state === "SUCCESS") {
-        this.setNextState(result);
-        return;
-      }
-      if (state === "FAIL") {
-        this.errorMessage = message;
-      }
-      resetCallback();
-    },
-    setNextState(dataServiceResult) {
-      if (dataServiceResult === null) {
-        return;
-      }
-      const { settingValue, setSettingValue, buttonState } = dataServiceResult;
-      if (setSettingValue) {
-        this.saveResult(settingValue);
-      }
-      this.setButtonState(buttonState);
-    },
-    saveResult(newVal) {
-      // without setTimeout, the value is not updated when triggered via onUpdate
-      setTimeout(() => this.handleChange(this.control.path, newVal));
-    },
-    setButtonState(newButtonStateId) {
-      this.clearError();
-      this.currentState = this.states.find(({ id }) => id === newButtonStateId);
-    },
-    clearError() {
-      this.errorMessage = null;
-    },
-  },
+    resetCallback,
+  );
+};
+
+onMounted(() => {
+  registerWatcher({
+    init: initialize,
+    transformSettings: saveCurrentSettings,
+    dependencies: control.value.uischema.options?.dependencies || [],
+  });
+  const updateOptions = control.value.uischema?.options?.updateOptions;
+  if (typeof updateOptions !== "undefined") {
+    registerWatcher({
+      transformSettings: onUpdate,
+      dependencies: updateOptions.dependencies,
+    });
+  }
 });
-export default ButtonInput;
+
+const displayErrorMessage = computed(
+  () => control.value.uischema.options?.displayErrorMessage ?? true,
+);
+const showTitleAndDescription = computed(
+  () => control.value.uischema.options?.showTitleAndDescription ?? true,
+);
 </script>
 
 <template>
-  <DialogComponentWrapper :control="control">
-    <LabeledInput
-      #default="{ labelForId }"
-      :config-keys="control?.schema?.configKeys"
-      :flow-variables-map="control.rootSchema.flowVariablesMap"
-      :path="control.path"
-      :text="control.label"
-      :description="control.description"
-      :errors="[control.errors]"
-      :show-reexecution-icon="isModelSettingAndHasNodeView"
-      :flow-settings="flowSettings"
-      :show="showTitleAndDescription"
-      @controlling-flow-variable-set="saveResult"
-    >
-      <div class="button-wrapper">
-        <FunctionButton
-          :id="labelForId"
-          :disabled="currentState.disabled"
-          class="button-input"
-          :primary="currentState.primary"
-          @click="onClick"
-        >
-          <div class="button-input-text">{{ currentState.text }}</div>
-        </FunctionButton>
-        <LoadingIcon v-if="numPendingRequests > 0" />
-        <span v-if="errorMessage && displayErrorMessage" class="error-message">
-          Error: {{ errorMessage }}
-        </span>
-      </div>
-    </LabeledInput>
-  </DialogComponentWrapper>
+  <LabeledInput
+    #default="{ labelForId }"
+    :control="control"
+    :show="showTitleAndDescription"
+  >
+    <div class="button-wrapper">
+      <FunctionButton
+        :id="labelForId"
+        :disabled="currentState.disabled"
+        class="button-input"
+        :primary="currentState.primary"
+        @click="onClick"
+      >
+        <div class="button-input-text">{{ currentState.text }}</div>
+      </FunctionButton>
+      <LoadingIcon v-if="numPendingRequests > 0" />
+      <span v-if="errorMessage && displayErrorMessage" class="error-message">
+        Error: {{ errorMessage }}
+      </span>
+    </div>
+  </LabeledInput>
 </template>
 
 <style scoped>

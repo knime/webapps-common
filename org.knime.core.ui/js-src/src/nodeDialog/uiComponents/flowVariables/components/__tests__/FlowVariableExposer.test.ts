@@ -5,15 +5,21 @@ import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";
 import flushPromises from "flush-promises";
 
 import FlowVariableExposer from "../FlowVariableExposer.vue";
-import type FlowVariableExposerProps from "../types/FlowVariableExposerProps";
-import ErrorMessage from "../../ErrorMessage.vue";
+import type FlowVariableExposerProps from "../../types/FlowVariableExposerProps";
+import ErrorMessage from "../../../ErrorMessage.vue";
+import { providedKey as providedByComponentKey } from "@/nodeDialog/composables/useFlowVariables";
+import { FlowSettings } from "@/nodeDialog/api/types";
+import { ref, type Ref } from "vue";
 
 describe("FlowVariableExposer", () => {
-  let props: FlowVariableExposerProps;
+  let props: FlowVariableExposerProps,
+    flowSettings: Ref<FlowSettings | undefined>,
+    flowVariablesMap: Record<string, FlowSettings>;
 
   beforeEach(() => {
+    flowVariablesMap = {};
+    flowSettings = ref(undefined);
     props = {
-      flowVariablesMap: {},
       persistPath: "persist.path.to.setting",
     };
   });
@@ -29,6 +35,14 @@ describe("FlowVariableExposer", () => {
   }) => {
     return mount(FlowVariableExposer as any, {
       props,
+      global: {
+        provide: {
+          [providedByComponentKey]: {
+            flowSettings,
+          },
+          getFlowVariablesMap: () => flowVariablesMap,
+        },
+      },
     });
   };
 
@@ -48,7 +62,7 @@ describe("FlowVariableExposer", () => {
 
   it("sets the initial model value", () => {
     const varName = "var";
-    props.flowSettings = {
+    flowSettings.value = {
       controllingFlowVariableName: null,
       controllingFlowVariableAvailable: true,
       exposedFlowVariableName: varName,
@@ -63,7 +77,7 @@ describe("FlowVariableExposer", () => {
     await wrapper
       .findComponent(InputField)
       .vm.$emit("update:model-value", inputValue);
-    expect(props.flowVariablesMap[props.persistPath]).toStrictEqual({
+    expect(flowVariablesMap[props.persistPath]).toStrictEqual({
       exposedFlowVariableName: inputValue,
     });
   });
@@ -72,7 +86,7 @@ describe("FlowVariableExposer", () => {
     "unsets exposed flow variable on blank input",
     async (unsettingFlowVarName) => {
       const exposedFlowVariableName = "exposed";
-      props.flowVariablesMap[props.persistPath] = {
+      flowVariablesMap[props.persistPath] = {
         controllingFlowVariableAvailable: true,
         controllingFlowVariableName: null,
         exposedFlowVariableName,
@@ -84,7 +98,7 @@ describe("FlowVariableExposer", () => {
       await wrapper
         .findComponent(InputField)
         .vm.$emit("update:model-value", unsettingFlowVarName);
-      expect(props.flowVariablesMap[props.persistPath]).toStrictEqual({
+      expect(flowVariablesMap[props.persistPath]).toStrictEqual({
         controllingFlowVariableAvailable: true,
         controllingFlowVariableName: null,
         exposedFlowVariableName: null,

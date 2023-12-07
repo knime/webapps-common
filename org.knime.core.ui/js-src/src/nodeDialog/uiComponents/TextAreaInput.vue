@@ -1,78 +1,31 @@
-<script>
-import { defineComponent } from "vue";
-import { rendererProps } from "@jsonforms/vue";
-import { isModelSettingAndHasNodeView, getFlowVariablesMap } from "../utils";
+<script setup lang="ts">
+import useDialogControl from "../composables/useDialogControl";
+import LabeledInput from "./label/LabeledInput.vue";
 import TextArea from "webapps-common/ui/components/forms/TextArea.vue";
-import LabeledInput from "./LabeledInput.vue";
-import DialogComponentWrapper from "./DialogComponentWrapper.vue";
-import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
-
-const TextAreaInput = defineComponent({
-  name: "TextAreaInput",
-  components: {
-    TextArea,
-    LabeledInput,
-    DialogComponentWrapper,
-  },
-  props: {
-    ...rendererProps(),
-  },
-  setup(props) {
-    return useJsonFormsControlWithUpdate(props);
-  },
-  computed: {
-    placeholder() {
-      return this.control.schema.placeholder ?? "";
-    },
-    isModelSettingAndHasNodeView() {
-      return isModelSettingAndHasNodeView(this.control);
-    },
-    flowSettings() {
-      return getFlowVariablesMap(this.control);
-    },
-    disabled() {
-      return (
-        !this.control.enabled ||
-        Boolean(this.flowSettings?.controllingFlowVariableName)
-      );
-    },
-  },
-  methods: {
-    onChange(event) {
-      this.handleChange(this.control.path, event);
-      if (this.isModelSettingAndHasNodeView) {
-        this.$store.dispatch("pagebuilder/dialog/dirtySettings", true);
-      }
-    },
-  },
-});
-export default TextAreaInput;
+import { rendererProps } from "@jsonforms/vue";
+const props = defineProps(rendererProps());
+const {
+  control,
+  handleDirtyChange: onChange,
+  disabled,
+} = useDialogControl<string>({ props });
 </script>
 
 <template>
-  <DialogComponentWrapper :control="control" style="min-width: 0">
-    <LabeledInput
-      #default="{ labelForId }"
-      :config-keys="control?.schema?.configKeys"
-      :flow-variables-map="control.rootSchema.flowVariablesMap"
-      :path="control.path"
-      :text="control.label"
-      :show-reexecution-icon="isModelSettingAndHasNodeView"
-      :description="control.description"
-      :errors="[control.errors]"
-      :flow-settings="flowSettings"
-      @controlling-flow-variable-set="onChange"
-    >
-      <TextArea
-        :id="labelForId"
-        class="text-area-input"
-        :model-value="control.data"
-        :disabled="disabled"
-        :rows="control.uischema.options?.rows"
-        @update:model-value="onChange"
-      />
-    </LabeledInput>
-  </DialogComponentWrapper>
+  <LabeledInput
+    #default="{ labelForId }"
+    :control="control"
+    @controlling-flow-variable-set="onChange"
+  >
+    <TextArea
+      :id="labelForId"
+      class="text-area-input"
+      :model-value="control.data"
+      :disabled="disabled"
+      :rows="control.uischema.options?.rows"
+      @update:model-value="onChange"
+    />
+  </LabeledInput>
 </template>
 
 <style lang="postcss" scoped>

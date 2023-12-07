@@ -1,4 +1,4 @@
-import type { FlowSettings, PossibleFlowVariable } from "./types";
+import type { PossibleFlowVariable } from "./types";
 
 type GetAvailableFlowVariables = (params: {
   method: "flowVariables.getAvailableFlowVariables";
@@ -50,36 +50,4 @@ export const getFlowVariableOverrideValue = (
     method: "flowVariables.getFlowVariableOverrideValue",
     options: [JSON.stringify(currentData), dataPath.split(".")],
   });
-};
-
-export const setControllingFlowVariable = (
-  flowVariableMap: Record<string, FlowSettings>,
-  { path, flowVariableName }: { path: string; flowVariableName: string },
-) => {
-  const flowVarAtPath = flowVariableMap[path] || {};
-  flowVarAtPath.controllingFlowVariableName = flowVariableName;
-  flowVarAtPath.controllingFlowVariableAvailable = true;
-  flowVariableMap[path] = flowVarAtPath;
-};
-
-export const setExposedFlowVariable = (
-  flowVariableMap: Record<string, FlowSettings>,
-  { path, flowVariableName }: { path: string; flowVariableName: string },
-) => {
-  const flowVarAtPath = flowVariableMap[path] || {};
-  flowVarAtPath.exposedFlowVariableName = flowVariableName.trim()
-    ? flowVariableName
-    : null;
-  flowVariableMap[path] = flowVarAtPath;
-};
-
-export const unsetControllingFlowVariable = (
-  flowVariableMap: Record<string, FlowSettings>,
-  { path }: { path: string },
-) => {
-  if (flowVariableMap[path]) {
-    delete flowVariableMap[path].controllingFlowVariableFlawed;
-    flowVariableMap[path].controllingFlowVariableAvailable = false;
-    flowVariableMap[path].controllingFlowVariableName = null;
-  }
 };

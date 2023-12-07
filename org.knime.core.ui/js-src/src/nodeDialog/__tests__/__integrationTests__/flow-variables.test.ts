@@ -6,7 +6,7 @@ import { JsonDataService } from "@knime/ui-extension-service";
 import NodeDialog from "../../NodeDialog.vue";
 import flushPromises from "flush-promises";
 
-import FlowVariableButton from "@/nodeDialog/uiComponents/flowVariables/FlowVariableButton.vue";
+import FlowVariableButton from "@/nodeDialog/uiComponents/flowVariables/components/FlowVariableButton.vue";
 import { getOptions } from "../utils";
 
 import type {

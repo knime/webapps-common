@@ -6,31 +6,37 @@ import FlowVariablePopover from "../FlowVariablePopover.vue";
 import FlowVariableSelector from "../FlowVariableSelector.vue";
 import FlowVariableExposer from "../FlowVariableExposer.vue";
 import MulitpleConfigKeysNotYetSupported from "../MultipleConfigKeysNotYetSupported.vue";
-import type FlowVariablePopoverProps from "../types/FlowVariablePopoverProps";
+import { providedKey as providedByComponentKey } from "@/nodeDialog/composables/useFlowVariables";
+import { type Ref, ref } from "vue";
 
 describe("FlowVariablePopover", () => {
-  let props: FlowVariablePopoverProps;
+  let subConfigKeys: string[] | undefined,
+    configKeys: Ref<string[] | undefined>;
 
   beforeEach(() => {
-    props = {
-      flowVariablesMap: {},
-      path: "model.myPath",
-    };
+    subConfigKeys = undefined;
+    configKeys = ref(undefined);
   });
 
-  const mountFlowVaiablePopover = (options: {
-    props: FlowVariablePopoverProps;
-  }) => {
+  const path = ref("model.myPath");
+
+  const mountFlowVaiablePopover = () => {
     return shallowMount(FlowVariablePopover, {
-      ...options,
       global: {
+        provide: {
+          [providedByComponentKey]: {
+            path,
+            configKeys,
+            subConfigKeys,
+          },
+        },
         stubs: { MulitpleConfigKeysNotYetSupported, Label, Fieldset },
       },
     });
   };
 
   it("renders selector", () => {
-    const wrapper = mountFlowVaiablePopover({ props });
+    const wrapper = mountFlowVaiablePopover();
 
     const labelForSelector = wrapper.findComponent(Label);
     const selector = wrapper.findComponent(FlowVariableSelector);
@@ -50,47 +56,46 @@ describe("FlowVariablePopover", () => {
   });
 
   it("does not render selector in case of multiple config keys", () => {
-    props.configKeys = ["myConfigKey1", "myConfigKey2"];
-    const wrapper = mountFlowVaiablePopover({ props });
+    const localConfigKeys = ["myConfigKey1", "myConfigKey2"];
+    configKeys.value = localConfigKeys;
+    const wrapper = mountFlowVaiablePopover();
     expect(wrapper.findComponent(FlowVariableSelector).exists()).toBeFalsy();
     expect(
       wrapper.findComponent(MulitpleConfigKeysNotYetSupported).exists(),
     ).toBeTruthy();
-    props.configKeys.forEach((key) => expect(wrapper.text()).toContain(key));
+    localConfigKeys.forEach((key) => expect(wrapper.text()).toContain(key));
   });
 
   it("does not render selector in case of multiple sub config keys", () => {
-    props.subConfigKeys = ["myConfigKey1", "myConfigKey2"];
-    const wrapper = mountFlowVaiablePopover({ props });
+    subConfigKeys = ["myConfigKey1", "myConfigKey2"];
+    const wrapper = mountFlowVaiablePopover();
     expect(wrapper.findComponent(FlowVariableSelector).exists()).toBeFalsy();
     expect(
       wrapper.findComponent(MulitpleConfigKeysNotYetSupported).exists(),
     ).toBeTruthy();
-    props.subConfigKeys.forEach((key) =>
-      expect(wrapper.text()).not.toContain(key),
-    );
+    subConfigKeys.forEach((key) => expect(wrapper.text()).not.toContain(key));
   });
 
   describe("persist path", () => {
     it("sets persist path from data path if no config keys are given", () => {
-      const wrapper = mountFlowVaiablePopover({ props });
+      const wrapper = mountFlowVaiablePopover();
       expect(
         wrapper.findComponent(FlowVariableSelector).props().persistPath,
-      ).toBe(props.path);
+      ).toBe(path.value);
     });
 
     it("sets persist path from config key", () => {
-      props.configKeys = ["configKey1"];
-      const wrapper = mountFlowVaiablePopover({ props });
+      configKeys.value = ["configKey1"];
+      const wrapper = mountFlowVaiablePopover();
       expect(
         wrapper.findComponent(FlowVariableSelector).props().persistPath,
       ).toBe("model.configKey1");
     });
 
     it("does not add anything if there are no sub config keys", () => {
-      props.subConfigKeys = [];
-      props.configKeys = ["configKey1"];
-      const wrapper = mountFlowVaiablePopover({ props });
+      subConfigKeys = [];
+      configKeys.value = ["configKey1"];
+      const wrapper = mountFlowVaiablePopover();
       expect(
         wrapper.findComponent(FlowVariableSelector).props().persistPath,
       ).toBe("model.configKey1");
@@ -100,9 +105,9 @@ describe("FlowVariablePopover", () => {
     });
 
     it("adds a single sub config key to persistPath and dataPath", () => {
-      props.subConfigKeys = ["subConfigKey"];
-      props.configKeys = ["configKey1"];
-      const wrapper = mountFlowVaiablePopover({ props });
+      subConfigKeys = ["subConfigKey"];
+      configKeys.value = ["configKey1"];
+      const wrapper = mountFlowVaiablePopover();
       expect(
         wrapper.findComponent(FlowVariableSelector).props().persistPath,
       ).toBe("model.configKey1.subConfigKey");
@@ -115,7 +120,7 @@ describe("FlowVariablePopover", () => {
   describe("events", () => {
     it("emits controllingFlowVariableSet", () => {
       const flowVarName = "myFlowVar";
-      const wrapper = mountFlowVaiablePopover({ props });
+      const wrapper = mountFlowVaiablePopover();
       wrapper
         .findComponent(FlowVariableSelector)
         .vm.$emit("controllingFlowVariableSet", flowVarName);

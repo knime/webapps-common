@@ -31,5 +31,5 @@ const findRenderer = (uiSchema, schema) => {
 
 export const determineRenderer = (uiSchema, schema) => {
   const renderer = findRenderer(uiSchema, schema);
-  return renderer.name;
+  return renderer?.name ?? renderer?.__name;
 };

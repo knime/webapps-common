@@ -1,118 +1,68 @@
-<script>
-import { defineComponent } from "vue";
+<script setup lang="ts">
+import { type Ref, computed, onMounted, ref } from "vue";
 import { rendererProps } from "@jsonforms/vue";
-import {
-  optionsMapper,
-  getFlowVariablesMap,
-  isModelSettingAndHasNodeView,
-} from "../utils";
+import { optionsMapper } from "../utils";
 import RadioButtons from "webapps-common/ui/components/forms/RadioButtons.vue";
 import ValueSwitch from "webapps-common/ui/components/forms/ValueSwitch.vue";
-import LabeledInput from "./LabeledInput.vue";
-import DialogComponentWrapper from "./DialogComponentWrapper.vue";
-import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
+import useDialogControl from "../composables/useDialogControl";
+import { IdAndText } from "../types/ChoicesUiSchema";
+import LabeledInput from "./label/LabeledInput.vue";
 
-const RadioInputBase = defineComponent({
-  name: "RadioInputBase",
-  components: {
-    RadioButtons,
-    ValueSwitch,
-    LabeledInput,
-    DialogComponentWrapper,
-  },
-  props: {
-    ...rendererProps(),
-    type: {
-      type: String,
-      required: true,
-      default: "radio",
-    },
-  },
-  setup(props) {
-    return useJsonFormsControlWithUpdate(props);
-  },
-  data() {
-    return {
-      options: null,
-    };
-  },
-  computed: {
-    isModelSettingAndHasNodeView() {
-      return isModelSettingAndHasNodeView(this.control);
-    },
-    flowSettings() {
-      return getFlowVariablesMap(this.control);
-    },
-    disabled() {
-      return (
-        !this.control.enabled ||
-        Boolean(this.flowSettings?.controllingFlowVariableName)
-      );
-    },
-    alignment() {
-      return this.control.uischema.options?.radioLayout;
-    },
-    uiComponent() {
-      switch (this.type) {
-        case "valueSwitch":
-          return ValueSwitch;
-        case "radio":
-          return RadioButtons;
-        default:
-          return RadioButtons;
-      }
-    },
-  },
-  mounted() {
-    this.options = this.control?.schema?.oneOf?.map(optionsMapper);
-  },
-  methods: {
-    onChange(event) {
-      this.handleChange(this.control.path, event);
-      if (this.isModelSettingAndHasNodeView) {
-        this.$store.dispatch("pagebuilder/dialog/dirtySettings", true);
-      }
-    },
-    setControllingFlowVariable(value) {
-      if (this.options.filter(({ id }) => value === id).length) {
-        this.onChange(value);
-      }
-    },
+const props = defineProps({
+  ...rendererProps(),
+  type: {
+    type: String,
+    required: true,
+    default: "radio",
   },
 });
-export default RadioInputBase;
+
+const {
+  handleDirtyChange: onChange,
+  control,
+  disabled,
+} = useDialogControl<string>({ props });
+
+const alignment = computed(() => control.value.uischema.options?.radioLayout);
+const uiComponent = computed(() => {
+  switch (props.type) {
+    case "valueSwitch":
+      return ValueSwitch;
+    case "radio":
+      return RadioButtons;
+    default:
+      return RadioButtons;
+  }
+});
+
+const options: Ref<IdAndText[] | null | undefined> = ref(null);
+onMounted(() => {
+  options.value = control.value?.schema?.oneOf?.map(optionsMapper);
+});
+
+const setControllingFlowVariable = (value: string) => {
+  if (options.value?.filter(({ id }) => value === id).length) {
+    onChange(value);
+  }
+};
 </script>
 
 <template>
-  <DialogComponentWrapper :control="control">
-    <LabeledInput
-      #default="{ labelForId }"
-      :config-keys="control?.schema?.configKeys"
-      :flow-variables-map="control.rootSchema.flowVariablesMap"
-      :path="control.path"
-      :text="control.label"
-      :show-reexecution-icon="isModelSettingAndHasNodeView"
-      :scope="control.uischema.scope"
-      :flow-settings="flowSettings"
-      :description="control.description"
-      @controlling-flow-variable-set="setControllingFlowVariable"
-    >
-      <component
-        :is="uiComponent"
-        v-if="options"
-        :id="labelForId"
-        :possible-values="options"
-        :alignment="alignment"
-        :disabled="disabled"
-        :model-value="control.data"
-        @update:model-value="onChange"
-      />
-    </LabeledInput>
-  </DialogComponentWrapper>
+  <LabeledInput
+    #default="{ labelForId }"
+    :control="control"
+    :margin-bottom="10"
+    @controlling-flow-variable-set="setControllingFlowVariable"
+  >
+    <component
+      :is="uiComponent"
+      v-if="options"
+      :id="labelForId"
+      :possible-values="options"
+      :alignment="alignment"
+      :disabled="disabled"
+      :model-value="control.data"
+      @update:model-value="onChange"
+    />
+  </LabeledInput>
 </template>
-
-<style lang="postcss" scoped>
-.labeled-input {
-  margin-bottom: 10px;
-}
-</style>

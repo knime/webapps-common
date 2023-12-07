@@ -1,0 +1,58 @@
+{
+  "result": {
+    "name": "Number Dialog",
+    "data": {
+      "integer": 1,
+      "double": 0.5,
+      "disabled": 0
+    },
+    "schema": {
+      "type": "object",
+      "properties": {
+        "integer": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "double": {
+          "format": "number",
+          "type": "number"
+        },
+        "disabled": {
+          "format": "number",
+          "type": "number"
+        }
+      }
+    },
+    "ui_schema": {
+      "type": "VerticalLayout",
+      "elements": [
+        {
+          "type": "Section",
+          "label": "Number Inputs",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/integer",
+              "label": "Integer input"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/double",
+              "label": "Double input"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/disabled",
+              "label": "Disabled"
+            }
+          ]
+        }
+      ]
+    },
+    "flowVariableSettings": {
+      "disabled": {
+        "controllingFlowVariableName": "myVar"
+      }
+    }
+  }
+}

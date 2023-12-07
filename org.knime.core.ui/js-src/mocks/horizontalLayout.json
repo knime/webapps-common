@@ -261,10 +261,7 @@
                 },
                 {
                   "type": "Control",
-                  "scope": "#/properties/view/properties/frequencyColumns",
-                  "options": {
-                    "format": "columnFilter"
-                  }
+                  "scope": "#/properties/view/properties/frequencyColumns"
                 }
               ]
             },
@@ -281,12 +278,7 @@
                 },
                 {
                   "type": "Control",
-                  "scope": "#/properties/view/properties/dropdownInput",
-                  "options": {
-                    "format": "columnSelection",
-                    "showRowKeys": false,
-                    "showNoneColumn": false
-                  }
+                  "scope": "#/properties/view/properties/dropdownInput"
                 }
               ]
             }

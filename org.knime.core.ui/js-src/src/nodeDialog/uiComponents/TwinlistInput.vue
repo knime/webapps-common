@@ -1,25 +1,15 @@
-<script lang="ts">
-import { defineComponent, markRaw, type Ref, type Raw } from "vue";
+<script setup lang="ts">
+import { markRaw, type Ref, type Raw, ref, computed } from "vue";
 import { rendererProps } from "@jsonforms/vue";
-import {
-  mergeDeep,
-  getFlowVariablesMap,
-  isModelSettingAndHasNodeView,
-  partitionBy,
-} from "../utils";
-import LabeledInput from "./LabeledInput.vue";
-import DialogComponentWrapper from "./DialogComponentWrapper.vue";
+import { mergeDeep, partitionBy } from "../utils";
 import MultiModeTwinlist from "webapps-common/ui/components/forms/MultiModeTwinlist.vue";
-import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
 import inject from "../utils/inject";
 import type { IdAndText, PossibleValue } from "../types/ChoicesUiSchema";
 import type Control from "../types/Control";
 import type { PartialDeep } from "type-fest";
 import TwinlistLoadingInfo from "./loading/TwinlistLoadingInfo.vue";
-
-const defaultTwinlistSize = 7;
-const defaultTwinlistLeftLabel = "Excludes";
-const defaultTwinlistRightLabel = "Includes";
+import useDialogControl from "../composables/useDialogControl";
+import LabeledInput from "./label/LabeledInput.vue";
 
 type TwinlistData = {
   mode: string;
@@ -44,276 +34,243 @@ type ControlWithTwinlistData = {
   [P in keyof Control]: P extends "data" ? TwinlistData : Control[P];
 };
 
-const TwinlistInput = defineComponent({
-  name: "TwinListInput",
-  components: {
-    LabeledInput,
-    DialogComponentWrapper,
-    MultiModeTwinlist,
+const props = defineProps({
+  ...rendererProps(),
+  twinlistSize: {
+    type: Number,
+    required: false,
+    default: 7,
   },
-  props: {
-    ...rendererProps(),
-    twinlistSize: {
-      type: Number,
-      required: false,
-      default: defaultTwinlistSize,
-    },
-    twinlistLeftLabel: {
-      type: String,
-      required: false,
-      default: defaultTwinlistLeftLabel,
-    },
-    twinlistRightLabel: {
-      type: String,
-      required: false,
-      default: defaultTwinlistRightLabel,
-    },
+  twinlistLeftLabel: {
+    type: String,
+    required: false,
+    default: "Excludes",
   },
-  setup(props) {
-    const jsonFormsControl = useJsonFormsControlWithUpdate(props);
-    return {
-      handleChange: jsonFormsControl.handleChange,
-      control: jsonFormsControl.control as Ref<ControlWithTwinlistData>,
-      getPossibleValuesFromUiSchema: inject("getPossibleValuesFromUiSchema"),
-    };
-  },
-  data() {
-    return {
-      loadingInfo: markRaw(TwinlistLoadingInfo) as Raw<any> | null,
-      possibleValues: null as null | PossibleValue[],
-      previouslySelectedTypes: null as null | IdAndText[],
-      initialManuallySelected: null as null | string[],
-    };
-  },
-  computed: {
-    isModelSettingAndHasNodeView() {
-      return isModelSettingAndHasNodeView(this.control);
-    },
-    flowSettings() {
-      return getFlowVariablesMap(this.control);
-    },
-    disabled() {
-      return (
-        !this.control.enabled ||
-        Boolean(this.flowSettings?.controllingFlowVariableName)
-      );
-    },
-    withTypes() {
-      return (
-        this.possibleValues !== null &&
-        Boolean(this.possibleValues[0]?.hasOwnProperty("type"))
-      );
-    },
-    showMode() {
-      return (
-        !this.control.uischema.options?.hasOwnProperty("showMode") ||
-        this.control.uischema.options?.showMode
-      );
-    },
-    showSearch() {
-      return (
-        !this.control.uischema.options?.hasOwnProperty("showSearch") ||
-        this.control.uischema.options?.showSearch
-      );
-    },
-  },
-  created() {
-    this.getPossibleValuesFromUiSchema(this.control).then((result) => {
-      this.possibleValues = result;
-      this.updateManualFilter(this.possibleValues.map((col) => col.id));
-      this.previouslySelectedTypes = this.getPreviouslySelectedTypes();
-    });
-  },
-  methods: {
-    onChange(obj: PartialDeep<TwinlistData>) {
-      const newData = mergeDeep(this.control.data, obj);
-      this.handleChange(this.control.path, newData);
-      return newData as TwinlistData;
-    },
-    onSelectedChange({
-      selected,
-      isManual,
-      isFirstInput,
-      deselected,
-    }: {
-      selected: string[];
-      isManual: boolean;
-      isFirstInput: boolean;
-      deselected: string[];
-    }) {
-      this.onChange({
-        selected,
-        ...(isManual
-          ? {
-              manualFilter: {
-                manuallySelected: selected,
-                manuallyDeselected: deselected,
-              },
-            }
-          : {}),
-      });
-      /**
-       * TODO: UIEXT-1122 do not use isFirstInput anymore but instead compare the value with the initial one,
-       * once the initial value is set correctly in the backend.
-       * */
-      if (this.isModelSettingAndHasNodeView && !isFirstInput) {
-        // @ts-ignore
-        this.$store.dispatch("pagebuilder/dialog/dirtySettings", true);
-      }
-    },
-    onIncludeUnknownColumnsChange(includeUnknownColumns: boolean) {
-      this.onChange({ manualFilter: { includeUnknownColumns } });
-    },
-    /**
-     *  add unknown columns either to the manually selected or manually deselected
-     * @param {string[]} possibleValueIds the possible values from which unknown values are determined.
-     * @returns {void}.
-     */
-    updateManualFilter(possibleValueIds: string[]) {
-      const { manuallySelected, manuallyDeselected, includeUnknownColumns } =
-        this.control.data.manualFilter;
-
-      const manuallySelectedSet = new Set(manuallySelected);
-      const manuallyDeselectedSet = new Set(manuallyDeselected);
-
-      const partitionedChoices = includeUnknownColumns //
-        ? partitionBy(possibleValueIds, (item) =>
-            manuallyDeselectedSet.has(item) ? "excluded" : "included",
-          ) //
-        : partitionBy(possibleValueIds, (item) =>
-            manuallySelectedSet.has(item) ? "included" : "excluded",
-          );
-
-      const includedPossibleValueIdsSet = new Set(partitionedChoices.included);
-      const missingManuallySelected = manuallySelected.filter(
-        (item) => !includedPossibleValueIdsSet.has(item),
-      );
-
-      const excludedPossibleValueIdsSet = new Set(partitionedChoices.excluded);
-      const missingManuallyDesselected = manuallySelected.filter(
-        (item) => !excludedPossibleValueIdsSet.has(item),
-      );
-
-      const newSelectedValues = [
-        ...missingManuallySelected,
-        ...(partitionedChoices.included ?? []),
-      ];
-      const newDeselectedValues = [
-        ...missingManuallyDesselected,
-        ...(partitionedChoices.excluded ?? []),
-      ];
-
-      const newData = {
-        manualFilter: {
-          manuallySelected: newSelectedValues,
-          manuallyDeselected: newDeselectedValues,
-        },
-      };
-      this.setInitialManuallySelected(this.onChange(newData));
-      this.loadingInfo = null;
-    },
-    setInitialManuallySelected(data: TwinlistData) {
-      this.initialManuallySelected = data.manualFilter.manuallySelected;
-    },
-    getPreviouslySelectedTypes() {
-      const selectedTypesIds = this.control.data.typeFilter.selectedTypes;
-      const selectedTypesToDisplayedText = this.typeDisplaysToMap(
-        this.control.data.typeFilter.typeDisplays,
-      );
-      return selectedTypesIds.map((id) => ({
-        id,
-        text: selectedTypesToDisplayedText[id] || id,
-      }));
-    },
-    typeDisplaysToMap(keyValuePairs: IdAndText[] | undefined) {
-      if (typeof keyValuePairs === "undefined") {
-        return {};
-      }
-      return keyValuePairs.reduce(
-        (obj, { id, text }) => ({ ...obj, [id]: text }),
-        {} as Record<string, string>,
-      );
-    },
-    onPatternChange(pattern: string) {
-      this.onChange({ patternFilter: { pattern } });
-    },
-    onModeChange(mode: string) {
-      this.onChange({ mode: mode.toUpperCase() });
-    },
-    onSelectedTypesChange(selectedTypes: string[], typeDisplays: IdAndText[]) {
-      this.onChange({ typeFilter: { selectedTypes, typeDisplays } });
-    },
-    onInversePatternChange(isInverted: boolean) {
-      this.onChange({ patternFilter: { isInverted } });
-    },
-    onCaseSensitiveChange(isCaseSensitive: boolean) {
-      this.onChange({ patternFilter: { isCaseSensitive } });
-    },
+  twinlistRightLabel: {
+    type: String,
+    required: false,
+    default: "Includes",
   },
 });
-export default TwinlistInput;
+
+const subConfigKeys = [
+  "mode",
+  "patterFilter.pattern",
+  "patternFilter.isCaseSensitive",
+  "patternFilter.isInverted",
+  "manualFilter.manuallySelected",
+  "manualFilter.manuallyDeselected",
+  "manualFilter.includeUnknownColumns",
+  "typeFilter.selectedTypes",
+];
+
+const {
+  control: untypedControl,
+  disabled,
+  handleChange,
+  triggerReexecution,
+} = useDialogControl<TwinlistData>({
+  props,
+  subConfigKeys,
+});
+const control = untypedControl as Ref<ControlWithTwinlistData>;
+
+const onChange = (obj: PartialDeep<TwinlistData>) => {
+  const newData = mergeDeep(control.value.data, obj) as TwinlistData;
+  handleChange(control.value.path, newData);
+};
+const onSelectedChange = ({
+  selected,
+  isManual,
+  isFirstInput,
+  deselected,
+}: {
+  selected: string[];
+  isManual: boolean;
+  isFirstInput: boolean;
+  deselected: string[];
+}) => {
+  onChange({
+    selected,
+    ...(isManual
+      ? {
+          manualFilter: {
+            manuallySelected: selected,
+            manuallyDeselected: deselected,
+          },
+        }
+      : {}),
+  });
+  /**
+   * TODO: UIEXT-1122 do not use isFirstInput anymore but instead compare the value with the initial one,
+   * once the initial value is set correctly in the backend.
+   * */
+  if (!isFirstInput) {
+    triggerReexecution();
+  }
+};
+const onIncludeUnknownColumnsChange = (includeUnknownColumns: boolean) => {
+  onChange({ manualFilter: { includeUnknownColumns } });
+};
+const onPatternChange = (pattern: string) => {
+  onChange({ patternFilter: { pattern } });
+};
+const onModeChange = (mode: string) => {
+  onChange({ mode: mode.toUpperCase() });
+};
+const onSelectedTypesChange = (
+  selectedTypes: string[],
+  typeDisplays: IdAndText[],
+) => {
+  onChange({ typeFilter: { selectedTypes, typeDisplays } });
+};
+const onInversePatternChange = (isInverted: boolean) => {
+  onChange({ patternFilter: { isInverted } });
+};
+const onCaseSensitiveChange = (isCaseSensitive: boolean) => {
+  onChange({ patternFilter: { isCaseSensitive } });
+};
+
+// Initial updates
+
+const loadingInfo = ref(markRaw(TwinlistLoadingInfo) as Raw<any> | null);
+const possibleValues = ref(null as null | PossibleValue[]);
+const previouslySelectedTypes = ref(null as null | IdAndText[]);
+const initialManuallySelected = ref(null as null | string[]);
+/**
+ *  add unknown columns either to the manually selected or manually deselected
+ * @param {string[]} possibleValueIds the possible values from which unknown values are determined.
+ * @returns {void}.
+ */
+const updateManualFilter = (possibleValueIds: string[]) => {
+  const { manuallySelected, manuallyDeselected, includeUnknownColumns } =
+    control.value.data.manualFilter;
+
+  const manuallySelectedSet = new Set(manuallySelected);
+  const manuallyDeselectedSet = new Set(manuallyDeselected);
+
+  const partitionedChoices = includeUnknownColumns //
+    ? partitionBy(possibleValueIds, (item) =>
+        manuallyDeselectedSet.has(item) ? "excluded" : "included",
+      ) //
+    : partitionBy(possibleValueIds, (item) =>
+        manuallySelectedSet.has(item) ? "included" : "excluded",
+      );
+
+  const includedPossibleValueIdsSet = new Set(partitionedChoices.included);
+  const missingManuallySelected = manuallySelected.filter(
+    (item) => !includedPossibleValueIdsSet.has(item),
+  );
+
+  const excludedPossibleValueIdsSet = new Set(partitionedChoices.excluded);
+  const missingManuallyDesselected = manuallySelected.filter(
+    (item) => !excludedPossibleValueIdsSet.has(item),
+  );
+
+  const newSelectedValues = [
+    ...missingManuallySelected,
+    ...(partitionedChoices.included ?? []),
+  ];
+  const newDeselectedValues = [
+    ...missingManuallyDesselected,
+    ...(partitionedChoices.excluded ?? []),
+  ];
+
+  const newData = {
+    manualFilter: {
+      manuallySelected: newSelectedValues,
+      manuallyDeselected: newDeselectedValues,
+    },
+  };
+  onChange(newData);
+  initialManuallySelected.value = newSelectedValues;
+  loadingInfo.value = null;
+};
+
+const typeDisplaysToMap = (keyValuePairs: IdAndText[] | undefined) => {
+  if (typeof keyValuePairs === "undefined") {
+    return {};
+  }
+  return keyValuePairs.reduce(
+    (obj, { id, text }) => ({ ...obj, [id]: text }),
+    {} as Record<string, string>,
+  );
+};
+
+const getPreviouslySelectedTypes = () => {
+  const selectedTypesIds = control.value.data.typeFilter.selectedTypes;
+  const selectedTypesToDisplayedText = typeDisplaysToMap(
+    control.value.data.typeFilter.typeDisplays,
+  );
+  return selectedTypesIds.map((id) => ({
+    id,
+    text: selectedTypesToDisplayedText[id] || id,
+  }));
+};
+
+inject("getPossibleValuesFromUiSchema")(control.value).then((result) => {
+  possibleValues.value = result;
+  updateManualFilter(possibleValues.value.map(({ id }) => id));
+  previouslySelectedTypes.value = getPreviouslySelectedTypes();
+});
+
+// Hiding controls
+
+const withTypes = computed(() => {
+  return (
+    possibleValues.value !== null &&
+    Boolean(possibleValues.value[0]?.hasOwnProperty("type"))
+  );
+});
+const showMode = computed(
+  () => control.value.uischema.options?.showMode ?? true,
+);
+const showSearch = computed(
+  () => control.value.uischema.options?.showSearch ?? true,
+);
 </script>
 
 <template>
-  <DialogComponentWrapper :control="control">
-    <LabeledInput
-      v-if="control.visible"
-      #default="{ labelForId }"
-      :config-keys="control?.schema?.configKeys"
-      :flow-variables-map="control.rootSchema.flowVariablesMap"
-      :flow-settings="flowSettings"
-      :sub-config-keys="[
-        'mode',
-        'patterFilter.pattern',
-        'patternFilter.isCaseSensitive',
-        'patternFilter.isInverted',
-        'manualFilter.manuallySelected',
-        'manualFilter.manuallyDeselected',
-        'manualFilter.includeUnknownColumns',
-        'typeFilter.selectedTypes',
-      ]"
-      :path="control.path"
-      :text="control.label"
-      :show-reexecution-icon="isModelSettingAndHasNodeView"
-      :description="control.description"
-      @controlling-flow-variable-set="onChange"
-    >
-      <MultiModeTwinlist
-        v-bind="$attrs"
-        :id="labelForId"
-        :show-mode="showMode"
-        :show-search="showSearch"
-        :disabled="disabled"
-        :with-types="withTypes"
-        :initial-selected-types="control.data.typeFilter.selectedTypes"
-        :additional-possible-types="previouslySelectedTypes"
-        :initial-pattern="control.data.patternFilter.pattern"
-        :initial-mode="control.data.mode.toLowerCase()"
-        :initial-case-sensitive-pattern="
-          control.data.patternFilter.isCaseSensitive
-        "
-        :empty-state-component="loadingInfo"
-        :initial-inverse-pattern="control.data.patternFilter.isInverted"
-        :initial-manually-selected="initialManuallySelected"
-        :initial-include-unknown-values="
-          control.data.manualFilter.includeUnknownColumns
-        "
-        :filter-chosen-values-on-possible-values-change="false"
-        mode-label="Selection mode"
-        :possible-values="possibleValues ?? []"
-        :size="twinlistSize"
-        :left-label="twinlistLeftLabel"
-        :right-label="twinlistRightLabel"
-        @input="onSelectedChange"
-        @include-unknown-values-input="onIncludeUnknownColumnsChange"
-        @pattern-input="onPatternChange"
-        @mode-input="onModeChange"
-        @types-input="onSelectedTypesChange"
-        @inverse-pattern-input="onInversePatternChange"
-        @case-sensitive-pattern-input="onCaseSensitiveChange"
-      />
-    </LabeledInput>
-  </DialogComponentWrapper>
+  <LabeledInput
+    #default="{ labelForId }"
+    :control="control"
+    @controlling-flow-variable-set="onChange"
+  >
+    <MultiModeTwinlist
+      v-bind="$attrs"
+      :id="labelForId"
+      :show-mode="showMode"
+      :show-search="showSearch"
+      :disabled="disabled"
+      :with-types="withTypes"
+      :initial-selected-types="control.data.typeFilter.selectedTypes"
+      :additional-possible-types="previouslySelectedTypes!"
+      :initial-pattern="control.data.patternFilter.pattern"
+      :initial-mode="control.data.mode.toLowerCase()"
+      :initial-case-sensitive-pattern="
+        control.data.patternFilter.isCaseSensitive
+      "
+      :empty-state-component="loadingInfo"
+      :initial-inverse-pattern="control.data.patternFilter.isInverted"
+      :initial-manually-selected="initialManuallySelected"
+      :initial-include-unknown-values="
+        control.data.manualFilter.includeUnknownColumns
+      "
+      :filter-chosen-values-on-possible-values-change="false"
+      mode-label="Selection mode"
+      :possible-values="possibleValues ?? []"
+      :size="twinlistSize"
+      :left-label="twinlistLeftLabel"
+      :right-label="twinlistRightLabel"
+      @input="onSelectedChange"
+      @include-unknown-values-input="onIncludeUnknownColumnsChange"
+      @pattern-input="onPatternChange"
+      @mode-input="onModeChange"
+      @types-input="onSelectedTypesChange"
+      @inverse-pattern-input="onInversePatternChange"
+      @case-sensitive-pattern-input="onCaseSensitiveChange"
+    />
+  </LabeledInput>
 </template>
 
 <style lang="postcss" scoped>

@@ -6,6 +6,8 @@ import {
 import ColumnSelect from "../ColumnSelect.vue";
 import DropdownInput from "../DropdownInput.vue";
 import Dropdown from "webapps-common/ui/components/forms/Dropdown.vue";
+import { providedKey as providedByComponentKey } from "@/nodeDialog/composables/useFlowVariables";
+import DialogLabel from "../label/DialogLabel.vue";
 
 describe("ColumnSelect.vue", () => {
   let wrapper, props, path, component, updateData;
@@ -178,5 +180,22 @@ describe("ColumnSelect.vue", () => {
     expect(() => wrapper.vm.toData("Value")).toThrowError(
       "Must not convert data before column choices are fetched.",
     );
+  });
+
+  it("sets subConfigKeys for LabeledInput and computed flow settings with them", async () => {
+    const subConfigKey = "selected";
+    const DialogLabelStub = {
+      inject: [providedByComponentKey],
+      template: "<div/>",
+    };
+    const { wrapper } = await mountJsonFormsComponent(ColumnSelect, {
+      props,
+      withControllingFlowVariable: `${path}.${subConfigKey}`,
+      stubs: { DialogLabel: DialogLabelStub },
+    });
+    const provided =
+      wrapper.getComponent(DialogLabel).vm[providedByComponentKey];
+    expect(provided.flowSettings.value).toBeTruthy();
+    expect(provided.subConfigKeys).toEqual([subConfigKey]);
   });
 });

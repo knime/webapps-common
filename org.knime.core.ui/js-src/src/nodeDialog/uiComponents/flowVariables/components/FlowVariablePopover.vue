@@ -4,27 +4,25 @@ import MulitpleConfigKeysNotYetSupported from "./MultipleConfigKeysNotYetSupport
 import FlowVariableSelector from "./FlowVariableSelector.vue";
 import { getConfigPaths } from "@/nodeDialog/utils";
 import { computed } from "vue";
-import type FlowVariablePopoverProps from "./types/FlowVariablePopoverProps";
 import FlowVariableExposer from "./FlowVariableExposer.vue";
 
-const props = defineProps<FlowVariablePopoverProps>();
+import { getFlowVariableSettingsProvidedByControl } from "../../../composables/useFlowVariables";
+const { subConfigKeys, path, configKeys } =
+  getFlowVariableSettingsProvidedByControl();
+
 /**
  * Either the single path under which the flow variables are stored within the
  * flowVariablesMap for this setting or false if there are multiple config keys
  * present (which is not yet supported).
  */
 const singleConfigPath = computed(() => {
-  const paths = getConfigPaths(
-    props.path,
-    props.configKeys,
-    props.subConfigKeys,
-  );
+  const paths = getConfigPaths(path.value, configKeys?.value, subConfigKeys);
   return paths.length === 1 ? paths[0] : false;
 });
 
 const dataPath = computed(() => {
-  const firstSubConfig = props.subConfigKeys?.[0];
-  return firstSubConfig ? `${props.path}.${firstSubConfig}` : props.path;
+  const firstSubConfig = subConfigKeys?.[0];
+  return firstSubConfig ? `${path.value}.${firstSubConfig}` : path.value;
 });
 
 const emit = defineEmits(["controllingFlowVariableSet"]);
@@ -42,8 +40,6 @@ const emit = defineEmits(["controllingFlowVariableSet"]);
           :id="labelForId"
           :data-path="dataPath"
           :persist-path="singleConfigPath"
-          :flow-settings="flowSettings"
-          :flow-variables-map="flowVariablesMap"
           @controlling-flow-variable-set="
             emit('controllingFlowVariableSet', $event)
           "
@@ -57,17 +53,11 @@ const emit = defineEmits(["controllingFlowVariableSet"]);
         <FlowVariableExposer
           :id="labelForId"
           :persist-path="singleConfigPath"
-          :flow-settings="flowSettings"
-          :flow-variables-map="flowVariablesMap"
         />
       </Label>
     </div>
   </template>
-  <MulitpleConfigKeysNotYetSupported
-    v-else
-    :config-keys="configKeys"
-    :sub-config-keys="subConfigKeys"
-  />
+  <MulitpleConfigKeysNotYetSupported v-else :config-keys="configKeys" />
 </template>
 >
 

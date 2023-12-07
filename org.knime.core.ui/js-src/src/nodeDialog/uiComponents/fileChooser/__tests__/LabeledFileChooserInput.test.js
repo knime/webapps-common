@@ -4,7 +4,8 @@ import {
   initializesJsonFormsControl,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import LabeledFileChooserInput from "../LabeledFileChooserInput.vue";
-import LabeledInput from "../../LabeledInput.vue";
+import LabeledInput from "../../label/LabeledInput.vue";
+import DialogLabel from "../../label/DialogLabel.vue";
 import LocalFileChooserInput from "../LocalFileChooserInput.vue";
 import ValueSwitch from "webapps-common/ui/components/forms/ValueSwitch.vue";
 import Label from "webapps-common/ui/components/forms/Label.vue";
@@ -92,19 +93,19 @@ describe("LabeledFileChooserInput.vue", () => {
   });
 
   it("sets labelForId", () => {
-    const labeldInput = wrapper.findComponent(LabeledInput);
+    const dialogLabel = wrapper.findComponent(DialogLabel);
     expect(wrapper.getComponent(LocalFileChooserInput).props().id).toBe(
-      labeldInput.vm.labelForId,
+      dialogLabel.vm.labelForId,
     );
-    expect(labeldInput.vm.labeledElement).toBeDefined();
-    expect(labeldInput.vm.labeledElement).not.toBeNull();
+    expect(dialogLabel.vm.labeledElement).toBeDefined();
+    expect(dialogLabel.vm.labeledElement).not.toBeNull();
   });
 
   it("initializes jsonforms", () => {
     initializesJsonFormsControl(component);
   });
 
-  it("calls onChange when local file text input is changed", () => {
+  it("calls updateData when local file text input is changed", () => {
     const dirtySettingsMock = vi.fn();
     const { wrapper, updateData } = mountJsonFormsComponent(
       LabeledFileChooserInput,
@@ -236,38 +237,26 @@ describe("LabeledFileChooserInput.vue", () => {
   });
 
   it("disables input when controlled by a flow variable", () => {
-    const localDefaultProps = JSON.parse(JSON.stringify(props));
-    localDefaultProps.control.rootSchema.flowVariablesMap[
-      `${props.control.path}.path`
-    ] = {
-      controllingFlowVariableAvailable: true,
-      controllingFlowVariableName: "knime.test",
-      exposedFlowVariableName: "test",
-      leaf: true,
-    };
     const { wrapper } = mountJsonFormsComponent(LabeledFileChooserInput, {
-      props: localDefaultProps,
+      props,
+      withControllingFlowVariable: `${props.control.path}.path`,
     });
-    expect(wrapper.vm.disabled).toBeTruthy();
+    expect(wrapper.findComponent(ValueSwitch).props().disabled).toBe(true);
+    expect(wrapper.findComponent(LocalFileChooserInput).props().disabled).toBe(
+      true,
+    );
   });
 
   it("sets default data when unsetting controlling flow variable", async () => {
     const stringRepresentation = "myStringRepresentation";
     props.control.data.path.fsCategory = "RELATIVE";
     props.control.data.path.context = { fsToString: stringRepresentation };
-    const flowVariablesMap = {
-      [`${props.control.path}.path`]: {
-        controllingFlowVariableName: "flowVar1",
-      },
-    };
-    props.control.rootSchema.flowVariablesMap = flowVariablesMap;
-    const { wrapper, updateData } = await mountJsonFormsComponent(
-      LabeledFileChooserInput,
-      {
+    const { flowVariablesMap, wrapper, updateData } =
+      await mountJsonFormsComponent(LabeledFileChooserInput, {
         props,
+        withControllingFlowVariable: `${props.control.path}.path`,
         global: { stubs: { CustomUrlFileChooser, Label } },
-      },
-    );
+      });
     flowVariablesMap[`${props.control.path}.path`].controllingFlowVariableName =
       null;
     wrapper.vm.control = { ...wrapper.vm.control };
@@ -282,33 +271,6 @@ describe("LabeledFileChooserInput.vue", () => {
           timeout: 1000,
         },
       },
-    );
-  });
-
-  it("does not render content of TextInput when visible is false", async () => {
-    wrapper.vm.control = { ...props.control, visible: false };
-    await wrapper.vm.$nextTick(); // wait until pending promises are resolved
-    expect(wrapper.findComponent(LabeledInput).exists()).toBe(false);
-  });
-
-  it("does not render if it is an advanced setting", () => {
-    props.control.uischema.options.isAdvanced = true;
-    const { wrapper } = mountJsonFormsComponent(LabeledFileChooserInput, {
-      props,
-    });
-    expect(wrapper.getComponent(LabeledFileChooserInput).isVisible()).toBe(
-      false,
-    );
-  });
-
-  it("renders if it is an advanced setting and advanced settings are shown", () => {
-    props.control.rootSchema.showAdvancedSettings = true;
-    props.control.uischema.options.isAdvanced = true;
-    const { wrapper } = mountJsonFormsComponent(LabeledFileChooserInput, {
-      props,
-    });
-    expect(wrapper.getComponent(LabeledFileChooserInput).isVisible()).toBe(
-      true,
     );
   });
 });

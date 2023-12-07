@@ -4,7 +4,7 @@ import FlowVariablePopover from "./FlowVariablePopover.vue";
 
 import DialogPopover from "@/nodeDialog/popover/DialogPopover.vue";
 
-import type FlowVariableButtonProps from "./types/FlowVariableButtonProps";
+import type FlowVariableButtonProps from "../types/FlowVariableButtonProps";
 
 import { computed, ref, type Ref } from "vue";
 
@@ -28,18 +28,12 @@ const tooltip = computed(() => {
   <DialogPopover :tooltip="tooltip">
     <template #icon="{ expanded, focused }">
       <FlowVariableIcon
-        :flow-settings="flowSettings"
         :show="hover || expanded || focused"
         @tooltip="setTooltipPrefix"
       />
     </template>
     <template #popover>
       <FlowVariablePopover
-        :path="path"
-        :config-keys="configKeys"
-        :sub-config-keys="subConfigKeys"
-        :flow-settings="flowSettings"
-        :flow-variables-map="flowVariablesMap"
         @controlling-flow-variable-set="
           emit('controllingFlowVariableSet', $event)
         "
@@ -47,3 +41,4 @@ const tooltip = computed(() => {
     </template>
   </DialogPopover>
 </template>
+@/nodeDialog/uiComponents/flowVariables/useFlowVariables

@@ -8,25 +8,15 @@ import DialogPopover from "@/nodeDialog/popover/DialogPopover.vue";
 import { mount } from "@vue/test-utils";
 import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";
 import flushPromises from "flush-promises";
-
 import FlowVariableButton from "../FlowVariableButton.vue";
-
-import type FlowVariableButtonProps from "../types/FlowVariableButtonProps";
+import type FlowVariableButtonProps from "../../types/FlowVariableButtonProps";
 
 describe("FlowVariableButton.vue", () => {
   let props: FlowVariableButtonProps;
 
   beforeEach(() => {
     props = {
-      flowVariablesMap: {},
-      path: "model.myPath",
       hover: false,
-      flowSettings: {
-        controllingFlowVariableAvailable: true,
-        controllingFlowVariableName: "controlling",
-        exposedFlowVariableName: "exposed",
-      },
-      configKeys: ["myConfigKey"],
     };
   });
 
@@ -44,6 +34,7 @@ describe("FlowVariableButton.vue", () => {
       global: {
         stubs: {
           FlowVariablePopover: true,
+          FlowVariableIcon: true,
         },
       },
     });
@@ -63,7 +54,6 @@ describe("FlowVariableButton.vue", () => {
       tooltip: "Click to overwrite with or output as flow variable.",
     });
     expect(wrapper.findComponent(FlowVariableIcon).props()).toStrictEqual({
-      flowSettings: props.flowSettings,
       show: false,
     });
   });
@@ -104,18 +94,10 @@ describe("FlowVariableButton.vue", () => {
   });
 
   it("opens FlowVariablePopover on button click", async () => {
-    props.subConfigKeys = ["sub1", "sub2"];
     const wrapper = mountFlowVariableButton({ props });
     await wrapper.find(".function-button").trigger("mouseup");
     const box = wrapper.find(".box");
     const popover = box.findComponent(FlowVariablePopover);
     expect(popover.exists()).toBeTruthy();
-    expect(popover.props()).toStrictEqual({
-      configKeys: props.configKeys,
-      flowSettings: props.flowSettings,
-      flowVariablesMap: props.flowVariablesMap,
-      path: props.path,
-      subConfigKeys: props.subConfigKeys,
-    });
   });
 });

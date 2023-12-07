@@ -51,21 +51,4 @@ describe("HorizontalLayout.vue", () => {
   it("initializes jsonforms", () => {
     initializesJsonFormsLayout(wrapper);
   });
-
-  it("checks that it is not rendered if it is an advanced setting", () => {
-    defaultProps.layout.uischema.options = { isAdvanced: true };
-    const { wrapper } = mountJsonFormsComponent(HorizontalLayout, {
-      props: defaultProps,
-    });
-    expect(wrapper.getComponent(HorizontalLayout).isVisible()).toBe(false);
-  });
-
-  it("checks that it is rendered if it is an advanced setting and advanced settings are shown", () => {
-    defaultProps.layout.uischema.options = { isAdvanced: true };
-    const { wrapper } = mountJsonFormsComponent(HorizontalLayout, {
-      props: defaultProps,
-      showAdvanced: true,
-    });
-    expect(wrapper.getComponent(HorizontalLayout).isVisible()).toBe(true);
-  });
 });

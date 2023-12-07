@@ -4,9 +4,11 @@ import {
   initializesJsonFormsControl,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import ComboBoxInput from "../ComboBoxInput.vue";
-import LabeledInput from "../LabeledInput.vue";
+import LabeledInput from "../label/LabeledInput.vue";
+import DialogLabel from "../label/DialogLabel.vue";
 
 import ComboBox from "webapps-common/ui/components/forms/ComboBox.vue";
+import flushPromises from "flush-promises";
 
 describe("ComboBoxInput.vue", () => {
   let props;
@@ -67,12 +69,12 @@ describe("ComboBoxInput.vue", () => {
   });
 
   it("sets labelForId", () => {
-    const labeldInput = wrapper.findComponent(LabeledInput);
+    const dialogLabel = wrapper.findComponent(DialogLabel);
     expect(wrapper.getComponent(ComboBox).attributes().id).toBe(
-      labeldInput.vm.labelForId,
+      dialogLabel.vm.labelForId,
     );
-    expect(labeldInput.vm.labeledElement).toBeDefined();
-    expect(labeldInput.vm.labeledElement).not.toBeNull();
+    expect(dialogLabel.vm.labeledElement).toBeDefined();
+    expect(dialogLabel.vm.labeledElement).not.toBeNull();
   });
 
   it("initializes jsonforms", () => {
@@ -133,28 +135,17 @@ describe("ComboBoxInput.vue", () => {
     const { wrapper } = mountJsonFormsComponent(ComboBoxInput, {
       props,
     });
-    await wrapper.vm.$nextTick();
+    await flushPromises();
     const comboBox = wrapper.findComponent(ComboBox);
     expect(comboBox.props().allowNewValues).toBe(true);
   });
 
-  it("disables comboBox when controlled by a flow variable", () => {
-    const localprops = JSON.parse(JSON.stringify(props));
-    localprops.control.rootSchema.flowVariablesMap[props.control.path] = {
-      controllingFlowVariableAvailable: true,
-      controllingFlowVariableName: "knime.test",
-      exposedFlowVariableName: "test",
-      leaf: true,
-    };
+  it("disables comboBox when controlled by a flow variable", async () => {
     const { wrapper } = mountJsonFormsComponent(ComboBoxInput, {
-      props: localprops,
+      props,
+      withControllingFlowVariable: true,
     });
-    expect(wrapper.vm.disabled).toBeTruthy();
-  });
-
-  it("does not render content of ComboBoxInput when visible is false", async () => {
-    wrapper.vm.control = { ...props.control, visible: false };
-    await wrapper.vm.$nextTick(); // wait until pending promises are resolved
-    expect(wrapper.findComponent(LabeledInput).exists()).toBe(false);
+    await flushPromises();
+    expect(wrapper.findComponent(ComboBox).attributes().disabled).toBeTruthy();
   });
 });

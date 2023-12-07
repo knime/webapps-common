@@ -21,6 +21,7 @@ import { getMetaOrCtrlKey } from "webapps-common/util/navigator";
 import { cloneDeep, set, isEqual } from "lodash";
 import { inject, markRaw } from "vue";
 import type ProvidedMethods from "./types/provided";
+import type { ProvidedForFlowVariables } from "./types/provided";
 import type SettingsData from "./types/SettingsData";
 import type Control from "./types/Control";
 import getChoices from "./api/getChoices";
@@ -59,7 +60,6 @@ export default {
   inject: ["getKnimeService"],
   provide() {
     return {
-      getJsonDataService: () => this.jsonDataService,
       registerWatcher: this.registerWatcher,
       updateData: this.updateData,
       getData: this.callDataService,
@@ -68,10 +68,11 @@ export default {
       flowVariablesApi: {
         getAvailableFlowVariables: this.getAvailableFlowVariables,
         getFlowVariableOverrideValue: this.getFlowVariableOverrideValue,
-        unsetControllingFlowVariable: this.unsetControllingFlowVariable,
+        clearControllingFlowVariable: this.clearControllingFlowVariable,
       },
       closeDialog: this.closeDialog,
-    } as ProvidedMethods;
+      getFlowVariablesMap: () => this.schema.flowVariablesMap,
+    } satisfies ProvidedMethods & ProvidedForFlowVariables;
   },
   setup() {
     return { getKnimeService: inject<() => KnimeService>("getKnimeService")! };
@@ -276,13 +277,9 @@ export default {
       // @ts-ignore
       this.$store.dispatch("pagebuilder/dialog/dirtySettings", true);
     },
-    unsetControllingFlowVariable(persistPath: string) {
+    clearControllingFlowVariable(persistPath: string) {
       this.flawedControllingVariablePaths.delete(persistPath);
       this.possiblyFlawedControllingVariablePaths.delete(persistPath);
-      flowVariablesApi.unsetControllingFlowVariable(
-        this.schema.flowVariablesMap,
-        { path: persistPath },
-      );
       this.cleanIfNecessary();
     },
     onSettingsChanged({ data }: { data: SettingsData }) {

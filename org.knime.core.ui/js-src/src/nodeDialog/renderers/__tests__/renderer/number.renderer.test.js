@@ -10,42 +10,34 @@ const renderers = [
 ];
 
 describe("NumberInput", () => {
-  const schema = {
-    type: "object",
-    properties: {
-      number: {
-        type: "number",
-      },
-    },
+  const uiSchema = {
+    type: "Control",
+    scope: "#/properties/number",
   };
 
-  it("numberInput config error", () => {
-    const uiSchema = {
-      type: "Controll",
-      scope: "#/properties/number",
-    };
-
-    expect(determineRenderer(uiSchema, schema, renderers)).toBeUndefined();
-  });
-
-  it("numberInput with options", () => {
-    const uiSchema = {
-      type: "Control",
-      scope: "#/properties/number",
-      options: {
-        format: "number",
+  it("determines integer renderer", () => {
+    const integerSchema = {
+      type: "object",
+      properties: {
+        number: {
+          type: "integer",
+        },
       },
     };
-
-    expect(determineRenderer(uiSchema, schema, renderers)).toBe("IntegerInput");
+    expect(determineRenderer(uiSchema, integerSchema, renderers)).toBe(
+      "IntegerInput",
+    );
   });
 
-  it("numberInput without options", () => {
-    const uiSchema = {
-      type: "Control",
-      scope: "#/properties/number",
+  it("determines double renderer", () => {
+    const schema = {
+      type: "object",
+      properties: {
+        number: {
+          type: "number",
+        },
+      },
     };
-
-    expect(determineRenderer(uiSchema, schema, renderers)).toBe("IntegerInput");
+    expect(determineRenderer(uiSchema, schema, renderers)).toBe("NumberInput");
   });
 });

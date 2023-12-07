@@ -35,6 +35,7 @@ describe("OneOfDropdown.vue", () => {
           ],
           title: "Y Axis Column",
         },
+        rootSchema: {},
         uischema: {
           type: "Control",
           scope: "#/properties/view/properties/yAxisColumn",

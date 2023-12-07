@@ -2,7 +2,7 @@ import type {
   JsonDataService,
   KnimeService,
 } from "@knime/ui-extension-service";
-import type { PossibleFlowVariable } from "../api/types";
+import type { FlowSettings, PossibleFlowVariable } from "../api/types";
 import type { getPossibleValuesFromUiSchema } from "../utils";
 import type Control from "./Control";
 import type SettingsData from "./SettingsData";
@@ -12,14 +12,23 @@ type getPossibleValuesFromUiSchema = (
 ) => ReturnType<typeof getPossibleValuesFromUiSchema>;
 
 type registerWatcher = (params: {
-  transformSettings: (newData: SettingsData) => Promise<void>;
-  init: (newData: SettingsData) => Promise<void>;
+  transformSettings: (newData: SettingsData) => Promise<void> | void;
+  init?: (newData: SettingsData) => Promise<void>;
   dependencies: string[];
 }) => void;
 type getData = (
   params: Parameters<JsonDataService["data"]>[0] & object,
 ) => Promise<any>;
 type sendAlert = (params: Parameters<KnimeService["createAlert"]>[0]) => void;
+
+interface Provided {
+  getPossibleValuesFromUiSchema: getPossibleValuesFromUiSchema;
+  registerWatcher: registerWatcher;
+  updateData: any;
+  sendAlert: sendAlert;
+  closeDialog: () => void;
+  getData: getData;
+}
 
 type ProvidedFlowVariablesApi = {
   getAvailableFlowVariables: (
@@ -29,17 +38,14 @@ type ProvidedFlowVariablesApi = {
     persistPath: string,
     dataPath: string,
   ) => Promise<any>;
-  unsetControllingFlowVariable: (persistPath: string) => void;
-};
-
-type Provided = {
-  getPossibleValuesFromUiSchema: getPossibleValuesFromUiSchema;
-  registerWatcher: registerWatcher;
-  updateData: any;
-  getData: getData;
-  sendAlert: sendAlert;
-  flowVariablesApi: ProvidedFlowVariablesApi;
-  closeDialog: () => void;
+  clearControllingFlowVariable: (persistPath: string) => void;
 };
 
 export default Provided;
+
+interface ProvidedForFlowVariables {
+  getFlowVariablesMap: () => Record<string, FlowSettings>;
+  flowVariablesApi: ProvidedFlowVariablesApi;
+}
+
+export { ProvidedForFlowVariables };

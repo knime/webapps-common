@@ -1,26 +1,15 @@
-import {
-  afterEach,
-  beforeEach,
-  beforeAll,
-  describe,
-  expect,
-  it,
-  vi,
-} from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   mountJsonFormsComponent,
   initializesJsonFormsControl,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import TextAreaInput from "../TextAreaInput.vue";
-import LabeledInput from "../LabeledInput.vue";
+import LabeledInput from "../label/LabeledInput.vue";
+import DialogLabel from "../label/DialogLabel.vue";
 import TextArea from "webapps-common/ui/components/forms/TextArea.vue";
 
 describe("TextInput.vue", () => {
-  let defaultProps, wrapper, onChangeSpy, component;
-
-  beforeAll(() => {
-    onChangeSpy = vi.spyOn(TextAreaInput.methods, "onChange");
-  });
+  let defaultProps, wrapper, component;
 
   beforeEach(async () => {
     defaultProps = {
@@ -72,19 +61,19 @@ describe("TextInput.vue", () => {
   });
 
   it("sets labelForId", () => {
-    const labeldInput = wrapper.findComponent(LabeledInput);
+    const dialogLabel = wrapper.findComponent(DialogLabel);
     expect(wrapper.getComponent(TextArea).props().id).toBe(
-      labeldInput.vm.labelForId,
+      dialogLabel.vm.labelForId,
     );
-    expect(labeldInput.vm.labeledElement).toBeDefined();
-    expect(labeldInput.vm.labeledElement).not.toBeNull();
+    expect(dialogLabel.vm.labeledElement).toBeDefined();
+    expect(dialogLabel.vm.labeledElement).not.toBeNull();
   });
 
   it("initializes jsonforms", () => {
     initializesJsonFormsControl(component);
   });
 
-  it("calls onChange when text area is changed", () => {
+  it("calls updateData when text area is changed", () => {
     const dirtySettingsMock = vi.fn();
     const { wrapper, updateData } = mountJsonFormsComponent(TextAreaInput, {
       props: defaultProps,
@@ -99,7 +88,6 @@ describe("TextInput.vue", () => {
     wrapper
       .findComponent(TextArea)
       .vm.$emit("update:modelValue", changedTextInput);
-    expect(onChangeSpy).toHaveBeenCalledWith(changedTextArea);
     expect(updateData).toHaveBeenCalledWith(
       expect.anything(),
       defaultProps.control.path,
@@ -151,41 +139,10 @@ describe("TextInput.vue", () => {
   });
 
   it("disables input when controlled by a flow variable", () => {
-    const localDefaultProps = JSON.parse(JSON.stringify(defaultProps));
-    localDefaultProps.control.rootSchema.flowVariablesMap[
-      defaultProps.control.path
-    ] = {
-      controllingFlowVariableAvailable: true,
-      controllingFlowVariableName: "knime.test",
-      exposedFlowVariableName: "test",
-      leaf: true,
-    };
     const { wrapper } = mountJsonFormsComponent(TextAreaInput, {
-      props: localDefaultProps,
+      props: defaultProps,
+      withControllingFlowVariable: true,
     });
     expect(wrapper.vm.disabled).toBeTruthy();
-  });
-
-  it("does not render content of TextInput when visible is false", async () => {
-    wrapper.vm.control = { ...defaultProps.control, visible: false };
-    await wrapper.vm.$nextTick(); // wait until pending promises are resolved
-    expect(wrapper.findComponent(LabeledInput).exists()).toBe(false);
-  });
-
-  it("checks that it is not rendered if it is an advanced setting", () => {
-    defaultProps.control.uischema.options.isAdvanced = true;
-    const { wrapper } = mountJsonFormsComponent(TextAreaInput, {
-      props: defaultProps,
-    });
-    expect(wrapper.getComponent(TextAreaInput).isVisible()).toBe(false);
-  });
-
-  it("checks that it is rendered if it is an advanced setting and advanced settings are shown", () => {
-    defaultProps.control.rootSchema.showAdvancedSettings = true;
-    defaultProps.control.uischema.options.isAdvanced = true;
-    const { wrapper } = mountJsonFormsComponent(TextAreaInput, {
-      props: defaultProps,
-    });
-    expect(wrapper.getComponent(TextAreaInput).isVisible()).toBe(true);
   });
 });

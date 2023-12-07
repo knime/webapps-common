@@ -1,30 +1,18 @@
-import {
-  afterEach,
-  beforeEach,
-  beforeAll,
-  describe,
-  expect,
-  it,
-  vi,
-} from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   mountJsonFormsComponent,
   initializesJsonFormsControl,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import SimpleTwinlistInput from "../SimpleTwinlistInput.vue";
 import TwinlistLoadingInfo from "../loading/TwinlistLoadingInfo.vue";
-import LabeledInput from "../LabeledInput.vue";
+import LabeledInput from "../label/LabeledInput.vue";
+import DialogLabel from "../label/DialogLabel.vue";
 import Twinlist from "webapps-common/ui/components/forms/Twinlist.vue";
 import MultiselectListBox from "webapps-common/ui/components/forms/MultiselectListBox.vue";
 import flushPromises from "flush-promises";
 
 describe("SimpleTwinlistInput.vue", () => {
-  let props, wrapper, onChangeSpy, component;
-
-  beforeAll(() => {
-    onChangeSpy = vi.spyOn(SimpleTwinlistInput.methods, "onChange");
-    SimpleTwinlistInput.methods.handleChange = vi.fn();
-  });
+  let props, wrapper, component;
 
   beforeEach(() => {
     props = {
@@ -78,12 +66,12 @@ describe("SimpleTwinlistInput.vue", () => {
   });
 
   it("sets labelForId", () => {
-    const labeldInput = wrapper.findComponent(LabeledInput);
+    const dialogLabel = wrapper.findComponent(DialogLabel);
     expect(wrapper.getComponent(Twinlist).attributes().id).toBe(
-      labeldInput.vm.labelForId,
+      dialogLabel.vm.labelForId,
     );
-    expect(labeldInput.vm.labeledElement).toBeDefined();
-    expect(labeldInput.vm.labeledElement).not.toBeNull();
+    expect(dialogLabel.vm.labeledElement).toBeDefined();
+    expect(dialogLabel.vm.labeledElement).not.toBeNull();
   });
 
   it("initializes jsonforms", () => {
@@ -92,40 +80,46 @@ describe("SimpleTwinlistInput.vue", () => {
 
   it("calls onChange when twinlist input is changed", async () => {
     const dirtySettingsMock = vi.fn();
-    const { wrapper } = await mountJsonFormsComponent(SimpleTwinlistInput, {
-      props,
-      modules: {
-        "pagebuilder/dialog": {
-          actions: { dirtySettings: dirtySettingsMock },
-          namespaced: true,
+    const { wrapper, updateData } = await mountJsonFormsComponent(
+      SimpleTwinlistInput,
+      {
+        props,
+        modules: {
+          "pagebuilder/dialog": {
+            actions: { dirtySettings: dirtySettingsMock },
+            namespaced: true,
+          },
         },
       },
-    });
+    );
     await wrapper
       .findComponent(Twinlist)
       .find({ ref: "moveAllRight" })
       .trigger("click");
-    expect(onChangeSpy).toBeCalled();
+    expect(updateData).toBeCalled();
     expect(dirtySettingsMock).not.toHaveBeenCalled();
   });
 
   it("indicates model settings change when model setting is changed", async () => {
     const dirtySettingsMock = vi.fn();
     props.control.uischema.scope = "#/properties/model/properties/yAxisColumn";
-    const { wrapper } = await mountJsonFormsComponent(SimpleTwinlistInput, {
-      props,
-      modules: {
-        "pagebuilder/dialog": {
-          actions: { dirtySettings: dirtySettingsMock },
-          namespaced: true,
+    const { wrapper, updateData } = await mountJsonFormsComponent(
+      SimpleTwinlistInput,
+      {
+        props,
+        modules: {
+          "pagebuilder/dialog": {
+            actions: { dirtySettings: dirtySettingsMock },
+            namespaced: true,
+          },
         },
       },
-    });
+    );
     await wrapper
       .findComponent(Twinlist)
       .find({ ref: "moveAllRight" })
       .trigger("click");
-    expect(onChangeSpy).toBeCalled();
+    expect(updateData).toBeCalled();
     expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
   });
 
@@ -191,14 +185,9 @@ describe("SimpleTwinlistInput.vue", () => {
   });
 
   it("disables twinlist when controlled by a flow variable", () => {
-    props.control.rootSchema.flowVariablesMap[props.control.path] = {
-      controllingFlowVariableAvailable: true,
-      controllingFlowVariableName: "knime.test",
-      exposedFlowVariableName: "test",
-      leaf: true,
-    };
     const { wrapper } = mountJsonFormsComponent(SimpleTwinlistInput, {
       props,
+      withControllingFlowVariable: true,
     });
     expect(wrapper.vm.disabled).toBeTruthy();
   });
@@ -206,32 +195,43 @@ describe("SimpleTwinlistInput.vue", () => {
   it("moves missing values correctly", async () => {
     const dirtySettingsMock = vi.fn();
     props.control.data = ["missing"];
-    const { wrapper } = await mountJsonFormsComponent(SimpleTwinlistInput, {
-      props,
-      modules: {
-        "pagebuilder/dialog": {
-          actions: { dirtySettings: dirtySettingsMock },
-          namespaced: true,
+    const { wrapper, updateData } = await mountJsonFormsComponent(
+      SimpleTwinlistInput,
+      {
+        props,
+        modules: {
+          "pagebuilder/dialog": {
+            actions: { dirtySettings: dirtySettingsMock },
+            namespaced: true,
+          },
         },
       },
-    });
+    );
     expect(wrapper.props().control.data).toStrictEqual(["missing"]);
     await wrapper
       .findComponent(Twinlist)
       .find({ ref: "moveAllLeft" })
       .trigger("click");
     await wrapper.vm.$nextTick();
-    expect(onChangeSpy).toBeCalledWith([]);
+    expect(updateData).toBeCalledWith(
+      expect.anything(),
+      props.control.path,
+      [],
+    );
     await wrapper
       .findComponent(Twinlist)
       .find({ ref: "moveAllRight" })
       .trigger("click");
-    expect(onChangeSpy).toBeCalledWith(["test_1", "test_2", "test_3"]);
+    expect(updateData).toBeCalledWith(expect.anything(), props.control.path, [
+      "test_1",
+      "test_2",
+      "test_3",
+    ]);
   });
 
   it("does not render content of SimpleTwinlistInput when visible is false", async () => {
     wrapper.vm.control = { ...props.control, visible: false };
     await flushPromises(); // wait until pending promises are resolved
-    expect(wrapper.findComponent(LabeledInput).exists()).toBe(false);
+    expect(wrapper.findComponent(DialogLabel).exists()).toBe(false);
   });
 });

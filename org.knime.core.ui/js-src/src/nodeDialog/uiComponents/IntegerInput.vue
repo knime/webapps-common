@@ -1,17 +1,9 @@
-<script>
-import { defineComponent } from "vue";
+<script setup lang="ts">
+import { rendererProps } from "@jsonforms/vue";
 import NumberInputBase from "./NumberInputBase.vue";
-
-const IntegerInput = defineComponent({
-  name: "IntegerInput",
-  components: {
-    NumberInputBase,
-  },
-  inheritAttrs: false,
-});
-export default IntegerInput;
+defineProps(rendererProps());
 </script>
 
 <template>
-  <NumberInputBase v-bind="$attrs" type="integer" />
+  <NumberInputBase v-bind="$props" type="integer" />
 </template>

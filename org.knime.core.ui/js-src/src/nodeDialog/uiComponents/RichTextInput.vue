@@ -1,72 +1,32 @@
-<script lang="ts">
-import { defineComponent } from "vue";
-import { rendererProps } from "@jsonforms/vue";
-import { isModelSettingAndHasNodeView, getFlowVariablesMap } from "../utils";
+<script setup lang="ts">
 import RichTextEditor from "webapps-common/ui/components/forms/RichTextEditor/RichTextEditor.vue";
 import createOnEscapeExtension from "webapps-common/ui/components/forms/RichTextEditor/createOnEscapeExtension";
-
-import LabeledInput from "./LabeledInput.vue";
-import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
 import inject from "../utils/inject";
-const RichTextInput = defineComponent({
-  name: "RichTextInput",
-  components: {
-    RichTextEditor,
-    LabeledInput,
-  },
-  props: {
-    ...rendererProps(),
-  },
-  emits: ["update"],
-  setup(props) {
-    const closeDialog = inject("closeDialog");
-    /**
-     * TODO: Remove and resolve properly with https://knime-com.atlassian.net/browse/UIEXT-1461-
-     */
-    const CloseDialogOnEscape = createOnEscapeExtension(() => {
-      closeDialog();
-      return true;
-    });
-    return { ...useJsonFormsControlWithUpdate(props), CloseDialogOnEscape };
-  },
-  computed: {
-    isModelSettingAndHasNodeView() {
-      return isModelSettingAndHasNodeView(this.control);
-    },
-    flowSettings() {
-      return getFlowVariablesMap(this.control);
-    },
-    disabled() {
-      return (
-        !this.control.enabled ||
-        Boolean(this.flowSettings?.controllingFlowVariableName)
-      );
-    },
-  },
-  methods: {
-    onChange(value: string) {
-      this.handleChange(this.control.path, value);
-      if (this.isModelSettingAndHasNodeView) {
-        // @ts-expect-error
-        this.$store.dispatch("pagebuilder/dialog/dirtySettings", true);
-      }
-    },
-  },
+import useDialogControl from "../composables/useDialogControl";
+import { rendererProps } from "@jsonforms/vue";
+import LabeledInput from "./label/LabeledInput.vue";
+const props = defineProps(rendererProps());
+const {
+  control,
+  handleDirtyChange: onChange,
+  disabled,
+} = useDialogControl<string>({ props });
+
+const closeDialog = inject("closeDialog");
+/**
+ * TODO: Remove and resolve properly with https://knime-com.atlassian.net/browse/UIEXT-1461-
+ */
+const CloseDialogOnEscape = createOnEscapeExtension(() => {
+  closeDialog();
+  return true;
 });
-export default RichTextInput;
 </script>
 
 <template>
   <LabeledInput
     #default="{ labelForId }"
-    :config-keys="control?.schema?.configKeys"
-    :flow-variables-map="control.rootSchema.flowVariablesMap"
-    :path="control.path"
-    :text="control.label"
-    :description="control.description"
-    :errors="[control.errors]"
-    :flow-settings="flowSettings"
-    class="input-wrapper"
+    fill
+    :control="control"
     @controlling-flow-variable-set="onChange"
   >
     <RichTextEditor
@@ -85,7 +45,7 @@ export default RichTextInput;
         bulletList: true,
         orderedList: true,
         heading: true,
-        blockQuote: true,
+        blockquote: true,
         code: true,
         codeBlock: true,
         horizontalRule: true,
@@ -110,14 +70,6 @@ export default RichTextInput;
 .editor-editable {
   &:deep(.rich-text-editor) {
     height: calc(100% - var(--toolbar-height));
-  }
-}
-
-.input-wrapper {
-  height: 100%;
-
-  &:deep(.label-wrapper) {
-    height: 100%;
   }
 }
 </style>

@@ -50,7 +50,7 @@ describe("ColumnSelect", () => {
     };
 
     expect(determineRenderer(uiSchema, schema, renderers)).toBe(
-      "TwinListInput",
+      "TwinlistInput",
     );
   });
 
@@ -64,7 +64,7 @@ describe("ColumnSelect", () => {
     };
 
     expect(determineRenderer(uiSchema, schema, renderers)).toBe(
-      "SimpleTwinListInput",
+      "SimpleTwinlistInput",
     );
   });
 });

@@ -1,17 +1,10 @@
-<script>
-import { defineComponent } from "vue";
+<script setup lang="ts">
 import RadioInputBase from "./RadioInputBase.vue";
+import { rendererProps } from "@jsonforms/vue";
 
-const RadioInput = defineComponent({
-  name: "RadioInput",
-  components: {
-    RadioInputBase,
-  },
-  inheritAttrs: false,
-});
-export default RadioInput;
+defineProps(rendererProps());
 </script>
 
 <template>
-  <RadioInputBase v-bind="$attrs" type="radio" />
+  <RadioInputBase v-bind="$props" type="radio" />
 </template>

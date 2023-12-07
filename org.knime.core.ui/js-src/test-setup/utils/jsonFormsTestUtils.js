@@ -13,7 +13,7 @@ import * as useJsonFormsControlWithUpdateModule from "@/nodeDialog/composables/u
 import * as jsonformsVueModule from "@jsonforms/vue";
 
 import { getPossibleValuesFromUiSchema } from "@/nodeDialog/utils";
-import { ref } from "vue";
+import { reactive, ref } from "vue";
 
 export const mountJsonFormsComponent = (
   component,
@@ -22,6 +22,7 @@ export const mountJsonFormsComponent = (
     provide,
     modules = null,
     showAdvanced = false,
+    withControllingFlowVariable = false,
     stubs = {},
   } = {},
 ) => {
@@ -39,19 +40,33 @@ export const mountJsonFormsComponent = (
   const updateData =
     updateDataMock ||
     vi.fn((handleChange, path, value) => handleChange(path, value));
-  const getData = getDataMock || vi.fn();
-  const sendAlert = sendAlertMock || vi.fn();
-  const asyncChoicesProvider = asyncChoicesProviderMock || vi.fn();
+  const getData = getDataMock ?? vi.fn();
+  const sendAlert = sendAlertMock ?? vi.fn();
+  const asyncChoicesProvider = asyncChoicesProviderMock ?? vi.fn();
+  const flowVariablesMap = reactive(
+    withControllingFlowVariable
+      ? {
+          [typeof withControllingFlowVariable === "string"
+            ? withControllingFlowVariable
+            : props.control.path]: {
+            controllingFlowVariableAvailable: true,
+            controllingFlowVariableName: "knime.test",
+          },
+        }
+      : {},
+  );
   if (props.control) {
     vi.spyOn(jsonformsVueModule, "useJsonFormsControl").mockReturnValue({
       handleChange: vi.fn(),
       control: ref(props.control),
     });
   }
+  const store = createStore({ modules });
   const wrapper = mount(component, {
     props,
     global: {
       provide: {
+        store,
         getKnimeService: () => ({
           extensionConfig: {
             nodeId: "nodeId",
@@ -73,13 +88,14 @@ export const mountJsonFormsComponent = (
         updateData,
         getData,
         sendAlert,
+        getFlowVariablesMap: () => flowVariablesMap,
       },
       stubs: {
         DispatchRenderer: true,
         ...stubs,
       },
       mocks: {
-        $store: createStore({ modules }),
+        $store: store,
       },
     },
     provide: {
@@ -99,6 +115,7 @@ export const mountJsonFormsComponent = (
     useJsonFormsControlSpy,
     sendAlert,
     getData,
+    flowVariablesMap,
   };
 };
 

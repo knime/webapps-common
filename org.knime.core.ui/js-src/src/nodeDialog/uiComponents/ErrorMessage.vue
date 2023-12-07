@@ -1,9 +1,11 @@
-<script>
+<script lang="ts">
+import type { PropType } from "vue";
+
 export default {
   props: {
     errors: {
       default: () => [],
-      type: Array,
+      type: Array as PropType<Array<{ message: string }>>,
     },
   },
   computed: {

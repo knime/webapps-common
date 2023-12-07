@@ -47,9 +47,7 @@ describe("FileChooser.vue", () => {
       props,
       global: {
         provide: {
-          getJsonDataService: () => ({
-            data: dataServiceSpy,
-          }),
+          getData: dataServiceSpy,
         },
         stubs: {
           Button: {

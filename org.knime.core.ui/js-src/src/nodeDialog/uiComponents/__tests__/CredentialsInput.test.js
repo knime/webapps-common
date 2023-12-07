@@ -4,7 +4,8 @@ import {
   initializesJsonFormsControl,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import CredentialsInput from "../CredentialsInput.vue";
-import LabeledInput from "../LabeledInput.vue";
+import LabeledInput from "../label/LabeledInput.vue";
+import DialogLabel from "../label/DialogLabel.vue";
 import InputField from "webapps-common/ui/components/forms/InputField.vue";
 import { inputFormats } from "@/nodeDialog/constants";
 import flushPromises from "flush-promises";
@@ -87,12 +88,12 @@ describe("CredentialsInput.vue", () => {
   });
 
   it("sets labelForId", () => {
-    const labeledInput = wrapper.findComponent(LabeledInput);
-    expect(labeledInput.get(".credentials-input-wrapper").attributes().id).toBe(
-      labeledInput.vm.labelForId,
+    const dialogLabel = wrapper.findComponent(DialogLabel);
+    expect(dialogLabel.get(".credentials-input-wrapper").attributes().id).toBe(
+      dialogLabel.vm.labelForId,
     );
-    expect(labeledInput.vm.labeledElement).toBeDefined();
-    expect(labeledInput.vm.labeledElement).not.toBeNull();
+    expect(dialogLabel.vm.labeledElement).toBeDefined();
+    expect(dialogLabel.vm.labeledElement).not.toBeNull();
   });
 
   it("initializes jsonforms", () => {
@@ -100,33 +101,12 @@ describe("CredentialsInput.vue", () => {
   });
 
   it("disables input when controlled by a flow variable", async () => {
-    wrapper.vm.control.rootSchema.flowVariablesMap[props.control.path] = {
-      controllingFlowVariableAvailable: true,
-      controllingFlowVariableName: "knime.test",
-      exposedFlowVariableName: "test",
-      leaf: true,
-    };
-    await wrapper.vm.$nextTick(); // wait until pending promises are resolved
+    const { wrapper } = mountJsonFormsComponent(CredentialsInput, {
+      props,
+      withControllingFlowVariable: true,
+    });
+    await flushPromises();
     expect(wrapper.vm.disabled).toBeTruthy();
-  });
-
-  it("does not render content of CredentialsInput when visible is false", async () => {
-    wrapper.vm.control.visible = false;
-    await wrapper.vm.$nextTick(); // wait until pending promises are resolved
-    expect(wrapper.findComponent(LabeledInput).exists()).toBeFalsy();
-  });
-
-  it("checks that it is not rendered if it is an advanced setting", async () => {
-    wrapper.vm.control.uischema.options.isAdvanced = true;
-    await wrapper.vm.$nextTick(); // wait until pending promises are resolved
-    expect(wrapper.findComponent(CredentialsInput).isVisible()).toBeFalsy();
-  });
-
-  it("checks that it is rendered if it is an advanced setting and advanced settings are shown", async () => {
-    wrapper.vm.control.uischema.options.isAdvanced = true;
-    wrapper.vm.control.rootSchema.showAdvancedSettings = true;
-    await wrapper.vm.$nextTick(); // wait until pending promises are resolved
-    expect(wrapper.getComponent(CredentialsInput).isVisible()).toBeTruthy();
   });
 
   it("sets correct initial value", () => {
@@ -253,17 +233,16 @@ describe("CredentialsInput.vue", () => {
   });
 
   it("sets flow variable name in data if controlling flow variable is set", async () => {
-    const flowVariablesMap = {
-      credentials: {
-        controllingFlowVariableName: null,
+    const { wrapper, updateData, flowVariablesMap } = mountJsonFormsComponent(
+      CredentialsInput,
+      {
+        props,
       },
-    };
-    props.control.rootSchema.flowVariablesMap = flowVariablesMap;
-    const { wrapper, updateData } = mountJsonFormsComponent(CredentialsInput, {
-      props,
-    });
+    );
     const flowVarName = "flowVar1";
-    flowVariablesMap.credentials.controllingFlowVariableName = flowVarName;
+    flowVariablesMap.credentials = {
+      controllingFlowVariableName: flowVarName,
+    };
     wrapper.vm.control = { ...wrapper.vm.control };
     await flushPromises();
     expect(updateData).toHaveBeenCalledWith(expect.anything(), "credentials", {
@@ -275,15 +254,13 @@ describe("CredentialsInput.vue", () => {
   });
 
   it("clears data if controlling flow variable is unset", async () => {
-    const flowVariablesMap = {
-      credentials: {
-        controllingFlowVariableName: "flowVar1",
+    const { wrapper, updateData, flowVariablesMap } = mountJsonFormsComponent(
+      CredentialsInput,
+      {
+        props,
+        withControllingFlowVariable: true,
       },
-    };
-    props.control.rootSchema.flowVariablesMap = flowVariablesMap;
-    const { wrapper, updateData } = mountJsonFormsComponent(CredentialsInput, {
-      props,
-    });
+    );
     flowVariablesMap.credentials.controllingFlowVariableName = null;
     wrapper.vm.control = { ...wrapper.vm.control };
     await flushPromises();

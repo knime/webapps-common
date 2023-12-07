@@ -64,21 +64,4 @@ describe("IntegerInput.vue", () => {
       useJsonFormsControlSpy: component.useJsonFormsControlSpy,
     });
   });
-
-  it("checks that it is not rendered if it is an advanced setting", () => {
-    defaultProps.control.uischema.options.isAdvanced = true;
-    const { wrapper } = mountJsonFormsComponent(IntegerInput, {
-      props: defaultProps,
-    });
-    expect(wrapper.getComponent(NumberInputBase).isVisible()).toBe(false);
-  });
-
-  it("checks that it is rendered if it is an advanced setting and advanced settings are shown", () => {
-    defaultProps.control.rootSchema.showAdvancedSettings = true;
-    defaultProps.control.uischema.options.isAdvanced = true;
-    const { wrapper } = mountJsonFormsComponent(IntegerInput, {
-      props: defaultProps,
-    });
-    expect(wrapper.getComponent(NumberInputBase).isVisible()).toBe(true);
-  });
 });

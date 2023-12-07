@@ -3,16 +3,19 @@ import OnlyFlowVariable from "webapps-common/ui/assets/img/icons/only-flow-varia
 import ExposeFlowVariable from "webapps-common/ui/assets/img/icons/expose-flow-variables.svg";
 import BothFlowVariables from "webapps-common/ui/assets/img/icons/both-flow-variables.svg";
 
-import type FlowVariableIconProps from "./types/FlowVariableIconProps";
+import type FlowVariableIconProps from "../types/FlowVariableIconProps";
 import { computed, watch } from "vue";
+import { getFlowVariableSettingsProvidedByControl } from "../../../composables/useFlowVariables";
 
-const props = defineProps<FlowVariableIconProps>();
+const { flowSettings } = getFlowVariableSettingsProvidedByControl();
+
+defineProps<FlowVariableIconProps>();
 const emit = defineEmits(["tooltip"]);
 const isControlled = computed(() =>
-  Boolean(props.flowSettings?.controllingFlowVariableName),
+  Boolean(flowSettings.value?.controllingFlowVariableName),
 );
 const isExposed = computed(() =>
-  Boolean(props.flowSettings?.exposedFlowVariableName),
+  Boolean(flowSettings.value?.exposedFlowVariableName),
 );
 
 const emitTooltip = (tooltip: string) => {

@@ -1,15 +1,10 @@
-<script lang="ts">
-import { defineComponent } from "vue";
-import { rendererProps } from "@jsonforms/vue";
-import {
-  isModelSettingAndHasNodeView,
-  getFlowVariablesMap,
-  mergeDeep,
-} from "../utils";
+<script setup lang="ts">
+import { computed, watch } from "vue";
+import { mergeDeep } from "../utils";
 import InputField from "webapps-common/ui/components/forms/InputField.vue";
-import LabeledInput from "./LabeledInput.vue";
-import DialogComponentWrapper from "./DialogComponentWrapper.vue";
-import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
+import useDialogControl from "../composables/useDialogControl";
+import LabeledInput from "./label/LabeledInput.vue";
+import { rendererProps } from "@jsonforms/vue";
 
 interface Credentials {
   username: string;
@@ -19,160 +14,116 @@ interface Credentials {
   isHiddenSecondFactor?: boolean;
   flowVariableName?: string | null;
 }
+const props = defineProps(rendererProps());
+const {
+  control,
+  handleDirtyChange: onChange,
+  disabled,
+  flowSettings,
+} = useDialogControl<Credentials>({ props });
 
-const CredentialsInput = defineComponent({
-  name: "CredentialsInput",
-  components: {
-    InputField,
-    LabeledInput,
-    DialogComponentWrapper,
-  },
-  props: {
-    ...rendererProps(),
-  },
-  setup(props) {
-    return useJsonFormsControlWithUpdate(props);
-  },
-  computed: {
-    isModelSettingAndHasNodeView() {
-      return isModelSettingAndHasNodeView(this.control);
-    },
-    flowSettings() {
-      return getFlowVariablesMap(this.control);
-    },
-    controllingFlowVariableName() {
-      return this.flowSettings?.controllingFlowVariableName;
-    },
-    disabled() {
-      return !this.control.enabled || Boolean(this.controllingFlowVariableName);
-    },
-    data() {
-      return this.control.data ?? this.getDefaultData();
-    },
-    displayedPassword() {
-      return this.data.isHiddenPassword
-        ? "*****************"
-        : this.data.password;
-    },
-    displayedSecondFactor() {
-      return this.data.isHiddenSecondFactor
-        ? "*****************"
-        : this.data.secondFactor;
-    },
-    hideUsername() {
-      return this.control.uischema.options?.hideUsername ?? false;
-    },
-    hidePassword() {
-      return this.control.uischema.options?.hidePassword ?? false;
-    },
-    showSecondFactor() {
-      return (
-        (!this.hidePassword &&
-          this.control.uischema.options?.showSecondFactor) ??
-        false
-      );
-    },
-    usernameLabel() {
-      return this.control.uischema.options?.usernameLabel ?? "Username";
-    },
-    passwordLabel() {
-      return this.control.uischema.options?.passwordLabel ?? "Password";
-    },
-    secondFactorLabel() {
-      return (
-        this.control.uischema.options?.secondFactorLabel ??
-        "Second authentication factor"
-      );
-    },
-  },
-  watch: {
-    controllingFlowVariableName(flowVariableName) {
-      if (flowVariableName) {
-        this.onChange(mergeDeep(this.data, { flowVariableName }));
-      } else {
-        this.resetData();
-      }
-    },
-  },
-  methods: {
-    onChange(credentials: Credentials) {
-      this.handleChange(this.control.path, credentials);
-      if (this.isModelSettingAndHasNodeView) {
-        // @ts-ignore
-        this.$store.dispatch("pagebuilder/dialog/dirtySettings", true);
-      }
-    },
-    resetData() {
-      this.onChange(this.getDefaultData());
-    },
-    getDefaultData(): Credentials {
-      return { password: "", secondFactor: "", username: "" };
-    },
-    onControllingFlowVariableSet(value: Credentials) {
-      this.onChange(mergeDeep(this.data, value));
-    },
-    onChangeUsername(username: string) {
-      this.onChange(mergeDeep(this.data, { username }));
-    },
-    onChangePassword(password: string) {
-      this.onChange(
-        mergeDeep(this.data, { password, isHiddenPassword: false }),
-      );
-    },
-    onChangeSecondFactor(secondFactor: string) {
-      this.onChange(
-        mergeDeep(this.data, { secondFactor, isHiddenSecondFactor: false }),
-      );
-    },
-  },
+const getDefaultData = (): Credentials => ({
+  password: "",
+  secondFactor: "",
+  username: "",
 });
-export default CredentialsInput;
+
+const data = computed(() => {
+  return control.value.data ?? getDefaultData();
+});
+
+const onChangeUsername = (username: string) => {
+  onChange(mergeDeep(data.value, { username }));
+};
+const onChangePassword = (password: string) => {
+  onChange(mergeDeep(data.value, { password, isHiddenPassword: false }));
+};
+const onChangeSecondFactor = (secondFactor: string) => {
+  onChange(
+    mergeDeep(data.value, { secondFactor, isHiddenSecondFactor: false }),
+  );
+};
+
+const hiddenPassword = "*****************";
+const displayedPassword = computed(() => {
+  return data.value.isHiddenPassword ? hiddenPassword : data.value.password;
+});
+const displayedSecondFactor = computed(() => {
+  return data.value.isHiddenSecondFactor
+    ? hiddenPassword
+    : data.value.secondFactor;
+});
+const options = computed(() => control.value.uischema.options ?? {});
+const hideUsername = computed(() => options.value.hideUsername ?? false);
+const hidePassword = computed(() => options.value?.hidePassword ?? false);
+const showSecondFactor = computed(
+  () => !hidePassword.value && (options.value.showSecondFactor ?? false),
+);
+const usernameLabel = computed(
+  () => options.value?.usernameLabel ?? "Username",
+);
+const passwordLabel = computed(
+  () => options.value?.passwordLabel ?? "Password",
+);
+const secondFactorLabel = computed(
+  () => options.value?.secondFactorLabel ?? "Second authentication factor",
+);
+
+// Flow variables
+
+const controllingFlowVariableName = computed(
+  () => flowSettings.value?.controllingFlowVariableName,
+);
+watch(
+  () => controllingFlowVariableName.value,
+  (flowVariableName) => {
+    if (flowVariableName) {
+      onChange(mergeDeep(data.value, { flowVariableName }));
+    } else {
+      onChange(getDefaultData());
+    }
+  },
+);
+const onControllingFlowVariableSet = (value: Credentials) => {
+  onChange(mergeDeep<Credentials>(data.value, value));
+};
 </script>
 
 <template>
-  <DialogComponentWrapper :control="control" style="min-width: 0">
-    <LabeledInput
-      #default="{ labelForId }"
-      :config-keys="control?.schema?.configKeys"
-      :flow-variables-map="control.rootSchema.flowVariablesMap"
-      :path="control.path"
-      :text="control.label"
-      :description="control.description"
-      :errors="[control.errors]"
-      :show-reexecution-icon="isModelSettingAndHasNodeView"
-      :flow-settings="flowSettings"
-      @controlling-flow-variable-set="onControllingFlowVariableSet"
-    >
-      <div :id="labelForId" class="credentials-input-wrapper">
-        <InputField
-          v-if="!hideUsername"
-          :placeholder="usernameLabel"
-          :model-value="data.username"
-          :disabled="disabled"
-          type="text"
-          @update:model-value="onChangeUsername"
-        />
-        <InputField
-          v-if="!hidePassword"
-          :class="{ margin: !hideUsername }"
-          :placeholder="passwordLabel"
-          :model-value="displayedPassword"
-          :disabled="disabled"
-          type="password"
-          @update:model-value="onChangePassword"
-        />
-        <InputField
-          v-if="showSecondFactor"
-          :class="{ margin: !hideUsername || !hidePassword }"
-          :placeholder="secondFactorLabel"
-          :model-value="displayedSecondFactor"
-          :disabled="disabled"
-          type="password"
-          @update:model-value="onChangeSecondFactor"
-        />
-      </div>
-    </LabeledInput>
-  </DialogComponentWrapper>
+  <LabeledInput
+    #default="{ labelForId }"
+    :control="control"
+    @controlling-flow-variable-set="onControllingFlowVariableSet"
+  >
+    <div :id="labelForId ?? undefined" class="credentials-input-wrapper">
+      <InputField
+        v-if="!hideUsername"
+        :placeholder="usernameLabel"
+        :model-value="data.username"
+        :disabled="disabled"
+        type="text"
+        @update:model-value="onChangeUsername"
+      />
+      <InputField
+        v-if="!hidePassword"
+        :class="{ margin: !hideUsername }"
+        :placeholder="passwordLabel"
+        :model-value="displayedPassword"
+        :disabled="disabled"
+        type="password"
+        @update:model-value="onChangePassword"
+      />
+      <InputField
+        v-if="showSecondFactor"
+        :class="{ margin: !hideUsername || !hidePassword }"
+        :placeholder="secondFactorLabel"
+        :model-value="displayedSecondFactor"
+        :disabled="disabled"
+        type="password"
+        @update:model-value="onChangeSecondFactor"
+      />
+    </div>
+  </LabeledInput>
 </template>
 
 <style lang="postcss" scoped>

@@ -1,21 +1,15 @@
-<script>
+<script setup lang="ts">
+import { rendererProps } from "@jsonforms/vue";
+import Control from "../types/Control";
 import { optionsMapper } from "../utils";
 import SimpleTwinlistInput from "./SimpleTwinlistInput.vue";
 
-export default {
-  name: "AnyOfTwinlist",
-  components: {
-    SimpleTwinlistInput,
-  },
-  inheritAttrs: false,
-  methods: {
-    optionsGenerator(control) {
-      return control?.schema?.anyOf?.map(optionsMapper);
-    },
-  },
+defineProps(rendererProps());
+const optionsGenerator = (control: Control) => {
+  return control?.schema?.anyOf?.map(optionsMapper);
 };
 </script>
 
 <template>
-  <SimpleTwinlistInput v-bind="$attrs" :options-generator="optionsGenerator" />
+  <SimpleTwinlistInput v-bind="$props" :options-generator="optionsGenerator" />
 </template>

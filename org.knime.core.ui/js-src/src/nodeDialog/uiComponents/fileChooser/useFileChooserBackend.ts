@@ -1,5 +1,5 @@
 import type { FolderAndError } from "./types";
-import { injectJsonDataService } from "@/nodeDialog/utils/inject";
+import inject from "@/nodeDialog/utils/inject";
 
 type ListItems = (params: {
   method: "fileChooser.listItems";
@@ -39,22 +39,16 @@ type GetFilePath = (params: {
 }) => Promise<string>;
 
 export default () => {
-  let jsonDataService: { data: GetFilePath & ListItems } | null = null;
-  const getDataService = () => {
-    if (jsonDataService === null) {
-      jsonDataService = injectJsonDataService();
-    }
-    return jsonDataService;
-  };
+  const getData = inject("getData") as GetFilePath & ListItems;
 
   const listItems = (path: string | null, nextFolder: string | null) => {
-    return getDataService().data({
+    return getData({
       method: "fileChooser.listItems",
       options: ["local", path, nextFolder],
     });
   };
   const getFilePath = (path: string | null, fileName: string) => {
-    return getDataService().data({
+    return getData({
       method: "fileChooser.getFilePath",
       options: ["local", path, fileName],
     });

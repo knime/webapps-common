@@ -1,194 +1,144 @@
-<script lang="ts">
-import { defineComponent, type PropType } from "vue";
+<script setup lang="ts">
+import { type Ref, type PropType, ref, computed, onMounted } from "vue";
 import { rendererProps } from "@jsonforms/vue";
-import { getFlowVariablesMap, isModelSettingAndHasNodeView } from "../utils";
-import Dropdown from "./loading/LoadingDropdown.vue";
-import LabeledInput from "./LabeledInput.vue";
-import DialogComponentWrapper from "./DialogComponentWrapper.vue";
+import LoadingDropdown from "./loading/LoadingDropdown.vue";
 import { AlertTypes } from "@knime/ui-extension-service";
 import { set } from "lodash";
-import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
 import getFlattenedSettings from "../utils/getFlattenedSettings";
 import { v4 as uuidv4 } from "uuid";
 import inject from "../utils/inject";
 import type SettingsData from "../types/SettingsData";
 import type { IdAndText } from "../types/ChoicesUiSchema";
+import useDialogControl from "../composables/useDialogControl";
+import LabeledInput from "./label/LabeledInput.vue";
 
-const DropdownInput = defineComponent({
-  name: "DropdownInput",
-  components: {
-    Dropdown,
-    LabeledInput,
-    DialogComponentWrapper,
+const props = defineProps({
+  ...rendererProps(),
+  asyncInitialOptions: {
+    type: Object as PropType<Promise<IdAndText[]>>,
+    required: false,
+    default: null,
   },
-  props: {
-    ...rendererProps(),
-    asyncInitialOptions: {
-      type: Object as PropType<Promise<IdAndText[]>>,
-      required: false,
-      default: null,
-    },
-    jsonFormsControl: {
-      type: Object as PropType<null | ReturnType<
-        typeof useJsonFormsControlWithUpdate
-      >>,
-      required: false,
-      default: null,
-    },
-    controlDataToDropdownValue: {
-      type: Function as PropType<(data: any) => string>,
-      required: false,
-      default: (data: string) => data,
-    },
-    dropdownValueToControlData: {
-      type: Function as PropType<(value: string | null) => any>,
-      required: false,
-      default: (value: string | null) => value,
-    },
-    subConfigKeys: {
-      type: Array as PropType<string[] | undefined>,
-      required: false,
-      default: () => [],
-    },
+  jsonFormsControl: {
+    type: Object as PropType<null | ReturnType<typeof useDialogControl>>,
+    required: false,
+    default: null,
   },
-  setup(props) {
-    return {
-      ...(props.jsonFormsControl ?? useJsonFormsControlWithUpdate(props)),
-      getPossibleValuesFromUiSchema: inject("getPossibleValuesFromUiSchema"),
-      registerWatcher: inject("registerWatcher"),
-      getData: inject("getData"),
-      sendAlert: inject("sendAlert"),
-    };
+  controlDataToDropdownValue: {
+    type: Function as PropType<(data: any) => string>,
+    required: false,
+    default: (data: string) => data,
   },
-  data() {
-    return {
-      options: null as null | IdAndText[],
-      widgetId: uuidv4(),
-    };
-  },
-  computed: {
-    isModelSettingAndHasNodeView() {
-      return isModelSettingAndHasNodeView(this.control);
-    },
-    flowSettings() {
-      return getFlowVariablesMap(this.control, this.subConfigKeys);
-    },
-    disabled() {
-      return (
-        !this.control.enabled ||
-        Boolean(this.flowSettings?.controllingFlowVariableName)
-      );
-    },
-    dropdownValue() {
-      return this.controlDataToDropdownValue(this.control.data);
-    },
-    choicesUpdateHandler() {
-      return this.control.uischema.options?.choicesUpdateHandler;
-    },
-  },
-  mounted() {
-    if (this.choicesUpdateHandler) {
-      const dependencies = this.control.uischema.options?.dependencies || [];
-      this.registerWatcher({
-        transformSettings: this.updateOptions.bind(this),
-        init: this.fetchInitialOptions.bind(this),
-        dependencies,
-      });
-    } else {
-      this.setInitialOptions();
-    }
-  },
-  methods: {
-    async setInitialOptions() {
-      if (this.asyncInitialOptions === null) {
-        this.getPossibleValuesFromUiSchema(this.control).then((result) => {
-          this.options = result;
-        });
-      } else {
-        this.options = await this.asyncInitialOptions;
-      }
-    },
-    async fetchInitialOptions(newSettings: SettingsData) {
-      // initially only fetch possible values, but do not set a value
-      // instead, use value from initial data
-      await this.updateOptions(newSettings, false);
-    },
-    async updateOptions(newSettings: SettingsData, setNewValue = true) {
-      const { result, state, message } = await this.getData({
-        method: "settings.update",
-        options: [
-          this.widgetId,
-          this.choicesUpdateHandler,
-          getFlattenedSettings(newSettings),
-        ],
-      });
-      if (result) {
-        this.handleResult(result, newSettings, setNewValue);
-      }
-      if (state === "FAIL") {
-        this.sendAlert({
-          type: AlertTypes.ERROR,
-          message,
-        });
-        this.handleResult([], newSettings, setNewValue);
-      }
-    },
-    handleResult(
-      result: IdAndText[],
-      newSettings: SettingsData,
-      setNewValue = true,
-    ) {
-      this.options = result;
-      if (setNewValue) {
-        set(
-          newSettings,
-          this.control.path,
-          this.getFirstValueFromDropdownOrNull(result),
-        );
-      }
-    },
-    getFirstValueFromDropdownOrNull(result: IdAndText[]) {
-      return this.dropdownValueToControlData(
-        result.length > 0 ? result[0].id : null,
-      );
-    },
-    onChange(value: string) {
-      this.handleChange(
-        this.control.path,
-        this.dropdownValueToControlData(value),
-      );
-      if (this.isModelSettingAndHasNodeView) {
-        // @ts-ignore
-        this.$store.dispatch("pagebuilder/dialog/dirtySettings", true);
-      }
-    },
+  dropdownValueToControlData: {
+    type: Function as PropType<(value: string | null) => any>,
+    required: false,
+    default: (value: string | null) => value,
   },
 });
-export default DropdownInput;
+const { control, handleDirtyChange, disabled } =
+  props.jsonFormsControl ?? useDialogControl<string>({ props });
+const getPossibleValuesFromUiSchema = inject("getPossibleValuesFromUiSchema");
+const registerWatcher = inject("registerWatcher");
+const getData = inject("getData");
+const sendAlert = inject("sendAlert");
+
+const options: Ref<null | IdAndText[]> = ref(null);
+
+const getFirstValueFromDropdownOrNull = (result: IdAndText[]) => {
+  return props.dropdownValueToControlData(
+    result.length > 0 ? result[0].id : null,
+  );
+};
+
+const choicesUpdateHandler = computed(
+  () => control.value.uischema.options?.choicesUpdateHandler,
+);
+const widgetId = uuidv4();
+const updateOptions = async (newSettings: SettingsData, setNewValue = true) => {
+  const { result, state, message } = await getData({
+    method: "settings.update",
+    options: [
+      widgetId,
+      choicesUpdateHandler.value,
+      getFlattenedSettings(newSettings),
+    ],
+  });
+
+  const handleResult = (result: IdAndText[]) => {
+    options.value = result;
+    if (setNewValue) {
+      set(
+        newSettings,
+        control.value.path,
+        getFirstValueFromDropdownOrNull(result),
+      );
+    }
+  };
+
+  if (result) {
+    handleResult(result);
+  }
+  if (state === "FAIL") {
+    sendAlert({
+      type: AlertTypes.ERROR,
+      message,
+    });
+    handleResult([]);
+  }
+};
+
+const fetchInitialOptions = async (newSettings: SettingsData) => {
+  // initially only fetch possible values, but do not set a value
+  // instead, use value from initial data
+  await updateOptions(newSettings, false);
+};
+
+const setInitialOptions = async () => {
+  if (props.asyncInitialOptions === null) {
+    getPossibleValuesFromUiSchema(control.value).then((result) => {
+      options.value = result;
+    });
+  } else {
+    options.value = await props.asyncInitialOptions;
+  }
+};
+
+onMounted(() => {
+  if (choicesUpdateHandler.value) {
+    const dependencies = control.value.uischema.options?.dependencies || [];
+    registerWatcher({
+      transformSettings: updateOptions,
+      init: fetchInitialOptions,
+      dependencies,
+    });
+  } else {
+    setInitialOptions();
+  }
+});
+
+const dropdownValue = computed(() =>
+  props.controlDataToDropdownValue(control.value.data),
+);
+
+const onChange = (value: string) => {
+  handleDirtyChange(props.dropdownValueToControlData(value));
+};
 </script>
 
 <template>
-  <DialogComponentWrapper :control="control" style="min-width: 0">
-    <LabeledInput
-      #default="{ labelForId }"
-      :flow-variables-map="control.rootSchema.flowVariablesMap"
-      :flow-settings="flowSettings"
-      :config-keys="control?.schema?.configKeys"
-      :sub-config-keys="subConfigKeys"
-      :path="control.path"
-      :text="control.label"
-      :show-reexecution-icon="isModelSettingAndHasNodeView"
-      :description="control.description"
-      @controlling-flow-variable-set="onChange"
-    >
-      <Dropdown
-        :id="labelForId"
-        :aria-label="control.label"
-        :disabled="disabled"
-        :model-value="dropdownValue"
-        :possible-values="options"
-        @update:model-value="onChange"
-      />
-    </LabeledInput>
-  </DialogComponentWrapper>
+  <LabeledInput
+    #default="{ labelForId }"
+    :control="control"
+    @controlling-flow-variable-set="onChange"
+  >
+    <!-- eslint-disable vue/attribute-hyphenation typescript complains with ':aria-label' instead of ':ariaLabel'-->
+    <LoadingDropdown
+      :id="labelForId ?? ''"
+      :ariaLabel="control.label"
+      :disabled="disabled"
+      :model-value="dropdownValue"
+      :possible-values="options"
+      @update:model-value="onChange"
+    />
+  </LabeledInput>
 </template>

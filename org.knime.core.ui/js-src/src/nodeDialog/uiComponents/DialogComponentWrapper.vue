@@ -16,11 +16,15 @@ export default DialogComponentWrapper;
 </script>
 
 <template>
-  <div v-if="isVisible" :class="{ fadeContainer: isAdvanced }">
+  <div v-if="isVisible" :class="['wrapper', { fadeContainer: isAdvanced }]">
     <slot />
   </div>
 </template>
 
 <style lang="postcss" scoped>
 @import url("../utils/animation.css");
+
+.wrapper {
+  min-width: 0;
+}
 </style>

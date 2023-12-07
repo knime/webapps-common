@@ -533,7 +533,7 @@ export const expectedRenderers = [
   { scope: "#/properties/view/properties/title", component: "TextInput" },
   { scope: "#/properties/view/properties/yAxisScale", component: "RadioInput" },
   { scope: "#/properties/view/properties/maxRows", component: "IntegerInput" },
-  { scope: "#/properties/view/properties/fraction", component: "IntegerInput" },
+  { scope: "#/properties/view/properties/fraction", component: "NumberInput" },
   {
     scope: "#/properties/view/properties/showTooltip",
     component: "CheckboxInput",
@@ -541,10 +541,6 @@ export const expectedRenderers = [
   {
     scope: "#/properties/view/properties/xAxisColumn",
     component: "ColumnSelect",
-  },
-  {
-    scope: "#/properties/view/properties/yAxisColumn",
-    component: "SimpleTwinListInput",
   },
   { scope: "#/properties/view/properties/xAxisLabel", component: "TextInput" },
   { scope: "#/properties/view/properties/yAxisLabel", component: "TextInput" },
@@ -558,7 +554,7 @@ export const expectedRenderers = [
   },
   {
     scope: "#/properties/view/properties/simpleTwinlist",
-    component: "SimpleTwinListInput",
+    component: "SimpleTwinlistInput",
   },
   {
     scope: "#/properties/view/properties/referenceLines",

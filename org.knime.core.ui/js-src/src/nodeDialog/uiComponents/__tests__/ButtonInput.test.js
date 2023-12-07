@@ -8,7 +8,8 @@ import DialogComponentWrapper from "../DialogComponentWrapper.vue";
 import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
 import LoadingIcon from "webapps-common/ui/components/LoadingIcon.vue";
 import Label from "webapps-common/ui/components/forms/Label.vue";
-import LabeledInput from "../LabeledInput.vue";
+import DialogLabel from "../label/DialogLabel.vue";
+import flushPromises from "flush-promises";
 
 describe("ButtonInput", () => {
   const states = [
@@ -52,14 +53,6 @@ describe("ButtonInput", () => {
       },
     },
   };
-  const dataSuccess = {
-    state: "SUCCESS",
-    result: {
-      settingValue: "token",
-      setSettingValue: true,
-      buttonState: states[1].id,
-    },
-  };
 
   const path = "test";
 
@@ -86,12 +79,20 @@ describe("ButtonInput", () => {
   const mountButtonInput = ({ props, getDataMock }) =>
     mountJsonFormsComponent(ButtonInput, { props, provide: { getDataMock } });
 
-  let wrapper, props, component, getData;
+  let getDataResult, wrapper, props, component, getData;
 
   beforeEach(async () => {
     props = getProps(defaultOptions);
     vi.useFakeTimers();
-    getData = vi.fn(() => dataSuccess);
+    getDataResult = {
+      state: "SUCCESS",
+      result: {
+        settingValue: "token",
+        setSettingValue: true,
+        buttonState: states[1].id,
+      },
+    };
+    getData = vi.fn(() => getDataResult);
     component = await mountButtonInput({ props, getDataMock: getData });
     wrapper = component.wrapper;
   });
@@ -114,11 +115,11 @@ describe("ButtonInput", () => {
 
   it("sets labelForId", async () => {
     await wrapper.vm.$nextTick();
-    const labeldInput = wrapper.findComponent(LabeledInput);
+    const dialogLabel = wrapper.findComponent(DialogLabel);
     expect(getButtonComponent(wrapper).attributes().id).toBe(
-      labeldInput.vm.labelForId,
+      dialogLabel.vm.labelForId,
     );
-    expect(labeldInput.vm.labeledElement).toBeDefined().not.toBeNull();
+    expect(dialogLabel.vm.labeledElement).toBeDefined().not.toBeNull();
   });
 
   describe("renders", () => {
@@ -154,17 +155,13 @@ describe("ButtonInput", () => {
 
   describe("actions", () => {
     it("invokes action on click", async () => {
-      const widgetId = "widgetId";
       const currentSettings = { foo: "bar" };
-      await wrapper.setData({
-        currentSettings,
-        widgetId,
-      });
+      wrapper.vm.currentSettings = currentSettings;
       await getButtonComponent(wrapper).trigger("click");
       expect(getData).toHaveBeenCalledWith({
         method: "settings.invokeButtonAction",
         options: [
-          widgetId,
+          expect.anything(),
           uischema.options.actionHandler,
           states[1].id,
           currentSettings,
@@ -198,7 +195,7 @@ describe("ButtonInput", () => {
       expect(wrapper.vm.currentState).toStrictEqual(stateAfterClick);
     });
 
-    it("calls handleChange if the result should be applied", async () => {
+    it("calls updateData if the result should be applied", async () => {
       getData.mockImplementation(() => ({
         state: "SUCCESS",
         result: {
@@ -207,13 +204,16 @@ describe("ButtonInput", () => {
           buttonState: states[1].id,
         },
       }));
-      wrapper.vm.handleChange = vi.fn();
       await wrapper
         .findComponent(FunctionButton)
         .find("button")
         .trigger("click");
       vi.runAllTimers();
-      expect(wrapper.vm.handleChange).toHaveBeenCalledWith("test", "token");
+      expect(component.updateData).toHaveBeenCalledWith(
+        expect.anything(),
+        "test",
+        "token",
+      );
     });
 
     it("does not call handleChange if the result should not be applied", async () => {
@@ -262,7 +262,6 @@ describe("ButtonInput", () => {
     it("displays no error message if displayErrorMessage is false", async () => {
       const noErrorUischema = { displayErrorMessage: false };
       props = getProps(noErrorUischema);
-      getData = vi.fn(() => dataSuccess);
       const { wrapper } = await mountButtonInput({
         props,
         getDataMock: vi.fn(() => errorReult),
@@ -297,7 +296,7 @@ describe("ButtonInput", () => {
     beforeEach(() => {
       const props = getProps({ isCancelable: true });
       props.control.uischema.options.dependencies = dependenciesUischema;
-      getData = vi.fn(() => dataSuccess);
+      getData = vi.fn(() => getDataResult);
       const comp = mountButtonInput({ props, getDataMock: getData });
       wrapper = comp.wrapper;
       callbacks = comp.callbacks;
@@ -324,7 +323,7 @@ describe("ButtonInput", () => {
   });
 
   describe("updates triggered by other settings", () => {
-    let settingsChangeCallback, wrapper, dependencies, callbacks;
+    let settingsChangeCallback, wrapper, dependencies, callbacks, updateData;
 
     const dependenciesUpdateHandler = ["foo", "bar"];
     const updateHandler = "updateHandler";
@@ -335,10 +334,11 @@ describe("ButtonInput", () => {
         updateHandler,
         dependencies: dependenciesUpdateHandler,
       };
-      getData = vi.fn(() => dataSuccess);
+      getData = vi.fn(() => getDataResult);
       const comp = mountButtonInput({ props, getDataMock: getData });
       wrapper = comp.wrapper;
       callbacks = comp.callbacks;
+      updateData = comp.updateData;
       settingsChangeCallback = callbacks[1].transformSettings;
       dependencies = callbacks[1].dependencies;
       wrapper.vm.cancel = vi.fn();
@@ -354,101 +354,125 @@ describe("ButtonInput", () => {
     it("applies new state defined by the update callback", async () => {
       const settingValue = "updateSettingResult";
       const nextState = states[0];
-      getData.mockImplementation(() => ({
+      getDataResult = {
         state: "SUCCESS",
         result: {
           settingValue,
           setSettingValue: true,
           buttonState: nextState.id,
         },
-      }));
-      const widgetId = "widgetId";
-      await wrapper.setData({ widgetId });
+      };
       await settingsChangeCallback({
         model: { foo: 2, bar: 1 },
         view: { baz: 3 },
       });
       expect(getData).toHaveBeenCalledWith({
         method: "settings.update",
-        options: [widgetId, updateHandler, { foo: 2, bar: 1, baz: 3 }],
+        options: [expect.anything(), updateHandler, { foo: 2, bar: 1, baz: 3 }],
       });
-      expect(wrapper.vm.currentState).toBe(nextState);
       vi.runAllTimers();
-      expect(wrapper.vm.handleChange).toHaveBeenCalledWith(path, settingValue);
+      await flushPromises();
+      expect(wrapper.text()).toContain(nextState.text);
+      expect(updateData).toHaveBeenCalledWith(
+        expect.anything(),
+        path,
+        settingValue,
+      );
     });
   });
 
   describe("reset current state", () => {
     it("resets current state after failed request on click", async () => {
       const nextState = states[0];
-      getData.mockImplementation(() => ({
+      getDataResult = {
         state: "FAIL",
         result: {
           buttonState: nextState.id,
         },
-      }));
+      };
       await wrapper
         .findComponent(FunctionButton)
         .find("button")
         .trigger("click");
-      expect(wrapper.vm.currentState).toBe(states[1]);
+      expect(wrapper.text()).toContain(states[1].text);
     });
 
     it("resets current state after canceled request on click", async () => {
       const nextState = states[0];
-      getData.mockImplementation(() => ({
+      getDataResult = {
         state: "CANCELED",
         result: {
           buttonState: nextState.id,
         },
-      }));
+      };
       await wrapper
         .findComponent(FunctionButton)
         .find("button")
         .trigger("click");
-      expect(wrapper.vm.currentState).toBe(states[1]);
+      expect(wrapper.text()).toContain(states[1].text);
     });
   });
 
-  it("does not switch to next state on click when none exists", () => {
-    wrapper.vm.currentState = states[2];
-    expect(wrapper.vm.currentState).toBe(states[2]);
+  it("does not switch to next state on click when none exists", async () => {
+    getDataResult.result.buttonState = states[2].id;
     getButtonComponent(wrapper).trigger("click");
-    expect(wrapper.vm.currentState).toBe(states[2]);
+    expect(wrapper.text()).toContain(states[1].text);
+    await flushPromises();
+    expect(wrapper.text()).toContain(states[2].text);
+    getButtonComponent(wrapper).trigger("click");
+    expect(wrapper.text()).toContain(states[2].text);
   });
 
   describe("current state", () => {
-    it("disabled button if current state is disabled", async () => {
-      await wrapper.setData({
-        currentState: { disabled: true },
+    const mountWithInitialState = async (initialState) => {
+      const stateId = "myState";
+      const result = {
+        state: "SUCCESS",
+        result: {
+          settingValue: "token",
+          setSettingValue: true,
+          buttonState: stateId,
+        },
+      };
+      const props = getProps({
+        states: [
+          {
+            id: stateId,
+            ...initialState,
+          },
+        ],
       });
+      const { wrapper } = mountButtonInput({
+        props,
+        getDataMock: () => result,
+      });
+      await flushPromises();
+      return wrapper;
+    };
+
+    it("disabled button if current state is disabled", async () => {
+      const wrapper = await mountWithInitialState({ disabled: true });
       expect(getButtonComponent(wrapper).attributes().class).contains(
         "disabled",
       );
     });
 
     it("does not disabled button if current state is not disabled", async () => {
-      await wrapper.setData({
-        currentState: { disabled: false },
-      });
+      const wrapper = await mountWithInitialState({ disabled: false });
       expect(getButtonComponent(wrapper).attributes().class).not.contains(
         "disabled",
       );
     });
 
     it("sets primary if current state is primary", async () => {
-      await wrapper.setData({
-        currentState: { primary: true },
-      });
+      const wrapper = await mountWithInitialState({ primary: true });
       expect(getButtonComponent(wrapper).attributes().class).contains(
         "primary",
       );
     });
 
     it("does not set primary if current state is not primary", async () => {
-      await wrapper.setData({
-        currentState: { primary: false },
-      });
+      const wrapper = await mountWithInitialState({ primary: false });
       expect(getButtonComponent(wrapper).attributes().class).not.contains(
         "primary",
       );
@@ -456,9 +480,7 @@ describe("ButtonInput", () => {
 
     it("displays custom button texts", async () => {
       const text = "customText";
-      await wrapper.setData({
-        currentState: { text },
-      });
+      const wrapper = await mountWithInitialState({ text });
       expect(wrapper.find(".button-input-text").text()).toBe(text);
     });
   });

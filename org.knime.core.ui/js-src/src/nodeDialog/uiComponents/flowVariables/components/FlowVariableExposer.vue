@@ -1,22 +1,20 @@
 <script setup lang="ts">
 import InputField from "webapps-common/ui/components/forms/InputField.vue";
 import { computed, ref, watchEffect } from "vue";
-import { setExposedFlowVariable } from "@/nodeDialog/api/flowVariables";
-import type FlowVariableExposerProps from "./types/FlowVariableExposerProps";
-import ErrorMessage from "../ErrorMessage.vue";
+import type FlowVariableExposerProps from "../types/FlowVariableExposerProps";
+import ErrorMessage from "../../ErrorMessage.vue";
+import useExposedFlowVariable from "../composables/useExposedFlowVariable";
 
 const props = defineProps<FlowVariableExposerProps>();
-
-const exposedVariableName = computed(
-  () => props.flowSettings?.exposedFlowVariableName ?? "",
-);
+const { setExposedFlowVariable, exposedFlowVariableName } =
+  useExposedFlowVariable();
 
 const modelValue = ref("");
 watchEffect(() => {
-  if (exposedVariableName.value === "" && modelValue.value.trim() === "") {
+  if (exposedFlowVariableName.value === "" && modelValue.value.trim() === "") {
     return;
   }
-  modelValue.value = exposedVariableName.value;
+  modelValue.value = exposedFlowVariableName.value;
 });
 
 const isValid = computed(
@@ -25,7 +23,7 @@ const isValid = computed(
 
 const onUpdate = (value: string) => {
   modelValue.value = value;
-  setExposedFlowVariable(props.flowVariablesMap, {
+  setExposedFlowVariable({
     path: props.persistPath,
     flowVariableName: value,
   });
@@ -39,6 +37,7 @@ const ariaLabel = computed(
 <!-- eslint-disable vue/attribute-hyphenation typescript complains with ':aria-label' instead of ':ariaLabel'-->
 <template>
   <InputField
+    :id="id"
     :ariaLabel="ariaLabel"
     :model-value="modelValue"
     :is-valid="isValid"

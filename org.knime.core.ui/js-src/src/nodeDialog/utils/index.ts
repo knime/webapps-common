@@ -1,6 +1,5 @@
 import getPossibleValuesFromUiSchema from "./getPossibleValuesFromUiSchema";
 export { getPossibleValuesFromUiSchema };
-import type { FlowSettings } from "../api/types";
 import type Control from "../types/Control";
 import type { PartialDeep } from "type-fest";
 import type { JsonSchema4, JsonSchema7 } from "@jsonforms/core";
@@ -40,38 +39,10 @@ export const mergeDeep = <T extends object>(
   return mergeDeepUntyped(obj1, obj2);
 };
 
-export const isModelSettingAndHasNodeView = (control: Control) =>
-  control?.rootSchema.hasNodeView &&
-  control?.uischema.scope?.startsWith("#/properties/model");
-
-const isFlowSettings = (
-  flowSettings: FlowSettings | undefined | null,
-): flowSettings is FlowSettings => {
-  return Boolean(flowSettings);
-};
-
-const toFlowVariablesMap = (
-  rootSchema: Control["rootSchema"],
-  configPaths: string[],
-) => {
-  const flowSettings = configPaths
-    .map((key) => rootSchema?.flowVariablesMap?.[key])
-    .filter(isFlowSettings);
-  return flowSettings.reduce(
-    (a, b) => {
-      return {
-        controllingFlowVariableAvailable:
-          a?.controllingFlowVariableAvailable || // NOSONAR
-          b?.controllingFlowVariableAvailable,
-        controllingFlowVariableName: a?.controllingFlowVariableName
-          ? a?.controllingFlowVariableName
-          : b?.controllingFlowVariableName,
-        exposedFlowVariableName: a?.exposedFlowVariableName
-          ? a?.exposedFlowVariableName
-          : b?.exposedFlowVariableName,
-      };
-    },
-    null as FlowSettings | null,
+export const isModelSettingAndHasNodeView = (control: Control) => {
+  return (
+    control?.rootSchema.hasNodeView &&
+    control?.uischema.scope?.startsWith("#/properties/model")
   );
 };
 
@@ -95,24 +66,6 @@ export const getConfigPaths = (
         subConfigKeys.map((subKey) => `${configPath}.${subKey}`),
       ) //
     : configPaths;
-};
-
-// expects a modified root schema which includes a flowVariablesMap
-// the root schema should look like the following:
-// rootSchema: {
-//    flowVariablesMap: {},
-//    schema: {},
-//    uischema: {},
-//    ...
-// }
-export const getFlowVariablesMap = (
-  { rootSchema, path, schema }: Control,
-  subConfigKeys: string[] = [],
-) => {
-  return toFlowVariablesMap(
-    rootSchema,
-    getConfigPaths(path, schema.configKeys, subConfigKeys),
-  );
 };
 
 // eslint-disable-next-line max-params

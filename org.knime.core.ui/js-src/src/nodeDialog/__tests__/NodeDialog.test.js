@@ -354,26 +354,6 @@ describe("NodeDialog.vue", () => {
     expect(result).toStrictEqual(expectedResult);
   });
 
-  it("provides 'unsetControllingFlowVariable' method", async () => {
-    const wrapper = shallowMount(NodeDialog, getOptions());
-    const persistPath = "path.to.my.setting";
-    await flushPromises();
-    const flowVariablesMap = {
-      [persistPath]: {
-        controllingFlowVariableAvailable: true,
-        controllingFlowVariableName: "myVar",
-        exposedFlowVariableName: null,
-      },
-    };
-    wrapper.vm.schema = { flowVariablesMap };
-    wrapper.vm.unsetControllingFlowVariable(persistPath);
-    expect(flowVariablesMap[persistPath]).toStrictEqual({
-      controllingFlowVariableAvailable: false,
-      controllingFlowVariableName: null,
-      exposedFlowVariableName: null,
-    });
-  });
-
   describe("getPossibleValuesFromUiSchema", () => {
     it("provides 'getPossibleValuesFromUiSchema' method", async () => {
       const mockChoices = [{ id: "foo", text: "bar" }];
@@ -786,7 +766,7 @@ describe("NodeDialog.vue", () => {
       expect(cleanSettingsMock).toHaveBeenCalled();
     });
 
-    it("unsets flawed variable path if 'unsetControllingFlowVariable' is called", async () => {
+    it("unsets flawed variable path if 'clearControllingFlowVariable' is called", async () => {
       const cleanSettingsMock = vi.fn();
       const wrapper = shallowMount(
         NodeDialog,
@@ -800,12 +780,8 @@ describe("NodeDialog.vue", () => {
         },
       };
       wrapper.vm.schema.flowVariablesMap = flowVariablesMap;
+      wrapper.vm.clearControllingFlowVariable(persistPath);
 
-      wrapper.vm.unsetControllingFlowVariable(persistPath);
-
-      expect(
-        flowVariablesMap[persistPath].controllingFlowVariableFlawed,
-      ).toBeFalsy();
       expect(cleanSettingsMock).toHaveBeenCalled();
     });
   });

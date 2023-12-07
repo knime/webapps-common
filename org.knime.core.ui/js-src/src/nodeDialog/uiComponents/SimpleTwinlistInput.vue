@@ -1,127 +1,77 @@
-<script lang="ts">
-import { defineComponent, markRaw } from "vue";
+<script setup lang="ts">
+import { type Ref, markRaw, ref } from "vue";
 import { rendererProps } from "@jsonforms/vue";
-import { getFlowVariablesMap, isModelSettingAndHasNodeView } from "../utils";
 import Twinlist from "webapps-common/ui/components/forms/Twinlist.vue";
-import LabeledInput from "./LabeledInput.vue";
-import DialogComponentWrapper from "./DialogComponentWrapper.vue";
-import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
 import inject from "../utils/inject";
 import TwinlistLoadingInfo from "./loading/TwinlistLoadingInfo.vue";
 import type { IdAndText } from "../types/ChoicesUiSchema";
+import useDialogControl from "../composables/useDialogControl";
+import LabeledInput from "./label/LabeledInput.vue";
 
-const defaultTwinlistSize = 7;
-const defaultTwinlistLeftLabel = "Excludes";
-const defaultTwinlistRightLabel = "Includes";
-
-const SimpleTwinlistInput = defineComponent({
-  name: "SimpleTwinListInput",
-  components: {
-    Twinlist,
-    LabeledInput,
-    DialogComponentWrapper,
+const props = defineProps({
+  ...rendererProps(),
+  twinlistSize: {
+    type: Number,
+    required: false,
+    default: 7,
   },
-  props: {
-    ...rendererProps(),
-    twinlistSize: {
-      type: Number,
-      required: false,
-      default: defaultTwinlistSize,
-    },
-    twinlistLeftLabel: {
-      type: String,
-      required: false,
-      default: defaultTwinlistLeftLabel,
-    },
-    twinlistRightLabel: {
-      type: String,
-      required: false,
-      default: defaultTwinlistRightLabel,
-    },
-    optionsGenerator: {
-      type: Function,
-      required: false,
-      default: null,
-    },
+  twinlistLeftLabel: {
+    type: String,
+    required: false,
+    default: "Excludes",
   },
-  setup(props) {
-    return {
-      ...useJsonFormsControlWithUpdate(props),
-      getPossibleValuesFromUiSchema: inject("getPossibleValuesFromUiSchema"),
-    };
+  twinlistRightLabel: {
+    type: String,
+    required: false,
+    default: "Includes",
   },
-  data() {
-    return {
-      possibleValues: null as null | IdAndText[],
-      TwinlistLoadingInfo: markRaw(TwinlistLoadingInfo),
-    };
-  },
-  computed: {
-    isModelSettingAndHasNodeView() {
-      return isModelSettingAndHasNodeView(this.control);
-    },
-    flowSettings() {
-      return getFlowVariablesMap(this.control);
-    },
-    disabled() {
-      return (
-        !this.control.enabled ||
-        Boolean(this.flowSettings?.controllingFlowVariableName)
-      );
-    },
-  },
-  created() {
-    if (this.optionsGenerator === null) {
-      this.getPossibleValuesFromUiSchema(this.control).then((result) => {
-        this.possibleValues = result;
-      });
-    } else {
-      this.possibleValues = this.optionsGenerator(this.control);
-    }
-  },
-  methods: {
-    onChange(event: any) {
-      this.handleChange(this.control.path, event);
-      if (this.isModelSettingAndHasNodeView) {
-        // @ts-ignore
-        this.$store.dispatch("pagebuilder/dialog/dirtySettings", true);
-      }
-    },
+  optionsGenerator: {
+    type: Function,
+    required: false,
+    default: null,
   },
 });
-export default SimpleTwinlistInput;
+
+const {
+  control,
+  handleDirtyChange: onChange,
+  disabled,
+} = useDialogControl<string[]>({ props });
+const getPossibleValuesFromUiSchema = inject("getPossibleValuesFromUiSchema");
+const possibleValues: Ref<null | IdAndText[]> = ref(null);
+const TwinlistLoadingInfoRaw = markRaw(TwinlistLoadingInfo) as any;
+
+if (props.optionsGenerator === null) {
+  getPossibleValuesFromUiSchema(control.value).then((result) => {
+    possibleValues.value = result;
+  });
+} else {
+  possibleValues.value = props.optionsGenerator(control.value);
+}
 </script>
 
 <template>
-  <DialogComponentWrapper :control="control">
-    <LabeledInput
-      #default="{ labelForId }"
-      :config-keys="control?.schema?.configKeys"
-      :flow-variables-map="control.rootSchema.flowVariablesMap"
-      :path="control.path"
-      :text="control.label"
-      :show-reexecution-icon="isModelSettingAndHasNodeView"
-      :flow-settings="flowSettings"
-      :description="control.description"
-      @controlling-flow-variable-set="onChange"
-    >
-      <Twinlist
-        :id="labelForId"
-        :disabled="disabled"
-        :model-value="control.data"
-        :possible-values="possibleValues ?? []"
-        :empty-state-component="
-          possibleValues === null ? TwinlistLoadingInfo : null
-        "
-        :hide-options="possibleValues === null"
-        :size="twinlistSize"
-        :left-label="twinlistLeftLabel"
-        :right-label="twinlistRightLabel"
-        :filter-chosen-values-on-possible-values-change="false"
-        @update:model-value="onChange"
-      />
-    </LabeledInput>
-  </DialogComponentWrapper>
+  <LabeledInput
+    #default="{ labelForId }"
+    :control="control"
+    @controlling-flow-variable-set="onChange"
+  >
+    <Twinlist
+      :id="labelForId"
+      :disabled="disabled"
+      :model-value="control.data"
+      :possible-values="possibleValues ?? []"
+      :empty-state-component="
+        possibleValues === null ? TwinlistLoadingInfoRaw : null
+      "
+      :hide-options="possibleValues === null"
+      :size="twinlistSize"
+      :left-label="twinlistLeftLabel"
+      :right-label="twinlistRightLabel"
+      :filter-chosen-values-on-possible-values-change="false"
+      @update:model-value="onChange"
+    />
+  </LabeledInput>
 </template>
 
 <style lang="postcss" scoped>

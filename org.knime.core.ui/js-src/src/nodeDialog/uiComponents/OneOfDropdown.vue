@@ -1,27 +1,13 @@
-<script lang="ts">
+<script setup lang="ts">
 import { rendererProps } from "@jsonforms/vue";
-import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
 import { optionsMapper } from "../utils";
 import DropdownInput from "./DropdownInput.vue";
+import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
 
-export default {
-  name: "OneOfDropdown",
-  components: {
-    DropdownInput,
-  },
-  inheritAttrs: false,
-  props: {
-    ...rendererProps(),
-  },
-  setup(props) {
-    const control = useJsonFormsControlWithUpdate(props).control;
-    const options = control.value?.schema?.oneOf?.map(optionsMapper) ?? [];
-
-    return {
-      asyncInitialOptions: Promise.resolve(options),
-    };
-  },
-};
+const props = defineProps(rendererProps());
+const { control } = useJsonFormsControlWithUpdate(props);
+const options = control.value.schema?.oneOf?.map(optionsMapper) ?? [];
+const asyncInitialOptions = Promise.resolve(options);
 </script>
 
 <template>

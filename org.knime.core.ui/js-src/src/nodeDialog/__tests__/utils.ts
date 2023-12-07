@@ -25,6 +25,11 @@ export const getOptions = ({
     },
     namespaced: true,
   };
+  const store = createStore({
+    modules: {
+      "pagebuilder/dialog": dialogStoreOptions,
+    },
+  });
   return {
     global: {
       provide: {
@@ -36,13 +41,10 @@ export const getOptions = ({
           createAlert: createAlertMock || vi.fn(),
           sendWarning: sendWarningMock || vi.fn(),
         }),
+        store,
       },
       mocks: {
-        $store: createStore({
-          modules: {
-            "pagebuilder/dialog": dialogStoreOptions,
-          },
-        }),
+        $store: store,
       },
       ...(stubButtonsBySlot && {
         stubs: {

@@ -1,17 +1,10 @@
-<script>
-import { defineComponent } from "vue";
+<script setup lang="ts">
 import RadioInputBase from "./RadioInputBase.vue";
+import { rendererProps } from "@jsonforms/vue";
 
-const ValueSwitchInput = defineComponent({
-  name: "ValueSwitchInput",
-  components: {
-    RadioInputBase,
-  },
-  inheritAttrs: false,
-});
-export default ValueSwitchInput;
+defineProps(rendererProps());
 </script>
 
 <template>
-  <RadioInputBase v-bind="$attrs" type="valueSwitch" />
+  <RadioInputBase v-bind="$props" type="valueSwitch" />
 </template>
