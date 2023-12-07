@@ -16,11 +16,12 @@ export default {
 <style type="postcss" scoped>
 @keyframes spin {
   100% {
-    transform: rotate(-360deg);
+    transform: scaleY(-1) rotate(-360deg);
   }
 }
 
 svg {
+  transform: scaleY(-1);
   animation: spin 2s linear infinite;
 }
 </style>
