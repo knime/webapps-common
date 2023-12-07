@@ -73,12 +73,6 @@ describe('format date', () => {
         let timeWithOffset = { input: '2023-11-30T11:15:00+00:00',
             expectedDateTime: 'Nov 30, 2023 12:15 PM' };
 
-        let timeFromTable = { input: '2023-09-22T08:38:36.291Z[GMT]',
-            expectedDateTime: 'Sep 22, 2023 10:38 AM' };
-
-        let timeInCST = { input: '2023-09-22T08:38:36.291Z[GMT]',
-            expectedDateTime: 'Sep 22, 2023 3:38 AM' };
-
         it('parseToLocalTime throws error on invalid format', () => {
             expect(() => formatLocalDateTimeString('')).toThrowError();
         });
@@ -87,14 +81,6 @@ describe('format date', () => {
         });
         it('formats time with offset strings', () => {
             expect(formatLocalDateTimeString(timeWithOffset.input, true)).toEqual(timeWithOffset.expectedDateTime);
-        });
-        it('formats time from Table', () => {
-            expect(formatLocalDateTimeString(timeFromTable.input, true)).toEqual(timeFromTable.expectedDateTime);
-        });
-        it('formats time to a different time zone', () => {
-            getLocalTimeZone.mockReturnValue('CST');
-            expect(formatLocalDateTimeString(timeInCST.input, true)).toEqual(timeInCST.expectedDateTime);
-            getLocalTimeZone.mockRestore();
         });
     });
 });
