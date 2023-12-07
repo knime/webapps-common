@@ -48,6 +48,8 @@
  */
 package org.knime.core.webui.data;
 
+import java.util.Optional;
+
 /**
  * Common interface for all data service types.
  *
@@ -58,15 +60,19 @@ public interface DataService {
     /**
      * Called whenever the data service won't be used anymore. I.e. resources can be freed-up such as clearing caches or
      * shutting down external processes etc.
+     *
+     * @return the dispose logic or an empty optional of nothing needs to be done on dispose
      */
-    void dispose();
+    Optional<Runnable> disposeRunnable();
 
     /**
      * Called whenever the data service can free-up resources. E.g. clearing caches or shutting down external processes
      * etc. Though, it does <b>not</b> necessarily mean, that the data service instance is not used anymore some time
      * later.
+     *
+     * @return the deactivate logic or an empty optional if nothing needs to be done on deactivation
      */
-    void deactivate();
+    Optional<Runnable> deactivateRunnable();
 
     /**
      * Common interface for all data service builder types.

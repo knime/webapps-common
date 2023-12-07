@@ -49,6 +49,7 @@
 package org.knime.core.webui.data;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.knime.core.node.NodeLogger;
@@ -140,17 +141,13 @@ public final class InitialDataService<D> implements DataService {
     }
 
     @Override
-    public void dispose() {
-        if (m_dispose != null) {
-            m_dispose.run();
-        }
+    public Optional<Runnable> disposeRunnable() {
+        return Optional.ofNullable(m_dispose);
     }
 
     @Override
-    public void deactivate() {
-        if (m_deactivate != null) {
-            m_deactivate.run();
-        }
+    public Optional<Runnable> deactivateRunnable() {
+        return Optional.ofNullable(m_deactivate);
     }
 
     /**

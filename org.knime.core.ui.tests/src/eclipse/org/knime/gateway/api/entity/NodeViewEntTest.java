@@ -184,6 +184,7 @@ class NodeViewEntTest {
         assertThat(ent.getGeneratedImageActionId()).isEqualTo("test_action_id");
         assertThat(ent.getNodeInfo().getNodeState()).isEqualTo("configured");
         assertThat(ent.getNodeInfo().isCanExecute()).isTrue();
+        assertThat(ent.isDeactivationRequired()).isNull();
 
         initViewSettingsAndExecute(nnc);
         ent = NodeViewEnt.create(nnc, null);
@@ -205,6 +206,7 @@ class NodeViewEntTest {
         assertThat(ent.getInitialSelection()).isNull();
         assertThat(ent.getColorModels()).isNull();
         assertThat(ent.getColumnNamesColorModel()).isNull();
+        assertThat(ent.isDeactivationRequired()).isTrue();
         var resourceInfo = ent.getResourceInfo();
         assertThat(resourceInfo.getPath()).endsWith("index.html");
         assertThat(resourceInfo.getBaseUrl()).isEqualTo("http://org.knime.core.ui.view/");
@@ -512,7 +514,8 @@ class NodeViewEntTest {
         @Override
         public Optional<InitialDataService<String>> createInitialDataService() {
             return Optional.of(
-                InitialDataService.builder(() -> JSONConfig.toJSONString(m_settings, WriterConfig.DEFAULT)).build());
+                InitialDataService.builder(() -> JSONConfig.toJSONString(m_settings, WriterConfig.DEFAULT))
+                    .onDeactivate(() -> {}).build());
         }
 
         @Override

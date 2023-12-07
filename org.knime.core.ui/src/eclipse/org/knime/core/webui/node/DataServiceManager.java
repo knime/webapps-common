@@ -50,11 +50,14 @@ package org.knime.core.webui.node;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.WeakHashMap;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import org.knime.core.webui.data.ApplyDataService;
+import org.knime.core.webui.data.DataService;
 import org.knime.core.webui.data.DataServiceProvider;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
@@ -130,7 +133,7 @@ public final class DataServiceManager<N extends NodeWrapper> {
      * @throws IllegalStateException if there is not initial data service available
      */
     public String callInitialDataService(final N nodeWrapper) {
-        removeRpcDataService(nodeWrapper).ifPresent(RpcDataService::deactivate);
+        removeRpcDataService(nodeWrapper).flatMap(RpcDataService::deactivateRunnable).ifPresent(Runnable::run);
         return getInitialDataService(nodeWrapper) //
             .filter(InitialDataService.class::isInstance) //
             .orElseThrow(() -> new IllegalStateException("No initial data service available")) //
@@ -146,7 +149,7 @@ public final class DataServiceManager<N extends NodeWrapper> {
             NodeCleanUpCallback.builder(nodeWrapper.get(), () -> {
                 var dataService = m_initialDataServices.remove(nodeWrapper);
                 if (dataService != null) {
-                    dataService.dispose();
+                    dataService.disposeRunnable().ifPresent(Runnable::run);
                 }
             }).cleanUpOnNodeStateChange(m_shouldCleanUpDataServicesOnNodeStateChange).build();
         } else {
@@ -181,7 +184,7 @@ public final class DataServiceManager<N extends NodeWrapper> {
             NodeCleanUpCallback.builder(nodeWrapper.get(), () -> {
                 var dataService = m_dataServices.remove(nodeWrapper);
                 if (dataService != null) {
-                    dataService.dispose();
+                    dataService.disposeRunnable().ifPresent(Runnable::run);
                 }
             }).cleanUpOnNodeStateChange(m_shouldCleanUpDataServicesOnNodeStateChange).build();
         } else {
@@ -221,7 +224,7 @@ public final class DataServiceManager<N extends NodeWrapper> {
             NodeCleanUpCallback.builder(nodeWrapper.get(), () -> {
                 var dataService = m_applyDataServices.remove(nodeWrapper);
                 if (dataService != null) {
-                    dataService.dispose();
+                    dataService.disposeRunnable().ifPresent(Runnable::run);
                 }
             }).cleanUpOnNodeStateChange(m_shouldCleanUpDataServicesOnNodeStateChange).build();
         } else {
@@ -237,15 +240,23 @@ public final class DataServiceManager<N extends NodeWrapper> {
      * @param nodeWrapper
      */
     public void deactivateDataServices(final N nodeWrapper) {
-        if (m_initialDataServices.containsKey(nodeWrapper)) {
-            m_initialDataServices.get(nodeWrapper).deactivate();
-        }
-        if (m_dataServices.containsKey(nodeWrapper)) {
-            m_dataServices.get(nodeWrapper).deactivate();
-        }
-        if (m_applyDataServices.containsKey(nodeWrapper)) {
-            m_applyDataServices.get(nodeWrapper).deactivate();
-        }
+        dataServices(nodeWrapper).forEach(ds -> ds.deactivateRunnable().ifPresent(Runnable::run));
+    }
+
+    /**
+     * @param nodeWrapper
+     * @return whether at least one data service has a deactivate-runnable registered
+     */
+    public boolean hasDeactivateRunnable(final N nodeWrapper) {
+        return dataServices(nodeWrapper).anyMatch(ds -> ds.deactivateRunnable().isPresent());
+    }
+
+    private Stream<DataService> dataServices(final N nodeWrapper) {
+        return Stream.of( //
+            m_initialDataServices.get(nodeWrapper), //
+            m_dataServices.get(nodeWrapper), //
+            m_applyDataServices.get(nodeWrapper) //
+        ).filter(Objects::nonNull);
     }
 
 }

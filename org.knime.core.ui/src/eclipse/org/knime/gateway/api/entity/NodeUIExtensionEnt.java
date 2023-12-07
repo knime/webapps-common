@@ -77,6 +77,8 @@ public class NodeUIExtensionEnt<N extends NodeWrapper> {
 
     private final PageType m_pageType;
 
+    private final boolean m_deactivationRequired;
+
     /**
      * @param nodeWrapper
      * @param pageResourceManager
@@ -116,8 +118,10 @@ public class NodeUIExtensionEnt<N extends NodeWrapper> {
         if (dataServiceManager != null
             && dataServiceManager.getDataServiceOfType(nodeWrapper, InitialDataService.class).isPresent()) {
             m_initialData = dataServiceManager.callInitialDataService(nodeWrapper);
+            m_deactivationRequired = dataServiceManager.hasDeactivateRunnable(nodeWrapper);
         } else {
             m_initialData = null;
+            m_deactivationRequired = false;
         }
 
         if (pageResourceManager != null) {
@@ -178,6 +182,14 @@ public class NodeUIExtensionEnt<N extends NodeWrapper> {
      */
     public String getExtensionType() {
         return m_pageType.toString();
+    }
+
+    /**
+     * @return {@code true} if the ui-extension needs to be deactivated as soon as it's not visible anymore;
+     *         {@code null otherwise}
+     */
+    public Boolean isDeactivationRequired() {
+        return m_deactivationRequired ? Boolean.TRUE : null;
     }
 
 }
