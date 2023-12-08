@@ -1,6 +1,10 @@
-import { formatDateString, formatDateTimeString, formatTimeString } from '~/util/format';
+import { formatDateString, formatDateTimeString, formatTimeString, formatLocalDateTimeString } from '~/util/format';
+import getLocalTimeZone from '~/util/localTimezone';
 
-describe('formatDateString', () => {
+jest.mock('~/util/localTimezone');
+
+
+describe('format date', () => {
     let validFixtures = [{
         input: 0,
         expectedDate: 'Jan 1, 1970',
@@ -41,7 +45,6 @@ describe('formatDateString', () => {
             expect(formatDateTimeString(input)).toEqual(expectedDateTime);
         });
     });
-
     it('format date throws error on invalid format', () => {
         invalidFixtures.forEach(({ input }) => {
             expect(() => formatDateString(input)).toThrowError();
@@ -57,6 +60,31 @@ describe('formatDateString', () => {
     it('format date/time throws error on invalid format', () => {
         invalidFixtures.forEach(({ input }) => {
             expect(() => formatDateTimeString(input)).toThrowError();
+        });
+    });
+    describe('parseToLocalTime', () => {
+        let timeInUTC = { input: '2023-06-30T11:15:00.000Z',
+            expectedDateTime: 'Jun 30, 2023 1:15 PM' };
+
+        let timeWithOffset = { input: '2023-11-30T11:15:00+00:00',
+            expectedDateTime: 'Nov 30, 2023 12:15 PM' };
+
+        let timeInCST = { input: '2023-09-22T08:38:36.291Z',
+            expectedDateTime: 'Sep 22, 2023 3:38 AM' };
+
+        it('parseToLocalTime throws error on invalid format', () => {
+            expect(() => formatLocalDateTimeString('')).toThrowError();
+        });
+        it('formats time in UTC strings', () => {
+            expect(formatLocalDateTimeString(timeInUTC.input, true)).toEqual(timeInUTC.expectedDateTime);
+        });
+        it('formats time with offset strings', () => {
+            expect(formatLocalDateTimeString(timeWithOffset.input, true)).toEqual(timeWithOffset.expectedDateTime);
+        });
+        it('formats time to a different time zone', () => {
+            getLocalTimeZone.mockReturnValue('CST');
+            expect(formatLocalDateTimeString(timeInCST.input, true)).toEqual(timeInCST.expectedDateTime);
+            getLocalTimeZone.mockRestore();
         });
     });
 });

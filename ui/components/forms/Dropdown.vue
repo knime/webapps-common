@@ -2,6 +2,7 @@
 import DropdownIcon from '../../assets/img/icons/arrow-dropdown.svg';
 import Vue from 'vue';
 import { mixin as clickaway } from 'vue-clickaway2';
+import { isEmpty } from 'lodash';
 
 let count = 0;
 const KEY_DOWN = 40;
@@ -50,7 +51,11 @@ export default {
             type: Boolean
         },
         /**
-         * List of possible values. Each item must have an `id` and a `text` property
+         * List of possible values. Each item must have an `id` and a `text` property. To use slots an additional
+         * slotData object must be passed which contains the data to be displayed.
+         *
+         * IMPORTANT: All values have to have a slotData object otherwise the slot will not be displayed and the
+         * usual text is rendered instead.
          * @example
          * [{
          *   id: 'pdf',
@@ -58,6 +63,14 @@ export default {
          * }, {
          *   id: 'XLS',
          *   text: 'Excel',
+         * }, {
+         *    id: 'JPG',
+         *   text: 'Jpeg',
+         *   slotData: {
+         *      fullName: 'Joint Photographic Experts Group',
+         *      year: '1992'
+         *      description: 'Commonly used method of lossy compression for digital images'
+         *  }
          * }]
          */
         possibleValues: {
@@ -102,6 +115,9 @@ export default {
         },
         isMissing() {
             return this.value && !this.displayTextMap.hasOwnProperty(this.value);
+        },
+        isSlotted() {
+            return this.possibleValues.every(value => value.slotData && !isEmpty(value.slotData));
         }
     },
     created() {
@@ -306,11 +322,26 @@ export default {
         ref="options"
         role="option"
         :title="item.text"
-        :class="{ 'focused': isCurrentValue(item.id), 'noselect': true, 'empty': item.text.trim() === '' }"
+        :class="{
+          'focused': isCurrentValue(item.id),
+          'noselect': true,
+          'empty': item.text.trim() === '',
+          'slotted': isSlotted
+        }"
         :aria-selected="isCurrentValue(item.id)"
         @click="onOptionClick(item.id)"
       >
-        {{ item.text }}
+        <template v-if="isSlotted">
+          <slot
+            name="option"
+            :slot-data="item.slotData"
+          />
+        </template>
+        <template
+          v-else
+        >
+          {{ item.text }}
+        </template>
       </li>
     </ul>
     <input
@@ -407,7 +438,10 @@ export default {
     overflow-y: auto;
     position: absolute;
     z-index: var(--z-index-common-dropdown-expanded, 2);
-    max-height: calc(22px * 7); /* show max 7 items */
+    max-height: var(
+      --dropdown-max-height,
+      calc(22px * 7)
+    ); /* show max 7 items. override to change default */
     font-size: 14px;
     min-height: 22px;
     width: 100%;
@@ -416,19 +450,16 @@ export default {
     background: var(--theme-dropdown-background-color);
     box-shadow: 0 1px 5px 0 var(--knime-gray-dark);
     cursor: pointer;
+    outline: none;
   }
 
   & [role="option"] {
-    display: block;
-    width: 100%;
-    padding: 0 10px 0 10px;
-    line-height: 22px;
-    position: relative;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
     background: var(--theme-dropdown-background-color);
     color: var(--theme-dropdown-foreground-color);
+
+    & > svg {
+      stroke: var(--theme-dropdown-foreground-color);
+    }
 
     &.empty {
       white-space: pre-wrap;
@@ -437,16 +468,43 @@ export default {
     &:hover {
       background: var(--theme-dropdown-background-color-hover);
       color: var(--theme-dropdown-foreground-color-hover);
+
+      & svg {
+        stroke: var(--theme-dropdown-foreground-color-hover);
+      }
     }
 
     &:focus {
       background: var(--theme-dropdown-background-color-focus);
       color: var(--theme-dropdown-foreground-color-focus);
+
+      & svg {
+        stroke: var(--theme-dropdown-foreground-color-focus);
+      }
     }
 
     &.focused {
       background: var(--theme-dropdown-background-color-selected);
       color: var(--theme-dropdown-foreground-color-selected);
+
+      & svg {
+        stroke: var(--theme-dropdown-foreground-color-selected);
+      }
+    }
+  }
+
+  & [role="option"]:not(.slotted) {
+    display: block;
+    width: 100%;
+    padding: 0 10px 0 10px;
+    line-height: 22px;
+    position: relative;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+
+    &.empty {
+      white-space: pre-wrap;
     }
   }
 
