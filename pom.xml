@@ -57,11 +57,6 @@
 			<layout>p2</layout>
 			<url>${knime.tp.p2}</url>
 		</repository>
-		<repository>
-			<id>p2-knime-base</id>
-			<layout>p2</layout>
-			<url>${knime.base.p2}</url>
-		</repository>
 	</repositories>
 
 </project><!-- vim: set shiftwidth=4 expandtab smarttab: -->
