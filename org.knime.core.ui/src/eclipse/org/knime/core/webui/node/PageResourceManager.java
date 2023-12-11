@@ -134,6 +134,11 @@ public final class PageResourceManager<N extends NodeWrapper> {
     private final boolean m_shouldCleanUpPageOnNodeStateChange;
 
     /**
+     * Will overwrite the base URL if set.
+     */
+    private static String baseUrlOverwrite;
+
+    /**
      * @param pageType
      * @param createPage function that creates a new page for a given node wrapper
      */
@@ -158,7 +163,7 @@ public final class PageResourceManager<N extends NodeWrapper> {
         m_decomposePagePath = decomposePagePath;
         m_shouldCleanUpPageOnNodeStateChange = shouldCleanUpPageOnNodeStateChange;
         m_domainName = "org.knime.core.ui." + m_pageType.toString();
-        m_baseUrl = "http://" + m_domainName + "/";
+        m_baseUrl = baseUrlOverwrite == null ? ("http://" + m_domainName + "/") : baseUrlOverwrite;
         m_nodeDebugPatternProp = "org.knime.ui.dev.node." + m_pageType.toString() + ".url.factory-class";
         m_nodeDebugUrlProp = "org.knime.ui.dev.node." + m_pageType.toString() + ".url";
     }
@@ -212,6 +217,18 @@ public final class PageResourceManager<N extends NodeWrapper> {
     }
 
     /**
+     * Allows one to inject a base url that will have precedence over the dynamically constructed one. This helps e.g.
+     * with running a local development app.
+     *
+     * Must be set before an instance of this class is created.
+     *
+     * @param baseUrl The guaranteed base url
+     */
+    public static void setBaseUrlOverwrite(final String baseUrl) {
+        baseUrlOverwrite = baseUrl;
+    }
+
+    /**
      * Optionally returns a debug url for a view (dialog etc.) which is controlled by a system property.
      *
      * @param nodeWrapper the node to get the debug url for
@@ -223,11 +240,10 @@ public final class PageResourceManager<N extends NodeWrapper> {
             return Optional.empty();
         }
         var nodeContainer = nodeWrapper.get();
-        if (nodeContainer instanceof NativeNodeContainer) {
+        if (nodeContainer instanceof NativeNodeContainer nnc) {
             String pattern = System.getProperty(m_nodeDebugPatternProp);
             @SuppressWarnings("rawtypes")
-            final Class<? extends NodeFactory> nodeFactoryClass =
-                ((NativeNodeContainer)nodeContainer).getNode().getFactory().getClass();
+            final Class<? extends NodeFactory> nodeFactoryClass = nnc.getNode().getFactory().getClass();
             if (pattern == null || Pattern.matches(pattern, nodeFactoryClass.getName())) {
                 return Optional.of(url);
             } else {
