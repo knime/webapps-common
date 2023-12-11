@@ -53,7 +53,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -61,8 +63,21 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.knime.core.node.CanceledExecutionException;
+import org.knime.core.node.ExecutionContext;
+import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeDialogPane;
+import org.knime.core.node.NodeFactory;
+import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettings;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.NodeView;
+import org.knime.core.node.port.PortObject;
+import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
+import org.knime.core.node.workflow.CredentialsStore;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
@@ -73,6 +88,7 @@ import org.knime.core.webui.node.dialog.NodeDialogManagerTest;
 import org.knime.core.webui.node.dialog.NodeDialogTest;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
 import org.knime.core.webui.page.Page;
@@ -80,7 +96,6 @@ import org.knime.testing.util.WorkflowManagerUtil;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -110,6 +125,8 @@ public class DefaultNodeDialogTest {
         @Widget
         @Persist(configKey = "nested")
         NestedViewSettings m_nestedViewSetting = new NestedViewSettings();
+
+        Credentials m_objectSetting = new Credentials();
     }
 
     static class NestedViewSettings implements DefaultNodeSettings {
@@ -123,9 +140,93 @@ public class DefaultNodeDialogTest {
 
     }
 
+    static class ObjectSetting {
+        String m_value = "5";
+    }
+
     private WorkflowManager m_wfm;
 
     private NativeNodeContainer m_nnc;
+
+    private NativeNodeContainer previousNode;
+
+    static class FlowVariablesInputNodeModel extends NodeModel {
+
+        FlowVariablesInputNodeModel() {
+            super(0, 0);
+        }
+
+        @Override
+        protected void loadInternals(final File nodeInternDir, final ExecutionMonitor exec)
+            throws IOException, CanceledExecutionException {
+            //
+        }
+
+        @Override
+        protected void saveInternals(final File nodeInternDir, final ExecutionMonitor exec)
+            throws IOException, CanceledExecutionException {
+            //
+        }
+
+        @Override
+        protected void saveSettingsTo(final NodeSettingsWO settings) {
+            //
+        }
+
+        @Override
+        protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+            //
+        }
+
+        @Override
+        protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
+            //
+        }
+
+        @Override
+        protected void reset() {
+            //
+        }
+
+        @Override
+        protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs) {
+            return new PortObjectSpec[]{FlowVariablePortObjectSpec.INSTANCE};
+        }
+
+        @Override
+        protected PortObject[] execute(final PortObject[] inObjects, final ExecutionContext exec) {
+            return new PortObject[]{};
+        }
+
+    }
+
+    static class FlowVariablesInputNodeFactory extends NodeFactory<FlowVariablesInputNodeModel> {
+        @Override
+        public FlowVariablesInputNodeModel createNodeModel() {
+            return new FlowVariablesInputNodeModel();
+        }
+
+        @Override
+        protected int getNrNodeViews() {
+            return 0;
+        }
+
+        @Override
+        public NodeView<FlowVariablesInputNodeModel> createNodeView(final int viewIndex,
+            final FlowVariablesInputNodeModel nodeModel) {
+            return null;
+        }
+
+        @Override
+        protected boolean hasDialog() {
+            return false;
+        }
+
+        @Override
+        protected NodeDialogPane createNodeDialogPane() {
+            return null;
+        }
+    }
 
     @BeforeEach
     void createWorkflowAndAddNode() throws IOException {
@@ -138,6 +239,10 @@ public class DefaultNodeDialogTest {
             () -> NodeDialogTest.createNodeDialog(Page.builder(() -> "page content", "page.html").build(),
                 defaultNodeSettingsService, null);
         m_nnc = NodeDialogManagerTest.createNodeWithNodeDialog(m_wfm, nodeDialogCreator);
+        previousNode = WorkflowManagerUtil.createAndAddNode(m_wfm, new FlowVariablesInputNodeFactory());
+        m_wfm.addConnection(previousNode.getID(), 0, m_nnc.getID(), 0);
+        m_wfm.executeAllAndWaitUntilDone();
+
     }
 
     @AfterEach
@@ -145,52 +250,67 @@ public class DefaultNodeDialogTest {
         WorkflowManagerUtil.disposeWorkflow(m_wfm);
     }
 
+    private void addFlowVariables(final FlowVariable... flowVariables) {
+        final var flowObjectStack = previousNode.getOutgoingFlowObjectStack();
+        for (var flowVar : flowVariables) {
+            flowObjectStack.push(flowVar);
+        }
+        m_wfm.resetAndConfigureNode(m_nnc.getID());
+        m_wfm.executeAllAndWaitUntilDone();
+    }
+
+    final static FlowVariable validFlowVariable1 = new FlowVariable("flow variable 1", "foo");
+
+    // "B" is valid, as we overwrite "MyEnum" above
+    final static FlowVariable validFlowVariable2 = new FlowVariable("flow variable 2", "B");
+
+    final static FlowVariable validFlowVariable3 = new FlowVariable("flow variable 3", "bar");
+
     @Nested
     class InitialDataTest {
 
         @BeforeEach
         void createWorkflowAndAddNode() throws InvalidSettingsException {
-            var defModelSettings = new NodeSettings("model");
-            var defViewSettings = new NodeSettings("view");
-            DefaultNodeSettings.saveSettings(ModelSettings.class, new ModelSettings(), defModelSettings);
-            DefaultNodeSettings.saveSettings(ViewSettings.class, new ViewSettings(), defViewSettings);
-            initNodeSettings(m_nnc, defModelSettings, defViewSettings);
-            m_nnc.getFlowObjectStack().push(new FlowVariable("flow variable 1", "foo"));
-            m_nnc.getFlowObjectStack().push(new FlowVariable("flow variable 3", "bar"));
+            final var initialNodeSettings =
+                new TestNodeSettingsBuilder().withIncludeVariableSettingsForNonExistentNodeSettings().build();
+            setNodeSettingsAndExecute(m_nnc, initialNodeSettings);
+        }
+
+        private static void setNodeSettingsAndExecute(final NativeNodeContainer nnc, final NodeSettings nodeSettings)
+            throws InvalidSettingsException {
+            var parent = nnc.getParent();
+            parent.saveNodeSettings(nnc.getID(), nodeSettings);
+            parent.loadNodeSettings(nnc.getID(), nodeSettings);
+            parent.executeAllAndWaitUntilDone();
         }
 
         @Test
         void testInitialDataWithFlowVariableSettings() throws InvalidSettingsException, IOException {
-            // "B" is valid, as we overwrite "MyEnum" above
-            m_nnc.getFlowObjectStack().push(new FlowVariable("flow variable 2", "B"));
+            addFlowVariables(validFlowVariable1, validFlowVariable2, validFlowVariable3);
 
             var initialData = getInitialData();
 
-            var mapper = new ObjectMapper();
-            var initialDataJson = mapper.readTree(initialData);
-            assertFlowVariableSettings(initialDataJson, mapper);
-            assertOverwrittenNodeSettings(initialDataJson, mapper);
+            assertFlowVariableSettings(initialData);
+            assertOverwrittenNodeSettings(initialData);
         }
 
         @Test
         void testInitialDataWithFlawedFlowVariableSettings() throws InvalidSettingsException, IOException {
             // "NOT_A_B_OR_C" is flawed, as we overwrite "MyEnum" above
-            m_nnc.getFlowObjectStack().push(new FlowVariable("flow variable 2", "NOT_A_B_OR_C"));
+            final var inValidFlowVariable2 = new FlowVariable("flow variable 2", "NOT_A_B_OR_C");
+            addFlowVariables(validFlowVariable1, inValidFlowVariable2, validFlowVariable3);
 
             var initialData = getInitialData();
 
-            var mapper = new ObjectMapper();
-            var initialDataJson = mapper.readTree(initialData);
-            assertNonOverwrittenNodeSettings(initialDataJson, mapper);
+            assertNonOverwrittenNodeSettings(initialData);
         }
 
         private String getInitialData() {
-            var initialData =
-                NodeDialogManager.getInstance().getDataServiceManager().callInitialDataService(NodeWrapper.of(m_nnc));
-            return initialData;
+            final var dataServiceManager = NodeDialogManager.getInstance().getDataServiceManager();
+            return dataServiceManager.callInitialDataService(NodeWrapper.of(m_nnc));
         }
 
-        private static void assertFlowVariableSettings(final JsonNode initialData, final ObjectMapper mapper)
+        private static void assertFlowVariableSettings(final String initialData)
             throws JsonMappingException, JsonProcessingException {
             var expectedFlowVariableSettings = """
                     {
@@ -220,43 +340,48 @@ public class DefaultNodeDialogTest {
                       }
                     }
                     """;
+            var mapper = new ObjectMapper();
             var expectedJson = mapper.readTree(expectedFlowVariableSettings);
-            assertThatJson(initialData.get("result").get("flowVariableSettings")).isEqualTo(expectedJson);
+            assertThatJson(mapper.readTree(initialData).get("result").get("flowVariableSettings"))
+                .isEqualTo(expectedJson);
         }
 
-        private static void assertOverwrittenNodeSettings(final JsonNode initialData, final ObjectMapper mapper)
+        private static void assertOverwrittenNodeSettings(final String initialData)
             throws JsonMappingException, JsonProcessingException {
-            var expectedData =
-                """
-                        {
-                          "model": {"modelSetting":"foo"},
-                          "view": {"nestedViewSetting":{"nestedViewSettings":"bar","nestedViewSettings2":"4"},"viewSetting":"B"}
-                        }
-                        """;
-
-            var expectedJson = mapper.readTree(expectedData);
-            assertThatJson(initialData.get("result").get("data")).isEqualTo(expectedJson);
+            var mapper = new ObjectMapper();
+            final var initialDataJson = mapper.readTree(initialData).get("result").get("data");
+            assertThatJson(initialDataJson.get("model").get("modelSetting")).isString()
+                .isEqualTo(validFlowVariable1.getStringValue());
+            assertThatJson(initialDataJson.get("view").get("viewSetting")).isString()
+                .isEqualTo(validFlowVariable2.getStringValue());
+            assertThatJson(initialDataJson.get("view").get("nestedViewSetting").get("nestedViewSettings")).isString()
+                .isEqualTo(validFlowVariable3.getStringValue());
         }
 
-        private static void assertNonOverwrittenNodeSettings(final JsonNode initialData, final ObjectMapper mapper)
+        private static void assertNonOverwrittenNodeSettings(final String initialData)
             throws JsonMappingException, JsonProcessingException {
-            var expectedData =
-                """
-                        {
-                          "model": {"modelSetting":"1"},
-                          "view": {"nestedViewSetting":{"nestedViewSettings":"3","nestedViewSettings2":"4"},"viewSetting":"A"}
-                        }
-                        """;
-            var expectedJson = mapper.readTree(expectedData);
-            assertThatJson(initialData.get("result").get("data")).isEqualTo(expectedJson);
+            var mapper = new ObjectMapper();
+            final var initialDataJson = mapper.readTree(initialData).get("result").get("data");
+            assertThatJson(initialDataJson.get("model").get("modelSetting")).isString()//
+                .isEqualTo("1");
+            assertThatJson(initialDataJson.get("view").get("viewSetting")).isString() //
+                .isEqualTo("A");
+            assertThatJson(initialDataJson.get("view").get("nestedViewSetting").get("nestedViewSettings")).isString()
+                .isEqualTo("3");
         }
     }
 
     @Nested
     class ApplyDataTest {
 
+        @BeforeEach
+        void addValidFlowVariables() {
+            addFlowVariables(validFlowVariable1, validFlowVariable2, validFlowVariable3);
+        }
+
         @Test
         void testApplyDataWithFlowVariableSettings() throws IOException, InvalidSettingsException {
+
             var applyData = """
                     {
                       "data": {
@@ -296,20 +421,10 @@ public class DefaultNodeDialogTest {
                     """;
             callApplyData(applyData);
 
-            var nodeSettingsToCheck = m_nnc.getNodeSettings();
-
-            var expectedNodeSettings = new NodeSettings("configuration");
-            var modelSettings = expectedNodeSettings.addNodeSettings("model");
-            var viewSettings = expectedNodeSettings.addNodeSettings("view");
-            DefaultNodeSettings.saveSettings(ModelSettings.class, new ModelSettings(), modelSettings);
-            DefaultNodeSettings.saveSettings(ViewSettings.class, new ViewSettings(), viewSettings);
-            initModelVariableSettings(expectedNodeSettings);
-            initViewVariableSettings(expectedNodeSettings, false);
-
-            assertSubNodeSettingsForKey(nodeSettingsToCheck, expectedNodeSettings, "model");
-            assertSubNodeSettingsForKey(nodeSettingsToCheck, expectedNodeSettings, "variables");
-            assertSubNodeSettingsForKey(nodeSettingsToCheck, expectedNodeSettings, "view");
-            assertSubNodeSettingsForKey(nodeSettingsToCheck, expectedNodeSettings, "view_variables");
+            var expectedNodeSettings = new TestNodeSettingsBuilder().build();
+            for (var key : List.of("model", "variables", "view", "view_variables")) {
+                assertSubNodeSettingsForKey(expectedNodeSettings, key);
+            }
         }
 
         @Test
@@ -348,16 +463,44 @@ public class DefaultNodeDialogTest {
                     """;
             callApplyData(applyViewVariablesData);
 
-            var nodeSettingsToCheck = m_nnc.getNodeSettings();
-            var expectedNodeSettings = new NodeSettings("configuration");
-            var modelSettings = expectedNodeSettings.addNodeSettings("model");
-            var viewSettings = expectedNodeSettings.addNodeSettings("view");
-            DefaultNodeSettings.saveSettings(ModelSettings.class, new ModelSettings(), modelSettings);
-            DefaultNodeSettings.saveSettings(ViewSettings.class, new ViewSettings(), viewSettings);
-
-            initViewVariableSettings(expectedNodeSettings, false);
             assertTrue(m_nnc.getNodeContainerState().isExecuted());
-            assertSubNodeSettingsForKey(nodeSettingsToCheck, expectedNodeSettings, "view_variables");
+            var expectedNodeSettings = new TestNodeSettingsBuilder().build();
+            assertSubNodeSettingsForKey(expectedNodeSettings, "view_variables");
+        }
+
+        @Test
+        void testApplyDataResetsObjectSettingsToPreviousStateWhenOverwritten()
+            throws IOException, InvalidSettingsException {
+
+            final var credentialsFlowVariable = CredentialsStore.newCredentialsFlowVariable("credentials flow variable",
+                "varUsername", "varPassword", "varSecondFactor");
+            addFlowVariables(credentialsFlowVariable);
+
+            initializeViewSettingsForApplyTest();
+
+            var objectSettingsOverwrittenByVariablesData = """
+                    {
+                      "data": {
+                        "model": {},
+                        "view": {
+                           "objectSetting": {
+                             "isHiddenPassword": true,
+                             "username": "username"
+                           }
+                         }
+                       },
+                       "flowVariableSettings": {
+                         "view.objectSetting": {
+                           "controllingFlowVariableAvailable": true,
+                           "controllingFlowVariableName": "credentials flow variable"
+                         }
+                       }
+                    }
+                    """;
+            callApplyData(objectSettingsOverwrittenByVariablesData);
+            final var savedNodeSettings = m_nnc.getNodeSettings();
+            assertThat(savedNodeSettings.getNodeSettings("view").getNodeSettings("objectSetting").getString("login"))
+                .isEmpty();
         }
 
         @Test
@@ -405,26 +548,33 @@ public class DefaultNodeDialogTest {
                 applyData);
         }
 
-        private static void assertSubNodeSettingsForKey(final NodeSettings test, final NodeSettings expected,
-            final String key) throws InvalidSettingsException {
-            assertThat(test.getNodeSettings(key)).isEqualTo(expected.getNodeSettings(key));
+        private void assertSubNodeSettingsForKey(final NodeSettings expected, final String key)
+            throws InvalidSettingsException {
+            assertThat(m_nnc.getNodeSettings().getNodeSettings(key)).isEqualTo(expected.getNodeSettings(key));
         }
 
     }
 
-    private static void initNodeSettings(final NativeNodeContainer nnc, final NodeSettings defaultModelSettings,
-        final NodeSettings defaultViewSettings) throws InvalidSettingsException {
-        var parent = nnc.getParent();
-        var nodeSettings = new NodeSettings("node_settings");
-        parent.saveNodeSettings(nnc.getID(), nodeSettings);
+    private class TestNodeSettingsBuilder {
 
-        nodeSettings.addNodeSettings(defaultModelSettings);
-        initModelVariableSettings(nodeSettings);
-        nodeSettings.addNodeSettings(defaultViewSettings);
-        initViewVariableSettings(nodeSettings, true);
+        boolean includeVariableSettingForNonExistentNodeSetting;
 
-        parent.loadNodeSettings(nnc.getID(), nodeSettings);
-        parent.executeAllAndWaitUntilDone();
+        NodeSettings build() {
+            var nodeSettings = new NodeSettings("configuration");
+            var modelSettings = nodeSettings.addNodeSettings("model");
+            var viewSettings = nodeSettings.addNodeSettings("view");
+            DefaultNodeSettings.saveSettings(ModelSettings.class, new ModelSettings(), modelSettings);
+            DefaultNodeSettings.saveSettings(ViewSettings.class, new ViewSettings(), viewSettings);
+            initModelVariableSettings(nodeSettings);
+            initViewVariableSettings(nodeSettings, includeVariableSettingForNonExistentNodeSetting);
+            return nodeSettings;
+        }
+
+        TestNodeSettingsBuilder withIncludeVariableSettingsForNonExistentNodeSettings() {
+            includeVariableSettingForNonExistentNodeSetting = true;
+            return this;
+        }
+
     }
 
     private static void initModelVariableSettings(final NodeSettings ns) {
