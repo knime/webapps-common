@@ -87,4 +87,14 @@ describe("Checkboxes.vue", () => {
       propPossibleValues.validator && propPossibleValues.validator([]),
     ).toBeTruthy();
   });
+
+  it("disables checkboxes if desired", () => {
+    props.disabled = true;
+    const wrapper = mount(Checkboxes, {
+      props,
+    });
+    wrapper.findAllComponents(Checkbox).forEach((checkbox) => {
+      expect(checkbox.props().disabled).toBeTruthy();
+    });
+  });
 });
