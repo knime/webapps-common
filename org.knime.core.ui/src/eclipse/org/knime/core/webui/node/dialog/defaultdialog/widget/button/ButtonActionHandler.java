@@ -69,7 +69,7 @@ public interface ButtonActionHandler<R, S, M extends Enum<M>> extends Dependency
      * This method is called whenever the dialog is opened in order to determine the initial state of the button.
      *
      * @param currentValue the current set value of the button field
-     * @param settings the state of the dependency settings
+     * @param m_settings the state of the dependency settings
      * @param context the current {@link DefaultNodeSettingsContext}
      *
      * @return the initial state of the button and its value.

@@ -50,26 +50,30 @@ package org.knime.core.webui.node.dialog;
 
 import java.io.IOException;
 import java.util.EnumMap;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.config.base.AbstractConfigEntry;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.webui.node.dialog.NodeDialog.OnApplyNodeModifier;
+import org.knime.core.webui.node.dialog.SettingsTreeTraversalUtil.VariableSettingsTree;
+import org.knime.core.webui.node.dialog.SettingsTreeTraversalUtil.VariableSettingsTreeNode;
 import org.knime.core.webui.node.dialog.internal.VariableSettings;
 import org.knime.core.webui.node.view.NodeViewManager;
+
+import com.google.common.base.Objects;
 
 /**
  * Helper to parse and apply data representing node settings to a node.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
+@SuppressWarnings("java:S3553") // accept Optionals as parameters as it is much more readable this way
 final class ApplyData {
 
     private final NodeContainer m_nc;
@@ -89,95 +93,112 @@ final class ApplyData {
             ? new OnApplyNodeModiferWrapper((NativeNodeContainer)nc, onApplyModifier) : null;
     }
 
+    static NodeSettings getOrCreateSubSettings(final NodeSettings settings, final SettingsType type)
+        throws InvalidSettingsException {
+        final var key = type.getConfigKey();
+        NodeSettings subSettings;
+        if (settings.containsKey(key)) {
+            subSettings = settings.getNodeSettings(key);
+        } else {
+            subSettings = new NodeSettings(key);
+            settings.addNodeSettings(subSettings);
+        }
+        return subSettings;
+    }
+
     void applyData(final String data) throws IOException {
-        var nodeSettings = new NodeSettings("node_settings");
-        // to keep another copy of the settings to be able to tell whether
-        // settings have been changed
-        var wfm = m_nc.getParent();
-        var nodeID = m_nc.getID();
         try {
-            // write settings into nodeSettings
-            wfm.saveNodeSettings(nodeID, nodeSettings);
-            var previousNodeSettings = cloneSettings(nodeSettings, "previous_settings");
-
-            // transfer data into settings, i.e., apply the data to the settings
-            populateNewSettings(data, nodeSettings);
-
-            // extract model and view settings from nodeSettings objects
-            var modelSettings = getSubSettings(nodeSettings, SettingsType.MODEL);
-            var viewSettings = getSubSettings(nodeSettings, SettingsType.VIEW);
-            var previousModelSettings = getSubSettings(previousNodeSettings, SettingsType.MODEL);
-            var previousViewSettings = getSubSettings(previousNodeSettings, SettingsType.VIEW);
-
-            // determine whether model or view settings changed by comparing against the previousNodeSettings
-            var modelSettingsChanged = settingsChanged(modelSettings, previousModelSettings)
-                || variableSettingsChanged(SettingsType.MODEL, nodeSettings, previousNodeSettings);
-            var viewSettingsChanged = settingsChanged(viewSettings, previousViewSettings)
-                || variableSettingsChanged(SettingsType.VIEW, nodeSettings, previousNodeSettings);
-
-            NodeSettings viewVariables = null;
-            if (viewSettingsChanged) {
-                if (nodeSettings.containsKey(SettingsType.VIEW.getVariablesConfigKey())) {
-                    // if setting is overwritten by a flow variable, then replace the setting in 'viewSettings' by
-                    // by the value given by 'previousViewSettings'
-                    viewVariables =
-                        nodeSettings.getNodeSettings(SettingsType.VIEW.getVariablesConfigKey()).getNodeSettings("tree");
-                    replaceVariableControlledSettingsWithPreviousSettings(viewVariables, //
-                        viewSettings, // NOSONAR: viewSettingsChanged is false if viewSettings is null
-                        previousViewSettings);
-                }
-
-                // validate settings
-                NodeViewManager.getInstance().validateSettings(m_nc, viewSettings);
-            }
-
-            if (modelSettingsChanged) {
-                if (nodeSettings.containsKey(SettingsType.MODEL.getVariablesConfigKey())) {
-                    // if setting is overwritten by flow variable, then replace the setting in 'modelSettings' by
-                    // by the value given by 'previousModelSettings'
-                    var modelVariables = nodeSettings.getNodeSettings(SettingsType.MODEL.getVariablesConfigKey())
-                        .getNodeSettings("tree");
-                    replaceVariableControlledSettingsWithPreviousSettings(modelVariables, //
-                        modelSettings, // NOSONAR: modelSettingsChanged is false if modelSettings is null
-                        previousModelSettings);
-                }
-
-                // 'persist' settings and load model settings into the node model
-                wfm.loadNodeSettings(nodeID, nodeSettings);
-            } else if (viewSettingsChanged) {
-                loadViewSettingsIntoNode(wfm, nodeID, viewVariables, viewSettings, previousViewSettings, nodeSettings);
-            }
-
-            if (m_onApplyModifierWrapper != null) {
-                // Note that if model settings passed to the close modifier have been overridden by flow variables,
-                // these settings have been replaced with their value from previous settings (see above). This means
-                // that (i) the close modifier cannot be controlled by flow variables and (ii) any changes applied
-                // to settings controlled by flow variables are ignored by the close modifier. In other words, if a
-                // setting is controlled by a flow variable, its previous and updated values, as passed to the close
-                // modifier, are always identical.
-                m_onApplyModifierWrapper.onApply(modelSettings, viewSettings, previousModelSettings,
-                    previousViewSettings);
-            }
+            applyDataOrThrow(data);
         } catch (InvalidSettingsException ex) {
             throw new IOException("Invalid node settings: " + ex.getMessage(), ex);
         }
     }
 
+    private void applyDataOrThrow(final String data) throws InvalidSettingsException {
+        var wfm = m_nc.getParent();
+        var nodeID = m_nc.getID();
+        var previousNodeSettings = getExistingNodeSettings(wfm, nodeID);
+        var nodeSettings = getToBeAppliedNodeSettings(data, previousNodeSettings);
+
+        final Optional<ApplyDataSettings> modelApplyDataSettings =
+            getApplyDataSettings(nodeSettings, previousNodeSettings, SettingsType.MODEL);
+        final var viewApplyDataSettings = getApplyDataSettings(nodeSettings, previousNodeSettings, SettingsType.VIEW);
+
+        final var changedModelSettings = modelApplyDataSettings.filter(ApplyDataSettings::hasChanged);
+        final var changedViewSettings = viewApplyDataSettings.filter(ApplyDataSettings::hasChanged);
+
+        applyChange(wfm, nodeID, nodeSettings, changedModelSettings, changedViewSettings);
+        callOnChangeModifyer(modelApplyDataSettings, viewApplyDataSettings);
+    }
+
+    private NodeSettings getExistingNodeSettings(final WorkflowManager wfm, final NodeID nodeID) {
+        var nodeSettings = new NodeSettings("node_settings");
+        wfm.saveNodeSettings(nodeID, nodeSettings);
+        if (!m_settingsTypes.contains(SettingsType.MODEL)) {
+            nodeSettings.addNodeSettings(SettingsType.MODEL.getConfigKey());
+        }
+        return nodeSettings;
+    }
+
+    private NodeSettings getToBeAppliedNodeSettings(final String data, final NodeSettings previousNodeSettings)
+        throws InvalidSettingsException {
+        var nodeSettings = cloneSettings(previousNodeSettings, "to_be_applied_settings");
+        populateNewSettings(data, nodeSettings);
+        return nodeSettings;
+    }
+
+    private static NodeSettings cloneSettings(final NodeSettings s, final String key) {
+        var res = new NodeSettings(key);
+        s.copyTo(res);
+        return res;
+    }
+
+    /**
+     * Transfer data into settings, i.e., apply the data to the settings
+     */
     private void populateNewSettings(final String data, final NodeSettings nodeSettings)
         throws InvalidSettingsException {
         var settingsMap = new EnumMap<SettingsType, NodeAndVariableSettingsWO>(SettingsType.class);
-        for (var settingsType : SettingsType.values()) {
-            if (m_settingsTypes.contains(settingsType)) {
-                var subSettings = getSubSettings(nodeSettings, settingsType);
-                settingsMap.put(settingsType, NodeAndVariableSettingsProxy.createWOProxy(subSettings,
-                    new VariableSettings(nodeSettings, settingsType)));
-            }
+        for (var settingsType : m_settingsTypes) {
+            settingsMap.put(settingsType, NodeAndVariableSettingsProxy.createWOProxy(//
+                getOrCreateSubSettings(nodeSettings, settingsType), //
+                new VariableSettings(nodeSettings, settingsType)//
+            ));
         }
         m_nodeSettingsService.toNodeSettings(data, settingsMap);
     }
 
-    private void loadViewSettingsIntoNode(final WorkflowManager wfm, final NodeID nodeID,
-        final NodeSettings viewVariables, final NodeSettings viewSettings, final NodeSettings previousViewSettings,
+    private Optional<ApplyDataSettings> getApplyDataSettings(final NodeSettings nodeSettings,
+        final NodeSettings previousNodeSettings, final SettingsType type) throws InvalidSettingsException {
+        return m_settingsTypes.contains(type)
+            ? Optional.of(new ApplyDataSettings(nodeSettings, previousNodeSettings, type)) : Optional.empty();
+    }
+
+    private void applyChange(final WorkflowManager wfm, final NodeID nodeID, final NodeSettings nodeSettings,
+        final Optional<ApplyDataSettings> changedModelSettings, final Optional<ApplyDataSettings> changedViewSettings)
+        throws InvalidSettingsException {
+        changedViewSettings.ifPresent(ApplyDataSettings::revertSettingsOverwrittenByVariables);
+        changedModelSettings.ifPresent(ApplyDataSettings::revertSettingsOverwrittenByVariables);
+
+        if (changedViewSettings.isPresent()) {
+            validateViewSettings(changedViewSettings.get());
+        }
+
+        if (changedModelSettings.isPresent()) {
+            /**
+             * validate and 'persist' settings and load model settings into the node model
+             */
+            wfm.loadNodeSettings(nodeID, nodeSettings);
+        } else if (changedViewSettings.isPresent()) {
+            loadViewSettingsIntoNode(wfm, nodeID, changedViewSettings.get(), nodeSettings);
+        }
+    }
+
+    private void validateViewSettings(final ApplyDataSettings changedView) throws InvalidSettingsException {
+        NodeViewManager.getInstance().validateSettings(m_nc, changedView.getSettings());
+    }
+
+    private void loadViewSettingsIntoNode(final WorkflowManager wfm, final NodeID nodeID, final ApplyDataSettings view,
         final NodeSettings nodeSettings) throws InvalidSettingsException {
         /**
          * We reset the node and trigger configure when
@@ -188,8 +209,7 @@ final class ApplyData {
          * changing view variables.
          * </ul>
          */
-        if (m_nc.getNodeContainerState().isIdle()
-            || (viewVariables != null && variablesInduceReset(viewVariables, viewSettings, previousViewSettings))) {
+        if (m_nc.getNodeContainerState().isIdle() || variablesInduceReset(view)) {
             /** 'persist' settings and reset the node (i.e., do as if model settings had changed) */
             wfm.loadNodeSettings(nodeID, nodeSettings);
         } else {
@@ -198,9 +218,8 @@ final class ApplyData {
         }
     }
 
-    private static boolean variablesInduceReset(final NodeSettingsRO variables, final NodeSettings settings,
-        final NodeSettingsRO previousSettings) throws InvalidSettingsException {
-        return exposedSettingsChanged(variables, settings, previousSettings) || variableSettingsFlawed(variables);
+    private static boolean variablesInduceReset(final ApplyDataSettings view) throws InvalidSettingsException {
+        return exposedVariablesChanged(view) || variableSettingsFlawed(view);
 
     }
 
@@ -208,17 +227,44 @@ final class ApplyData {
      * Helper method to recursively determine whether there is any setting that has changed and that is exposed as a
      * variable
      */
-    private static boolean exposedSettingsChanged(final NodeSettingsRO variables, final NodeSettings settings,
-        final NodeSettingsRO previousSettings) {
-        return traverseSettingsTrees(variables, settings, previousSettings,
-            (variable, setting, previousSetting) -> isExposedAsVariableButNotControlledByAVariable(variable)
-                && !setting.isIdentical(previousSetting));
+    private static boolean exposedVariablesChanged(final ApplyDataSettings view) {
+        return SettingsTreeTraversalUtil.traverseSettingsTrees(new VariableSettingsTree(view),
+            ApplyData::exposedVariableChanged);
+    }
+
+    private static boolean exposedVariableChanged(final VariableSettingsTreeNode leaf) {
+        final var exposedVariableName = getExposedVariableName(leaf.variables());
+        final var previousExposedVariableName =
+            leaf.previousVariables() == null ? null : getExposedVariableName(leaf.previousVariables());
+
+        if (!Objects.equal(exposedVariableName, previousExposedVariableName)) {
+            return true;
+        }
+        final var isExposed = exposedVariableName != null;
+        final var isNotControlled = getUsedVariable(leaf.variables()) == null;
+        return isExposed && isNotControlled && !leaf.settings().isIdentical(leaf.previousSettings());
+    }
+
+    private static String getUsedVariable(final NodeSettingsRO variable) {
+        return variable.getString(VariableSettings.USED_VARIABLE_CFG_KEY, null);
+    }
+
+    private static String getExposedVariableName(final NodeSettingsRO variable) {
+        return variable.getString(VariableSettings.EXPOSED_VARIABLE_CFG_KEY, null);
     }
 
     private static final String IS_FLAWED_CFG_KEY = VariableSettings.USED_VARIABLE_FLAWED_CFG_KEY;
 
-    private static boolean variableSettingsFlawed(final NodeSettingsRO varSettings) throws InvalidSettingsException {
+    private static boolean variableSettingsFlawed(final ApplyDataSettings view) throws InvalidSettingsException {
+        final var varSettings = view.getVariables();
+        if (varSettings.isPresent()) {
+            return variableSettingsFlawed(varSettings.get());
+        }
+        return false;
 
+    }
+
+    private static boolean variableSettingsFlawed(final NodeSettingsRO varSettings) throws InvalidSettingsException {
         if (varSettings.getBoolean(IS_FLAWED_CFG_KEY, false)) {
             return true;
         }
@@ -233,139 +279,23 @@ final class ApplyData {
 
     }
 
-    private static void replaceVariableControlledSettingsWithPreviousSettings(final NodeSettingsRO variables,
-        final NodeSettings settings, final NodeSettingsRO previousSettings) {
-        traverseSettingsTrees(variables, settings, previousSettings, (variable, setting, previousSetting) -> {
-            if (isVariableControllingSetting(variable)) {
-                // replace the value of setting with the value of previousSetting
-                var parent = (NodeSettings)setting.getParent();
-                parent.addEntry(previousSetting);
-            }
-            return false;
-        });
-    }
-
     /**
-     * Traverses the variable-settings-tree (i.e. whether a setting is controlled by a variable or exposed as a
-     * variable) and a settings tree at the same time and evaluates the 'stopCriterion' at every leaf. Returns 'true' if
-     * the stop criterion has been evaluated to 'true' during the traversal.
+     * Note that if model settings passed to the close modifier have been overridden by flow variables, these settings
+     * have been replaced with their value from previous settings (see above). This means that (i) the close modifier
+     * cannot be controlled by flow variables and (ii) any changes applied to settings controlled by flow variables are
+     * ignored by the close modifier. In other words, if a setting is controlled by a flow variable, its previous and
+     * updated values, as passed to the close modifier, are always identical.
      */
-    private static boolean traverseSettingsTrees(final NodeSettingsRO variables, final NodeSettings settings,
-        final NodeSettingsRO previousSettings, final StopCriterion stopCriterion) {
-        for (String key : variables) { // NOSONAR
-            // runtime is quadratic in number of settings, since the getSettingsChildByKey has linear runtime
-            var variable = getSettingsChildByKey(variables, key);
-            if (!(variable instanceof NodeSettingsRO)) {
-                continue; // unexpected (yet not unrecoverable) state: variable should have children
-            }
-            var setting = getSettingsChildByKey(settings, key);
-            if (setting == null) {
-                continue; // unexpected (yet not unrecoverable) state: setting should be present
-            }
-            var previousSetting = getSettingsChildByKey(previousSettings, key);
-            if (previousSetting == null) {
-                continue; // unexpected (yet not unrecoverable) state: setting should be present
-            }
-
-            final var variableNodeSettings = (NodeSettingsRO)variable;
-            if (!isLeafVariableNodeSettings(variableNodeSettings) && setting instanceof NodeSettingsRO
-                && previousSetting instanceof NodeSettingsRO) {
-                if (traverseSettingsTrees(variableNodeSettings, (NodeSettings)setting, (NodeSettingsRO)previousSetting,
-                    stopCriterion)) {
-                    return true;
-                }
-            } else if (stopCriterion.stop((NodeSettingsRO)variable, setting, previousSetting)) {
-                return true;
-            }
+    private void callOnChangeModifyer(final Optional<ApplyDataSettings> modelApplyDataSettings,
+        final Optional<ApplyDataSettings> viewApplyDataSettings) {
+        if (m_onApplyModifierWrapper != null) {
+            m_onApplyModifierWrapper.onApply( //
+                modelApplyDataSettings.map(m -> m.getSettings()).orElse(new NodeSettings("empty")), //
+                viewApplyDataSettings.map(v -> v.getSettings()).orElse(null), //
+                modelApplyDataSettings.map(m -> m.getPreviousSettings()).orElse(new NodeSettings("empty")), //
+                viewApplyDataSettings.map(v -> v.getPreviousSettings()).orElse(null) //
+            );
         }
-        return false;
-    }
-
-    private interface StopCriterion {
-        boolean stop(NodeSettingsRO variable, AbstractConfigEntry setting, AbstractConfigEntry previousSetting);
-    }
-
-    // Helper method to get a child of arbitrary type by its key / name
-    private static AbstractConfigEntry getSettingsChildByKey(final NodeSettingsRO settings, final String key) {
-        for (var i = 0; i < settings.getChildCount(); i++) {
-            var treeNode = settings.getChildAt(i);
-            if (!(treeNode instanceof AbstractConfigEntry)) {
-                continue; // unexpected (yet not unrecoverable) state: setting should be of type AbstractConfigEntry
-            }
-            var ace = (AbstractConfigEntry)treeNode;
-            if (ace.getKey().equals(key)) {
-                return ace;
-            }
-        }
-        return null;
-    }
-
-    private static boolean isLeafVariableNodeSettings(final NodeSettingsRO variable) {
-        return variable.containsKey(VariableSettings.USED_VARIABLE_CFG_KEY)
-            || variable.containsKey(VariableSettings.EXPOSED_VARIABLE_CFG_KEY);
-    }
-
-    private static boolean isVariableControllingSetting(final NodeSettingsRO variable) {
-        return variable.getString(VariableSettings.USED_VARIABLE_CFG_KEY, null) != null;
-    }
-
-    // Helper method to determine whether a given setting is exposed as a variable
-    private static boolean isExposedAsVariableButNotControlledByAVariable(final NodeSettingsRO variable) {
-        return variable.getString(VariableSettings.EXPOSED_VARIABLE_CFG_KEY, null) != null
-            && variable.getString(VariableSettings.USED_VARIABLE_CFG_KEY, null) == null;
-    }
-
-    private static boolean settingsChanged(final NodeSettings settings, final NodeSettings previousSettings) {
-        if (settings != null) {
-            return !Objects.equals(settings, previousSettings);
-        }
-        return false;
-    }
-
-    private static boolean variableSettingsChanged(final SettingsType type, final NodeSettings nodeSettings,
-        final NodeSettings previousNodeSettings) throws InvalidSettingsException {
-        final String variablesConfigKey = type.getVariablesConfigKey();
-        final var varSettings = nodeSettings.containsKey(variablesConfigKey) //
-            ? nodeSettings.getNodeSettings(variablesConfigKey) //
-            : null;
-        final var previousVarSettings = previousNodeSettings.containsKey(variablesConfigKey) //
-            ? previousNodeSettings.getNodeSettings(variablesConfigKey) //
-            : null;
-        return settingsChanged(varSettings, previousVarSettings);
-    }
-
-    private NodeSettings getSubSettings(final NodeSettings settings, final SettingsType type)
-        throws InvalidSettingsException {
-        if (hasSettings(type)) {
-            return getOrCreateSubSettings(settings, type.getConfigKey());
-        } else if (type == SettingsType.MODEL) {
-            // even if the node has no model settings,
-            // we still have to add empty model settings since the wfm expects node settings to be present
-            settings.addNodeSettings(type.getConfigKey());
-        }
-        return null;
-    }
-
-    private static NodeSettings cloneSettings(final NodeSettings s, final String key) {
-        var res = new NodeSettings(key);
-        s.copyTo(res);
-        return res;
-    }
-
-    private static NodeSettings getOrCreateSubSettings(final NodeSettings settings, final String key)
-        throws InvalidSettingsException {
-        NodeSettings subSettings;
-        if (settings.containsKey(key)) {
-            subSettings = settings.getNodeSettings(key);
-        } else {
-            subSettings = new NodeSettings(key);
-            settings.addNodeSettings(subSettings);
-        }
-        return subSettings;
-    }
-
-    private boolean hasSettings(final SettingsType type) {
-        return m_settingsTypes.contains(type);
     }
 
     void cleanUp() {

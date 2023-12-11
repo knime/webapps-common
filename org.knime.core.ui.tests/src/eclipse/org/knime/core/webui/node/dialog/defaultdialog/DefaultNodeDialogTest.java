@@ -55,6 +55,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -140,15 +141,11 @@ public class DefaultNodeDialogTest {
 
     }
 
-    static class ObjectSetting {
-        String m_value = "5";
-    }
-
     private WorkflowManager m_wfm;
 
     private NativeNodeContainer m_nnc;
 
-    private NativeNodeContainer previousNode;
+    private NativeNodeContainer m_previousNode;
 
     static class FlowVariablesInputNodeModel extends NodeModel {
 
@@ -239,8 +236,8 @@ public class DefaultNodeDialogTest {
             () -> NodeDialogTest.createNodeDialog(Page.builder(() -> "page content", "page.html").build(),
                 defaultNodeSettingsService, null);
         m_nnc = NodeDialogManagerTest.createNodeWithNodeDialog(m_wfm, nodeDialogCreator);
-        previousNode = WorkflowManagerUtil.createAndAddNode(m_wfm, new FlowVariablesInputNodeFactory());
-        m_wfm.addConnection(previousNode.getID(), 0, m_nnc.getID(), 0);
+        m_previousNode = WorkflowManagerUtil.createAndAddNode(m_wfm, new FlowVariablesInputNodeFactory());
+        m_wfm.addConnection(m_previousNode.getID(), 0, m_nnc.getID(), 0);
         m_wfm.executeAllAndWaitUntilDone();
 
     }
@@ -250,8 +247,8 @@ public class DefaultNodeDialogTest {
         WorkflowManagerUtil.disposeWorkflow(m_wfm);
     }
 
-    private void addFlowVariables(final FlowVariable... flowVariables) {
-        final var flowObjectStack = previousNode.getOutgoingFlowObjectStack();
+    private void addFlowVariablesAndExecuteWorkflow(final FlowVariable... flowVariables) {
+        final var flowObjectStack = m_previousNode.getOutgoingFlowObjectStack();
         for (var flowVar : flowVariables) {
             flowObjectStack.push(flowVar);
         }
@@ -270,7 +267,7 @@ public class DefaultNodeDialogTest {
     class InitialDataTest {
 
         @BeforeEach
-        void createWorkflowAndAddNode() throws InvalidSettingsException {
+        void saveInitialNodeSettingsToNode() throws InvalidSettingsException {
             final var initialNodeSettings =
                 new TestNodeSettingsBuilder().withIncludeVariableSettingsForNonExistentNodeSettings().build();
             setNodeSettingsAndExecute(m_nnc, initialNodeSettings);
@@ -286,7 +283,7 @@ public class DefaultNodeDialogTest {
 
         @Test
         void testInitialDataWithFlowVariableSettings() throws InvalidSettingsException, IOException {
-            addFlowVariables(validFlowVariable1, validFlowVariable2, validFlowVariable3);
+            addFlowVariablesAndExecuteWorkflow(validFlowVariable1, validFlowVariable2, validFlowVariable3);
 
             var initialData = getInitialData();
 
@@ -298,7 +295,7 @@ public class DefaultNodeDialogTest {
         void testInitialDataWithFlawedFlowVariableSettings() throws InvalidSettingsException, IOException {
             // "NOT_A_B_OR_C" is flawed, as we overwrite "MyEnum" above
             final var inValidFlowVariable2 = new FlowVariable("flow variable 2", "NOT_A_B_OR_C");
-            addFlowVariables(validFlowVariable1, inValidFlowVariable2, validFlowVariable3);
+            addFlowVariablesAndExecuteWorkflow(validFlowVariable1, inValidFlowVariable2, validFlowVariable3);
 
             var initialData = getInitialData();
 
@@ -376,23 +373,25 @@ public class DefaultNodeDialogTest {
 
         @BeforeEach
         void addValidFlowVariables() {
-            addFlowVariables(validFlowVariable1, validFlowVariable2, validFlowVariable3);
+            addFlowVariablesAndExecuteWorkflow(validFlowVariable1, validFlowVariable2, validFlowVariable3);
         }
 
         @Test
         void testApplyDataWithFlowVariableSettings() throws IOException, InvalidSettingsException {
 
+            initializeEmptySettingsAndExecuteWorkflow();
+
             var applyData = """
                     {
                       "data": {
                         "model": {
-                          "model setting": "2"
+                          "modelSetting": "2"
                         },
                         "view": {
-                          "view setting": "3",
+                          "viewSetting": "C",
                           "nested": {
-                            "nested view setting": "4",
-                            "nested view setting 2": "5"
+                            "nestedViewSetting": "4",
+                            "nestedViewSetting 2": "5"
                           }
                         }
                       },
@@ -421,7 +420,12 @@ public class DefaultNodeDialogTest {
                     """;
             callApplyData(applyData);
 
-            var expectedNodeSettings = new TestNodeSettingsBuilder().build();
+            var expectedNodeSettings = new TestNodeSettingsBuilder() //
+                /**
+                 * This is the only settings value that is expected to be different. All other changes are overwritten
+                 * by flow variables
+                 */
+                .withSettingsValue("view.nested.nested view setting 2", "4").build();
             for (var key : List.of("model", "variables", "view", "view_variables")) {
                 assertSubNodeSettingsForKey(expectedNodeSettings, key);
             }
@@ -430,11 +434,35 @@ public class DefaultNodeDialogTest {
         @Test
         void testApplyDataWithOnlyViewFlowVariableSettings() throws IOException, InvalidSettingsException {
 
-            initializeViewSettingsForApplyTest();
+            var initialApplyData = """
+                      {
+                      "data": {
+                        "model": {},
+                        "view": {}
+                       },
+                      "flowVariableSettings": {
+                        "view.nested.nested view setting 3": {
+                          "exposedFlowVariableName": "exposed var name"
+                        },
+                        "view.nested.nested view setting 2": {
+                          "exposedFlowVariableName": "exposed var name"
+                        },
+                        "view.nested.nested view setting": {
+                          "controllingFlowVariableAvailable": false,
+                          "controllingFlowVariableName": "flow variable 1",
+                          "exposedFlowVariableName": "exposed var name"
+                        }
+                      }
+                    }
+                    """;
+
+            callApplyData(initialApplyData);
+            m_wfm.executeAllAndWaitUntilDone();
+            assertTrue(m_nnc.getNodeContainerState().isExecuted());
 
             /**
              * Essential here is that the settings and the model variables did not change, i.e. only new view variables
-             * get applied.
+             * get applied and that the exposed settings which are not controlled by a flow variable did not change.
              */
             var applyViewVariablesData = """
                     {
@@ -474,9 +502,9 @@ public class DefaultNodeDialogTest {
 
             final var credentialsFlowVariable = CredentialsStore.newCredentialsFlowVariable("credentials flow variable",
                 "varUsername", "varPassword", "varSecondFactor");
-            addFlowVariables(credentialsFlowVariable);
+            addFlowVariablesAndExecuteWorkflow(credentialsFlowVariable);
 
-            initializeViewSettingsForApplyTest();
+            initializeEmptySettingsAndExecuteWorkflow();
 
             var objectSettingsOverwrittenByVariablesData = """
                     {
@@ -506,7 +534,7 @@ public class DefaultNodeDialogTest {
         @Test
         void testApplyDataResetsNodeOnFlawedViewVariables() throws IOException, InvalidSettingsException {
 
-            initializeViewSettingsForApplyTest();
+            initializeEmptySettingsAndExecuteWorkflow();
 
             var flawedViewVariablesData = """
                     {
@@ -528,7 +556,91 @@ public class DefaultNodeDialogTest {
             assertFalse(m_nnc.getNodeContainerState().isExecuted());
         }
 
-        private void initializeViewSettingsForApplyTest() throws IOException {
+        @Test
+        void testApplyDataResetsNodeOnExposedVariableChange() throws IOException, InvalidSettingsException {
+
+            var initialApplyData = """
+                    {
+                      "data": {
+                        "model": {},
+                        "view": {}
+                      },
+                      "flowVariableSettings": {
+                        "view.view setting": {
+                          "exposedFlowVariableName": "previous name"
+                        }
+                      }
+                    }
+                    """;
+
+            callApplyData(initialApplyData);
+            m_wfm.executeAllAndWaitUntilDone();
+            assertTrue(m_nnc.getNodeContainerState().isExecuted());
+
+            var newExposedViewVariablesData = """
+                    {
+                      "data": {
+                        "model": {},
+                        "view": {}
+                       },
+                      "flowVariableSettings": {
+                        "view.view setting": {
+                          "exposedFlowVariableName": "new name"
+                        }
+                      }
+                    }
+                    """;
+            callApplyData(newExposedViewVariablesData);
+
+            assertFalse(m_nnc.getNodeContainerState().isExecuted());
+        }
+
+        @Test
+        void testApplyDataResetsNodeOnSettingsUnderlyingExposedVariableChange()
+            throws IOException, InvalidSettingsException {
+
+            var initialApplyData = """
+                    {
+                      "data": {
+                        "model": {},
+                        "view": {
+                            "viewSetting": "C"
+                        }
+                      },
+                      "flowVariableSettings": {
+                        "view.view setting": {
+                          "exposedFlowVariableName": "exposed name"
+                        }
+                      }
+                    }
+                    """;
+
+            callApplyData(initialApplyData);
+            m_wfm.executeAllAndWaitUntilDone();
+            assertTrue(m_nnc.getNodeContainerState().isExecuted());
+            assertThat(m_nnc.getNodeSettings().getNodeSettings("view").getString("view setting")).isEqualTo("C");
+
+            var newExposedViewVariablesData = """
+                    {
+                      "data": {
+                        "model": {},
+                        "view": {
+                            "viewSetting": "B"
+                        }
+                       },
+                      "flowVariableSettings": {
+                        "view.view setting": {
+                          "exposedFlowVariableName": "exposed name"
+                        }
+                      }
+                    }
+                    """;
+            callApplyData(newExposedViewVariablesData);
+
+            assertFalse(m_nnc.getNodeContainerState().isExecuted());
+        }
+
+        private void initializeEmptySettingsAndExecuteWorkflow() throws IOException {
             var initialApplyData = """
                     {
                       "data": {
@@ -555,9 +667,11 @@ public class DefaultNodeDialogTest {
 
     }
 
-    private class TestNodeSettingsBuilder {
+    private final static class TestNodeSettingsBuilder {
 
         boolean includeVariableSettingForNonExistentNodeSetting;
+
+        Map<String, String> settingsValues = new HashMap<>();
 
         NodeSettings build() {
             var nodeSettings = new NodeSettings("configuration");
@@ -565,6 +679,18 @@ public class DefaultNodeDialogTest {
             var viewSettings = nodeSettings.addNodeSettings("view");
             DefaultNodeSettings.saveSettings(ModelSettings.class, new ModelSettings(), modelSettings);
             DefaultNodeSettings.saveSettings(ViewSettings.class, new ViewSettings(), viewSettings);
+            settingsValues.entrySet().forEach(e -> {
+                final var path = e.getKey().split("\\.");
+                var config = nodeSettings;
+                for (int i = 0; i < path.length - 1; i++) {
+                    try {
+                        config = config.getNodeSettings(path[i]);
+                    } catch (InvalidSettingsException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+                config.addString(path[path.length - 1], e.getValue());
+            });
             initModelVariableSettings(nodeSettings);
             initViewVariableSettings(nodeSettings, includeVariableSettingForNonExistentNodeSetting);
             return nodeSettings;
@@ -572,6 +698,15 @@ public class DefaultNodeDialogTest {
 
         TestNodeSettingsBuilder withIncludeVariableSettingsForNonExistentNodeSettings() {
             includeVariableSettingForNonExistentNodeSetting = true;
+            return this;
+        }
+
+        /**
+         * @param settingsPath the path to the setting in the saved node settings, e.g.: "model.model setting"
+         * @param value the string value of the setting
+         */
+        TestNodeSettingsBuilder withSettingsValue(final String settingsPath, final String value) {
+            settingsValues.put(settingsPath, value);
             return this;
         }
 
