@@ -1,14 +1,20 @@
 <script lang="ts">
-import { ref, toRefs, computed, unref, watch } from "vue";
+import { ref, inject, toRefs, computed } from "vue";
+import {
+  useFloating,
+  type Strategy,
+  type Placement,
+  shift,
+  flip,
+  autoUpdate,
+} from "@floating-ui/vue";
 
 import FunctionButton from "./FunctionButton.vue";
 import MenuItems from "./MenuItems.vue";
-import usePopper from "../composables/usePopper";
 import useClickOutside from "../composables/useClickOutside";
 
 import type { MenuItem } from "./MenuItems.vue";
 import type { PropType } from "vue";
-import type { Placement, PositioningStrategy } from "@popperjs/core";
 
 const orientations = ["right", "top", "left"] as const;
 
@@ -77,7 +83,7 @@ export default {
       default: null,
     },
     /**
-     * Allow overflow of the popper on the main axis regarding the SubMenu Button
+     * Allow overflow of the popover on the main axis regarding the SubMenu Button
      */
     allowOverflowMainAxis: {
       type: Boolean,
@@ -95,21 +101,21 @@ export default {
     },
     /**
      * The positioning strategy for the dropdown menu (also called popover)
-     * see: https://popper.js.org/docs/v2/constructors/#strategy
      */
     positioningStrategy: {
-      type: String as PropType<PositioningStrategy>,
+      type: String as PropType<Strategy>,
       default: "fixed",
       validator: (value: string) => ["fixed", "absolute"].includes(value),
     },
   },
   emits: ["item-click", "toggle", "open", "close"],
   setup(props) {
-    const { orientation } = toRefs(props);
+    const { positioningStrategy } = toRefs(props);
     const submenu = ref(null);
     const menuItems = ref(null);
     const menuWrapper = ref(null);
     const expanded = ref(false);
+    const shadowRoot = inject<ShadowRoot | null>("shadowRoot", null);
     const closeMenu = () => {
       expanded.value = false;
     };
@@ -119,33 +125,20 @@ export default {
       expanded,
     );
 
-    const { popperInstance, updatePopper } = usePopper(
-      {
-        popperTarget: menuWrapper,
-        referenceEl: submenu,
-      },
-      computed(() => ({
-        placement: placementMap[props.orientation],
-        strategy: props.positioningStrategy,
-        modifiers: [
-          {
-            name: "preventOverflow",
-            options: {
-              mainAxis: props.allowOverflowMainAxis,
-            },
-          },
-        ],
-      })),
-    );
-
-    watch(orientation, (value) => {
-      const popper = unref(popperInstance);
-      if (!popper) {
-        return;
-      }
-      popper.setOptions({
-        placement: placementMap[value],
-      });
+    // floating menu
+    const placement = computed(() => placementMap[props.orientation]);
+    const middleware = computed(() => [
+      shift({ mainAxis: props.allowOverflowMainAxis }),
+      flip(),
+    ]);
+    const {
+      floatingStyles: menuWrapperFloatingStyles,
+      update: updateFloatingMenu,
+    } = useFloating(submenu, menuWrapper, {
+      placement,
+      strategy: positioningStrategy,
+      middleware,
+      whileElementsMounted: autoUpdate,
     });
 
     return {
@@ -153,8 +146,10 @@ export default {
       submenu,
       menuWrapper,
       expanded,
-      updatePopper,
       closeMenu,
+      updateFloatingMenu,
+      menuWrapperFloatingStyles,
+      shadowRoot,
     };
   },
   data() {
@@ -181,7 +176,7 @@ export default {
       const openOrCloseEvent = this.expanded ? "open" : "close";
       this.$emit(openOrCloseEvent);
 
-      this.updatePopper();
+      this.updateFloatingMenu();
     },
     onItemClick(event: Event, item: any) {
       this.$emit("item-click", event, item, this.id);
@@ -230,10 +225,11 @@ export default {
     >
       <slot :expanded="expanded" />
     </FunctionButton>
-    <Teleport to="body" :disabled="!teleportToBody">
+    <Teleport :to="shadowRoot || 'body'" :disabled="!teleportToBody">
       <div
         v-show="expanded"
         ref="menuWrapper"
+        :style="menuWrapperFloatingStyles"
         :class="['menu-wrapper', { disabled }]"
       >
         <MenuItems

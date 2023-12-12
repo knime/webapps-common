@@ -5,7 +5,7 @@ import MenuItems from "../MenuItems.vue";
 import SubMenu from "../SubMenu.vue";
 import FunctionButton from "../FunctionButton.vue";
 import { ref, unref } from "vue";
-import usePopper from "../../composables/usePopper";
+import { useFloating } from "@floating-ui/vue";
 import useClickOutside from "../../composables/useClickOutside";
 
 const dropdownNavigation = {
@@ -17,12 +17,14 @@ vi.mock("../../composables/useDropdownNavigation", () => ({
   default: vi.fn(() => dropdownNavigation),
 }));
 
-const popper = {
-  updatePopper: vi.fn(),
-  popperInstance: { setOptions: vi.fn() },
+const floating = {
+  update: vi.fn(),
 };
-vi.mock("../../composables/usePopper", () => ({
-  default: vi.fn(() => popper),
+vi.mock("@floating-ui/vue", () => ({
+  useFloating: vi.fn(() => floating),
+  autoUpdate: vi.fn(),
+  shift: vi.fn(),
+  flip: vi.fn(),
 }));
 vi.mock("../../composables/useClickOutside", () => ({ default: vi.fn() }));
 
@@ -206,53 +208,22 @@ describe("SubMenu.vue", () => {
   });
 
   describe("popover", () => {
-    it("uses popper navigation", () => {
-      usePopper.reset();
-      props.teleportToBody = false; // necessary in order to find the popperTarget in the dom more easily
+    it("uses floating navigation", () => {
+      useFloating.reset();
+      props.teleportToBody = false; // necessary in order to find the floating ui target in the dom more easily
       const wrapper = mount(SubMenu, { props });
-      const [{ popperTarget, referenceEl }, options] = usePopper.mock.calls[0];
+      const [submenu, menuWrapper, options] = useFloating.mock.calls[0];
 
-      expect(unref(referenceEl)).toStrictEqual(
-        wrapper.find(".submenu").element,
-      );
-      expect(unref(popperTarget)).toStrictEqual(
+      expect(unref(submenu)).toStrictEqual(wrapper.find(".submenu").element);
+      expect(unref(menuWrapper)).toStrictEqual(
         wrapper.find(".menu-wrapper").element,
       );
 
-      expect(unref(options)).toStrictEqual({
-        modifiers: [
-          {
-            name: "preventOverflow",
-            options: {
-              mainAxis: false,
-            },
-          },
-        ],
-        placement: "bottom-end",
-        strategy: "fixed",
-      });
+      expect(options.placement.value).toBe("bottom-end");
+      expect(options.strategy.value).toBe("fixed");
     });
 
-    it("updates popper placement on orientation change", async () => {
-      const wrapper = mount(SubMenu, { props });
-      popper.popperInstance.setOptions.reset();
-      await wrapper.setProps({ orientation: "left" });
-      expect(popper.popperInstance.setOptions).toHaveBeenCalledWith({
-        placement: "bottom-start",
-      });
-      popper.popperInstance.setOptions.reset();
-      await wrapper.setProps({ orientation: "top" });
-      expect(popper.popperInstance.setOptions).toHaveBeenCalledWith({
-        placement: "top-end",
-      });
-      popper.popperInstance.setOptions.reset();
-      await wrapper.setProps({ orientation: "right" });
-      expect(popper.popperInstance.setOptions).toHaveBeenCalledWith({
-        placement: "bottom-end",
-      });
-    });
-
-    it("updates popper on toggle", async () => {
+    it("updates floating on toggle", async () => {
       const wrapper = shallowMount(SubMenu, {
         props,
         global: {
@@ -266,9 +237,9 @@ describe("SubMenu.vue", () => {
           },
         },
       });
-      popper.updatePopper.reset();
+      floating.update.reset();
       await wrapper.find(".submenu-toggle").trigger("click");
-      expect(popper.updatePopper).toHaveBeenCalled();
+      expect(floating.update).toHaveBeenCalled();
     });
   });
 
