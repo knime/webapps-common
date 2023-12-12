@@ -1,10 +1,10 @@
 <script lang="ts">
 import type { PropType } from "vue";
 import { onBeforeUpdate, ref, toRef } from "vue";
-import usePopper from "../composables/usePopper";
 import { uniqueId } from "lodash-es";
 import BaseMenuItem from "./BaseMenuItem.vue";
 import type { MenuItem } from "./MenuItems.vue";
+import { useFloating, shift, flip, autoUpdate } from "@floating-ui/vue";
 
 type ElementTemplateRef = HTMLElement | { $el: HTMLElement };
 
@@ -62,18 +62,19 @@ export default {
       listItems.value = [];
     });
 
-    usePopper(
-      {
-        popperTarget: listContainer,
-        referenceEl: positionRelativeToElement,
-      },
-      {
-        strategy: "fixed",
-        placement: "right-start",
-        modifiers: [],
-      },
-    );
+    // position sub level menus
+    const { floatingStyles: listContainerFloatingStyles } =
+      positionRelativeToElement.value
+        ? useFloating(positionRelativeToElement, listContainer, {
+            strategy: "fixed",
+            placement: "right-start",
+            middleware: [flip(), shift()],
+            whileElementsMounted: autoUpdate,
+          })
+        : { floatingStyles: null };
+
     return {
+      listContainerFloatingStyles,
       listContainer,
       listItems,
     };
@@ -189,6 +190,7 @@ export default {
     ref="listContainer"
     :aria-label="menuAriaLabel"
     class="base-menu-items"
+    :style="listContainerFloatingStyles"
     role="menu"
     tabindex="-1"
     @pointerleave="$emit('item-hovered', null, id)"
@@ -233,7 +235,7 @@ export default {
    */
   --menu-items-elevation: var(--shadow-elevation-1);
 
-  margin: 5px 0;
+  margin: 0;
   padding: 0;
   background-color: var(--knime-white);
   color: var(--theme-dropdown-foreground-color);

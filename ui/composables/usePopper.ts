@@ -1,5 +1,7 @@
 import { onMounted, onUnmounted, ref, unref, type Ref } from "vue";
 
+// TODO: remove this composeable after we made sure its not used anywehre anymore. Use `@floating-ui/vue`
+// TODO: consider using https://www.npmjs.com/package/eslint-plugin-deprecation
 // TODO: Revert to using '@popperjs/core' when this is not necessary for the pagebuilder vite library build
 // @ts-ignore
 import { createPopper } from "@popperjs/core/dist/esm";
@@ -13,6 +15,9 @@ export type PopperTargets = {
   referenceEl: Ref<HTMLElement | null>;
 };
 
+/**
+ * @deprecated popper.js will be removed soon, please use `useFloating`of `@floating-ui/vue`
+ */
 export default (
   { popperTarget, referenceEl }: PopperTargets,
   options: Ref<Partial<Options>> | Partial<Options>,

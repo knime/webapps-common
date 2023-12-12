@@ -113,7 +113,7 @@ export default {
     const { positioningStrategy } = toRefs(props);
     const submenu = ref(null);
     const menuItems = ref(null);
-    const menuWrapper = ref(null);
+    const menuWrapper = ref<HTMLElement | null>(null);
     const expanded = ref(false);
     const shadowRoot = inject<ShadowRoot | null>("shadowRoot", null);
     const closeMenu = () => {
@@ -252,6 +252,10 @@ export default {
 <style lang="postcss" scoped>
 .menu-wrapper {
   z-index: var(--z-index-common-menu-items-expanded, 57);
+
+  & .menu-items {
+    margin: 5px 0;
+  }
 
   &.disabled {
     opacity: 0.5;

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch, toRef } from "vue";
+import { computed, onMounted, onUnmounted, ref, toRefs, watch } from "vue";
 import { directive as vClickAway } from "vue3-click-away";
 
 import type { MenuItem as BaseMenuItem } from "../MenuItems.vue";
 import MenuItems from "../MenuItems.vue";
-import usePopper from "../../composables/usePopper";
+import { useFloating, autoUpdate, offset } from "@floating-ui/vue";
 
 import type { FileExplorerItem, FileExplorerContextMenu } from "./types";
 
@@ -16,18 +16,14 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const element = ref(props.anchor.element);
-const referenceRect = element.value.getBoundingClientRect();
+const { position } = toRefs(props);
+const element = computed(() => props.anchor.element);
 const menuWrapper = ref<HTMLElement | null>(null);
 const shouldShowMenu = ref(true);
 
-const wrapperHeight = computed(() => {
-  if (!menuWrapper.value) {
-    return 0;
-  }
-
-  return menuWrapper.value.getBoundingClientRect().height;
-});
+const wrapperHeight = computed(
+  () => menuWrapper.value?.getBoundingClientRect()?.height ?? 0,
+);
 
 let intersectionObserver: IntersectionObserver;
 
@@ -50,6 +46,7 @@ const offsetX = computed(() => {
 });
 
 const offsetY = computed(() => {
+  const referenceRect = element.value.getBoundingClientRect();
   const clickPosition = props.position.y - referenceRect.top;
   const distanceToBottom = window.innerHeight - props.position.y;
   const isClipped = distanceToBottom < wrapperHeight.value;
@@ -57,46 +54,29 @@ const offsetY = computed(() => {
   // when the menu is being clipped by the bottom, invert its
   // positioning by increasing the Y axis offset. This is relevant only
   // for the last items at the end of a large scrollable container
-  return isClipped
-    ? clickPosition * -1
-    : (clickPosition + wrapperHeight.value) * -1;
+  return (isClipped ? clickPosition : clickPosition + wrapperHeight.value) * -1;
 });
 
-const popperOffsetModifier = computed(() => ({
-  name: "offset",
-  options: { offset: [offsetX.value, offsetY.value] },
-}));
+const middleware = computed(() => [
+  offset({ mainAxis: offsetY.value, crossAxis: offsetX.value }),
+]);
 
-const { popperInstance } = usePopper(
-  {
-    popperTarget: menuWrapper,
-    referenceEl: element,
-  },
+const { floatingStyles, update: updateFloating } = useFloating(
+  element,
+  menuWrapper,
   {
     placement: "top-start",
     strategy: "fixed",
-    modifiers: [popperOffsetModifier.value],
+    middleware,
+    whileElementsMounted: autoUpdate,
   },
 );
 
-const repositionPopper = async () => {
-  // by re-setting the modifiers we update the offset which will reposition the popper
-  await popperInstance.value?.setOptions({
-    modifiers: [popperOffsetModifier.value],
-  });
-};
+watch(position, () => updateFloating(), { deep: true });
 
-watch(wrapperHeight, async () => {
-  await repositionPopper();
+watch(wrapperHeight, () => {
+  updateFloating();
 });
-
-watch(
-  toRef(props, "position"),
-  async () => {
-    await repositionPopper();
-  },
-  { deep: true },
-);
 
 const emit = defineEmits<{
   (e: "itemClick", payload: FileExplorerContextMenu.ItemClickPayload): void;
@@ -165,7 +145,6 @@ const items = computed(() => [
 ]);
 
 const closeMenu = () => {
-  popperInstance.value?.destroy();
   emit("close");
 };
 </script>
@@ -175,6 +154,7 @@ const closeMenu = () => {
     v-show="shouldShowMenu"
     ref="menuWrapper"
     v-click-away="() => closeMenu()"
+    :style="floatingStyles"
     class="menu-wrapper"
   >
     <slot
