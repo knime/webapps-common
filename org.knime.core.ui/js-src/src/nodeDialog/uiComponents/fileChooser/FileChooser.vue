@@ -8,7 +8,7 @@ import { toFileExplorerItem } from "./utils";
 import Button from "webapps-common/ui/components/Button.vue";
 import LoadingIcon from "webapps-common/ui/components/LoadingIcon.vue";
 import FolderIcon from "webapps-common/ui/assets/img/icons/folder.svg";
-import InputField from "@@/webapps-common/ui/components/forms/InputField.vue";
+import InputField from "webapps-common/ui/components/forms/InputField.vue";
 
 const { listItems, getFilePath } = useFileChooserBackend();
 

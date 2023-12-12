@@ -1,4 +1,4 @@
-import type { FileExplorerItem } from "@@/webapps-common/ui/components/FileExplorer/types";
+import type { FileExplorerItem } from "webapps-common/ui/components/FileExplorer/types";
 import type { Item } from "./types";
 
 export const toFileExplorerItem = (props: Item): FileExplorerItem => {

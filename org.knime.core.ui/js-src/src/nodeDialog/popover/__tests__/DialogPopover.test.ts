@@ -17,7 +17,7 @@ import flushPromises from "flush-promises";
 import DialogPopover from "../DialogPopover.vue";
 import type DialogPopoverProps from "../types/DialogPopoverProps";
 
-import useClickOutside from "@@/webapps-common/ui/composables/useClickOutside";
+import useClickOutside from "webapps-common/ui/composables/useClickOutside";
 import { unref } from "vue";
 
 const useClickOutsideMock = useClickOutside as Mock<any[], any>;

@@ -1,14 +1,14 @@
 import { shallowMount } from "@vue/test-utils";
 import { describe, expect, it, vi, type SpyInstance, beforeEach } from "vitest";
-import FileChooser from "../FileChooser.vue";
-import FileExplorer from "webapps-common/ui/components/FileExplorer/FileExplorer.vue";
-import type { Folder } from "../types";
 import flushPromises from "flush-promises";
+import type { Folder } from "../types";
 import { toFileExplorerItem } from "../utils";
 
-import Button from "@@/webapps-common/ui/components/Button.vue";
-import LoadingIcon from "@@/webapps-common/ui/components/LoadingIcon.vue";
-import InputField from "@@/webapps-common/ui/components/forms/InputField.vue";
+import FileChooser from "../FileChooser.vue";
+import FileExplorer from "webapps-common/ui/components/FileExplorer/FileExplorer.vue";
+import Button from "webapps-common/ui/components/Button.vue";
+import LoadingIcon from "webapps-common/ui/components/LoadingIcon.vue";
+import InputField from "webapps-common/ui/components/forms/InputField.vue";
 
 describe("FileChooser.vue", () => {
   let dataServiceSpy: SpyInstance;
