@@ -89,6 +89,11 @@ export const getDefaultProps = (): TableViewDisplayProps => {
       enableSortingByHeader: false,
       autoSizeColumnsToContent: AutoSizeColumnsToContent.FIXED,
       title: "Title",
+      skipRemainingColumns: false,
+      showOnlySelectedRows: false,
+      showOnlySelectedRowsConfigurable: false,
+      displayedColumns: { selected: [] },
+      enableCellCopying: false,
     },
     page: {
       currentRowCount: 4,

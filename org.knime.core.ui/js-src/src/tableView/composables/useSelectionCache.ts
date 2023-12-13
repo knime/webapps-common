@@ -15,7 +15,7 @@ export default (knimeService: KnimeService) => {
   };
 
   const mapSelectionToRows = (rows: {
-    topRows: string[][] | undefined;
+    topRows: any[][] | undefined;
     bottomRows: string[][];
   }) => {
     const { topRows, bottomRows } = rows;
@@ -23,7 +23,7 @@ export default (knimeService: KnimeService) => {
     if (typeof topRows === "undefined") {
       return;
     }
-    const getRowKey = (row: string[]) => row[1];
+    const getRowKey = (row: any[]): string => row[1];
     const rowKeysTop = topRows
       .map(getRowKey)
       .filter((x) => typeof x !== "undefined");

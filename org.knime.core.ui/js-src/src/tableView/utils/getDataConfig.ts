@@ -1,13 +1,21 @@
-const isImage = (contentType: string) => contentType === "img_path";
-const isHtml = (contentType: string) => contentType === "html";
-const isMultiLineTxt = (contentType: string) =>
-  contentType === "multi_line_txt";
-
+import type {
+  ColumnConfig,
+  DataConfig,
+  FilterConfig,
+} from "@knime/knime-ui-table";
 import { getCustomRowHeight } from "../composables/useRowHeight";
 import type TableViewViewSettings from "../types/ViewSettings";
 import { RowHeightMode } from "../types/ViewSettings";
 import specialColumns from "./specialColumns";
+import type { DataType, HeaderMenuItem } from "../types";
+import type { Renderer } from "../types/InitialData";
+import type { MenuItem } from "webapps-common/ui/components/MenuItems.vue";
+import { ColumnContentType } from "../types/Table";
 const { INDEX, ROW_ID, SKIPPED_REMAINING_COLUMNS_COLUMN } = specialColumns;
+const isImage = (contentType?: ColumnContentType) => contentType === "img_path";
+const isHtml = (contentType?: ColumnContentType) => contentType === "html";
+const isMultiLineTxt = (contentType?: ColumnContentType) =>
+  contentType === "multi_line_txt";
 
 export default ({
   settings,
@@ -26,24 +34,18 @@ export default ({
 }: {
   settings: TableViewViewSettings;
   columnSizes: number[];
-  columnFiltersMap?: Map<symbol | string, any>;
+  columnFiltersMap?: Map<symbol | string, FilterConfig>;
   displayedColumns: string[];
-  columnContentTypes: string[];
-  dataTypes: Record<
-    string,
-    {
-      name: string;
-      renderers: { name: string; id: string }[];
-    }
-  >;
+  columnContentTypes: ColumnContentType[];
+  dataTypes: Record<string, DataType>;
   colNameSelectedRendererId?: Record<string, string>;
-  columnDataTypeIds: any;
+  columnDataTypeIds: string[];
   columnFormatterDescriptions?: (string | null)[];
   columnNamesColors: string[] | null;
-  indicateRemainingColumnsSkipped: any;
+  indicateRemainingColumnsSkipped: boolean;
   enableRowResizing: boolean;
   enableDynamicRowHeight: boolean;
-}) => {
+}): DataConfig => {
   const {
     showRowKeys,
     showRowIndices,
@@ -53,8 +55,11 @@ export default ({
     enableRendererSelection,
   } = settings;
 
-  const createHeaderSubMenuItems = (columnName: string, renderers: any[]) => {
-    const headerSubMenuItems = [];
+  const createHeaderSubMenuItems = (
+    columnName: string,
+    renderers: Renderer[],
+  ) => {
+    const headerSubMenuItems: (HeaderMenuItem | MenuItem)[] = [];
     headerSubMenuItems.push({
       text: "Data renderer",
       separator: true,
@@ -88,13 +93,13 @@ export default ({
     id: symbol | string;
     index: number;
     columnName: string;
-    filterConfig?: any;
+    filterConfig?: FilterConfig;
     isSortable: boolean;
     columnTypeName?: string;
-    contentType?: any;
-    columnTypeRenderers?: any;
-    headerColor?: string | null;
-  }) => ({
+    contentType?: ColumnContentType;
+    columnTypeRenderers?: Renderer[];
+    headerColor?: string;
+  }): ColumnConfig => ({
     // the id is used to keep track of added/removed columns in the TableUIForAutoSizeCalculation
     id,
     // the key is used to access the data in the TableUI
@@ -107,7 +112,7 @@ export default ({
       isHtml(contentType) ||
       isMultiLineTxt(contentType),
     size: columnSizes[index],
-    filterConfig: filterConfig || { is: "", modelValue: "" },
+    filterConfig,
     ...(columnTypeRenderers && {
       headerSubMenuItems: createHeaderSubMenuItems(
         columnName,
@@ -116,10 +121,10 @@ export default ({
     }),
     formatter: (val: string) => val,
     isSortable,
-    headerColor: headerColor ?? null,
+    headerColor,
   });
 
-  const columnConfigs = [];
+  const columnConfigs: ColumnConfig[] = [];
   if (showRowIndices) {
     columnConfigs.push(
       createColumnConfig({

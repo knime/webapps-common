@@ -3,6 +3,7 @@ import { computed, reactive, onMounted, ref, type Ref, toRefs } from "vue";
 import {
   TableUIWithAutoSizeCalculation,
   type Rect,
+  type ColumnConfig,
 } from "@knime/knime-ui-table";
 import ImageRenderer from "./renderers/ImageRenderer.vue";
 import HtmlRenderer from "./renderers/HtmlRenderer.vue";
@@ -11,34 +12,55 @@ import getDataConfig from "./utils/getDataConfig";
 import getTableConfig from "./utils/getTableConfig";
 import useColumnSizes from "./composables/useColumnSizes";
 import useAutoColumnSizes from "./composables/useAutoColumnSizes";
-import type { TableViewDisplayProps } from "./types";
+import type { HeaderMenuItem, TableViewDisplayProps } from "./types";
 import useBoolean from "./utils/useBoolean";
 import { separateSpecialColumns } from "./utils/specialColumns";
 import { BORDER_BOTTOM_WIDTH } from "./constants";
 import { RowHeightMode } from "./types/ViewSettings";
 import LoadingIcon from "webapps-common/ui/components/LoadingIcon.vue";
 
-const emit = defineEmits([
-  "page-change",
-  "column-sort",
-  "row-select",
-  "select-all",
-  "search",
-  "column-filter",
-  "clear-filter",
-  "column-resize",
-  "header-sub-menu-item-selection",
-  "lazyload",
-  "update-column-configs",
-  "pending-image",
-  "rendered-image",
-  "all-columns-resize",
-  "update:available-width",
-  "auto-column-sizes-update",
-  "row-height-update",
-  "table-is-ready",
-  "copy-selection",
-]);
+const emit = defineEmits<{
+  pageChange: [pageNumberDiff: -1 | 1];
+  columnSort: [colInd: number, columnId: string | symbol];
+  rowSelect: [
+    selected: boolean,
+    rowInd: number,
+    groupInd: number,
+    isTop: boolean,
+  ];
+  selectAll: [selected: boolean];
+  search: [input: string];
+  columnFilter: [colId: string | symbol, value: string | string[]];
+  clearFilter: [];
+  columnResize: [columnIndex: number, newColumnSize: number];
+  headerSubMenuItemSelection: [item: HeaderMenuItem, colId: string];
+  lazyload: [
+    lazyloadParams: {
+      direction: 1 | -1;
+      startIndex: number;
+      endIndex: number;
+    },
+  ];
+  allColumnsResize: [newColumnSize: number];
+  "update:available-width": [newAvailableWidth: number];
+  copySelection: [
+    copySelectionParams: {
+      columnNames: string[];
+      withRowIndices: boolean;
+      withRowKeys: boolean;
+      withHeaders: boolean;
+      fromIndex: number;
+      toIndex: number;
+      isTop: boolean;
+    },
+  ];
+
+  updateColumnConfigs: [newColumnConfigs: ColumnConfig[]];
+  pendingImage: [imageId: string];
+  renderedImage: [imageId: string];
+  rowHeightUpdate: [newRowHeight: number | null | "dynamic"];
+  tableIsReady: [];
+}>();
 
 const props = defineProps<TableViewDisplayProps>();
 
@@ -127,7 +149,7 @@ const dataConfig = computed(() => {
     enableDynamicRowHeight: props.enableDynamicRowHeight,
     ...reactive(props.header),
   });
-  emit("update-column-configs", conf.columnConfigs);
+  emit("updateColumnConfigs", conf.columnConfigs);
   return conf;
 });
 
@@ -175,7 +197,7 @@ const table: Ref<null | typeof TableUIWithAutoSizeCalculation> = ref(null);
 
 const tableIsReady = ref(false);
 const onTableIsReady = () => {
-  emit("table-is-ready");
+  emit("tableIsReady");
   tableIsReady.value = true;
 };
 
@@ -214,7 +236,7 @@ const onCopySelection = ({
   );
   const fromIndex = y.min;
   const toIndex = y.max;
-  emit("copy-selection", {
+  emit("copySelection", {
     columnNames,
     withRowIndices: containedSpecialColumns.has("INDEX"),
     withRowKeys: containedSpecialColumns.has("ROW_ID"),
@@ -244,20 +266,22 @@ const onCopySelection = ({
       :num-rows-above="rows.numRowsAbove"
       :num-rows-below="rows.numRowsBelow"
       :auto-column-sizes-options="autoColumnSizesOptions"
-      @page-change="(...args: any[]) => $emit('page-change', ...args)"
+      @page-change="(arg: any) => $emit('pageChange', arg)"
       @column-sort="
         (colIndex: number) =>
-          $emit('column-sort', colIndex, getColumnId(colIndex))
+          $emit('columnSort', colIndex, getColumnId(colIndex))
       "
-      @row-select="(...args: any[]) => $emit('row-select', ...args)"
-      @select-all="(...args: any[]) => $emit('select-all', ...args)"
-      @search="(...args: any[]) => $emit('search', ...args)"
+      @row-select="
+        (...args: [any, any, any, any]) => $emit('rowSelect', ...args)
+      "
+      @select-all="(...args: [any]) => $emit('selectAll', ...args)"
+      @search="(...args: [any]) => $emit('search', ...args)"
       @column-filter="
         (colIndex: number, newVal: any) =>
-          $emit('column-filter', getColumnId(colIndex), newVal)
+          $emit('columnFilter', getColumnId(colIndex), newVal)
       "
-      @clear-filter="(...args: any[]) => $emit('clear-filter', ...args)"
-      @lazyload="(...args: any[]) => $emit('lazyload', ...args)"
+      @clear-filter="() => $emit('clearFilter')"
+      @lazyload="(...args: [any]) => $emit('lazyload', ...args)"
       @column-resize="
         (colIndex: number, newSize: number) =>
           onColumnResize(getColumnId(colIndex), newSize)
@@ -268,10 +292,14 @@ const onCopySelection = ({
       @update:available-width="onUpdateAvailableWidth"
       @header-sub-menu-item-selection="
         (item: any, colIndex: number) =>
-          $emit('header-sub-menu-item-selection', item, getColumnId(colIndex))
+          $emit(
+            'headerSubMenuItemSelection',
+            item,
+            getColumnId(colIndex) as string,
+          )
       "
       @auto-column-sizes-update="onAutoColumnSizesUpdate"
-      @row-height-update="$emit('row-height-update', $event)"
+      @row-height-update="$emit('rowHeightUpdate', $event)"
       @ready="onTableIsReady"
       @copy-selection="onCopySelection"
     >
@@ -294,8 +322,8 @@ const onCopySelection = ({
           :base-url="baseUrl"
           :update="!columnResizeActive.state"
           :table-is-ready="tableIsReady"
-          @pending="(id: string) => $emit('pending-image', id)"
-          @rendered="(id: string) => $emit('rendered-image', id)"
+          @pending="(id: string) => $emit('pendingImage', id)"
+          @rendered="(id: string) => $emit('renderedImage', id)"
         />
         <HtmlRenderer
           v-else-if="getContentType(index) === 'html'"

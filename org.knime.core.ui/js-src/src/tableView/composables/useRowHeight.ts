@@ -32,8 +32,10 @@ export default () => {
     currentRowHeight.value = getInitialRowHeight(settings);
   };
 
-  const onRowHeightChange = (rowHeight: number) => {
-    currentRowHeight.value = rowHeight;
+  const onRowHeightChange = (rowHeight: number | "dynamic" | null) => {
+    if (typeof rowHeight === "number") {
+      currentRowHeight.value = rowHeight;
+    }
   };
 
   return { currentRowHeight, setRowHeightSettings, onRowHeightChange };

@@ -1,15 +1,31 @@
 <!-- eslint-disable max-lines -->
-<script>
-import { JsonDataService } from "@knime/ui-extension-service";
+<script lang="ts">
+import {
+  Event,
+  JsonDataService,
+  KnimeService,
+  SelectionModes,
+  SelectionService,
+} from "@knime/ui-extension-service";
 import TableViewDisplay from "./TableViewDisplay.vue";
 import { createDefaultFilterConfig, arrayEquals } from "@/tableView/utils";
-import { AutoSizeColumnsToContent } from "./types/ViewSettings";
+import TableViewViewSettings, {
+  AutoSizeColumnsToContent,
+} from "./types/ViewSettings";
+import InitialData from "./types/InitialData";
+import type Table from "./types/Table";
+import type { ColumnContentType } from "./types/Table";
+import type { HeaderMenuItem } from "./types";
 import specialColumns from "./utils/specialColumns";
-import { inject } from "vue";
+import { PropType, inject } from "vue";
 import useSelectionCache from "./composables/useSelectionCache";
 import useRowHeight from "./composables/useRowHeight";
-import { constants as tableConstants } from "@knime/knime-ui-table";
-const { ROW_ID, INDEX, SKIPPED_REMAINING_COLUMNS_COLUMN } = specialColumns;
+import {
+  type FilterConfig,
+  constants as tableConstants,
+} from "@knime/knime-ui-table";
+
+const { ROW_ID, INDEX } = specialColumns;
 // -1 is the backend representation (columnName) for sorting the table by rowKeys
 const ROW_KEYS_SORT_COL_NAME = "-1";
 
@@ -21,14 +37,27 @@ const DEFAULT_BUFFER_SIZE = 50;
 const SMALL_BUFFER_SIZE = 1;
 const DEFAULT_NUM_ROWS_BOTTOM = 1000;
 
+interface DataRequestOptions {
+  lazyLoad?: {
+    loadFromIndex: number;
+    numRows: number;
+    newScopeStart: number;
+    bufferStart?: number;
+    bufferEnd?: number;
+    direction: 1 | -1;
+  };
+  updateTotalSelected?: boolean;
+  updateDisplayedColumns?: boolean;
+  updateColumnContentTypes?: boolean;
+}
+
 export default {
   components: {
     TableViewDisplay,
   },
-  inject: ["getKnimeService"],
   props: {
     initialData: {
-      type: Object,
+      type: Object as PropType<InitialData>,
       default: null,
       required: false,
     },
@@ -44,9 +73,10 @@ export default {
     },
   },
   setup() {
-    const selectionCache = useSelectionCache(inject("getKnimeService")());
+    const knimeService = inject<() => KnimeService>("getKnimeService")!();
+    const selectionCache = useSelectionCache(knimeService);
     const rowHeight = useRowHeight();
-    return { ...selectionCache, ...rowHeight };
+    return { ...selectionCache, ...rowHeight, knimeService };
   },
   data() {
     return {
@@ -54,34 +84,34 @@ export default {
       selectionLoaded: false,
       currentIndex: 0,
       currentPage: 1,
-      currentScopeStartIndex: null,
-      currentScopeEndIndex: null,
-      columnSortIndex: null,
-      columnSortDirection: null,
-      columnSortColumnName: null,
+      currentScopeStartIndex: 0,
+      currentScopeEndIndex: 0,
+      columnSortIndex: null as null | number,
+      columnSortDirection: 0,
+      columnSortColumnName: null as null | string,
       totalSelected: 0,
-      table: {},
-      colNameSelectedRendererId: {},
-      dataTypes: {},
-      columnDomainValues: {},
+      table: {} as Table,
+      colNameSelectedRendererId: {} as Record<string, string>,
+      dataTypes: {} as InitialData["dataTypes"],
+      columnDomainValues: {} as InitialData["columnDomainValues"],
       totalRowCount: 0,
       currentRowCount: 0,
-      settings: {},
-      displayedColumns: [],
+      settings: {} as TableViewViewSettings,
+      displayedColumns: [] as string[],
       columnCount: 0,
-      jsonDataService: null,
-      selectionService: null,
+      jsonDataService: null as null | JsonDataService,
+      selectionService: null as null | SelectionService,
       searchTerm: "",
-      columnFiltersMap: new Map(),
+      columnFiltersMap: new Map() as Map<string | symbol, FilterConfig>,
       baseUrl: null,
       scopeSize: 0,
       numRowsAbove: 0,
       numRowsBelow: 0,
-      bottomRows: [],
-      columnDataTypeIds: null,
-      columnFormatterDescriptions: null,
-      columnContentTypes: null,
-      columnNamesColors: null,
+      bottomRows: [] as any[],
+      columnDataTypeIds: [] as string[],
+      columnFormatterDescriptions: [] as string[],
+      columnContentTypes: [] as ColumnContentType[],
+      columnNamesColors: [] as string[],
       // a counter which is used to ignore all requests which were not the last sent one
       lastUpdateHash: 0,
       link: "",
@@ -89,9 +119,6 @@ export default {
     };
   },
   computed: {
-    knimeService() {
-      return this.getKnimeService();
-    },
     numberOfDisplayedIdColumns() {
       let offset = this.settings.showRowKeys ? 1 : 0;
       offset += this.settings.showRowIndices ? 1 : 0;
@@ -104,7 +131,11 @@ export default {
           if (modelValue !== "") {
             return true;
           }
-        } else if (modelValue.length && modelValue[0] !== "") {
+        } else if (
+          typeof modelValue === "object" &&
+          modelValue.length &&
+          modelValue[0] !== ""
+        ) {
           return true;
         }
       }
@@ -184,7 +215,7 @@ export default {
         text: "Show only selected rows",
         checkbox: {
           checked: this.showOnlySelectedRows,
-          setBoolean: (checked) => {
+          setBoolean: (checked: boolean) => {
             this.showOnlySelectedRows = checked;
             this.resetTableAndComputeSizes();
           },
@@ -204,8 +235,9 @@ export default {
     );
     const initialData =
       this.initialData === null
-        ? await this.jsonDataService.initialData()
+        ? ((await this.jsonDataService.initialData()) as InitialData)
         : this.initialData;
+    // @ts-expect-error
     this.baseUrl = this.knimeService?.extensionConfig?.resourceInfo?.baseUrl;
     if (initialData) {
       const { table, dataTypes, columnDomainValues, settings } = initialData;
@@ -238,13 +270,18 @@ export default {
     }
   },
   methods: {
-    setSettings(settings) {
+    setSettings(settings: TableViewViewSettings) {
       this.settings = settings;
       this.showOnlySelectedRows = settings.showOnlySelectedRows;
     },
-    async initializeLazyLoading(params) {
+    async initializeLazyLoading(
+      params: {
+        updateDisplayedColumns?: boolean;
+        updateTotalSelected?: boolean;
+      } = {},
+    ) {
       const { updateDisplayedColumns = false, updateTotalSelected = true } =
-        params || {};
+        params;
       this.currentScopeStartIndex = 0;
       this.scopeSize = this.minScopeSize;
       this.currentScopeEndIndex = Math.min(
@@ -263,9 +300,18 @@ export default {
         loadFromIndex: this.currentScopeStartIndex,
         newScopeStart: this.currentScopeStartIndex,
         numRows,
+        direction: 1 as const,
       };
     },
-    onScroll({ direction, startIndex, endIndex }) {
+    onScroll({
+      direction,
+      startIndex,
+      endIndex,
+    }: {
+      direction: 1 | -1;
+      startIndex: number;
+      endIndex: number;
+    }) {
       if (!this.useLazyLoading) {
         return;
       }
@@ -335,14 +381,14 @@ export default {
         });
       }
     },
-    computeScopeSize(startIndex, endIndex) {
+    computeScopeSize(startIndex: number, endIndex: number) {
       return Math.max(
         endIndex - startIndex + 2 * this.bufferSize,
         this.minScopeSize,
       );
     },
 
-    async updateData(options) {
+    async updateData(options: DataRequestOptions) {
       this.lastUpdateHash += 1;
       const updateHash = this.lastUpdateHash;
       const data = await this.requestData(options);
@@ -352,7 +398,7 @@ export default {
       this.updateInternals(data, options);
       this.dataLoaded = true;
     },
-    async requestData(options) {
+    async requestData(options: DataRequestOptions) {
       const {
         lazyLoad,
         updateTotalSelected = false,
@@ -419,7 +465,7 @@ export default {
       if (bottomTable !== null && bottomTable.rows.length === 0) {
         const newBottomStart = Math.max(
           topLoadFromIndex + topNumRows,
-          topTable.rowCount - this.numRowsBottom,
+          topTable!.rowCount - this.numRowsBottom,
         );
         bottomTable = await this.requestTable(
           newBottomStart,
@@ -432,7 +478,10 @@ export default {
       }
       return { topTable, bottomTable };
     },
-    updateInternals(tables, options) {
+    updateInternals(
+      tables: { topTable: Table | null; bottomTable: Table | null },
+      options: DataRequestOptions,
+    ) {
       const { topTable, bottomTable } = tables;
       const {
         updateDisplayedColumns,
@@ -440,8 +489,8 @@ export default {
         updateColumnContentTypes,
         lazyLoad,
       } = options;
-      const getFromTopOrBottom = (key) =>
-        topTable ? topTable[key] : bottomTable[key];
+      const getFromTopOrBottom = <T extends keyof Table>(key: T) =>
+        topTable ? topTable[key] : bottomTable![key];
       if (updateDisplayedColumns) {
         this.displayedColumns = getFromTopOrBottom("displayedColumns");
         this.columnFiltersMap = this.getDefaultFilterConfigsMap(
@@ -455,11 +504,7 @@ export default {
         this.columnNamesColors = getFromTopOrBottom("columnNamesColors");
       }
       if (updateTotalSelected) {
-        if (
-          this.columnSortColumnName ||
-          this.searchTerm ||
-          this.colFilterActive
-        ) {
+        if (this.colSortActive || this.searchTerm || this.colFilterActive) {
           this.totalSelected = getFromTopOrBottom("totalSelected");
         } else {
           this.totalSelected = this.getCurrentSelectedRowKeys().size;
@@ -486,7 +531,7 @@ export default {
           topPreviousDataLength,
         });
         if (typeof this.table.rows === "undefined") {
-          this.table = { ...topTable, rows };
+          this.table = { ...topTable!, rows };
         } else {
           this.table.rows = rows;
           this.table.rowCount = getFromTopOrBottom("rowCount");
@@ -506,7 +551,7 @@ export default {
           this.table.rowCount,
         );
       } else {
-        this.table = topTable;
+        this.table = topTable!;
         this.bottomRows = bottomTable ? bottomTable.rows : [];
       }
       this.currentRowCount = this.table.rowCount;
@@ -516,7 +561,7 @@ export default {
         ? this.numRowsTotal - this.currentScopeEndIndex
         : 0;
     },
-    getTopAndBottomIndicesOnPagination(loadFromIndex, numRows) {
+    getTopAndBottomIndicesOnPagination(loadFromIndex: number, numRows: number) {
       const currentPageEnd = loadFromIndex + numRows;
       const topLoadFromIndex = loadFromIndex;
       const topNumRows = this.numRowsTop;
@@ -529,13 +574,13 @@ export default {
         bottomNumRows,
       };
     },
-    getTopIndices(loadFromIndex, loadToIndex) {
+    getTopIndices(loadFromIndex: number, loadToIndex: number) {
       const topLoadFromIndex = Math.min(loadFromIndex, this.numRowsTop);
       const topLoadToIndex = Math.min(loadToIndex, this.numRowsTop);
       const topNumRows = topLoadToIndex - topLoadFromIndex;
       return { topLoadFromIndex, topNumRows };
     },
-    getBottomIndices(loadFromIndex, loadToIndex) {
+    getBottomIndices(loadFromIndex: number, loadToIndex: number) {
       const bottomLoadFromIndex =
         this.currentRowCount -
         Math.min(this.numRowsBottom, this.numRowsTotal - loadFromIndex);
@@ -547,24 +592,19 @@ export default {
     },
     // eslint-disable-next-line max-params
     requestTable(
-      startIndex,
-      numRows,
-      displayedColumns,
-      updateDisplayedColumns,
-      updateTotalSelected,
-      clearImageDataCache,
-    ) {
+      startIndex: number,
+      numRows: number,
+      displayedColumns: string[],
+      updateDisplayedColumns: boolean,
+      updateTotalSelected: boolean,
+      clearImageDataCache: boolean,
+    ): Promise<Table> {
       const selectedRendererIds = updateDisplayedColumns
         ? this.getCurrentSelectedRenderers(
             this.settings.displayedColumns.selected,
           )
         : this.selectedRendererIds;
-      // if columnSortColumnName is present a sorting is active
-      if (
-        this.columnSortColumnName ||
-        this.searchTerm ||
-        this.colFilterActive
-      ) {
+      if (this.colSortActive || this.searchTerm || this.colFilterActive) {
         return this.requestFilteredAndSortedTable(
           startIndex,
           numRows,
@@ -587,13 +627,13 @@ export default {
     },
     // eslint-disable-next-line max-params
     requestFilteredAndSortedTable(
-      startIndex,
-      numRows,
-      displayedColumns,
-      updateDisplayedColumns,
-      updateTotalSelected,
-      selectedRendererIds,
-      clearImageDataCache,
+      startIndex: number,
+      numRows: number,
+      displayedColumns: string[],
+      updateDisplayedColumns: boolean,
+      updateTotalSelected: boolean,
+      selectedRendererIds: (string | null)[],
+      clearImageDataCache: boolean,
     ) {
       const columnSortIsAscending = this.columnSortDirection === 1;
       return this.performRequest("getFilteredAndSortedTable", [
@@ -617,12 +657,12 @@ export default {
     },
     // eslint-disable-next-line max-params
     requestUnfilteredAndUnsortedTable(
-      startIndex,
-      numRows,
-      displayedColumns,
-      updateDisplayedColumns,
-      selectedRendererIds,
-      clearImageDataCache,
+      startIndex: number,
+      numRows: number,
+      displayedColumns: string[],
+      updateDisplayedColumns: boolean,
+      selectedRendererIds: (string | null)[],
+      clearImageDataCache: boolean,
     ) {
       return this.performRequest("getTable", [
         displayedColumns,
@@ -635,26 +675,26 @@ export default {
         this.showOnlySelectedRows,
       ]);
     },
-    getColumnsForRequest(updateDisplayedColumns) {
+    getColumnsForRequest(updateDisplayedColumns: boolean) {
       return updateDisplayedColumns
         ? this.settings.displayedColumns.selected
         : this.displayedColumns;
     },
-    getColumnFilterValues(displayedColumns) {
+    getColumnFilterValues(displayedColumns: string[]) {
       return [ROW_ID.id, ...displayedColumns].map((colId) =>
         this.getArrayOfFilterValues(colId),
       );
     },
-    getArrayOfFilterValues(colId) {
+    getArrayOfFilterValues(colId: string | symbol) {
       const filter = this.columnFiltersMap.get(colId);
       if (typeof filter?.modelValue === "string") {
         return [filter?.modelValue];
       } else {
-        return filter?.modelValue;
+        return filter?.modelValue ?? "";
       }
     },
-    performRequest(method, options) {
-      return this.jsonDataService.data({ method, options });
+    performRequest(method: string, options?: any) {
+      return this.jsonDataService!.data({ method, options });
     },
     getCombinedTopRows({
       topTable,
@@ -662,6 +702,12 @@ export default {
       bufferEnd,
       direction,
       topPreviousDataLength,
+    }: {
+      topTable: Table | null;
+      bufferStart: number;
+      bufferEnd: number;
+      direction: 1 | -1;
+      topPreviousDataLength: number;
     }) {
       const previousStartIndex = this.currentScopeStartIndex;
       const topBufferStart = Math.min(
@@ -679,7 +725,17 @@ export default {
         direction,
       });
     },
-    getCombinedBottomRows({ bottomTable, bufferStart, bufferEnd, direction }) {
+    getCombinedBottomRows({
+      bottomTable,
+      bufferStart,
+      bufferEnd,
+      direction,
+    }: {
+      bottomTable: Table | null;
+      bufferStart: number;
+      bufferEnd: number;
+      direction: 1 | -1;
+    }) {
       // plus 1 because of the additional "…" row
       const previousBottomStartIndex = Math.max(
         this.numRowsTop + 1,
@@ -704,8 +760,14 @@ export default {
       bufferEnd,
       direction,
       bottom = false,
+    }: {
+      newRows?: any[];
+      bufferStart?: number;
+      bufferEnd?: number;
+      direction: 1 | -1;
+      bottom?: boolean;
     }) {
-      const rows = newRows || [];
+      const rows = newRows ?? [];
       if (bufferStart === bufferEnd) {
         return rows;
       }
@@ -717,14 +779,21 @@ export default {
         return [...rows, ...buffer];
       }
     },
-    async refreshTable(params) {
+    async refreshTable(
+      params: {
+        updateDisplayedColumns?: boolean;
+        resetPage?: boolean;
+        updateTotalSelected?: boolean;
+      } = {},
+    ) {
       let {
         updateDisplayedColumns = false,
         resetPage = false,
         updateTotalSelected = false,
-      } = params || {};
-      this.$refs.tableViewDisplay.refreshScroller();
-      this.$refs.tableViewDisplay.clearCellSelection();
+      } = params;
+      const tableViewDisplay = this.getTableViewDisplay();
+      tableViewDisplay.refreshScroller();
+      tableViewDisplay.clearCellSelection();
       if (resetPage) {
         this.currentPage = 1;
         this.currentIndex = 0;
@@ -738,18 +807,21 @@ export default {
         await this.updateData({ updateDisplayedColumns, updateTotalSelected });
       }
     },
-    async onPageChange(pageDirection) {
+    async onPageChange(pageDirection: 1 | -1) {
       const { pageSize } = this.settings;
       this.currentPage += pageDirection;
       this.currentIndex += pageDirection * pageSize;
       await this.refreshTable();
-      this.$refs.tableViewDisplay.triggerCalculationOfAutoColumnSizes();
+      this.getTableViewDisplay().triggerCalculationOfAutoColumnSizes();
     },
-    settingsChanged(newSettings, key) {
+    settingsChanged(
+      newSettings: TableViewViewSettings,
+      key: keyof TableViewViewSettings,
+    ) {
       return newSettings[key] !== this.settings[key];
     },
-    async onViewSettingsChange(event) {
-      const newSettings = event.data.data.view;
+    async onViewSettingsChange(event: Event) {
+      const newSettings = event.data.data.view as TableViewViewSettings;
       const enablePaginationChanged = this.settingsChanged(
         newSettings,
         "enablePagination",
@@ -787,7 +859,7 @@ export default {
       const oldDisplayedColumns = this.settings.displayedColumns.selected;
 
       if (autoSizeColumnsToContentChanged) {
-        this.$refs.tableViewDisplay.deleteColumnSizeOverrides();
+        this.getTableViewDisplay().deleteColumnSizeOverrides();
       }
 
       this.setSettings(newSettings);
@@ -804,7 +876,7 @@ export default {
         );
       }
       if (showRowKeysChanged || showRowIndicesChanged) {
-        this.$refs.tableViewDisplay.clearCellSelection();
+        this.getTableViewDisplay().clearCellSelection();
       }
       if (displayedColumnsChanged) {
         await this.refreshTable({
@@ -834,7 +906,7 @@ export default {
         oldDisplayedColumns,
       });
     },
-    onColumnSort(newColumnSortIndex, newColumnSortId) {
+    onColumnSort(newColumnSortIndex: number, newColumnSortId: symbol | string) {
       // if columnSortIndex equals newColumnSortIndex sorting is ascending as default is descending
       const ascendingSort =
         this.columnSortIndex === newColumnSortIndex &&
@@ -847,7 +919,7 @@ export default {
       this.columnSortColumnName =
         newColumnSortId === ROW_ID.id
           ? ROW_KEYS_SORT_COL_NAME
-          : newColumnSortId;
+          : (newColumnSortId as string);
       this.refreshTable();
     },
     async onSelectionChange() {
@@ -865,13 +937,18 @@ export default {
         return this.getCurrentSelectedRowKeys().size;
       }
     },
-    async onRowSelect(selected, rowInd, _groupInd, isTop) {
+    async onRowSelect(
+      selected: boolean,
+      rowInd: number,
+      _groupInd: number,
+      isTop: boolean,
+    ) {
       const rowKey = isTop
         ? this.table.rows[rowInd][1]
         : this.bottomRows[rowInd][1];
       this.totalSelected += selected ? 1 : -1;
       await this.selectionService.publishOnSelectionChange(
-        selected ? "add" : "remove",
+        selected ? SelectionModes.ADD : SelectionModes.REMOVE,
         [rowKey],
       );
       this.transformSelection();
@@ -879,7 +956,7 @@ export default {
         this.refreshTable({ resetPage: true });
       }
     },
-    async onSelectAll(selected) {
+    async onSelectAll(selected: boolean) {
       const filterActive = this.currentRowCount !== this.totalRowCount;
       let backendSelectionPromise;
       if (selected || filterActive) {
@@ -899,12 +976,16 @@ export default {
       }
       this.totalSelected = selected ? this.currentRowCount : 0;
     },
-    onSearch(input) {
+    onSearch(input: string) {
       this.searchTerm = input;
       this.refreshTable({ resetPage: true, updateTotalSelected: true });
     },
-    onColumnFilter(colId, value) {
-      this.columnFiltersMap.get(colId).modelValue = value;
+    onColumnFilter(colId: string | symbol, value: string | string[]) {
+      const columnFilter = this.columnFiltersMap.get(colId);
+      if (!columnFilter) {
+        return;
+      }
+      columnFilter.modelValue = value;
       this.refreshTable({ resetPage: true, updateTotalSelected: true });
     },
     onClearFilter() {
@@ -913,7 +994,7 @@ export default {
       );
       this.refreshTable({ resetPage: true, updateTotalSelected: true });
     },
-    onHeaderSubMenuItemSelection(item, columnName) {
+    onHeaderSubMenuItemSelection(item: HeaderMenuItem, columnName: string) {
       if (item.section === "dataRendering") {
         this.colNameSelectedRendererId[columnName] = item.id;
       }
@@ -935,53 +1016,37 @@ export default {
       this.totalSelected = initialSelection ? initialSelection.length : 0;
       this.transformSelection();
     },
-    createHeaderSubMenuItems(columnName, renderers) {
-      const headerSubMenuItems = [];
-      headerSubMenuItems.push({
-        text: "Data renderer",
-        separator: true,
-        sectionHeadline: true,
-      });
-      renderers.forEach((renderer) => {
-        headerSubMenuItems.push({
-          text: renderer.name,
-          title: renderer.name,
-          id: renderer.id,
-          section: "dataRendering",
-          selected: this.colNameSelectedRendererId[columnName] === renderer.id,
-        });
-      });
-      return headerSubMenuItems;
-    },
-    getDefaultFilterConfigsMap(displayedColumns) {
-      const filterConfigs = new Map();
+    getDefaultFilterConfigsMap(displayedColumns: string[]) {
+      const filterConfigs: Map<string | symbol, FilterConfig> = new Map();
 
       filterConfigs.set(ROW_ID.id, createDefaultFilterConfig(false, null));
-      filterConfigs.set(INDEX.id, { is: "", modelValue: "" });
-      filterConfigs.set(SKIPPED_REMAINING_COLUMNS_COLUMN.id, {
-        is: "",
-        modelValue: "",
-      });
-
       displayedColumns.forEach((col) => {
         const domainValues = this.columnDomainValues[col];
         const domainValuesMapped = domainValues
-          ? domainValues.map((val) => ({ id: val, text: val }))
+          ? domainValues.map((val: string) => ({ id: val, text: val }))
           : null;
         filterConfigs.set(
           col,
-          createDefaultFilterConfig(domainValues, domainValuesMapped),
+          createDefaultFilterConfig(Boolean(domainValues), domainValuesMapped),
         );
       });
       return filterConfigs;
     },
     // only call the method when (displayedColumns XOR showRowKeys XOR showRowKeys) changed and a sorting is active
     updateSortingParams(
-      newSettings,
-      displayedColumnsChanged,
-      showRowKeysChanged,
-      showRowIndicesChanged,
+      newSettings: TableViewViewSettings,
+      displayedColumnsChanged: boolean,
+      showRowKeysChanged: boolean,
+      showRowIndicesChanged: boolean,
     ) {
+      /**
+       * This check happens already earlier but is repeated here in order to have type safety
+       */
+      if (this.columnSortIndex === null || this.columnSortColumnName === null) {
+        throw Error(
+          "This method should only be called when column sorting is active",
+        );
+      }
       const { showRowKeys, showRowIndices, displayedColumns } = newSettings;
       if (displayedColumnsChanged) {
         // sort on column (not rowKey column) and add/remove (different) column (not rowKey/rowIndex column)
@@ -1020,16 +1085,24 @@ export default {
     resetSorting() {
       this.columnSortColumnName = null;
       this.columnSortIndex = null;
-      this.columnSortDirection = null;
+      this.columnSortDirection = 0;
       this.currentPage = 1;
       this.currentIndex = 0;
     },
-    getCurrentSelectedRenderers(displayedColumns) {
+    getCurrentSelectedRenderers(displayedColumns: string[]) {
       return displayedColumns.map(
         (columnName) => this.colNameSelectedRendererId[columnName] || null,
       );
     },
-    async onCopySelection(rect) {
+    async onCopySelection(rect: {
+      isTop: boolean;
+      fromIndex: number;
+      toIndex: number;
+      withRowIndices: boolean;
+      withRowKeys: boolean;
+      withHeaders: boolean;
+      columnNames: string[];
+    }) {
       const fromIndex = rect.isTop
         ? rect.fromIndex
         : this.bottomScrollIndexToIndex(rect.fromIndex);
@@ -1078,7 +1151,7 @@ export default {
     /**
      * A method to revert the index shift caused by leaving out rows between top and bottom rows by counting from the bottom.
      */
-    bottomScrollIndexToIndex(bottomScrollIndex) {
+    bottomScrollIndexToIndex(bottomScrollIndex: number) {
       return this.currentRowCount - this.maxNumRows + bottomScrollIndex;
     },
     deleteColumnSizeOverrides({
@@ -1086,13 +1159,18 @@ export default {
       showRowKeysChanged,
       displayedColumnsChanged,
       oldDisplayedColumns,
+    }: {
+      showRowIndicesChanged: boolean;
+      showRowKeysChanged: boolean;
+      displayedColumnsChanged: boolean;
+      oldDisplayedColumns: string[];
     }) {
       if (showRowIndicesChanged && !this.settings.showRowIndices) {
-        this.$refs.tableViewDisplay.deleteColumnSizeOverrides([INDEX.id]);
+        this.getTableViewDisplay().deleteColumnSizeOverrides([INDEX.id]);
       } else if (showRowKeysChanged && !this.settings.showRowKeys) {
-        this.$refs.tableViewDisplay.deleteColumnSizeOverrides([ROW_ID.id]);
+        this.getTableViewDisplay().deleteColumnSizeOverrides([ROW_ID.id]);
       } else if (displayedColumnsChanged) {
-        this.$refs.tableViewDisplay.deleteColumnSizeOverrides(
+        this.getTableViewDisplay().deleteColumnSizeOverrides(
           oldDisplayedColumns.filter(
             (columnName) => !this.displayedColumns.includes(columnName),
           ),
@@ -1101,7 +1179,10 @@ export default {
     },
     async resetTableAndComputeSizes() {
       await this.refreshTable({ resetPage: true });
-      this.$refs.tableViewDisplay.triggerCalculationOfAutoColumnSizes();
+      this.getTableViewDisplay().triggerCalculationOfAutoColumnSizes();
+    },
+    getTableViewDisplay(): typeof TableViewDisplay {
+      return this.$refs.tableViewDisplay as typeof TableViewDisplay;
     },
   },
 };
@@ -1133,7 +1214,7 @@ export default {
     :selection="{
       top: currentSelection,
       bottom: currentBottomSelection,
-      totalSelected,
+      totalSelected: Boolean(totalSelected),
     }"
     :page="{
       currentRowCount,
@@ -1143,10 +1224,14 @@ export default {
       currentPage,
       columnCount,
     }"
-    :sorting="{
-      columnSortIndex,
-      columnSortDirection,
-    }"
+    :sorting="
+      columnSortIndex === null
+        ? undefined
+        : {
+            columnSortIndex,
+            columnSortDirection,
+          }
+    "
     global-search-query=""
     :enable-virtual-scrolling="true"
     :enable-column-resizing="true"

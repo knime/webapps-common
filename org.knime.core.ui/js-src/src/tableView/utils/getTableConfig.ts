@@ -1,6 +1,8 @@
+import { MenuItem } from "webapps-common/ui/components/MenuItems.vue";
 import type { PageParams } from "../types";
 import type TableViewViewSettings from "../types/ViewSettings";
 import { SelectionMode } from "../types/ViewSettings";
+import type { TableConfig, PageConfig } from "@knime/knime-ui-table";
 
 const getPageConfig = (
   pageParams: PageParams,
@@ -19,7 +21,7 @@ const getPageConfig = (
       currentPage,
       columnCount,
       showTableSize,
-    },
+    } satisfies PageConfig,
   };
 };
 
@@ -45,7 +47,7 @@ export default ({
   enableCellSelection: boolean;
   enableColumnResizing: boolean;
   forceHideTableSizes: boolean;
-  settingsItems?: object[];
+  settingsItems?: MenuItem[];
 }) => {
   const {
     enableSortingByHeader,
@@ -82,5 +84,5 @@ export default ({
       },
     }),
     settingsItems,
-  };
+  } satisfies TableConfig;
 };

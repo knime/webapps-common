@@ -107,7 +107,7 @@ describe("TableViewDisplay.vue", () => {
         });
 
         expect(dataConfig?.columnConfigs[0]).toStrictEqual({
-          filterConfig: { is: "", modelValue: "" },
+          filterConfig: undefined,
           formatter: expect.anything(),
           hasSlotContent: false,
           noPadding: false,
@@ -154,7 +154,7 @@ describe("TableViewDisplay.vue", () => {
         });
 
         expect(dataConfig?.columnConfigs[0]).toStrictEqual({
-          filterConfig: { is: "", modelValue: "" },
+          filterConfig: undefined,
           formatter: expect.anything(),
           hasSlotContent: false,
           noPadding: false,
@@ -164,11 +164,11 @@ describe("TableViewDisplay.vue", () => {
           id: INDEX.id,
           size: INDEX.defaultSize,
           subHeader: undefined,
-          headerColor: null,
+          headerColor: undefined,
         });
 
         expect(dataConfig?.columnConfigs[1]).toStrictEqual({
-          filterConfig: { is: "", modelValue: "" },
+          filterConfig: undefined,
           formatter: expect.anything(),
           hasSlotContent: false,
           noPadding: false,
@@ -178,11 +178,11 @@ describe("TableViewDisplay.vue", () => {
           id: ROW_ID.id,
           size: ROW_ID.defaultSize,
           subHeader: undefined,
-          headerColor: null,
+          headerColor: undefined,
         });
 
         expect(dataConfig?.columnConfigs[5]).toStrictEqual({
-          filterConfig: { is: "", modelValue: "" },
+          filterConfig: undefined,
           formatter: expect.anything(),
           hasSlotContent: false,
           noPadding: false,
@@ -192,7 +192,7 @@ describe("TableViewDisplay.vue", () => {
           id: SKIPPED.id,
           size: SKIPPED.defaultSize,
           subHeader: undefined,
-          headerColor: null,
+          headerColor: undefined,
         });
       });
 
@@ -205,7 +205,7 @@ describe("TableViewDisplay.vue", () => {
           const columnConfigs = getColumnConfigs(wrapper);
 
           expect(columnConfigs?.[1]).toStrictEqual({
-            filterConfig: { is: "", modelValue: "" },
+            filterConfig: undefined,
             formatter: expect.anything(),
             noPadding: false,
             hasSlotContent: false,
@@ -516,7 +516,7 @@ describe("TableViewDisplay.vue", () => {
     expect(columnResizeActive.state).toBeFalsy();
   });
 
-  it("emits table got visible", () => {
+  it("emits tableIsReady", () => {
     const wrapper = shallowMountDisplay({ props });
     const tableViewDisplay = wrapper.findComponent(TableViewDisplay);
     const tableUIWithAutoSizeCalculation = wrapper.findComponent(
@@ -524,7 +524,7 @@ describe("TableViewDisplay.vue", () => {
     );
 
     tableUIWithAutoSizeCalculation.vm.$emit("ready");
-    expect(tableViewDisplay.emitted()).toHaveProperty("table-is-ready");
+    expect(tableViewDisplay.emitted()).toHaveProperty("tableIsReady");
   });
 
   it("shows loading animation after timeout", () => {

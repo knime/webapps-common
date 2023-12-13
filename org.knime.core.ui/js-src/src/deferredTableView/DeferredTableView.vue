@@ -1,12 +1,13 @@
 // A table view which is not loaded immediately but on user request
-<script>
-import { JsonDataService } from "@knime/ui-extension-service";
+<script lang="ts">
+import { JsonDataService, KnimeService } from "@knime/ui-extension-service";
 import TableViewInteractive from "../tableView/TableViewInteractive.vue";
 import Button from "webapps-common/ui/components/Button.vue";
 import SubMenu from "webapps-common/ui/components/SubMenu.vue";
 import SplitButton from "webapps-common/ui/components/SplitButton.vue";
 import CircleArrow from "webapps-common/ui/assets/img/icons/circle-arrow-down.svg";
 import DropdownIcon from "webapps-common/ui/assets/img/icons/arrow-dropdown.svg";
+import InitialData from "@/tableView/types/InitialData";
 
 const baseSubMenuItems = [
   {
@@ -35,16 +36,16 @@ export default {
   inject: ["getKnimeService"],
   data() {
     return {
-      jsonDataService: null,
+      jsonDataService: null as null | JsonDataService,
       numRows: 100,
-      tableViewInitialData: null,
+      tableViewInitialData: null as null | InitialData,
       tableViewKey: 0,
       baseSubMenuItems,
     };
   },
   computed: {
     knimeService() {
-      return this.getKnimeService();
+      return (this.getKnimeService as () => KnimeService)();
     },
     columnCount() {
       return this.tableViewInitialData?.table.columnCount;
@@ -76,7 +77,7 @@ export default {
   },
   methods: {
     async fetchTableData() {
-      const tableViewInitialDataString = await this.jsonDataService.data({
+      const tableViewInitialDataString = await this.jsonDataService!.data({
         method: "getTableViewInitialData",
         options: [this.numRows],
       });
@@ -87,7 +88,7 @@ export default {
       this.tableViewInitialData = JSON.parse(tableViewInitialDataString);
       this.forceTableViewRender();
     },
-    onSubmenuItemClick(updatedNumRows) {
+    onSubmenuItemClick(updatedNumRows: number) {
       this.numRows = updatedNumRows;
       this.fetchTableData();
     },

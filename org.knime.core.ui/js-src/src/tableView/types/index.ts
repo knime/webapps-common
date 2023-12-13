@@ -1,5 +1,7 @@
 import type { KnimeService } from "@knime/ui-extension-service";
 import type TableViewViewSettings from "./ViewSettings";
+import { MenuItem } from "@@/webapps-common/ui/components/MenuItems.vue";
+import { FilterConfig } from "@knime/knime-ui-table";
 
 export interface DataType {
   name: string;
@@ -18,6 +20,16 @@ export interface ImageDimension {
   heightInPx: number;
 }
 
+export type HeaderMenuItem = MenuItem & {
+  id: string;
+  section: "dataRendering";
+};
+
+export interface EmptyFilterConfig {
+  is: "";
+  modelValue: "";
+}
+
 export type ColumnSizes = Record<string | symbol, number>;
 
 export interface TableViewDisplayProps {
@@ -31,7 +43,7 @@ export interface TableViewDisplayProps {
   };
   header: {
     displayedColumns: string[];
-    columnFiltersMap?: Map<string | symbol, any>;
+    columnFiltersMap?: Map<string | symbol, FilterConfig>;
     columnContentTypes: ("txt" | "multi_line_txt" | "img_path" | "html")[];
     dataTypes: Record<string, DataType>;
     columnDataTypeIds: string[];
@@ -60,6 +72,6 @@ export interface TableViewDisplayProps {
   knimeService: KnimeService;
   forceHideTableSizes?: boolean;
   firstRowImageDimensions: Record<string, ImageDimension>;
-  settingsItems?: object[];
+  settingsItems?: MenuItem[];
   enableDynamicRowHeight?: boolean;
 }

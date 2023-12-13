@@ -200,7 +200,7 @@ describe("TableViewInteractive.vue", () => {
       addOnSelectionChangeCallback: vi.fn(),
       initialSelection: vi.fn().mockResolvedValue([]),
       publishOnSelectionChange: vi.fn((mode, rows) =>
-        cachingMethods[mode](rows),
+        cachingMethods[mode.toLowerCase()](rows),
       ),
       onSettingsChange: vi.fn(),
       getCachedSelection: vi.fn(() => cachedSelection),
@@ -312,8 +312,8 @@ describe("TableViewInteractive.vue", () => {
           searchQuery: "",
         },
         sortConfig: {
-          sortColumn: null,
-          sortDirection: null,
+          sortColumn: undefined,
+          sortDirection: undefined,
         },
         enableCellSelection: true,
         enableVirtualScrolling: true,
@@ -561,6 +561,7 @@ describe("TableViewInteractive.vue", () => {
                 loadFromIndex: 0,
                 newScopeStart: 0,
                 numRows: rowCount,
+                direction: 1,
               },
             }),
           );
@@ -577,6 +578,7 @@ describe("TableViewInteractive.vue", () => {
                 loadFromIndex: 0,
                 newScopeStart: 0,
                 numRows: wrapper.vm.scopeSize,
+                direction: 1,
               },
             }),
           );
@@ -1253,6 +1255,7 @@ describe("TableViewInteractive.vue", () => {
                   loadFromIndex: 0,
                   newScopeStart: 0,
                   numRows: 2,
+                  direction: 1,
                 },
               }),
             );
@@ -1515,10 +1518,6 @@ describe("TableViewInteractive.vue", () => {
           hasSlotContent: true,
         },
         {
-          filterConfig: {
-            is: "",
-            modelValue: "",
-          },
           hasSlotContent: false,
           header: "(skipped remaining columns)",
           isSortable: false,
@@ -1647,7 +1646,7 @@ describe("TableViewInteractive.vue", () => {
         expect(resetSortingSpy).toHaveBeenCalled();
         expect(wrapper.vm.columnSortColumnName).toBeNull();
         expect(wrapper.vm.columnSortIndex).toBeNull();
-        expect(wrapper.vm.columnSortDirection).toBeNull();
+        expect(wrapper.vm.columnSortDirection).toBe(0);
         expect(wrapper.vm.currentPage).toBe(1);
         expect(wrapper.vm.currentIndex).toBe(0);
       });
@@ -1929,7 +1928,7 @@ describe("TableViewInteractive.vue", () => {
       it("calls the selection service and updates local selection on select single row", async () => {
         // select row
         await tableViewDisplay.vm.$emit("rowSelect", true, 1, 0, true);
-        expect(publishOnSelectionChangeSpy).toHaveBeenCalledWith("add", [
+        expect(publishOnSelectionChangeSpy).toHaveBeenCalledWith("ADD", [
           "row2",
         ]);
         expect(wrapper.vm.currentSelection).toEqual([
@@ -1943,7 +1942,7 @@ describe("TableViewInteractive.vue", () => {
 
         // unselect row
         await tableViewDisplay.vm.$emit("rowSelect", false, 1, 0, true);
-        expect(publishOnSelectionChangeSpy).toHaveBeenCalledWith("remove", [
+        expect(publishOnSelectionChangeSpy).toHaveBeenCalledWith("REMOVE", [
           "row2",
         ]);
         expect(wrapper.vm.currentSelection).toEqual([
@@ -1967,7 +1966,7 @@ describe("TableViewInteractive.vue", () => {
         // select row
         await tableViewDisplay.vm.$emit("rowSelect", true, 1, 0, false);
 
-        expect(publishOnSelectionChangeSpy).toHaveBeenCalledWith("add", [
+        expect(publishOnSelectionChangeSpy).toHaveBeenCalledWith("ADD", [
           "bottomRow2",
         ]);
         expect(wrapper.vm.currentSelection).toEqual([
@@ -1981,7 +1980,7 @@ describe("TableViewInteractive.vue", () => {
 
         // unselect row
         await tableViewDisplay.vm.$emit("rowSelect", false, 1, 0, false);
-        expect(publishOnSelectionChangeSpy).toHaveBeenCalledWith("remove", [
+        expect(publishOnSelectionChangeSpy).toHaveBeenCalledWith("REMOVE", [
           "bottomRow2",
         ]);
         expect(wrapper.vm.currentSelection).toEqual([

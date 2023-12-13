@@ -32,6 +32,11 @@ type TableViewViewSettings = {
   enableGlobalSearch: boolean;
   autoSizeColumnsToContent: AutoSizeColumnsToContent;
   title: string;
+  skipRemainingColumns: boolean;
+  showOnlySelectedRows: boolean;
+  showOnlySelectedRowsConfigurable: boolean;
+  displayedColumns: { selected: string[] };
+  enableCellCopying: boolean;
 };
 
 export default TableViewViewSettings;
