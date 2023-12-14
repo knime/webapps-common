@@ -39,6 +39,10 @@ export default {
         return ["horizontal", "vertical"].includes(value);
       },
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
     /**
      * selected value (which is a list of ids of entries)
      */
@@ -87,6 +91,7 @@ export default {
       :key="`checkboxes-${item.id}`"
       :model-value="modelValue.indexOf(item.id) > -1"
       :title="item.text"
+      :disabled="disabled"
       class="box"
       @update:model-value="onUpdateModelValue(item.id, $event)"
     >

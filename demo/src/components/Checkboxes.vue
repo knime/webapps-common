@@ -49,6 +49,7 @@ export default {
       </div>
       <div class="grid-container">
         <div class="grid-item-5">
+          <span>Horizontal</span>
           <Checkboxes
             v-model="selected"
             placeholder="Select stuff here!"
@@ -69,10 +70,32 @@ export default {
           />
         </div>
         <div class="grid-item-5">
+          <span>Vertical</span>
           <Checkboxes
             v-model="selected"
             alignment="vertical"
             placeholder="Select stuff here vertical!"
+            :possible-values="[
+              {
+                id: 'foo',
+                text: 'Foo',
+              },
+              {
+                id: 'bar',
+                text: 'Bar',
+              },
+              {
+                id: 'baz',
+                text: 'Baz',
+              },
+            ]"
+          />
+        </div>
+        <div class="grid-item-5">
+          <span>Disabled</span>
+          <Checkboxes
+            v-model="selected"
+            disabled
             :possible-values="[
               {
                 id: 'foo',
