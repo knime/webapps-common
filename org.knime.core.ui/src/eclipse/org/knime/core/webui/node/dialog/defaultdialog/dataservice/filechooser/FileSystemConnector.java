@@ -79,6 +79,9 @@ final class FileSystemConnector {
         if (fileSystemId.equals("local")) {
             return new LocalFileChooserBackend();
         }
+        if (fileSystemId.equals("relativeToCurrentHubSpace")) {
+            return new HubFileChooserBackend();
+        }
         throw new IllegalArgumentException(String.format("%s is not a valid file system id", fileSystemId));
     }
 

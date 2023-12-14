@@ -50,16 +50,17 @@ package org.knime.core.webui.node.dialog.defaultdialog.dataservice.filechooser;
 
 import org.knime.filehandling.core.connections.DefaultFSConnectionFactory;
 import org.knime.filehandling.core.connections.FSConnection;
+import org.knime.filehandling.core.connections.RelativeTo;
 
 /**
  *
  * @author Paul Bärnreuther
  */
-final class LocalFileChooserBackend extends SimpleFileChooserBackend {
+final class HubFileChooserBackend extends SimpleFileChooserBackend {
 
     @Override
     FSConnection createFSConnection() {
-        return DefaultFSConnectionFactory.createLocalFSConnection();
+        return DefaultFSConnectionFactory.createRelativeToConnection(RelativeTo.SPACE);
     }
 
 }

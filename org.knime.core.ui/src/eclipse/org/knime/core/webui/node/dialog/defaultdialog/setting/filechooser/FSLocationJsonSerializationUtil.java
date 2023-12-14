@@ -52,6 +52,7 @@ import java.io.IOException;
 
 import org.knime.filehandling.core.connections.FSCategory;
 import org.knime.filehandling.core.connections.FSLocation;
+import org.knime.filehandling.core.connections.RelativeTo;
 import org.knime.filehandling.core.connections.config.URIFSConnectionConfig;
 
 import com.fasterxml.jackson.core.JacksonException;
@@ -98,13 +99,16 @@ public class FSLocationJsonSerializationUtil {
         module.addDeserializer(FSLocation.class, new FSLocationDeserializer());
     }
 
+    private static final String RELATIVE_TO_CURRENT_HUBSPACE = "relative-to-current-hubspace";
+
     static final class FSLocationSerializer extends JsonSerializer<FSLocation> {
 
         @Override
         public void serialize(final FSLocation fsLocation, final JsonGenerator gen,
             final SerializerProvider serializers) throws IOException {
             gen.writeStartObject();
-            final var fsCategory = fsLocation.getFileSystemCategory();
+            final var fsCategory =
+                isCurrentHubSpace(fsLocation) ? RELATIVE_TO_CURRENT_HUBSPACE : fsLocation.getFileSystemCategory();
             gen.writeStringField(CATEGORY_KEY, fsCategory);
             gen.writeStringField(PATH_KEY, fsLocation.getPath());
             final var timeout = fsLocation.getFileSystemSpecifier() //
@@ -141,6 +145,9 @@ public class FSLocationJsonSerializationUtil {
                 final var timeout = extractString(node, TIMEOUT_KEY);
                 return new FSLocation(fsCategory, timeout, path);
             }
+            if (fsCategory.equals(RELATIVE_TO_CURRENT_HUBSPACE)) {
+                return new FSLocation(FSCategory.RELATIVE, RelativeTo.SPACE.getSettingsValue(), path);
+            }
             return new FSLocation(fsCategory, path);
         }
 
@@ -161,8 +168,13 @@ public class FSLocationJsonSerializationUtil {
         return fsCategory.equals(FSCategory.CUSTOM_URL.toString());
     }
 
+    static boolean isCurrentHubSpace(final FSLocation fsLocation) {
+        return fsLocation.getFSCategory() == FSCategory.RELATIVE && fsLocation.getFileSystemSpecifier()
+            .filter(specifier -> specifier.equals(RelativeTo.SPACE.getSettingsValue())).isPresent();
+    }
+
     static boolean isSupportedByFrontend(final String fsCategory) {
-        return isLocal(fsCategory) || isCustomURL(fsCategory);
+        return isLocal(fsCategory) || isCustomURL(fsCategory) || fsCategory.equals(RELATIVE_TO_CURRENT_HUBSPACE);
     }
 
 }
