@@ -77,6 +77,9 @@ const demoComponents = {
     FileExplorer: defineAsyncComponent(
       () => import("./components/FileExplorer.vue"),
     ),
+    LocalDateTime: defineAsyncComponent(
+      () => import("./components/LocalDateTime.vue"),
+    ),
   },
   toasts: {
     "Toast Service": defineAsyncComponent(

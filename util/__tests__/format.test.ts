@@ -1,30 +1,33 @@
-import { describe, it, expect } from "vitest";
-
+import { describe, it, expect, vi } from "vitest";
 import {
   formatDateString,
   formatDateTimeString,
   formatTimeString,
+  formatLocalDateTimeString,
 } from "../format";
+import getLocalTimeZone from "../localTimezone";
 
-describe("formatDateString", () => {
+vi.mock("../localTimezone");
+
+describe("formatDate", () => {
   const validFixtures = [
     {
       input: 0,
       expectedDate: "Jan 1, 1970",
-      expectedTime: "1:00\u202fAM",
-      expectedDateTime: "Jan 1, 1970 1:00\u202fAM",
+      expectedTime: "1:00 AM",
+      expectedDateTime: "Jan 1, 1970 1:00 AM",
     },
     {
       input: "2018-07-31T09:44:31+00:00",
       expectedDate: "Jul 31, 2018",
-      expectedTime: "11:44\u202fAM",
-      expectedDateTime: "Jul 31, 2018 11:44\u202fAM",
+      expectedTime: "11:44 AM",
+      expectedDateTime: "Jul 31, 2018 11:44 AM",
     },
     {
       input: "December 17, 1995 03:24:00",
       expectedDate: "Dec 17, 1995",
-      expectedTime: "3:24\u202fAM",
-      expectedDateTime: "Dec 17, 1995 3:24\u202fAM",
+      expectedTime: "3:24 AM",
+      expectedDateTime: "Dec 17, 1995 3:24 AM",
     },
   ];
 
@@ -70,6 +73,45 @@ describe("formatDateString", () => {
   it("format date/time throws error on invalid format", () => {
     invalidFixtures.forEach(({ input }) => {
       expect(() => formatDateTimeString(input)).toThrowError();
+    });
+  });
+
+  describe("parseToLocalTime", () => {
+    const timeInUTC = {
+      input: "2023-06-30T11:15:00.000Z",
+      expectedDateTime: "Jun 30, 2023 1:15 PM",
+    };
+    const timeWithOffset = {
+      input: "2023-11-30T11:15:00+00:00",
+      expectedDateTime: "Nov 30, 2023 12:15 PM",
+    };
+    const timeInCST = {
+      input: "2023-09-22T08:38:36.291Z",
+      expectedDateTime: "Sep 22, 2023 3:38 AM",
+    };
+
+    it("parseToLocalTime throws error on invalid format", () => {
+      expect(() => formatLocalDateTimeString("")).toThrowError();
+    });
+
+    it("formats time in UTC strings", () => {
+      expect(formatLocalDateTimeString(timeInUTC.input, true)).toEqual(
+        timeInUTC.expectedDateTime,
+      );
+    });
+
+    it("formats time with offset strings", () => {
+      expect(formatLocalDateTimeString(timeWithOffset.input, true)).toEqual(
+        timeWithOffset.expectedDateTime,
+      );
+    });
+
+    it("formats time to a different time zone", () => {
+      getLocalTimeZone.mockReturnValue("CST");
+      expect(formatLocalDateTimeString(timeInCST.input, true)).toEqual(
+        timeInCST.expectedDateTime,
+      );
+      getLocalTimeZone.mockRestore();
     });
   });
 });
