@@ -52,37 +52,29 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.knime.core.webui.data.InitialDataServiceTestUtil.parseResult;
+import static org.knime.testing.node.ui.NodeDialogTestUtil.createNodeDialog;
+import static org.knime.testing.node.ui.NodeDialogTestUtil.createNodeSettingsService;
+import static org.knime.testing.node.ui.NodeDialogTestUtil.settingsToString;
 
 import java.awt.Container;
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.config.ConfigEditJTree;
 import org.knime.core.node.config.ConfigEditTreeModel.ConfigEditTreeNode;
-import org.knime.core.node.config.base.JSONConfig;
-import org.knime.core.node.config.base.JSONConfig.WriterConfig;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContext;
-import org.knime.core.webui.data.RpcDataService;
-import org.knime.core.webui.data.rpc.json.impl.ObjectMapperUtil;
 import org.knime.core.webui.node.NodeWrapper;
-import org.knime.core.webui.node.dialog.NodeAndVariableSettingsProxy.NodeSettingsWrapper;
 import org.knime.core.webui.node.dialog.NodeDialog.OnApplyNodeModifier;
 import org.knime.core.webui.node.dialog.NodeDialogAdapter.LegacyFlowVariableNodeDialog;
 import org.knime.core.webui.node.dialog.internal.VariableSettings;
@@ -93,9 +85,6 @@ import org.knime.testing.node.dialog.NodeDialogNodeFactory;
 import org.knime.testing.node.dialog.NodeDialogNodeModel;
 import org.knime.testing.node.dialog.NodeDialogNodeView;
 import org.knime.testing.util.WorkflowManagerUtil;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Tests for {@link NodeDialog}.
@@ -622,150 +611,6 @@ public class NodeDialogTest {
 
     private static Container getChild(final Container cont, final int index) {
         return (Container)cont.getComponent(index);
-    }
-
-    /**
-     * Helper to create a {@link NodeSettingsService}-instance for testing.
-     *
-     * @return a new instance
-     */
-    public static NodeSettingsService createNodeSettingsService() {
-        return createNodeSettingsService(null);
-    }
-
-    /**
-     * Helper to create a {@link NodeSettingsService}-instance for testing.
-     *
-     * @param variableSettingsWriter optional logic that fills the {@link VariableSettingsWO}
-     *
-     * @return a new instance
-     */
-    public static NodeSettingsService
-        createNodeSettingsService(final Consumer<Map<SettingsType, VariableSettingsWO>> variableSettingsWriter) {
-        return new NodeSettingsService() {
-
-            @Override
-            public String fromNodeSettings(final Map<SettingsType, NodeAndVariableSettingsRO> settings,
-                final PortObjectSpec[] specs) {
-                return settingsToString(settings.get(SettingsType.MODEL), settings.get(SettingsType.VIEW));
-            }
-
-            @Override
-            public void toNodeSettings(final String textSettings,
-                final Map<SettingsType, NodeAndVariableSettingsWO> settings) {
-                stringToSettings(textSettings, settings.get(SettingsType.MODEL), settings.get(SettingsType.VIEW));
-                if (variableSettingsWriter != null) {
-                    variableSettingsWriter.accept(
-                        settings.entrySet().stream().map(e -> Map.entry(e.getKey(), (VariableSettingsWO)e.getValue()))
-                            .collect(Collectors.toMap(Entry::getKey, Entry::getValue)));
-                }
-            }
-        };
-    }
-
-    private static final ObjectMapper MAPPER = ObjectMapperUtil.getInstance().getObjectMapper();
-
-    private static String settingsToString(final NodeSettingsRO modelSettings, final NodeSettingsRO viewSettings) {
-        var root = MAPPER.createObjectNode();
-        try {
-            root.set("model",
-                MAPPER.readTree(JSONConfig.toJSONString(extractNodeSettings(modelSettings), WriterConfig.DEFAULT)));
-            root.set("view",
-                MAPPER.readTree(JSONConfig.toJSONString(extractNodeSettings(viewSettings), WriterConfig.DEFAULT)));
-        } catch (JsonProcessingException ex) {
-            throw new RuntimeException(ex);
-        }
-        return root.toString();
-    }
-
-    private static void stringToSettings(final String s, final NodeSettingsWO modelSettings,
-        final NodeSettingsWO viewSettings) {
-        try {
-            var jsonNode = MAPPER.readTree(s);
-            JSONConfig.readJSON(extractNodeSettings(modelSettings), new StringReader(jsonNode.get("model").toString()));
-            JSONConfig.readJSON(extractNodeSettings(viewSettings), new StringReader(jsonNode.get("view").toString()));
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-    private static <C> C extractNodeSettings(final C settings) {
-        if (settings instanceof NodeSettingsWrapper wrapper) {
-            return (C)wrapper.getNodeSettings();
-        } else {
-            return settings;
-        }
-    }
-
-    /**
-     * Helper to create a {@link NodeDialog}.
-     *
-     * @param page the page to create the node dialog with
-     *
-     * @return a new dialog instance
-     */
-    public static NodeDialog createNodeDialog(final Page page) {
-        var settingsMapper = new NodeSettingsService() {
-
-            @Override
-            public void toNodeSettings(final String textSettings,
-                final Map<SettingsType, NodeAndVariableSettingsWO> settings) {
-                //
-            }
-
-            @Override
-            public String fromNodeSettings(final Map<SettingsType, NodeAndVariableSettingsRO> settings,
-                final PortObjectSpec[] specs) {
-                return "test settings";
-            }
-
-        };
-        return createNodeDialog(page, settingsMapper, null);
-    }
-
-    /**
-     * Helper to create {@link NodeDialog}.
-     *
-     * @param page
-     * @param settingsDataService
-     * @param dataService
-     * @return a new dialog instance
-     */
-    public static NodeDialog createNodeDialog(final Page page, final NodeSettingsService settingsDataService,
-        final RpcDataService dataService) {
-        return createNodeDialog(page, settingsDataService, dataService, null);
-    }
-
-    static NodeDialog createNodeDialog(final Page page, final NodeSettingsService settingsDataService,
-        final RpcDataService dataService, final OnApplyNodeModifier onApplyModifier) {
-        return new NodeDialog() {
-
-            @Override
-            public Set<SettingsType> getSettingsTypes() {
-                return Set.of(SettingsType.MODEL, SettingsType.VIEW);
-            }
-
-            @Override
-            public Optional<RpcDataService> createRpcDataService() {
-                return Optional.ofNullable(dataService);
-            }
-
-            @Override
-            public NodeSettingsService getNodeSettingsService() {
-                return settingsDataService;
-            }
-
-            @Override
-            public Page getPage() {
-                return page;
-            }
-
-            @Override
-            public Optional<OnApplyNodeModifier> getOnApplyNodeModifier() {
-                return Optional.ofNullable(onApplyModifier);
-            }
-
-        };
     }
 
     /**

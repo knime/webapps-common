@@ -46,7 +46,7 @@
  * History
  *   May 15, 2023 (hornm): created
  */
-package org.knime.gateway.api.entity;
+package org.knime.testing.node;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,14 +63,17 @@ import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NodeView;
+import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.testing.util.TableTestUtil;
+import org.knime.testing.util.WorkflowManagerUtil;
 
 /**
  * Primitive source node for testing with one table output port.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-class SourceNodeFactory extends NodeFactory<NodeModel> {
+public final class SourceNodeTestFactory extends NodeFactory<NodeModel> {
 
     /**
      * {@inheritDoc}
@@ -78,7 +81,7 @@ class SourceNodeFactory extends NodeFactory<NodeModel> {
     @Override
     public NodeModel createNodeModel() {
         var table = TableTestUtil.createDefaultTestTable(2).get();
-        return new NodeModel(0, 1) {
+        return new NodeModel(0, 1) { // NOSONAR
 
             @Override
             protected DataTableSpec[] configure(final DataTableSpec[] inSpecs) throws InvalidSettingsException {
@@ -161,6 +164,17 @@ class SourceNodeFactory extends NodeFactory<NodeModel> {
     @Override
     protected NodeDialogPane createNodeDialogPane() {
         return null;
+    }
+
+    /**
+     * @param wfm
+     * @param nc
+     * @param inPortIdx
+     */
+    public static void connectSourceNodeToInputPort(final WorkflowManager wfm, final NodeContainer nc,
+        final int inPortIdx) {
+        final var sourceNode = WorkflowManagerUtil.createAndAddNode(wfm, new SourceNodeTestFactory());
+        wfm.addConnection(sourceNode.getID(), 1, nc.getID(), inPortIdx + 1);
     }
 
 }

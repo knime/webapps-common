@@ -49,8 +49,8 @@
 package org.knime.core.webui.node.dialog;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.knime.core.webui.node.dialog.NodeDialogTest.createNodeDialog;
 import static org.knime.core.webui.page.PageTest.BUNDLE_ID;
+import static org.knime.testing.node.ui.NodeDialogTestUtil.createNodeDialog;
 import static org.knime.testing.util.WorkflowManagerUtil.createAndAddNode;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -363,7 +363,7 @@ public class NodeDialogManagerTest {
         var metanode = m_wfm.createAndAddSubWorkflow(new PortType[]{BufferedDataTable.TYPE},
             new PortType[]{BufferedDataTable.TYPE}, "Metanode");
         var nnc = createAndAddNode(metanode, new NodeDialogNodeFactory(
-            () -> NodeDialogTest.createNodeDialog(Page.builder(() -> "page content", "index.html").build()), 1));
+            () -> createNodeDialog(Page.builder(() -> "page content", "index.html").build()), 1));
         metanode.addConnection(metanode.getID(), 0, nnc.getID(), 1);
 
         assertThat(NodeDialogManager.getInstance().getDataServiceManager().callInitialDataService(NodeWrapper.of(nnc)))

@@ -52,6 +52,7 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.knime.testing.node.ui.NodeDialogTestUtil.createNodeDialog;
 
 import java.io.File;
 import java.io.IOException;
@@ -86,7 +87,6 @@ import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.dialog.NodeDialog;
 import org.knime.core.webui.node.dialog.NodeDialogManager;
 import org.knime.core.webui.node.dialog.NodeDialogManagerTest;
-import org.knime.core.webui.node.dialog.NodeDialogTest;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
@@ -233,7 +233,7 @@ public class DefaultNodeDialogTest {
         final var defaultNodeSettingsService =
             new DefaultNodeSettingsService(settingsClasses, new AsyncChoicesHolder());
         Supplier<NodeDialog> nodeDialogCreator =
-            () -> NodeDialogTest.createNodeDialog(Page.builder(() -> "page content", "page.html").build(),
+            () -> createNodeDialog(Page.builder(() -> "page content", "page.html").build(),
                 defaultNodeSettingsService, null);
         m_nnc = NodeDialogManagerTest.createNodeWithNodeDialog(m_wfm, nodeDialogCreator);
         m_previousNode = WorkflowManagerUtil.createAndAddNode(m_wfm, new FlowVariablesInputNodeFactory());

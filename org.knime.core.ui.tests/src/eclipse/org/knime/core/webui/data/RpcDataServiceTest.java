@@ -68,8 +68,8 @@ import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.view.NodeView;
 import org.knime.core.webui.node.view.NodeViewManager;
 import org.knime.core.webui.node.view.NodeViewManagerTest;
-import org.knime.core.webui.node.view.NodeViewTest;
 import org.knime.core.webui.page.Page;
+import org.knime.testing.node.view.NodeViewTestUtil;
 import org.knime.testing.util.WorkflowManagerUtil;
 
 /**
@@ -199,7 +199,7 @@ class RpcDataServiceTest {
     private NativeNodeContainer createNodeWithRPCDataService(final Supplier<RpcDataService> rpcDataServiceSupplier) {
         var page = Page.builder(() -> "content", "index.html").build();
         NativeNodeContainer nnc = NodeViewManagerTest.createNodeWithNodeView(m_wfm,
-            m -> NodeViewTest.createNodeView(page, null, rpcDataServiceSupplier, null));
+            m -> NodeViewTestUtil.createNodeView(page, null, rpcDataServiceSupplier, null));
         m_wfm.executeAllAndWaitUntilDone();
         return nnc;
     }

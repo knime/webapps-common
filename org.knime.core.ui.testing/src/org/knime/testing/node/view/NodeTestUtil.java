@@ -76,6 +76,10 @@ import org.knime.testing.util.WorkflowManagerUtil;
  */
 public final class NodeTestUtil {
 
+    private NodeTestUtil() {
+        // utility
+    }
+
     /**
      * Instantiates a given node factory, connects it to a data generator node, executes it, and checks for the presence
      * of its services. Returns the {@link Page} of the node's view.

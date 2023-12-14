@@ -58,6 +58,7 @@ import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.page.Page;
 import org.knime.testing.node.view.NodeViewNodeModel;
+import org.knime.testing.node.view.NodeViewTestUtil;
 import org.knime.testing.util.WorkflowManagerUtil;
 
 /**
@@ -74,7 +75,7 @@ class ReexecuteApplyDataServiceTest {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var page = Page.builder(() -> "content", "index.html").build();
         NativeNodeContainer nnc =
-            NodeViewManagerTest.createNodeWithNodeView(wfm, m -> NodeViewTest.createNodeView(page, m));
+            NodeViewManagerTest.createNodeWithNodeView(wfm, m -> NodeViewTestUtil.createNodeView(page, m));
         wfm.executeAllAndWaitUntilDone();
 
         NodeViewManager.getInstance().getDataServiceManager().callApplyDataService(NodeWrapper.of(nnc),

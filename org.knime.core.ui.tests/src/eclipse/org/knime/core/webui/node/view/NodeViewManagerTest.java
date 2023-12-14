@@ -50,9 +50,8 @@ package org.knime.core.webui.node.view;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.knime.core.webui.node.view.NodeViewTest.createNodeView;
-import static org.knime.core.webui.node.view.NodeViewTest.createTableView;
 import static org.knime.core.webui.page.PageTest.BUNDLE_ID;
+import static org.knime.testing.node.view.NodeViewTestUtil.createNodeView;
 import static org.knime.testing.util.WorkflowManagerUtil.createAndAddNode;
 
 import java.io.IOException;
@@ -95,6 +94,7 @@ import org.knime.core.webui.node.view.table.selection.SelectionTranslationServic
 import org.knime.core.webui.page.Page;
 import org.knime.testing.node.view.NodeViewNodeFactory;
 import org.knime.testing.node.view.NodeViewNodeModel;
+import org.knime.testing.node.view.NodeViewTestUtil;
 import org.knime.testing.util.WorkflowManagerUtil;
 
 /**
@@ -416,7 +416,7 @@ public class NodeViewManagerTest {
     @Test
     void testCallSelectionTranslationService() {
         var page = Page.builder(() -> "test page content", "index.html").build();
-        var nodeView = createTableView(page, null, null, null, new SelectionTranslationService() {
+        var nodeView = NodeViewTestUtil.createTableView(page, null, null, null, new SelectionTranslationService() {
             @Override
             public Set<RowKey> toRowKeys(final List<String> selection) throws IOException {
                 throw new IOException(selection.toString());

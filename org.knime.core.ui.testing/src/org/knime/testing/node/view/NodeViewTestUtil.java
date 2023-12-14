@@ -46,7 +46,7 @@
  * History
  *   Oct 16, 2021 (hornm): created
  */
-package org.knime.core.webui.node.view;
+package org.knime.testing.node.view;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -56,10 +56,11 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.webui.data.ApplyDataService;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
+import org.knime.core.webui.node.view.NodeTableView;
+import org.knime.core.webui.node.view.NodeView;
 import org.knime.core.webui.node.view.table.TableView;
 import org.knime.core.webui.node.view.table.selection.SelectionTranslationService;
 import org.knime.core.webui.page.Page;
-import org.knime.testing.node.view.NodeViewNodeModel;
 
 /**
  * Helper methods and tests for {@link NodeView NodeViews} and {@link TableView TableViews}.
@@ -67,13 +68,14 @@ import org.knime.testing.node.view.NodeViewNodeModel;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
-public final class NodeViewTest {
+public final class NodeViewTestUtil {
 
-    private NodeViewTest() {
-        // at the moment it's just a utility class
+    private NodeViewTestUtil() {
+        // utility
     }
 
-    static NodeView createNodeView(final Page page, final NodeViewNodeModel m) {
+    @SuppressWarnings("javadoc")
+    public static NodeView createNodeView(final Page page, final NodeViewNodeModel m) {
         return createNodeView(page, null, null, ApplyDataService.builder(m).build());
     }
 

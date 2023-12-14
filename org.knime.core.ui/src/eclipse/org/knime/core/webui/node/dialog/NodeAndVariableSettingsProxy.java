@@ -51,9 +51,9 @@ package org.knime.core.webui.node.dialog;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
+import java.util.function.Supplier;
 
 import org.knime.core.node.NodeSettings;
-import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.webui.node.dialog.internal.VariableSettings;
 
 /**
@@ -86,7 +86,7 @@ final class NodeAndVariableSettingsProxy {
 
     private static Object createProxy(final NodeSettings nodeSettingsDelegate,
         final VariableSettings variableSettingsDelegate) {
-        NodeSettingsWrapper nodeSettingsWrapper = () -> nodeSettingsDelegate;
+        Supplier<NodeSettings> nodeSettingsWrapper = () -> nodeSettingsDelegate;
         InvocationHandler invocationHandler = (proxy, method, args) -> { // NOSONAR
             for (Object delegate : new Object[]{nodeSettingsDelegate, variableSettingsDelegate, nodeSettingsWrapper}) {
                 try {
@@ -102,17 +102,14 @@ final class NodeAndVariableSettingsProxy {
             throw new IllegalStateException("Implementation problem - should never end up here");
         };
         return Proxy.newProxyInstance(NodeAndVariableSettingsProxy.class.getClassLoader(),
-            new Class[]{NodeAndVariableSettingsWO.class, NodeAndVariableSettingsRO.class, NodeSettingsWrapper.class},
+            new Class[]{NodeAndVariableSettingsWO.class, NodeAndVariableSettingsRO.class, //
+                /*
+                 * For testing purposes only. In order to be able to extract the underlying {@link NodeSettings}-class to be able to
+                 * read it from json using
+                 * {@link JSONConfig#readJSON(org.knime.core.node.config.base.ConfigBaseWO, java.io.Reader)}.
+                 */
+                Supplier.class},
             invocationHandler);
-    }
-
-    /**
-     * For testing purposes only. In order to be able to extract the underlying {@link NodeSettings}-class to be able to
-     * read it from json using
-     * {@link JSONConfig#readJSON(org.knime.core.node.config.base.ConfigBaseWO, java.io.Reader)}.
-     */
-    interface NodeSettingsWrapper {
-        NodeSettings getNodeSettings();
     }
 
 }

@@ -51,6 +51,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.knime.testing.node.ui.NodeDialogTestUtil.createNodeDialog;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -80,7 +81,6 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.webui.data.DataServiceContextTest;
 import org.knime.core.webui.node.dialog.NodeDialog;
 import org.knime.core.webui.node.dialog.NodeDialogManagerTest;
-import org.knime.core.webui.node.dialog.NodeDialogTest;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultDialogDataConverterImpl;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
@@ -133,7 +133,7 @@ class FlowVariableDataServiceTest {
     void initNodeContextWithFlowStack() throws IOException {
         m_wfm = WorkflowManagerUtil.createEmptyWorkflow();
         Supplier<NodeDialog> nodeDialogCreator =
-            () -> NodeDialogTest.createNodeDialog(Page.builder(() -> "page content", "page.html").build());
+            () -> createNodeDialog(Page.builder(() -> "page content", "page.html").build());
         NativeNodeContainer nnc = NodeDialogManagerTest.createNodeWithNodeDialog(m_wfm, nodeDialogCreator);
         nnc.getNode().setFlowObjectStack(getContextWithFlowVariables(), null);
         NodeContext.pushContext(nnc);
