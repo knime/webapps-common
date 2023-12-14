@@ -60,6 +60,7 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.CredentialsProvider;
 import org.knime.core.node.workflow.FlowObjectStack;
+import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.webui.UIExtension;
@@ -108,7 +109,7 @@ final class NodeDialogAdapter implements UIExtension, DataServiceProvider {
     @Override
     public Optional<InitialDataService<String>> createInitialDataService() {
         var initialData = new InitialData(m_snc, m_settingsTypes, m_nodeSettingsService);
-        return Optional.of(InitialDataService.builder(initialData::get).build());
+        return Optional.of(InitialDataService.builder(initialData::get).onDeactivate(this::deactivate).build());
     }
 
     @Override
@@ -185,12 +186,13 @@ final class NodeDialogAdapter implements UIExtension, DataServiceProvider {
 
     }
 
-    /**
-     * This method is called when the node dialog is deactivated (temporarily or also permanently when the node is
-     * removed).
-     */
-    void deactivate() {
-        m_nodeSettingsService.deactivate();
+    private void deactivate() {
+        NodeContext.pushContext(m_snc);
+        try {
+            m_nodeSettingsService.deactivate();
+        } finally {
+            NodeContext.removeLastContext();
+        }
     }
 
 }

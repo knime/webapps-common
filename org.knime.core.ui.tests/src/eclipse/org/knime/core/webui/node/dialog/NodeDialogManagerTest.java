@@ -157,18 +157,26 @@ public class NodeDialogManagerTest {
     }
 
     @Test
-    void deactivatesNodeSettingsServiceOnDeactivate() {
+    void deactivatesNodeSettingsServiceOnDataServiceDeactivate() {
         final var nodeSettingsService = mock(NodeSettingsService.class);
         var page = Page.builder(() -> "test page content", "index.html").build();
-        NativeNodeContainer nc = createNodeWithNodeDialog(m_wfm, () -> createNodeDialog(page, nodeSettingsService, null));
-        NodeDialogManager.getInstance().getNodeDialog(nc);
+        NativeNodeContainer nc =
+            createNodeWithNodeDialog(m_wfm, () -> createNodeDialog(page, nodeSettingsService, null));
+        final var nodeDialogManager = NodeDialogManager.getInstance();
+        final var dataServiceManager = nodeDialogManager.getDataServiceManager();
+        final var nodeWrapper = NodeWrapper.of(nc);
+        dataServiceManager.callInitialDataService(nodeWrapper);
+
         doAnswer(new Answer() {
             @Override
             public Object answer(final InvocationOnMock invocation) {
                 assertThat(NodeContext.getContext().getNodeContainer()).isSameAs(nc);
                 return null;
-            }}).when(nodeSettingsService).deactivate();
-        NodeDialogManager.getInstance().deactivateDialog(nc);
+            }
+        }).when(nodeSettingsService).deactivate();
+
+        dataServiceManager.deactivateDataServices(nodeWrapper);
+
         verify(nodeSettingsService, times(1)).deactivate();
     }
 

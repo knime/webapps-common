@@ -150,7 +150,11 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
         return DefaultNodeSettings.createDefaultNodeSettingsContext(specs);
     }
 
-
+    /**
+     * {@inheritDoc}
+     *
+     * We need to clean up the passwords which were stored during serialization in {@link #fromNodeSettings}
+     */
     @Override
     public void deactivate() {
         final var nodeId = NodeContext.getContext().getNodeContainer().getID();

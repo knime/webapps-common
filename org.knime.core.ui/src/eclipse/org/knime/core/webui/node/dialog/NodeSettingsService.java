@@ -107,8 +107,8 @@ public interface NodeSettingsService {
     }
 
     /**
-     * TODO UIEXT-1376 rethink if this method is necessary and if we can avoid the use of singletons here. Method called
-     * on deactivation of the dialog. The {@link NodeContext} provides the current node container here.
+     * Method called on deactivation of the dialog. The {@link NodeContext} provides the current node container here.
+     * Use this method to clean up any global state that was created in the {{@link #fromNodeSettings} method.
      */
     default void deactivate() {
     }

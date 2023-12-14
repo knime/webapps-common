@@ -49,7 +49,6 @@
 package org.knime.core.webui.node.dialog;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.WeakHashMap;
 
 import org.knime.core.node.NodeDialogPane;
@@ -129,18 +128,22 @@ public final class NodeDialogManager {
         if (nc instanceof NativeNodeContainer) {
             var nnc = (NativeNodeContainer)nc;
             return m_nodeDialogAdapterMap.computeIfAbsent(nc, id -> {
-                NodeCleanUpCallback.builder(nnc, () -> deactivateDialog(nnc)).build();
+                NodeCleanUpCallback.builder(nnc, () -> removeNodeDialogAdapter(nnc)).build();
                 return createNativeNodeDialog(nnc);
             });
         } else if (nc instanceof SubNodeContainer) {
             var snc = (SubNodeContainer)nc;
             return m_nodeDialogAdapterMap.computeIfAbsent(nc, id -> {
-                NodeCleanUpCallback.builder(nc, () -> deactivateDialog(nc)).build();
+                NodeCleanUpCallback.builder(nc, () -> removeNodeDialogAdapter(nc)).build();
                 return createSubNodeContainerDialog(snc);
             });
         } else {
             throw new IllegalArgumentException("The node " + nc.getNameWithID() + " is no supported node container");
         }
+    }
+
+    private void removeNodeDialogAdapter(final NodeContainer nnc) {
+        m_nodeDialogAdapterMap.remove(nnc);
     }
 
     private static NodeDialogAdapter createNativeNodeDialog(final NativeNodeContainer nnc) {
@@ -201,19 +204,4 @@ public final class NodeDialogManager {
     public boolean canBeEnlarged(final NodeContainer snc) {
         return getNodeDialog(snc).getNodeDialog().canBeEnlarged();
     }
-
-    /**
-     * deactivates the node dialog associated to the node container;
-     *
-     * @param nc
-     */
-    public void deactivateDialog(final NodeContainer nc) {
-        NodeContext.pushContext(nc);
-        try {
-            Optional.ofNullable(m_nodeDialogAdapterMap.get(nc)).ifPresent(NodeDialogAdapter::deactivate);
-        } finally {
-            NodeContext.removeLastContext();
-        }
-    }
-
 }
