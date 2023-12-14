@@ -173,7 +173,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * </tr>
  * <tr>
  * <td>Arrays/Collections of objects(**)</td>
- * <td>Array Widget</td>
+ * <td>Array Widget ({@link ArrayWidgetExample example})</td>
  * <td>{@link ArrayWidget}</td>
  * </tr>
  * <tr>
