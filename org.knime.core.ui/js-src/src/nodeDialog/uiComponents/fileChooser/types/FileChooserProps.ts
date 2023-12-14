@@ -1,6 +1,7 @@
 export enum FSCategory {
   LOCAL,
   CUSTOM_URL,
+  "relative-to-current-hubspace",
 }
 
 export interface FileChooserValue {

@@ -1,16 +1,14 @@
 <script setup lang="ts">
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref, computed, toRef } from "vue";
 import FileExplorer from "webapps-common/ui/components/FileExplorer/FileExplorer.vue";
 import type { FileExplorerItem } from "webapps-common/ui/components/FileExplorer/types";
 import useFileChooserBackend from "./useFileChooserBackend";
-import type { Folder, FolderAndError } from "./types";
+import type { BackendType, Folder, FolderAndError } from "./types";
 import { toFileExplorerItem } from "./utils";
 import Button from "webapps-common/ui/components/Button.vue";
 import LoadingIcon from "webapps-common/ui/components/LoadingIcon.vue";
 import FolderIcon from "webapps-common/ui/assets/img/icons/folder.svg";
 import InputField from "webapps-common/ui/components/forms/InputField.vue";
-
-const { listItems, getFilePath } = useFileChooserBackend();
 
 const currentPath = ref<string | null>(null);
 
@@ -19,12 +17,21 @@ const currentPathDisplay = computed(() => {
 });
 const items = ref<FileExplorerItem[]>([]);
 const props = withDefaults(
-  defineProps<{ initialFilePath?: string; isWriter?: boolean }>(),
+  defineProps<{
+    initialFilePath?: string;
+    isWriter?: boolean;
+    backendType: BackendType;
+  }>(),
   {
     initialFilePath: "",
     isWriter: false,
   },
 );
+
+const { listItems, getFilePath } = useFileChooserBackend(
+  toRef(props, "backendType"),
+);
+
 const isLoading = ref(true);
 
 const setNextItems = (folder: Folder) => {

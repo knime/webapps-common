@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import useDialogControl from "../../composables/useDialogControl";
-import LocalFileChooserInput from "./LocalFileChooserInput.vue";
+import StringFileChooserInputWithExplorer from "./StringFileChooserInputWithExplorer.vue";
 import LabeledInput from "../label/LabeledInput.vue";
 import { rendererProps } from "@jsonforms/vue";
 const props = defineProps(rendererProps());
@@ -19,8 +19,9 @@ const placeholder = computed(() => control.value.uischema.options?.placeholder);
     :control="control"
     @controlling-flow-variable-set="onChange"
   >
-    <LocalFileChooserInput
+    <StringFileChooserInputWithExplorer
       :id="labelForId"
+      :backend-type="'local'"
       :disabled="disabled"
       :placeholder="placeholder"
       :model-value="control.data"

@@ -1,4 +1,5 @@
-import type { FolderAndError } from "./types";
+import type { Ref } from "vue";
+import type { BackendType, FolderAndError } from "./types";
 import inject from "@/nodeDialog/utils/inject";
 
 type ListItems = (params: {
@@ -7,7 +8,7 @@ type ListItems = (params: {
     /**
      * The id of the used file system.
      */
-    "local",
+    BackendType,
     /**
      * The current path or null to reference the root level
      */
@@ -26,7 +27,7 @@ type GetFilePath = (params: {
     /**
      * The id of the used file system.
      */
-    "local",
+    BackendType,
     /**
      * The path of the folder containing the file.
      */
@@ -38,19 +39,19 @@ type GetFilePath = (params: {
   ];
 }) => Promise<string>;
 
-export default () => {
+export default (backendType: Ref<BackendType>) => {
   const getData = inject("getData") as GetFilePath & ListItems;
 
   const listItems = (path: string | null, nextFolder: string | null) => {
     return getData({
       method: "fileChooser.listItems",
-      options: ["local", path, nextFolder],
+      options: [backendType.value, path, nextFolder],
     });
   };
   const getFilePath = (path: string | null, fileName: string) => {
     return getData({
       method: "fileChooser.getFilePath",
-      options: ["local", path, fileName],
+      options: [backendType.value, path, fileName],
     });
   };
 

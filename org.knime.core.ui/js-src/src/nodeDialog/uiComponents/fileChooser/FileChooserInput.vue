@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type FileChooserProps from "./types/FileChooserProps";
 import type { FileChooserValue, FSCategory } from "./types/FileChooserProps";
-import LocalFileChooserInput from "./LocalFileChooserInput.vue";
+import StringFileChooserInputWithExplorer from "./StringFileChooserInputWithExplorer.vue";
 import ValueSwitch from "webapps-common/ui/components/forms/ValueSwitch.vue";
 import CustomUrlFileChooser from "./CustomUrlFileChooser.vue";
 import { mergeDeep } from "@/nodeDialog/utils";
@@ -36,6 +36,10 @@ const possibleCategories: { id: keyof typeof FSCategory; text: string }[] = [
     id: "CUSTOM_URL",
     text: "Custom/KNIME URL",
   },
+  {
+    id: "relative-to-current-hubspace",
+    text: "Current HUB space",
+  },
 ];
 
 const isSupported = computed(() =>
@@ -61,11 +65,20 @@ const isSupported = computed(() =>
       @update:path="onPathUpdate"
       @update:timeout="onTimeoutUpdate"
     />
-    <LocalFileChooserInput
+    <StringFileChooserInputWithExplorer
       v-else
       :id="id"
+      :backend-type="
+        modelValue.fsCategory === 'LOCAL'
+          ? 'local'
+          : 'relativeToCurrentHubSpace'
+      "
       :disabled="disabled"
-      placeholder="Local file path"
+      :placeholder="
+        modelValue.fsCategory === 'LOCAL'
+          ? 'Local file path'
+          : 'Path relative to hub space'
+      "
       :model-value="modelValue.path"
       @update:model-value="onPathUpdate"
     />

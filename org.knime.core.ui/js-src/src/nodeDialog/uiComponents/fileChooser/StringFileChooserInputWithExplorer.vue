@@ -4,9 +4,9 @@ import { ref } from "vue";
 import InputField from "webapps-common/ui/components/forms/InputField.vue";
 import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
 import FolderLenseIcon from "webapps-common/ui/assets/img/icons/folder-lense.svg";
-import type LocalFileChooserProps from "./types/LocalFileChooserProps";
+import type StringFileChooserInputWithExplorerProps from "./types/StringFileChooserInputWithExplorerProps";
 
-defineProps<LocalFileChooserProps>();
+defineProps<StringFileChooserInputWithExplorerProps>();
 const emit = defineEmits(["update:modelValue"]);
 
 const active = ref(false);
@@ -47,6 +47,7 @@ const chooseFile = (chosen: string) => {
   </InputField>
   <div v-if="active" class="modal-overlay">
     <FileChooser
+      :backend-type="backendType"
       :initial-file-path="modelValue"
       @choose-file="chooseFile"
       @cancel="deactivateFileChooser"

@@ -15,3 +15,5 @@ export type FolderAndError = {
   folder: Folder;
   errorMessage?: string;
 };
+
+export type BackendType = "local" | "relativeToCurrentHubSpace";
