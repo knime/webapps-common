@@ -452,10 +452,10 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         if (m_rendererRegistry != null) {
             if (forceClearImageDataCache || m_sortedTableCache.wasUpdated()
                 || m_filteredAndSortedTableCache.wasUpdated()) {
-                /**
+                /*
                  * Clears the image data cache if it's forced to be cleared. That's usually done when 'pagination' is
-                 * enabled because in that case a new batch of rows is request with every page change and the is no need
-                 * to keep the older one. If, however, 'pagination' is disabled (i.e. 'infinite scrolling' is used
+                 * enabled because in that case a new batch of rows is request with every page change and there is no
+                 * need to keep the older one. If, however, 'pagination' is disabled (i.e. 'infinite scrolling' is used
                  * instead), then it's almost certain that images of two different consecutive(!) 'row-batches' are
                  * being requested at the same time. I.e. we must _not_ clear previous row-batches too early. However,
                  * we _can_ clear the image data cache if 'pagination' is disabled or if the entire table is being

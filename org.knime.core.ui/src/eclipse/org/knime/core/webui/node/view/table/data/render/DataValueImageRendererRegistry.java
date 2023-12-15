@@ -280,17 +280,18 @@ public final class DataValueImageRendererRegistry {
 
     }
 
+    // instances are thread-safe and all fields are synchronized via the instance's monitor
     private static class Images {
 
-        private Map<String, Image> m_images = Collections.synchronizedMap(new HashMap<>());
+        private final Map<String, Image> m_images = new HashMap<>();
 
-        private Deque<Set<String>> m_batches = new LinkedList<>();
+        private final Deque<Set<String>> m_batches = new LinkedList<>();
 
-        private int m_hashCollisionCount = 0;
+        private int m_hashCollisionCount;
 
         private StatsPerTable m_stats;
 
-        String addImage(final DataCell cell, final DataValueImageRenderer renderer) {
+        synchronized String addImage(final DataCell cell, final DataValueImageRenderer renderer) {
             var key = Integer.toString(31 * cell.hashCode() + renderer.getId().hashCode());
             if (m_images.containsKey(key)) {
                 var existingCell = m_images.get(key).getDataCell();
@@ -307,19 +308,20 @@ public final class DataValueImageRendererRegistry {
             return key;
         }
 
-        Image getImage(final String imageId) {
+        synchronized Image getImage(final String imageId) {
             return m_images.get(imageId);
         }
 
-        void startNewBatch() {
+        synchronized void startNewBatch() {
             if (!m_batches.isEmpty() && m_batches.getFirst().isEmpty()) {
                 return;
             }
+            var imagesToKeep = m_batches.stream() //
+                    .limit(MAX_NUM_ROW_BATCHES_IN_CACHE - 1l)
+                    .flatMap(Set::stream)
+                    .collect(Collectors.toSet());
             while (m_batches.size() >= MAX_NUM_ROW_BATCHES_IN_CACHE) {
-                var removedBatch = m_batches.removeLast();
-                // only remove the images which are NOT part of the existing batches
-                var imagesToKeep = m_batches.stream().flatMap(Set::stream).collect(Collectors.toSet());
-                removedBatch.forEach(id -> {
+                m_batches.removeLast().forEach(id -> {
                     if (!imagesToKeep.contains(id)) {
                         m_images.remove(id);
                     }
@@ -328,28 +330,36 @@ public final class DataValueImageRendererRegistry {
             m_batches.addFirst(new HashSet<>());
         }
 
-        StatsPerTable getStats() {
+        synchronized StatsPerTable getStats() {
             if (m_stats == null) {
                 m_stats = new StatsPerTable() { // NOSONAR
 
                     @Override
                     public int numImages() {
-                        return m_images.size();
+                        synchronized (Images.this) {
+                            return m_images.size();
+                        }
                     }
 
                     @Override
                     public int numRenderedImages() {
-                        return (int)m_images.values().stream().filter(Image::isRendered).count();
+                        synchronized (Images.this) {
+                            return (int) m_images.values().stream().filter(Image::isRendered).count();
+                        }
                     }
 
                     @Override
                     public int numRenderImageCalls() {
-                        return m_images.values().stream().mapToInt(Image::getNumRenderCalls).sum();
+                        synchronized (Images.this) {
+                            return m_images.values().stream().mapToInt(Image::getNumRenderCalls).sum();
+                        }
                     }
 
                     @Override
                     public int[] batchSizes() {
-                        return m_batches.stream().mapToInt(Set::size).toArray();
+                        synchronized (Images.this) {
+                            return m_batches.stream().mapToInt(Set::size).toArray();
+                        }
                     }
 
                 };
