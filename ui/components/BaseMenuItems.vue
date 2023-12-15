@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { PropType } from "vue";
+import type { PropType, StyleValue } from "vue";
 import { onBeforeUpdate, ref, toRef } from "vue";
 import { uniqueId } from "lodash-es";
 import BaseMenuItem from "./BaseMenuItem.vue";
@@ -63,15 +63,16 @@ export default {
     });
 
     // position sub level menus
-    const { floatingStyles: listContainerFloatingStyles } =
-      positionRelativeToElement.value
-        ? useFloating(positionRelativeToElement, listContainer, {
-            strategy: "fixed",
-            placement: "right-start",
-            middleware: [flip(), shift()],
-            whileElementsMounted: autoUpdate,
-          })
-        : { floatingStyles: null };
+    const { floatingStyles } = positionRelativeToElement.value
+      ? useFloating(positionRelativeToElement, listContainer, {
+          strategy: "fixed",
+          placement: "right-start",
+          middleware: [flip(), shift()],
+          whileElementsMounted: autoUpdate,
+        })
+      : { floatingStyles: null };
+
+    const listContainerFloatingStyles = floatingStyles as StyleValue;
 
     return {
       listContainerFloatingStyles,
