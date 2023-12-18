@@ -1,48 +1,62 @@
-import { IFrameKnimeService } from "src";
 import {
   Event,
-  NodeServices,
   DataServiceType,
   DataServiceTypes,
-  EventTypes,
+  ExtensionTypes,
 } from "src/types";
 import { AlertTypes } from "src/types/AlertTypes";
 import { DialogSettings } from "src/types/DialogSettings";
 import { createJsonRpcRequest } from "src/utils";
-import { KnimeService } from "./KnimeService";
+import { Identifiers, UIExtensionService } from "src/knime-svc/types";
+import { getBaseService, createAlert } from "./utils";
+import type { AlertConfig } from "src/types/Alert";
 
 const MAX_MESSAGE_LEN = 160;
 
 /**
  * A utility class to interact with JsonDataServices implemented by a UI Extension node.
  */
-export class JsonDataService<T = any> {
-  private knimeService: IFrameKnimeService | KnimeService<T>;
+export class JsonDataService<
+  T extends AlertConfig &
+    Identifiers & {
+      extensionType: ExtensionTypes;
+      initialData?: any;
+      dialogSettings?: DialogSettings;
+    } = any,
+> {
+  private knimeService: UIExtensionService<T>;
 
   /**
-   * @param {KnimeService<T> | IFrameKnimeService} knimeService - knimeService instance which is used to communicate
+   * @param { UIExtensionService<T> } baseService - knimeService instance which is used to communicate
    *      with the framework.
    */
-  constructor(knimeService: IFrameKnimeService | KnimeService<T>) {
-    this.knimeService = knimeService;
+  constructor(baseService?: UIExtensionService<T>) {
+    this.knimeService = getBaseService(baseService);
   }
 
   /**
+   * 
+  // TODO: could detect BE service type / (endpoint) based on config
+  // and call specific service.(...)
    * Calls the node data service with optional request body. The service to call is specified by the service type
-   * and needs to correspond directly to a {@see DataServiceType} supported by the node.
+   * and needs to correspond directly to a @see DataServiceType supported by the node.
    *
    * @param {DataServiceType} dataServiceType - the data service type.
    * @param {string} [request] - an optional request payload.
    * @returns {Promise} rejected or resolved depending on backend response.
    */
-  private callDataService(dataServiceType: DataServiceType, request = "") {
+  private callDataService(serviceType: DataServiceType, request = "") {
+    const config = this.knimeService.getConfig();
     return (
       this.knimeService
-        .callService([
-          NodeServices.CALL_NODE_DATA_SERVICE,
-          dataServiceType,
+        .callNodeDataService({
+          serviceType,
           request,
-        ])
+          extensionType: config.extensionType,
+          nodeId: config.nodeId,
+          projectId: config.projectId,
+          workflowId: config.workflowId,
+        })
         // empty string check is required because it cannot be parsed but is a valid/expected response
         .then((response) =>
           typeof response === "string" && response !== ""
@@ -60,10 +74,9 @@ export class JsonDataService<T = any> {
    */
   async initialData() {
     let initialData;
-    if (this.knimeService.extensionConfig?.initialData) {
-      initialData = await Promise.resolve(
-        this.knimeService.extensionConfig?.initialData,
-      );
+    const initialDataPerConfig = this.knimeService.getConfig().initialData;
+    if (initialDataPerConfig) {
+      initialData = initialDataPerConfig;
     } else {
       initialData = await this.callDataService(DataServiceTypes.INITIAL_DATA);
     }
@@ -91,11 +104,11 @@ export class JsonDataService<T = any> {
    * @returns {DialogSettings | null} the initial dialog state
    */
   getDialogSettings(): DialogSettings | null {
-    return this.knimeService.extensionConfig?.dialogSettings || null;
+    return this.knimeService.getConfig().dialogSettings || null;
   }
 
   /**
-   * Retrieve data from the node using the {@see DataServiceType.DATA} api. Different method names can be registered
+   * Retrieve data from the node using the @see DataServiceType.DATA api. Different method names can be registered
    * with the data service in the node implementation to provide targets (specified by the {@param method}). Any
    * optional parameter will be provided directly to the data service target and can be used to specify the nature of
    * the data returned.
@@ -134,29 +147,18 @@ export class JsonDataService<T = any> {
    *
    * @returns {Promise} rejected or resolved depending on backend response.
    */
-  async applyData() {
-    const data = await this.knimeService.getData();
+  applyData(data: any) {
     return this.callDataService(DataServiceTypes.APPLY_DATA, data);
-  }
-
-  /**
-   * Registers a function with the framework is used to provide the current state of the client-side UI Extension.
-   *
-   * @param {Function} callback - function which provides the current client side state when invoked.
-   * @returns {undefined}
-   */
-  registerDataGetter(callback: () => any) {
-    this.knimeService.registerDataGetter(() => JSON.stringify(callback()));
   }
 
   /**
    * Adds callback that will be triggered when data changes.
    * @param {Function} callback - called on data change.
    * @param {Event} response - the data update event object.
-   * @returns {void}
+   * @returns {() => void} - method for removing the listener again
    */
   addOnDataChangeCallback(callback: (event: Event) => void) {
-    this.knimeService.addEventCallback(EventTypes.DataEvent, callback);
+    return this.knimeService.addPushEventListener("data-change", callback);
   }
 
   /**
@@ -165,9 +167,7 @@ export class JsonDataService<T = any> {
    * @returns {void}
    */
   publishData(data: any) {
-    this.knimeService.pushEvent({
-      event: { data, eventType: EventTypes.DataEvent },
-    });
+    this.knimeService.publishData(data);
   }
 
   private handleError(
@@ -212,8 +212,8 @@ export class JsonDataService<T = any> {
         : formattedStack;
     }
     messageBody = messageBody.trim();
-    this.knimeService.sendError(
-      this.knimeService.createAlert({
+    this.knimeService.sendAlert(
+      createAlert(this.knimeService.getConfig(), {
         subtitle: messageSubject || "Something went wrong",
         message:
           messageBody ||
@@ -232,8 +232,8 @@ export class JsonDataService<T = any> {
     } else if (message?.length > MAX_MESSAGE_LEN) {
       subtitle = "Expand for details";
     }
-    this.knimeService.sendWarning(
-      this.knimeService.createAlert({
+    this.knimeService.sendAlert(
+      createAlert(this.knimeService.getConfig(), {
         type: AlertTypes.WARN,
         message,
         subtitle,

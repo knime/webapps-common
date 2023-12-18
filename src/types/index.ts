@@ -1,4 +1,5 @@
 export * from "./AlertTypes";
+export * from "./Alert";
 export * from "./ExtensionConfig";
 export * from "./Event";
 export * from "./NodeServices";

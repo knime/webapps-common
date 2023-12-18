@@ -1,8 +1,5 @@
 export {
-  KnimeService,
   JsonDataService,
-  IFrameKnimeService,
-  IFrameKnimeServiceAdapter,
   SelectionService,
   CachingSelectionService,
   DialogService,
@@ -11,8 +8,12 @@ export {
   NumericColorHandler,
   NominalColorHandler,
   ColorHandler,
+  AlertingService,
+  ResourceService,
 } from "./services";
 
 export * from "./types";
+
+export * from "./knime-svc";
 
 export { KnimeUtils } from "./utils/KnimeUtils";

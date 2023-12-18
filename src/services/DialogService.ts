@@ -1,25 +1,30 @@
-import { IFrameKnimeService } from "src";
-import { KnimeService } from "./KnimeService";
+import { UIExtensionService } from "src/knime-svc/types";
+import { getBaseService } from "./utils";
 
 /**
  * A utility class to interact with Dialog settings implemented by a UI Extension node.
  */
-export class DialogService<T = any> {
-  private knimeService: IFrameKnimeService | KnimeService<T>;
+export class DialogService<
+  T extends {
+    hasNodeView: boolean;
+    writeProtected: boolean;
+  } = any,
+> {
+  private knimeService: UIExtensionService<T>;
 
   /**
-   * @param {KnimeService<T> | IFrameKnimeService} knimeService - knimeService instance which is used to communicate
+   * @param {UIExtensionService<T>} baseService - knimeService instance which is used to communicate
    *      with the framework.
    */
-  constructor(knimeService: IFrameKnimeService | KnimeService<T>) {
-    this.knimeService = knimeService;
+  constructor(baseService?: UIExtensionService<T>) {
+    this.knimeService = getBaseService(baseService);
   }
 
   /**
    * @returns {boolean} - true, if the node this dialog belongs to also has a node view, otherwise false
    */
   hasNodeView() {
-    return this.knimeService.extensionConfig?.hasNodeView;
+    return this.knimeService.getConfig()?.hasNodeView;
   }
 
   /**
@@ -27,6 +32,6 @@ export class DialogService<T = any> {
    *         otherwise false
    */
   isWriteProtected() {
-    return this.knimeService.extensionConfig?.writeProtected;
+    return this.knimeService.getConfig()?.writeProtected;
   }
 }

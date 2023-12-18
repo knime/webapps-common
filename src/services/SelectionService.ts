@@ -1,21 +1,27 @@
-import { IFrameKnimeService } from "src/services";
-import { Event, NodeServices, SelectionModes, EventTypes } from "src/types";
-import { KnimeService } from "./KnimeService";
+import { Event, SelectionModes, EventTypes } from "src/types";
+import { UIExtensionService } from "src/knime-svc";
+import type { Identifiers } from "src/knime-svc/types";
+import { getBaseService } from "./utils";
 
 /**
  * SelectionService provides methods to handle data selection.
  * To use it, the relating Java implementation also needs to use the SelectionService.
  */
-export class SelectionService<T = any> {
-  private knimeService: IFrameKnimeService | KnimeService<T>;
-  private callbackMap: Map<Function, Function>;
+export class SelectionService<
+  T extends Identifiers & {
+    initialData?: any;
+    initialSelection?: any;
+  } = any,
+> {
+  private knimeService: UIExtensionService<T>;
+  private removeCallbacksMap: Map<Function, () => void>;
 
   /**
    * @param {KnimeService} knimeService - instance should be provided to use events.
    */
-  constructor(knimeService: IFrameKnimeService | KnimeService<T>) {
-    this.knimeService = knimeService;
-    this.callbackMap = new Map();
+  constructor(baseService?: UIExtensionService<T>) {
+    this.knimeService = getBaseService(baseService);
+    this.removeCallbacksMap = new Map();
   }
 
   /**
@@ -26,9 +32,9 @@ export class SelectionService<T = any> {
    */
   async initialSelection() {
     let initialSelection;
-    if (this.knimeService.extensionConfig?.initialData) {
+    if (this.knimeService.getConfig().initialData) {
       initialSelection = await Promise.resolve(
-        this.knimeService.extensionConfig?.initialSelection,
+        this.knimeService.getConfig()?.initialSelection,
       );
     }
 
@@ -48,8 +54,15 @@ export class SelectionService<T = any> {
     mode: SelectionModes,
     selection: string[],
   ): Promise<any> {
+    const config = this.knimeService.getConfig();
     return this.knimeService
-      .callService([NodeServices.CALL_NODE_SELECTION_SERVICE, mode, selection])
+      .updateDataPointSelection({
+        projectId: config.projectId,
+        workflowId: config.workflowId,
+        nodeId: config.nodeId,
+        mode,
+        selection,
+      })
       .then((response) =>
         typeof response === "string" ? JSON.parse(response) : response,
       );
@@ -90,15 +103,15 @@ export class SelectionService<T = any> {
   addOnSelectionChangeCallback(callback: (any) => void): void {
     const wrappedCallback = (event: Event): void => {
       const { nodeId, selection, mode } = event.payload || {};
-      if (this.knimeService.extensionConfig.nodeId === nodeId) {
+      if (this.knimeService.getConfig().nodeId === nodeId) {
         callback({ selection, mode });
       }
     };
-    this.callbackMap.set(callback, wrappedCallback);
-    this.knimeService.addEventCallback(
+    const removeCallback = this.knimeService.addPushEventListener(
       EventTypes.SelectionEvent,
       wrappedCallback,
     );
+    this.removeCallbacksMap.set(callback, removeCallback);
   }
 
   /**
@@ -107,13 +120,8 @@ export class SelectionService<T = any> {
    * @returns {void}
    */
   removeOnSelectionChangeCallback(callback: (any) => void): void {
-    const wrappedCallback = this.callbackMap.get(callback) as (
-      event: Event,
-    ) => void;
-    this.knimeService.removeEventCallback(
-      EventTypes.SelectionEvent,
-      wrappedCallback,
-    );
+    this.removeCallbacksMap.get(callback)();
+    this.removeCallbacksMap.delete(callback);
   }
 
   /**

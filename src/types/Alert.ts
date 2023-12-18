@@ -18,3 +18,15 @@ export type Alert = {
   subtitle?: string;
   message?: string;
 };
+
+export type AlertConfig = {
+  nodeId?: string;
+  nodeInfo?: NodeInfo;
+};
+
+export type CreateAlertParams = {
+  type?: AlertTypes;
+  message?: string;
+  code?: string | number;
+  subtitle?: string;
+};

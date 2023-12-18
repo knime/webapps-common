@@ -1,11 +1,13 @@
-import { KnimeService } from "./KnimeService";
 import {
   ColorModel,
   ColorModelType,
   NumericColorModel,
 } from "../types/ColorModel";
 import convert from "color-convert";
-import { AlertTypes } from "src";
+import { AlertTypes } from "src/types";
+import { createAlert, getBaseService } from "./utils";
+import { AlertConfig } from "src/types/Alert";
+import { UIExtensionService } from "src/knime-svc";
 
 // TODO: UIEXT-858 Provide this default color via color model
 const lightGray = "#D3D3D3";
@@ -75,25 +77,30 @@ export type ColorHandler = NumericColorHandler | NominalColorHandler;
  * A utility class to receive a color callback created by the color model provided by a
  * UI Extension node.
  */
-export class ColorService {
+export class ColorService<
+  T extends AlertConfig & {
+    colorModels?: Record<string, ColorModel>;
+    columnNamesColorModel?: ColorModel;
+  } = any,
+> {
   /**
    * Mapping from column name to attached color model given by the extension config.
    */
   private colorModels: Record<string, ColorModel> | undefined;
   private columnNamesColorModel: ColorModel | undefined;
-  private knimeService: KnimeService;
+  private knimeService: UIExtensionService<T>;
 
   /**
    * @param {KnimeService} knimeService - knimeService instance which is used to communicate
    *      with the framework.
    */
-  constructor(knimeService: KnimeService) {
-    this.colorModels = knimeService.extensionConfig?.colorModels;
+  constructor(baseService?: UIExtensionService<T>) {
+    const knimeService = getBaseService(baseService);
+    this.colorModels = knimeService.getConfig().colorModels;
     if (!this.colorModels) {
       throw new Error("No color models present in the given extension config.");
     }
-    this.columnNamesColorModel =
-      knimeService.extensionConfig?.columnNamesColorModel;
+    this.columnNamesColorModel = knimeService.getConfig().columnNamesColorModel;
     this.knimeService = knimeService;
   }
 
@@ -107,8 +114,8 @@ export class ColorService {
       }
     }
     if (!suppressWarning) {
-      this.knimeService.sendWarning(
-        this.knimeService.createAlert({
+      this.knimeService.sendAlert(
+        createAlert(this.knimeService.getConfig(), {
           type: AlertTypes.WARN,
           message: `No color handler found for the given column name "${columnName}".`,
         }),
