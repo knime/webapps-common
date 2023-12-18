@@ -9,8 +9,12 @@ import {
   onUnmounted,
   watchEffect,
   nextTick,
+  inject,
 } from "vue";
-import { fetchImage, getImageUrl } from "@/utils/images";
+import {
+  fetchImage,
+  getImageUrl as getImageUrlFromStore,
+} from "@/utils/images";
 
 // @ts-ignore
 import { useStore } from "vuex";
@@ -35,11 +39,17 @@ const waitForTableToBeReady = () =>
   });
 
 const emit = defineEmits(["pending", "rendered"]);
-const inlinedSrc: Ref<false | string> = ref(false);
+const inlinedSrc: Ref<undefined | string> = ref();
 
 const store = useStore();
+const fallbackGetImageUrl = (resourceInfo: {
+  baseUrl: string;
+  path: string;
+}): string => getImageUrlFromStore(store, resourceInfo);
+const getImageUrl = inject("getImageUrl", fallbackGetImageUrl);
+
 const imageUrl = computed(() =>
-  getImageUrl(store, {
+  getImageUrl({
     baseUrl: props.baseUrl,
     path: props.path,
   }),

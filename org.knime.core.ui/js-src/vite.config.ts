@@ -2,9 +2,10 @@ import { fileURLToPath, URL } from "node:url";
 import { defineConfig } from "vitest/config";
 import vue from "@vitejs/plugin-vue";
 import svgLoader from "vite-svg-loader";
-import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
-import type { LibraryOptions } from "vite";
+import type { LibraryFormats, LibraryOptions } from "vite";
 import { loadEnv } from "vite";
+// only used by obsolete UMD format
+import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 
 const camelCase = (input: string) => {
   return input
@@ -25,25 +26,30 @@ const COMPONENTS = [
 
 type ComponentLibraries = (typeof COMPONENTS)[number];
 
-const getComponentLibraryOptions = (
-  name: ComponentLibraries,
-  overrideName?: string,
-): LibraryOptions => ({
-  name: (overrideName || name).toLowerCase(),
-  entry: fileURLToPath(
-    new URL(`./src/${camelCase(name)}/${name}.vue`, import.meta.url),
-  ),
-  fileName: name,
-  formats: ["umd"],
-});
+const getComponentLibraryOptions =
+  (
+    name: ComponentLibraries,
+    overrideName: string = null,
+  ): ((format: LibraryFormats) => LibraryOptions) =>
+  (format: LibraryFormats) => ({
+    name: (overrideName || name).toLowerCase(), // only for umd
+    entry: fileURLToPath(
+      new URL(
+        `./src/${camelCase(name)}/${name}${
+          format === "es" ? "App.ts" : ".vue"
+        }`,
+        import.meta.url,
+      ),
+    ),
+    // as this package is not yet a module, the default would be mjs and cjs which is not what we want
+    fileName: (format) => `${name}${format === "es" ? "" : `.${format}`}.js`,
+    formats: [format as LibraryFormats],
+  });
 
-/**
- * NOTE: If you add a new library, make sure it is wrapped in a <div> with the
- * class `knime-ui-LIBNAME` where LIBNAME is the name you dfine in this object as key.
- *
- * See below how the CSS code is scoped in order to prevent problems with webapps-common in knime-ui.
- */
-const libraries: Record<ComponentLibraries, LibraryOptions> = {
+const libraries: Record<
+  ComponentLibraries,
+  (format: LibraryFormats) => LibraryOptions
+> = {
   NodeDialog: getComponentLibraryOptions("NodeDialog", "defaultdialog"),
   TableView: getComponentLibraryOptions("TableView"),
   DeferredTableView: getComponentLibraryOptions("DeferredTableView"),
@@ -52,9 +58,12 @@ const libraries: Record<ComponentLibraries, LibraryOptions> = {
   ImageView: getComponentLibraryOptions("ImageView"),
 };
 
-const getCurrentLibrary = (mode: ComponentLibraries) => {
+const getCurrentLibrary = (
+  mode: ComponentLibraries,
+  format: LibraryFormats,
+) => {
   if (mode in libraries) {
-    return libraries[mode];
+    return libraries[mode](format);
   }
 
   return false;
@@ -87,20 +96,18 @@ const getTestSetupFile = (mode: "integration" | "unit") => {
 };
 
 // https://vitest.dev/config/
-export default defineConfig(({ mode }) => {
+export default defineConfig((userOptions) => {
+  const [mode = "", format = "es"] = userOptions?.mode?.split(":") ?? [];
   const env = { ...process.env, ...loadEnv(mode, process.cwd()) };
   const testMode = mode === "integration" ? "integration" : "unit";
-  return {
-    define: {
-      "process.env": env, // needed by v-calendar
-    },
-    plugins: [
-      vue(),
-      svgLoader(),
-      // not supported natively in Vite yet, see https://github.com/vitejs/vite/issues/1579
+
+  const conditionalVitePlugins = [];
+  const conditionalRollupOptions = { external: [], output: {} };
+
+  if (format === "umd") {
+    conditionalVitePlugins.push(
       cssInjectedByJsPlugin({
-        styleId: "knime-ui-table",
-        injectCodeFunction: function injectCodeFunction(cssCode) {
+        injectCodeFunction: function injectCodeFunction(cssCode: string) {
           try {
             if (typeof document !== "undefined") {
               const elementStyle = document.createElement("style");
@@ -113,7 +120,21 @@ export default defineConfig(({ mode }) => {
           }
         },
       }),
-    ],
+    );
+
+    conditionalRollupOptions.external = ["vue"];
+    conditionalRollupOptions.output = {
+      globals: {
+        vue: "Vue",
+      },
+    };
+  }
+
+  return {
+    define: {
+      "process.env": env, // needed by v-calendar
+    },
+    plugins: [vue(), svgLoader(), ...conditionalVitePlugins].filter(Boolean),
     resolve: {
       alias: {
         "@": fileURLToPath(new URL("./src", import.meta.url)),
@@ -124,14 +145,56 @@ export default defineConfig(({ mode }) => {
       ],
     },
     build: {
-      lib: getCurrentLibrary(mode as ComponentLibraries),
+      lib: getCurrentLibrary(
+        mode as ComponentLibraries,
+        format as LibraryFormats,
+      ),
       emptyOutDir: false,
+      cssCodeSplit: false,
       rollupOptions: {
-        external: ["vue"],
-        output: {
-          globals: {
-            vue: "Vue", // maps to window.Vue which must be provided by the consuming app
-          },
+        ...conditionalRollupOptions,
+        ...{
+          plugins: [
+            {
+              apply: "build",
+              enforce: "post",
+              name: "macro-replace-css",
+              generateBundle(opts, bundle) {
+                // we only support this for ES format, umd uses the head injection
+                if (opts.format !== "es") {
+                  return;
+                }
+                const bundleKeys = Object.keys(bundle);
+                const bundleFilename = bundleKeys.find((name) =>
+                  name.endsWith(".js"),
+                );
+                const cssFilename = bundleKeys.find((name) =>
+                  name.endsWith(".css"),
+                );
+
+                if (!bundleFilename || !cssFilename) {
+                  // eslint-disable-next-line no-console
+                  console.log("Do not call macro-replace-css");
+                  return;
+                }
+
+                const {
+                  // @ts-ignore
+                  [cssFilename]: { source: rawCss },
+                  [bundleFilename]: component,
+                } = bundle;
+
+                // @ts-ignore
+                component.code = component.code.replace(
+                  "__INLINE_CSS_CODE__",
+                  JSON.stringify(rawCss),
+                );
+
+                // remove css file from final bundle
+                delete bundle[cssFilename];
+              },
+            },
+          ],
         },
       },
     },
@@ -140,7 +203,7 @@ export default defineConfig(({ mode }) => {
       exclude: getExcludedTestFiles(testMode),
       environment: "jsdom",
       reporters: ["default", "junit"],
-      deps: { inline: ["consola"] },
+      deps: { inline: ["consola", "@knime/knime-ui-table"] },
       setupFiles: [
         fileURLToPath(new URL(getTestSetupFile(testMode), import.meta.url)),
       ],

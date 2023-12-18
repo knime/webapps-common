@@ -36,13 +36,11 @@ const onViewSettingsChange = (event: Event) => {
 };
 
 const store = useStore();
-
-const getImageUrl = (path: string, baseUrl: string) => {
-  return getImageUrlFromStore(store, {
-    baseUrl,
-    path,
-  });
-};
+const fallbackGetImageUrl = (resourceInfo: {
+  baseUrl: string;
+  path: string;
+}): string => getImageUrlFromStore(store, resourceInfo);
+const getImageUrl = inject("getImageUrl", fallbackGetImageUrl);
 
 const imgSrc = ref("");
 const image: Ref<HTMLImageElement> = ref(null as any);
@@ -59,7 +57,7 @@ onMounted(async () => {
 
   // @ts-ignore
   const baseUrl = knimeService.extensionConfig?.resourceInfo?.baseUrl;
-  const imageUrl = getImageUrl(initialData.imagePath, baseUrl);
+  const imageUrl = getImageUrl({ path: initialData.imagePath, baseUrl });
   imgSrc.value = reportingService.isReportingActive()
     ? await fetchImage(imageUrl)
     : imageUrl;
@@ -122,7 +120,7 @@ div.scroll-container {
 }
 
 /**
- * There is a gap of 4px to the figcaption because img is an inline element. 
+ * There is a gap of 4px to the figcaption because img is an inline element.
  * But since we also want this gap when using the image inside a flexbox, we style this gap ourselves.
  */
 img {
