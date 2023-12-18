@@ -1,4 +1,6 @@
-# ![Image](https://www.knime.com/sites/default/files/knime_logo_github_40x40_4layers.png) KNIME views & dialogs
+# ![Image](https://www.knime.com/sites/default/files/knime_logo_github_40x40_4layers.png) KNIME Core UI
+[![Jenkins](https://jenkins.knime.com/buildStatus/icon?job=knime-core-ui%2Fmaster)](https://jenkins.knime.com/job/knime-core-ui/job/master/)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=KNIME_knime-core-ui&metric=alert_status&token=3754ed0a736e21d7b41232ced136830b1f844af6)](https://sonarcloud.io/summary/new_code?id=KNIME_knime-core-ui)
 
 This repository contains the core UI functionality.
 
