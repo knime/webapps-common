@@ -47,6 +47,7 @@ onMounted(() => {
   >
     <div ref="controlHeader" class="control-header">
       <div class="left">
+        <slot name="before-label" />
         <Label
           :text="title"
           class="label"

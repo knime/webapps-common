@@ -34,7 +34,6 @@ const triggersReexecution = useTriggersReexecution(control);
     :style="{ marginBottom: `${marginBottom}px` }"
   >
     <DialogLabel
-      #default="{ labelForId }"
       :class="{ fill }"
       :title="control.label"
       :show-reexecution-icon="triggersReexecution"
@@ -46,7 +45,12 @@ const triggersReexecution = useTriggersReexecution(control);
         (event) => $emit('controllingFlowVariableSet', event)
       "
     >
-      <slot :label-for-id="labelForId" />
+      <template #default="{ labelForId }">
+        <slot :label-for-id="labelForId" />
+      </template>
+      <template #before-label>
+        <slot name="before-label" />
+      </template>
     </DialogLabel>
   </DialogComponentWrapper>
 </template>

@@ -10,6 +10,11 @@ export default (rpcRequest: { method: string; params: any[] }) => {
             value: "the string flow variable value (abbrevia...",
             abbreviated: true,
           },
+          {
+            name: "nullVariable",
+            value: null,
+            abbreviated: false,
+          },
         ],
         BOOLEAN: [
           { name: "booleanVariable", value: "true", abbreviated: false },
@@ -33,6 +38,8 @@ export default (rpcRequest: { method: string; params: any[] }) => {
           return "some string";
         case "booleanVariable":
           return true;
+        case "nullVariable":
+          return null;
         case "numberVariable":
           return 100;
         case "credentialsVariable":
