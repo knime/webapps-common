@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, type Mock } from "vitest";
 import {
   formatDateString,
   formatDateTimeString,
@@ -91,7 +91,7 @@ describe("formatDate", () => {
     };
 
     it("parseToLocalTime throws error on invalid format", () => {
-      expect(() => formatLocalDateTimeString("")).toThrowError();
+      expect(() => formatLocalDateTimeString("", true)).toThrowError();
     });
 
     it("formats time in UTC strings", () => {
@@ -107,11 +107,11 @@ describe("formatDate", () => {
     });
 
     it("formats time to a different time zone", () => {
-      getLocalTimeZone.mockReturnValue("CST");
+      (getLocalTimeZone as Mock).mockReturnValue("CST");
       expect(formatLocalDateTimeString(timeInCST.input, true)).toEqual(
         timeInCST.expectedDateTime,
       );
-      getLocalTimeZone.mockRestore();
+      (getLocalTimeZone as Mock).mockRestore();
     });
   });
 });

@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { shallowMount } from "@vue/test-utils";
 
-import LocalDateTime from "~/ui/components/LocalDateTime.vue";
-import { formatLocalDateTimeString } from "~/util/format";
+import LocalDateTime from "../LocalDateTime.vue";
+import { formatLocalDateTimeString } from "../../../util/format";
 
 const dateOffset = "2023-01-23T09:15:28+00:00";
 const dateUTC = "2023-01-23T09:15:28.000Z";
