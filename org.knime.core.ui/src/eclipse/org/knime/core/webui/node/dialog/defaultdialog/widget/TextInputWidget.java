@@ -76,4 +76,11 @@ public @interface TextInputWidget {
      * @return an optional regular expression pattern for a nominal field
      */
     String pattern() default "";
+
+    /**
+     * With this field set to true, the input also has a checkbox which indicates whether the value is null.
+     * If so, the input is hidden.
+     * @return whether the input should be hidden in case the value is null.
+     */
+    boolean optional() default false;
 }

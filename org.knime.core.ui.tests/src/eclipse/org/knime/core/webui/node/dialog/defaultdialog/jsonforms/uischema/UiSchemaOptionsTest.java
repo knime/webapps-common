@@ -76,6 +76,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RichTextInputWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonChange;
@@ -143,6 +144,23 @@ class UiSchemaOptionsTest {
         assertThatJson(response).inPath("$.elements[6].options.format").isString().isEqualTo("credentials");
         assertThatJson(response).inPath("$.elements[7].scope").isString().contains("fileChooser");
         assertThatJson(response).inPath("$.elements[7].options.format").isString().isEqualTo("fileChooser");
+    }
+
+    @Test
+    void testHidableStringSetting() {
+        @SuppressWarnings("unused")
+        class HidableStringSettings {
+
+            @TextInputWidget(optional = true)
+            String m_string;
+
+        }
+
+        var response = buildTestUiSchema(HidableStringSettings.class);
+
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("string");
+        assertThatJson(response).inPath("$.elements[0].options.hideOnNull").isBoolean().isTrue();
+
     }
 
     @Test

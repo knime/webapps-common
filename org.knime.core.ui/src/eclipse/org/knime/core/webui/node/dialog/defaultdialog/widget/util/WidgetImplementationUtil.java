@@ -68,6 +68,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileChooserWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RichTextInputWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
@@ -139,7 +140,8 @@ public final class WidgetImplementationUtil {
         new WidgetAnnotation(List.of(Credentials.class), CredentialsWidget.class), //
         new WidgetAnnotation(List.of(Credentials.class), PasswordWidget.class), //
         new WidgetAnnotation(List.of(Credentials.class), UsernameWidget.class), //
-        new WidgetAnnotation(List.of(String.class), LocalFileChooserWidget.class) //
+        new WidgetAnnotation(List.of(String.class), LocalFileChooserWidget.class), //
+        new WidgetAnnotation(List.of(String.class), TextInputWidget.class), //
     };
 
     /**
