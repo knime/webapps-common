@@ -50,6 +50,8 @@
     "@jsonforms/vue-vanilla": "3.0.0",
     "@knime/knime-ui-table": "0.3.63",
     "@knime/ui-extension-service": "0.20.0",
+    "@tiptap/core": "^2.1.10",
+    "date-fns": "2.29.3",
     "focus-trap-vue": "4.0.2",
     "tabbable": "6.2.0",
     "uuid": "9.0.0",
