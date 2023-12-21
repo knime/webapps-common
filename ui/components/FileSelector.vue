@@ -1,0 +1,86 @@
+<script>
+import Button from "./Button.vue";
+import LensIcon from "../assets/img/icons/lens.svg";
+
+export default {
+  components: {
+    Button,
+    LensIcon,
+  },
+  props: {
+    label: {
+      type: String,
+      default: "",
+    },
+    acceptedFileTypes: {
+      type: String,
+      default: "",
+    },
+    multiple: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  data() {
+    return {
+      files: null,
+    };
+  },
+  computed: {
+    displayedFilename() {
+      return (
+        this.files?.map?.(({ name }) => name).join(", ") ?? "No file selected"
+      );
+    },
+    fileChooserId() {
+      return `file-chooser-${this.label}`;
+    },
+    selectFileText() {
+      return `Select file${this.multiple ? "s" : ""}`;
+    },
+  },
+  methods: {
+    openFileChooser() {
+      this.$refs.fileChooser.click();
+    },
+    onSelect(event) {
+      const selectedFiles = Array.from(event.target.files);
+      this.files = selectedFiles;
+      debugger;
+      return selectedFiles;
+    },
+  },
+};
+</script>
+
+<template>
+  <div class="wrapper">
+    <label :for="fileChooserId">
+      <Button :compact="true" :with-border="true" @click="openFileChooser">
+        <LensIcon />{{ selectFileText }}
+      </Button>
+      <span class="filename">{{ displayedFilename }}</span>
+    </label>
+    <input
+      :id="fileChooserId"
+      ref="fileChooser"
+      :aria-label="label"
+      type="file"
+      :accept="acceptedFileTypes"
+      :multiple="multiple"
+      hidden
+      :value="files ?? ''"
+      @input="(event) => onSelect(event)"
+    />
+  </div>
+</template>
+
+<style lang="postcss" scoped>
+.filename {
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 500;
+  color: var(--knime-dove-gray);
+  margin-left: 10px;
+}
+</style>
