@@ -44,10 +44,8 @@ export default {
       this.$refs.fileChooser.click();
     },
     onSelect(event) {
-      const selectedFiles = Array.from(event.target.files);
-      this.files = selectedFiles;
-      debugger;
-      return selectedFiles;
+      this.files = Array.from(event.target.files);
+      this.emit("input", this.files);
     },
   },
 };
