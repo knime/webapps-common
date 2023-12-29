@@ -52,6 +52,7 @@ export default {
       class="carousel"
       @mousedown="onMouseDown"
       @mousemove="onMouseMove"
+      @mouseup="onMouseEnd"
       @click.capture="onMouseEnd"
       @mouseleave="onMouseEnd"
       @dragstart="onDragStart"
