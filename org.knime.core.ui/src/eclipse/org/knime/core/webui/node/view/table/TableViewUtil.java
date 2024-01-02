@@ -88,9 +88,11 @@ public final class TableViewUtil {
     /**
      * The page representing the table view.
      */
-    public static final Page PAGE = Page.builder(TableViewUtil.class, "js-src/dist", "TableView.umd.js")
-        .markAsReusable(TABLEVIEW_PAGE_ID).addResources(createTableCellImageResourceSupplier(),
-            DataValueImageRendererRegistry.RENDERED_CELL_IMAGES_PATH_PREFIX, true)
+    public static final Page PAGE = Page.builder(TableViewUtil.class, "js-src/dist", "TableView.umd.js") //
+        .addResourceFile("TableView.js") //
+        .markAsReusable(TABLEVIEW_PAGE_ID)
+        .addResources(createTableCellImageResourceSupplier(),
+            DataValueImageRendererRegistry.RENDERED_CELL_IMAGES_PATH_PREFIX, true) //
         .build();
 
     // This is workaround/hack for the lack of proper random-access functionality for a (BufferedData)Table.

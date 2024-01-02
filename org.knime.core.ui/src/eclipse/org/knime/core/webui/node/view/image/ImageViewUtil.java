@@ -86,6 +86,7 @@ public final class ImageViewUtil {
      * The page representing the image view.
      */
     public static final Page PAGE = Page.builder(ImageViewUtil.class, "js-src/dist", "ImageView.umd.js") //
+        .addResourceFile("ImageView.js") //
         .markAsReusable(IMAGE_VIEW_PAGE_ID) //
         .addResources(imageId -> new ByteArrayInputStream(IMAGE_DATA_MAP.remove(imageId)), "img", true) //
         .build();
