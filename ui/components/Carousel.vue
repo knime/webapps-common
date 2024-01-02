@@ -3,19 +3,23 @@
  * Displays shadows on both sides of a carousel
  * indicate content being hidden which can be scrolled to
  */
-let isMouseDown = false;
 let wasDragged = false;
 const scrollThreshold = 5; // to prevent clicks not being bubbled to child by accident
 let startX, scrollLeft, slider;
 
 export default {
+  data() {
+    return {
+      isMouseDown: false,
+    };
+  },
   /**
    * following methods allow dragging via mouse
    */
   methods: {
     onMouseDown(e) {
       slider = this.$refs.carousel;
-      isMouseDown = true;
+      this.isMouseDown = true;
       wasDragged = false;
       startX = e.pageX;
       scrollLeft = slider.scrollLeft;
@@ -24,10 +28,10 @@ export default {
       if (wasDragged) {
         e.preventDefault();
       }
-      isMouseDown = false;
+      this.isMouseDown = false;
     },
     onMouseMove(e) {
-      if (!isMouseDown) {
+      if (!this.isMouseDown) {
         return;
       }
       e.preventDefault();
@@ -50,6 +54,7 @@ export default {
     <div
       ref="carousel"
       class="carousel"
+      :class="{ 'is-mouse-down': isMouseDown }"
       @mousedown="onMouseDown"
       @mousemove="onMouseMove"
       @click.capture="onMouseEnd"
@@ -106,6 +111,10 @@ export default {
   padding-left: var(--grid-gap-width);
   padding-right: var(--grid-gap-width);
   user-select: none;
+
+  &.is-mouse-down {
+    cursor: grabbing;
+  }
 
   &::-webkit-scrollbar {
     display: none;
