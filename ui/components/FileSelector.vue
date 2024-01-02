@@ -14,7 +14,7 @@ export default {
     },
     acceptedFileTypes: {
       type: String,
-      default: "",
+      default: "*",
     },
     multiple: {
       type: Boolean,
@@ -45,7 +45,7 @@ export default {
     },
     onSelect(event) {
       this.files = Array.from(event.target.files);
-      this.emit("input", this.files);
+      this.$emit("input", this.files);
     },
   },
 };
@@ -67,7 +67,6 @@ export default {
       :accept="acceptedFileTypes"
       :multiple="multiple"
       hidden
-      :value="files ?? ''"
       @input="(event) => onSelect(event)"
     />
   </div>
