@@ -54,5 +54,5 @@ package org.knime.core.webui.node.dialog.defaultdialog.rule;
  * @author Paul Bärnreuther
  */
 public sealed interface Operator<E extends AtomicExpression<E>> extends Expression<E>
-    permits And<E>, Or<E>, Not<E>, IdentityOperation<E> {
+    permits And, Or, Not, IdentityOperation {
 }

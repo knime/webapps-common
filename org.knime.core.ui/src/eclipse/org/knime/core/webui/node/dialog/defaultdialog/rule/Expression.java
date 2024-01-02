@@ -61,7 +61,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.rule;
  *
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
-public sealed interface Expression<E extends AtomicExpression<E>> permits Operator<E>, AtomicExpression<E> {
+public sealed interface Expression<E extends AtomicExpression<E>> permits Operator, AtomicExpression {
 
     /**
      * @param <T> the type of the resolved value
