@@ -1,7 +1,7 @@
 <script>
-import CodeExample from "./demo/CodeExample.vue";
-import FileSelector from "../../ui/components/FileSelector.vue";
-import code from "!!raw-loader!../../ui/components/FileSelector";
+import CodeExample from './demo/CodeExample.vue';
+import FileSelector from '../../ui/components/FileSelector.vue';
+import code from '!!raw-loader!../../ui/components/FileSelector';
 
 const codeExample = `<FileSelector
                         accepted-file-types="*"
@@ -10,18 +10,18 @@ const codeExample = `<FileSelector
                     />`;
 
 export default {
-  components: {
-    FileSelector,
-    CodeExample,
-  },
-  computed: {
-    codeExample() {
-      return codeExample;
+    components: {
+        FileSelector,
+        CodeExample
     },
-    code() {
-      return code;
-    },
-  },
+    computed: {
+        codeExample() {
+            return codeExample;
+        },
+        code() {
+            return code;
+        }
+    }
 };
 </script>
 
@@ -47,12 +47,16 @@ export default {
           label="Select a file"
           :multiple="false"
         />
-        <CodeExample summary="Show usage example">{{
-          codeExample
-        }}</CodeExample>
-        <CodeExample summary="Show FileSelector.vue source code">{{
-          code
-        }}</CodeExample>
+        <CodeExample summary="Show usage example">
+          {{
+            codeExample
+          }}
+        </CodeExample>
+        <CodeExample summary="Show FileSelector.vue source code">
+          {{
+            code
+          }}
+        </CodeExample>
       </div>
     </div>
   </section>

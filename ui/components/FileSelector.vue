@@ -1,60 +1,64 @@
 <script>
-import Button from "./Button.vue";
-import LensIcon from "../assets/img/icons/lens.svg";
+import Button from './Button.vue';
+import LensIcon from '../assets/img/icons/lens.svg';
 
 export default {
-  components: {
-    Button,
-    LensIcon,
-  },
-  props: {
-    label: {
-      type: String,
-      default: "",
+    components: {
+        Button,
+        LensIcon
     },
-    acceptedFileTypes: {
-      type: String,
-      default: "*",
+    props: {
+        label: {
+            type: String,
+            default: ''
+        },
+        acceptedFileTypes: {
+            type: String,
+            default: '*'
+        },
+        multiple: {
+            type: Boolean,
+            default: false
+        }
     },
-    multiple: {
-      type: Boolean,
-      default: false,
+    data() {
+        return {
+            files: null
+        };
     },
-  },
-  data() {
-    return {
-      files: null,
-    };
-  },
-  computed: {
-    displayedFilename() {
-      return (
-        this.files?.map?.(({ name }) => name).join(", ") ?? "No file selected"
-      );
+    computed: {
+        displayedFilename() {
+            return (
+                this.files?.map?.(({ name }) => name).join(', ') ?? 'No file selected'
+            );
+        },
+        fileChooserId() {
+            return `file-chooser-${this.label}`;
+        },
+        selectFileText() {
+            return `Select file${this.multiple ? 's' : ''}`;
+        }
     },
-    fileChooserId() {
-      return `file-chooser-${this.label}`;
-    },
-    selectFileText() {
-      return `Select file${this.multiple ? "s" : ""}`;
-    },
-  },
-  methods: {
-    openFileChooser() {
-      this.$refs.fileChooser.click();
-    },
-    onSelect(event) {
-      this.files = Array.from(event.target.files);
-      this.$emit("input", this.files);
-    },
-  },
+    methods: {
+        openFileChooser() {
+            this.$refs.fileChooser.click();
+        },
+        onSelect(event) {
+            this.files = Array.from(event.target.files);
+            this.$emit('input', this.files);
+        }
+    }
 };
 </script>
 
 <template>
   <div class="wrapper">
     <label :for="fileChooserId">
-      <Button :compact="true" :with-border="true" @click="openFileChooser">
+      <Button
+        :compact="true"
+        :with-border="true"
+        @click="openFileChooser"
+      >
         <LensIcon />{{ selectFileText }}
       </Button>
       <span class="filename">{{ displayedFilename }}</span>
@@ -68,7 +72,7 @@ export default {
       :multiple="multiple"
       hidden
       @input="(event) => onSelect(event)"
-    />
+    >
   </div>
 </template>
 
