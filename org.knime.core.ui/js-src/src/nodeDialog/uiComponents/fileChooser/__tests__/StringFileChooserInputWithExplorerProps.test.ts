@@ -1,13 +1,13 @@
 import { shallowMount, VueWrapper } from "@vue/test-utils";
 import { beforeEach, describe, expect, it } from "vitest";
-import LocalFileChooserInput from "../LocalFileChooserInput.vue";
+import StringFileChooserInputWithExplorer from "../StringFileChooserInputWithExplorer.vue";
 import FileChooser from "../FileChooser.vue";
 import InputField from "webapps-common/ui/components/forms/InputField.vue";
 import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
-import type LocalFileChooserProps from "../types/LocalFileChooserProps";
+import type StringFileChooserInputWithExplorerProps from "../types/StringFileChooserInputWithExplorerProps";
 
 describe("LocalFileChooserInput.vue", () => {
-  let props: LocalFileChooserProps;
+  let props: StringFileChooserInputWithExplorerProps;
 
   beforeEach(() => {
     props = {
@@ -15,11 +15,12 @@ describe("LocalFileChooserInput.vue", () => {
       modelValue: "",
       disabled: false,
       placeholder: "",
+      backendType: "local",
     };
   });
 
   const shallowMountLocalFileChooser = () => {
-    return shallowMount(LocalFileChooserInput, {
+    return shallowMount(StringFileChooserInputWithExplorer, {
       props,
       global: { stubs: { InputField } },
     });
@@ -34,15 +35,19 @@ describe("LocalFileChooserInput.vue", () => {
   });
 
   it("sets props", () => {
-    props = {
+    const newProps = {
       placeholder: "myPlaceholder",
       id: "myId",
       disabled: true,
       modelValue: "initialValue",
     };
+    props = {
+      ...props,
+      ...newProps,
+    };
     const wrapper = shallowMountLocalFileChooser();
     const inputField = wrapper.findComponent(InputField);
-    expect(inputField.props()).toMatchObject(props);
+    expect(inputField.props()).toMatchObject(newProps);
     expect(inputField.findComponent(FunctionButton).props().disabled).toBe(
       props.disabled,
     );

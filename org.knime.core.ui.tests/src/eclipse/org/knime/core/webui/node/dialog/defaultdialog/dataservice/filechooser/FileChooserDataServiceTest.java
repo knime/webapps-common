@@ -88,7 +88,7 @@ class FileChooserDataServiceTest {
      */
     private Path m_subFolder;
 
-    private MockedConstruction<SimpleFileChooserBackend> fileChooserBackendMock;
+    private MockedConstruction<LocalFileChooserBackend> fileChooserBackendMock;
 
     private FileSystem m_fileSystem;
 
@@ -97,7 +97,7 @@ class FileChooserDataServiceTest {
         m_subFolder = Files.createTempDirectory(m_tempRootFolder, "directoryPath");
         m_fileSystem = mock(FileSystem.class);
         when(m_fileSystem.getRootDirectories()).thenReturn(List.of(m_tempRootFolder));
-        fileChooserBackendMock = Mockito.mockConstruction(SimpleFileChooserBackend.class, (mock, context) -> {
+        fileChooserBackendMock = Mockito.mockConstruction(LocalFileChooserBackend.class, (mock, context) -> {
             when(mock.getFileSystem()).thenReturn(m_fileSystem);
             when(mock.pathToObject(ArgumentMatchers.any())).thenCallRealMethod();
         });

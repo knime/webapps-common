@@ -7,7 +7,7 @@ import {
 import LabeledLocalFileChooserInput from "../LabeledLocalFileChooserInput.vue";
 import LabeledInput from "../../label/LabeledInput.vue";
 import DialogLabel from "../../label/DialogLabel.vue";
-import LocalFileChooserInput from "../LocalFileChooserInput.vue";
+import StringFileChooserInputWithExplorer from "../StringFileChooserInputWithExplorer.vue";
 
 describe("LabeledLocalFileChooserInput.vue", () => {
   let defaultProps, wrapper, component;
@@ -51,14 +51,16 @@ describe("LabeledLocalFileChooserInput.vue", () => {
       true,
     );
     expect(wrapper.findComponent(LabeledInput).exists()).toBe(true);
-    expect(wrapper.findComponent(LocalFileChooserInput).exists()).toBe(true);
+    expect(
+      wrapper.findComponent(StringFileChooserInputWithExplorer).exists(),
+    ).toBe(true);
   });
 
   it("sets labelForId", () => {
     const dialogLabel = wrapper.findComponent(DialogLabel);
-    expect(wrapper.getComponent(LocalFileChooserInput).props().id).toBe(
-      dialogLabel.vm.labelForId,
-    );
+    expect(
+      wrapper.getComponent(StringFileChooserInputWithExplorer).props().id,
+    ).toBe(dialogLabel.vm.labelForId);
     expect(dialogLabel.vm.labeledElement).toBeDefined();
     expect(dialogLabel.vm.labeledElement).not.toBeNull();
   });
@@ -78,7 +80,7 @@ describe("LabeledLocalFileChooserInput.vue", () => {
     );
     const changedTextInput = "Shaken not stirred";
     wrapper
-      .findComponent(LocalFileChooserInput)
+      .findComponent(StringFileChooserInputWithExplorer)
       .vm.$emit("update:modelValue", changedTextInput);
     expect(updateData).toHaveBeenCalledWith(
       expect.anything(),
@@ -108,7 +110,7 @@ describe("LabeledLocalFileChooserInput.vue", () => {
     );
     const changedTextInput = "Shaken not stirred";
     wrapper
-      .findComponent(LocalFileChooserInput)
+      .findComponent(StringFileChooserInputWithExplorer)
       .vm.$emit("update:modelValue", changedTextInput);
     expect(setDirtyModelSettingsMock).toHaveBeenCalledWith();
     expect(updateData).toHaveBeenCalledWith(
@@ -119,9 +121,9 @@ describe("LabeledLocalFileChooserInput.vue", () => {
   });
 
   it("sets correct initial value", () => {
-    expect(wrapper.findComponent(LocalFileChooserInput).vm.modelValue).toBe(
-      defaultProps.control.data,
-    );
+    expect(
+      wrapper.findComponent(StringFileChooserInputWithExplorer).vm.modelValue,
+    ).toBe(defaultProps.control.data);
   });
 
   it("disables input when controlled by a flow variable", () => {

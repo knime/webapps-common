@@ -44,7 +44,10 @@ describe("FileChooser.vue", () => {
         return Promise.resolve(null);
       });
     const context = {
-      props,
+      props: {
+        ...props,
+        backendType: "local",
+      },
       global: {
         provide: {
           getData: dataServiceSpy,

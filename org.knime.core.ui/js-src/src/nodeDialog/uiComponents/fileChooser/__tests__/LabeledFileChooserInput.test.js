@@ -7,7 +7,7 @@ import {
 import LabeledFileChooserInput from "../LabeledFileChooserInput.vue";
 import LabeledInput from "../../label/LabeledInput.vue";
 import DialogLabel from "../../label/DialogLabel.vue";
-import LocalFileChooserInput from "../LocalFileChooserInput.vue";
+import StringFileChooserInputWithExplorer from "../StringFileChooserInputWithExplorer.vue";
 import ValueSwitch from "webapps-common/ui/components/forms/ValueSwitch.vue";
 import Label from "webapps-common/ui/components/forms/Label.vue";
 import NumberInput from "webapps-common/ui/components/forms/NumberInput.vue";
@@ -84,14 +84,16 @@ describe("LabeledFileChooserInput.vue", () => {
     expect(wrapper.getComponent(LabeledFileChooserInput).exists()).toBe(true);
     expect(wrapper.findComponent(LabeledInput).exists()).toBe(true);
     expect(wrapper.findComponent(ValueSwitch).exists()).toBe(true);
-    expect(wrapper.findComponent(LocalFileChooserInput).exists()).toBe(true);
+    expect(
+      wrapper.findComponent(StringFileChooserInputWithExplorer).exists(),
+    ).toBe(true);
   });
 
   it("sets labelForId", () => {
     const dialogLabel = wrapper.findComponent(DialogLabel);
-    expect(wrapper.getComponent(LocalFileChooserInput).props().id).toBe(
-      dialogLabel.vm.labelForId,
-    );
+    expect(
+      wrapper.getComponent(StringFileChooserInputWithExplorer).props().id,
+    ).toBe(dialogLabel.vm.labelForId);
     expect(dialogLabel.vm.labeledElement).toBeDefined();
     expect(dialogLabel.vm.labeledElement).not.toBeNull();
   });
@@ -111,7 +113,7 @@ describe("LabeledFileChooserInput.vue", () => {
     );
     const changedTextInput = "Shaken not stirred";
     wrapper
-      .findComponent(LocalFileChooserInput)
+      .findComponent(StringFileChooserInputWithExplorer)
       .vm.$emit("update:modelValue", changedTextInput);
     const onChangePayload = {
       path: {
@@ -145,7 +147,7 @@ describe("LabeledFileChooserInput.vue", () => {
     });
     const changedTextInput = "Shaken not stirred";
     wrapper
-      .findComponent(LocalFileChooserInput)
+      .findComponent(StringFileChooserInputWithExplorer)
       .vm.$emit("update:modelValue", changedTextInput);
     expect(setDirtyModelSettingsMock).toHaveBeenCalled();
   });
@@ -154,9 +156,9 @@ describe("LabeledFileChooserInput.vue", () => {
     expect(wrapper.findComponent(ValueSwitch).vm.modelValue).toBe(
       props.control.data.path.fsCategory,
     );
-    expect(wrapper.findComponent(LocalFileChooserInput).vm.modelValue).toBe(
-      props.control.data.path.path,
-    );
+    expect(
+      wrapper.findComponent(StringFileChooserInputWithExplorer).vm.modelValue,
+    ).toBe(props.control.data.path.path);
   });
 
   it("renders with fsCategory CUSTOM_URL", async () => {
@@ -227,9 +229,10 @@ describe("LabeledFileChooserInput.vue", () => {
       withControllingFlowVariable: `${props.control.path}.path`,
     });
     expect(wrapper.findComponent(ValueSwitch).props().disabled).toBe(true);
-    expect(wrapper.findComponent(LocalFileChooserInput).props().disabled).toBe(
-      true,
-    );
+    expect(
+      wrapper.findComponent(StringFileChooserInputWithExplorer).props()
+        .disabled,
+    ).toBe(true);
   });
 
   it("sets default data when unsetting controlling flow variable", async () => {
