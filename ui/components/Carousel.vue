@@ -1,48 +1,53 @@
-<script>
+<script lang="ts">
+import { defineComponent } from "vue";
 /**
  * Displays shadows on both sides of a carousel
  * indicate content being hidden which can be scrolled to
  */
-let isMouseDown = false;
-let wasDragged = false;
 const scrollThreshold = 5; // to prevent clicks not being bubbled to child by accident
-let startX, scrollLeft, slider;
+let startX: number, scrollLeft: number, slider: HTMLDivElement;
 
-export default {
+export default defineComponent({
+  data() {
+    return {
+      isMouseDown: false,
+      wasDragged: false,
+    };
+  },
   /**
    * following methods allow dragging via mouse
    */
   methods: {
-    onMouseDown(e) {
-      slider = this.$refs.carousel;
-      isMouseDown = true;
-      wasDragged = false;
+    onMouseDown(e: MouseEvent) {
+      slider = this.$refs.carousel as HTMLDivElement;
+      this.isMouseDown = true;
+      this.wasDragged = false;
       startX = e.pageX;
       scrollLeft = slider.scrollLeft;
     },
-    onMouseEnd(e) {
-      if (wasDragged) {
+    onMouseEnd(e: MouseEvent) {
+      if (this.wasDragged) {
         e.preventDefault();
       }
-      isMouseDown = false;
+      this.isMouseDown = false;
     },
-    onMouseMove(e) {
-      if (!isMouseDown) {
+    onMouseMove(e: MouseEvent) {
+      if (!this.isMouseDown) {
         return;
       }
       e.preventDefault();
       const x = e.pageX;
       const walk = x - startX;
-      if (wasDragged || Math.abs(walk) > scrollThreshold) {
-        wasDragged = true;
+      if (this.wasDragged || Math.abs(walk) > scrollThreshold) {
+        this.wasDragged = true;
         slider.scrollLeft = scrollLeft - walk;
       }
     },
-    onDragStart(e) {
+    onDragStart(e: MouseEvent) {
       e.preventDefault();
     },
   },
-};
+});
 </script>
 
 <template>
@@ -50,8 +55,10 @@ export default {
     <div
       ref="carousel"
       class="carousel"
+      :class="{ 'is-mouse-down': isMouseDown }"
       @mousedown="onMouseDown"
       @mousemove="onMouseMove"
+      @mouseup="onMouseEnd"
       @click.capture="onMouseEnd"
       @mouseleave="onMouseEnd"
       @dragstart="onDragStart"
@@ -106,6 +113,10 @@ export default {
   padding-left: var(--grid-gap-width);
   padding-right: var(--grid-gap-width);
   user-select: none;
+
+  &.is-mouse-down {
+    cursor: grabbing;
+  }
 
   &::-webkit-scrollbar {
     display: none;

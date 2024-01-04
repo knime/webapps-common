@@ -7,21 +7,18 @@ import MenuItems from "../../MenuItems.vue";
 import FileExplorerContextMenu from "../FileExplorerContextMenu.vue";
 import type { FileExplorerItem } from "../types";
 import { MockIntersectionObserver } from "./utils";
+import { useFloating } from "@floating-ui/vue";
 
-const setOptions = vi.fn();
-
-vi.mock("../../../composables/usePopper", () => {
-  return {
-    default: () => ({
-      popperInstance: {
-        value: {
-          setOptions,
-          destroy: vi.fn(),
-        },
-      },
-    }),
-  };
-});
+vi.mock("@floating-ui/vue", () => ({
+  useFloating: vi.fn().mockReturnValue({
+    update: vi.fn(),
+    floatingStyles: {},
+  }),
+  offset: vi.fn((options) => options),
+  autoUpdate: vi.fn(),
+  shift: vi.fn(),
+  flip: vi.fn(),
+}));
 
 describe("FileExplorerContextMenu.vue", () => {
   beforeAll(() => {
@@ -92,12 +89,12 @@ describe("FileExplorerContextMenu.vue", () => {
 
     await nextTick();
 
-    expect(setOptions).toHaveBeenCalledWith({
-      modifiers: [
-        expect.objectContaining({
-          options: { offset: [30, -90] },
-        }),
-      ],
+    // @ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [_, __, options] = useFloating.mock.calls[0];
+    expect(options.middleware.value[0]).toStrictEqual({
+      crossAxis: 30,
+      mainAxis: -90,
     });
   });
 
@@ -114,6 +111,8 @@ describe("FileExplorerContextMenu.vue", () => {
   });
 
   it("should set the popper offset accounting distance to the window bottom", async () => {
+    // @ts-expect-error
+    useFloating.reset();
     // @ts-expect-error
     defaultProps.anchor.element.getBoundingClientRect = vi.fn(() => ({
       top: 20,
@@ -134,12 +133,12 @@ describe("FileExplorerContextMenu.vue", () => {
 
     await nextTick();
 
-    expect(setOptions).toHaveBeenCalledWith({
-      modifiers: [
-        expect.objectContaining({
-          options: { offset: [30, -60] },
-        }),
-      ],
+    // @ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [_, __, options] = useFloating.mock.calls[0];
+    expect(options.middleware.value[0]).toStrictEqual({
+      crossAxis: 30,
+      mainAxis: -60,
     });
   });
 
