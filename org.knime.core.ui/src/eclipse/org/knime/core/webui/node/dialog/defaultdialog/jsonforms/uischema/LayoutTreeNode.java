@@ -53,6 +53,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -61,6 +62,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchem
 import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Before;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Inside;
+
+import com.fasterxml.jackson.databind.ser.PropertyWriter;
 
 /**
  * A representation of a layout part class which is used in {@link LayoutTree} to determine the structure between all
@@ -188,7 +191,7 @@ public final class LayoutTreeNode {
         this.m_isBefore.add(inBack);
     }
 
-    private LayoutTreeNode getParent() {
+    LayoutTreeNode getParent() {
         return m_parent;
     }
 
@@ -222,10 +225,12 @@ public final class LayoutTreeNode {
             getPointsToUpdater().syncWith(target);
         } else {
             if (m_value.isNestmateOf(target.getValue())) {
+
                 throw new UiSchemaGenerationException(String.format(
                     "Layout part %s targets layout part %s although it is a nest mate. "
                         + "Place the parts next to each other instead.",
-                    getValue().getSimpleName(), target.getValue().getSimpleName()));
+                    getValue().getSimpleName(), target.getValue().getSimpleName()), this, target);
+
             }
             getPointsToUpdater().pointTo(target);
         }
@@ -279,7 +284,7 @@ public final class LayoutTreeNode {
 
     private void throwOrderDependenciesException() {
         throw new UiSchemaGenerationException(
-            String.format("Conflicting order annotations for layout part %s", getValue().getSimpleName()));
+            String.format("Conflicting order annotations for layout part %s", getValue().getSimpleName()), this);
     }
 
     void setParent(final LayoutTreeNode target) {
@@ -338,13 +343,14 @@ public final class LayoutTreeNode {
             return m_nodes.stream() //
                 .filter(node -> node.m_isAfter.isEmpty()) //
                 .sorted(Comparator.comparing(node -> node.getValue().getSimpleName())) //
-                .findFirst().orElseThrow(
-                    () -> new UiSchemaGenerationException(String.format("Circular ordering in the layout parts: %s",
-                        m_nodes.stream() //
-                            .map(LayoutTreeNode::getValue) //
-                            .map(Class::getSimpleName) //
-                            .collect(Collectors.joining(", ")) //
-                    )));
+                .findFirst().orElseThrow(() -> {
+                    final var nodeStrings = m_nodes.stream() //
+                        .map(LayoutTreeNode::getValue) //
+                        .map(Class::getSimpleName).toList();
+                    throw new UiSchemaGenerationException(
+                        String.format("Circular ordering in the layout parts: %s", String.join(", ", nodeStrings) //
+                    ), m_nodes);
+                });
         }
 
         private void removeChild(final LayoutTreeNode nextChild) {
@@ -359,6 +365,31 @@ public final class LayoutTreeNode {
     void filterChildren() {
         final var emptyChildren = m_children.stream().filter(child -> !child.hasContent()).toList();
         emptyChildren.forEach(child -> m_children.remove(child));
+    }
+
+    @Override
+    public String toString() {
+        return toString("");
+    }
+
+    String toString(final String indent) {
+        final List<String> lines = new ArrayList<>();
+        if (this.getValue() != null) {
+            lines.add(
+                indent + String.format("%s ({@link %s})", this.getValue().getSimpleName(), this.getValue().getName()));
+        }
+        final var childIndent = indent + "|    ";
+        Map.of("after", m_isAfter, "before", m_isBefore).entrySet().forEach(e -> {
+            if (!e.getValue().isEmpty()) {
+                lines.add(String.format("%s  is %s ", indent, e.getKey()) + String.join(", ",
+                    e.getValue().stream().map(LayoutTreeNode::getValue).map(Class::getSimpleName).toList()));
+            }
+        });
+        getControls().stream().map(JsonFormsControl::field).map(PropertyWriter::getName)
+            .map(name -> String.format("%s| -> %s", indent, name)).forEach(lines::add); // NOSONAR
+        getChildren().stream().map(child -> child.toString(childIndent)).forEach(lines::add); // NOSONAR
+
+        return String.join("\n", lines);
     }
 
 }

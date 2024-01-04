@@ -44,72 +44,64 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Mar 21, 2023 (Paul Bärnreuther): created
+ *   Jan 4, 2024 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
+ * A utility class to enrich {@link UiSchemaGenerationException} messages with information about context nodes.
  *
  * @author Paul Bärnreuther
  */
-public final class UiSchemaGenerationException extends RuntimeException {
+final class LayoutTreeViewUtil {
 
-    private static final long serialVersionUID = 1L;
-
-    private final transient List<LayoutTreeNode> m_contextNodes;
-
-    /**
-     * @param message which will be enriched with using contextNodes if any are provided
-     * @param contextNodes the nodes causing this exception
-     */
-    public UiSchemaGenerationException(final String message, final LayoutTreeNode... contextNodes) {
-        this(message, Arrays.asList(contextNodes));
+    private LayoutTreeViewUtil() {
+        // Util
     }
 
-    /**
-     * @param message which will be enriched with using contextNodes if any are provided
-     * @param contextNodes the nodes causing this exception
-     */
-    public UiSchemaGenerationException(final String message, final Collection<LayoutTreeNode> contextNodes) {
-        super(message);
-        m_contextNodes = contextNodes.stream().toList();
-    }
-
-    /**
-     * @param message which will be enriched with using context nodes if any are provided using {@link #withNodes}
-     * @param cause
-     */
-    public UiSchemaGenerationException(final String message, final Throwable cause) {
-        super(message, cause);
-        m_contextNodes = null;
-    }
-
-    @Override
-    public synchronized UiSchemaGenerationException getCause() {
-        return (UiSchemaGenerationException)super.getCause();
-    }
-
-    /**
-     * @return the message of the exception together with a tree view of any attached node
-     */
-    @Override
-    public String getMessage() {
-        final var treeView = LayoutTreeViewUtil.getTreeView(m_contextNodes);
-        if (treeView.isPresent()) {
-            return String.format( //
-                "%s: %s" //
-                    + "\n%s", //
-                super.getMessage(), //
-                String.join(", ",
-                    m_contextNodes.stream().map(node -> node.getValue().getSimpleName()).toArray(String[]::new)),
-                treeView.get());
+    static Optional<String> getTreeView(final List<LayoutTreeNode> contextNodes) {
+        if (contextNodes == null || contextNodes.isEmpty()) {
+            return Optional.empty();
         }
-
-        return super.getMessage();
+        return Optional.of(getCommonParent(contextNodes).toString());
     }
 
+    private static LayoutTreeNode getCommonParent(final List<LayoutTreeNode> contextNodes) {
+        final var firstNode = contextNodes.get(0);
+        final var otherNodes = contextNodes.subList(1, contextNodes.size());
+        final var otherNodesParentsList = otherNodes.stream().map(LayoutTreeViewUtil::getParents).toList();
+        final var commonParent = getCommonParent(firstNode, otherNodesParentsList);
+        return commonParent.orElseGet(() -> createCommonParent(contextNodes));
+    }
+
+    private static Set<LayoutTreeNode> getParents(final LayoutTreeNode node) {
+        if (node.isRoot()) {
+            return Set.of(node);
+        }
+        return Stream.concat(Stream.of(node), getParents(node.getParent()).stream()).collect(Collectors.toSet());
+    }
+
+    private static Optional<LayoutTreeNode> getCommonParent(final LayoutTreeNode node,
+        final Collection<Set<LayoutTreeNode>> parentsOfOtherNodes) {
+        if (parentsOfOtherNodes.stream().allMatch(parents -> parents.contains(node))) {
+            return Optional.of(node);
+        }
+        if (node.isRoot()) {
+            return Optional.empty();
+        }
+        return getCommonParent(node.getParent(), parentsOfOtherNodes);
+    }
+
+    private static LayoutTreeNode createCommonParent(final List<LayoutTreeNode> contextNodes) {
+        final var artificialCommonParent = new LayoutTreeNode(null);
+        artificialCommonParent.getChildren().addAll(contextNodes);
+        return artificialCommonParent;
+    }
 }

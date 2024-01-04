@@ -109,7 +109,7 @@ final class LayoutTree {
     private LayoutTreeNode shakeTreeAndFindRoot() {
         var roots = m_nodes.values().stream().filter(n -> n.isRoot()).filter(LayoutTreeNode::hasContent).toList();
         if (roots.size() > 1) {
-            throw new UiSchemaGenerationException("Multiple root layout nodes detected");
+            throw new UiSchemaGenerationException("Multiple root layout nodes detected", roots);
         }
         return roots.stream().findFirst().orElse(new LayoutTreeNode(null));
     }
