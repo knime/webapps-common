@@ -9,7 +9,7 @@ import {
 } from "vitest";
 import * as UseJsonFromsControlWithUpdateModule from "../useJsonFormsControlWithUpdate";
 import * as UseFlowVariablesModule from "../useFlowVariables";
-import { type Ref, ref, unref } from "vue";
+import { type Ref, ref } from "vue";
 import { FlowSettings } from "@/nodeDialog/api/types/index";
 import Control from "@/nodeDialog/types/Control";
 import UseDialogControlTestComponent from "./UseDialogControlTestComponent.vue";
@@ -90,8 +90,7 @@ describe("useDialogControl", () => {
     const result = mountTestComponent();
     expect(useJsonFormsControlWithUpdateSpy).toHaveBeenCalledWith(props);
     const flowSettingsParams = useFlowSettingsSpy.mock.calls[0][0];
-    expect(unref(flowSettingsParams.path)).toBe(path);
-    expect(unref(flowSettingsParams.configKeys)).toStrictEqual(configKeys);
+    expect(flowSettingsParams.control).toStrictEqual(control);
     expect(flowSettingsParams.subConfigKeys).toBeUndefined();
     expect(result.control).toBe(control.value);
     expect(result.flowSettings).toBe(flowSettings.value);

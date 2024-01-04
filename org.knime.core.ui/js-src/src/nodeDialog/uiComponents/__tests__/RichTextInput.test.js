@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   mountJsonFormsComponent,
   initializesJsonFormsControl,
+  getControlBase,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import RichTextEditor from "webapps-common/ui/components/forms/RichTextEditor/RichTextEditor.vue";
 import RichTextInput from "../RichTextInput.vue";
@@ -14,9 +15,7 @@ describe("RichTextInput.vue", () => {
   beforeEach(() => {
     props = {
       control: {
-        path: "richTextContent",
-        visible: true,
-        enabled: true,
+        ...getControlBase("richTextContent"),
         data: "test",
         schema: {
           properties: {
@@ -30,12 +29,6 @@ describe("RichTextInput.vue", () => {
           scope: "#/properties/view/properties/richTextContent",
           options: {
             format: inputFormats.richTextInput,
-          },
-        },
-        rootSchema: {
-          hasNodeView: true,
-          flowVariablesMap: {
-            flowVar1: "flow value",
           },
         },
       },

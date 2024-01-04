@@ -36,15 +36,6 @@ const getHandleDirtyChangeMethods = <ValueType>(
   return { handleDirtyChange, triggerReexecution };
 };
 
-const getAndProvideFlowVariableSettings = (
-  control: Ref<Control>,
-  subConfigKeys: string[] | undefined,
-) => {
-  const path = computed(() => control.value.path);
-  const configKeys = computed(() => control.value.schema.configKeys);
-  return useFlowSettings({ path, configKeys, subConfigKeys });
-};
-
 export default <ValueType>({
   props,
   subConfigKeys,
@@ -62,10 +53,10 @@ export default <ValueType>({
   const { handleDirtyChange, triggerReexecution } =
     getHandleDirtyChangeMethods<ValueType>(control, handleChange);
 
-  const flowSettings = getAndProvideFlowVariableSettings(
+  const flowSettings = useFlowSettings({
     control,
-    unref(subConfigKeys),
-  );
+    subConfigKeys: unref(subConfigKeys),
+  });
 
   const disabled = computed(() => {
     return (

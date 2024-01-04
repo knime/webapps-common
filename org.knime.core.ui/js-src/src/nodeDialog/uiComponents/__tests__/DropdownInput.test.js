@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   mountJsonFormsComponent,
   initializesJsonFormsControl,
+  getControlBase,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import DropdownInput from "../DropdownInput.vue";
 import LabeledInput from "../label/LabeledInput.vue";
@@ -17,11 +18,8 @@ describe("DropdownInput.vue", () => {
   beforeEach(async () => {
     props = {
       control: {
-        path,
-        enabled: true,
-        visible: true,
+        ...getControlBase(path),
         data: "Universe_0_0",
-        label: "defaultLabel",
         schema: {
           title: "Y Axis Column",
         },
@@ -51,9 +49,6 @@ describe("DropdownInput.vue", () => {
               },
             ],
           },
-        },
-        rootSchema: {
-          hasNodeView: true,
         },
       },
     };

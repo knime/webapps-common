@@ -1,13 +1,13 @@
-import { MaybeRef, Ref, computed, inject, provide, unref } from "vue";
-import { getConfigPaths } from "../utils";
+import { Ref, computed, inject, provide } from "vue";
+import { getConfigPaths, getDataPaths } from "../utils/paths";
 import { FlowSettings } from "../api/types";
 import { injectForFlowVariables } from "../utils/inject";
+import Control from "../types/Control";
 
-interface FlowVariableSettingsProvidedByControl {
+export interface FlowVariableSettingsProvidedByControl {
   flowSettings: Ref<FlowSettings | null>;
-  path: Ref<string>;
-  configKeys?: Ref<string[] | undefined>;
-  subConfigKeys?: string[];
+  dataPaths: Ref<string[]>;
+  configPaths: Ref<string[]>;
 }
 
 /** Exported only for tests */
@@ -50,23 +50,24 @@ const toFlowSetting = (
 };
 
 export const useFlowSettings = (params: {
-  path: MaybeRef<string>;
-  configKeys?: MaybeRef<string[] | undefined>;
+  control: Ref<Control>;
   subConfigKeys?: string[];
 }): Ref<FlowSettings | null> => {
-  const { path, configKeys, subConfigKeys } = params;
+  const { control, subConfigKeys } = params;
   const flowVariablesMap = getFlowVariablesMap();
+  const path = computed(() => control.value.path);
+  const configPaths = computed(() =>
+    getConfigPaths({ control: control.value, path: path.value, subConfigKeys }),
+  );
   const flowSettings = computed(() => {
-    return toFlowSetting(
-      flowVariablesMap,
-      getConfigPaths(unref(path), unref(configKeys), subConfigKeys),
-    );
+    return toFlowSetting(flowVariablesMap, configPaths.value);
   });
   provide(providedKey, {
     flowSettings,
-    path,
-    configKeys,
-    subConfigKeys,
-  });
+    dataPaths: computed(() =>
+      getDataPaths({ path: path.value, subConfigKeys }),
+    ),
+    configPaths,
+  } satisfies FlowVariableSettingsProvidedByControl);
   return flowSettings;
 };

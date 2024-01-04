@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   initializesJsonFormsControl,
   mountJsonFormsComponent,
+  getControlBase,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import ColumnSelect from "../ColumnSelect.vue";
 import DropdownInput from "../DropdownInput.vue";
@@ -16,12 +17,10 @@ describe("ColumnSelect.vue", () => {
     path = "control path mock";
     props = {
       control: {
-        path,
-        visible: true,
+        ...getControlBase(path),
         data: {
           selected: "Universe_0_0",
         },
-        label: "Column Selection",
         schema: {
           type: "object",
           properties: {
@@ -31,7 +30,6 @@ describe("ColumnSelect.vue", () => {
           },
           title: "Y Axis Column",
         },
-        rootSchema: {},
         uischema: {
           type: "Control",
           scope: "#/properties/view/properties/yAxisColumn",
@@ -188,14 +186,15 @@ describe("ColumnSelect.vue", () => {
       inject: [providedByComponentKey],
       template: "<div/>",
     };
+    const totalPath = `${path}.${subConfigKey}`;
     const { wrapper } = await mountJsonFormsComponent(ColumnSelect, {
       props,
-      withControllingFlowVariable: `${path}.${subConfigKey}`,
+      withControllingFlowVariable: totalPath,
       stubs: { DialogLabel: DialogLabelStub },
     });
     const provided =
       wrapper.getComponent(DialogLabel).vm[providedByComponentKey];
     expect(provided.flowSettings.value).toBeTruthy();
-    expect(provided.subConfigKeys).toEqual([subConfigKey]);
+    expect(provided.configPaths.value).toEqual([totalPath]);
   });
 });

@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   mountJsonFormsComponent,
   initializesJsonFormsControl,
+  getControlBase,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import TextAreaInput from "../TextAreaInput.vue";
 import LabeledInput from "../label/LabeledInput.vue";
@@ -14,10 +15,7 @@ describe("TextInput.vue", () => {
   beforeEach(async () => {
     defaultProps = {
       control: {
-        path: "test",
-        enabled: true,
-        visible: true,
-        label: "defaultLabel",
+        ...getControlBase("test"),
         data: "test",
         schema: {
           properties: {
@@ -34,10 +32,6 @@ describe("TextInput.vue", () => {
           options: {
             isAdvanced: false,
           },
-        },
-        rootSchema: {
-          hasNodeView: true,
-          flowVariablesMap: {},
         },
       },
     };

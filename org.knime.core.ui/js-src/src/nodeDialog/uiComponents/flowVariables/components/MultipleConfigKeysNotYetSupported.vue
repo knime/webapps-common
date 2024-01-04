@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineProps<{ configKeys?: string[]; subConfigKeys?: string[] }>();
+defineProps<{ configPaths: string[]; subConfigKeys?: string[] }>();
 </script>
 
 <template>
@@ -11,10 +11,10 @@ defineProps<{ configKeys?: string[]; subConfigKeys?: string[] }>();
     To do so, select <b>"Configure flow variables"</b> in the context menu of
     this node.
   </p>
-  <template v-if="(configKeys ?? []).length > 1">
-    <p>Config keys:</p>
+  <template v-if="(configPaths ?? []).length > 1">
+    <p>Config paths:</p>
     <ul>
-      <li v-for="key in configKeys ?? []" :key="key">
+      <li v-for="key in configPaths ?? []" :key="key">
         {{ key }}
       </li>
     </ul>
@@ -25,5 +25,10 @@ defineProps<{ configKeys?: string[]; subConfigKeys?: string[] }>();
 p {
   margin: 10px 0;
   font-size: 13px;
+}
+
+li {
+  font-size: 13px;
+  overflow-wrap: break-word;
 }
 </style>

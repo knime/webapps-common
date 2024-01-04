@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   mountJsonFormsComponent,
   initializesJsonFormsControl,
+  getControlBase,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import NumberInput from "../NumberInput.vue";
 import NumberInputBase from "../NumberInputBase.vue";
@@ -16,10 +17,7 @@ describe("NumberInput.vue", () => {
   beforeEach(() => {
     props = {
       control: {
-        path: "test",
-        enabled: true,
-        visible: true,
-        label: "defaultLabel",
+        ...getControlBase("test"),
         schema: {
           properties: {
             maxRows: {
@@ -34,10 +32,6 @@ describe("NumberInput.vue", () => {
           options: {
             format: "double",
           },
-        },
-        rootSchema: {
-          hasNodeView: true,
-          flowVariablesMap: {},
         },
       },
     };

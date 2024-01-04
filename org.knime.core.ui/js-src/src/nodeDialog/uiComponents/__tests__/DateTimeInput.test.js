@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   mountJsonFormsComponent,
   initializesJsonFormsControl,
+  getControlBase,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import DateTimeInput from "../DateTimeInput.vue";
 import LabeledInput from "../label/LabeledInput.vue";
@@ -14,10 +15,7 @@ describe("DateTimeInput.vue", () => {
   beforeEach(() => {
     defaultProps = {
       control: {
-        path: "test",
-        enabled: true,
-        visible: true,
-        label: "defaultLabel",
+        ...getControlBase("test"),
         data: "2022-12-12T20:22:22.000Z",
         schema: {
           properties: {
@@ -35,10 +33,6 @@ describe("DateTimeInput.vue", () => {
           options: {
             isAdvanced: false,
           },
-        },
-        rootSchema: {
-          hasNodeView: true,
-          flowVariablesMap: {},
         },
       },
     };

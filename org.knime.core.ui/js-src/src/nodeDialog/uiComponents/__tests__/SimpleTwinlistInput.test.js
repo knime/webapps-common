@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   mountJsonFormsComponent,
   initializesJsonFormsControl,
+  getControlBase,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import SimpleTwinlistInput from "../SimpleTwinlistInput.vue";
 import TwinlistLoadingInfo from "../loading/TwinlistLoadingInfo.vue";
@@ -17,10 +18,7 @@ describe("SimpleTwinlistInput.vue", () => {
   beforeEach(() => {
     props = {
       control: {
-        path: "test",
-        enabled: true,
-        visible: true,
-        label: "defaultLabel",
+        ...getControlBase("test"),
         data: ["test_1"],
         schema: {
           type: "array",
@@ -42,10 +40,6 @@ describe("SimpleTwinlistInput.vue", () => {
               },
             ],
           },
-        },
-        rootSchema: {
-          hasNodeView: true,
-          flowVariablesMap: {},
         },
       },
     };

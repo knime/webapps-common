@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   mountJsonFormsComponent,
   initializesJsonFormsControl,
+  getControlBase,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import ColumnFilter from "../ColumnFilter.vue";
 import TwinlistInput from "../TwinlistInput.vue";
@@ -10,6 +11,7 @@ describe("ColumnFilter.vue", () => {
   const defaultProps = {
     path: "",
     control: {
+      ...getControlBase("path"),
       data: {
         patternFilter: {
           pattern: "",

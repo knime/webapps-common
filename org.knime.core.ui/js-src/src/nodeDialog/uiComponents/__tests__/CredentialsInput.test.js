@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   mountJsonFormsComponent,
   initializesJsonFormsControl,
+  getControlBase,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import CredentialsInput from "../CredentialsInput.vue";
 import LabeledInput from "../label/LabeledInput.vue";
@@ -16,10 +17,7 @@ describe("CredentialsInput.vue", () => {
   beforeEach(() => {
     props = {
       control: {
-        path: "credentials",
-        enabled: true,
-        visible: true,
-        label: "label",
+        ...getControlBase("credentials"),
         data: {
           username: "username",
           password: "password",
@@ -49,10 +47,6 @@ describe("CredentialsInput.vue", () => {
           options: {
             format: inputFormats.credentials,
           },
-        },
-        rootSchema: {
-          hasNodeView: true,
-          flowVariablesMap: {},
         },
       },
     };

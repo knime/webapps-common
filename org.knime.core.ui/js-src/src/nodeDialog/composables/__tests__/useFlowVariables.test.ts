@@ -3,6 +3,8 @@ import { FlowSettings } from "@/nodeDialog/api/types";
 import { mount } from "@vue/test-utils";
 import UseFlowVariablesTestComponent from "./UseFlowVariablesTestComponent.vue";
 import { providedKey } from "../useFlowVariables";
+import Control, { SchemaWithConfigKeys } from "@/nodeDialog/types/Control";
+import { Ref, ref } from "vue";
 
 let flowVariablesMap: Record<string, FlowSettings>;
 
@@ -11,8 +13,10 @@ vi.mock("../../utils/inject", () => ({
 }));
 
 type Props = {
-  path: string;
-  configKeys?: string[];
+  control: Ref<{
+    path: string;
+    rootSchema: Control["rootSchema"];
+  }>;
   subConfigKeys?: string[];
 };
 
@@ -20,6 +24,26 @@ describe("useFlowVariables", () => {
   const InjectingSlot = {
     inject: [providedKey],
     template: "<div/>",
+  };
+
+  const createControl = ({
+    path,
+    configKeys,
+  }: {
+    path: string;
+    configKeys?: string[];
+  }) => {
+    const rootSchema: Control["rootSchema"] = {};
+    let schema: SchemaWithConfigKeys = rootSchema;
+    for (const segment of path.split(".")) {
+      const nextSchema = {};
+      schema.properties = { [segment]: nextSchema };
+      schema = nextSchema;
+    }
+    if (configKeys) {
+      schema.configKeys = configKeys;
+    }
+    return ref({ path, rootSchema });
   };
 
   const mountTestComponent = (props: Props) => {
@@ -36,16 +60,21 @@ describe("useFlowVariables", () => {
     });
   };
 
-  it("provides flowSettings, path and config keys", () => {
+  it("provides flowSettings, configPaths and dataPaths", () => {
     const path = "path";
     const configKeys = ["configKey"];
     const subConfigKeys = ["subConfigKey"];
-    const props = { path, configKeys, subConfigKeys };
-    const wrapper = mountTestComponent(props);
-    expect(wrapper.findComponent(InjectingSlot).vm[providedKey]).toEqual({
-      flowSettings: expect.anything(),
-      ...props,
+    const wrapper = mountTestComponent({
+      control: createControl({
+        path,
+        configKeys,
+      }),
+      subConfigKeys,
     });
+    const provided = wrapper.findComponent(InjectingSlot).vm[providedKey];
+    expect(provided.flowSettings).toBeDefined();
+    expect(provided.configPaths.value).toEqual(["configKey.subConfigKey"]);
+    expect(provided.dataPaths.value).toEqual(["path.subConfigKey"]);
   });
 
   describe("flow settings", () => {
@@ -85,7 +114,9 @@ describe("useFlowVariables", () => {
     );
 
     it("returns null for an missing flowVariablesMap", () => {
-      expect(getFlowSettings({ path: "" })).toBeNull();
+      expect(
+        getFlowSettings({ control: createControl({ path: "otherPath" }) }),
+      ).toBeNull();
     });
 
     it("returns undefined for missing flow setting for path", () => {
@@ -94,14 +125,16 @@ describe("useFlowVariables", () => {
       };
       expect(
         getFlowSettings({
-          path: "path.to.another_setting",
+          control: createControl({ path: "path.to.another_setting" }),
         }),
       ).toBeNull();
 
       expect(
         getFlowSettings({
-          path: "path.to.another_setting",
-          configKeys: ["also_another_setting"],
+          control: createControl({
+            path: "path.to.another_setting",
+            configKeys: ["also_another_setting"],
+          }),
         }),
       ).toBeNull();
     });
@@ -109,7 +142,9 @@ describe("useFlowVariables", () => {
     it("uses path if configKeys is undefined", () => {
       const path = "path.to.my_setting";
       flowVariablesMap = { [path]: CONTROLLING_FLOW_SETTINGS };
-      expect(getFlowSettings({ path })).toEqual(CONTROLLING_FLOW_SETTINGS);
+      expect(getFlowSettings({ control: createControl({ path }) })).toEqual(
+        CONTROLLING_FLOW_SETTINGS,
+      );
     });
 
     it("uses configKeys", () => {
@@ -118,8 +153,10 @@ describe("useFlowVariables", () => {
       };
       expect(
         getFlowSettings({
-          path: "path.to.my_setting",
-          configKeys: ["my_real_setting_name"],
+          control: createControl({
+            path: "path.to.my_setting",
+            configKeys: ["my_real_setting_name"],
+          }),
         }),
       ).toEqual(CONTROLLING_FLOW_SETTINGS);
     });
@@ -131,8 +168,10 @@ describe("useFlowVariables", () => {
       };
       expect(
         getFlowSettings({
-          path: "path.to.my_setting",
-          configKeys: ["setting_1", "setting_2", "not_overwritten_setting"],
+          control: createControl({
+            path: "path.to.my_setting",
+            configKeys: ["setting_1", "setting_2", "not_overwritten_setting"],
+          }),
         }),
       ).toEqual(MERGED_FLOW_SETTINGS);
 
@@ -143,13 +182,15 @@ describe("useFlowVariables", () => {
       };
       expect(
         getFlowSettings({
-          path: "path.to.my_setting",
-          configKeys: [
-            "setting_1",
-            "setting_2",
-            "setting_3",
-            "not_overwritten_setting",
-          ],
+          control: createControl({
+            path: "path.to.my_setting",
+            configKeys: [
+              "setting_1",
+              "setting_2",
+              "setting_3",
+              "not_overwritten_setting",
+            ],
+          }),
         }),
       ).toEqual(MERGED_FLOW_SETTINGS);
     });

@@ -2,13 +2,11 @@
 import Label from "webapps-common/ui/components/forms/Label.vue";
 import MulitpleConfigKeysNotYetSupported from "./MultipleConfigKeysNotYetSupported.vue";
 import FlowVariableSelector from "./FlowVariableSelector.vue";
-import { getConfigPaths } from "@/nodeDialog/utils";
 import { computed } from "vue";
 import FlowVariableExposer from "./FlowVariableExposer.vue";
 
 import { getFlowVariableSettingsProvidedByControl } from "../../../composables/useFlowVariables";
-const { subConfigKeys, path, configKeys } =
-  getFlowVariableSettingsProvidedByControl();
+const { dataPaths, configPaths } = getFlowVariableSettingsProvidedByControl();
 
 /**
  * Either the single path under which the flow variables are stored within the
@@ -16,13 +14,7 @@ const { subConfigKeys, path, configKeys } =
  * present (which is not yet supported).
  */
 const singleConfigPath = computed(() => {
-  const paths = getConfigPaths(path.value, configKeys?.value, subConfigKeys);
-  return paths.length === 1 ? paths[0] : false;
-});
-
-const dataPath = computed(() => {
-  const firstSubConfig = subConfigKeys?.[0];
-  return firstSubConfig ? `${path.value}.${firstSubConfig}` : path.value;
+  return configPaths.value.length === 1 ? configPaths.value[0] : false;
 });
 
 const emit = defineEmits(["controllingFlowVariableSet"]);
@@ -38,7 +30,7 @@ const emit = defineEmits(["controllingFlowVariableSet"]);
       >
         <FlowVariableSelector
           :id="labelForId"
-          :data-path="dataPath"
+          :data-path="dataPaths[0]"
           :persist-path="singleConfigPath"
           @controlling-flow-variable-set="
             emit('controllingFlowVariableSet', $event)
@@ -57,7 +49,7 @@ const emit = defineEmits(["controllingFlowVariableSet"]);
       </Label>
     </div>
   </template>
-  <MulitpleConfigKeysNotYetSupported v-else :config-keys="configKeys" />
+  <MulitpleConfigKeysNotYetSupported v-else :config-paths="configPaths" />
 </template>
 >
 

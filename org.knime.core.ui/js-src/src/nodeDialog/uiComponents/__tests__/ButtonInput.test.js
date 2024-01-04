@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   initializesJsonFormsControl,
   mountJsonFormsComponent,
+  getControlBase,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import ButtonInput from "../ButtonInput.vue";
 import DialogComponentWrapper from "../DialogComponentWrapper.vue";
@@ -58,12 +59,8 @@ describe("ButtonInput", () => {
 
   const getProps = (uischemaOptions) => ({
     control: {
-      visible: true,
-      path,
+      ...getControlBase(path),
       schema,
-      rootSchema: {
-        flowVariablesMap: {},
-      },
       label: "Test title",
       uischema: {
         ...uischema,

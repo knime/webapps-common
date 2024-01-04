@@ -1,5 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { mountJsonFormsComponent } from "@@/test-setup/utils/jsonFormsTestUtils";
+import {
+  mountJsonFormsComponent,
+  getControlBase,
+} from "@@/test-setup/utils/jsonFormsTestUtils";
 import RadioInput from "../RadioInput.vue";
 import RadioInputBase from "../RadioInputBase.vue";
 import LabeledInput from "../label/LabeledInput.vue";
@@ -12,10 +15,7 @@ describe("RadioInput.vue", () => {
   beforeEach(() => {
     props = {
       control: {
-        path: "test",
-        enabled: true,
-        visible: true,
-        label: "defaultLabel",
+        ...getControlBase("test"),
         data: "LOG",
         schema: {
           oneOf: [
@@ -36,10 +36,6 @@ describe("RadioInput.vue", () => {
             format: "radio",
             radioLayout: "horizontal",
           },
-        },
-        rootSchema: {
-          hasNodeView: true,
-          flowVariablesMap: {},
         },
       },
     };

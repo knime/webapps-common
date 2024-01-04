@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   mountJsonFormsComponent,
   initializesJsonFormsControl,
+  getControlBase,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import AnyOfTwinlist from "../AnyOfTwinlist.vue";
 import SimpleTwinlistInput from "../SimpleTwinlistInput.vue";
@@ -13,7 +14,7 @@ describe("AnyOfTwinlist.vue", () => {
     props = {
       path: "",
       control: {
-        label: "Twin List",
+        ...getControlBase("path"),
         schema: {
           anyOf: [
             {
@@ -35,7 +36,6 @@ describe("AnyOfTwinlist.vue", () => {
           ],
           title: "Y Axis Column",
         },
-        rootSchema: {},
         uischema: {
           type: "Control",
           scope: "#/properties/view/properties/frequencies",

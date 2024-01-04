@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   mountJsonFormsComponent,
   initializesJsonFormsControl,
+  getControlBase,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import TwinlistInput from "../TwinlistInput.vue";
 import TwinlistLoadingInfo from "../loading/TwinlistLoadingInfo.vue";
@@ -20,10 +21,7 @@ describe("TwinlistInput.vue", () => {
   beforeEach(() => {
     props = {
       control: {
-        path: "test",
-        enabled: true,
-        visible: true,
-        label: "defaultLabel",
+        ...getControlBase("test"),
         data: {
           selected: ["test_1"],
           manualFilter: {
@@ -158,10 +156,6 @@ describe("TwinlistInput.vue", () => {
               },
             ],
           },
-        },
-        rootSchema: {
-          hasNodeView: true,
-          flowVariablesMap: {},
         },
       },
     };

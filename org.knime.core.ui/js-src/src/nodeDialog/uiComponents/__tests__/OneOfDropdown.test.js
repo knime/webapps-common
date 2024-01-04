@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   mountJsonFormsComponent,
   initializesJsonFormsControl,
+  getControlBase,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import OneOfDropdown from "../OneOfDropdown.vue";
 import DropdownInput from "../DropdownInput.vue";
@@ -13,7 +14,7 @@ describe("OneOfDropdown.vue", () => {
     props = {
       path: "",
       control: {
-        label: "Drop Down",
+        ...getControlBase("path"),
         schema: {
           oneOf: [
             {
@@ -35,7 +36,6 @@ describe("OneOfDropdown.vue", () => {
           ],
           title: "Y Axis Column",
         },
-        rootSchema: {},
         uischema: {
           type: "Control",
           scope: "#/properties/view/properties/yAxisColumn",

@@ -41,4 +41,3 @@ const tooltip = computed(() => {
     </template>
   </DialogPopover>
 </template>
-@/nodeDialog/uiComponents/flowVariables/useFlowVariables

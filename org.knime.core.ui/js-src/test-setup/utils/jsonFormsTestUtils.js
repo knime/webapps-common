@@ -154,3 +154,17 @@ export const initializesJsonFormsArrayControl = (wrapper) => {
   expect(props.control.uischema).toBeDefined();
   expect(useJsonFormsArrayControl).toHaveBeenCalled();
 };
+
+export const getControlBase = (path) => ({
+  path,
+  enabled: true,
+  visible: true,
+  label: "defaultLabel",
+  rootSchema: {
+    properties: {
+      [path]: {},
+    },
+    hasNodeView: true,
+    flowVariablesMap: {},
+  },
+});

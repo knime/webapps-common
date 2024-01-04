@@ -46,28 +46,6 @@ export const isModelSettingAndHasNodeView = (control: Control) => {
   );
 };
 
-const _getConfigPaths = (path: string, configKeys: string[] | undefined) => {
-  if (configKeys) {
-    const pathParts = path.split(".");
-    const parentPath = pathParts.slice(0, -1).join(".");
-    return configKeys.map((key) => [parentPath, key].join("."));
-  }
-  return [path];
-};
-
-export const getConfigPaths = (
-  path: string,
-  configKeys: string[] | undefined,
-  subConfigKeys: string[] = [],
-) => {
-  const configPaths = _getConfigPaths(path, configKeys);
-  return subConfigKeys.length //
-    ? configPaths.flatMap((configPath) =>
-        subConfigKeys.map((subKey) => `${configPath}.${subKey}`),
-      ) //
-    : configPaths;
-};
-
 // eslint-disable-next-line max-params
 // recursive function to check if the object contains a key value pair with a given parent
 const isKeyValuePresentInObject = (

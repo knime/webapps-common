@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   mountJsonFormsComponent,
   initializesJsonFormsControl,
+  getControlBase,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import IntegerInput from "../IntegerInput.vue";
 import NumberInputBase from "../NumberInputBase.vue";
@@ -13,8 +14,7 @@ describe("IntegerInput.vue", () => {
   beforeEach(async () => {
     defaultProps = {
       control: {
-        visible: true,
-        path: "",
+        ...getControlBase("path"),
         schema: {
           properties: {
             maxRows: {
@@ -22,9 +22,6 @@ describe("IntegerInput.vue", () => {
               title: "Show tooltip",
             },
           },
-        },
-        rootSchema: {
-          flowVariablesMap: {},
         },
         uischema: {
           type: "Control",

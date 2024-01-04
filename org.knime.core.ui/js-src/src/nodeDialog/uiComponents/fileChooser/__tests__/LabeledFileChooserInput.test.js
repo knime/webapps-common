@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   mountJsonFormsComponent,
   initializesJsonFormsControl,
+  getControlBase,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import LabeledFileChooserInput from "../LabeledFileChooserInput.vue";
 import LabeledInput from "../../label/LabeledInput.vue";
@@ -20,9 +21,7 @@ describe("LabeledFileChooserInput.vue", () => {
   beforeEach(async () => {
     props = {
       control: {
-        path: "test",
-        enabled: true,
-        visible: true,
+        ...getControlBase("test"),
         data: {
           path: {
             path: "myPath",
@@ -67,10 +66,6 @@ describe("LabeledFileChooserInput.vue", () => {
           options: {
             format: "fileChooser",
           },
-        },
-        rootSchema: {
-          hasNodeView: true,
-          flowVariablesMap: {},
         },
       },
     };

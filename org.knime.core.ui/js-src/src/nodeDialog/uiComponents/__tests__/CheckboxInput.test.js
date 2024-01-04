@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   mountJsonFormsComponent,
   initializesJsonFormsControl,
+  getControlBase,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import CheckboxInput from "../CheckboxInput.vue";
 import ErrorMessage from "../ErrorMessage.vue";
@@ -16,10 +17,7 @@ describe("CheckboxInput.vue", () => {
   beforeEach(async () => {
     defaultProps = {
       control: {
-        path: "test",
-        enabled: true,
-        visible: true,
-        label: "defaultLabel",
+        ...getControlBase("test"),
         data: true,
         schema: {
           properties: {
@@ -35,10 +33,6 @@ describe("CheckboxInput.vue", () => {
           options: {
             format: "checkbox",
           },
-        },
-        rootSchema: {
-          hasNodeView: true,
-          flowVariablesMap: {},
         },
       },
     };

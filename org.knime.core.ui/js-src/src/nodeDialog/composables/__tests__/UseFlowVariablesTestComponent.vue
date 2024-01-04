@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import Control from "@/nodeDialog/types/Control";
 import { useFlowSettings } from "../useFlowVariables";
+import { Ref } from "vue";
 const props = defineProps<{
-  path: string;
-  configKeys?: string[];
+  control: Ref<Pick<Control, "path" | "rootSchema">>;
   subConfigKeys?: string[];
 }>();
-const flowSettings = useFlowSettings(props);
+const flowSettings = useFlowSettings(props as any);
 
 defineExpose({
   flowSettings,
