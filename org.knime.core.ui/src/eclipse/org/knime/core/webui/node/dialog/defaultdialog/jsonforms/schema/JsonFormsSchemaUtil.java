@@ -72,6 +72,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
@@ -215,8 +216,7 @@ public final class JsonFormsSchemaUtil {
                 .filter(pattern -> !pattern.isEmpty())//
                 .orElse(null));
 
-        builder.forFields().withPropertyNameOverrideResolver(
-            field -> field.getName().startsWith("m_") ? field.getName().substring(2) : field.getName());
+        builder.forFields().withPropertyNameOverrideResolver(field -> StringUtils.removeStart(field.getName(), "m_"));
 
         builder.forFields().withInstanceAttributeOverride(JsonFormsSchemaUtil::addConfigKeys);
 

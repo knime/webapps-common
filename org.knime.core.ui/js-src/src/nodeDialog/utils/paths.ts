@@ -33,7 +33,7 @@ export const getDataPaths = ({
   path: string;
   subConfigKeys: string[] | undefined;
 }) => {
-  return subConfigKeys && subConfigKeys.length
+  return subConfigKeys?.length
     ? subConfigKeys.map((subKey) => composePaths(path, subKey))
     : [path];
 };

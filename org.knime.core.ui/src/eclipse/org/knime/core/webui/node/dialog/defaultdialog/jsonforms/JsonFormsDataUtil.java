@@ -54,6 +54,7 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.StringUtils;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FSLocationJsonSerializationUtil;
@@ -128,7 +129,7 @@ public final class JsonFormsDataUtil {
             @Override
             public String nameForField(final MapperConfig<?> config, final AnnotatedField field,
                 final String defaultName) {
-                return defaultName.startsWith("m_") ? defaultName.substring(2) : defaultName;
+                return StringUtils.removeStart(defaultName, "m_");
             }
         });
 
