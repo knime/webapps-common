@@ -48,8 +48,8 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms;
 
-import org.eclipse.ui.commands.ActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesUpdateHandler;
 
@@ -166,7 +166,7 @@ public final class JsonFormsConsts {
         public static final String TAG_FORMAT = "format";
 
         /**
-         * The {@link ActionHandler} of a {@link ButtonWidget}
+         * The {@link ButtonActionHandler} of a {@link ButtonWidget}
          */
         public static final String TAG_ACTION_HANDLER = "actionHandler";
 

@@ -80,7 +80,7 @@ public final class UiSchemaGenerationException extends RuntimeException {
     }
 
     /**
-     * @param message which will be enriched with using context nodes if any are provided using {@link #withNodes}
+     * @param message
      * @param cause
      */
     public UiSchemaGenerationException(final String message, final Throwable cause) {
@@ -88,28 +88,18 @@ public final class UiSchemaGenerationException extends RuntimeException {
         m_contextNodes = null;
     }
 
-    @Override
-    public synchronized UiSchemaGenerationException getCause() {
-        return (UiSchemaGenerationException)super.getCause();
-    }
-
     /**
      * @return the message of the exception together with a tree view of any attached node
      */
     @Override
     public String getMessage() {
-        final var treeView = LayoutTreeViewUtil.getTreeView(m_contextNodes);
-        if (treeView.isPresent()) {
-            return String.format( //
-                "%s: %s" //
-                    + "\n%s", //
-                super.getMessage(), //
-                String.join(", ",
-                    m_contextNodes.stream().map(node -> node.getValue().getSimpleName()).toArray(String[]::new)),
-                treeView.get());
+        if (m_contextNodes == null || m_contextNodes.isEmpty()) {
+            return super.getMessage();
         }
-
-        return super.getMessage();
+        final var treeView = LayoutTreeViewUtil.getTreeView(m_contextNodes);
+        final var listOfContextNodes = String.join(", ",
+            m_contextNodes.stream().map(node -> node.getValue().getSimpleName()).toArray(String[]::new));
+        return String.format("%s: %s\n%s", super.getMessage(), listOfContextNodes, treeView);
     }
 
 }

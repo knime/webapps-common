@@ -344,12 +344,7 @@ public final class LayoutTreeNode {
                 .filter(node -> node.m_isAfter.isEmpty()) //
                 .sorted(Comparator.comparing(node -> node.getValue().getSimpleName())) //
                 .findFirst().orElseThrow(() -> {
-                    final var nodeStrings = m_nodes.stream() //
-                        .map(LayoutTreeNode::getValue) //
-                        .map(Class::getSimpleName).toList();
-                    throw new UiSchemaGenerationException(
-                        String.format("Circular ordering in the layout parts: %s", String.join(", ", nodeStrings) //
-                    ), m_nodes);
+                    throw new UiSchemaGenerationException("Circular ordering of layout parts", m_nodes);
                 });
         }
 
@@ -372,8 +367,8 @@ public final class LayoutTreeNode {
         return toString("");
     }
 
-    String toString(final String indent) {
-        final List<String> lines = new ArrayList<>();
+    private String toString(final String indent) {
+        final var lines = new ArrayList<String>();
         if (this.getValue() != null) {
             lines.add(
                 indent + String.format("%s ({@link %s})", this.getValue().getSimpleName(), this.getValue().getName()));

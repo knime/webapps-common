@@ -66,11 +66,8 @@ final class LayoutTreeViewUtil {
         // Util
     }
 
-    static Optional<String> getTreeView(final List<LayoutTreeNode> contextNodes) {
-        if (contextNodes == null || contextNodes.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.of(getCommonParent(contextNodes).toString());
+    static String getTreeView(final List<LayoutTreeNode> contextNodes) {
+        return getCommonParent(contextNodes).toString();
     }
 
     private static LayoutTreeNode getCommonParent(final List<LayoutTreeNode> contextNodes) {
