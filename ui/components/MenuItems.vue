@@ -37,6 +37,8 @@ import {
   type Ref,
   type SVGAttributes,
 } from "vue";
+import type { Boundary } from "@floating-ui/vue";
+
 import useDropdownNavigation from "../composables/useDropdownNavigation";
 import getWrappedAroundIndex from "../util/getWrappedAroundIndex";
 import BaseMenuItems from "./BaseMenuItems.vue";
@@ -77,16 +79,24 @@ export interface MenuItem {
   };
 }
 
-type Props = {
+export type Props = {
   items: MenuItem[];
   menuAriaLabel: string;
   disableSpaceToClick?: boolean;
   registerKeydown?: boolean;
+  /**
+   * Element used to detect when the MenuItem is near the edges of a clipping parent.
+   * This will then be used to automatically position opened floating submenus accordingly.
+   *
+   * Defaults to the document's body
+   */
+  clippingBoundary?: Boundary;
 };
 
 const props = withDefaults(defineProps<Props>(), {
   disableSpaceToClick: false,
   registerKeydown: false,
+  clippingBoundary: () => document.body,
 });
 
 interface Emits {
@@ -204,6 +214,7 @@ const hasSelectedChildItem = (item: MenuItem) => {
     :items="props.items"
     :menu-aria-label="props.menuAriaLabel"
     :focused-item-index="currentIndex"
+    :clipping-boundary="clippingBoundary"
     @keydown="props.registerKeydown && onKeydown($event)"
     @item-click="(event, item, id) => $emit('item-click', event, item, id)"
     @item-hovered="(item, id, index) => onItemHovered(item, id, index)"
@@ -245,6 +256,7 @@ const hasSelectedChildItem = (item: MenuItem) => {
               :items="item.children"
               :max-menu-width="maxMenuWidth"
               :position-relative-to-element="itemElement"
+              :clipping-boundary="clippingBoundary"
               register-keydown
               @close-submenu="openSubmenuItemIndex = -1"
               @item-click="(...args) => $emit('item-click', ...args)"

@@ -4,7 +4,13 @@ import { onBeforeUpdate, ref, toRef } from "vue";
 import { uniqueId } from "lodash-es";
 import BaseMenuItem from "./BaseMenuItem.vue";
 import type { MenuItem } from "./MenuItems.vue";
-import { useFloating, shift, flip, autoUpdate } from "@floating-ui/vue";
+import {
+  useFloating,
+  shift,
+  flip,
+  autoUpdate,
+  type Boundary,
+} from "@floating-ui/vue";
 
 type ElementTemplateRef = HTMLElement | { $el: HTMLElement };
 
@@ -50,6 +56,16 @@ export default {
       type: HTMLElement as PropType<HTMLElement | null>,
       default: null,
     },
+    /**
+     * Element used to detect when the MenuItem is near the edges of a clipping parent.
+     * This will then be used to automatically position opened floating submenus accordingly.
+     *
+     * Defaults to the document's body
+     */
+    clippingBoundary: {
+      type: Object as PropType<Boundary>,
+      default: document.body,
+    },
   },
   emits: ["item-click", "item-focused", "item-hovered"],
   setup(props) {
@@ -67,7 +83,10 @@ export default {
       ? useFloating(positionRelativeToElement, listContainer, {
           strategy: "fixed",
           placement: "right-start",
-          middleware: [flip(), shift()],
+          middleware: [
+            flip({ boundary: props.clippingBoundary }),
+            shift({ boundary: props.clippingBoundary }),
+          ],
           whileElementsMounted: autoUpdate,
         })
       : { floatingStyles: null };

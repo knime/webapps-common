@@ -13,7 +13,7 @@ import FunctionButton from "./FunctionButton.vue";
 import MenuItems from "./MenuItems.vue";
 import useClickOutside from "../composables/useClickOutside";
 
-import type { MenuItem } from "./MenuItems.vue";
+import type { MenuItem, Props as MenuItemsProps } from "./MenuItems.vue";
 import type { PropType } from "vue";
 
 const orientations = ["right", "top", "left"] as const;
@@ -107,6 +107,10 @@ export default {
       default: "fixed",
       validator: (value: string) => ["fixed", "absolute"].includes(value),
     },
+    menuItemsProps: {
+      type: Object as PropType<Partial<MenuItemsProps>>,
+      default: () => ({}) as Partial<MenuItemsProps>,
+    },
   },
   emits: ["item-click", "toggle", "open", "close"],
   setup(props) {
@@ -116,6 +120,12 @@ export default {
     const menuWrapper = ref<HTMLElement | null>(null);
     const expanded = ref(false);
     const shadowRoot = inject<ShadowRoot | null>("shadowRoot", null);
+
+    // @ts-expect-error - force cast shadowRoot into HTMLElement
+    const clippingBoundary = computed<HTMLElement>(
+      () => shadowRoot || document.body,
+    );
+
     const closeMenu = () => {
       expanded.value = false;
     };
@@ -142,6 +152,7 @@ export default {
     });
 
     return {
+      clippingBoundary,
       menuItems,
       submenu,
       menuWrapper,
@@ -239,6 +250,8 @@ export default {
           :class="['menu-items', `orient-${orientation}`]"
           :items="items"
           :max-menu-width="maxMenuWidth"
+          :clipping-boundary="clippingBoundary"
+          v-bind="menuItemsProps"
           menu-aria-label="sub menu"
           @item-click="onItemClick"
           @close="closeMenu"
