@@ -63,4 +63,9 @@ final class HubFileChooserBackend extends SimpleFileChooserBackend {
         return DefaultFSConnectionFactory.createRelativeToConnection(RelativeTo.SPACE);
     }
 
+    @Override
+    public boolean isAbsoluteFileSystem() {
+        return false;
+    }
+
 }

@@ -13,7 +13,7 @@ import InputField from "webapps-common/ui/components/forms/InputField.vue";
 const currentPath = ref<string | null>(null);
 
 const currentPathDisplay = computed(() => {
-  return currentPath.value ?? "Root directories";
+  return currentPath.value ?? "";
 });
 const items = ref<FileExplorerItem[]>([]);
 const props = withDefaults(

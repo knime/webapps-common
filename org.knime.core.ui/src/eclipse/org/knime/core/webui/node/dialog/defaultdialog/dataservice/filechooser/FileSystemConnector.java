@@ -68,6 +68,10 @@ final class FileSystemConnector {
 
         Object pathToObject(Path path);
 
+        default boolean isAbsoluteFileSystem() {
+            return true;
+        }
+
         void close() throws IOException;
     }
 
