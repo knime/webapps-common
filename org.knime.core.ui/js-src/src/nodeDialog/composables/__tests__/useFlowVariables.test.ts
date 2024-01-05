@@ -3,7 +3,7 @@ import { FlowSettings } from "@/nodeDialog/api/types";
 import { mount } from "@vue/test-utils";
 import UseFlowVariablesTestComponent from "./UseFlowVariablesTestComponent.vue";
 import { providedKey } from "../useFlowVariables";
-import Control, { SchemaWithConfigKeys } from "@/nodeDialog/types/Control";
+import Control from "@/nodeDialog/types/Control";
 import { Ref, ref } from "vue";
 
 let flowVariablesMap: Record<string, FlowSettings>;
@@ -34,9 +34,10 @@ describe("useFlowVariables", () => {
     configKeys?: string[];
   }) => {
     const rootSchema: Control["rootSchema"] = {};
-    let schema: SchemaWithConfigKeys = rootSchema;
+    let schema: any = rootSchema;
     for (const segment of path.split(".")) {
       const nextSchema = {};
+      schema.type = "object";
       schema.properties = { [segment]: nextSchema };
       schema = nextSchema;
     }

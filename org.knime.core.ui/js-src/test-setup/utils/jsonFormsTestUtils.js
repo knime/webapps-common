@@ -161,6 +161,7 @@ export const getControlBase = (path) => ({
   visible: true,
   label: "defaultLabel",
   rootSchema: {
+    type: "object",
     properties: {
       [path]: {},
     },

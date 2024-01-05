@@ -63,10 +63,6 @@ export const getConfigPaths = (params: {
       configPaths = configPaths.flatMap((parentPath) =>
         getNextSubPaths({ parentPath, schema, segment }),
       );
-    } else {
-      throw Error(
-        `Unable to propagate schema further: Path segment "${segment}" for non object- or array- schema`,
-      );
     }
   }
   return subConfigKeys?.length //

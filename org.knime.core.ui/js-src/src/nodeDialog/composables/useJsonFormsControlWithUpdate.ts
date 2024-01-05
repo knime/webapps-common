@@ -25,6 +25,6 @@ export const useJsonFormsControlWithUpdate = (
     updateData(handleChange, ...args);
   return {
     handleChange: jsonFormsControl.handleChange,
-    control: toRef(jsonFormsControl, "control"),
+    control: toRef(jsonFormsControl, "control") as any,
   };
 };
