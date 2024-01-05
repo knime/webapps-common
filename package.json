@@ -47,7 +47,7 @@
     "vue3-click-away": "1.2.4"
   },
   "devDependencies": {
-    "@knime/eslint-config": "8.0.9",
+    "@knime/eslint-config": "8.0.10",
     "@tsconfig/node18": "18.2.2",
     "@types/jsdom": "20.0.1",
     "@types/lodash-es": "4.17.12",
@@ -56,7 +56,7 @@
     "@vitest/coverage-c8": "0.29.2",
     "@vue/test-utils": "2.4.1",
     "@vue/tsconfig": "0.4.0",
-    "eslint": "8.54.0",
+    "eslint": "8.56.0",
     "flush-promises": "1.0.2",
     "husky": "8.0.3",
     "lint-staged": "15.1.0",
@@ -65,8 +65,8 @@
     "postcss-mixins": "9.0.4",
     "postcss-preset-env": "8.0.0",
     "postcss-url": "10.1.3",
-    "prettier": "3.1.0",
-    "stylelint": "15.11.0",
+    "prettier": "3.1.1",
+    "stylelint": "16.1.0",
     "typescript": "5.2.2",
     "vite-svg-loader": "4.0.0",
     "vitest": "0.29.2",
