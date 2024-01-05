@@ -1,6 +1,10 @@
-import Control, { SchemaWithConfigKeys } from "../types/Control";
+import Control, {
+  Schema,
+  isArraySchema,
+  isObjectSchema,
+} from "../types/Control";
 
-const composePaths = (path1: string, path2: string) => {
+export const composePaths = (path1: string, path2: string) => {
   if (path1 === "") {
     return path2;
   }
@@ -13,7 +17,7 @@ const getNextSubPaths = ({
   segment,
 }: {
   parentPath: string;
-  schema: SchemaWithConfigKeys;
+  schema: Schema;
   segment: string;
 }) => {
   const configKeys = schema.configKeys;
@@ -46,15 +50,24 @@ export const getConfigPaths = (params: {
   const { path, control, subConfigKeys } = params;
   const segments = path.split(".");
   let configPaths = [""];
-  let schema = control.rootSchema;
+  let schema: Schema = control.rootSchema;
   for (const segment of segments) {
-    /**
-     * properties is guaranteed to exist here, since the schema is the schema of the given subpath
-     */
-    schema = schema.properties![segment];
-    configPaths = configPaths.flatMap((parentPath) =>
-      getNextSubPaths({ parentPath, schema, segment }),
-    );
+    if (isArraySchema(schema)) {
+      configPaths = configPaths.map((p) => composePaths(p, segment));
+      schema = schema.items;
+    } else if (isObjectSchema(schema)) {
+      /**
+       * properties is guaranteed to exist here, since the schema is the schema of the given subpath
+       */
+      schema = schema.properties[segment];
+      configPaths = configPaths.flatMap((parentPath) =>
+        getNextSubPaths({ parentPath, schema, segment }),
+      );
+    } else {
+      throw Error(
+        `Unable to propagate schema further: Path segment "${segment}" for non object- or array- schema`,
+      );
+    }
   }
   return subConfigKeys?.length //
     ? configPaths.flatMap((configPath) =>

@@ -35,8 +35,10 @@ describe("paths", () => {
     it("returns given path if no configKeys and no subConfigKeys are given", () => {
       const path = "model.mySetting";
       const control: Control = createControl({
+        type: "object",
         properties: {
           model: {
+            type: "object",
             properties: {
               mySetting: {},
             },
@@ -54,8 +56,10 @@ describe("paths", () => {
     it("appends subConfigKeys", () => {
       const path = "model.mySetting";
       const control: Control = createControl({
+        type: "object",
         properties: {
           model: {
+            type: "object",
             properties: {
               mySetting: {},
             },
@@ -76,8 +80,10 @@ describe("paths", () => {
     it("uses configKeys", () => {
       const path = "model.mySetting";
       const control: Control = createControl({
+        type: "object",
         properties: {
           model: {
+            type: "object",
             configKeys: ["model_1", "model_2"],
             properties: {
               mySetting: {
@@ -97,6 +103,39 @@ describe("paths", () => {
         "model_1.mySetting_2.subConfigKey",
         "model_2.mySetting_1.subConfigKey",
         "model_2.mySetting_2.subConfigKey",
+      ]);
+    });
+
+    it("navigates to items and ignores config keys for array schema ", () => {
+      const path = "model.3.mySetting";
+      const control: Control = createControl({
+        type: "object",
+        properties: {
+          model: {
+            type: "array",
+            configKeys: ["model_1", "model_2"],
+            items: {
+              type: "object",
+              properties: {
+                mySetting: {
+                  configKeys: ["mySetting_1", "mySetting_2"],
+                },
+              },
+              configKeys: ["ignored"],
+            } as any,
+          },
+        },
+      });
+      const configPaths = getConfigPaths({
+        path,
+        subConfigKeys: ["subConfigKey"],
+        control,
+      });
+      expect(configPaths).toStrictEqual([
+        "model_1.3.mySetting_1.subConfigKey",
+        "model_1.3.mySetting_2.subConfigKey",
+        "model_2.3.mySetting_1.subConfigKey",
+        "model_2.3.mySetting_2.subConfigKey",
       ]);
     });
   });
