@@ -71,11 +71,11 @@ import org.knime.core.webui.node.util.NodeCleanUpCallback;
  */
 public final class DataServiceManager<N extends NodeWrapper> {
 
-    private final Map<N, InitialDataService<?>> m_initialDataServices = new WeakHashMap<>();
+    private final Map<N, InitialDataService<Object>> m_initialDataServices = new WeakHashMap<>();
 
     private final Map<N, RpcDataService> m_dataServices = new WeakHashMap<>();
 
-    private final Map<N, ApplyDataService<?>> m_applyDataServices = new WeakHashMap<>();
+    private final Map<N, ApplyDataService<Object>> m_applyDataServices = new WeakHashMap<>();
 
     private final Function<N, DataServiceProvider> m_getDataServiceProvider;
 
@@ -133,6 +133,9 @@ public final class DataServiceManager<N extends NodeWrapper> {
      * @throws IllegalStateException if there is not initial data service available
      */
     public String callInitialDataService(final N nodeWrapper) {
+        /**
+         * TODO UIEXT-1525: Remove this
+         */
         removeRpcDataService(nodeWrapper).flatMap(RpcDataService::deactivateRunnable).ifPresent(Runnable::run);
         return getInitialDataService(nodeWrapper) //
             .filter(InitialDataService.class::isInstance) //
@@ -140,22 +143,9 @@ public final class DataServiceManager<N extends NodeWrapper> {
             .getInitialData();
     }
 
-    private Optional<InitialDataService<?>> getInitialDataService(final N nodeWrapper) {
-        InitialDataService<?> ds;
-        if (!m_initialDataServices.containsKey(nodeWrapper)) {
-            ds = nodeWrapper.getWithContext(
-                () -> m_getDataServiceProvider.apply(nodeWrapper).createInitialDataService().orElse(null));
-            m_initialDataServices.put(nodeWrapper, ds);
-            NodeCleanUpCallback.builder(nodeWrapper.get(), () -> {
-                var dataService = m_initialDataServices.remove(nodeWrapper);
-                if (dataService != null) {
-                    dataService.disposeRunnable().ifPresent(Runnable::run);
-                }
-            }).cleanUpOnNodeStateChange(m_shouldCleanUpDataServicesOnNodeStateChange).build();
-        } else {
-            ds = m_initialDataServices.get(nodeWrapper);
-        }
-        return Optional.ofNullable(ds);
+    private Optional<InitialDataService<Object>> getInitialDataService(final N nodeWrapper) {
+        return getOrCreateDataService(nodeWrapper, m_initialDataServices,
+            DataServiceProvider::createInitialDataService);
     }
 
     /**
@@ -176,21 +166,7 @@ public final class DataServiceManager<N extends NodeWrapper> {
     }
 
     private Optional<RpcDataService> getRpcDataService(final N nodeWrapper) {
-        RpcDataService ds;
-        if (!m_dataServices.containsKey(nodeWrapper)) {
-            ds = nodeWrapper
-                .getWithContext(() -> m_getDataServiceProvider.apply(nodeWrapper).createRpcDataService().orElse(null));
-            m_dataServices.put(nodeWrapper, ds);
-            NodeCleanUpCallback.builder(nodeWrapper.get(), () -> {
-                var dataService = m_dataServices.remove(nodeWrapper);
-                if (dataService != null) {
-                    dataService.disposeRunnable().ifPresent(Runnable::run);
-                }
-            }).cleanUpOnNodeStateChange(m_shouldCleanUpDataServicesOnNodeStateChange).build();
-        } else {
-            ds = m_dataServices.get(nodeWrapper);
-        }
-        return Optional.ofNullable(ds);
+        return getOrCreateDataService(nodeWrapper, m_dataServices, DataServiceProvider::createRpcDataService);
     }
 
     private Optional<RpcDataService> removeRpcDataService(final N nodeWrapper) {
@@ -216,21 +192,29 @@ public final class DataServiceManager<N extends NodeWrapper> {
         }
     }
 
-    private Optional<ApplyDataService<?>> getApplyDataService(final N nodeWrapper) {
-        ApplyDataService<?> ds;
-        if (!m_applyDataServices.containsKey(nodeWrapper)) {
-            ds = m_getDataServiceProvider.apply(nodeWrapper).createApplyDataService().orElse(null);
-            m_applyDataServices.put(nodeWrapper, ds);
-            NodeCleanUpCallback.builder(nodeWrapper.get(), () -> {
-                var dataService = m_applyDataServices.remove(nodeWrapper);
-                if (dataService != null) {
-                    dataService.disposeRunnable().ifPresent(Runnable::run);
-                }
-            }).cleanUpOnNodeStateChange(m_shouldCleanUpDataServicesOnNodeStateChange).build();
+    private Optional<ApplyDataService<Object>> getApplyDataService(final N nodeWrapper) {
+        return getOrCreateDataService(nodeWrapper, m_applyDataServices, DataServiceProvider::createApplyDataService);
+    }
+
+    private <S extends DataService> Optional<S> getOrCreateDataService(final N nodeWrapper,
+        final Map<N, S> dataServices, final Function<DataServiceProvider, Optional<S>> createNewService) {
+        if (!dataServices.containsKey(nodeWrapper)) {
+            final var optionalDataService =
+                nodeWrapper.getWithContext(() -> createNewService.apply(m_getDataServiceProvider.apply(nodeWrapper)));
+            optionalDataService.ifPresent(dataService -> {
+                dataServices.put(nodeWrapper, dataService);
+                NodeCleanUpCallback.builder(nodeWrapper.get(), () -> {
+                    final var removedDataService = dataServices.remove(nodeWrapper);
+                    if (removedDataService != null) {
+                        removedDataService.disposeRunnable().ifPresent(Runnable::run);
+                    }
+
+                }).cleanUpOnNodeStateChange(m_shouldCleanUpDataServicesOnNodeStateChange).build();
+            });
+            return optionalDataService;
         } else {
-            ds = m_applyDataServices.get(nodeWrapper);
+            return Optional.of(dataServices.get(nodeWrapper));
         }
-        return Optional.ofNullable(ds);
     }
 
     /**
@@ -252,7 +236,7 @@ public final class DataServiceManager<N extends NodeWrapper> {
     }
 
     private Stream<DataService> dataServices(final N nodeWrapper) {
-        return Stream.of( //
+        return Stream.<DataService>of( //
             m_initialDataServices.get(nodeWrapper), //
             m_dataServices.get(nodeWrapper), //
             m_applyDataServices.get(nodeWrapper) //
