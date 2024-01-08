@@ -51,7 +51,6 @@ package org.knime.core.webui.data;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContext;
@@ -71,17 +70,14 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  *
  * @since 4.5
  */
-public final class RpcDataService implements DataService {
+public final class RpcDataService extends AbstractDataService {
 
     private final RpcServer m_rpcServer;
-
-    private Runnable m_deactivate;
-
-    private final Runnable m_dispose;
 
     private final NodeContainer m_nc;
 
     private RpcDataService(final RpcDataServiceBuilder builder) {
+        super(builder);
         final var hasUnnamedHandler = builder.m_unnamedHandler != null;
         final var hasNamedHandlers = !builder.m_namedHandlers.isEmpty();
         if (hasUnnamedHandler) {
@@ -95,11 +91,8 @@ public final class RpcDataService implements DataService {
             builder.m_namedHandlers.forEach(jsonRpcServer::addService);
             m_rpcServer = jsonRpcServer;
         } else {
-            throw new IllegalStateException(
-                "No handler was supplied to this RPCDataService");
+            throw new IllegalStateException("No handler was supplied to this RPCDataService");
         }
-        m_deactivate = builder.m_deactivate;
-        m_dispose = builder.m_dispose;
         m_nc = DataServiceUtil.getNodeContainerFromContext();
     }
 
@@ -159,16 +152,6 @@ public final class RpcDataService implements DataService {
             .set("params", paramsArrayNode).toPrettyString();
     }
 
-    @Override
-    public Optional<Runnable> disposeRunnable() {
-        return Optional.ofNullable(m_dispose);
-    }
-
-    @Override
-    public Optional<Runnable> deactivateRunnable() {
-        return Optional.ofNullable(m_deactivate);
-    }
-
     /**
      * @param <S>
      * @param handler the handler whose methods are called. Whenever any of the methods are being called, a
@@ -189,15 +172,11 @@ public final class RpcDataService implements DataService {
     /**
      * The builder.
      */
-    public static final class RpcDataServiceBuilder implements DataServiceBuilder {
+    public static final class RpcDataServiceBuilder extends AbstractDataServiceBuilder {
 
         private final Object m_unnamedHandler;
 
         private Map<String, Object> m_namedHandlers = new HashMap<>();
-
-        private Runnable m_dispose;
-
-        private Runnable m_deactivate;
 
         private RpcDataServiceBuilder(final Object handler) {
             m_unnamedHandler = handler;
@@ -223,13 +202,13 @@ public final class RpcDataService implements DataService {
 
         @Override
         public RpcDataServiceBuilder onDispose(final Runnable dispose) {
-            m_dispose = dispose;
+            super.onDispose(dispose);
             return this;
         }
 
         @Override
         public RpcDataServiceBuilder onDeactivate(final Runnable deactivate) {
-            m_deactivate = deactivate;
+            super.onDeactivate(deactivate);
             return this;
         }
 

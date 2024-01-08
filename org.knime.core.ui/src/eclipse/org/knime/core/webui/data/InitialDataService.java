@@ -49,7 +49,6 @@
 package org.knime.core.webui.data;
 
 import java.io.IOException;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.knime.core.node.NodeLogger;
@@ -68,7 +67,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @since 4.5
  */
-public final class InitialDataService<D> implements DataService {
+public final class InitialDataService<D> extends AbstractDataService {
 
     private final Supplier<D> m_dataSupplier;
 
@@ -76,17 +75,13 @@ public final class InitialDataService<D> implements DataService {
 
     private Serializer<D> m_serializer;
 
-    private Runnable m_dispose;
-
-    private Runnable m_deactivate;
-
     private final NodeContainer m_nc;
-
 
     /**
      * @param dataSupplier
      */
     private InitialDataService(final InitialDataServiceBuilder<D> builder) {
+        super(builder);
         m_dataSupplier = builder.m_dataSupplier;
         if (builder.m_serializer == null) {
             m_serializer = obj -> {
@@ -99,8 +94,6 @@ public final class InitialDataService<D> implements DataService {
         } else {
             m_serializer = builder.m_serializer;
         }
-        m_dispose = builder.m_dispose;
-        m_deactivate = builder.m_deactivate;
         m_nc = DataServiceUtil.getNodeContainerFromContext();
     }
 
@@ -140,16 +133,6 @@ public final class InitialDataService<D> implements DataService {
         }
     }
 
-    @Override
-    public Optional<Runnable> disposeRunnable() {
-        return Optional.ofNullable(m_dispose);
-    }
-
-    @Override
-    public Optional<Runnable> deactivateRunnable() {
-        return Optional.ofNullable(m_deactivate);
-    }
-
     /**
      * @param <D>
      * @param dataSupplier supplies the initial data. A {@link DataServiceContext} is available whenever the supplier is
@@ -165,15 +148,11 @@ public final class InitialDataService<D> implements DataService {
      *
      * @param <D>
      */
-    public static final class InitialDataServiceBuilder<D> implements DataServiceBuilder {
+    public static final class InitialDataServiceBuilder<D> extends AbstractDataServiceBuilder {
 
         private Supplier<D> m_dataSupplier;
 
         private Serializer<D> m_serializer;
-
-        private Runnable m_dispose;
-
-        private Runnable m_deactivate;
 
         private InitialDataServiceBuilder(final Supplier<D> dataSupplier) {
             m_dataSupplier = dataSupplier;
@@ -181,13 +160,13 @@ public final class InitialDataService<D> implements DataService {
 
         @Override
         public InitialDataServiceBuilder<D> onDispose(final Runnable dispose) {
-            m_dispose = dispose;
+            super.onDispose(dispose);
             return this;
         }
 
         @Override
         public InitialDataServiceBuilder<D> onDeactivate(final Runnable deactivate) {
-            m_deactivate = deactivate;
+            super.onDeactivate(deactivate);
             return this;
         }
 

@@ -68,7 +68,7 @@ import org.knime.core.webui.data.rpc.json.impl.ObjectMapperUtil;
  *
  * @since 4.5
  */
-public final class ApplyDataService<D> implements DataService {
+public final class ApplyDataService<D> extends AbstractDataService {
 
     private final Applier<D> m_dataApplier;
 
@@ -80,16 +80,11 @@ public final class ApplyDataService<D> implements DataService {
 
     private NodeID m_nodeId;
 
-    private Runnable m_dispose;
-
-    private Runnable m_deactivate;
-
     private final Deserializer<D> m_deserializer;
 
     private ApplyDataService(final ApplyDataServiceBuilder<D> builder) {
+        super(builder);
         m_dataApplier = builder.m_dataApplier;
-        m_dispose = builder.m_dispose;
-        m_deactivate = builder.m_deactivate;
         m_reExecutable = builder.m_reExecutable;
         m_dataValidator = builder.m_validator;
         if (builder.m_deserializer == null) {
@@ -138,16 +133,6 @@ public final class ApplyDataService<D> implements DataService {
         } else if (m_reExecutable != null) {
             m_reExecutable.preReExecute(data, false);
         }
-    }
-
-    @Override
-    public Optional<Runnable> disposeRunnable() {
-        return Optional.ofNullable(m_dispose);
-    }
-
-    @Override
-    public Optional<Runnable> deactivateRunnable() {
-        return Optional.ofNullable(m_deactivate);
     }
 
     /**
@@ -201,15 +186,11 @@ public final class ApplyDataService<D> implements DataService {
      * The builder.
      * @param <D>
      */
-    public static final class ApplyDataServiceBuilder<D> implements DataServiceBuilder {
+    public static final class ApplyDataServiceBuilder<D> extends AbstractDataServiceBuilder {
 
         private Applier<D> m_dataApplier;
 
         private Function<D, String> m_validator;
-
-        private Runnable m_deactivate;
-
-        private Runnable m_dispose;
 
         private ReExecutable<D> m_reExecutable;
 
@@ -229,13 +210,13 @@ public final class ApplyDataService<D> implements DataService {
 
         @Override
         public ApplyDataServiceBuilder<D> onDispose(final Runnable dispose) {
-            m_dispose = dispose;
+            super.onDispose(dispose);
             return this;
         }
 
         @Override
         public ApplyDataServiceBuilder<D> onDeactivate(final Runnable deactivate) {
-            m_deactivate = deactivate;
+            super.onDeactivate(deactivate);
             return this;
         }
 
