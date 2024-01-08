@@ -3,7 +3,7 @@ import { type Ref, type PropType, ref, computed, onMounted } from "vue";
 import { rendererProps } from "@jsonforms/vue";
 import LoadingDropdown from "./loading/LoadingDropdown.vue";
 import { AlertTypes } from "@knime/ui-extension-service";
-import { set } from "lodash";
+import { set } from "lodash-es";
 import getFlattenedSettings from "../utils/getFlattenedSettings";
 import { v4 as uuidv4 } from "uuid";
 import inject from "../utils/inject";

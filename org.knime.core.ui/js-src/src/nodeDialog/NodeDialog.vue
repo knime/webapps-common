@@ -18,7 +18,7 @@ import {
 } from "../nodeDialog/utils";
 import Button from "webapps-common/ui/components/Button.vue";
 import { getMetaOrCtrlKey } from "webapps-common/util/navigator";
-import { cloneDeep, set, isEqual } from "lodash";
+import { cloneDeep, set, isEqual } from "lodash-es";
 import { inject, markRaw } from "vue";
 import type ProvidedMethods from "./types/provided";
 import type { ProvidedForFlowVariables } from "./types/provided";
