@@ -308,6 +308,7 @@ const onItemDoubleClick = (item: FileExplorerItemType) => {
         :key="index"
         ref="itemRefs"
         :item="item"
+        :title="item.name"
         :is-dragging="isDragging"
         :is-selected="isSelected(index)"
         :is-rename-active="item.id === renamedItemId"
