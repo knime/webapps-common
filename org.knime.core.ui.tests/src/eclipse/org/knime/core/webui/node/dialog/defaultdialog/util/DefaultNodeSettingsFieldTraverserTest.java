@@ -61,8 +61,9 @@ import java.util.Optional;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.LayoutGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsWidgetTraverser;
+import org.knime.core.webui.node.dialog.defaultdialog.util.FieldAnnotationsHolder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ser.PropertyWriter;
@@ -75,7 +76,7 @@ import com.fasterxml.jackson.databind.ser.PropertyWriter;
 class DefaultNodeSettingsFieldTraverserTest {
 
     static DefaultNodeSettingsFieldTraverser getTraverser(final Class<?> settingsClass) {
-        return new DefaultNodeSettingsFieldTraverser(JsonFormsDataUtil.getMapper(), settingsClass);
+        return new DefaultNodeSettingsFieldTraverser(settingsClass);
     }
 
     @Test

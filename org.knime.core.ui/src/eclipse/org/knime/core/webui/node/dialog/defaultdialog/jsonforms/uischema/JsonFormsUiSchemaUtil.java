@@ -52,6 +52,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaDefaultNodeSettingsTraverser.JsonFormsControl;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
@@ -60,7 +61,13 @@ import org.knime.core.webui.node.dialog.defaultdialog.rule.ScopedExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesAdder;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.cfg.MapperConfig;
+import com.fasterxml.jackson.databind.introspect.AnnotatedField;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
@@ -85,42 +92,68 @@ public final class JsonFormsUiSchemaUtil {
         // utility class
     }
 
+    private static ObjectMapper MAPPER; // NOSONAR
+
+    /**
+     * @return the configured mapper for ui-schema generation
+     */
+    static ObjectMapper getMapper() {
+        if (MAPPER == null) {
+            MAPPER = createMapper();
+        }
+        return MAPPER;
+    }
+
+    private static ObjectMapper createMapper() {
+        var mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(Include.NON_NULL);
+        mapper.setVisibility(PropertyAccessor.ALL, Visibility.NON_PRIVATE);
+        mapper.setPropertyNamingStrategy(new PropertyNamingStrategy() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public String nameForField(final MapperConfig<?> config, final AnnotatedField field,
+                final String defaultName) {
+                return StringUtils.removeStart(defaultName, "m_");
+            }
+        });
+        return mapper;
+    }
+
     /**
      * Call this method to build the uischema of sub layouts which are independent from the parent layout apart from
      * having access to the parentFields
      *
      * @param parentFields the fields of the "outside" layout
      */
-    static ObjectNode buildUISchema(final Map<String, Class<?>> settings, final ObjectMapper mapper,
+    static ObjectNode buildUISchema(final Map<String, Class<?>> settings,
         final DefaultNodeSettingsContext context, final AsyncChoicesAdder asyncChoicesAdder,
         final Collection<JsonFormsControl> parentFields) {
-        final var layoutSkeleton = resolveLayout(settings, mapper);
+        final var layoutSkeleton = resolveLayout(settings);
         layoutSkeleton.fields().addAll(parentFields);
-        return new LayoutNodesGenerator(layoutSkeleton, mapper, context, asyncChoicesAdder).build();
+        return new LayoutNodesGenerator(layoutSkeleton, context, asyncChoicesAdder).build();
     }
 
     /**
      * @param settings
-     * @param mapper
      * @param context
      * @param asyncChoicesAdder
      * @return the ui schema resolved by the mapper from the given settings
      */
-    public static ObjectNode buildUISchema(final Map<String, Class<?>> settings, final ObjectMapper mapper,
+    public static ObjectNode buildUISchema(final Map<String, Class<?>> settings,
         final DefaultNodeSettingsContext context, final AsyncChoicesAdder asyncChoicesAdder) {
-        return buildUISchema(settings, mapper, context, asyncChoicesAdder, Collections.emptyList());
+        return buildUISchema(settings, context, asyncChoicesAdder, Collections.emptyList());
     }
 
     /**
      * Resolves a map of default node settings classes to a tree structure representing the layout of the node dialog
      *
      * @param settings the map of default node settings classes
-     * @param mapper
      * @return the resolved tree structure and some additional information which is necessary to generator the uischema
      *         from that
      */
-    public static LayoutSkeleton resolveLayout(final Map<String, Class<?>> settings, final ObjectMapper mapper) {
-        final var traverser = new UiSchemaDefaultNodeSettingsTraverser(mapper);
+    public static LayoutSkeleton resolveLayout(final Map<String, Class<?>> settings) {
+        final var traverser = new UiSchemaDefaultNodeSettingsTraverser();
         final var traversalResult = traverser.traverse(settings);
         final var layoutTreeRoot = new LayoutTree(traversalResult.layoutPartToControls()).getRootNode();
         return new LayoutSkeleton(layoutTreeRoot, traversalResult.signals(), traversalResult.fields());

@@ -70,7 +70,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.rule.Operator;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.ScopedExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
@@ -90,7 +89,6 @@ final class UiSchemaRulesGenerator {
     private JsonFormsExpressionResolver m_visitor;
 
     /**
-     * @param mapper an object mapper used to resolve given conditions
      * @param field a field for which the effect of a rule is to be determined
      * @param signalsMap the map of all signals in the settings context at hand. It maps the ids of {@link Signal}
      *            annotations to a construct holding the respective condition and the scope of the associated field.

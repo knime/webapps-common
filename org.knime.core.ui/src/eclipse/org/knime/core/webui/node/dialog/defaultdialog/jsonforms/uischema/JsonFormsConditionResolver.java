@@ -54,6 +54,7 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.Schema.TAG_PATTERN;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.Schema.TAG_PROPERTIES;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_CONTAINS;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil.getMapper;
 
 import org.knime.core.webui.node.dialog.defaultdialog.rule.ArrayContainsCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.ConditionVisitor;
@@ -66,7 +67,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.rule.TrueCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.IsSpecificColumnCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
@@ -75,18 +75,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 class JsonFormsConditionResolver implements ConditionVisitor<ObjectNode> {
 
-    private final ObjectMapper m_mapper;
-
-    /**
-     * @param mapper
-     */
-    public JsonFormsConditionResolver(final ObjectMapper mapper) {
-        m_mapper = mapper;
-    }
-
     @Override
     public <E extends Enum<E>> ObjectNode visit(final OneOfEnumCondition<E> oneOfEnumCondition) {
-        final var node = m_mapper.createObjectNode();
+        final var node = getMapper().createObjectNode();
         final var oneOf = node.putArray(TAG_ONEOF);
         for (var option : oneOfEnumCondition.oneOf()) {
             oneOf.addObject().put(TAG_CONST, option.toString());
@@ -96,22 +87,22 @@ class JsonFormsConditionResolver implements ConditionVisitor<ObjectNode> {
 
     @Override
     public ObjectNode visit(final TrueCondition trueCondition) {
-        return m_mapper.createObjectNode().put(TAG_CONST, true);
+        return getMapper().createObjectNode().put(TAG_CONST, true);
     }
 
     @Override
     public ObjectNode visit(final FalseCondition falseCondition) {
-        return m_mapper.createObjectNode().put(TAG_CONST, false);
+        return getMapper().createObjectNode().put(TAG_CONST, false);
     }
 
     @Override
     public ObjectNode visit(final HasMultipleItemsCondition hasMultipleItemsCondition) {
-        return m_mapper.createObjectNode().put(TAG_ITEMS_MIN, 2);
+        return getMapper().createObjectNode().put(TAG_ITEMS_MIN, 2);
     }
 
     @Override
     public ObjectNode visit(final IsSpecificColumnCondition isSpecificColumnCondition) {
-        final var condition = m_mapper.createObjectNode();
+        final var condition = getMapper().createObjectNode();
         condition //
             .putObject(TAG_PROPERTIES).putObject(IsSpecificColumnCondition.PROPERTY_NAME) //
             .put(TAG_CONST, isSpecificColumnCondition.getColumnName());
@@ -120,13 +111,13 @@ class JsonFormsConditionResolver implements ConditionVisitor<ObjectNode> {
 
     @Override
     public ObjectNode visit(final IsSpecificStringCondition isSpecificStringCondition) {
-        return m_mapper.createObjectNode() //
+        return getMapper().createObjectNode() //
             .put(TAG_CONST, isSpecificStringCondition.getValue());
     }
 
     @Override
     public ObjectNode visit(final PatternCondition patternCondition) {
-        return m_mapper.createObjectNode() //
+        return getMapper().createObjectNode() //
             .put(TAG_PATTERN, patternCondition.getPattern());
     }
 
@@ -134,7 +125,7 @@ class JsonFormsConditionResolver implements ConditionVisitor<ObjectNode> {
     public ObjectNode visit(final ArrayContainsCondition arrayContainsCondition) {
         final var itemConditionClass = arrayContainsCondition.getItemCondition();
         final var itemCondition = InstantiationUtil.createInstance(itemConditionClass);
-        final var conditionObjectNode = m_mapper.createObjectNode();
+        final var conditionObjectNode = getMapper().createObjectNode();
         var currentObjectNode = conditionObjectNode.putObject(TAG_CONTAINS);
         for (var pathEntry : arrayContainsCondition.getItemFieldPath()) {
             currentObjectNode = currentObjectNode.putObject(TAG_PROPERTIES).putObject(pathEntry);

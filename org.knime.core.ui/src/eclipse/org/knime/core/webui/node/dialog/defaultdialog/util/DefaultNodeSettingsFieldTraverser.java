@@ -57,18 +57,19 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaGenerationException;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.LayoutGroup;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.PropertyWriter;
 
 /**
  *
  * This class is used to traverse the settings within {@link DefaultNodeSettings}. It is a depth-first (for nested
- * settings) traversal and it calls a given callback on every traversed leaf field.
+ * settings implementing {@link LayoutGroup}) traversal and it calls a given callback on every traversed leaf field
+ * (every field which is not of type {@link LayoutGroup}).
  *
  * Additionally, optionally, one can specify a list of classes of annotations, which should be tracked during the
  * traversal. Each such annotation is checked for at every point of the traversal starting with the annotation on the
@@ -85,11 +86,10 @@ public class DefaultNodeSettingsFieldTraverser {
     private final Class<?> m_settingsClass;
 
     /**
-     * @param mapper an object mapper to serialize with
      * @param settingsClass the class to be traversed.
      */
-    public DefaultNodeSettingsFieldTraverser(final ObjectMapper mapper, final Class<?> settingsClass) {
-        m_serializerProvider = mapper.getSerializerProviderInstance();
+    public DefaultNodeSettingsFieldTraverser(final Class<?> settingsClass) {
+        m_serializerProvider = getMapper().getSerializerProviderInstance();
         m_settingsClass = settingsClass;
     }
 
@@ -121,7 +121,7 @@ public class DefaultNodeSettingsFieldTraverser {
      * @param trackedAnnotations the classes of the annotations which should be tracked and given with the field
      *            parameter.
      */
-    public void traverse(final Consumer<TraversedField> fieldCallback,
+    void traverse(final Consumer<TraversedField> fieldCallback,
         final Collection<Class<? extends Annotation>> trackedAnnotations) {
         final var annotations = new FieldAnnotationsHolder(trackedAnnotations);
         traverseClass(m_settingsClass, fieldCallback, Collections.emptyList(), annotations);

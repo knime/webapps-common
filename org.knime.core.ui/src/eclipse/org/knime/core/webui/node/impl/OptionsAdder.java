@@ -55,7 +55,6 @@ import java.util.function.Consumer;
 
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.LayoutTreeNode;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaDefaultNodeSettingsTraverser.JsonFormsControl;
@@ -94,8 +93,7 @@ final class OptionsAdder {
         if (viewSettingsClass != null) {
             settings.put(SettingsType.VIEW.getConfigKey(), viewSettingsClass);
         }
-        final var layoutTree =
-            JsonFormsUiSchemaUtil.resolveLayout(settings, JsonFormsDataUtil.getMapper()).layoutTreeRoot();
+        final var layoutTree = JsonFormsUiSchemaUtil.resolveLayout(settings).layoutTreeRoot();
         applyToAllLeaves(layoutTree, addField);
     }
 

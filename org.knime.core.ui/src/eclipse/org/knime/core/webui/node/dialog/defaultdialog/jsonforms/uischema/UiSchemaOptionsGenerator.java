@@ -86,6 +86,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFi
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsWidgetTraverser.TraversedField;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.AsyncChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
@@ -114,7 +115,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyH
 import org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.WidgetAnnotation;
 
 import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.ser.PropertyWriter;
@@ -130,8 +130,6 @@ final class UiSchemaOptionsGenerator {
     private final Class<?> m_fieldClass;
 
     private final String m_fieldName;
-
-    private final ObjectMapper m_mapper;
 
     private final JavaType m_fieldType;
 
@@ -155,10 +153,8 @@ final class UiSchemaOptionsGenerator {
      * @param asyncChoicesProvider to be used to store results of asynchronously computed choices of
      *            {@link ChoicesWidget}s.
      */
-    UiSchemaOptionsGenerator(final ObjectMapper mapper, final PropertyWriter field,
-        final DefaultNodeSettingsContext context, final Collection<JsonFormsControl> fields, final String scope,
-        final AsyncChoicesAdder asyncChoicesAdder) {
-        m_mapper = mapper;
+    UiSchemaOptionsGenerator(final PropertyWriter field, final DefaultNodeSettingsContext context,
+        final Collection<JsonFormsControl> fields, final String scope, final AsyncChoicesAdder asyncChoicesAdder) {
         m_field = field;
         m_asyncChoicesAdder = asyncChoicesAdder;
         m_fieldType = field.getType();
@@ -210,6 +206,7 @@ final class UiSchemaOptionsGenerator {
             }
         }
 
+        // TODO it must contain the widget annotation
         if (annotatedWidgets.contains(Widget.class)) {
             final var widget = m_field.getAnnotation(Widget.class);
             if (widget.advanced()) {
@@ -322,7 +319,7 @@ final class UiSchemaOptionsGenerator {
             } else {
                 final var possibleValues = generatePossibleValues(choicesProviderClass);
                 if (possibleValues.length < ASYNC_CHOICES_THRESHOLD) {
-                    options.set("possibleValues", m_mapper.valueToTree(possibleValues));
+                    options.set("possibleValues", JsonFormsUiSchemaUtil.getMapper().valueToTree(possibleValues));
                 } else {
                     prepareAsyncChoices(options, choicesProviderClass, () -> possibleValues);
                 }
@@ -420,7 +417,7 @@ final class UiSchemaOptionsGenerator {
     private void addDependencies(final ArrayNode dependencies,
         final Class<? extends DependencyHandler<?>> actionHandler) {
         final var dependencyClass = GenericTypeFinderUtil.getFirstGenericType(actionHandler, DependencyHandler.class);
-        final var traverser = new DefaultNodeSettingsFieldTraverser(m_mapper, dependencyClass);
+        final var traverser = new DefaultNodeSettingsFieldTraverser(dependencyClass);
         final Consumer<TraversedField> addNewDependency = getAddNewDependencyCallback(dependencies);
         traverser.traverse(addNewDependency, List.of(DeclaringDefaultNodeSettings.class));
     }
@@ -499,7 +496,7 @@ final class UiSchemaOptionsGenerator {
          */
         final var persistentAsyncChoicesAdder = new PersistentAsyncChoicesAdder(m_asyncChoicesAdder);
         var details = JsonFormsUiSchemaUtil
-            .buildUISchema(arraySettings, m_mapper, m_defaultNodeSettingsContext, persistentAsyncChoicesAdder, m_fields)
+            .buildUISchema(arraySettings, m_defaultNodeSettingsContext, persistentAsyncChoicesAdder, m_fields)
             .get(TAG_ELEMENTS);
         options.set(TAG_ARRAY_LAYOUT_DETAIL, details);
 

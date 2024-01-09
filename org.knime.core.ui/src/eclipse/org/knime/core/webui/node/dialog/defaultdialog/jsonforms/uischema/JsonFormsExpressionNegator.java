@@ -54,13 +54,13 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import java.util.Arrays;
 
 import org.knime.core.webui.node.dialog.defaultdialog.rule.And;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.DefaultExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Expression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.ExpressionVisitor;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.JsonFormsExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Not;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Or;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
@@ -72,15 +72,12 @@ final class JsonFormsExpressionNegator implements ExpressionVisitor<ObjectNode, 
 
     private final JsonFormsExpressionResolver m_operationVisitor;
 
-    private final ObjectMapper m_mapper;
-
     /**
      * @param expressionVisitor
      * @param mapper
      */
     public JsonFormsExpressionNegator(final JsonFormsExpressionResolver expressionVisitor, final ObjectMapper mapper) {
         m_operationVisitor = expressionVisitor;
-        m_mapper = mapper;
     }
 
     @Override
@@ -109,7 +106,8 @@ final class JsonFormsExpressionNegator implements ExpressionVisitor<ObjectNode, 
     public ObjectNode visit(final JsonFormsExpression expression) {
         final var node = expression.accept(m_operationVisitor);
         final var positiveSchema = node.get(FIELD_NAME_SCHEMA);
-        node.replace(FIELD_NAME_SCHEMA, m_mapper.createObjectNode().set(TAG_NOT, positiveSchema));
+        node.replace(FIELD_NAME_SCHEMA,
+            JsonFormsUiSchemaUtil.getMapper().createObjectNode().set(TAG_NOT, positiveSchema));
         return node;
     }
 

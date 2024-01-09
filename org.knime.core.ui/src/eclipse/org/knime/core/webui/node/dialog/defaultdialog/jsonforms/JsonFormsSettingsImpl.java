@@ -132,8 +132,7 @@ public final class JsonFormsSettingsImpl implements JsonFormsSettings {
         if (m_viewSettingsClass != null) {
             settings.put(SettingsType.VIEW.getConfigKey(), m_viewSettingsClass);
         }
-        return new RawValue(JsonFormsUiSchemaUtil
-            .buildUISchema(settings, JsonFormsDataUtil.getMapper(), m_context, asyncChoicesHolder).toString());
+        return new RawValue(JsonFormsUiSchemaUtil.buildUISchema(settings, m_context, asyncChoicesHolder).toString());
     }
 
     @Override

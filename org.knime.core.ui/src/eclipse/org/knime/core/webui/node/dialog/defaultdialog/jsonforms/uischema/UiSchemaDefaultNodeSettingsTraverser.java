@@ -64,9 +64,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.rule.Signals;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Hidden;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.PropertyWriter;
 
 /**
@@ -75,10 +74,8 @@ import com.fasterxml.jackson.databind.ser.PropertyWriter;
  */
 public class UiSchemaDefaultNodeSettingsTraverser {
 
-    private final ObjectMapper m_mapper;
-
-    UiSchemaDefaultNodeSettingsTraverser(final ObjectMapper mapper) {
-        m_mapper = mapper;
+    UiSchemaDefaultNodeSettingsTraverser() {
+        //
     }
 
     /**
@@ -127,9 +124,9 @@ public class UiSchemaDefaultNodeSettingsTraverser {
         return new TraversalResult(layoutPartToControls, signals, fields);
     }
 
-    private void traverseSettingsClass(final Consumer<TraversalConsumerPayload> addField,
+    private static void traverseSettingsClass(final Consumer<TraversalConsumerPayload> addField,
         final Consumer<TraversalConsumerPayload> addSignal, final String settingsKey, final Class<?> setting) {
-        final var traverser = new DefaultNodeSettingsFieldTraverser(m_mapper, setting);
+        final var traverser = new DefaultNodeSettingsFieldTraverser(setting);
         traverser.traverse(field -> {
             final var scope = toScope(field.path(), settingsKey);
             final var payload = new TraversalConsumerPayload(scope, field, setting);

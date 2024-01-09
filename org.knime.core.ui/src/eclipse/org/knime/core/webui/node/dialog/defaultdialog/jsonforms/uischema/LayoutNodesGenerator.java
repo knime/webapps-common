@@ -62,7 +62,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchem
 import org.knime.core.webui.node.dialog.defaultdialog.rule.ScopedExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesAdder;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.ser.PropertyWriter;
@@ -72,8 +71,6 @@ import com.fasterxml.jackson.databind.ser.PropertyWriter;
  * @author Paul Bärnreuther
  */
 final class LayoutNodesGenerator {
-
-    private final ObjectMapper m_mapper;
 
     private final LayoutTreeNode m_rootLayoutTree;
 
@@ -88,13 +85,11 @@ final class LayoutNodesGenerator {
     /**
      * @param layout a record containing controls (as a mapping between layout parts and their contained settings
      *            controls) and a ruleSourcesMap (the mapping between ids of rule sources to their conditions)
-     * @param mapper the object mapper used for the ui schema generation
      * @param context the settings creation context with access to the input ports
      * @param asyncChoicesAdder used to start asynchronous computations of choices during the ui-schema generation.
      */
-    LayoutNodesGenerator(final LayoutSkeleton layout, final ObjectMapper mapper,
-        final DefaultNodeSettingsContext context, final AsyncChoicesAdder asyncChoicesAdder) {
-        m_mapper = mapper;
+    LayoutNodesGenerator(final LayoutSkeleton layout, final DefaultNodeSettingsContext context,
+        final AsyncChoicesAdder asyncChoicesAdder) {
         m_signals = layout.signals();
         m_fields = layout.fields();
         m_rootLayoutTree = layout.layoutTreeRoot();
@@ -103,7 +98,7 @@ final class LayoutNodesGenerator {
     }
 
     ObjectNode build() {
-        final var rootNode = m_mapper.createObjectNode();
+        final var rootNode = JsonFormsUiSchemaUtil.getMapper().createObjectNode();
         buildLayout(m_rootLayoutTree, rootNode.putArray(TAG_ELEMENTS));
         return rootNode;
     }
@@ -128,8 +123,8 @@ final class LayoutNodesGenerator {
         final PropertyWriter field) {
         final var scope = controlElement.scope();
         try {
-            new UiSchemaOptionsGenerator(m_mapper, field, m_defaultNodeSettingsContext, m_fields, scope,
-                m_asyncChoicesAdder).addOptionsTo(control);
+            new UiSchemaOptionsGenerator(field, m_defaultNodeSettingsContext, m_fields, scope, m_asyncChoicesAdder)
+                .addOptionsTo(control);
         } catch (UiSchemaGenerationException ex) {
             throw new UiSchemaGenerationException(
                 String.format("Error when generating the options of %s.: %s", scope, ex.getMessage()), ex);

@@ -58,12 +58,9 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.ArrayLayoutUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * This class is used to supply handlers associated to specific widgets to the data service.
@@ -76,21 +73,20 @@ abstract class WidgetHandlerHolder<H> {
     private Map<String, H> m_handlers = new HashMap<>();
 
     WidgetHandlerHolder(final Collection<Class<? extends DefaultNodeSettings>> settingsClasses) {
-        addHandlers(settingsClasses, JsonFormsDataUtil.getMapper());
+        addHandlers(settingsClasses);
     }
 
-    private void addHandlers(final Collection<Class<? extends DefaultNodeSettings>> settings,
-        final ObjectMapper mapper) {
-        final Consumer<TraversedField> addActionHandlerClass = getAddActionHandlerClassCallback(mapper);
+    private void addHandlers(final Collection<Class<? extends DefaultNodeSettings>> settings) {
+        final Consumer<TraversedField> addActionHandlerClass = getAddActionHandlerClassCallback();
         settings.forEach(settingsClass -> {
-            final var generator = new DefaultNodeSettingsFieldTraverser(mapper, settingsClass);
+            final var generator = new DefaultNodeSettingsFieldTraverser(settingsClass);
             generator.traverse(addActionHandlerClass);
         });
     }
 
-    private Consumer<TraversedField> getAddActionHandlerClassCallback(final ObjectMapper mapper) {
+    private Consumer<TraversedField> getAddActionHandlerClassCallback() {
         return field -> {
-            addHandlersForNestedFields(mapper, field);
+            addHandlersForNestedFields(field);
             final var optionalHandlerClass = getHandlerClass(field);
             optionalHandlerClass
                 .ifPresent(handlerClass -> m_handlers.put(handlerClass.getName(), createInstance(handlerClass)));
@@ -98,12 +94,12 @@ abstract class WidgetHandlerHolder<H> {
 
     }
 
-    private void addHandlersForNestedFields(final ObjectMapper mapper, final TraversedField field) {
+    private void addHandlersForNestedFields(final TraversedField field) {
         final var javaType = field.propertyWriter().getType();
         if (ArrayLayoutUtil.isArrayLayoutField(javaType)) {
             final var elementClass = javaType.getContentType().getRawClass();
             if (DefaultNodeSettings.class.isAssignableFrom(elementClass)) {
-                addHandlers(List.of((Class<? extends DefaultNodeSettings>)elementClass), mapper);
+                addHandlers(List.of((Class<? extends DefaultNodeSettings>)elementClass));
             }
         }
     }

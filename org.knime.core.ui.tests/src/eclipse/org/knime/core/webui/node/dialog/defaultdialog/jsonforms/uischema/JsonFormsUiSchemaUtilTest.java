@@ -57,7 +57,6 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtilTest.SuperclassAnnotationTestLayout.AfterCenterLayout;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtilTest.SuperclassAnnotationTestLayout.BeforeCenterLayout;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtilTest.SuperclassAnnotationTestLayout.CenterLayoutExtended;
@@ -91,8 +90,7 @@ class JsonFormsUiSchemaUtilTest {
 
     static ObjectNode buildUiSchema(final Map<String, Class<?>> settings, final DefaultNodeSettingsContext context,
         final AsyncChoicesHolder asyncChoicesHolder) {
-        return JsonFormsUiSchemaUtil.buildUISchema(settings, JsonFormsDataUtil.getMapper(), context,
-            asyncChoicesHolder);
+        return JsonFormsUiSchemaUtil.buildUISchema(settings, context, asyncChoicesHolder);
     }
 
     static ObjectNode buildTestUiSchema(final Class<?> settingsClass) {
