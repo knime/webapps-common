@@ -58,8 +58,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.Patte
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 /**
  * A class used to store several representation of column choices. I.e. the columns can be determined using one of the
  * modes of {@link ColumnFilterMode}.
@@ -150,7 +148,6 @@ public class ColumnFilter implements PersistableSettings {
      * @param spec of the input data table (for type selection)
      * @return the array of currently selected columns with respect to the mode
      */
-    @JsonIgnore
     public String[] getSelected(final String[] choices, final DataTableSpec spec) {
         switch (m_mode) {
             case MANUAL:

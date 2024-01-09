@@ -81,8 +81,6 @@ import org.knime.core.webui.node.view.table.TableViewLayout.ViewSection;
 import org.knime.core.webui.node.view.table.TableViewViewSettings.RowHeightMode.CompactModeToRowHeightModePersistor;
 import org.knime.core.webui.node.view.table.TableViewViewSettings.RowHeightMode.RowHeightIsCustom;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 /**
  * @author Konrad Amtenbrink, KNIME GmbH, Berlin, Germany
  * @author Christian Albrecht, KNIME GmbH, Konstanz, Germany
@@ -379,7 +377,6 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     }
 
     @SuppressWarnings("javadoc")
-    @JsonIgnore //
     public String[] getDisplayedColumns(final DataTableSpec spec) {
         final var choices = spec.getColumnNames();
         return m_displayedColumns.getSelected(choices, spec);

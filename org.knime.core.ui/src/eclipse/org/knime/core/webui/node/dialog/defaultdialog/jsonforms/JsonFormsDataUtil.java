@@ -123,6 +123,8 @@ public final class JsonFormsDataUtil {
         mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.setVisibility(PropertyAccessor.ALL, Visibility.NON_PRIVATE);
+        mapper.setVisibility(PropertyAccessor.GETTER, Visibility.NONE);
+        mapper.setVisibility(PropertyAccessor.IS_GETTER, Visibility.NONE);
         mapper.setPropertyNamingStrategy(new PropertyNamingStrategy() {
             private static final long serialVersionUID = 1L;
 
