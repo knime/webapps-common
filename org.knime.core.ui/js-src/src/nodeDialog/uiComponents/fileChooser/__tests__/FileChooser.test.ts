@@ -86,7 +86,7 @@ describe("FileChooser.vue", () => {
     expect(wrapper.findComponent(FileExplorer).exists()).toBeFalsy();
     expect(wrapper.findComponent(LoadingIcon).exists()).toBeTruthy();
     await flushPromises();
-    expect(wrapper.find("span").text()).toBe("Root directories");
+    expect(wrapper.find("span").text()).toBe("");
     expect(wrapper.findComponent(FileExplorer).exists()).toBeTruthy();
     const explorerProps = wrapper.findComponent(FileExplorer).props();
     expect(explorerProps.items).toStrictEqual(

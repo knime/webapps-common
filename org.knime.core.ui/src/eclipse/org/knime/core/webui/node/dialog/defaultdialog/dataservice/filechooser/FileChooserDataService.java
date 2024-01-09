@@ -132,10 +132,8 @@ public final class FileChooserDataService {
         throws IOException {
         final var fileChooserBackend = m_fsConnector.getFileChooserBackend(fileSystemId);
         final Path nextPath = getNextPath(path, nextFolder, fileChooserBackend.getFileSystem());
-        if (nextPath == null) {
-            if (fileChooserBackend.isAbsoluteFileSystem()) {
-                return Folder.asRootFolder(getRootItems(fileChooserBackend));
-            }
+        if (nextPath == null && fileChooserBackend.isAbsoluteFileSystem()) {
+            return Folder.asRootFolder(getRootItems(fileChooserBackend));
         }
         final Deque<Path> pathStack = toFragments(fileChooserBackend, nextPath);
         return getItemsInFolder(fileChooserBackend, pathStack);
@@ -143,24 +141,28 @@ public final class FileChooserDataService {
 
     private static Deque<Path> toFragments(final FileChooserBackend fileChooserBackend, final Path nextPath) {
         final Deque<Path> subPaths = new ArrayDeque<>();
-        final var emptyPath = fileChooserBackend.getFileSystem().getPath("");
-        if (emptyPath != null) {
-            subPaths.push(emptyPath);
+        final var defaultPath = getDefaultPath(fileChooserBackend, nextPath);
+        if (defaultPath != null) {
+            subPaths.push(defaultPath);
         }
         if (nextPath != null) {
-            if (fileChooserBackend.isAbsoluteFileSystem()) {
-                final var rootPath = nextPath.getRoot();
-                if (rootPath != null) {
-                    subPaths.push(rootPath);
-                }
-            }
             final var pathFragments = StreamSupport.stream(nextPath.spliterator(), false).collect(Collectors.toList());
             for (Path pathFragent : pathFragments) {
                 var lastPath = subPaths.peek();
-                subPaths.push(lastPath.resolve(pathFragent));
+                subPaths.push(lastPath == null ? pathFragent : lastPath.resolve(pathFragent));
             }
         }
         return subPaths;
+    }
+
+    private static Path getDefaultPath(final FileChooserBackend fileChooserBackend, final Path nextPath) {
+        if (fileChooserBackend.isAbsoluteFileSystem()) {
+            final var rootPath = nextPath.getRoot();
+            if (rootPath != null) {
+                return rootPath;
+            }
+        }
+        return getEmptyPathFolder(fileChooserBackend);
     }
 
     /**
@@ -199,16 +201,11 @@ public final class FileChooserDataService {
         final Deque<Path> pathStack) throws IOException {
         String errorMessage = null;
         while (!pathStack.isEmpty()) {
-            final var folder = pathStack.pop();
+            final var path = pathStack.pop();
             try {
-                final var folderContent = listFilteredAndSortedItems(folder) //
+                final var folderContent = listFilteredAndSortedItems(path) //
                     .stream().map(fileChooserBackend::pathToObject).toList();
-                if (fileChooserBackend.isAbsoluteFileSystem()) {
-                    return Folder.asNonRootFolder(folder.toAbsolutePath(), folderContent, errorMessage);
-                } else {
-                    return folder.toString().isEmpty() ? Folder.asRootFolder(folderContent, errorMessage)
-                        : Folder.asNonRootFolder(folder, folderContent, errorMessage);
-                }
+                return createFolder(path, folderContent, errorMessage, fileChooserBackend);
             } catch (NotDirectoryException ex) { //NOSONAR
                 /**
                  * Do not set an error message in this case, since we intentionally get here when opening the file
@@ -217,16 +214,31 @@ public final class FileChooserDataService {
                  */
             } catch (NoSuchFileException ex) { //NOSONAR
                 if (errorMessage == null) {
-                    errorMessage = String.format("The selected path %s does not exist", folder);
+                    errorMessage = String.format("The selected path %s does not exist", path);
                 }
             } catch (AccessDeniedException ex) { //NOSONAR
                 if (errorMessage == null) {
-                    errorMessage = String.format("Access to the selected path %s is denied", folder);
+                    errorMessage = String.format("Access to the selected path %s is denied", path);
                 }
             }
         }
         throw new IllegalStateException(
             "Something went wrong. There should be at least one valid path in the given stack.");
+    }
+
+    private static FolderAndError createFolder(final Path path, final List<Object> folderContent,
+        final String errorMessage, final FileChooserBackend fileChooserBackend) {
+        if (fileChooserBackend.isAbsoluteFileSystem()) {
+            return Folder.asNonRootFolder(path.toAbsolutePath(), folderContent, errorMessage);
+        } else {
+            return getEmptyPathFolder(fileChooserBackend).equals(path)
+                ? Folder.asRootFolder(folderContent, errorMessage)
+                : Folder.asNonRootFolder(path, folderContent, errorMessage);
+        }
+    }
+
+    private static Path getEmptyPathFolder(final FileChooserBackend fileChooserBackend) {
+        return fileChooserBackend.getFileSystem().getPath("");
     }
 
     private static List<Path> listFilteredAndSortedItems(final Path folder) throws IOException {

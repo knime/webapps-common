@@ -63,8 +63,10 @@ import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.filechooser.FileChooserDataService.FolderAndError;
 import org.knime.core.webui.node.dialog.defaultdialog.dataservice.filechooser.SimpleFileChooserBackend.Item;
 import org.mockito.ArgumentMatchers;
 import org.mockito.MockedConstruction;
@@ -77,144 +79,238 @@ import org.mockito.Mockito;
 @SuppressWarnings("java:S2698") // we accept assertions without messages
 class FileChooserDataServiceTest {
 
-    /**
-     * Simulating the root folder of this test file system
-     */
-    @TempDir
-    private Path m_tempRootFolder;
+    @Nested
+    class AbsoluteFileSystemTest extends NestedFileChooserDataServiceTest {
 
-    /**
-     * A folder within the root folder
-     */
-    private Path m_subFolder;
+        /**
+         * Simulating the root folder of this test file system
+         */
+        @TempDir
+        private Path m_tempRootFolder;
 
-    private MockedConstruction<LocalFileChooserBackend> fileChooserBackendMock;
+        @Override
+        Path getDefaultDirectory() {
+            return m_tempRootFolder;
+        }
 
-    private FileSystem m_fileSystem;
+        @Override
+        FileSystem getFileSystem() {
+            final var fileSystem = mock(FileSystem.class);
+            when(fileSystem.getRootDirectories()).thenReturn(List.of(m_tempRootFolder));
+            return fileSystem;
+        }
 
-    @BeforeEach
-    void mockFileChooserBackend() throws IOException {
-        m_subFolder = Files.createTempDirectory(m_tempRootFolder, "directoryPath");
-        m_fileSystem = mock(FileSystem.class);
-        when(m_fileSystem.getRootDirectories()).thenReturn(List.of(m_tempRootFolder));
-        fileChooserBackendMock = Mockito.mockConstruction(LocalFileChooserBackend.class, (mock, context) -> {
-            when(mock.getFileSystem()).thenReturn(m_fileSystem);
-            when(mock.pathToObject(ArgumentMatchers.any())).thenCallRealMethod();
-        });
+        @Override
+        boolean useAbsoluteFileSystem() {
+            return true;
+        }
+
+        @Override
+        List<Path> getItemsInInitialFolder() {
+            return List.of(getDefaultDirectory());
+        }
+
+        @Test
+        void testThrowsOnWrongFileSystemId() {
+            final var dataService = new FileChooserDataService();
+            assertThrows(IllegalArgumentException.class,
+                () -> dataService.listItems("notAValidFileSystemId", null, null));
+        }
+
+        @Test
+        void testReusesFileSystem() throws IOException {
+            final var dataService = new FileChooserDataService();
+            dataService.listItems("local", null, null);
+            dataService.listItems("local", null, null);
+            assertThat(fileChooserBackendMock.constructed()).hasSize(1);
+        }
+
+        @Test
+        void testClosesAndClearsFileSystemOnClear() throws IOException {
+            final var dataService = new FileChooserDataService();
+            dataService.listItems("local", null, null);
+            dataService.clear();
+            verify(fileChooserBackendMock.constructed().get(0)).close();
+            dataService.listItems("local", null, null);
+            assertThat(fileChooserBackendMock.constructed()).hasSize(2);
+        }
+
     }
 
-    @AfterEach
-    void endMockingFileChooserBackend() {
-        fileChooserBackendMock.close();
+    @Nested
+    class RelativeFileSystemTest extends NestedFileChooserDataServiceTest {
+
+        @TempDir
+        private Path m_emptyPathDirectory;
+
+        @Override
+        Path getDefaultDirectory() {
+            return m_emptyPathDirectory;
+        }
+
+        @Override
+        FileSystem getFileSystem() {
+            final var fileSystem = mock(FileSystem.class);
+            when(fileSystem.getPath(eq(""))).thenReturn(getDefaultDirectory());
+            return fileSystem;
+        }
+
+        @Override
+        boolean useAbsoluteFileSystem() {
+            return false;
+        }
+
+        @Override
+        List<Path> getItemsInInitialFolder() throws IOException {
+            return Files.list(getDefaultDirectory()).toList();
+        }
+
     }
 
-    @Test
-    void testGetLocalRootItems() throws IOException {
-        final var dataService = new FileChooserDataService();
-        final var rootItems = dataService.listItems("local", null, null);
-        verify(fileChooserBackendMock.constructed().get(0)).pathToObject(eq(m_tempRootFolder));
-        assertThat(rootItems.folder().items()).hasSize(1);
-        assertThat(rootItems.errorMessage()).isEmpty();
-        final var rootItem = (Item)rootItems.folder().items().get(0);
-        assertThat(rootItem.isDirectory()).isTrue();
+    abstract class NestedFileChooserDataServiceTest {
+
+        /**
+         * A folder within the default folder
+         */
+        protected Path m_subFolder;
+
+        protected MockedConstruction<LocalFileChooserBackend> fileChooserBackendMock;
+
+        protected FileSystem m_fileSystem;
+
+        abstract Path getDefaultDirectory();
+
+        abstract FileSystem getFileSystem();
+
+        abstract boolean useAbsoluteFileSystem();
+
+        abstract List<Path> getItemsInInitialFolder() throws IOException;
+
+        @BeforeEach
+        void mockFileChooserBackend() throws IOException {
+            m_subFolder = Files.createTempDirectory(getDefaultDirectory(), "directoryPath");
+            m_fileSystem = getFileSystem();
+            fileChooserBackendMock = Mockito.mockConstruction(LocalFileChooserBackend.class, (mock, context) -> {
+                when(mock.getFileSystem()).thenReturn(m_fileSystem);
+                when(mock.pathToObject(ArgumentMatchers.any())).thenCallRealMethod();
+                when(mock.isAbsoluteFileSystem()).thenReturn(useAbsoluteFileSystem());
+            });
+        }
+
+        @AfterEach
+        void endMockingFileChooserBackend() {
+            if (fileChooserBackendMock != null) {
+                fileChooserBackendMock.close();
+            }
+        }
+
+        @Test
+        void testGetItemsWithoutParameters() throws IOException {
+            final var result = performListItems(null, null);
+
+            getItemsInInitialFolder()
+                .forEach(item -> verify(fileChooserBackendMock.constructed().get(0)).pathToObject(eq(item)));
+            assertThat(result.folder().items()).hasSize(1);
+            assertThat(result.folder().path()).isNull();
+            assertThat(result.errorMessage()).isEmpty();
+            final var rootItem = (Item)result.folder().items().get(0);
+            assertThat(rootItem.isDirectory()).isTrue();
+        }
+
+        @Test
+        void testListItemsRelativeToPath() throws IOException {
+            final var directory = Files.createTempDirectory(m_subFolder, "aDirectory");
+            final var subDirectory = Files.createTempDirectory(directory, "aSubDirectory");
+            final var path = relativizeIfNecessary(m_subFolder).toString();
+            final var folderName = directory.getFileName().toString();
+            when(m_fileSystem.getPath(eq(path), eq(folderName))).thenReturn(relativizeIfNecessary(directory));
+
+            final var result = performListItems(path, folderName);
+
+            final var fileChooserBackend = fileChooserBackendMock.constructed().get(0);
+            verify(fileChooserBackend).pathToObject(eq(subDirectory));
+            assertThat(result.errorMessage()).isEmpty();
+            assertThat(result.folder().items()).hasSize(1);
+        }
+
+        @Test
+        void testListItemsWithoutPath() throws IOException {
+            final var directory = Files.createTempDirectory(m_subFolder, "aDirectory");
+            final var file = Files.writeString(m_subFolder.resolve("aFile"), "");
+            final var pathToDir = pathToString(relativizeIfNecessary(m_subFolder));
+
+            final var result = performListItems(null, pathToDir);
+
+            final var fileChooserBackend = fileChooserBackendMock.constructed().get(0);
+            verify(fileChooserBackend).pathToObject(eq(directory));
+            verify(fileChooserBackend).pathToObject(eq(file));
+            assertThat(result.errorMessage()).isEmpty();
+            final var items = result.folder().items();
+            assertThat(items).hasSize(2);
+            assertThat(items.stream().map(item -> ((Item)item).isDirectory()).count()).isEqualTo(2);
+        }
+
+        @Test
+        void testListItemsWithInvalidPath() throws IOException {
+            final var deletedFolder = Files.createTempDirectory(m_subFolder, "aDirectory");
+            Files.delete(deletedFolder);
+            final var invalidPath = pathToString(relativizeIfNecessary(deletedFolder));
+
+            final var result = performListItems(null, invalidPath);
+
+            assertThat(result.errorMessage().get())
+                .isEqualTo(String.format("The selected path %s does not exist", deletedFolder));
+            assertThat(result.folder().path()).isEqualTo(m_subFolder.toString());
+        }
+
+        @Test
+        void testListItemsParentPath() throws IOException {
+            final var directory = Files.createTempDirectory(m_subFolder, "aDirectory");
+            final var file = Files.writeString(m_subFolder.resolve("aFile"), "");
+            final var path = pathToString(relativizeIfNecessary(directory));
+
+            final var rootItems = performListItems(path, "..");
+
+            final var fileChooserBackend = fileChooserBackendMock.constructed().get(0);
+            verify(fileChooserBackend).pathToObject(eq(directory));
+            verify(fileChooserBackend).pathToObject(eq(file));
+            final var items = rootItems.folder().items();
+            assertThat(items).hasSize(2);
+            assertThat(items.stream().map(item -> ((Item)item).isDirectory()).count()).isEqualTo(2);
+        }
+
+        @Test
+        void testGetFilePath() throws IOException {
+            final var file = Files.writeString(m_subFolder.resolve("aFile"), "");
+            final var path = relativizeIfNecessary(m_subFolder).toString();
+            final var fileName = file.getFileName().toString();
+            when(m_fileSystem.getPath(eq(path), eq(fileName))).thenReturn(file);
+            final var filePath = new FileChooserDataService().getFilePath("local", path, fileName);
+            assertThat(filePath).isEqualTo(file.toString());
+        }
+
+        private Path relativizeIfNecessary(final Path absolutePath) {
+            if (useAbsoluteFileSystem()) {
+                return absolutePath;
+            }
+            return getDefaultDirectory().relativize(absolutePath);
+        }
+
+        private String pathToString(final Path path) {
+            final var pathString = path.toString();
+            when(m_fileSystem.getPath(eq(pathString))).thenReturn(path);
+            return pathString;
+        }
+
+        private static FolderAndError performListItems(final FileChooserDataService dataService, final String path,
+            final String folder) throws IOException {
+            return dataService.listItems("local", path, folder);
+        }
+
+        private static FolderAndError performListItems(final String path, final String folder) throws IOException {
+            return performListItems(new FileChooserDataService(), path, folder);
+        }
     }
 
-    @Test
-    void testListLocalItemsRelativeToPath() throws IOException {
-        final var directory = Files.createTempDirectory(m_subFolder, "aDirectory");
-        final var subDirectory = Files.createTempDirectory(directory, "aSubDirectory");
-        final var dataService = new FileChooserDataService();
-        final var path = m_subFolder.toString();
-        final var folderName = directory.getFileName().toString();
-        when(m_fileSystem.getPath(eq(path), eq(folderName))).thenReturn(directory);
-        final var rootItems = dataService.listItems("local", path, folderName);
-        final var fileChooserBackend = fileChooserBackendMock.constructed().get(0);
-        verify(fileChooserBackend).pathToObject(eq(subDirectory));
-        assertThat(rootItems.errorMessage()).isEmpty();
-        final var items = rootItems.folder().items();
-        assertThat(items).hasSize(1);
-    }
 
-    @Test
-    void testListLocalItemsWithoutPath() throws IOException {
-        final var directory = Files.createTempDirectory(m_subFolder, "aDirectory");
-        final var file = Files.writeString(m_subFolder.resolve("aFile"), "");
-        final var dataService = new FileChooserDataService();
-        final var pathToDir = directory.toString();
-        when(m_fileSystem.getPath(eq(pathToDir))).thenReturn(m_subFolder);
-        final var rootItems = dataService.listItems("local", null, pathToDir);
-        final var fileChooserBackend = fileChooserBackendMock.constructed().get(0);
-        verify(fileChooserBackend).pathToObject(eq(directory));
-        verify(fileChooserBackend).pathToObject(eq(file));
-        assertThat(rootItems.errorMessage()).isEmpty();
-        final var items = rootItems.folder().items();
-        assertThat(items).hasSize(2);
-        assertThat(items.stream().map(item -> ((Item)item).isDirectory()).count()).isEqualTo(2);
-    }
-
-    @Test
-    void testListLocalItemsWithInvalidPath() throws IOException {
-        final var deletedFolder = Files.createTempDirectory(m_subFolder, "aDirectory");
-        Files.delete(deletedFolder);
-        final var dataService = new FileChooserDataService();
-        final var correctPath = m_subFolder.toString();
-        final var invalidPath = correctPath + "/non-existing folder/file.txt";
-        when(m_fileSystem.getPath(eq(invalidPath))).thenReturn(deletedFolder);
-        when(m_fileSystem.getPath(eq(correctPath))).thenReturn(m_subFolder);
-        final var listedItems = dataService.listItems("local", null, invalidPath);
-        assertThat(listedItems.errorMessage().get())
-            .isEqualTo(String.format("The selected path %s does not exist", deletedFolder.toAbsolutePath()));
-        assertThat(listedItems.folder().path()).isEqualTo(correctPath);
-    }
-
-    @Test
-    void testListLocalItemsParentPath() throws IOException {
-        final var directory = Files.createTempDirectory(m_subFolder, "aDirectory");
-        final var file = Files.writeString(m_subFolder.resolve("aFile"), "");
-        final var dataService = new FileChooserDataService();
-        final var path = directory.toString();
-        when(m_fileSystem.getPath(eq(path))).thenReturn(directory);
-        final var rootItems = dataService.listItems("local", path, "..");
-        final var fileChooserBackend = fileChooserBackendMock.constructed().get(0);
-        verify(fileChooserBackend).pathToObject(eq(directory));
-        verify(fileChooserBackend).pathToObject(eq(file));
-        final var items = rootItems.folder().items();
-        assertThat(items).hasSize(2);
-        assertThat(items.stream().map(item -> ((Item)item).isDirectory()).count()).isEqualTo(2);
-    }
-
-    @Test
-    void testThrowsOnWrongFileSystemId() {
-        final var dataService = new FileChooserDataService();
-        assertThrows(IllegalArgumentException.class, () -> dataService.listItems("notAValidFileSystemId", null, null));
-    }
-
-    @Test
-    void testReusesFileSystem() throws IOException {
-        final var dataService = new FileChooserDataService();
-        dataService.listItems("local", null, null);
-        dataService.listItems("local", null, null);
-        assertThat(fileChooserBackendMock.constructed()).hasSize(1);
-    }
-
-    @Test
-    void testClosesAndClearsFileSystemOnClear() throws IOException {
-        final var dataService = new FileChooserDataService();
-        dataService.listItems("local", null, null);
-        dataService.clear();
-        verify(fileChooserBackendMock.constructed().get(0)).close();
-        dataService.listItems("local", null, null);
-        assertThat(fileChooserBackendMock.constructed()).hasSize(2);
-    }
-
-    @Test
-    void testGetFilePath() throws IOException {
-        final var file = Files.writeString(m_subFolder.resolve("aFile"), "");
-        final var path = m_subFolder.toString();
-        final var fileName = file.getFileName().toString();
-        when(m_fileSystem.getPath(eq(path), eq(fileName))).thenReturn(file);
-        final var dataService = new FileChooserDataService();
-        final var filePath = dataService.getFilePath("local", path, fileName);
-        assertThat(filePath).isEqualTo(file.toString());
-    }
 }

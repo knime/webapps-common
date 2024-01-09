@@ -90,7 +90,7 @@ public class FileChooserTest {
     }
 
     @Test
-    void testSerializeDefault() {
+    void testSerializeLocal() {
         class TestSettings {
             FileChooser fileChooser = new FileChooser();
         }
@@ -110,6 +110,20 @@ public class FileChooserTest {
         assertThatJson(result).inPath("fileChooser.path.path").isString().isEqualTo("myPath");//
         assertThatJson(result).inPath("fileChooser.path.fsCategory").isString().isEqualTo("CUSTOM_URL");
         assertThatJson(result).inPath("fileChooser.path.timeout").isIntegralNumber().isEqualTo(1);
+
+    }
+
+    @Test
+    void testSerializeCurrentHubSpace() {
+        class TestSettings {
+            FileChooser fileChooser =
+                new FileChooser(new FSLocation(FSCategory.RELATIVE, RelativeTo.SPACE.getSettingsValue(), "myPath"));
+        }
+        final var result = objectMapper.valueToTree(new TestSettings());
+        assertThatJson(result).inPath("fileChooser.path.path").isString().isEqualTo("myPath");//
+        assertThatJson(result).inPath("fileChooser.path.fsCategory").isString()
+            .isEqualTo("relative-to-current-hubspace");
+        assertThatJson(result).inPath("fileChooser.path.timeout").isIntegralNumber().isEqualTo(10000);
 
     }
 
