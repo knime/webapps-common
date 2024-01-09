@@ -11,6 +11,8 @@ import TableViewDisplay from "./TableViewDisplay.vue";
 import { createDefaultFilterConfig, arrayEquals } from "@/tableView/utils";
 import TableViewViewSettings, {
   AutoSizeColumnsToContent,
+  PossiblyNonInitializedSettings,
+  isInitialized,
 } from "./types/ViewSettings";
 import InitialData from "./types/InitialData";
 import type Table from "./types/Table";
@@ -820,8 +822,14 @@ export default {
     ) {
       return newSettings[key] !== this.settings[key];
     },
-    async onViewSettingsChange(event: Event) {
-      const newSettings = event.data.data.view as TableViewViewSettings;
+    onViewSettingsChange(event: Event) {
+      const newSettings = event.data.data
+        .view as PossiblyNonInitializedSettings;
+      if (isInitialized(newSettings)) {
+        this.handleNewSettings(newSettings);
+      }
+    },
+    async handleNewSettings(newSettings: TableViewViewSettings) {
       const enablePaginationChanged = this.settingsChanged(
         newSettings,
         "enablePagination",

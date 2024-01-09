@@ -16,7 +16,7 @@ export enum SelectionMode {
   EDIT = "EDIT",
 }
 
-type TableViewViewSettings = {
+type GenericTableViewViewSettings<T extends string[] | undefined> = {
   showRowKeys: boolean;
   showRowIndices: boolean;
   showColumnDataType: boolean;
@@ -35,8 +35,20 @@ type TableViewViewSettings = {
   skipRemainingColumns: boolean;
   showOnlySelectedRows: boolean;
   showOnlySelectedRowsConfigurable: boolean;
-  displayedColumns: { selected: string[] };
+  displayedColumns: { selected: T };
   enableCellCopying: boolean;
+};
+
+type TableViewViewSettings = GenericTableViewViewSettings<string[]>;
+
+export type PossiblyNonInitializedSettings = GenericTableViewViewSettings<
+  string[] | undefined
+>;
+
+export const isInitialized = (
+  newSettings: PossiblyNonInitializedSettings,
+): newSettings is TableViewViewSettings => {
+  return typeof newSettings.displayedColumns.selected !== "undefined";
 };
 
 export default TableViewViewSettings;
