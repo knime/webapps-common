@@ -84,6 +84,14 @@ export const hasAdvancedOptions = (uischema: object) =>
     value: true,
   });
 
+export const getValuesNotInSet = <T>(arr: T[], valueSet: Set<T>) => {
+  return arr.filter((item) => !valueSet.has(item));
+};
+
+export const getValuesInSet = <T>(arr: T[], valueSet: Set<T>) => {
+  return arr.filter((item) => valueSet.has(item));
+};
+
 export const partitionBy = <T, Keys extends string | number | symbol>(
   arr: T[],
   fn: (item: T) => Keys,

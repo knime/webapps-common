@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { markRaw, type Ref, type Raw, ref, computed } from "vue";
 import { rendererProps } from "@jsonforms/vue";
-import { mergeDeep, partitionBy } from "../utils";
+import { mergeDeep, getValuesInSet, getValuesNotInSet } from "../utils";
 import MultiModeTwinlist from "webapps-common/ui/components/forms/MultiModeTwinlist.vue";
 import inject from "../utils/inject";
 import type { IdAndText, PossibleValue } from "../types/ChoicesUiSchema";
@@ -142,48 +142,18 @@ const initialManuallySelected = ref(null as null | string[]);
  * @param {string[]} possibleValueIds the possible values from which unknown values are determined.
  * @returns {void}.
  */
-const updateManualFilter = (possibleValueIds: string[]) => {
+const setInitialManuallySelected = (possibleValueIds: string[]) => {
   const { manuallySelected, manuallyDeselected, includeUnknownColumns } =
     control.value.data.manualFilter;
 
-  const manuallySelectedSet = new Set(manuallySelected);
-  const manuallyDeselectedSet = new Set(manuallyDeselected);
+  const includedPossibleValueIds = includeUnknownColumns //
+    ? getValuesNotInSet(possibleValueIds, new Set(manuallyDeselected)) //
+    : getValuesInSet(possibleValueIds, new Set(manuallySelected));
 
-  const partitionedChoices = includeUnknownColumns //
-    ? partitionBy(possibleValueIds, (item) =>
-        manuallyDeselectedSet.has(item) ? "excluded" : "included",
-      ) //
-    : partitionBy(possibleValueIds, (item) =>
-        manuallySelectedSet.has(item) ? "included" : "excluded",
-      );
-
-  const includedPossibleValueIdsSet = new Set(partitionedChoices.included);
-  const missingManuallySelected = manuallySelected.filter(
-    (item) => !includedPossibleValueIdsSet.has(item),
-  );
-
-  const excludedPossibleValueIdsSet = new Set(partitionedChoices.excluded);
-  const missingManuallyDesselected = manuallySelected.filter(
-    (item) => !excludedPossibleValueIdsSet.has(item),
-  );
-
-  const newSelectedValues = [
-    ...missingManuallySelected,
-    ...(partitionedChoices.included ?? []),
+  initialManuallySelected.value = [
+    ...getValuesNotInSet(manuallySelected, new Set(includedPossibleValueIds)),
+    ...includedPossibleValueIds,
   ];
-  const newDeselectedValues = [
-    ...missingManuallyDesselected,
-    ...(partitionedChoices.excluded ?? []),
-  ];
-
-  const newData = {
-    manualFilter: {
-      manuallySelected: newSelectedValues,
-      manuallyDeselected: newDeselectedValues,
-    },
-  };
-  onChange(newData);
-  initialManuallySelected.value = newSelectedValues;
   loadingInfo.value = null;
 };
 
@@ -210,7 +180,7 @@ const getPreviouslySelectedTypes = () => {
 
 inject("getPossibleValuesFromUiSchema")(control.value).then((result) => {
   possibleValues.value = result;
-  updateManualFilter(possibleValues.value.map(({ id }) => id));
+  setInitialManuallySelected(possibleValues.value.map(({ id }) => id));
   previouslySelectedTypes.value = getPreviouslySelectedTypes();
 });
 

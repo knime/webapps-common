@@ -274,7 +274,7 @@ describe("TwinlistInput.vue", () => {
         .findComponent(MultiModeTwinlist)
         .vm.$emit("input", { selected, isManual: false });
       expect(updateData).toHaveBeenNthCalledWith(
-        3,
+        2,
         expect.anything(),
         props.control.path,
         expect.objectContaining({ selected }),
@@ -288,7 +288,7 @@ describe("TwinlistInput.vue", () => {
         .findComponent(MultiModeTwinlist)
         .vm.$emit("input", { selected, isManual: true, deselected });
       expect(updateData).toHaveBeenNthCalledWith(
-        3,
+        2,
         expect.anything(),
         props.control.path,
         expect.objectContaining({
@@ -307,7 +307,7 @@ describe("TwinlistInput.vue", () => {
         .findComponent(MultiModeTwinlist)
         .vm.$emit("includeUnknownValuesInput", includeUnknownColumns);
       expect(updateData).toHaveBeenNthCalledWith(
-        3,
+        2,
         expect.anything(),
         props.control.path,
         expect.objectContaining({
@@ -322,7 +322,7 @@ describe("TwinlistInput.vue", () => {
         .findComponent(MultiModeTwinlist)
         .vm.$emit("patternInput", pattern);
       expect(updateData).toHaveBeenNthCalledWith(
-        3,
+        2,
         expect.anything(),
         props.control.path,
         expect.objectContaining({
@@ -337,7 +337,7 @@ describe("TwinlistInput.vue", () => {
         .findComponent(MultiModeTwinlist)
         .vm.$emit("inversePatternInput", isInverted);
       expect(updateData).toHaveBeenNthCalledWith(
-        3,
+        2,
         expect.anything(),
         props.control.path,
         expect.objectContaining({
@@ -352,7 +352,7 @@ describe("TwinlistInput.vue", () => {
         .findComponent(MultiModeTwinlist)
         .vm.$emit("caseSensitivePatternInput", isCaseSensitive);
       expect(updateData).toHaveBeenNthCalledWith(
-        3,
+        2,
         expect.anything(),
         props.control.path,
         expect.objectContaining({
@@ -372,7 +372,7 @@ describe("TwinlistInput.vue", () => {
         .findComponent(MultiModeTwinlist)
         .vm.$emit("typesInput", selectedTypes, typeDisplays);
       expect(updateData).toHaveBeenNthCalledWith(
-        3,
+        2,
         expect.anything(),
         props.control.path,
         expect.objectContaining({
@@ -456,7 +456,9 @@ describe("TwinlistInput.vue", () => {
       });
       await flushPromises();
       const manuallySelected = ["A", "B"];
-      expect(updateData).toHaveBeenCalledWith(
+      expect(updateData).toHaveBeenCalledTimes(1);
+      expect(updateData).toHaveBeenNthCalledWith(
+        1,
         expect.anything(),
         localProps.control.path,
         expect.objectContaining({
@@ -498,7 +500,9 @@ describe("TwinlistInput.vue", () => {
       });
       await flushPromises();
       const manuallySelected = ["A", "B", "E"];
-      expect(updateData).toHaveBeenCalledWith(
+      expect(updateData).toHaveBeenCalledTimes(1);
+      expect(updateData).toHaveBeenNthCalledWith(
+        1,
         expect.anything(),
         localProps.control.path,
         expect.objectContaining({
