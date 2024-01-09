@@ -56,7 +56,8 @@ import java.lang.annotation.Target;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 
 /**
- * An annotation for indicating controlling the common widget metadata of a given field.
+ * An annotation for a field indicating that its contributing to the dialog UI. And it allows one to control common
+ * widget metadata of the field.
  *
  * Depending on the type of the field being annotated and in case there is <b> no</b>
  * {@link org.knime.core.webui.node.dialog.defaultdialog.widget other widget annotation} present, a default widget will

@@ -67,9 +67,11 @@ import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.VariableType;
+import org.knime.core.webui.node.dialog.defaultdialog.examples.ArrayWidgetExample;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.LayoutGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorFactory;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
@@ -91,8 +93,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.CredentialsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.PasswordWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.UsernameWidget;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Marker interface for implementations that define a {@link DefaultNodeDialog}. The implementations allow one to
@@ -118,11 +118,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * </ol>
  * <h3>Dialog widgets</h3>
  * <p>
- * All fields with visibility of at least 'package scope' are represented as dialog widgets; they can optionally be
- * annotated with {@link Widget} and {@link org.knime.core.webui.node.dialog.defaultdialog.widget other widget
- * annotations} to supply additional information (e.g. description, domain info, ...). Note that getters of at least
- * 'package scope' will also be represented as dialog widgets. If this is not intended, they can be annotated by an
- * {@link JsonIgnore} annotation.
+ * All fields with visibility of at least 'package scope' and annotated with {@link Widget} are represented as dialog
+ * widgets. They can additionally be annotated with {@link org.knime.core.webui.node.dialog.defaultdialog.widget other
+ * widget annotations} to supply additional information (e.g. description, domain info, ...).
+ *
+ * Fields without a widget annotation are still persisted and passed to the frontend as 'data' (but will not be visible
+ * to the user). This can e.g. be used when a setting is only used in a dialog-less context, e.g. a port view. Refer to
+ * {@link Effect} on how to hide a widget depending on other settings.
  *
  * The table below lists all the supported type with
  * <ul>

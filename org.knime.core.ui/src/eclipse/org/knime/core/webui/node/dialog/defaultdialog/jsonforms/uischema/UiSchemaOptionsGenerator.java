@@ -204,15 +204,13 @@ final class UiSchemaOptionsGenerator {
             }
         }
 
-        // TODO it must contain the widget annotation
-        if (annotatedWidgets.contains(Widget.class)) {
-            final var widget = m_field.getAnnotation(Widget.class);
-            if (widget.advanced()) {
-                options.put(OPTIONS_IS_ADVANCED, true);
-            }
-            if (widget.hideTitle()) {
-                control.put(TAG_LABEL, "");
-            }
+        assert annotatedWidgets.contains(Widget.class);
+        final var widget = m_field.getAnnotation(Widget.class);
+        if (widget.advanced()) {
+            options.put(OPTIONS_IS_ADVANCED, true);
+        }
+        if (widget.hideTitle()) {
+            control.put(TAG_LABEL, "");
         }
 
         if (annotatedWidgets.contains(DateTimeWidget.class)) {
