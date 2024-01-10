@@ -88,7 +88,6 @@ export default defineComponent({
 </script>
 
 <template>
-  <!-- Note: @click events also fire on keyboard activation via Enter -->
   <Component
     :is="component"
     v-bind="dynamicProps"
