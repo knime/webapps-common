@@ -307,6 +307,10 @@ final class ApplyData {
     /**
      * Wraps an {@link OnApplyNodeModifier}, stores / defers settings updates on apply and finally delegates the applied
      * updates to the underlying {@link OnApplyNodeModifier} on dialog close.
+     *
+     * This wrapper is mandatory since apply is also called when clicking on "Save and Execute" when having a dialog and
+     * a view opened.
+     * It is to be removed this with the introduction of embedded dialogs
      */
     private static final class OnApplyNodeModiferWrapper {
 
@@ -344,9 +348,13 @@ final class ApplyData {
         }
 
         private void onClose() {
-            m_modifier.onApply(m_nnc, m_initialModelSettings, m_updatedModelSettings, m_initialViewSettings,
-                m_updatedViewSettings);
+            final var currentInitialModelSettings = m_initialModelSettings;
+            final var currentInitialViewSettings = m_initialViewSettings;
+            final var currentUpdatedModelSettings = m_updatedModelSettings;
+            final var currentUpdatedViewSettings = m_updatedViewSettings;
             m_initialModelSettings = m_initialViewSettings = m_updatedModelSettings = m_updatedViewSettings = null;
+            m_modifier.onApply(m_nnc, currentInitialModelSettings, currentUpdatedModelSettings,
+                currentInitialViewSettings, currentUpdatedViewSettings);
         }
     }
 
