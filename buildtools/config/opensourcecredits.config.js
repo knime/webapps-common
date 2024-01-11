@@ -21,9 +21,6 @@ module.exports = {
     "knime-ui@0.0.0-unused",
     "knime-ui-extension-service@1.0.0",
     "knime-pagebuilder@1.0.0",
-    // TODO remove webpack?
-    "webpack-external-import@0.3.0-beta.0", // licensed under GPL-3 but not included in the production app
-    "webpack-external-import@1.1.3", // licensed under GPL-3 but not included in the production app
     "cluster-key-slot@1.1.0", // recognized as Apache* but is actually Apache-2.0 license
     "argparse@2.0.1", // licensed under Python-2.0 but not included in the production app
     "@nuxt/ui-templates@1.3.1", // licensed under CC-BY-ND-4.0 but not included in the production app
