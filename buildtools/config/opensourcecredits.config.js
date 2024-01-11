@@ -8,6 +8,7 @@ module.exports = {
     "CC0-1.0",
     "CC-BY-3.0",
     "CC-BY-4.0",
+    "CC-BY-ND-4.0",
     "MPL-2.0",
     "Public Domain",
     "Zlib",
@@ -23,7 +24,6 @@ module.exports = {
     "knime-pagebuilder@1.0.0",
     "cluster-key-slot@1.1.0", // recognized as Apache* but is actually Apache-2.0 license
     "argparse@2.0.1", // licensed under Python-2.0 but not included in the production app
-    "@nuxt/ui-templates@1.3.1", // licensed under CC-BY-ND-4.0 but not included in the production app
     "jackspeak@2.3.6", // licensed under BlueOak-1.0.0 but not included in the production app
     "path-scurry@1.10.1", // licensed under BlueOak-1.0.0 but not included in the production app
   ],
