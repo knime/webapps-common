@@ -12,10 +12,6 @@ module.exports = {
     "Public Domain",
     "Zlib",
     "Unlicense",
-
-    // TODO check if can be whitelisted globally or we need to exclude single packages
-    "BlueOak-1.0.0",
-    "CC-BY-ND-4.0",
   ],
 
   // e.g. 'nuxt@2.0.0'
@@ -30,6 +26,9 @@ module.exports = {
     "webpack-external-import@1.1.3", // licensed under GPL-3 but not included in the production app
     "cluster-key-slot@1.1.0", // recognized as Apache* but is actually Apache-2.0 license
     "argparse@2.0.1", // licensed under Python-2.0 but not included in the production app
+    "@nuxt/ui-templates@1.3.1", // licensed under CC-BY-ND-4.0 but not included in the production app
+    "jackspeak@2.3.6", // licensed under BlueOak-1.0.0 but not included in the production app
+    "path-scurry@1.10.1", // licensed under BlueOak-1.0.0 but not included in the production app
   ],
 
   // manually add packages to the credits, e.g.:
