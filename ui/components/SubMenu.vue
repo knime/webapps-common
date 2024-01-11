@@ -123,7 +123,7 @@ export default {
 
     // @ts-expect-error - force cast shadowRoot into HTMLElement
     const clippingBoundary = computed<HTMLElement>(
-      () => shadowRoot || document.body,
+      () => shadowRoot || document?.body,
     );
 
     const closeMenu = () => {

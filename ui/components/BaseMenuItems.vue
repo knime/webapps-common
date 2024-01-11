@@ -64,7 +64,7 @@ export default {
      */
     clippingBoundary: {
       type: Object as PropType<Boundary>,
-      default: document.body,
+      default: document?.body,
     },
   },
   emits: ["item-click", "item-focused", "item-hovered"],
