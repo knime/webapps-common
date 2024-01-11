@@ -53,7 +53,7 @@ export default {
       default: null,
     },
     positionRelativeToElement: {
-      type: HTMLElement as PropType<HTMLElement | null>,
+      type: Object as PropType<HTMLElement | null>,
       default: null,
     },
     /**
