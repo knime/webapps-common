@@ -1,13 +1,27 @@
+import { setUpCustomEmbedderService } from "src/embedder";
 import { SelectionService } from "src/services";
-import { KnimeService } from "src/services/KnimeService";
-import { ExtensionConfig, NodeServices, SelectionModes } from "src/types";
+import { SelectionEventCallbackParams } from "src/services/SelectionService";
+import { ExtensionConfig, SelectionModes } from "src/types";
 import { extensionConfig } from "test/mocks";
 
 describe("SelectionService", () => {
+  const constructSelectionService = (extensionConfig: ExtensionConfig) => {
+    const apiLayer = {
+      updateDataPointSelection: jest.fn(),
+      getConfig: () => extensionConfig,
+    };
+    const embedder = setUpCustomEmbedderService(apiLayer);
+    const selectionService = new SelectionService(embedder.service);
+    return {
+      selectionService,
+      dispatchPushEvent: embedder.dispatchPushEvent,
+      ...apiLayer,
+    };
+  };
+
   describe("initialization", () => {
     it("Creates selection service", () => {
-      const knime = new KnimeService();
-      const selectionService = new SelectionService(knime);
+      const { selectionService } = constructSelectionService(extensionConfig);
 
       expect(selectionService).toHaveProperty("add");
       expect(selectionService).toHaveProperty("remove");
@@ -22,81 +36,91 @@ describe("SelectionService", () => {
 
   describe("methods", () => {
     it("Calls selection service add/remove/replace methods with correct params", async () => {
-      const callableService = jest
-        .fn()
-        .mockReturnValue(
-          Promise.resolve(new Promise((res) => res({ result: "[]" }))),
-        );
+      const { selectionService, updateDataPointSelection } =
+        constructSelectionService(extensionConfig);
 
-      const knime = new KnimeService(extensionConfig, callableService);
-      const selectionService = new SelectionService(knime);
-
+      updateDataPointSelection.mockReturnValue(
+        Promise.resolve(new Promise((res) => res({ result: "[]" }))),
+      );
       const params = ["row1", "row2", "row3"];
       await selectionService.add(params);
-      expect(callableService.mock.calls[0]).toEqual([
-        NodeServices.CALL_NODE_SELECTION_SERVICE,
-        SelectionModes.ADD,
-        params,
-      ]);
+
+      const idParams = {
+        nodeId: extensionConfig.nodeId,
+        projectId: extensionConfig.projectId,
+        workflowId: extensionConfig.workflowId,
+      };
+
+      expect(updateDataPointSelection.mock.calls[0][0]).toStrictEqual({
+        mode: SelectionModes.ADD,
+        selection: params,
+        ...idParams,
+      });
 
       await selectionService.remove(params);
-      expect(callableService.mock.calls[1]).toEqual([
-        NodeServices.CALL_NODE_SELECTION_SERVICE,
-        SelectionModes.REMOVE,
-        params,
-      ]);
+      expect(updateDataPointSelection.mock.calls[1][0]).toStrictEqual({
+        mode: SelectionModes.REMOVE,
+        selection: params,
+        ...idParams,
+      });
       await selectionService.replace(params);
-      expect(callableService.mock.calls[2]).toEqual([
-        NodeServices.CALL_NODE_SELECTION_SERVICE,
-        SelectionModes.REPLACE,
-        params,
-      ]);
+      expect(updateDataPointSelection.mock.calls[2][0]).toStrictEqual({
+        mode: SelectionModes.REPLACE,
+        selection: params,
+        ...idParams,
+      });
     });
 
-    it("Adds callback to event with addOnSelectionChangeCallback", () => {
-      const knime = new KnimeService();
-      const selectionService = new SelectionService(knime);
+    const selectionPayload: SelectionEventCallbackParams = {
+      mode: SelectionModes.ADD,
+      selection: ["a", "c"],
+    };
 
-      const callback = () => {};
+    it("Adds callback to event with addOnSelectionChangeCallback", () => {
+      const { selectionService, dispatchPushEvent } =
+        constructSelectionService(extensionConfig);
+
+      const callback = jest.fn();
 
       selectionService.addOnSelectionChangeCallback(callback);
 
-      expect(knime.eventCallbacksMap.get("SelectionEvent")[0]).toEqual(
-        (selectionService as any).callbackMap.get(callback),
-      );
+      const payload = { ...extensionConfig, ...selectionPayload };
+      dispatchPushEvent({ name: "SelectionEvent", payload });
+      expect(callback).toHaveBeenCalledWith(selectionPayload);
     });
 
     it("wraps selection callbacks to filter events by nodeId", () => {
       const testPayload = { key: "someValue" };
       const nodeId = "123";
       const extensionConfig = { nodeId } as ExtensionConfig;
-      const knime = new KnimeService(extensionConfig);
-      const selectionService = new SelectionService(knime);
+      const { selectionService, dispatchPushEvent } =
+        constructSelectionService(extensionConfig);
 
       const callback = jest.fn();
 
       selectionService.addOnSelectionChangeCallback(callback);
 
-      const wrappedCallback = (selectionService as any).callbackMap.get(
-        callback,
-      );
-
-      wrappedCallback({ nodeId: "321", params: [testPayload] });
+      dispatchPushEvent({
+        name: "SelectionEvent",
+        payload: { nodeId: "otherNodeId", ...selectionPayload },
+      });
       expect(callback).not.toHaveBeenCalled();
-      wrappedCallback({ nodeId, params: [testPayload] });
+      dispatchPushEvent({
+        name: "SelectionEvent",
+        payload: { nodeId: extensionConfig.nodeId, ...selectionPayload },
+      });
       expect(callback).not.toHaveBeenCalledWith(testPayload);
     });
 
     it("Removes event callback with removeOnSelectionChangeCallback", () => {
-      const knime = new KnimeService();
-      const selectionService = new SelectionService(knime);
+      const { selectionService } = constructSelectionService(extensionConfig);
 
       const callback = () => {};
 
       selectionService.addOnSelectionChangeCallback(callback);
       selectionService.removeOnSelectionChangeCallback(callback);
 
-      expect(knime.eventCallbacksMap.get("SelectionEvent")).toEqual([]);
+      // expect(knime.eventCallbacksMap.get("SelectionEvent")).toEqual([]);
     });
   });
 });

@@ -1,18 +1,22 @@
-import { KnimeService } from "src";
+import { ExtensionConfig } from "src";
+import { setUpCustomEmbedderService } from "src/embedder";
 import { ReportingService } from "src/services/ReportingService";
 
 import { extensionConfig } from "test/mocks";
 
 describe("ReportingService", () => {
-  it("sets isReportingActive to false when extensionConfig is missing", () => {
-    const reportingService = new ReportingService(new KnimeService());
-    expect(reportingService.isReportingActive()).toBe(false);
-  });
+  const constructReportingService = (extensionConfig: ExtensionConfig) => {
+    const apiLayer = {
+      setReportingContent: jest.fn(),
+      getConfig: () => extensionConfig,
+    };
+    const baseService = setUpCustomEmbedderService(apiLayer);
+    const reportingService = new ReportingService(baseService.service);
+    return { reportingService, ...apiLayer };
+  };
 
   it("sets isReportingActive to false if generateImageActionId is not set", () => {
-    const reportingService = new ReportingService(
-      new KnimeService(extensionConfig),
-    );
+    const { reportingService } = constructReportingService(extensionConfig);
     expect(reportingService.isReportingActive()).toBe(false);
   });
 
@@ -21,38 +25,25 @@ describe("ReportingService", () => {
       ...extensionConfig,
       generatedImageActionId: "dummyId",
     };
-    const reportingService = new ReportingService(
-      new KnimeService(localExtensionConfig),
-    );
+    const { reportingService } =
+      constructReportingService(localExtensionConfig);
+
     expect(reportingService.isReportingActive()).toBe(true);
   });
 
   it("calls pushEventCallback when setting reporting content", () => {
-    const pushEventCallback = jest.fn();
-    const reportingService = new ReportingService(
-      new KnimeService(extensionConfig, null, pushEventCallback),
-    );
+    const { reportingService, setReportingContent } =
+      constructReportingService(extensionConfig);
+
     const reportingContent = "<div>reporting content</div>";
     reportingService.setReportingContent(reportingContent);
-    expect(pushEventCallback).toHaveBeenCalledWith(
-      expect.objectContaining({
-        type: "reportingContent",
-        reportingContent,
-      }),
-    );
+    expect(setReportingContent).toHaveBeenCalledWith(reportingContent);
   });
 
   it("calls pushEventCallback when setting render completed", () => {
-    const pushEventCallback = jest.fn();
-    const reportingService = new ReportingService(
-      new KnimeService(extensionConfig, null, pushEventCallback),
-    );
+    const { reportingService, setReportingContent } =
+      constructReportingService(extensionConfig);
     reportingService.setRenderCompleted();
-    expect(pushEventCallback).toHaveBeenCalledWith(
-      expect.objectContaining({
-        type: "reportingContent",
-        reportingContent: false,
-      }),
-    );
+    expect(setReportingContent).toHaveBeenCalledWith(false);
   });
 });

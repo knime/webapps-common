@@ -1,15 +1,15 @@
+import { setUpCustomEmbedderService } from "src/embedder";
 import { DialogService } from "src/services/DialogService";
 import { extensionConfig } from "test/mocks";
-import { KnimeService } from "src/services/KnimeService";
 
 describe("DialogService", () => {
-  describe("initialization", () => {
-    it("Creates data service", () => {
-      const knimeService = new KnimeService(extensionConfig);
-      const dialogService = new DialogService(knimeService);
-
-      expect(dialogService).toHaveProperty("hasNodeView");
-      expect(dialogService).toHaveProperty("isWriteProtected");
+  it("provides configs for dialogs", () => {
+    const embedder = setUpCustomEmbedderService({
+      getConfig: () => extensionConfig,
     });
+    const dialogService = new DialogService(embedder.service);
+
+    expect(dialogService.hasNodeView()).toBeTruthy();
+    expect(dialogService.isWriteProtected()).toBeFalsy();
   });
 });

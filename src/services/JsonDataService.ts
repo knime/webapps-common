@@ -1,39 +1,38 @@
-import {
-  Event,
-  DataServiceType,
-  DataServiceTypes,
-  ExtensionTypes,
-} from "src/types";
+import { DataServiceType, ExtensionTypes } from "src/types";
 import { AlertTypes } from "src/types/AlertTypes";
 import { DialogSettings } from "src/types/DialogSettings";
 import { createJsonRpcRequest } from "src/utils";
-import { Identifiers, UIExtensionService } from "src/knime-svc/types";
-import { getBaseService, createAlert } from "./utils";
+import {
+  CustomUIExtensionService,
+  Identifiers,
+  UIExtensionAPILayer,
+  UIExtensionPushEvents,
+} from "src/serviceTypes";
+import { createAlert } from "./utils";
 import type { AlertConfig } from "src/types/Alert";
+import { AbstractService } from "./AbstractService";
 
 const MAX_MESSAGE_LEN = 160;
+
+type JsonDataServiceExtensionConfig = AlertConfig &
+  Identifiers & {
+    extensionType: ExtensionTypes;
+    initialData?: any;
+    dialogSettings?: DialogSettings;
+  };
+
+type JsonDataServiceAPILayer = Pick<
+  UIExtensionAPILayer,
+  "callNodeDataService" | "publishData" | "sendAlert"
+> & { getConfig: () => JsonDataServiceExtensionConfig };
+
+export type JsonDataServiceUIExtensionService =
+  CustomUIExtensionService<JsonDataServiceAPILayer>;
 
 /**
  * A utility class to interact with JsonDataServices implemented by a UI Extension node.
  */
-export class JsonDataService<
-  T extends AlertConfig &
-    Identifiers & {
-      extensionType: ExtensionTypes;
-      initialData?: any;
-      dialogSettings?: DialogSettings;
-    } = any,
-> {
-  private knimeService: UIExtensionService<T>;
-
-  /**
-   * @param { UIExtensionService<T> } baseService - knimeService instance which is used to communicate
-   *      with the framework.
-   */
-  constructor(baseService?: UIExtensionService<T>) {
-    this.knimeService = getBaseService(baseService);
-  }
-
+export class JsonDataService extends AbstractService<JsonDataServiceAPILayer> {
   /**
    * 
   // TODO: could detect BE service type / (endpoint) based on config
@@ -46,9 +45,9 @@ export class JsonDataService<
    * @returns {Promise} rejected or resolved depending on backend response.
    */
   private callDataService(serviceType: DataServiceType, request = "") {
-    const config = this.knimeService.getConfig();
+    const config = this.baseService.getConfig();
     return (
-      this.knimeService
+      this.baseService
         .callNodeDataService({
           serviceType,
           request,
@@ -74,11 +73,11 @@ export class JsonDataService<
    */
   async initialData() {
     let initialData;
-    const initialDataPerConfig = this.knimeService.getConfig().initialData;
+    const initialDataPerConfig = this.baseService.getConfig().initialData;
     if (initialDataPerConfig) {
       initialData = initialDataPerConfig;
     } else {
-      initialData = await this.callDataService(DataServiceTypes.INITIAL_DATA);
+      initialData = await this.callDataService(DataServiceType.INITIAL_DATA);
     }
 
     if (typeof initialData === "string") {
@@ -104,7 +103,7 @@ export class JsonDataService<
    * @returns {DialogSettings | null} the initial dialog state
    */
   getDialogSettings(): DialogSettings | null {
-    return this.knimeService.getConfig().dialogSettings || null;
+    return this.baseService.getConfig().dialogSettings || null;
   }
 
   /**
@@ -121,7 +120,7 @@ export class JsonDataService<
    */
   async data(params: { method?: string; options?: any } = {}) {
     const response = await this.callDataService(
-      DataServiceTypes.DATA,
+      DataServiceType.DATA,
       JSON.stringify(
         createJsonRpcRequest(params.method || "getData", params.options),
       ),
@@ -148,7 +147,7 @@ export class JsonDataService<
    * @returns {Promise} rejected or resolved depending on backend response.
    */
   applyData(data: any) {
-    return this.callDataService(DataServiceTypes.APPLY_DATA, data);
+    return this.callDataService(DataServiceType.APPLY_DATA, data);
   }
 
   /**
@@ -157,8 +156,10 @@ export class JsonDataService<
    * @param {Event} response - the data update event object.
    * @returns {() => void} - method for removing the listener again
    */
-  addOnDataChangeCallback(callback: (event: Event) => void) {
-    return this.knimeService.addPushEventListener("data-change", callback);
+  addOnDataChangeCallback(
+    callback: UIExtensionPushEvents.PushEventListenerCallback<any>,
+  ) {
+    return this.baseService.addPushEventListener("data-change", callback);
   }
 
   /**
@@ -167,7 +168,7 @@ export class JsonDataService<
    * @returns {void}
    */
   publishData(data: any) {
-    this.knimeService.publishData(data);
+    this.baseService.publishData(data);
   }
 
   private handleError(
@@ -212,8 +213,8 @@ export class JsonDataService<
         : formattedStack;
     }
     messageBody = messageBody.trim();
-    this.knimeService.sendAlert(
-      createAlert(this.knimeService.getConfig(), {
+    this.baseService.sendAlert(
+      createAlert(this.baseService.getConfig(), {
         subtitle: messageSubject || "Something went wrong",
         message:
           messageBody ||
@@ -232,8 +233,8 @@ export class JsonDataService<
     } else if (message?.length > MAX_MESSAGE_LEN) {
       subtitle = "Expand for details";
     }
-    this.knimeService.sendAlert(
-      createAlert(this.knimeService.getConfig(), {
+    this.baseService.sendAlert(
+      createAlert(this.baseService.getConfig(), {
         type: AlertTypes.WARN,
         message,
         subtitle,

@@ -1,23 +1,22 @@
-import { UIExtensionService } from "src/knime-svc";
-import { getBaseService } from "./utils";
+import { UIExtensionAPILayer } from "src/serviceTypes";
+import { AbstractService } from "./AbstractService";
+
+type ReportingServiceExtensionConfig = {
+  generatedImageActionId?: string | null;
+};
+
+type ReportingServiceAPILayer = Pick<
+  UIExtensionAPILayer,
+  "setReportingContent"
+> & { getConfig: () => ReportingServiceExtensionConfig };
 
 /**
  * ReportingService is used in views in order to detect that the view is generated in a reporting context
  * and to communicate that the view is rendered.
  */
-export class ReportingService<
-  T extends {
-    generatedImageActionId?: string | null;
-  } = any,
-> {
-  private knimeService: UIExtensionService<T>;
-
-  constructor(baseService?: UIExtensionService<T>) {
-    this.knimeService = getBaseService(baseService);
-  }
-
+export class ReportingService extends AbstractService<ReportingServiceAPILayer> {
   isReportingActive() {
-    return Boolean(this.knimeService.getConfig().generatedImageActionId);
+    return Boolean(this.baseService.getConfig().generatedImageActionId);
   }
 
   /**
@@ -26,7 +25,7 @@ export class ReportingService<
    * @return {void}
    */
   setReportingContent(reportingContent: false | string): void {
-    this.knimeService.setReportingContent(reportingContent);
+    this.baseService.setReportingContent(reportingContent);
   }
 
   /**

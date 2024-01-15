@@ -1,26 +1,44 @@
-import { Event, SelectionModes, EventTypes } from "src/types";
-import { UIExtensionService } from "src/knime-svc";
-import type { Identifiers } from "src/knime-svc/types";
-import { getBaseService } from "./utils";
+import { SelectionModes, EventTypes } from "src/types";
+import type {
+  CustomUIExtensionService,
+  Identifiers,
+  UIExtensionAPILayer,
+} from "src/serviceTypes";
+import { AbstractService } from "./AbstractService";
+
+export interface SelectionEventCallbackParams {
+  mode: SelectionModes;
+  selection?: string[];
+}
+
+interface SelectionEvent {
+  projectId: string;
+  workflowId: string;
+  nodeId: string;
+  mode: SelectionModes;
+  selection?: string[];
+  error: string | null;
+}
+
+type SelectionServiceExtensionConfig = Identifiers & {
+  initialData?: unknown;
+  initialSelection?: unknown;
+};
+
+type SelectionServiceAPILayer = Pick<
+  UIExtensionAPILayer,
+  "updateDataPointSelection"
+> & { getConfig: () => SelectionServiceExtensionConfig };
 
 /**
  * SelectionService provides methods to handle data selection.
  * To use it, the relating Java implementation also needs to use the SelectionService.
  */
-export class SelectionService<
-  T extends Identifiers & {
-    initialData?: any;
-    initialSelection?: any;
-  } = any,
-> {
-  private knimeService: UIExtensionService<T>;
+export class SelectionService extends AbstractService<SelectionServiceAPILayer> {
   private removeCallbacksMap: Map<Function, () => void>;
 
-  /**
-   * @param {KnimeService} knimeService - instance should be provided to use events.
-   */
-  constructor(baseService?: UIExtensionService<T>) {
-    this.knimeService = getBaseService(baseService);
+  constructor(baseService: CustomUIExtensionService<SelectionServiceAPILayer>) {
+    super(baseService);
     this.removeCallbacksMap = new Map();
   }
 
@@ -32,9 +50,9 @@ export class SelectionService<
    */
   async initialSelection() {
     let initialSelection;
-    if (this.knimeService.getConfig().initialData) {
+    if (this.baseService.getConfig().initialData) {
       initialSelection = await Promise.resolve(
-        this.knimeService.getConfig()?.initialSelection,
+        this.baseService.getConfig()?.initialSelection,
       );
     }
 
@@ -54,8 +72,8 @@ export class SelectionService<
     mode: SelectionModes,
     selection: string[],
   ): Promise<any> {
-    const config = this.knimeService.getConfig();
-    return this.knimeService
+    const config = this.baseService.getConfig();
+    return this.baseService
       .updateDataPointSelection({
         projectId: config.projectId,
         workflowId: config.workflowId,
@@ -97,17 +115,17 @@ export class SelectionService<
 
   /**
    * Adds callback that will be triggered on data selection change outside the scope of the view.
-   * @param {function} callback - that need to be added. Will be triggered by the framework on selection change.
-   * @returns {void}
    */
-  addOnSelectionChangeCallback(callback: (any) => void): void {
-    const wrappedCallback = (event: Event): void => {
-      const { nodeId, selection, mode } = event.payload || {};
-      if (this.knimeService.getConfig().nodeId === nodeId) {
+  addOnSelectionChangeCallback(
+    callback: (event: SelectionEventCallbackParams) => void,
+  ): void {
+    const wrappedCallback = (event?: SelectionEvent): void => {
+      const { nodeId, selection, mode } = event || {};
+      if (this.baseService.getConfig().nodeId === nodeId) {
         callback({ selection, mode });
       }
     };
-    const removeCallback = this.knimeService.addPushEventListener(
+    const removeCallback = this.baseService.addPushEventListener(
       EventTypes.SelectionEvent,
       wrappedCallback,
     );
@@ -119,7 +137,9 @@ export class SelectionService<
    * @param {function} callback - that needs to be removed from events.
    * @returns {void}
    */
-  removeOnSelectionChangeCallback(callback: (any) => void): void {
+  removeOnSelectionChangeCallback(
+    callback: (event: SelectionEventCallbackParams) => void,
+  ): void {
     this.removeCallbacksMap.get(callback)();
     this.removeCallbacksMap.delete(callback);
   }

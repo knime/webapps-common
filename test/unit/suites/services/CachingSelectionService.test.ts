@@ -1,14 +1,16 @@
 import {
   CachingSelectionService,
-  KnimeService,
   SelectionModes,
   SelectionService,
+  UIExtensionPushEvents,
 } from "src";
+import { setUpCustomEmbedderService } from "src/embedder";
 import { extensionConfig } from "test/mocks";
 
-describe("BarChartSelectionService", () => {
+describe("CachingSelectionService", () => {
   let cachingSelectionService: CachingSelectionService,
-    knimeService: KnimeService;
+    knimeService: typeof SelectionService.prototype.baseService,
+    dispatchPushEvent: (event: UIExtensionPushEvents.PushEvent<any>) => void;
 
   const setInitialSelection = (initialSelection: string[]) => {
     jest
@@ -18,7 +20,14 @@ describe("BarChartSelectionService", () => {
   };
 
   beforeEach(() => {
-    knimeService = new KnimeService(extensionConfig);
+    const embedderService = setUpCustomEmbedderService({
+      updateDataPointSelection: jest
+        .fn()
+        .mockResolvedValue('{"result": "backend-result"}'),
+      getConfig: () => extensionConfig,
+    });
+    knimeService = embedderService.service;
+    dispatchPushEvent = embedderService.dispatchPushEvent;
     cachingSelectionService = new CachingSelectionService(knimeService);
   });
 
@@ -44,7 +53,8 @@ describe("BarChartSelectionService", () => {
         mode: selectionMode,
       };
 
-      knimeService.eventCallbacksMap.get("SelectionEvent")[0]({
+      dispatchPushEvent({
+        name: "SelectionEvent",
         payload: selectionPayload,
       });
 

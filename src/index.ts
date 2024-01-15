@@ -14,6 +14,7 @@ export {
 
 export * from "./types";
 
-export * from "./knime-svc";
-
 export { KnimeUtils } from "./utils/KnimeUtils";
+
+export { setUpEmbedderService, setUpIframeEmbedderService } from "./embedder";
+export * from "./serviceTypes";

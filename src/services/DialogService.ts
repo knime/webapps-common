@@ -1,30 +1,21 @@
-import { UIExtensionService } from "src/knime-svc/types";
-import { getBaseService } from "./utils";
+import { AbstractService } from "./AbstractService";
+
+type DialogServiceExtensionConfig = {
+  hasNodeView: boolean;
+  writeProtected?: boolean;
+};
+
+type DialogServiceAPILayer = { getConfig: () => DialogServiceExtensionConfig };
 
 /**
  * A utility class to interact with Dialog settings implemented by a UI Extension node.
  */
-export class DialogService<
-  T extends {
-    hasNodeView: boolean;
-    writeProtected: boolean;
-  } = any,
-> {
-  private knimeService: UIExtensionService<T>;
-
-  /**
-   * @param {UIExtensionService<T>} baseService - knimeService instance which is used to communicate
-   *      with the framework.
-   */
-  constructor(baseService?: UIExtensionService<T>) {
-    this.knimeService = getBaseService(baseService);
-  }
-
+export class DialogService extends AbstractService<DialogServiceAPILayer> {
   /**
    * @returns {boolean} - true, if the node this dialog belongs to also has a node view, otherwise false
    */
   hasNodeView() {
-    return this.knimeService.getConfig()?.hasNodeView;
+    return this.baseService.getConfig().hasNodeView;
   }
 
   /**
@@ -32,6 +23,6 @@ export class DialogService<
    *         otherwise false
    */
   isWriteProtected() {
-    return this.knimeService.getConfig()?.writeProtected;
+    return this.baseService.getConfig().writeProtected;
   }
 }

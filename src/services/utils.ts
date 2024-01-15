@@ -1,13 +1,5 @@
 import { AlertConfig, CreateAlertParams } from "src/types/Alert";
-import { AlertTypes, NodeInfo, UIExtensionService } from "..";
-import { createUIExtensionServiceProxy } from "src/knime-svc/service-proxy";
-
-export const getBaseService = (baseService?: UIExtensionService) => {
-  const { service } = baseService
-    ? { service: baseService }
-    : createUIExtensionServiceProxy();
-  return service;
-};
+import { AlertTypes, NodeInfo } from "src/types";
 
 export const createAlert = (
   baseConfig: AlertConfig,

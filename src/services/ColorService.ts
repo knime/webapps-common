@@ -5,9 +5,13 @@ import {
 } from "../types/ColorModel";
 import convert from "color-convert";
 import { AlertTypes } from "src/types";
-import { createAlert, getBaseService } from "./utils";
+import { createAlert } from "./utils";
 import { AlertConfig } from "src/types/Alert";
-import { UIExtensionService } from "src/knime-svc";
+import {
+  CustomUIExtensionService,
+  UIExtensionAPILayer,
+} from "src/serviceTypes";
+import { AbstractService } from "./AbstractService";
 
 // TODO: UIEXT-858 Provide this default color via color model
 const lightGray = "#D3D3D3";
@@ -73,35 +77,37 @@ export class NominalColorHandler extends AbstractColorHandler<
 
 export type ColorHandler = NumericColorHandler | NominalColorHandler;
 
+type ColorServiceExtensionConfig = AlertConfig & {
+  colorModels?: Record<string, ColorModel>;
+  columnNamesColorModel?: ColorModel;
+};
+
+type ColorServiceAPILayer = Pick<UIExtensionAPILayer, "sendAlert"> & {
+  getConfig: () => ColorServiceExtensionConfig;
+};
+
 /**
  * A utility class to receive a color callback created by the color model provided by a
  * UI Extension node.
  */
-export class ColorService<
-  T extends AlertConfig & {
-    colorModels?: Record<string, ColorModel>;
-    columnNamesColorModel?: ColorModel;
-  } = any,
-> {
+export class ColorService extends AbstractService<ColorServiceAPILayer> {
   /**
    * Mapping from column name to attached color model given by the extension config.
    */
   private colorModels: Record<string, ColorModel> | undefined;
   private columnNamesColorModel: ColorModel | undefined;
-  private knimeService: UIExtensionService<T>;
 
   /**
    * @param {KnimeService} knimeService - knimeService instance which is used to communicate
    *      with the framework.
    */
-  constructor(baseService?: UIExtensionService<T>) {
-    const knimeService = getBaseService(baseService);
-    this.colorModels = knimeService.getConfig().colorModels;
+  constructor(baseService?: CustomUIExtensionService<ColorServiceAPILayer>) {
+    super(baseService);
+    this.colorModels = baseService.getConfig().colorModels;
     if (!this.colorModels) {
       throw new Error("No color models present in the given extension config.");
     }
-    this.columnNamesColorModel = knimeService.getConfig().columnNamesColorModel;
-    this.knimeService = knimeService;
+    this.columnNamesColorModel = baseService.getConfig().columnNamesColorModel;
   }
 
   public getColorHandler(columnName: string, suppressWarning: boolean = false) {
@@ -114,8 +120,8 @@ export class ColorService<
       }
     }
     if (!suppressWarning) {
-      this.knimeService.sendAlert(
-        createAlert(this.knimeService.getConfig(), {
+      this.baseService.sendAlert(
+        createAlert(this.baseService.getConfig(), {
           type: AlertTypes.WARN,
           message: `No color handler found for the given column name "${columnName}".`,
         }),
@@ -128,7 +134,7 @@ export class ColorService<
     if (this.columnNamesColorModel) {
       const { model, type } = this.columnNamesColorModel;
       if (type === ColorModelType.NOMINAL) {
-        return new NominalColorHandler(model);
+        return new NominalColorHandler(model as Record<string, string>);
       } else {
         throw new Error(
           "The type of the column name color model is not correct.",

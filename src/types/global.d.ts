@@ -4,4 +4,8 @@ declare global {
     getNodeViewInfo: () => any;
     closeCEFWindow?: () => void;
   }
+
+  interface Crypto {
+    randomUUID: () => `${string}-${string}-${string}-${string}-${string}`;
+  }
 }

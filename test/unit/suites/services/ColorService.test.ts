@@ -1,5 +1,5 @@
 /* eslint-disable no-magic-numbers */
-import { KnimeService } from "src/services/KnimeService";
+import { setUpCustomEmbedderService } from "src/embedder";
 import {
   ColorService,
   NominalColorHandler,
@@ -10,8 +10,10 @@ import { extensionConfig } from "test/mocks";
 
 const createServices = ({ colorModels = {}, columnNamesColorModel = null }) => {
   const config = { ...extensionConfig, colorModels, columnNamesColorModel };
-  const knimeService = new KnimeService(config);
-  knimeService.sendWarning = jest.fn();
+  const knimeService = setUpCustomEmbedderService({
+    sendAlert: jest.fn(),
+    getConfig: () => config,
+  }).service;
   const colorService = new ColorService(knimeService);
 
   return { config, knimeService, colorService };
@@ -21,7 +23,8 @@ describe("ColorService", () => {
   const numericColumnName = "nominalColumn";
   const nominalColumnName = "numericColumn";
 
-  let colorService: ColorService, knimeService: KnimeService;
+  let colorService: ColorService,
+    uiExtensionService: typeof ColorService.prototype.baseService;
 
   const colorModels = {
     [numericColumnName]: {
@@ -44,7 +47,9 @@ describe("ColorService", () => {
   };
 
   beforeEach(() => {
-    ({ knimeService, colorService } = createServices({ colorModels }));
+    ({ knimeService: uiExtensionService, colorService } = createServices({
+      colorModels,
+    }));
   });
 
   const defaultColor = "#D3D3D3";
@@ -52,12 +57,12 @@ describe("ColorService", () => {
   describe("getColorCallback", () => {
     it("returns null and sets a warning if the column does not have a color handler", () => {
       expect(colorService.getColorHandler("foo")).toBeNull();
-      expect(knimeService.sendWarning).toHaveBeenCalled();
+      expect(uiExtensionService.sendAlert).toHaveBeenCalled();
     });
 
     it("does not set a warning if suppressed", () => {
       colorService.getColorHandler("foo", true);
-      expect(knimeService.sendWarning).not.toHaveBeenCalled();
+      expect(uiExtensionService.sendAlert).not.toHaveBeenCalled();
     });
 
     it("returns a function for nominal color model", () => {
@@ -98,7 +103,7 @@ describe("ColorService", () => {
           column3: "#0000FF",
         },
       };
-      ({ knimeService, colorService } = createServices({
+      ({ knimeService: uiExtensionService, colorService } = createServices({
         columnNamesColorModel,
       }));
 
@@ -111,7 +116,7 @@ describe("ColorService", () => {
     });
 
     it("throws an Error in case the model is not nominal", () => {
-      ({ knimeService, colorService } = createServices({
+      ({ knimeService: uiExtensionService, colorService } = createServices({
         columnNamesColorModel: colorModels[numericColumnName],
       }));
 

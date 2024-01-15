@@ -1,6 +1,8 @@
-import { Event } from "src/types";
-import { SelectionService } from "./SelectionService";
-import type { UIExtensionService } from "src/knime-svc";
+import {} from "src/types";
+import {
+  SelectionEventCallbackParams,
+  SelectionService,
+} from "./SelectionService";
 
 /**
  * A SelectionService which persists the current selection.
@@ -8,7 +10,7 @@ import type { UIExtensionService } from "src/knime-svc";
 export class CachingSelectionService extends SelectionService {
   private cachedSelection: Set<string>;
 
-  constructor(baseService?: UIExtensionService) {
+  constructor(baseService?: typeof SelectionService.prototype.baseService) {
     super(baseService);
     this.cachedSelection = new Set();
     this.addOnSelectionChangeCallback(this.addBackendSelection.bind(this));
@@ -17,7 +19,7 @@ export class CachingSelectionService extends SelectionService {
   private addBackendSelection({
     mode,
     selection,
-  }: Pick<Event["payload"], "selection" | "mode">) {
+  }: SelectionEventCallbackParams) {
     switch (mode) {
       case "ADD":
         this.addToChache(selection);
