@@ -75,9 +75,9 @@ export default {
       return;
     }
 
-    initialTab = availableTabs[0] ?? null;
+    initialTab = availableTabs[0] ?? { value: null };
     consola.trace("TabBar: Setting initial tab to", initialTab);
-    this.$emit("update:modelValue", initialTab);
+    this.$emit("update:modelValue", initialTab.value);
   },
   methods: {
     onChange(value) {
