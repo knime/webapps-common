@@ -50,6 +50,17 @@ describe("TabBar.vue", () => {
     expect(wrapper.find("input:checked").attributes("value")).toBe("all");
   });
 
+  it("does not emit if initial value is set", () => {
+    let wrapper = shallowMount(TabBar, {
+      props: {
+        possibleValues,
+        modelValue: "workflows",
+      },
+    });
+
+    expect(wrapper.emitted("update:modelValue")).toBeFalsy();
+  });
+
   it("can be disabled", () => {
     let wrapper = shallowMount(TabBar, {
       props: {

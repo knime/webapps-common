@@ -67,9 +67,17 @@ export default {
   },
   emits: ["update:modelValue"],
   created() {
-    const firstTab = this.possibleValues.find((tab) => !tab.disabled);
-    consola.trace("TabBar: Setting initial tab", firstTab);
-    this.$emit("update:modelValue", firstTab ? firstTab.value : null);
+    const availableTabs = this.possibleValues.filter((tab) => !tab.disabled);
+    let initialTab = availableTabs.find((tab) => tab.value === this.modelValue);
+
+    if (initialTab) {
+      consola.trace("TabBar: Initial tab set to", initialTab);
+      return;
+    }
+
+    initialTab = availableTabs.find((tab) => !tab.disabled);
+    consola.trace("TabBar: Setting initial tab to", initialTab);
+    this.$emit("update:modelValue", initialTab ? initialTab.value : null);
   },
   methods: {
     onChange(value) {
