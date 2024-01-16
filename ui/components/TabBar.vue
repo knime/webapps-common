@@ -75,9 +75,9 @@ export default {
       return;
     }
 
-    initialTab = availableTabs.find((tab) => !tab.disabled);
+    initialTab = availableTabs[0] ?? null;
     consola.trace("TabBar: Setting initial tab to", initialTab);
-    this.$emit("update:modelValue", initialTab ? initialTab.value : null);
+    this.$emit("update:modelValue", initialTab);
   },
   methods: {
     onChange(value) {
