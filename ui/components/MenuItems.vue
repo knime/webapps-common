@@ -1,3 +1,10 @@
+<script lang="ts">
+/** Dummy description */
+export default {
+  name: "MenuItems",
+};
+</script>
+
 <script setup lang="ts">
 /**
  * MenuItems component with (optional) hotkey text and icons
@@ -30,6 +37,7 @@
  * another MenuItems instance. The keyboard navigation is delegated to the submenu and open/close is handled.
  * Use the selector `:deep(.menu-items-sub-level)` to style the sub menus
  */
+
 import {
   type FunctionalComponent,
   nextTick,
@@ -78,6 +86,7 @@ export interface MenuItem {
 }
 
 type Props = {
+  /** Some example definition */
   items: MenuItem[];
   menuAriaLabel: string;
   disableSpaceToClick?: boolean;
