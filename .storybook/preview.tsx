@@ -1,5 +1,7 @@
 import type { Preview } from "@storybook/vue3";
+
 import "../ui/css/index.css";
+import DocumentationTemplate from "../stories/Template.mdx";
 
 const preview: Preview = {
   parameters: {
@@ -11,7 +13,7 @@ const preview: Preview = {
       },
     },
     docs: {
-      toc: true,
+      page: DocumentationTemplate,
     },
   },
 };

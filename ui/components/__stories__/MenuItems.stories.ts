@@ -69,6 +69,11 @@ const meta = {
     items: menuItemsData,
     menuAriaLabel: "label",
   },
+  parameters: {
+    docs: {
+      description: "Hello from Spain",
+    },
+  },
 } satisfies Meta<typeof MenuItems>;
 
 export default meta;
