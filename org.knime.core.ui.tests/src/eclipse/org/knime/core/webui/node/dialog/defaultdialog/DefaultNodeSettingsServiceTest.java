@@ -141,7 +141,8 @@ class DefaultNodeSettingsServiceTest {
         assertThatJson(initialData.get("schema")).isEqualTo(wrappedSchema);
 
         // assert that returned ui schema is equal to json object created via JsonFormsUiSchemaUtil
-        final Map<String, Class<?>> testSettingsMap = Map.of(SettingsType.VIEW.getConfigKey(), TestSettings.class);
+        final Map<String, Class<? extends DefaultNodeSettings>> testSettingsMap =
+            Map.of(SettingsType.VIEW.getConfigKey(), TestSettings.class);
         final var uiSchema = JsonFormsUiSchemaUtil.buildUISchema(testSettingsMap,
             DefaultNodeSettings.createDefaultNodeSettingsContext(specs), new AsyncChoicesHolder());
         assertThatJson(initialData.get("ui_schema")).isEqualTo(uiSchema);

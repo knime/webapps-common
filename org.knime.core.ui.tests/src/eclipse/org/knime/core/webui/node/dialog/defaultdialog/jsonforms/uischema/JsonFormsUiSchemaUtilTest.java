@@ -84,25 +84,26 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @SuppressWarnings("java:S2698") // we accept assertions without messages
 class JsonFormsUiSchemaUtilTest {
 
-    static ObjectNode buildUiSchema(final Map<String, Class<?>> settings) {
+    static ObjectNode buildUiSchema(final Map<String, Class<? extends DefaultNodeSettings>> settings) {
         return buildUiSchema(settings, null, new AsyncChoicesHolder());
     }
 
-    static ObjectNode buildUiSchema(final Map<String, Class<?>> settings, final DefaultNodeSettingsContext context,
-        final AsyncChoicesHolder asyncChoicesHolder) {
+    static ObjectNode buildUiSchema(final Map<String, Class<? extends DefaultNodeSettings>> settings,
+        final DefaultNodeSettingsContext context, final AsyncChoicesHolder asyncChoicesHolder) {
         return JsonFormsUiSchemaUtil.buildUISchema(settings, context, asyncChoicesHolder);
     }
 
-    static ObjectNode buildTestUiSchema(final Class<?> settingsClass) {
+    static ObjectNode buildTestUiSchema(final Class<? extends DefaultNodeSettings> settingsClass) {
         return buildUiSchema(Map.of("test", settingsClass));
     }
 
-    static ObjectNode buildTestUiSchema(final Class<?> settingsClass, final DefaultNodeSettingsContext context) {
+    static ObjectNode buildTestUiSchema(final Class<? extends DefaultNodeSettings> settingsClass,
+        final DefaultNodeSettingsContext context) {
         return buildTestUiSchema(settingsClass, context, new AsyncChoicesHolder());
     }
 
-    static ObjectNode buildTestUiSchema(final Class<?> settingsClass, final DefaultNodeSettingsContext context,
-        final AsyncChoicesHolder asyncChoicesHolder) {
+    static ObjectNode buildTestUiSchema(final Class<? extends DefaultNodeSettings> settingsClass,
+        final DefaultNodeSettingsContext context, final AsyncChoicesHolder asyncChoicesHolder) {
         return buildUiSchema(Map.of("test", settingsClass), context, asyncChoicesHolder);
     }
 
@@ -160,7 +161,7 @@ class JsonFormsUiSchemaUtilTest {
 
     @Test
     void testLayout() throws JsonProcessingException {
-        final var settings = new LinkedHashMap<String, Class<?>>();
+        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
         settings.put("model", TestLayoutModelSettings.class);
         settings.put("view", TestLayoutViewSettings.class);
         final var response = buildUiSchema(settings);
@@ -370,7 +371,7 @@ class JsonFormsUiSchemaUtilTest {
 
     @Test
     void testThrowsIfMultipleLayoutRootsAreDetected() {
-        final Map<String, Class<?>> settings =
+        final Map<String, Class<? extends DefaultNodeSettings>> settings =
             Map.of("model", TestMultipleRootsOne.class, "view", TestMultipleRootsTwo.class);
         assertThrows(UiSchemaGenerationException.class, () -> buildUiSchema(settings));
     }
@@ -396,7 +397,8 @@ class JsonFormsUiSchemaUtilTest {
 
     @Test
     void testThrowsIfThereIsAFieldAndAFieldClassAnnotationForAField() {
-        final Map<String, Class<?>> settings = Map.of("test", TestFieldWithTwoLayoutAnnotationsSettings.class);
+        final Map<String, Class<? extends DefaultNodeSettings>> settings =
+            Map.of("test", TestFieldWithTwoLayoutAnnotationsSettings.class);
         assertThrows(FieldAnnotationsHolder.FieldAnnotationException.class, () -> buildUiSchema(settings));
     }
 
@@ -426,7 +428,7 @@ class JsonFormsUiSchemaUtilTest {
             String m_setting3;
         }
 
-        final Map<String, Class<?>> settings = Map.of("test", VirtualLayoutSettings.class);
+        final Map<String, Class<? extends DefaultNodeSettings>> settings = Map.of("test", VirtualLayoutSettings.class);
         final var response = buildUiSchema(settings);
 
         assertThatJson(response).inPath("$.elements").isArray().hasSize(3);
@@ -454,7 +456,8 @@ class JsonFormsUiSchemaUtilTest {
             String m_setting1;
         }
 
-        final Map<String, Class<?>> settings = Map.of("test", TestEmptySectionSettings.class);
+        final Map<String, Class<? extends DefaultNodeSettings>> settings =
+            Map.of("test", TestEmptySectionSettings.class);
         final var response = buildUiSchema(settings);
 
         assertThatJson(response).inPath("$.elements").isArray().hasSize(1);
@@ -479,7 +482,8 @@ class JsonFormsUiSchemaUtilTest {
             String m_setting2;
         }
 
-        final Map<String, Class<?>> settings = Map.of("test", TestHorizontalLayoutSettings.class);
+        final Map<String, Class<? extends DefaultNodeSettings>> settings =
+            Map.of("test", TestHorizontalLayoutSettings.class);
         final var response = buildUiSchema(settings);
 
         assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("HorizontalLayout");
@@ -518,7 +522,7 @@ class JsonFormsUiSchemaUtilTest {
     @Test
     void testLayoutAnnotationsOnSuperclass() {
 
-        class TestSettings {
+        class TestSettings implements DefaultNodeSettings {
 
             @Layout(BeforeCenterLayout.class)
             int intBeforeCenterLayout;
@@ -532,7 +536,7 @@ class JsonFormsUiSchemaUtilTest {
             String stringInSecondSection;
         }
 
-        final Map<String, Class<?>> settings = Map.of("test", TestSettings.class);
+        final Map<String, Class<? extends DefaultNodeSettings>> settings = Map.of("test", TestSettings.class);
 
         final var response = buildUiSchema(settings);
 

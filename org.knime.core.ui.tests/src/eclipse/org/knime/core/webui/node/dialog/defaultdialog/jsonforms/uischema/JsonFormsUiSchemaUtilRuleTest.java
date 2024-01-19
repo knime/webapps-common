@@ -613,7 +613,7 @@ class JsonFormsUiSchemaUtilRuleTest {
 
     @Test
     void testRuleWithRepeatedSignals() {
-        final class RepeatedSignalsTestSettings {
+        final class RepeatedSignalsTestSettings implements DefaultNodeSettings {
 
             enum MyEnum {
                     A, B, C;
@@ -670,7 +670,7 @@ class JsonFormsUiSchemaUtilRuleTest {
 
     @Test
     void testIgnoreOnMissingSignals() {
-        final class EffectWithoutSignalsSettings {
+        final class EffectWithoutSignalsSettings implements DefaultNodeSettings {
 
             interface UnmetCondition {
             }
@@ -689,7 +689,7 @@ class JsonFormsUiSchemaUtilRuleTest {
 
     @Test
     void testThrowsIfMissingSignalsAreNotIgnored() {
-        final class EffectWithoutSignalsSettings {
+        final class EffectWithoutSignalsSettings implements DefaultNodeSettings {
 
             interface UnmetCondition {
             }
@@ -736,7 +736,7 @@ class JsonFormsUiSchemaUtilRuleTest {
             String m_extendingWithExtraEffectSetting;
         }
 
-        final class EffectOnClassSettings {
+        final class EffectOnClassSettings implements DefaultNodeSettings {
 
             @Signal(condition = TrueCondition.class)
             boolean m_signalSetting;

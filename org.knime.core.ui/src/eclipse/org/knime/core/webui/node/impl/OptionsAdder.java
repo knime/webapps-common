@@ -84,9 +84,9 @@ final class OptionsAdder {
         addOptions(modelSettingsClass, viewSettingsClass, field -> createOption(field, tab, optionCreator));
     }
 
-    private static void addOptions(final Class<?> modelSettingsClass, final Class<?> viewSettingsClass,
-        final Consumer<PropertyWriter> addField) {
-        final Map<String, Class<?>> settings = new HashMap<>();
+    private static void addOptions(final Class<? extends DefaultNodeSettings> modelSettingsClass,
+        final Class<? extends DefaultNodeSettings> viewSettingsClass, final Consumer<PropertyWriter> addField) {
+        final Map<String, Class<? extends DefaultNodeSettings>> settings = new HashMap<>();
         if (modelSettingsClass != null) {
             settings.put(SettingsType.MODEL.getConfigKey(), modelSettingsClass);
         }

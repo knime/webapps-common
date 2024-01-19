@@ -125,7 +125,7 @@ public final class JsonFormsSettingsImpl implements JsonFormsSettings {
     }
 
     private RawValue generateUiSchema(final AsyncChoicesHolder asyncChoicesHolder) {
-        final var settings = new LinkedHashMap<String, Class<?>>();
+        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
         if (m_modelSettingsClass != null) {
             settings.put(SettingsType.MODEL.getConfigKey(), m_modelSettingsClass);
         }

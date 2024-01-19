@@ -149,7 +149,7 @@ class UiSchemaOptionsTest {
     @Test
     void testHidableStringSetting() {
         @SuppressWarnings("unused")
-        class HidableStringSettings {
+        class HidableStringSettings implements DefaultNodeSettings {
 
             @TextInputWidget(optional = true)
             String m_string;
@@ -166,7 +166,7 @@ class UiSchemaOptionsTest {
     @Test
     void testComboBoxFormat() {
         @SuppressWarnings("unused")
-        class ComboBoxFormatSettings {
+        class ComboBoxFormatSettings implements DefaultNodeSettings {
 
             String[] m_comboBox;
 
@@ -273,7 +273,7 @@ class UiSchemaOptionsTest {
                 int m_field2;
             }
 
-            class ShowSortButtonsTestSettings {
+            class ShowSortButtonsTestSettings implements DefaultNodeSettings {
                 @ArrayWidget
                 ArrayElement[] m_arrayElementNoSortButtons;
 
@@ -291,7 +291,7 @@ class UiSchemaOptionsTest {
 
         @Test
         void testHideTitle() {
-            class HideTitleSettings {
+            class HideTitleSettings implements DefaultNodeSettings {
                 @Widget(title = "foo1")
                 String m_foo1;
 
@@ -315,7 +315,7 @@ class UiSchemaOptionsTest {
 
         @Test
         void testDefaultButtonWidgetOptions() {
-            class ButtonWidgetDefaultTestSettings {
+            class ButtonWidgetDefaultTestSettings implements DefaultNodeSettings {
 
                 @ButtonWidget(actionHandler = ButtonActionHandlerWithoutDependencies.class)
                 String m_foo;
@@ -334,7 +334,7 @@ class UiSchemaOptionsTest {
 
         @Test
         void testButtonWidgetOptions() {
-            class ButtonWidgetOptionsTestSettings {
+            class ButtonWidgetOptionsTestSettings implements DefaultNodeSettings {
                 @ButtonWidget(actionHandler = ButtonActionHandlerWithoutDependencies.class, displayErrorMessage = false,
                     showTitleAndDescription = false)
                 String m_foo;
@@ -353,7 +353,7 @@ class UiSchemaOptionsTest {
 
         @Test
         void testButtonStates() {
-            class ButtonWidgetDefaultTestSettings {
+            class ButtonWidgetDefaultTestSettings implements DefaultNodeSettings {
                 @ButtonWidget(actionHandler = ButtonActionHandlerWithoutDependencies.class)
                 String m_foo;
             }
@@ -395,7 +395,7 @@ class UiSchemaOptionsTest {
             String m_sub2;
         }
 
-        class ButtonWidgetWithDependenciesTestSettings {
+        class ButtonWidgetWithDependenciesTestSettings implements DefaultNodeSettings {
             @ButtonWidget(actionHandler = ButtonActionHandlerWithDependencies.class,
                 updateHandler = ButtonUpdateHandlerWithDependencies.class)
             String m_foo;
@@ -462,7 +462,7 @@ class UiSchemaOptionsTest {
 
         }
 
-        class ButtonWidgetWithMissingDependenciesTestSettings {
+        class ButtonWidgetWithMissingDependenciesTestSettings implements DefaultNodeSettings {
             @ButtonWidget(actionHandler = ButtonActionHandlerWithMissingDependencies.class)
             String m_foo;
 
@@ -499,7 +499,7 @@ class UiSchemaOptionsTest {
             Boolean m_otherSetting1;
         }
 
-        static class OtherSettingsWithAmbigous {
+        static class OtherSettingsWithAmbigous implements DefaultNodeSettings {
             Boolean m_otherSetting1;
 
         }
@@ -511,19 +511,19 @@ class UiSchemaOptionsTest {
 
         @Test
         void testThrowsForButtonWidgetWithAmbigousDependencies() {
-            final Map<String, Class<?>> settingsClasses =
+            final Map<String, Class<? extends DefaultNodeSettings>> settingsClasses =
                 Map.of("foo", ButtonWidgetWithAmbigousDependenciesTestSettings.class, "bar", SecondSettings.class);
             assertThrows(UiSchemaGenerationException.class, () -> buildUiSchema(settingsClasses));
         }
 
-        class ButtonWidgetWithDisAmbigousDependenciesTestSettings {
+        class ButtonWidgetWithDisAmbigousDependenciesTestSettings implements DefaultNodeSettings {
             @ButtonWidget(actionHandler = TestButtonActionHandlerWithDisAmbiguousDependencies.class)
             String m_foo;
 
             Boolean m_otherSetting1;
         }
 
-        static class OtherSettingsWithSpecification {
+        static class OtherSettingsWithSpecification implements DefaultNodeSettings {
 
             @DeclaringDefaultNodeSettings(SecondSettings.class)
             Boolean m_otherSetting1;
@@ -537,7 +537,7 @@ class UiSchemaOptionsTest {
 
         @Test
         void testButtonWidgetWithAmbigousDependenciesUsingSpecifyingContainingClass() {
-            final var settingsClasses = new LinkedHashMap<String, Class<?>>();
+            final var settingsClasses = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
             settingsClasses.put("foo", ButtonWidgetWithDisAmbigousDependenciesTestSettings.class);
             settingsClasses.put("bar", SecondSettings.class);
             var response = buildUiSchema(settingsClasses);
@@ -547,14 +547,14 @@ class UiSchemaOptionsTest {
                 .isEqualTo("#/properties/bar/properties/otherSetting1");
         }
 
-        class ButtonWidgetWithWrongTypeDependenciesTestSettings {
+        class ButtonWidgetWithWrongTypeDependenciesTestSettings implements DefaultNodeSettings {
             @ButtonWidget(actionHandler = TestButtonActionHandlerWithWrongType.class)
             String m_foo;
 
             Boolean m_otherSetting1;
         }
 
-        static class OtherSettingsWithWrongType {
+        static class OtherSettingsWithWrongType  implements DefaultNodeSettings {
             String m_otherSetting1;
         }
 
@@ -571,7 +571,7 @@ class UiSchemaOptionsTest {
 
     @Test
     void testDateTimeWidgetDefaultOptions() {
-        class DateTimeDefaultTestSettings {
+        class DateTimeDefaultTestSettings implements DefaultNodeSettings {
 
             @DateTimeWidget
             String m_dateTime;
@@ -591,7 +591,7 @@ class UiSchemaOptionsTest {
 
     @Test
     void testDateTimeWidgetCustomOptions() {
-        class DateTimeDefaultTestSettings {
+        class DateTimeDefaultTestSettings implements DefaultNodeSettings {
 
             @DateTimeWidget(showTime = true, showSeconds = true, showMilliseconds = true, minDate = "2023-06-12",
                 maxDate = "2023-06-14", timezone = "America/Dawson_Creek")
@@ -611,7 +611,7 @@ class UiSchemaOptionsTest {
 
     @Test
     void testDateWidgetOptions() {
-        class DateTimeDefaultTestSettings {
+        class DateTimeDefaultTestSettings implements DefaultNodeSettings {
 
             @DateWidget(minDate = "2023-06-12", maxDate = "2023-06-14")
             LocalDate m_date;
@@ -625,7 +625,7 @@ class UiSchemaOptionsTest {
 
     @Test
     void testRichTextInputWidget() {
-        class RichTextInputWidgetSettings {
+        class RichTextInputWidgetSettings implements DefaultNodeSettings {
             @RichTextInputWidget
             String m_richTextContent;
         }
@@ -638,7 +638,7 @@ class UiSchemaOptionsTest {
 
     @Test
     void testCredentials() {
-        class CredentialsWidgetSettings {
+        class CredentialsWidgetSettings implements DefaultNodeSettings {
             @CredentialsWidget(passwordLabel = "myPasswordLabel", usernameLabel = "myUsernameLabel")
             Credentials m_credentials;
 
@@ -713,7 +713,7 @@ class UiSchemaOptionsTest {
 
     @Test
     void testThrowsIfUsernameWidget() {
-        class CredentialsWidgetSettings {
+        class CredentialsWidgetSettings implements DefaultNodeSettings {
             @PasswordWidget(passwordLabel = "myPasswordLabel")
             @UsernameWidget("myUsernameLabel")
             Credentials m_credentials;

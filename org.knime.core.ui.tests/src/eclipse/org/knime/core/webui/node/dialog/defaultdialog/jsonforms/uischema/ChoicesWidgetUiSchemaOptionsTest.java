@@ -334,7 +334,7 @@ class ChoicesWidgetUiSchemaOptionsTest {
 
         }
 
-        class AsyncChoicesArrayLayoutSettings {
+        class AsyncChoicesArrayLayoutSettings implements DefaultNodeSettings {
 
             ArrayLayoutElementWithChoices[] m_withinArrayLayout;
         }

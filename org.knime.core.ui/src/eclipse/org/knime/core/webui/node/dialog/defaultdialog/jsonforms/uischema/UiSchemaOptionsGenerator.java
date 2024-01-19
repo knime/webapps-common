@@ -85,7 +85,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFi
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsWidgetTraverser.TraversedField;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.AsyncChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
@@ -347,7 +346,8 @@ final class UiSchemaOptionsGenerator {
         }
 
         if (isArrayLayoutField) {
-            applyArrayLayoutOptions(options, m_fieldType.getContentType().getRawClass());
+            applyArrayLayoutOptions(options,
+                (Class<? extends DefaultNodeSettings>)m_fieldType.getContentType().getRawClass());
         }
     }
 
@@ -484,9 +484,10 @@ final class UiSchemaOptionsGenerator {
         return partitionedWidgetAnnotations.get(true).stream().map(WidgetAnnotation::widgetAnnotation).toList();
     }
 
-    private void applyArrayLayoutOptions(final ObjectNode options, final Class<?> componentType) {
+    private void applyArrayLayoutOptions(final ObjectNode options,
+        final Class<? extends DefaultNodeSettings> componentType) {
 
-        Map<String, Class<?>> arraySettings = new HashMap<>();
+        Map<String, Class<? extends DefaultNodeSettings>> arraySettings = new HashMap<>();
         arraySettings.put(null, componentType);
         /**
          * We need a persistent async choices adder in case of settings nested inside an array layout, since the

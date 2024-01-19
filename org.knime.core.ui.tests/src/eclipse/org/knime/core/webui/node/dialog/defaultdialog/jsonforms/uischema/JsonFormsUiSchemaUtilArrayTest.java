@@ -53,7 +53,6 @@ import java.util.Collection;
 
 import org.junit.jupiter.api.Test;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
@@ -72,7 +71,7 @@ class JsonFormsUiSchemaUtilArrayTest {
 
     @Test
     void testArrayLayout() {
-        class TestArrayLayoutSettings {
+        class TestArrayLayoutSettings implements DefaultNodeSettings {
 
             ArrayElements[] m_arraySetting;
 
@@ -238,7 +237,7 @@ class JsonFormsUiSchemaUtilArrayTest {
     @Test
     void testResolvesDependenciesFromOutsideTheArrayLayout() {
 
-        class TestArrayLayoutWithUpdateSettings {
+        class TestArrayLayoutWithUpdateSettings implements DefaultNodeSettings {
 
             String m_dependency;
 
