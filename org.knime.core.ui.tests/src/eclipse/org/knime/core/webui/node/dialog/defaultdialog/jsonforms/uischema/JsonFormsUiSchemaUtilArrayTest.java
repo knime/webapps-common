@@ -73,21 +73,27 @@ class JsonFormsUiSchemaUtilArrayTest {
     void testArrayLayout() {
         class TestArrayLayoutSettings implements DefaultNodeSettings {
 
+            @Widget
             ArrayElements[] m_arraySetting;
 
+            @Widget
             Collection<CollectionElements> m_collectionSetting;
 
             class ArrayElements {
 
+                @Widget
                 String m_innerSetting1;
 
+                @Widget
                 String m_innerSetting2;
             }
 
             class CollectionElements {
 
+                @Widget
                 String m_innerCollectionSetting1;
 
+                @Widget
                 String m_innerCollectionSetting2;
             }
         }
@@ -127,21 +133,27 @@ class JsonFormsUiSchemaUtilArrayTest {
 
             private static final String EXPECTED_TITLE = "Expected Title";
 
+            @Widget
             @ArrayWidget(addButtonText = EXPECTED_ADD_TEXT)
             ArrayElements[] m_arraySetting1;
 
+            @Widget
             @ArrayWidget(elementTitle = EXPECTED_TITLE)
             ArrayElements[] m_arraySetting2;
 
+            @Widget
             @ArrayWidget(elementTitle = "", addButtonText = "")
             ArrayElements[] m_arraySetting3;
 
+            @Widget
             @ArrayWidget(addButtonText = EXPECTED_ADD_TEXT)
             Collection<ArrayElements> m_collectionSetting1;
 
+            @Widget
             @ArrayWidget(elementTitle = EXPECTED_TITLE)
             Collection<ArrayElements> m_collectionSetting2;
 
+            @Widget
             @ArrayWidget(elementTitle = "", addButtonText = "")
             Collection<ArrayElements> m_collectionSetting3;
 
@@ -227,6 +239,7 @@ class JsonFormsUiSchemaUtilArrayTest {
 
         class TestStringArraySettings implements DefaultNodeSettings {
 
+            @Widget
             String[] m_stringArray;
         }
 
@@ -239,6 +252,7 @@ class JsonFormsUiSchemaUtilArrayTest {
 
         class TestArrayLayoutWithUpdateSettings implements DefaultNodeSettings {
 
+            @Widget
             String m_dependency;
 
             static class Dependency {
@@ -255,10 +269,12 @@ class JsonFormsUiSchemaUtilArrayTest {
 
             }
 
+            @Widget
             ArrayElements[] m_arraySetting;
 
             class ArrayElements {
 
+                @Widget
                 @ChoicesWidget(choicesUpdateHandler = DependencyHandler.class)
                 String m_innerSetting;
             }

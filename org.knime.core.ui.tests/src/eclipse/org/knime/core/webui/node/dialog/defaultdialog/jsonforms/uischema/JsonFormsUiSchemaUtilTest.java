@@ -71,7 +71,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.LayoutGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.util.FieldAnnotationsHolder;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Hidden;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -123,9 +123,11 @@ class JsonFormsUiSchemaUtilTest {
     @Layout(TestSettingsLayout.class)
     class DummySettings implements DefaultNodeSettings {
 
+        @Widget
         @Layout(TestSettingsLayout.Section1.class)
         String m_setting1;
 
+        @Widget
         @Layout(TestSettingsLayout.Section2.NestedSection.class)
         String m_setting2;
     }
@@ -144,17 +146,21 @@ class JsonFormsUiSchemaUtilTest {
     }
 
     class TestLayoutViewSettings implements DefaultNodeSettings {
+        @Widget
         @Layout(TestSettingsLayout.Section1.class)
         String m_testViewSetting1;
 
+        @Widget
         @Layout(TestSettingsLayout.Section2.class)
         String m_testViewSetting2;
     }
 
     class TestLayoutModelSettings implements DefaultNodeSettings {
+        @Widget
         @Layout(TestSettingsLayout.Section1.class)
         String m_testModelSetting1;
 
+        @Widget
         @Layout(TestSettingsLayout.Section2.NestedSection.class)
         String m_nestedModelSetting;
     }
@@ -182,8 +188,10 @@ class JsonFormsUiSchemaUtilTest {
     }
 
     class ClusterOfSettings implements LayoutGroup {
+        @Widget
         String m_sub1;
 
+        @Widget
         String m_sub2;
     }
 
@@ -194,10 +202,12 @@ class JsonFormsUiSchemaUtilTest {
     }
 
     class TestControlSettings implements DefaultNodeSettings {
+        @Widget
         String m_normalSetting;
 
         ClusterOfSettings m_settingWithNestedUiElements;
 
+        @Widget
         ControlSetting m_customSetting;
     }
 
@@ -219,6 +229,7 @@ class JsonFormsUiSchemaUtilTest {
     void testHiddenSettings() throws JsonProcessingException {
         @SuppressWarnings("unused")
         class TestHiddenSettings implements DefaultNodeSettings {
+            @Widget
             String m_normalSetting;
 
             String m_hiddenSetting;
@@ -242,13 +253,17 @@ class JsonFormsUiSchemaUtilTest {
 
     @Layout(TestDefaultParentLayout.DefaultSection.class)
     class TestDefaultParentSettings implements DefaultNodeSettings {
+        @Widget
         String m_defaultParentSetting;
 
+        @Widget
         @Layout(TestDefaultParentLayout.Section1.class)
         String m_sectionSetting;
 
+        @Widget
         ClusterOfSettings m_clusterOfSettingsDefaultParent;
 
+        @Widget
         @Layout(TestDefaultParentLayout.Section1.class)
         ClusterOfSettings m_clusterOfSettingsInSection;
     }
@@ -284,8 +299,10 @@ class JsonFormsUiSchemaUtilTest {
 
     class TestNoLayoutAnnotationSettings implements DefaultNodeSettings {
 
+        @Widget
         String m_rootSetting;
 
+        @Widget
         @Layout(TestNoLayoutAnnotationLayout.Section1.class)
         String m_sectionSetting;
 
@@ -312,9 +329,11 @@ class JsonFormsUiSchemaUtilTest {
         static interface Section2 {
         }
 
+        @Widget
         @Layout(Section1.class)
         String m_foo;
 
+        @Widget
         @Layout(Section2.class)
         String m_bar;
     }
@@ -339,6 +358,7 @@ class JsonFormsUiSchemaUtilTest {
     }
 
     static class NoRootForSectionSettings implements DefaultNodeSettings {
+        @Widget
         @Layout(SectionWithoutEnclosingClass.class)
         String m_foo;
     }
@@ -358,12 +378,14 @@ class JsonFormsUiSchemaUtilTest {
         static interface Section1 {
         }
 
+        @Widget
         @Layout(Section1.class)
         String m_foo;
     }
 
     static class TestMultipleRootsTwo implements DefaultNodeSettings {
 
+        @Widget
         @Layout(GeneralTestLayout.GeneralSection1.class)
         String m_bar;
     }
@@ -417,12 +439,15 @@ class JsonFormsUiSchemaUtilTest {
         }
 
         class VirtualLayoutSettings implements DefaultNodeSettings {
+            @Widget
             @Layout(TestVirtualSectionLayout.Section1.class)
             String m_setting1;
 
+            @Widget
             @Layout(TestVirtualSectionLayout.Section2.class)
             String m_setting2;
 
+            @Widget
             @Layout(TestVirtualSectionLayout.Section3.class)
             String m_setting3;
         }
@@ -451,6 +476,7 @@ class JsonFormsUiSchemaUtilTest {
         }
 
         class TestEmptySectionSettings implements DefaultNodeSettings {
+            @Widget
             @Layout(TestEmptySectionLayout.Section1.class)
             String m_setting1;
         }
@@ -474,9 +500,11 @@ class JsonFormsUiSchemaUtilTest {
         }
 
         class TestHorizontalLayoutSettings implements DefaultNodeSettings {
+            @Widget
             @Layout(TestHorizontalLayout.HorizontalGroup.class)
             String m_setting1;
 
+            @Widget
             @Layout(TestHorizontalLayout.HorizontalGroup.class)
             String m_setting2;
         }
@@ -502,9 +530,11 @@ class JsonFormsUiSchemaUtilTest {
         }
 
         class CenterLayoutExtended extends CenterLayout {
+            @Widget
             @Layout(CenterLayoutInnerLayout.class)
             String centerLayoutElement1;
 
+            @Widget
             @Layout(CenterLayoutInnerLayout.class)
             String centerLayoutElement2;
         }
@@ -523,14 +553,17 @@ class JsonFormsUiSchemaUtilTest {
 
         class TestSettings implements DefaultNodeSettings {
 
+            @Widget
             @Layout(BeforeCenterLayout.class)
             int intBeforeCenterLayout;
 
             CenterLayoutExtended secondSection = new CenterLayoutExtended();
 
+            @Widget
             @Layout(AfterCenterLayout.class)
             String stringAfterCenterLayout;
 
+            @Widget
             @Layout(SecondSection.class)
             String stringInSecondSection;
         }

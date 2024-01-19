@@ -96,9 +96,11 @@ class JsonFormsUiSchemaUtilRuleTest {
             interface SomeBooleanIsTrue {
             }
 
+            @Widget
             @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
             boolean m_someBoolean;
 
+            @Widget
             @Effect(signals = SomeBooleanIsTrue.class, type = EffectType.DISABLE)
             boolean m_tagetSetting;
 
@@ -132,9 +134,11 @@ class JsonFormsUiSchemaUtilRuleTest {
 
             }
 
+            @Widget
             @Signal(condition = OneOrTwo.class)
             OneTwoOrThree m_someBoolean;
 
+            @Widget
             @Effect(signals = OneOrTwo.class, type = EffectType.DISABLE)
             boolean m_tagetSetting;
 
@@ -162,18 +166,23 @@ class JsonFormsUiSchemaUtilRuleTest {
             interface SomeBooleanIsTrue {
             }
 
+            @Widget
             @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
             boolean m_someBoolean;
 
+            @Widget
             @Effect(signals = SomeBooleanIsTrue.class, type = EffectType.DISABLE)
             boolean m_disable;
 
+            @Widget
             @Effect(signals = SomeBooleanIsTrue.class, type = EffectType.ENABLE)
             boolean m_enable;
 
+            @Widget
             @Effect(signals = SomeBooleanIsTrue.class, type = EffectType.HIDE)
             boolean m_hide;
 
+            @Widget
             @Effect(signals = SomeBooleanIsTrue.class, type = EffectType.SHOW)
             boolean m_show;
 
@@ -193,15 +202,18 @@ class JsonFormsUiSchemaUtilRuleTest {
             interface SomeBooleanIsTrue {
             }
 
+            @Widget
             @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
             boolean m_someBoolean;
 
             interface AnotherBooleanIsFalse {
             }
 
+            @Widget
             @Signal(id = AnotherBooleanIsFalse.class, condition = FalseCondition.class)
             boolean m_anotherBoolean;
 
+            @Widget
             @Effect(signals = {SomeBooleanIsTrue.class, AnotherBooleanIsFalse.class}, type = EffectType.ENABLE,
                 operation = And.class)
             boolean m_effect;
@@ -288,15 +300,18 @@ class JsonFormsUiSchemaUtilRuleTest {
             interface SomeBooleanIsTrue {
             }
 
+            @Widget
             @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
             boolean m_someBoolean;
 
             interface AnotherBooleanIsFalse {
             }
 
+            @Widget
             @Signal(id = AnotherBooleanIsFalse.class, condition = FalseCondition.class)
             boolean m_anotherBoolean;
 
+            @Widget
             @Effect(signals = {SomeBooleanIsTrue.class, AnotherBooleanIsFalse.class}, type = EffectType.ENABLE,
                 operation = Or.class)
             boolean m_effect;
@@ -326,9 +341,11 @@ class JsonFormsUiSchemaUtilRuleTest {
             interface SomeBooleanIsTrue {
             }
 
+            @Widget
             @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
             boolean m_someBoolean;
 
+            @Widget
             @Effect(signals = SomeBooleanIsTrue.class, type = EffectType.ENABLE, operation = Not.class)
             boolean m_effect;
         }
@@ -357,15 +374,18 @@ class JsonFormsUiSchemaUtilRuleTest {
             interface SomeBooleanIsTrue {
             }
 
+            @Widget
             @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
             boolean m_someBoolean;
 
             interface AnotherBooleanIsFalse {
             }
 
+            @Widget
             @Signal(id = AnotherBooleanIsFalse.class, condition = FalseCondition.class)
             boolean m_anotherBoolean;
 
+            @Widget
             @Effect(signals = {SomeBooleanIsTrue.class, AnotherBooleanIsFalse.class}, type = EffectType.ENABLE,
                 operation = NotAnd.class)
             boolean m_effect;
@@ -404,15 +424,18 @@ class JsonFormsUiSchemaUtilRuleTest {
             interface SomeBooleanIsTrue {
             }
 
+            @Widget
             @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
             boolean m_someBoolean;
 
             interface AnotherBooleanIsFalse {
             }
 
+            @Widget
             @Signal(id = AnotherBooleanIsFalse.class, condition = FalseCondition.class)
             boolean m_anotherBoolean;
 
+            @Widget
             @Effect(signals = {SomeBooleanIsTrue.class, AnotherBooleanIsFalse.class}, type = EffectType.ENABLE,
                 operation = NotOr.class)
             boolean m_effect;
@@ -451,9 +474,11 @@ class JsonFormsUiSchemaUtilRuleTest {
             interface SomeBooleanIsTrue {
             }
 
+            @Widget
             @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
             boolean m_someBoolean;
 
+            @Widget
             @Effect(signals = SomeBooleanIsTrue.class, type = EffectType.ENABLE, operation = DoubleNegation.class)
             boolean m_effect;
         }
@@ -492,9 +517,11 @@ class JsonFormsUiSchemaUtilRuleTest {
             interface SomeBooleanIsTrue {
             }
 
+            @Widget
             @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
             boolean m_someBoolean;
 
+            @Widget
             @Effect(signals = {SomeBooleanIsTrue.class, SomeBooleanIsTrue.class}, type = EffectType.ENABLE,
                 operation = OperationTakingOneCondition.class)
             boolean m_effect;
@@ -504,9 +531,11 @@ class JsonFormsUiSchemaUtilRuleTest {
             interface SomeBooleanIsTrue {
             }
 
+            @Widget
             @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
             boolean m_someBoolean;
 
+            @Widget
             @Effect(signals = SomeBooleanIsTrue.class, type = EffectType.ENABLE,
                 operation = OperationTakingTwoCondition.class)
             boolean m_effect;
@@ -516,9 +545,11 @@ class JsonFormsUiSchemaUtilRuleTest {
             interface SomeBooleanIsTrue {
             }
 
+            @Widget
             @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
             boolean m_someBoolean;
 
+            @Widget
             @Effect(signals = {SomeBooleanIsTrue.class, SomeBooleanIsTrue.class}, type = EffectType.ENABLE)
             boolean m_effect;
         }
@@ -527,9 +558,11 @@ class JsonFormsUiSchemaUtilRuleTest {
             interface SomeBooleanIsTrue {
             }
 
+            @Widget
             @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
             boolean m_someBoolean;
 
+            @Widget
             @Effect(signals = {}, type = EffectType.ENABLE)
             boolean m_effect;
         }
@@ -556,10 +589,12 @@ class JsonFormsUiSchemaUtilRuleTest {
         interface SomeBooleanIsTrue {
         }
 
+        @Widget
         @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
         @Layout(LayoutWithEffect.class)
         boolean m_someBoolean;
 
+        @Widget
         @Layout(LayoutWithEffect.OptionalHorizontalLayout.class)
         boolean m_tagetSetting;
     }
@@ -585,9 +620,11 @@ class JsonFormsUiSchemaUtilRuleTest {
             interface HasMultipleItemsTest {
             }
 
+            @Widget
             @Signal(id = HasMultipleItemsTest.class, condition = HasMultipleItemsCondition.class)
             ArraySettings[] m_arrayElements;
 
+            @Widget
             @Effect(signals = HasMultipleItemsTest.class, type = EffectType.SHOW)
             boolean m_targetSetting;
 
@@ -637,13 +674,16 @@ class JsonFormsUiSchemaUtilRuleTest {
                 }
             }
 
+            @Widget
             @Signal(condition = MyEnum.IsA.class)
             @Signal(condition = MyEnum.IsAorB.class)
             MyEnum m_foo;
 
+            @Widget
             @Effect(signals = MyEnum.IsA.class, type = EffectType.SHOW)
             boolean m_showIfA;
 
+            @Widget
             @Effect(signals = MyEnum.IsAorB.class, type = EffectType.SHOW)
             boolean m_showIfB;
         }
@@ -675,6 +715,7 @@ class JsonFormsUiSchemaUtilRuleTest {
             interface UnmetCondition {
             }
 
+            @Widget
             @Effect(signals = UnmetCondition.class, type = EffectType.HIDE, ignoreOnMissingSignals = true)
             boolean m_setting;
 
@@ -694,6 +735,7 @@ class JsonFormsUiSchemaUtilRuleTest {
             interface UnmetCondition {
             }
 
+            @Widget
             @Effect(signals = UnmetCondition.class, type = EffectType.HIDE)
             boolean m_setting;
 
@@ -716,28 +758,34 @@ class JsonFormsUiSchemaUtilRuleTest {
     void testEffectAnnotationOnClass() {
 
         final class SubSubSettings implements LayoutGroup {
+            @Widget
             String m_subSubEffectSetting;
         }
 
         @Effect(signals = TrueCondition.class, type = EffectType.HIDE)
         class SubSettings implements LayoutGroup {
 
+            @Widget
             String m_subEffectSetting;
 
+            @Widget
             SubSubSettings m_subSubSettings;
         }
 
         final class ExtendingSubSettings extends SubSettings {
+            @Widget
             String m_extendingSetting;
         }
 
         @Effect(signals = TrueCondition.class, type = EffectType.HIDE)
         final class ExtendingSubSettingsWithExtraAnnotation extends SubSettings {
+            @Widget
             String m_extendingWithExtraEffectSetting;
         }
 
         final class EffectOnClassSettings implements DefaultNodeSettings {
 
+            @Widget
             @Signal(condition = TrueCondition.class)
             boolean m_signalSetting;
 
@@ -782,6 +830,7 @@ class JsonFormsUiSchemaUtilRuleTest {
             @Signal(id = TestColumnCondition.class, condition = IsTestColumnCondition.class)
             ColumnSelection columnSelection = new ColumnSelection();
 
+            @Widget
             @Effect(signals = TestColumnCondition.class, type = EffectType.SHOW)
             boolean someConditionalSetting = true;
 
@@ -806,6 +855,7 @@ class JsonFormsUiSchemaUtilRuleTest {
             @Signal(condition = IsNoneColumnCondition.class)
             ColumnSelection columnSelection = new ColumnSelection();
 
+            @Widget
             @Effect(signals = IsNoneColumnCondition.class, type = EffectType.SHOW)
             boolean someConditionalSetting = true;
         }
@@ -829,6 +879,7 @@ class JsonFormsUiSchemaUtilRuleTest {
             @Signal(condition = IsNoneColumnStringCondition.class)
             String columnSelection;
 
+            @Widget
             @Effect(signals = IsNoneColumnStringCondition.class, type = EffectType.SHOW)
             boolean someConditionalSetting = true;
         }
@@ -856,9 +907,11 @@ class JsonFormsUiSchemaUtilRuleTest {
 
         final class PatternConditionTestSettings implements DefaultNodeSettings {
 
+            @Widget
             @Signal(condition = TestPatternCondition.class)
             String patternSetting;
 
+            @Widget
             @Effect(signals = TestPatternCondition.class, type = EffectType.SHOW)
             boolean effectSetting;
         }
@@ -910,9 +963,11 @@ class JsonFormsUiSchemaUtilRuleTest {
 
             }
 
+            @Widget
             @Signal(condition = ArrayContainsFooValueCondition.class)
             Element[] m_array;
 
+            @Widget
             @Effect(signals = ArrayContainsFooValueCondition.class, type = EffectType.SHOW)
             boolean effectSetting;
         }

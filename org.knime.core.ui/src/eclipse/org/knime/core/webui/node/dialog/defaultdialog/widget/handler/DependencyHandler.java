@@ -55,7 +55,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
  * The fields specified in this class have to reference other settings of the current node settings. To reference a
  * setting, use the same name and the same type (for nested settings all names along the way have to match) as the field
  * that is to be referenced. If there is a field which is not unique with respect to its field name and type, use the
- * {@link DeclaringDefaultNodeSettings} annotation to further specify the specific node settings class of the field. *
+ * {@link DeclaringDefaultNodeSettings} annotation to further specify the specific node settings class of the field.
  * <p>
  * Example:
  *
@@ -70,14 +70,17 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
  *
  *            class MyNodeViewSettings extends DefaultNodeSettings {
  *
+ *                &#64;Widget
  *                &#64;ButtonWidget(actionHandler = MyActionHandler)
  *                String m_foo;
  *
+ *                &#64;Widget
  *                String m_bar;
  *
  *            }
  *
  *            class MyNodeModelSettings extends DefaultNodeSettings {
+ *                &#64;Widget
  *                String m_bar;
  *            }
  *

@@ -74,6 +74,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileChooserWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.IdAndText;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.PossibleColumnValue;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
@@ -93,15 +94,19 @@ class ChoicesWidgetUiSchemaOptionsTest {
 
         @SuppressWarnings("unused")
         class SeveralChoicesSettings implements DefaultNodeSettings {
+            @Widget
             @ChoicesWidget
             ColumnSelection m_columnSelection;
 
+            @Widget
             @ChoicesWidget
             ColumnFilter m_columnFilter;
 
+            @Widget
             @ChoicesWidget
             String[] m_stringArray;
 
+            @Widget
             @ChoicesWidget
             String m_string;
 
@@ -109,6 +114,7 @@ class ChoicesWidgetUiSchemaOptionsTest {
                     A, B, C
             }
 
+            @Widget
             @ChoicesWidget
             MyEnum m_foo;
         }
@@ -152,12 +158,15 @@ class ChoicesWidgetUiSchemaOptionsTest {
 
     class ChoicesSettings implements DefaultNodeSettings {
 
+        @Widget
         @ChoicesWidget(showNoneColumn = true, choices = TestColumnChoicesProvider.class)
         ColumnSelection m_foo;
 
+        @Widget
         @ChoicesWidget(choices = TestChoicesProvider.class)
         String m_bar;
 
+        @Widget
         @ChoicesWidget(choices = TestChoicesProviderWithIdAndText.class)
         String m_idAndText;
 
@@ -259,15 +268,19 @@ class ChoicesWidgetUiSchemaOptionsTest {
 
         class AsyncChoicesSettings implements DefaultNodeSettings {
 
+            @Widget
             @ChoicesWidget(showNoneColumn = true, choices = TestAsyncColumnChoicesProvider.class)
             ColumnSelection m_foo;
 
+            @Widget
             @ChoicesWidget(choices = TestAsyncChoicesProvider.class)
             String m_bar;
 
+            @Widget
             @ChoicesWidget(choices = TestAsyncChoicesProvider.class)
             String m_baz;
 
+            @Widget
             @ChoicesWidget(choices = TestChoicesProviderWithManyChoices.class)
             String m_manyChoices;
 
@@ -329,6 +342,7 @@ class ChoicesWidgetUiSchemaOptionsTest {
 
         class ArrayLayoutElementWithChoices {
 
+            @Widget
             @ChoicesWidget(choices = TestAsyncChoicesProviderForArrayLayout.class)
             String m_elementChoices;
 
@@ -336,6 +350,7 @@ class ChoicesWidgetUiSchemaOptionsTest {
 
         class AsyncChoicesArrayLayoutSettings implements DefaultNodeSettings {
 
+            @Widget
             ArrayLayoutElementWithChoices[] m_withinArrayLayout;
         }
 
@@ -366,9 +381,11 @@ class ChoicesWidgetUiSchemaOptionsTest {
     void testChoicesWidgetShowNoneColumn() {
         class ChoicesWidgetTestSettings implements DefaultNodeSettings {
 
+            @Widget
             @ChoicesWidget(showNoneColumn = true)
             ColumnSelection m_foo;
 
+            @Widget
             @ChoicesWidget()
             ColumnSelection m_bar;
 
@@ -384,9 +401,11 @@ class ChoicesWidgetUiSchemaOptionsTest {
     void testChoicesWidgetShowRowKeys() {
         class ChoicesWidgetTestSettings implements DefaultNodeSettings {
 
+            @Widget
             @ChoicesWidget(showRowKeysColumn = true)
             ColumnSelection m_foo;
 
+            @Widget
             @ChoicesWidget()
             ColumnSelection m_bar;
 
@@ -402,9 +421,11 @@ class ChoicesWidgetUiSchemaOptionsTest {
     void testChoicesWidgetHideSearch() {
         class ChoicesWidgetTestSettings implements DefaultNodeSettings {
 
+            @Widget
             @ChoicesWidget(showSearch = false)
             ColumnSelection m_foo;
 
+            @Widget
             @ChoicesWidget()
             ColumnSelection m_bar;
 
@@ -420,9 +441,11 @@ class ChoicesWidgetUiSchemaOptionsTest {
     void testChoicesWidgetHideMode() {
         class ChoicesWidgetTestSettings implements DefaultNodeSettings {
 
+            @Widget
             @ChoicesWidget(showMode = false)
             ColumnSelection m_foo;
 
+            @Widget
             @ChoicesWidget()
             ColumnSelection m_bar;
 
@@ -438,9 +461,11 @@ class ChoicesWidgetUiSchemaOptionsTest {
     void testLocalFileChooserWidget() {
         class LocalFileChooserWidgetTestSettings implements DefaultNodeSettings {
 
+            @Widget
             @LocalFileChooserWidget
             String m_defaultOptions;
 
+            @Widget
             @LocalFileChooserWidget(placeholder = "myPlaceholder")
             String m_specialOptions;
 

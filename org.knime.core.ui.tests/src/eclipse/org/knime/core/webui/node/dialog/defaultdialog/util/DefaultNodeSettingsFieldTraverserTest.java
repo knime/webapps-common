@@ -62,8 +62,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.LayoutGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsWidgetTraverser;
-import org.knime.core.webui.node.dialog.defaultdialog.util.FieldAnnotationsHolder;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ser.PropertyWriter;
@@ -83,8 +82,10 @@ class DefaultNodeSettingsFieldTraverserTest {
     void testTraversal() throws JsonProcessingException {
 
         class ClusterOfSettings implements LayoutGroup {
+            @Widget
             String m_sub1;
 
+            @Widget
             String m_sub2;
         }
 
@@ -95,10 +96,12 @@ class DefaultNodeSettingsFieldTraverserTest {
         }
 
         class TestControlSettings implements DefaultNodeSettings {
+            @Widget
             String m_normalSetting;
 
             ClusterOfSettings m_settingWithNestedUiElements;
 
+            @Widget
             ControlSetting m_customSetting;
         }
 
@@ -138,6 +141,7 @@ class DefaultNodeSettingsFieldTraverserTest {
         void testDoesNotTrackAnnotationsIfNoneProvided() {
             class TestAnnotationSettings implements DefaultNodeSettings {
 
+                @Widget
                 @TestId(2)
                 String m_sectionSetting;
             }
@@ -162,6 +166,7 @@ class DefaultNodeSettingsFieldTraverserTest {
 
             class TestAnnotationSettings implements DefaultNodeSettings {
 
+                @Widget
                 @TestId(1)
                 @TestId2(1)
                 String m_sectionSetting;
@@ -185,17 +190,21 @@ class DefaultNodeSettingsFieldTraverserTest {
 
             class ClusterOfSettings implements LayoutGroup {
 
+                @Widget
                 @TestId(3)
                 String m_sub1;
 
+                @Widget
                 String m_sub2;
             }
 
             @TestId(1)
             class TestDefaultParentSettings implements DefaultNodeSettings {
 
+                @Widget
                 String m_defaultParentSetting;
 
+                @Widget
                 @TestId(2)
                 String m_simpleSetting;
 
@@ -223,8 +232,10 @@ class DefaultNodeSettingsFieldTraverserTest {
 
             class TestNoAnnotationSettings implements DefaultNodeSettings {
 
+                @Widget
                 String m_setting;
 
+                @Widget
                 @TestId(1)
                 String m_foo;
 
