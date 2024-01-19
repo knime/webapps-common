@@ -56,13 +56,20 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang3.StringUtils;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaGenerationException;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.cfg.MapperConfig;
+import com.fasterxml.jackson.databind.introspect.AnnotatedField;
 import com.fasterxml.jackson.databind.ser.PropertyWriter;
 
 /**
@@ -80,6 +87,31 @@ import com.fasterxml.jackson.databind.ser.PropertyWriter;
  * @author Paul Bärnreuther
  */
 public class DefaultNodeSettingsFieldTraverser {
+
+    private static ObjectMapper mapper;
+
+    private static ObjectMapper getMapper() {
+        if (mapper == null) {
+            mapper = createMapper();
+        }
+        return mapper;
+    }
+
+    private static ObjectMapper createMapper() {
+        var newMapper = new ObjectMapper();
+        newMapper.setSerializationInclusion(Include.NON_NULL);
+        newMapper.setVisibility(PropertyAccessor.ALL, Visibility.NON_PRIVATE);
+        newMapper.setPropertyNamingStrategy(new PropertyNamingStrategy() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public String nameForField(final MapperConfig<?> config, final AnnotatedField field,
+                final String defaultName) {
+                return StringUtils.removeStart(defaultName, "m_");
+            }
+        });
+        return newMapper;
+    }
 
     private final SerializerProvider m_serializerProvider;
 
@@ -121,7 +153,7 @@ public class DefaultNodeSettingsFieldTraverser {
      * @param trackedAnnotations the classes of the annotations which should be tracked and given with the field
      *            parameter.
      */
-    void traverse(final Consumer<TraversedField> fieldCallback,
+    public void traverse(final Consumer<TraversedField> fieldCallback,
         final Collection<Class<? extends Annotation>> trackedAnnotations) {
         final var annotations = new FieldAnnotationsHolder(trackedAnnotations);
         traverseClass(m_settingsClass, fieldCallback, Collections.emptyList(), annotations);
