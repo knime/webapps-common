@@ -221,7 +221,6 @@ class JsonFormsUiSchemaUtilTest {
         class TestHiddenSettings implements DefaultNodeSettings {
             String m_normalSetting;
 
-            @Hidden
             String m_hiddenSetting;
 
         }

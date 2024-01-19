@@ -70,7 +70,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.selection.Selectio
 import org.knime.core.webui.node.dialog.defaultdialog.setting.selection.SelectionMode;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Hidden;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
@@ -350,7 +349,6 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     /**
      * If there should be a limit on rendered Columns
      */
-    @Hidden
     @Persist(hidden = true, optional = true)
     public boolean m_skipRemainingColumns;
 
