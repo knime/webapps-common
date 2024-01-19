@@ -389,8 +389,7 @@
       "type" : "Section",
       "elements" : [ {
         "type" : "Control",
-        "scope" : "#/properties/view/properties/title",
-        "options" : { }
+        "scope" : "#/properties/view/properties/title"
       }, {
         "type" : "Control",
         "scope" : "#/properties/view/properties/showTableSize",
@@ -421,7 +420,6 @@
       }, {
         "type" : "Control",
         "scope" : "#/properties/view/properties/pageSize",
-        "options" : { },
         "rule" : {
           "effect" : "SHOW",
           "condition" : {
@@ -446,7 +444,6 @@
       }, {
         "type" : "Control",
         "scope" : "#/properties/view/properties/customRowHeight",
-        "options" : { },
         "rule" : {
           "effect" : "SHOW",
           "condition" : {

@@ -44,16 +44,13 @@
   "ui_schema" : {
     "elements" : [ {
       "type" : "Control",
-      "scope" : "#/properties/view/properties/title",
-      "options" : { }
+      "scope" : "#/properties/view/properties/title"
     }, {
       "type" : "Control",
-      "scope" : "#/properties/view/properties/altText",
-      "options" : { }
+      "scope" : "#/properties/view/properties/altText"
     }, {
       "type" : "Control",
-      "scope" : "#/properties/view/properties/caption",
-      "options" : { }
+      "scope" : "#/properties/view/properties/caption"
     }, {
       "type" : "Control",
       "scope" : "#/properties/view/properties/shrinkToFit",

@@ -347,6 +347,10 @@ final class UiSchemaOptionsGenerator {
             applyArrayLayoutOptions(options,
                 (Class<? extends DefaultNodeSettings>)m_fieldType.getContentType().getRawClass());
         }
+
+        if (options.isEmpty()) {
+            control.remove(TAG_OPTIONS);
+        }
     }
 
     private void prepareAsyncChoices(final ObjectNode options,
