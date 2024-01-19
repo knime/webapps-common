@@ -72,7 +72,7 @@ import com.fasterxml.jackson.databind.ser.PropertyWriter;
  *
  * @author Paul Bärnreuther
  */
-public class UiSchemaDefaultNodeSettingsTraverser {
+class UiSchemaDefaultNodeSettingsTraverser {
 
     UiSchemaDefaultNodeSettingsTraverser() {
         //
@@ -84,18 +84,6 @@ public class UiSchemaDefaultNodeSettingsTraverser {
      * @author Paul Bärnreuther
      */
     static record TrackedAnnotations(Effect effect) {
-    }
-
-    /**
-     * A record representing a single control within a node dialog
-     *
-     * @param scope of the control
-     * @param field the associated property writer of the java field
-     * @param rootClass the class from which the control originated from
-     * @param trackedAnnotations tracked during the traversal.
-     */
-    public static record JsonFormsControl(String scope, PropertyWriter field, Class<?> rootClass,
-        TrackedAnnotations trackedAnnotations) {
     }
 
     private static record TraversalConsumerPayload(String scope, TraversedField field, Class<?> rootClass) {

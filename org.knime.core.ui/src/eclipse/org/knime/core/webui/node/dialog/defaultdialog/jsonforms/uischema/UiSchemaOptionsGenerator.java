@@ -78,7 +78,6 @@ import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.Format;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaDefaultNodeSettingsTraverser.JsonFormsControl;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.util.ArrayLayoutUtil;
@@ -146,7 +145,7 @@ final class UiSchemaOptionsGenerator {
     /**
      *
      * @param mapper the object mapper used for the ui schema generation
-     * @param field the field for which options are to be added from {@link Style} annotations
+     * @param field the field for which options are to be added from {@link Widget} annotations
      * @param context the current context of the default node settings
      * @param fields all traversed fields
      * @param scope of the current field
@@ -166,7 +165,7 @@ final class UiSchemaOptionsGenerator {
     }
 
     /**
-     * This method applies the styles of the given field to the given control as described in {@link Style}.
+     * This method applies the styles of the given field to the given control as described in {@link Widget}
      *
      * @param control
      */
