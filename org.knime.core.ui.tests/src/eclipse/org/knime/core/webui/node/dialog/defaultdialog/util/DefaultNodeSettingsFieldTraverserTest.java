@@ -61,7 +61,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.LayoutGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -81,7 +81,7 @@ class DefaultNodeSettingsFieldTraverserTest {
     @Test
     void testTraversal() throws JsonProcessingException {
 
-        class ClusterOfSettings implements LayoutGroup {
+        class ClusterOfSettings implements WidgetGroup {
             @Widget
             String m_sub1;
 
@@ -188,7 +188,7 @@ class DefaultNodeSettingsFieldTraverserTest {
         @Test
         void testSetsParentAnnotationAsDefault() {
 
-            class ClusterOfSettings implements LayoutGroup {
+            class ClusterOfSettings implements WidgetGroup {
 
                 @Widget
                 @TestId(3)
@@ -253,7 +253,7 @@ class DefaultNodeSettingsFieldTraverserTest {
         void testThrowsIfAnnotationBothForClassAndEnclosingField() throws JsonProcessingException {
 
             @TestId
-            class ClusterOfSettings implements LayoutGroup {
+            class ClusterOfSettings implements WidgetGroup {
 
                 String m_sub1;
 

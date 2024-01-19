@@ -57,7 +57,7 @@ import org.junit.jupiter.api.Test;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.HorizontalLayout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.LayoutGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.And;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.ArrayContainsCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Condition;
@@ -757,13 +757,13 @@ class JsonFormsUiSchemaUtilRuleTest {
     @SuppressWarnings("unused")
     void testEffectAnnotationOnClass() {
 
-        final class SubSubSettings implements LayoutGroup {
+        final class SubSubSettings implements WidgetGroup {
             @Widget
             String m_subSubEffectSetting;
         }
 
         @Effect(signals = TrueCondition.class, type = EffectType.HIDE)
-        class SubSettings implements LayoutGroup {
+        class SubSettings implements WidgetGroup {
 
             @Widget
             String m_subEffectSetting;

@@ -64,7 +64,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.Defaul
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.Format;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.JsonFormsSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.TestButtonActionHandler.TestStates;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.LayoutGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
@@ -410,7 +410,7 @@ class UiSchemaOptionsTest {
             assertThatJson(response).inPath("$.elements[0].options.states[2].text").isString().isEqualTo("Done Text");
         }
 
-        static class GroupOfSettings implements LayoutGroup {
+        static class GroupOfSettings implements WidgetGroup {
             @Widget
             String m_sub1;
 
@@ -436,7 +436,7 @@ class UiSchemaOptionsTest {
             String m_otherSetting4;
         }
 
-        static class OtherGroupOfSettings implements LayoutGroup {
+        static class OtherGroupOfSettings implements WidgetGroup {
             @Widget
             String m_sub2;
         }

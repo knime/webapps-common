@@ -59,7 +59,7 @@ import java.util.function.Consumer;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaGenerationException;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.LayoutGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -68,8 +68,8 @@ import com.fasterxml.jackson.databind.ser.PropertyWriter;
 /**
  *
  * This class is used to traverse the settings within {@link DefaultNodeSettings}. It is a depth-first (for nested
- * settings implementing {@link LayoutGroup}) traversal and it calls a given callback on every traversed leaf field
- * (every field which is not of type {@link LayoutGroup}).
+ * settings implementing {@link WidgetGroup}) traversal and it calls a given callback on every traversed leaf field
+ * (every field which is not of type {@link WidgetGroup}).
  *
  * Additionally, optionally, one can specify a list of classes of annotations, which should be tracked during the
  * traversal. Each such annotation is checked for at every point of the traversal starting with the annotation on the
@@ -149,7 +149,7 @@ public class DefaultNodeSettingsFieldTraverser {
         final var path = getPath(parentPath, field.getName());
         final var fieldType = field.getType().getRawClass();
         final var annotations = classAnnotations.toFieldAnnotationsHolder(field);
-        if (LayoutGroup.class.isAssignableFrom(fieldType)) {
+        if (WidgetGroup.class.isAssignableFrom(fieldType)) {
             this.traverseClass(fieldType, fieldCallback, path, annotations);
         } else {
             fieldCallback.accept(new TraversedField(field, path, annotations));

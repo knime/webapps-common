@@ -49,14 +49,16 @@
 package org.knime.core.webui.node.dialog.defaultdialog.layout;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
 /**
  * If a (possibly nested) field within a {@link DefaultNodeSettings} class is an instance of a class extending this
  * interface, it will not be treated as a setting during the creation of the user interface and instead its nested
- * fields are respected. This is useful for clustering several settings into one java object.
+ * fields (annotated with {@link Widget}) are respected. This is useful for clustering several settings into one java
+ * object.
  *
  * @author Paul Bärnreuther
  */
-public interface LayoutGroup {
+public interface WidgetGroup {
 
 }

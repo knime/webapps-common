@@ -68,7 +68,7 @@ import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.VariableType;
 import org.knime.core.webui.node.dialog.defaultdialog.examples.ArrayWidgetExample;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.LayoutGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorFactory;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
@@ -217,7 +217,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.Usernam
  * </p>
  *
  * <h4>Nested settings</h4> For nested fields to be transformed to dialog widgets themselves the containing class has to
- * be annotated with {@link LayoutGroup}
+ * be annotated with {@link WidgetGroup}
  *
  * <h4>Layouting</h4> Additional annotations can be used to set the layouting for the generated dialog. See the
  * {@link org.knime.core.webui.node.dialog.defaultdialog.layout layout package} for further information. The class of

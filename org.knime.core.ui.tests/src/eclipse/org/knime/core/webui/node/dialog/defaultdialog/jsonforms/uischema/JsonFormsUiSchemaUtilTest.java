@@ -67,7 +67,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.Before;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.HorizontalLayout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Inside;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.LayoutGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.util.FieldAnnotationsHolder;
@@ -187,7 +187,7 @@ class JsonFormsUiSchemaUtilTest {
             .isEqualTo("#/properties/model/properties/nestedModelSetting");
     }
 
-    class ClusterOfSettings implements LayoutGroup {
+    class ClusterOfSettings implements WidgetGroup {
         @Widget
         String m_sub1;
 
@@ -408,7 +408,7 @@ class JsonFormsUiSchemaUtilTest {
         }
 
         @Layout(Section1.class)
-        class SettingsType implements LayoutGroup {
+        class SettingsType implements WidgetGroup {
 
         }
 
@@ -523,7 +523,7 @@ class JsonFormsUiSchemaUtilTest {
     @Inside(FirstSection.class)
     interface SuperclassAnnotationTestLayout {
 
-        abstract class CenterLayout implements PersistableSettings, LayoutGroup {
+        abstract class CenterLayout implements PersistableSettings, WidgetGroup {
             @HorizontalLayout()
             interface CenterLayoutInnerLayout {
             }
