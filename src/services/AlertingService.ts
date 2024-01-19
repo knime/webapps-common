@@ -1,11 +1,7 @@
-import { UIExtensionAPILayer } from "src/serviceTypes";
 import { createAlert } from "./utils";
-import { AlertConfig, CreateAlertParams } from "src/types/Alert";
+import { CreateAlertParams } from "src/types/alert";
 import { AbstractService } from "./AbstractService";
-
-type AlertingServiceAPILayer = Pick<UIExtensionAPILayer, "sendAlert"> & {
-  getConfig: () => AlertConfig;
-};
+import { AlertingServiceAPILayer } from "./types/serviceApiLayers";
 
 /**
  * A utility class to interact with Dialog settings implemented by a UI Extension node.

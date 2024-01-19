@@ -4,14 +4,11 @@ import {
   NumericColorModel,
 } from "../types/ColorModel";
 import convert from "color-convert";
-import { AlertTypes } from "src/types";
+import { AlertType } from "src/types/alert";
 import { createAlert } from "./utils";
-import { AlertConfig } from "src/types/Alert";
-import {
-  CustomUIExtensionService,
-  UIExtensionAPILayer,
-} from "src/serviceTypes";
+import { UIExtensionService } from "src/types/uiExtensionService";
 import { AbstractService } from "./AbstractService";
+import { ColorServiceAPILayer } from "./types/serviceApiLayers";
 
 // TODO: UIEXT-858 Provide this default color via color model
 const lightGray = "#D3D3D3";
@@ -77,15 +74,6 @@ export class NominalColorHandler extends AbstractColorHandler<
 
 export type ColorHandler = NumericColorHandler | NominalColorHandler;
 
-type ColorServiceExtensionConfig = AlertConfig & {
-  colorModels?: Record<string, ColorModel>;
-  columnNamesColorModel?: ColorModel;
-};
-
-type ColorServiceAPILayer = Pick<UIExtensionAPILayer, "sendAlert"> & {
-  getConfig: () => ColorServiceExtensionConfig;
-};
-
 /**
  * A utility class to receive a color callback created by the color model provided by a
  * UI Extension node.
@@ -101,7 +89,7 @@ export class ColorService extends AbstractService<ColorServiceAPILayer> {
    * @param {KnimeService} knimeService - knimeService instance which is used to communicate
    *      with the framework.
    */
-  constructor(baseService?: CustomUIExtensionService<ColorServiceAPILayer>) {
+  constructor(baseService?: UIExtensionService<ColorServiceAPILayer>) {
     super(baseService);
     this.colorModels = baseService.getConfig().colorModels;
     if (!this.colorModels) {
@@ -122,7 +110,7 @@ export class ColorService extends AbstractService<ColorServiceAPILayer> {
     if (!suppressWarning) {
       this.baseService.sendAlert(
         createAlert(this.baseService.getConfig(), {
-          type: AlertTypes.WARN,
+          type: AlertType.WARN,
           message: `No color handler found for the given column name "${columnName}".`,
         }),
       );

@@ -1,16 +1,16 @@
 import { IframeMessageEvent, WrappedIframePushEvent } from "./types";
 
 export const isWrappedEventOfType = (
-  event: IframeMessageEvent<unknown>,
+  event: IframeMessageEvent,
   type: string,
 ) => {
   return event.data.type === type;
 };
 
-export const toWrappedEventOfType = <T>(
+export const toWrappedEventOfType = <T, S>(
   payload: T,
-  type: string,
-): WrappedIframePushEvent<T> => {
+  type: S,
+): WrappedIframePushEvent<T, S> => {
   return {
     type,
     payload,

@@ -1,14 +1,5 @@
-import { UIExtensionAPILayer } from "src/serviceTypes";
 import { AbstractService } from "./AbstractService";
-
-type ReportingServiceExtensionConfig = {
-  generatedImageActionId?: string | null;
-};
-
-type ReportingServiceAPILayer = Pick<
-  UIExtensionAPILayer,
-  "setReportingContent"
-> & { getConfig: () => ReportingServiceExtensionConfig };
+import { ReportingServiceAPILayer } from "./types/serviceApiLayers";
 
 /**
  * ReportingService is used in views in order to detect that the view is generated in a reporting context

@@ -1,4 +1,3 @@
-import {} from "src/types";
 import {
   SelectionEventCallbackParams,
   SelectionService,

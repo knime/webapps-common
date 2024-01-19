@@ -1,12 +1,11 @@
 export * from "./iframe/embedder";
 
 import { DefaultEventHandler } from "./pushEvents";
+import { UIExtensionPushEvents } from "./types/pushEvents";
 import type {
-  CustomUIExtensionService,
-  UIExtensionAPILayer,
-  UIExtensionPushEvents,
+  UIExtensionServiceAPILayer,
   UIExtensionService,
-} from "./serviceTypes";
+} from "./types/uiExtensionService";
 
 /**
  * exported for test purposes
@@ -14,7 +13,7 @@ import type {
 export const setUpCustomEmbedderService = <APILayer>(
   apiLayer: APILayer,
 ): UIExtensionPushEvents.DispatchPushEvent & {
-  service: CustomUIExtensionService<APILayer>;
+  service: UIExtensionService<APILayer>;
 } => {
   const pushEventHandler = new DefaultEventHandler();
   return {
@@ -30,11 +29,9 @@ export const setUpCustomEmbedderService = <APILayer>(
 
 /**
  * Service used to communicate with KNIME's internal extensions which are not inside an iframe.
- * @param apiLayer
- * @returns
  */
 export const setUpEmbedderService = (
-  apiLayer: UIExtensionAPILayer,
+  apiLayer: UIExtensionServiceAPILayer,
 ): UIExtensionPushEvents.DispatchPushEvent & {
   service: UIExtensionService;
 } => {

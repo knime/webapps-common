@@ -1,9 +1,9 @@
 import { JsonDataService } from "src/services/JsonDataService";
 import { extensionConfig, longMessage } from "test/mocks";
-import { DataServiceType } from "src/types";
-import { Alert } from "src/types/Alert";
-import { AlertTypes } from "src/types/AlertTypes";
+import { DataServiceType } from "src/types/DataServiceType";
+import { Alert, AlertType } from "src/types/alert";
 import { setUpCustomEmbedderService } from "src/embedder";
+import { UIExtensionPushEvents } from "src/types/pushEvents";
 
 describe("JsonDataService", () => {
   const defaultExtensionConfig = extensionConfig;
@@ -86,7 +86,7 @@ describe("JsonDataService", () => {
       jsonDataService.data({ options });
 
       const parameters = getFirstCallParameter(callNodeDataService);
-      expect(parameters.request).toContain(JSON.stringify(options));
+      expect(parameters.dataServiceRequest).toContain(JSON.stringify(options));
     });
 
     it("calls data service by method", () => {
@@ -96,7 +96,7 @@ describe("JsonDataService", () => {
       jsonDataService.data({ method: "nextPage" });
 
       const parameters = getFirstCallParameter(callNodeDataService);
-      expect(parameters.request).toContain("nextPage");
+      expect(parameters.dataServiceRequest).toContain("nextPage");
     });
 
     it("accepts empty string response from data request", async () => {
@@ -132,7 +132,7 @@ describe("JsonDataService", () => {
       const parameter = getFirstCallParameter(callNodeDataService);
       expect(parameter).toMatchObject({
         serviceType: DataServiceType.APPLY_DATA,
-        request: appliedData,
+        dataServiceRequest: appliedData,
       });
     });
   });
@@ -147,7 +147,10 @@ describe("JsonDataService", () => {
 
       const payload = {};
 
-      dispatchPushEvent({ name: "data-change", payload });
+      dispatchPushEvent({
+        name: UIExtensionPushEvents.EventTypes.DataEvent,
+        payload,
+      });
       expect(mockDataChangeCallback).toHaveBeenCalledWith(payload);
     });
 
@@ -283,7 +286,7 @@ describe("JsonDataService", () => {
       jsonDataService.handleWarnings(["Message 1"]);
       const sentMessage = sendAlertSpy.mock.calls[0][0] as Alert;
       expect(sentMessage.message).toBe("Message 1");
-      expect(sentMessage.type).toBe(AlertTypes.WARN);
+      expect(sentMessage.type).toBe(AlertType.WARN);
       expect(sentMessage.subtitle).toBeFalsy();
     });
 
@@ -292,7 +295,7 @@ describe("JsonDataService", () => {
       jsonDataService.handleWarnings(warnings);
       const sentMessage = sendAlertSpy.mock.calls[0][0] as Alert;
       expect(sentMessage.message).toBe(warnings.join("\n\n"));
-      expect(sentMessage.type).toBe(AlertTypes.WARN);
+      expect(sentMessage.type).toBe(AlertType.WARN);
       expect(sentMessage.subtitle).toBe("2 messages");
     });
 
@@ -300,7 +303,7 @@ describe("JsonDataService", () => {
       jsonDataService.handleWarnings([longMessage]);
       const sentMessage = sendAlertSpy.mock.calls[0][0] as Alert;
       expect(sentMessage.message).toBe(longMessage);
-      expect(sentMessage.type).toBe(AlertTypes.WARN);
+      expect(sentMessage.type).toBe(AlertType.WARN);
       expect(sentMessage.subtitle).toBe("Expand for details");
     });
 
@@ -310,7 +313,7 @@ describe("JsonDataService", () => {
       expect(sentMessage.message).toBe(
         "No further information available. Please check the workflow configuration.",
       );
-      expect(sentMessage.type).toBe(AlertTypes.ERROR);
+      expect(sentMessage.type).toBe(AlertType.ERROR);
       expect(sentMessage.subtitle).toBe("Something went wrong");
     });
 
@@ -318,7 +321,7 @@ describe("JsonDataService", () => {
       jsonDataService.handleError({ message: longMessage });
       const sentMessage = sendAlertSpy.mock.calls[0][0] as Alert;
       expect(sentMessage.message).toBe(longMessage);
-      expect(sentMessage.type).toBe(AlertTypes.ERROR);
+      expect(sentMessage.type).toBe(AlertType.ERROR);
       expect(sentMessage.subtitle).toBe("Something went wrong");
     });
 
@@ -337,7 +340,7 @@ describe("JsonDataService", () => {
         message: expect.any(String),
         nodeInfo: extensionConfig.nodeInfo,
         subtitle: "Please check the workflow configuration",
-        type: AlertTypes.ERROR,
+        type: AlertType.ERROR,
       });
       expect(sentMessage.message).toContain("NullPointerException");
       expect(sentMessage.message).toContain("Something went wrong");

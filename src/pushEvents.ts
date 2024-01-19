@@ -1,4 +1,4 @@
-import type { UIExtensionPushEvents } from "./serviceTypes";
+import type { UIExtensionPushEvents as Events } from "./types";
 
 class MapOfArrays<K, V> {
   private map = new Map<K, V[]>();
@@ -26,24 +26,22 @@ class MapOfArrays<K, V> {
  * The embedder dispatches events triggering listeners registered by the client.
  */
 export class DefaultEventHandler
-  implements
-    UIExtensionPushEvents.AddPushEventListener,
-    UIExtensionPushEvents.DispatchPushEvent
+  implements Events.AddPushEventListener, Events.DispatchPushEvent
 {
   private callbacksMap = new MapOfArrays<
-    UIExtensionPushEvents.PushEventName,
-    UIExtensionPushEvents.PushEventListenerCallback<any>
+    Events.Name,
+    Events.PushEventListenerCallback<any>
   >();
 
-  addPushEventListener<T>(
-    eventName: UIExtensionPushEvents.PushEventName,
-    callback: UIExtensionPushEvents.PushEventListenerCallback<T>,
+  addPushEventListener<T extends Events.Name>(
+    eventName: Events.Name,
+    callback: Events.PushEventListenerCallback<T>,
   ): () => void {
     this.callbacksMap.add(eventName, callback);
     return () => this.callbacksMap.removeFrom(eventName, callback);
   }
 
-  dispatchPushEvent<T>(event: UIExtensionPushEvents.PushEvent<T>) {
+  dispatchPushEvent<T extends Events.Name>(event: Events.PushEvent<T>) {
     this.callbacksMap
       .get(event.name)
       .forEach((callback) => callback(event.payload));

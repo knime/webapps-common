@@ -1,11 +1,16 @@
+import { UIExtensionServiceConfig } from "src";
 import { setUpCustomEmbedderService } from "src/embedder";
 import { SelectionService } from "src/services";
-import { SelectionEventCallbackParams } from "src/services/SelectionService";
-import { ExtensionConfig, SelectionModes } from "src/types";
+import {
+  SelectionEventCallbackParams,
+  SelectionModes,
+} from "src/services/SelectionService";
 import { extensionConfig } from "test/mocks";
 
 describe("SelectionService", () => {
-  const constructSelectionService = (extensionConfig: ExtensionConfig) => {
+  const constructSelectionService = (
+    extensionConfig: UIExtensionServiceConfig,
+  ) => {
     const apiLayer = {
       updateDataPointSelection: jest.fn(),
       getConfig: () => extensionConfig,
@@ -92,7 +97,7 @@ describe("SelectionService", () => {
     it("wraps selection callbacks to filter events by nodeId", () => {
       const testPayload = { key: "someValue" };
       const nodeId = "123";
-      const extensionConfig = { nodeId } as ExtensionConfig;
+      const extensionConfig = { nodeId } as UIExtensionServiceConfig;
       const { selectionService, dispatchPushEvent } =
         constructSelectionService(extensionConfig);
 

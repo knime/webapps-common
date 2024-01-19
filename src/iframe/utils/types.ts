@@ -1,10 +1,13 @@
-import { UIExtensionPushEvents } from "../../serviceTypes";
+import { UIExtensionPushEvents } from "../../types";
 
-export interface WrappedIframePushEvent<T> {
-  type: string;
+export interface WrappedIframePushEvent<T, S> {
+  type: S;
   payload: T;
 }
 
-export type IframeMessageEvent<T> = MessageEvent<
-  WrappedIframePushEvent<UIExtensionPushEvents.PushEvent<T>>
+export type IframeMessageEvent = MessageEvent<
+  WrappedIframePushEvent<
+    UIExtensionPushEvents.PushEvent<UIExtensionPushEvents.Name>,
+    "UIExtensionPushEvent"
+  >
 >;

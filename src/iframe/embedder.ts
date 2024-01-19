@@ -1,8 +1,6 @@
 import { IframeDispatchEvent } from "./pushEvents";
-import type {
-  UIExtensionAPILayer,
-  UIExtensionMessageExchange,
-} from "../serviceTypes";
+import type { UIExtensionServiceAPILayer } from "../types/uiExtensionService";
+import { PayloadForKey, RequestFor, Response } from "./types";
 
 /**
  * Sets up the necessary handler on the window to receive
@@ -17,12 +15,19 @@ import type {
  */
 const enableRequestsToMethods = (
   iframeContentWindow: Window,
-  apiLayer: UIExtensionAPILayer,
+  apiLayer: UIExtensionServiceAPILayer,
 ) => {
   const isUIExtensionMessageExchangeRequest = (
     event: MessageEvent,
-  ): event is MessageEvent<UIExtensionMessageExchange.Request> => {
+  ): event is MessageEvent<RequestFor<UIExtensionServiceAPILayer>> => {
     return event.data?.type === "UIExtensionRequest";
+  };
+
+  const callApiLayer = <K extends keyof UIExtensionServiceAPILayer>(
+    payload: PayloadForKey<UIExtensionServiceAPILayer, K>,
+  ) => {
+    // @ts-expect-error
+    return apiLayer[payload.method](...payload.params);
   };
 
   // handles events received in parent
@@ -31,17 +36,13 @@ const enableRequestsToMethods = (
       if (event.data.source !== iframeContentWindow) {
         return;
       }
-
-      const { method, params } = event.data.payload;
-      // @ts-expect-error
-      const response = await apiLayer[method](...params);
-
-      const message: UIExtensionMessageExchange.Response = {
+      const response = await callApiLayer(event.data.payload);
+      const responseMessage: Response = {
         requestId: event.data.requestId,
         type: "UIExtensionResponse",
         payload: response,
       };
-      iframeContentWindow.postMessage(message, "*");
+      iframeContentWindow.postMessage(responseMessage, "*");
     }
   };
 
@@ -52,7 +53,7 @@ const enableRequestsToMethods = (
 };
 
 export const setUpIframeEmbedderService = (
-  apiLayer: UIExtensionAPILayer,
+  apiLayer: UIExtensionServiceAPILayer,
   iframeContentWindow: Window,
 ) => {
   enableRequestsToMethods(iframeContentWindow, apiLayer);

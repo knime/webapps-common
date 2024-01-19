@@ -1,11 +1,13 @@
-import { ExtensionConfig } from "src";
+import { UIExtensionServiceConfig } from "src";
 import { setUpCustomEmbedderService } from "src/embedder";
 import { ReportingService } from "src/services/ReportingService";
 
 import { extensionConfig } from "test/mocks";
 
 describe("ReportingService", () => {
-  const constructReportingService = (extensionConfig: ExtensionConfig) => {
+  const constructReportingService = (
+    extensionConfig: UIExtensionServiceConfig,
+  ) => {
     const apiLayer = {
       setReportingContent: jest.fn(),
       getConfig: () => extensionConfig,

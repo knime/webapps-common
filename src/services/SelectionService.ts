@@ -1,17 +1,17 @@
-import { SelectionModes, EventTypes } from "src/types";
-import type {
-  CustomUIExtensionService,
-  Identifiers,
-  UIExtensionAPILayer,
-} from "src/serviceTypes";
+import { UIExtensionService } from "src/types/uiExtensionService";
 import { AbstractService } from "./AbstractService";
+import { UIExtensionPushEvents } from "src/types/pushEvents";
+import { SelectionServiceAPILayer } from "./types/serviceApiLayers";
 
-export interface SelectionEventCallbackParams {
-  mode: SelectionModes;
-  selection?: string[];
+/**
+ * Selection service modes available by default to UI Extension nodes.
+ */
+export enum SelectionModes {
+  ADD = "ADD",
+  REMOVE = "REMOVE",
+  REPLACE = "REPLACE",
 }
-
-interface SelectionEvent {
+export interface SelectionEventPayload {
   projectId: string;
   workflowId: string;
   nodeId: string;
@@ -20,15 +20,12 @@ interface SelectionEvent {
   error: string | null;
 }
 
-type SelectionServiceExtensionConfig = Identifiers & {
-  initialData?: unknown;
-  initialSelection?: unknown;
-};
+export type SelectionMode = SelectionModes;
 
-type SelectionServiceAPILayer = Pick<
-  UIExtensionAPILayer,
-  "updateDataPointSelection"
-> & { getConfig: () => SelectionServiceExtensionConfig };
+export interface SelectionEventCallbackParams {
+  mode: SelectionModes;
+  selection?: string[];
+}
 
 /**
  * SelectionService provides methods to handle data selection.
@@ -37,7 +34,7 @@ type SelectionServiceAPILayer = Pick<
 export class SelectionService extends AbstractService<SelectionServiceAPILayer> {
   private removeCallbacksMap: Map<Function, () => void>;
 
-  constructor(baseService: CustomUIExtensionService<SelectionServiceAPILayer>) {
+  constructor(baseService: UIExtensionService<SelectionServiceAPILayer>) {
     super(baseService);
     this.removeCallbacksMap = new Map();
   }
@@ -119,14 +116,14 @@ export class SelectionService extends AbstractService<SelectionServiceAPILayer> 
   addOnSelectionChangeCallback(
     callback: (event: SelectionEventCallbackParams) => void,
   ): void {
-    const wrappedCallback = (event?: SelectionEvent): void => {
+    const wrappedCallback = (event?: SelectionEventPayload): void => {
       const { nodeId, selection, mode } = event || {};
       if (this.baseService.getConfig().nodeId === nodeId) {
         callback({ selection, mode });
       }
     };
     const removeCallback = this.baseService.addPushEventListener(
-      EventTypes.SelectionEvent,
+      UIExtensionPushEvents.EventTypes.SelectionEvent,
       wrappedCallback,
     );
     this.removeCallbacksMap.set(callback, removeCallback);

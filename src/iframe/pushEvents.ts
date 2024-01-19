@@ -1,14 +1,14 @@
-import { UIExtensionPushEvents } from "../serviceTypes";
+import { UIExtensionPushEvents as Events } from "../types";
 import { isWrappedEventOfType, toWrappedEventOfType } from "./utils/events";
 import { IframeMessageEvent } from "./utils/types";
 
 const iframePushEventId = "UIExtensionPushEvent";
 
-const isUIExtensionPushEvent = (event: IframeMessageEvent<any>) =>
+const isUIExtensionPushEvent = (event: IframeMessageEvent) =>
   isWrappedEventOfType(event, iframePushEventId);
 
-const toUIExtensionPushEventMessage = <T>(
-  event: UIExtensionPushEvents.PushEvent<T>,
+const toUIExtensionPushEventMessage = <T extends Events.Name>(
+  event: Events.PushEvent<T>,
 ) => toWrappedEventOfType(event, iframePushEventId);
 
 /**
@@ -16,16 +16,14 @@ const toUIExtensionPushEventMessage = <T>(
  * the embedder side of an iframe ui extension to dispatch events
  * to any listeners registered by an {@link IframeAddEventListener} inside that iframe
  */
-export class IframeDispatchEvent
-  implements UIExtensionPushEvents.DispatchPushEvent
-{
+export class IframeDispatchEvent implements Events.DispatchPushEvent {
   private contentWindow: Window;
 
   constructor(contentWindow: Window) {
     this.contentWindow = contentWindow;
   }
 
-  dispatchPushEvent<T>(event: UIExtensionPushEvents.PushEvent<T>) {
+  dispatchPushEvent<T extends Events.Name>(event: Events.PushEvent<T>) {
     this.contentWindow.postMessage(toUIExtensionPushEventMessage(event), "*");
   }
 }
@@ -35,20 +33,18 @@ export class IframeDispatchEvent
  * implementations inside an iframe. The registered listeners are triggered
  * by an {@link IframeDispatchEvent} on the embedder side
  */
-export class IframeAddEventListener
-  implements UIExtensionPushEvents.AddPushEventListener
-{
+export class IframeAddEventListener implements Events.AddPushEventListener {
   private contentWindow: Window;
 
   constructor(contentWindow: Window) {
     this.contentWindow = contentWindow;
   }
 
-  addPushEventListener<T>(
-    eventName: string,
-    callback: UIExtensionPushEvents.PushEventListenerCallback<T>,
+  addPushEventListener<T extends Events.Name>(
+    eventName: T,
+    callback: Events.PushEventListenerCallback<T>,
   ): () => void {
-    const handler = (messageEvent: IframeMessageEvent<any>) => {
+    const handler = (messageEvent: IframeMessageEvent) => {
       if (!isUIExtensionPushEvent(messageEvent)) {
         return;
       }

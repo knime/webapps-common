@@ -1,10 +1,10 @@
 import {
   CachingSelectionService,
-  SelectionModes,
   SelectionService,
   UIExtensionPushEvents,
 } from "src";
 import { setUpCustomEmbedderService } from "src/embedder";
+import { SelectionModes } from "src/services/SelectionService";
 import { extensionConfig } from "test/mocks";
 
 describe("CachingSelectionService", () => {

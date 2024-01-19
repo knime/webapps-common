@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
-import type { UIExtensionMessageExchange } from "../../serviceTypes";
 import { toWrappedEventOfType } from "../utils/events";
+import { API, PayloadForKey, RequestForKey } from "../types";
 const REQUEST_TIMEOUT_MS = 10000;
 
 /**
@@ -9,14 +9,14 @@ const REQUEST_TIMEOUT_MS = 10000;
  * @param payload
  * @returns
  */
-export default <T = unknown>(
-  payload: UIExtensionMessageExchange.Request["payload"],
+export default <A extends API, K extends keyof API & string>(
+  payload: PayloadForKey<A, K>,
   iframeWindow: Window,
 ) => {
   let timeoutID: ReturnType<typeof setTimeout>;
 
   const requestId = uuidv4();
-  const promise = new Promise<T>((resolve, reject) => {
+  const promise = new Promise<Awaited<ReturnType<A[K]>>>((resolve, reject) => {
     const handler = (event: MessageEvent) => {
       if (event.data.type !== "UIExtensionResponse") {
         return;
@@ -31,14 +31,12 @@ export default <T = unknown>(
       iframeWindow.removeEventListener("message", handler);
     };
     iframeWindow.addEventListener("message", handler);
-    iframeWindow.parent.postMessage(
-      {
-        requestId,
-        source: iframeWindow,
-        ...toWrappedEventOfType(payload, "UIExtensionRequest"),
-      },
-      "*",
-    );
+    const requestMessage: RequestForKey<A, K> = {
+      requestId,
+      source: iframeWindow,
+      ...toWrappedEventOfType(payload, "UIExtensionRequest"),
+    };
+    iframeWindow.parent.postMessage(requestMessage, "*");
 
     timeoutID = setTimeout(() => {
       self.removeEventListener("message", handler);

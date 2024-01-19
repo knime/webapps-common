@@ -1,9 +1,5 @@
 import { createProxy } from "src/iframe/serviceProxy";
-import {
-  CustomUIExtensionService,
-  UIExtensionAPILayer,
-  UIExtensionService,
-} from "src/serviceTypes";
+import { UIExtensionService } from "src/types/uiExtensionService";
 
 /**
  * exported for test purposes
@@ -19,17 +15,17 @@ export const getInitializedBaseServiceProxy = async (
     "getConfig"
   > & { getConfig: () => typeof extensionConfig };
   initializedBaseService.getConfig = () => extensionConfig;
+  /**
+   * Without nesting the result in an object, because this is an asynchronous method,
+   * e.g. the 'then' method would also be proxied
+   */
   return { serviceProxy: initializedBaseService };
 };
 
-export class AbstractService<
-  T extends Partial<Omit<UIExtensionAPILayer, "getConfig">> & {
-    getConfig?: () => Partial<ReturnType<UIExtensionAPILayer["getConfig"]>>;
-  },
-> {
-  baseService: CustomUIExtensionService<T>;
+export class AbstractService<T> {
+  baseService: UIExtensionService<T>;
 
-  constructor(baseService: CustomUIExtensionService<T>) {
+  constructor(baseService: UIExtensionService<T>) {
     if (new.target === AbstractService) {
       throw new Error("Cannot instantiate abstract class");
     }

@@ -1,0 +1,96 @@
+import { ExtensionTypes } from "src/types/ExtensionTypes";
+import { DataServiceType } from "src/types/DataServiceType";
+import { Alert, AlertConfig } from "src/types/alert";
+import { DialogSettings } from "./DialogSettings";
+import { ColorModel } from "./ColorModel";
+import { UIExtensionPushEvents } from "./pushEvents";
+
+export type Identifiers = {
+  /**
+   * the id of the node in the workflow.
+   */
+  projectId: string;
+  /**
+   * the project id of the workflow.
+   */
+  workflowId: string;
+  /**
+   * the workflow id.
+   */
+  nodeId: string;
+};
+
+/**
+ * The configuration of the client-side UIExtension implementation
+ */
+export type UIExtensionServiceConfig = AlertConfig &
+  Identifiers & {
+    /**
+     * the type of the extension (effects the api behavior).
+     */
+    extensionType: ExtensionTypes;
+    /**
+     * optional initial data to provide directly to the UI Extension.
+     */
+    initialData?: any;
+    /**
+     * optional initial selection to provide directly to the UI Extension.
+     */
+    initialSelection?: any;
+    /**
+     * optional initial dialog state supplying the UI Extension with the state of a dialog if present.
+     */
+    dialogSettings?: DialogSettings;
+    /**
+     * optional action-id to communicate the generated image back to Java.
+     *  TODO UIEXT-1031: We are also (mis)using this prop for cpmmunicating the report back to Java. The two concerns
+     *  should either be unified or separated.
+     */
+    generatedImageActionId?: string | null;
+    hasNodeView: boolean;
+    writeProtected?: boolean;
+    /**
+     * optional color model per column used to map data cell values
+     * (numeric xor nominal) of a column to hexadecimal color codes
+     */
+    colorModels?: Record<string, ColorModel>;
+    /**
+     * optional color model used to map column names to hexadecimal color
+     * codes
+     */
+    columnNamesColorModel?: ColorModel;
+  };
+
+/**
+ * API layer definition for the UIExtension service. This contract
+ * represents the method implementations that the embedded of Extensions
+ * needs to supply in order to make the communication with Extensions work properly
+ */
+export type UIExtensionServiceAPILayer = {
+  getResourceLocation: (path: string) => Promise<string>;
+
+  callNodeDataService: (
+    params: Identifiers & {
+      extensionType: string;
+      serviceType: DataServiceType;
+      dataServiceRequest: string;
+    },
+  ) => Promise<any>;
+
+  updateDataPointSelection: (
+    params: Identifiers & { mode: string; selection: string[] },
+  ) => Promise<any>;
+
+  setReportingContent: (content: string | false) => void;
+
+  imageGenerated: (image: string) => void;
+
+  publishData: (data: any) => void;
+
+  sendAlert: (alert: Alert) => void;
+
+  getConfig: () => UIExtensionServiceConfig;
+};
+
+export type UIExtensionService<APILayer = UIExtensionServiceAPILayer> =
+  APILayer & UIExtensionPushEvents.AddPushEventListener;

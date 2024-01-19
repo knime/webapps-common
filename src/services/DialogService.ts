@@ -1,11 +1,5 @@
 import { AbstractService } from "./AbstractService";
-
-type DialogServiceExtensionConfig = {
-  hasNodeView: boolean;
-  writeProtected?: boolean;
-};
-
-type DialogServiceAPILayer = { getConfig: () => DialogServiceExtensionConfig };
+import { DialogServiceAPILayer } from "./types/serviceApiLayers";
 
 /**
  * A utility class to interact with Dialog settings implemented by a UI Extension node.

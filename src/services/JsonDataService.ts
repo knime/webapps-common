@@ -1,33 +1,14 @@
-import { DataServiceType, ExtensionTypes } from "src/types";
-import { AlertTypes } from "src/types/AlertTypes";
 import { DialogSettings } from "src/types/DialogSettings";
 import { createJsonRpcRequest } from "src/utils";
-import {
-  CustomUIExtensionService,
-  Identifiers,
-  UIExtensionAPILayer,
-  UIExtensionPushEvents,
-} from "src/serviceTypes";
+
 import { createAlert } from "./utils";
-import type { AlertConfig } from "src/types/Alert";
+import { AlertType } from "src/types/alert";
 import { AbstractService } from "./AbstractService";
+import { DataServiceType } from "src/types/DataServiceType";
+import { UIExtensionPushEvents } from "src/types/pushEvents";
+import { JsonDataServiceAPILayer } from "./types/serviceApiLayers";
 
 const MAX_MESSAGE_LEN = 160;
-
-type JsonDataServiceExtensionConfig = AlertConfig &
-  Identifiers & {
-    extensionType: ExtensionTypes;
-    initialData?: any;
-    dialogSettings?: DialogSettings;
-  };
-
-type JsonDataServiceAPILayer = Pick<
-  UIExtensionAPILayer,
-  "callNodeDataService" | "publishData" | "sendAlert"
-> & { getConfig: () => JsonDataServiceExtensionConfig };
-
-export type JsonDataServiceUIExtensionService =
-  CustomUIExtensionService<JsonDataServiceAPILayer>;
 
 /**
  * A utility class to interact with JsonDataServices implemented by a UI Extension node.
@@ -50,7 +31,7 @@ export class JsonDataService extends AbstractService<JsonDataServiceAPILayer> {
       this.baseService
         .callNodeDataService({
           serviceType,
-          request,
+          dataServiceRequest: request,
           extensionType: config.extensionType,
           nodeId: config.nodeId,
           projectId: config.projectId,
@@ -153,13 +134,13 @@ export class JsonDataService extends AbstractService<JsonDataServiceAPILayer> {
   /**
    * Adds callback that will be triggered when data changes.
    * @param {Function} callback - called on data change.
-   * @param {Event} response - the data update event object.
    * @returns {() => void} - method for removing the listener again
    */
-  addOnDataChangeCallback(
-    callback: UIExtensionPushEvents.PushEventListenerCallback<any>,
-  ) {
-    return this.baseService.addPushEventListener("data-change", callback);
+  addOnDataChangeCallback(callback: (data: any) => void) {
+    return this.baseService.addPushEventListener(
+      UIExtensionPushEvents.EventTypes.DataEvent,
+      callback,
+    );
   }
 
   /**
@@ -219,7 +200,7 @@ export class JsonDataService extends AbstractService<JsonDataServiceAPILayer> {
         message:
           messageBody ||
           "No further information available. Please check the workflow configuration.",
-        type: AlertTypes.ERROR,
+        type: AlertType.ERROR,
         code,
       }),
     );
@@ -235,7 +216,7 @@ export class JsonDataService extends AbstractService<JsonDataServiceAPILayer> {
     }
     this.baseService.sendAlert(
       createAlert(this.baseService.getConfig(), {
-        type: AlertTypes.WARN,
+        type: AlertType.WARN,
         message,
         subtitle,
       }),

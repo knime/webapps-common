@@ -1,5 +1,5 @@
 import {
-  CustomUIExtensionService,
+  UIExtensionService,
   UIExtensionPushEvents,
   setUpIframeEmbedderService,
 } from "src";
@@ -23,9 +23,7 @@ class Embedder<APILayer extends { getConfig: () => {} }> {
   }
 
   injectScript(
-    injectedScript: (param: {
-      service: CustomUIExtensionService<APILayer>;
-    }) => void,
+    injectedScript: (param: { service: UIExtensionService<APILayer> }) => void,
   ) {
     const stringLines = injectedScript.toString().split("\n");
     if (!stringLines[0].trim().startsWith("({ service })")) {

@@ -1,5 +1,12 @@
-import { AlertTypes } from "./AlertTypes";
 import { NodeInfo } from "./NodeInfo";
+
+/**
+ * @enum
+ */
+export enum AlertType {
+  ERROR = "error",
+  WARN = "warn",
+}
 
 /**
  *
@@ -13,7 +20,7 @@ import { NodeInfo } from "./NodeInfo";
 export type Alert = {
   nodeId: string;
   nodeInfo: NodeInfo;
-  type: AlertTypes | keyof typeof AlertTypes;
+  type: AlertType;
   code?: string | number;
   subtitle?: string;
   message?: string;
@@ -25,7 +32,7 @@ export type AlertConfig = {
 };
 
 export type CreateAlertParams = {
-  type?: AlertTypes;
+  type?: AlertType;
   message?: string;
   code?: string | number;
   subtitle?: string;

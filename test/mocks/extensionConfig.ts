@@ -1,7 +1,8 @@
 /* eslint-disable no-magic-numbers */
-import { ExtensionConfig, ExtensionTypes, ResourceTypes } from "src/types";
+import { UIExtensionServiceConfig } from "src/types/uiExtensionService";
+import { ExtensionTypes } from "src/types/ExtensionTypes";
 
-export const extensionConfig: ExtensionConfig = {
+export const extensionConfig: UIExtensionServiceConfig = {
   initialData: {
     result: {
       settings: {
@@ -43,12 +44,6 @@ export const extensionConfig: ExtensionConfig = {
   nodeId: "123",
   projectId: "knime workflow",
   workflowId: "root:10",
-  resourceInfo: {
-    id: "org.knime.base.views.scatterplot.ScatterPlotNodeFactory",
-    type: ResourceTypes.VUE_COMPONENT_LIB,
-    path: null,
-    url: "http://localhost:4000/ScatterPlot.js",
-  },
   nodeInfo: {
     nodeAnnotation: "",
     nodeState: "executed",
@@ -57,9 +52,5 @@ export const extensionConfig: ExtensionConfig = {
     nodeName: "Scatter Plot",
   },
   extensionType: ExtensionTypes.VIEW,
-  flowVariableSettings: {
-    modelVariables: {},
-    viewVariables: {},
-  },
   hasNodeView: true,
 };

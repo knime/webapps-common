@@ -1,11 +1,11 @@
-import { AlertConfig, CreateAlertParams } from "src/types/Alert";
-import { AlertTypes, NodeInfo } from "src/types";
+import { AlertConfig, CreateAlertParams, AlertType } from "src/types/alert";
+import { NodeInfo } from "src/types/NodeInfo";
 
 export const createAlert = (
   baseConfig: AlertConfig,
   alertParams: CreateAlertParams,
 ) => {
-  const { type = AlertTypes.ERROR, message, code, subtitle } = alertParams;
+  const { type = AlertType.ERROR, message, code, subtitle } = alertParams;
   return {
     nodeId: baseConfig.nodeId ?? "MISSING",
     nodeInfo: baseConfig.nodeInfo ?? ({} as NodeInfo),
