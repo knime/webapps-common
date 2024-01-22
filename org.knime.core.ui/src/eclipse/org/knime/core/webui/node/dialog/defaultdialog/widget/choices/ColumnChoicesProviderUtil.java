@@ -48,6 +48,7 @@ r *  Copyright by KNIME AG, Zurich, Switzerland
 package org.knime.core.webui.node.dialog.defaultdialog.widget.choices;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataTableSpec;
@@ -68,6 +69,21 @@ public final class ColumnChoicesProviderUtil {
 
     private ColumnChoicesProviderUtil() {
         throw new IllegalStateException("Utility class");
+    }
+
+    /**
+     * Offers all column from the first input table as options.
+     *
+     * @author Carl Witt, KNIME AG, Zurich, Switzerland
+     */
+    public static final class AllColumnChoicesProvider implements ColumnChoicesProvider {
+        @Override
+        public DataColumnSpec[] columnChoices(final DefaultNodeSettingsContext context) {
+            return context.getDataTableSpec(0) //
+                .map(DataTableSpec::stream) //
+                .orElseGet(Stream::empty) //
+                .toArray(DataColumnSpec[]::new);
+        }
     }
 
     /**

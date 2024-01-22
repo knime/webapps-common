@@ -194,9 +194,6 @@ public abstract class WebUINodeModel<S extends DefaultNodeSettings> extends Node
      */
     protected void onLoadInternals(final File nodeInternDir, final ExecutionMonitor exec)
         throws IOException, CanceledExecutionException {
-        if (m_modelSettings == null) {
-            m_modelSettings = DefaultNodeSettings.createSettings(m_modelSettingsClass);
-        }
         onLoadInternals(nodeInternDir, exec, m_modelSettings);
     }
 
@@ -224,7 +221,7 @@ public abstract class WebUINodeModel<S extends DefaultNodeSettings> extends Node
     }
 
     /**
-     * Allows extending classes to implement custom behavior during {@link #saveInternals(File, ExecutionMonitor)}o
+     * Allows extending classes to implement custom behavior during {@link #saveInternals(File, ExecutionMonitor)}
      *
      * @param nodeInternDir directory where the node can persist information
      * @param exec for progress and cancellation
@@ -233,9 +230,6 @@ public abstract class WebUINodeModel<S extends DefaultNodeSettings> extends Node
      */
     protected void onSaveInternals(final File nodeInternDir, final ExecutionMonitor exec)
         throws IOException, CanceledExecutionException {
-        if (m_modelSettings == null) {
-            m_modelSettings = DefaultNodeSettings.createSettings(m_modelSettingsClass);
-        }
         onSaveInternals(nodeInternDir, exec, m_modelSettings);
     }
 
@@ -266,6 +260,10 @@ public abstract class WebUINodeModel<S extends DefaultNodeSettings> extends Node
 
     /**
      * Allows extending classes to validate the settings before they are loaded into the NodeModel.
+     * <p>
+     * This does not affect new nodes. Their settings are <b>not</b> passed through this method before being passed to
+     * configure or execute.
+     * </p>
      *
      * @param settings to validate
      * @throws InvalidSettingsException if the settings are invalid
