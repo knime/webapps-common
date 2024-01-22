@@ -41,7 +41,7 @@ export default {
           label="Select a file"
           :multiple="true"
         />
-        <p>Select single files</p>
+        <p>Select a single file</p>
         <FileSelector
           accepted-file-types="*"
           label="Select a file"
