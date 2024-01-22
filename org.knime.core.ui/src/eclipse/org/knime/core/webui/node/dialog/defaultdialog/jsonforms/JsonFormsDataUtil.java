@@ -147,7 +147,7 @@ public final class JsonFormsDataUtil {
     }
 
     /**
-     * @return the configured mapper
+     * @return the configured mapper which is used to serialize {@link DefaultNodeSettings}-objects
      */
     public static ObjectMapper getMapper() {
         if (MAPPER == null) {

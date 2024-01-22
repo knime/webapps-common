@@ -191,10 +191,10 @@ public final class VariableSettingsUtil {
                         nestedVariableSettings = nestedVariableSettings.getOrCreateVariableSettings(keys[i]);
                     }
                     nestedVariableSettings.addUsedVariable(keys[keys.length - 1],
-                        flowVariableSetting.getControllingFlowVariableName(),
-                        flowVariableSetting.isControllingFlowVariableFlawed());
+                        flowVariableSetting.m_controllingFlowVariableName,
+                        flowVariableSetting.m_isControllingFlowVariableFlawed);
                     nestedVariableSettings.addExposedVariable(keys[keys.length - 1],
-                        flowVariableSetting.getExposedFlowVariableName());
+                        flowVariableSetting.m_exposedFlowVariableName);
                 } catch (InvalidSettingsException ex) { // NOSONAR
                     LOGGER.warn("Failed to read flow variable settings from json", ex);
                 }
@@ -204,13 +204,18 @@ public final class VariableSettingsUtil {
 
     private static class FlowVariableSetting {
 
-        private final String m_controllingFlowVariableName;
+        @JsonProperty("controllingFlowVariableName")
+        final String m_controllingFlowVariableName;
 
-        private final String m_exposedFlowVariableName;
+        @JsonProperty("exposedFlowVariableName")
+        final String m_exposedFlowVariableName;
 
-        private final boolean m_isControllingFlowVariableAvailable;
+        @JsonProperty("controllingFlowVariableFlawed")
+        final boolean m_isControllingFlowVariableFlawed;
 
-        private final boolean m_isControllingFlowVariableFlawed;
+        @JsonProperty("controllingFlowVariableAvailable")
+        @SuppressWarnings("unused")
+        final Boolean m_isControllingFlowVariableAvailable;
 
         @JsonCreator
         FlowVariableSetting(@JsonProperty("controllingFlowVariableName") final String controllingFlowVariableName,
@@ -223,7 +228,8 @@ public final class VariableSettingsUtil {
             final boolean isControllingFlowVariableAvailable, final String exposedFlowVariableName,
             final boolean isControllingFlowVariableFlawed) {
             m_controllingFlowVariableName = controllingFlowVariableName;
-            m_isControllingFlowVariableAvailable = isControllingFlowVariableAvailable;
+            m_isControllingFlowVariableAvailable =
+                m_controllingFlowVariableName == null ? null : isControllingFlowVariableAvailable;
             m_exposedFlowVariableName = exposedFlowVariableName;
             m_isControllingFlowVariableFlawed = isControllingFlowVariableFlawed;
         }
@@ -231,23 +237,6 @@ public final class VariableSettingsUtil {
         private FlowVariableSetting(final String controllingFlowVariableName,
             final boolean isControllingFlowVariableAvailable, final String exposedFlowVariableName) {
             this(controllingFlowVariableName, isControllingFlowVariableAvailable, exposedFlowVariableName, false);
-        }
-
-        public String getControllingFlowVariableName() {
-            return m_controllingFlowVariableName;
-        }
-
-        @SuppressWarnings("unused")
-        public Boolean isControllingFlowVariableAvailable() {
-            return m_controllingFlowVariableName == null ? null : m_isControllingFlowVariableAvailable;
-        }
-
-        public String getExposedFlowVariableName() {
-            return m_exposedFlowVariableName;
-        }
-
-        public boolean isControllingFlowVariableFlawed() {
-            return m_isControllingFlowVariableFlawed;
         }
 
     }
