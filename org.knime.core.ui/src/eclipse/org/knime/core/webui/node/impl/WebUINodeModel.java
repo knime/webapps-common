@@ -181,38 +181,74 @@ public abstract class WebUINodeModel<S extends DefaultNodeSettings> extends Node
     @Override
     protected final void loadInternals(final File nodeInternDir, final ExecutionMonitor exec)
         throws IOException, CanceledExecutionException {
-
         onLoadInternals(nodeInternDir, exec);
     }
 
     /**
      * Allows extending classes to implement custom behavior during {@link #loadInternals(File, ExecutionMonitor)}o
      *
-     * @param nodeInternDir
-     * @param exec
+     * @param nodeInternDir directory where the node can persist information
+     * @param exec for progress and cancellation
      * @throws IOException
      * @throws CanceledExecutionException
      */
     protected void onLoadInternals(final File nodeInternDir, final ExecutionMonitor exec)
         throws IOException, CanceledExecutionException {
+        if (m_modelSettings == null) {
+            m_modelSettings = DefaultNodeSettings.createSettings(m_modelSettingsClass);
+        }
+        onLoadInternals(nodeInternDir, exec, m_modelSettings);
     }
 
+    /**
+     * Allows extending classes to implement custom behavior during {@link #loadInternals(File, ExecutionMonitor)}o
+     *
+     * @param nodeInternDir directory where the node can persist information
+     * @param exec for progress and cancellation
+     * @param settings node settings
+     * @throws IOException
+     * @throws CanceledExecutionException
+     */
+    protected void onLoadInternals(final File nodeInternDir, final ExecutionMonitor exec, final S settings)
+        throws IOException, CanceledExecutionException {
+    }
+
+    /**
+     * @param nodeInternDir directory where the node can persist information
+     * @param exec for progress and cancellation
+     */
     @Override
     protected final void saveInternals(final File nodeInternDir, final ExecutionMonitor exec)
         throws IOException, CanceledExecutionException {
-
         onSaveInternals(nodeInternDir, exec);
     }
 
     /**
      * Allows extending classes to implement custom behavior during {@link #saveInternals(File, ExecutionMonitor)}o
      *
-     * @param nodeInternDir
-     * @param exec
+     * @param nodeInternDir directory where the node can persist information
+     * @param exec for progress and cancellation
      * @throws IOException
      * @throws CanceledExecutionException
      */
     protected void onSaveInternals(final File nodeInternDir, final ExecutionMonitor exec)
+        throws IOException, CanceledExecutionException {
+        if (m_modelSettings == null) {
+            m_modelSettings = DefaultNodeSettings.createSettings(m_modelSettingsClass);
+        }
+        onSaveInternals(nodeInternDir, exec, m_modelSettings);
+    }
+
+    /**
+     * Allows extending classes to implement custom behavior during {@link #saveInternals(File, ExecutionMonitor)}o
+     *
+     * @param nodeInternDir directory where the node can persist information
+     * @param exec for progress and cancellation
+     * @param settings node settings
+     * @throws IOException
+     * @throws CanceledExecutionException
+     */
+    protected void onSaveInternals(final File nodeInternDir, final ExecutionMonitor exec, final S settings)
         throws IOException, CanceledExecutionException {
     }
 
