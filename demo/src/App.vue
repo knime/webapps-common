@@ -56,6 +56,9 @@ const demoComponents = {
     ),
     Collapser: defineAsyncComponent(() => import("./components/Collapser.vue")),
     FileLink: defineAsyncComponent(() => import("./components/FileLink.vue")),
+    FileSelector: defineAsyncComponent(
+      () => import("./components/FileSelector.vue"),
+    ),
     IdleReadyButton: defineAsyncComponent(
       () => import("./components/IdleReadyButton.vue"),
     ),
