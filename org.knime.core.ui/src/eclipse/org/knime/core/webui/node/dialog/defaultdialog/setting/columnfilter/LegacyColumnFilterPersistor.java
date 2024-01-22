@@ -56,12 +56,12 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.util.filter.NameFilterConfiguration.EnforceOption;
 import org.knime.core.node.util.filter.PatternFilterConfiguration;
 import org.knime.core.node.util.filter.column.DataColumnSpecFilterConfiguration;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.PatternFilter.PatternMode;
 
 /**
  * {@link NodeSettingsPersistor} for {@link ColumnFilter} that persists it in a way compatible to
@@ -84,36 +84,6 @@ public final class LegacyColumnFilterPersistor extends NodeSettingsPersistorWith
     private static final String KEY_FILTER_TYPE_MANUAL = "STANDARD";
 
     /**
-     * See NameFilterConfiguration.KEY_ENFORCE_OPTION
-     */
-    private static final String KEY_ENFORCE_OPTION = "enforce_option";
-
-    /**
-     * See NameFilterConfiguration.KEY_EXCLUDED_NAMES
-     */
-    private static final String OLD_EXCLUDED_NAMES = "excluded_names";
-
-    /**
-     * See NameFilterConfiguration.KEY_INCLUDED_NAMES
-     */
-    private static final String KEY_INCLUDED_NAMES = "included_names";
-
-    /**
-     * See PatternFilterConfiguration.CFG_TYPE
-     */
-    private static final String PATTERN_FILTER_TYPE = "type";
-
-    /**
-     * See PatternFilterConfiguration.PatternFilterType.Regex
-     */
-    private static final String PATTERN_FILTER_REGEX = "Regex";
-
-    /**
-     * See PatternFilterConfiguration.PatternFilterType.Wildcard
-     */
-    private static final String PATTERN_FILTER_WILDCARD = "Wildcard";
-
-    /**
      * See TypeFilterConfigurationImpl.TYPE
      */
     private static final String OLD_FILTER_TYPE_DATATYPE = "datatype";
@@ -129,10 +99,8 @@ public final class LegacyColumnFilterPersistor extends NodeSettingsPersistorWith
         var columnFilterSettings = nodeSettings.getNodeSettings(configKey);
         var columnFilter = new ColumnFilter();
         columnFilter.m_mode = loadMode(columnFilterSettings);
-        columnFilter.m_selected = columnFilterSettings.getStringArray(KEY_INCLUDED_NAMES);
-        columnFilter.m_manualFilter = loadManualFilter(columnFilterSettings);
-        columnFilter.m_patternFilter =
-            loadPatternMatching(columnFilterSettings.getNodeSettings(PatternFilterConfiguration.TYPE));
+        columnFilter.m_manualFilter = LegacyManualFilterPersistorUtil.loadManualFilter(columnFilterSettings);
+        columnFilter.m_patternFilter = LegacyPatternFilterPersistorUtil.loadPatternMatching(columnFilterSettings.getNodeSettings(PatternFilterConfiguration.TYPE));
         columnFilter.m_typeFilter = loadTypeFilter(columnFilterSettings.getNodeSettings(OLD_FILTER_TYPE_DATATYPE));
         return columnFilter;
     }
@@ -144,14 +112,7 @@ public final class LegacyColumnFilterPersistor extends NodeSettingsPersistorWith
             return ColumnFilterMode.MANUAL;
         } else if (PatternFilterConfiguration.TYPE.equals(filterType)) {
             var patternMatchingSettings = columnFilterSettings.getNodeSettings(PatternFilterConfiguration.TYPE);
-            var patternMatchingType = patternMatchingSettings.getString(PATTERN_FILTER_TYPE);
-            if (PATTERN_FILTER_WILDCARD.equals(patternMatchingType)) {
-                return ColumnFilterMode.WILDCARD;
-            } else if (PATTERN_FILTER_REGEX.equals(patternMatchingType)) {
-                return ColumnFilterMode.REGEX;
-            } else {
-                throw new InvalidSettingsException("Unsupported name pattern type: " + patternMatchingType);
-            }
+            return LegacyPatternFilterPersistorUtil.loadPatternMode(patternMatchingSettings).toColumnFilterMode();
         } else if (OLD_FILTER_TYPE_DATATYPE.equals(filterType)) {
             return ColumnFilterMode.TYPE;
         } else {
@@ -159,33 +120,9 @@ public final class LegacyColumnFilterPersistor extends NodeSettingsPersistorWith
         }
     }
 
-    private static ManualColumnFilter loadManualFilter(final NodeSettingsRO columnFilterSettings)
+    private static TypeFilter loadTypeFilter(final NodeSettingsRO typeFilterSettings)
         throws InvalidSettingsException {
-        var manualFilter = new ManualColumnFilter(columnFilterSettings.getStringArray(KEY_INCLUDED_NAMES));
-        manualFilter.m_manuallyDeselected = columnFilterSettings.getStringArray(OLD_EXCLUDED_NAMES);
-        manualFilter.m_includeUnknownColumns = loadIncludeUnknownColumns(columnFilterSettings);
-        return manualFilter;
-    }
-
-    private static boolean loadIncludeUnknownColumns(final NodeSettingsRO columnFilterSettings)
-        throws InvalidSettingsException {
-        var enforceOptionName = columnFilterSettings.getString(KEY_ENFORCE_OPTION);
-        var enforceOption = EnforceOption.valueOf(enforceOptionName);
-        return enforceOption == EnforceOption.EnforceExclusion;
-    }
-
-    private static PatternColumnFilter loadPatternMatching(final NodeSettingsRO patternMatchingSettings)
-        throws InvalidSettingsException {
-        var patternFilter = new PatternColumnFilter();
-        patternFilter.m_pattern = patternMatchingSettings.getString("pattern");
-        patternFilter.m_isCaseSensitive = patternMatchingSettings.getBoolean("caseSensitive");
-        patternFilter.m_isInverted = patternMatchingSettings.getBoolean("excludeMatching");
-        return patternFilter;
-    }
-
-    private static TypeColumnFilter loadTypeFilter(final NodeSettingsRO typeFilterSettings)
-        throws InvalidSettingsException {
-        var typeFilter = new TypeColumnFilter();
+        var typeFilter = new TypeFilter();
         typeFilter.m_selectedTypes = loadSelectedTypes(typeFilterSettings);
         typeFilter.m_typeDisplays = getDisplays(typeFilter.m_selectedTypes);
         return typeFilter;
@@ -218,8 +155,8 @@ public final class LegacyColumnFilterPersistor extends NodeSettingsPersistorWith
         }
         var columnFilterSettings = settings.addNodeSettings(configKey);
         columnFilterSettings.addString(KEY_FILTER_TYPE, toFilterType(columnFilter.m_mode));
-        saveManualFilter(columnFilter.m_manualFilter, columnFilterSettings);
-        savePatternMatching(columnFilter.m_patternFilter, columnFilter.m_mode,
+        LegacyManualFilterPersistorUtil.saveManualFilter(columnFilter.m_manualFilter, columnFilterSettings);
+        LegacyPatternFilterPersistorUtil.savePatternMatching(columnFilter.m_patternFilter, PatternMode.of(columnFilter.m_mode),
             columnFilterSettings.addNodeSettings(PatternFilterConfiguration.TYPE));
         saveTypeFilter(columnFilter.m_typeFilter, columnFilterSettings.addNodeSettings(OLD_FILTER_TYPE_DATATYPE));
     }
@@ -251,33 +188,7 @@ public final class LegacyColumnFilterPersistor extends NodeSettingsPersistorWith
         }
     }
 
-    private static void saveManualFilter(final ManualColumnFilter manualFilter,
-        final NodeSettingsWO columnFilterSettings) {
-        columnFilterSettings.addStringArray(KEY_INCLUDED_NAMES, manualFilter.m_manuallySelected);
-        columnFilterSettings.addStringArray(OLD_EXCLUDED_NAMES, manualFilter.m_manuallyDeselected);
-        columnFilterSettings.addString(KEY_ENFORCE_OPTION, getEnforceOption(manualFilter).name());
-    }
-
-    private static EnforceOption getEnforceOption(final ManualColumnFilter manualFilter) {
-        if (manualFilter.m_includeUnknownColumns) {
-            return EnforceOption.EnforceExclusion;
-        } else {
-            return EnforceOption.EnforceInclusion;
-        }
-    }
-
-    private static void savePatternMatching(final PatternColumnFilter patternFilter, final ColumnFilterMode mode,
-        final NodeSettingsWO patternMatchingSettings) {
-        patternMatchingSettings.addString("pattern", patternFilter.m_pattern);
-        // not entirely backwards compatible because we don't persist the pattern type if pattern matching
-        // is not the current mode but we accept that
-        patternMatchingSettings.addString("type",
-            mode == ColumnFilterMode.REGEX ? PATTERN_FILTER_REGEX : PATTERN_FILTER_WILDCARD);
-        patternMatchingSettings.addBoolean("caseSensitive", patternFilter.m_isCaseSensitive);
-        patternMatchingSettings.addBoolean("excludeMatching", patternFilter.m_isInverted);
-    }
-
-    private static void saveTypeFilter(final TypeColumnFilter typeFilter, final NodeSettingsWO typeFilterSettings) {
+    private static void saveTypeFilter(final TypeFilter typeFilter, final NodeSettingsWO typeFilterSettings) {
         var typeListSettings = typeFilterSettings.addNodeSettings(TYPELIST);
         if (typeFilter.m_selectedTypes != null) {
             Stream.of(typeFilter.m_selectedTypes).forEach(t -> typeListSettings.addBoolean(t, true));

@@ -44,7 +44,7 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   15 Dec 2022 Paul Bärnreuther: created
+ *   Jan 22, 2024 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter;
 
@@ -52,24 +52,18 @@ import java.util.Objects;
 
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.PatternFilter.PatternMode;
-import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * A class used to store several representation of column choices. I.e. the columns can be determined using one of the
- * modes of {@link ColumnFilterMode}.
  *
  * @author Paul Bärnreuther
  */
-public class ColumnFilter implements PersistableSettings {
-
+public class NameFilter {
     /**
-     * The setting representing the selected columns
+     * The setting representing the selected strings
      */
     @Persist(hidden = true, optional = true)
     public String[] m_selected;
@@ -77,7 +71,7 @@ public class ColumnFilter implements PersistableSettings {
     /**
      * The way the selection is determined by
      */
-    public ColumnFilterMode m_mode; //NOSONAR
+    public NameFilterMode m_mode; //NOSONAR
 
     /**
      * Settings regarding selection by pattern matching (regex or wildcard)
@@ -89,21 +83,16 @@ public class ColumnFilter implements PersistableSettings {
      */
     public ManualFilter m_manualFilter; //NOSONAR
 
-    /**
-     * Settings regarding selection per type
-     */
-    public TypeFilter m_typeFilter; //NOSONAR
 
     /**
-     * Initialises the column selection with an initial array of columns which are manually selected
+     * Use this to construct a string array filter with an initial array of columns which are manually selected
      *
      * @param initialSelected the initial manually selected non-null columns
      */
-    public ColumnFilter(final String[] initialSelected) {
-        m_mode = ColumnFilterMode.MANUAL;
+    public NameFilter(final String[] initialSelected) {
+        m_mode = NameFilterMode.MANUAL;
         m_manualFilter = new ManualFilter(Objects.requireNonNull(initialSelected));
         m_patternFilter = new PatternFilter();
-        m_typeFilter = new TypeFilter();
     }
 
     /**
@@ -114,35 +103,19 @@ public class ColumnFilter implements PersistableSettings {
     }
 
     /**
-     * Initialises the column selection with no initially selected columns.
+     * Initializes the column selection with no initially selected columns.
      */
-    public ColumnFilter() {
+    public NameFilter() {
         this(new String[0]);
     }
 
     /**
-     * Initialises the column selection based on the given context.
+     * Initializes the column selection with no initially selected columns.
      *
      * @param context settings creation context
      */
-    public ColumnFilter(final DefaultNodeSettingsContext context) {
+    public NameFilter(final DefaultNodeSettingsContext context) {
         this();
-    }
-
-    /**
-     * Creates a ColumnFilter that includes all columns the choicesProvider selects including unknown new columns.
-     *
-     * @param choicesProviderClass the class of {@link ChoicesProvider}
-     * @param context of the settings creation
-     * @return a new ColumnFilter
-     */
-    public static ColumnFilter createDefault(final Class<? extends ChoicesProvider> choicesProviderClass,
-        final DefaultNodeSettingsContext context) {
-        ChoicesProvider choicesProvider = InstantiationUtil.createInstance(choicesProviderClass);
-        var choices = choicesProvider.choices(context);
-        var columnFilter = new ColumnFilter(choices);
-        columnFilter.m_manualFilter.m_includeUnknownColumns = true;
-        return columnFilter;
     }
 
     /**
@@ -155,8 +128,6 @@ public class ColumnFilter implements PersistableSettings {
         switch (m_mode) {
             case MANUAL:
                 return m_manualFilter.getUpdatedManuallySelected(Objects.requireNonNull(choices));
-            case TYPE:
-                return m_typeFilter.getSelected(choices, spec);
             default:
                 return m_patternFilter.getSelected(PatternMode.of(m_mode), choices);
         }

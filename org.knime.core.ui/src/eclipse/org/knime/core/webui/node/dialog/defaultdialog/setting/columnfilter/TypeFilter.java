@@ -72,7 +72,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  *
  * @author Paul Bärnreuther
  */
-class TypeColumnFilter implements PersistableSettings {
+class TypeFilter implements PersistableSettings {
 
     /**
      * A list of string representations of types of columns which are used in case of m_mode = "TYPE"
@@ -89,7 +89,7 @@ class TypeColumnFilter implements PersistableSettings {
     /**
      * Filter with no selected Types
      */
-    TypeColumnFilter() {
+    TypeFilter() {
         m_selectedTypes = new String[0];
     }
 
@@ -113,7 +113,7 @@ class TypeColumnFilter implements PersistableSettings {
         return spec.stream()//
             .filter(colSpec -> choicesSet.contains(colSpec.getName())) //
             .map(DataColumnSpec::getType) //
-            .map(TypeColumnFilter::typeToString) //
+            .map(TypeFilter::typeToString) //
             .toArray(String[]::new);
     }
 

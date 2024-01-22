@@ -62,7 +62,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSet
  *
  * @author Paul Bärnreuther
  */
-class ManualColumnFilter implements PersistableSettings {
+class ManualFilter implements PersistableSettings {
 
     /**
      * the manually selected columns in case of m_mode = "MANUAL"
@@ -85,13 +85,13 @@ class ManualColumnFilter implements PersistableSettings {
     /**
      * @param initialSelected the initially manually selected columns
      */
-    ManualColumnFilter(final String[] initialSelected) {
+    ManualFilter(final String[] initialSelected) {
         m_manuallySelected = initialSelected;
         m_manuallyDeselected = new String[0];
     }
 
     @SuppressWarnings("javadoc")
-    ManualColumnFilter() {
+    ManualFilter() {
     }
 
     /**

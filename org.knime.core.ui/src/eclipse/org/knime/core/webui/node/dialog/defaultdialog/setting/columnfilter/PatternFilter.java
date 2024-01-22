@@ -65,7 +65,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  *
  * @author Paul Bärnreuther
  */
-class PatternColumnFilter implements PersistableSettings {
+class PatternFilter implements PersistableSettings {
 
     /**
      * the pattern to which column names are matched in case of m_mode = "REGEX" or "WILDCARD"
@@ -87,19 +87,68 @@ class PatternColumnFilter implements PersistableSettings {
     /**
      * Initialise to empty pattern matching anything
      */
-    PatternColumnFilter() {
+    PatternFilter() {
         m_isCaseSensitive = false;
         m_isInverted = false;
         m_pattern = "";
     }
 
+    enum PatternMode {
+        REGEX, WILDCARD, NONE;
+
+        static PatternMode of(final ColumnFilterMode mode) {
+            switch(mode) {
+                case REGEX:
+                    return REGEX;
+                case WILDCARD:
+                    return WILDCARD;
+                default:
+                    return NONE;
+            }
+
+        }
+
+        static PatternMode of(final NameFilterMode mode) {
+            switch(mode) {
+                case REGEX:
+                    return REGEX;
+                case WILDCARD:
+                    return WILDCARD;
+                default:
+                    return NONE;
+            }
+        }
+
+
+        ColumnFilterMode toColumnFilterMode() {
+            switch(this) {
+                case REGEX:
+                    return ColumnFilterMode.REGEX;
+                default:
+                    return ColumnFilterMode.WILDCARD;
+
+            }
+        }
+
+
+        NameFilterMode toNameFilterMode() {
+            switch(this) {
+                case REGEX:
+                    return NameFilterMode.REGEX;
+                default:
+                    return NameFilterMode.WILDCARD;
+
+            }
+        }
+    }
+
     /**
      * @param mode of the filter (either REGEX or WILDCARD)
-     * @param choices the list of all possible column names
-     * @return the array of currently selected columns with respect to the mode
+     * @param choices the list of all possible strings
+     * @return the array of currently selected strings with respect to the mode
      */
     @JsonIgnore
-    String[] getSelected(final ColumnFilterMode mode, final String[] choices) {
+    public String[] getSelected(final PatternMode mode, final String[] choices) {
         final Predicate<String> predicate;
         final var casedPattern = m_isCaseSensitive ? m_pattern : m_pattern.toLowerCase(Locale.getDefault());
         switch (mode) {
