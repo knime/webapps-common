@@ -67,4 +67,9 @@ public @interface Label {
      * @return The value visible for a value of an enum as an option in a widget that is generated from it.
      */
     String value();
+
+    /**
+     * @return The description of the enum constant.
+     */
+    String description() default "";
 }
