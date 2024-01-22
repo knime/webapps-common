@@ -169,6 +169,56 @@ class JsonFormsSchemaUtilTest {
         assertThrows(IllegalStateException.class, () -> testSettings(EnumTestSettingWidgetAnnotation.class));
     }
 
+    @Test
+    void testEnumConstantDescriptionsAdded() throws JsonProcessingException {
+
+        class EnumTestSettingDescription {
+            private static String SNAPSHOT = "{\"testEnum\":{"
+                + "\"description\": \"An enum to test if the constants are added automatically."
+                + "\\n<ul>\\n<li><b>First choice</b>: The first choice.</li>"
+                + "\\n<li><b>Second choice</b>: The second choice.</li>\\n</ul>\","
+                + "\"oneOf\":["//
+                    + "{\"const\":\"SOME_CHOICE\",\"title\":\"First choice\"},"//
+                    + "{\"const\":\"SOME_OTHER_CHOICE\",\"title\":\"Second choice\"}"//
+                    + "], \"title\":\"Test Enum\"}}";
+            enum TestEnum {
+                @Label(value = "First choice", description = "The first choice.")
+                SOME_CHOICE, //
+                @Label(value = "Second choice", description = "The second choice.")
+                SOME_OTHER_CHOICE;
+            }
+
+            @Widget(title = "Test Enum", description = "An enum to test if the constants are added automatically.")
+            TestEnum testEnum;
+        }
+
+        testSettings(EnumTestSettingDescription.class);
+    }
+
+    @Test
+    void testEnumConstantDescriptionsOnlyAddedIfAllDefined() throws JsonProcessingException {
+
+        class EnumTestSettingDescription {
+            private static String SNAPSHOT = "{\"testEnum\":{"
+                + "\"description\": \"An enum to test if the constants are only added if all are described.\","
+                + "\"oneOf\":["//
+                    + "{\"const\":\"SOME_CHOICE\",\"title\":\"First choice\"},"//
+                    + "{\"const\":\"SOME_OTHER_CHOICE\",\"title\":\"Second choice\"}"//
+                    + "], \"title\":\"Test Enum\"}}";
+            enum TestEnum {
+                @Label(value = "First choice", description = "The first choice.")
+                SOME_CHOICE, //
+                @Label("Second choice")
+                SOME_OTHER_CHOICE;
+            }
+
+            @Widget(title = "Test Enum", description = "An enum to test if the constants are only added if all are described.")
+            TestEnum testEnum;
+        }
+
+        testSettings(EnumTestSettingDescription.class);
+    }
+
     private static class MinMaxSetting {
         private static String SNAPSHOT = "{"//
             + "\"testMin\":{\"type\":\"integer\",\"format\":\"int32\",\"default\":0,\"minimum\":0},"//

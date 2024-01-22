@@ -52,7 +52,9 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.Schema.TAG_ONEOF;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.Schema.TAG_TITLE;
 
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.knime.core.node.NodeLogger;
@@ -69,7 +71,6 @@ import com.github.victools.jsonschema.generator.SchemaGenerationContext;
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
 final class EnumDefinitionProvider implements CustomPropertyDefinitionProvider<FieldScope> {
-
 
     @Override
     public CustomPropertyDefinition provideCustomSchemaDefinition(final FieldScope field,
@@ -88,36 +89,61 @@ final class EnumDefinitionProvider implements CustomPropertyDefinitionProvider<F
 
     }
 
-    private ArrayNode determineEnumValues(final SchemaGenerationContext schemaContext, final Class<?> erasedType) {
+    private static <E extends Enum<E>> ArrayNode determineEnumValues(final SchemaGenerationContext schemaContext, final Class<?> erasedType) {
         var config = schemaContext.getGeneratorConfig();
         final var arrayNode = config.createArrayNode();
 
-        for (var enumConstant : erasedType.getEnumConstants()) {
-            addEnumFieldsToArrayNode(erasedType, arrayNode, ((Enum<?>)enumConstant).name());
+        @SuppressWarnings("unchecked")
+        var enumClass = (Class<E>)erasedType;
+        for (var enumConstant : enumClass.getEnumConstants()) {
+            addEnumFieldToArrayNode(enumConstant, arrayNode);
         }
         return arrayNode;
     }
 
-    private void addEnumFieldsToArrayNode(final Class<?> erasedType, final ArrayNode arrayNode, final String name) {
+
+    private static <E extends Enum<E>> void addEnumFieldToArrayNode(final E constant, final ArrayNode arrayNode) {
+        var name = constant.name();
         final var innerObjectNode = arrayNode.addObject();
         innerObjectNode.put(TAG_CONST, name);
+        var constantEntry = createConstantEntry(constant);
+        innerObjectNode.put(TAG_TITLE, constantEntry.title());
+    }
 
-        String title = null;
+    record ConstantEntry(String title, String description) {
+        
+        boolean hasDescription() {
+            return description != null && description.trim().length() > 0;
+        }
+        
+    }
+
+    static <E extends Enum<E>> List<ConstantEntry> getEnumConstantDescription(final Class<E> enumClass) {
+        return Stream.of(enumClass.getEnumConstants())//
+                .map(EnumDefinitionProvider::createConstantEntry)
+                .toList();
+    }
+
+    static <E extends Enum<E>> ConstantEntry createConstantEntry(final E constant) {
+        var enumClass = constant.getDeclaringClass();
+        var name = constant.name();
         try {
-            final var field = erasedType.getField(name);
-            if (field.isAnnotationPresent(Label.class)) {
-                final var label = field.getAnnotation(Label.class);
-                title = label.value();
-            }
+            final var field = enumClass.getField(name);
             if (field.isAnnotationPresent(Widget.class)) {
                 throw new IllegalStateException(String.format(
                     "There is a @Widget annotation present at the enum field %s. Use the @Label annotation instead.",
                     name));
             }
+            if (field.isAnnotationPresent(Label.class)) {
+                final var label = field.getAnnotation(Label.class);
+                return new ConstantEntry(label.value(), label.description());
+            }
         } catch (NoSuchFieldException | SecurityException e) {
-            NodeLogger.getLogger(getClass()).error(String.format("Exception when accessing field %s.", name), e);
+            NodeLogger.getLogger(EnumDefinitionProvider.class).error(String.format("Exception when accessing field %s.", name), e);
         }
-        innerObjectNode.put(TAG_TITLE,
-            title != null ? title : StringUtils.capitalize(name.toLowerCase(Locale.getDefault()).replace("_", " ")));
+        var label = StringUtils.capitalize(name.toLowerCase(Locale.getDefault()).replace("_", " "));
+        return new ConstantEntry(label, null);
     }
+
+
 }

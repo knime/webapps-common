@@ -76,6 +76,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.EnumDefinitionProvider.ConstantEntry;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.ConfigKeyUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
@@ -179,9 +180,7 @@ public final class JsonFormsSchemaUtil {
                 .map(Widget::title).filter(l -> !field.isFakeContainerItemScope() && !l.isEmpty()).orElse(null));
 
         builder.forFields()
-            .withDescriptionResolver(field -> Optional
-                .ofNullable(field.getAnnotationConsideringFieldAndGetter(Widget.class)).map(Widget::description)
-                .filter(d -> !field.isFakeContainerItemScope() && !d.isEmpty()).orElse(null));
+            .withDescriptionResolver(JsonFormsSchemaUtil::resolveDescription);
 
         builder.forFields().withNumberInclusiveMinimumResolver(
             field -> Optional.ofNullable(field.getAnnotationConsideringFieldAndGetter(NumberInputWidget.class))//
@@ -223,6 +222,29 @@ public final class JsonFormsSchemaUtil {
         builder.forFields().withTargetTypeOverridesResolver(JsonFormsSchemaUtil::overrideClass);
 
         return new SchemaGenerator(builder.build()).generateSchema(settingsClass);
+    }
+
+    private static String resolveDescription(final FieldScope field) {
+        var description = Optional
+                .ofNullable(field.getAnnotationConsideringFieldAndGetter(Widget.class)).map(Widget::description)
+                .filter(d -> !field.isFakeContainerItemScope() && !d.isEmpty()).orElse(null);
+        var type = field.getType().getErasedType();
+        if (description != null && type.isEnum()) {
+            description += getConstantList(type);
+        }
+        return description;
+    }
+
+    private static <E extends Enum<E>> String getConstantList(final Class<?> erasedEnumType) {
+        @SuppressWarnings("unchecked") // the calling method checks that erasedEnumType is an enum
+        var enumClass = (Class<E>)erasedEnumType;
+        var constantEntries = EnumDefinitionProvider.getEnumConstantDescription(enumClass);
+        if (constantEntries.stream().allMatch(ConstantEntry::hasDescription)) {
+            return constantEntries.stream()//
+                    .map(e -> "\n<li><b>%s</b>: %s</li>".formatted(e.title(), e.description()))//
+                    .collect(Collectors.joining("", "\n<ul>", "\n</ul>"));
+        }
+        return "";
     }
 
     private static BigDecimal resolveDouble(final DefaultNodeSettingsContext context,
