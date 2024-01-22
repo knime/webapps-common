@@ -83,6 +83,8 @@ public final class WebUINodeConfiguration {
 
     private final String m_fullDescription;
 
+    private final ExternalResource[] m_externalResources;
+
     private final NodeType m_nodeType;
 
     private final Class<? extends DefaultNodeSettings> m_modelSettingsClass;
@@ -100,6 +102,7 @@ public final class WebUINodeConfiguration {
         m_icon = builder.m_icon;
         m_shortDescription = builder.m_shortDescription;
         m_fullDescription = builder.m_fullDescription;
+        m_externalResources = builder.m_externalResources.toArray(ExternalResource[]::new);
         m_nodeType = builder.m_nodeType;
         m_modelSettingsClass = builder.m_modelSettingsClass;
         m_inPortDescriptions = builder.m_inputPortDescriptions.toArray(PortDescription[]::new);
@@ -122,6 +125,10 @@ public final class WebUINodeConfiguration {
 
     String getFullDescription() {
         return m_fullDescription;
+    }
+
+    ExternalResource[] getExternalResources() {
+        return m_externalResources;
     }
 
     NodeType getNodeType() {
@@ -239,6 +246,8 @@ public final class WebUINodeConfiguration {
         private final String m_shortDescription;
 
         private final String m_fullDescription;
+
+        private final List<ExternalResource> m_externalResources = new ArrayList<>();
 
         private NodeType m_nodeType;
 
@@ -395,6 +404,19 @@ public final class WebUINodeConfiguration {
          */
         public NodeOptionals sinceVersion(final int major, final int minor, final int revision) {
             m_sinceVersion = new Version(major, minor, revision);
+            return this;
+        }
+
+        /**
+         * Adds a link to an external resource to the full description of the node.
+         *
+         * @param href resource URL
+         * @param description resource description
+         * @return this build stage
+         */
+        public NodeOptionals addExternalResource(final String href, final String description) {
+            m_externalResources.add(new ExternalResource(CheckUtils.checkArgumentNotNull(href),
+                CheckUtils.checkArgumentNotNull(description)));
             return this;
         }
 

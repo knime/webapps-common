@@ -64,6 +64,7 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.port.PortType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 
 /**
@@ -84,7 +85,17 @@ public abstract class WebUINodeModel<S extends DefaultNodeSettings> extends Node
      * @param modelSettingsClass the type of the model settings for this node
      */
     protected WebUINodeModel(final WebUINodeConfiguration configuration, final Class<S> modelSettingsClass) {
-        super(configuration.getInputPortTypes(), configuration.getOutputPortTypes());
+        this(configuration.getInputPortTypes(), configuration.getOutputPortTypes(), modelSettingsClass);
+    }
+
+    /**
+     * @param modelSettingsClass the type of the model settings for this node
+     * @param inputPortTypes input port types
+     * @param outputPortTypes output port types
+     */
+    protected WebUINodeModel(final PortType[] inputPortTypes, final PortType[] outputPortTypes,
+        final Class<S> modelSettingsClass) {
+        super(inputPortTypes, outputPortTypes);
         m_modelSettingsClass = modelSettingsClass;
     }
 
