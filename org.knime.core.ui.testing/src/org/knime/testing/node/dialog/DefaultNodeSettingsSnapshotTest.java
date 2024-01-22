@@ -56,7 +56,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -66,6 +65,7 @@ import org.eclipse.core.runtime.FileLocator;
 import org.junit.jupiter.api.Test;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.util.FileUtil;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts;
@@ -177,7 +177,7 @@ public class DefaultNodeSettingsSnapshotTest {
 
     private static Path getSnapshotPath(final Class<?> clazz) throws IOException {
         var url = FileLocator.toFileURL(resolveToURL("/files/test_snapshots", clazz));
-        return Paths.get(url.getPath());
+        return FileUtil.getFileFromURL(url).toPath();
     }
 
     private static URL resolveToURL(final String path, final Class<?> clazz) throws IOException {
