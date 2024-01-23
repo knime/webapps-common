@@ -1,5 +1,5 @@
 import { describe, expect, vi, it } from "vitest";
-import BoldIcon from "../../../assets/img/icons/bold.svg";
+import BoldIcon from "../../../../assets/img/icons/bold.svg";
 import type { EditorToolItem } from "../types";
 import { shallowMount } from "@vue/test-utils";
 import RichTextEditorToolbar from "../RichTextEditorToolbar.vue";

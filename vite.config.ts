@@ -14,6 +14,7 @@ export default defineConfig({
     setupFiles: [fileURLToPath(new URL("vitest.setup.ts", import.meta.url))],
     coverage: {
       all: true,
+      provider: "v8",
       exclude: [
         "demo/",
         "lint/",

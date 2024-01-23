@@ -21,7 +21,8 @@ const callback = computed(() => {
   if (typeof props.callback === "function") {
     return props.callback;
   }
-  return null;
+  // eslint-disable-next-line no-undefined
+  return undefined;
 });
 </script>
 

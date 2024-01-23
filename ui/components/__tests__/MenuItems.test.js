@@ -1,4 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeEach,
+  afterEach,
+  beforeAll,
+} from "vitest";
 import { defineComponent, ref } from "vue";
 import { mount, shallowMount } from "@vue/test-utils";
 
@@ -17,6 +25,10 @@ vi.mock("../../composables/useDropdownNavigation", () => ({
 import useDropdownNavigation from "../../composables/useDropdownNavigation";
 
 describe("MenuItems.vue", () => {
+  afterEach(() => {
+    // vi.clearAllMocks();
+  });
+
   it("passes down all props", () => {
     const myProp = "test property";
     const wrapper = shallowMount(MenuItems, {
@@ -76,7 +88,7 @@ describe("MenuItems.vue", () => {
     });
 
     it("uses close function which emits @close", () => {
-      useDropdownNavigation.reset();
+      vi.clearAllMocks();
       const wrapper = shallowMount(MenuItems, {
         props: { items: [], menuAriaLabel: "" },
       });
@@ -96,8 +108,11 @@ describe("MenuItems.vue", () => {
 
       const getItem = (item) => ({ index: item.index, onClick: item.onClick });
 
+      beforeAll(() => {
+        vi.clearAllMocks();
+      });
+
       beforeEach(() => {
-        useDropdownNavigation.reset();
         mount(MenuItems, {
           global: {
             stubs: {

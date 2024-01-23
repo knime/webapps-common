@@ -16,28 +16,30 @@ const sevenTags = [
 const threeTags = ["tag1", "tag2", "tagedyTag"];
 const defaultNumInitialTags = 5;
 
-const checkTagTexts = (wrappers, expectedTags, numInitialTags) => {
-  if (expectedTags.length > numInitialTags) {
-    // initial plus expander tag
-    expect(wrappers.length).toEqual(numInitialTags + 1);
-    let i = 0;
-    while (i < wrappers.length - 1) {
-      expect(wrappers[i].text()).toEqual(expectedTags[i]);
-      i++;
-    }
-    // last wrapper is expander tag
-    expect(wrappers[i].text()).toBe(`+${expectedTags.length - numInitialTags}`);
-  } else {
-    expect(wrappers.length).toEqual(expectedTags.length);
-    let i = 0;
-    while (i < wrappers.length) {
-      expect(wrappers[i].text()).toEqual(expectedTags[i]);
-      i++;
-    }
-  }
-};
-
 describe("tagList.vue", () => {
+  const checkTagTexts = (wrappers, expectedTags, numInitialTags) => {
+    if (expectedTags.length > numInitialTags) {
+      // initial plus expander tag
+      expect(wrappers.length).toEqual(numInitialTags + 1);
+      let i = 0;
+      while (i < wrappers.length - 1) {
+        expect(wrappers[i].text()).toEqual(expectedTags[i]);
+        i++;
+      }
+      // last wrapper is expander tag
+      expect(wrappers[i].text()).toBe(
+        `+${expectedTags.length - numInitialTags}`,
+      );
+    } else {
+      expect(wrappers.length).toEqual(expectedTags.length);
+      let i = 0;
+      while (i < wrappers.length) {
+        expect(wrappers[i].text()).toEqual(expectedTags[i]);
+        i++;
+      }
+    }
+  };
+
   it("renders three tags", () => {
     const wrapper = shallowMount(TagList, {
       props: { tags: threeTags },
@@ -88,22 +90,16 @@ describe("tagList.vue", () => {
     });
   });
 
-  it("shows active tags", () => {
+  it("shows active tags", async () => {
     const wrapper = shallowMount(TagList, {
       props: { tags: sevenTags, activeTags: ["tagMaster", "moarTags"] },
     });
+    await wrapper.find(".more-tags").trigger("click");
     const tags = wrapper.findAllComponents(Tag);
 
-    it.each([
-      { tag: tags.at(0), expected: false },
-      { tag: tags.at(1), expected: false },
-      { tag: tags.at(2), expected: false },
-      { tag: tags.at(3), expected: true },
-      { tag: tags.at(4), expected: false },
-      { tag: tags.at(5), expected: true },
-      { tag: tags.at(6), expected: false },
-    ])("tag is active or not", ({ tag, expected }) => {
-      expect(tag.props("active")).toBe(expected);
+    const expected = [false, false, false, true, false, true, false];
+    tags.forEach((tag, index) => {
+      expect(tag.props("active")).toBe(expected.at(index));
     });
   });
 });
