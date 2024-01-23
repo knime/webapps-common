@@ -50,6 +50,7 @@ package org.knime.core.webui.node.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.NotImplementedException;
@@ -105,6 +106,13 @@ public abstract class WebUINodeModel<S extends DefaultNodeSettings> extends Node
             m_modelSettings = DefaultNodeSettings.createSettings(m_modelSettingsClass, inSpecs);
         }
         return configure(inSpecs, m_modelSettings);
+    }
+
+    /**
+     * @return the settings, an empty optional if the node hasn't been configured, yet
+     */
+    protected final Optional<S> getSettings() {
+        return Optional.ofNullable(m_modelSettings);
     }
 
     @Override
@@ -179,35 +187,9 @@ public abstract class WebUINodeModel<S extends DefaultNodeSettings> extends Node
     }
 
     @Override
-    protected final void loadInternals(final File nodeInternDir, final ExecutionMonitor exec)
+    protected void loadInternals(final File nodeInternDir, final ExecutionMonitor exec)
         throws IOException, CanceledExecutionException {
-        onLoadInternals(nodeInternDir, exec);
-    }
-
-    /**
-     * Allows extending classes to implement custom behavior during {@link #loadInternals(File, ExecutionMonitor)}o
-     *
-     * @param nodeInternDir directory where the node can persist information
-     * @param exec for progress and cancellation
-     * @throws IOException
-     * @throws CanceledExecutionException
-     */
-    protected void onLoadInternals(final File nodeInternDir, final ExecutionMonitor exec)
-        throws IOException, CanceledExecutionException {
-        onLoadInternals(nodeInternDir, exec, m_modelSettings);
-    }
-
-    /**
-     * Allows extending classes to implement custom behavior during {@link #loadInternals(File, ExecutionMonitor)}o
-     *
-     * @param nodeInternDir directory where the node can persist information
-     * @param exec for progress and cancellation
-     * @param settings node settings
-     * @throws IOException
-     * @throws CanceledExecutionException
-     */
-    protected void onLoadInternals(final File nodeInternDir, final ExecutionMonitor exec, final S settings)
-        throws IOException, CanceledExecutionException {
+        //
     }
 
     /**
@@ -215,35 +197,9 @@ public abstract class WebUINodeModel<S extends DefaultNodeSettings> extends Node
      * @param exec for progress and cancellation
      */
     @Override
-    protected final void saveInternals(final File nodeInternDir, final ExecutionMonitor exec)
+    protected void saveInternals(final File nodeInternDir, final ExecutionMonitor exec)
         throws IOException, CanceledExecutionException {
-        onSaveInternals(nodeInternDir, exec);
-    }
-
-    /**
-     * Allows extending classes to implement custom behavior during {@link #saveInternals(File, ExecutionMonitor)}
-     *
-     * @param nodeInternDir directory where the node can persist information
-     * @param exec for progress and cancellation
-     * @throws IOException
-     * @throws CanceledExecutionException
-     */
-    protected void onSaveInternals(final File nodeInternDir, final ExecutionMonitor exec)
-        throws IOException, CanceledExecutionException {
-        onSaveInternals(nodeInternDir, exec, m_modelSettings);
-    }
-
-    /**
-     * Allows extending classes to implement custom behavior during {@link #saveInternals(File, ExecutionMonitor)}o
-     *
-     * @param nodeInternDir directory where the node can persist information
-     * @param exec for progress and cancellation
-     * @param settings node settings
-     * @throws IOException
-     * @throws CanceledExecutionException
-     */
-    protected void onSaveInternals(final File nodeInternDir, final ExecutionMonitor exec, final S settings)
-        throws IOException, CanceledExecutionException {
+        //
     }
 
     @Override
@@ -277,14 +233,12 @@ public abstract class WebUINodeModel<S extends DefaultNodeSettings> extends Node
         m_modelSettings = DefaultNodeSettings.loadSettings(settings, m_modelSettingsClass);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    protected final void reset() {
-        onReset();
+    protected void reset() {
+        //
     }
 
-    /**
-     * Allows extending classes to implement custom behavior during {@link #reset()}.
-     */
-    protected void onReset() {
-    }
 }
