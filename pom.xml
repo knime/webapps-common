@@ -28,6 +28,7 @@
 		<module>org.knime.core.ui/js-src</module>
 		<module>org.knime.core.ui/lib/fetch_jars</module>
 		<module>org.knime.core.ui.tests/lib/fetch_jars</module>
+		<module>org.knime.core.ui.testing/lib/fetch_jars</module>
 		<module>org.knime.core.ui</module>
 		<module>org.knime.core.ui.testing</module>
 		<module>org.knime.core.ui.tests</module>

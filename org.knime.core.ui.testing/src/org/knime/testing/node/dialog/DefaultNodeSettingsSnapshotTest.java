@@ -48,59 +48,66 @@
  */
 package org.knime.testing.node.dialog;
 
-import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.junit.jupiter.api.Test;
-import org.knime.core.node.NodeSettings;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.util.FileUtil;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsSettingsImpl;
 import org.osgi.framework.FrameworkUtil;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * <p>
- * Implemented by a junit test class in order run a snapshot-test on a {@link DefaultNodeSettings}-implementation.
+ * Implemented by a junit test class in order run a snapshot-test on a {@link DefaultNodeSettings}-implementation. A
+ * snapshot test computes a representation of a {@link DefaultNodeSettings} instance and makes sure that representation
+ * does not change. For instance,
+ * <ul>
+ * <li>the node dialog (json forms)</li>
+ * <li>the internal structure (node settings/xml)</li>
+ * </ul>
  * </p>
  *
  * <p>
- * When the test is run for the very first time, the snapshot-file (.snap) is created. It contains the
- * jsonforms-representation (json-string) of the default node settings-class as required by the frontend (data, schema,
- * ui-schema). Every successive run compares the newly determined string-representation with the snapshot file. If those
- * don't match, the test will fail and a debug-file (.snap.debug) is created with the current result (which then can be
- * compared with the original snapshot using a diff tool).
+ * When the test is run for the first time, the snapshot files are created. The files are stored under
+ * {@code files/test_snapshots} at the root of plugin/fragment where the implementing test is located. The directory
+ * must be manually created before running the test for the first time.
+ * </p>
+ * <p>
+ * Every successive run compares the newly determined outputs with the existing snapshot files. If those don't match,
+ * the test will fail and a debug file is created with the current output (which then can be compared with the original
+ * snapshot using a diff tool).
  * </p>
  *
+ * <h2>Json Forms</h2>
  * <p>
- * The snapshot is stored at {@code files/test_snapshots} at the root of plugin/fragment where the implementing test is
- * located. The directory must be manually created before running the test for the first time.
+ * The snapshot file (.snap) contains the json forms representation of the default node settings class as required by
+ * the frontend (data, schema, ui-schema). Usually, this is a single {@link DefaultNodeSettings} instance. However, some
+ * nodes have both model settings and view settings, in which case the snapshot contains the json forms for both. See
+ * {@link JsonFormsSnapshot}
+ * </p>
+ *
+ * <h2>Node Settings</h2>
+ * <p>
+ * Each snapshot file (.xml) contains the representation of one configuration. See {@link NodeSettingsSnapshot}.
  * </p>
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
+ * @author Carl Witt, KNIME AG, Zurich, Switzerland
  */
+@SuppressWarnings("restriction")
 public class DefaultNodeSettingsSnapshotTest {
 
-    private final PortObjectSpec[] m_specs;
+    private static final String SNAPSHOT_FILE_LOCATION = "/files/test_snapshots";
 
-    private final Map<SettingsType, Class<? extends DefaultNodeSettings>> m_settingsClasses;
+    private final List<Snapshot> m_snapshotTests;
 
     /**
      * @param settingsClasses the default node settings classes to be tested
@@ -108,78 +115,54 @@ public class DefaultNodeSettingsSnapshotTest {
      */
     protected DefaultNodeSettingsSnapshotTest(
         final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses, final PortObjectSpec... specs) {
-        m_settingsClasses = settingsClasses;
-        m_specs = specs;
+        this(SnapshotTestConfiguration.builder() //
+            .withInputPortObjectSpecs(specs) //
+            .testJsonForms(settingsClasses).build());
     }
 
+    /**
+     * @param configuration defines the snapshot tests to run
+     */
+    protected DefaultNodeSettingsSnapshotTest(final SnapshotTestConfiguration configuration) {
+        m_snapshotTests = configuration.m_snapshotTests;
+        m_snapshotTests.forEach(st -> st.setBaseName(getClass().getName()));
+    }
+
+    /**
+     * If a snapshot file exists, compares against its contents. If not, creates the file.
+     *
+     * @throws IOException
+     */
     @Test
     protected void testSnapshot() throws IOException {
-        // create an instance of the settings-class and save to node settings
-        var settingsObjects = m_settingsClasses.entrySet().stream().map(e -> {
-            var nodeSettings = new NodeSettings("ignore");
-            var settingsObj = DefaultNodeSettings.createSettings(e.getValue(), m_specs);
-            DefaultNodeSettings.saveSettings(e.getValue(), settingsObj, nodeSettings);
-            return Map.entry(e.getKey(), settingsObj);
-        }).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-
-        // turn it into the json-forms representation
-        var jsonFormsSettings =
-            new JsonFormsSettingsImpl(settingsObjects, DefaultNodeSettings.createDefaultNodeSettingsContext(m_specs));
-        var mapper = JsonFormsDataUtil.getMapper();
-        var objectNode = mapper.createObjectNode();
-        objectNode.set(JsonFormsConsts.FIELD_NAME_DATA, jsonFormsSettings.getData());
-        objectNode.set(JsonFormsConsts.FIELD_NAME_SCHEMA, jsonFormsSettings.getSchema());
-        objectNode.putRawValue(JsonFormsConsts.FIELD_NAME_UI_SCHEMA, jsonFormsSettings.getUiSchema(null));
-        var jsonForms = mapper.readTree(mapper.writeValueAsString(objectNode));
-
-        // write the snapshot or compare with an existing snapshot
-        var snapshotFile = getSnapshotPath(this.getClass()).resolve(getSnapshotFileName());
-        if (Files.exists(snapshotFile)) {
-            compareWithSnapshotAndWriteDebugFile(jsonForms, snapshotFile);
-        } else {
-            writeSnapshotFile(jsonForms, snapshotFile);
+        for (var snapshot : m_snapshotTests) {
+            // write the snapshot or compare with an existing snapshot
+            var snapshotFile = getSnapshotPath(this.getClass()).resolve(snapshot.getFilename());
+            if (Files.exists(snapshotFile)) {
+                snapshot.compareWithSnapshotAndWriteDebugFile(snapshotFile);
+            } else {
+                snapshot.writeGroundTruth(snapshotFile);
+            }
         }
     }
 
-    private static void writeSnapshotFile(final JsonNode jsonForms, final Path snapshotFile) throws IOException {
-        try {
-            var jsonFormsString =
-                JsonFormsDataUtil.getMapper().writerWithDefaultPrettyPrinter().writeValueAsString(jsonForms);
-            Files.write(snapshotFile, jsonFormsString.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
-        } catch (JsonProcessingException e) {
-            throw new IllegalStateException(
-                String.format("Exception while trying to write snapshot: %s", e.getMessage()), e);
-        }
-    }
-
-    private void compareWithSnapshotAndWriteDebugFile(final JsonNode jsonForms, final Path snapshotFile)
-        throws IOException {
-        var expectedJsonFormsString = Files.readString(snapshotFile, StandardCharsets.UTF_8);
-        var debugFile = snapshotFile.getParent().resolve(getSnapshotFileName() + ".debug");
-        try {
-            assertThatJson(jsonForms).isEqualTo(JsonFormsDataUtil.getMapper().readTree(expectedJsonFormsString));
-        } catch (AssertionError e) {
-            // write debug file if snapshot doesn't match
-            Files.writeString(debugFile,
-                JsonFormsDataUtil.getMapper().writerWithDefaultPrettyPrinter().writeValueAsString(jsonForms),
-                StandardCharsets.UTF_8);
-            throw e;
-        }
-        if (Files.exists(debugFile)) {
-            // if snapshot matches, delete debug file
-            Files.delete(debugFile);
-        }
-    }
-
-    private String getSnapshotFileName() {
-        return getClass().getName() + ".snap";
-    }
-
+    /**
+     * @param clazz defines the bundle to use as root
+     * @return the snapshot file location, i.e., {@value DefaultNodeSettingsSnapshotTest#SNAPSHOT_FILE_LOCATION} in the
+     *         root of the bundle that contains the test class
+     * @throws IOException
+     */
     private static Path getSnapshotPath(final Class<?> clazz) throws IOException {
-        var url = FileLocator.toFileURL(resolveToURL("/files/test_snapshots", clazz));
+        var url = FileLocator.toFileURL(resolveToURL(SNAPSHOT_FILE_LOCATION, clazz));
         return FileUtil.getFileFromURL(url).toPath();
     }
 
+    /**
+     * @param path defines the target location
+     * @param clazz defines the bundle to use as root
+     * @return the location as file URL
+     * @throws IOException
+     */
     private static URL resolveToURL(final String path, final Class<?> clazz) throws IOException {
         var bundle = FrameworkUtil.getBundle(clazz);
         var p = new org.eclipse.core.runtime.Path(path);
