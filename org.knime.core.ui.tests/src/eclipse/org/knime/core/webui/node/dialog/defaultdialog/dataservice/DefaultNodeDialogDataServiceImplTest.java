@@ -75,11 +75,13 @@ import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.webui.data.DataServiceContextTest;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.Update;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.UpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonChange;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonUpdateHandler;
@@ -128,6 +130,36 @@ class DefaultNodeDialogDataServiceImplTest {
         final Class<? extends DefaultNodeSettings> viewSettingsClass) {
         return new DefaultNodeDialogDataServiceImpl(List.of(modelSettingsClass, viewSettingsClass),
             new AsyncChoicesHolder());
+    }
+
+    @Nested
+    class ValueUpdatesDataServiceTest {
+
+        private static final class TestUpdateHandler implements UpdateHandler<String, TestDefaultNodeSettings> {
+
+            @Override
+            public String update(final TestDefaultNodeSettings settings, final DefaultNodeSettingsContext context)
+                throws WidgetHandlerException {
+                return settings.m_foo;
+            }
+
+        }
+
+        @Test
+        void testUpdate() throws ExecutionException, InterruptedException {
+
+            class UpdateSettings implements DefaultNodeSettings {
+                @Update(updateHandler = TestUpdateHandler.class)
+                String m_choicesWidgetElement;
+
+            }
+
+            final String testDepenenciesFooValue = "custom value";
+            final var dataService = getDataService(UpdateSettings.class);
+            final var result = dataService.update("widgetId", TestUpdateHandler.class.getName(),
+                Map.of("foo", testDepenenciesFooValue));
+            assertThat(result.result()).isEqualTo(testDepenenciesFooValue);
+        }
     }
 
     @Nested

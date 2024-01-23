@@ -428,46 +428,7 @@ final class UiSchemaOptionsGenerator {
 
     private void addDependencies(final ArrayNode dependencies,
         final Class<? extends DependencyHandler<?>> actionHandler) {
-        final var dependencyClass = GenericTypeFinderUtil.getFirstGenericType(actionHandler, DependencyHandler.class);
-        final var traverser = new DefaultNodeSettingsFieldTraverser(dependencyClass);
-        final Consumer<TraversedField> addNewDependency = getAddNewDependencyCallback(dependencies);
-        traverser.traverse(addNewDependency, List.of(DeclaringDefaultNodeSettings.class));
-    }
-
-    private Consumer<TraversedField> getAddNewDependencyCallback(final ArrayNode dependencies) {
-        return field -> {
-            final var searchScope = UiSchemaDefaultNodeSettingsTraverser.toScope(field.path());
-            final var declaringDefaultNodeSettings = field.trackedAnnotations()
-                .getInstance(DeclaringDefaultNodeSettings.class).map(DeclaringDefaultNodeSettings::value).orElse(null);
-            final var clazz = field.propertyWriter().getType().getRawClass();
-            final var targetScope = findTargetScope(searchScope, declaringDefaultNodeSettings, clazz);
-            /**
-             * exclude the field itself to enable using the current DefaultNodeSettings as the dependencies class to get
-             * a dependency from every other setting.
-             */
-            if (!targetScope.equals(m_scope)) {
-                dependencies.add(targetScope);
-            }
-        };
-    }
-
-    private String findTargetScope(final String searchScope,
-        final Class<? extends DefaultNodeSettings> declaringDefaultNodeSettings, final Class<?> clazz) {
-        final var candidates = m_fields.stream().filter(control -> {
-            if (declaringDefaultNodeSettings != null && !control.rootClass().equals(declaringDefaultNodeSettings)) {
-                return false;
-            }
-            boolean classEquals = control.field().getType().getRawClass().equals(clazz);
-            boolean matchesSearchPath = control.scope().endsWith(searchScope);
-            return classEquals && matchesSearchPath;
-        }).map(JsonFormsControl::scope).toList();
-        if (candidates.size() > 1) {
-            throw new UiSchemaGenerationException(
-                String.format("Multiple settings found for path %s. Consider using @DeclaringClass to "
-                    + "disambiguate the reference.", searchScope));
-        }
-        return candidates.stream().findFirst().orElseThrow(
-            () -> new UiSchemaGenerationException(String.format("No setting found for path %s.", searchScope)));
+        new DependencyResolver(m_fields, m_scope).addDependencyScopes(actionHandler, dependencies::add);
     }
 
     /**

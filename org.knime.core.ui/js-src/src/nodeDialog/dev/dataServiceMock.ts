@@ -28,6 +28,10 @@ export default (rpcRequest: { method: string; params: any[] }) => {
         ],
         NUMBER: [{ name: "numberVariable", value: "100", abbreviated: false }],
       };
+    case "settings.update": {
+      const dependencies = rpcRequest.params[2];
+      return { result: dependencies.a + dependencies.b };
+    }
     case "flowVariables.getFlowVariableOverrideValue":
       switch (
         JSON.parse(rpcRequest.params[0]).flowVariableSettings[

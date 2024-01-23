@@ -26,10 +26,13 @@ import { inject, markRaw } from "vue";
 import type ProvidedMethods from "./types/provided";
 import type { ProvidedForFlowVariables } from "./types/provided";
 import type SettingsData from "./types/SettingsData";
+import type { Update } from "./types/Update";
 import type Control from "./types/Control";
 import getChoices from "./api/getChoices";
 import * as flowVariablesApi from "./api/flowVariables";
 import type { FlowSettings } from "./api/types";
+import getFlattenedSettings from "./utils/getFlattenedSettings";
+import { DialogSettings } from "@knime/ui-extension-service/dist/DialogSettings-33e63dd7";
 import { v4 as uuidv4 } from "uuid";
 
 const renderers = [
@@ -93,7 +96,12 @@ export default {
         showAdvancedSettings: boolean;
         flowVariablesMap: Record<string, FlowSettings>;
       },
-      uischema: {} as UISchemaElement,
+      uischema: {} as UISchemaElement & {
+        /**
+         * Data defining the value updates from dependenies to targets
+         */
+        globalUpdates?: Update[];
+      },
       ready: false,
       isWriteProtected: false,
       isMetaKeyPressed: false,
@@ -109,6 +117,7 @@ export default {
     schema.showAdvancedSettings = false;
     this.schema = schema;
     this.uischema = initialSettings.ui_schema;
+    this.registerGlobalWatchers(this.uischema?.globalUpdates ?? []);
     this.currentData = initialSettings.data;
     this.setOriginalModelSettings(this.currentData);
     this.dialogService.setApplyListener(this.applySettings.bind(this));
@@ -125,6 +134,21 @@ export default {
     window.removeEventListener("keyup", doIfBodyActive(this.keyUp.bind(this)));
   },
   methods: {
+    registerGlobalWatchers(globalUpdates: Update[]) {
+      globalUpdates.forEach(({ dependencies, target, updateHandler }) => {
+        const updateCallback = async (newSettings: DialogSettings & object) => {
+          const { result } = await this.jsonDataService!.data({
+            method: "settings.update",
+            options: [null, updateHandler, getFlattenedSettings(newSettings)],
+          });
+          set(newSettings, toDataPath(target), result);
+        };
+        this.registerWatcher({
+          dependencies,
+          transformSettings: updateCallback,
+        });
+      });
+    },
     getData() {
       return {
         data: this.currentData,
@@ -187,6 +211,7 @@ export default {
       }
       const newData = cloneDeep(this.currentData);
       set(newData, path, data);
+
       for (const watcher of triggeredWatchers) {
         await watcher.transformSettings(newData);
       }

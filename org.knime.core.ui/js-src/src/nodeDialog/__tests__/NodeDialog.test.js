@@ -588,6 +588,59 @@ describe("NodeDialog.vue", () => {
         arrayLayoutSetting: [{ value: "some data" }, { value: "second" }],
       });
     });
+
+    it("adds global update handlers initially", async () => {
+      const updateHandler = "myUpdateHandler";
+      const uiSchemaKey = "ui_schema";
+      initialDataSpy.mockResolvedValue({
+        data: {
+          view: {
+            firstSetting: "firstSetting",
+          },
+          model: {
+            secondSetting: "secondSetting",
+          },
+        },
+        schema: {},
+        [uiSchemaKey]: {
+          globalUpdates: [
+            {
+              dependencies: ["#/properties/view/properties/firstSetting"],
+              target: "#/properties/model/properties/secondSetting",
+              updateHandler,
+            },
+          ],
+        },
+        flowVariableSettings: {},
+      });
+
+      const wrapper = shallowMount(NodeDialog, getOptions());
+      await flushPromises();
+      const dataSericeMock = vi.spyOn(wrapper.vm.jsonDataService, "data");
+      const updatedValue = "updated";
+      dataSericeMock.mockResolvedValue({ result: updatedValue });
+
+      const path = "view.firstSetting";
+      const triggeringValue = "some data";
+      const handleChange = vi.fn(() => {});
+      await wrapper.vm.updateData(handleChange, path, triggeringValue);
+      expect(handleChange).toHaveBeenCalledWith("", {
+        view: {
+          firstSetting: triggeringValue,
+        },
+        model: {
+          secondSetting: updatedValue,
+        },
+      });
+      expect(dataSericeMock).toHaveBeenCalledWith({
+        method: "settings.update",
+        options: [
+          null,
+          updateHandler,
+          expect.objectContaining({ firstSetting: triggeringValue }),
+        ],
+      });
+    });
   });
 
   describe("flawed controlling variable paths", () => {

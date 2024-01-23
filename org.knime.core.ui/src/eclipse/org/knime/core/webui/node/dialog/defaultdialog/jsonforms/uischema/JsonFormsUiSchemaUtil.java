@@ -53,6 +53,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaDefaultNodeSettingsTraverser.JsonFormsControl;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
@@ -112,11 +113,14 @@ public final class JsonFormsUiSchemaUtil {
         final Collection<JsonFormsControl> parentFields) {
         final var layoutSkeleton = resolveLayout(settings);
         layoutSkeleton.fields().addAll(parentFields);
-        return new LayoutNodesGenerator(layoutSkeleton, context, asyncChoicesAdder).build();
+        final var uiSchema = new LayoutNodesGenerator(layoutSkeleton, context, asyncChoicesAdder).build();
+        UpdateHandlerUtil.addUpdateHandlers(uiSchema, settings, layoutSkeleton.fields());
+        return uiSchema;
     }
 
     /**
-     * @param settings
+     * @param setting
+     * @param mapper
      * @param context
      * @param asyncChoicesAdder
      * @return the ui schema resolved by the mapper from the given settings

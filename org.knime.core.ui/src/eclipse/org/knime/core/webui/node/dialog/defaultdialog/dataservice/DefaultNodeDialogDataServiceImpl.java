@@ -76,6 +76,8 @@ public final class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialog
 
     private final ChoicesWidgetUpdateHandlerHolder m_choicesUpdateHandlers;
 
+    private final ValueUpdateHandlerHolder m_valueUpdateHandlers;
+
     private final DataServiceRequestHandler m_requestHandler;
 
     private final AsyncChoicesGetter m_asyncChoicesGetter;
@@ -90,6 +92,7 @@ public final class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialog
         m_buttonActionHandlers = new ButtonWidgetActionHandlerHolder(settingsClasses);
         m_buttonUpdateHandlers = new ButtonWidgetUpdateHandlerHolder(settingsClasses);
         m_choicesUpdateHandlers = new ChoicesWidgetUpdateHandlerHolder(settingsClasses);
+        m_valueUpdateHandlers = new ValueUpdateHandlerHolder(settingsClasses);
         m_requestHandler = new DataServiceRequestHandler();
         m_asyncChoicesGetter = asyncChoicesGetter;
     }
@@ -138,6 +141,10 @@ public final class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialog
     }
 
     private UpdateHandler<?, ?> getUpdateHandler(final String handlerClassName) {
+        final var valueUpdateHandler = m_valueUpdateHandlers.getHandler(handlerClassName);
+        if (valueUpdateHandler != null) {
+            return valueUpdateHandler;
+        }
         final var buttonHandler = m_buttonUpdateHandlers.getHandler(handlerClassName);
         if (buttonHandler != null) {
             return buttonHandler;
