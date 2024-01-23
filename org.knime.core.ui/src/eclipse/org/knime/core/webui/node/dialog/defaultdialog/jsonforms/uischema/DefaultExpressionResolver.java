@@ -49,14 +49,18 @@
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.FIELD_NAME_SCHEMA;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.Schema.TAG_CONST;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_CONDITIONS;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_SCOPE;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_TYPE;
 
 import org.knime.core.webui.node.dialog.defaultdialog.rule.And;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.ConstantExpression;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.DefaultExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Expression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.ExpressionVisitor;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.DefaultExpression;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.JsonFormsExpression;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.JsonFormsExpressionVisitor;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Not;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Or;
 
@@ -68,7 +72,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  *
  * @author Paul Bärnreuther
  */
-class DefaultExpressionResolver implements ExpressionVisitor<ObjectNode, DefaultExpression> {
+class DefaultExpressionResolver implements ExpressionVisitor<ObjectNode, JsonFormsExpression> {
 
     private final ObjectMapper m_mapper;
 
@@ -89,7 +93,7 @@ class DefaultExpressionResolver implements ExpressionVisitor<ObjectNode, Default
      * @example { "type": "AND", "conditions": { ... } }
      */
     @Override
-    public ObjectNode visit(final And<DefaultExpression> and) {
+    public ObjectNode visit(final And<JsonFormsExpression> and) {
         final var conditionNode = m_mapper.createObjectNode();
         conditionNode.put(TAG_TYPE, "AND");
         addAllConditions(conditionNode, and.getChildren());
@@ -100,7 +104,7 @@ class DefaultExpressionResolver implements ExpressionVisitor<ObjectNode, Default
      * @example { "type": "OR", "conditions": { ... } }
      */
     @Override
-    public ObjectNode visit(final Or<DefaultExpression> or) {
+    public ObjectNode visit(final Or<JsonFormsExpression> or) {
         final var conditionNode = m_mapper.createObjectNode();
         conditionNode.put(TAG_TYPE, "OR");
         addAllConditions(conditionNode, or.getChildren());
@@ -108,7 +112,7 @@ class DefaultExpressionResolver implements ExpressionVisitor<ObjectNode, Default
     }
 
     private void addAllConditions(final ObjectNode expressionNode,
-        final Expression<DefaultExpression>[] expressions) {
+        final Expression<JsonFormsExpression>[] expressions) {
         final var node = expressionNode.putArray(TAG_CONDITIONS);
         for (var expression : expressions) {
             node.add(expression.accept(this));
@@ -119,7 +123,7 @@ class DefaultExpressionResolver implements ExpressionVisitor<ObjectNode, Default
      * The "not" operation is not resolved directly but instead applies another visitor to its child component.
      */
     @Override
-    public ObjectNode visit(final Not<DefaultExpression> not) {
+    public ObjectNode visit(final Not<JsonFormsExpression> not) {
         return not.getChildOperation().accept(m_negator);
     }
 
@@ -127,10 +131,25 @@ class DefaultExpressionResolver implements ExpressionVisitor<ObjectNode, Default
      * @example { "scope": "path/to/rule/source/setting", "schema": { "const": true} }
      */
     @Override
-    public ObjectNode visit(final DefaultExpression expression) {
-        final var conditionNode = m_mapper.createObjectNode();
-        conditionNode.put(TAG_SCOPE, expression.scope());
-        conditionNode.set(FIELD_NAME_SCHEMA, expression.condition().accept(m_conditionVisitor));
-        return conditionNode;
+    public ObjectNode visit(final JsonFormsExpression expression) {
+        return expression.accept(new JsonFormsExpressionVisitor() {
+
+            @Override
+            public ObjectNode visit(final ConstantExpression constantExpression) {
+                final var conditionNode = m_mapper.createObjectNode();
+                if (!constantExpression.value()) {
+                    conditionNode.putObject(FIELD_NAME_SCHEMA).put(TAG_CONST, true);
+                }
+                return conditionNode;
+            }
+
+            @Override
+            public ObjectNode visit(final DefaultExpression defaultExpression) {
+                final var conditionNode = m_mapper.createObjectNode();
+                conditionNode.put(TAG_SCOPE, defaultExpression.scope());
+                conditionNode.set(FIELD_NAME_SCHEMA, defaultExpression.condition().accept(m_conditionVisitor));
+                return conditionNode;
+            }
+        });
     }
 }

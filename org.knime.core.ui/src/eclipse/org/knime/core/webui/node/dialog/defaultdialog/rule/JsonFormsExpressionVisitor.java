@@ -44,26 +44,23 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 4, 2023 (Paul Bärnreuther): created
+ *   Jan 23, 2024 (wiswedel): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.rule;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * The atomic expression that is used for json forms implementation
+ * A visitor allowing jsonforms based implementation to determine their value.
  *
- * @author Paul Bärnreuther
+ * @author Bernd Wiswedel
+ * @param <T> the type of the returned value on visiting a {@link Expression}
  */
-public record DefaultExpression(String scope, Condition condition) implements JsonFormsExpression {
+@SuppressWarnings("javadoc")
+public interface JsonFormsExpressionVisitor {
 
-    @Override
-    public <T> T accept(final ExpressionVisitor<T, JsonFormsExpression> visitor) {
-        return visitor.visit(this);
-    }
+    ObjectNode visit(DefaultExpression defaultExpression);
 
-    @Override
-    public ObjectNode accept(final JsonFormsExpressionVisitor visitor) {
-        return visitor.visit(this);
-    }
+    ObjectNode visit(ConstantExpression constantExpression);
+
 }

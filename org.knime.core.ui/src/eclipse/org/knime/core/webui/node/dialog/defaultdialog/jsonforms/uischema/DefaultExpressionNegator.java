@@ -56,7 +56,7 @@ import java.util.Arrays;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.And;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Expression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.ExpressionVisitor;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.DefaultExpression;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.JsonFormsExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Not;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Or;
 
@@ -68,7 +68,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  *
  * @author Paul Bärnreuther
  */
-final class DefaultExpressionNegator implements ExpressionVisitor<ObjectNode, DefaultExpression> {
+final class DefaultExpressionNegator implements ExpressionVisitor<ObjectNode, JsonFormsExpression> {
 
     private final DefaultExpressionResolver m_operationVisitor;
 
@@ -84,29 +84,29 @@ final class DefaultExpressionNegator implements ExpressionVisitor<ObjectNode, De
     }
 
     @Override
-    public ObjectNode visit(final And<DefaultExpression> and) {
-        final var resolvedOperation = new Or<DefaultExpression>(reverseAll(and.getChildren()));
+    public ObjectNode visit(final And<JsonFormsExpression> and) {
+        final var resolvedOperation = new Or<JsonFormsExpression>(reverseAll(and.getChildren()));
         return resolvedOperation.accept(m_operationVisitor);
     }
 
     @Override
-    public ObjectNode visit(final Or<DefaultExpression> or) {
-        final var resolvedOperation = new And<DefaultExpression>(reverseAll(or.getChildren()));
+    public ObjectNode visit(final Or<JsonFormsExpression> or) {
+        final var resolvedOperation = new And<JsonFormsExpression>(reverseAll(or.getChildren()));
         return resolvedOperation.accept(m_operationVisitor);
     }
 
     @SuppressWarnings("unchecked")
-    private static Expression<DefaultExpression>[] reverseAll(final Expression<DefaultExpression>[] expressions) {
-        return Arrays.asList(expressions).stream().map(Not<DefaultExpression>::new).toArray(Expression[]::new);
+    private static Expression<JsonFormsExpression>[] reverseAll(final Expression<JsonFormsExpression>[] expressions) {
+        return Arrays.asList(expressions).stream().map(Not<JsonFormsExpression>::new).toArray(Expression[]::new);
     }
 
     @Override
-    public ObjectNode visit(final Not<DefaultExpression> not) {
+    public ObjectNode visit(final Not<JsonFormsExpression> not) {
         return not.getChildOperation().accept(m_operationVisitor);
     }
 
     @Override
-    public ObjectNode visit(final DefaultExpression expression) {
+    public ObjectNode visit(final JsonFormsExpression expression) {
         final var node = expression.accept(m_operationVisitor);
         final var positiveSchema = node.get(FIELD_NAME_SCHEMA);
         node.replace(FIELD_NAME_SCHEMA, m_mapper.createObjectNode().set(TAG_NOT, positiveSchema));

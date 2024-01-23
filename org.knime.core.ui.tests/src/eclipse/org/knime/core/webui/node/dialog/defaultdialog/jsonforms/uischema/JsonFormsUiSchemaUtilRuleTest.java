@@ -66,6 +66,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect.EffectType;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Expression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.FalseCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.HasMultipleItemsCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.InputSignal;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.IsNoneColumnStringCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.IsSpecificStringCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Not;
@@ -229,7 +230,7 @@ class JsonFormsUiSchemaUtilRuleTest {
             static final class AlwaysTrueSignal implements InputSignal {
 
                 @Override
-                public boolean isTrue(final DefaultNodeSettingsContext context) {
+                public boolean applies(final DefaultNodeSettingsContext context) {
                     return true;
                 }
             }
@@ -237,7 +238,7 @@ class JsonFormsUiSchemaUtilRuleTest {
            static final class AlwaysFalseSignal implements InputSignal {
 
                 @Override
-                public boolean isTrue(final DefaultNodeSettingsContext context) {
+                public boolean applies(final DefaultNodeSettingsContext context) {
                     return false;
                 }
             }

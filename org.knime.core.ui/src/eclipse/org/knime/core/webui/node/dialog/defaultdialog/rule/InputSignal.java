@@ -44,26 +44,33 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 4, 2023 (Paul Bärnreuther): created
+ *   Jan 23, 2024 (wiswedel): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.rule;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 
 /**
- * The atomic expression that is used for json forms implementation
+ * An indication provided to an {@link Effect} annotation that allows that effect to be active or not depending
+ * on the node's context. Implementations can determine their value from, e.g. the presence of certain columns
+ * (or column types) or if dynamic ports are enabled/shown or not.
  *
+ * <p>
+ * An <code>InputSignal</code> serves a similar role as a {@link Signal} annotation, except that it's not initiating
+ * an effect depending on a change of a setting but the context of the node.
+ *
+ * @author Bernd Wiswedel
  * @author Paul Bärnreuther
+ * @since 5.3
  */
-public record DefaultExpression(String scope, Condition condition) implements JsonFormsExpression {
+public interface InputSignal {
 
-    @Override
-    public <T> T accept(final ExpressionVisitor<T, JsonFormsExpression> visitor) {
-        return visitor.visit(this);
-    }
+    /**
+     * Determines the value of the single given the node's context.
+     *
+     * @param context Non-null context.
+     * @return If the signal applies.
+     */
+    boolean applies(DefaultNodeSettingsContext context);
 
-    @Override
-    public ObjectNode accept(final JsonFormsExpressionVisitor visitor) {
-        return visitor.visit(this);
-    }
 }
