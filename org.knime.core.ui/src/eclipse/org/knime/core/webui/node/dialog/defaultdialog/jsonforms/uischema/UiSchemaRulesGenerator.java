@@ -57,7 +57,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Map;
 
-import org.knime.core.webui.node.dialog.defaultdialog.rule.DefaultExpression;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.ScopedExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Expression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.JsonFormsExpression;
@@ -75,11 +75,11 @@ final class UiSchemaRulesGenerator {
 
     private final ObjectMapper m_mapper;
 
-    private final Map<Class<?>, DefaultExpression> m_signalsMap;
+    private final Map<Class<?>, ScopedExpression> m_signalsMap;
 
     private final Effect m_effect;
 
-    private DefaultExpressionResolver m_visitor;
+    private JsonFormsExpressionResolver m_visitor;
 
     /**
      * @param mapper an object mapper used to resolve given conditions
@@ -88,11 +88,11 @@ final class UiSchemaRulesGenerator {
      *            annotations to a construct holding the respective condition and the scope of the associated field.
      */
     UiSchemaRulesGenerator(final ObjectMapper mapper, final Effect effect,
-        final Map<Class<?>, DefaultExpression> signalsMap) {
+        final Map<Class<?>, ScopedExpression> signalsMap) {
         m_mapper = mapper;
         m_effect = effect;
         m_signalsMap = signalsMap;
-        m_visitor = new DefaultExpressionResolver(m_mapper);
+        m_visitor = new JsonFormsExpressionResolver(m_mapper);
     }
 
     /**
@@ -108,7 +108,7 @@ final class UiSchemaRulesGenerator {
         }
         final var signalClasses = m_effect.signals();
         final var signals =
-            Arrays.asList(signalClasses).stream().map(m_signalsMap::get).toArray(DefaultExpression[]::new);
+            Arrays.asList(signalClasses).stream().map(m_signalsMap::get).toArray(ScopedExpression[]::new);
         for (int signalIndex = 0; signalIndex < signals.length; signalIndex++) {
             if (signals[signalIndex] == null) {
                 if (m_effect.ignoreOnMissingSignals()) {
@@ -130,7 +130,7 @@ final class UiSchemaRulesGenerator {
     @SuppressWarnings("unchecked")
     private static Expression<JsonFormsExpression> instantiateOperation(
         @SuppressWarnings("rawtypes") final Class<? extends Operator> operationClass,
-        final DefaultExpression[] expressions) {
+        final ScopedExpression[] expressions) {
         try {
             return instantiateWithSuitableConstructor(operationClass, expressions);
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
@@ -143,7 +143,7 @@ final class UiSchemaRulesGenerator {
     @SuppressWarnings("unchecked")
     private static Operator<JsonFormsExpression> instantiateWithSuitableConstructor(
         @SuppressWarnings("rawtypes") final Class<? extends Operator> operationClass,
-        final DefaultExpression[] expressions)
+        final ScopedExpression[] expressions)
         throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         final var constructors = operationClass.getDeclaredConstructors();
         final var multiParameterConstructor = getMultiParameterConstructor(constructors, expressions.length);

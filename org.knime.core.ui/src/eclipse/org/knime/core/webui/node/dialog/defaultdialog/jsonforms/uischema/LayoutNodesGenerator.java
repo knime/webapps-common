@@ -59,7 +59,7 @@ import java.util.Map;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil.LayoutSkeleton;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaDefaultNodeSettingsTraverser.JsonFormsControl;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.DefaultExpression;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.ScopedExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesAdder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -77,7 +77,7 @@ final class LayoutNodesGenerator {
 
     private final LayoutTreeNode m_rootLayoutTree;
 
-    private Map<Class<?>, DefaultExpression> m_signals;
+    private Map<Class<?>, ScopedExpression> m_signals;
 
     private final DefaultNodeSettingsContext m_defaultNodeSettingsContext;
 

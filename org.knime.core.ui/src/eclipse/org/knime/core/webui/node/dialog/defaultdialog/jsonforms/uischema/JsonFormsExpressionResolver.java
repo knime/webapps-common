@@ -56,7 +56,7 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 
 import org.knime.core.webui.node.dialog.defaultdialog.rule.And;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.ConstantExpression;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.DefaultExpression;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.ScopedExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Expression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.ExpressionVisitor;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.JsonFormsExpression;
@@ -72,21 +72,21 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  *
  * @author Paul Bärnreuther
  */
-class DefaultExpressionResolver implements ExpressionVisitor<ObjectNode, JsonFormsExpression> {
+class JsonFormsExpressionResolver implements ExpressionVisitor<ObjectNode, JsonFormsExpression> {
 
     private final ObjectMapper m_mapper;
 
     private final JsonFormsConditionResolver m_conditionVisitor;
 
-    private final DefaultExpressionNegator m_negator;
+    private final JsonFormsExpressionNegator m_negator;
 
     /**
      * @param mapper
      */
-    public DefaultExpressionResolver(final ObjectMapper mapper) {
+    public JsonFormsExpressionResolver(final ObjectMapper mapper) {
         m_mapper = mapper;
         m_conditionVisitor = new JsonFormsConditionResolver(m_mapper);
-        m_negator = new DefaultExpressionNegator(this, m_mapper);
+        m_negator = new JsonFormsExpressionNegator(this, m_mapper);
     }
 
     /**
@@ -144,10 +144,10 @@ class DefaultExpressionResolver implements ExpressionVisitor<ObjectNode, JsonFor
             }
 
             @Override
-            public ObjectNode visit(final DefaultExpression defaultExpression) {
+            public ObjectNode visit(final ScopedExpression scopedExpression) {
                 final var conditionNode = m_mapper.createObjectNode();
-                conditionNode.put(TAG_SCOPE, defaultExpression.scope());
-                conditionNode.set(FIELD_NAME_SCHEMA, defaultExpression.condition().accept(m_conditionVisitor));
+                conditionNode.put(TAG_SCOPE, scopedExpression.scope());
+                conditionNode.set(FIELD_NAME_SCHEMA, scopedExpression.condition().accept(m_conditionVisitor));
                 return conditionNode;
             }
         });

@@ -56,7 +56,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * @author Bernd Wiswedel
  */
 public sealed interface JsonFormsExpression extends AtomicExpression<JsonFormsExpression>
-    permits DefaultExpression, ConstantExpression {
+    permits ScopedExpression, ConstantExpression {
 
     /**
      * @param visitor an implementation dependent expression resolver

@@ -56,7 +56,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.Defaul
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaDefaultNodeSettingsTraverser.JsonFormsControl;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.DefaultExpression;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.ScopedExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesAdder;
 
@@ -132,7 +132,7 @@ public final class JsonFormsUiSchemaUtil {
      * @param signals a map of all present {@link Signal} annotations.
      * @param fields a collection of all traversed fields (the leaves of the tree)
      */
-    public static record LayoutSkeleton(LayoutTreeNode layoutTreeRoot, Map<Class<?>, DefaultExpression> signals,
+    public static record LayoutSkeleton(LayoutTreeNode layoutTreeRoot, Map<Class<?>, ScopedExpression> signals,
         Collection<JsonFormsControl> fields) {
     }
 }

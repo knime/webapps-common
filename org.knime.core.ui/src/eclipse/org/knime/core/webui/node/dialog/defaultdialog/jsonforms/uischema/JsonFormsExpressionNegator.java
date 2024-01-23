@@ -64,13 +64,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * A visitor used to resolve the "not" operation in the {@link DefaultExpressionResolver}
+ * A visitor used to resolve the "not" operation in the {@link JsonFormsExpressionResolver}
  *
  * @author Paul Bärnreuther
  */
-final class DefaultExpressionNegator implements ExpressionVisitor<ObjectNode, JsonFormsExpression> {
+final class JsonFormsExpressionNegator implements ExpressionVisitor<ObjectNode, JsonFormsExpression> {
 
-    private final DefaultExpressionResolver m_operationVisitor;
+    private final JsonFormsExpressionResolver m_operationVisitor;
 
     private final ObjectMapper m_mapper;
 
@@ -78,7 +78,7 @@ final class DefaultExpressionNegator implements ExpressionVisitor<ObjectNode, Js
      * @param expressionVisitor
      * @param mapper
      */
-    public DefaultExpressionNegator(final DefaultExpressionResolver expressionVisitor, final ObjectMapper mapper) {
+    public JsonFormsExpressionNegator(final JsonFormsExpressionResolver expressionVisitor, final ObjectMapper mapper) {
         m_operationVisitor = expressionVisitor;
         m_mapper = mapper;
     }

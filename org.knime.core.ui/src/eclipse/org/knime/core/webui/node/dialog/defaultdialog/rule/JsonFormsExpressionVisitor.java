@@ -59,7 +59,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @SuppressWarnings("javadoc")
 public interface JsonFormsExpressionVisitor {
 
-    ObjectNode visit(DefaultExpression defaultExpression);
+    ObjectNode visit(ScopedExpression scopedExpression);
 
     ObjectNode visit(ConstantExpression constantExpression);
 

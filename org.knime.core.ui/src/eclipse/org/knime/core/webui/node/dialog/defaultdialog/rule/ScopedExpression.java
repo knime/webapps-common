@@ -55,7 +55,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  *
  * @author Paul Bärnreuther
  */
-public record DefaultExpression(String scope, Condition condition) implements JsonFormsExpression {
+public record ScopedExpression(String scope, Condition condition) implements JsonFormsExpression {
 
     @Override
     public <T> T accept(final ExpressionVisitor<T, JsonFormsExpression> visitor) {
