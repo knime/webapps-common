@@ -253,12 +253,33 @@ class JsonFormsUiSchemaUtilRuleTest {
 
 
         final var response = buildTestUiSchema(ConstantEffectSettings.class);
-        assertThatJson(response).inPath("$.elements").isArray().hasSize(3);
+        assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
         assertThatJson(response).inPath("$.elements[0].rule.effect").isString().isEqualTo("DISABLE");
         assertThatJson(response).inPath("$.elements[0].rule.condition").isObject().doesNotContainKeys("schema", "scope");
         assertThatJson(response).inPath("$.elements[1].rule.effect").isString().isEqualTo("DISABLE");
         assertThatJson(response).inPath("$.elements[1].rule.condition").isObject().doesNotContainKey("scope");
         assertThatJson(response).inPath("$.elements[1].rule.condition.schema.const").isBoolean().isTrue();
+    }
+
+    @Test
+    void testThrowsIfConstantIsUsedAsSignalIdentifier() {
+        final class MisusedEffectSettings implements DefaultNodeSettings {
+            static final class InvalidSignal implements InputSignal {
+
+                @Override
+                public boolean applies(final DefaultNodeSettingsContext context) {
+                    return true;
+                }
+            }
+
+            @Effect(signals = InvalidSignal.class, type = EffectType.DISABLE)
+            boolean m_fieldWithInvalidSignal;
+
+            @Signal(id = InvalidSignal.class, condition = TrueCondition.class)
+            boolean m_signalBoolean;
+        }
+
+        assertThrows(UiSchemaGenerationException.class, () -> buildTestUiSchema(MisusedEffectSettings.class));
     }
 
     @Test

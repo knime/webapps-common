@@ -110,7 +110,8 @@ final class LayoutNodesGenerator {
 
     private void buildLayout(final LayoutTreeNode rootNode, final ArrayNode parentNode) {
         final var layoutPart = LayoutPart.determineFromClassAnnotation(rootNode.getValue());
-        final var layoutNode = layoutPart.create(parentNode, rootNode.getValue(), m_mapper, m_signals);
+        final var layoutNode =
+            layoutPart.create(m_defaultNodeSettingsContext, parentNode, rootNode.getValue(), m_mapper, m_signals);
         rootNode.getControls().forEach(control -> addControlElement(layoutNode, control));
         rootNode.getChildren().forEach(childLayoutNode -> buildLayout(childLayoutNode, layoutNode));
     }
@@ -137,8 +138,8 @@ final class LayoutNodesGenerator {
 
     private void addRule(final JsonFormsControl controlElement, final ObjectNode control) {
         try {
-            new UiSchemaRulesGenerator(m_mapper, controlElement.trackedAnnotations().effect(), m_signals)
-                .applyRulesTo(control);
+            new UiSchemaRulesGenerator(m_mapper, controlElement.trackedAnnotations().effect(), m_signals,
+                m_defaultNodeSettingsContext).applyRulesTo(control);
         } catch (UiSchemaGenerationException ex) {
             throw new UiSchemaGenerationException(String.format("Error when resolving @Effect annotation for %s.: %s",
                 controlElement.scope(), ex.getMessage()), ex);

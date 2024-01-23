@@ -60,6 +60,7 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import java.util.Map;
 import java.util.function.Function;
 
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.HorizontalLayout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
@@ -97,9 +98,9 @@ enum LayoutPart {
         return VIRTUAL_SECTION;
     }
 
-    ArrayNode create(final ArrayNode parent, final Class<?> layoutClass, final ObjectMapper mapper,
-        final Map<Class<?>, ScopedExpression> signals) {
-        return m_create.apply(new LayoutNodeCreationContext(parent, layoutClass, mapper, signals));
+    ArrayNode create(final DefaultNodeSettingsContext context, final ArrayNode parent,
+        final Class<?> layoutClass, final ObjectMapper mapper, final Map<Class<?>, ScopedExpression> signals) {
+        return m_create.apply(new LayoutNodeCreationContext(parent, layoutClass, mapper, signals, context));
     }
 
     private static ArrayNode getSection(final LayoutNodeCreationContext creationContext) {
@@ -127,10 +128,10 @@ enum LayoutPart {
 
     private static void applyRules(final ObjectNode node, final LayoutNodeCreationContext creationContext) {
         new UiSchemaRulesGenerator(creationContext.mapper(), creationContext.layoutClass.getAnnotation(Effect.class),
-            creationContext.signals()).applyRulesTo(node);
+            creationContext.signals(), creationContext.context()).applyRulesTo(node);
     }
 
     private record LayoutNodeCreationContext(ArrayNode parent, Class<?> layoutClass, ObjectMapper mapper,
-        Map<Class<?>, ScopedExpression> signals) {
+        Map<Class<?>, ScopedExpression> signals, DefaultNodeSettingsContext context) {
     }
 }

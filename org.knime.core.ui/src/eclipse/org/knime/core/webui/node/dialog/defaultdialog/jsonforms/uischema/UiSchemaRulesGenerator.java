@@ -54,14 +54,20 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 
-import org.knime.core.webui.node.dialog.defaultdialog.rule.ScopedExpression;
+import org.knime.core.node.util.CheckUtils;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.ConstantExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Expression;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.InputSignal;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.JsonFormsExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Operator;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.ScopedExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -79,6 +85,8 @@ final class UiSchemaRulesGenerator {
 
     private final Effect m_effect;
 
+    private final DefaultNodeSettingsContext m_nodeSettingsContext;
+
     private JsonFormsExpressionResolver m_visitor;
 
     /**
@@ -86,12 +94,14 @@ final class UiSchemaRulesGenerator {
      * @param field a field for which the effect of a rule is to be determined
      * @param signalsMap the map of all signals in the settings context at hand. It maps the ids of {@link Signal}
      *            annotations to a construct holding the respective condition and the scope of the associated field.
+     * @param nodeSettingsContext the node's context (inputs, flow vars)
      */
     UiSchemaRulesGenerator(final ObjectMapper mapper, final Effect effect,
-        final Map<Class<?>, ScopedExpression> signalsMap) {
+        final Map<Class<?>, ScopedExpression> signalsMap, final DefaultNodeSettingsContext nodeSettingsContext) {
         m_mapper = mapper;
         m_effect = effect;
         m_signalsMap = signalsMap;
+        m_nodeSettingsContext = nodeSettingsContext;
         m_visitor = new JsonFormsExpressionResolver(m_mapper);
     }
 
@@ -107,30 +117,65 @@ final class UiSchemaRulesGenerator {
             return;
         }
         final var signalClasses = m_effect.signals();
-        final var signals =
-            Arrays.asList(signalClasses).stream().map(m_signalsMap::get).toArray(ScopedExpression[]::new);
-        for (int signalIndex = 0; signalIndex < signals.length; signalIndex++) {
-            if (signals[signalIndex] == null) {
-                if (m_effect.ignoreOnMissingSignals()) {
-                    return;
-                }
-                throw new UiSchemaGenerationException(String.format(
-                    "Missing source annotation: %s. "
-                    + "If this is wanted and the rule should be ignored instead of throwing this error, "
-                    + "use the respective flag in the @Effect annotation.",
-                    signalClasses[signalIndex].getName()));
+        final var expressionList = new ArrayList<JsonFormsExpression>();
+        for (var i = 0; i < signalClasses.length; i++) {
+            final var signalClass = signalClasses[i];
+            final var expressionOptional = createExpressionFromSignal(signalClass);
+            if (expressionOptional.isEmpty()) {
+                return; // "ignoreOnMissingSignals"
             }
+            expressionList.add(expressionOptional.get());
         }
         final var rule = control.putObject(TAG_RULE).put(TAG_EFFECT, String.valueOf(m_effect.type()));
 
         final var operationClass = m_effect.operation();
-        rule.set(TAG_CONDITION, instantiateOperation(operationClass, signals).accept(m_visitor));
+        rule.set(TAG_CONDITION,
+            instantiateOperation(operationClass, expressionList.toArray(JsonFormsExpression[]::new)).accept(m_visitor));
+    }
+
+    /**
+     * Extracts the expression from a signal added to an effect.
+     *
+     * @param signalClass The signal class as defined in the @Effect annotation.
+     * @return Either an expression or an empty optional if the effect has the {@link Effect#ignoreOnMissingSignals()}
+     *         set.
+     */
+    private Optional<JsonFormsExpression> createExpressionFromSignal(final Class<?> signalClass) {
+        JsonFormsExpression expression = m_signalsMap.get(signalClass);
+        if (expression == null) {
+            if (InputSignal.class.isAssignableFrom(signalClass)) {
+                try {
+                    expression = new ConstantExpression(signalClass.asSubclass(InputSignal.class)
+                        .getDeclaredConstructor().newInstance().applies(m_nodeSettingsContext));
+                } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+                        | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
+                    throw new UiSchemaGenerationException(
+                        "Unable to instantiate instance of " + signalClass.getName(), ex);
+                }
+            } else if (m_effect.ignoreOnMissingSignals()) {
+                return Optional.empty();
+            } else {
+                throw new UiSchemaGenerationException(String.format(
+                    "Missing source annotation: %s. "
+                            + "If this is wanted and the rule should be ignored instead of throwing this error, "
+                            + "use the respective flag in the @Effect annotation.",
+                            signalClass.getName()));
+            }
+        } else {
+            // (artificial design limitation:) input signals not to be used as identifiers in @Signal annotation
+            CheckUtils.check(!InputSignal.class.isAssignableFrom(signalClass), UiSchemaGenerationException::new,
+                () -> String.format(
+                    "Invalid source annotation: %s - it denotes a %s, "
+                            + "which can not be referenced by a @Signal annotation.", //
+                            signalClass, InputSignal.class.getSimpleName()));
+        }
+        return Optional.of(expression);
     }
 
     @SuppressWarnings("unchecked")
     private static Expression<JsonFormsExpression> instantiateOperation(
         @SuppressWarnings("rawtypes") final Class<? extends Operator> operationClass,
-        final ScopedExpression[] expressions) {
+        final JsonFormsExpression[] expressions) {
         try {
             return instantiateWithSuitableConstructor(operationClass, expressions);
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
@@ -143,7 +188,7 @@ final class UiSchemaRulesGenerator {
     @SuppressWarnings("unchecked")
     private static Operator<JsonFormsExpression> instantiateWithSuitableConstructor(
         @SuppressWarnings("rawtypes") final Class<? extends Operator> operationClass,
-        final ScopedExpression[] expressions)
+        final JsonFormsExpression[] expressions)
         throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         final var constructors = operationClass.getDeclaredConstructors();
         final var multiParameterConstructor = getMultiParameterConstructor(constructors, expressions.length);
