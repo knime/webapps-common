@@ -1,0 +1,49 @@
+{
+  "result": {
+    "name": "Constant Rules Dialog",
+    "data": {
+      "enabledFalse": "Test",
+      "enabledTrue": "Test"
+    },
+    "schema": {
+      "type": "object",
+      "properties": {
+        "enabledFalse": {
+          "type": "string"
+        },
+        "enabledTrue": {
+          "type": "string"
+        }
+      }
+    },
+    "ui_schema": {
+      "type": "VerticalLayout",
+      "elements": [
+        {
+          "type": "Section",
+          "label": "Section",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/enabledFalse",
+              "rule": {
+                "effect": "ENABLE",
+                "condition": {
+                  "schema": { "const": "" }
+                }
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/enabledTrue",
+              "rule": {
+                "effect": "ENABLE",
+                "condition": {}
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

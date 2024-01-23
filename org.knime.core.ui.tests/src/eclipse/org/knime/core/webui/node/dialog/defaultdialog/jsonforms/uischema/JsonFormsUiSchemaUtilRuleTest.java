@@ -224,6 +224,43 @@ class JsonFormsUiSchemaUtilRuleTest {
     }
 
     @Test
+    void testConstantEffect() {
+        final class ConstantEffectSettings implements DefaultNodeSettings {
+            static final class AlwaysTrueSignal implements InputSignal {
+
+                @Override
+                public boolean isTrue(final DefaultNodeSettingsContext context) {
+                    return true;
+                }
+            }
+
+           static final class AlwaysFalseSignal implements InputSignal {
+
+                @Override
+                public boolean isTrue(final DefaultNodeSettingsContext context) {
+                    return false;
+                }
+            }
+
+            @Effect(signals = AlwaysTrueSignal.class, type = EffectType.DISABLE)
+            boolean m_constantlyDisabled;
+
+
+            @Effect(signals = AlwaysFalseSignal.class, type = EffectType.DISABLE)
+            boolean m_constantlyEnabled;
+        }
+
+
+        final var response = buildTestUiSchema(ConstantEffectSettings.class);
+        assertThatJson(response).inPath("$.elements").isArray().hasSize(3);
+        assertThatJson(response).inPath("$.elements[0].rule.effect").isString().isEqualTo("DISABLE");
+        assertThatJson(response).inPath("$.elements[0].rule.condition").isObject().doesNotContainKeys("schema", "scope");
+        assertThatJson(response).inPath("$.elements[1].rule.effect").isString().isEqualTo("DISABLE");
+        assertThatJson(response).inPath("$.elements[1].rule.condition").isObject().doesNotContainKey("scope");
+        assertThatJson(response).inPath("$.elements[1].rule.condition.schema.const").isBoolean().isTrue();
+    }
+
+    @Test
     void testOr() {
         final class OrSettings implements DefaultNodeSettings {
             interface SomeBooleanIsTrue {
