@@ -100,8 +100,22 @@ public final class LegacyColumnFilterPersistor extends NodeSettingsPersistorWith
         var columnFilter = new ColumnFilter();
         columnFilter.m_mode = loadMode(columnFilterSettings);
         columnFilter.m_manualFilter = LegacyManualFilterPersistorUtil.loadManualFilter(columnFilterSettings);
-        columnFilter.m_patternFilter = LegacyPatternFilterPersistorUtil.loadPatternMatching(columnFilterSettings.getNodeSettings(PatternFilterConfiguration.TYPE));
-        columnFilter.m_typeFilter = loadTypeFilter(columnFilterSettings.getNodeSettings(OLD_FILTER_TYPE_DATATYPE));
+        if (columnFilterSettings.containsKey(PatternFilterConfiguration.TYPE)) {
+            columnFilter.m_patternFilter = LegacyPatternFilterPersistorUtil.loadPatternMatching(columnFilterSettings.getNodeSettings(PatternFilterConfiguration.TYPE));
+        } else {
+            // in some very old workflows this field might not have been populated,
+            // see knime://Testflows/Testflows%20(master)/knime-base/Flow%20Control/testGroupLoopStart
+            columnFilter.m_patternFilter = new PatternFilter();
+        }
+
+        if (columnFilterSettings.containsKey(OLD_FILTER_TYPE_DATATYPE)) {
+            columnFilter.m_typeFilter = loadTypeFilter(columnFilterSettings.getNodeSettings(OLD_FILTER_TYPE_DATATYPE));
+        } else {
+            // in some very old workflows this field might not have been populated,
+            // see knime://Testflows/Testflows%20(master)/knime-base/Flow%20Control/testGroupLoopStart
+            columnFilter.m_typeFilter = new TypeFilter();
+        }
+
         return columnFilter;
     }
 
