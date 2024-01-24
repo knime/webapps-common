@@ -55,6 +55,7 @@ import org.junit.jupiter.api.Test;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialogTest;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.testing.util.TableTestUtil;
 
@@ -69,7 +70,7 @@ class ColumnFilterTest {
     private static final DataColumnSpec COL_SPEC = TABLE_SPEC.getColumnSpec(0);
 
     private static final DefaultNodeSettingsContext CONTEXT =
-        new DefaultNodeSettingsContext(new PortObjectSpec[]{TABLE_SPEC}, null, null);
+        DefaultNodeDialogTest.createDefaultNodeSettingsContext(new PortObjectSpec[]{TABLE_SPEC}, null, null);
 
     @Test
     void testGetSelectedByManualWithIncludeUnknownColumns() {

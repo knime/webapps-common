@@ -68,6 +68,7 @@ import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.VariableType;
 import org.knime.core.webui.node.dialog.defaultdialog.examples.ArrayWidgetExample;
+import org.knime.core.webui.node.dialog.defaultdialog.examples.ArrayWidgetExample;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorFactory;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
@@ -240,7 +241,7 @@ public interface DefaultNodeSettings extends PersistableSettings, WidgetGroup {
 
         private final CredentialsProvider m_credentialsProvider;
 
-        public DefaultNodeSettingsContext(final PortObjectSpec[] specs, final FlowObjectStack stack,
+        DefaultNodeSettingsContext(final PortObjectSpec[] specs, final FlowObjectStack stack,
             final CredentialsProvider credentialsProvider) {
             m_specs = specs;
             m_stack = stack;

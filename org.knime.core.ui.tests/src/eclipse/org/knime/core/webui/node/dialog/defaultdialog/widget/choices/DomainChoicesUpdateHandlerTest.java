@@ -63,6 +63,7 @@ import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialogTest;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
 
@@ -88,7 +89,7 @@ class DomainChoicesUpdateHandlerTest {
         colSpecCreator.setDomain(colDomain);
         final var colSpec = colSpecCreator.createSpec();
 
-        return new DefaultNodeSettingsContext(new PortObjectSpec[]{new DataTableSpec(//
+        return DefaultNodeDialogTest.createDefaultNodeSettingsContext(new PortObjectSpec[]{new DataTableSpec(//
             new DataColumnSpec[]{colSpec} //
                 )}, null, null);
     }
@@ -142,7 +143,7 @@ class DomainChoicesUpdateHandlerTest {
             public String columnName() {
                 return colName;
             }
-        }, new DefaultNodeSettingsContext(new PortObjectSpec[]{null}, null, null));
+        }, DefaultNodeDialogTest.createDefaultNodeSettingsContext(new PortObjectSpec[]{null}, null, null));
         assertThat(response).isEmpty();
     }
 

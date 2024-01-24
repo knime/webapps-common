@@ -79,7 +79,9 @@ import org.knime.core.node.NodeView;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
+import org.knime.core.node.workflow.CredentialsProvider;
 import org.knime.core.node.workflow.CredentialsStore;
+import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
@@ -88,6 +90,7 @@ import org.knime.core.webui.node.dialog.NodeDialog;
 import org.knime.core.webui.node.dialog.NodeDialogManager;
 import org.knime.core.webui.node.dialog.NodeDialogManagerTest;
 import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
@@ -106,6 +109,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @SuppressWarnings("java:S2698") // we accept assertions without messages
 public class DefaultNodeDialogTest {
+
+    /**
+     * Widens scope of constructor of {@link DefaultNodeSettingsContext}. Only used in tests.
+     */
+    @SuppressWarnings("javadoc")
+    public static final DefaultNodeSettingsContext createDefaultNodeSettingsContext(final PortObjectSpec[] specs,
+        final FlowObjectStack stack, final CredentialsProvider credentialsProvider) {
+        return new DefaultNodeSettingsContext(specs, stack, credentialsProvider);
+    }
 
     static class ModelSettings implements DefaultNodeSettings {
         @Widget
