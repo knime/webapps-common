@@ -20,7 +20,7 @@ describe("FileSelector.vue", () => {
     expect(wrapper.find(".filename").text()).toContain("No file selected");
   });
 
-  it("opens file chooser on button click", async () => {
+  it("opens file selector on button click", async () => {
     const wrapper = mount(FileSelector, {
       propsData: {
         label: "Select file",
@@ -28,10 +28,13 @@ describe("FileSelector.vue", () => {
         multiple: false,
       },
     });
-    const fileChooserClickspy = vi.spyOn(wrapper.vm.$refs.fileChooser, "click");
+    const fileSelectorClickspy = vi.spyOn(
+      wrapper.vm.$refs.fileSelector,
+      "click",
+    );
 
     await wrapper.findComponent(Button).trigger("click");
-    expect(fileChooserClickspy).toHaveBeenCalled();
+    expect(fileSelectorClickspy).toHaveBeenCalled();
   });
 
   it("updates displayed filename on file selection", async () => {
