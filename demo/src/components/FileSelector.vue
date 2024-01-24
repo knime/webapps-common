@@ -36,7 +36,7 @@ export default {
           <code>"accepted-file-types"</code> property.
         </p>
         <div class="grid-container selector-container">
-          <div class="grid-item-3">
+          <div class="grid-item-6">
             <p>Select a single file</p>
             <FileSelector
               :accepted-file-types="acceptedFileTypes"
@@ -82,7 +82,6 @@ export default {
             :multiple="true"
           />
         </div>
-
         <CodeExample summary="Show usage example">{{
           codeExample
         }}</CodeExample>
