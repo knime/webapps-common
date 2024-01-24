@@ -78,6 +78,7 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NodeView;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
 import org.knime.core.node.workflow.CredentialsProvider;
 import org.knime.core.node.workflow.CredentialsStore;
@@ -114,9 +115,9 @@ public class DefaultNodeDialogTest {
      * Widens scope of constructor of {@link DefaultNodeSettingsContext}. Only used in tests.
      */
     @SuppressWarnings("javadoc")
-    public static final DefaultNodeSettingsContext createDefaultNodeSettingsContext(final PortObjectSpec[] specs,
-        final FlowObjectStack stack, final CredentialsProvider credentialsProvider) {
-        return new DefaultNodeSettingsContext(specs, stack, credentialsProvider);
+    public static final DefaultNodeSettingsContext createDefaultNodeSettingsContext(final PortType[] inPortTypes,
+        final PortObjectSpec[] specs, final FlowObjectStack stack, final CredentialsProvider credentialsProvider) {
+        return new DefaultNodeSettingsContext(inPortTypes, specs, stack, credentialsProvider);
     }
 
     static class ModelSettings implements DefaultNodeSettings {

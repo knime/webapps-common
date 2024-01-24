@@ -53,21 +53,24 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.port.PortType;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.CredentialsProvider;
 import org.knime.core.node.workflow.FlowObjectStack;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContext;
+import org.knime.core.node.workflow.NodeInPort;
 import org.knime.core.node.workflow.VariableType;
-import org.knime.core.webui.node.dialog.defaultdialog.examples.ArrayWidgetExample;
 import org.knime.core.webui.node.dialog.defaultdialog.examples.ArrayWidgetExample;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorFactory;
@@ -235,17 +238,28 @@ public interface DefaultNodeSettings extends PersistableSettings, WidgetGroup {
      */
     final class DefaultNodeSettingsContext {
 
+        private final PortType[] m_inTypes;
+
         private final PortObjectSpec[] m_specs;
 
         private final FlowObjectStack m_stack;
 
         private final CredentialsProvider m_credentialsProvider;
 
-        DefaultNodeSettingsContext(final PortObjectSpec[] specs, final FlowObjectStack stack,
-            final CredentialsProvider credentialsProvider) {
+        DefaultNodeSettingsContext(final PortType[] inTypes, final PortObjectSpec[] specs,
+            final FlowObjectStack stack, final CredentialsProvider credentialsProvider) {
+            m_inTypes = inTypes;
             m_specs = specs;
             m_stack = stack;
             m_credentialsProvider = credentialsProvider;
+        }
+
+        /**
+         * The node's input types. Not null and not containing null.
+         * @return the inTypes
+         */
+        public PortType[] getInPortTypes() {
+            return m_inTypes;
         }
 
         /**
@@ -441,14 +455,26 @@ public interface DefaultNodeSettings extends PersistableSettings, WidgetGroup {
         Objects.requireNonNull(specs, () -> "Port object specs must not be null.");
         final var nodeContext = NodeContext.getContext();
         if (nodeContext == null) {
-            return new DefaultNodeSettingsContext(specs, null, null);
+            // can only happen during tests
+            return new DefaultNodeSettingsContext(fallbackPortTypesFor(specs), specs, null, null);
         }
-        var nc = nodeContext.getNodeContainer();
-        CredentialsProvider credentialsProvider = null;
+        final var nc = nodeContext.getNodeContainer();
+        final CredentialsProvider credentialsProvider;
+        final PortType[] inPortTypes;
         if (nc instanceof NativeNodeContainer nnc) {
             credentialsProvider = nnc.getNode().getCredentialsProvider();
+            // skip hidden flow variable input (mickey mouse ear) - not exposed to node implementation
+            inPortTypes = IntStream.range(1, nnc.getNrInPorts()).mapToObj(nnc::getInPort)
+                .map(NodeInPort::getPortType).toArray(PortType[]::new);
+        } else {
+            credentialsProvider = null;
+            inPortTypes = fallbackPortTypesFor(specs);
         }
-        return new DefaultNodeSettingsContext(specs, nc.getFlowObjectStack(), credentialsProvider);
+        return new DefaultNodeSettingsContext(inPortTypes, specs, nc.getFlowObjectStack(), credentialsProvider);
+    }
+
+    private static PortType[] fallbackPortTypesFor(final PortObjectSpec[] specs) {
+        return IntStream.range(0, specs.length).mapToObj(i -> PortObject.TYPE).toArray(PortType[]::new);
     }
 
 }

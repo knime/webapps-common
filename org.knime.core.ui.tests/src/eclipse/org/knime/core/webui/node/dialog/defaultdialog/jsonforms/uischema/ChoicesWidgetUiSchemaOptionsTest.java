@@ -63,7 +63,9 @@ import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.def.DoubleCell;
 import org.knime.core.data.def.StringCell;
+import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.port.PortType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialogTest;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
@@ -179,8 +181,8 @@ class ChoicesWidgetUiSchemaOptionsTest {
             new DataColumnSpecCreator("column2", DoubleCell.TYPE).createSpec()};
 
     private static DefaultNodeSettingsContext createDefaultNodeSettingsContext() {
-        DefaultNodeSettingsContext defaultNodeSettingsContext = DefaultNodeDialogTest
-            .createDefaultNodeSettingsContext(new PortObjectSpec[]{new DataTableSpec(columnSpecs)}, null, null);
+        DefaultNodeSettingsContext defaultNodeSettingsContext = DefaultNodeDialogTest.createDefaultNodeSettingsContext(
+            new PortType[]{BufferedDataTable.TYPE}, new PortObjectSpec[]{new DataTableSpec(columnSpecs)}, null, null);
         return defaultNodeSettingsContext;
     }
 
