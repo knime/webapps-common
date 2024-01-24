@@ -1,4 +1,5 @@
 <script>
+import { getCurrentInstance } from "vue";
 import Button from "./Button.vue";
 import LensIcon from "../assets/img/icons/lens.svg";
 
@@ -33,16 +34,17 @@ export default {
         this.files?.map?.(({ name }) => name).join(", ") ?? "No file selected"
       );
     },
-    fileChooserId() {
-      return `file-chooser-${this.label}`;
+    fileSelectorId() {
+      const uid = getCurrentInstance().uid;
+      return `file-selector-${uid}`;
     },
     selectFileText() {
       return `Select file${this.multiple ? "s" : ""}`;
     },
   },
   methods: {
-    openFileChooser() {
-      this.$refs.fileChooser.click();
+    openFileSelector() {
+      this.$refs.fileSelector.click();
     },
     onSelect(event) {
       this.files = Array.from(event.target.files);
@@ -54,15 +56,15 @@ export default {
 
 <template>
   <div class="wrapper">
-    <label :for="fileChooserId">
-      <Button :compact="true" :with-border="true" @click="openFileChooser">
+    <label :for="fileSelectorId">
+      <Button :compact="true" :with-border="true" @click="openFileSelector">
         <LensIcon />{{ selectFileText }}
       </Button>
       <span class="filename">{{ displayedFilename }}</span>
     </label>
     <input
-      :id="fileChooserId"
-      ref="fileChooser"
+      :id="fileSelectorId"
+      ref="fileSelector"
       :aria-label="label"
       type="file"
       :accept="acceptedFileTypes"
