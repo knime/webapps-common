@@ -268,6 +268,12 @@ class FieldBasedNodeSettingsPersistorTest {
         // omit the m_ to test if settings without m_ prefix also work
         boolean booleanSetting; //NOSONAR
 
+        private String privateSetting = "test";
+
+        String getSetting() {
+            return "test";
+        }
+
         @Override
         public void saveExpected(final NodeSettingsWO settings) {
             settings.addInt("intSetting", m_intSetting);
@@ -283,7 +289,8 @@ class FieldBasedNodeSettingsPersistorTest {
                 && m_doubleSetting == settings.m_doubleSetting//
                 && m_longSetting == settings.m_longSetting//
                 && Objects.equals(m_stringSetting, settings.m_stringSetting)//
-                && booleanSetting == settings.booleanSetting;
+                && booleanSetting == settings.booleanSetting//
+                && privateSetting == settings.privateSetting;
         }
 
         @Override
