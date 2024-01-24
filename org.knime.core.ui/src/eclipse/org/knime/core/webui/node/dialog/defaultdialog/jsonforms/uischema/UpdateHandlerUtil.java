@@ -52,14 +52,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaDefaultNodeSettingsTraverser.JsonFormsControl;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Update;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.UpdateHandler;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
@@ -73,22 +74,21 @@ final class UpdateHandlerUtil {
         // Utility
     }
 
-    record UpdateParams(String updateHandlerName, List<String> dependencies, String targetScope) {
+    record UpdateHandlerParams(String updateHandlerName, List<String> dependencies) {
     }
 
     /**
      * Adds an array with one element for each {@link Update} annotation to the rootNode if any are present.
      */
-    static void addUpdateHandlers(final ObjectNode rootNode, final Map<String, Class<?>> settingsClasses,
-        final Collection<JsonFormsControl> fields, final ObjectMapper mapper) {
-        final var updateParams = getUpdateHandlersAndScope(mapper, fields, settingsClasses);
+    static void addUpdateHandlers(final ObjectNode rootNode,
+        final Map<String, Class<? extends WidgetGroup>> settingsClasses, final Collection<JsonFormsControl> fields) {
+        final var updateParams = getUpdateHandlersParams(fields, settingsClasses);
         if (updateParams.isEmpty()) {
             return;
         }
         final var globalUpdates = rootNode.putArray("globalUpdates");
         updateParams.forEach(updateParam -> {
             final var updateObjectNode = globalUpdates.addObject();
-            updateObjectNode.put("target", updateParam.targetScope());
             updateObjectNode.put("updateHandler", updateParam.updateHandlerName());
             final var dependenciesArrayNode = updateObjectNode.putArray("dependencies");
             updateParam.dependencies().forEach(dependenciesArrayNode::add);
@@ -96,33 +96,24 @@ final class UpdateHandlerUtil {
 
     }
 
-    private static Collection<UpdateParams> getUpdateHandlersAndScope(final ObjectMapper mapper,
-        final Collection<JsonFormsControl> fields, final Map<String, Class<?>> settingsClasses) {
-        final List<UpdateParams> updateParams = new ArrayList<>();
-        settingsClasses.entrySet().forEach(entry -> {
-            final var traverser = new DefaultNodeSettingsFieldTraverser(mapper, entry.getValue());
-            final Consumer<TraversedField> addUpdateParam =
-                getAddUpdateCallback(updateParams, mapper, fields, entry.getKey());
-            traverser.traverse(addUpdateParam);
-        });
-        return updateParams;
-
+    private static Collection<UpdateHandlerParams> getUpdateHandlersParams(final Collection<JsonFormsControl> fields,
+        final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
+        final var traversedFields = settingsClasses.values().stream()
+            .flatMap((settingsClass) -> new DefaultNodeSettingsFieldTraverser(settingsClass).getAllFields().stream());
+        final var updateHandlers = traversedFields.map(UpdateHandlerUtil::getUpdateAnnotation)
+            .filter(Optional::isPresent).map(Optional::get).map(Update::updateHandler).collect(Collectors.toSet());
+        return updateHandlers.stream().map(handler -> toUpdateParams(handler, fields)).toList();
     }
 
-    private static Consumer<TraversedField> getAddUpdateCallback(final List<UpdateParams> updates,
-        final ObjectMapper mapper, final Collection<JsonFormsControl> fields, final String settingsKey) {
-        return field -> {
-            final var updateAnnotation = field.propertyWriter().getAnnotation(Update.class);
-            if (updateAnnotation != null) {
-                final var scope = UiSchemaDefaultNodeSettingsTraverser.toScope(field.path(), settingsKey);
-                final var updateHandler = updateAnnotation.updateHandler();
-                final List<String> dependencies = new ArrayList<>();
-                new DependencyResolver(mapper, fields, scope).addDependencyScopes(updateHandler, dependencies::add);
+    private static Optional<Update> getUpdateAnnotation(final TraversedField field) {
+        return Optional.ofNullable(field.propertyWriter().getAnnotation(Update.class));
+    }
 
-                final var updateHanderAndScope = new UpdateParams(updateHandler.getName(), dependencies, scope);
-                updates.add(updateHanderAndScope);
-            }
-        };
+    private static UpdateHandlerParams toUpdateParams(final Class<? extends UpdateHandler<?, ?>> updateHandler,
+        final Collection<JsonFormsControl> fields) {
+        final List<String> dependencies = new ArrayList<>();
+        new DependencyResolver(fields).addDependencyScopes(updateHandler, dependencies::add);
+        return new UpdateHandlerParams(updateHandler.getName(), dependencies);
     }
 
 }

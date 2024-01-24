@@ -48,19 +48,22 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
-import java.util.Collection;
+import static org.knime.core.webui.node.dialog.defaultdialog.dataservice.ConvertValueUtil.convertDependencies;
+import static org.knime.core.webui.node.dialog.defaultdialog.dataservice.ConvertValueUtil.convertValue;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import org.knime.core.webui.data.DataServiceContext;
+import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.PasswordHolder;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.UpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesGetter;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
 
 /**
  * Implementation of the {@link DefaultNodeDialogDataService}.
@@ -87,12 +90,15 @@ public final class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialog
      * @param asyncChoicesGetter for retrieving those choices whose computation was triggered during the determination
      *            of the initial data.
      */
-    public DefaultNodeDialogDataServiceImpl(final Collection<Class<? extends DefaultNodeSettings>> settingsClasses,
+    public DefaultNodeDialogDataServiceImpl(
+        final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses,
         final AsyncChoicesGetter asyncChoicesGetter) {
-        m_buttonActionHandlers = new ButtonWidgetActionHandlerHolder(settingsClasses);
-        m_buttonUpdateHandlers = new ButtonWidgetUpdateHandlerHolder(settingsClasses);
-        m_choicesUpdateHandlers = new ChoicesWidgetUpdateHandlerHolder(settingsClasses);
-        m_valueUpdateHandlers = new ValueUpdateHandlerHolder(settingsClasses);
+        final Map<String, Class<? extends WidgetGroup>> keyToSettingsClassMap = new HashMap<>();
+        settingsClasses.forEach((type, settingsClass) -> keyToSettingsClassMap.put(type.getConfigKey(), settingsClass));
+        m_buttonActionHandlers = new ButtonWidgetActionHandlerHolder(keyToSettingsClassMap);
+        m_buttonUpdateHandlers = new ButtonWidgetUpdateHandlerHolder(keyToSettingsClassMap);
+        m_choicesUpdateHandlers = new ChoicesWidgetUpdateHandlerHolder(keyToSettingsClassMap);
+        m_valueUpdateHandlers = new ValueUpdateHandlerHolder(keyToSettingsClassMap);
         m_requestHandler = new DataServiceRequestHandler();
         m_asyncChoicesGetter = asyncChoicesGetter;
     }
@@ -159,23 +165,6 @@ public final class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialog
     @Override
     public Result<?> getChoices(final String className) throws InterruptedException, ExecutionException {
         return m_requestHandler.handleRequestFuture(m_asyncChoicesGetter.getChoices(className));
-    }
-
-    private static Object convertDependencies(final Object objectSettings, final DependencyHandler<?> handler,
-        final DefaultNodeSettingsContext context) {
-        final var settingsType = GenericTypeFinderUtil.getFirstGenericType(handler.getClass(), DependencyHandler.class);
-        return convertValue(objectSettings, settingsType, context);
-    }
-
-    private static Object convertValue(final Object objectSettings, final Class<?> settingsType,
-        final DefaultNodeSettingsContext context) {
-        PasswordHolder.setCredentialsProvider(context.getCredentialsProvider().orElse(null));
-        try {
-            return JsonFormsDataUtil.getMapper().convertValue(objectSettings, settingsType);
-        } finally {
-            PasswordHolder.removeCredentialsProvider();
-        }
-
     }
 
     static final class NoHandlerFoundException extends IllegalArgumentException {

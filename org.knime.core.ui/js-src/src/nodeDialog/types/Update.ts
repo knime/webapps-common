@@ -7,8 +7,9 @@ export interface Update {
    * An id to the backend handler that contains the update logic
    */
   updateHandler: string;
-  /**
-   * The schema path to the updated data
-   */
-  target: string;
+}
+
+export interface PathAndValue {
+  path: string;
+  value: unknown;
 }

@@ -54,10 +54,26 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.NoopUpdateResolver;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.UpdateHandler;
-
+import org.knime.core.webui.node.dialog.defaultdialog.widget.UpdateResolver;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
 /**
+ * Define custom updates from dependencies to targets. This annotation can be put on a field which is a {@link Widget}
+ * or a {@link WidgetGroup}. If the same dependencies should update multiple settings which do not form a complete
+ * {@link WidgetGroup} the annotation should not be put on the group but on the individual parts. In this case one can
+ * use a {@link #resolver} in addition to the shared {@link #updateHandler} to map the common intermediate result of the
+ * {@link #updateHandler} to the type of the field.
+ *
+ * The annotation will lead to a runtime exception when opening the dialog when not following these constraints:
+ * <ul>
+ * <li>If the given {@link #updateHandler} is only used in this annotation, a {@link #resolver} must not be specified
+ * and the return type of the handler has to match the field type</li>
+ * <li>Else there return type of the {@link #updateHandler} has to match the input type of the {@link #resolver} and the
+ * return type of the resolver has to match the field type</li>
+ * </ul>
  *
  * @author Paul Bärnreuther
  */
@@ -71,5 +87,13 @@ public @interface Update {
      *         the update.
      */
     Class<? extends UpdateHandler<?, ?>> updateHandler(); // NOSONAR
+
+    /**
+     * An class containing an additional callback which transforms the result of the {@link #updateHandler} to the
+     * fields type. This parameter must not be specified in case the handler is only used here.
+     *
+     * @return
+     */
+    Class<? extends UpdateResolver<?, ?>> resolver() default NoopUpdateResolver.class; // NOSONAR
 
 }

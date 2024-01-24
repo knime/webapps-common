@@ -44,42 +44,35 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jul 10, 2023 (Paul Bärnreuther): created
+ *   Jan 25, 2024 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
-import java.util.Map;
-import java.util.Optional;
-
-import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesUpdateHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.NoopChoicesUpdateHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.PasswordHolder;
+import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
 
 /**
- * The holder of all {@link ChoicesWidget#choicesUpdateHandler}s.
- *
  * @author Paul Bärnreuther
  */
-class ChoicesWidgetUpdateHandlerHolder extends HandlerHolder<ChoicesUpdateHandler<?>> {
+class ConvertValueUtil {
 
-    /**
-     * @param settingsClasses
-     */
-    ChoicesWidgetUpdateHandlerHolder(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
-        super(settingsClasses);
+    public static Object convertDependencies(final Object objectSettings, final DependencyHandler<?> handler,
+        final DefaultNodeSettingsContext context) {
+        final var settingsType = GenericTypeFinderUtil.getFirstGenericType(handler.getClass(), DependencyHandler.class);
+        return convertValue(objectSettings, settingsType, context);
     }
 
-    @Override
-    Optional<Class<? extends ChoicesUpdateHandler<?>>> getHandlerClass(final FieldWithDefaultNodeSettingsKey field) {
-        final var choicesWidget = field.field().propertyWriter().getAnnotation(ChoicesWidget.class);
-        if (choicesWidget != null) {
-            final var updateHandler = choicesWidget.choicesUpdateHandler();
-            if (updateHandler != NoopChoicesUpdateHandler.class) {
-                return Optional.of(updateHandler);
-            }
+    public static Object convertValue(final Object objectSettings, final Class<?> settingsType,
+        final DefaultNodeSettingsContext context) {
+        PasswordHolder.setCredentialsProvider(context.getCredentialsProvider().orElse(null));
+        try {
+            return JsonFormsDataUtil.getMapper().convertValue(objectSettings, settingsType);
+        } finally {
+            PasswordHolder.removeCredentialsProvider();
         }
-        return Optional.empty();
-    }
 
+    }
 }

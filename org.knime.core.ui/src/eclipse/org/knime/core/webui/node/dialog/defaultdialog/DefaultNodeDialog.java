@@ -165,7 +165,7 @@ public final class DefaultNodeDialog implements NodeDialog {
 
     @Override
     public Optional<RpcDataService> createRpcDataService() {
-        final var dataService = new DefaultNodeDialogDataServiceImpl(m_settingsClasses.values(), m_asyncChoicesHolder);
+        final var dataService = new DefaultNodeDialogDataServiceImpl(m_settingsClasses, m_asyncChoicesHolder);
         final var flowVariablesDataService =
             new FlowVariableDataServiceImpl(new DefaultDialogDataConverterImpl(m_settingsClasses));
         final var fileChooserService = new FileChooserDataService();

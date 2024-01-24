@@ -44,42 +44,26 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jul 10, 2023 (Paul Bärnreuther): created
+ *   Jan 24, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
+package org.knime.core.webui.node.dialog.defaultdialog.widget;
 
-import java.util.Map;
-import java.util.Optional;
-
-import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesUpdateHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.NoopChoicesUpdateHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.Update;
 
 /**
- * The holder of all {@link ChoicesWidget#choicesUpdateHandler}s.
+ * Marker class that is only meant to serve as a default in {@link Update#resolver}.
  *
  * @author Paul Bärnreuther
  */
-class ChoicesWidgetUpdateHandlerHolder extends HandlerHolder<ChoicesUpdateHandler<?>> {
+public class NoopUpdateResolver implements UpdateResolver<Void, Void> {
 
     /**
-     * @param settingsClasses
+     * This method should never be called, since the handler should never be used.
      */
-    ChoicesWidgetUpdateHandlerHolder(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
-        super(settingsClasses);
-    }
-
     @Override
-    Optional<Class<? extends ChoicesUpdateHandler<?>>> getHandlerClass(final FieldWithDefaultNodeSettingsKey field) {
-        final var choicesWidget = field.field().propertyWriter().getAnnotation(ChoicesWidget.class);
-        if (choicesWidget != null) {
-            final var updateHandler = choicesWidget.choicesUpdateHandler();
-            if (updateHandler != NoopChoicesUpdateHandler.class) {
-                return Optional.of(updateHandler);
-            }
-        }
-        return Optional.empty();
+    public Void resolve(final Void update, final DefaultNodeSettingsContext context) {
+        return null;
     }
 
 }

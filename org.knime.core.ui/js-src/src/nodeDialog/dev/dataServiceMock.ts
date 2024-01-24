@@ -30,7 +30,15 @@ export default (rpcRequest: { method: string; params: any[] }) => {
       };
     case "settings.update": {
       const dependencies = rpcRequest.params[2];
-      return { result: dependencies.a + dependencies.b };
+      /**
+       * See update.json
+       */
+      return {
+        result: [
+          { path: "view.sum", value: dependencies.a + dependencies.b },
+          { path: "view.product", value: dependencies.a * dependencies.b },
+        ],
+      };
     }
     case "flowVariables.getFlowVariableOverrideValue":
       switch (

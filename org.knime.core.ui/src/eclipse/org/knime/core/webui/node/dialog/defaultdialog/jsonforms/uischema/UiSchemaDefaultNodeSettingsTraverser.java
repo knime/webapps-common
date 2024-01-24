@@ -186,7 +186,13 @@ class UiSchemaDefaultNodeSettingsTraverser {
         });
     }
 
-    static String toScope(final List<String> path, final String settingsKey) {
+    /**
+     * TODO move
+     * @param path
+     * @param settingsKey
+     * @return
+     */
+    public static String toScope(final List<String> path, final String settingsKey) {
         final var pathWithPrefix = new ArrayList<String>(path);
         if (settingsKey != null) {
             pathWithPrefix.add(0, settingsKey);

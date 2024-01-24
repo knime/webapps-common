@@ -44,78 +44,63 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jul 10, 2023 (Paul Bärnreuther): created
+ *   Jan 24, 2024 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
 import static org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil.createInstance;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Consumer;
+import java.util.stream.Stream;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.util.ArrayLayoutUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
 
 /**
- * This class is used to supply handlers associated to specific widgets to the data service.
+ * Takes care of accessing the fields in a given collection of {@link WidgetGroup}s. The implementer has to convert a
+ * traversed field to a handlers of type <H> to make it accessible later via {@link #getHandler}.
  *
- * @param <H> The type of the handler class
  * @author Paul Bärnreuther
+ * @param <H> the type of the handler
  */
-abstract class WidgetHandlerHolder<H> {
+public abstract class HandlerHolder<H> {
 
     private Map<String, H> m_handlers = new HashMap<>();
 
-    WidgetHandlerHolder(final Collection<Class<? extends DefaultNodeSettings>> settingsClasses) {
-        addHandlers(settingsClasses);
+    HandlerHolder(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
+        final List<FieldWithDefaultNodeSettingsKey> traversedFields = settingsClasses.entrySet().stream()
+            .flatMap(entry -> getTraversedFields(entry.getValue(), entry.getKey())).toList();
+        m_handlers = toHandlers(traversedFields);
     }
 
-    private void addHandlers(final Collection<Class<? extends DefaultNodeSettings>> settings) {
-        final Consumer<TraversedField> addActionHandlerClass = getAddActionHandlerClassCallback();
-        settings.forEach(settingsClass -> {
-            final var generator = new DefaultNodeSettingsFieldTraverser(settingsClass);
-            generator.traverse(addActionHandlerClass);
-        });
+    private static Stream<FieldWithDefaultNodeSettingsKey>
+        getTraversedFields(final Class<? extends WidgetGroup> settingsClass, final String settingsKey) {
+        return new DefaultNodeSettingsFieldTraverser(settingsClass).getAllFields().stream()
+            .map(field -> new FieldWithDefaultNodeSettingsKey(field, settingsKey));
     }
 
-    private Consumer<TraversedField> getAddActionHandlerClassCallback() {
-        return field -> {
-            addHandlersForNestedFields(field);
-            final var optionalHandlerClass = getHandlerClass(field);
-            optionalHandlerClass
-                .ifPresent(handlerClass -> m_handlers.put(handlerClass.getName(), createInstance(handlerClass)));
-        };
-
+    record FieldWithDefaultNodeSettingsKey(TraversedField field, String settingsKey) {
     }
 
-    private void addHandlersForNestedFields(final TraversedField field) {
-        final var javaType = field.propertyWriter().getType();
-        if (ArrayLayoutUtil.isArrayLayoutField(javaType)) {
-            final var elementClass = javaType.getContentType().getRawClass();
-            if (DefaultNodeSettings.class.isAssignableFrom(elementClass)) {
-                addHandlers(List.of((Class<? extends DefaultNodeSettings>)elementClass));
-            }
-        }
+    private Map<String, H> toHandlers(final List<FieldWithDefaultNodeSettingsKey> fields) {
+        final Map<String, H> handlers = new HashMap<>();
+        fields.forEach(field -> getHandlerClass(field)
+            .ifPresent(handlerClass -> handlers.put(handlerClass.getName(), createInstance(handlerClass))));
+        return handlers;
     }
 
     /**
-     *
-     * @param field any traversed field in the supplied settings
-     * @return an optional of the persent handler or an empty optional
+     * @param field of the traversed settings
+     * @return the relevant handler parameter of the annotation
      */
-    abstract Optional<Class<? extends H>> getHandlerClass(final TraversedField field);
+    abstract Optional<Class<? extends H>> getHandlerClass(final FieldWithDefaultNodeSettingsKey field);
 
-    /**
-     * @param handlerClassName the name of the handler class
-     * @return the present hander with that class name held by this class of null.
-     */
-    H getHandler(final String widgetId) {
-        return m_handlers.get(widgetId);
+    H getHandler(final String handlerClassName) {
+        return m_handlers.get(handlerClassName);
     }
+
 }

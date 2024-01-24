@@ -12,7 +12,7 @@ import {
 import {
   dialogApplyData,
   dialogInitialData,
-} from "@@/test-setup/mocks/dialogData";
+} from "/test-setup/mocks/dialogData";
 import Button from "webapps-common/ui/components/Button.vue";
 
 import NodeDialog from "../NodeDialog.vue";
@@ -606,7 +606,6 @@ describe("NodeDialog.vue", () => {
           globalUpdates: [
             {
               dependencies: ["#/properties/view/properties/firstSetting"],
-              target: "#/properties/model/properties/secondSetting",
               updateHandler,
             },
           ],
@@ -618,7 +617,9 @@ describe("NodeDialog.vue", () => {
       await flushPromises();
       const dataSericeMock = vi.spyOn(wrapper.vm.jsonDataService, "data");
       const updatedValue = "updated";
-      dataSericeMock.mockResolvedValue({ result: updatedValue });
+      dataSericeMock.mockResolvedValue({
+        result: [{ path: "model.secondSetting", value: updatedValue }],
+      });
 
       const path = "view.firstSetting";
       const triggeringValue = "some data";

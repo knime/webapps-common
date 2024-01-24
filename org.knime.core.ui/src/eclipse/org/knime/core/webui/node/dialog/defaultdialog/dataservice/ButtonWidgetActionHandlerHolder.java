@@ -48,12 +48,11 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
-import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 
@@ -64,34 +63,35 @@ import com.fasterxml.jackson.databind.ser.PropertyWriter;
  *
  * @author Paul Bärnreuther
  */
-class ButtonWidgetActionHandlerHolder extends WidgetHandlerHolder<ButtonActionHandler<?, ?, ?>> {
+class ButtonWidgetActionHandlerHolder extends HandlerHolder<ButtonActionHandler<?, ?, ?>> {
 
     /**
      * @param settingsClasses
      */
-    ButtonWidgetActionHandlerHolder(final Collection<Class<? extends DefaultNodeSettings>> settingsClasses) {
+    ButtonWidgetActionHandlerHolder(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
         super(settingsClasses);
     }
 
     @Override
-    Optional<Class<? extends ButtonActionHandler<?, ?, ?>>> getHandlerClass(final TraversedField field) {
-        final var buttonWidget = field.propertyWriter().getAnnotation(ButtonWidget.class);
+    Optional<Class<? extends ButtonActionHandler<?, ?, ?>>> getHandlerClass(final FieldWithDefaultNodeSettingsKey field) {
+        final var buttonWidget = field.field().propertyWriter().getAnnotation(ButtonWidget.class);
         if (buttonWidget == null) {
             return Optional.empty();
 
         }
         final var actionHandlerClass = buttonWidget.actionHandler();
-        validate(field, actionHandlerClass);
+        validate(field.field().propertyWriter(), actionHandlerClass);
         return Optional.of(actionHandlerClass);
 
     }
 
-    private static void validate(final TraversedField field,
+    private static void
+        validate(final PropertyWriter field,
         final Class<? extends ButtonActionHandler<?, ?, ?>> actionHandlerClass) {
-        if (!isValidReturnType(field.propertyWriter(), actionHandlerClass)) {
+        if (!isValidReturnType(field, actionHandlerClass)) {
             throw new IllegalArgumentException(
                 String.format("Return type of action handler %s is not assignable to the type of the field %s.",
-                    actionHandlerClass.getSimpleName(), field.propertyWriter().getFullName()));
+                    actionHandlerClass.getSimpleName(), field.getFullName()));
         }
     }
 

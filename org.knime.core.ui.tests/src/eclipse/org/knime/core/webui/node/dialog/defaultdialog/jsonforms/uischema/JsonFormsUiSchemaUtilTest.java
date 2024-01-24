@@ -72,8 +72,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Update;
 import org.knime.core.webui.node.dialog.defaultdialog.util.FieldAnnotationsHolder;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.UpdateHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
 
@@ -591,6 +591,78 @@ class JsonFormsUiSchemaUtilTest {
         assertThatJson(response).inPath("$.elements[1].label").isString().isEqualTo("Second");
         assertThatJson(response).inPath("$.elements[1].type").isString().isEqualTo("Section");
         assertThatJson(response).inPath("$.elements[1].elements[0].scope").isString().contains("stringInSecondSection");
+
+    }
+
+
+
+    @Test
+    void testGlobalUpdates() {
+        @SuppressWarnings("unused")
+        class TestSettings implements DefaultNodeSettings {
+
+            @Widget
+            String dependency;
+
+            @Widget
+            String anotherDependency;
+
+            static final class Dependency {
+                String dependency;
+            }
+
+            static final class DependencyAndAnotherDependency {
+                String dependency;
+
+                String anotherDependency;
+            }
+
+            static final class TestUpdateHandler implements UpdateHandler<String, Dependency> {
+
+                @Override
+                public String update(final Dependency settings, final DefaultNodeSettingsContext context)
+                    throws WidgetHandlerException {
+                    throw new RuntimeException("Should not be called in this test");
+                }
+
+            }
+
+            static final class AnotherTestUpdateHandler
+                implements UpdateHandler<String, DependencyAndAnotherDependency> {
+
+                @Override
+                public String update(final DependencyAndAnotherDependency settings,
+                    final DefaultNodeSettingsContext context) throws WidgetHandlerException {
+                    throw new RuntimeException("Should not be called in this test");
+                }
+
+            }
+
+            @Update(updateHandler = TestUpdateHandler.class)
+            String target;
+
+            @Update(updateHandler = AnotherTestUpdateHandler.class)
+            String anotherTarget;
+        }
+
+        final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", TestSettings.class);
+
+        final var response = buildUiSchema(settings);
+
+        assertThatJson(response).inPath("$.globalUpdates").isArray().hasSize(2);
+        assertThatJson(response).inPath("$.globalUpdates[1].dependencies").isArray().hasSize(1);
+
+        assertThatJson(response).inPath("$.globalUpdates[1].dependencies").isArray()
+            .contains("#/properties/test/properties/dependency");
+        assertThatJson(response).inPath("$.globalUpdates[1].updateHandler").isString()
+            .isEqualTo(TestSettings.TestUpdateHandler.class.getName());
+        assertThatJson(response).inPath("$.globalUpdates[0].dependencies").isArray().hasSize(2);
+        assertThatJson(response).inPath("$.globalUpdates[0].dependencies").isArray()
+            .contains("#/properties/test/properties/dependency");
+        assertThatJson(response).inPath("$.globalUpdates[0].dependencies").isArray()
+            .contains("#/properties/test/properties/anotherDependency");
+        assertThatJson(response).inPath("$.globalUpdates[0].updateHandler").isString()
+            .isEqualTo(TestSettings.AnotherTestUpdateHandler.class.getName());
 
     }
 }

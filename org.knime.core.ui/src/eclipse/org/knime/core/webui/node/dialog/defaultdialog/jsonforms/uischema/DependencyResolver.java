@@ -53,14 +53,11 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaDefaultNodeSettingsTraverser.JsonFormsControl;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DeclaringDefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  *
@@ -70,19 +67,22 @@ final class DependencyResolver {
 
     private final Collection<JsonFormsControl> m_fields;
 
-    private final ObjectMapper m_mapper;
-
     private final String m_scope;
 
-    DependencyResolver(final ObjectMapper mapper, final Collection<JsonFormsControl> fields, final String scope) {
-        m_mapper = mapper;
+    DependencyResolver(final Collection<JsonFormsControl> fields, final String scope) {
         m_fields = fields;
         m_scope = scope;
     }
 
-    void addDependencyScopes(final Class<? extends DependencyHandler<?>> dependencyHandlerClass, final Consumer<String> addDependency) {
-        final var dependencyClass = GenericTypeFinderUtil.getFirstGenericType(dependencyHandlerClass, DependencyHandler.class);
-        final var traverser = new DefaultNodeSettingsFieldTraverser(m_mapper, dependencyClass);
+    DependencyResolver(final Collection<JsonFormsControl> fields) {
+        this(fields, null);
+    }
+
+    void addDependencyScopes(final Class<? extends DependencyHandler<?>> dependencyHandlerClass,
+        final Consumer<String> addDependency) {
+        final var dependencyClass =
+            GenericTypeFinderUtil.getFirstGenericType(dependencyHandlerClass, DependencyHandler.class);
+        final var traverser = new DefaultNodeSettingsFieldTraverser(dependencyClass);
         final Consumer<TraversedField> addNewDependency = getAddNewDependencyCallback(addDependency);
         traverser.traverse(addNewDependency, List.of(DeclaringDefaultNodeSettings.class));
     }
@@ -116,7 +116,7 @@ final class DependencyResolver {
         }).map(JsonFormsControl::scope).toList();
         if (candidates.size() > 1) {
             throw new UiSchemaGenerationException(
-                String.format("Multiple settings found for path %s. Consider using @DeclaringClass to "
+                String.format("Multiple settings found for path %s. Consider using @DeclaringDefaultNodeSettings to "
                     + "disambiguate the reference.", searchScope));
         }
         return candidates.stream().findFirst().orElseThrow(

@@ -127,6 +127,12 @@ public class DefaultNodeSettingsFieldTraverser {
         m_settingsClass = settingsClass;
     }
 
+    private DefaultNodeSettingsFieldTraverser(final SerializerProvider serializerProvider,
+        final Class<?> settingsClass) {
+        m_serializerProvider = serializerProvider;
+        m_settingsClass = settingsClass;
+    }
+
     /**
      * @param propertyWriter the property writer of the field holding name, class, annotations, etc.
      * @param path the list of the names of all enclosing field and the present one
@@ -194,6 +200,37 @@ public class DefaultNodeSettingsFieldTraverser {
         final var newPath = new ArrayList<String>(parentPath);
         newPath.add(next);
         return newPath;
+    }
+
+    /**
+     * TODO
+     * @return
+     */
+    public List<TraversedField> getAllFields() {
+        List<TraversedField> fields = new ArrayList<>();
+        final Consumer<TraversedField> addActionHandlerClass = getAddTravesedFieldCallback(fields);
+        traverse(addActionHandlerClass);
+        return fields;
+    }
+
+    private Consumer<TraversedField> getAddTravesedFieldCallback(final List<TraversedField> fields) {
+        return field -> {
+            fields.addAll(getArrayLayoutElementFields(field));
+            fields.add(field);
+        };
+
+    }
+
+    private List<TraversedField> getArrayLayoutElementFields(final TraversedField field) {
+        final var javaType = field.propertyWriter().getType();
+        if (ArrayLayoutUtil.isArrayLayoutField(javaType)) {
+            final var elementClass = javaType.getContentType().getRawClass();
+            if (DefaultNodeSettings.class.isAssignableFrom(elementClass)) {
+                return new DefaultNodeSettingsFieldTraverser(m_serializerProvider,
+                    elementClass).getAllFields();
+            }
+        }
+        return new ArrayList<>(0);
     }
 
 }

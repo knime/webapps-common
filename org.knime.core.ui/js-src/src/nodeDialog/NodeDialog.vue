@@ -26,7 +26,7 @@ import { inject, markRaw } from "vue";
 import type ProvidedMethods from "./types/provided";
 import type { ProvidedForFlowVariables } from "./types/provided";
 import type SettingsData from "./types/SettingsData";
-import type { Update } from "./types/Update";
+import type { Update, PathAndValue } from "./types/Update";
 import type Control from "./types/Control";
 import getChoices from "./api/getChoices";
 import * as flowVariablesApi from "./api/flowVariables";
@@ -135,13 +135,17 @@ export default {
   },
   methods: {
     registerGlobalWatchers(globalUpdates: Update[]) {
-      globalUpdates.forEach(({ dependencies, target, updateHandler }) => {
+      globalUpdates.forEach(({ dependencies, updateHandler }) => {
         const updateCallback = async (newSettings: DialogSettings & object) => {
           const { result } = await this.jsonDataService!.data({
             method: "settings.update",
             options: [null, updateHandler, getFlattenedSettings(newSettings)],
           });
-          set(newSettings, toDataPath(target), result);
+          if (result) {
+            result.forEach(({ path, value }: PathAndValue) => {
+              set(newSettings, path, value);
+            });
+          }
         };
         this.registerWatcher({
           dependencies,

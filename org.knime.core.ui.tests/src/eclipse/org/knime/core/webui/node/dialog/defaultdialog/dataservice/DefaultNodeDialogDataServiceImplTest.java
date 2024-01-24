@@ -73,15 +73,18 @@ import org.knime.core.node.workflow.ICredentials;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.webui.data.DataServiceContextTest;
+import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.ValueUpdateHandlerHolder.PathAndValue;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Update;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.UpdateHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.UpdateResolver;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonChange;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonUpdateHandler;
@@ -90,6 +93,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesUpda
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.IdAndText;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
+
 /**
  * Tests DefaultNodeSettingsService.
  *
@@ -122,13 +126,14 @@ class DefaultNodeDialogDataServiceImplTest {
 
     private static DefaultNodeDialogDataServiceImpl getDataServiceWithAsyncChoices(
         final Class<? extends DefaultNodeSettings> modelSettingsClass, final AsyncChoicesHolder asyncChoicesHolder) {
-        return new DefaultNodeDialogDataServiceImpl(List.of(modelSettingsClass), asyncChoicesHolder);
+        return new DefaultNodeDialogDataServiceImpl(Map.of(SettingsType.MODEL, modelSettingsClass), asyncChoicesHolder);
     }
 
     private static DefaultNodeDialogDataServiceImpl getDataService(
         final Class<? extends DefaultNodeSettings> modelSettingsClass,
         final Class<? extends DefaultNodeSettings> viewSettingsClass) {
-        return new DefaultNodeDialogDataServiceImpl(List.of(modelSettingsClass, viewSettingsClass),
+        return new DefaultNodeDialogDataServiceImpl(
+            Map.of(SettingsType.MODEL, modelSettingsClass, SettingsType.VIEW, viewSettingsClass),
             new AsyncChoicesHolder());
     }
 
@@ -146,19 +151,78 @@ class DefaultNodeDialogDataServiceImplTest {
         }
 
         @Test
-        void testUpdate() throws ExecutionException, InterruptedException {
+        void testSingleUpdate() throws ExecutionException, InterruptedException {
 
             class UpdateSettings implements DefaultNodeSettings {
                 @Update(updateHandler = TestUpdateHandler.class)
-                String m_choicesWidgetElement;
+                String m_updatedWidget;
 
             }
 
             final String testDepenenciesFooValue = "custom value";
             final var dataService = getDataService(UpdateSettings.class);
-            final var result = dataService.update("widgetId", TestUpdateHandler.class.getName(),
+            final var resultWrapper = dataService.update("widgetId", TestUpdateHandler.class.getName(),
                 Map.of("foo", testDepenenciesFooValue));
-            assertThat(result.result()).isEqualTo(testDepenenciesFooValue);
+            final var result = (List<PathAndValue>)(resultWrapper.result());
+            assertThat(result).hasSize(1);
+            assertThat(result.get(0).value()).isEqualTo(testDepenenciesFooValue);
+            assertThat(result.get(0).path()).isEqualTo("model.updatedWidget");
+        }
+
+        record IntermediateState(String first, String second) {
+        }
+
+        static final class FirstResolver implements UpdateResolver<IntermediateState, String> {
+
+            @Override
+            public String resolve(final IntermediateState update, final DefaultNodeSettingsContext context) {
+                return update.first();
+            }
+
+        }
+
+        static final class SecondResolver implements UpdateResolver<IntermediateState, String> {
+
+            @Override
+            public String resolve(final IntermediateState update, final DefaultNodeSettingsContext context) {
+                return update.second();
+            }
+
+        }
+
+        private static final class TestMultiUpdateHandler
+            implements UpdateHandler<IntermediateState, TestDefaultNodeSettings> {
+
+            @Override
+            public IntermediateState update(final TestDefaultNodeSettings settings,
+                final DefaultNodeSettingsContext context) throws WidgetHandlerException {
+                return new IntermediateState(settings.m_foo + "_first", settings.m_foo + "_second");
+            }
+
+        }
+
+        @Test
+        void testMultipleUpdatesWithOneHandler() throws ExecutionException, InterruptedException {
+
+            class UpdateSettings implements DefaultNodeSettings {
+                @Update(updateHandler = TestMultiUpdateHandler.class, resolver = FirstResolver.class)
+                String m_firstUpdatedWidget;
+
+                @Update(updateHandler = TestMultiUpdateHandler.class, resolver = SecondResolver.class)
+                String m_secondUpdatedWidget;
+
+            }
+
+            final String testDepenenciesFooValue = "custom value";
+            final var dataService = getDataService(UpdateSettings.class);
+            final var resultWrapper = dataService.update("widgetId", TestMultiUpdateHandler.class.getName(),
+                Map.of("foo", testDepenenciesFooValue));
+            final var result = (List<PathAndValue>)(resultWrapper.result());
+            assertThat(result).hasSize(2);
+            assertThat(result.get(0).value()).isEqualTo(testDepenenciesFooValue + "_first");
+            assertThat(result.get(0).path()).isEqualTo("model.firstUpdatedWidget");
+            assertThat(result.get(1).value()).isEqualTo(testDepenenciesFooValue + "_second");
+            assertThat(result.get(1).path()).isEqualTo("model.secondUpdatedWidget");
         }
     }
 
