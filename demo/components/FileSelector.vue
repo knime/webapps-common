@@ -2,7 +2,7 @@
 import CodeExample from './demo/CodeExample.vue';
 import FileSelector from '../../ui/components/FileSelector.vue';
 import code from '!!raw-loader!../../ui/components/FileSelector';
-import Dropdown from "webapps-common/ui/components/forms/Dropdown.vue";
+import Dropdown from 'webapps-common/ui/components/forms/Dropdown.vue';
 
 const codeExample = `<FileSelector
   accepted-file-types="*"
@@ -14,12 +14,12 @@ export default {
     components: {
         FileSelector,
         CodeExample,
-        Dropdown,
+        Dropdown
     },
     data() {
-      return {
-        acceptedFileTypes: "*",
-      }
+        return {
+            acceptedFileTypes: '*'
+        };
     },
     computed: {
         codeExample() {
@@ -89,16 +89,17 @@ export default {
             :multiple="true"
           />
         </div>
-        <CodeExample summary="Show usage example">{{
-          codeExample
-        }}</CodeExample>
-        <CodeExample summary="Show FileSelector.vue source code">{{
-          fileSelectorCode
-        }}</CodeExample>
+        <CodeExample summary="Show usage example">
+          {{ codeExample }}
+        </CodeExample>
+        <CodeExample summary="Show FileSelector.vue source code">
+          {{ fileSelectorCode }}
+        </CodeExample>
       </div>
     </div>
   </section>
 </template>
+
 <style lang="postcss" scoped>
 .grid-container {
   justify-content: start;
@@ -108,5 +109,3 @@ export default {
   margin-bottom: 30px;
 }
 </style>
-
-
