@@ -62,9 +62,9 @@ import java.util.Optional;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.ConstantExpression;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.ConstantSignal;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Expression;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.ConstantSignal;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.JsonFormsExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Operator;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.ScopedExpression;
@@ -77,8 +77,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * @author Paul Bärnreuther
  */
 final class UiSchemaRulesGenerator {
-
-    private final ObjectMapper m_mapper;
 
     private final Map<Class<?>, ScopedExpression> m_signalsMap;
 
@@ -94,13 +92,12 @@ final class UiSchemaRulesGenerator {
      *            annotations to a construct holding the respective condition and the scope of the associated field.
      * @param nodeSettingsContext the node's context (inputs, flow vars)
      */
-    UiSchemaRulesGenerator(final ObjectMapper mapper, final Effect effect,
-        final Map<Class<?>, ScopedExpression> signalsMap, final DefaultNodeSettingsContext nodeSettingsContext) {
-        m_mapper = mapper;
+    UiSchemaRulesGenerator(final Effect effect, final Map<Class<?>, ScopedExpression> signalsMap,
+        final DefaultNodeSettingsContext nodeSettingsContext) {
         m_effect = effect;
         m_signalsMap = signalsMap;
         m_nodeSettingsContext = nodeSettingsContext;
-        m_visitor = new JsonFormsExpressionResolver(m_mapper);
+        m_visitor = new JsonFormsExpressionResolver();
     }
 
     /**

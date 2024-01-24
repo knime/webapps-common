@@ -58,7 +58,6 @@ import java.util.Map;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil.LayoutSkeleton;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaDefaultNodeSettingsTraverser.JsonFormsControl;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.ScopedExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesAdder;
 
@@ -106,7 +105,7 @@ final class LayoutNodesGenerator {
     private void buildLayout(final LayoutTreeNode rootNode, final ArrayNode parentNode) {
         final var layoutPart = LayoutPart.determineFromClassAnnotation(rootNode.getValue());
         final var layoutNode =
-            layoutPart.create(m_defaultNodeSettingsContext, parentNode, rootNode.getValue(), m_mapper, m_signals);
+            layoutPart.create(m_defaultNodeSettingsContext, parentNode, rootNode.getValue(), m_signals);
         rootNode.getControls().forEach(control -> addControlElement(layoutNode, control));
         rootNode.getChildren().forEach(childLayoutNode -> buildLayout(childLayoutNode, layoutNode));
     }
@@ -133,7 +132,7 @@ final class LayoutNodesGenerator {
 
     private void addRule(final JsonFormsControl controlElement, final ObjectNode control) {
         try {
-            new UiSchemaRulesGenerator(m_mapper, controlElement.trackedAnnotations().effect(), m_signals,
+            new UiSchemaRulesGenerator(controlElement.trackedAnnotations().effect(), m_signals,
                 m_defaultNodeSettingsContext).applyRulesTo(control);
         } catch (UiSchemaGenerationException ex) {
             throw new UiSchemaGenerationException(String.format("Error when resolving @Effect annotation for %s.: %s",

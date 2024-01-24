@@ -61,12 +61,12 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.And;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.ArrayContainsCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Condition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.ConstantSignal;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect.EffectType;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Expression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.FalseCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.HasMultipleItemsCondition;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.ConstantSignal;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.IsNoneColumnStringCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.IsSpecificStringCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Not;
@@ -255,10 +255,12 @@ class JsonFormsUiSchemaUtilRuleTest {
                 }
             }
 
+            @Widget
             @Effect(signals = AlwaysTrueSignal.class, type = EffectType.DISABLE)
             boolean m_constantlyDisabled;
 
 
+            @Widget
             @Effect(signals = AlwaysFalseSignal.class, type = EffectType.DISABLE)
             boolean m_constantlyEnabled;
         }
@@ -284,6 +286,7 @@ class JsonFormsUiSchemaUtilRuleTest {
                 }
             }
 
+            @Widget
             @Effect(signals = InvalidSignal.class, type = EffectType.DISABLE)
             boolean m_fieldWithInvalidSignal;
 

@@ -57,13 +57,13 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.
 
 import org.knime.core.webui.node.dialog.defaultdialog.rule.And;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.ConstantExpression;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.ScopedExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Expression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.ExpressionVisitor;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.JsonFormsExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.JsonFormsExpressionVisitor;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Not;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Or;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.ScopedExpression;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -74,8 +74,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 class JsonFormsExpressionResolver implements ExpressionVisitor<ObjectNode, JsonFormsExpression> {
 
-    private final JsonFormsConditionResolver m_conditionVisitor = new JsonFormsConditionResolver();
-
     private final JsonFormsConditionResolver m_conditionVisitor;
 
     private final JsonFormsExpressionNegator m_negator;
@@ -83,10 +81,9 @@ class JsonFormsExpressionResolver implements ExpressionVisitor<ObjectNode, JsonF
     /**
      * @param mapper
      */
-    public JsonFormsExpressionResolver(final ObjectMapper mapper) {
-        m_mapper = mapper;
-        m_conditionVisitor = new JsonFormsConditionResolver(m_mapper);
-        m_negator = new JsonFormsExpressionNegator(this, m_mapper);
+    public JsonFormsExpressionResolver() {
+        m_conditionVisitor = new JsonFormsConditionResolver();
+        m_negator = new JsonFormsExpressionNegator(this);
     }
 
     /**
@@ -94,7 +91,7 @@ class JsonFormsExpressionResolver implements ExpressionVisitor<ObjectNode, JsonF
      */
     @Override
     public ObjectNode visit(final And<JsonFormsExpression> and) {
-        final var conditionNode = m_mapper.createObjectNode();
+        final var conditionNode = getMapper().createObjectNode();
         conditionNode.put(TAG_TYPE, "AND");
         addAllConditions(conditionNode, and.getChildren());
         return conditionNode;
@@ -105,7 +102,7 @@ class JsonFormsExpressionResolver implements ExpressionVisitor<ObjectNode, JsonF
      */
     @Override
     public ObjectNode visit(final Or<JsonFormsExpression> or) {
-        final var conditionNode = m_mapper.createObjectNode();
+        final var conditionNode = getMapper().createObjectNode();
         conditionNode.put(TAG_TYPE, "OR");
         addAllConditions(conditionNode, or.getChildren());
         return conditionNode;
@@ -136,7 +133,7 @@ class JsonFormsExpressionResolver implements ExpressionVisitor<ObjectNode, JsonF
 
             @Override
             public ObjectNode visit(final ConstantExpression constantExpression) {
-                final var conditionNode = m_mapper.createObjectNode();
+                final var conditionNode = getMapper().createObjectNode();
                 if (!constantExpression.value()) {
                     conditionNode.putObject(FIELD_NAME_SCHEMA).put(TAG_CONST, true);
                 }
@@ -145,7 +142,7 @@ class JsonFormsExpressionResolver implements ExpressionVisitor<ObjectNode, JsonF
 
             @Override
             public ObjectNode visit(final ScopedExpression scopedExpression) {
-                final var conditionNode = m_mapper.createObjectNode();
+                final var conditionNode = getMapper().createObjectNode();
                 conditionNode.put(TAG_SCOPE, scopedExpression.scope());
                 conditionNode.set(FIELD_NAME_SCHEMA, scopedExpression.condition().accept(m_conditionVisitor));
                 return conditionNode;

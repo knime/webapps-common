@@ -54,7 +54,6 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import java.util.Arrays;
 
 import org.knime.core.webui.node.dialog.defaultdialog.rule.And;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.DefaultExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Expression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.ExpressionVisitor;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.JsonFormsExpression;
@@ -74,9 +73,8 @@ final class JsonFormsExpressionNegator implements ExpressionVisitor<ObjectNode, 
 
     /**
      * @param expressionVisitor
-     * @param mapper
      */
-    public JsonFormsExpressionNegator(final JsonFormsExpressionResolver expressionVisitor, final ObjectMapper mapper) {
+    public JsonFormsExpressionNegator(final JsonFormsExpressionResolver expressionVisitor) {
         m_operationVisitor = expressionVisitor;
     }
 

@@ -98,8 +98,8 @@ enum LayoutPart {
     }
 
     ArrayNode create(final DefaultNodeSettingsContext context, final ArrayNode parent,
-        final Class<?> layoutClass, final ObjectMapper mapper, final Map<Class<?>, ScopedExpression> signals) {
-        return m_create.apply(new LayoutNodeCreationContext(parent, layoutClass, mapper, signals, context));
+        final Class<?> layoutClass, final Map<Class<?>, ScopedExpression> signals) {
+        return m_create.apply(new LayoutNodeCreationContext(parent, layoutClass, signals, context));
     }
 
     private static ArrayNode getSection(final LayoutNodeCreationContext creationContext) {
@@ -126,11 +126,11 @@ enum LayoutPart {
     }
 
     private static void applyRules(final ObjectNode node, final LayoutNodeCreationContext creationContext) {
-        new UiSchemaRulesGenerator(creationContext.mapper(), creationContext.layoutClass.getAnnotation(Effect.class),
+        new UiSchemaRulesGenerator(creationContext.layoutClass.getAnnotation(Effect.class),
             creationContext.signals(), creationContext.context()).applyRulesTo(node);
     }
 
-    private record LayoutNodeCreationContext(ArrayNode parent, Class<?> layoutClass, ObjectMapper mapper,
+    private record LayoutNodeCreationContext(ArrayNode parent, Class<?> layoutClass,
         Map<Class<?>, ScopedExpression> signals, DefaultNodeSettingsContext context) {
     }
 }
