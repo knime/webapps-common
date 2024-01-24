@@ -32,16 +32,16 @@ export default {
                 this.files?.map?.(({ name }) => name).join(', ') ?? 'No file selected'
             );
         },
-        fileChooserId() {
-            return `file-chooser-${this.label}`;
+        fileSelectorId() {
+            return `file-selector-${this._uid}`;
         },
         selectFileText() {
             return `Select file${this.multiple ? 's' : ''}`;
         }
     },
     methods: {
-        openFileChooser() {
-            this.$refs.fileChooser.click();
+        openFileSelector() {
+            this.$refs.fileSelector.click();
         },
         onSelect(event) {
             this.files = Array.from(event.target.files);
@@ -53,19 +53,19 @@ export default {
 
 <template>
   <div class="wrapper">
-    <label :for="fileChooserId">
+    <label :for="fileSelectorId">
       <Button
         :compact="true"
         :with-border="true"
-        @click="openFileChooser"
+        @click="openFileSelector"
       >
         <LensIcon />{{ selectFileText }}
       </Button>
       <span class="filename">{{ displayedFilename }}</span>
     </label>
     <input
-      :id="fileChooserId"
-      ref="fileChooser"
+      :id="fileSelectorId"
+      ref="fileSelector"
       :aria-label="label"
       type="file"
       :accept="acceptedFileTypes"
