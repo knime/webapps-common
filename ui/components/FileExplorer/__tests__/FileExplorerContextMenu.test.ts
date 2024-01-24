@@ -112,8 +112,6 @@ describe("FileExplorerContextMenu.vue", () => {
 
   it("should set the popper offset accounting distance to the window bottom", async () => {
     // @ts-expect-error
-    useFloating.reset();
-    // @ts-expect-error
     defaultProps.anchor.element.getBoundingClientRect = vi.fn(() => ({
       top: 20,
       left: 10,

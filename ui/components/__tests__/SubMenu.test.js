@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import { mount, shallowMount } from "@vue/test-utils";
 
 import MenuItems from "../MenuItems.vue";
@@ -30,6 +30,10 @@ vi.mock("../../composables/useClickOutside", () => ({ default: vi.fn() }));
 
 describe("SubMenu.vue", () => {
   let props;
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
 
   beforeEach(() => {
     props = {
@@ -163,7 +167,6 @@ describe("SubMenu.vue", () => {
   });
 
   it("uses click outside", async () => {
-    useClickOutside.reset();
     const wrapper = mount(SubMenu, { props });
     await wrapper.find(".submenu-toggle").trigger("click"); // open
     const [{ targets, callback }, active] = useClickOutside.mock.calls[0];
@@ -209,7 +212,6 @@ describe("SubMenu.vue", () => {
 
   describe("popover", () => {
     it("uses floating navigation", () => {
-      useFloating.reset();
       props.teleportToBody = false; // necessary in order to find the floating ui target in the dom more easily
       const wrapper = mount(SubMenu, { props });
       const [submenu, menuWrapper, options] = useFloating.mock.calls[0];
@@ -237,7 +239,6 @@ describe("SubMenu.vue", () => {
           },
         },
       });
-      floating.update.reset();
       await wrapper.find(".submenu-toggle").trigger("click");
       expect(floating.update).toHaveBeenCalled();
     });
