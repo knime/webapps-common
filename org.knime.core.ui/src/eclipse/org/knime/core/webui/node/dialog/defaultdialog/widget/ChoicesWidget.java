@@ -78,13 +78,14 @@ public @interface ChoicesWidget {
     Class<? extends ChoicesProvider> choices() default ChoicesProvider.class;
 
     /**
-     * TODO UIEXT-907 Make this only available for column choices.
      *
      * @return whether to show an additional choice "None" representing no selection.
      */
     boolean showNoneColumn() default false;
 
     /**
+     * TODO UIEXT-907 Make this only available for column choices.
+     *
      * @return whether to show an additional choice "RowIDs" representing the row key column.
      */
     boolean showRowKeysColumn() default false;

@@ -64,6 +64,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.rule.IsSpecificStringCondi
 import org.knime.core.webui.node.dialog.defaultdialog.rule.OneOfEnumCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.PatternCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.TrueCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.IsColumnOfTypeCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.IsSpecificColumnCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 
@@ -106,6 +108,16 @@ class JsonFormsConditionResolver implements ConditionVisitor<ObjectNode> {
         condition //
             .putObject(TAG_PROPERTIES).putObject(IsSpecificColumnCondition.PROPERTY_NAME) //
             .put(TAG_CONST, isSpecificColumnCondition.getColumnName());
+        return condition;
+    }
+
+    @Override
+    public ObjectNode visit(final IsColumnOfTypeCondition isColumnOfTypeCondition) {
+        final var condition = getMapper().createObjectNode();
+        condition //
+            .putObject(TAG_PROPERTIES).putObject(IsColumnOfTypeCondition.PROPERTY_NAME) //
+            .putObject(TAG_CONTAINS)
+            .put(TAG_CONST, ColumnSelection.getTypeClassIdentifier(isColumnOfTypeCondition.getDataValueClass()));
         return condition;
     }
 

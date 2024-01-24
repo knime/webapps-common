@@ -44,83 +44,36 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   15 Dec 2022 Paul Bärnreuther: created
+ *   Jan 24, 2024 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection;
 
-import org.knime.core.data.DataColumnSpec;
-import org.knime.core.data.DataType;
 import org.knime.core.data.DataValue;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.Condition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.ConditionVisitor;
 
 /**
- * A class used to store a selected column together with additional information (e.g. type).
  *
  * @author Paul Bärnreuther
  */
-public final class ColumnSelection implements PersistableSettings {
+public abstract class IsColumnOfTypeCondition implements Condition {
 
     /**
-     * The selected column
+     * See {@link ColumnSelection#m_compatibleTypes}
      */
-    public String m_selected; // NOSONAR
+    public static final String PROPERTY_NAME = "compatibleTypes";
 
     /**
-     * The collection of the names of all types with respect to which the current selected column is compatible
+     * {@inheritDoc}
      */
-    @Persist(hidden = true, optional = true)
-    public String[] m_compatibleTypes;
-
-    /**
-     * @param colSpec the spec of the initially selected column
-     */
-    public ColumnSelection(final DataColumnSpec colSpec) {
-        this(colSpec.getName(), colSpec.getType());
+    @Override
+    public <T> T accept(final ConditionVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 
     /**
-     * @param name the name of the selected column
-     * @param type the type of the selected column
+     * @return the data type to check compatibility against
      */
-    public ColumnSelection(final String name, final DataType type) {
-        m_selected = name;
-        m_compatibleTypes = getCompatibleTypes(type);
-    }
+    public abstract  Class<? extends DataValue> getDataValueClass();
 
-    /**
-     * Initialises the column selection with no initially selected columns.
-     */
-    public ColumnSelection() {
-        // Default constructor is needed for schema generation but does not need to set anything.
-    }
-
-    /**
-     * @return the currently selected column
-     */
-    @JsonIgnore
-    public String getSelected() {
-        return m_selected;
-    }
-
-    /**
-     * @param type against which compatibility is checked
-     * @return A list of string representations of all the types the given one is compatible to
-     */
-    public static String[] getCompatibleTypes(final DataType type) {
-        if (type == null) {
-            return new String[0];
-        }
-        return type.getValueClasses().stream().map(ColumnSelection::getTypeClassIdentifier).toArray(String[]::new);
-    }
-
-    /**
-     * @param dataTypeClass
-     * @return the string representation as used in {@link #m_compatibleTypes}
-     */
-    public static String getTypeClassIdentifier(final Class<? extends DataValue> dataTypeClass) {
-        return dataTypeClass.getName();
-    }
 }

@@ -54,6 +54,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtilTest.buildTestUiSchema;
 
 import org.junit.jupiter.api.Test;
+import org.knime.core.data.DataValue;
+import org.knime.core.data.def.StringCell;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.HorizontalLayout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
@@ -76,6 +78,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.rule.PatternCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.TrueCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.IsColumnOfTypeCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.IsNoneColumnCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.IsSpecificColumnCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
@@ -850,6 +853,47 @@ class JsonFormsUiSchemaUtilRuleTest {
             .isEqualTo(response.get("elements").get(0).get("scope").asText());
         assertThatJson(response).inPath("$.elements[1].rule.condition.schema.properties.selected.const").isString()
             .isEqualTo("foo");
+    }
+
+    static class IsStringColumnCondition extends IsColumnOfTypeCondition {
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Class<? extends DataValue> getDataValueClass() {
+            return StringCell.class;
+        }
+    }
+
+    @Test
+    void testIsColumnOfTypeCondition() {
+
+        final class ChoicesWithColumnTypeCondition implements DefaultNodeSettings {
+
+            interface TestColumnCondition {
+            }
+
+            @Widget(title = "Foo")
+            @ChoicesWidget(choices = TestChoicesProvider.class)
+            @Signal(id = TestColumnCondition.class, condition = IsStringColumnCondition.class)
+            ColumnSelection columnSelection = new ColumnSelection();
+
+            @Effect(signals = TestColumnCondition.class, type = EffectType.SHOW)
+            @Widget
+            boolean someConditionalSetting = true;
+
+        }
+
+        final var response = buildTestUiSchema(ChoicesWithColumnTypeCondition.class);
+        assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
+        assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Control");
+        assertThatJson(response).inPath("$.elements[1].type").isString().isEqualTo("Control");
+        assertThatJson(response).inPath("$.elements[1].rule.effect").isString().isEqualTo("SHOW");
+        assertThatJson(response).inPath("$.elements[1].rule.condition.scope").isString()
+            .isEqualTo(response.get("elements").get(0).get("scope").asText());
+        assertThatJson(response).inPath("$.elements[1].rule.condition.schema.properties.compatibleTypes.contains.const")
+            .isString().isEqualTo(StringCell.class.getName());
     }
 
     @Test

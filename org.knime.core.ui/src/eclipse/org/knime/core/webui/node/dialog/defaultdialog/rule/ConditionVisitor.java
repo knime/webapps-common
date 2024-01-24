@@ -48,6 +48,7 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.rule;
 
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.IsColumnOfTypeCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.IsSpecificColumnCondition;
 
 /**
@@ -75,5 +76,7 @@ public interface ConditionVisitor<T> {
     T visit(PatternCondition patternCondition);
 
     T visit(ArrayContainsCondition arrayContainsCondition);
+
+    T visit(IsColumnOfTypeCondition isColumnOfTypeCondition);
 
 }
