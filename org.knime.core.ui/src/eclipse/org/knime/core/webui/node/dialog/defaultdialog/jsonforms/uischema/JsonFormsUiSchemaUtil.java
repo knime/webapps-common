@@ -53,7 +53,6 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
@@ -126,7 +125,7 @@ public final class JsonFormsUiSchemaUtil {
      *
      * @param parentFields the fields of the "outside" layout
      */
-    static ObjectNode buildUISchema(final Map<String, Class<? extends DefaultNodeSettings>> settings,
+    static ObjectNode buildUISchema(final Map<String, Class<? extends WidgetGroup>> settings,
         final DefaultNodeSettingsContext context, final AsyncChoicesAdder asyncChoicesAdder,
         final Collection<JsonFormsControl> parentFields) {
         final var layoutSkeleton = resolveLayout(settings);
@@ -140,7 +139,7 @@ public final class JsonFormsUiSchemaUtil {
      * @param asyncChoicesAdder
      * @return the ui schema resolved by the mapper from the given settings
      */
-    public static ObjectNode buildUISchema(final Map<String, Class<? extends DefaultNodeSettings>> settings,
+    public static ObjectNode buildUISchema(final Map<String, Class<? extends WidgetGroup>> settings,
         final DefaultNodeSettingsContext context, final AsyncChoicesAdder asyncChoicesAdder) {
         return buildUISchema(settings, context, asyncChoicesAdder, Collections.emptyList());
     }
@@ -152,7 +151,7 @@ public final class JsonFormsUiSchemaUtil {
      * @return the resolved tree structure and some additional information which is necessary to generator the uischema
      *         from that
      */
-    public static LayoutSkeleton resolveLayout(final Map<String, Class<? extends DefaultNodeSettings>> settings) {
+    public static LayoutSkeleton resolveLayout(final Map<String, Class<? extends WidgetGroup>> settings) {
         final var traverser = new UiSchemaDefaultNodeSettingsTraverser();
         final var traversalResult = traverser.traverse(settings);
         final var layoutTreeRoot = new LayoutTree(traversalResult.layoutPartToControls()).getRootNode();

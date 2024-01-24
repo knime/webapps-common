@@ -56,7 +56,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.ScopedExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
@@ -103,7 +102,7 @@ class UiSchemaDefaultNodeSettingsTraverser {
         Map<Class<?>, ScopedExpression> signals, Collection<JsonFormsControl> fields) {
     }
 
-    TraversalResult traverse(final Map<String, Class<? extends DefaultNodeSettings>> settings) {
+    TraversalResult traverse(final Map<String, Class<? extends WidgetGroup>> settings) {
         final Collection<JsonFormsControl> fields = new HashSet<>();
         final Map<Class<?>, List<JsonFormsControl>> layoutPartToControls = new HashMap<>();
         final Map<Class<?>, ScopedExpression> signals = new HashMap<>();

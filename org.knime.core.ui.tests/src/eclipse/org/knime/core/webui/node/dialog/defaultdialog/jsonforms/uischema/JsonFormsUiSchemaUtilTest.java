@@ -67,8 +67,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.Before;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.HorizontalLayout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Inside;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.util.FieldAnnotationsHolder;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
@@ -84,11 +84,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @SuppressWarnings("java:S2698") // we accept assertions without messages
 class JsonFormsUiSchemaUtilTest {
 
-    static ObjectNode buildUiSchema(final Map<String, Class<? extends DefaultNodeSettings>> settings) {
+    static ObjectNode buildUiSchema(final Map<String, Class<? extends WidgetGroup>> settings) {
         return buildUiSchema(settings, null, new AsyncChoicesHolder());
     }
 
-    static ObjectNode buildUiSchema(final Map<String, Class<? extends DefaultNodeSettings>> settings,
+    static ObjectNode buildUiSchema(final Map<String, Class<? extends WidgetGroup>> settings,
         final DefaultNodeSettingsContext context, final AsyncChoicesHolder asyncChoicesHolder) {
         return JsonFormsUiSchemaUtil.buildUISchema(settings, context, asyncChoicesHolder);
     }
@@ -167,7 +167,7 @@ class JsonFormsUiSchemaUtilTest {
 
     @Test
     void testLayout() throws JsonProcessingException {
-        final var settings = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
+        final var settings = new LinkedHashMap<String, Class<? extends WidgetGroup>>();
         settings.put("model", TestLayoutModelSettings.class);
         settings.put("view", TestLayoutViewSettings.class);
         final var response = buildUiSchema(settings);
@@ -392,7 +392,7 @@ class JsonFormsUiSchemaUtilTest {
 
     @Test
     void testThrowsIfMultipleLayoutRootsAreDetected() {
-        final Map<String, Class<? extends DefaultNodeSettings>> settings =
+        final Map<String, Class<? extends WidgetGroup>> settings =
             Map.of("model", TestMultipleRootsOne.class, "view", TestMultipleRootsTwo.class);
         assertThrows(UiSchemaGenerationException.class, () -> buildUiSchema(settings));
     }
@@ -418,7 +418,7 @@ class JsonFormsUiSchemaUtilTest {
 
     @Test
     void testThrowsIfThereIsAFieldAndAFieldClassAnnotationForAField() {
-        final Map<String, Class<? extends DefaultNodeSettings>> settings =
+        final Map<String, Class<? extends WidgetGroup>> settings =
             Map.of("test", TestFieldWithTwoLayoutAnnotationsSettings.class);
         assertThrows(FieldAnnotationsHolder.FieldAnnotationException.class, () -> buildUiSchema(settings));
     }
@@ -452,7 +452,7 @@ class JsonFormsUiSchemaUtilTest {
             String m_setting3;
         }
 
-        final Map<String, Class<? extends DefaultNodeSettings>> settings = Map.of("test", VirtualLayoutSettings.class);
+        final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", VirtualLayoutSettings.class);
         final var response = buildUiSchema(settings);
 
         assertThatJson(response).inPath("$.elements").isArray().hasSize(3);
@@ -481,7 +481,7 @@ class JsonFormsUiSchemaUtilTest {
             String m_setting1;
         }
 
-        final Map<String, Class<? extends DefaultNodeSettings>> settings =
+        final Map<String, Class<? extends WidgetGroup>> settings =
             Map.of("test", TestEmptySectionSettings.class);
         final var response = buildUiSchema(settings);
 
@@ -509,7 +509,7 @@ class JsonFormsUiSchemaUtilTest {
             String m_setting2;
         }
 
-        final Map<String, Class<? extends DefaultNodeSettings>> settings =
+        final Map<String, Class<? extends WidgetGroup>> settings =
             Map.of("test", TestHorizontalLayoutSettings.class);
         final var response = buildUiSchema(settings);
 
@@ -568,7 +568,7 @@ class JsonFormsUiSchemaUtilTest {
             String stringInSecondSection;
         }
 
-        final Map<String, Class<? extends DefaultNodeSettings>> settings = Map.of("test", TestSettings.class);
+        final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", TestSettings.class);
 
         final var response = buildUiSchema(settings);
 

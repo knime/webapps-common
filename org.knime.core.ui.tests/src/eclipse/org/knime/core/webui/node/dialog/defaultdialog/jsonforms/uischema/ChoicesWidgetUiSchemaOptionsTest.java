@@ -67,6 +67,7 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.JsonFormsSchemaUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.AsyncChoicesProvider;
@@ -340,7 +341,7 @@ class ChoicesWidgetUiSchemaOptionsTest {
         static class TestAsyncChoicesProviderForArrayLayout extends TestAsyncChoicesProvider {
         }
 
-        class ArrayLayoutElementWithChoices {
+        class ArrayLayoutElementWithChoices implements WidgetGroup {
 
             @Widget
             @ChoicesWidget(choices = TestAsyncChoicesProviderForArrayLayout.class)

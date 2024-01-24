@@ -53,6 +53,7 @@ import java.util.Collection;
 
 import org.junit.jupiter.api.Test;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
@@ -79,7 +80,7 @@ class JsonFormsUiSchemaUtilArrayTest {
             @Widget
             Collection<CollectionElements> m_collectionSetting;
 
-            class ArrayElements {
+            class ArrayElements implements WidgetGroup {
 
                 @Widget
                 String m_innerSetting1;
@@ -88,7 +89,7 @@ class JsonFormsUiSchemaUtilArrayTest {
                 String m_innerSetting2;
             }
 
-            class CollectionElements {
+            class CollectionElements implements WidgetGroup {
 
                 @Widget
                 String m_innerCollectionSetting1;
@@ -160,8 +161,9 @@ class JsonFormsUiSchemaUtilArrayTest {
             @Widget(advanced = true)
             ArrayElements[] m_arrayAdvancedSetting;
 
-            class ArrayElements {
+            class ArrayElements implements WidgetGroup {
 
+                @Widget
                 String m_innerSetting1;
             }
         }
@@ -272,7 +274,7 @@ class JsonFormsUiSchemaUtilArrayTest {
             @Widget
             ArrayElements[] m_arraySetting;
 
-            class ArrayElements {
+            class ArrayElements implements WidgetGroup {
 
                 @Widget
                 @ChoicesWidget(choicesUpdateHandler = DependencyHandler.class)

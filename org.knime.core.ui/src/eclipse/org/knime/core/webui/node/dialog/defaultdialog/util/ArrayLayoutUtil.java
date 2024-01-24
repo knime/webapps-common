@@ -48,7 +48,7 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.util;
 
-import java.util.List;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 
 import com.fasterxml.jackson.core.type.ResolvedType;
 
@@ -68,14 +68,11 @@ public final class ArrayLayoutUtil {
      * @return whether the uischema generation should interpret this field as an array layout
      */
     public static boolean isArrayLayoutField(final ResolvedType javaType) {
-        return (javaType.isArrayType() || javaType.isCollectionLikeType()) && isObject(javaType.getContentType());
+        return (javaType.isArrayType() || javaType.isCollectionLikeType()) && isWidgetGroup(javaType.getContentType());
     }
 
-    private static boolean isObject(final ResolvedType contentType) {
-        var boxedTypes = List.of(String.class, Double.class, Short.class, Boolean.class, Float.class, Integer.class,
-            Long.class, Character.class);
-
-        return !contentType.isPrimitive() && !contentType.isEnumType()
-            && boxedTypes.stream().allMatch(type -> !type.equals(contentType.getRawClass()));
+    private static boolean isWidgetGroup(final ResolvedType contentType) {
+        return !contentType.isEnumType() && WidgetGroup.class.isAssignableFrom(contentType.getRawClass());
     }
+
 }

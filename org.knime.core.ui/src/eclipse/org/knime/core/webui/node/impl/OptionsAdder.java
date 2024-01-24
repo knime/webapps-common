@@ -58,6 +58,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsControl;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.LayoutTreeNode;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.w3c.dom.Element;
 
@@ -86,7 +87,7 @@ final class OptionsAdder {
 
     private static void addOptions(final Class<? extends DefaultNodeSettings> modelSettingsClass,
         final Class<? extends DefaultNodeSettings> viewSettingsClass, final Consumer<PropertyWriter> addField) {
-        final Map<String, Class<? extends DefaultNodeSettings>> settings = new HashMap<>();
+        final Map<String, Class<? extends WidgetGroup>> settings = new HashMap<>();
         if (modelSettingsClass != null) {
             settings.put(SettingsType.MODEL.getConfigKey(), modelSettingsClass);
         }

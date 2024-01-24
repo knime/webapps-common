@@ -283,7 +283,7 @@ class UiSchemaOptionsTest {
         @Test
         void testShowSortButtonsTest() {
             @SuppressWarnings("unused")
-            class ArrayElement {
+            class ArrayElement implements WidgetGroup {
                 String m_field1;
 
                 int m_field2;
@@ -548,7 +548,7 @@ class UiSchemaOptionsTest {
 
         @Test
         void testThrowsForButtonWidgetWithAmbigousDependencies() {
-            final Map<String, Class<? extends DefaultNodeSettings>> settingsClasses =
+            final Map<String, Class<? extends WidgetGroup>> settingsClasses =
                 Map.of("foo", ButtonWidgetWithAmbigousDependenciesTestSettings.class, "bar", SecondSettings.class);
             assertThrows(UiSchemaGenerationException.class, () -> buildUiSchema(settingsClasses));
         }
@@ -577,7 +577,7 @@ class UiSchemaOptionsTest {
 
         @Test
         void testButtonWidgetWithAmbigousDependenciesUsingSpecifyingContainingClass() {
-            final var settingsClasses = new LinkedHashMap<String, Class<? extends DefaultNodeSettings>>();
+            final var settingsClasses = new LinkedHashMap<String, Class<? extends WidgetGroup>>();
             settingsClasses.put("foo", ButtonWidgetWithDisAmbigousDependenciesTestSettings.class);
             settingsClasses.put("bar", SecondSettings.class);
             var response = buildUiSchema(settingsClasses);

@@ -60,6 +60,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.Before;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Inside;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
 /**
@@ -371,7 +372,7 @@ class JsonFormsUiSchemaUtilOrdersTest {
             String m_setting2;
         }
 
-        final Map<String, Class<? extends DefaultNodeSettings>> settings = Map.of("test", DummySettings.class);
+        final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", DummySettings.class);
         assertThrows(UiSchemaGenerationException.class, () -> JsonFormsUiSchemaUtilTest.buildUiSchema(settings));
     }
 
@@ -400,7 +401,7 @@ class JsonFormsUiSchemaUtilOrdersTest {
             String m_setting2;
         }
 
-        final Map<String, Class<? extends DefaultNodeSettings>> settings = Map.of("test", DummySettings.class);
+        final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", DummySettings.class);
         assertThrows(UiSchemaGenerationException.class, () -> JsonFormsUiSchemaUtilTest.buildUiSchema(settings));
     }
 
@@ -439,7 +440,7 @@ class JsonFormsUiSchemaUtilOrdersTest {
             String m_setting3;
         }
 
-        final Map<String, Class<? extends DefaultNodeSettings>> settings = Map.of("test", DummySettings.class);
+        final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", DummySettings.class);
         assertThrows(UiSchemaGenerationException.class, () -> JsonFormsUiSchemaUtilTest.buildUiSchema(settings));
     }
 
@@ -749,7 +750,7 @@ class JsonFormsUiSchemaUtilOrdersTest {
             String m_setting2;
         }
 
-        final Map<String, Class<? extends DefaultNodeSettings>> settings = Map.of("test", DummySettings.class);
+        final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", DummySettings.class);
         assertThrows(UiSchemaGenerationException.class, () -> JsonFormsUiSchemaUtilTest.buildUiSchema(settings));
     }
 
@@ -814,7 +815,7 @@ class JsonFormsUiSchemaUtilOrdersTest {
 
         }
 
-        final Map<String, Class<? extends DefaultNodeSettings>> settings = Map.of("test", DummySettings.class);
+        final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", DummySettings.class);
         assertThrows(UiSchemaGenerationException.class, () -> JsonFormsUiSchemaUtilTest.buildUiSchema(settings));
 
     }

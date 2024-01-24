@@ -78,6 +78,7 @@ import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.Format;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.util.ArrayLayoutUtil;
@@ -487,9 +488,9 @@ final class UiSchemaOptionsGenerator {
     }
 
     private void applyArrayLayoutOptions(final ObjectNode options,
-        final Class<? extends DefaultNodeSettings> componentType) {
+        final Class<? extends WidgetGroup> componentType) {
 
-        Map<String, Class<? extends DefaultNodeSettings>> arraySettings = new HashMap<>();
+        Map<String, Class<? extends WidgetGroup>> arraySettings = new HashMap<>();
         arraySettings.put(null, componentType);
         /**
          * We need a persistent async choices adder in case of settings nested inside an array layout, since the

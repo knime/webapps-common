@@ -226,7 +226,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.Usernam
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
-public interface DefaultNodeSettings extends PersistableSettings {
+public interface DefaultNodeSettings extends PersistableSettings, WidgetGroup {
 
     /**
      * A context that holds any available information that might be relevant for creating a new instance of

@@ -65,6 +65,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUti
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonNodeSettingsMapperUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.JsonFormsSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -141,7 +142,7 @@ class DefaultNodeSettingsServiceTest {
         assertThatJson(initialData.get("schema")).isEqualTo(wrappedSchema);
 
         // assert that returned ui schema is equal to json object created via JsonFormsUiSchemaUtil
-        final Map<String, Class<? extends DefaultNodeSettings>> testSettingsMap =
+        final Map<String, Class<? extends WidgetGroup>> testSettingsMap =
             Map.of(SettingsType.VIEW.getConfigKey(), TestSettings.class);
         final var uiSchema = JsonFormsUiSchemaUtil.buildUISchema(testSettingsMap,
             DefaultNodeSettings.createDefaultNodeSettingsContext(specs), new AsyncChoicesHolder());
