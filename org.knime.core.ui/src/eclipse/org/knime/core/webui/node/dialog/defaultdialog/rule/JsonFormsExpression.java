@@ -58,6 +58,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public sealed interface JsonFormsExpression extends AtomicExpression<JsonFormsExpression>
     permits ScopedExpression, ConstantExpression {
 
+    @Override
+    default <T> T accept(final ExpressionVisitor<T, JsonFormsExpression> visitor) {
+        return visitor.visit(this);
+    }
+
     /**
      * @param visitor an implementation dependent expression resolver
      * @return a resolved value of the expression depending on the implementation.

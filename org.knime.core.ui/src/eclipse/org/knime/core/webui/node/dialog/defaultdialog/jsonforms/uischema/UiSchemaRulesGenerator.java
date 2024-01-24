@@ -64,7 +64,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.Defaul
 import org.knime.core.webui.node.dialog.defaultdialog.rule.ConstantExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Expression;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.InputSignal;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.ConstantSignal;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.JsonFormsExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Operator;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.ScopedExpression;
@@ -143,9 +143,9 @@ final class UiSchemaRulesGenerator {
     private Optional<JsonFormsExpression> createExpressionFromSignal(final Class<?> signalClass) {
         JsonFormsExpression expression = m_signalsMap.get(signalClass);
         if (expression == null) {
-            if (InputSignal.class.isAssignableFrom(signalClass)) {
+            if (ConstantSignal.class.isAssignableFrom(signalClass)) {
                 try {
-                    expression = new ConstantExpression(signalClass.asSubclass(InputSignal.class)
+                    expression = new ConstantExpression(signalClass.asSubclass(ConstantSignal.class)
                         .getDeclaredConstructor().newInstance().applies(m_nodeSettingsContext));
                 } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
                         | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
@@ -163,11 +163,11 @@ final class UiSchemaRulesGenerator {
             }
         } else {
             // (artificial design limitation:) input signals not to be used as identifiers in @Signal annotation
-            CheckUtils.check(!InputSignal.class.isAssignableFrom(signalClass), UiSchemaGenerationException::new,
+            CheckUtils.check(!ConstantSignal.class.isAssignableFrom(signalClass), UiSchemaGenerationException::new,
                 () -> String.format(
                     "Invalid source annotation: %s - it denotes a %s, "
                             + "which can not be referenced by a @Signal annotation.", //
-                            signalClass, InputSignal.class.getSimpleName()));
+                            signalClass, ConstantSignal.class.getSimpleName()));
         }
         return Optional.of(expression);
     }

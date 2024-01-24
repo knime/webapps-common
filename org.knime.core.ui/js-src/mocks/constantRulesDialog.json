@@ -29,7 +29,7 @@
               "rule": {
                 "effect": "ENABLE",
                 "condition": {
-                  "schema": { "const": "" }
+                  "schema": { "const": true }
                 }
               }
             },

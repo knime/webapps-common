@@ -66,7 +66,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect.EffectType;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Expression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.FalseCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.HasMultipleItemsCondition;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.InputSignal;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.ConstantSignal;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.IsNoneColumnStringCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.IsSpecificStringCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Not;
@@ -227,7 +227,7 @@ class JsonFormsUiSchemaUtilRuleTest {
     @Test
     void testConstantEffect() {
         final class ConstantEffectSettings implements DefaultNodeSettings {
-            static final class AlwaysTrueSignal implements InputSignal {
+            static final class AlwaysTrueSignal implements ConstantSignal {
 
                 @Override
                 public boolean applies(final DefaultNodeSettingsContext context) {
@@ -235,7 +235,7 @@ class JsonFormsUiSchemaUtilRuleTest {
                 }
             }
 
-           static final class AlwaysFalseSignal implements InputSignal {
+           static final class AlwaysFalseSignal implements ConstantSignal {
 
                 @Override
                 public boolean applies(final DefaultNodeSettingsContext context) {
@@ -264,7 +264,7 @@ class JsonFormsUiSchemaUtilRuleTest {
     @Test
     void testThrowsIfConstantIsUsedAsSignalIdentifier() {
         final class MisusedEffectSettings implements DefaultNodeSettings {
-            static final class InvalidSignal implements InputSignal {
+            static final class InvalidSignal implements ConstantSignal {
 
                 @Override
                 public boolean applies(final DefaultNodeSettingsContext context) {

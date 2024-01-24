@@ -56,13 +56,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  *
  * @author Paul Bärnreuther
  * @author Bernd Wiswedel
+ *
+ * @param value the constant value derived from a {@link ConstantSignal}.
  */
 public record ConstantExpression(boolean value) implements JsonFormsExpression {
-
-    @Override
-    public <T> T accept(final ExpressionVisitor<T, JsonFormsExpression> visitor) {
-        return visitor.visit(this);
-    }
 
     @Override
     public ObjectNode accept(final JsonFormsExpressionVisitor visitor) {

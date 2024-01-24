@@ -56,14 +56,14 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.Defaul
  * (or column types) or if dynamic ports are enabled/shown or not.
  *
  * <p>
- * An <code>InputSignal</code> serves a similar role as a {@link Signal} annotation, except that it's not initiating
+ * An <code>ConstantSignal</code> serves a similar role as a {@link Signal} annotation, except that it's not initiating
  * an effect depending on a change of a setting but the context of the node.
  *
  * @author Bernd Wiswedel
  * @author Paul Bärnreuther
  * @since 5.3
  */
-public interface InputSignal {
+public interface ConstantSignal {
 
     /**
      * Determines the value of the single given the node's context.

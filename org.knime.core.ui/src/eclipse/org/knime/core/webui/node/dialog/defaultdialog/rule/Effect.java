@@ -88,11 +88,19 @@ public @interface Effect {
     }
 
     /**
-     * @return the array of ids used in {@link Signal} annotations within the same settings context which should be used
-     *         as building blocks for the rule. If a {@link Signal} does not define an id, it is also possible to
-     *         reference it by condition, but this should only be used when the condition is a custom and unique one in
-     *         the present settings context. There either has to be exactly one id if no operation is provided or the
-     *         number of ids has to fit a suitable constructor of the given operation.
+     * An array of signal IDs that, combined via an {@link #operation() operation}, defines if the effect applies. In
+     * most cases it's a single signal. Generally there are two types of signals:
+     * <ol>
+     * <li>A signal defined by a {@link Signal @Signal} annotation defined on some other field in the same settings
+     * context. If a {@link Signal} does not define an id, it is also possible to reference it by condition, but this
+     * should only be used when the condition is a custom and unique one in the present settings context. There either
+     * has to be exactly one id if no operation is provided or the number of ids has to fit a suitable constructor of
+     * the given operation.
+     * <li>A (constant) signal deriving its state from the node's input (e.g. the presence of certain dynamic ports).
+     * This signal must extend {@link ConstantSignal} and does not need to live in the same settings context.
+     * </ol>
+     *
+     * @return Such an array.
      */
     Class<?>[] signals();
 

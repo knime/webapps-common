@@ -58,11 +58,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public record ScopedExpression(String scope, Condition condition) implements JsonFormsExpression {
 
     @Override
-    public <T> T accept(final ExpressionVisitor<T, JsonFormsExpression> visitor) {
-        return visitor.visit(this);
-    }
-
-    @Override
     public ObjectNode accept(final JsonFormsExpressionVisitor visitor) {
         return visitor.visit(this);
     }
