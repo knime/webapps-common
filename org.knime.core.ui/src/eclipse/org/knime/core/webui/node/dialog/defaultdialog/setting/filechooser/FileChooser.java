@@ -67,7 +67,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public final class FileChooser implements PersistableSettings {
 
     @JsonProperty("path")
-    FSLocation m_path;
+    public FSLocation m_path;
 
     /**
      * A local file chooser
