@@ -90,8 +90,10 @@ final class ApplyDataSettings {
     private static Optional<NodeSettings> getVariableSettings(final NodeSettings nodeSettings, final SettingsType type)
         throws InvalidSettingsException {
         final String variablesConfigKey = type.getVariablesConfigKey();
-        if (nodeSettings.containsKey(variablesConfigKey)) {
-            return Optional.of(nodeSettings.getNodeSettings(variablesConfigKey).getNodeSettings("tree"));
+        NodeSettings variablesSettingsTree;
+        if (nodeSettings.containsKey(variablesConfigKey)
+            && (variablesSettingsTree = nodeSettings.getNodeSettings(variablesConfigKey)).containsKey("tree")) {
+            return Optional.of(variablesSettingsTree.getNodeSettings("tree"));
         }
         return Optional.empty();
     }

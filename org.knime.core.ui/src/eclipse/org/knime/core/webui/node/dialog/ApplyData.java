@@ -160,6 +160,8 @@ final class ApplyData {
         throws InvalidSettingsException {
         var settingsMap = new EnumMap<SettingsType, NodeAndVariableSettingsWO>(SettingsType.class);
         for (var settingsType : m_settingsTypes) {
+            nodeSettings.addNodeSettings(new NodeSettings(settingsType.getConfigKey()));
+            nodeSettings.addNodeSettings(new NodeSettings(settingsType.getVariablesConfigKey()));
             settingsMap.put(settingsType, NodeAndVariableSettingsProxy.createWOProxy(//
                 getOrCreateSubSettings(nodeSettings, settingsType), //
                 new VariableSettings(nodeSettings, settingsType)//
