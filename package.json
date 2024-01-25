@@ -5,6 +5,7 @@
   "homepage": "https://knime.github.io/webapps-common/",
   "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE LICENSE IN license.txt)",
   "author": "KNIME AG, Zurich, Switzerland",
+  "type": "module",
   "scripts": {
     "dev": "npm --prefix demo/ install && npm run --prefix demo/ dev",
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
@@ -21,7 +22,7 @@
     "coverage": "TZ='Europe/Berlin' vitest run --coverage",
     "generate-css": "node ./ui/colors/generateCSS.mjs",
     "opensourcecredits": "npm run --prefix buildtools/ opensourcecredits",
-    "preinstall": "node ./install-subDependencies",
+    "preinstall": "node ./install-subDependencies.cjs",
     "postinstall": "run-p generate-css opensourcecredits",
     "prepare": "husky install"
   },
@@ -47,11 +48,11 @@
     "vue3-click-away": "1.2.4"
   },
   "devDependencies": {
-    "@knime/eslint-config": "8.0.10",
-    "@tsconfig/node18": "18.2.2",
+    "@knime/eslint-config": "8.0.11",
+    "@tsconfig/node20": "20.1.2",
     "@types/jsdom": "20.0.1",
     "@types/lodash-es": "4.17.12",
-    "@types/node": "18.14.2",
+    "@types/node": "20.11.6",
     "@vitejs/plugin-vue": "5.0.3",
     "@vitest/coverage-v8": "1.2.1",
     "@vue/test-utils": "2.4.1",
@@ -59,6 +60,7 @@
     "eslint": "8.56.0",
     "flush-promises": "1.0.2",
     "husky": "8.0.3",
+    "jsdom": "20.0.3",
     "lint-staged": "15.1.0",
     "npm-run-all": "4.1.5",
     "postcss-import": "15.1.0",
@@ -74,9 +76,9 @@
     "vue-tsc": "1.8.27"
   },
   "engines": {
-    "node": "18.x"
+    "node": "18.x - 20.x"
   },
   "volta": {
-    "node": "18.14.2"
+    "node": "20.11.0"
   }
 }

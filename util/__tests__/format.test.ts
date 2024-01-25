@@ -14,20 +14,20 @@ describe("formatDate", () => {
     {
       input: 0,
       expectedDate: "Jan 1, 1970",
-      expectedTime: "1:00 AM",
-      expectedDateTime: "Jan 1, 1970 1:00 AM",
+      expectedTime: "1:00 AM",
+      expectedDateTime: "Jan 1, 1970 1:00 AM",
     },
     {
       input: "2018-07-31T09:44:31+00:00",
       expectedDate: "Jul 31, 2018",
-      expectedTime: "11:44 AM",
-      expectedDateTime: "Jul 31, 2018 11:44 AM",
+      expectedTime: "11:44 AM",
+      expectedDateTime: "Jul 31, 2018 11:44 AM",
     },
     {
       input: "December 17, 1995 03:24:00",
       expectedDate: "Dec 17, 1995",
-      expectedTime: "3:24 AM",
-      expectedDateTime: "Dec 17, 1995 3:24 AM",
+      expectedTime: "3:24 AM",
+      expectedDateTime: "Dec 17, 1995 3:24 AM",
     },
   ];
 
@@ -79,15 +79,15 @@ describe("formatDate", () => {
   describe("parseToLocalTime", () => {
     const timeInUTC = {
       input: "2023-06-30T11:15:00.000Z",
-      expectedDateTime: "Jun 30, 2023 1:15 PM",
+      expectedDateTime: "Jun 30, 2023 1:15 PM",
     };
     const timeWithOffset = {
       input: "2023-11-30T11:15:00+00:00",
-      expectedDateTime: "Nov 30, 2023 12:15 PM",
+      expectedDateTime: "Nov 30, 2023 12:15 PM",
     };
     const timeInCST = {
       input: "2023-09-22T08:38:36.291Z",
-      expectedDateTime: "Sep 22, 2023 3:38 AM",
+      expectedDateTime: "Sep 22, 2023 3:38 AM",
     };
 
     it("parseToLocalTime throws error on invalid format", () => {
