@@ -223,16 +223,33 @@ public final class JsonFormsSchemaUtil {
         return new SchemaGenerator(builder.build()).generateSchema(settingsClass);
     }
 
-    private static String resolveDescription(final FieldScope field) {
-        var description = Optional
-                .ofNullable(field.getAnnotationConsideringFieldAndGetter(Widget.class)).map(Widget::description)
-                .filter(d -> !field.isFakeContainerItemScope() && !d.isEmpty()).orElse(null);
-        var type = field.getType().getErasedType();
-        if (description != null && type.isEnum()) {
-            description += getConstantList(type);
-        }
-        return description;
+    private static String resolveDescription(final FieldScope fieldScope) {
+        var type = fieldScope.getType().getErasedType();
+        return Optional.ofNullable(fieldScope.getAnnotationConsideringFieldAndGetter(Widget.class))//
+                .filter(w -> !fieldScope.isFakeContainerItemScope())//
+                .flatMap(w -> resolveDescription(w, type))//
+                .orElse(null);
     }
+
+    /**
+     * Resolves the description from a widget. In case of enums, the description of the enum constants are added as list
+     * to the description of the enum setting.
+     *
+     * @param widget annotation of a setting
+     * @param fieldType type of the setting
+     * @return the description if it is present
+     */
+    public static Optional<String> resolveDescription(final Widget widget, final Class<?> fieldType) {
+        var description = widget.description();
+        if (description.isEmpty()) {
+            return Optional.empty();
+        }
+        if (fieldType.isEnum()) {
+            description += getConstantList(fieldType);
+        }
+        return Optional.of(description);
+    }
+
 
     private static <E extends Enum<E>> String getConstantList(final Class<?> erasedEnumType) {
         @SuppressWarnings("unchecked") // the calling method checks that erasedEnumType is an enum

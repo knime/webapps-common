@@ -55,6 +55,7 @@ import java.util.function.Consumer;
 
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.JsonFormsSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsControl;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.LayoutTreeNode;
@@ -107,7 +108,8 @@ final class OptionsAdder {
         final BiFunction<String, String, Element> optionCreator) {
         final var widget = field.getAnnotation(Widget.class);
         if (widget != null) {
-            var option = optionCreator.apply(widget.title(), widget.description());
+            var description = JsonFormsSchemaUtil.resolveDescription(widget, field.getType().getRawClass());
+            var option = optionCreator.apply(widget.title(), description.orElse(""));
             tab.appendChild(option);
         }
     }
