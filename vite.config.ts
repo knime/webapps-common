@@ -4,6 +4,7 @@ import svgLoader from "vite-svg-loader";
 import { fileURLToPath, URL } from "node:url";
 
 // https://vitejs.dev/config/
+// https://vitest.dev/config/
 export default defineConfig({
   plugins: [vue(), svgLoader()],
   test: {
