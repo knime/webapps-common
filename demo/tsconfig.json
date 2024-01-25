@@ -1,14 +1,12 @@
 {
-  "extends": "@vue/tsconfig/tsconfig.web.json",
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
   "include": [
     "env.d.ts",
     "../svg.d.ts", // for supporting SVG component imports; order is important
     "src/**/*",
     "src/**/*.vue",
-    "../ui/components/FileExplorer/types.ts",
-    "../ui/services/toast.ts",
-    "../ui/components/MenuItems.vue",
-    "../ui/globals.d.ts"
+    "../ui/**/*.ts",
+    "../ui/**/*.vue"
   ],
   "compilerOptions": {
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
