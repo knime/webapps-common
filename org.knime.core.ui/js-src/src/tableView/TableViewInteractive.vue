@@ -1031,10 +1031,10 @@ export default {
     },
     async onCopySelection(rect) {
       const fromIndex = rect.isTop
-        ? rect.fromIndex
+        ? rect.fromIndex + this.currentPageStart
         : this.bottomScrollIndexToIndex(rect.fromIndex);
       const toIndex = rect.isTop
-        ? rect.toIndex
+        ? rect.toIndex + this.currentPageStart
         : this.bottomScrollIndexToIndex(rect.toIndex);
       document.body.style.cursor = "wait";
       const { withRowIndices, withRowKeys } = rect;
@@ -1079,7 +1079,7 @@ export default {
      * A method to revert the index shift caused by leaving out rows between top and bottom rows by counting from the bottom.
      */
     bottomScrollIndexToIndex(bottomScrollIndex) {
-      return this.currentRowCount - this.maxNumRows + bottomScrollIndex;
+      return this.currentPageEnd - this.maxNumRows + bottomScrollIndex;
     },
     deleteColumnSizeOverrides({
       showRowIndicesChanged,

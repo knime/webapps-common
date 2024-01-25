@@ -2455,6 +2455,24 @@ describe("TableViewInteractive.vue", () => {
       },
     );
 
+    it("copies table content for page 2", async () => {
+      await wrapper.setData({
+        currentPage: 2,
+      });
+      copyContent({ x: { min: 2, max: 3 }, y: { min: 0, max: 1 } });
+      expect(wrapper.vm.jsonDataService.data).toHaveBeenCalledWith({
+        method: "getCopyContent",
+        options: [
+          { isIncluded: false, columnName: INDEX.name },
+          { isIncluded: false, columnName: ROW_ID.name },
+          false,
+          ["col3", "col4"],
+          2,
+          3,
+        ],
+      });
+    });
+
     it("sets cursor to 'wait' while copying content to clipboard and unsets afterwards", async (showRowIndices, showRowKeys) => {
       await wrapper.setData({
         settings: {
@@ -2533,7 +2551,10 @@ describe("TableViewInteractive.vue", () => {
       expect(writeMock).toHaveBeenCalledWith([clipboardMock.results[0][1]]);
     });
 
-    it("copies table content for bottom rows", () => {
+    it("copies table content for bottom rows", async () => {
+      await wrapper.setData({
+        settings: { ...initialDataMock.settings, pageSize: 5000000 },
+      });
       copyContent(
         {
           x: { min: 2, max: 3 },
@@ -2548,8 +2569,8 @@ describe("TableViewInteractive.vue", () => {
           { isIncluded: false, columnName: ROW_ID.name },
           false,
           ["col3", "col4"],
-          1,
-          2,
+          4999997,
+          4999998,
         ],
       });
     });
