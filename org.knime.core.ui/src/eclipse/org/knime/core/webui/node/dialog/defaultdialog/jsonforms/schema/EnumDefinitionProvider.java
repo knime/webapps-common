@@ -89,7 +89,8 @@ final class EnumDefinitionProvider implements CustomPropertyDefinitionProvider<F
 
     }
 
-    private static <E extends Enum<E>> ArrayNode determineEnumValues(final SchemaGenerationContext schemaContext, final Class<?> erasedType) {
+    private static <E extends Enum<E>> ArrayNode determineEnumValues(final SchemaGenerationContext schemaContext,
+        final Class<?> erasedType) {
         var config = schemaContext.getGeneratorConfig();
         final var arrayNode = config.createArrayNode();
 
@@ -111,11 +112,11 @@ final class EnumDefinitionProvider implements CustomPropertyDefinitionProvider<F
     }
 
     record ConstantEntry(String title, String description) {
-        
+
         boolean hasDescription() {
             return description != null && description.trim().length() > 0;
         }
-        
+
     }
 
     static <E extends Enum<E>> List<ConstantEntry> getEnumConstantDescription(final Class<E> enumClass) {
@@ -139,7 +140,8 @@ final class EnumDefinitionProvider implements CustomPropertyDefinitionProvider<F
                 return new ConstantEntry(label.value(), label.description());
             }
         } catch (NoSuchFieldException | SecurityException e) {
-            NodeLogger.getLogger(EnumDefinitionProvider.class).error(String.format("Exception when accessing field %s.", name), e);
+            NodeLogger.getLogger(EnumDefinitionProvider.class)
+                .error(String.format("Exception when accessing field %s.", name), e);
         }
         var label = StringUtils.capitalize(name.toLowerCase(Locale.getDefault()).replace("_", " "));
         return new ConstantEntry(label, null);

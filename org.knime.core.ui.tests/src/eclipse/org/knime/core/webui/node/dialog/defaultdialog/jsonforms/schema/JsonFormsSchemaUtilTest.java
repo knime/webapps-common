@@ -93,7 +93,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
 
-@SuppressWarnings({"unused", "java:S2698"})// we accept assertions without messages
+@SuppressWarnings({"unused", "java:S2698"}) // we accept assertions without messages
 class JsonFormsSchemaUtilTest {
 
     private static final ObjectMapper MAPPER = JsonFormsDataUtil.getMapper();
@@ -173,19 +173,19 @@ class JsonFormsSchemaUtilTest {
     void testEnumConstantDescriptionsAdded() throws JsonProcessingException {
 
         class EnumTestSettingDescription {
-            private static String SNAPSHOT = "{\"testEnum\":{"
-                + "\"description\": \"An enum to test if the constants are added automatically."
-                + "\\n<ul>\\n<li><b>First choice</b>: The first choice.</li>"
-                + "\\n<li><b>Second choice</b>: The second choice.</li>\\n</ul>\","
-                + "\"oneOf\":["//
+            private static String SNAPSHOT =
+                "{\"testEnum\":{" + "\"description\": \"An enum to test if the constants are added automatically."
+                    + "\\n<ul>\\n<li><b>First choice</b>: The first choice.</li>"
+                    + "\\n<li><b>Second choice</b>: The second choice.</li>\\n</ul>\"," + "\"oneOf\":["//
                     + "{\"const\":\"SOME_CHOICE\",\"title\":\"First choice\"},"//
                     + "{\"const\":\"SOME_OTHER_CHOICE\",\"title\":\"Second choice\"}"//
                     + "], \"title\":\"Test Enum\"}}";
+
             enum TestEnum {
-                @Label(value = "First choice", description = "The first choice.")
-                SOME_CHOICE, //
-                @Label(value = "Second choice", description = "The second choice.")
-                SOME_OTHER_CHOICE;
+                    @Label(value = "First choice", description = "The first choice.")
+                    SOME_CHOICE, //
+                    @Label(value = "Second choice", description = "The second choice.")
+                    SOME_OTHER_CHOICE;
             }
 
             @Widget(title = "Test Enum", description = "An enum to test if the constants are added automatically.")
@@ -196,23 +196,26 @@ class JsonFormsSchemaUtilTest {
     }
 
     @Test
-    void testEnumConstantDescriptionsOnlyAddedIfAllDefined() throws JsonProcessingException {
+    void testEnumConstantDescriptionsOnlyAddedIfAtLeastOneIsDefined() throws JsonProcessingException {
 
         class EnumTestSettingDescription {
             private static String SNAPSHOT = "{\"testEnum\":{"
-                + "\"description\": \"An enum to test if the constants are only added if all are described.\","
-                + "\"oneOf\":["//
-                    + "{\"const\":\"SOME_CHOICE\",\"title\":\"First choice\"},"//
-                    + "{\"const\":\"SOME_OTHER_CHOICE\",\"title\":\"Second choice\"}"//
-                    + "], \"title\":\"Test Enum\"}}";
+                + "\"description\": \"An enum to test if the constants are added if any constant is described."
+                + "\\n<ul>" + "\\n<li><b>First choice</b>: The first choice.</li>" + "\\n<li><b>Second choice</b></li>"
+                + "\\n</ul>" + "\"," + "\"oneOf\":["//
+                + "{\"const\":\"SOME_CHOICE\",\"title\":\"First choice\"},"//
+                + "{\"const\":\"SOME_OTHER_CHOICE\",\"title\":\"Second choice\"}"//
+                + "], \"title\":\"Test Enum\"}}";
+
             enum TestEnum {
-                @Label(value = "First choice", description = "The first choice.")
-                SOME_CHOICE, //
-                @Label("Second choice")
-                SOME_OTHER_CHOICE;
+                    @Label(value = "First choice", description = "The first choice.")
+                    SOME_CHOICE, //
+                    @Label("Second choice")
+                    SOME_OTHER_CHOICE;
             }
 
-            @Widget(title = "Test Enum", description = "An enum to test if the constants are only added if all are described.")
+            @Widget(title = "Test Enum",
+                description = "An enum to test if the constants are added if any constant is described.")
             TestEnum testEnum;
         }
 
@@ -572,9 +575,8 @@ class JsonFormsSchemaUtilTest {
     }
 
     private static JsonNode getProperties(final Class<?> clazz, final PortObjectSpec... specs) {
-        return JsonFormsSchemaUtil
-            .buildSchema(clazz, DefaultNodeSettings.createDefaultNodeSettingsContext(specs), JsonFormsDataUtil.getMapper())
-            .get("properties");
+        return JsonFormsSchemaUtil.buildSchema(clazz, DefaultNodeSettings.createDefaultNodeSettingsContext(specs),
+            JsonFormsDataUtil.getMapper()).get("properties");
     }
 
     private static JsonNode getPropertiesWithoutContext(final Class<?> clazz) {

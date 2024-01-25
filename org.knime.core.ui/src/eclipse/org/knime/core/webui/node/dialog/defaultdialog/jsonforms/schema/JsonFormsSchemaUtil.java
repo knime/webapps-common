@@ -126,7 +126,6 @@ public final class JsonFormsSchemaUtil {
 
     /**
      * @param settingsClasses the classes
-     * @param settings the instances
      * @param context the creation context with access to the input ports
      * @param mapper the object mapper to be used
      * @return a schema representation
@@ -239,12 +238,17 @@ public final class JsonFormsSchemaUtil {
         @SuppressWarnings("unchecked") // the calling method checks that erasedEnumType is an enum
         var enumClass = (Class<E>)erasedEnumType;
         var constantEntries = EnumDefinitionProvider.getEnumConstantDescription(enumClass);
-        if (constantEntries.stream().allMatch(ConstantEntry::hasDescription)) {
+        if (constantEntries.stream().anyMatch(ConstantEntry::hasDescription)) {
             return constantEntries.stream()//
-                    .map(e -> "\n<li><b>%s</b>: %s</li>".formatted(e.title(), e.description()))//
+                    .map(JsonFormsSchemaUtil::createConstantListItem)//
                     .collect(Collectors.joining("", "\n<ul>", "\n</ul>"));
         }
         return "";
+    }
+
+    private static String createConstantListItem(final ConstantEntry entry) {
+        var description = entry.hasDescription() ? (": " + entry.description()) : "";
+        return "\n<li><b>%s</b>%s</li>".formatted(entry.title(), description);//NOSONAR
     }
 
     private static BigDecimal resolveDouble(final DefaultNodeSettingsContext context,
