@@ -166,7 +166,7 @@ const closeMenu = () => {
       <MenuItems
         menu-aria-label="File explorer context menu"
         :items="items"
-        @item-click="(_, item) => onItemClick(item)"
+        @item-click="(_: MouseEvent, item: BaseMenuItem) => onItemClick(item)"
       />
     </slot>
   </div>

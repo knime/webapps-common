@@ -99,18 +99,13 @@ const props = withDefaults(defineProps<Props>(), {
   clippingBoundary: () => document.body,
 });
 
-interface Emits {
-  (e: "close"): void;
-  (e: "item-click", event: MouseEvent, item: MenuItem, menuId: string): void;
-  (e: "item-focused", itemId: string | null, item: MenuItem | null): void;
-  (
-    e: "item-hovered",
-    item: MenuItem | null,
-    menuId: string,
-    index: number,
-  ): void;
-  (e: "close-submenu"): void;
-}
+type Emits = {
+  close: [];
+  "item-click": [event: MouseEvent, item: MenuItem, menuId: string];
+  "item-focused": [itemId: string | null, item: MenuItem | null];
+  "item-hovered": [item: MenuItem | null, menuId: string, index: number];
+  "close-submenu": [];
+};
 
 const emit = defineEmits<Emits>();
 const baseMenuItems: Ref<InstanceType<typeof BaseMenuItems> | null> = ref(null);
@@ -216,9 +211,11 @@ const hasSelectedChildItem = (item: MenuItem) => {
     :focused-item-index="currentIndex"
     :clipping-boundary="clippingBoundary"
     @keydown="props.registerKeydown && onKeydown($event)"
-    @item-click="(event, item, id) => $emit('item-click', event, item, id)"
-    @item-hovered="(item, id, index) => onItemHovered(item, id, index)"
-    @item-focused="(id, item) => $emit('item-focused', id, item)"
+    @item-click="(...args: Emits['item-click']) => $emit('item-click', ...args)"
+    @item-hovered="(...args: Emits['item-hovered']) => onItemHovered(...args)"
+    @item-focused="
+      (...args: Emits['item-focused']) => $emit('item-focused', ...args)
+    "
   >
     <template
       #item="{
@@ -259,9 +256,17 @@ const hasSelectedChildItem = (item: MenuItem) => {
               :clipping-boundary="clippingBoundary"
               register-keydown
               @close-submenu="openSubmenuItemIndex = -1"
-              @item-click="(...args) => $emit('item-click', ...args)"
-              @item-hovered="(...args) => $emit('item-hovered', ...args)"
-              @item-focused="(...args) => $emit('item-focused', ...args)"
+              @item-click="
+                (...args: Emits['item-click']) => $emit('item-click', ...args)
+              "
+              @item-hovered="
+                (...args: Emits['item-hovered']) =>
+                  $emit('item-hovered', ...args)
+              "
+              @item-focused="
+                (...args: Emits['item-focused']) =>
+                  $emit('item-focused', ...args)
+              "
             />
           </span>
         </template>
