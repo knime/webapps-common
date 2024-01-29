@@ -198,6 +198,15 @@ const showMode = computed(
 const showSearch = computed(
   () => control.value.uischema.options?.showSearch ?? true,
 );
+
+const leftLabel = computed(
+  () =>
+    control.value.uischema.options?.excludedLabel ?? props.twinlistLeftLabel,
+);
+const rightLabel = computed(
+  () =>
+    control.value.uischema.options?.includedLabel ?? props.twinlistRightLabel,
+);
 </script>
 
 <template>
@@ -230,8 +239,8 @@ const showSearch = computed(
       mode-label="Selection mode"
       :possible-values="possibleValues ?? []"
       :size="twinlistSize"
-      :left-label="twinlistLeftLabel"
-      :right-label="twinlistRightLabel"
+      :left-label="leftLabel"
+      :right-label="rightLabel"
       @input="onSelectedChange"
       @include-unknown-values-input="onIncludeUnknownColumnsChange"
       @pattern-input="onPatternChange"

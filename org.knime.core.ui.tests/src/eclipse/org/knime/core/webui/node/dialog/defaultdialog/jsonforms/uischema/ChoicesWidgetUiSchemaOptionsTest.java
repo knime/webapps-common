@@ -462,6 +462,48 @@ class ChoicesWidgetUiSchemaOptionsTest {
     }
 
     @Test
+    void testChoicesWidgetIncludedLabel() {
+        class ChoicesWidgetTestSettings implements DefaultNodeSettings {
+
+            @Widget
+            @ChoicesWidget(includedLabel = "Label for included columns.")
+            ColumnFilter m_foo;
+
+            @Widget
+            @ChoicesWidget()
+            ColumnFilter m_bar;
+
+        }
+        var response = buildTestUiSchema(ChoicesWidgetTestSettings.class);
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("foo");
+        assertThatJson(response).inPath("$.elements[0].options.includedLabel").isString()
+            .isEqualTo("Label for included columns.");
+        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("bar");
+        assertThatJson(response).inPath("$.elements[1].options.includedLabel").isAbsent();
+    }
+
+    @Test
+    void testChoicesWidgetExcludedLabel() {
+        class ChoicesWidgetTestSettings implements DefaultNodeSettings {
+
+            @Widget
+            @ChoicesWidget(excludedLabel = "Label for excluded columns.")
+            ColumnFilter m_foo;
+
+            @Widget
+            @ChoicesWidget()
+            ColumnFilter m_bar;
+
+        }
+        var response = buildTestUiSchema(ChoicesWidgetTestSettings.class);
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("foo");
+        assertThatJson(response).inPath("$.elements[0].options.excludedLabel").isString()
+            .isEqualTo("Label for excluded columns.");
+        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("bar");
+        assertThatJson(response).inPath("$.elements[1].options.excludedLabel").isAbsent();
+    }
+
+    @Test
     void testLocalFileChooserWidget() {
         class LocalFileChooserWidgetTestSettings implements DefaultNodeSettings {
 

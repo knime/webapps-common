@@ -13,6 +13,8 @@ export type ChoicesUiSchemaOptions = {
   choicesProviderClass?: string;
   showNoneColumn?: boolean;
   showRowKeys?: boolean;
+  includedLabel?: string;
+  excludedLabel?: string;
 };
 
 export type ChoicesUiSchema = {

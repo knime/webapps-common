@@ -101,6 +101,16 @@ public @interface ChoicesWidget {
     boolean showMode() default true;
 
     /**
+     * @return the label of the included columns for the {@link ColumnFilter}
+     */
+    String includedLabel() default "";
+
+    /**
+     * @return the label of the excluded columns for the {@link ColumnFilter}
+     */
+    String excludedLabel() default "";
+
+    /**
      * @return a handler which defined dependencies from one or multiple setting to this one and updates the possible
      *         values when such a dependency changes. On an update, if the current value is also part of the new values,
      *         it is kept. Otherwise the first of the new possible values is taken.

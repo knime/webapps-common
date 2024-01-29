@@ -617,4 +617,23 @@ describe("TwinlistInput.vue", () => {
     await wrapper.vm.$nextTick(); // wait until pending promises are resolved
     expect(wrapper.findComponent(DialogLabel).exists()).toBe(false);
   });
+
+  describe("left and right label", () => {
+    it("passes the labels given by the uischema options to the twinlist if available", async () => {
+      const includedLabel = "includedLabelLeft";
+      const excludedLabel = "excludedLabelRight";
+      props.control.uischema.options.includedLabel = includedLabel;
+      props.control.uischema.options.excludedLabel = excludedLabel;
+      const { wrapper } = await mountJsonFormsComponent(TwinlistInput, {
+        props,
+      });
+      expect(wrapper.vm.leftLabel).toBe(excludedLabel);
+      expect(wrapper.vm.rightLabel).toBe(includedLabel);
+    });
+
+    it("passes the labels given by the props if uischema options are not available", () => {
+      expect(wrapper.vm.leftLabel).toBe("Excludes");
+      expect(wrapper.vm.rightLabel).toBe("Includes");
+    });
+  });
 });

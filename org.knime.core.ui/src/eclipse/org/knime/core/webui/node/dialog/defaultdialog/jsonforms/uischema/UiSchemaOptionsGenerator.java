@@ -329,6 +329,12 @@ final class UiSchemaOptionsGenerator {
             options.put("showRowKeys", choicesWidget.showRowKeysColumn());
             options.put("showSearch", choicesWidget.showSearch());
             options.put("showMode", choicesWidget.showMode());
+            if (!choicesWidget.includedLabel().isEmpty()) {
+                options.put("includedLabel", choicesWidget.includedLabel());
+            }
+            if (!choicesWidget.excludedLabel().isEmpty()) {
+                options.put("excludedLabel", choicesWidget.excludedLabel());
+            }
             if (!choicesWidget.choicesUpdateHandler().equals(NoopChoicesUpdateHandler.class)) {
                 options.put(TAG_CHOICES_UPDATE_HANDLER, choicesWidget.choicesUpdateHandler().getName());
                 final var dependencies = options.putArray(TAG_DEPENDENCIES);
