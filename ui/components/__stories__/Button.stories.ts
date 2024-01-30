@@ -16,6 +16,15 @@ const meta = {
     onDark: false,
     withBorder: false,
   },
+  parameters: {
+    docs: {
+      /* description: { component: "Hello Helian" } */ extractComponentDescription:
+        (component) => {
+          console.warn(component);
+          return "some string";
+        },
+    },
+  },
 } satisfies Meta<typeof Button>;
 
 export default meta;
@@ -33,6 +42,7 @@ export const Primary: Story = {
     // @ts-expect-error
     default: "Click me!",
   },
+  parameters: { docs: { description: { story: "Story description" } } },
 };
 
 export const WithIcon: Story = {
