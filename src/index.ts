@@ -1,6 +1,7 @@
 export {
   JsonDataService,
   SelectionService,
+  SelectionModes,
   CachingSelectionService,
   DialogService,
   ReportingService,
@@ -10,6 +11,7 @@ export {
   ColorHandler,
   AlertingService,
   ResourceService,
+  ImageGenerationService,
 } from "./services";
 
 export * from "./types";

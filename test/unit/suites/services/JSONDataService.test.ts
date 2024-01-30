@@ -109,11 +109,6 @@ describe("JsonDataService", () => {
   });
 
   describe("service.applyData", () => {
-    /* const mockData = {
-      item1: true,
-      item2: 10,
-    }; */
-
     let jsonDataService: JsonDataService, callNodeDataService;
 
     beforeEach(() => {
@@ -132,7 +127,7 @@ describe("JsonDataService", () => {
       const parameter = getFirstCallParameter(callNodeDataService);
       expect(parameter).toMatchObject({
         serviceType: DataServiceType.APPLY_DATA,
-        dataServiceRequest: appliedData,
+        dataServiceRequest: JSON.stringify(appliedData),
       });
     });
   });

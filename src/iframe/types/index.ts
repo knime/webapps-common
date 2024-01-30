@@ -54,7 +54,6 @@ export type RequestForKey<
   A extends API,
   K extends Names<A>,
 > = IframeProxyMessageEvent<"UIExtensionRequest"> & {
-  source: Window;
   payload: PayloadForKey<A, K>;
 };
 

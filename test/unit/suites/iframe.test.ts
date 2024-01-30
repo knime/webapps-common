@@ -20,6 +20,15 @@ class Embedder<APILayer extends { getConfig: () => {} }> {
     );
     this.dispatchPushEvent = dispatchPushEvent;
     this.iframe = iframe;
+    // Tests fail without this wrapper, since since event.source is null in this constructed test setup.
+    window.postMessage = (message: any, targetOrigin: string) => {
+      expect(targetOrigin).toBe("*");
+      const event = new MessageEvent("message", {
+        data: message,
+        source: iframe.contentWindow,
+      });
+      window.dispatchEvent(event);
+    };
   }
 
   injectScript(
@@ -34,7 +43,6 @@ class Embedder<APILayer extends { getConfig: () => {} }> {
     stringLines.shift();
     stringLines.pop();
     const injectedScriptBodyText = stringLines.join("\n");
-
     this.iframe.contentDocument.open();
     this.iframe.contentDocument.write(`<!doctype html>
       <html lang="en">
@@ -44,7 +52,6 @@ class Embedder<APILayer extends { getConfig: () => {} }> {
         </head>
         <body>
         <div id="iframe-content"></div>
-        <script type="module" src="./my-script.ts"></script>
         <script>
         window.parent.getInitializedBaseService(window).then(({serviceProxy: service}) => {
           ${injectedScriptBodyText}

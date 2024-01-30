@@ -19,7 +19,7 @@ export enum AlertType {
  */
 export type Alert = {
   nodeId: string;
-  nodeInfo: NodeInfo;
+  nodeInfo?: NodeInfo;
   type: AlertType;
   code?: string | number;
   subtitle?: string;

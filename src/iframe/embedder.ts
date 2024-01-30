@@ -33,7 +33,7 @@ const enableRequestsToMethods = (
   // handles events received in parent
   const messageHandler = async (event: MessageEvent) => {
     if (isUIExtensionMessageExchangeRequest(event)) {
-      if (event.data.source !== iframeContentWindow) {
+      if (event.source !== iframeContentWindow) {
         return;
       }
       const response = await callApiLayer(event.data.payload);

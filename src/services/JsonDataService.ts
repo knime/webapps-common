@@ -128,7 +128,10 @@ export class JsonDataService extends AbstractService<JsonDataServiceAPILayer> {
    * @returns {Promise} rejected or resolved depending on backend response.
    */
   applyData(data: any) {
-    return this.callDataService(DataServiceType.APPLY_DATA, data);
+    return this.callDataService(
+      DataServiceType.APPLY_DATA,
+      JSON.stringify(data),
+    );
   }
 
   /**

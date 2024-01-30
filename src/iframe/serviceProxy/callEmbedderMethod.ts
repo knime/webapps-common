@@ -33,7 +33,6 @@ export default <A extends API, K extends keyof API & string>(
     iframeWindow.addEventListener("message", handler);
     const requestMessage: RequestForKey<A, K> = {
       requestId,
-      source: iframeWindow,
       ...toWrappedEventOfType(payload, "UIExtensionRequest"),
     };
     iframeWindow.parent.postMessage(requestMessage, "*");
