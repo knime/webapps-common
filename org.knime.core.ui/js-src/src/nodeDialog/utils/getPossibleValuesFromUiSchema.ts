@@ -1,4 +1,4 @@
-import { AlertTypes, type KnimeService } from "@knime/ui-extension-service";
+import { AlertType, type AlertingService } from "@knime/ui-extension-service";
 import type Result from "../api/types/Result";
 import type {
   ChoicesUiSchemaOptions,
@@ -16,7 +16,7 @@ const extractFromUiSchemaOptions = <Key extends keyof ChoicesUiSchemaOptions>(
 
 const extractPossibleValues = (
   asyncResult: Result<PossibleValue[]>,
-  sendAlert: (params: Parameters<KnimeService["createAlert"]>[0]) => void,
+  sendAlert: (params: Parameters<AlertingService["sendAlert"]>[0]) => void,
   choicesProviderClass: string,
 ) => {
   const { state } = asyncResult;
@@ -25,13 +25,13 @@ const extractPossibleValues = (
   } else {
     if (state === "CANCELED") {
       sendAlert({
-        type: AlertTypes.ERROR,
+        type: AlertType.ERROR,
         subtitle: `Receiving possible values from ${choicesProviderClass} canceled.`,
       });
     }
     if (state === "FAIL") {
       sendAlert({
-        type: AlertTypes.ERROR,
+        type: AlertType.ERROR,
         subtitle: "Failed to fetch possible values.",
         message: asyncResult.message,
       });
@@ -45,7 +45,7 @@ export default async (
   getAsyncPossibleValues: (
     choicesProviderClass: string,
   ) => Promise<Result<PossibleValue[]> | undefined>,
-  sendAlert: (params: Parameters<KnimeService["createAlert"]>[0]) => void,
+  sendAlert: (params: Parameters<AlertingService["sendAlert"]>[0]) => void,
 ) => {
   let normalPossibleValues = extractFromUiSchemaOptions(
     control,

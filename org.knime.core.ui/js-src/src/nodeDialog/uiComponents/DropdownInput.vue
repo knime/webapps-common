@@ -9,7 +9,7 @@ import {
 } from "vue";
 import { rendererProps } from "@jsonforms/vue";
 import LoadingDropdown from "./loading/LoadingDropdown.vue";
-import { AlertTypes } from "@knime/ui-extension-service";
+import { AlertType } from "@knime/ui-extension-service";
 import { set } from "lodash-es";
 import getFlattenedSettings from "../utils/getFlattenedSettings";
 import { v4 as uuidv4 } from "uuid";
@@ -87,7 +87,7 @@ const updateOptions = async (newSettings: SettingsData, setNewValue = true) => {
   }
   if (state === "FAIL") {
     sendAlert({
-      type: AlertTypes.ERROR,
+      type: AlertType.ERROR,
       message,
     });
     handleResult([]);

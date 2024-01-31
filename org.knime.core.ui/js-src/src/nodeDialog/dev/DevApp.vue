@@ -2,11 +2,9 @@
 /* eslint-disable no-console */
 import {
   ExtensionTypes,
-  KnimeService,
-  NodeServices,
-  ResourceTypes,
-  type ExtensionConfig,
-  type ServiceParameters,
+  UIExtensionPushEvents,
+  type UIExtensionService,
+  type Alert,
 } from "@knime/ui-extension-service";
 import NodeDialog from "@/nodeDialog/NodeDialog.vue";
 import dataServiceMock from "./dataServiceMock";
@@ -20,7 +18,7 @@ export default {
     if (localStorage && localStorage.dialogIdx) {
       this.currentDialogIndex = Number(localStorage.getItem("dialogIdx"));
     }
-    this.currentKS = this.getMockKnimeService();
+    this.currentKS = this.getMockBaseService();
     return {
       getKnimeService: () => this.currentKS,
     };
@@ -28,7 +26,7 @@ export default {
   data() {
     return {
       currentDialogIndex: 0,
-      currentKS: null as null | KnimeService,
+      currentKS: null as null | UIExtensionService,
     };
   },
   computed: {
@@ -63,7 +61,7 @@ export default {
         return;
       }
       localStorage.setItem("dialogIdx", newIdx);
-      this.currentKS = this.getMockKnimeService();
+      this.currentKS = this.getMockBaseService();
     },
   },
   created() {
@@ -76,9 +74,9 @@ export default {
       console.log("Close CEF called by dev app (functional only in KAP).");
   },
   methods: {
-    getMockKnimeService() {
+    getMockBaseService(): UIExtensionService {
       let initialData = JSON.stringify(this.currentDialog);
-      let extensionConfig: ExtensionConfig = {
+      let extensionConfig = {
         initialData,
         nodeId: "0",
         workflowId: "0",
@@ -87,12 +85,6 @@ export default {
           modelVariables: this.currentDialog.result.schema.flowVariablesMap,
           viewVariables: this.currentDialog.result.schema.flowVariablesMap,
         },
-        resourceInfo: {
-          type: ResourceTypes.VUE_COMPONENT_LIB,
-          id: "NodeDialog",
-          path: "any",
-          url: "dummyUrl",
-        },
         nodeInfo: {
           nodeState: "executed",
           nodeName: "DevApp",
@@ -100,38 +92,48 @@ export default {
         hasNodeView: false,
         extensionType: ExtensionTypes.DIALOG,
       };
-      return new KnimeService(
-        extensionConfig,
-        this.callService,
-        this.pushEvent,
-      );
+      return {
+        callNodeDataService: (params) => {
+          console.log("callNodeDataService called");
+          const rpcRequest = JSON.parse(params.dataServiceRequest);
+          const result = dataServiceMock(rpcRequest);
+          const delay = 2000;
+          return new Promise((resolve) =>
+            setTimeout(() => resolve({ result: { result } }), delay),
+          );
+        },
+        addPushEventListener: (name: UIExtensionPushEvents.Name) => {
+          console.log(`Push event listener added for event ${name}`);
+          return () => {};
+        },
+        getConfig() {
+          return extensionConfig;
+        },
+        getResourceLocation() {
+          console.log("getResourceLocation called");
+          return Promise.resolve("Dummy resource location");
+        },
+        imageGenerated() {
+          console.log("imageGenerated called");
+        },
+        publishData(data: any) {
+          console.log("publishData called with", data);
+        },
+        sendAlert(alert: Alert) {
+          console.log("alert sent: ", alert);
+        },
+        setReportingContent() {
+          console.log("setReportingContent called");
+        },
+        updateDataPointSelection() {
+          console.log("updateDataPointSelection called");
+          return Promise.resolve();
+        },
+      };
     },
     onDialogSelect(e: any) {
       let dialogIdx = e.target.selectedOptions[0].index - 1;
       this.currentDialogIndex = dialogIdx;
-    },
-    // Mock service calls
-    callService(...serviceParameters: ServiceParameters) {
-      console.log(
-        "KnimeService called service with request:",
-        serviceParameters,
-      );
-      if (
-        serviceParameters[0] === NodeServices.CALL_NODE_DATA_SERVICE &&
-        typeof serviceParameters[2] === "string"
-      ) {
-        const rpcRequest = JSON.parse(serviceParameters[2]);
-        const result = dataServiceMock(rpcRequest);
-        const delay = 2000;
-        return new Promise((resolve) =>
-          setTimeout(() => resolve({ result: { result } }), delay),
-        );
-      }
-      return Promise.resolve();
-    },
-    pushEvent(event: any) {
-      console.log("Push event was called:", event);
-      return Promise.resolve();
     },
     applySettings() {
       let message = "Current dialog does not have an apply data method.";

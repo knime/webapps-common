@@ -37,16 +37,16 @@ export default {
     }
   },
   methods: {
-    onViewSettingsChange(event) {
+    onViewSettingsChange(payload) {
       // TODO: Can be removed once we have frontend sanitization
       if (
-        event.data.flowVariableSettings["view.richTextContent"]
+        payload.flowVariableSettings["view.richTextContent"]
           ?.controllingFlowVariableAvailable
       ) {
         return;
       }
       this.richTextContent = this.replaceFlowVariablesInContent(
-        event.data.data.view.richTextContent,
+        payload.data.view.richTextContent,
       );
     },
     replaceFlowVariablesInContent(newRichTextContent) {

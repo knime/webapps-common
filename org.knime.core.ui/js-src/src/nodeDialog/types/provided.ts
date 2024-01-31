@@ -1,6 +1,6 @@
 import type {
   JsonDataService,
-  KnimeService,
+  AlertingService,
 } from "@knime/ui-extension-service";
 import type { FlowSettings, PossibleFlowVariable } from "../api/types";
 import type { getPossibleValuesFromUiSchema } from "../utils";
@@ -19,7 +19,7 @@ type registerWatcher = (params: {
 type getData = (
   params: Parameters<JsonDataService["data"]>[0] & object,
 ) => Promise<any>;
-type sendAlert = (params: Parameters<KnimeService["createAlert"]>[0]) => void;
+type sendAlert = (params: Parameters<AlertingService["sendAlert"]>[0]) => void;
 
 interface Provided {
   getPossibleValuesFromUiSchema: getPossibleValuesFromUiSchema;

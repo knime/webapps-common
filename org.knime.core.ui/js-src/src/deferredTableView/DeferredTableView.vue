@@ -1,6 +1,9 @@
 // A table view which is not loaded immediately but on user request
 <script lang="ts">
-import { JsonDataService, KnimeService } from "@knime/ui-extension-service";
+import {
+  JsonDataService,
+  UIExtensionService,
+} from "@knime/ui-extension-service";
 import TableViewInteractive from "../tableView/TableViewInteractive.vue";
 import Button from "webapps-common/ui/components/Button.vue";
 import SubMenu from "webapps-common/ui/components/SubMenu.vue";
@@ -45,7 +48,7 @@ export default {
   },
   computed: {
     knimeService() {
-      return (this.getKnimeService as () => KnimeService)();
+      return (this.getKnimeService as () => UIExtensionService)();
     },
     columnCount() {
       return this.tableViewInitialData?.table.columnCount;

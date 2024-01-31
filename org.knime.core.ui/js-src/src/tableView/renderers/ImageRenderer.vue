@@ -11,17 +11,15 @@ import {
   nextTick,
   inject,
 } from "vue";
-import {
-  fetchImage,
-  getImageUrl as getImageUrlFromStore,
-} from "@/utils/images";
+import { fetchImage } from "@/utils/images";
 
-// @ts-ignore
-import { useStore } from "vuex";
+import {
+  ResourceService,
+  UIExtensionService,
+} from "@knime/ui-extension-service";
 
 const props = defineProps<{
   path: string;
-  baseUrl: string;
   height?: number;
   width?: number;
   update?: boolean;
@@ -41,39 +39,39 @@ const waitForTableToBeReady = () =>
 const emit = defineEmits(["pending", "rendered"]);
 const inlinedSrc: Ref<undefined | string> = ref();
 
-const store = useStore();
-const fallbackGetImageUrl = (resourceInfo: {
-  baseUrl: string;
-  path: string;
-}): string => getImageUrlFromStore(store, resourceInfo);
-const getImageUrl = inject("getImageUrl", fallbackGetImageUrl);
+const knimeService = inject<() => UIExtensionService>("getKnimeService")!();
+const resourceService = new ResourceService(knimeService);
 
-const imageUrl = computed(() =>
-  getImageUrl({
-    baseUrl: props.baseUrl,
-    path: props.path,
-  }),
-);
-
-const urlWithDimensions = computed(() => {
+const addDimensions = computed(() => (imageUrl: string) => {
   /**
    * Use Number.Max_VALUE to automatically get the correct height for the given
    * width Handled in the backend
    */
   return props.width
-    ? `${imageUrl.value}?w=${Math.floor(props.width)}&h=${Math.floor(
+    ? `${imageUrl}?w=${Math.floor(props.width)}&h=${Math.floor(
         typeof props.height === "number" ? props.height : Number.MAX_VALUE,
       )}`
-    : imageUrl.value;
+    : imageUrl;
+});
+
+const imageUrl = ref(null as null | string);
+
+const imageUrlWithDimensions = computed(() => {
+  return imageUrl.value === null ? null : addDimensions.value(imageUrl.value);
+});
+
+watchEffect(async () => {
+  imageUrl.value = await resourceService.getResourceUrl(props.path);
 });
 
 let uuid: string | null = null;
 onMounted(async () => {
+  imageUrl.value = await resourceService.getResourceUrl(props.path);
   if (props.includeDataInHtml) {
     uuid = uniqueId("Image");
     emit("pending", uuid);
     await waitForTableToBeReady();
-    inlinedSrc.value = await fetchImage(urlWithDimensions.value);
+    inlinedSrc.value = await fetchImage(imageUrlWithDimensions.value!);
     // wait until image was rendered in the DOM
     await nextTick();
     emit("rendered", uuid);
@@ -90,7 +88,7 @@ let fixedSrc: null | string = null;
 watch(
   () => props.update,
   (update) => {
-    fixedSrc = update ? null : urlWithDimensions.value;
+    fixedSrc = update ? null : imageUrlWithDimensions.value;
   },
   { immediate: true },
 );
@@ -98,13 +96,13 @@ watch(
 
 <template>
   <img
-    v-if="!includeDataInHtml || inlinedSrc"
+    v-if="(!includeDataInHtml || inlinedSrc) && imageUrlWithDimensions"
     :style="{
       ...(typeof width === 'number' && { maxWidth: width + 'px' }),
       ...(typeof height === 'number' && { maxHeight: height + 'px' }),
     }"
     loading="lazy"
-    :src="includeDataInHtml ? inlinedSrc : fixedSrc || urlWithDimensions"
+    :src="includeDataInHtml ? inlinedSrc : fixedSrc || imageUrlWithDimensions"
     alt=""
   />
 </template>

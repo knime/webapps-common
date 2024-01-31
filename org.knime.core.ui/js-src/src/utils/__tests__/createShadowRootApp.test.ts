@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import createShadowRootApp from "../createShadowRootApp";
 import { defineComponent } from "vue";
-import { KnimeService } from "@knime/ui-extension-service";
+import { UIExtensionService } from "@knime/ui-extension-service";
 
 vi.stubGlobal("__INLINE_CSS_CODE__", ".someCssCode { color: red; }");
 
@@ -20,7 +20,7 @@ const mountApp = (initialData: any = null) => {
   const shadowRoot = document
     .createElement("div")
     .attachShadow({ mode: "open" });
-  const knimeService = {} as KnimeService;
+  const knimeService = {} as UIExtensionService;
   const getImageUrl = vi.fn(() => "");
 
   const app = exportedAppFunction(

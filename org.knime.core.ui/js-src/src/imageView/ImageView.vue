@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { JsonDataService, ReportingService } from "@knime/ui-extension-service";
 import {
-  fetchImage,
-  getImageUrl as getImageUrlFromStore,
-} from "@/utils/images";
+  JsonDataService,
+  ReportingService,
+  ResourceService,
+} from "@knime/ui-extension-service";
+import { fetchImage } from "@/utils/images";
 import OptionalLabel from "./OptionalLabel.vue";
 import OptionalFigure from "./OptionalFigure.vue";
 import type Settings from "./types/ImageViewSettings";
@@ -16,9 +17,7 @@ import {
   toRef,
   type Ref,
 } from "vue";
-import type { Event, KnimeService } from "@knime/ui-extension-service";
-// @ts-ignore
-import { useStore } from "vuex";
+import type { UIExtensionService } from "@knime/ui-extension-service";
 
 const viewSettings: Settings = reactive({
   title: "",
@@ -31,16 +30,13 @@ const setData = (settings: Settings) => {
   Object.assign(viewSettings, settings);
 };
 
-const onViewSettingsChange = (event: Event) => {
-  setData(event.data.data.view);
+const onViewSettingsChange = ({
+  data: { view: viewSettings },
+}: {
+  data: { view: Settings };
+}) => {
+  setData(viewSettings);
 };
-
-const store = useStore();
-const fallbackGetImageUrl = (resourceInfo: {
-  baseUrl: string;
-  path: string;
-}): string => getImageUrlFromStore(store, resourceInfo);
-const getImageUrl = inject("getImageUrl", fallbackGetImageUrl);
 
 const imgSrc = ref("");
 const image: Ref<HTMLImageElement> = ref(null as any);
@@ -48,16 +44,15 @@ const naturalHeight = ref(0);
 const loaded = ref(false);
 
 onMounted(async () => {
-  const knimeService = inject<() => KnimeService>("getKnimeService")!();
+  const knimeService = inject<() => UIExtensionService>("getKnimeService")!();
   const jsonDataService = new JsonDataService(knimeService);
   jsonDataService.addOnDataChangeCallback(onViewSettingsChange);
   const initialData = await jsonDataService.initialData();
   setData(initialData.settings);
+  const imageUrl = await new ResourceService(knimeService).getResourceUrl(
+    initialData.imagePath,
+  );
   const reportingService = new ReportingService(knimeService);
-
-  // @ts-ignore
-  const baseUrl = knimeService.extensionConfig?.resourceInfo?.baseUrl;
-  const imageUrl = getImageUrl({ path: initialData.imagePath, baseUrl });
   imgSrc.value = reportingService.isReportingActive()
     ? await fetchImage(imageUrl)
     : imageUrl;

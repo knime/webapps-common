@@ -1,9 +1,8 @@
 <!-- eslint-disable max-lines -->
 <script lang="ts">
 import {
-  Event,
   JsonDataService,
-  KnimeService,
+  UIExtensionService,
   SelectionModes,
   SelectionService,
 } from "@knime/ui-extension-service";
@@ -75,7 +74,7 @@ export default {
     },
   },
   setup() {
-    const knimeService = inject<() => KnimeService>("getKnimeService")!();
+    const knimeService = inject<() => UIExtensionService>("getKnimeService")!();
     const selectionCache = useSelectionCache(knimeService);
     const rowHeight = useRowHeight();
     return { ...selectionCache, ...rowHeight, knimeService };
@@ -822,9 +821,8 @@ export default {
     ) {
       return newSettings[key] !== this.settings[key];
     },
-    onViewSettingsChange(event: Event) {
-      const newSettings = event.data.data
-        .view as PossiblyNonInitializedSettings;
+    onViewSettingsChange(data: { view: PossiblyNonInitializedSettings }) {
+      const newSettings = data.view;
       if (isInitialized(newSettings)) {
         this.handleNewSettings(newSettings);
       }

@@ -2,7 +2,8 @@
 import {
   JsonDataService,
   DialogService,
-  KnimeService,
+  UIExtensionService,
+  AlertingService,
 } from "@knime/ui-extension-service";
 import { vanillaRenderers } from "@jsonforms/vue-vanilla";
 import { JsonForms } from "@jsonforms/vue";
@@ -77,7 +78,9 @@ export default {
     } satisfies ProvidedMethods & ProvidedForFlowVariables;
   },
   setup() {
-    return { getKnimeService: inject<() => KnimeService>("getKnimeService")! };
+    return {
+      getKnimeService: inject<() => UIExtensionService>("getKnimeService")!,
+    };
   },
   data() {
     return {
@@ -118,7 +121,6 @@ export default {
     this.uischema = initialSettings.ui_schema;
     this.currentData = initialSettings.data;
     this.setOriginalModelSettings(this.currentData);
-    this.jsonDataService.registerDataGetter(this.getData);
     // @ts-ignore
     this.$store.dispatch("pagebuilder/dialog/setApplySettings", {
       applySettings: this.applySettings,
@@ -170,9 +172,8 @@ export default {
     },
     sendAlert(params: Parameters<ProvidedMethods["sendAlert"]>[0]) {
       const knimeService = this.getKnimeService();
-      const alert = knimeService.createAlert(params);
-      alert.nodeInfo.nodeName = " ";
-      knimeService.sendWarning(alert);
+      const alertService = new AlertingService(knimeService);
+      alertService.sendAlert(params, true);
     },
     /**
      * @param {Function} handleChange The handler function that is used to handle the change of a dialog setting
@@ -319,7 +320,7 @@ export default {
     },
     applySettings() {
       this.setOriginalModelSettings(this.currentData);
-      return this.jsonDataService!.applyData();
+      return this.jsonDataService!.applyData(this.getData());
     },
     async applySettingsCloseDialog() {
       const response = await this.applySettings();

@@ -1,10 +1,10 @@
 import { Component, createApp } from "vue";
-import { KnimeService } from "@knime/ui-extension-service";
+import { UIExtensionService } from "@knime/ui-extension-service";
 
 export default (component: Component, withInitialData = false) => {
   return (
     shadowRoot: ShadowRoot,
-    knimeService: KnimeService,
+    knimeService: UIExtensionService,
     initialData: any,
     getImageUrl: (resourceInfo: { baseUrl: string; path: string }) => string,
   ) => {

@@ -96,10 +96,10 @@ describe("ImageView.vue", () => {
 
   beforeEach(() => {
     jsonDataServiceMock = createJsonDataServiceMock();
-    (JsonDataService as Mock).mockImplementation(() => jsonDataServiceMock);
+    (JsonDataService as any).mockImplementation(() => jsonDataServiceMock);
     const setRenderCompleted = vi.fn();
-    (ReportingService as Mock).mockImplementation((knimeService) => ({
-      isReportingActive: () => knimeService.isReport,
+    (ReportingService as any).mockImplementation((baseService: any) => ({
+      isReportingActive: () => baseService.isReport,
       setRenderCompleted,
     }));
   });

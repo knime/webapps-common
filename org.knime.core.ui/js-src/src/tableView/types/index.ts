@@ -1,4 +1,4 @@
-import type { KnimeService } from "@knime/ui-extension-service";
+import type { UIExtensionService } from "@knime/ui-extension-service";
 import type TableViewViewSettings from "./ViewSettings";
 import { MenuItem } from "@@/webapps-common/ui/components/MenuItems.vue";
 import { FilterConfig } from "@knime/knime-ui-table";
@@ -69,7 +69,7 @@ export interface TableViewDisplayProps {
   enableRowResizing: boolean;
   currentRowHeight: number;
   includeImageResources: boolean;
-  knimeService: KnimeService;
+  knimeService: UIExtensionService;
   forceHideTableSizes?: boolean;
   firstRowImageDimensions: Record<string, ImageDimension>;
   settingsItems?: MenuItem[];

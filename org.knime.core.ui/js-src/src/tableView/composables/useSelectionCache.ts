@@ -1,10 +1,10 @@
 import {
   CachingSelectionService,
-  type KnimeService,
+  type UIExtensionService,
 } from "@knime/ui-extension-service";
 import { ref } from "vue";
 
-export default (knimeService: KnimeService) => {
+export default (knimeService: UIExtensionService) => {
   const selectionService = new CachingSelectionService(knimeService);
 
   const currentSelection = ref([] as boolean[]);
