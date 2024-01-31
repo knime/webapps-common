@@ -6,7 +6,6 @@ export default (component: Component, withInitialData = false) => {
     shadowRoot: ShadowRoot,
     knimeService: UIExtensionService,
     initialData: any,
-    getImageUrl: (resourceInfo: { baseUrl: string; path: string }) => string,
   ) => {
     // create a app holder in the shadow root
     const holder = document.createElement("div");
@@ -27,7 +26,6 @@ export default (component: Component, withInitialData = false) => {
     const app = createApp(component, rootProps);
     app.provide("getKnimeService", () => knimeService);
     app.provide("shadowRoot", shadowRoot);
-    app.provide("getImageUrl", getImageUrl);
     app.mount(holder);
 
     return {
