@@ -21,14 +21,8 @@ const mountApp = (initialData: any = null) => {
     .createElement("div")
     .attachShadow({ mode: "open" });
   const knimeService = {} as UIExtensionService;
-  const getImageUrl = vi.fn(() => "");
 
-  const app = exportedAppFunction(
-    shadowRoot,
-    knimeService,
-    initialData,
-    getImageUrl,
-  );
+  const app = exportedAppFunction(shadowRoot, knimeService, initialData);
 
   return { app, shadowRoot };
 };

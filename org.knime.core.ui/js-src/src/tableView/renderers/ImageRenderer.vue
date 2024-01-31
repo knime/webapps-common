@@ -92,6 +92,16 @@ watch(
   },
   { immediate: true },
 );
+
+watch(
+  () => imageUrlWithDimensions.value,
+  (newValue, oldValue) => {
+    if (oldValue === null && !props.update) {
+      fixedSrc = newValue;
+    }
+  },
+  { immediate: true },
+);
 </script>
 
 <template>

@@ -821,8 +821,11 @@ export default {
     ) {
       return newSettings[key] !== this.settings[key];
     },
-    onViewSettingsChange(data: { view: PossiblyNonInitializedSettings }) {
-      const newSettings = data.view;
+    onViewSettingsChange({
+      data: { view: newSettings },
+    }: {
+      data: { view: PossiblyNonInitializedSettings };
+    }) {
       if (isInitialized(newSettings)) {
         this.handleNewSettings(newSettings);
       }

@@ -3,63 +3,48 @@
 /* eslint-disable max-lines */
 import { mount } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createStore } from "vuex";
 import * as imagesModule from "../../../utils/images";
 
 import ImageRenderer from "../ImageRenderer.vue";
 import flushPromises from "flush-promises";
+import { ResourceService } from "@knime/ui-extension-service";
 
 describe("ImageRenderer.vue", () => {
   let props, context;
 
-  const getUiExtResourceLocation = vi.fn(
-    ({ resourceInfo }) => resourceInfo.baseUrl + resourceInfo.path,
+  const getResourceUrl = vi.fn((path) =>
+    Promise.resolve(`Resource url (${path})`),
   );
 
   beforeEach(() => {
+    ResourceService.mockImplementation(() => ({
+      getResourceUrl,
+    }));
     props = {
-      baseUrl: "baseUrl",
       path: "path",
       includeDataInHtml: false,
       tableIsReady: true,
     };
-    const store = createStore({
-      modules: {
-        api: {
-          getters: {
-            uiExtResourceLocation: () => getUiExtResourceLocation,
-          },
-          namespaced: true,
-        },
-      },
-    });
-    context = { props, global: { provide: { store } } };
+
+    context = { props, global: { provide: { getKnimeService: () => ({}) } } };
   });
 
-  it("sets url", () => {
+  it("sets url", async () => {
     const wrapper = mount(ImageRenderer, context);
-    const resourceInfo = {
-      baseUrl: props.baseUrl,
-      path: props.path,
-    };
-    expect(getUiExtResourceLocation).toHaveBeenCalledWith({ resourceInfo });
+    await flushPromises();
+    expect(getResourceUrl).toHaveBeenCalledWith(props.path);
     expect(wrapper.find("img").attributes().src).toBe(
-      getUiExtResourceLocation({ resourceInfo }),
+      await getResourceUrl(props.path),
     );
   });
 
-  it("sets width and height if provided", () => {
+  it("sets width and height if provided", async () => {
     props.width = 10;
     props.height = 20;
     const wrapper = mount(ImageRenderer, context);
-    const resourceInfo = {
-      baseUrl: props.baseUrl,
-      path: props.path,
-    };
+    await flushPromises();
     expect(wrapper.find("img").attributes().src).toBe(
-      `${getUiExtResourceLocation({ resourceInfo })}?w=${props.width}&h=${
-        props.height
-      }`,
+      `${await getResourceUrl(props.path)}?w=${props.width}&h=${props.height}`,
     );
   });
 
@@ -67,12 +52,9 @@ describe("ImageRenderer.vue", () => {
     props.width = 10;
     props.height = 20;
     props.update = false;
-    const resourceInfo = {
-      baseUrl: props.baseUrl,
-      path: props.path,
-    };
     const wrapper = mount(ImageRenderer, context);
-    const initialSrc = `${getUiExtResourceLocation({ resourceInfo })}?w=${
+    await flushPromises();
+    const initialSrc = `${await getResourceUrl(props.path)}?w=${
       props.width
     }&h=${props.height}`;
     expect(wrapper.find("img").attributes().src).toBe(initialSrc);
@@ -82,13 +64,14 @@ describe("ImageRenderer.vue", () => {
       height: 123,
     };
     await wrapper.setProps(newProps);
+    await flushPromises();
     expect(wrapper.find("img").attributes().src).toBe(initialSrc);
 
     await wrapper.setProps({
       update: true,
     });
     expect(wrapper.find("img").attributes().src).toBe(
-      `${getUiExtResourceLocation({ resourceInfo })}?w=${newProps.width}&h=${
+      `${await getResourceUrl(props.path)}?w=${newProps.width}&h=${
         newProps.height
       }`,
     );
@@ -114,19 +97,20 @@ describe("ImageRenderer.vue", () => {
     it("emits pending and rendered events when image is loaded", async () => {
       props.includeDataInHtml = true;
       const wrapper = mount(ImageRenderer, context);
+      await flushPromises();
       expect(wrapper.emitted("pending")[0]).toStrictEqual([
         expect.stringContaining("Image"),
       ]);
-      expect(wrapper.emitted("rendered")).toBeFalsy();
-      await flushPromises();
       expect(wrapper.emitted("rendered")[0]).toStrictEqual([
         expect.stringContaining("Image"),
       ]);
     });
 
-    it("emits rendered when the ImageRenderer is unmounted", () => {
+    it("emits rendered when the ImageRenderer is unmounted", async () => {
       props.includeDataInHtml = true;
+      props.tableIsReady = false;
       const wrapper = mount(ImageRenderer, context);
+      await flushPromises();
       expect(wrapper.emitted("pending")).toStrictEqual([
         [expect.stringContaining("Image")],
       ]);
@@ -141,6 +125,7 @@ describe("ImageRenderer.vue", () => {
       props.tableIsReady = false;
       props.includeDataInHtml = true;
       const wrapper = mount(ImageRenderer, context);
+      await flushPromises();
       expect(wrapper.emitted("pending")[0]).toStrictEqual([
         expect.stringContaining("Image"),
       ]);

@@ -3,9 +3,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { shallowMount } from "@vue/test-utils";
 import { JsonForms } from "@jsonforms/vue";
 import {
-  AlertTypes,
+  AlertType,
   JsonDataService,
   DialogService,
+  AlertingService,
 } from "@knime/ui-extension-service";
 import {
   dialogApplyData,
@@ -288,16 +289,15 @@ describe("NodeDialog.vue", () => {
   });
 
   it("provides 'sendAlert' method", () => {
-    const createAlertMock = vi.fn(() => ({ nodeInfo: {} }));
-    const sendWarningMock = vi.fn();
-    const options = getOptions({ createAlertMock, sendWarningMock });
+    const sendAlert = vi.fn();
+    AlertingService.mockImplementation(() => ({
+      sendAlert,
+    }));
+    const options = getOptions();
     const wrapper = shallowMount(NodeDialog, options);
-    const callParams = { type: AlertTypes.ERROR, message: "message" };
+    const callParams = { type: AlertType.ERROR, message: "message" };
     wrapper.vm.sendAlert(callParams);
-    expect(createAlertMock).toHaveBeenCalledWith(callParams);
-    expect(sendWarningMock).toHaveBeenCalledWith({
-      nodeInfo: { nodeName: " " },
-    });
+    expect(sendAlert).toHaveBeenCalledWith(callParams, true);
   });
 
   it("provides 'getAvailableFlowVariables' method", () => {
@@ -355,6 +355,15 @@ describe("NodeDialog.vue", () => {
   });
 
   describe("getPossibleValuesFromUiSchema", () => {
+    let sendAlert;
+
+    beforeEach(() => {
+      sendAlert = vi.fn();
+      AlertingService.mockImplementation(() => ({
+        sendAlert,
+      }));
+    });
+
     it("provides 'getPossibleValuesFromUiSchema' method", async () => {
       const mockChoices = [{ id: "foo", text: "bar" }];
       const wrapper = shallowMount(NodeDialog, getOptions());
@@ -376,8 +385,7 @@ describe("NodeDialog.vue", () => {
 
     it("displays an error when getChoices returns state 'FAIL'", async () => {
       const myMessage = "MyMessage";
-      const createAlertMock = vi.fn(() => ({ nodeInfo: {} }));
-      const wrapper = shallowMount(NodeDialog, getOptions({ createAlertMock }));
+      const wrapper = shallowMount(NodeDialog, getOptions());
       vi.spyOn(wrapper.vm.jsonDataService, "data").mockResolvedValue({
         state: "FAIL",
         message: myMessage,
@@ -388,16 +396,18 @@ describe("NodeDialog.vue", () => {
         },
       });
       expect(choices).toStrictEqual([]);
-      expect(createAlertMock).toHaveBeenCalledWith({
-        type: AlertTypes.ERROR,
-        subtitle: "Failed to fetch possible values.",
-        message: myMessage,
-      });
+      expect(sendAlert).toHaveBeenCalledWith(
+        {
+          type: AlertType.ERROR,
+          subtitle: "Failed to fetch possible values.",
+          message: myMessage,
+        },
+        true,
+      );
     });
 
     it("displays an error when getChoices returns state 'CANCELED'", async () => {
-      const createAlertMock = vi.fn(() => ({ nodeInfo: {} }));
-      const wrapper = shallowMount(NodeDialog, getOptions({ createAlertMock }));
+      const wrapper = shallowMount(NodeDialog, getOptions());
       vi.spyOn(wrapper.vm.jsonDataService, "data").mockResolvedValue({
         state: "CANCELED",
       });
@@ -408,10 +418,13 @@ describe("NodeDialog.vue", () => {
         },
       });
       expect(choices).toStrictEqual([]);
-      expect(createAlertMock).toHaveBeenCalledWith({
-        type: AlertTypes.ERROR,
-        subtitle: `Receiving possible values from ${choicesProviderClass} canceled.`,
-      });
+      expect(sendAlert).toHaveBeenCalledWith(
+        {
+          type: AlertType.ERROR,
+          subtitle: `Receiving possible values from ${choicesProviderClass} canceled.`,
+        },
+        true,
+      );
     });
   });
 

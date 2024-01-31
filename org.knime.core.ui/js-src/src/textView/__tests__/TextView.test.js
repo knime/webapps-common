@@ -71,7 +71,7 @@ describe("TextView.vue", () => {
         },
         flowVariableSettings: {},
       };
-      await wrapper.vm.onViewSettingsChange({ data });
+      await wrapper.vm.onViewSettingsChange(data);
       expect(wrapper.vm.richTextContent).toStrictEqual(
         data.data.view.richTextContent,
       );
@@ -91,7 +91,7 @@ describe("TextView.vue", () => {
         flowVariableSettings: {},
       };
       wrapper.vm.flowVariablesMap = flowVariablesMap;
-      await wrapper.vm.onViewSettingsChange({ data });
+      await wrapper.vm.onViewSettingsChange(data);
       expect(wrapper.vm.richTextContent).toBe(
         `${flowVariablesMap.key1} abc ${flowVariablesMap.key2}`,
       );
@@ -111,7 +111,7 @@ describe("TextView.vue", () => {
         flowVariableSettings: {},
       };
       wrapper.vm.flowVariablesMap = flowVariablesMap;
-      await wrapper.vm.onViewSettingsChange({ data });
+      await wrapper.vm.onViewSettingsChange(data);
       expect(wrapper.vm.richTextContent).toBe(
         `${flowVariablesMap.key1} abc ${flowVariablesMap.key2}`,
       );
@@ -130,7 +130,7 @@ describe("TextView.vue", () => {
           },
         },
       };
-      await wrapper.vm.onViewSettingsChange({ data });
+      await wrapper.vm.onViewSettingsChange(data);
       expect(wrapper.vm.richTextContent).toStrictEqual(defaultContent);
     });
   });

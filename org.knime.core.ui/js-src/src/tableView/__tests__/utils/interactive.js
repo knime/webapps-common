@@ -15,6 +15,6 @@ export const changeViewSetting = (wrapper, settingsKey, settingsValue) => {
   const settings = deepCopySettings(wrapper);
   settings[settingsKey] = settingsValue;
   wrapper.vm.onViewSettingsChange({
-    data: { data: { view: settings } },
+    data: { view: settings },
   });
 };

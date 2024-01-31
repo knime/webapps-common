@@ -8,11 +8,13 @@ import {
   type Mock,
 } from "vitest";
 import ImageView from "../ImageView.vue";
-import { JsonDataService, ReportingService } from "@knime/ui-extension-service";
+import {
+  JsonDataService,
+  ReportingService,
+  ResourceService,
+} from "@knime/ui-extension-service";
 import Label from "webapps-common/ui/components/forms/Label.vue";
 import flushPromises from "flush-promises";
-// @ts-ignore
-import { createStore } from "vuex";
 import { VueWrapper, mount } from "@vue/test-utils";
 import * as fetchImage from "@/utils/images";
 import type ImageViewSettings from "../types/ImageViewSettings";
@@ -23,7 +25,6 @@ describe("ImageView.vue", () => {
     addOnDataChangeCallback: Mock<any, any>;
   };
 
-  const defaultBaseUrl = "defaultBaseUrl";
   const defaultImagePath = "defaultImagePath";
   const defaultSettings = {
     title: "defaultTitle",
@@ -44,23 +45,15 @@ describe("ImageView.vue", () => {
     addOnDataChangeCallback: vi.fn(),
   });
 
-  const storeOptions = {
-    modules: {
-      api: {
-        getters: {
-          uiExtResourceLocation: () =>
-            vi.fn(
-              ({ resourceInfo }) => resourceInfo.baseUrl + resourceInfo.path,
-            ),
-        },
-        namespaced: true,
-      },
-    },
-  };
+  let getResourceUrl: Mock;
+  const getMockResourceUrl = (path: string) => `Resource url ( ${path} )`;
 
   const mountComponent = async (isReport = false) => {
+    getResourceUrl = vi.fn((path) => Promise.resolve(getMockResourceUrl(path)));
     const setRenderCompleted = vi.fn();
-    // eslint-disable-next-line no-extra-parens
+    (ResourceService as any).mockImplementation(() => ({
+      getResourceUrl,
+    }));
     (ReportingService as any).mockImplementation(
       ({ isReport }: { isReport: boolean }) => ({
         isReportingActive: () => isReport,
@@ -72,20 +65,15 @@ describe("ImageView.vue", () => {
         provide: {
           getKnimeService: () => ({
             isReport,
-            extensionConfig: {
-              resourceInfo: {
-                baseUrl: defaultBaseUrl,
-              },
-            },
+            extensionConfig: {},
           }),
-          store: createStore(storeOptions),
         },
       },
     };
     const wrapper = mount(ImageView, mountOptions) as VueWrapper & {
       vm: {
         onViewSettingsChange: (param: {
-          data: { data: { view: Partial<ImageViewSettings> } };
+          data: { view: Partial<ImageViewSettings> };
         }) => void;
         viewSettings: ImageViewSettings;
       };
@@ -116,7 +104,7 @@ describe("ImageView.vue", () => {
       caption: string;
       shrinkToFit: boolean;
     },
-    imageSrc = defaultBaseUrl + defaultImagePath,
+    imageSrc = getMockResourceUrl(defaultImagePath),
   ) => {
     expect(imageView.vm.viewSettings.title).toStrictEqual(settings.title);
     expect(imageView.vm.viewSettings.altText).toStrictEqual(settings.altText);
@@ -228,7 +216,7 @@ describe("ImageView.vue", () => {
           },
         },
       };
-      await wrapper.vm.onViewSettingsChange({ data });
+      await wrapper.vm.onViewSettingsChange(data);
       checkWrapper(wrapper, data.data.view);
     });
   });
@@ -240,7 +228,7 @@ describe("ImageView.vue", () => {
         view: { ...defaultSettings, title: "" },
       },
     };
-    await wrapper.vm.onViewSettingsChange({ data });
+    await wrapper.vm.onViewSettingsChange(data);
     checkWrapper(wrapper, data.data.view);
   });
 
@@ -251,7 +239,7 @@ describe("ImageView.vue", () => {
         view: { ...defaultSettings, caption: "" },
       },
     };
-    await wrapper.vm.onViewSettingsChange({ data });
+    await wrapper.vm.onViewSettingsChange(data);
     checkWrapper(wrapper, data.data.view);
   });
 
@@ -262,7 +250,7 @@ describe("ImageView.vue", () => {
         view: { ...defaultSettings, title: "", caption: "" },
       },
     };
-    await wrapper.vm.onViewSettingsChange({ data });
+    await wrapper.vm.onViewSettingsChange(data);
     checkWrapper(wrapper, data.data.view);
   });
 });
