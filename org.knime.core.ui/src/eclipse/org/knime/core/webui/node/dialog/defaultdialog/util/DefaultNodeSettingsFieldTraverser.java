@@ -101,6 +101,8 @@ public class DefaultNodeSettingsFieldTraverser {
         var newMapper = new ObjectMapper();
         newMapper.setSerializationInclusion(Include.NON_NULL);
         newMapper.setVisibility(PropertyAccessor.ALL, Visibility.NON_PRIVATE);
+        newMapper.setVisibility(PropertyAccessor.GETTER, Visibility.NONE);
+        newMapper.setVisibility(PropertyAccessor.IS_GETTER, Visibility.NONE);
         newMapper.setPropertyNamingStrategy(new PropertyNamingStrategy() {
             private static final long serialVersionUID = 1L;
 

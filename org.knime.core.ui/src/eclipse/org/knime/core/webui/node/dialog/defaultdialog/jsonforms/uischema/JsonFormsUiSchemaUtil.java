@@ -52,7 +52,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
@@ -61,13 +60,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.rule.ScopedExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesAdder;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.cfg.MapperConfig;
-import com.fasterxml.jackson.databind.introspect.AnnotatedField;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
@@ -105,19 +98,7 @@ public final class JsonFormsUiSchemaUtil {
     }
 
     private static ObjectMapper createMapper() {
-        var mapper = new ObjectMapper();
-        mapper.setSerializationInclusion(Include.NON_NULL);
-        mapper.setVisibility(PropertyAccessor.ALL, Visibility.NON_PRIVATE);
-        mapper.setPropertyNamingStrategy(new PropertyNamingStrategy() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public String nameForField(final MapperConfig<?> config, final AnnotatedField field,
-                final String defaultName) {
-                return StringUtils.removeStart(defaultName, "m_");
-            }
-        });
-        return mapper;
+        return new ObjectMapper();
     }
 
     /**
