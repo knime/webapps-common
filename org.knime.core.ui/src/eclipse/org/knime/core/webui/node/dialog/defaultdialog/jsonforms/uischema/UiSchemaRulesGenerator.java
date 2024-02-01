@@ -69,6 +69,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.rule.JsonFormsExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Operator;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.ScopedExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
+import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -144,37 +145,33 @@ final class UiSchemaRulesGenerator {
                         .getDeclaredConstructor().newInstance().applies(m_nodeSettingsContext));
                 } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
                         | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
-                    throw new UiSchemaGenerationException(
-                        "Unable to instantiate instance of " + signalClass.getName(), ex);
+                    throw new UiSchemaGenerationException("Unable to instantiate instance of " + signalClass.getName(),
+                        ex);
                 }
             } else if (m_effect.ignoreOnMissingSignals()) {
                 return Optional.empty();
             } else {
-                throw new UiSchemaGenerationException(String.format(
-                    "Missing source annotation: %s. "
-                            + "If this is wanted and the rule should be ignored instead of throwing this error, "
-                            + "use the respective flag in the @Effect annotation.",
-                            signalClass.getName()));
+                throw new UiSchemaGenerationException(String.format("Missing source annotation: %s. "
+                    + "If this is wanted and the rule should be ignored instead of throwing this error, "
+                    + "use the respective flag in the @Effect annotation.", signalClass.getName()));
             }
         } else {
             // (artificial design limitation:) input signals not to be used as identifiers in @Signal annotation
             CheckUtils.check(!ConstantSignal.class.isAssignableFrom(signalClass), UiSchemaGenerationException::new,
                 () -> String.format(
                     "Invalid source annotation: %s - it denotes a %s, "
-                            + "which can not be referenced by a @Signal annotation.", //
-                            signalClass, ConstantSignal.class.getSimpleName()));
+                        + "which can not be referenced by a @Signal annotation.", //
+                    signalClass, ConstantSignal.class.getSimpleName()));
         }
         return Optional.of(expression);
     }
 
-    @SuppressWarnings("unchecked")
     private static Expression<JsonFormsExpression> instantiateOperation(
         @SuppressWarnings("rawtypes") final Class<? extends Operator> operationClass,
         final JsonFormsExpression[] expressions) {
         try {
             return instantiateWithSuitableConstructor(operationClass, expressions);
-        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException ex) {
+        } catch (IllegalArgumentException ex) {
             throw new UiSchemaGenerationException(
                 String.format("Failed to instantiate operation %s", operationClass.getSimpleName()), ex);
         }
@@ -183,17 +180,17 @@ final class UiSchemaRulesGenerator {
     @SuppressWarnings("unchecked")
     private static Operator<JsonFormsExpression> instantiateWithSuitableConstructor(
         @SuppressWarnings("rawtypes") final Class<? extends Operator> operationClass,
-        final JsonFormsExpression[] expressions)
-        throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        final JsonFormsExpression[] expressions) {
         final var constructors = operationClass.getDeclaredConstructors();
         final var multiParameterConstructor = getMultiParameterConstructor(constructors, expressions.length);
         if (multiParameterConstructor != null) {
-            return (Operator<JsonFormsExpression>)multiParameterConstructor.newInstance((Object[])expressions);
+            return (Operator<JsonFormsExpression>)InstantiationUtil.createInstance(multiParameterConstructor,
+                (Object[])expressions);
         }
         final var arrayConstructor = getArrayConstructor(constructors);
         if (arrayConstructor != null) {
-            final Object[] parameters = new Object[]{expressions};
-            return (Operator<JsonFormsExpression>)arrayConstructor.newInstance(parameters);
+            final var parameters = new Object[]{expressions};
+            return (Operator<JsonFormsExpression>)InstantiationUtil.createInstance(arrayConstructor, parameters);
         }
         throw new UiSchemaGenerationException(
             String.format("No valid constructor found for operation %s with %s expressions",

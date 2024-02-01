@@ -72,8 +72,8 @@ public final class InstantiationUtil {
      * @param <T> the type of the instance
      * @param clazz
      * @param context a settings creation context
-     * @return the instance provided by the constructor of clazz which takes a single {@link DefaultNodeSettingsContext} as
-     *         a parameter.
+     * @return the instance provided by the constructor of clazz which takes a single {@link DefaultNodeSettingsContext}
+     *         as a parameter.
      */
     public static <T extends DefaultNodeSettings> T createDefaultNodeSettings(final Class<T> clazz,
         final DefaultNodeSettingsContext context) {
@@ -85,8 +85,8 @@ public final class InstantiationUtil {
     /**
      * @param clazz
      * @param context a settings creation context
-     * @return the instance provided by the constructor of clazz which takes a single {@link DefaultNodeSettingsContext} as
-     *         a parameter.
+     * @return the instance provided by the constructor of clazz which takes a single {@link DefaultNodeSettingsContext}
+     *         as a parameter.
      */
     public static Object createInstanceWithContext(final Class<?> clazz, final DefaultNodeSettingsContext context) {
         try {
@@ -95,7 +95,6 @@ public final class InstantiationUtil {
         }
         return createInstance(clazz);
     }
-
 
     /**
      * @param <T> the type of the instance
@@ -111,7 +110,16 @@ public final class InstantiationUtil {
         }
     }
 
-    private static <T> T createInstance(final Constructor<T> constructor, final Object... initArgs) {
+    /**
+     * Creates a new instance using the given constructor and arguments, trying to make the constructor accessible in
+     * the process by invoking {@link Constructor#setAccessible(boolean)}.
+     *
+     * @param <T> instance type
+     * @param constructor constructor
+     * @param initArgs arguments for constructor
+     * @return instance created by constructor
+     */
+    public static <T> T createInstance(final Constructor<T> constructor, final Object... initArgs) {
         constructor.setAccessible(true); // NOSONAR
         try {
             return constructor.newInstance(initArgs);
