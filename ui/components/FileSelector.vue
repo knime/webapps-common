@@ -23,7 +23,7 @@ export default {
         multiple: {
             type: Boolean,
             default: false
-        },
+        }
     },
     computed: {
         displayedFilename() {
