@@ -31,7 +31,7 @@ export default {
     },
     computed: {
         displayedFilename() {
-            return this.value?.map?.(({ name }) => name).join(', ') ||  'No file selected';
+            return this.value?.map?.(({ name }) => name).join(', ') || 'No file selected';
         },
         fileSelectorId() {
             return `file-selector-${this._uid}`;
