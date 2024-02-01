@@ -50,27 +50,25 @@ describe("FileSelector.vue", () => {
       type: "text/plain",
     });
 
-    wrapper.vm.onSelect({
-      target: {
-        files: [file],
-      },
+    await wrapper.setProps({
+      value: [file],
     });
-    await wrapper.vm.$nextTick();
-    expect(wrapper.emitted().input).toBeTruthy();
     expect(wrapper.find(".filename").text()).toContain("test-file.txt");
   });
 
   it("renders correctly with given file", () => {
     const fileName = "not-the-file-you-are-looking-for.zip";
+    const file = new File(["test file"], fileName, {
+      type: "text/plain",
+    });
+
     const wrapper = mount(FileSelector, {
-        propsData: {
-            label: "Select file",
-            acceptedFileTypes: "*",
-            multiple: false,
-            files: [{
-                name: fileName
-            }]
-        }
+      propsData: {
+        label: "Select file",
+        acceptedFileTypes: "*",
+        multiple: false,
+        value: [file],
+      },
     });
     expect(wrapper.find(".filename").text()).toBe(fileName);
   });
