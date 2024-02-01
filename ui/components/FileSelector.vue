@@ -24,10 +24,6 @@ export default {
             type: Boolean,
             default: false
         },
-        files: {
-            type: Array,
-            default: null
-        }
     },
     computed: {
         displayedFilename() {
