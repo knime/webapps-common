@@ -6,6 +6,7 @@ export { DialogService } from "./DialogService";
 export { AlertingService } from "./AlertingService";
 export { ResourceService } from "./ResourceService";
 export { ImageGenerationService } from "./ImageGenerationService";
+export { CloseService } from "./CloseService";
 export {
   ColorService,
   NumericColorHandler,

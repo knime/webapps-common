@@ -12,6 +12,7 @@ export {
   AlertingService,
   ResourceService,
   ImageGenerationService,
+  CloseService,
 } from "./services";
 
 export * from "./types";

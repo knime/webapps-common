@@ -79,3 +79,5 @@ export type SelectionServiceAPILayer = Pick<
   UIExtensionServiceAPILayer,
   "updateDataPointSelection"
 > & { getConfig: () => SelectionServiceExtensionConfig };
+
+export type CloseServiceAPILayer = Pick<UIExtensionServiceAPILayer, "close">;
