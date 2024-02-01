@@ -15,7 +15,7 @@ type registerWatcher = (params: {
   transformSettings: (newData: SettingsData) => Promise<void> | void;
   init?: (newData: SettingsData) => Promise<void>;
   dependencies: string[];
-}) => void;
+}) => Promise<() => void>;
 type getData = (
   params: Parameters<JsonDataService["data"]>[0] & object,
 ) => Promise<any>;

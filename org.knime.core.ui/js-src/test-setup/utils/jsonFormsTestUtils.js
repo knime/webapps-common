@@ -61,6 +61,7 @@ export const mountJsonFormsComponent = (
       control: ref(props.control),
     });
   }
+  const unregisterWatcher = vi.fn();
   const store = createStore({ modules });
   const wrapper = mount(component, {
     props,
@@ -82,6 +83,7 @@ export const mountJsonFormsComponent = (
           if (typeof init === "function") {
             init({});
           }
+          return unregisterWatcher;
         },
         getPossibleValuesFromUiSchema: (control) =>
           getPossibleValuesFromUiSchema(control, asyncChoicesProvider),
@@ -111,6 +113,7 @@ export const mountJsonFormsComponent = (
   return {
     wrapper,
     callbacks,
+    unregisterWatcher,
     updateData,
     useJsonFormsControlSpy,
     sendAlert,

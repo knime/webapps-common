@@ -1,5 +1,12 @@
 <script setup lang="ts">
-import { type Ref, type PropType, ref, computed, onMounted } from "vue";
+import {
+  type Ref,
+  type PropType,
+  ref,
+  computed,
+  onMounted,
+  onBeforeUnmount,
+} from "vue";
 import { rendererProps } from "@jsonforms/vue";
 import LoadingDropdown from "./loading/LoadingDropdown.vue";
 import { AlertTypes } from "@knime/ui-extension-service";
@@ -103,10 +110,12 @@ const setInitialOptions = async () => {
   }
 };
 
-onMounted(() => {
+let unregisterWatcher = () => {};
+
+onMounted(async () => {
   if (choicesUpdateHandler.value) {
     const dependencies = control.value.uischema.options?.dependencies || [];
-    registerWatcher({
+    unregisterWatcher = await registerWatcher({
       transformSettings: updateOptions,
       init: fetchInitialOptions,
       dependencies,
@@ -114,6 +123,10 @@ onMounted(() => {
   } else {
     setInitialOptions();
   }
+});
+
+onBeforeUnmount(() => {
+  unregisterWatcher();
 });
 
 const dropdownValue = computed(() =>

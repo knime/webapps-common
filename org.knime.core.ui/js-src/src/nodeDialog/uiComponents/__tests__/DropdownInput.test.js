@@ -214,6 +214,7 @@ describe("DropdownInput.vue", () => {
       dependencies,
       getDataMock,
       sendAlert,
+      unregisterWatcher,
       newSettings;
 
     const dependenciesUischema = ["foo", "bar"];
@@ -246,6 +247,7 @@ describe("DropdownInput.vue", () => {
 
       const callbacks = comp.callbacks;
       const firstWatcherCall = callbacks[0];
+      unregisterWatcher = comp.unregisterWatcher;
       settingsChangeCallback = firstWatcherCall.transformSettings;
       initialSettingsChangeCallback = firstWatcherCall.init;
       dependencies = firstWatcherCall.dependencies;
@@ -255,6 +257,11 @@ describe("DropdownInput.vue", () => {
     it("registers watcher", () => {
       expect(settingsChangeCallback).toBeDefined();
       expect(dependencies).toStrictEqual(dependenciesUischema);
+    });
+
+    it("deregisters watcher on unmount", () => {
+      wrapper.unmount();
+      expect(unregisterWatcher).toHaveBeenCalled();
     });
 
     it("requests new data if dependencies change", () => {

@@ -27,6 +27,7 @@ import type Control from "./types/Control";
 import getChoices from "./api/getChoices";
 import * as flowVariablesApi from "./api/flowVariables";
 import type { FlowSettings } from "./api/types";
+import { v4 as uuidv4 } from "uuid";
 
 const renderers = [
   ...vanillaRenderers,
@@ -41,6 +42,7 @@ declare global {
 }
 
 type RegisteredWatcher = {
+  id: string;
   dataPaths: string[];
   transformSettings: (newData: SettingsData) => void;
 };
@@ -207,13 +209,20 @@ export default {
       init,
       dependencies,
     }: Parameters<ProvidedMethods["registerWatcher"]>[0]) {
-      this.registeredWatchers.push({
+      const registered = {
+        id: uuidv4(),
         transformSettings,
         dataPaths: dependencies.map(toDataPath),
-      });
+      };
+      this.registeredWatchers.push(registered);
       if (typeof init === "function") {
         await init(this.currentData);
       }
+      return () => {
+        this.registeredWatchers = this.registeredWatchers.filter(
+          (item) => item.id !== registered.id,
+        );
+      };
     },
     getAvailableFlowVariables(persistPath: string) {
       return flowVariablesApi.getAvailableFlowVariables(

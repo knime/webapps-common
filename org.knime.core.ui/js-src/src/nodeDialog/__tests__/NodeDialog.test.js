@@ -443,7 +443,7 @@ describe("NodeDialog.vue", () => {
       await wrapper.vm.registerWatcher({ transformSettings, dependencies });
 
       expect(wrapper.vm.registeredWatchers.length).toBe(1);
-      expect(wrapper.vm.registeredWatchers[0]).toStrictEqual({
+      expect(wrapper.vm.registeredWatchers[0]).toMatchObject({
         transformSettings,
         dataPaths: ["test", "test2"],
       });
@@ -456,11 +456,37 @@ describe("NodeDialog.vue", () => {
       });
 
       expect(wrapper.vm.registeredWatchers.length).toBe(2);
-      expect(wrapper.vm.registeredWatchers[1]).toStrictEqual({
+      expect(wrapper.vm.registeredWatchers[1]).toMatchObject({
         transformSettings,
         dataPaths: ["test", "test2"],
       });
       expect(init).toHaveBeenCalled();
+    });
+
+    it("removes watcher when calling the returned value of registerWatcher", async () => {
+      const wrapper = shallowMount(NodeDialog, getOptions());
+      await flushPromises();
+
+      wrapper.setData({
+        currentData: {
+          test: "test",
+          test2: "test",
+          otherTest: "test",
+        },
+      });
+
+      const dependencies = ["#/properties/test", "#/properties/test2"];
+
+      const unwatch = await wrapper.vm.registerWatcher({
+        transformSettings: vi.fn(),
+        dependencies,
+      });
+
+      expect(wrapper.vm.registeredWatchers.length).toBe(1);
+
+      unwatch();
+
+      expect(wrapper.vm.registeredWatchers.length).toBe(0);
     });
   });
 
