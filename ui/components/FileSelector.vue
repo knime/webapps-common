@@ -2,7 +2,6 @@
 import Button from './Button.vue';
 import LensIcon from '../assets/img/icons/lens.svg';
 import { isEqual } from 'lodash';
-import consolaGlobalInstance from 'consola';
 
 export default {
     components: {
