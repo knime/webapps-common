@@ -9,7 +9,7 @@ export const getInitializedBaseServiceProxy = async (
 ): Promise<{ serviceProxy: UIExtensionService }> => {
   const baseService = createProxy(iframeWindow);
   const extensionConfig = await baseService.getConfig();
-  // @ts-expect-error
+  // @ts-expect-error the type is not yet satisfied. We cannot spread baseService, because it is a proxy
   const initializedBaseService = baseService as Omit<
     typeof baseService,
     "getConfig"
@@ -23,7 +23,7 @@ export const getInitializedBaseServiceProxy = async (
 };
 
 export class AbstractService<T> {
-  baseService: UIExtensionService<T>;
+  protected baseService: UIExtensionService<T>;
 
   constructor(baseService: UIExtensionService<T>) {
     if (new.target === AbstractService) {

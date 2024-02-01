@@ -1,10 +1,12 @@
 /* eslint-disable no-magic-numbers */
+import { UIExtensionService } from "src";
 import { setUpCustomEmbedderService } from "src/embedder";
 import {
   ColorService,
   NominalColorHandler,
   NumericColorHandler,
 } from "src/services/ColorService";
+import { ColorServiceAPILayer } from "src/services/types/serviceApiLayers";
 import { ColorModelType } from "src/types/ColorModel";
 import { extensionConfig } from "test/mocks";
 
@@ -24,7 +26,7 @@ describe("ColorService", () => {
   const nominalColumnName = "numericColumn";
 
   let colorService: ColorService,
-    uiExtensionService: typeof ColorService.prototype.baseService;
+    uiExtensionService: UIExtensionService<ColorServiceAPILayer>;
 
   const colorModels = {
     [numericColumnName]: {

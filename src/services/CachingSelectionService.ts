@@ -1,7 +1,9 @@
+import { UIExtensionService } from "src/types";
 import {
   SelectionEventCallbackParams,
   SelectionService,
 } from "./SelectionService";
+import { SelectionServiceAPILayer } from "./types/serviceApiLayers";
 
 /**
  * A SelectionService which persists the current selection.
@@ -9,7 +11,7 @@ import {
 export class CachingSelectionService extends SelectionService {
   private cachedSelection: Set<string>;
 
-  constructor(baseService?: typeof SelectionService.prototype.baseService) {
+  constructor(baseService?: UIExtensionService<SelectionServiceAPILayer>) {
     super(baseService);
     this.cachedSelection = new Set();
     this.addOnSelectionChangeCallback(this.addBackendSelection.bind(this));

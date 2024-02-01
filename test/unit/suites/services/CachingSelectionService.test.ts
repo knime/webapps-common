@@ -2,14 +2,16 @@ import {
   CachingSelectionService,
   SelectionService,
   UIExtensionPushEvents,
+  UIExtensionService,
 } from "src";
 import { setUpCustomEmbedderService } from "src/embedder";
 import { SelectionModes } from "src/services/SelectionService";
+import { SelectionServiceAPILayer } from "src/services/types/serviceApiLayers";
 import { extensionConfig } from "test/mocks";
 
 describe("CachingSelectionService", () => {
   let cachingSelectionService: CachingSelectionService,
-    knimeService: typeof SelectionService.prototype.baseService,
+    knimeService: UIExtensionService<SelectionServiceAPILayer>,
     dispatchPushEvent: (event: UIExtensionPushEvents.PushEvent<any>) => void;
 
   const setInitialSelection = (initialSelection: string[]) => {
