@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, type Ref, computed } from "vue";
+import { onMounted, ref, computed } from "vue";
 import FileExplorer from "webapps-common/ui/components/FileExplorer/FileExplorer.vue";
 import type { FileExplorerItem } from "webapps-common/ui/components/FileExplorer/types";
 import useFileChooserBackend from "./useFileChooserBackend";
@@ -12,12 +12,12 @@ import InputField from "webapps-common/ui/components/forms/InputField.vue";
 
 const { listItems, getFilePath } = useFileChooserBackend();
 
-const currentPath: Ref<string | null> = ref(null);
+const currentPath = ref<string | null>(null);
 
 const currentPathDisplay = computed(() => {
   return currentPath.value ?? "Root directories";
 });
-const items: Ref<FileExplorerItem[]> = ref([]);
+const items = ref<FileExplorerItem[]>([]);
 const props = withDefaults(
   defineProps<{ initialFilePath?: string; isWriter?: boolean }>(),
   {
@@ -33,7 +33,7 @@ const setNextItems = (folder: Folder) => {
   items.value = folder.items.map(toFileExplorerItem);
 };
 
-const displayedError: Ref<string | null> = ref(null);
+const displayedError = ref<string | null>(null);
 const setErrorMessage = (errorMessage: string | undefined) => {
   displayedError.value = errorMessage ?? null;
 };

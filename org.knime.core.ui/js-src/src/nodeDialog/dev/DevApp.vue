@@ -69,9 +69,6 @@ export default {
     if (localStorage && localStorage.dialogIdx) {
       this.currentDialogIndex = Number(localStorage.getItem("dialogIdx"));
     }
-    // Mock global AP/RPC functionality.
-    window.closeCEFWindow = () =>
-      console.log("Close CEF called by dev app (functional only in KAP).");
   },
   methods: {
     getMockBaseService(): UIExtensionService {
@@ -128,6 +125,11 @@ export default {
         updateDataPointSelection() {
           console.log("updateDataPointSelection called");
           return Promise.resolve();
+        },
+        close(isMetaKeyPresent: boolean) {
+          console.log(
+            `close called ${isMetaKeyPresent ? "with meta key pressed" : ""}`,
+          );
         },
       };
     },

@@ -7,6 +7,7 @@ import {
   JsonDataService,
   DialogService,
   AlertingService,
+  CloseService,
 } from "@knime/ui-extension-service";
 import {
   dialogApplyData,
@@ -19,7 +20,6 @@ import flushPromises from "flush-promises";
 
 import { getOptions } from "./utils";
 
-window.closeCEFWindow = () => {};
 const metaOrCtrlKey = "metaKey";
 
 vi.mock("webapps-common/util/navigator", () => {
@@ -29,7 +29,7 @@ vi.mock("webapps-common/util/navigator", () => {
 });
 
 describe("NodeDialog.vue", () => {
-  let initialDataSpy;
+  let initialDataSpy, closeSpy;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -40,6 +40,7 @@ describe("NodeDialog.vue", () => {
       });
     vi.spyOn(JsonDataService.prototype, "applyData").mockResolvedValue();
     vi.spyOn(JsonDataService.prototype, "publishData").mockResolvedValue();
+    closeSpy = vi.spyOn(CloseService.prototype, "close").mockResolvedValue();
   });
 
   it("renders empty wrapper", async () => {
@@ -199,22 +200,20 @@ describe("NodeDialog.vue", () => {
 
   it("calls window.closeCEFWindow in closeDialog", () => {
     const wrapper = shallowMount(NodeDialog, getOptions());
-    const spy = vi.spyOn(window, "closeCEFWindow");
 
     wrapper.vm.closeDialog();
 
-    expect(spy).toHaveBeenCalledWith(false);
+    expect(closeSpy).toHaveBeenCalledWith(false);
   });
 
   describe("keyboard shortcuts", () => {
-    let wrapper, formWrapper, closeCEFWindowSpy, applyDataSpy;
+    let wrapper, formWrapper, applyDataSpy;
 
     beforeEach(() => {
       wrapper = shallowMount(
         NodeDialog,
         getOptions({ stubButtonsBySlot: true }),
       );
-      closeCEFWindowSpy = vi.spyOn(window, "closeCEFWindow");
       applyDataSpy = vi
         .spyOn(wrapper.vm.jsonDataService, "applyData")
         .mockResolvedValue({});
@@ -226,7 +225,7 @@ describe("NodeDialog.vue", () => {
 
       wrapper.vm.closeDialog();
 
-      expect(closeCEFWindowSpy).toHaveBeenCalledWith(true);
+      expect(closeSpy).toHaveBeenCalledWith(true);
     });
 
     it("does not executes node when metaOrCtrlKey was pressed and released again on closeDialog", async () => {
@@ -239,12 +238,12 @@ describe("NodeDialog.vue", () => {
 
       wrapper.vm.closeDialog();
 
-      expect(closeCEFWindowSpy).toHaveBeenCalledWith(false);
+      expect(closeSpy).toHaveBeenCalledWith(false);
     });
 
     it("triggers cancel on escape", async () => {
       await formWrapper.trigger("keydown", { key: "Escape" });
-      expect(closeCEFWindowSpy).toHaveBeenCalledWith(false);
+      expect(closeSpy).toHaveBeenCalledWith(false);
     });
 
     it("triggers on window keyboard event with body as target", () => {
@@ -253,7 +252,7 @@ describe("NodeDialog.vue", () => {
       event[metaOrCtrlKey] = false;
       Object.defineProperty(event, "target", { value: document.body });
       window.dispatchEvent(event);
-      expect(closeCEFWindowSpy).toHaveBeenCalledWith(false);
+      expect(closeSpy).toHaveBeenCalledWith(false);
     });
 
     it("does not trigger on window keyboard event if target is not body", () => {
@@ -262,13 +261,13 @@ describe("NodeDialog.vue", () => {
       event[metaOrCtrlKey] = false;
       Object.defineProperty(event, "target", { value: "not-the-body" });
       window.dispatchEvent(event);
-      expect(closeCEFWindowSpy).not.toHaveBeenCalled();
+      expect(closeSpy).not.toHaveBeenCalled();
     });
 
     it("triggers apply + close on enter", async () => {
       await formWrapper.trigger("keydown", { key: "Enter" });
       expect(applyDataSpy).toHaveBeenCalled();
-      expect(closeCEFWindowSpy).toHaveBeenCalledWith(false);
+      expect(closeSpy).toHaveBeenCalledWith(false);
     });
 
     it("triggers apply + close + execute on metaOrCtrlKey + enter", async () => {
@@ -277,7 +276,7 @@ describe("NodeDialog.vue", () => {
         [metaOrCtrlKey]: true,
       });
       expect(applyDataSpy).toHaveBeenCalled();
-      expect(closeCEFWindowSpy).toHaveBeenCalledWith(true);
+      expect(closeSpy).toHaveBeenCalledWith(true);
     });
   });
 

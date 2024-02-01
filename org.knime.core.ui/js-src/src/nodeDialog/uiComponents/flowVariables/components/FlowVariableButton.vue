@@ -6,12 +6,12 @@ import DialogPopover from "@/nodeDialog/popover/DialogPopover.vue";
 
 import type FlowVariableButtonProps from "../types/FlowVariableButtonProps";
 
-import { computed, ref, type Ref } from "vue";
+import { computed, ref } from "vue";
 
 defineProps<FlowVariableButtonProps>();
 const emit = defineEmits(["controllingFlowVariableSet"]);
 
-const tooltipPrefix: Ref<string | null> = ref(null);
+const tooltipPrefix = ref<string | null>(null);
 const setTooltipPrefix = (prefix: string) => {
   tooltipPrefix.value = prefix;
 };

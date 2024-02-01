@@ -4,6 +4,7 @@ import {
   DialogService,
   UIExtensionService,
   AlertingService,
+  CloseService,
 } from "@knime/ui-extension-service";
 import { vanillaRenderers } from "@jsonforms/vue-vanilla";
 import { JsonForms } from "@jsonforms/vue";
@@ -35,12 +36,6 @@ const renderers = [
   ...fallbackRenderers,
   ...defaultRenderers,
 ];
-
-declare global {
-  export interface Window {
-    closeCEFWindow: (executeNode: boolean) => void;
-  }
-}
 
 type RegisteredWatcher = {
   id: string;
@@ -331,7 +326,7 @@ export default {
       }
     },
     closeDialog() {
-      window.closeCEFWindow(this.isMetaKeyPressed);
+      new CloseService(this.getKnimeService()).close(this.isMetaKeyPressed);
     },
     changeAdvancedSettings() {
       if (this.schema === null) {

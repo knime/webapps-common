@@ -5,7 +5,6 @@ import {
   ref,
   watch,
   onMounted,
-  type Ref,
   onUnmounted,
   watchEffect,
   nextTick,
@@ -37,7 +36,7 @@ const waitForTableToBeReady = () =>
   });
 
 const emit = defineEmits(["pending", "rendered"]);
-const inlinedSrc: Ref<undefined | string> = ref();
+const inlinedSrc = ref<string | undefined>();
 
 const knimeService = inject<() => UIExtensionService>("getKnimeService")!();
 const resourceService = new ResourceService(knimeService);
@@ -54,7 +53,7 @@ const addDimensions = computed(() => (imageUrl: string) => {
     : imageUrl;
 });
 
-const imageUrl = ref(null as null | string);
+const imageUrl = ref<string | null>(null);
 
 const imageUrlWithDimensions = computed(() => {
   return imageUrl.value === null ? null : addDimensions.value(imageUrl.value);
