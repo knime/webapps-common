@@ -54,4 +54,19 @@ describe('FileSelector.vue', () => {
         expect(wrapper.emitted().input).toBeTruthy();
         expect(wrapper.find('.filename').text()).toContain('test-file.txt');
     });
+
+    it('renders correctly with given file', () => {
+        const fileName = 'not-the-file-you-are-looking-for.zip';
+        const wrapper = mount(FileSelector, {
+            propsData: {
+                label: 'Select file',
+                acceptedFileTypes: '*',
+                multiple: false,
+                files: [{
+                    name: fileName
+                }]
+            }
+        });
+        expect(wrapper.find('.filename').text()).toBe(fileName);
+    });
 });

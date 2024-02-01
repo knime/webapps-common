@@ -1,6 +1,8 @@
 <script>
 import Button from './Button.vue';
 import LensIcon from '../assets/img/icons/lens.svg';
+import { isEqual } from 'lodash';
+import consolaGlobalInstance from 'consola';
 
 export default {
     components: {
@@ -19,18 +21,24 @@ export default {
         multiple: {
             type: Boolean,
             default: false
+        },
+        files: {
+            type: Array,
+            default: null
         }
     },
     data() {
         return {
-            files: null
+            internalFiles: null
         };
     },
     computed: {
         displayedFilename() {
-            return (
-                this.files?.map?.(({ name }) => name).join(', ') ?? 'No file selected'
-            );
+            const placeholder = 'No file selected';
+            if (!this.internalFiles?.length) {
+                return placeholder;
+            }
+            return this.internalFiles?.map?.(({ name }) => name).join(', ') ?? placeholder;
         },
         fileSelectorId() {
             return `file-selector-${this._uid}`;
@@ -39,13 +47,24 @@ export default {
             return `Select file${this.multiple ? 's' : ''}`;
         }
     },
+    watch: {
+        files: {
+            handler(newFiles, oldFiles) {
+                if (!isEqual(newFiles, oldFiles)) {
+                    this.internalFiles = this.files;
+                }
+            },
+            deep: true,
+            immediate: true
+        }
+    },
     methods: {
         openFileSelector() {
             this.$refs.fileSelector.click();
         },
         onSelect(event) {
-            this.files = Array.from(event.target.files);
-            this.$emit('input', this.files);
+            this.internalFiles = Array.from(event.target.files);
+            this.$emit('input', this.internalFiles);
         }
     }
 };
