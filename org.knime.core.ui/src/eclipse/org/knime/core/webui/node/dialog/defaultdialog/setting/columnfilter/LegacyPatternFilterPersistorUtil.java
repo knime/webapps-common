@@ -96,13 +96,9 @@ class LegacyPatternFilterPersistorUtil {
         var patternFilter = new PatternFilter();
         patternFilter.m_pattern = patternMatchingSettings.getString("pattern");
         patternFilter.m_isCaseSensitive = patternMatchingSettings.getBoolean("caseSensitive");
-        if (patternMatchingSettings.containsKey("excludeMatching")) {
-            patternFilter.m_isInverted = patternMatchingSettings.getBoolean("excludeMatching");
-        } else {
-            // In some very old workflows this field might not have existed yet,
-            // see knime://Testflows/Testflows%20(master)/knime-base/Loops/test_LoopEnd_Bug4029
-            patternFilter.m_isInverted = false;
-        }
+        // In some very old workflows this field might not have existed, yet, and we default to 'false'
+        // see, e.g., knime://Testflows/Testflows%20(master)/knime-base/Loops/test_LoopEnd_Bug4029
+        patternFilter.m_isInverted = patternMatchingSettings.getBoolean("excludeMatching", false);
         return patternFilter;
     }
 
