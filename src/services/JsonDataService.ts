@@ -15,9 +15,6 @@ const MAX_MESSAGE_LEN = 160;
  */
 export class JsonDataService extends AbstractService<JsonDataServiceAPILayer> {
   /**
-   * 
-  // TODO: could detect BE service type / (endpoint) based on config
-  // and call specific service.(...)
    * Calls the node data service with optional request body. The service to call is specified by the service type
    * and needs to correspond directly to a @see DataServiceType supported by the node.
    *

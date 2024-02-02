@@ -31,18 +31,19 @@ const enableRequestsToMethods = (
   };
 
   // handles events received in parent
-  const messageHandler = async (event: MessageEvent) => {
+  const messageHandler = (event: MessageEvent) => {
     if (isUIExtensionMessageExchangeRequest(event)) {
       if (event.source !== iframeContentWindow) {
         return;
       }
-      const response = await callApiLayer(event.data.payload);
-      const responseMessage: Response = {
-        requestId: event.data.requestId,
-        type: "UIExtensionResponse",
-        payload: response,
-      };
-      iframeContentWindow.postMessage(responseMessage, "*");
+      Promise.resolve(callApiLayer(event.data.payload)).then((response) => {
+        const responseMessage: Response = {
+          requestId: event.data.requestId,
+          type: "UIExtensionResponse",
+          payload: response,
+        };
+        iframeContentWindow.postMessage(responseMessage, "*");
+      });
     }
   };
 

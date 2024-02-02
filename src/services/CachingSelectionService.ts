@@ -11,7 +11,7 @@ import { SelectionServiceAPILayer } from "./types/serviceApiLayers";
 export class CachingSelectionService extends SelectionService {
   private cachedSelection: Set<string>;
 
-  constructor(baseService?: UIExtensionService<SelectionServiceAPILayer>) {
+  constructor(baseService: UIExtensionService<SelectionServiceAPILayer>) {
     super(baseService);
     this.cachedSelection = new Set();
     this.addOnSelectionChangeCallback(this.addBackendSelection.bind(this));

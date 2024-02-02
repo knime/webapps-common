@@ -122,7 +122,7 @@ export class ColorService extends AbstractService<ColorServiceAPILayer> {
     if (this.columnNamesColorModel) {
       const { model, type } = this.columnNamesColorModel;
       if (type === ColorModelType.NOMINAL) {
-        return new NominalColorHandler(model as Record<string, string>);
+        return new NominalColorHandler(model);
       } else {
         throw new Error(
           "The type of the column name color model is not correct.",

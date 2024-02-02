@@ -1,7 +1,7 @@
 import { setUpCustomEmbedderService } from "src/embedder";
 import { CloseService } from "src/services/CloseService";
 
-describe("DialogService", () => {
+describe("CloseService", () => {
   it("provides configs for dialogs", () => {
     const close = jest.fn();
     const embedder = setUpCustomEmbedderService({

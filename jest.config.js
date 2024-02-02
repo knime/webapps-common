@@ -32,7 +32,6 @@ module.exports = {
   ],
   testEnvironmentOptions: {
     url: "http://test.example/",
-    resources: "usable",
   },
   testMatch: ["<rootDir>/test/unit/suites/**/*.test.ts"],
   watchPlugins: [],

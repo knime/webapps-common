@@ -4,7 +4,7 @@ import { AbstractService } from "./AbstractService";
 import { AlertingServiceAPILayer } from "./types/serviceApiLayers";
 
 /**
- * A utility class to interact with Dialog settings implemented by a UI Extension node.
+ * A service that can be used to send warnings or errors to the embedder.
  */
 export class AlertingService extends AbstractService<AlertingServiceAPILayer> {
   sendAlert(params: CreateAlertParams, isDialog = false) {
