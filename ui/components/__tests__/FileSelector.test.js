@@ -46,14 +46,40 @@ describe("FileSelector.vue", () => {
       },
     });
 
-    const file = new File(["test file"], "test-file.txt", {
+    const fileMock = new File(["(file content)"], "test-file.txt", {
       type: "text/plain",
     });
 
     await wrapper.setProps({
-      value: [file],
+      modelValue: [fileMock],
     });
-    expect(wrapper.find(".filename").text()).toContain("test-file.txt");
+
+    expect(wrapper.find(".filename").text()).toBe("test-file.txt");
+  });
+
+  it("emits file", async () => {
+    const wrapper = mount(FileSelector, {
+      propsData: {
+        label: "Select file",
+        acceptedFileTypes: "*",
+        multiple: false,
+      },
+    });
+
+    const inputFile = wrapper.find('input[type="file"]');
+    const fileMock = new File(["(file content)"], "test-file.txt", {
+      type: "text/plain",
+    });
+
+    Object.defineProperty(inputFile.element, "files", {
+      value: [fileMock],
+      writable: false,
+    });
+
+    await inputFile.trigger("input");
+
+    expect(wrapper.emitted("update:modelValue")).toBeTruthy();
+    expect(wrapper.emitted("update:modelValue")[0][0]).toEqual([fileMock]);
   });
 
   it("renders correctly with given file", () => {
@@ -67,7 +93,7 @@ describe("FileSelector.vue", () => {
         label: "Select file",
         acceptedFileTypes: "*",
         multiple: false,
-        value: [file],
+        modelValue: [file],
       },
     });
     expect(wrapper.find(".filename").text()).toBe(fileName);

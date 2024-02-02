@@ -9,7 +9,7 @@ export default {
     LensIcon,
   },
   props: {
-    value: {
+    modelValue: {
       type: Array,
       default: null,
     },
@@ -26,11 +26,12 @@ export default {
       default: false,
     },
   },
-  emits: ["input"],
+  emits: ["update:modelValue"],
   computed: {
     displayedFilename() {
       return (
-        this.value?.map?.(({ name }) => name).join(", ") || "No file selected"
+        this.modelValue?.map?.(({ name }) => name).join(", ") ||
+        "No file selected"
       );
     },
     fileSelectorId() {
@@ -46,7 +47,7 @@ export default {
       this.$refs.fileSelector.click();
     },
     onSelect(event) {
-      this.$emit("input", Array.from(event.target.files));
+      this.$emit("update:modelValue", Array.from(event.target.files));
     },
   },
 };
