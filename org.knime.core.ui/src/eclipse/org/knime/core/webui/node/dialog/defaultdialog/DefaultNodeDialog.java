@@ -75,7 +75,7 @@ public final class DefaultNodeDialog implements NodeDialog {
     /**
      * The page representing the default node dialog.
      */
-    public static final Page PAGE = Page.builder(DefaultNodeDialog.class, "js-src/dist", "NodeDialog.umd.js")
+    public static final Page PAGE = Page.builder(DefaultNodeDialog.class, "js-src/dist", "NodeDialog.umd.js").addResourceFile("NodeDialog.js")
         .markAsReusable("defaultdialog").build();
 
     private final DefaultNodeSettingsService m_settingsDataService;
