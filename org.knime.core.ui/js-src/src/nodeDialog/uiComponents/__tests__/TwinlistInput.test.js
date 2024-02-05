@@ -227,44 +227,34 @@ describe("TwinlistInput.vue", () => {
   });
 
   it("calls updateDate when twinlist input is changed", async () => {
-    const dirtySettingsMock = vi.fn();
+    const setDirtyModelSettingsMock = vi.fn();
     const { wrapper } = mountJsonFormsComponent(TwinlistInput, {
       props,
-      modules: {
-        "pagebuilder/dialog": {
-          actions: { dirtySettings: dirtySettingsMock },
-          namespaced: true,
-        },
-      },
+      provide: { setDirtyModelSettingsMock },
     });
     await wrapper
       .findComponent(Twinlist)
       .find({ ref: "moveAllRight" })
       .trigger("click");
     expect(updateData).toHaveBeenCalled();
-    expect(dirtySettingsMock).not.toHaveBeenCalled();
+    expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
   });
 
   it("indicates model settings change when model setting is changed", async () => {
-    const dirtySettingsMock = vi.fn();
+    const setDirtyModelSettingsMock = vi.fn();
     props.control.uischema.scope = "#/properties/model/properties/yAxisColumn";
     const { wrapper } = await mountJsonFormsComponent(TwinlistInput, {
       props,
-      modules: {
-        "pagebuilder/dialog": {
-          actions: { dirtySettings: dirtySettingsMock },
-          namespaced: true,
-        },
-      },
+      provide: { setDirtyModelSettingsMock },
     });
-    expect(dirtySettingsMock).not.toHaveBeenCalled();
+    expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
     await flushPromises();
     await wrapper
       .findComponent(Twinlist)
       .find({ ref: "moveAllRight" })
       .trigger("click");
     expect(updateData).toHaveBeenCalled();
-    expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
+    expect(setDirtyModelSettingsMock).toHaveBeenCalled();
   });
 
   describe("handles changes", () => {
@@ -550,7 +540,7 @@ describe("TwinlistInput.vue", () => {
   });
 
   it("moves missing values correctly", async () => {
-    const dirtySettingsMock = vi.fn();
+    const setDirtyModelSettingsMock = vi.fn();
     const localProps = {
       ...props,
       control: {
@@ -567,12 +557,7 @@ describe("TwinlistInput.vue", () => {
     };
     const { wrapper, updateData } = mountJsonFormsComponent(TwinlistInput, {
       props: localProps,
-      modules: {
-        "pagebuilder/dialog": {
-          actions: { dirtySettings: dirtySettingsMock },
-          namespaced: true,
-        },
-      },
+      provide: { setDirtyModelSettingsMock },
     });
     await flushPromises();
     expect(wrapper.props().control.data.manualFilter).toMatchObject({

@@ -66,15 +66,10 @@ describe("DateTimeInput.vue", () => {
   });
 
   it("calls updateData when text input is changed", () => {
-    const dirtySettingsMock = vi.fn();
+    const setDirtyModelSettingsMock = vi.fn();
     const { wrapper, updateData } = mountJsonFormsComponent(DateTimeInput, {
       props: defaultProps,
-      modules: {
-        "pagebuilder/dialog": {
-          actions: { dirtySettings: dirtySettingsMock },
-          namespaced: true,
-        },
-      },
+      provide: { setDirtyModelSettingsMock },
     });
     const changedDateTimeInput = new Date("2022-12-12T20:22:22.000Z");
     wrapper
@@ -85,11 +80,11 @@ describe("DateTimeInput.vue", () => {
       defaultProps.control.path,
       changedDateTimeInput,
     );
-    expect(dirtySettingsMock).not.toHaveBeenCalled();
+    expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
   });
 
   it("indicates model settings change when model setting is changed", () => {
-    const dirtySettingsMock = vi.fn();
+    const setDirtyModelSettingsMock = vi.fn();
     const { wrapper, updateData } = mountJsonFormsComponent(DateTimeInput, {
       props: {
         ...defaultProps,
@@ -101,18 +96,13 @@ describe("DateTimeInput.vue", () => {
           },
         },
       },
-      modules: {
-        "pagebuilder/dialog": {
-          actions: { dirtySettings: dirtySettingsMock },
-          namespaced: true,
-        },
-      },
+      provide: { setDirtyModelSettingsMock },
     });
     const changedDateTimeInput = "Shaken not stirred";
     wrapper
       .findComponent(DateTimeInputBase)
       .vm.$emit("update:modelValue", changedDateTimeInput);
-    expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
+    expect(setDirtyModelSettingsMock).toHaveBeenCalled();
     expect(updateData).toHaveBeenCalledWith(
       expect.anything(),
       defaultProps.control.path,

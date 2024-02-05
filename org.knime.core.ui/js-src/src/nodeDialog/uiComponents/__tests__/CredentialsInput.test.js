@@ -133,15 +133,10 @@ describe("CredentialsInput.vue", () => {
   });
 
   it("updates data when username input is changed", () => {
-    const dirtySettingsMock = vi.fn();
+    const setDirtyModelSettingsMock = vi.fn();
     const { wrapper, updateData } = mountJsonFormsComponent(CredentialsInput, {
       props,
-      modules: {
-        "pagebuilder/dialog": {
-          actions: { dirtySettings: dirtySettingsMock },
-          namespaced: true,
-        },
-      },
+      provide: { setDirtyModelSettingsMock },
     });
     const username = "new user";
     wrapper
@@ -156,19 +151,14 @@ describe("CredentialsInput.vue", () => {
         secondFactor: props.control.data.secondFactor,
       },
     );
-    expect(dirtySettingsMock).not.toHaveBeenCalled();
+    expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
   });
 
   it("updates data when password input is changed", () => {
-    const dirtySettingsMock = vi.fn();
+    const setDirtyModelSettingsMock = vi.fn();
     const { wrapper, updateData } = mountJsonFormsComponent(CredentialsInput, {
       props,
-      modules: {
-        "pagebuilder/dialog": {
-          actions: { dirtySettings: dirtySettingsMock },
-          namespaced: true,
-        },
-      },
+      provide: { setDirtyModelSettingsMock },
     });
     const password = "new password";
     wrapper
@@ -184,27 +174,22 @@ describe("CredentialsInput.vue", () => {
         isHiddenPassword: false,
       },
     );
-    expect(dirtySettingsMock).not.toHaveBeenCalled();
+    expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
   });
 
   it("indicates model settings change when model setting is changed", () => {
     props.control.uischema.scope = "#/properties/model/properties/credentials";
 
-    const dirtySettingsMock = vi.fn();
+    const setDirtyModelSettingsMock = vi.fn();
     const { wrapper } = mountJsonFormsComponent(CredentialsInput, {
       props,
-      modules: {
-        "pagebuilder/dialog": {
-          actions: { dirtySettings: dirtySettingsMock },
-          namespaced: true,
-        },
-      },
+      provide: { setDirtyModelSettingsMock },
     });
     const username = "new user";
     wrapper
       .findAllComponents(InputField)[0]
       .vm.$emit("update:modelValue", username);
-    expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
+    expect(setDirtyModelSettingsMock).toHaveBeenCalled();
   });
 
   it("sets flow variable value in data if controlling flow variable is set", async () => {
@@ -326,15 +311,10 @@ describe("CredentialsInput.vue", () => {
 
   it("updates data when second factor input is changed", () => {
     props.control.uischema.options.showSecondFactor = true;
-    const dirtySettingsMock = vi.fn();
+    const setDirtyModelSettingsMock = vi.fn();
     const { wrapper, updateData } = mountJsonFormsComponent(CredentialsInput, {
       props,
-      modules: {
-        "pagebuilder/dialog": {
-          actions: { dirtySettings: dirtySettingsMock },
-          namespaced: true,
-        },
-      },
+      provide: { setDirtyModelSettingsMock },
     });
     const secondFactor = "new second factor";
     wrapper
@@ -350,7 +330,7 @@ describe("CredentialsInput.vue", () => {
         isHiddenSecondFactor: false,
       },
     );
-    expect(dirtySettingsMock).not.toHaveBeenCalled();
+    expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
   });
 
   it("uses a custom second factor label if provided with one", () => {

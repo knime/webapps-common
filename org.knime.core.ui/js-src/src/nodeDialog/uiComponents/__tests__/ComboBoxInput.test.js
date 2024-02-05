@@ -98,21 +98,16 @@ describe("ComboBoxInput.vue", () => {
   });
 
   it("indicates model settings change when model setting is changed", async () => {
-    const dirtySettingsMock = vi.fn();
+    const setDirtyModelSettingsMock = vi.fn();
     props.control.uischema.scope = "#/properties/model/properties/yAxisColumn";
     const { wrapper } = await mountJsonFormsComponent(ComboBoxInput, {
       props,
-      modules: {
-        "pagebuilder/dialog": {
-          actions: { dirtySettings: dirtySettingsMock },
-          namespaced: true,
-        },
-      },
+      provide: { setDirtyModelSettingsMock },
     });
-    expect(dirtySettingsMock).not.toHaveBeenCalled();
+    expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
     const comboBox = wrapper.findComponent(ComboBox);
     comboBox.vm.$emit("update:selectedIds", ["id_1", "id_2"]);
-    expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
+    expect(setDirtyModelSettingsMock).toHaveBeenCalled();
   });
 
   it("sets correct label", () => {

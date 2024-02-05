@@ -83,10 +83,10 @@ describe("DropdownInput.vue", () => {
   });
 
   describe("reacts to dropdown input change", () => {
-    let dirtySettingsMock;
+    let setDirtyModelSettingsMock;
 
     beforeEach(() => {
-      dirtySettingsMock = vi.fn();
+      setDirtyModelSettingsMock = vi.fn();
     });
 
     afterEach(() => {
@@ -96,13 +96,7 @@ describe("DropdownInput.vue", () => {
     it("calls updateData when input is changed", async () => {
       const { wrapper, updateData } = await mountJsonFormsComponent(
         DropdownInput,
-        { props },
-        {
-          "pagebuilder/dialog": {
-            actions: { dirtySettings: dirtySettingsMock },
-            namespaced: true,
-          },
-        },
+        { props, provide: { setDirtyModelSettingsMock } },
       );
       const changedDropdownInput = "Shaken not stirred";
       wrapper
@@ -113,7 +107,7 @@ describe("DropdownInput.vue", () => {
         props.control.path,
         changedDropdownInput,
       );
-      expect(dirtySettingsMock).not.toHaveBeenCalled();
+      expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
     });
 
     it("indicates model settings change when model setting is changed", async () => {
@@ -130,19 +124,14 @@ describe("DropdownInput.vue", () => {
               },
             },
           },
-          modules: {
-            "pagebuilder/dialog": {
-              actions: { dirtySettings: dirtySettingsMock },
-              namespaced: true,
-            },
-          },
+          provide: { setDirtyModelSettingsMock },
         },
       );
       const changedDropdownInput = "Shaken not stirred";
       wrapper
         .findComponent(Dropdown)
         .vm.$emit("update:modelValue", changedDropdownInput);
-      expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
+      expect(setDirtyModelSettingsMock).toHaveBeenCalled();
       expect(updateData).toHaveBeenCalledWith(
         expect.anything(),
         props.control.path,

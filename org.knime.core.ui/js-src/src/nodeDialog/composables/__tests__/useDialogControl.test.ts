@@ -14,8 +14,6 @@ import { FlowSettings } from "@/nodeDialog/api/types/index";
 import Control from "@/nodeDialog/types/Control";
 import UseDialogControlTestComponent from "./UseDialogControlTestComponent.vue";
 import { mount } from "@vue/test-utils";
-// @ts-ignore
-import { createStore } from "vuex";
 
 describe("useDialogControl", () => {
   const props: any = "foo";
@@ -25,7 +23,7 @@ describe("useDialogControl", () => {
     useJsonFormsControlWithUpdateSpy: SpyInstance<any>,
     control: Ref<Control>,
     handleChange: Mock,
-    dirtySettingsMock: Mock;
+    setDirtyModelSettingsMock: Mock;
   const path = "path";
   const configKeys = ["configKey1", "configKey2"];
 
@@ -56,7 +54,7 @@ describe("useDialogControl", () => {
       required: true,
     });
     handleChange = vi.fn();
-    dirtySettingsMock = vi.fn();
+    setDirtyModelSettingsMock = vi.fn();
     useFlowSettingsSpy = vi
       .spyOn(UseFlowVariablesModule, "useFlowSettings")
       .mockImplementation(() => flowSettings);
@@ -73,14 +71,7 @@ describe("useDialogControl", () => {
       props: { props },
       global: {
         provide: {
-          store: createStore({
-            modules: {
-              "pagebuilder/dialog": {
-                actions: { dirtySettings: dirtySettingsMock },
-                namespaced: true,
-              },
-            },
-          }),
+          setDirtyModelSettings: setDirtyModelSettingsMock,
         },
       },
     }).vm;
@@ -111,24 +102,24 @@ describe("useDialogControl", () => {
 
     it("sets settings dirty on change of a model setting with node view", () => {
       mountAndChange();
-      expect(dirtySettingsMock).toHaveBeenCalled();
+      expect(setDirtyModelSettingsMock).toHaveBeenCalled();
     });
 
     it("sets settings dirty on triggerReexecution call", () => {
       mountTestComponent().triggerReexecution();
-      expect(dirtySettingsMock).toHaveBeenCalled();
+      expect(setDirtyModelSettingsMock).toHaveBeenCalled();
     });
 
     it("does not set settings dirty on change of a non-model setting", () => {
       control.value.uischema.scope = "#/properties/view/properties/mySetting";
       mountAndChange();
-      expect(dirtySettingsMock).not.toHaveBeenCalled();
+      expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
     });
 
     it("does not set settings dirty on change of a model setting without a node view", () => {
       control.value.rootSchema.hasNodeView = false;
       mountAndChange();
-      expect(dirtySettingsMock).not.toHaveBeenCalled();
+      expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
     });
   });
 

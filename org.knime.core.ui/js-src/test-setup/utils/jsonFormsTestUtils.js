@@ -5,8 +5,6 @@
 import { expect, vi } from "vitest";
 
 import { mount } from "@vue/test-utils";
-import { createStore } from "vuex";
-
 import { useJsonFormsLayout, useJsonFormsArrayControl } from "@jsonforms/vue";
 
 import * as useJsonFormsControlWithUpdateModule from "@/nodeDialog/composables/useJsonFormsControlWithUpdate";
@@ -20,7 +18,6 @@ export const mountJsonFormsComponent = (
   {
     props = {},
     provide,
-    modules = null,
     showAdvanced = false,
     withControllingFlowVariable = false,
     stubs = {},
@@ -35,6 +32,7 @@ export const mountJsonFormsComponent = (
     getDataMock,
     updateDataMock,
     sendAlertMock,
+    setDirtyModelSettingsMock,
     asyncChoicesProviderMock,
   } = provide || {};
   const updateData =
@@ -42,6 +40,7 @@ export const mountJsonFormsComponent = (
     vi.fn((handleChange, path, value) => handleChange(path, value));
   const getData = getDataMock ?? vi.fn();
   const sendAlert = sendAlertMock ?? vi.fn();
+  const setDirtyModelSettings = setDirtyModelSettingsMock ?? vi.fn();
   const asyncChoicesProvider = asyncChoicesProviderMock ?? vi.fn();
   const flowVariablesMap = reactive(
     withControllingFlowVariable
@@ -62,21 +61,14 @@ export const mountJsonFormsComponent = (
     });
   }
   const unregisterWatcher = vi.fn();
-  const store = createStore({ modules });
   const wrapper = mount(component, {
     props,
     global: {
       provide: {
-        store,
         getKnimeService: () => ({
-          extensionConfig: {
+          getConfig: () => ({
             nodeId: "nodeId",
-          },
-          callService: vi.fn().mockResolvedValue({}),
-          registerDataGetter: vi.fn(),
-          addEventCallback: vi.fn(),
-          createAlert: vi.fn(),
-          sendWarning: vi.fn(),
+          }),
         }),
         registerWatcher: ({ transformSettings, init, dependencies }) => {
           callbacks.push({ transformSettings, init, dependencies });
@@ -90,14 +82,12 @@ export const mountJsonFormsComponent = (
         updateData,
         getData,
         sendAlert,
+        setDirtyModelSettings,
         getFlowVariablesMap: () => flowVariablesMap,
       },
       stubs: {
         DispatchRenderer: true,
         ...stubs,
-      },
-      mocks: {
-        $store: store,
       },
     },
     provide: {

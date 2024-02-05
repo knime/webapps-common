@@ -63,17 +63,12 @@ describe("RichTextInput.vue", () => {
   });
 
   it("calls updateData when html content is changed", async () => {
-    const dirtySettingsMock = vi.fn();
+    const setDirtyModelSettingsMock = vi.fn();
     const { wrapper, updateData } = await mountJsonFormsComponent(
       RichTextInput,
       {
         props,
-        modules: {
-          "pagebuilder/dialog": {
-            actions: { dirtySettings: dirtySettingsMock },
-            namespaced: true,
-          },
-        },
+        provide: { setDirtyModelSettingsMock },
         stubs: {
           EditorContent: true,
         },
@@ -88,7 +83,7 @@ describe("RichTextInput.vue", () => {
       props.control.path,
       changedRichTextInput,
     );
-    expect(dirtySettingsMock).not.toHaveBeenCalled();
+    expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
   });
 
   it("sets correct initial value", () => {

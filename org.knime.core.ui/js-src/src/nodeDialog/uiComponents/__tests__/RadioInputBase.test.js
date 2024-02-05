@@ -111,17 +111,12 @@ describe("RadioInputBase.vue", () => {
   );
 
   it("calls updateData when radio button is changed", async () => {
-    const dirtySettingsMock = vi.fn();
+    const setDirtyModelSettingsMock = vi.fn();
     const { wrapper, updateData } = await mountJsonFormsComponent(
       RadioInputBase,
       {
         props: defaultProps,
-        modules: {
-          "pagebuilder/dialog": {
-            actions: { dirtySettings: dirtySettingsMock },
-            namespaced: true,
-          },
-        },
+        provide: { setDirtyModelSettingsMock },
       },
     );
     const changedRadioInputBase = "Shaken not stirred";
@@ -133,11 +128,11 @@ describe("RadioInputBase.vue", () => {
       defaultProps.control.path,
       changedRadioInputBase,
     );
-    expect(dirtySettingsMock).not.toHaveBeenCalled();
+    expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
   });
 
   it("indicates model settings change when model setting is changed", async () => {
-    const dirtySettingsMock = vi.fn();
+    const setDirtyModelSettingsMock = vi.fn();
     const { wrapper, updateData } = await mountJsonFormsComponent(
       RadioInputBase,
       {
@@ -151,19 +146,14 @@ describe("RadioInputBase.vue", () => {
             },
           },
         },
-        modules: {
-          "pagebuilder/dialog": {
-            actions: { dirtySettings: dirtySettingsMock },
-            namespaced: true,
-          },
-        },
+        provide: { setDirtyModelSettingsMock },
       },
     );
     const changedRadioInputBase = "Shaken not stirred";
     await wrapper
       .findComponent(RadioButtons)
       .vm.$emit("update:modelValue", changedRadioInputBase);
-    expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
+    expect(setDirtyModelSettingsMock).toHaveBeenCalled();
     expect(updateData).toHaveBeenCalledWith(
       expect.anything(),
       defaultProps.control.path,

@@ -68,17 +68,12 @@ describe("LabeledLocalFileChooserInput.vue", () => {
   });
 
   it("calls updateData when text input is changed", () => {
-    const dirtySettingsMock = vi.fn();
+    const setDirtyModeSettingsMock = vi.fn();
     const { wrapper, updateData } = mountJsonFormsComponent(
       LabeledLocalFileChooserInput,
       {
         props: defaultProps,
-        modules: {
-          "pagebuilder/dialog": {
-            actions: { dirtySettings: dirtySettingsMock },
-            namespaced: true,
-          },
-        },
+        provide: { setDirtyModeSettingsMock },
       },
     );
     const changedTextInput = "Shaken not stirred";
@@ -90,11 +85,11 @@ describe("LabeledLocalFileChooserInput.vue", () => {
       defaultProps.control.path,
       changedTextInput,
     );
-    expect(dirtySettingsMock).not.toHaveBeenCalled();
+    expect(setDirtyModeSettingsMock).not.toHaveBeenCalled();
   });
 
   it("indicates model settings change when model setting is changed", () => {
-    const dirtySettingsMock = vi.fn();
+    const setDirtyModelSettingsMock = vi.fn();
     const { wrapper, updateData } = mountJsonFormsComponent(
       LabeledLocalFileChooserInput,
       {
@@ -108,19 +103,14 @@ describe("LabeledLocalFileChooserInput.vue", () => {
             },
           },
         },
-        modules: {
-          "pagebuilder/dialog": {
-            actions: { dirtySettings: dirtySettingsMock },
-            namespaced: true,
-          },
-        },
+        provide: { setDirtyModelSettingsMock },
       },
     );
     const changedTextInput = "Shaken not stirred";
     wrapper
       .findComponent(LocalFileChooserInput)
       .vm.$emit("update:modelValue", changedTextInput);
-    expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
+    expect(setDirtyModelSettingsMock).toHaveBeenCalledWith();
     expect(updateData).toHaveBeenCalledWith(
       expect.anything(),
       defaultProps.control.path,

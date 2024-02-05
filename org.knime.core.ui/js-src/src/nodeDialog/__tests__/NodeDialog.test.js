@@ -29,7 +29,11 @@ vi.mock("webapps-common/util/navigator", () => {
 });
 
 describe("NodeDialog.vue", () => {
-  let initialDataSpy, closeSpy;
+  let initialDataSpy,
+    closeSpy,
+    setApplyListenerSpy,
+    setCleanSettingsSpy,
+    setDirtyModelSettingsSpy;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -39,20 +43,25 @@ describe("NodeDialog.vue", () => {
         ...dialogInitialData,
       });
     vi.spyOn(JsonDataService.prototype, "applyData").mockResolvedValue();
-    vi.spyOn(JsonDataService.prototype, "publishData").mockResolvedValue();
+    vi.spyOn(DialogService.prototype, "publishSettings").mockResolvedValue();
+    setApplyListenerSpy = vi.spyOn(DialogService.prototype, "setApplyListener");
+    setCleanSettingsSpy = vi.spyOn(
+      DialogService.prototype,
+      "setSettingsWithCleanModelSettings",
+    );
+    setDirtyModelSettingsSpy = vi.spyOn(
+      DialogService.prototype,
+      "setDirtyModelSettings",
+    );
     closeSpy = vi.spyOn(CloseService.prototype, "close").mockResolvedValue();
   });
 
   it("renders empty wrapper", async () => {
-    const setApplySettingsMock = vi.fn();
-    const wrapper = shallowMount(
-      NodeDialog,
-      getOptions({ setApplySettingsMock }),
-    );
+    const wrapper = shallowMount(NodeDialog, getOptions());
     await flushPromises();
 
     expect(wrapper.getComponent(NodeDialog).exists()).toBe(true);
-    expect(setApplySettingsMock).toHaveBeenCalled();
+    expect(setApplyListenerSpy).toHaveBeenCalled();
     expect(wrapper.find("a.advanced-options").exists()).not.toBe(true);
   });
 
@@ -97,17 +106,12 @@ describe("NodeDialog.vue", () => {
   });
 
   describe("onSettingsChanged", () => {
-    let wrapper,
-      onSettingsChangedSpy,
-      publishDataSpy,
-      jsonformsStub,
-      cleanSettingsMock;
+    let wrapper, onSettingsChangedSpy, publishDataSpy, jsonformsStub;
 
     beforeEach(async () => {
-      cleanSettingsMock = vi.fn();
-      wrapper = shallowMount(NodeDialog, getOptions({ cleanSettingsMock }));
+      wrapper = shallowMount(NodeDialog, getOptions());
       onSettingsChangedSpy = vi.spyOn(wrapper.vm, "onSettingsChanged");
-      publishDataSpy = vi.spyOn(wrapper.vm.jsonDataService, "publishData");
+      publishDataSpy = vi.spyOn(wrapper.vm.dialogService, "publishSettings");
 
       await flushPromises();
 
@@ -149,10 +153,7 @@ describe("NodeDialog.vue", () => {
       await jsonformsStub.vm.$emit("change", payload);
       expect(onSettingsChangedSpy).toHaveBeenCalledWith(payload);
       expect(publishDataSpy).toHaveBeenCalled();
-      expect(cleanSettingsMock).toHaveBeenCalledWith(
-        expect.anything(),
-        payload.data,
-      );
+      expect(setCleanSettingsSpy).toHaveBeenCalledWith(payload.data);
     });
   });
 
@@ -591,11 +592,7 @@ describe("NodeDialog.vue", () => {
 
   describe("flawed controlling variable paths", () => {
     it("sets variable path to flawed if 'getFlowVariableOverrideValue' returns undefined", async () => {
-      const dirtySettingsMock = vi.fn();
-      const wrapper = shallowMount(
-        NodeDialog,
-        getOptions({ dirtySettingsMock }),
-      );
+      const wrapper = shallowMount(NodeDialog, getOptions());
       vi.spyOn(wrapper.vm.jsonDataService, "data").mockResolvedValue(undefined);
       const persistPath = "my.path";
       const flowSettings = {};
@@ -607,16 +604,12 @@ describe("NodeDialog.vue", () => {
       expect(wrapper.vm.flawedControllingVariablePaths).toStrictEqual(
         new Set([persistPath]),
       );
-      expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
+      expect(setDirtyModelSettingsSpy).toHaveBeenCalled();
       expect(flowSettings.controllingFlowVariableFlawed).toBeTruthy();
     });
 
     it("excludes flawed overwritten variables from subsequent 'getFlowVariableOverrideValue' requests of other settings", async () => {
-      const dirtySettingsMock = vi.fn();
-      const wrapper = shallowMount(
-        NodeDialog,
-        getOptions({ dirtySettingsMock }),
-      );
+      const wrapper = shallowMount(NodeDialog, getOptions());
       const getDataSpy = vi
         .spyOn(wrapper.vm.jsonDataService, "data")
         .mockResolvedValue("not_undefined");
@@ -655,11 +648,7 @@ describe("NodeDialog.vue", () => {
     });
 
     it("does not exclude flawed overwritten variable from subsequent 'getFlowVariableOverrideValue' request of the same setting", async () => {
-      const dirtySettingsMock = vi.fn();
-      const wrapper = shallowMount(
-        NodeDialog,
-        getOptions({ dirtySettingsMock }),
-      );
+      const wrapper = shallowMount(NodeDialog, getOptions());
       const getDataSpy = vi
         .spyOn(wrapper.vm.jsonDataService, "data")
         .mockResolvedValue("not_undefined");
@@ -773,11 +762,7 @@ describe("NodeDialog.vue", () => {
     });
 
     it("dispatched 'cleanSettings' when the last flawed path is cleaned", async () => {
-      const cleanSettingsMock = vi.fn();
-      const wrapper = shallowMount(
-        NodeDialog,
-        getOptions({ cleanSettingsMock }),
-      );
+      const wrapper = shallowMount(NodeDialog, getOptions());
       vi.spyOn(wrapper.vm.jsonDataService, "data").mockResolvedValue(
         "notUndefined",
       );
@@ -794,22 +779,18 @@ describe("NodeDialog.vue", () => {
         "_dataPath",
       );
 
-      expect(cleanSettingsMock).not.toHaveBeenCalled();
+      expect(setCleanSettingsSpy).not.toHaveBeenCalled();
 
       await wrapper.vm.getFlowVariableOverrideValue(
         persistPaths[2],
         "_dataPath",
       );
 
-      expect(cleanSettingsMock).toHaveBeenCalled();
+      expect(setCleanSettingsSpy).toHaveBeenCalled();
     });
 
     it("unsets flawed variable path if 'clearControllingFlowVariable' is called", async () => {
-      const cleanSettingsMock = vi.fn();
-      const wrapper = shallowMount(
-        NodeDialog,
-        getOptions({ cleanSettingsMock }),
-      );
+      const wrapper = shallowMount(NodeDialog, getOptions());
       const persistPath = "path.to.my.setting";
       await flushPromises();
       const flowVariablesMap = {
@@ -820,7 +801,7 @@ describe("NodeDialog.vue", () => {
       wrapper.vm.schema.flowVariablesMap = flowVariablesMap;
       wrapper.vm.clearControllingFlowVariable(persistPath);
 
-      expect(cleanSettingsMock).toHaveBeenCalled();
+      expect(setCleanSettingsSpy).toHaveBeenCalled();
     });
   });
 

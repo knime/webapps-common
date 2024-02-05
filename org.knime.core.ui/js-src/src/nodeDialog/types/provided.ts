@@ -28,6 +28,7 @@ interface Provided {
   sendAlert: sendAlert;
   closeDialog: () => void;
   getData: getData;
+  setDirtyModelSettings: () => void;
 }
 
 type ProvidedFlowVariablesApi = {

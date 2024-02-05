@@ -65,15 +65,10 @@ describe("CheckboxInput.vue", () => {
   });
 
   it("calls updateData when checkbox is changed", async () => {
-    const dirtySettingsMock = vi.fn();
+    const setDirtyModelSettingsMock = vi.fn();
     const { wrapper, updateData } = mountJsonFormsComponent(CheckboxInput, {
       props: defaultProps,
-      modules: {
-        "pagebuilder/dialog": {
-          actions: { dirtySettings: dirtySettingsMock },
-          namespaced: true,
-        },
-      },
+      provide: { setDirtyModelSettingsMock },
     });
     await wrapper.findComponent(Checkbox).vm.$emit("update:modelValue", true);
     expect(updateData).toHaveBeenCalledWith(
@@ -81,11 +76,11 @@ describe("CheckboxInput.vue", () => {
       defaultProps.control.path,
       true,
     );
-    expect(dirtySettingsMock).not.toHaveBeenCalled();
+    expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
   });
 
   it("indicates model settings change when model setting is changed", async () => {
-    const dirtySettingsMock = vi.fn();
+    const setDirtyModelSettingsMock = vi.fn();
     const { wrapper, updateData } = await mountJsonFormsComponent(
       CheckboxInput,
       {
@@ -99,12 +94,7 @@ describe("CheckboxInput.vue", () => {
             },
           },
         },
-        modules: {
-          "pagebuilder/dialog": {
-            actions: { dirtySettings: dirtySettingsMock },
-            namespaced: true,
-          },
-        },
+        provide: { setDirtyModelSettingsMock },
       },
     );
     await wrapper.findComponent(Checkbox).vm.$emit("update:modelValue", true);
@@ -113,7 +103,7 @@ describe("CheckboxInput.vue", () => {
       defaultProps.control.path,
       true,
     );
-    expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
+    expect(setDirtyModelSettingsMock).toHaveBeenCalled();
   });
 
   it("checks that re-execution icon is present if it is a model setting", async () => {

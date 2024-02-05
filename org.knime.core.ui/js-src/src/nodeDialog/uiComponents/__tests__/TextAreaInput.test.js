@@ -68,15 +68,10 @@ describe("TextInput.vue", () => {
   });
 
   it("calls updateData when text area is changed", () => {
-    const dirtySettingsMock = vi.fn();
+    const setDirtyModelSettingsMock = vi.fn();
     const { wrapper, updateData } = mountJsonFormsComponent(TextAreaInput, {
       props: defaultProps,
-      modules: {
-        "pagebuilder/dialog": {
-          actions: { dirtySettings: dirtySettingsMock },
-          namespaced: true,
-        },
-      },
+      provide: { setDirtyModelSettingsMock },
     });
     const changedTextArea = "Shaken not stirred";
     wrapper
@@ -87,11 +82,11 @@ describe("TextInput.vue", () => {
       defaultProps.control.path,
       changedTextArea,
     );
-    expect(dirtySettingsMock).not.toHaveBeenCalled();
+    expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
   });
 
   it("indicates model settings change when model setting is changed", () => {
-    const dirtySettingsMock = vi.fn();
+    const setDirtyModelSettingsMock = vi.fn();
     const { wrapper, updateData } = mountJsonFormsComponent(TextAreaInput, {
       props: {
         ...defaultProps,
@@ -103,18 +98,13 @@ describe("TextInput.vue", () => {
           },
         },
       },
-      modules: {
-        "pagebuilder/dialog": {
-          actions: { dirtySettings: dirtySettingsMock },
-          namespaced: true,
-        },
-      },
+      provide: { setDirtyModelSettingsMock },
     });
     const changedTextInput = "Shaken not stirred";
     wrapper
       .findComponent(TextArea)
       .vm.$emit("update:modelValue", changedTextInput);
-    expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
+    expect(setDirtyModelSettingsMock).toHaveBeenCalled();
     expect(updateData).toHaveBeenCalledWith(
       expect.anything(),
       defaultProps.control.path,

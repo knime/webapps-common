@@ -75,35 +75,25 @@ describe("NumberInput.vue", () => {
   });
 
   it("calls onChange of NumberInputBase when number input is changed", () => {
-    const dirtySettingsMock = vi.fn();
+    const setDirtyModelSettingsMock = vi.fn();
     const { wrapper, updateData } = mountJsonFormsComponent(NumberInput, {
       props,
-      modules: {
-        "pagebuilder/dialog": {
-          actions: { dirtySettings: dirtySettingsMock },
-          namespaced: true,
-        },
-      },
+      provide: { setDirtyModelSettingsMock },
     });
     wrapper.findComponent(NumberInputBase).find("input").trigger("input");
     expect(updateData).toBeCalled();
-    expect(dirtySettingsMock).not.toHaveBeenCalled();
+    expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
   });
 
   it("indicates model settings change when model setting is changed", () => {
-    const dirtySettingsMock = vi.fn();
+    const setDirtyModelSettingsMock = vi.fn();
     props.control.uischema.scope = "#/properties/model/properties/yAxisColumn";
     const { wrapper } = mountJsonFormsComponent(NumberInput, {
       props,
-      modules: {
-        "pagebuilder/dialog": {
-          actions: { dirtySettings: dirtySettingsMock },
-          namespaced: true,
-        },
-      },
+      provide: { setDirtyModelSettingsMock },
     });
     wrapper.findComponent(NumberInputBase).find("input").trigger("input");
-    expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
+    expect(setDirtyModelSettingsMock).toHaveBeenCalled();
   });
 
   it("sets correct label", () => {

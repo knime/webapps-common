@@ -70,6 +70,7 @@ export default {
       },
       closeDialog: this.closeDialog,
       getFlowVariablesMap: () => this.schema.flowVariablesMap,
+      setDirtyModelSettings: this.setDirtyModelSettings,
     } satisfies ProvidedMethods & ProvidedForFlowVariables;
   },
   setup() {
@@ -97,13 +98,6 @@ export default {
       isMetaKeyPressed: false,
     };
   },
-  // TODO: UIEXT-236 Move to dialog service
-  computed: {
-    dirtyModelSettings(): boolean {
-      // @ts-ignore
-      return this.$store.state["pagebuilder/dialog"].dirtyModelSettings;
-    },
-  },
   async mounted() {
     this.jsonDataService = new JsonDataService(this.getKnimeService());
     this.dialogService = new DialogService(this.getKnimeService());
@@ -116,10 +110,7 @@ export default {
     this.uischema = initialSettings.ui_schema;
     this.currentData = initialSettings.data;
     this.setOriginalModelSettings(this.currentData);
-    // @ts-ignore
-    this.$store.dispatch("pagebuilder/dialog/setApplySettings", {
-      applySettings: this.applySettings,
-    });
+    this.dialogService.setApplyListener(this.applySettings.bind(this));
     this.isWriteProtected = this.dialogService.isWriteProtected();
     this.ready = true;
     window.addEventListener("keydown", doIfBodyActive(this.keyDown.bind(this)));
@@ -139,9 +130,9 @@ export default {
         flowVariableSettings: this.schema.flowVariablesMap,
       };
     },
-    publishData() {
+    publishSettings() {
       const publishedData = cloneDeep(this.getData());
-      this.jsonDataService!.publishData(publishedData);
+      this.dialogService!.publishSettings(publishedData);
     },
     setOriginalModelSettings(data: SettingsData) {
       this.originalModelSettings = this.getModelSettings(data);
@@ -266,7 +257,7 @@ export default {
           delete flowSettings.controllingFlowVariableFlawed;
         }
       } else {
-        this.setDirty();
+        this.setDirtyModelSettings();
         if (flowSettings) {
           flowSettings.controllingFlowVariableFlawed = true;
         }
@@ -278,9 +269,8 @@ export default {
       this.cleanIfNecessary();
       return overrideValue;
     },
-    setDirty() {
-      // @ts-ignore
-      this.$store.dispatch("pagebuilder/dialog/dirtySettings", true);
+    setDirtyModelSettings() {
+      this.dialogService?.setDirtyModelSettings();
     },
     clearControllingFlowVariable(persistPath: string) {
       this.flawedControllingVariablePaths.delete(persistPath);
@@ -295,10 +285,7 @@ export default {
           this.currentData[key] = data[key];
         });
         this.cleanIfNecessary();
-        // TODO: UIEXT-236 Move to dialog service
-        if (!this.dirtyModelSettings) {
-          this.publishData();
-        }
+        this.publishSettings();
       }
     },
     cleanIfNecessary() {
@@ -306,9 +293,7 @@ export default {
         this.hasOriginalModelSettings(this.currentData) &&
         this.flawedControllingVariablePaths.size === 0
       ) {
-        // @ts-ignore
-        this.$store.dispatch(
-          "pagebuilder/dialog/cleanSettings",
+        this.dialogService?.setSettingsWithCleanModelSettings(
           cloneDeep(this.currentData),
         );
       }

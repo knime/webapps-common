@@ -10,8 +10,7 @@ import {
 import { isModelSettingAndHasNodeView } from "../utils";
 import { useFlowSettings } from "./useFlowVariables";
 import Control from "../types/Control";
-// @ts-ignore
-import { useStore } from "vuex";
+import inject from "../utils/inject";
 
 export const useTriggersReexecution = (control: Ref<Control>) => {
   return computed(() => Boolean(isModelSettingAndHasNodeView(control.value)));
@@ -21,12 +20,11 @@ const getHandleDirtyChangeMethods = <ValueType>(
   control: Ref<Control>,
   handleChange: (path: string, value: ValueType) => void,
 ) => {
-  const store = useStore();
   const triggersReexecution = useTriggersReexecution(control);
+  const setDirtyModelSettings = inject("setDirtyModelSettings");
   const triggerReexecution = () => {
     if (triggersReexecution.value) {
-      // @ts-ignore
-      store.dispatch("pagebuilder/dialog/dirtySettings", true);
+      setDirtyModelSettings();
     }
   };
   const handleDirtyChange = (newValue: ValueType) => {

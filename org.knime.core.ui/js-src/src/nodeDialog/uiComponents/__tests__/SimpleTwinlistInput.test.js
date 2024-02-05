@@ -73,17 +73,12 @@ describe("SimpleTwinlistInput.vue", () => {
   });
 
   it("calls onChange when twinlist input is changed", async () => {
-    const dirtySettingsMock = vi.fn();
+    const setDirtyModelSettingsMock = vi.fn();
     const { wrapper, updateData } = await mountJsonFormsComponent(
       SimpleTwinlistInput,
       {
         props,
-        modules: {
-          "pagebuilder/dialog": {
-            actions: { dirtySettings: dirtySettingsMock },
-            namespaced: true,
-          },
-        },
+        provide: { setDirtyModelSettingsMock },
       },
     );
     await wrapper
@@ -91,22 +86,17 @@ describe("SimpleTwinlistInput.vue", () => {
       .find({ ref: "moveAllRight" })
       .trigger("click");
     expect(updateData).toBeCalled();
-    expect(dirtySettingsMock).not.toHaveBeenCalled();
+    expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
   });
 
   it("indicates model settings change when model setting is changed", async () => {
-    const dirtySettingsMock = vi.fn();
+    const setDirtyModelSettingsMock = vi.fn();
     props.control.uischema.scope = "#/properties/model/properties/yAxisColumn";
     const { wrapper, updateData } = await mountJsonFormsComponent(
       SimpleTwinlistInput,
       {
         props,
-        modules: {
-          "pagebuilder/dialog": {
-            actions: { dirtySettings: dirtySettingsMock },
-            namespaced: true,
-          },
-        },
+        provide: { setDirtyModelSettingsMock },
       },
     );
     await wrapper
@@ -114,7 +104,7 @@ describe("SimpleTwinlistInput.vue", () => {
       .find({ ref: "moveAllRight" })
       .trigger("click");
     expect(updateData).toBeCalled();
-    expect(dirtySettingsMock).toHaveBeenCalledWith(expect.anything(), true);
+    expect(setDirtyModelSettingsMock).toHaveBeenCalled();
   });
 
   it("correctly transforms the data into possible values", () => {
@@ -187,18 +177,13 @@ describe("SimpleTwinlistInput.vue", () => {
   });
 
   it("moves missing values correctly", async () => {
-    const dirtySettingsMock = vi.fn();
+    const setDirtyModelSettingsMock = vi.fn();
     props.control.data = ["missing"];
     const { wrapper, updateData } = await mountJsonFormsComponent(
       SimpleTwinlistInput,
       {
         props,
-        modules: {
-          "pagebuilder/dialog": {
-            actions: { dirtySettings: dirtySettingsMock },
-            namespaced: true,
-          },
-        },
+        provide: { setDirtyModelSettingsMock },
       },
     );
     expect(wrapper.props().control.data).toStrictEqual(["missing"]);
