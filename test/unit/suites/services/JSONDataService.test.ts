@@ -132,29 +132,20 @@ describe("JsonDataService", () => {
     });
   });
 
-  describe("callbacks and events", () => {
-    it("adds callback to event with addOnDataChangeCallback", () => {
-      const { jsonDataService, dispatchPushEvent } = constructJsonDataService();
+  it("adds callback to event with addOnDataChangeCallback", () => {
+    const { jsonDataService, dispatchPushEvent } = constructJsonDataService();
 
-      const mockDataChangeCallback = jest.fn();
+    const mockDataChangeCallback = jest.fn();
 
-      jsonDataService.addOnDataChangeCallback(mockDataChangeCallback);
+    jsonDataService.addOnDataChangeCallback(mockDataChangeCallback);
 
-      const payload = {};
+    const payload = {};
 
-      dispatchPushEvent({
-        name: UIExtensionPushEvents.EventTypes.DataEvent,
-        payload,
-      });
-      expect(mockDataChangeCallback).toHaveBeenCalledWith(payload);
+    dispatchPushEvent({
+      name: UIExtensionPushEvents.EventTypes.DataEvent,
+      payload,
     });
-
-    it("publishes data via the knimeService", () => {
-      const { jsonDataService, publishData } = constructJsonDataService();
-      const testData = { agent: "007" };
-      jsonDataService.publishData(testData);
-      expect(publishData).toHaveBeenCalledWith(testData);
-    });
+    expect(mockDataChangeCallback).toHaveBeenCalledWith(payload);
   });
 
   describe("handling errors", () => {

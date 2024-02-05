@@ -143,15 +143,6 @@ export class JsonDataService extends AbstractService<JsonDataServiceAPILayer> {
     );
   }
 
-  /**
-   * Publish a data update event to other UIExtensions registered in the current page.
-   * @param {any} data - the data to send.
-   * @returns {void}
-   */
-  publishData(data: any) {
-    this.baseService.publishData(data);
-  }
-
   private handleError(
     error: {
       details?: string;

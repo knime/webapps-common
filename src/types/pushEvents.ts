@@ -6,11 +6,13 @@ export namespace UIExtensionPushEvents {
   export enum EventTypes {
     DataEvent = "DataEvent",
     SelectionEvent = "SelectionEvent",
+    ApplyDataEvent = "ApplyDataEvent",
   }
 
   type KnownPushEvents = {
     [EventTypes.SelectionEvent]: SelectionEventPayload;
     [EventTypes.DataEvent]: any;
+    [EventTypes.ApplyDataEvent]: never;
   };
 
   type KnownPushEventName = keyof KnownPushEvents;

@@ -87,6 +87,12 @@ export type UIExtensionServiceAPILayer = {
 
   publishData: (data: any) => void;
 
+  setDirtyModelSettings: () => void;
+
+  setSettingsWithCleanModelSettings: (cleanData: any) => void;
+
+  onApplied: () => void;
+
   sendAlert: (alert: Alert) => void;
 
   close: (isMetaKeyPressed: boolean) => void;

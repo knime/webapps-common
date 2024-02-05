@@ -31,7 +31,13 @@ type DialogServiceExtensionConfig = {
   writeProtected?: boolean;
 };
 
-export type DialogServiceAPILayer = {
+export type DialogServiceAPILayer = Pick<
+  UIExtensionServiceAPILayer,
+  | "publishData"
+  | "setSettingsWithCleanModelSettings"
+  | "setDirtyModelSettings"
+  | "onApplied"
+> & {
   getConfig: () => DialogServiceExtensionConfig;
 };
 
@@ -53,7 +59,7 @@ type JsonDataServiceExtensionConfig = AlertConfig &
 
 export type JsonDataServiceAPILayer = Pick<
   UIExtensionServiceAPILayer,
-  "callNodeDataService" | "publishData" | "sendAlert"
+  "callNodeDataService" | "sendAlert"
 > & { getConfig: () => JsonDataServiceExtensionConfig };
 
 type ReportingServiceExtensionConfig = {
