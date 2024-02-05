@@ -101,7 +101,8 @@ public final class LegacyColumnFilterPersistor extends NodeSettingsPersistorWith
         columnFilter.m_mode = loadMode(columnFilterSettings);
         columnFilter.m_manualFilter = LegacyManualFilterPersistorUtil.loadManualFilter(columnFilterSettings);
         if (columnFilterSettings.containsKey(PatternFilterConfiguration.TYPE)) {
-            columnFilter.m_patternFilter = LegacyPatternFilterPersistorUtil.loadPatternMatching(columnFilterSettings.getNodeSettings(PatternFilterConfiguration.TYPE));
+            columnFilter.m_patternFilter = LegacyPatternFilterPersistorUtil
+                .loadPatternMatching(columnFilterSettings.getNodeSettings(PatternFilterConfiguration.TYPE));
         } else {
             // in some very old workflows this field might not have been populated,
             // see knime://Testflows/Testflows%20(master)/knime-base/Flow%20Control/testGroupLoopStart
@@ -170,8 +171,8 @@ public final class LegacyColumnFilterPersistor extends NodeSettingsPersistorWith
         var columnFilterSettings = settings.addNodeSettings(configKey);
         columnFilterSettings.addString(KEY_FILTER_TYPE, toFilterType(columnFilter.m_mode));
         LegacyManualFilterPersistorUtil.saveManualFilter(columnFilter.m_manualFilter, columnFilterSettings);
-        LegacyPatternFilterPersistorUtil.savePatternMatching(columnFilter.m_patternFilter, PatternMode.of(columnFilter.m_mode),
-            columnFilterSettings.addNodeSettings(PatternFilterConfiguration.TYPE));
+        LegacyPatternFilterPersistorUtil.savePatternMatching(columnFilter.m_patternFilter,
+            PatternMode.of(columnFilter.m_mode), columnFilterSettings.addNodeSettings(PatternFilterConfiguration.TYPE));
         saveTypeFilter(columnFilter.m_typeFilter, columnFilterSettings.addNodeSettings(OLD_FILTER_TYPE_DATATYPE));
     }
 
@@ -189,17 +190,12 @@ public final class LegacyColumnFilterPersistor extends NodeSettingsPersistorWith
     }
 
     private static String toFilterType(final ColumnFilterMode mode) {
-        switch (mode) {
-            case MANUAL:
-                return KEY_FILTER_TYPE_MANUAL;
-            case REGEX:
-            case WILDCARD:
-                return PatternFilterConfiguration.TYPE;
-            case TYPE:
-                return OLD_FILTER_TYPE_DATATYPE;
-            default:
-                throw new IllegalArgumentException("Unsupported ColumnSelectionMode: " + mode);
-        }
+        return switch (mode) {
+            case MANUAL -> KEY_FILTER_TYPE_MANUAL;
+            case REGEX, WILDCARD -> PatternFilterConfiguration.TYPE;
+            case TYPE -> OLD_FILTER_TYPE_DATATYPE;
+            default -> throw new IllegalArgumentException("Unsupported ColumnSelectionMode: " + mode);
+        };
     }
 
     private static void saveTypeFilter(final TypeFilter typeFilter, final NodeSettingsWO typeFilterSettings) {
