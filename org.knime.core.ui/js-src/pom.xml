@@ -20,6 +20,7 @@
 		<sonar.sources>src</sonar.sources>
 		<sonar.tests>src</sonar.tests>
 		<sonar.test.inclusions>src/**/__tests__/**/*</sonar.test.inclusions>
+		<sonar.nodejs.executable>${project.build.directory}/node/node</sonar.nodejs.executable>
 		<sonar.exclusions>src/**/__tests__/**/*,node_modules/**/*,dist/**/*,.nyc_output/**/*,test-results/**/*,*.log,config/**/*,**/config.js,**/*.config.js,buildtools/**,webapps-common/**,src/test/**,**/dev/**</sonar.exclusions>
 		<sonar.javascript.lcov.reportPaths>coverage/lcov.info</sonar.javascript.lcov.reportPaths>
 		<sonar.css.stylelint.reportPaths>test-results/stylelint.json</sonar.css.stylelint.reportPaths>
