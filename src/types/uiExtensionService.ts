@@ -63,7 +63,7 @@ export type UIExtensionServiceConfig = AlertConfig &
 
 /**
  * API layer definition for the UIExtension service. This contract
- * represents the method implementations that the embedded of Extensions
+ * represents the method implementations that the embedder of Extensions
  * needs to supply in order to make the communication with Extensions work properly
  */
 export type UIExtensionServiceAPILayer = {

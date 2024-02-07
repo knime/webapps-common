@@ -6,7 +6,7 @@ import { ImageGenerationServiceAPILayer } from "./types/serviceApiLayers";
  * and to communicate the generated image.
  */
 export class ImageGenerationService extends AbstractService<ImageGenerationServiceAPILayer> {
-  getImageActionId() {
+  getGeneratedImageActionId() {
     return this.baseService.getConfig().generatedImageActionId;
   }
 

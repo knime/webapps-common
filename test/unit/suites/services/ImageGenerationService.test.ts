@@ -25,7 +25,7 @@ describe("ImageGenerationService", () => {
       ...extensionConfig,
       generatedImageActionId,
     });
-    expect(imageGenerationService.getImageActionId()).toBe(
+    expect(imageGenerationService.getGeneratedImageActionId()).toBe(
       generatedImageActionId,
     );
   });
