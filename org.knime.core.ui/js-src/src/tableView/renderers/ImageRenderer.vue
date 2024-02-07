@@ -59,8 +59,10 @@ const imageUrlWithDimensions = computed(() => {
   return imageUrl.value === null ? null : addDimensions.value(imageUrl.value);
 });
 
-watchEffect(async () => {
-  imageUrl.value = await resourceService.getResourceUrl(props.path);
+watchEffect(() => {
+  resourceService.getResourceUrl(props.path).then((newImageUrl) => {
+    imageUrl.value = newImageUrl;
+  });
 });
 
 let uuid: string | null = null;
