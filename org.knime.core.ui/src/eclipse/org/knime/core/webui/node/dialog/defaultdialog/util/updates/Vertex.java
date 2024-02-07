@@ -44,63 +44,64 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jan 24, 2024 (Paul Bärnreuther): created
+ *   Feb 6, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
+package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
-import static org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil.createInstance;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Stream;
-
-import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
-import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * Takes care of accessing the fields in a given collection of {@link WidgetGroup}s. The implementer has to convert a
- * traversed field to a handlers of type <H> to make it accessible later via {@link #getHandler}.
  *
  * @author Paul Bärnreuther
- * @param <H> the type of the handler
  */
-public abstract class HandlerHolder<H> {
+sealed abstract class Vertex permits UpdateVertex, ActionVertex, TriggerVertex, DependencyVertex {
 
-    private Map<String, H> m_handlers = new HashMap<>();
+    private final Set<Vertex> m_children = new HashSet<Vertex>();
 
-    HandlerHolder(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
-        final List<FieldWithDefaultNodeSettingsKey> traversedFields = settingsClasses.entrySet().stream()
-            .flatMap(entry -> getTraversedFields(entry.getValue(), entry.getKey())).toList();
-        m_handlers = toHandlers(traversedFields);
+    private final Set<Vertex> m_parents = new HashSet<Vertex>();
+
+    Set<Vertex> getChildren() {
+        return m_children;
     }
 
-    private static Stream<FieldWithDefaultNodeSettingsKey>
-        getTraversedFields(final Class<? extends WidgetGroup> settingsClass, final String settingsKey) {
-        return new DefaultNodeSettingsFieldTraverser(settingsClass).getAllFields().stream()
-            .map(field -> new FieldWithDefaultNodeSettingsKey(field, settingsKey));
+    Set<Vertex> getParents() {
+        return m_parents;
     }
 
-    record FieldWithDefaultNodeSettingsKey(TraversedField field, String settingsKey) {
+    void addChild(final Vertex childVertex) {
+        m_children.add(childVertex);
+        childVertex.m_parents.add(this);
     }
 
-    private Map<String, H> toHandlers(final List<FieldWithDefaultNodeSettingsKey> fields) {
-        final Map<String, H> handlers = new HashMap<>();
-        fields.forEach(field -> getHandlerClass(field)
-            .ifPresent(handlerClass -> handlers.put(handlerClass.getName(), createInstance(handlerClass))));
-        return handlers;
+    void addParent(final Vertex parentVertex) {
+        m_parents.add(parentVertex);
+        parentVertex.m_children.add(this);
     }
 
-    /**
-     * @param field of the traversed settings
-     * @return the relevant handler parameter of the annotation
-     */
-    abstract Optional<Class<? extends H>> getHandlerClass(final FieldWithDefaultNodeSettingsKey field);
+    abstract <T> T visit(VertexVisitor<T> visitor);
 
-    H getHandler(final String handlerClassName) {
-        return m_handlers.get(handlerClassName);
+    interface VertexVisitor<T> {
+
+        default T accept(final UpdateVertex updateVertex) {
+            return acceptDefault(updateVertex);
+        }
+
+        default T accept(final ActionVertex actionVertex) {
+            return acceptDefault(actionVertex);
+        }
+
+        default T accept(final TriggerVertex triggerVertex) {
+            return acceptDefault(triggerVertex);
+        }
+
+        default T accept(final DependencyVertex dependencyVertex) {
+            return acceptDefault(dependencyVertex);
+        }
+
+        default T acceptDefault(@SuppressWarnings("unused") final Vertex vertex) {
+            return null;
+        }
     }
 
 }

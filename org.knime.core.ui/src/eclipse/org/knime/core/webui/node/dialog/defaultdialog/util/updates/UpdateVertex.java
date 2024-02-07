@@ -44,56 +44,48 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jan 22, 2024 (Paul Bärnreuther): created
+ *   Feb 6, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.rule;
+package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.util.List;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.NoopUpdateResolver;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.UpdateHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.UpdateResolver;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueIdsAndUpdates.UpdateWrapper;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Action;
 
 /**
- * Define custom updates from dependencies to targets. This annotation can be put on a field which is a {@link Widget}
- * or a {@link WidgetGroup}. If the same dependencies should update multiple settings which do not form a complete
- * {@link WidgetGroup} the annotation should not be put on the group but on the individual parts. In this case one can
- * use a {@link #resolver} in addition to the shared {@link #updateHandler} to map the common intermediate result of the
- * {@link #updateHandler} to the type of the field.
- *
- * The annotation will lead to a runtime exception when opening the dialog when not following these constraints:
- * <ul>
- * <li>If the given {@link #updateHandler} is only used in this annotation, a {@link #resolver} must not be specified
- * and the return type of the handler has to match the field type</li>
- * <li>Else there return type of the {@link #updateHandler} has to match the input type of the {@link #resolver} and the
- * return type of the resolver has to match the field type</li>
- * </ul>
  *
  * @author Paul Bärnreuther
  */
-@Retention(RUNTIME)
-@Target(FIELD)
-public @interface Update {
+public final class UpdateVertex extends Vertex {
 
-    /**
-     * @return a handler which defined dependencies from one or multiple setting to the annotated setting. The first
-     *         generic type has to match the type of the annotated field. The second one defines the settings triggering
-     *         the update.
-     */
-    Class<? extends UpdateHandler<?, ?>> updateHandler(); // NOSONAR
+    private final Class<? extends Action> m_action;
 
-    /**
-     * An class containing an additional callback which transforms the result of the {@link #updateHandler} to the
-     * fields type. This parameter must not be specified in case the handler is only used here.
-     *
-     * @return
-     */
-    Class<? extends UpdateResolver<?, ?>> resolver() default NoopUpdateResolver.class; // NOSONAR
+    private final List<String> m_path;
+
+    private final String m_settingsKey;
+
+    UpdateVertex(final UpdateWrapper wrapper) {
+        m_action = wrapper.action();
+        m_path = wrapper.path();
+        m_settingsKey = wrapper.settingsKey();
+    }
+
+    @Override
+    public <T> T visit(final VertexVisitor<T> visitor) {
+        return visitor.accept(this);
+    }
+
+    Class<? extends Action> getActionClass() {
+        return m_action;
+    }
+
+    public List<String> getPath() {
+        return m_path;
+    }
+
+    public String getSettingsKey() {
+        return m_settingsKey;
+    }
 
 }

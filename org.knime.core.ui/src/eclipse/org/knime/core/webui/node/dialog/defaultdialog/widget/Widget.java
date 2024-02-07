@@ -55,6 +55,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueId;
 
 /**
  * An annotation for a field indicating that its contributing to the dialog UI. And it allows one to control common
@@ -92,5 +93,12 @@ public @interface Widget {
      *         description.
      */
     boolean hideTitle() default false;
+
+    /**
+     * @return An id that can be referenced by update handlers of other fields. The generic type of {@link ValueId} has
+     *         to match the type of the annotated field. Otherwise a runtime exception is thrown when the dialog is
+     *         opened.
+     */
+    Class<? extends ValueId> id() default ValueId.class;
 
 }

@@ -73,7 +73,8 @@ class ButtonWidgetActionHandlerHolder extends HandlerHolder<ButtonActionHandler<
     }
 
     @Override
-    Optional<Class<? extends ButtonActionHandler<?, ?, ?>>> getHandlerClass(final FieldWithDefaultNodeSettingsKey field) {
+    Optional<Class<? extends ButtonActionHandler<?, ?, ?>>>
+        getHandlerClass(final FieldWithDefaultNodeSettingsKey field) {
         final var buttonWidget = field.field().propertyWriter().getAnnotation(ButtonWidget.class);
         if (buttonWidget == null) {
             return Optional.empty();
@@ -85,8 +86,7 @@ class ButtonWidgetActionHandlerHolder extends HandlerHolder<ButtonActionHandler<
 
     }
 
-    private static void
-        validate(final PropertyWriter field,
+    private static void validate(final PropertyWriter field,
         final Class<? extends ButtonActionHandler<?, ?, ?>> actionHandlerClass) {
         if (!isValidReturnType(field, actionHandlerClass)) {
             throw new IllegalArgumentException(

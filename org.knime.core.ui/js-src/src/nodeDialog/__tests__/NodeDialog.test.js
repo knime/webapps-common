@@ -590,7 +590,8 @@ describe("NodeDialog.vue", () => {
     });
 
     it("adds global update handlers initially", async () => {
-      const updateHandler = "myUpdateHandler";
+      const triggerId = "myTriggerId";
+      const dependencyId = "myDependencyId";
       const uiSchemaKey = "ui_schema";
       initialDataSpy.mockResolvedValue({
         data: {
@@ -605,8 +606,16 @@ describe("NodeDialog.vue", () => {
         [uiSchemaKey]: {
           globalUpdates: [
             {
-              dependencies: ["#/properties/view/properties/firstSetting"],
-              updateHandler,
+              trigger: {
+                scope: "#/properties/view/properties/firstSetting",
+                id: triggerId,
+              },
+              dependencies: [
+                {
+                  id: dependencyId,
+                  scope: "#/properties/model/properties/secondSetting",
+                },
+              ],
             },
           ],
         },
@@ -618,7 +627,12 @@ describe("NodeDialog.vue", () => {
       const dataSericeMock = vi.spyOn(wrapper.vm.jsonDataService, "data");
       const updatedValue = "updated";
       dataSericeMock.mockResolvedValue({
-        result: [{ path: "model.secondSetting", value: updatedValue }],
+        result: [
+          {
+            path: "#/properties/model/properties/secondSetting",
+            value: updatedValue,
+          },
+        ],
       });
 
       const path = "view.firstSetting";
@@ -634,12 +648,8 @@ describe("NodeDialog.vue", () => {
         },
       });
       expect(dataSericeMock).toHaveBeenCalledWith({
-        method: "settings.update",
-        options: [
-          null,
-          updateHandler,
-          expect.objectContaining({ firstSetting: triggeringValue }),
-        ],
+        method: "settings.update2",
+        options: [null, triggerId, { [dependencyId]: "secondSetting" }],
       });
     });
   });

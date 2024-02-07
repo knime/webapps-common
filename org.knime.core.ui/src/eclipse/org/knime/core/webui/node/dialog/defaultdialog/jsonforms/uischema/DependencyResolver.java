@@ -53,6 +53,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsScopeUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
@@ -89,7 +90,7 @@ final class DependencyResolver {
 
     private Consumer<TraversedField> getAddNewDependencyCallback(final Consumer<String> addDependency) {
         return field -> {
-            final var searchScope = UiSchemaDefaultNodeSettingsTraverser.toScope(field.path());
+            final var searchScope = JsonFormsScopeUtil.toScope(field.path());
             final var declaringDefaultNodeSettings = field.trackedAnnotations()
                 .getInstance(DeclaringDefaultNodeSettings.class).map(DeclaringDefaultNodeSettings::value).orElse(null);
             final var clazz = field.propertyWriter().getType().getRawClass();

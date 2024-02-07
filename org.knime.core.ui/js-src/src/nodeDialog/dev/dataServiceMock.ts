@@ -28,15 +28,21 @@ export default (rpcRequest: { method: string; params: any[] }) => {
         ],
         NUMBER: [{ name: "numberVariable", value: "100", abbreviated: false }],
       };
-    case "settings.update": {
+    case "settings.update2": {
       const dependencies = rpcRequest.params[2];
       /**
        * See update.json
        */
       return {
         result: [
-          { path: "view.sum", value: dependencies.a + dependencies.b },
-          { path: "view.product", value: dependencies.a * dependencies.b },
+          {
+            path: "#/properties/view/properties/sum",
+            value: dependencies.A + dependencies.B,
+          },
+          {
+            path: "#/properties/view/properties/product",
+            value: dependencies.A * dependencies.B,
+          },
         ],
       };
     }

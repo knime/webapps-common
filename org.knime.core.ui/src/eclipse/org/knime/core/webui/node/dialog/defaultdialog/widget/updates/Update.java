@@ -44,26 +44,44 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jan 24, 2024 (Paul Bärnreuther): created
+ *   Jan 22, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget;
+package org.knime.core.webui.node.dialog.defaultdialog.widget.updates;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Update;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
 /**
- * Marker class that is only meant to serve as a default in {@link Update#resolver}.
+ * Define custom updates from dependencies to targets. This annotation can be put on a field which is a {@link Widget}
+ * or a {@link WidgetGroup}. If the same dependencies should update multiple settings which do not form a complete
+ * {@link WidgetGroup} the annotation should not be put on the group but on the individual parts. In this case one can
+ * use a {@link #resolver} in addition to the shared {@link #updateHandler} to map the common intermediate result of the
+ * {@link #updateHandler} to the type of the field.
+ *
+ * The annotation will lead to a runtime exception when opening the dialog when not following these constraints:
+ * <ul>
+ * <li>If the given {@link #updateHandler} is only used in this annotation, a {@link #resolver} must not be specified
+ * and the return type of the handler has to match the field type</li>
+ * <li>Else there return type of the {@link #updateHandler} has to match the input type of the {@link #resolver} and the
+ * return type of the resolver has to match the field type</li>
+ * </ul>
  *
  * @author Paul Bärnreuther
  */
-public class NoopUpdateResolver implements UpdateResolver<Void, Void> {
+@Retention(RUNTIME)
+@Target(FIELD)
+public @interface Update {
 
     /**
-     * This method should never be called, since the handler should never be used.
+     * @return a handler which defined dependencies from one or multiple setting to the annotated setting. The generic
+     *         type of the action has to match the type of the annotated field.
      */
-    @Override
-    public Void resolve(final Void update, final DefaultNodeSettingsContext context) {
-        return null;
-    }
+    Class<? extends Action<?>> updateHandler(); // NOSONAR
 
 }

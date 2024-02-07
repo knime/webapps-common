@@ -79,11 +79,11 @@ public final class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialog
 
     private final ChoicesWidgetUpdateHandlerHolder m_choicesUpdateHandlers;
 
-    private final ValueUpdateHandlerHolder m_valueUpdateHandlers;
-
     private final DataServiceRequestHandler m_requestHandler;
 
     private final AsyncChoicesGetter m_asyncChoicesGetter;
+
+    private final TriggerInvocationHandler m_triggerInvocationHandler;
 
     /**
      * @param settingsClasses the classes of the {@link DefaultNodeSettings} associated to the dialog.
@@ -98,8 +98,8 @@ public final class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialog
         m_buttonActionHandlers = new ButtonWidgetActionHandlerHolder(keyToSettingsClassMap);
         m_buttonUpdateHandlers = new ButtonWidgetUpdateHandlerHolder(keyToSettingsClassMap);
         m_choicesUpdateHandlers = new ChoicesWidgetUpdateHandlerHolder(keyToSettingsClassMap);
-        m_valueUpdateHandlers = new ValueUpdateHandlerHolder(keyToSettingsClassMap);
         m_requestHandler = new DataServiceRequestHandler();
+        m_triggerInvocationHandler = new TriggerInvocationHandler(keyToSettingsClassMap);
         m_asyncChoicesGetter = asyncChoicesGetter;
     }
 
@@ -147,10 +147,6 @@ public final class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialog
     }
 
     private UpdateHandler<?, ?> getUpdateHandler(final String handlerClassName) {
-        final var valueUpdateHandler = m_valueUpdateHandlers.getHandler(handlerClassName);
-        if (valueUpdateHandler != null) {
-            return valueUpdateHandler;
-        }
         final var buttonHandler = m_buttonUpdateHandlers.getHandler(handlerClassName);
         if (buttonHandler != null) {
             return buttonHandler;
@@ -160,6 +156,14 @@ public final class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialog
             return choicesHandler;
         }
         throw new NoHandlerFoundException(handlerClassName);
+    }
+
+    @Override
+    public Result<?> update2(final String widgetId, final String triggerClass,
+        final Map<String, Object> rawDependencies) throws InterruptedException, ExecutionException {
+        final var context = createContext();
+        return m_requestHandler.handleRequest(widgetId,
+            () -> m_triggerInvocationHandler.trigger(triggerClass, rawDependencies, context));
     }
 
     @Override

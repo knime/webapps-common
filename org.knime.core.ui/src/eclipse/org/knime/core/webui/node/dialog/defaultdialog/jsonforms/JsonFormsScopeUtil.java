@@ -44,30 +44,43 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jan 24, 2024 (Paul Bärnreuther): created
+ *   Feb 7, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.rule;
+package org.knime.core.webui.node.dialog.defaultdialog.jsonforms;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import org.knime.core.webui.node.dialog.defaultdialog.widget.UpdateHandler;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * This annotation can be used to restrict an {@link Update} to the subset of nested subsettings.
  *
  * @author Paul Bärnreuther
  */
-@Retention(RUNTIME)
-@Target(FIELD)
-public @interface UpdateWith {
+public final class JsonFormsScopeUtil {
+    private JsonFormsScopeUtil() {
+        // utility class
+    }
 
     /**
-     * @return a handler used in an {@link UpdateHandler} on a parent field of the annotated field
+     *
+     * @param path
+     * @param settingsKey
+     * @return the json schema scope
      */
-    Class<? extends UpdateHandler<?, ?>> updateHandler(); // NOSONAR
+    public static String toScope(final List<String> path, final String settingsKey) {
+        final var pathWithPrefix = new ArrayList<String>(path);
+        if (settingsKey != null) {
+            pathWithPrefix.add(0, settingsKey);
+        }
+        pathWithPrefix.add(0, "#");
+        return toScope(pathWithPrefix);
+    }
 
+    /**
+     *
+     * @param path
+     * @return the json schema scope
+     */
+    public static String toScope(final List<String> path) {
+        return String.join("/properties/", path);
+    }
 }

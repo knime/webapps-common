@@ -203,8 +203,7 @@ public class DefaultNodeSettingsFieldTraverser {
     }
 
     /**
-     * TODO
-     * @return
+     * @return A list of all traversed fields including fields nested within array layout elements.
      */
     public List<TraversedField> getAllFields() {
         List<TraversedField> fields = new ArrayList<>();
@@ -226,8 +225,7 @@ public class DefaultNodeSettingsFieldTraverser {
         if (ArrayLayoutUtil.isArrayLayoutField(javaType)) {
             final var elementClass = javaType.getContentType().getRawClass();
             if (DefaultNodeSettings.class.isAssignableFrom(elementClass)) {
-                return new DefaultNodeSettingsFieldTraverser(m_serializerProvider,
-                    elementClass).getAllFields();
+                return new DefaultNodeSettingsFieldTraverser(m_serializerProvider, elementClass).getAllFields();
             }
         }
         return new ArrayList<>(0);

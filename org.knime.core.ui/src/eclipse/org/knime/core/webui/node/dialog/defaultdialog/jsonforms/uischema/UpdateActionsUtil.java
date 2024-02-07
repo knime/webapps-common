@@ -48,18 +48,18 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsScopeUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Update;
-import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
-import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.UpdateHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.DependencyVertex;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueIdsAndUpdates;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerToDependencies;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerVertex;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.ValueIdsAndUpdatesToDependencyTree;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Update;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -68,52 +68,76 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  *
  * @author Paul Bärnreuther
  */
-final class UpdateHandlerUtil {
+final class UpdateActionsUtil {
 
-    private UpdateHandlerUtil() {
+    private UpdateActionsUtil() {
         // Utility
     }
 
-    record UpdateHandlerParams(String updateHandlerName, List<String> dependencies) {
+    record Dependency(String scope, String valueId) {
+    }
+
+    record TriggerAndDependencies(TriggerVertex trigger, Collection<DependencyVertex> dependencies) {
+
+        String getTriggerId() {
+            return trigger().getId();
+        }
+
+        String getTriggerPath() {
+            final var settingsKey = trigger().getSettingsKey();
+            final var path = trigger().getPath();
+            return JsonFormsScopeUtil.toScope(path, settingsKey);
+        }
+
+        List<Dependency> getDependencyPaths() {
+            return dependencies().stream().map(dep -> {
+                final var scope = JsonFormsScopeUtil.toScope(dep.getPath(), dep.getSettingsKey());
+                final var valueId = dep.getValueId().getName();
+                return new Dependency(scope, valueId);
+            }).toList();
+        }
     }
 
     /**
      * Adds an array with one element for each {@link Update} annotation to the rootNode if any are present.
      */
     static void addUpdateHandlers(final ObjectNode rootNode,
-        final Map<String, Class<? extends WidgetGroup>> settingsClasses, final Collection<JsonFormsControl> fields) {
-        final var updateParams = getUpdateHandlersParams(fields, settingsClasses);
-        if (updateParams.isEmpty()) {
+        final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
+        final var triggersWithDependencies = getTriggersWithDependencies(settingsClasses);
+        if (triggersWithDependencies.isEmpty()) {
             return;
         }
+        addToUiSchema(rootNode, triggersWithDependencies);
+    }
+
+    private static void addToUiSchema(final ObjectNode rootNode,
+        final List<TriggerAndDependencies> triggersWithDependencies) {
         final var globalUpdates = rootNode.putArray("globalUpdates");
-        updateParams.forEach(updateParam -> {
+        triggersWithDependencies.forEach(triggerWithDependencies -> {
             final var updateObjectNode = globalUpdates.addObject();
-            updateObjectNode.put("updateHandler", updateParam.updateHandlerName());
+            final var triggerNode = updateObjectNode.putObject("trigger");
+            triggerNode.put("id", triggerWithDependencies.getTriggerId());
+            triggerNode.put("scope", triggerWithDependencies.getTriggerPath());
             final var dependenciesArrayNode = updateObjectNode.putArray("dependencies");
-            updateParam.dependencies().forEach(dependenciesArrayNode::add);
+            triggerWithDependencies.getDependencyPaths().forEach(dep -> {
+                final var newDependency = dependenciesArrayNode.addObject();
+                newDependency.put("scope", dep.scope());
+                newDependency.put("id", dep.valueId());
+            });
         });
-
     }
 
-    private static Collection<UpdateHandlerParams> getUpdateHandlersParams(final Collection<JsonFormsControl> fields,
-        final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
-        final var traversedFields = settingsClasses.values().stream()
-            .flatMap((settingsClass) -> new DefaultNodeSettingsFieldTraverser(settingsClass).getAllFields().stream());
-        final var updateHandlers = traversedFields.map(UpdateHandlerUtil::getUpdateAnnotation)
-            .filter(Optional::isPresent).map(Optional::get).map(Update::updateHandler).collect(Collectors.toSet());
-        return updateHandlers.stream().map(handler -> toUpdateParams(handler, fields)).toList();
-    }
+    private static List<TriggerAndDependencies>
+        getTriggersWithDependencies(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
+        final var valueIdsAndUpdates =
+            SettingsClassesToValueIdsAndUpdates.settingsClassesToValueIdsAndUpdates(settingsClasses);
 
-    private static Optional<Update> getUpdateAnnotation(final TraversedField field) {
-        return Optional.ofNullable(field.propertyWriter().getAnnotation(Update.class));
-    }
-
-    private static UpdateHandlerParams toUpdateParams(final Class<? extends UpdateHandler<?, ?>> updateHandler,
-        final Collection<JsonFormsControl> fields) {
-        final List<String> dependencies = new ArrayList<>();
-        new DependencyResolver(fields).addDependencyScopes(updateHandler, dependencies::add);
-        return new UpdateHandlerParams(updateHandler.getName(), dependencies);
+        final var triggers = ValueIdsAndUpdatesToDependencyTree.valueIdsAndUpdatesToDependencyTree(valueIdsAndUpdates);
+        final var triggerToDependencies = new TriggerToDependencies();
+        final var triggersWithDependencies = triggers.stream()
+            .map(trigger -> new TriggerAndDependencies(trigger, triggerToDependencies.triggerToDependencies(trigger)))
+            .toList();
+        return triggersWithDependencies;
     }
 
 }

@@ -44,63 +44,47 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jan 24, 2024 (Paul Bärnreuther): created
+ *   Feb 6, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
+package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
-import static org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil.createInstance;
-
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Stream;
 
-import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
-import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueIdsAndUpdates.ValueIdWrapper;
 
 /**
- * Takes care of accessing the fields in a given collection of {@link WidgetGroup}s. The implementer has to convert a
- * traversed field to a handlers of type <H> to make it accessible later via {@link #getHandler}.
  *
  * @author Paul Bärnreuther
- * @param <H> the type of the handler
  */
-public abstract class HandlerHolder<H> {
+public final class TriggerVertex extends Vertex {
 
-    private Map<String, H> m_handlers = new HashMap<>();
+    private final String m_id;
 
-    HandlerHolder(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
-        final List<FieldWithDefaultNodeSettingsKey> traversedFields = settingsClasses.entrySet().stream()
-            .flatMap(entry -> getTraversedFields(entry.getValue(), entry.getKey())).toList();
-        m_handlers = toHandlers(traversedFields);
+    private final List<String> m_path;
+
+    private final String m_settingsKey;
+
+    TriggerVertex(final ValueIdWrapper valueIdWrapper) {
+        m_id = valueIdWrapper.valueId().getName();
+        m_path = valueIdWrapper.path();
+        m_settingsKey = valueIdWrapper.settingsKey();
     }
 
-    private static Stream<FieldWithDefaultNodeSettingsKey>
-        getTraversedFields(final Class<? extends WidgetGroup> settingsClass, final String settingsKey) {
-        return new DefaultNodeSettingsFieldTraverser(settingsClass).getAllFields().stream()
-            .map(field -> new FieldWithDefaultNodeSettingsKey(field, settingsKey));
+    @Override
+    public <T> T visit(final VertexVisitor<T> visitor) {
+        return visitor.accept(this);
     }
 
-    record FieldWithDefaultNodeSettingsKey(TraversedField field, String settingsKey) {
+    public String getId() {
+        return m_id;
     }
 
-    private Map<String, H> toHandlers(final List<FieldWithDefaultNodeSettingsKey> fields) {
-        final Map<String, H> handlers = new HashMap<>();
-        fields.forEach(field -> getHandlerClass(field)
-            .ifPresent(handlerClass -> handlers.put(handlerClass.getName(), createInstance(handlerClass))));
-        return handlers;
+    public String getSettingsKey() {
+        return m_settingsKey;
     }
 
-    /**
-     * @param field of the traversed settings
-     * @return the relevant handler parameter of the annotation
-     */
-    abstract Optional<Class<? extends H>> getHandlerClass(final FieldWithDefaultNodeSettingsKey field);
-
-    H getHandler(final String handlerClassName) {
-        return m_handlers.get(handlerClassName);
+    public List<String> getPath() {
+        return m_path;
     }
 
 }

@@ -49,6 +49,7 @@
 package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.groups.Tuple.tuple;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -58,6 +59,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Supplier;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -76,14 +78,11 @@ import org.knime.core.webui.data.DataServiceContextTest;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.ValueUpdateHandlerHolder.PathAndValue;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Update;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.TriggerInvocationHandler.PathAndValue;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.UpdateHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.UpdateResolver;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonChange;
@@ -93,6 +92,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesUpda
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.IdAndText;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Action;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Update;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueId;
 
 /**
  * Tests DefaultNodeSettingsService.
@@ -140,12 +142,24 @@ class DefaultNodeDialogDataServiceImplTest {
     @Nested
     class ValueUpdatesDataServiceTest {
 
-        private static final class TestUpdateHandler implements UpdateHandler<String, TestDefaultNodeSettings> {
+        static final class MyValueId implements ValueId<String> {
+        }
+
+        private static final class TestAction implements Action<String> {
+
+            private Supplier<String> m_dependencySupplier;
 
             @Override
-            public String update(final TestDefaultNodeSettings settings, final DefaultNodeSettingsContext context)
-                throws WidgetHandlerException {
-                return settings.m_foo;
+            public void init(final ActionInitializer initializer) {
+                m_dependencySupplier = initializer.dependOnChangedValue(MyValueId.class);
+            }
+
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public String compute() {
+                return m_dependencySupplier.get();
             }
 
         }
@@ -154,75 +168,121 @@ class DefaultNodeDialogDataServiceImplTest {
         void testSingleUpdate() throws ExecutionException, InterruptedException {
 
             class UpdateSettings implements DefaultNodeSettings {
-                @Update(updateHandler = TestUpdateHandler.class)
+
+                @Widget(id = MyValueId.class)
+                String m_dependency;
+
+                @Update(updateHandler = TestAction.class)
                 String m_updatedWidget;
 
             }
 
             final String testDepenenciesFooValue = "custom value";
             final var dataService = getDataService(UpdateSettings.class);
-            final var resultWrapper = dataService.update("widgetId", TestUpdateHandler.class.getName(),
-                Map.of("foo", testDepenenciesFooValue));
+            final var resultWrapper = dataService.update2("widgetId", MyValueId.class.getName(),
+                Map.of(MyValueId.class.getName(), testDepenenciesFooValue));
             final var result = (List<PathAndValue>)(resultWrapper.result());
             assertThat(result).hasSize(1);
             assertThat(result.get(0).value()).isEqualTo(testDepenenciesFooValue);
-            assertThat(result.get(0).path()).isEqualTo("model.updatedWidget");
+            assertThat(result.get(0).path()).isEqualTo("#/properties/model/properties/updatedWidget");
+        }
+
+        static final class MyFirstValueId implements ValueId<String> {
+        }
+
+        static final class MySecondValueId implements ValueId<String> {
         }
 
         record IntermediateState(String first, String second) {
         }
 
-        static final class FirstResolver implements UpdateResolver<IntermediateState, String> {
+        private static final class CommonFirstAction implements Action<IntermediateState> {
 
+            private Supplier<String> m_secondDependencyProvider;
+
+            private Supplier<String> m_firstDependencyProvider;
+
+            /**
+             * {@inheritDoc}
+             */
             @Override
-            public String resolve(final IntermediateState update, final DefaultNodeSettingsContext context) {
-                return update.first();
+            public void init(final ActionInitializer initializer) {
+                m_firstDependencyProvider = initializer.dependOnChangedValue(MyFirstValueId.class);
+                m_secondDependencyProvider = initializer.dependOnValueWhichIsNotATrigger(MySecondValueId.class);
+            }
+
+            /**
+             * {@inheritDoc}
+             */
+            @Override
+            public IntermediateState compute() {
+                return new IntermediateState(m_firstDependencyProvider.get() + "_first",
+                    m_secondDependencyProvider.get() + "_second");
             }
 
         }
 
-        static final class SecondResolver implements UpdateResolver<IntermediateState, String> {
+        static final class FirstResolver implements Action<String> {
+
+            private Supplier<IntermediateState> m_pairProvider;
 
             @Override
-            public String resolve(final IntermediateState update, final DefaultNodeSettingsContext context) {
-                return update.second();
+            public void init(final ActionInitializer initializer) {
+                m_pairProvider = initializer.continueOtherAction(CommonFirstAction.class);
+            }
+
+            @Override
+            public String compute() {
+                return m_pairProvider.get().first();
             }
 
         }
 
-        private static final class TestMultiUpdateHandler
-            implements UpdateHandler<IntermediateState, TestDefaultNodeSettings> {
+        static final class SecondResolver implements Action<String> {
+            private Supplier<IntermediateState> m_pairProvider;
 
             @Override
-            public IntermediateState update(final TestDefaultNodeSettings settings,
-                final DefaultNodeSettingsContext context) throws WidgetHandlerException {
-                return new IntermediateState(settings.m_foo + "_first", settings.m_foo + "_second");
+            public void init(final ActionInitializer initializer) {
+                m_pairProvider = initializer.continueOtherAction(CommonFirstAction.class);
             }
 
+            @Override
+            public String compute() {
+                return m_pairProvider.get().second();
+            }
         }
 
         @Test
         void testMultipleUpdatesWithOneHandler() throws ExecutionException, InterruptedException {
 
             class UpdateSettings implements DefaultNodeSettings {
-                @Update(updateHandler = TestMultiUpdateHandler.class, resolver = FirstResolver.class)
+
+                @Widget(id = MyFirstValueId.class)
+                String m_foo;
+
+                @Widget(id = MySecondValueId.class)
+                String m_bar;
+
+                @Update(updateHandler = FirstResolver.class)
                 String m_firstUpdatedWidget;
 
-                @Update(updateHandler = TestMultiUpdateHandler.class, resolver = SecondResolver.class)
+                @Update(updateHandler = SecondResolver.class)
                 String m_secondUpdatedWidget;
 
             }
 
-            final String testDepenenciesFooValue = "custom value";
+            final String testDepenenciesFooValue = "custom value 1";
+
+            final String testDepenenciesBarValue = "custom value 2";
             final var dataService = getDataService(UpdateSettings.class);
-            final var resultWrapper = dataService.update("widgetId", TestMultiUpdateHandler.class.getName(),
-                Map.of("foo", testDepenenciesFooValue));
+            final var resultWrapper =
+                dataService.update2("widgetId", MyFirstValueId.class.getName(), Map.of(MyFirstValueId.class.getName(),
+                    testDepenenciesFooValue, MySecondValueId.class.getName(), testDepenenciesBarValue));
             final var result = (List<PathAndValue>)(resultWrapper.result());
             assertThat(result).hasSize(2);
-            assertThat(result.get(0).value()).isEqualTo(testDepenenciesFooValue + "_first");
-            assertThat(result.get(0).path()).isEqualTo("model.firstUpdatedWidget");
-            assertThat(result.get(1).value()).isEqualTo(testDepenenciesFooValue + "_second");
-            assertThat(result.get(1).path()).isEqualTo("model.secondUpdatedWidget");
+            assertThat(result).extracting("value", "path").contains(
+                tuple(testDepenenciesFooValue + "_first", "#/properties/model/properties/firstUpdatedWidget"),
+                tuple(testDepenenciesBarValue + "_second", "#/properties/model/properties/secondUpdatedWidget"));
         }
     }
 

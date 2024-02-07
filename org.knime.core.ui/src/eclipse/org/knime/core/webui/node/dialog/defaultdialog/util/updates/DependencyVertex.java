@@ -44,25 +44,51 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jan 24, 2024 (Paul Bärnreuther): created
+ *   Feb 6, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget;
+package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
+import java.util.List;
+
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueIdsAndUpdates.ValueIdWrapper;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueId;
 
 /**
  *
  * @author Paul Bärnreuther
  */
-public interface UpdateResolver<UpdateHandlerOutput, FieldType> {
+public final class DependencyVertex extends Vertex {
 
-    FieldType resolve(UpdateHandlerOutput update, final DefaultNodeSettingsContext context);
+    private final Class<? extends ValueId> m_id;
 
-    @SuppressWarnings({"javadoc"})
-    default FieldType castAndUpdate(final Object settings, final DefaultNodeSettingsContext context)
-        throws WidgetHandlerException {
-        return resolve((UpdateHandlerOutput)settings, context);
+    private final List<String> m_path;
+
+    private final String m_settingsKey;
+
+    /**
+     * @param valueIdWrapper
+     */
+    public DependencyVertex(final ValueIdWrapper valueIdWrapper) {
+        m_id = valueIdWrapper.valueId();
+        m_path = valueIdWrapper.path();
+        m_settingsKey = valueIdWrapper.settingsKey();
+    }
+
+    @Override
+    public <T> T visit(final VertexVisitor<T> visitor) {
+        return visitor.accept(this);
+    }
+
+    public Class<? extends ValueId> getValueId() {
+        return m_id;
+    }
+
+    public String getSettingsKey() {
+        return m_settingsKey;
+    }
+
+    public List<String> getPath() {
+        return m_path;
     }
 
 }

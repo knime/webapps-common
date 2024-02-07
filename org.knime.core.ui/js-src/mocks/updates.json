@@ -65,11 +65,36 @@
       ],
       "globalUpdates": [
         {
+          "trigger": {
+            "scope": "#/properties/view/properties/a",
+            "id": "Trigger_A"
+          },
           "dependencies": [
-            "#/properties/view/properties/a",
-            "#/properties/view/properties/b"
-          ],
-          "updateHandler": "UpdateHandler(update.json)"
+            {
+              "scope": "#/properties/view/properties/a",
+              "id": "A"
+            },
+            {
+              "scope": "#/properties/view/properties/b",
+              "id": "B"
+            }
+          ]
+        },
+        {
+          "trigger": {
+            "scope": "#/properties/view/properties/b",
+            "id": "Trigger_B"
+          },
+          "dependencies": [
+            {
+              "scope": "#/properties/view/properties/a",
+              "id": "A"
+            },
+            {
+              "scope": "#/properties/view/properties/b",
+              "id": "B"
+            }
+          ]
         }
       ]
     }

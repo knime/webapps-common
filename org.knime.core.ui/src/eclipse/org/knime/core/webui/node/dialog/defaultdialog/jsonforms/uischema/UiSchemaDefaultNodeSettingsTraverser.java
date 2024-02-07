@@ -56,6 +56,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsScopeUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
@@ -117,7 +118,7 @@ class UiSchemaDefaultNodeSettingsTraverser {
         final Consumer<TraversalConsumerPayload> addSignal, final String settingsKey, final Class<?> setting) {
         final var traverser = new DefaultNodeSettingsFieldTraverser(setting);
         traverser.traverse(field -> {
-            final var scope = toScope(field.path(), settingsKey);
+            final var scope =  JsonFormsScopeUtil.toScope(field.path(), settingsKey);
             final var payload = new TraversalConsumerPayload(scope, field, setting);
             // TODO UIEXT-1573 only allow signals on widgets
             addSignal.accept(payload);
@@ -184,24 +185,5 @@ class UiSchemaDefaultNodeSettingsTraverser {
             newControls.add(newJsonFormsControl);
             return newControls;
         });
-    }
-
-    /**
-     * TODO move
-     * @param path
-     * @param settingsKey
-     * @return
-     */
-    public static String toScope(final List<String> path, final String settingsKey) {
-        final var pathWithPrefix = new ArrayList<String>(path);
-        if (settingsKey != null) {
-            pathWithPrefix.add(0, settingsKey);
-        }
-        pathWithPrefix.add(0, "#");
-        return toScope(pathWithPrefix);
-    }
-
-    static String toScope(final List<String> path) {
-        return String.join("/properties/", path);
     }
 }

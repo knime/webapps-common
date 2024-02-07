@@ -70,7 +70,8 @@ class ButtonWidgetUpdateHandlerHolder extends HandlerHolder<ButtonUpdateHandler<
     }
 
     @Override
-    Optional<Class<? extends ButtonUpdateHandler<?, ?, ?>>> getHandlerClass(final FieldWithDefaultNodeSettingsKey field) {
+    Optional<Class<? extends ButtonUpdateHandler<?, ?, ?>>>
+        getHandlerClass(final FieldWithDefaultNodeSettingsKey field) {
         final var buttonWidget = field.field().propertyWriter().getAnnotation(ButtonWidget.class);
         if (buttonWidget == null) {
             return Optional.empty();

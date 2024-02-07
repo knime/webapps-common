@@ -53,11 +53,22 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUti
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.PasswordHolder;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueId;
 
 /**
  * @author Paul Bärnreuther
  */
 class ConvertValueUtil {
+
+    private ConvertValueUtil() {
+        // Utility
+    }
+
+    public static Object convertValueId(final Object objectSettings, final Class<? extends ValueId> valueId,
+        final DefaultNodeSettingsContext context) {
+        final var settingsType = GenericTypeFinderUtil.getFirstGenericType(valueId, ValueId.class);
+        return convertValue(objectSettings, settingsType, context);
+    }
 
     public static Object convertDependencies(final Object objectSettings, final DependencyHandler<?> handler,
         final DefaultNodeSettingsContext context) {

@@ -21,7 +21,7 @@ import {
 } from "../nodeDialog/utils";
 import Button from "webapps-common/ui/components/Button.vue";
 import { getMetaOrCtrlKey } from "webapps-common/util/navigator";
-import { cloneDeep, set, isEqual } from "lodash-es";
+import { cloneDeep, set, get, isEqual } from "lodash-es";
 import { inject, markRaw } from "vue";
 import type ProvidedMethods from "./types/provided";
 import type { ProvidedForFlowVariables } from "./types/provided";
@@ -31,7 +31,6 @@ import type Control from "./types/Control";
 import getChoices from "./api/getChoices";
 import * as flowVariablesApi from "./api/flowVariables";
 import type { FlowSettings } from "./api/types";
-import getFlattenedSettings from "./utils/getFlattenedSettings";
 import { DialogSettings } from "@knime/ui-extension-service/dist/DialogSettings-33e63dd7";
 import { v4 as uuidv4 } from "uuid";
 
@@ -135,20 +134,26 @@ export default {
   },
   methods: {
     registerGlobalWatchers(globalUpdates: Update[]) {
-      globalUpdates.forEach(({ dependencies, updateHandler }) => {
+      globalUpdates.forEach(({ dependencies, trigger }) => {
         const updateCallback = async (newSettings: DialogSettings & object) => {
+          const currentDependencies = Object.fromEntries(
+            dependencies.map((dep) => [
+              dep.id,
+              get(newSettings, toDataPath(dep.scope)),
+            ]),
+          );
           const { result } = await this.jsonDataService!.data({
-            method: "settings.update",
-            options: [null, updateHandler, getFlattenedSettings(newSettings)],
+            method: "settings.update2",
+            options: [null, trigger.id, currentDependencies],
           });
           if (result) {
             result.forEach(({ path, value }: PathAndValue) => {
-              set(newSettings, path, value);
+              set(newSettings, toDataPath(path), value);
             });
           }
         };
         this.registerWatcher({
-          dependencies,
+          dependencies: [trigger.scope],
           transformSettings: updateCallback,
         });
       });

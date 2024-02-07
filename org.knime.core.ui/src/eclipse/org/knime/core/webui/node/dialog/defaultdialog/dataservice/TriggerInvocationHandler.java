@@ -44,63 +44,58 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jan 24, 2024 (Paul Bärnreuther): created
+ *   Feb 7, 2024 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
-import static org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil.createInstance;
-
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.function.Function;
 
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsScopeUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
-import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.InvokeTrigger;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueIdsAndUpdates;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerVertex;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.UpdateVertex;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.ValueIdsAndUpdatesToDependencyTree;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueId;
 
 /**
- * Takes care of accessing the fields in a given collection of {@link WidgetGroup}s. The implementer has to convert a
- * traversed field to a handlers of type <H> to make it accessible later via {@link #getHandler}.
+ * Used to convert triggers to a list of resulting updates given a map of dependencies.
  *
  * @author Paul Bärnreuther
- * @param <H> the type of the handler
  */
-public abstract class HandlerHolder<H> {
+public class TriggerInvocationHandler {
 
-    private Map<String, H> m_handlers = new HashMap<>();
+    private final Collection<TriggerVertex> m_triggers;
 
-    HandlerHolder(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
-        final List<FieldWithDefaultNodeSettingsKey> traversedFields = settingsClasses.entrySet().stream()
-            .flatMap(entry -> getTraversedFields(entry.getValue(), entry.getKey())).toList();
-        m_handlers = toHandlers(traversedFields);
+    TriggerInvocationHandler(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
+        final var valueIdsAndUpdates =
+            SettingsClassesToValueIdsAndUpdates.settingsClassesToValueIdsAndUpdates(settingsClasses);
+        m_triggers = ValueIdsAndUpdatesToDependencyTree.valueIdsAndUpdatesToDependencyTree(valueIdsAndUpdates);
     }
 
-    private static Stream<FieldWithDefaultNodeSettingsKey>
-        getTraversedFields(final Class<? extends WidgetGroup> settingsClass, final String settingsKey) {
-        return new DefaultNodeSettingsFieldTraverser(settingsClass).getAllFields().stream()
-            .map(field -> new FieldWithDefaultNodeSettingsKey(field, settingsKey));
+    record PathAndValue(String path, Object value) {
     }
 
-    record FieldWithDefaultNodeSettingsKey(TraversedField field, String settingsKey) {
+    List<PathAndValue> trigger(final String triggerId, final Map<String, Object> rawDependencies,
+        final DefaultNodeSettingsContext context) {
+        final var trigger = m_triggers.stream().filter(t -> t.getId().equals(triggerId)).findAny().orElseThrow();
+        final Function<Class<? extends ValueId>, Object> dependencyProvider = (valueId) -> {
+            final var rawDependencyObject = rawDependencies.get(valueId.getName());
+            return ConvertValueUtil.convertValueId(rawDependencyObject, valueId, context);
+        };
+        final var resultPerUpdateHandler = new InvokeTrigger(dependencyProvider).invokeTrigger(trigger);
+        return resultPerUpdateHandler.entrySet().stream()
+            .map(entry -> new PathAndValue(getScope(entry.getKey()), entry.getValue())).toList();
     }
 
-    private Map<String, H> toHandlers(final List<FieldWithDefaultNodeSettingsKey> fields) {
-        final Map<String, H> handlers = new HashMap<>();
-        fields.forEach(field -> getHandlerClass(field)
-            .ifPresent(handlerClass -> handlers.put(handlerClass.getName(), createInstance(handlerClass))));
-        return handlers;
+    private static String getScope(final UpdateVertex updateVertex) {
+        final var path = updateVertex.getPath();
+        final var settingsKey = updateVertex.getSettingsKey();
+        return JsonFormsScopeUtil.toScope(path, settingsKey);
     }
-
-    /**
-     * @param field of the traversed settings
-     * @return the relevant handler parameter of the annotation
-     */
-    abstract Optional<Class<? extends H>> getHandlerClass(final FieldWithDefaultNodeSettingsKey field);
-
-    H getHandler(final String handlerClassName) {
-        return m_handlers.get(handlerClassName);
-    }
-
 }

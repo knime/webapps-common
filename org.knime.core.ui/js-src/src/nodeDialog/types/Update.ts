@@ -1,12 +1,23 @@
+export interface ValueReference {
+  /**
+   * The schema path of the setting
+   */
+  scope: string;
+  /**
+   * A unique identifyer
+   */
+  id: string;
+}
+
 export interface Update {
   /**
-   * The schema paths to the settings triggering an update
+   * The dependencies that the frontend needs to provide when requesting an update from the backend
    */
-  dependencies: string[];
+  dependencies: ValueReference[];
   /**
-   * An id to the backend handler that contains the update logic
+   * The trigger of this update
    */
-  updateHandler: string;
+  trigger: ValueReference;
 }
 
 export interface PathAndValue {

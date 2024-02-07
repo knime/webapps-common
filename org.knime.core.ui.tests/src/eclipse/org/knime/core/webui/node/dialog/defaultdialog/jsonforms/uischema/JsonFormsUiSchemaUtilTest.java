@@ -70,12 +70,12 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Update;
 import org.knime.core.webui.node.dialog.defaultdialog.util.FieldAnnotationsHolder;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.UpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Action;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Update;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueId;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -484,8 +484,7 @@ class JsonFormsUiSchemaUtilTest {
             String m_setting1;
         }
 
-        final Map<String, Class<? extends WidgetGroup>> settings =
-            Map.of("test", TestEmptySectionSettings.class);
+        final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", TestEmptySectionSettings.class);
         final var response = buildUiSchema(settings);
 
         assertThatJson(response).inPath("$.elements").isArray().hasSize(1);
@@ -512,8 +511,7 @@ class JsonFormsUiSchemaUtilTest {
             String m_setting2;
         }
 
-        final Map<String, Class<? extends WidgetGroup>> settings =
-            Map.of("test", TestHorizontalLayoutSettings.class);
+        final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", TestHorizontalLayoutSettings.class);
         final var response = buildUiSchema(settings);
 
         assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("HorizontalLayout");
@@ -594,45 +592,35 @@ class JsonFormsUiSchemaUtilTest {
 
     }
 
-
-
     @Test
     void testGlobalUpdates() {
+
         @SuppressWarnings("unused")
         class TestSettings implements DefaultNodeSettings {
 
-            @Widget
+            class Dependency implements ValueId<String> {
+
+            }
+
+            @Widget(id = Dependency.class)
             String dependency;
 
-            @Widget
+            class AnotherDependency implements ValueId<String> {
+
+            }
+
+            @Widget(id = AnotherDependency.class)
             String anotherDependency;
 
-            static final class Dependency {
-                String dependency;
-            }
-
-            static final class DependencyAndAnotherDependency {
-                String dependency;
-
-                String anotherDependency;
-            }
-
-            static final class TestUpdateHandler implements UpdateHandler<String, Dependency> {
+            static final class TestUpdateHandler implements Action<String> {
 
                 @Override
-                public String update(final Dependency settings, final DefaultNodeSettingsContext context)
-                    throws WidgetHandlerException {
-                    throw new RuntimeException("Should not be called in this test");
+                public void init(final ActionInitializer initializer) {
+                    initializer.dependOnChangedValue(Dependency.class);
                 }
 
-            }
-
-            static final class AnotherTestUpdateHandler
-                implements UpdateHandler<String, DependencyAndAnotherDependency> {
-
                 @Override
-                public String update(final DependencyAndAnotherDependency settings,
-                    final DefaultNodeSettingsContext context) throws WidgetHandlerException {
+                public String compute() {
                     throw new RuntimeException("Should not be called in this test");
                 }
 
@@ -640,6 +628,21 @@ class JsonFormsUiSchemaUtilTest {
 
             @Update(updateHandler = TestUpdateHandler.class)
             String target;
+
+            static final class AnotherTestUpdateHandler implements Action<String> {
+
+                @Override
+                public void init(final ActionInitializer initializer) {
+                    initializer.dependOnValueWhichIsNotATrigger(Dependency.class);
+                    initializer.setOnChangeTrigger(AnotherDependency.class);
+                }
+
+                @Override
+                public String compute() {
+                    throw new RuntimeException("Should not be called in this test");
+
+                }
+            }
 
             @Update(updateHandler = AnotherTestUpdateHandler.class)
             String anotherTarget;
@@ -650,19 +653,24 @@ class JsonFormsUiSchemaUtilTest {
         final var response = buildUiSchema(settings);
 
         assertThatJson(response).inPath("$.globalUpdates").isArray().hasSize(2);
+        assertThatJson(response).inPath("$.globalUpdates[1].trigger.id").isString()
+            .isEqualTo(TestSettings.Dependency.class.getName());
+        assertThatJson(response).inPath("$.globalUpdates[1].trigger.scope").isString()
+            .isEqualTo("#/properties/test/properties/dependency");
         assertThatJson(response).inPath("$.globalUpdates[1].dependencies").isArray().hasSize(1);
-
-        assertThatJson(response).inPath("$.globalUpdates[1].dependencies").isArray()
-            .contains("#/properties/test/properties/dependency");
-        assertThatJson(response).inPath("$.globalUpdates[1].updateHandler").isString()
-            .isEqualTo(TestSettings.TestUpdateHandler.class.getName());
-        assertThatJson(response).inPath("$.globalUpdates[0].dependencies").isArray().hasSize(2);
-        assertThatJson(response).inPath("$.globalUpdates[0].dependencies").isArray()
-            .contains("#/properties/test/properties/dependency");
-        assertThatJson(response).inPath("$.globalUpdates[0].dependencies").isArray()
-            .contains("#/properties/test/properties/anotherDependency");
-        assertThatJson(response).inPath("$.globalUpdates[0].updateHandler").isString()
-            .isEqualTo(TestSettings.AnotherTestUpdateHandler.class.getName());
+        assertThatJson(response).inPath("$.globalUpdates[1].dependencies[0].scope").isString()
+            .isEqualTo("#/properties/test/properties/dependency");
+        assertThatJson(response).inPath("$.globalUpdates[1].dependencies[0].id").isString()
+            .isEqualTo(TestSettings.Dependency.class.getName());
+        assertThatJson(response).inPath("$.globalUpdates[0].trigger.id").isString()
+            .isEqualTo(TestSettings.AnotherDependency.class.getName());
+        assertThatJson(response).inPath("$.globalUpdates[0].trigger.scope").isString()
+            .isEqualTo("#/properties/test/properties/anotherDependency");
+        assertThatJson(response).inPath("$.globalUpdates[0].dependencies").isArray().hasSize(1);
+        assertThatJson(response).inPath("$.globalUpdates[0].dependencies[0].scope").isString()
+            .isEqualTo("#/properties/test/properties/dependency");
+        assertThatJson(response).inPath("$.globalUpdates[0].dependencies[0].id").isString()
+            .isEqualTo(TestSettings.Dependency.class.getName());
 
     }
 }
