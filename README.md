@@ -8,48 +8,18 @@ This repository is maintained by the [KNIME UI Extensions Development Team](mail
 This repository contains the frontend wrapper that implements adapter pattern between data providers (back-end services) and
 data consumers (e.g. KNIME Views).
 
-## Usage in UI components
+## Usage as npm package
 
 1. Run `npm i @knime/ui-extension-service` to install dependency.
 2. Instantiate and use desired services as shown below
 
-### Usage in an IFrame-based KNIME UI component (recommended)
-
 ```javascript
-import {
-  IFrameKnimeService,
-  JsonDataService,
-} from "@knime/ui-extension-service";
-this.knimeService = new IFrameKnimeService();
-await this.knimeService.waitForInitialization();
-this.knimeJsonDataService = new JsonDataService(this.knimeService);
-this.initialData = await this.knimeJsonDataService.initialData();
+import { JsonDataService } from "@knime/ui-extension-service";
+this.jsonDataService = await JsonDataService.getInstance();
+this.initialData = await this.jsonDataService.initialData();
 ```
 
-### Usage in a Vue-based KNIME UI component
-
-In this case, the `getKnimeService` method is already provided by the parent application and just needs to be called.
-_Note_: to make the view compatible with re-execution in Data Apps, use a computed property to access the `knimeService` e.g.
-
-```javascript
-...
-import { JsonDataService } from '@knime/ui-extension-service';
-...
-inject: ['getKnimeService'],
-...
-computed: {
-    knimeService() {
-        return this.getKnimeService();
-    }
-}
-...
-async mounted() {
-    const jsonDataService = new JsonDataService(this.knimeService);
-    this.initialData = await jsonDataService.getInitialData();
-}
-```
-
-## Usage in custom visualizations
+## Usage as IIFE
 
 Custom UI component implementations can also use this package to interface with the KNIME® Analytics Platform.
 
