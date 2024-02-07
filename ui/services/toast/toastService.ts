@@ -40,7 +40,7 @@ export class ToastServiceProvider {
         ({ id }) => clonedToast.id === id,
       );
       if (previousToast) {
-        return previousToast.uniqueId;
+        return previousToast.uniqueId as string;
       }
     }
     clonedToast.uniqueId = uniqueId();
