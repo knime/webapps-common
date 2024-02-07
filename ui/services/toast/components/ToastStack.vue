@@ -55,7 +55,7 @@ const isActive = (index: number) => index === 0;
       class="toast"
       :style="style(index)"
       :stack-id="stackIdentifier"
-      @remove="remove(toast.id as string)"
+      @remove="remove(toast.uniqueId)"
       @auto-remove="autoRemove()"
     />
   </transition-group>
