@@ -68,20 +68,23 @@ describe("test-service.ts", () => {
         expect(toastService.toasts.value).toHaveLength(1);
       });
 
-      it("should return the id of the new toast", () => {
-        const id = toastService.show(simpleToast);
-        expect(id).toBe(toastService.toasts.value[0].id);
+      it("should add a toast twice to the toasts array using different ids", () => {
+        const firstId = toastService.show(simpleToast);
+        const secondId = toastService.show(simpleToast);
+        expect(firstId).not.toEqual(secondId);
+        expect(toastService.toasts.value).toHaveLength(2);
       });
 
-      it("should assign a unique id to the new toast if id is not provided", () => {
-        const id = toastService.show(simpleToast);
-        expect(toastService.toasts.value[0].id).toBe(id);
+      it("should not add a toast twice to the toasts if it provides a custom id", () => {
+        const firstId = toastService.show(toastWithId);
+        const secondId = toastService.show(toastWithId);
+        expect(firstId).toEqual(secondId);
+        expect(toastService.toasts.value).toHaveLength(1);
       });
 
-      it("should make the provided id unique", () => {
-        const id = toastService.show(toastWithId);
-        expect(id).toContain(toastWithId.id);
-        expect(id).not.toBe(toastWithId.id);
+      it("should return the uniqueId of the new toast", () => {
+        const id = toastService.show(simpleToast);
+        expect(id).toBe(toastService.toasts.value[0].uniqueId);
       });
 
       it("should add new toasts to the start of the toasts array", () => {

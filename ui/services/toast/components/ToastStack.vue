@@ -50,7 +50,7 @@ const isActive = (index: number) => index === 0;
     <Toast
       v-for="(toast, index) in toasts"
       v-bind="toast"
-      :key="toast.id"
+      :key="toast.uniqueId"
       :active="isActive(index)"
       class="toast"
       :style="style(index)"
