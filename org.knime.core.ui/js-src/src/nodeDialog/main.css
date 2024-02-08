@@ -1,0 +1,6 @@
+:root,
+:host {
+  & * {
+    box-sizing: border-box;
+  }
+}
