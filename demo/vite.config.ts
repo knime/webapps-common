@@ -2,10 +2,12 @@ import { fileURLToPath, URL } from "node:url";
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import svgLoader from "vite-svg-loader";
+// @ts-ignore
+import { svgoConfig } from "webapps-common/config/svgo.config";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue(), svgLoader()],
+  plugins: [vue(), svgLoader({ svgoConfig })],
   base: "/webapps-common/",
   resolve: {
     alias: {
