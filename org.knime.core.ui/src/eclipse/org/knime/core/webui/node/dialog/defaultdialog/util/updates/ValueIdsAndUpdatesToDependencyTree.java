@@ -71,6 +71,16 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueId;
  */
 public class ValueIdsAndUpdatesToDependencyTree {
 
+    private ValueIdsAndUpdatesToDependencyTree() {
+        // Utility
+    }
+
+    /**
+     * Converts collected valueIds and updates to a tree structure connecting these
+     *
+     * @param valueIdsAndUpdates collected from settings
+     * @return the trigger vertices of the resulting tree of vertices
+     */
     public static Collection<TriggerVertex>
         valueIdsAndUpdatesToDependencyTree(final ValueIdsAndUpdates valueIdsAndUpdates) {
         return new DependencyTreeCreator(valueIdsAndUpdates).getTriggerVertices();
@@ -141,9 +151,7 @@ public class ValueIdsAndUpdatesToDependencyTree {
             }
 
             private ValueIdWrapper findValueIdWrapper(final Class<? extends ValueId> valueId) {
-                final var valueIdWrapper =
-                    m_valueIds.stream().filter(wrapper -> wrapper.valueId().equals(valueId)).findAny().orElseThrow();
-                return valueIdWrapper;
+                return m_valueIds.stream().filter(wrapper -> wrapper.valueId().equals(valueId)).findAny().orElseThrow();
             }
 
             /**
@@ -186,15 +194,20 @@ public class ValueIdsAndUpdatesToDependencyTree {
         }
     }
 
+    /**
+     * The action initializer used during constructions to document the dependencies of the action
+     *
+     * @author Paul Bärnreuther
+     */
     static final class ActionDependencyReceiver implements Action.ActionInitializer {
 
-        private final Collection<Class<? extends ValueId<?>>> m_triggers = new HashSet<>();
+        private final Collection<Class<? extends ValueId>> m_triggers = new HashSet<>();
 
         private final Collection<Class<? extends ButtonTrigger>> m_buttonTriggers = new HashSet<>();
 
-        private final Collection<Class<? extends ValueId<?>>> m_dependencies = new HashSet<>();
+        private final Collection<Class<? extends ValueId>> m_dependencies = new HashSet<>();
 
-        private final Collection<Class<? extends Action<?>>> m_actions = new HashSet<>();
+        private final Collection<Class<? extends Action>> m_actions = new HashSet<>();
 
         @Override
         public <T> Supplier<T> dependOnChangedValue(final Class<? extends ValueId<T>> id) {
@@ -226,7 +239,7 @@ public class ValueIdsAndUpdatesToDependencyTree {
             return null;
         }
 
-        Collection<Class<? extends ValueId<?>>> getTriggers() {
+        Collection<Class<? extends ValueId>> getTriggers() {
             return m_triggers;
         }
 
@@ -234,11 +247,11 @@ public class ValueIdsAndUpdatesToDependencyTree {
             return m_buttonTriggers;
         }
 
-        Collection<Class<? extends ValueId<?>>> getDependencies() {
+        Collection<Class<? extends ValueId>> getDependencies() {
             return m_dependencies;
         }
 
-        Collection<Class<? extends Action<?>>> getActions() {
+        Collection<Class<? extends Action>> getActions() {
             return m_actions;
         }
 

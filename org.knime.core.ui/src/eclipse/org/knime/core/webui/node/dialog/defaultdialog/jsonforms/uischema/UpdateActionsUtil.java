@@ -63,6 +63,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerVertex
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.ValueIdsAndUpdatesToDependencyTree;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Update;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
@@ -118,16 +119,20 @@ final class UpdateActionsUtil {
         final List<TriggerAndDependencies> triggersWithDependencies) {
         final var globalUpdates = rootNode.putArray("globalUpdates");
         triggersWithDependencies.forEach(triggerWithDependencies -> {
-            final var updateObjectNode = globalUpdates.addObject();
-            final var triggerNode = updateObjectNode.putObject("trigger");
-            triggerNode.put("id", triggerWithDependencies.getTriggerId());
-            triggerWithDependencies.getTriggerPath().ifPresent(scope -> triggerNode.put("scope", scope));
-            final var dependenciesArrayNode = updateObjectNode.putArray("dependencies");
-            triggerWithDependencies.getDependencyPaths().forEach(dep -> {
-                final var newDependency = dependenciesArrayNode.addObject();
-                newDependency.put("scope", dep.scope());
-                newDependency.put("id", dep.valueId());
-            });
+            addGlobalUpdate(globalUpdates, triggerWithDependencies);
+        });
+    }
+
+    private static void addGlobalUpdate(final ArrayNode globalUpdates, final TriggerAndDependencies triggerWithDependencies) {
+        final var updateObjectNode = globalUpdates.addObject();
+        final var triggerNode = updateObjectNode.putObject("trigger");
+        triggerNode.put("id", triggerWithDependencies.getTriggerId());
+        triggerWithDependencies.getTriggerPath().ifPresent(scope -> triggerNode.put("scope", scope));
+        final var dependenciesArrayNode = updateObjectNode.putArray("dependencies");
+        triggerWithDependencies.getDependencyPaths().forEach(dep -> {
+            final var newDependency = dependenciesArrayNode.addObject();
+            newDependency.put("scope", dep.scope());
+            newDependency.put("id", dep.valueId());
         });
     }
 
@@ -138,10 +143,9 @@ final class UpdateActionsUtil {
 
         final var triggers = ValueIdsAndUpdatesToDependencyTree.valueIdsAndUpdatesToDependencyTree(valueIdsAndUpdates);
         final var triggerToDependencies = new TriggerToDependencies();
-        final var triggersWithDependencies = triggers.stream()
+        return triggers.stream()
             .map(trigger -> new TriggerAndDependencies(trigger, triggerToDependencies.triggerToDependencies(trigger)))
             .toList();
-        return triggersWithDependencies;
     }
 
 }

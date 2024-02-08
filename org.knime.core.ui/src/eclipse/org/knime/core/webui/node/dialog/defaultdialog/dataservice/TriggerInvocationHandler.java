@@ -83,11 +83,11 @@ public class TriggerInvocationHandler {
 
     List<PathAndValue> trigger(final String triggerId, final Map<String, Object> rawDependencies,
         final DefaultNodeSettingsContext context) {
-        final var trigger = m_triggers.stream().filter(t -> t.getId().equals(triggerId)).findAny().orElseThrow();
-        final Function<Class<? extends ValueId>, Object> dependencyProvider = (valueId) -> {
+        final Function<Class<? extends ValueId>, Object> dependencyProvider = valueId -> {
             final var rawDependencyObject = rawDependencies.get(valueId.getName());
             return ConvertValueUtil.convertValueId(rawDependencyObject, valueId, context);
         };
+        final var trigger = m_triggers.stream().filter(t -> t.getId().equals(triggerId)).findAny().orElseThrow();
         final var resultPerUpdateHandler = new InvokeTrigger(dependencyProvider).invokeTrigger(trigger);
         return resultPerUpdateHandler.entrySet().stream()
             .map(entry -> new PathAndValue(getScope(entry.getKey()), entry.getValue())).toList();

@@ -55,11 +55,11 @@ import java.util.Set;
  *
  * @author Paul Bärnreuther
  */
-sealed abstract class Vertex permits UpdateVertex, ActionVertex, TriggerVertex, DependencyVertex {
+abstract sealed class Vertex permits UpdateVertex, ActionVertex, TriggerVertex, DependencyVertex {
 
-    private final Set<Vertex> m_children = new HashSet<Vertex>();
+    private final Set<Vertex> m_children = new HashSet<>();
 
-    private final Set<Vertex> m_parents = new HashSet<Vertex>();
+    private final Set<Vertex> m_parents = new HashSet<>();
 
     Set<Vertex> getChildren() {
         return m_children;

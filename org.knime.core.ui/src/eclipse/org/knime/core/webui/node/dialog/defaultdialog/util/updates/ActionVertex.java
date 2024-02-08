@@ -50,7 +50,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
 import static org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil.createInstance;
 
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Action;;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Action;
 
 /**
  *
@@ -58,7 +58,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Action;;
  */
 final class ActionVertex extends Vertex {
 
-    private final Action<?> m_action;
+    private final Action m_action;
 
     private final Class<? extends Action> m_actionClass;
 
@@ -75,7 +75,7 @@ final class ActionVertex extends Vertex {
         return visitor.accept(this);
     }
 
-    public Action<?> getAction() {
+    public Action getAction() {
         return m_action;
     }
 

@@ -79,7 +79,7 @@ public final class InvokeTrigger {
             updateVertex -> updateVertex.visit(new GetValueVisitor())));
     }
 
-    private final class GetTriggeredUpdatesVisitor implements VertexVisitor<Collection<UpdateVertex>> {
+    private static final class GetTriggeredUpdatesVisitor implements VertexVisitor<Collection<UpdateVertex>> {
 
         @Override
         public Collection<UpdateVertex> accept(final UpdateVertex updateVertex) {
@@ -125,6 +125,53 @@ public final class InvokeTrigger {
 
     private final class GetValueVisitor implements VertexVisitor<Object> {
 
+        /**
+         * The initializer handed into an action for invocation
+         *
+         * @author Paul Bärnreuther
+         */
+        private final class ActionInitializerImplementation implements ActionInitializer {
+
+            private final ActionVertex m_actionVertex;
+
+            /**
+             * @param actionVertex the vertex whose action is to be initialized
+             */
+            private ActionInitializerImplementation(final ActionVertex actionVertex) {
+                m_actionVertex = actionVertex;
+            }
+
+            @Override
+            public <T> void setOnChangeTrigger(final Class<? extends ValueId<T>> id) {
+                // Nothing to do here during invocation
+            }
+
+            @Override
+            public void setButtonTrigger(final Class<? extends ButtonTrigger> trigger) {
+                // Nothing to do here during invocation
+            }
+
+            @Override
+            public <T> Supplier<T> dependOnValueWhichIsNotATrigger(final Class<? extends ValueId<T>> id) {
+                return vertexToSupplier(getParentDependencyVertex(m_actionVertex, id));
+            }
+
+            @Override
+            public <T> Supplier<T> dependOnChangedValue(final Class<? extends ValueId<T>> id) {
+                return vertexToSupplier(getParentDependencyVertex(m_actionVertex, id));
+            }
+
+            @Override
+            public <T> Supplier<T> continueOtherAction(final Class<? extends Action<T>> actionClass) {
+                return vertexToSupplier(getParentActionVertex(m_actionVertex, actionClass));
+            }
+
+            @SuppressWarnings("unchecked")
+            private <T> Supplier<T> vertexToSupplier(final Vertex vertex) {
+                return () -> (T)vertex.visit(new GetValueVisitor());
+            }
+        }
+
         @Override
         public Object accept(final ActionVertex actionVertex) {
             if (!m_cache.containsKey(actionVertex)) {
@@ -135,38 +182,7 @@ public final class InvokeTrigger {
         }
 
         private Object invokeAction(final ActionVertex actionVertex) {
-            final var actionInitializer = new ActionInitializer() {
-
-                @Override
-                public <T> void setOnChangeTrigger(final Class<? extends ValueId<T>> id) {
-                    // Nothing to do here
-                }
-
-                @Override
-                public void setButtonTrigger(final Class<? extends ButtonTrigger> trigger) {
-                    // Nothing to do here
-                }
-
-                @Override
-                public <T> Supplier<T> dependOnValueWhichIsNotATrigger(final Class<? extends ValueId<T>> id) {
-                    return vertexToSupplier(getParentDependencyVertex(actionVertex, id));
-                }
-
-                @Override
-                public <T> Supplier<T> dependOnChangedValue(final Class<? extends ValueId<T>> id) {
-                    return vertexToSupplier(getParentDependencyVertex(actionVertex, id));
-                }
-
-                @Override
-                public <T> Supplier<T> continueOtherAction(final Class<? extends Action<T>> actionClass) {
-                    return vertexToSupplier(getParentActionVertex(actionVertex, actionClass));
-                }
-
-                @SuppressWarnings("unchecked")
-                private <T> Supplier<T> vertexToSupplier(final Vertex vertex) {
-                    return () -> (T)vertex.visit(new GetValueVisitor());
-                }
-            };
+            final var actionInitializer = new ActionInitializerImplementation(actionVertex);
             final var action = actionVertex.getAction();
             action.init(actionInitializer);
             return action.compute();
@@ -175,7 +191,7 @@ public final class InvokeTrigger {
         @Override
         public Object accept(final DependencyVertex dependencyVertex) {
             return m_cache.computeIfAbsent(dependencyVertex,
-                _v -> m_dependencyProvider.apply(dependencyVertex.getValueId()));
+                v -> m_dependencyProvider.apply(dependencyVertex.getValueId()));
         }
 
         @Override

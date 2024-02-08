@@ -55,10 +55,15 @@ import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueId;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
+ * A utility class for converting objects which are untyped parameters of rpc method calls to resolved objects of the
+ * correct type by using {@link ObjectMapper#convertValue}.
+ *
  * @author Paul Bärnreuther
  */
-class ConvertValueUtil {
+final class ConvertValueUtil {
 
     private ConvertValueUtil() {
         // Utility
