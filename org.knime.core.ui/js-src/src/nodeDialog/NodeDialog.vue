@@ -61,6 +61,7 @@ export default {
   inject: ["getKnimeService"],
   provide() {
     return {
+      trigger: this.trigger,
       registerWatcher: this.registerWatcher,
       updateData: this.updateData,
       getData: this.callDataService,
@@ -90,6 +91,10 @@ export default {
       possiblyFlawedControllingVariablePaths: new Set() satisfies Set<string>,
       renderers: Object.freeze(renderers),
       registeredWatchers: [] as RegisteredWatcher[],
+      registeredTriggers: new Map<
+        string,
+        (settings: DialogSettings & object) => Promise<DialogSettings & object>
+      >(),
       currentData: {} as SettingsData,
       schema: {} as JsonSchema & {
         showAdvancedSettings: boolean;
@@ -152,10 +157,21 @@ export default {
             });
           }
         };
-        this.registerWatcher({
-          dependencies: [trigger.scope],
-          transformSettings: updateCallback,
-        });
+        if (trigger.scope) {
+          this.registerWatcher({
+            dependencies: [trigger.scope],
+            transformSettings: updateCallback,
+          });
+        } else {
+          const transformSettings = async (
+            settings: DialogSettings & object,
+          ) => {
+            const newSettings = cloneDeep(settings);
+            await updateCallback(newSettings);
+            return newSettings;
+          };
+          this.registeredTriggers.set(trigger.id, transformSettings);
+        }
       });
     },
     getData() {
@@ -225,6 +241,13 @@ export default {
         await watcher.transformSettings(newData);
       }
       handleChange("", newData);
+    },
+    async trigger(trigger: string) {
+      const callback = this.registeredTriggers.get(trigger);
+      if (!callback) {
+        throw Error(`No trigger registered for id ${trigger}`);
+      }
+      this.currentData = await callback(this.currentData);
     },
     async registerWatcher({
       transformSettings,

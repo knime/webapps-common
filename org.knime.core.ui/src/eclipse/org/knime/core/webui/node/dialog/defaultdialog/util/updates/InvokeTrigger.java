@@ -60,6 +60,7 @@ import java.util.stream.Collectors;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.Vertex.VertexVisitor;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Action;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Action.ActionInitializer;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonTrigger;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueId;
 
 public final class InvokeTrigger {
@@ -138,6 +139,11 @@ public final class InvokeTrigger {
 
                 @Override
                 public <T> void setOnChangeTrigger(final Class<? extends ValueId<T>> id) {
+                    // Nothing to do here
+                }
+
+                @Override
+                public void setButtonTrigger(final Class<? extends ButtonTrigger> trigger) {
                     // Nothing to do here
                 }
 

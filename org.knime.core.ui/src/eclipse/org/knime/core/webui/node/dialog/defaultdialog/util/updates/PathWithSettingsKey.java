@@ -44,49 +44,16 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Feb 6, 2024 (Paul Bärnreuther): created
+ *   Feb 7, 2024 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
-import java.util.Optional;
-
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueIdsAndUpdates.ValueIdWrapper;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonTrigger;
+import java.util.List;
 
 /**
  *
  * @author Paul Bärnreuther
  */
-public final class TriggerVertex extends Vertex {
-
-    private final String m_id;
-
-    private final Optional<PathWithSettingsKey> m_scope;
-
-    TriggerVertex(final Class<? extends ButtonTrigger> triggerId) {
-        m_id = triggerId.getName();
-        m_scope = Optional.empty();
-    }
-
-    TriggerVertex(final ValueIdWrapper valueIdWrapper) {
-        m_id = valueIdWrapper.valueId().getName();
-        m_scope = Optional.of(valueIdWrapper.scope());
-    }
-
-    @Override
-    public <T> T visit(final VertexVisitor<T> visitor) {
-        return visitor.accept(this);
-    }
-
-    public String getId() {
-        return m_id;
-    }
-
-    /**
-     * @return information about the associated field of the trigger if there is any
-     */
-    public Optional<PathWithSettingsKey> getScope() {
-        return m_scope;
-    }
+public record PathWithSettingsKey(List<String> path, String settingsKey) {
 
 }

@@ -78,6 +78,11 @@ class DefaultFieldNodeSettingsPersistorFactoryTest {
     }
 
     @Test
+    void testVoid() throws InvalidSettingsException {
+        testSaveLoad(Void.class, null);
+    }
+
+    @Test
     void testInt() throws InvalidSettingsException {
         var persistor = createPersistor(int.class);
         var nodeSettings = new NodeSettings(KEY);

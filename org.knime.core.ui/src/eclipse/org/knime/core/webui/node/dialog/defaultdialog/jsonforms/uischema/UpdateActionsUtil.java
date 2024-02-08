@@ -51,10 +51,12 @@ package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsScopeUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.DependencyVertex;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.PathWithSettingsKey;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueIdsAndUpdates;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerToDependencies;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerVertex;
@@ -83,19 +85,21 @@ final class UpdateActionsUtil {
             return trigger().getId();
         }
 
-        String getTriggerPath() {
-            final var settingsKey = trigger().getSettingsKey();
-            final var path = trigger().getPath();
-            return JsonFormsScopeUtil.toScope(path, settingsKey);
+        Optional<String> getTriggerPath() {
+            return trigger().getScope().map(UpdateActionsUtil::resolveScopeToString);
         }
 
         List<Dependency> getDependencyPaths() {
             return dependencies().stream().map(dep -> {
-                final var scope = JsonFormsScopeUtil.toScope(dep.getPath(), dep.getSettingsKey());
+                final var scope = resolveScopeToString(dep.getScope());
                 final var valueId = dep.getValueId().getName();
                 return new Dependency(scope, valueId);
             }).toList();
         }
+    }
+
+    private static String resolveScopeToString(final PathWithSettingsKey scope) {
+        return JsonFormsScopeUtil.toScope(scope.path(), scope.settingsKey());
     }
 
     /**
@@ -117,7 +121,7 @@ final class UpdateActionsUtil {
             final var updateObjectNode = globalUpdates.addObject();
             final var triggerNode = updateObjectNode.putObject("trigger");
             triggerNode.put("id", triggerWithDependencies.getTriggerId());
-            triggerNode.put("scope", triggerWithDependencies.getTriggerPath());
+            triggerWithDependencies.getTriggerPath().ifPresent(scope -> triggerNode.put("scope", scope));
             final var dependenciesArrayNode = updateObjectNode.putArray("dependencies");
             triggerWithDependencies.getDependencyPaths().forEach(dep -> {
                 final var newDependency = dependenciesArrayNode.addObject();

@@ -72,7 +72,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Callable;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import org.knime.core.util.Pair;
@@ -83,9 +82,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.util.ArrayLayoutUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
-import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
-import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.AsyncChoicesProvider;
@@ -104,13 +100,13 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonAction
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonState;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.NoopButtonUpdateHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SimpleButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesAdder;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.NoopChoicesUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.PersistentAsyncChoicesAdder;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.CredentialsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.PasswordWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.UsernameWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DeclaringDefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.WidgetAnnotation;
 
@@ -260,6 +256,12 @@ final class UiSchemaOptionsGenerator {
                 final var updateDependencies = updateOptions.putArray(TAG_DEPENDENCIES);
                 addDependencies(updateDependencies, updateHandlerClass);
             }
+        }
+        if (annotatedWidgets.contains(SimpleButtonWidget.class)) {
+            options.put(TAG_FORMAT, Format.SIMPLE_BUTTON);
+            final var simpleButtonWidget = m_field.getAnnotation(SimpleButtonWidget.class);
+            options.put("triggerId", simpleButtonWidget.trigger().getName());
+            options.put("text", simpleButtonWidget.text());
         }
 
         if (annotatedWidgets.contains(ValueSwitchWidget.class)) {

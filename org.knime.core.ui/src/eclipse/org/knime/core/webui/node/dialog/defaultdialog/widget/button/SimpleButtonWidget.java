@@ -44,49 +44,37 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Feb 6, 2024 (Paul Bärnreuther): created
+ *   Feb 7, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
+package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
 
-import java.util.Optional;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueIdsAndUpdates.ValueIdWrapper;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Action;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonTrigger;
 
 /**
+ * A widget whose whole purpose is to trigger an {@link Action}
  *
  * @author Paul Bärnreuther
  */
-public final class TriggerVertex extends Vertex {
-
-    private final String m_id;
-
-    private final Optional<PathWithSettingsKey> m_scope;
-
-    TriggerVertex(final Class<? extends ButtonTrigger> triggerId) {
-        m_id = triggerId.getName();
-        m_scope = Optional.empty();
-    }
-
-    TriggerVertex(final ValueIdWrapper valueIdWrapper) {
-        m_id = valueIdWrapper.valueId().getName();
-        m_scope = Optional.of(valueIdWrapper.scope());
-    }
-
-    @Override
-    public <T> T visit(final VertexVisitor<T> visitor) {
-        return visitor.accept(this);
-    }
-
-    public String getId() {
-        return m_id;
-    }
+@Retention(RUNTIME)
+@Target(FIELD)
+public @interface SimpleButtonWidget {
 
     /**
-     * @return information about the associated field of the trigger if there is any
+     * @return the trigger that can be referenced by an {@link Action} using
+     *         {@link Action.ActionInitializer#triggerWithButton}
      */
-    public Optional<PathWithSettingsKey> getScope() {
-        return m_scope;
-    }
+    Class<? extends ButtonTrigger> trigger();
+
+    /**
+     * @return the text displayed on the button
+     */
+    String text();
 
 }

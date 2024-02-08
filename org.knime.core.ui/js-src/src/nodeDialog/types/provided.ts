@@ -24,6 +24,7 @@ type sendAlert = (params: Parameters<AlertingService["sendAlert"]>[0]) => void;
 interface Provided {
   getPossibleValuesFromUiSchema: getPossibleValuesFromUiSchema;
   registerWatcher: registerWatcher;
+  trigger: (triggerId: string) => void;
   updateData: any;
   sendAlert: sendAlert;
   closeDialog: () => void;

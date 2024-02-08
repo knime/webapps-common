@@ -51,6 +51,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.widget.updates;
 import java.util.function.Supplier;
 
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SimpleButtonWidget;
 
 /**
  *
@@ -113,6 +114,13 @@ public interface Action<OUTPUT> {
          * @return a supplier to be used during {@link #compute}
          */
         <T> Supplier<T> continueOtherAction(Class<? extends Action<T>> actionClass);
+
+        /**
+         * Defines that the action is to be triggered whenever a button with the given id is clicked
+         *
+         * @param trigger used as {@link SimpleButtonWidget#trigger}
+         */
+        void setButtonTrigger(Class<? extends ButtonTrigger> trigger);
 
     }
 

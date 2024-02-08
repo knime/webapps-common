@@ -9,6 +9,11 @@ export interface ValueReference {
   id: string;
 }
 
+export interface Trigger {
+  id: string;
+  scope: undefined;
+}
+
 export interface Update {
   /**
    * The dependencies that the frontend needs to provide when requesting an update from the backend
@@ -17,7 +22,7 @@ export interface Update {
   /**
    * The trigger of this update
    */
-  trigger: ValueReference;
+  trigger: Trigger | ValueReference;
 }
 
 export interface PathAndValue {

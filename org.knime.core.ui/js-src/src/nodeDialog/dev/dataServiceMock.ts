@@ -29,6 +29,12 @@ export default (rpcRequest: { method: string; params: any[] }) => {
         NUMBER: [{ name: "numberVariable", value: "100", abbreviated: false }],
       };
     case "settings.update2": {
+      if (
+        rpcRequest.params[1] === "buttonTriggerId (from simpleButtonInput.json)"
+      ) {
+        window.alert("Button was clicked!");
+        return { result: [] };
+      }
       const dependencies = rpcRequest.params[2];
       /**
        * See update.json

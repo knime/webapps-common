@@ -12,6 +12,7 @@ export const inputFormats = {
   twinList: "twinList",
   comboBox: "comboBox",
   button: "button",
+  simpleButton: "simpleButton",
   textArea: "textArea",
   credentials: "credentials",
   localFileChooser: "localFileChooser",

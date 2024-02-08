@@ -1,0 +1,37 @@
+{
+  "result": {
+    "name": "Button Input Mock Dialog",
+    "data": {},
+    "schema": {
+      "type": "object",
+      "properties": {
+        "button": {
+          "title": "A button",
+          "description": "Click to trigger an action in the backend"
+        }
+      }
+    },
+    "ui_schema": {
+      "elements": [
+        {
+          "scope": "#/properties/button",
+          "type": "Control",
+          "options": {
+            "format": "simpleButton",
+            "showTitleAndDescription": true,
+            "triggerId": "buttonTriggerId (from simpleButtonInput.json)",
+            "text": "Click me!"
+          }
+        }
+      ],
+      "globalUpdates": [
+        {
+          "trigger": {
+            "id": "buttonTriggerId (from simpleButtonInput.json)"
+          },
+          "dependencies": []
+        }
+      ]
+    }
+  }
+}

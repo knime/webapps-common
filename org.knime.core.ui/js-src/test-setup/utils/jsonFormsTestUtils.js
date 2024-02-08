@@ -33,6 +33,7 @@ export const mountJsonFormsComponent = (
     updateDataMock,
     sendAlertMock,
     setDirtyModelSettingsMock,
+    triggerMock,
     asyncChoicesProviderMock,
   } = provide || {};
   const updateData =
@@ -40,6 +41,7 @@ export const mountJsonFormsComponent = (
     vi.fn((handleChange, path, value) => handleChange(path, value));
   const getData = getDataMock ?? vi.fn();
   const sendAlert = sendAlertMock ?? vi.fn();
+  const trigger = triggerMock ?? vi.fn();
   const setDirtyModelSettings = setDirtyModelSettingsMock ?? vi.fn();
   const asyncChoicesProvider = asyncChoicesProviderMock ?? vi.fn();
   const flowVariablesMap = reactive(
@@ -83,6 +85,7 @@ export const mountJsonFormsComponent = (
         getData,
         sendAlert,
         setDirtyModelSettings,
+        trigger,
         getFlowVariablesMap: () => flowVariablesMap,
       },
       stubs: {

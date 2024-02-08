@@ -94,8 +94,8 @@ public class TriggerInvocationHandler {
     }
 
     private static String getScope(final UpdateVertex updateVertex) {
-        final var path = updateVertex.getPath();
-        final var settingsKey = updateVertex.getSettingsKey();
+        final var path = updateVertex.getScope().path();
+        final var settingsKey = updateVertex.getScope().settingsKey();
         return JsonFormsScopeUtil.toScope(path, settingsKey);
     }
 }

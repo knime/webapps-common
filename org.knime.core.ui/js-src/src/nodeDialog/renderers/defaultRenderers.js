@@ -3,6 +3,7 @@ import { horizontalLayoutRenderer } from "./horizontalLayoutRenderer";
 import { sectionLayoutRenderer } from "./sectionLayoutRenderer";
 
 import { buttonRenderer } from "./buttonRenderer";
+import { simpleButtonRenderer } from "./simpleButtonRenderer";
 import { checkboxRenderer } from "./checkboxRenderer";
 import { checkboxesRenderer } from "./checkboxesRenderer";
 import { columnFilterRenderer } from "./columnFilterRenderer";
@@ -29,6 +30,7 @@ export const defaultRenderers = [
 
   /* component renderers */
   buttonRenderer,
+  simpleButtonRenderer,
   checkboxRenderer,
   checkboxesRenderer,
   columnFilterRenderer,

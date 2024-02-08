@@ -26,75 +26,10 @@
                   }
                 },
                 "selected": {
-                  "oneOf": [
-                    {
-                      "const": "Universe_0_0",
-                      "title": "Universe_0_0",
-                      "columnType": "org.knime.core.data.DoubleValue",
-                      "columnTypeDisplayed": "Number (double)",
-                      "compatibleTypes": [
-                        "org.knime.core.data.DoubleValue",
-                        "org.knime.core.data.DataValue",
-                        "org.knime.core.data.ComplexNumberValue",
-                        "org.knime.core.data.FuzzyNumberValue",
-                        "org.knime.core.data.FuzzyIntervalValue",
-                        "org.knime.core.data.BoundedValue"
-                      ]
-                    },
-                    {
-                      "const": "Universe_0_1",
-                      "title": "Universe_0_1",
-                      "columnType": "org.knime.core.data.DoubleValue",
-                      "columnTypeDisplayed": "Number (double)",
-                      "compatibleTypes": [
-                        "org.knime.core.data.DoubleValue",
-                        "org.knime.core.data.DataValue",
-                        "org.knime.core.data.ComplexNumberValue",
-                        "org.knime.core.data.FuzzyNumberValue",
-                        "org.knime.core.data.FuzzyIntervalValue",
-                        "org.knime.core.data.BoundedValue"
-                      ]
-                    },
-                    {
-                      "const": "Universe_1_0",
-                      "title": "Universe_1_0",
-                      "columnType": "org.knime.core.data.DoubleValue",
-                      "columnTypeDisplayed": "Number (double)",
-                      "compatibleTypes": [
-                        "org.knime.core.data.DoubleValue",
-                        "org.knime.core.data.DataValue",
-                        "org.knime.core.data.ComplexNumberValue",
-                        "org.knime.core.data.FuzzyNumberValue",
-                        "org.knime.core.data.FuzzyIntervalValue",
-                        "org.knime.core.data.BoundedValue"
-                      ]
-                    },
-                    {
-                      "const": "Universe_1_1",
-                      "title": "Universe_1_1",
-                      "columnType": "org.knime.core.data.DoubleValue",
-                      "columnTypeDisplayed": "Number (double)",
-                      "compatibleTypes": [
-                        "org.knime.core.data.DoubleValue",
-                        "org.knime.core.data.DataValue",
-                        "org.knime.core.data.ComplexNumberValue",
-                        "org.knime.core.data.FuzzyNumberValue",
-                        "org.knime.core.data.FuzzyIntervalValue",
-                        "org.knime.core.data.BoundedValue"
-                      ]
-                    },
-                    {
-                      "const": "Cluster Membership",
-                      "title": "Cluster Membership",
-                      "columnType": "org.knime.core.data.StringValue",
-                      "columnTypeDisplayed": "String",
-                      "compatibleTypes": [
-                        "org.knime.core.data.StringValue",
-                        "org.knime.core.data.DataValue",
-                        "org.knime.core.data.NominalValue"
-                      ]
-                    }
-                  ]
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
                 }
               },
               "title": "Vertical dimension",
@@ -129,8 +64,78 @@
               "type": "Control",
               "scope": "#/properties/view/properties/column",
               "options": {
+                "format": "columnSelection",
                 "showRowKeys": false,
-                "showNoneColumn": false
+                "showNoneColumn": false,
+                "possibleValues": [
+                  {
+                    "id": "Universe_0_0",
+                    "text": "Universe_0_0",
+                    "columnType": "org.knime.core.data.DoubleValue",
+                    "columnTypeDisplayed": "Number (double)",
+                    "compatibleTypes": [
+                      "org.knime.core.data.DoubleValue",
+                      "org.knime.core.data.DataValue",
+                      "org.knime.core.data.ComplexNumberValue",
+                      "org.knime.core.data.FuzzyNumberValue",
+                      "org.knime.core.data.FuzzyIntervalValue",
+                      "org.knime.core.data.BoundedValue"
+                    ]
+                  },
+                  {
+                    "id": "Universe_0_1",
+                    "text": "Universe_0_1",
+                    "columnType": "org.knime.core.data.DoubleValue",
+                    "columnTypeDisplayed": "Number (double)",
+                    "compatibleTypes": [
+                      "org.knime.core.data.DoubleValue",
+                      "org.knime.core.data.DataValue",
+                      "org.knime.core.data.ComplexNumberValue",
+                      "org.knime.core.data.FuzzyNumberValue",
+                      "org.knime.core.data.FuzzyIntervalValue",
+                      "org.knime.core.data.BoundedValue"
+                    ]
+                  },
+                  {
+                    "id": "Universe_1_0",
+                    "text": "Universe_1_0",
+                    "columnType": "org.knime.core.data.DoubleValue",
+                    "columnTypeDisplayed": "Number (double)",
+                    "compatibleTypes": [
+                      "org.knime.core.data.DoubleValue",
+                      "org.knime.core.data.DataValue",
+                      "org.knime.core.data.ComplexNumberValue",
+                      "org.knime.core.data.FuzzyNumberValue",
+                      "org.knime.core.data.FuzzyIntervalValue",
+                      "org.knime.core.data.BoundedValue"
+                    ]
+                  },
+                  {
+                    "id": "Universe_1_1",
+                    "text": "Universe_1_1",
+                    "columnType": "org.knime.core.data.DoubleValue",
+                    "columnTypeDisplayed": "Number (double)",
+                    "compatibleTypes": [
+                      "org.knime.core.data.DoubleValue",
+                      "org.knime.core.data.DataValue",
+                      "org.knime.core.data.ComplexNumberValue",
+                      "org.knime.core.data.FuzzyNumberValue",
+                      "org.knime.core.data.FuzzyIntervalValue",
+                      "org.knime.core.data.BoundedValue"
+                    ]
+                  },
+                  {
+                    "id": "Cluster Membership",
+                    "text": "Cluster Membership",
+                    "columnType": "org.knime.core.data.StringValue",
+                    "columnTypeDisplayed": "String",
+                    "compatibleTypes": [
+                      "org.knime.core.data.StringValue",
+                      "org.knime.core.data.DataValue",
+                      "org.knime.core.data.NominalValue"
+                    ]
+                  }
+                ]
               }
             },
             {

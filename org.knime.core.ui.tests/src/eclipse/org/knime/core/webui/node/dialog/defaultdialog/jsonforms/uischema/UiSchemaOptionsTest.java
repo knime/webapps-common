@@ -83,11 +83,13 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonChange;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SimpleButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.CredentialsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.PasswordWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.UsernameWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DeclaringDefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonTrigger;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -624,7 +626,7 @@ class UiSchemaOptionsTest {
             Boolean m_otherSetting1;
         }
 
-        static class OtherSettingsWithWrongType  implements DefaultNodeSettings {
+        static class OtherSettingsWithWrongType implements DefaultNodeSettings {
             @Widget
             String m_otherSetting1;
         }
@@ -638,6 +640,28 @@ class UiSchemaOptionsTest {
             assertThrows(UiSchemaGenerationException.class,
                 () -> buildTestUiSchema(ButtonWidgetWithWrongTypeDependenciesTestSettings.class));
         }
+    }
+
+    @Test
+    void testSimpleButtonWidgetOptions() {
+        class SimpleButtonWidgetTestSettings implements DefaultNodeSettings {
+
+            class MyButtonTrigger implements ButtonTrigger {
+
+            }
+
+            @Widget
+            @SimpleButtonWidget(trigger = MyButtonTrigger.class, text = "buttonText")
+            Void m_button;
+
+        }
+        var response = buildTestUiSchema(SimpleButtonWidgetTestSettings.class);
+        assertThatJson(response).inPath("$.elements[0]").isObject().containsKey("options");
+        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("simpleButton");
+        assertThatJson(response).inPath("$.elements[0].options.triggerId").isString()
+            .isEqualTo(SimpleButtonWidgetTestSettings.MyButtonTrigger.class.getName());
+        assertThatJson(response).inPath("$.elements[0].options.text").isString().isEqualTo("buttonText");
+
     }
 
     @Test

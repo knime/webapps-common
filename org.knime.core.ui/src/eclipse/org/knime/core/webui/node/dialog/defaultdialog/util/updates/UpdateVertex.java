@@ -48,8 +48,6 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
-import java.util.List;
-
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueIdsAndUpdates.UpdateWrapper;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Action;
 
@@ -61,14 +59,11 @@ public final class UpdateVertex extends Vertex {
 
     private final Class<? extends Action> m_action;
 
-    private final List<String> m_path;
-
-    private final String m_settingsKey;
+    private final PathWithSettingsKey m_scope;
 
     UpdateVertex(final UpdateWrapper wrapper) {
         m_action = wrapper.action();
-        m_path = wrapper.path();
-        m_settingsKey = wrapper.settingsKey();
+        m_scope = wrapper.scope();
     }
 
     @Override
@@ -80,12 +75,11 @@ public final class UpdateVertex extends Vertex {
         return m_action;
     }
 
-    public List<String> getPath() {
-        return m_path;
-    }
-
-    public String getSettingsKey() {
-        return m_settingsKey;
+    /**
+     * @return information on the associated field
+     */
+    public PathWithSettingsKey getScope() {
+        return m_scope;
     }
 
 }

@@ -115,6 +115,8 @@ final class DefaultFieldNodeSettingsPersistorFactory {
      * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
      */
     private enum PersistorImpl implements FieldPersistor {
+            VOID(Void.class, (s, k) -> null, (v, s, k) -> {
+            }),//
             INT(int.class, ConfigBaseRO::getInt, (v, s, k) -> s.addInt(k, v)),
             DOUBLE(double.class, ConfigBaseRO::getDouble, (v, s, k) -> s.addDouble(k, v)),
             LONG(long.class, ConfigBaseRO::getLong, (v, s, k) -> s.addLong(k, v)),

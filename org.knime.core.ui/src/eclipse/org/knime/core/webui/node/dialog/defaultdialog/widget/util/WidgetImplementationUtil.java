@@ -72,6 +72,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SimpleButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.CredentialsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.PasswordWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.UsernameWidget;
@@ -134,6 +135,7 @@ public final class WidgetImplementationUtil {
         new WidgetAnnotation(ChoicesWidget.class), //
         new WidgetAnnotation(List.of(String[].class), ComboBoxWidget.class), //
         new WidgetAnnotation(ButtonWidget.class), //
+        new WidgetAnnotation(List.of(Void.class), SimpleButtonWidget.class), //
         new WidgetAnnotation(List.of(String.class), DateTimeWidget.class), //
         new WidgetAnnotation(List.of(LocalDate.class), DateWidget.class), //
         new WidgetAnnotation(List.of(String.class), RichTextInputWidget.class), //

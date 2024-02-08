@@ -56,6 +56,7 @@ import org.knime.core.node.NodeSettingsRO;
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  */
+@FunctionalInterface
 interface FieldLoader<T> {
     T load(NodeSettingsRO settings, String configKey) throws InvalidSettingsException;
 }

@@ -54,6 +54,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
@@ -72,8 +73,10 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.util.FieldAnnotationsHolder;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SimpleButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Action;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonTrigger;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Update;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueId;
 
@@ -592,85 +595,131 @@ class JsonFormsUiSchemaUtilTest {
 
     }
 
-    @Test
-    void testGlobalUpdates() {
+    @Nested
+    class ActionsTest {
 
-        @SuppressWarnings("unused")
-        class TestSettings implements DefaultNodeSettings {
+        @Test
+        void testValueUpdates() {
 
-            class Dependency implements ValueId<String> {
+            @SuppressWarnings("unused")
+            class TestSettings implements DefaultNodeSettings {
 
-            }
-
-            @Widget(id = Dependency.class)
-            String dependency;
-
-            class AnotherDependency implements ValueId<String> {
-
-            }
-
-            @Widget(id = AnotherDependency.class)
-            String anotherDependency;
-
-            static final class TestUpdateHandler implements Action<String> {
-
-                @Override
-                public void init(final ActionInitializer initializer) {
-                    initializer.dependOnChangedValue(Dependency.class);
-                }
-
-                @Override
-                public String compute() {
-                    throw new RuntimeException("Should not be called in this test");
-                }
-
-            }
-
-            @Update(updateHandler = TestUpdateHandler.class)
-            String target;
-
-            static final class AnotherTestUpdateHandler implements Action<String> {
-
-                @Override
-                public void init(final ActionInitializer initializer) {
-                    initializer.dependOnValueWhichIsNotATrigger(Dependency.class);
-                    initializer.setOnChangeTrigger(AnotherDependency.class);
-                }
-
-                @Override
-                public String compute() {
-                    throw new RuntimeException("Should not be called in this test");
+                class Dependency implements ValueId<String> {
 
                 }
+
+                @Widget(id = Dependency.class)
+                String dependency;
+
+                class AnotherDependency implements ValueId<String> {
+
+                }
+
+                @Widget(id = AnotherDependency.class)
+                String anotherDependency;
+
+                static final class TestUpdateHandler implements Action<String> {
+
+                    @Override
+                    public void init(final ActionInitializer initializer) {
+                        initializer.dependOnChangedValue(Dependency.class);
+                    }
+
+                    @Override
+                    public String compute() {
+                        throw new RuntimeException("Should not be called in this test");
+                    }
+
+                }
+
+                @Update(updateHandler = TestUpdateHandler.class)
+                String target;
+
+                static final class AnotherTestUpdateHandler implements Action<String> {
+
+                    @Override
+                    public void init(final ActionInitializer initializer) {
+                        initializer.dependOnValueWhichIsNotATrigger(Dependency.class);
+                        initializer.setOnChangeTrigger(AnotherDependency.class);
+                    }
+
+                    @Override
+                    public String compute() {
+                        throw new RuntimeException("Should not be called in this test");
+
+                    }
+                }
+
+                @Update(updateHandler = AnotherTestUpdateHandler.class)
+                String anotherTarget;
             }
 
-            @Update(updateHandler = AnotherTestUpdateHandler.class)
-            String anotherTarget;
+            final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", TestSettings.class);
+
+            final var response = buildUiSchema(settings);
+
+            assertThatJson(response).inPath("$.globalUpdates").isArray().hasSize(2);
+            assertThatJson(response).inPath("$.globalUpdates[1].trigger.id").isString()
+                .isEqualTo(TestSettings.Dependency.class.getName());
+            assertThatJson(response).inPath("$.globalUpdates[1].trigger.scope").isString()
+                .isEqualTo("#/properties/test/properties/dependency");
+            assertThatJson(response).inPath("$.globalUpdates[1].dependencies").isArray().hasSize(1);
+            assertThatJson(response).inPath("$.globalUpdates[1].dependencies[0].scope").isString()
+                .isEqualTo("#/properties/test/properties/dependency");
+            assertThatJson(response).inPath("$.globalUpdates[1].dependencies[0].id").isString()
+                .isEqualTo(TestSettings.Dependency.class.getName());
+            assertThatJson(response).inPath("$.globalUpdates[0].trigger.id").isString()
+                .isEqualTo(TestSettings.AnotherDependency.class.getName());
+            assertThatJson(response).inPath("$.globalUpdates[0].trigger.scope").isString()
+                .isEqualTo("#/properties/test/properties/anotherDependency");
+            assertThatJson(response).inPath("$.globalUpdates[0].dependencies").isArray().hasSize(1);
+            assertThatJson(response).inPath("$.globalUpdates[0].dependencies[0].scope").isString()
+                .isEqualTo("#/properties/test/properties/dependency");
+            assertThatJson(response).inPath("$.globalUpdates[0].dependencies[0].id").isString()
+                .isEqualTo(TestSettings.Dependency.class.getName());
+
         }
 
-        final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", TestSettings.class);
+        void testSimpleButtonWidgetUpdate() {
 
-        final var response = buildUiSchema(settings);
+            class TestSettings implements DefaultNodeSettings {
 
-        assertThatJson(response).inPath("$.globalUpdates").isArray().hasSize(2);
-        assertThatJson(response).inPath("$.globalUpdates[1].trigger.id").isString()
-            .isEqualTo(TestSettings.Dependency.class.getName());
-        assertThatJson(response).inPath("$.globalUpdates[1].trigger.scope").isString()
-            .isEqualTo("#/properties/test/properties/dependency");
-        assertThatJson(response).inPath("$.globalUpdates[1].dependencies").isArray().hasSize(1);
-        assertThatJson(response).inPath("$.globalUpdates[1].dependencies[0].scope").isString()
-            .isEqualTo("#/properties/test/properties/dependency");
-        assertThatJson(response).inPath("$.globalUpdates[1].dependencies[0].id").isString()
-            .isEqualTo(TestSettings.Dependency.class.getName());
-        assertThatJson(response).inPath("$.globalUpdates[0].trigger.id").isString()
-            .isEqualTo(TestSettings.AnotherDependency.class.getName());
-        assertThatJson(response).inPath("$.globalUpdates[0].trigger.scope").isString()
-            .isEqualTo("#/properties/test/properties/anotherDependency");
-        assertThatJson(response).inPath("$.globalUpdates[0].dependencies").isArray().hasSize(1);
-        assertThatJson(response).inPath("$.globalUpdates[0].dependencies[0].scope").isString()
-            .isEqualTo("#/properties/test/properties/dependency");
-        assertThatJson(response).inPath("$.globalUpdates[0].dependencies[0].id").isString()
-            .isEqualTo(TestSettings.Dependency.class.getName());
+                class MyTrigger implements ButtonTrigger {
 
+                }
+
+                @Widget
+                @SimpleButtonWidget(trigger = MyTrigger.class, text = "Click me")
+                Void m_button;
+
+                class MyButtonAction implements Action<String> {
+
+                    @Override
+                    public void init(final ActionInitializer initializer) {
+                        initializer.setButtonTrigger(MyTrigger.class);
+                    }
+
+                    @Override
+                    public String compute() {
+                        throw new RuntimeException("Should not be called in this test");
+                    }
+
+                }
+
+                @Update(updateHandler = MyButtonAction.class)
+                String m_updated;
+            }
+
+            final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", TestSettings.class);
+
+            final var response = buildUiSchema(settings);
+
+            assertThatJson(response).inPath("$.globalUpdates").isArray().hasSize(2);
+            assertThatJson(response).inPath("$.globalUpdates[0].trigger").isObject().doesNotContainKey("scope");
+            assertThatJson(response).inPath("$.globalUpdates[0].trigger.id").isString()
+                .isEqualTo(TestSettings.MyTrigger.class.getName());
+            assertThatJson(response).inPath("$.globalUpdates[0].dependencies").isArray().hasSize(0);
+        }
     }
+
 }

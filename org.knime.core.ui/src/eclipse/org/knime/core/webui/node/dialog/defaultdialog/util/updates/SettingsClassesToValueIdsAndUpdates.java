@@ -50,7 +50,6 @@ package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
@@ -67,10 +66,10 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueId;
  */
 public class SettingsClassesToValueIdsAndUpdates {
 
-    record ValueIdWrapper(Class<? extends ValueId> valueId, String settingsKey, List<String> path) {
+    record ValueIdWrapper(Class<? extends ValueId> valueId, PathWithSettingsKey scope) {
     }
 
-    record UpdateWrapper(Class<? extends Action> action, String settingsKey, List<String> path) {
+    record UpdateWrapper(Class<? extends Action> action, PathWithSettingsKey scope) {
     }
 
     record ValueIdsAndUpdates(Collection<ValueIdWrapper> valueIds, Collection<UpdateWrapper> updates) {
@@ -101,7 +100,7 @@ public class SettingsClassesToValueIdsAndUpdates {
         final String settingsKey) {
         final var widgetAnnotation = field.propertyWriter().getAnnotation(Widget.class);
         if (widgetAnnotation != null && !widgetAnnotation.id().equals(ValueId.class)) {
-            valueIds.add(new ValueIdWrapper(widgetAnnotation.id(), settingsKey, field.path()));
+            valueIds.add(new ValueIdWrapper(widgetAnnotation.id(), new PathWithSettingsKey(field.path(), settingsKey)));
         }
     }
 
@@ -109,7 +108,8 @@ public class SettingsClassesToValueIdsAndUpdates {
         final String settingsKey) {
         final var updateAnnotation = field.propertyWriter().getAnnotation(Update.class);
         if (updateAnnotation != null) {
-            updates.add(new UpdateWrapper(updateAnnotation.updateHandler(), settingsKey, field.path()));
+            updates.add(new UpdateWrapper(updateAnnotation.updateHandler(),
+                new PathWithSettingsKey(field.path(), settingsKey)));
         }
     }
 

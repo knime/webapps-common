@@ -48,8 +48,6 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
-import java.util.List;
-
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueIdsAndUpdates.ValueIdWrapper;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueId;
 
@@ -61,17 +59,14 @@ public final class DependencyVertex extends Vertex {
 
     private final Class<? extends ValueId> m_id;
 
-    private final List<String> m_path;
-
-    private final String m_settingsKey;
+    private final PathWithSettingsKey m_scope;
 
     /**
      * @param valueIdWrapper
      */
     public DependencyVertex(final ValueIdWrapper valueIdWrapper) {
         m_id = valueIdWrapper.valueId();
-        m_path = valueIdWrapper.path();
-        m_settingsKey = valueIdWrapper.settingsKey();
+        m_scope = valueIdWrapper.scope();
     }
 
     @Override
@@ -83,12 +78,11 @@ public final class DependencyVertex extends Vertex {
         return m_id;
     }
 
-    public String getSettingsKey() {
-        return m_settingsKey;
-    }
-
-    public List<String> getPath() {
-        return m_path;
+    /**
+     * @return the scope of the field this dependency points to
+     */
+    public PathWithSettingsKey getScope() {
+        return m_scope;
     }
 
 }

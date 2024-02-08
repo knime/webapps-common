@@ -62,6 +62,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClass
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueIdsAndUpdates.ValueIdsAndUpdates;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.Vertex.VertexVisitor;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Action;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonTrigger;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueId;
 
 /**
@@ -81,7 +82,7 @@ public class ValueIdsAndUpdatesToDependencyTree {
 
         private final Map<Class<? extends Action>, ActionVertex> m_actionVertices = new HashMap<>();
 
-        private final Map<Class<? extends ValueId>, TriggerVertex> m_triggerVertices = new HashMap<>();
+        private final Map<Class<?>, TriggerVertex> m_triggerVertices = new HashMap<>();
 
         private final Map<Class<? extends ValueId>, DependencyVertex> m_dependencyVertices = new HashMap<>();
 
@@ -125,9 +126,13 @@ public class ValueIdsAndUpdatesToDependencyTree {
                 return m_actionVertices.computeIfAbsent(actionClass, ActionVertex::new);
             }
 
-            TriggerVertex getTriggerVertex(final Class<? extends ValueId> valueId) {
+            TriggerVertex getValueTriggerVertex(final Class<? extends ValueId> valueId) {
                 final var valueIdWrapper = findValueIdWrapper(valueId);
-                return m_triggerVertices.computeIfAbsent(valueId, v->  new TriggerVertex(valueIdWrapper));
+                return m_triggerVertices.computeIfAbsent(valueId, v -> new TriggerVertex(valueIdWrapper));
+            }
+
+            TriggerVertex getButtonTriggerVertex(final Class<? extends ButtonTrigger> trigger) {
+                return m_triggerVertices.computeIfAbsent(trigger, v -> new TriggerVertex(trigger));
             }
 
             DependencyVertex getDependencyVertex(final Class<? extends ValueId> valueId) {
@@ -135,10 +140,9 @@ public class ValueIdsAndUpdatesToDependencyTree {
                 return m_dependencyVertices.computeIfAbsent(valueId, v -> new DependencyVertex(valueIdWrapper));
             }
 
-
-
             private ValueIdWrapper findValueIdWrapper(final Class<? extends ValueId> valueId) {
-                final var valueIdWrapper = m_valueIds.stream().filter(wrapper -> wrapper.valueId().equals(valueId)).findAny().orElseThrow();
+                final var valueIdWrapper =
+                    m_valueIds.stream().filter(wrapper -> wrapper.valueId().equals(valueId)).findAny().orElseThrow();
                 return valueIdWrapper;
             }
 
@@ -165,7 +169,9 @@ public class ValueIdsAndUpdatesToDependencyTree {
                 parentVertices
                     .addAll(actionDependencyReceiver.getActions().stream().map(this::getActionVertex).toList());
                 parentVertices
-                    .addAll(actionDependencyReceiver.getTriggers().stream().map(this::getTriggerVertex).toList());
+                    .addAll(actionDependencyReceiver.getTriggers().stream().map(this::getValueTriggerVertex).toList());
+                parentVertices.addAll(
+                    actionDependencyReceiver.getButtonTriggers().stream().map(this::getButtonTriggerVertex).toList());
                 parentVertices.addAll(
                     actionDependencyReceiver.getDependencies().stream().map(this::getDependencyVertex).toList());
                 return parentVertices;
@@ -183,6 +189,8 @@ public class ValueIdsAndUpdatesToDependencyTree {
     static final class ActionDependencyReceiver implements Action.ActionInitializer {
 
         private final Collection<Class<? extends ValueId<?>>> m_triggers = new HashSet<>();
+
+        private final Collection<Class<? extends ButtonTrigger>> m_buttonTriggers = new HashSet<>();
 
         private final Collection<Class<? extends ValueId<?>>> m_dependencies = new HashSet<>();
 
@@ -207,6 +215,12 @@ public class ValueIdsAndUpdatesToDependencyTree {
         }
 
         @Override
+        public void setButtonTrigger(final Class<? extends ButtonTrigger> trigger) {
+            getButtonTriggers().add(trigger);
+
+        }
+
+        @Override
         public <T> Supplier<T> continueOtherAction(final Class<? extends Action<T>> actionClass) {
             getActions().add(actionClass);
             return null;
@@ -214,6 +228,10 @@ public class ValueIdsAndUpdatesToDependencyTree {
 
         Collection<Class<? extends ValueId<?>>> getTriggers() {
             return m_triggers;
+        }
+
+        Collection<Class<? extends ButtonTrigger>> getButtonTriggers() {
+            return m_buttonTriggers;
         }
 
         Collection<Class<? extends ValueId<?>>> getDependencies() {
