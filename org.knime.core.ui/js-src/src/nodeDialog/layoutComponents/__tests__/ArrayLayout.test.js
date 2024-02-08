@@ -260,13 +260,9 @@ describe("ArrayLayout.vue", () => {
     const itemControlsWithArrowDown = itemControls.filter((wrapper) =>
       wrapper.findComponent(ArrowDownIcon).exists(),
     );
-    const itemControlsWithTrash = itemControls.filter((wrapper) =>
-      wrapper.findComponent(TrashIcon).exists(),
-    );
 
     expect(itemControlsWithArrowUp).toHaveLength(0);
     expect(itemControlsWithArrowDown).toHaveLength(0);
-    expect(itemControlsWithTrash).toHaveLength(numberDataItems);
   });
 
   it("renders headers", () => {
@@ -323,6 +319,47 @@ describe("ArrayLayout.vue", () => {
         .findAllComponents(FunctionButton);
       expect(itemControlsButtons.at(0).vm.disabled).toBe(moveUpDisabled);
       expect(itemControlsButtons.at(1).vm.disabled).toBe(moveDownDisabled);
+    },
+  );
+
+  it.each([
+    {
+      render: "not render",
+      condition: "present and true",
+      value: true,
+      numberIcons: 0,
+    },
+    {
+      render: "render",
+      condition: "false",
+      value: false,
+      numberIcons: control.data.length,
+    },
+    {
+      render: "render",
+      condition: "not present",
+      value: null,
+      numberIcons: control.data.length,
+    },
+  ])(
+    "does $render add and delete buttons when hasFixedSize is $condition",
+    ({ value, numberIcons }) => {
+      if (value === null) {
+        delete control.uischema.options.hasFixedSize;
+      } else {
+        control.uischema.options.hasFixedSize = value;
+      }
+
+      const { wrapper } = mountJsonFormsComponent(ArrayLayout, {
+        props: { control },
+      });
+
+      const itemControls = wrapper.findAllComponents(ArrayLayoutItemControls);
+      const itemControlsWithTrash = itemControls.filter((wrapper) =>
+        wrapper.findComponent(TrashIcon).exists(),
+      );
+
+      expect(itemControlsWithTrash).toHaveLength(numberIcons);
     },
   );
 });

@@ -44,6 +44,9 @@ const ArrayLayout = defineComponent({
     showSortControls() {
       return this.control.uischema.options.showSortButtons;
     },
+    showAddAndDeleteButtons() {
+      return !this.control.uischema.options.hasFixedSize;
+    },
     elements() {
       if (this.control.uischema.options.detail) {
         return Object.entries(this.control.uischema.options.detail);
@@ -110,6 +113,7 @@ export default ArrayLayout;
             :is-first="objIndex === 0"
             :is-last="objIndex === control.data.length - 1"
             :show-sort-controls="showSortControls"
+            :show-delete-button="showAddAndDeleteButtons"
             @move-up="moveItemUp(objIndex)"
             @move-down="moveItemDown(objIndex)"
             @delete="deleteItem(objIndex)"
@@ -135,13 +139,19 @@ export default ArrayLayout;
             :is-first="objIndex === 0"
             :is-last="objIndex === control.data.length - 1"
             :show-sort-controls="showSortControls"
+            :show-delete-button="showAddAndDeleteButtons"
             @move-up="moveUp(control.path, objIndex)()"
             @move-down="moveDown(control.path, objIndex)()"
             @delete="deleteItem(objIndex)"
           />
         </div>
       </div>
-      <Button with-border compact @click="addDefaultItem">
+      <Button
+        v-if="showAddAndDeleteButtons"
+        with-border
+        compact
+        @click="addDefaultItem"
+      >
         <PlusIcon />
         {{ control.uischema.options.addButtonText || "New" }}
       </Button>

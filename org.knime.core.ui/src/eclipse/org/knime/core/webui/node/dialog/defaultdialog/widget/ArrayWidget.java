@@ -78,4 +78,9 @@ public @interface ArrayWidget {
      * @return whether sort buttons should be shown that allow to change the order of the array elements
      */
     boolean showSortButtons() default false;
+
+    /**
+     * @return whether add and delete buttons should be hidden such that the size of the array cannot be changed
+     */
+    boolean hasFixedSize() default false;
 }

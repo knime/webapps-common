@@ -76,7 +76,7 @@ public final class ArrayWidgetExample implements DefaultNodeSettings {
     /**
      * Optionally specify annotation to configure the UI.
      */
-    @ArrayWidget(addButtonText = "Next", elementTitle = "Element", showSortButtons = false)
+    @ArrayWidget(addButtonText = "Next", elementTitle = "Element", showSortButtons = false, hasFixedSize = false)
     ElementClass[] m_arraySetting2;
 
     /**

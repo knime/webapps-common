@@ -323,6 +323,33 @@ class UiSchemaOptionsTest {
             assertThatJson(response).inPath("$.elements[1].label").isString().isEqualTo("");
         }
 
+        @Test
+        void testHasFixedSizeTest() {
+            @SuppressWarnings("unused")
+            class ArrayElement implements WidgetGroup {
+                String m_field1;
+
+                int m_field2;
+            }
+
+            class HasFixedSizeTestSettings implements DefaultNodeSettings {
+                @Widget
+                @ArrayWidget
+                ArrayElement[] m_arrayElementVariableSize;
+
+                @Widget
+                @ArrayWidget(hasFixedSize = true)
+                ArrayElement[] m_arrayElementFixedSize;
+            }
+
+            var response = buildTestUiSchema(HasFixedSizeTestSettings.class);
+            assertThatJson(response).inPath("$.elements[0].scope").isString().contains("arrayElementVariableSize");
+            assertThatJson(response).inPath("$.elements[0].options").isObject().doesNotContainKey("hasFixedSize");
+            assertThatJson(response).inPath("$.elements[1].scope").isString().contains("arrayElementFixedSize");
+            assertThatJson(response).inPath("$.elements[1].options").isObject().containsKey("hasFixedSize");
+            assertThatJson(response).inPath("$.elements[1].options.hasFixedSize").isBoolean().isTrue();
+        }
+
         static class EmptyButtonTestSettings {
 
         }

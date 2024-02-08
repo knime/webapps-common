@@ -25,6 +25,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    showDeleteButton: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ["moveUp", "moveDown", "delete"],
 };
@@ -46,7 +50,11 @@ export default {
     >
       <ArrowDownIcon />
     </FunctionButton>
-    <FunctionButton class="trashButton" @click="$emit('delete')">
+    <FunctionButton
+      v-if="showDeleteButton"
+      class="trashButton"
+      @click="$emit('delete')"
+    >
       <TrashIcon class="trash" />
     </FunctionButton>
   </div>

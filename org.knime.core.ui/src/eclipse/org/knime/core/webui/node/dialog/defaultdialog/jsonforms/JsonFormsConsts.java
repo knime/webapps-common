@@ -241,6 +241,11 @@ public final class JsonFormsConsts {
         public static final String TAG_ARRAY_LAYOUT_SHOW_SORT_BUTTONS = "showSortButtons";
 
         /**
+         * Whether to hide add and delete buttons such that the size of the array cannot be changed
+         */
+        public static final String TAG_ARRAY_LAYOUT_HAS_FIXED_SIZE = "hasFixedSize";
+
+        /**
          * Rules to show/hide/enable/disable an ui element in the ui-schema
          */
         public static final String TAG_RULE = "rule";
