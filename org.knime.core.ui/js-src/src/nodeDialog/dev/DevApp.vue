@@ -122,6 +122,17 @@ export default {
         setReportingContent() {
           console.log("setReportingContent called");
         },
+        onApplied() {
+          console.log("onApplied called");
+        },
+        setDirtyModelSettings() {
+          console.log("setDirtyModelSettings called");
+        },
+        setSettingsWithCleanModelSettings(cleanData) {
+          console.log(
+            `setSettingsWithCleanModelSettings called with ${cleanData}`,
+          );
+        },
         updateDataPointSelection() {
           console.log("updateDataPointSelection called");
           return Promise.resolve();
