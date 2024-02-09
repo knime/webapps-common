@@ -2,6 +2,7 @@
 import "./variables.css";
 import Checkbox from "../forms/Checkbox.vue";
 import DropdownIcon from "../../assets/img/icons/arrow-dropdown.svg";
+import { useActiveElement } from "@vueuse/core";
 
 const BLUR_TIMEOUT = 1;
 const BOXES_HEIGHT = 28.5; // 22.5px for the checkbox label and 2 * 3px for vertical padding of a single option
@@ -121,6 +122,10 @@ export default {
     },
   },
   emits: ["update:modelValue", "focusOutside"],
+  setup() {
+    const activeElement = useActiveElement();
+    return { activeElement };
+  },
   data() {
     return {
       checkedValue: this.modelValue,
@@ -192,7 +197,7 @@ export default {
     getNextElement(changeInd) {
       return (
         this.focusOptions[
-          this.focusOptions.indexOf(document.activeElement) + changeInd
+          this.focusOptions.indexOf(this.activeElement) + changeInd
         ] ||
         (changeInd < 0
           ? this.focusOptions[this.focusOptions.length - 1]
