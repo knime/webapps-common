@@ -2,7 +2,7 @@ import { expect, afterEach, vi, describe, it } from "vitest";
 import flushPromises from "flush-promises";
 import { shallowMount } from "@vue/test-utils";
 import UIExtComponent from "../UIExtComponent.vue";
-import { UIExtensionServiceAPILayer } from "@knime/ui-extension-service";
+import type { UIExtensionServiceAPILayer } from "@knime/ui-extension-service";
 import * as ExtensionServiceModule from "@knime/ui-extension-service";
 import { createApp, defineComponent } from "vue";
 

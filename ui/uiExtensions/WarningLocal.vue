@@ -1,6 +1,6 @@
 <script>
-import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
-import WarningIcon from "webapps-common/ui/assets/img/icons/circle-warning.svg";
+import FunctionButton from "../components/FunctionButton.vue";
+import WarningIcon from "../assets/img/icons/circle-warning.svg";
 
 export default {
   components: {

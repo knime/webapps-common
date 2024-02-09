@@ -1,5 +1,5 @@
 import { ExtensionTypes } from "@knime/ui-extension-service";
-import { ExtensionConfig } from "../types/ExtensionConfig";
+import type { ExtensionConfig } from "../types/ExtensionConfig";
 import { ResourceTypes } from "../types/ResourceTypes";
 
 const baseConfig = {

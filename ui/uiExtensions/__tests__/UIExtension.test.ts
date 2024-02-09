@@ -3,18 +3,18 @@ import { shallowMount } from "@vue/test-utils";
 import UIExtension from "../UIExtension.vue";
 import UIExtComponent from "../UIExtComponent.vue";
 import UIExtIFrame from "../UIExtIFrame.vue";
-import AlertLocal from "../../../ui/AlertLocal.vue";
-import WarningLocal from "../../../ui/WarningLocal.vue";
+import AlertLocal from "../AlertLocal.vue";
+import WarningLocal from "../WarningLocal.vue";
 import {
   iFrameExtensionConfig,
   componentExtensionConfig,
 } from "./extensionConfig";
-import { ExtensionConfig } from "../types/ExtensionConfig";
-import { UIExtensionAPILayer } from "../types/UIExtensionAPILayer";
+import type { ExtensionConfig } from "../types/ExtensionConfig";
+import type { UIExtensionAPILayer } from "../types/UIExtensionAPILayer";
 import {
-  Alert,
+  type Alert,
   AlertType,
-  UIExtensionServiceAPILayer,
+  type UIExtensionServiceAPILayer,
 } from "@knime/ui-extension-service";
 vi.mock("@knime/ui-extension-service");
 

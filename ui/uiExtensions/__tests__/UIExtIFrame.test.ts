@@ -9,7 +9,7 @@ import {
 } from "vitest";
 import { shallowMount } from "@vue/test-utils";
 import UIExtIFrame from "../UIExtIFrame.vue";
-import { UIExtensionServiceAPILayer } from "@knime/ui-extension-service";
+import type { UIExtensionServiceAPILayer } from "@knime/ui-extension-service";
 import * as ExtensionServiceModule from "@knime/ui-extension-service";
 
 describe("UIExtIFrame.vue", () => {
