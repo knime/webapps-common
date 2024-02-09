@@ -235,7 +235,7 @@ describe("Dropdown.vue", () => {
     const { wrapper } = doMount({
       isValid,
     });
-    let root = wrapper.find("div");
+    let root = wrapper.find("div.dropdown");
     expect(root.classes()).toContain("invalid");
   });
 
