@@ -64,6 +64,7 @@ public final class TextViewUtil {
      * The page representing the table view.
      */
     public static final Page PAGE =
-        Page.builder(TextViewUtil.class, "js-src/dist", "TextView.umd.js").markAsReusable(TEXT_VIEW_PAGE_ID).build();
+        Page.builder(TextViewUtil.class, "js-src/dist", "TextView.umd.js").addResourceFile("TextView.js")
+            .markAsReusable(TEXT_VIEW_PAGE_ID).build();
 
 }
