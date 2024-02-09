@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, toRefs, watch } from "vue";
-import { directive as vClickAway } from "vue3-click-away";
 
 import type { MenuItem as BaseMenuItem } from "../MenuItems.vue";
 import MenuItems from "../MenuItems.vue";
 import { useFloating, autoUpdate, offset } from "@floating-ui/vue";
 
 import type { FileExplorerItem, FileExplorerContextMenu } from "./types";
+import { onClickOutside } from "@vueuse/core";
 
 interface Props {
   position: { x: number; y: number };
@@ -147,13 +147,14 @@ const items = computed(() => [
 const closeMenu = () => {
   emit("close");
 };
+
+onClickOutside(menuWrapper, closeMenu);
 </script>
 
 <template>
   <div
     v-show="shouldShowMenu"
     ref="menuWrapper"
-    v-click-away="() => closeMenu()"
     :style="floatingStyles"
     class="menu-wrapper"
   >

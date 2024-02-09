@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { toRefs, ref, watch, nextTick, type Ref } from "vue";
-import { directive as vClickAway } from "vue3-click-away";
 
 import InputField from "../forms/InputField.vue";
 import FolderIcon from "../../assets/img/icons/folder.svg";
@@ -10,6 +9,8 @@ import { useNameValidator } from "./useNameValidator";
 
 import FileExplorerItemBase from "./FileExplorerItemBase.vue";
 import type { FileExplorerItem, ItemIconRenderer } from "./types";
+
+import { OnClickOutside } from "@vueuse/components";
 
 interface Props {
   blacklistedNames: Array<string>;
@@ -127,20 +128,24 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
     >
       <span v-if="!isRenameActive">{{ item.name }}</span>
       <template v-else>
-        <div v-click-away="($event: any) => onRenameSubmit($event, true)">
-          <InputField
-            ref="renameInput"
-            v-model="renameValue"
-            class="rename-input"
-            type="text"
-            title="rename"
-            :is-valid="isValid"
-            @keyup="onRenameSubmit($event)"
-          />
-          <div v-if="!isValid" class="item-error">
-            <span>{{ errorMessage }}</span>
+        <OnClickOutside
+          @trigger="($event: any) => onRenameSubmit($event, true)"
+        >
+          <div>
+            <InputField
+              ref="renameInput"
+              v-model="renameValue"
+              class="rename-input"
+              type="text"
+              title="rename"
+              :is-valid="isValid"
+              @keyup="onRenameSubmit($event)"
+            />
+            <div v-if="!isValid" class="item-error">
+              <span>{{ errorMessage }}</span>
+            </div>
           </div>
-        </div>
+        </OnClickOutside>
       </template>
     </td>
   </FileExplorerItemBase>

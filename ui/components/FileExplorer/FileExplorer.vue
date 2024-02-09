@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, toRefs, toRef, computed, watch } from "vue";
-import { directive as vClickAway } from "vue3-click-away";
 
 import { useItemDragging } from "./useItemDragging";
 import { useMultiSelection } from "./useMultiSelection";
@@ -12,6 +11,7 @@ import type {
   FileExplorerContextMenu as FileExplorerContextMenuNamespace,
   ItemIconRenderer,
 } from "./types";
+import { onClickOutside } from "@vueuse/core";
 
 /**
  * Component that handles FileExplorer interactions.
@@ -278,13 +278,13 @@ const onItemDoubleClick = (item: FileExplorerItemType) => {
     emit("openFile", item);
   }
 };
+
+const table = ref<null | HTMLElement>(null);
+onClickOutside(table, resetSelection);
 </script>
 
 <template>
-  <table
-    v-click-away="() => resetSelection()"
-    aria-label="Current workflow group in Space Explorer"
-  >
+  <table ref="table" aria-label="Current workflow group in Space Explorer">
     <thead>
       <tr>
         <th scope="col">Type</th>
