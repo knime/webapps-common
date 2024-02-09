@@ -1,5 +1,6 @@
 <script>
 import { JsonDataService } from "@knime/ui-extension-service";
+import "../common/main.css";
 
 export default {
   inject: ["getKnimeService"],

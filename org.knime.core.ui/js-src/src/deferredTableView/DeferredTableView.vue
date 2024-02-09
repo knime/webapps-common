@@ -11,6 +11,7 @@ import SplitButton from "webapps-common/ui/components/SplitButton.vue";
 import CircleArrow from "webapps-common/ui/assets/img/icons/circle-arrow-down.svg";
 import DropdownIcon from "webapps-common/ui/assets/img/icons/arrow-dropdown.svg";
 import InitialData from "@/tableView/types/InitialData";
+import "../common/main.css";
 
 const baseSubMenuItems = [
   {

@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
-import { computed, ref, toRef, watch, type Ref, inject } from "vue";
+import { computed, ref, toRef, watch, type Ref } from "vue";
 import { useFloating, shift, arrow, offset, flip } from "@floating-ui/vue";
 import type { Side, Placement } from "@floating-ui/vue";
 import useClickOutside from "webapps-common/ui/composables/useClickOutside";
 import type DialogPopoverProps from "./types/DialogPopoverProps";
 import { FocusTrap } from "focus-trap-vue";
 import { tabbable } from "tabbable";
+import { useActiveElement } from "@vueuse/core";
 
 const props = withDefaults(defineProps<DialogPopoverProps>(), {
   ignoredClickOutsideTarget: null,
@@ -38,10 +39,11 @@ const toggleExpanded = () => {
 const close = () => {
   expanded.value = false;
 };
-const shadowRoot = inject<ShadowRoot | null>("shadowRoot", null);
+
+const activeElement = useActiveElement();
 
 const closeUnlessButtonFocused = () => {
-  if ((shadowRoot ?? document).activeElement !== referenceEl.value) {
+  if (activeElement.value !== referenceEl.value) {
     close();
   }
 };

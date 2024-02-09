@@ -8,7 +8,7 @@ import {
 } from "@knime/ui-extension-service";
 import { vanillaRenderers } from "@jsonforms/vue-vanilla";
 import { JsonForms } from "@jsonforms/vue";
-import "./main.css";
+import "../common/main.css";
 import {
   toDataPath,
   type JsonSchema,

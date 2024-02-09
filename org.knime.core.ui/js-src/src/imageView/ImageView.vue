@@ -8,6 +8,8 @@ import { fetchImage } from "@/utils/images";
 import OptionalLabel from "./OptionalLabel.vue";
 import OptionalFigure from "./OptionalFigure.vue";
 import type Settings from "./types/ImageViewSettings";
+import "../common/main.css";
+
 import {
   inject,
   nextTick,
