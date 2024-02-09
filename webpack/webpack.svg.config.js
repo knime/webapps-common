@@ -59,6 +59,15 @@ module.exports = {
             ]
         },
         {
+            resourceQuery: /\?fileSkipSVGO$/,
+            use: [
+                {
+                    loader: 'file-loader?name=img/[name].[hash:7].[ext]',
+                    options: { esModule: false }
+                }
+            ]
+        },
+        {
             use: [
                 {
                     loader: 'vue-svg-loader',
