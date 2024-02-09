@@ -1,10 +1,10 @@
 <script lang="ts">
 import "./variables.css";
-import { mixin as VueClickAway } from "vue3-click-away";
 import { isEmpty } from "lodash-es";
 
 import DropdownIcon from "../../assets/img/icons/arrow-dropdown.svg";
-import type { PropType } from "vue";
+import { type PropType } from "vue";
+import { OnClickOutside } from "@vueuse/components";
 
 type Id = string | number;
 interface PossibleValue {
@@ -29,8 +29,8 @@ const TYPING_TIMEOUT = 1000; // in ms
 export default {
   components: {
     DropdownIcon,
+    OnClickOutside,
   },
-  mixins: [VueClickAway],
   props: {
     id: {
       type: String,
@@ -307,70 +307,71 @@ export default {
 </script>
 
 <template>
-  <div
-    :id="id"
-    v-click-away="clickAway"
-    :class="[
-      'dropdown',
-      { collapsed: !isExpanded, invalid: !isValid, disabled },
-    ]"
-  >
+  <OnClickOutside @trigger="clickAway">
     <div
-      :id="generateId('button')"
-      ref="button"
-      role="button"
-      tabindex="0"
-      aria-haspopup="listbox"
-      :class="{ placeholder: showPlaceholder, missing: isMissing }"
-      :aria-label="ariaLabel"
-      :aria-labelledby="generateId('button')"
-      :aria-expanded="isExpanded"
-      @click="toggleExpanded"
-      @keydown="handleKeyDownButton"
+      :id="id"
+      :class="[
+        'dropdown',
+        { collapsed: !isExpanded, invalid: !isValid, disabled },
+      ]"
     >
-      {{ displayText }}
-      <div v-if="hasRightIcon" class="loading-icon">
-        <slot name="icon-right" />
-      </div>
-      <!-- @vue-ignore -->
-      <DropdownIcon class="icon" />
-    </div>
-    <ul
-      v-show="isExpanded"
-      ref="ul"
-      role="listbox"
-      tabindex="-1"
-      :aria-activedescendant="
-        isExpanded ? generateId('option', getCurrentSelectedId()) : undefined
-      "
-      @keydown="handleKeyDownList"
-    >
-      <li
-        v-for="item of possibleValues"
-        :id="generateId('option', item.id)"
-        :key="`listbox-${item.id}`"
-        ref="options"
-        role="option"
-        :title="typeof item.title === 'undefined' ? item.text : item.title"
-        :class="{
-          focused: isCurrentValue(item.id),
-          noselect: true,
-          empty: item.text.trim() === '',
-          'has-option-template': hasOptionTemplate,
-        }"
-        :aria-selected="isCurrentValue(item.id)"
-        @click="onOptionClick(item.id)"
+      <div
+        :id="generateId('button')"
+        ref="button"
+        role="button"
+        tabindex="0"
+        aria-haspopup="listbox"
+        :class="{ placeholder: showPlaceholder, missing: isMissing }"
+        :aria-label="ariaLabel"
+        :aria-labelledby="generateId('button')"
+        :aria-expanded="isExpanded"
+        @click="toggleExpanded"
+        @keydown="handleKeyDownButton"
       >
-        <template v-if="hasOptionTemplate">
-          <slot name="option" :slot-data="item.slotData" />
-        </template>
-        <template v-else>
-          {{ item.text }}
-        </template>
-      </li>
-    </ul>
-    <input :id="id" type="hidden" :name="name" :value="modelValue" />
-  </div>
+        {{ displayText }}
+        <div v-if="hasRightIcon" class="loading-icon">
+          <slot name="icon-right" />
+        </div>
+        <!-- @vue-ignore -->
+        <DropdownIcon class="icon" />
+      </div>
+      <ul
+        v-show="isExpanded"
+        ref="ul"
+        role="listbox"
+        tabindex="-1"
+        :aria-activedescendant="
+          isExpanded ? generateId('option', getCurrentSelectedId()) : undefined
+        "
+        @keydown="handleKeyDownList"
+      >
+        <li
+          v-for="item of possibleValues"
+          :id="generateId('option', item.id)"
+          :key="`listbox-${item.id}`"
+          ref="options"
+          role="option"
+          :title="typeof item.title === 'undefined' ? item.text : item.title"
+          :class="{
+            focused: isCurrentValue(item.id),
+            noselect: true,
+            empty: item.text.trim() === '',
+            'has-option-template': hasOptionTemplate,
+          }"
+          :aria-selected="isCurrentValue(item.id)"
+          @click="onOptionClick(item.id)"
+        >
+          <template v-if="hasOptionTemplate">
+            <slot name="option" :slot-data="item.slotData" />
+          </template>
+          <template v-else>
+            {{ item.text }}
+          </template>
+        </li>
+      </ul>
+      <input :id="id" type="hidden" :name="name" :value="modelValue" />
+    </div>
+  </OnClickOutside>
 </template>
 
 <style lang="postcss" scoped>
