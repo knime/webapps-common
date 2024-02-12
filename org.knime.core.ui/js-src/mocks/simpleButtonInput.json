@@ -19,8 +19,7 @@
           "options": {
             "format": "simpleButton",
             "showTitleAndDescription": true,
-            "triggerId": "buttonTriggerId (from simpleButtonInput.json)",
-            "text": "Click me!"
+            "triggerId": "buttonTriggerId (from simpleButtonInput.json)"
           }
         }
       ],

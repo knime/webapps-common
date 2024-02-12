@@ -18,11 +18,12 @@ describe("SimpleButtonInput.vue", () => {
     defaultProps = {
       control: {
         ...getControlBase("path"),
+        label: buttonText,
         schema: {
           properties: {
             button: {
               type: "object",
-              title: "Button",
+              title: buttonText,
             },
           },
         },
@@ -32,7 +33,6 @@ describe("SimpleButtonInput.vue", () => {
           options: {
             format: "simpleButton",
             triggerId,
-            text: buttonText,
           },
         },
       },

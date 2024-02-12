@@ -651,7 +651,7 @@ class UiSchemaOptionsTest {
             }
 
             @Widget
-            @SimpleButtonWidget(ref = MyButtonTrigger.class, text = "buttonText")
+            @SimpleButtonWidget(ref = MyButtonTrigger.class)
             Void m_button;
 
         }
@@ -660,7 +660,6 @@ class UiSchemaOptionsTest {
         assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("simpleButton");
         assertThatJson(response).inPath("$.elements[0].options.triggerId").isString()
             .isEqualTo(SimpleButtonWidgetTestSettings.MyButtonTrigger.class.getName());
-        assertThatJson(response).inPath("$.elements[0].options.text").isString().isEqualTo("buttonText");
 
     }
 

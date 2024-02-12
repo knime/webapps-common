@@ -808,7 +808,7 @@ class JsonFormsUiSchemaUtilTest {
                 }
 
                 @Widget
-                @SimpleButtonWidget(ref = MyButtonRef.class, text = "Click me")
+                @SimpleButtonWidget(ref = MyButtonRef.class)
                 Void m_button;
 
                 class MyButtonStateProvider implements StateProvider<String> {

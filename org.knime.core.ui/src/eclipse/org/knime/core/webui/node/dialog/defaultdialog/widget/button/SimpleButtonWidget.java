@@ -72,9 +72,4 @@ public @interface SimpleButtonWidget {
      */
     Class<? extends ButtonRef> ref();
 
-    /**
-     * @return the text displayed on the button
-     */
-    String text();
-
 }
