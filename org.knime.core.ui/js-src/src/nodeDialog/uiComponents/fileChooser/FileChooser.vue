@@ -99,6 +99,7 @@ const onChangeSelection = (itemIds: string[]) => {
 const onCancel = () => {
   emit("cancel");
 };
+const buttonWrapper = ref<null | HTMLElement>(null);
 </script>
 
 <template>
@@ -125,12 +126,13 @@ const onCancel = () => {
         :disable-context-menu="true"
         :disable-multi-select="true"
         :disable-dragging="true"
+        :click-outside-exception="buttonWrapper"
         @change-directory="changeDirectory"
         @open-file="onOpenFile($event.name)"
         @change-selection="onChangeSelection"
       />
     </template>
-    <div class="button-wrapper">
+    <div ref="buttonWrapper" class="button-wrapper">
       <Button compact with-border @click="onCancel">Cancel</Button>
       <Button
         v-if="selectedFileName"
