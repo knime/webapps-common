@@ -54,89 +54,98 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SimpleButtonWidget;
 
 /**
+ * This class is used to provide dynamic state for value or metadata of dialog controls. It can also provide an
+ * intermediate non-user-facing state to be used in the computation of other {@link StateProvider}s.
+ * <ul>
+ * It consists of two methods:
+ * <li>With {@link #init} the dependencies and triggers are defined. This method is called whenever the dialog is opened
+ * and before every invocation of {@link #computeState}.</li>
+ * <li>{@link #computeState} is called whenever one of the defined actions defined in {@link #init} triggers.</li>
+ * </ul>
  *
  * @author Paul Bärnreuther
- * @param <OUTPUT> The type of the output value of this action
+ * @param <State> The type of the provided state
  */
-public interface Action<OUTPUT> {
+public interface StateProvider<State> {
 
     /**
-     * This interface defined the methods with which an action can be bound to user actions. One can define
+     * This interface defined the methods with which the state provider can be configured. One can define
      * <ul>
      * <li><b>Triggers</b>: The user actions leading to an invocation</li>
-     * <li><b>Dependencies</b>: The fields on whose values the output of the action depends on.</li>
+     * <li><b>Dependencies</b>: The fields on whose values the provided state depends on.</li>
      * </ul>
      */
-    interface ActionInitializer {
+    interface StateProviderInitializer {
 
         /**
-         * Sets <b>Trigger</b> and <b>Dependency</b>, i.e.:
+         * Sets value ref as <b>Trigger</b> and as <b>Dependency</b>, i.e.:
          *
-         * Refer to a {@link Widget} with this method to trigger the action on a change of that setting while also
-         * depending on the new value.
+         * Refer to a {@link Widget} with this method to recompute the provided state on every change of that setting
+         * while also depending on the new value.
          *
          * @param <T> the type of the dependency
-         * @param id used for {@link Widget#id} of a field
-         * @return a supplier to be used during {@link #compute}. If the returned supplier is not needed, use
-         *         {@link #setOnChangeTrigger} instead.
+         * @param ref used for {@link Widget#ref} of a field
+         * @return a supplier to be used during {@link #computeState}. If the returned supplier is not needed, use
+         *         {@link #computeOnValueChange} instead.
          */
-        <T> Supplier<T> dependOnChangedValue(Class<? extends ValueId<T>> id);
+        <T> Supplier<T> computeFromValueSupplier(Class<? extends ValueRef<T>> ref);
 
         /**
-         * Sets <b>Dependency</b> and not <b>Trigger</b>, i.e.:
+         * Sets value ref as <b>Dependency</b> and not as <b>Trigger</b>, i.e.:
          *
-         * Refer to a {@link Widget} with this method to depend on its value without triggering this action on a change
-         * of it.
+         * Refer to a {@link Widget} with this method to depend on its value without triggering recomputation on a
+         * change of it.
          *
          * @param <T> the type of the dependency
-         * @param id used for {@link Widget#id} of a field
-         * @return a supplier to be used during {@link #compute}.
+         * @param ref used for {@link Widget#ref} of a field
+         * @return a supplier to be used during {@link #computeState}.
          */
-        <T> Supplier<T> dependOnValueWhichIsNotATrigger(Class<? extends ValueId<T>> id);
+        <T> Supplier<T> getValueSupplier(Class<? extends ValueRef<T>> ref);
 
         /**
-         * Sets <b>Trigger</b> and not <b>Dependency</b>, i.e.:
+         * Sets value ref as <b>Trigger</b> and not as <b>Dependency</b>, i.e.:
          *
-         * Refer to a {@link Widget} with this method to trigger the action on a change of that setting. If the action
-         * should also depend on the value of the triggering settings, use {@link #dependOnChangedValue} instead.
+         * Refer to a {@link Widget} with this method to recompute the provided state on every change of that setting.
+         * If the state should also depend on the value of the triggering settings, use
+         * {@link #computeFromValueSupplier} instead.
          *
+         * @param id used for {@link Widget#ref} of a field
          * @param <T> the type of the dependency
-         * @param id
          */
-        <T> void setOnChangeTrigger(Class<? extends ValueId<T>> id);
+        <T> void computeOnValueChange(Class<? extends ValueRef<T>> id);
 
         /**
-         * Refer to another {@link Action} with this method to trigger this action after the other action has been
-         * triggered and depend on its output.
+         * Refer to another {@link StateProvider} with this method to recompute this state whenever the provided state
+         * of the given class changes and depend on its output.
          *
-         * @param <T> the type of the output of the other action
-         * @param actionClass the class of the other action
-         * @return a supplier to be used during {@link #compute}
+         * @param stateProviderClass the class of the other state provider
+         * @return a supplier to be used during {@link #computeState}
+         * @param <T> the type of the referenced provided state
          */
-        <T> Supplier<T> continueOtherAction(Class<? extends Action<T>> actionClass);
+        <T> Supplier<T> getProvidedState(Class<? extends StateProvider<T>> stateProviderClass);
 
         /**
-         * Defines that the action is to be triggered whenever a button with the given id is clicked
+         * Defines that the state is to be computed whenever a button with the given id is clicked
          *
-         * @param trigger used as {@link SimpleButtonWidget#trigger}
+         * @param ref used as {@link SimpleButtonWidget#ref}
          */
-        void setButtonTrigger(Class<? extends ButtonTrigger> trigger);
+        void computeOnButtonClick(Class<? extends ButtonRef> ref);
 
     }
 
     /**
-     * This method is called when the dialog is opened.
+     * This method is called whenever the dialog is opened.
      *
      * @param initializer providing configuration methods to define triggers and dependencies of the method. This
      *            instance must not be used beyond the scope of this method. Any further call to one of its methods
      *            after the invocation of this method will result in a runtime exception.
      */
-    void init(ActionInitializer initializer);
+    void init(StateProviderInitializer initializer);
 
     /**
-     * @return the result of this action. It is either transformed directly to a specific update in the dialog or as
-     *         input for another {@link Action}.
+     * @return the provided state. It is either transformed directly to a specific update in the dialog or used as input
+     *         for another {@link StateProvider}.
      */
-    OUTPUT compute();
+    State computeState();
 
 }

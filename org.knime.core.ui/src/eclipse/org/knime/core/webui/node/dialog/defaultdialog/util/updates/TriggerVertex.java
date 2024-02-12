@@ -50,8 +50,8 @@ package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
 import java.util.Optional;
 
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueIdsAndUpdates.ValueIdWrapper;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonTrigger;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueRefsAndValueProviders.ValueRefWrapper;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonRef;
 
 /**
  *
@@ -63,14 +63,14 @@ public final class TriggerVertex extends Vertex {
 
     private final Optional<PathWithSettingsKey> m_scope;
 
-    TriggerVertex(final Class<? extends ButtonTrigger> triggerId) {
-        m_id = triggerId.getName();
+    TriggerVertex(final Class<? extends ButtonRef> buttonRef) {
+        m_id = buttonRef.getName();
         m_scope = Optional.empty();
     }
 
-    TriggerVertex(final ValueIdWrapper valueIdWrapper) {
-        m_id = valueIdWrapper.valueId().getName();
-        m_scope = Optional.of(valueIdWrapper.scope());
+    TriggerVertex(final ValueRefWrapper valueRefWrapper) {
+        m_id = valueRefWrapper.valueRef().getName();
+        m_scope = Optional.of(valueRefWrapper.scope());
     }
 
     @Override
@@ -78,6 +78,9 @@ public final class TriggerVertex extends Vertex {
         return visitor.accept(this);
     }
 
+    /**
+     * @return a unique identifier
+     */
     public String getId() {
         return m_id;
     }

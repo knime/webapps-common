@@ -113,7 +113,7 @@ public final class JsonFormsUiSchemaUtil {
         final var layoutSkeleton = resolveLayout(settings);
         layoutSkeleton.fields().addAll(parentFields);
         final var uiSchema = new LayoutNodesGenerator(layoutSkeleton, context, asyncChoicesAdder).build();
-        UpdateActionsUtil.addUpdateHandlers(uiSchema, settings);
+        GlobalUpdatesUtil.addUpdateHandlers(uiSchema, settings);
         return uiSchema;
     }
 

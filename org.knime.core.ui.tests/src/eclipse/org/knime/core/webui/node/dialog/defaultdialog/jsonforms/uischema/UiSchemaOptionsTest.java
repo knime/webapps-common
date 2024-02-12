@@ -89,7 +89,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.Passwor
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.UsernameWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DeclaringDefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonTrigger;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonRef;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -646,12 +646,12 @@ class UiSchemaOptionsTest {
     void testSimpleButtonWidgetOptions() {
         class SimpleButtonWidgetTestSettings implements DefaultNodeSettings {
 
-            class MyButtonTrigger implements ButtonTrigger {
+            class MyButtonTrigger implements ButtonRef {
 
             }
 
             @Widget
-            @SimpleButtonWidget(trigger = MyButtonTrigger.class, text = "buttonText")
+            @SimpleButtonWidget(ref = MyButtonTrigger.class, text = "buttonText")
             Void m_button;
 
         }

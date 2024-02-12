@@ -260,7 +260,7 @@ final class UiSchemaOptionsGenerator {
         if (annotatedWidgets.contains(SimpleButtonWidget.class)) {
             options.put(TAG_FORMAT, Format.SIMPLE_BUTTON);
             final var simpleButtonWidget = m_field.getAnnotation(SimpleButtonWidget.class);
-            options.put("triggerId", simpleButtonWidget.trigger().getName());
+            options.put("triggerId", simpleButtonWidget.ref().getName());
             options.put("text", simpleButtonWidget.text());
         }
 

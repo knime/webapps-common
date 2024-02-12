@@ -48,8 +48,8 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueIdsAndUpdates.UpdateWrapper;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Action;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueRefsAndValueProviders.ValueProviderWrapper;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 
 /**
  *
@@ -57,12 +57,12 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Action;
  */
 public final class UpdateVertex extends Vertex {
 
-    private final Class<? extends Action> m_action;
+    private final Class<? extends StateProvider> m_stateProviderClass;
 
     private final PathWithSettingsKey m_scope;
 
-    UpdateVertex(final UpdateWrapper wrapper) {
-        m_action = wrapper.action();
+    UpdateVertex(final ValueProviderWrapper wrapper) {
+        m_stateProviderClass = wrapper.stateProviderClass();
         m_scope = wrapper.scope();
     }
 
@@ -71,8 +71,8 @@ public final class UpdateVertex extends Vertex {
         return visitor.accept(this);
     }
 
-    Class<? extends Action> getActionClass() {
-        return m_action;
+    Class<? extends StateProvider> getStateProviderClass() {
+        return m_stateProviderClass;
     }
 
     /**

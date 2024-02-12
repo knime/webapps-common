@@ -54,11 +54,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Action;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonTrigger;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonRef;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 
 /**
- * A widget whose whole purpose is to trigger an {@link Action}
+ * A widget whose whole purpose is to trigger an {@link StateProvider}
  *
  * @author Paul Bärnreuther
  */
@@ -67,10 +67,10 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonTrigg
 public @interface SimpleButtonWidget {
 
     /**
-     * @return the trigger that can be referenced by an {@link Action} using
-     *         {@link Action.ActionInitializer#triggerWithButton}
+     * @return the trigger that can be referenced by an {@link StateProvider} using
+     *         {@link StateProvider.StateProviderInitializer#computeOnButtonClick}
      */
-    Class<? extends ButtonTrigger> trigger();
+    Class<? extends ButtonRef> ref();
 
     /**
      * @return the text displayed on the button

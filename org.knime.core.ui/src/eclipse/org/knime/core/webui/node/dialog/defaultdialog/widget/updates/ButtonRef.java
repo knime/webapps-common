@@ -44,43 +44,14 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Feb 6, 2024 (Paul Bärnreuther): created
+ *   Feb 7, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
-
-import static org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil.createInstance;
-
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Action;
+package org.knime.core.webui.node.dialog.defaultdialog.widget.updates;
 
 /**
- *
- * @author Paul Bärnreuther
+ * Marker interface for a class used as id for a button. It can be used in
+ * {@link StateProvider.StateProviderInitializer#computeOnButtonClick}.
  */
-final class ActionVertex extends Vertex {
-
-    private final Action m_action;
-
-    private final Class<? extends Action> m_actionClass;
-
-    /**
-     * @param actionClass
-     */
-    public ActionVertex(final Class<? extends Action> actionClass) {
-        m_actionClass = actionClass;
-        m_action = createInstance(actionClass);
-    }
-
-    @Override
-    public <T> T visit(final VertexVisitor<T> visitor) {
-        return visitor.accept(this);
-    }
-
-    public Action getAction() {
-        return m_action;
-    }
-
-    public Class<? extends Action> getActionClass() {
-        return m_actionClass;
-    }
+public interface ButtonRef {
 
 }

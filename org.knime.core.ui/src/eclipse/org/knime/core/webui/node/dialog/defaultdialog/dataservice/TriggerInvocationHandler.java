@@ -57,11 +57,10 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.Defaul
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsScopeUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.InvokeTrigger;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueIdsAndUpdates;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToDependencyTree;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerVertex;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.UpdateVertex;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.ValueIdsAndUpdatesToDependencyTree;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueId;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
 
 /**
  * Used to convert triggers to a list of resulting updates given a map of dependencies.
@@ -73,9 +72,7 @@ public class TriggerInvocationHandler {
     private final Collection<TriggerVertex> m_triggers;
 
     TriggerInvocationHandler(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
-        final var valueIdsAndUpdates =
-            SettingsClassesToValueIdsAndUpdates.settingsClassesToValueIdsAndUpdates(settingsClasses);
-        m_triggers = ValueIdsAndUpdatesToDependencyTree.valueIdsAndUpdatesToDependencyTree(valueIdsAndUpdates);
+        m_triggers = SettingsClassesToDependencyTree.settingsToDependencyTree(settingsClasses);
     }
 
     record PathAndValue(String path, Object value) {
@@ -83,9 +80,9 @@ public class TriggerInvocationHandler {
 
     List<PathAndValue> trigger(final String triggerId, final Map<String, Object> rawDependencies,
         final DefaultNodeSettingsContext context) {
-        final Function<Class<? extends ValueId>, Object> dependencyProvider = valueId -> {
-            final var rawDependencyObject = rawDependencies.get(valueId.getName());
-            return ConvertValueUtil.convertValueId(rawDependencyObject, valueId, context);
+        final Function<Class<? extends ValueRef>, Object> dependencyProvider = valueRef -> {
+            final var rawDependencyObject = rawDependencies.get(valueRef.getName());
+            return ConvertValueUtil.convertValueRef(rawDependencyObject, valueRef, context);
         };
         final var trigger = m_triggers.stream().filter(t -> t.getId().equals(triggerId)).findAny().orElseThrow();
         final var resultPerUpdateHandler = new InvokeTrigger(dependencyProvider).invokeTrigger(trigger);

@@ -55,7 +55,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueId;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
 
 /**
  * An annotation for a field indicating that its contributing to the dialog UI. And it allows one to control common
@@ -95,10 +96,20 @@ public @interface Widget {
     boolean hideTitle() default false;
 
     /**
-     * @return An id that can be referenced by update handlers of other fields. The generic type of {@link ValueId} has
+     * @return An id that can be referenced by update handlers of other fields. The generic type of {@link ValueRef} has
      *         to match the type of the annotated field. Otherwise a runtime exception is thrown when the dialog is
      *         opened.
      */
-    Class<? extends ValueId> id() default ValueId.class;
+    Class<? extends ValueRef> valueRef() default ValueRef.class;
+
+    /**
+     * @return a {@link StateProvider} defining how the value of this widget should depend on user actions and other
+     *         settings. See {@link StateProvider#init} for more information on what kind of actions can trigger such a
+     *         value change.
+     *
+     *         TODO: UIEXT-1597 Add a sentence here that it is in particular possible to define the widgets intial value
+     *         with this.
+     */
+    Class<? extends StateProvider> valueProvider() default StateProvider.class; // NOSONAR
 
 }

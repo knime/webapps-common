@@ -58,25 +58,41 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.Vertex.VertexVisitor;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Action;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Action.ActionInitializer;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonTrigger;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueId;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonRef;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider.StateProviderInitializer;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
 
+/**
+ * This class is used to convert a trigger to a map indexed by its triggered updates.
+ *
+ * @author Paul Bärnreuther
+ */
 public final class InvokeTrigger {
 
     private Map<Vertex, Object> m_cache = new HashMap<>();
 
-    private final Function<Class<? extends ValueId>, Object> m_dependencyProvider;
+    private final Function<Class<? extends ValueRef>, Object> m_dependencyProvider;
 
-    public InvokeTrigger(final Function<Class<? extends ValueId>, Object> dependencyProvider) {
+    /**
+     *
+     * @param dependencyProvider providing the values of all {@link ValueRef} dependencies that the triggered updates
+     *            will depend on.
+     */
+    public InvokeTrigger(final Function<Class<? extends ValueRef>, Object> dependencyProvider) {
         m_dependencyProvider = dependencyProvider;
     }
 
+    /**
+     * This class is used to convert a trigger to a map indexed by its triggered updates.
+     *
+     * @param trigger
+     * @return a mapping from updated vertex to its associated state
+     */
     public Map<UpdateVertex, Object> invokeTrigger(final TriggerVertex trigger) {
         final var updateVertices = trigger.visit(new GetTriggeredUpdatesVisitor());
         return updateVertices.stream().collect(Collectors.toUnmodifiableMap(Function.identity(),
-            updateVertex -> updateVertex.visit(new GetValueVisitor())));
+            updateVertex -> updateVertex.visit(new ComputeVisitor())));
     }
 
     private static final class GetTriggeredUpdatesVisitor implements VertexVisitor<Collection<UpdateVertex>> {
@@ -94,26 +110,27 @@ public final class InvokeTrigger {
 
     }
 
-    private static ActionVertex getParentActionVertex(final Vertex vertex, final Class<? extends Action> actionClass) {
-        final var getParentActionVertexVisitor = new VertexVisitor<ActionVertex>() {
+    private static StateVertex getParentStateVertex(final Vertex vertex,
+        final Class<? extends StateProvider> stateProviderClass) {
+        final var getParentStateVertexVisitor = new VertexVisitor<StateVertex>() {
             @Override
-            public ActionVertex accept(final ActionVertex actionVertex) {
-                if (actionVertex.getActionClass().equals(actionClass)) {
-                    return actionVertex;
+            public StateVertex accept(final StateVertex stateVertex) {
+                if (stateVertex.getStateProviderClass().equals(stateProviderClass)) {
+                    return stateVertex;
                 }
                 return null;
             }
         };
-        return vertex.getParents().stream().map(parent -> parent.visit(getParentActionVertexVisitor))
+        return vertex.getParents().stream().map(parent -> parent.visit(getParentStateVertexVisitor))
             .filter(Objects::nonNull).findAny().orElseThrow();
     }
 
     private static DependencyVertex getParentDependencyVertex(final Vertex vertex,
-        final Class<? extends ValueId<?>> valueId) {
+        final Class<? extends ValueRef<?>> valueRef) {
         final var getParentDependencyVertexVisitor = new VertexVisitor<DependencyVertex>() {
             @Override
             public DependencyVertex accept(final DependencyVertex dependencyVertex) {
-                if (dependencyVertex.getValueId().equals(valueId)) {
+                if (dependencyVertex.getValueRef().equals(valueRef)) {
                     return dependencyVertex;
                 }
                 return null;
@@ -123,80 +140,80 @@ public final class InvokeTrigger {
             .filter(Objects::nonNull).findAny().orElseThrow();
     }
 
-    private final class GetValueVisitor implements VertexVisitor<Object> {
+    private final class ComputeVisitor implements VertexVisitor<Object> {
 
         /**
-         * The initializer handed into an action for invocation
+         * The initializer handed into a state provider for invocation
          *
          * @author Paul Bärnreuther
          */
-        private final class ActionInitializerImplementation implements ActionInitializer {
+        private final class StateProviderInvocationInitializer implements StateProviderInitializer {
 
-            private final ActionVertex m_actionVertex;
+            private final StateVertex m_stateVertex;
 
             /**
-             * @param actionVertex the vertex whose action is to be initialized
+             * @param stateVertex the vertex whose state provider is to be initialized
              */
-            private ActionInitializerImplementation(final ActionVertex actionVertex) {
-                m_actionVertex = actionVertex;
+            private StateProviderInvocationInitializer(final StateVertex stateVertex) {
+                m_stateVertex = stateVertex;
             }
 
             @Override
-            public <T> void setOnChangeTrigger(final Class<? extends ValueId<T>> id) {
+            public <T> void computeOnValueChange(final Class<? extends ValueRef<T>> id) {
                 // Nothing to do here during invocation
             }
 
             @Override
-            public void setButtonTrigger(final Class<? extends ButtonTrigger> trigger) {
+            public void computeOnButtonClick(final Class<? extends ButtonRef> trigger) {
                 // Nothing to do here during invocation
             }
 
             @Override
-            public <T> Supplier<T> dependOnValueWhichIsNotATrigger(final Class<? extends ValueId<T>> id) {
-                return vertexToSupplier(getParentDependencyVertex(m_actionVertex, id));
+            public <T> Supplier<T> getValueSupplier(final Class<? extends ValueRef<T>> id) {
+                return vertexToSupplier(getParentDependencyVertex(m_stateVertex, id));
             }
 
             @Override
-            public <T> Supplier<T> dependOnChangedValue(final Class<? extends ValueId<T>> id) {
-                return vertexToSupplier(getParentDependencyVertex(m_actionVertex, id));
+            public <T> Supplier<T> computeFromValueSupplier(final Class<? extends ValueRef<T>> id) {
+                return vertexToSupplier(getParentDependencyVertex(m_stateVertex, id));
             }
 
             @Override
-            public <T> Supplier<T> continueOtherAction(final Class<? extends Action<T>> actionClass) {
-                return vertexToSupplier(getParentActionVertex(m_actionVertex, actionClass));
+            public <T> Supplier<T> getProvidedState(final Class<? extends StateProvider<T>> stateProviderClass) {
+                return vertexToSupplier(getParentStateVertex(m_stateVertex, stateProviderClass));
             }
 
             @SuppressWarnings("unchecked")
             private <T> Supplier<T> vertexToSupplier(final Vertex vertex) {
-                return () -> (T)vertex.visit(new GetValueVisitor());
+                return () -> (T)vertex.visit(new ComputeVisitor());
             }
         }
 
         @Override
-        public Object accept(final ActionVertex actionVertex) {
-            if (!m_cache.containsKey(actionVertex)) {
-                m_cache.put(actionVertex, this.invokeAction(actionVertex));
+        public Object accept(final StateVertex stateVertex) {
+            if (!m_cache.containsKey(stateVertex)) {
+                m_cache.put(stateVertex, this.computeState(stateVertex));
             }
-            return m_cache.get(actionVertex);
+            return m_cache.get(stateVertex);
 
         }
 
-        private Object invokeAction(final ActionVertex actionVertex) {
-            final var actionInitializer = new ActionInitializerImplementation(actionVertex);
-            final var action = actionVertex.getAction();
-            action.init(actionInitializer);
-            return action.compute();
+        private Object computeState(final StateVertex stateVertex) {
+            final var initializer = new StateProviderInvocationInitializer(stateVertex);
+            final var stateProvider = stateVertex.getStateProvider();
+            stateProvider.init(initializer);
+            return stateProvider.computeState();
         }
 
         @Override
         public Object accept(final DependencyVertex dependencyVertex) {
             return m_cache.computeIfAbsent(dependencyVertex,
-                v -> m_dependencyProvider.apply(dependencyVertex.getValueId()));
+                v -> m_dependencyProvider.apply(dependencyVertex.getValueRef()));
         }
 
         @Override
         public Object accept(final UpdateVertex updateVertex) {
-            return getParentActionVertex(updateVertex, updateVertex.getActionClass()).visit(this);
+            return getParentStateVertex(updateVertex, updateVertex.getStateProviderClass()).visit(this);
         }
 
     }

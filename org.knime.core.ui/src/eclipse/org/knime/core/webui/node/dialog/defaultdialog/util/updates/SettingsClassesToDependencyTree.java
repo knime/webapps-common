@@ -44,13 +44,39 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Feb 7, 2024 (Paul Bärnreuther): created
+ *   Feb 12, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget.updates;
+package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
+
+import java.util.Collection;
+import java.util.Map;
+
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 
 /**
- * Marker interface for any kind of trigger of an action/update
+ *
+ * @author Paul Bärnreuther
  */
-public interface ButtonTrigger {
+public final class SettingsClassesToDependencyTree {
+
+    private SettingsClassesToDependencyTree() {
+        // Utility
+    }
+
+    /**
+     * Collect annotations from the given settingsClasses and transforms them into a tree structure with {@link Vertex}
+     * as nodes.
+     *
+     * @param settingsClasses
+     * @return the triggers in that dependency structure. These are then processed further using
+     *         {@link TriggerToDependencies} (during initialization) and {@link InvokeTrigger} (during invocation)
+     */
+    public static Collection<TriggerVertex>
+        settingsToDependencyTree(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
+        final var valueRefsAndValueProviders =
+            SettingsClassesToValueRefsAndValueProviders.settingsClassesToValueRefsAndValueProviders(settingsClasses);
+        return ValueRefsAndValueProvidersToDependencyTree
+            .valueRefsAndValueProvidersToDependencyTree(valueRefsAndValueProviders);
+    }
 
 }

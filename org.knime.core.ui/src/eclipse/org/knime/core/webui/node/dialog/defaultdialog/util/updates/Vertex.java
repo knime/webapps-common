@@ -55,7 +55,7 @@ import java.util.Set;
  *
  * @author Paul Bärnreuther
  */
-abstract sealed class Vertex permits UpdateVertex, ActionVertex, TriggerVertex, DependencyVertex {
+abstract sealed class Vertex permits UpdateVertex, StateVertex, TriggerVertex, DependencyVertex {
 
     private final Set<Vertex> m_children = new HashSet<>();
 
@@ -87,8 +87,8 @@ abstract sealed class Vertex permits UpdateVertex, ActionVertex, TriggerVertex, 
             return acceptDefault(updateVertex);
         }
 
-        default T accept(final ActionVertex actionVertex) {
-            return acceptDefault(actionVertex);
+        default T accept(final StateVertex stateVertex) {
+            return acceptDefault(stateVertex);
         }
 
         default T accept(final TriggerVertex triggerVertex) {

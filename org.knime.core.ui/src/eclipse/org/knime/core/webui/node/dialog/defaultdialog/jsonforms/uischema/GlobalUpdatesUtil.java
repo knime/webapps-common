@@ -57,44 +57,40 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsScopeUt
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.DependencyVertex;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.PathWithSettingsKey;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueIdsAndUpdates;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToDependencyTree;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerToDependencies;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerVertex;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.ValueIdsAndUpdatesToDependencyTree;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Update;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
+import org.knime.filehandling.core.node.table.reader.preview.dialog.AnalysisComponentModel.Update;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * Utility class to resolve {@link Update} annotations
+ * Utility class to resolve updates given by {@link StateProvider}s
  *
  * @author Paul Bärnreuther
  */
-final class UpdateActionsUtil {
+final class GlobalUpdatesUtil {
 
-    private UpdateActionsUtil() {
+    private GlobalUpdatesUtil() {
         // Utility
     }
 
-    record Dependency(String scope, String valueId) {
+    record Dependency(String scope, String valueRef) {
     }
 
     record TriggerAndDependencies(TriggerVertex trigger, Collection<DependencyVertex> dependencies) {
 
-        String getTriggerId() {
-            return trigger().getId();
-        }
-
         Optional<String> getTriggerPath() {
-            return trigger().getScope().map(UpdateActionsUtil::resolveScopeToString);
+            return trigger().getScope().map(GlobalUpdatesUtil::resolveScopeToString);
         }
 
         List<Dependency> getDependencyPaths() {
             return dependencies().stream().map(dep -> {
                 final var scope = resolveScopeToString(dep.getScope());
-                final var valueId = dep.getValueId().getName();
-                return new Dependency(scope, valueId);
+                final var valueRef = dep.getValueRef().getName();
+                return new Dependency(scope, valueRef);
             }).toList();
         }
     }
@@ -123,25 +119,23 @@ final class UpdateActionsUtil {
         });
     }
 
-    private static void addGlobalUpdate(final ArrayNode globalUpdates, final TriggerAndDependencies triggerWithDependencies) {
+    private static void addGlobalUpdate(final ArrayNode globalUpdates,
+        final TriggerAndDependencies triggerWithDependencies) {
         final var updateObjectNode = globalUpdates.addObject();
         final var triggerNode = updateObjectNode.putObject("trigger");
-        triggerNode.put("id", triggerWithDependencies.getTriggerId());
+        triggerNode.put("id", triggerWithDependencies.trigger().getId());
         triggerWithDependencies.getTriggerPath().ifPresent(scope -> triggerNode.put("scope", scope));
         final var dependenciesArrayNode = updateObjectNode.putArray("dependencies");
         triggerWithDependencies.getDependencyPaths().forEach(dep -> {
             final var newDependency = dependenciesArrayNode.addObject();
             newDependency.put("scope", dep.scope());
-            newDependency.put("id", dep.valueId());
+            newDependency.put("id", dep.valueRef());
         });
     }
 
     private static List<TriggerAndDependencies>
         getTriggersWithDependencies(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
-        final var valueIdsAndUpdates =
-            SettingsClassesToValueIdsAndUpdates.settingsClassesToValueIdsAndUpdates(settingsClasses);
-
-        final var triggers = ValueIdsAndUpdatesToDependencyTree.valueIdsAndUpdatesToDependencyTree(valueIdsAndUpdates);
+        final var triggers = SettingsClassesToDependencyTree.settingsToDependencyTree(settingsClasses);
         final var triggerToDependencies = new TriggerToDependencies();
         return triggers.stream()
             .map(trigger -> new TriggerAndDependencies(trigger, triggerToDependencies.triggerToDependencies(trigger)))

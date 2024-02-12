@@ -44,44 +44,20 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jan 22, 2024 (Paul Bärnreuther): created
+ *   Feb 6, 2024 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.widget.updates;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
 /**
- * Define custom updates from dependencies to targets. This annotation can be put on a field which is a {@link Widget}
- * or a {@link WidgetGroup}. If the same dependencies should update multiple settings which do not form a complete
- * {@link WidgetGroup} the annotation should not be put on the group but on the individual parts. In this case one can
- * use a {@link #resolver} in addition to the shared {@link #updateHandler} to map the common intermediate result of the
- * {@link #updateHandler} to the type of the field.
- *
- * The annotation will lead to a runtime exception when opening the dialog when not following these constraints:
- * <ul>
- * <li>If the given {@link #updateHandler} is only used in this annotation, a {@link #resolver} must not be specified
- * and the return type of the handler has to match the field type</li>
- * <li>Else there return type of the {@link #updateHandler} has to match the input type of the {@link #resolver} and the
- * return type of the resolver has to match the field type</li>
- * </ul>
+ * This interface can be extended by classes used as {@link Widget#id}. It is used to resolve dependencies between
+ * widgets in a type safe way.
  *
  * @author Paul Bärnreuther
+ * @param <FIELD> the type of the associated field in the {@link DefaultNodeSettings}.
  */
-@Retention(RUNTIME)
-@Target(FIELD)
-public @interface Update {
-
-    /**
-     * @return a handler which defined dependencies from one or multiple setting to the annotated setting. The generic
-     *         type of the action has to match the type of the annotated field.
-     */
-    Class<? extends Action<?>> updateHandler(); // NOSONAR
+public interface ValueRef<FIELD> {
 
 }

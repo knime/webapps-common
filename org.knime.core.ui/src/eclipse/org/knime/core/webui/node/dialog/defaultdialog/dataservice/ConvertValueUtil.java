@@ -53,7 +53,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUti
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.PasswordHolder;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueId;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -69,9 +69,9 @@ final class ConvertValueUtil {
         // Utility
     }
 
-    public static Object convertValueId(final Object objectSettings, final Class<? extends ValueId> valueId,
+    public static Object convertValueRef(final Object objectSettings, final Class<? extends ValueRef> valueRef,
         final DefaultNodeSettingsContext context) {
-        final var settingsType = GenericTypeFinderUtil.getFirstGenericType(valueId, ValueId.class);
+        final var settingsType = GenericTypeFinderUtil.getFirstGenericType(valueRef, ValueRef.class);
         return convertValue(objectSettings, settingsType, context);
     }
 

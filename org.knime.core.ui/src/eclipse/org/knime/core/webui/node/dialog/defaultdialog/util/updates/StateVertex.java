@@ -48,69 +48,39 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
+import static org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil.createInstance;
 
-import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
-import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Action;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Update;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueId;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 
 /**
  *
  * @author Paul Bärnreuther
  */
-public class SettingsClassesToValueIdsAndUpdates {
+final class StateVertex extends Vertex {
 
-    record ValueIdWrapper(Class<? extends ValueId> valueId, PathWithSettingsKey scope) {
+    private final StateProvider m_stateProvider;
+
+    private final Class<? extends StateProvider> m_stateProviderClass;
+
+    /**
+     * @param stateProviderClass
+     */
+    public StateVertex(final Class<? extends StateProvider> stateProviderClass) {
+        m_stateProviderClass = stateProviderClass;
+        m_stateProvider = createInstance(stateProviderClass);
     }
 
-    record UpdateWrapper(Class<? extends Action> action, PathWithSettingsKey scope) {
+    @Override
+    public <T> T visit(final VertexVisitor<T> visitor) {
+        return visitor.accept(this);
     }
 
-    record ValueIdsAndUpdates(Collection<ValueIdWrapper> valueIds, Collection<UpdateWrapper> updates) {
+    public StateProvider getStateProvider() {
+        return m_stateProvider;
     }
 
-    public static ValueIdsAndUpdates
-        settingsClassesToValueIdsAndUpdates(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
-
-        final Collection<ValueIdWrapper> valueIds = new ArrayList<>();
-        final Collection<UpdateWrapper> updates = new ArrayList<>();
-
-        settingsClasses.entrySet().forEach(entry -> {
-            final var traverser = new DefaultNodeSettingsFieldTraverser(entry.getValue());
-            final var fields = traverser.getAllFields();
-
-            fields.stream().forEach(field -> {
-                addValueId(valueIds, field, entry.getKey());
-                addUpdate(updates, field, entry.getKey());
-            });
-
-        });
-
-        return new ValueIdsAndUpdates(valueIds, updates);
-
-    }
-
-    private static void addValueId(final Collection<ValueIdWrapper> valueIds, final TraversedField field,
-        final String settingsKey) {
-        final var widgetAnnotation = field.propertyWriter().getAnnotation(Widget.class);
-        if (widgetAnnotation != null && !widgetAnnotation.id().equals(ValueId.class)) {
-            valueIds.add(new ValueIdWrapper(widgetAnnotation.id(), new PathWithSettingsKey(field.path(), settingsKey)));
-        }
-    }
-
-    private static void addUpdate(final Collection<UpdateWrapper> updates, final TraversedField field,
-        final String settingsKey) {
-        final var updateAnnotation = field.propertyWriter().getAnnotation(Update.class);
-        if (updateAnnotation != null) {
-            updates.add(new UpdateWrapper(updateAnnotation.updateHandler(),
-                new PathWithSettingsKey(field.path(), settingsKey)));
-        }
+    public Class<? extends StateProvider> getStateProviderClass() {
+        return m_stateProviderClass;
     }
 
 }

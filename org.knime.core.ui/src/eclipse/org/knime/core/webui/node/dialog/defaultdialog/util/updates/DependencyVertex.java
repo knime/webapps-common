@@ -48,25 +48,23 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueIdsAndUpdates.ValueIdWrapper;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueId;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueRefsAndValueProviders.ValueRefWrapper;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
 
 /**
+ * An object representing a reference to a value of a widget
  *
  * @author Paul Bärnreuther
  */
 public final class DependencyVertex extends Vertex {
 
-    private final Class<? extends ValueId> m_id;
+    private final Class<? extends ValueRef> m_ref;
 
     private final PathWithSettingsKey m_scope;
 
-    /**
-     * @param valueIdWrapper
-     */
-    public DependencyVertex(final ValueIdWrapper valueIdWrapper) {
-        m_id = valueIdWrapper.valueId();
-        m_scope = valueIdWrapper.scope();
+    DependencyVertex(final ValueRefWrapper valueRefWrapper) {
+        m_ref = valueRefWrapper.valueRef();
+        m_scope = valueRefWrapper.scope();
     }
 
     @Override
@@ -74,8 +72,8 @@ public final class DependencyVertex extends Vertex {
         return visitor.accept(this);
     }
 
-    public Class<? extends ValueId> getValueId() {
-        return m_id;
+    public Class<? extends ValueRef> getValueRef() {
+        return m_ref;
     }
 
     /**

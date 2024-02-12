@@ -92,9 +92,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesUpda
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.IdAndText;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Action;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Update;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueId;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
 
 /**
  * Tests DefaultNodeSettingsService.
@@ -142,23 +141,23 @@ class DefaultNodeDialogDataServiceImplTest {
     @Nested
     class ValueUpdatesDataServiceTest {
 
-        static final class MyValueId implements ValueId<String> {
+        static final class MyValueRef implements ValueRef<String> {
         }
 
-        private static final class TestAction implements Action<String> {
+        private static final class TestStateProvider implements StateProvider<String> {
 
             private Supplier<String> m_dependencySupplier;
 
             @Override
-            public void init(final ActionInitializer initializer) {
-                m_dependencySupplier = initializer.dependOnChangedValue(MyValueId.class);
+            public void init(final StateProviderInitializer initializer) {
+                m_dependencySupplier = initializer.computeFromValueSupplier(MyValueRef.class);
             }
 
             /**
              * {@inheritDoc}
              */
             @Override
-            public String compute() {
+            public String computeState() {
                 return m_dependencySupplier.get();
             }
 
@@ -169,34 +168,34 @@ class DefaultNodeDialogDataServiceImplTest {
 
             class UpdateSettings implements DefaultNodeSettings {
 
-                @Widget(id = MyValueId.class)
+                @Widget(valueRef = MyValueRef.class)
                 String m_dependency;
 
-                @Update(updateHandler = TestAction.class)
+                @Widget(valueProvider = TestStateProvider.class)
                 String m_updatedWidget;
 
             }
 
             final String testDepenenciesFooValue = "custom value";
             final var dataService = getDataService(UpdateSettings.class);
-            final var resultWrapper = dataService.update2("widgetId", MyValueId.class.getName(),
-                Map.of(MyValueId.class.getName(), testDepenenciesFooValue));
+            final var resultWrapper = dataService.update2("widgetId", MyValueRef.class.getName(),
+                Map.of(MyValueRef.class.getName(), testDepenenciesFooValue));
             final var result = (List<PathAndValue>)(resultWrapper.result());
             assertThat(result).hasSize(1);
             assertThat(result.get(0).value()).isEqualTo(testDepenenciesFooValue);
             assertThat(result.get(0).path()).isEqualTo("#/properties/model/properties/updatedWidget");
         }
 
-        static final class MyFirstValueId implements ValueId<String> {
+        static final class MyFirstValueRef implements ValueRef<String> {
         }
 
-        static final class MySecondValueId implements ValueId<String> {
+        static final class MySecondValueRef implements ValueRef<String> {
         }
 
-        record IntermediateState(String first, String second) {
+        record CommonFirstState(String first, String second) {
         }
 
-        private static final class CommonFirstAction implements Action<IntermediateState> {
+        private static final class CommonFirstStateProvider implements StateProvider<CommonFirstState> {
 
             private Supplier<String> m_secondDependencyProvider;
 
@@ -206,48 +205,48 @@ class DefaultNodeDialogDataServiceImplTest {
              * {@inheritDoc}
              */
             @Override
-            public void init(final ActionInitializer initializer) {
-                m_firstDependencyProvider = initializer.dependOnChangedValue(MyFirstValueId.class);
-                m_secondDependencyProvider = initializer.dependOnValueWhichIsNotATrigger(MySecondValueId.class);
+            public void init(final StateProviderInitializer initializer) {
+                m_firstDependencyProvider = initializer.computeFromValueSupplier(MyFirstValueRef.class);
+                m_secondDependencyProvider = initializer.getValueSupplier(MySecondValueRef.class);
             }
 
             /**
              * {@inheritDoc}
              */
             @Override
-            public IntermediateState compute() {
-                return new IntermediateState(m_firstDependencyProvider.get() + "_first",
+            public CommonFirstState computeState() {
+                return new CommonFirstState(m_firstDependencyProvider.get() + "_first",
                     m_secondDependencyProvider.get() + "_second");
             }
 
         }
 
-        static final class FirstResolver implements Action<String> {
+        static final class FirstResolver implements StateProvider<String> {
 
-            private Supplier<IntermediateState> m_pairProvider;
+            private Supplier<CommonFirstState> m_pairProvider;
 
             @Override
-            public void init(final ActionInitializer initializer) {
-                m_pairProvider = initializer.continueOtherAction(CommonFirstAction.class);
+            public void init(final StateProviderInitializer initializer) {
+                m_pairProvider = initializer.getProvidedState(CommonFirstStateProvider.class);
             }
 
             @Override
-            public String compute() {
+            public String computeState() {
                 return m_pairProvider.get().first();
             }
 
         }
 
-        static final class SecondResolver implements Action<String> {
-            private Supplier<IntermediateState> m_pairProvider;
+        static final class SecondResolver implements StateProvider<String> {
+            private Supplier<CommonFirstState> m_pairProvider;
 
             @Override
-            public void init(final ActionInitializer initializer) {
-                m_pairProvider = initializer.continueOtherAction(CommonFirstAction.class);
+            public void init(final StateProviderInitializer initializer) {
+                m_pairProvider = initializer.getProvidedState(CommonFirstStateProvider.class);
             }
 
             @Override
-            public String compute() {
+            public String computeState() {
                 return m_pairProvider.get().second();
             }
         }
@@ -257,16 +256,16 @@ class DefaultNodeDialogDataServiceImplTest {
 
             class UpdateSettings implements DefaultNodeSettings {
 
-                @Widget(id = MyFirstValueId.class)
+                @Widget(valueRef = MyFirstValueRef.class)
                 String m_foo;
 
-                @Widget(id = MySecondValueId.class)
+                @Widget(valueRef = MySecondValueRef.class)
                 String m_bar;
 
-                @Update(updateHandler = FirstResolver.class)
+                @Widget(valueProvider = FirstResolver.class)
                 String m_firstUpdatedWidget;
 
-                @Update(updateHandler = SecondResolver.class)
+                @Widget(valueProvider = SecondResolver.class)
                 String m_secondUpdatedWidget;
 
             }
@@ -276,8 +275,8 @@ class DefaultNodeDialogDataServiceImplTest {
             final String testDepenenciesBarValue = "custom value 2";
             final var dataService = getDataService(UpdateSettings.class);
             final var resultWrapper =
-                dataService.update2("widgetId", MyFirstValueId.class.getName(), Map.of(MyFirstValueId.class.getName(),
-                    testDepenenciesFooValue, MySecondValueId.class.getName(), testDepenenciesBarValue));
+                dataService.update2("widgetId", MyFirstValueRef.class.getName(), Map.of(MyFirstValueRef.class.getName(),
+                    testDepenenciesFooValue, MySecondValueRef.class.getName(), testDepenenciesBarValue));
             final var result = (List<PathAndValue>)(resultWrapper.result());
             assertThat(result).hasSize(2);
             assertThat(result).extracting("value", "path").contains(

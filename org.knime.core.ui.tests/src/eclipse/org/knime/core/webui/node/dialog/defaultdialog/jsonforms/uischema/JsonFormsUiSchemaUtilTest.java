@@ -75,10 +75,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.util.FieldAnnotationsHolde
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SimpleButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Action;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonTrigger;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Update;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueId;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonRef;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -596,7 +595,7 @@ class JsonFormsUiSchemaUtilTest {
     }
 
     @Nested
-    class ActionsTest {
+    class GlobalUpdatesTest {
 
         @Test
         void testValueUpdates() {
@@ -604,53 +603,53 @@ class JsonFormsUiSchemaUtilTest {
             @SuppressWarnings("unused")
             class TestSettings implements DefaultNodeSettings {
 
-                class Dependency implements ValueId<String> {
+                class Dependency implements ValueRef<String> {
 
                 }
 
-                @Widget(id = Dependency.class)
+                @Widget(valueRef = Dependency.class)
                 String dependency;
 
-                class AnotherDependency implements ValueId<String> {
+                class AnotherDependency implements ValueRef<String> {
 
                 }
 
-                @Widget(id = AnotherDependency.class)
+                @Widget(valueRef = AnotherDependency.class)
                 String anotherDependency;
 
-                static final class TestUpdateHandler implements Action<String> {
+                static final class TestStateProvider implements StateProvider<String> {
 
                     @Override
-                    public void init(final ActionInitializer initializer) {
-                        initializer.dependOnChangedValue(Dependency.class);
+                    public void init(final StateProviderInitializer initializer) {
+                        initializer.computeFromValueSupplier(Dependency.class);
                     }
 
                     @Override
-                    public String compute() {
+                    public String computeState() {
                         throw new RuntimeException("Should not be called in this test");
                     }
 
                 }
 
-                @Update(updateHandler = TestUpdateHandler.class)
+                @Widget(valueProvider = TestStateProvider.class)
                 String target;
 
-                static final class AnotherTestUpdateHandler implements Action<String> {
+                static final class AnotherTestStateProvider implements StateProvider<String> {
 
                     @Override
-                    public void init(final ActionInitializer initializer) {
-                        initializer.dependOnValueWhichIsNotATrigger(Dependency.class);
-                        initializer.setOnChangeTrigger(AnotherDependency.class);
+                    public void init(final StateProviderInitializer initializer) {
+                        initializer.getValueSupplier(Dependency.class);
+                        initializer.computeOnValueChange(AnotherDependency.class);
                     }
 
                     @Override
-                    public String compute() {
+                    public String computeState() {
                         throw new RuntimeException("Should not be called in this test");
 
                     }
                 }
 
-                @Update(updateHandler = AnotherTestUpdateHandler.class)
+                @Widget(valueProvider = AnotherTestStateProvider.class)
                 String anotherTarget;
             }
 
@@ -684,29 +683,29 @@ class JsonFormsUiSchemaUtilTest {
 
             class TestSettings implements DefaultNodeSettings {
 
-                class MyTrigger implements ButtonTrigger {
+                class MyButtonRef implements ButtonRef {
 
                 }
 
                 @Widget
-                @SimpleButtonWidget(trigger = MyTrigger.class, text = "Click me")
+                @SimpleButtonWidget(ref = MyButtonRef.class, text = "Click me")
                 Void m_button;
 
-                class MyButtonAction implements Action<String> {
+                class MyButtonStateProvider implements StateProvider<String> {
 
                     @Override
-                    public void init(final ActionInitializer initializer) {
-                        initializer.setButtonTrigger(MyTrigger.class);
+                    public void init(final StateProviderInitializer initializer) {
+                        initializer.computeOnButtonClick(MyButtonRef.class);
                     }
 
                     @Override
-                    public String compute() {
+                    public String computeState() {
                         throw new RuntimeException("Should not be called in this test");
                     }
 
                 }
 
-                @Update(updateHandler = MyButtonAction.class)
+                @Widget(valueProvider = MyButtonStateProvider.class)
                 String m_updated;
             }
 
@@ -717,7 +716,7 @@ class JsonFormsUiSchemaUtilTest {
             assertThatJson(response).inPath("$.globalUpdates").isArray().hasSize(2);
             assertThatJson(response).inPath("$.globalUpdates[0].trigger").isObject().doesNotContainKey("scope");
             assertThatJson(response).inPath("$.globalUpdates[0].trigger.id").isString()
-                .isEqualTo(TestSettings.MyTrigger.class.getName());
+                .isEqualTo(TestSettings.MyButtonRef.class.getName());
             assertThatJson(response).inPath("$.globalUpdates[0].dependencies").isArray().hasSize(0);
         }
     }
