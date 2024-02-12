@@ -35,24 +35,26 @@ export class ToastServiceProvider {
 
   show = (toast: Toast): string => {
     const clonedToast = cloneDeep(toast);
-    if (clonedToast.id) {
+    if (clonedToast.key) {
       const previousToast = this.toasts.value.find(
-        ({ id }) => clonedToast.id === id,
+        ({ key }) => clonedToast.key === key,
       );
       if (previousToast) {
-        return previousToast.uniqueId as string;
+        return previousToast.id as string;
       }
     }
-    clonedToast.uniqueId = uniqueId();
+    clonedToast.id = clonedToast.id
+      ? `${clonedToast.id}-${uniqueId()}`
+      : uniqueId();
     clonedToast.autoRemove = clonedToast.autoRemove ?? true;
     this.toasts.value.unshift(clonedToast);
 
-    return clonedToast.uniqueId;
+    return clonedToast.id;
   };
 
   remove = (id: string): void => {
     this.toasts.value = this.toasts.value.filter(
-      (toast: Toast) => toast.id !== id && toast.uniqueId !== id,
+      (toast: Toast) => toast.id !== id,
     );
   };
 

@@ -50,12 +50,12 @@ const isActive = (index: number) => index === 0;
     <Toast
       v-for="(toast, index) in toasts"
       v-bind="toast"
-      :key="toast.uniqueId"
+      :key="toast.id"
       :active="isActive(index)"
       class="toast"
       :style="style(index)"
       :stack-id="stackIdentifier"
-      @remove="remove(toast.uniqueId as string)"
+      @remove="remove(toast.id as string)"
       @auto-remove="autoRemove()"
     />
   </transition-group>

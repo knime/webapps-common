@@ -59,7 +59,7 @@ export interface Toast {
   autoRemove?: boolean;
   active?: boolean;
   id?: string;
-  uniqueId?: string;
+  key?: string;
   stackId?: string;
 }
 
