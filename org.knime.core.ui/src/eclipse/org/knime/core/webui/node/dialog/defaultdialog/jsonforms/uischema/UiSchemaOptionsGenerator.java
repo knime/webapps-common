@@ -340,6 +340,9 @@ final class UiSchemaOptionsGenerator {
                 options.put(TAG_CHOICES_UPDATE_HANDLER, choicesWidget.choicesUpdateHandler().getName());
                 final var dependencies = options.putArray(TAG_DEPENDENCIES);
                 addDependencies(dependencies, choicesWidget.choicesUpdateHandler());
+                final var choicesUpdateHandlerInstance =
+                    InstantiationUtil.createInstance(choicesWidget.choicesUpdateHandler());
+                options.put("setFirstValueOnUpdate", choicesUpdateHandlerInstance.setFirstValueOnUpdate());
             }
             if (annotatedWidgets.contains(ComboBoxWidget.class)) {
                 options.put(TAG_FORMAT, Format.COMBO_BOX);
@@ -494,8 +497,7 @@ final class UiSchemaOptionsGenerator {
         return partitionedWidgetAnnotations.get(true).stream().map(WidgetAnnotation::widgetAnnotation).toList();
     }
 
-    private void applyArrayLayoutOptions(final ObjectNode options,
-        final Class<? extends WidgetGroup> componentType) {
+    private void applyArrayLayoutOptions(final ObjectNode options, final Class<? extends WidgetGroup> componentType) {
 
         Map<String, Class<? extends WidgetGroup>> arraySettings = new HashMap<>();
         arraySettings.put(null, componentType);

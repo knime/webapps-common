@@ -60,4 +60,13 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyH
  * @author Paul Bärnreuther
  */
 public interface ChoicesUpdateHandler<S> extends UpdateHandler<IdAndText[], S> {
+
+    /**
+     * @return whether an update of the choices should also induce an update of the value of the widget by selecting the
+     *         first of the new choices.
+     */
+    default boolean setFirstValueOnUpdate() {
+        return true;
+    }
+
 }

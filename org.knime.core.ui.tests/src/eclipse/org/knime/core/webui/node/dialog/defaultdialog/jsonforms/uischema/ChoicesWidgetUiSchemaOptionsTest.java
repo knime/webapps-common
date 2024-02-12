@@ -77,11 +77,12 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.AsyncChoicesProvide
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileChooserWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.IdAndText;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.PossibleColumnValue;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
 
 /**
  *
@@ -320,11 +321,10 @@ class ChoicesWidgetUiSchemaOptionsTest {
                     .isEqualTo(new IdAndText[]{new IdAndText("id1", "text1"), new IdAndText("id2", "text2")});
             }
 
-            final var testAsyncChoicesProvider =  TestAsyncChoicesProvider.class.getName();
-            assertThrows(NullPointerException.class,
-                () -> asyncChoicesHolder.getChoices(testAsyncChoicesProvider));
+            final var testAsyncChoicesProvider = TestAsyncChoicesProvider.class.getName();
+            assertThrows(NullPointerException.class, () -> asyncChoicesHolder.getChoices(testAsyncChoicesProvider));
 
-            final var testAsyncColumnChoicesProvider =  TestAsyncColumnChoicesProvider.class.getName();
+            final var testAsyncColumnChoicesProvider = TestAsyncColumnChoicesProvider.class.getName();
             assertThat(asyncChoicesHolder.getChoices(testAsyncColumnChoicesProvider).get())
                 .isEqualTo(IntStream.range(0, columnSpecs.length).mapToObj(i -> columnSpecs[i])
                     .map(PossibleColumnValue::fromColSpec).toArray(PossibleColumnValue[]::new));
@@ -332,7 +332,7 @@ class ChoicesWidgetUiSchemaOptionsTest {
             assertThrows(NullPointerException.class,
                 () -> asyncChoicesHolder.getChoices(testAsyncColumnChoicesProvider));
 
-            final var testChoicesProviderWithManyChoices =  TestChoicesProviderWithManyChoices.class.getName();
+            final var testChoicesProviderWithManyChoices = TestChoicesProviderWithManyChoices.class.getName();
             assertThat(asyncChoicesHolder.getChoices(testChoicesProviderWithManyChoices).get())
                 .isEqualTo(TestChoicesProviderWithManyChoices.manyChoices);
 
@@ -504,25 +504,78 @@ class ChoicesWidgetUiSchemaOptionsTest {
     }
 
     @Test
-    void testLocalFileChooserWidget() {
-        class LocalFileChooserWidgetTestSettings implements DefaultNodeSettings {
+    void testChoicesUpdateHandler() {
+        @SuppressWarnings("unused")
+        final class ChoicesWidgetTestSettings implements DefaultNodeSettings {
 
             @Widget
-            @LocalFileChooserWidget
-            String m_defaultOptions;
+            Integer m_dependency;
+
+            static final class Dependency {
+                Integer m_dependency;
+            }
+
+            static class MyChoicesUpdateHandler implements ChoicesUpdateHandler<Dependency> {
+
+                @Override
+                public IdAndText[] update(final Dependency settings, final DefaultNodeSettingsContext context)
+                    throws WidgetHandlerException {
+                    throw new RuntimeException("Should not be called in this test");
+                }
+
+            }
 
             @Widget
-            @LocalFileChooserWidget(placeholder = "myPlaceholder")
-            String m_specialOptions;
+            @ChoicesWidget(choicesUpdateHandler = MyChoicesUpdateHandler.class)
+            ColumnFilter m_columnFilter;
 
         }
-        var response = buildTestUiSchema(LocalFileChooserWidgetTestSettings.class);
-        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("defaultOptions");
-        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("localFileChooser");
-        assertThatJson(response).inPath("$.elements[0].options.placeholder").isString().isEqualTo("");
-        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("specialOptions");
-        assertThatJson(response).inPath("$.elements[1].options.format").isString().isEqualTo("localFileChooser");
-        assertThatJson(response).inPath("$.elements[1].options.placeholder").isString().isEqualTo("myPlaceholder");
+        var response = buildTestUiSchema(ChoicesWidgetTestSettings.class);
+        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("columnFilter");
+        assertThatJson(response).inPath("$.elements[1].options.choicesUpdateHandler").isString()
+            .isEqualTo(ChoicesWidgetTestSettings.MyChoicesUpdateHandler.class.getName());
+        assertThatJson(response).inPath("$.elements[1].options.dependencies").isArray().hasSize(1);
+        assertThatJson(response).inPath("$.elements[1].options.setFirstValueOnUpdate").isBoolean().isTrue();
+    }
+
+    @Test
+    void testChoicesUpdateHandlerWithoutSetFirstValue() {
+        @SuppressWarnings("unused")
+        final class ChoicesWidgetTestSettings implements DefaultNodeSettings {
+
+            @Widget
+            Integer m_dependency;
+
+            static final class Dependency {
+                Integer m_dependency;
+            }
+
+            static class MyChoicesUpdateHandlerWithoutSetFirstValue implements ChoicesUpdateHandler<Dependency> {
+
+                @Override
+                public boolean setFirstValueOnUpdate() {
+                    return false;
+                }
+
+                @Override
+                public IdAndText[] update(final Dependency settings, final DefaultNodeSettingsContext context)
+                    throws WidgetHandlerException {
+                    throw new RuntimeException("Should not be called in this test");
+                }
+
+            }
+
+            @Widget
+            @ChoicesWidget(choicesUpdateHandler = MyChoicesUpdateHandlerWithoutSetFirstValue.class)
+            ColumnFilter m_columnFilter;
+
+        }
+        var response = buildTestUiSchema(ChoicesWidgetTestSettings.class);
+        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("columnFilter");
+        assertThatJson(response).inPath("$.elements[1].options.choicesUpdateHandler").isString()
+            .isEqualTo(ChoicesWidgetTestSettings.MyChoicesUpdateHandlerWithoutSetFirstValue.class.getName());
+        assertThatJson(response).inPath("$.elements[1].options.dependencies").isArray().hasSize(1);
+        assertThatJson(response).inPath("$.elements[1].options.setFirstValueOnUpdate").isBoolean().isFalse();
     }
 
 }

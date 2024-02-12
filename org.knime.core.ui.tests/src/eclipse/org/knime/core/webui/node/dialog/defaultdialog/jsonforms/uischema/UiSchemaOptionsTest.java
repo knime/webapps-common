@@ -74,6 +74,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ComboBoxWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileChooserWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RichTextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
@@ -801,6 +802,28 @@ class UiSchemaOptionsTest {
 
         assertThrows(UiSchemaGenerationException.class, () -> buildTestUiSchema(CredentialsWidgetSettings.class));
 
+    }
+
+    @Test
+    void testLocalFileChooserWidget() {
+        class LocalFileChooserWidgetTestSettings implements DefaultNodeSettings {
+
+            @Widget
+            @LocalFileChooserWidget
+            String m_defaultOptions;
+
+            @Widget
+            @LocalFileChooserWidget(placeholder = "myPlaceholder")
+            String m_specialOptions;
+
+        }
+        var response = buildTestUiSchema(LocalFileChooserWidgetTestSettings.class);
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("defaultOptions");
+        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("localFileChooser");
+        assertThatJson(response).inPath("$.elements[0].options.placeholder").isString().isEqualTo("");
+        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("specialOptions");
+        assertThatJson(response).inPath("$.elements[1].options.format").isString().isEqualTo("localFileChooser");
+        assertThatJson(response).inPath("$.elements[1].options.placeholder").isString().isEqualTo("myPlaceholder");
     }
 
 }

@@ -206,20 +206,23 @@ describe("DropdownInput.vue", () => {
       unregisterWatcher,
       newSettings;
 
-    const dependenciesUischema = ["foo", "bar"];
+    const dependenciesUiSchema = ["foo", "bar"];
     const result = [
       { id: "first", text: "First" },
       { id: "second", text: "Second" },
     ];
     const updateHandler = "UpdateHandler";
+    const valueBeforeUpdate = "settingsBefore";
 
     beforeEach(() => {
       newSettings = {
         view: { foo: "foo", bar: "bar" },
         model: { baz: "baz" },
+        [path]: valueBeforeUpdate,
       };
-      props.control.uischema.options.dependencies = dependenciesUischema;
+      props.control.uischema.options.dependencies = dependenciesUiSchema;
       props.control.uischema.options.choicesUpdateHandler = updateHandler;
+      props.control.uischema.options.setFirstValueOnUpdate = true;
       getDataMock = vi.fn(() => {
         return {
           result,
@@ -245,7 +248,7 @@ describe("DropdownInput.vue", () => {
 
     it("registers watcher", () => {
       expect(settingsChangeCallback).toBeDefined();
-      expect(dependencies).toStrictEqual(dependenciesUischema);
+      expect(dependencies).toStrictEqual(dependenciesUiSchema);
     });
 
     it("deregisters watcher on unmount", () => {
@@ -283,7 +286,7 @@ describe("DropdownInput.vue", () => {
       initialSettingsChangeCallback(newSettings);
       await flushPromises();
       expect(wrapper.vm.options).toStrictEqual(result);
-      expect(newSettings[path]).toBeUndefined();
+      expect(newSettings[path]).toBe(valueBeforeUpdate);
     });
 
     it("selects null if the fetched options are empty", async () => {
@@ -296,6 +299,21 @@ describe("DropdownInput.vue", () => {
       await flushPromises();
       expect(wrapper.vm.options).toStrictEqual([]);
       expect(newSettings[path]).toBeNull();
+    });
+
+    it("does not change the value if setFirstValueOnUpdate is false", async () => {
+      props.control.uischema.options.setFirstValueOnUpdate = false;
+      const { callbacks } = mountJsonFormsComponent(DropdownInput, {
+        props,
+        provide: { getDataMock },
+      });
+
+      const firstWatcherCall = callbacks[0];
+      const settingsChangeCallback = firstWatcherCall.transformSettings;
+
+      settingsChangeCallback(newSettings);
+      await flushPromises();
+      expect(newSettings[path]).toBe(valueBeforeUpdate);
     });
 
     it("sets empty options and warns about error on state FAIL", async () => {

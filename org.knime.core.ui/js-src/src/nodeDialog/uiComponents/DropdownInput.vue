@@ -61,7 +61,10 @@ const choicesUpdateHandler = computed(
   () => control.value.uischema.options?.choicesUpdateHandler,
 );
 const widgetId = uuidv4();
-const updateOptions = async (newSettings: SettingsData, setNewValue = true) => {
+const updateOptions = async (
+  newSettings: SettingsData,
+  setNewValue: boolean,
+) => {
   const { result, state, message } = await getData({
     method: "settings.update",
     options: [
@@ -115,8 +118,12 @@ let unregisterWatcher = () => {};
 onMounted(async () => {
   if (choicesUpdateHandler.value) {
     const dependencies = control.value.uischema.options?.dependencies || [];
+    const setFirstValueOnUpdate = Boolean(
+      control.value.uischema.options?.setFirstValueOnUpdate,
+    );
     unregisterWatcher = await registerWatcher({
-      transformSettings: updateOptions,
+      transformSettings: (newSettings) =>
+        updateOptions(newSettings, setFirstValueOnUpdate),
       init: fetchInitialOptions,
       dependencies,
     });

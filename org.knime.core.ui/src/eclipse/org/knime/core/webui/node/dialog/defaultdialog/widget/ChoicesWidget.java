@@ -112,8 +112,9 @@ public @interface ChoicesWidget {
 
     /**
      * @return a handler which defined dependencies from one or multiple setting to this one and updates the possible
-     *         values when such a dependency changes. On an update, if the current value is also part of the new values,
-     *         it is kept. Otherwise the first of the new possible values is taken.
+     *         values when such a dependency changes. On an update, per default, the value of the dropdown is also
+     *         updated to the first of the new possible values. This feature can be disabled by overriding
+     *         {@link ChoicesUpdateHandler#setFirstValueOnUpdate}.
      */
     Class<? extends ChoicesUpdateHandler<?>> choicesUpdateHandler() default NoopChoicesUpdateHandler.class; // NOSONAR
 
