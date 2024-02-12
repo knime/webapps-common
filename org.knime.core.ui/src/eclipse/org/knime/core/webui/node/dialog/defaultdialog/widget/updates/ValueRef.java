@@ -56,8 +56,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
  * widgets in a type safe way.
  *
  * @author Paul Bärnreuther
- * @param <FIELD> the type of the associated field in the {@link DefaultNodeSettings}.
+ * @param <V> the type of the associated field in the {@link DefaultNodeSettings}.
  */
-public interface ValueRef<FIELD> {
+public interface ValueRef<V> {
 
 }

@@ -51,9 +51,14 @@ package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import org.knime.core.node.util.CheckUtils;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaGenerationException;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
+import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
+import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
@@ -86,12 +91,7 @@ final class SettingsClassesToValueRefsAndValueProviders {
             final var fields = traverser.getAllFields();
 
             fields.stream().forEach(field -> {
-                final var widgetAnnotation = field.propertyWriter().getAnnotation(Widget.class);
-                if (widgetAnnotation != null) {
-                    final var pathWithSettingsKey = new PathWithSettingsKey(field.path(), entry.getKey());
-                    addValueRef(valueRefs, widgetAnnotation, pathWithSettingsKey);
-                    addValueProvider(valueProviders, widgetAnnotation, pathWithSettingsKey);
-                }
+                addValueRefAndValueProviderForField(field, entry, valueRefs, valueProviders);
             });
 
         });
@@ -100,18 +100,44 @@ final class SettingsClassesToValueRefsAndValueProviders {
 
     }
 
+    private static void addValueRefAndValueProviderForField(final TraversedField field,
+        final Entry<String, Class<? extends WidgetGroup>> entry, final Collection<ValueRefWrapper> valueRefs,
+        final Collection<ValueProviderWrapper> valueProviders) {
+        final var widgetAnnotation = field.propertyWriter().getAnnotation(Widget.class);
+        if (widgetAnnotation != null) {
+            final var pathWithSettingsKey = new PathWithSettingsKey(field.path(), entry.getKey());
+            final var fieldType = field.propertyWriter().getType().getRawClass();
+            addValueRef(valueRefs, widgetAnnotation, fieldType, pathWithSettingsKey);
+            addValueProvider(valueProviders, widgetAnnotation, fieldType, pathWithSettingsKey);
+        }
+    }
+
     private static void addValueRef(final Collection<ValueRefWrapper> valueRefs, final Widget widgetAnnotation,
-        final PathWithSettingsKey pathWithSettingsKey) {
-        if (!widgetAnnotation.valueRef().equals(ValueRef.class)) {
+        final Class<?> fieldType, final PathWithSettingsKey pathWithSettingsKey) {
+        final var valueRef = widgetAnnotation.valueRef();
+        if (!valueRef.equals(ValueRef.class)) {
+            validateAgainstFieldType(fieldType, valueRef, ValueRef.class);
             valueRefs.add(new ValueRefWrapper(widgetAnnotation.valueRef(), pathWithSettingsKey));
         }
     }
 
     private static void addValueProvider(final Collection<ValueProviderWrapper> valueProviders,
-        final Widget widgetAnnotation, final PathWithSettingsKey pathWithSettingsKey) {
-        if (!widgetAnnotation.valueProvider().equals(StateProvider.class)) {
-            valueProviders.add(new ValueProviderWrapper(widgetAnnotation.valueProvider(), pathWithSettingsKey));
+        final Widget widgetAnnotation, final Class<?> fieldType, final PathWithSettingsKey pathWithSettingsKey) {
+        final var valueProviderClass = widgetAnnotation.valueProvider();
+        if (!valueProviderClass.equals(StateProvider.class)) {
+            validateAgainstFieldType(fieldType, valueProviderClass, StateProvider.class);
+            valueProviders.add(new ValueProviderWrapper(valueProviderClass, pathWithSettingsKey));
         }
+    }
+
+    private static <T> void validateAgainstFieldType(final Class<?> fieldType,
+        final Class<? extends T> implementingClass, final Class<T> genericInterface) {
+        final var genericType = GenericTypeFinderUtil.getFirstGenericType(implementingClass, genericInterface);
+        CheckUtils.check(fieldType.isAssignableFrom(genericType), UiSchemaGenerationException::new,
+            () -> String.format(
+                "The generic type \"%s\" of the %s \"%s\" does not match the type \"%s\" of the annotated field",
+                genericType.getSimpleName(), genericInterface.getSimpleName(), implementingClass.getSimpleName(),
+                fieldType.getSimpleName()));
     }
 
 }

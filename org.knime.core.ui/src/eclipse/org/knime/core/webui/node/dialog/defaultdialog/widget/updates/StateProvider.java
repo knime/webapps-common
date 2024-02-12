@@ -64,9 +64,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SimpleButton
  * </ul>
  *
  * @author Paul Bärnreuther
- * @param <State> The type of the provided state
+ * @param <S> The type of the provided state
  */
-public interface StateProvider<State> {
+public interface StateProvider<S> {
 
     /**
      * This interface defined the methods with which the state provider can be configured. One can define
@@ -146,6 +146,6 @@ public interface StateProvider<State> {
      * @return the provided state. It is either transformed directly to a specific update in the dialog or used as input
      *         for another {@link StateProvider}.
      */
-    State computeState();
+    S computeState();
 
 }

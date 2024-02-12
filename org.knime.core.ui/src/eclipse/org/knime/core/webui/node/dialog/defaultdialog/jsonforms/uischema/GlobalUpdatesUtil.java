@@ -114,9 +114,8 @@ final class GlobalUpdatesUtil {
     private static void addToUiSchema(final ObjectNode rootNode,
         final List<TriggerAndDependencies> triggersWithDependencies) {
         final var globalUpdates = rootNode.putArray("globalUpdates");
-        triggersWithDependencies.forEach(triggerWithDependencies -> {
-            addGlobalUpdate(globalUpdates, triggerWithDependencies);
-        });
+        triggersWithDependencies
+            .forEach(triggerWithDependencies -> addGlobalUpdate(globalUpdates, triggerWithDependencies));
     }
 
     private static void addGlobalUpdate(final ArrayNode globalUpdates,

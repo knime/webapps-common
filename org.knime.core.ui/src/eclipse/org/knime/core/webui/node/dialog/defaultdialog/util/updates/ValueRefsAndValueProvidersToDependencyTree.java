@@ -104,9 +104,7 @@ final class ValueRefsAndValueProvidersToDependencyTree {
         }
 
         Collection<TriggerVertex> getTriggerVertices() {
-            m_updates.forEach(update -> {
-                addToQueue(new UpdateVertex(update));
-            });
+            m_updates.forEach(update -> addToQueue(new UpdateVertex(update)));
             while (!m_queue.isEmpty()) {
                 addParentsForVertex(m_queue.poll());
             }
@@ -148,7 +146,9 @@ final class ValueRefsAndValueProvidersToDependencyTree {
 
             private ValueRefWrapper findValueRefWrapper(final Class<? extends ValueRef> valueRef) {
                 return m_valueRefs.stream().filter(wrapper -> wrapper.valueRef().equals(valueRef)).findAny()
-                    .orElseThrow();
+                    .orElseThrow(() -> new RuntimeException(
+                        String.format("The value reference %s is used in a state provider but could not be found. "
+                            + "It should used as valueRef for a widget.", valueRef.getSimpleName())));
             }
 
             /**
@@ -171,8 +171,8 @@ final class ValueRefsAndValueProvidersToDependencyTree {
 
                 final Collection<Vertex> parentVertices = new HashSet<>();
 
-                parentVertices
-                    .addAll(stateProviderDependencyReceiver.getStateProviders().stream().map(this::getStateVertex).toList());
+                parentVertices.addAll(
+                    stateProviderDependencyReceiver.getStateProviders().stream().map(this::getStateVertex).toList());
                 parentVertices.addAll(stateProviderDependencyReceiver.getValueRefTriggers().stream()
                     .map(this::getValueTriggerVertex).toList());
                 parentVertices.addAll(stateProviderDependencyReceiver.getButtonRefTriggers().stream()

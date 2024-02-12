@@ -49,6 +49,7 @@
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.LinkedHashMap;
@@ -658,24 +659,143 @@ class JsonFormsUiSchemaUtilTest {
             final var response = buildUiSchema(settings);
 
             assertThatJson(response).inPath("$.globalUpdates").isArray().hasSize(2);
-            assertThatJson(response).inPath("$.globalUpdates[1].trigger.id").isString()
-                .isEqualTo(TestSettings.Dependency.class.getName());
-            assertThatJson(response).inPath("$.globalUpdates[1].trigger.scope").isString()
-                .isEqualTo("#/properties/test/properties/dependency");
-            assertThatJson(response).inPath("$.globalUpdates[1].dependencies").isArray().hasSize(1);
-            assertThatJson(response).inPath("$.globalUpdates[1].dependencies[0].scope").isString()
-                .isEqualTo("#/properties/test/properties/dependency");
-            assertThatJson(response).inPath("$.globalUpdates[1].dependencies[0].id").isString()
-                .isEqualTo(TestSettings.Dependency.class.getName());
-            assertThatJson(response).inPath("$.globalUpdates[0].trigger.id").isString()
-                .isEqualTo(TestSettings.AnotherDependency.class.getName());
-            assertThatJson(response).inPath("$.globalUpdates[0].trigger.scope").isString()
-                .isEqualTo("#/properties/test/properties/anotherDependency");
-            assertThatJson(response).inPath("$.globalUpdates[0].dependencies").isArray().hasSize(1);
-            assertThatJson(response).inPath("$.globalUpdates[0].dependencies[0].scope").isString()
-                .isEqualTo("#/properties/test/properties/dependency");
-            assertThatJson(response).inPath("$.globalUpdates[0].dependencies[0].id").isString()
-                .isEqualTo(TestSettings.Dependency.class.getName());
+            assertThatJson(response).inPath("$.globalUpdates").isArray().anySatisfy(globalUpdate -> {
+                assertThatJson(globalUpdate).inPath("$.trigger.id").isString()
+                    .isEqualTo(TestSettings.Dependency.class.getName());
+                assertThatJson(globalUpdate).inPath("$.trigger.scope").isString()
+                    .isEqualTo("#/properties/test/properties/dependency");
+                assertThatJson(globalUpdate).inPath("$.dependencies").isArray().hasSize(1);
+                assertThatJson(globalUpdate).inPath("$.dependencies[0].scope").isString()
+                    .isEqualTo("#/properties/test/properties/dependency");
+                assertThatJson(globalUpdate).inPath("$.dependencies[0].id").isString()
+                    .isEqualTo(TestSettings.Dependency.class.getName());
+            });
+
+            assertThatJson(response).inPath("$.globalUpdates").isArray().anySatisfy(globalUpdate -> {
+                assertThatJson(globalUpdate).inPath("$.trigger.id").isString()
+                    .isEqualTo(TestSettings.AnotherDependency.class.getName());
+                assertThatJson(globalUpdate).inPath("$.trigger.scope").isString()
+                    .isEqualTo("#/properties/test/properties/anotherDependency");
+                assertThatJson(globalUpdate).inPath("$.dependencies").isArray().hasSize(1);
+                assertThatJson(globalUpdate).inPath("$.dependencies[0].scope").isString()
+                    .isEqualTo("#/properties/test/properties/dependency");
+                assertThatJson(globalUpdate).inPath("$.dependencies[0].id").isString()
+                    .isEqualTo(TestSettings.Dependency.class.getName());
+            });
+
+        }
+
+        @Test
+        void testThrowsRuntimeExceptionOnWrongTypeForValueRef() {
+
+            @SuppressWarnings("unused")
+            class WrongTypeReferenceSettings implements DefaultNodeSettings {
+
+                class IntegerReference implements ValueRef<Integer> {
+
+                }
+
+                @Widget(valueRef = IntegerReference.class)
+                String dependency;
+
+                static final class TestStateProvider implements StateProvider<String> {
+
+                    @Override
+                    public void init(final StateProviderInitializer initializer) {
+                        initializer.computeFromValueSupplier(IntegerReference.class);
+                    }
+
+                    @Override
+                    public String computeState() {
+                        throw new RuntimeException("Should not be called in this test");
+                    }
+
+                }
+
+                @Widget(valueProvider = TestStateProvider.class)
+                String target;
+            }
+
+            final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", WrongTypeReferenceSettings.class);
+
+            assertThat(assertThrows(UiSchemaGenerationException.class, () -> buildUiSchema(settings)).getMessage())
+                .isEqualTo(
+                    "The generic type \"Integer\" of the ValueRef \"IntegerReference\" does not match the type \"String\" of the annotated field");
+
+        }
+
+        @Test
+        void testThrowsRuntimeExceptionOnWrongTypeForValueProvider() {
+
+            @SuppressWarnings("unused")
+            class WrongTypeReferenceSettings implements DefaultNodeSettings {
+
+                class MyReference implements ValueRef<String> {
+
+                }
+
+                @Widget(valueRef = MyReference.class)
+                String dependency;
+
+                static final class IntegerStateProvider implements StateProvider<Integer> {
+
+                    @Override
+                    public void init(final StateProviderInitializer initializer) {
+                        initializer.computeFromValueSupplier(MyReference.class);
+                    }
+
+                    @Override
+                    public Integer computeState() {
+                        throw new RuntimeException("Should not be called in this test");
+                    }
+
+                }
+
+                @Widget(valueProvider = IntegerStateProvider.class)
+                String target;
+            }
+
+            final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", WrongTypeReferenceSettings.class);
+
+            assertThat(assertThrows(UiSchemaGenerationException.class, () -> buildUiSchema(settings)).getMessage())
+                .isEqualTo(
+                    "The generic type \"Integer\" of the StateProvider \"IntegerStateProvider\" does not match the type \"String\" of the annotated field");
+
+        }
+
+        @Test
+        void testThrowsRuntimeExceptionOnDanglingReference() {
+
+            @SuppressWarnings("unused")
+            class DanglingReferenceSettings implements DefaultNodeSettings {
+
+                class DanglingReference implements ValueRef<Integer> {
+
+                }
+
+                static final class TestStateProvider implements StateProvider<String> {
+
+                    @Override
+                    public void init(final StateProviderInitializer initializer) {
+                        initializer.computeFromValueSupplier(DanglingReference.class);
+                    }
+
+                    @Override
+                    public String computeState() {
+                        throw new RuntimeException("Should not be called in this test");
+                    }
+
+                }
+
+                @Widget(valueProvider = TestStateProvider.class)
+                String target;
+            }
+
+            final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", DanglingReferenceSettings.class);
+
+            assertThat(assertThrows(RuntimeException.class, () -> buildUiSchema(settings)).getMessage())
+                .isEqualTo("The value reference DanglingReference is used in a state provider but could not be found. "
+                    + "It should used as valueRef for a widget.");
 
         }
 
