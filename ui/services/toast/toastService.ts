@@ -1,6 +1,6 @@
-import { ref, provide, inject, computed, getCurrentInstance } from "vue";
 import type { App, Plugin } from "vue";
-import { uniqueId, cloneDeep } from "lodash-es";
+import { computed, getCurrentInstance, inject, provide, ref } from "vue";
+import { uniqueId } from "lodash-es";
 import type {
   Toast,
   ToastService,
@@ -34,13 +34,13 @@ export class ToastServiceProvider {
   toasts = ref<Toast[]>([]);
 
   show = (toast: Toast): string => {
-    const clonedToast = cloneDeep(toast);
+    const clonedToast = structuredClone(toast);
     if (clonedToast.key) {
       const previousToast = this.toasts.value.find(
         ({ key }) => clonedToast.key === key,
       );
       if (previousToast) {
-        return previousToast.id as string;
+        return previousToast.id!;
       }
     }
     clonedToast.id = clonedToast.id
