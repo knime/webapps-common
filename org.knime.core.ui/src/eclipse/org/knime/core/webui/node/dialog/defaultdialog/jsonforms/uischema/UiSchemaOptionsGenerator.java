@@ -59,6 +59,7 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_DEPENDENCIES;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ELEMENTS;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_FORMAT;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_IS_WRITER;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_LABEL;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_OPTIONS;
 import static org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.getApplicableDefaults;
@@ -84,6 +85,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.Colum
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.util.ArrayLayoutUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.AllFileExtensionsAllowedProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.AsyncChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
@@ -91,7 +93,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ComboBoxWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileChooserWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileReaderWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RichTextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
@@ -232,10 +236,36 @@ final class UiSchemaOptionsGenerator {
             options.put(TAG_FORMAT, Format.RICH_TEXT_INPUT);
         }
 
-        if (annotatedWidgets.contains(LocalFileChooserWidget.class)) {
+        if (annotatedWidgets.contains(FileWriterWidget.class)) {
+            options.put(TAG_FORMAT, Format.FILE_CHOOSER);
+            options.put(TAG_IS_WRITER, true);
+            final var fileWriterWidget = m_field.getAnnotation(FileWriterWidget.class);
+            if (!fileWriterWidget.fileExtensionProvider().equals(AllFileExtensionsAllowedProvider.class)) {
+                final var fileExtension =
+                    InstantiationUtil.createInstance(fileWriterWidget.fileExtensionProvider()).get();
+                options.put("fileExtension", fileExtension);
+            }
+
+        }
+        if (annotatedWidgets.contains(LocalFileReaderWidget.class)) {
+            if (annotatedWidgets.contains(LocalFileWriterWidget.class)) {
+                throw new UiSchemaGenerationException(
+                    "A widget cannot be both a LocalFileReaderWidget and a LocalFileWriterWidget.");
+            }
             options.put(TAG_FORMAT, Format.LOCAL_FILE_CHOOSER);
-            final var localFileChooserWidget = m_field.getAnnotation(LocalFileChooserWidget.class);
-            options.put("placeholder", localFileChooserWidget.placeholder());
+            final var localFileReaderWidget = m_field.getAnnotation(LocalFileReaderWidget.class);
+            options.put("placeholder", localFileReaderWidget.placeholder());
+        }
+        if (annotatedWidgets.contains(LocalFileWriterWidget.class)) {
+            options.put(TAG_FORMAT, Format.LOCAL_FILE_CHOOSER);
+            final var localFileWriterWidget = m_field.getAnnotation(LocalFileWriterWidget.class);
+            options.put("placeholder", localFileWriterWidget.placeholder());
+            options.put(TAG_IS_WRITER, true);
+            if (!localFileWriterWidget.fileExtensionProvider().equals(AllFileExtensionsAllowedProvider.class)) {
+                final var fileExtension =
+                    InstantiationUtil.createInstance(localFileWriterWidget.fileExtensionProvider()).get();
+                options.put("fileExtension", fileExtension);
+            }
         }
         if (annotatedWidgets.contains(ButtonWidget.class)) {
             final var buttonWidget = m_field.getAnnotation(ButtonWidget.class);

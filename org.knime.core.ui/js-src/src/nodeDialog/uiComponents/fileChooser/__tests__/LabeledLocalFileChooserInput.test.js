@@ -10,10 +10,10 @@ import DialogLabel from "../../label/DialogLabel.vue";
 import StringFileChooserInputWithExplorer from "../StringFileChooserInputWithExplorer.vue";
 
 describe("LabeledLocalFileChooserInput.vue", () => {
-  let defaultProps, wrapper, component;
+  let props, wrapper, component;
 
   beforeEach(async () => {
-    defaultProps = {
+    props = {
       control: {
         ...getControlBase("test"),
         data: "test",
@@ -31,13 +31,14 @@ describe("LabeledLocalFileChooserInput.vue", () => {
           scope: "#/properties/view/properties/localFile",
           options: {
             format: "localFileChooser",
+            isWriter: false,
           },
         },
       },
     };
 
     component = await mountJsonFormsComponent(LabeledLocalFileChooserInput, {
-      props: defaultProps,
+      props,
     });
     wrapper = component.wrapper;
   });
@@ -74,7 +75,7 @@ describe("LabeledLocalFileChooserInput.vue", () => {
     const { wrapper, updateData } = mountJsonFormsComponent(
       LabeledLocalFileChooserInput,
       {
-        props: defaultProps,
+        props,
         provide: { setDirtyModeSettingsMock },
       },
     );
@@ -84,7 +85,7 @@ describe("LabeledLocalFileChooserInput.vue", () => {
       .vm.$emit("update:modelValue", changedTextInput);
     expect(updateData).toHaveBeenCalledWith(
       expect.anything(),
-      defaultProps.control.path,
+      props.control.path,
       changedTextInput,
     );
     expect(setDirtyModeSettingsMock).not.toHaveBeenCalled();
@@ -92,19 +93,11 @@ describe("LabeledLocalFileChooserInput.vue", () => {
 
   it("indicates model settings change when model setting is changed", () => {
     const setDirtyModelSettingsMock = vi.fn();
+    props.control.uischema.scope = "#/properties/model/properties/yAxisColumn";
     const { wrapper, updateData } = mountJsonFormsComponent(
       LabeledLocalFileChooserInput,
       {
-        props: {
-          ...defaultProps,
-          control: {
-            ...defaultProps.control,
-            uischema: {
-              ...defaultProps.control.schema,
-              scope: "#/properties/model/properties/yAxisColumn",
-            },
-          },
-        },
+        props,
         provide: { setDirtyModelSettingsMock },
       },
     );
@@ -115,7 +108,7 @@ describe("LabeledLocalFileChooserInput.vue", () => {
     expect(setDirtyModelSettingsMock).toHaveBeenCalledWith();
     expect(updateData).toHaveBeenCalledWith(
       expect.anything(),
-      defaultProps.control.path,
+      props.control.path,
       changedTextInput,
     );
   });
@@ -123,12 +116,30 @@ describe("LabeledLocalFileChooserInput.vue", () => {
   it("sets correct initial value", () => {
     expect(
       wrapper.findComponent(StringFileChooserInputWithExplorer).vm.modelValue,
-    ).toBe(defaultProps.control.data);
+    ).toBe(props.control.data);
+  });
+
+  it("sets correct browsing options", async () => {
+    props.control.uischema.options.fileExtension = "pdf";
+    props.control.uischema.options.isWriter = true;
+
+    const { wrapper } = await mountJsonFormsComponent(
+      LabeledLocalFileChooserInput,
+      {
+        props,
+      },
+    );
+    expect(
+      wrapper.findComponent(LocalFileChooserInput).props().options,
+    ).toMatchObject({
+      fileExtension: "pdf",
+      isWriter: true,
+    });
   });
 
   it("disables input when controlled by a flow variable", () => {
     const { wrapper } = mountJsonFormsComponent(LabeledLocalFileChooserInput, {
-      props: defaultProps,
+      props,
       withControllingFlowVariable: true,
     });
     expect(wrapper.vm.disabled).toBeTruthy();

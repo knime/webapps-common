@@ -80,6 +80,7 @@ const isSupported = computed(() =>
           : 'Path relative to hub space'
       "
       :model-value="modelValue.path"
+      :options="browseOptions"
       @update:model-value="onPathUpdate"
     />
   </template>

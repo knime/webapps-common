@@ -132,17 +132,9 @@ describe("LabeledFileChooserInput.vue", () => {
 
   it("indicates model settings change when model setting is changed", () => {
     const setDirtyModelSettingsMock = vi.fn();
+    props.control.uischema.scope = "#/properties/model/properties/yAxisColumn";
     const { wrapper } = mountJsonFormsComponent(LabeledFileChooserInput, {
-      props: {
-        ...props,
-        control: {
-          ...props.control,
-          uischema: {
-            ...props.control.schema,
-            scope: "#/properties/model/properties/yAxisColumn",
-          },
-        },
-      },
+      props,
       provide: { setDirtyModelSettingsMock },
     });
     const changedTextInput = "Shaken not stirred";
@@ -159,6 +151,21 @@ describe("LabeledFileChooserInput.vue", () => {
     expect(
       wrapper.findComponent(StringFileChooserInputWithExplorer).vm.modelValue,
     ).toBe(props.control.data.path.path);
+  });
+
+  it("sets correct browsing options", async () => {
+    props.control.uischema.options.fileExtension = "pdf";
+    props.control.uischema.options.isWriter = true;
+
+    const { wrapper } = await mountJsonFormsComponent(LabeledFileChooserInput, {
+      props,
+    });
+    expect(
+      wrapper.findComponent(LocalFileChooserInput).props().options,
+    ).toMatchObject({
+      fileExtension: "pdf",
+      isWriter: true,
+    });
   });
 
   it("renders with fsCategory CUSTOM_URL", async () => {

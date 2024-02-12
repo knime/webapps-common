@@ -61,6 +61,7 @@ import java.util.Comparator;
 import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -122,21 +123,23 @@ public final class FileChooserDataService {
      * @param path the current path or null to reference the root level.
      * @param nextFolder - the name of the to be accessed folder relative to the path or ".." if the parent folder
      *            should be accessed. Set to null in order to access the path directly.
+     * @param filteredEndings the endings with respect to which the files are filtered. If empty or null, no filters
+     *            will be applied.
      * @return A list of items in the next folder possibly together with an error message explaining why the returned
      *         folder is not the requested one.
      *
      *
      * @throws IOException
      */
-    public FolderAndError listItems(final String fileSystemId, final String path, final String nextFolder)
-        throws IOException {
+    public FolderAndError listItems(final String fileSystemId, final String path, final String nextFolder,
+        final List<String> filteredEndings) throws IOException {
         final var fileChooserBackend = m_fsConnector.getFileChooserBackend(fileSystemId);
         final Path nextPath = getNextPath(path, nextFolder, fileChooserBackend.getFileSystem());
         if (nextPath == null && fileChooserBackend.isAbsoluteFileSystem()) {
             return Folder.asRootFolder(getRootItems(fileChooserBackend));
         }
         final Deque<Path> pathStack = toFragments(fileChooserBackend, nextPath);
-        return getItemsInFolder(fileChooserBackend, pathStack);
+        return getItemsInFolder(fileChooserBackend, pathStack, filteredEndings);
     }
 
     private static Deque<Path> toFragments(final FileChooserBackend fileChooserBackend, final Path nextPath) {
@@ -198,12 +201,12 @@ public final class FileChooserDataService {
     }
 
     private static FolderAndError getItemsInFolder(final FileChooserBackend fileChooserBackend,
-        final Deque<Path> pathStack) throws IOException {
+        final Deque<Path> pathStack, final List<String> filteredEndings) throws IOException {
         String errorMessage = null;
         while (!pathStack.isEmpty()) {
             final var path = pathStack.pop();
             try {
-                final var folderContent = listFilteredAndSortedItems(path) //
+                final var folderContent = listFilteredAndSortedItems(path, fileChooserBackend.getFileSystem(), filteredEndings) //
                     .stream().map(fileChooserBackend::pathToObject).toList();
                 return createFolder(path, folderContent, errorMessage, fileChooserBackend);
             } catch (NotDirectoryException ex) { //NOSONAR
@@ -241,7 +244,11 @@ public final class FileChooserDataService {
         return fileChooserBackend.getFileSystem().getPath("");
     }
 
-    private static List<Path> listFilteredAndSortedItems(final Path folder) throws IOException {
+    private static List<Path> listFilteredAndSortedItems(final Path folder, final FileSystem fileSystem,
+                                                         final List<String> filteredEndings) throws IOException {
+
+        final Predicate<Path> fileEndingPredicate = getFileEndingPredicate(fileSystem, filteredEndings);
+
         return Files.list(folder) //
             .filter(Files::isReadable) //
             .filter(t -> {
@@ -251,9 +258,20 @@ public final class FileChooserDataService {
                     return true;
                 }
             }) //
+            .filter(item -> Files.isDirectory(item) || fileEndingPredicate.test(item))
             .sorted(
                 Comparator.comparingInt(FileChooserDataService::getFileTypeOrdinal).thenComparing(Path::getFileName))
             .toList();
+    }
+
+    private static Predicate<Path> getFileEndingPredicate(final FileSystem fileSystem,
+        final List<String> filteredEndings) {
+        if (filteredEndings != null && !filteredEndings.isEmpty()) {
+            final var endingsMatcher =
+                fileSystem.getPathMatcher(String.format("glob:**.{%s}", String.join(",", filteredEndings)));
+            return endingsMatcher::matches;
+        }
+        return path -> true;
     }
 
     private static int getFileTypeOrdinal(final Path file) {

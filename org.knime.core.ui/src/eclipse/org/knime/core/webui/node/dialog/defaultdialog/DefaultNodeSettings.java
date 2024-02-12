@@ -85,8 +85,10 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileChooserWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileReaderWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RichTextInputWidget;
@@ -159,7 +161,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.Usernam
  * <td>{@link ChoicesWidget} (twin-list)<br>
  * {@link TextInputWidget}<br>
  * {@link DateTimeWidget}<br>
- * {@link LocalFileChooserWidget}<br>
+ * {@link LocalFileReaderWidget}<br>
+ * {@link LocalFileWriterWidget}<br>
  * {@link RichTextInputWidget}</td>
  * </tr>
  * <tr>
@@ -204,7 +207,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.Usernam
  * <tr>
  * <td>{@link FileChooser}</td>
  * <td>Path file chooser (currently with options "Local File System" and "Custom/KNIME URL")</td>
- * <td></td>
+ * <td>{@link FileWriterWidget}</td>
  * </tr>
  * <tr>
  * <td>Any type</td>

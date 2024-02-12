@@ -4,6 +4,7 @@ import FileChooserInput from "./FileChooserInput.vue";
 import useDialogControl from "../../composables/useDialogControl";
 import LabeledInput from "../label/LabeledInput.vue";
 import { rendererProps } from "@jsonforms/vue";
+import { FileChooserUiSchemaOptions } from "@/nodeDialog/types/FileChooserUiSchema";
 const props = defineProps(rendererProps());
 const { control, handleDirtyChange, disabled, flowSettings } = useDialogControl(
   {
@@ -28,6 +29,10 @@ const onChange = (value: any) => {
   handleDirtyChange({ path: value });
 };
 
+const browseOptions = computed(() => {
+  return control.value.uischema.options as FileChooserUiSchemaOptions;
+});
+
 watch(
   () => Boolean(flowSettings.value?.controllingFlowVariableName),
   (value) => {
@@ -48,6 +53,7 @@ watch(
       :id="labelForId"
       :disabled="disabled"
       :model-value="data"
+      :browse-options="browseOptions"
       @update:model-value="onChange"
     />
   </LabeledInput>

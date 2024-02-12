@@ -13,10 +13,16 @@ export interface FileChooserValue {
   };
 }
 
+export type WriterProps = {};
+
 interface FileChooserProps {
   modelValue: FileChooserValue;
   disabled: boolean;
   id: string | null;
+  browseOptions?: {
+    isWriter?: boolean;
+    fileExtension?: string; // TODO use fileExtensionProvider instead
+  };
 }
 
 export default FileChooserProps;

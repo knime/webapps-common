@@ -1,13 +1,22 @@
 <script setup lang="ts">
 import FileChooser from "./FileChooser.vue";
-import { ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import InputField from "webapps-common/ui/components/forms/InputField.vue";
 import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
 import FolderLenseIcon from "webapps-common/ui/assets/img/icons/folder-lense.svg";
 import type StringFileChooserInputWithExplorerProps from "./types/StringFileChooserInputWithExplorerProps";
 
-defineProps<StringFileChooserInputWithExplorerProps>();
+const props = defineProps<StringFileChooserInputWithExplorerProps>();
 const emit = defineEmits(["update:modelValue"]);
+
+const placeholder = computed(() => props.options?.placeholder);
+const isWriter = computed(() => props.options?.isWriter);
+const filteredExtensions = ref<string[]>([]);
+onMounted(() => {
+  if (props.options?.fileExtension) {
+    filteredExtensions.value = [props.options?.fileExtension]; // TODO
+  }
+});
 
 const active = ref(false);
 const deactivateFileChooser = () => {
@@ -49,6 +58,8 @@ const chooseFile = (chosen: string) => {
     <FileChooser
       :backend-type="backendType"
       :initial-file-path="modelValue"
+      :is-writer="isWriter"
+      :filtered-extensions="filteredExtensions"
       @choose-file="chooseFile"
       @cancel="deactivateFileChooser"
     />

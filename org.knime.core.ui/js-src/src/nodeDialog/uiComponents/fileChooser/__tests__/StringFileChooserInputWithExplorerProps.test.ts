@@ -14,7 +14,6 @@ describe("LocalFileChooserInput.vue", () => {
       id: "id",
       modelValue: "",
       disabled: false,
-      placeholder: "",
       backendType: "local",
     };
   });
@@ -34,20 +33,24 @@ describe("LocalFileChooserInput.vue", () => {
     expect(wrapper.findComponent(FileChooser).exists()).toBeFalsy();
   });
 
-  it("sets props", () => {
-    const newProps = {
-      placeholder: "myPlaceholder",
+  it("sets props on input field", () => {
+    props = {
+      ...props
+      options: {
+        placeholder: "myPlaceholder",
+      },
       id: "myId",
       disabled: true,
       modelValue: "initialValue",
     };
-    props = {
-      ...props,
-      ...newProps,
-    };
     const wrapper = shallowMountLocalFileChooser();
     const inputField = wrapper.findComponent(InputField);
-    expect(inputField.props()).toMatchObject(newProps);
+    expect(inputField.props()).toMatchObject({
+      placeholder: props.options?.placeholder,
+      id: props.id,
+      disabled: props.disabled,
+      modelValue: props.modelValue,
+    });
     expect(inputField.findComponent(FunctionButton).props().disabled).toBe(
       props.disabled,
     );
@@ -64,6 +67,19 @@ describe("LocalFileChooserInput.vue", () => {
     const wrapper = shallowMountLocalFileChooser();
     await activateFileChooser(wrapper);
     expect(wrapper.findComponent(FileChooser).exists()).toBeTruthy();
+  });
+
+  it("sets props on file browser", async () => {
+    props.options = {
+      fileExtension: "pdf",
+      isWriter: true,
+    };
+    const wrapper = shallowMountLocalFileChooser();
+    await activateFileChooser(wrapper);
+    expect(wrapper.findComponent(FileChooser).props()).toMatchObject({
+      filteredExtensions: ["pdf"],
+      isWriter: true,
+    });
   });
 
   it("closes file browser on cancel", async () => {

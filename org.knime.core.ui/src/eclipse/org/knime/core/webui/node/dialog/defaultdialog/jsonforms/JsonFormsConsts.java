@@ -181,6 +181,11 @@ public final class JsonFormsConsts {
         public static final String TAG_DEPENDENCIES = "dependencies";
 
         /**
+         * The boolean flag indicator of a file chooser widget whether it has writer capabilities.
+         */
+        public static final String TAG_IS_WRITER = "isWriter";
+
+        /**
          * Several formats which are written to the options of the ui-schema of an ui element
          *
          * @author Paul Bärnreuther

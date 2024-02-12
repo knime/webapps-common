@@ -20,11 +20,13 @@ const props = withDefaults(
   defineProps<{
     initialFilePath?: string;
     isWriter?: boolean;
+    filteredExtensions?: string[];
     backendType: BackendType;
   }>(),
   {
     initialFilePath: "",
     isWriter: false,
+    filteredExtensions: () => [],
   },
 );
 
@@ -49,6 +51,10 @@ const handleListItemsResult = (folderAndError: FolderAndError) => {
   setNextItems(folderAndError.folder);
   setErrorMessage(folderAndError.errorMessage);
 };
+
+const { listItems, getFilePath } = useFileChooserBackend({
+  filteredExtensions: toRef(props, "filteredExtensions"),
+});
 
 onMounted(() => {
   listItems(null, props.initialFilePath).then(handleListItemsResult);

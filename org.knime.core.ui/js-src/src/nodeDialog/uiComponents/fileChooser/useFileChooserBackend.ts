@@ -18,6 +18,11 @@ type ListItems = (params: {
      * should be accessed. Set to null in order to access the path directly.
      */
     string | null,
+    /**
+     * the endings with respect to which the files are filtered. If empty or null, no filters
+     * will be applied.
+     */
+    string[] | null,
   ];
 }) => Promise<FolderAndError>;
 
@@ -39,13 +44,23 @@ type GetFilePath = (params: {
   ];
 }) => Promise<string>;
 
-export default (backendType: Ref<BackendType>) => {
+export default (
+  props: {
+    filteredExtensions?: Ref<string[]>;
+    backendType: Ref<BackendType>;
+  } = {},
+) => {
   const getData = inject("getData") as GetFilePath & ListItems;
 
   const listItems = (path: string | null, nextFolder: string | null) => {
     return getData({
       method: "fileChooser.listItems",
-      options: [backendType.value, path, nextFolder],
+      options: [
+        props.backendType.value,
+        path,
+        nextFolder,
+        props.filteredExtensions?.value ?? null,
+      ],
     });
   };
   const getFilePath = (path: string | null, fileName: string) => {

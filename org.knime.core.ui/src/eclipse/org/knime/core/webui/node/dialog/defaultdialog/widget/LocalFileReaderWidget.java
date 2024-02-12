@@ -61,7 +61,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RUNTIME)
 @Target(FIELD)
-public @interface LocalFileChooserWidget {
+public @interface LocalFileReaderWidget {
 
     /**
      * @return the placeholder of the string input field

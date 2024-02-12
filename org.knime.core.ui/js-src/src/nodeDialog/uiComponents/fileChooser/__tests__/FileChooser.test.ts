@@ -1,5 +1,5 @@
 import { shallowMount } from "@vue/test-utils";
-import { describe, expect, it, vi, type SpyInstance, beforeEach } from "vitest";
+import { describe, expect, it, vi, beforeEach, MockInstance } from "vitest";
 import flushPromises from "flush-promises";
 import type { Folder } from "../types";
 import { toFileExplorerItem } from "../utils";
@@ -11,7 +11,7 @@ import LoadingIcon from "webapps-common/ui/components/LoadingIcon.vue";
 import InputField from "webapps-common/ui/components/forms/InputField.vue";
 
 describe("FileChooser.vue", () => {
-  let dataServiceSpy: SpyInstance;
+  let dataServiceSpy: MockInstance;
 
   const fileName = "aFile";
   const filePath = "/path/to/containing/folder/aFile";
@@ -30,8 +30,12 @@ describe("FileChooser.vue", () => {
   });
 
   const shallowMountFileChooser = (
-    props: { initialFilePath?: string; isWriter?: boolean } = {},
-    customDataServiceMethod?: SpyInstance,
+    props: {
+      initialFilePath?: string;
+      isWriter?: boolean;
+      filteredExtensions?: string[];
+    } = {},
+    customDataServiceMethod?: MockInstance,
   ) => {
     dataServiceSpy =
       customDataServiceMethod ??
@@ -81,7 +85,7 @@ describe("FileChooser.vue", () => {
     const wrapper = shallowMountFileChooser();
     expect(dataServiceSpy).toHaveBeenCalledWith({
       method: "fileChooser.listItems",
-      options: ["local", null, ""],
+      options: ["local", null, "", []],
     });
     expect(wrapper.findComponent(FileExplorer).exists()).toBeFalsy();
     expect(wrapper.findComponent(LoadingIcon).exists()).toBeTruthy();
@@ -104,10 +108,19 @@ describe("FileChooser.vue", () => {
     const wrapper = shallowMountFileChooser({ initialFilePath });
     expect(dataServiceSpy).toHaveBeenCalledWith({
       method: "fileChooser.listItems",
-      options: ["local", null, initialFilePath],
+      options: ["local", null, initialFilePath, []],
     });
     await flushPromises();
     expect(wrapper.find("span").text()).toBe(folderFromBackend.path);
+  });
+
+  it("uses file extensions when requesting listed items", () => {
+    const filteredExtensions = ["pdf"];
+    shallowMountFileChooser({ filteredExtensions });
+    expect(dataServiceSpy).toHaveBeenCalledWith({
+      method: "fileChooser.listItems",
+      options: ["local", null, "", filteredExtensions],
+    });
   });
 
   it("shows error message", async () => {
@@ -179,7 +192,7 @@ describe("FileChooser.vue", () => {
       await openButton?.vm.$emit("click");
       expect(dataServiceSpy).toHaveBeenCalledWith({
         method: "fileChooser.listItems",
-        options: ["local", folderFromBackend.path, directoryName],
+        options: ["local", folderFromBackend.path, directoryName, []],
       });
     });
 
@@ -191,7 +204,7 @@ describe("FileChooser.vue", () => {
         .vm.$emit("changeDirectory", directoryName);
       expect(dataServiceSpy).toHaveBeenCalledWith({
         method: "fileChooser.listItems",
-        options: ["local", folderFromBackend.path, directoryName],
+        options: ["local", folderFromBackend.path, directoryName, []],
       });
     });
   });
