@@ -157,9 +157,10 @@ export default {
   pointer-events: all;
   position: absolute;
   left: 50%;
-  top: 40%;
+  top: var(--modal-top, 40%);
   transform: translate(-50%, -50%);
   width: min(95%, var(--modal-width, 550px));
-  background-color: var(--knime-white);
+  height: var(--modal-height, auto);
+  background-color: var(--modal-background, var(--knime-white));
 }
 </style>
