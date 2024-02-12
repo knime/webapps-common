@@ -2547,7 +2547,9 @@ describe("TableViewInteractive.vue", () => {
           type: "text/plain",
         },
       });
-      expect(writeMock).toHaveBeenCalledWith([clipboardMock.results[0][1]]);
+      expect(writeMock).toHaveBeenCalledWith([
+        clipboardMock.mock.results[0].value,
+      ]);
     });
 
     it("copies table content for bottom rows", async () => {

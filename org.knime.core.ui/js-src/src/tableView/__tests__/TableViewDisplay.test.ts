@@ -1,6 +1,6 @@
 /* eslint-disable vitest/max-nested-describe, max-lines */
 import { VueWrapper } from "@vue/test-utils";
-import { describe, it, beforeEach, expect, vi } from "vitest";
+import { describe, it, beforeEach, expect, vi, Mock } from "vitest";
 // @ts-ignore
 import { TableUIWithAutoSizeCalculation } from "@knime/knime-ui-table";
 import type { TableViewDisplayProps } from "../types";
@@ -543,7 +543,7 @@ describe("TableViewDisplay.vue", () => {
 
   describe("column size composables", () => {
     it("uses useAutoColumnSizes with correct values", async () => {
-      (useAutoColumnSizes as any).reset();
+      (useAutoColumnSizes as Mock).mockClear();
       props.firstRowImageDimensions = {
         col1: { widthInPx: 20, heightInPx: 50 },
       };
@@ -567,7 +567,7 @@ describe("TableViewDisplay.vue", () => {
     });
 
     it("uses useColumnSizes with correct values", () => {
-      (useColumnSizes as any).reset();
+      (useColumnSizes as Mock).mockClear();
       shallowMountDisplay({ props });
       const [{ settings, header, autoColumnSizes, autoColumnSizesActive }] = (
         useColumnSizes as any
