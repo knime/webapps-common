@@ -279,7 +279,7 @@ describe("LabeledFileChooserInput.vue", () => {
         path: {
           path: "",
           fsCategory: "LOCAL",
-          timeout: 1000,
+          timeout: 10000,
         },
       },
     );

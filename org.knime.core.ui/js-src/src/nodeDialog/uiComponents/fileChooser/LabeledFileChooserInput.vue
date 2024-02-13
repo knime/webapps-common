@@ -48,7 +48,7 @@ const LabeledFileChooserInput = defineComponent({
     getDefaultData() {
       return {
         path: "",
-        timeout: 1000,
+        timeout: 10000,
         fsCategory: "LOCAL",
       };
     },

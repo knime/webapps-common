@@ -52,6 +52,7 @@ import java.io.IOException;
 
 import org.knime.filehandling.core.connections.FSCategory;
 import org.knime.filehandling.core.connections.FSLocation;
+import org.knime.filehandling.core.connections.config.URIFSConnectionConfig;
 
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -77,7 +78,7 @@ public class FSLocationJsonSerializationUtil {
 
     private static final String TIMEOUT_KEY = "timeout";
 
-    private static final int DEFAULT_TIMEOUT = 1000;
+    private static final int DEFAULT_TIMEOUT = URIFSConnectionConfig.DEFAULT_TIMEOUT_MILLIS;
 
     private static final String CATEGORY_KEY = "fsCategory";
 
