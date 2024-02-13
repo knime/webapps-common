@@ -58,8 +58,7 @@ import java.util.function.Supplier;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FileChooser;
 
 /**
- * Put this annotation on a {@link FileChooser} filed in order to equip it with specific capabilities for choosing a
- * file to write to.
+ * Put this annotation on a {@link FileChooser} field in order to equip it with additional writer features.
  *
  * @author Paul Bärnreuther
  */

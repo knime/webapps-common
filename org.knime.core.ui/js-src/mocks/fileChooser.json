@@ -4,12 +4,19 @@
     "data": {
       "view": {
         "localFile": "/home/InitialValue.txt",
+        "localFileWriter": "/home/InitialValue.txt",
         "disabled": "/home/InitialValue.txt",
         "withPlaceholder": "",
         "disabledPath": {
           "path": {
             "fsCategory": "LOCAL",
             "path": ""
+          }
+        },
+        "writer": {
+          "path": {
+            "fsCategory": "LOCAL",
+            "path": "my/path/to/my/file.txt"
           }
         },
         "overwrittenByNonSupported": {
@@ -40,6 +47,10 @@
               "type": "string",
               "title": "Default"
             },
+            "localFileWriter": {
+              "type": "string",
+              "title": "Writer"
+            },
             "disabled": {
               "type": "string",
               "title": "Disabled"
@@ -49,13 +60,24 @@
               "title": "With Placeholder"
             },
             "empty": {
-              "title": "Default"
+              "title": "Default",
+              "properties": {}
+            },
+            "writer": {
+              "title": "Writer",
+              "properties": {}
             },
             "disabledPath": {
-              "title": "Disabled"
+              "title": "Disabled",
+              "properties": {}
             },
             "pathCustom": {
-              "title": "Custom URL"
+              "title": "Custom URL",
+              "properties": {}
+            },
+            "overwrittenByNonSupported": {
+              "title": "Overwritten by non-supported",
+              "properties": {}
             }
           }
         }
@@ -73,6 +95,14 @@
               "scope": "#/properties/view/properties/localFile",
               "options": {
                 "format": "localFileChooser"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/localFileWriter",
+              "options": {
+                "format": "localFileChooser",
+                "isWriter": true
               }
             },
             {
@@ -101,6 +131,14 @@
               "scope": "#/properties/view/properties/empty",
               "options": {
                 "format": "fileChooser"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/writer",
+              "options": {
+                "format": "fileChooser",
+                "isWriter": true
               }
             },
             {
