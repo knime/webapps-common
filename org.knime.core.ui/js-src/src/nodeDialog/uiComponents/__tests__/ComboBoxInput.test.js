@@ -82,14 +82,14 @@ describe("ComboBoxInput.vue", () => {
   });
 
   it("sets correct initial value", () => {
-    expect(
-      wrapper.findComponent(ComboBox).props().initialSelectedIds,
-    ).toStrictEqual(props.control.data);
+    expect(wrapper.findComponent(ComboBox).props().modelValue).toStrictEqual(
+      props.control.data,
+    );
   });
 
   it("calls handleChange when ComboBox's value changes", () => {
     const comboBox = wrapper.findComponent(ComboBox);
-    comboBox.vm.$emit("update:selectedIds", ["id_1", "id_2"]);
+    comboBox.vm.$emit("update:modelValue", ["id_1", "id_2"]);
     expect(updateData).toHaveBeenCalledWith(
       expect.anything(),
       props.control.path,
@@ -106,7 +106,7 @@ describe("ComboBoxInput.vue", () => {
     });
     expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
     const comboBox = wrapper.findComponent(ComboBox);
-    comboBox.vm.$emit("update:selectedIds", ["id_1", "id_2"]);
+    comboBox.vm.$emit("update:modelValue", ["id_1", "id_2"]);
     expect(setDirtyModelSettingsMock).toHaveBeenCalled();
   });
 

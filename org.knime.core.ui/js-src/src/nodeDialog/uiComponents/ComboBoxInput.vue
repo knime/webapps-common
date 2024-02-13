@@ -13,11 +13,11 @@ const {
 } = useDialogControl<string[]>({ props });
 
 const options = ref([] as PossibleValue[] | undefined);
-const initialSelectedIds = ref([] as string[]);
+const selectedIds = ref([] as string[]);
 const loaded = ref(false);
 
 onMounted(() => {
-  initialSelectedIds.value = control.value.data;
+  selectedIds.value = control.value.data;
   options.value = control.value.uischema?.options?.possibleValues;
   loaded.value = true;
 });
@@ -50,8 +50,8 @@ const disabled = computed(
       :aria-label="control.label"
       :disabled="disabled"
       :possible-values="noPossibleValuesPresent ? [] : options"
-      :initial-selected-ids="initialSelectedIds"
-      @update:selected-ids="onChange"
+      :model-value="selectedIds"
+      @update:model-value="onChange"
     />
   </LabeledInput>
 </template>
