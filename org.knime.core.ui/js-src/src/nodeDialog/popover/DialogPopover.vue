@@ -7,7 +7,7 @@ import useClickOutside from "webapps-common/ui/composables/useClickOutside";
 import type DialogPopoverProps from "./types/DialogPopoverProps";
 import { FocusTrap } from "focus-trap-vue";
 import { tabbable } from "tabbable";
-import { useActiveElement } from "@vueuse/core";
+import getDeepActiveElement from "@/utils/getDeepActiveElement";
 
 const props = withDefaults(defineProps<DialogPopoverProps>(), {
   ignoredClickOutsideTarget: null,
@@ -40,10 +40,8 @@ const close = () => {
   expanded.value = false;
 };
 
-const activeElement = useActiveElement();
-
 const closeUnlessButtonFocused = () => {
-  if (activeElement.value !== referenceEl.value) {
+  if (getDeepActiveElement() !== referenceEl.value) {
     close();
   }
 };
