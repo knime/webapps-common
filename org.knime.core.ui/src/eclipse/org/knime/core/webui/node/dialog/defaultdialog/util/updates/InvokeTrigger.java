@@ -68,7 +68,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
  *
  * @author Paul Bärnreuther
  */
-public final class InvokeTrigger {
+final class InvokeTrigger {
 
     private Map<Vertex, Object> m_cache = new HashMap<>();
 
@@ -79,7 +79,7 @@ public final class InvokeTrigger {
      * @param dependencyProvider providing the values of all {@link ValueRef} dependencies that the triggered updates
      *            will depend on.
      */
-    public InvokeTrigger(final Function<Class<? extends ValueRef>, Object> dependencyProvider) {
+    InvokeTrigger(final Function<Class<? extends ValueRef>, Object> dependencyProvider) {
         m_dependencyProvider = dependencyProvider;
     }
 
@@ -179,7 +179,8 @@ public final class InvokeTrigger {
             }
 
             @Override
-            public <T> Supplier<T> getProvidedState(final Class<? extends StateProvider<T>> stateProviderClass) {
+            public <T> Supplier<T>
+                computeFromProvidedState(final Class<? extends StateProvider<T>> stateProviderClass) {
                 return vertexToSupplier(getParentStateVertex(m_stateVertex, stateProviderClass));
             }
 

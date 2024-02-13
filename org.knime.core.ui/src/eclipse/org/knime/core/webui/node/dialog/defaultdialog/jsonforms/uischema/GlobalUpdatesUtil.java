@@ -48,20 +48,15 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsScopeUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.DependencyVertex;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.PathWithSettingsKey;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToDependencyTree;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerToDependencies;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerVertex;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToDependencyTreeUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerAndDependencies;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
-import org.knime.filehandling.core.node.table.reader.preview.dialog.AnalysisComponentModel.Update;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -77,34 +72,14 @@ final class GlobalUpdatesUtil {
         // Utility
     }
 
-    record Dependency(String scope, String valueRef) {
-    }
-
-    record TriggerAndDependencies(TriggerVertex trigger, Collection<DependencyVertex> dependencies) {
-
-        Optional<String> getTriggerPath() {
-            return trigger().getScope().map(GlobalUpdatesUtil::resolveScopeToString);
-        }
-
-        List<Dependency> getDependencyPaths() {
-            return dependencies().stream().map(dep -> {
-                final var scope = resolveScopeToString(dep.getScope());
-                final var valueRef = dep.getValueRef().getName();
-                return new Dependency(scope, valueRef);
-            }).toList();
-        }
-    }
-
-    private static String resolveScopeToString(final PathWithSettingsKey scope) {
-        return JsonFormsScopeUtil.toScope(scope.path(), scope.settingsKey());
-    }
-
     /**
-     * Adds an array with one element for each {@link Update} annotation to the rootNode if any are present.
+     * Adds an array with one element for each trigger of an update defined by {@link StateProviders} to the rootNode if
+     * any are present.
      */
-    static void addUpdateHandlers(final ObjectNode rootNode,
+    static void addGlobalUpdates(final ObjectNode rootNode,
         final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
-        final var triggersWithDependencies = getTriggersWithDependencies(settingsClasses);
+        final var triggersWithDependencies =
+            SettingsClassesToDependencyTreeUtil.getTriggersWithDependencies(settingsClasses);
         if (triggersWithDependencies.isEmpty()) {
             return;
         }
@@ -122,23 +97,18 @@ final class GlobalUpdatesUtil {
         final TriggerAndDependencies triggerWithDependencies) {
         final var updateObjectNode = globalUpdates.addObject();
         final var triggerNode = updateObjectNode.putObject("trigger");
-        triggerNode.put("id", triggerWithDependencies.trigger().getId());
-        triggerWithDependencies.getTriggerPath().ifPresent(scope -> triggerNode.put("scope", scope));
+        triggerNode.put("id", triggerWithDependencies.getTriggerId());
+        triggerWithDependencies.getTriggerFieldLocation()
+            .ifPresent(fieldLocation -> triggerNode.put("scope", resolveFiledLocationToScope(fieldLocation)));
         final var dependenciesArrayNode = updateObjectNode.putArray("dependencies");
-        triggerWithDependencies.getDependencyPaths().forEach(dep -> {
+        triggerWithDependencies.getDependencies().forEach(dep -> {
             final var newDependency = dependenciesArrayNode.addObject();
-            newDependency.put("scope", dep.scope());
+            newDependency.put("scope", resolveFiledLocationToScope(dep.fieldLocation()));
             newDependency.put("id", dep.valueRef());
         });
     }
 
-    private static List<TriggerAndDependencies>
-        getTriggersWithDependencies(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
-        final var triggers = SettingsClassesToDependencyTree.settingsToDependencyTree(settingsClasses);
-        final var triggerToDependencies = new TriggerToDependencies();
-        return triggers.stream()
-            .map(trigger -> new TriggerAndDependencies(trigger, triggerToDependencies.triggerToDependencies(trigger)))
-            .toList();
+    private static String resolveFiledLocationToScope(final PathWithSettingsKey fieldLocation) {
+        return JsonFormsScopeUtil.toScope(fieldLocation.path(), fieldLocation.settingsKey());
     }
-
 }

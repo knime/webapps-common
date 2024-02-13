@@ -44,39 +44,49 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Feb 12, 2024 (Paul Bärnreuther): created
+ *   Feb 7, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
+package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsScopeUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.PathWithSettingsKey;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerInvocationHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
 
 /**
+ * Used to convert triggers to a list of resulting updates given a map of dependencies.
  *
  * @author Paul Bärnreuther
  */
-public final class SettingsClassesToDependencyTree {
+public class DataServiceTriggerInvocationHandler {
 
-    private SettingsClassesToDependencyTree() {
-        // Utility
+    private TriggerInvocationHandler m_triggerInvocationHandler;
+
+    DataServiceTriggerInvocationHandler(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
+        m_triggerInvocationHandler = new TriggerInvocationHandler(settingsClasses);
     }
 
-    /**
-     * Collect annotations from the given settingsClasses and transforms them into a tree structure with {@link Vertex}
-     * as nodes.
-     *
-     * @param settingsClasses
-     * @return the triggers in that dependency structure. These are then processed further using
-     *         {@link TriggerToDependencies} (during initialization) and {@link InvokeTrigger} (during invocation)
-     */
-    public static Collection<TriggerVertex>
-        settingsToDependencyTree(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
-        final var valueRefsAndValueProviders =
-            SettingsClassesToValueRefsAndValueProviders.settingsClassesToValueRefsAndValueProviders(settingsClasses);
-        return ValueRefsAndValueProvidersToDependencyTree
-            .valueRefsAndValueProvidersToDependencyTree(valueRefsAndValueProviders);
+    record PathAndValue(String path, Object value) {
     }
 
+    List<PathAndValue> trigger(final String triggerId, final Map<String, Object> rawDependencies,
+        final DefaultNodeSettingsContext context) {
+        final Function<Class<? extends ValueRef>, Object> dependencyProvider = valueRef -> {
+            final var rawDependencyObject = rawDependencies.get(valueRef.getName());
+            return ConvertValueUtil.convertValueRef(rawDependencyObject, valueRef, context);
+        };
+        return m_triggerInvocationHandler.invokeTrigger(triggerId, dependencyProvider).entrySet().stream()
+            .map(entry -> new PathAndValue(toScope(entry.getKey()), entry.getValue())).toList();
+
+    }
+
+    private static String toScope(final PathWithSettingsKey scope) {
+        return JsonFormsScopeUtil.toScope(scope.path(), scope.settingsKey());
+    }
 }

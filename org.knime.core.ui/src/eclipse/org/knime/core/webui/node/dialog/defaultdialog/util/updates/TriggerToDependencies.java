@@ -63,13 +63,13 @@ import org.knime.core.webui.node.dialog.defaultdialog.util.updates.Vertex.Vertex
  *
  * @author Paul Bärnreuther
  */
-public class TriggerToDependencies {
+class TriggerToDependencies {
 
     /**
      * @param trigger
      * @return the all ancestor dependencies of all descendant updates of this trigger.
      */
-    public Collection<DependencyVertex> triggerToDependencies(final TriggerVertex trigger) {
+    Collection<DependencyVertex> triggerToDependencies(final TriggerVertex trigger) {
         return getDescendantDependenciesFor(trigger);
     }
 

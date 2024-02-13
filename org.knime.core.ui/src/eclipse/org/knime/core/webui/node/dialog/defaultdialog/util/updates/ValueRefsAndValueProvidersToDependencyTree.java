@@ -231,7 +231,7 @@ final class ValueRefsAndValueProvidersToDependencyTree {
         }
 
         @Override
-        public <T> Supplier<T> getProvidedState(final Class<? extends StateProvider<T>> stateProviderClass) {
+        public <T> Supplier<T> computeFromProvidedState(final Class<? extends StateProvider<T>> stateProviderClass) {
             getStateProviders().add(stateProviderClass);
             return null;
         }

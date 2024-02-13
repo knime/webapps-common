@@ -52,7 +52,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
 /**
- * This interface can be extended by classes used as {@link Widget#id}. It is used to resolve dependencies between
+ * This interface can be extended by classes used as {@link Widget#ref}. It is used to resolve dependencies between
  * widgets in a type safe way.
  *
  * @author Paul Bärnreuther

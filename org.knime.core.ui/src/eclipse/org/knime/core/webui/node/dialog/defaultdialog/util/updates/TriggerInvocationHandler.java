@@ -44,46 +44,45 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Feb 7, 2024 (Paul Bärnreuther): created
+ *   Feb 13, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.jsonforms;
+package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
 
 /**
- * The scope of a setting is its json schema path (i.e. #/properties/...) We use this scope whenever we need to point to
- * a setting when generating the uiSchema or within a dialogs data service
- *
  * @author Paul Bärnreuther
  */
-public final class JsonFormsScopeUtil {
-    private JsonFormsScopeUtil() {
-        // utility class
+public class TriggerInvocationHandler {
+
+    private final Collection<TriggerVertex> m_triggers;
+
+    /**
+     * @param settingsClasses the settings classes to collect annotations from
+     */
+    public TriggerInvocationHandler(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
+        m_triggers = SettingsClassesToDependencyTreeUtil.settingsToDependencyTree(settingsClasses);
     }
 
     /**
      *
-     * @param path
-     * @param settingsKey
-     * @return the json schema scope
+     * @param triggerId matching an id of the triggers in the provided settingsClasses
+     * @param dependencyProvider providing values for dependencies of this trigger (see {@link TriggerAndDependencies})
+     * @return a mapping from identifiers of fields to their updated value
      */
-    public static String toScope(final List<String> path, final String settingsKey) {
-        final var pathWithPrefix = new ArrayList<String>(path);
-        if (settingsKey != null) {
-            pathWithPrefix.add(0, settingsKey);
-        }
-        pathWithPrefix.add(0, "#");
-        return toScope(pathWithPrefix);
+    public Map<PathWithSettingsKey, Object> invokeTrigger(final String triggerId,
+        final Function<Class<? extends ValueRef>, Object> dependencyProvider) {
+        final var trigger = m_triggers.stream().filter(t -> t.getId().equals(triggerId)).findAny().orElseThrow();
+        final var resultPerUpdateHandler = new InvokeTrigger(dependencyProvider).invokeTrigger(trigger);
+        return resultPerUpdateHandler.entrySet().stream()
+            .collect(Collectors.toMap(e -> e.getKey().getFieldLocation(), Entry::getValue));
     }
 
-    /**
-     * TODO UIEXT-1673 make this method private. We shouldn't need it to be public anymore.
-     *
-     * @param path
-     * @return the json schema scope
-     */
-    public static String toScope(final List<String> path) {
-        return String.join("/properties/", path);
-    }
 }

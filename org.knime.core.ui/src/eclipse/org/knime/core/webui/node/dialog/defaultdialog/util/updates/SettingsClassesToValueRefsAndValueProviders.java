@@ -65,10 +65,10 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
 
 final class SettingsClassesToValueRefsAndValueProviders {
 
-    record ValueRefWrapper(Class<? extends ValueRef> valueRef, PathWithSettingsKey scope) {
+    record ValueRefWrapper(Class<? extends ValueRef> valueRef, PathWithSettingsKey fieldLocation) {
     }
 
-    record ValueProviderWrapper(Class<? extends StateProvider> stateProviderClass, PathWithSettingsKey scope) {
+    record ValueProviderWrapper(Class<? extends StateProvider> stateProviderClass, PathWithSettingsKey fieldLocation) {
     }
 
     record ValueRefsAndValueProviders(Collection<ValueRefWrapper> valueRefs,
@@ -76,7 +76,6 @@ final class SettingsClassesToValueRefsAndValueProviders {
     }
 
     /**
-     *
      * @param settingsClasses a map of settings classes to collect annotated fields from
      * @return the valueRef and updates annotations
      */
@@ -88,12 +87,8 @@ final class SettingsClassesToValueRefsAndValueProviders {
 
         settingsClasses.entrySet().forEach(entry -> {
             final var traverser = new DefaultNodeSettingsFieldTraverser(entry.getValue());
-            final var fields = traverser.getAllFields();
-
-            fields.stream().forEach(field -> {
-                addValueRefAndValueProviderForField(field, entry, valueRefs, valueProviders);
-            });
-
+            traverser.getAllFields().stream()
+                .forEach(field -> addValueRefAndValueProviderForField(field, entry, valueRefs, valueProviders));
         });
 
         return new ValueRefsAndValueProviders(valueRefs, valueProviders);

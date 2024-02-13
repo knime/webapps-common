@@ -50,9 +50,13 @@ package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
 import java.util.List;
 
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+
 /**
  *
  * @author Paul Bärnreuther
+ * @param path the path of the field in a {@link DefaultNodeSettings} class
+ * @param settingsKey the key of the {@link DefaultNodeSettings} class
  */
 public record PathWithSettingsKey(List<String> path, String settingsKey) {
 

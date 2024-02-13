@@ -56,15 +56,15 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
  *
  * @author Paul Bärnreuther
  */
-public final class DependencyVertex extends Vertex {
+final class DependencyVertex extends Vertex {
 
     private final Class<? extends ValueRef> m_ref;
 
-    private final PathWithSettingsKey m_scope;
+    private final PathWithSettingsKey m_fieldLocation;
 
     DependencyVertex(final ValueRefWrapper valueRefWrapper) {
         m_ref = valueRefWrapper.valueRef();
-        m_scope = valueRefWrapper.scope();
+        m_fieldLocation = valueRefWrapper.fieldLocation();
     }
 
     @Override
@@ -72,15 +72,15 @@ public final class DependencyVertex extends Vertex {
         return visitor.accept(this);
     }
 
-    public Class<? extends ValueRef> getValueRef() {
+    Class<? extends ValueRef> getValueRef() {
         return m_ref;
     }
 
     /**
      * @return the scope of the field this dependency points to
      */
-    public PathWithSettingsKey getScope() {
-        return m_scope;
+    PathWithSettingsKey getFieldLocation() {
+        return m_fieldLocation;
     }
 
 }

@@ -44,55 +44,48 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Feb 7, 2024 (Paul Bärnreuther): created
+ *   Feb 12, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
+package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsScopeUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.InvokeTrigger;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToDependencyTree;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerVertex;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.UpdateVertex;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
 
 /**
- * Used to convert triggers to a list of resulting updates given a map of dependencies.
+ * A utility class for parsing all update interactions between different widgets from given settings classes.
  *
  * @author Paul Bärnreuther
  */
-public class TriggerInvocationHandler {
+public final class SettingsClassesToDependencyTreeUtil {
 
-    private final Collection<TriggerVertex> m_triggers;
-
-    TriggerInvocationHandler(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
-        m_triggers = SettingsClassesToDependencyTree.settingsToDependencyTree(settingsClasses);
+    private SettingsClassesToDependencyTreeUtil() {
+        // Utility
     }
 
-    record PathAndValue(String path, Object value) {
+    static Collection<TriggerVertex>
+        settingsToDependencyTree(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
+        final var valueRefsAndValueProviders =
+            SettingsClassesToValueRefsAndValueProviders.settingsClassesToValueRefsAndValueProviders(settingsClasses);
+        return ValueRefsAndValueProvidersToDependencyTree
+            .valueRefsAndValueProvidersToDependencyTree(valueRefsAndValueProviders);
     }
 
-    List<PathAndValue> trigger(final String triggerId, final Map<String, Object> rawDependencies,
-        final DefaultNodeSettingsContext context) {
-        final Function<Class<? extends ValueRef>, Object> dependencyProvider = valueRef -> {
-            final var rawDependencyObject = rawDependencies.get(valueRef.getName());
-            return ConvertValueUtil.convertValueRef(rawDependencyObject, valueRef, context);
-        };
-        final var trigger = m_triggers.stream().filter(t -> t.getId().equals(triggerId)).findAny().orElseThrow();
-        final var resultPerUpdateHandler = new InvokeTrigger(dependencyProvider).invokeTrigger(trigger);
-        return resultPerUpdateHandler.entrySet().stream()
-            .map(entry -> new PathAndValue(getScope(entry.getKey()), entry.getValue())).toList();
+    /**
+     *
+     * @param settingsClasses
+     * @return a list of all triggers and their associated dependencies to be used for an intial declaration for the
+     *         frontend
+     */
+    public static List<TriggerAndDependencies>
+        getTriggersWithDependencies(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
+        final var triggers = SettingsClassesToDependencyTreeUtil.settingsToDependencyTree(settingsClasses);
+        final var triggerToDependencies = new TriggerToDependencies();
+        return triggers.stream()
+            .map(trigger -> new TriggerAndDependencies(trigger, triggerToDependencies.triggerToDependencies(trigger)))
+            .toList();
     }
 
-    private static String getScope(final UpdateVertex updateVertex) {
-        final var path = updateVertex.getScope().path();
-        final var settingsKey = updateVertex.getScope().settingsKey();
-        return JsonFormsScopeUtil.toScope(path, settingsKey);
-    }
 }

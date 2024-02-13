@@ -55,15 +55,15 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvid
  *
  * @author Paul Bärnreuther
  */
-public final class UpdateVertex extends Vertex {
+final class UpdateVertex extends Vertex {
 
     private final Class<? extends StateProvider> m_stateProviderClass;
 
-    private final PathWithSettingsKey m_scope;
+    private final PathWithSettingsKey m_fieldLocation;
 
     UpdateVertex(final ValueProviderWrapper wrapper) {
         m_stateProviderClass = wrapper.stateProviderClass();
-        m_scope = wrapper.scope();
+        m_fieldLocation = wrapper.fieldLocation();
     }
 
     @Override
@@ -78,8 +78,8 @@ public final class UpdateVertex extends Vertex {
     /**
      * @return information on the associated field
      */
-    public PathWithSettingsKey getScope() {
-        return m_scope;
+    PathWithSettingsKey getFieldLocation() {
+        return m_fieldLocation;
     }
 
 }

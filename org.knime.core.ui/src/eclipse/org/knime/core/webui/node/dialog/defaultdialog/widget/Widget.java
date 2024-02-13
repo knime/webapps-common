@@ -96,9 +96,9 @@ public @interface Widget {
     boolean hideTitle() default false;
 
     /**
-     * @return An id that can be referenced by update handlers of other fields. The generic type of {@link ValueRef} has
-     *         to match the type of the annotated field. Otherwise a runtime exception is thrown when the dialog is
-     *         opened.
+     * @return An id that can be referenced by {@link StateProvider StateProviders} of other widget of other fields. The
+     *         generic type of {@link ValueRef} has to match the type of the annotated field. Otherwise a runtime
+     *         exception is thrown when the dialog is opened.
      */
     Class<? extends ValueRef> valueRef() default ValueRef.class;
 

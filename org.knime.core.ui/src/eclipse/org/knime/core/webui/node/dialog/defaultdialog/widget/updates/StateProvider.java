@@ -122,7 +122,7 @@ public interface StateProvider<S> {
          * @return a supplier to be used during {@link #computeState}
          * @param <T> the type of the referenced provided state
          */
-        <T> Supplier<T> getProvidedState(Class<? extends StateProvider<T>> stateProviderClass);
+        <T> Supplier<T> computeFromProvidedState(Class<? extends StateProvider<T>> stateProviderClass);
 
         /**
          * Defines that the state is to be computed whenever a button with the given id is clicked

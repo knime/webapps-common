@@ -83,7 +83,7 @@ public final class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialog
 
     private final AsyncChoicesGetter m_asyncChoicesGetter;
 
-    private final TriggerInvocationHandler m_triggerInvocationHandler;
+    private final DataServiceTriggerInvocationHandler m_triggerInvocationHandler;
 
     /**
      * @param settingsClasses the classes of the {@link DefaultNodeSettings} associated to the dialog.
@@ -99,7 +99,7 @@ public final class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialog
         m_buttonUpdateHandlers = new ButtonWidgetUpdateHandlerHolder(keyToSettingsClassMap);
         m_choicesUpdateHandlers = new ChoicesWidgetUpdateHandlerHolder(keyToSettingsClassMap);
         m_requestHandler = new DataServiceRequestHandler();
-        m_triggerInvocationHandler = new TriggerInvocationHandler(keyToSettingsClassMap);
+        m_triggerInvocationHandler = new DataServiceTriggerInvocationHandler(keyToSettingsClassMap);
         m_asyncChoicesGetter = asyncChoicesGetter;
     }
 

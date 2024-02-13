@@ -78,7 +78,7 @@ import org.knime.core.webui.data.DataServiceContextTest;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.TriggerInvocationHandler.PathAndValue;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DataServiceTriggerInvocationHandler.PathAndValue;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
@@ -227,7 +227,7 @@ class DefaultNodeDialogDataServiceImplTest {
 
             @Override
             public void init(final StateProviderInitializer initializer) {
-                m_pairProvider = initializer.getProvidedState(CommonFirstStateProvider.class);
+                m_pairProvider = initializer.computeFromProvidedState(CommonFirstStateProvider.class);
             }
 
             @Override
@@ -242,7 +242,7 @@ class DefaultNodeDialogDataServiceImplTest {
 
             @Override
             public void init(final StateProviderInitializer initializer) {
-                m_pairProvider = initializer.getProvidedState(CommonFirstStateProvider.class);
+                m_pairProvider = initializer.computeFromProvidedState(CommonFirstStateProvider.class);
             }
 
             @Override

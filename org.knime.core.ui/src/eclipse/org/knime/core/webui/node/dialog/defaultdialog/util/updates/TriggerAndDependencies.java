@@ -44,46 +44,65 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Feb 7, 2024 (Paul Bärnreuther): created
+ *   Feb 13, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.jsonforms;
+package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
- * The scope of a setting is its json schema path (i.e. #/properties/...) We use this scope whenever we need to point to
- * a setting when generating the uiSchema or within a dialogs data service
+ * A single trigger together with all dependencies of all of it triggered updates.
  *
  * @author Paul Bärnreuther
  */
-public final class JsonFormsScopeUtil {
-    private JsonFormsScopeUtil() {
-        // utility class
+public class TriggerAndDependencies {
+
+    private final Optional<PathWithSettingsKey> m_triggerFieldLocation;
+
+    private final String m_triggerId;
+
+    private final List<Dependency> m_dependencies;
+
+    TriggerAndDependencies(final TriggerVertex triggerVertex, final Collection<DependencyVertex> dependencyVertices) {
+        m_triggerFieldLocation = triggerVertex.getFieldLocation();
+        m_triggerId = triggerVertex.getId();
+        m_dependencies = getDependencyPaths(dependencyVertices);
+    }
+
+    private static List<Dependency> getDependencyPaths(final Collection<DependencyVertex> dependencyVertices) {
+        return dependencyVertices.stream().map(dep -> {
+            final var valueRef = dep.getValueRef().getName();
+            return new Dependency(dep.getFieldLocation(), valueRef);
+        }).toList();
     }
 
     /**
-     *
-     * @param path
-     * @param settingsKey
-     * @return the json schema scope
+     * @return Information on the field associated to the trigger, if such a field exists. Otherwise empty.
      */
-    public static String toScope(final List<String> path, final String settingsKey) {
-        final var pathWithPrefix = new ArrayList<String>(path);
-        if (settingsKey != null) {
-            pathWithPrefix.add(0, settingsKey);
-        }
-        pathWithPrefix.add(0, "#");
-        return toScope(pathWithPrefix);
+    public Optional<PathWithSettingsKey> getTriggerFieldLocation() {
+        return m_triggerFieldLocation;
     }
 
     /**
-     * TODO UIEXT-1673 make this method private. We shouldn't need it to be public anymore.
-     *
-     * @param path
-     * @return the json schema scope
+     * @param fieldLocation - information on the field associated to this dependency
+     * @param valueRef - an id of the reference class
      */
-    public static String toScope(final List<String> path) {
-        return String.join("/properties/", path);
+    public record Dependency(PathWithSettingsKey fieldLocation, String valueRef) {
+    }
+
+    /**
+     * @return the dependencies
+     */
+    public List<Dependency> getDependencies() {
+        return m_dependencies;
+    }
+
+    /**
+     * @return the id of the trigger
+     */
+    public String getTriggerId() {
+        return m_triggerId;
     }
 }
