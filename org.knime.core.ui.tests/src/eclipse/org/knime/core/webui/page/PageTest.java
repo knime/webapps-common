@@ -108,7 +108,7 @@ public class PageTest {
     void testCreateResourcesFromDir() {
         var page = Page.builder(BUNDLE_ID, "files", "page.html").addResourceDirectory("dir").build();
         assertThat(page.getResource("dir/subdir/res.html")).isPresent();
-        assertThat(page.getResource("dir/res2.umd.js")).isPresent();
+        assertThat(page.getResource("dir/res2.js")).isPresent();
         assertThat(page.getResource("dir/res1.html")).isPresent();
         assertThat(page.getResource("path/to/non/existent/resource.html")).isEmpty();
     }

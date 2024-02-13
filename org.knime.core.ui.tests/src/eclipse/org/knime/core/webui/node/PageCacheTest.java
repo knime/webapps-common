@@ -116,7 +116,7 @@ class PageCacheTest {
         /* static page checks */
 
         pageCache.clear();
-        var staticPageBuilder = Page.builder(PageTest.BUNDLE_ID, "files", "component.umd.js");
+        var staticPageBuilder = Page.builder(PageTest.BUNDLE_ID, "files", "component.js");
         var staticPage = staticPageBuilder.build();
         var staticPageId = pageCache.getOrCreatePageAndReturnPageId(nodeWrapperMock, nw -> staticPage, true);
         assertThat(staticPageId).isEqualTo("nodeWrapperTypeId");
