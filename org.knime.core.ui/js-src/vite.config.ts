@@ -2,10 +2,8 @@ import { fileURLToPath, URL } from "node:url";
 import { defineConfig } from "vitest/config";
 import vue from "@vitejs/plugin-vue";
 import svgLoader from "vite-svg-loader";
-import type { LibraryFormats, LibraryOptions } from "vite";
+import type { LibraryOptions } from "vite";
 import { loadEnv } from "vite";
-// only used by obsolete UMD format
-import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 
 const camelCase = (input: string) => {
   return input
@@ -26,31 +24,18 @@ const COMPONENTS = [
 
 type ComponentLibraries = (typeof COMPONENTS)[number];
 
-const getComponentLibraryOptions =
-  (
-    name: ComponentLibraries,
-    overrideName: string = null,
-  ): ((format: LibraryFormats) => LibraryOptions) =>
-  (format: LibraryFormats) => ({
-    name: (overrideName || name).toLowerCase(), // only for umd
-    entry: fileURLToPath(
-      new URL(
-        `./src/${camelCase(name)}/${name}${
-          format === "es" ? "App.ts" : ".vue"
-        }`,
-        import.meta.url,
-      ),
-    ),
-    // as this package is not yet a module, the default would be mjs and cjs which is not what we want
-    fileName: (format) => `${name}${format === "es" ? "" : `.${format}`}.js`,
-    formats: [format as LibraryFormats],
-  });
+const getComponentLibraryOptions = (
+  name: ComponentLibraries,
+): LibraryOptions => ({
+  entry: fileURLToPath(
+    new URL(`./src/${camelCase(name)}/${name}App.ts`, import.meta.url),
+  ),
+  fileName: name,
+  formats: ["es"],
+});
 
-const libraries: Record<
-  ComponentLibraries,
-  (format: LibraryFormats) => LibraryOptions
-> = {
-  NodeDialog: getComponentLibraryOptions("NodeDialog", "defaultdialog"),
+const libraries: Record<ComponentLibraries, LibraryOptions> = {
+  NodeDialog: getComponentLibraryOptions("NodeDialog"),
   TableView: getComponentLibraryOptions("TableView"),
   DeferredTableView: getComponentLibraryOptions("DeferredTableView"),
   TextView: getComponentLibraryOptions("TextView"),
@@ -58,12 +43,9 @@ const libraries: Record<
   ImageView: getComponentLibraryOptions("ImageView"),
 };
 
-const getCurrentLibrary = (
-  mode: ComponentLibraries,
-  format: LibraryFormats,
-) => {
+const getCurrentLibrary = (mode: ComponentLibraries) => {
   if (mode in libraries) {
-    return libraries[mode](format);
+    return libraries[mode];
   }
 
   return false;
@@ -96,59 +78,25 @@ const getTestSetupFile = (mode: "integration" | "unit") => {
 };
 
 // https://vitest.dev/config/
-export default defineConfig((userOptions) => {
-  const [mode = "", format = "es"] = userOptions?.mode?.split(":") ?? [];
+export default defineConfig(({ mode }) => {
   const env = { ...process.env, ...loadEnv(mode, process.cwd()) };
   const testMode = mode === "integration" ? "integration" : "unit";
 
-  const conditionalVitePlugins = [];
   const conditionalRollupOptions = { external: [], output: {} };
-
-  if (format === "umd") {
-    conditionalVitePlugins.push(
-      cssInjectedByJsPlugin({
-        injectCodeFunction: function injectCodeFunction(cssCode: string) {
-          try {
-            if (typeof document !== "undefined") {
-              const elementStyle = document.createElement("style");
-              elementStyle.appendChild(document.createTextNode(cssCode));
-              document.head.prepend(elementStyle);
-            }
-          } catch (e) {
-            // eslint-disable-next-line no-console
-            console.error("vite-plugin-css-injected-by-js", e);
-          }
-        },
-      }),
-    );
-
-    conditionalRollupOptions.external = ["vue"];
-    conditionalRollupOptions.output = {
-      globals: {
-        vue: "Vue",
-      },
-    };
-  }
 
   return {
     define: {
       "process.env": env, // needed by v-calendar
     },
-    plugins: [vue(), svgLoader(), ...conditionalVitePlugins].filter(Boolean),
+    plugins: [vue(), svgLoader()],
     resolve: {
       alias: {
         "@": fileURLToPath(new URL("./src", import.meta.url)),
         "@@": fileURLToPath(new URL(".", import.meta.url)),
       },
-      dedupe: [
-        "vue", // see https://github.com/vuejs/core/issues/4344#issuecomment-899064501
-      ],
     },
     build: {
-      lib: getCurrentLibrary(
-        mode as ComponentLibraries,
-        format as LibraryFormats,
-      ),
+      lib: getCurrentLibrary(mode as ComponentLibraries),
       emptyOutDir: false,
       cssCodeSplit: false,
       rollupOptions: {

@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Vue-based view components for KNIME",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev:NodeDialog": "npm run _dev NodeDialog 3333",
     "dev:NodeDialog:standalone": "vite",
@@ -19,12 +20,6 @@
     "build:TextView": "vite build --mode TextView",
     "build:FlowVariableView": "vite build --mode FlowVariableView",
     "build:ImageView": "vite build --mode ImageView",
-    "build:NodeDialog.umd": "vite build --mode NodeDialog:umd",
-    "build:TableView.umd": "vite build --mode TableView:umd",
-    "build:DeferredTableView.umd": "vite build --mode DeferredTableView:umd",
-    "build:TextView.umd": "vite build --mode TextView:umd",
-    "build:FlowVariableView.umd": "vite build --mode FlowVariableView:umd",
-    "build:ImageView.umd": "vite build --mode ImageView:umd",
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
     "format": "prettier --cache --write .",
     "format:check": "prettier --cache --check .",
@@ -55,7 +50,6 @@
     "focus-trap-vue": "4.0.2",
     "tabbable": "6.2.0",
     "uuid": "9.0.0",
-    "vue3-click-away": "1.2.4",
     "webapps-common": "file:webapps-common"
   },
   "devDependencies": {
@@ -88,9 +82,9 @@
     "vue-tsc": "1.8.27"
   },
   "engines": {
-    "node": "18.x"
+    "node": "20.x"
   },
   "volta": {
-    "node": "18.14.2"
+    "node": "20.11.0"
   }
 }
