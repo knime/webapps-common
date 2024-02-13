@@ -66,6 +66,27 @@ describe("generatePossibleValues", () => {
         },
       ]),
     );
+    expect(
+      await getPossibleValuesFromUiSchema(
+        {
+          uischema: {
+            options: {
+              possibleValues,
+              showRowNumbers: true,
+            },
+          },
+        },
+        dummyAsyncChoicesProvider,
+        dummySendAlert,
+      ),
+    ).toEqual(
+      expect.arrayContaining([
+        {
+          id: "<row-numbers>",
+          text: "Row numbers",
+        },
+      ]),
+    );
   });
 
   describe("async choices", () => {

@@ -423,6 +423,26 @@ class ChoicesWidgetUiSchemaOptionsTest {
     }
 
     @Test
+    void testChoicesWidgetShowRowNumbers() {
+        class ChoicesWidgetTestSettings implements DefaultNodeSettings {
+
+            @Widget
+            @ChoicesWidget(showRowNumbersColumn = true)
+            ColumnSelection m_foo;
+
+            @Widget
+            @ChoicesWidget()
+            ColumnSelection m_bar;
+
+        }
+        var response = buildTestUiSchema(ChoicesWidgetTestSettings.class);
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("foo");
+        assertThatJson(response).inPath("$.elements[0].options.showRowNumbers").isBoolean().isTrue();
+        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("bar");
+        assertThatJson(response).inPath("$.elements[1].options.showRowNumbers").isBoolean().isFalse();
+    }
+
+    @Test
     void testChoicesWidgetHideSearch() {
         class ChoicesWidgetTestSettings implements DefaultNodeSettings {
 

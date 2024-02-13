@@ -14,6 +14,7 @@ export type ChoicesUiSchemaOptions = {
   setFirstValueOnUpdate?: boolean;
   showNoneColumn?: boolean;
   showRowKeys?: boolean;
+  showRowNumbers?: boolean;
   includedLabel?: string;
   excludedLabel?: string;
 };

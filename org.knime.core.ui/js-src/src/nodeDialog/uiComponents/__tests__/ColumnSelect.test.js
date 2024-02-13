@@ -135,6 +135,7 @@ describe("ColumnSelect.vue", () => {
     it("optionsGenerator correctly transforms the data with none column and row keys", async () => {
       props.control.uischema.options.showNoneColumn = true;
       props.control.uischema.options.showRowKeys = true;
+      props.control.uischema.options.showRowNumbers = true;
 
       const wrapper = (component = mountJsonFormsComponent(ColumnSelect, {
         props,
@@ -150,6 +151,10 @@ describe("ColumnSelect.vue", () => {
         expect.objectContaining({
           id: "<row-keys>",
           text: "RowIDs",
+        }),
+        expect.objectContaining({
+          id: "<row-numbers>",
+          text: "Row numbers",
         }),
         expect.objectContaining({
           id: "Universe_0_0",

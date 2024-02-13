@@ -71,9 +71,13 @@ export default async (
   const showRowKeys = Boolean(
     extractFromUiSchemaOptions(control, "showRowKeys"),
   );
+  const showRowNumbers = Boolean(
+    extractFromUiSchemaOptions(control, "showRowNumbers"),
+  );
   return [
     ...(showNoneColumn ? [{ id: "<none>", text: "None" }] : []),
     ...(showRowKeys ? [{ id: "<row-keys>", text: "RowIDs" }] : []),
+    ...(showRowNumbers ? [{ id: "<row-numbers>", text: "Row numbers" }] : []),
     ...normalPossibleValues,
   ];
 };

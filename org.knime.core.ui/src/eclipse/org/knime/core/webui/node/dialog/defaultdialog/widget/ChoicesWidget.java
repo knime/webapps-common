@@ -90,6 +90,11 @@ public @interface ChoicesWidget {
     boolean showRowKeysColumn() default false;
 
     /**
+     * @return whether to show an additional choice "Row numbers" representing the row number column.
+     */
+    boolean showRowNumbersColumn() default false;
+
+    /**
      * @return whether a search field should be shown for the {@link ColumnFilter}
      */
     boolean showSearch() default true;
