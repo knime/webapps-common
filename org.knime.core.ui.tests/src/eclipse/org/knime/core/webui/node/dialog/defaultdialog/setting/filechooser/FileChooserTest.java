@@ -97,7 +97,7 @@ public class FileChooserTest {
         final var result = objectMapper.valueToTree(new TestSettings());
         assertThatJson(result).inPath("fileChooser.path.path").isString().isEqualTo("");//
         assertThatJson(result).inPath("fileChooser.path.fsCategory").isString().isEqualTo("LOCAL");
-        assertThatJson(result).inPath("fileChooser.path.timeout").isIntegralNumber().isEqualTo(1000);
+        assertThatJson(result).inPath("fileChooser.path.timeout").isIntegralNumber().isEqualTo(10000);
 
     }
 
