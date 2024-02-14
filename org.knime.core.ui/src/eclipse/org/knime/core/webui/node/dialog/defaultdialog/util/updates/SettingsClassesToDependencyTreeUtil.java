@@ -68,9 +68,9 @@ public final class SettingsClassesToDependencyTreeUtil {
     static Collection<TriggerVertex>
         settingsToDependencyTree(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
         final var valueRefsAndValueProviders =
-            SettingsClassesToValueRefsAndValueProviders.settingsClassesToValueRefsAndValueProviders(settingsClasses);
-        return ValueRefsAndValueProvidersToDependencyTree
-            .valueRefsAndValueProvidersToDependencyTree(valueRefsAndValueProviders);
+            SettingsClassesToValueRefsAndStateProviders.settingsClassesToValueRefsAndStateProviders(settingsClasses);
+        return ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree
+            .valueRefsAndStateProvidersToDependencyTree(valueRefsAndValueProviders);
     }
 
     /**

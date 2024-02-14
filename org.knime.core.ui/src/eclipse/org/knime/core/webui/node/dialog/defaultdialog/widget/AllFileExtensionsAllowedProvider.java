@@ -48,8 +48,6 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.widget;
 
-import java.util.function.Supplier;
-
 /**
  *
  * Marker class that is only meant to serve as a default in {@link FileWriterWidget#fileExtensionProvider()} and
@@ -58,11 +56,16 @@ import java.util.function.Supplier;
  * @noreference
  * @author Paul Bärnreuther
  */
-public final class AllFileExtensionsAllowedProvider implements Supplier<String> {
+public final class AllFileExtensionsAllowedProvider implements FileExtensionProvider {
 
     @Override
-    public String get() {
-        throw new RuntimeException("This method should never be called");
+    public void init(final StateProviderInitializer initializer) {
+        throw new IllegalStateException("This method should never be called");
+    }
+
+    @Override
+    public String computeState() {
+        throw new IllegalStateException("This method should never be called");
     }
 
 }

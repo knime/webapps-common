@@ -53,7 +53,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import java.util.function.Supplier;
+
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 
 import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FileChooser;
 
@@ -67,13 +68,24 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FileCh
 public @interface FileWriterWidget {
 
     /**
-     * Provider for a single valid file extension respected for modes which allow browsing.
+     * A single valid file extension. When selecting a file path from a file explorer this has two effects:
+     * <ol>
+     * <li>Only files with this extension are shown in the explorer</li>
+     * <li>Whenever a file is chosen, i.e. when the explorer is closed, the extension is appended if the file does not
+     * already exist and does not already end with the extension.
+     * </ol>
      *
-     * @return a provider for a file extension by which the browsable files are filtered and which is appended to the
-     *         selected filename whenever it does not already end with it.
      *
-     *         TODO: Replace with a stateProvider. (or add another field?)
+     * @return a file extension (e.g. "pdf" for files which should end with ".pdf")
      */
-    Class<? extends Supplier<String>> fileExtensionProvider() default AllFileExtensionsAllowedProvider.class;
+    String fileExtension() default "";
+
+    /**
+     * This can be used instead of {@link #fileExtension} in order to supply the file extension in a dynamic way, e.g.
+     * depending on other settings. See {@link StateProvider} for more information.
+     *
+     * @return a file extension provider
+     */
+    Class<? extends FileExtensionProvider> fileExtensionProvider() default AllFileExtensionsAllowedProvider.class;
 
 }

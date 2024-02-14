@@ -78,11 +78,13 @@ import org.knime.core.webui.data.DataServiceContextTest;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DataServiceTriggerInvocationHandler.PathAndValue;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DataServiceTriggerInvocationHandler.UpdateResult;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.FileExtensionProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonChange;
@@ -139,7 +141,7 @@ class DefaultNodeDialogDataServiceImplTest {
     }
 
     @Nested
-    class ValueUpdatesDataServiceTest {
+    class UpdatesDataServiceTest {
 
         static final class MyValueRef implements ValueRef<String> {
         }
@@ -180,10 +182,51 @@ class DefaultNodeDialogDataServiceImplTest {
             final var dataService = getDataService(UpdateSettings.class);
             final var resultWrapper = dataService.update2("widgetId", MyValueRef.class.getName(),
                 Map.of(MyValueRef.class.getName(), testDepenenciesFooValue));
-            final var result = (List<PathAndValue>)(resultWrapper.result());
+            final var result = (List<UpdateResult>)(resultWrapper.result());
             assertThat(result).hasSize(1);
             assertThat(result.get(0).value()).isEqualTo(testDepenenciesFooValue);
             assertThat(result.get(0).path()).isEqualTo("#/properties/model/properties/updatedWidget");
+        }
+
+        @Test
+        void testUiStateProvider() throws ExecutionException, InterruptedException {
+
+            class UpdateSettings implements DefaultNodeSettings {
+
+                @Widget(valueRef = MyValueRef.class)
+                String m_dependency;
+
+                static final class MyFileExtensionProvider implements FileExtensionProvider {
+
+                    private Supplier<String> m_valueSupplier;
+
+                    @Override
+                    public void init(final StateProviderInitializer initializer) {
+                        m_valueSupplier = initializer.computeFromValueSupplier(MyValueRef.class);
+
+                    }
+
+                    @Override
+                    public String computeState() {
+                        return m_valueSupplier.get();
+                    }
+
+                }
+
+                @LocalFileWriterWidget(fileExtensionProvider = MyFileExtensionProvider.class)
+                String m_updatedWidget;
+
+            }
+
+            final String testDepenencyValue = "custom value";
+            final var dataService = getDataService(UpdateSettings.class);
+            final var resultWrapper = dataService.update2("widgetId", MyValueRef.class.getName(),
+                Map.of(MyValueRef.class.getName(), testDepenencyValue));
+            final var result = (List<UpdateResult>)(resultWrapper.result());
+            assertThat(result).hasSize(1);
+            assertThat(result.get(0).value()).isEqualTo(testDepenencyValue);
+            assertThat(result.get(0).path()).isNull();
+            assertThat(result.get(0).id()).isEqualTo(UpdateSettings.MyFileExtensionProvider.class.getName());
         }
 
         static final class MyFirstValueRef implements ValueRef<String> {
@@ -277,7 +320,7 @@ class DefaultNodeDialogDataServiceImplTest {
             final var resultWrapper =
                 dataService.update2("widgetId", MyFirstValueRef.class.getName(), Map.of(MyFirstValueRef.class.getName(),
                     testDepenenciesFooValue, MySecondValueRef.class.getName(), testDepenenciesBarValue));
-            final var result = (List<PathAndValue>)(resultWrapper.result());
+            final var result = (List<UpdateResult>)(resultWrapper.result());
             assertThat(result).hasSize(2);
             assertThat(result).extracting("value", "path").contains(
                 tuple(testDepenenciesFooValue + "_first", "#/properties/model/properties/firstUpdatedWidget"),

@@ -1,7 +1,8 @@
 export type FileChooserUiSchemaOptions = {
   isWriter?: boolean;
   placeholder?: string;
-  fileExtension?: string; // TODO replace with fileExtensionProvider
+  fileExtension?: string;
+  fileExtensionProvider?: string;
 };
 
 export type FileChooserUiSchema = {

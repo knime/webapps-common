@@ -58,6 +58,8 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_CHOICES_UPDATE_HANDLER;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_DEPENDENCIES;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ELEMENTS;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_FILE_EXTENSION;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_FILE_EXTENSION_PROVIDER;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_FORMAT;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_IS_WRITER;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_LABEL;
@@ -93,6 +95,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ComboBoxWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.FileExtensionProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileReaderWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
@@ -204,10 +207,6 @@ final class UiSchemaOptionsGenerator {
                 case FILE_CHOOSER:
                     options.put(TAG_FORMAT, Format.FILE_CHOOSER);
                     break;
-                case FILE_WRITER:
-                    options.put(TAG_FORMAT, Format.FILE_CHOOSER);
-                    options.put(TAG_IS_WRITER, true);
-                    break;
             }
         }
 
@@ -244,11 +243,7 @@ final class UiSchemaOptionsGenerator {
             options.put(TAG_FORMAT, Format.FILE_CHOOSER);
             options.put(TAG_IS_WRITER, true);
             final var fileWriterWidget = m_field.getAnnotation(FileWriterWidget.class);
-            if (!fileWriterWidget.fileExtensionProvider().equals(AllFileExtensionsAllowedProvider.class)) {
-                final var fileExtension =
-                    InstantiationUtil.createInstance(fileWriterWidget.fileExtensionProvider()).get();
-                options.put("fileExtension", fileExtension);
-            }
+            resolveFileExtension(options, fileWriterWidget.fileExtension(), fileWriterWidget.fileExtensionProvider());
 
         }
         if (annotatedWidgets.contains(LocalFileReaderWidget.class)) {
@@ -265,11 +260,8 @@ final class UiSchemaOptionsGenerator {
             final var localFileWriterWidget = m_field.getAnnotation(LocalFileWriterWidget.class);
             options.put("placeholder", localFileWriterWidget.placeholder());
             options.put(TAG_IS_WRITER, true);
-            if (!localFileWriterWidget.fileExtensionProvider().equals(AllFileExtensionsAllowedProvider.class)) {
-                final var fileExtension =
-                    InstantiationUtil.createInstance(localFileWriterWidget.fileExtensionProvider()).get();
-                options.put("fileExtension", fileExtension);
-            }
+            resolveFileExtension(options, localFileWriterWidget.fileExtension(),
+                localFileWriterWidget.fileExtensionProvider());
         }
         if (annotatedWidgets.contains(ButtonWidget.class)) {
             final var buttonWidget = m_field.getAnnotation(ButtonWidget.class);
@@ -404,6 +396,19 @@ final class UiSchemaOptionsGenerator {
 
         if (options.isEmpty()) {
             control.remove(TAG_OPTIONS);
+        }
+    }
+
+    private static void resolveFileExtension(final ObjectNode options, final String fileExtension,
+        final Class<? extends FileExtensionProvider> fileExtensionProvider) {
+        if (!fileExtension.isEmpty()) {
+            options.put(TAG_FILE_EXTENSION, fileExtension);
+        }
+        if (!fileExtensionProvider.equals(AllFileExtensionsAllowedProvider.class)) {
+            CheckUtils.check(fileExtension.isEmpty(), UiSchemaGenerationException::new,
+                () -> "The parameter \"fileExtension\" and \"fileExtensionProvider\" "
+                    + "cannot be used in combination.");
+            options.put(TAG_FILE_EXTENSION_PROVIDER, fileExtensionProvider.getName());
         }
     }
 

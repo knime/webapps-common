@@ -113,27 +113,44 @@ class FileChooserDataServiceTest {
         }
 
         @Test
+        void testRelativeInputPath() throws IOException {
+            when(super.m_fileSystem.getPath(eq(""))).thenReturn(m_tempRootFolder);
+            final var deletedFolder = Files.createTempDirectory(m_subFolder, "aDirectory");
+            Files.delete(deletedFolder);
+            final var invalidPath = super.pathToString(m_tempRootFolder.relativize(deletedFolder));
+
+            final var result =
+                new PerformListItemsBuilder().asWriter().withFolder(invalidPath).build().performListItems();
+
+            assertThat(result.errorMessage()).isEmpty();
+            assertThat(result.folder().path()).isEqualTo(m_subFolder.toString());
+            assertThat(result.filePathRelativeToFolder()).isEqualTo(m_subFolder.relativize(deletedFolder).toString());
+        }
+
+        @Test
         void testThrowsOnWrongFileSystemId() {
-            final var dataService = new FileChooserDataService();
-            assertThrows(IllegalArgumentException.class,
-                () -> dataService.listItems("notAValidFileSystemId", null, null, new ListItemsConfig(false, null)));
+            final var performListItems =
+                new PerformListItemsBuilder().withFileSystemId("notAValidFileSystemId").build();
+            assertThrows(IllegalArgumentException.class, performListItems::performListItems);
         }
 
         @Test
         void testReusesFileSystem() throws IOException {
             final var dataService = new FileChooserDataService();
-            dataService.listItems("local", null, null, new ListItemsConfig(false, null));
-            dataService.listItems("local", null, null, new ListItemsConfig(false, null));
+            final var performListItems = new PerformListItemsBuilder().fromDataService(dataService).build();
+            performListItems.performListItems();
+            performListItems.performListItems();
             assertThat(fileChooserBackendMock.constructed()).hasSize(1);
         }
 
         @Test
         void testClosesAndClearsFileSystemOnClear() throws IOException {
             final var dataService = new FileChooserDataService();
-            dataService.listItems("local", null, null, new ListItemsConfig(false, null));
+            final var performListItems = new PerformListItemsBuilder().fromDataService(dataService).build();
+            performListItems.performListItems();
             dataService.clear();
             verify(fileChooserBackendMock.constructed().get(0)).close();
-            dataService.listItems("local", null, null, new ListItemsConfig(false, null));
+            performListItems.performListItems();
             assertThat(fileChooserBackendMock.constructed()).hasSize(2);
         }
 
@@ -165,6 +182,19 @@ class FileChooserDataServiceTest {
         @Override
         List<Path> getItemsInInitialFolder() throws IOException {
             return Files.list(getDefaultDirectory()).toList();
+        }
+
+        @Test
+        void testAbsoluteInputPath() throws IOException {
+            final var absolutePath = super.pathToString(m_subFolder);
+
+            final var result =
+                new PerformListItemsBuilder().asWriter().withFolder(absolutePath).build().performListItems();
+
+            assertThat(result.errorMessage()).isEmpty();
+            assertThat(result.folder().path()).isNull();
+            assertThat(result.filePathRelativeToFolder())
+                .isEqualTo(m_emptyPathDirectory.getParent().getParent().relativize(m_subFolder).toString());
         }
 
     }
@@ -258,8 +288,11 @@ class FileChooserDataServiceTest {
 
             final var result = new PerformListItemsBuilder().withPath(path).withFolder(folderName)
                 .withExtensions(fileExtensions).build().performListItems();
-            // One folder (which is not checked against file extensions) and the pdf file but not the txt file
             verify(m_fileSystem).getPathMatcher(eq("glob:**.{pdf,png}"));
+            /**
+             * Two items expected: One folder (which is not checked against file extensions) and the pdf file but not
+             * the txt file
+             */
             assertThat(result.folder().items()).hasSize(2);
         }
 
@@ -374,7 +407,7 @@ class FileChooserDataServiceTest {
 
             @Test
             void testGetFilePathDoesNotAppendExtensionIfExtensionAlreadyPresent() throws IOException {
-                final var file = Files.writeString(m_subFolder.resolve("aFile." + APPENDEN_EXTENSION), "");
+                final var file = m_subFolder.resolve("aFile." + APPENDEN_EXTENSION);
                 final var path = relativizeIfNecessary(m_subFolder).toString();
                 final var fileName = file.getFileName().toString();
                 when(m_fileSystem.getPath(eq(path), eq(fileName))).thenReturn(file);
@@ -437,6 +470,11 @@ class FileChooserDataServiceTest {
 
             PerformListItemsBuilder withPath(final String path) {
                 m_path = path;
+                return this;
+            }
+
+            PerformListItemsBuilder withFileSystemId(final String fileSystemId) {
+                m_fileSystemId = fileSystemId;
                 return this;
             }
 

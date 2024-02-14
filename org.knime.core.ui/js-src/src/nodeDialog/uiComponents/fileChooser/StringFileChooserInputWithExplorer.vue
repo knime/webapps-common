@@ -5,6 +5,7 @@ import InputField from "webapps-common/ui/components/forms/InputField.vue";
 import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
 import FolderLenseIcon from "webapps-common/ui/assets/img/icons/folder-lense.svg";
 import type StringFileChooserInputWithExplorerProps from "./types/StringFileChooserInputWithExplorerProps";
+import inject from "@/nodeDialog/utils/inject";
 
 const props = defineProps<StringFileChooserInputWithExplorerProps>();
 const emit = defineEmits(["update:modelValue"]);
@@ -13,10 +14,22 @@ const placeholder = computed(() => props.options?.placeholder);
 const isWriter = computed(() => props.options?.isWriter);
 const filteredExtensions = ref<string[]>([]);
 const appendedExtension = ref<string | null>(null);
+const addStateProviderListener = inject("addStateProviderListener");
+
+const setFileExtension = (fileExtension: string) => {
+  filteredExtensions.value = [fileExtension];
+  appendedExtension.value = fileExtension;
+};
+
 onMounted(() => {
   if (props.options?.fileExtension) {
-    filteredExtensions.value = [props.options?.fileExtension]; // TODO
-    appendedExtension.value = props.options?.fileExtension;
+    setFileExtension(props.options?.fileExtension);
+  }
+  if (props.options?.fileExtensionProvider) {
+    addStateProviderListener(
+      props.options?.fileExtensionProvider,
+      setFileExtension,
+    );
   }
 });
 

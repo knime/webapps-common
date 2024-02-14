@@ -839,6 +839,7 @@ class JsonFormsUiSchemaUtilTest {
                 .isEqualTo(TestSettings.MyButtonRef.class.getName());
             assertThatJson(response).inPath("$.globalUpdates[0].dependencies").isArray().hasSize(0);
         }
+
     }
 
 }

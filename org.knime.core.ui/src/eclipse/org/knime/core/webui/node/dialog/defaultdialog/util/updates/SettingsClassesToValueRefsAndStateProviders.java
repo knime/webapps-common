@@ -48,10 +48,14 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.function.Function;
 
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaGenerationException;
@@ -59,11 +63,14 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.AllFileExtensionsAllowedProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
 
-final class SettingsClassesToValueRefsAndValueProviders {
+final class SettingsClassesToValueRefsAndStateProviders {
 
     record ValueRefWrapper(Class<? extends ValueRef> valueRef, PathWithSettingsKey fieldLocation) {
     }
@@ -71,31 +78,76 @@ final class SettingsClassesToValueRefsAndValueProviders {
     record ValueProviderWrapper(Class<? extends StateProvider> stateProviderClass, PathWithSettingsKey fieldLocation) {
     }
 
-    record ValueRefsAndValueProviders(Collection<ValueRefWrapper> valueRefs,
-        Collection<ValueProviderWrapper> valueProviders) {
+    record ValueRefsAndStateProviders(Collection<ValueRefWrapper> valueRefs,
+        Collection<ValueProviderWrapper> valueProviders, Collection<Class<? extends StateProvider>> uiStateProviders) {
     }
 
     /**
      * @param settingsClasses a map of settings classes to collect annotated fields from
      * @return the valueRef and updates annotations
      */
-    static ValueRefsAndValueProviders
-        settingsClassesToValueRefsAndValueProviders(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
+    static ValueRefsAndStateProviders
+        settingsClassesToValueRefsAndStateProviders(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
 
         final Collection<ValueRefWrapper> valueRefs = new ArrayList<>();
         final Collection<ValueProviderWrapper> valueProviders = new ArrayList<>();
+        final Collection<Class<? extends StateProvider>> uiStateProviders = new ArrayList<>();
 
         settingsClasses.entrySet().forEach(entry -> {
             final var traverser = new DefaultNodeSettingsFieldTraverser(entry.getValue());
-            traverser.getAllFields().stream()
-                .forEach(field -> addValueRefAndValueProviderForField(field, entry, valueRefs, valueProviders));
+            traverser.getAllFields().stream().forEach(field -> {
+                addWidgetAnnotationValueRefAndValueProviderForField(field, entry, valueRefs, valueProviders);
+                addUiStateProviderForField(field, uiStateProviders);
+            });
         });
-
-        return new ValueRefsAndValueProviders(valueRefs, valueProviders);
+        return new ValueRefsAndStateProviders(valueRefs, valueProviders, uiStateProviders);
 
     }
 
-    private static void addValueRefAndValueProviderForField(final TraversedField field,
+    private record UiStateProviderSpec<T extends Annotation, S extends StateProvider>( //
+        Class<T> annotationClass, //
+        Function<T, Class<? extends S>> getProviderParameter, //
+        Class<? extends S> ignoredDefaultParameter //
+    ) {
+    }
+
+    private static List<UiStateProviderSpec<? extends Annotation, ? extends StateProvider>> uiStateProviderSpecs =
+        List.of( //
+            new UiStateProviderSpec<>(//
+                FileWriterWidget.class, //
+                FileWriterWidget::fileExtensionProvider, //
+                AllFileExtensionsAllowedProvider.class //
+            ), //
+            new UiStateProviderSpec<>(//
+                LocalFileWriterWidget.class, //
+                LocalFileWriterWidget::fileExtensionProvider, //
+                AllFileExtensionsAllowedProvider.class//
+            ) //
+
+        );
+
+    private static void addUiStateProviderForField(final TraversedField field,
+        final Collection<Class<? extends StateProvider>> uiStateProviders) {
+        uiStateProviderSpecs.stream().forEach(
+            spec -> getUiStateProviderForFieldAndSpecificAnnotation(field, spec).ifPresent(uiStateProviders::add));
+    }
+
+    private static <T extends Annotation, S extends StateProvider> Optional<Class<? extends S>>
+        getUiStateProviderForFieldAndSpecificAnnotation(final TraversedField field,
+            final UiStateProviderSpec<T, S> spec) {
+        final var annotation = field.propertyWriter().getAnnotation(spec.annotationClass());
+        if (annotation == null) {
+            return Optional.empty();
+        }
+        final var stateProvider = spec.getProviderParameter().apply(annotation);
+        if (stateProvider.equals(spec.ignoredDefaultParameter())) {
+            return Optional.empty();
+        }
+        return Optional.of(stateProvider);
+
+    }
+
+    private static void addWidgetAnnotationValueRefAndValueProviderForField(final TraversedField field,
         final Entry<String, Class<? extends WidgetGroup>> entry, final Collection<ValueRefWrapper> valueRefs,
         final Collection<ValueProviderWrapper> valueProviders) {
         final var widgetAnnotation = field.propertyWriter().getAnnotation(Widget.class);

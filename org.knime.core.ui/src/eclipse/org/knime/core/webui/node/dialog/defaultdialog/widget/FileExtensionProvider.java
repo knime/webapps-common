@@ -44,49 +44,17 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Feb 6, 2024 (Paul Bärnreuther): created
+ *   Feb 14, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
+package org.knime.core.webui.node.dialog.defaultdialog.widget;
 
-import java.util.Optional;
-
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueRefsAndStateProviders.ValueProviderWrapper;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 
 /**
+ * Used for dynamically providing file extensions to writer widgets.
  *
  * @author Paul Bärnreuther
  */
-final class UpdateVertex extends Vertex {
-
-    private final Class<? extends StateProvider> m_stateProviderClass;
-
-    private final Optional<PathWithSettingsKey> m_fieldLocation;
-
-    UpdateVertex(final ValueProviderWrapper wrapper) {
-        m_stateProviderClass = wrapper.stateProviderClass();
-        m_fieldLocation = Optional.of(wrapper.fieldLocation());
-    }
-
-    UpdateVertex(final Class<? extends StateProvider> update) {
-        m_stateProviderClass = update;
-        m_fieldLocation = Optional.empty();
-    }
-
-    @Override
-    public <T> T visit(final VertexVisitor<T> visitor) {
-        return visitor.accept(this);
-    }
-
-    Class<? extends StateProvider> getStateProviderClass() {
-        return m_stateProviderClass;
-    }
-
-    /**
-     * @return information on the associated field
-     */
-    Optional<PathWithSettingsKey> getFieldLocation() {
-        return m_fieldLocation;
-    }
+public interface FileExtensionProvider extends StateProvider<String> {
 
 }

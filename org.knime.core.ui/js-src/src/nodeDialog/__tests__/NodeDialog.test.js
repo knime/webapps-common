@@ -503,7 +503,7 @@ describe("NodeDialog.vue", () => {
     });
   });
 
-  describe("updateData", () => {
+  describe("updateData (old mechanism: registerWatchers)", () => {
     let wrapper, handleChange, registeredWatchers;
 
     const settingsData = {
@@ -588,45 +588,67 @@ describe("NodeDialog.vue", () => {
         arrayLayoutSetting: [{ value: "some data" }, { value: "second" }],
       });
     });
+  });
 
-    it("adds global update handlers initially", async () => {
+  describe("value updates, triggers and stateProviderListeners", () => {
+    const uiSchemaKey = "ui_schema";
+    let globalUpdates;
+
+    beforeEach(() => {
+      initialDataSpy.mockImplementation(
+        vi.fn(() =>
+          Promise.resolve({
+            data: {
+              view: {
+                firstSetting: "firstSetting",
+              },
+              model: {
+                secondSetting: "secondSetting",
+              },
+            },
+            schema: {},
+            [uiSchemaKey]: {
+              globalUpdates,
+            },
+            flowVariableSettings: {},
+          }),
+        ),
+      );
+    });
+
+    const getDataServiceSpy = (wrapper) => {
+      return vi.spyOn(wrapper.vm.jsonDataService, "data");
+    };
+
+    const getWrapperWithDataServiceSpy = async () => {
+      const wrapper = shallowMount(NodeDialog, getOptions());
+      await flushPromises();
+      const dataServiceSpy = getDataServiceSpy(wrapper);
+      return { wrapper, dataServiceSpy };
+    };
+
+    it("handles value updates", async () => {
       const triggerId = "myTriggerId";
       const dependencyId = "myDependencyId";
-      const uiSchemaKey = "ui_schema";
-      initialDataSpy.mockResolvedValue({
-        data: {
-          view: {
-            firstSetting: "firstSetting",
+      globalUpdates = [
+        {
+          trigger: {
+            scope: "#/properties/view/properties/firstSetting",
+            id: triggerId,
           },
-          model: {
-            secondSetting: "secondSetting",
-          },
-        },
-        schema: {},
-        [uiSchemaKey]: {
-          globalUpdates: [
+          dependencies: [
             {
-              trigger: {
-                scope: "#/properties/view/properties/firstSetting",
-                id: triggerId,
-              },
-              dependencies: [
-                {
-                  id: dependencyId,
-                  scope: "#/properties/model/properties/secondSetting",
-                },
-              ],
+              id: dependencyId,
+              scope: "#/properties/model/properties/secondSetting",
             },
           ],
         },
-        flowVariableSettings: {},
-      });
+      ];
 
-      const wrapper = shallowMount(NodeDialog, getOptions());
-      await flushPromises();
-      const dataSericeMock = vi.spyOn(wrapper.vm.jsonDataService, "data");
+      const { wrapper, dataServiceSpy } = await getWrapperWithDataServiceSpy();
+
       const updatedValue = "updated";
-      dataSericeMock.mockResolvedValue({
+      dataServiceSpy.mockResolvedValue({
         result: [
           {
             path: "#/properties/model/properties/secondSetting",
@@ -634,11 +656,18 @@ describe("NodeDialog.vue", () => {
           },
         ],
       });
-
-      const path = "view.firstSetting";
       const triggeringValue = "some data";
       const handleChange = vi.fn(() => {});
-      await wrapper.vm.updateData(handleChange, path, triggeringValue);
+
+      await wrapper.vm.updateData(
+        handleChange,
+        "view.firstSetting",
+        triggeringValue,
+      );
+      expect(dataServiceSpy).toHaveBeenCalledWith({
+        method: "settings.update2",
+        options: [null, triggerId, { [dependencyId]: "secondSetting" }],
+      });
       expect(handleChange).toHaveBeenCalledWith("", {
         view: {
           firstSetting: triggeringValue,
@@ -647,10 +676,94 @@ describe("NodeDialog.vue", () => {
           secondSetting: updatedValue,
         },
       });
-      expect(dataSericeMock).toHaveBeenCalledWith({
+    });
+
+    it("handles updates triggered by a widget user interaction", async () => {
+      const triggerId = "myTriggerId";
+      const dependencyId = "myDependencyId";
+      globalUpdates = [
+        {
+          trigger: {
+            id: triggerId,
+          },
+          dependencies: [
+            {
+              id: dependencyId,
+              scope: "#/properties/model/properties/secondSetting",
+            },
+          ],
+        },
+      ];
+
+      const { wrapper, dataServiceSpy } = await getWrapperWithDataServiceSpy();
+
+      const updatedValue = "updated";
+      dataServiceSpy.mockResolvedValue({
+        result: [
+          {
+            path: "#/properties/model/properties/secondSetting",
+            value: updatedValue,
+          },
+        ],
+      });
+
+      await wrapper.vm.trigger(triggerId);
+      expect(dataServiceSpy).toHaveBeenCalledWith({
         method: "settings.update2",
         options: [null, triggerId, { [dependencyId]: "secondSetting" }],
       });
+      expect(wrapper.vm.currentData).toStrictEqual({
+        view: {
+          firstSetting: "firstSetting",
+        },
+        model: {
+          secondSetting: updatedValue,
+        },
+      });
+    });
+
+    it("calls registered state provider listeners on update", async () => {
+      const triggerId = "myTriggerId";
+      const dependencyId = "myDependencyId";
+      globalUpdates = [
+        {
+          trigger: {
+            id: triggerId,
+          },
+          dependencies: [
+            {
+              id: dependencyId,
+              scope: "#/properties/model/properties/secondSetting",
+            },
+          ],
+        },
+      ];
+
+      const { wrapper, dataServiceSpy } = await getWrapperWithDataServiceSpy();
+
+      const stateProviderId = "myId";
+
+      const stateProviderListener = vi.fn();
+      wrapper.vm.addStateProviderListener(
+        stateProviderId,
+        stateProviderListener,
+      );
+      const updatedValue = "updated";
+      dataServiceSpy.mockResolvedValue({
+        result: [
+          {
+            id: stateProviderId,
+            value: updatedValue,
+          },
+        ],
+      });
+      await wrapper.vm.trigger(triggerId);
+      expect(dataServiceSpy).toHaveBeenCalledWith({
+        method: "settings.update2",
+        options: [null, triggerId, { [dependencyId]: "secondSetting" }],
+      });
+
+      expect(stateProviderListener).toHaveBeenCalledWith(updatedValue);
     });
   });
 

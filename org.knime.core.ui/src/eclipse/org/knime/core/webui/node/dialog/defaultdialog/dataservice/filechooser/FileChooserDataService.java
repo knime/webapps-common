@@ -101,8 +101,23 @@ public final class FileChooserDataService {
         static FolderAndError asNonRootFolder(final Path path, final List<Object> items, final String errorMessage,
             final Path inputPath) {
             final var folder = new Folder(items, path.toString());
-            return new FolderAndError(folder, Optional.ofNullable(errorMessage), path.relativize(inputPath).toString());
+            String relativePath = getFilePathRelativeToFolder(path, inputPath);
+            return new FolderAndError(folder, Optional.ofNullable(errorMessage), relativePath);
         }
+    }
+
+    /**
+     * @param path
+     * @param inputPath
+     * @return inputPath relative to path while taking care of all combinations of absolute and relative paths.
+     */
+    private static String getFilePathRelativeToFolder(final Path path, final Path inputPath) {
+        if (path.isAbsolute() && !inputPath.isAbsolute()) {
+            return path.relativize(inputPath.toAbsolutePath()).toString();
+        } else if (!path.isAbsolute() && inputPath.isAbsolute()) {
+            return inputPath.toString();
+        }
+        return path.relativize(inputPath).toString();
     }
 
     /**
@@ -112,7 +127,7 @@ public final class FileChooserDataService {
         /**
          * Setting this will impact whether non-readable or non-writable files are not displayed
          */
-        Boolean isWriter,
+        boolean isWriter,
         /**
          * the extensions with respect to which the files are filtered. If empty or null, no filters will be applied.
          */
@@ -206,12 +221,17 @@ public final class FileChooserDataService {
     /**
      * @param appendedExtension is non null here
      */
-    private static Path appendExtensionIfNotPresent(final Path nextPath, final String appendedExtension) {
-        final var isExistingWritableFile = Files.isWritable(nextPath) && !Files.isDirectory(nextPath);
+    private static Path appendExtensionIfNotPresent(final Path path, final String appendedExtension) {
+        final var isExistingWritableFile = Files.isWritable(path) && !Files.isDirectory(path);
         if (isExistingWritableFile) {
-            return nextPath;
+            return path;
         }
-        return nextPath.resolveSibling(String.format("%s.%s", nextPath.getFileName(), appendedExtension));
+        final var alreadyEndsWithExtension =
+            path.getFileName().toString().endsWith(String.format(".%s", appendedExtension));
+        if (alreadyEndsWithExtension) {
+            return path;
+        }
+        return path.resolveSibling(String.format("%s.%s", path.getFileName(), appendedExtension));
 
     }
 
@@ -269,7 +289,7 @@ public final class FileChooserDataService {
             return Folder.asNonRootFolder(path.toAbsolutePath(), folderContent, errorMessage, inputPath);
         } else {
             return getEmptyPathFolder(fileChooserBackend).equals(path)
-                ? Folder.asRootFolder(folderContent, errorMessage, path.relativize(inputPath).toString())
+                ? Folder.asRootFolder(folderContent, errorMessage, getFilePathRelativeToFolder(path, inputPath))
                 : Folder.asNonRootFolder(path, folderContent, errorMessage, inputPath);
         }
     }
@@ -304,7 +324,7 @@ public final class FileChooserDataService {
         return extensionsPredicate.and(readerOrWriterPredicate);
     }
 
-    private static Predicate<Path> getReaderOrWriterPredicate(final Boolean isWriter) {
+    private static Predicate<Path> getReaderOrWriterPredicate(final boolean isWriter) {
         return isWriter ? Files::isWritable : Files::isReadable;
     }
 

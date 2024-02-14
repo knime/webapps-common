@@ -51,6 +51,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsScopeUtil;
@@ -72,17 +73,30 @@ public class DataServiceTriggerInvocationHandler {
         m_triggerInvocationHandler = new TriggerInvocationHandler(settingsClasses);
     }
 
-    record PathAndValue(String path, Object value) {
+    record UpdateResult(String path, String id, Object value) {
+
+        private static UpdateResult forPath(final String path, final Object value) {
+            return new UpdateResult(path, null, value);
+        }
+
+        private static UpdateResult forId(final String id, final Object value) {
+            return new UpdateResult(null, id, value);
+        }
     }
 
-    List<PathAndValue> trigger(final String triggerId, final Map<String, Object> rawDependencies,
+    List<UpdateResult> trigger(final String triggerId, final Map<String, Object> rawDependencies,
         final DefaultNodeSettingsContext context) {
         final Function<Class<? extends ValueRef>, Object> dependencyProvider = valueRef -> {
             final var rawDependencyObject = rawDependencies.get(valueRef.getName());
             return ConvertValueUtil.convertValueRef(rawDependencyObject, valueRef, context);
         };
-        return m_triggerInvocationHandler.invokeTrigger(triggerId, dependencyProvider).entrySet().stream()
-            .map(entry -> new PathAndValue(toScope(entry.getKey()), entry.getValue())).toList();
+        final var triggerResult = m_triggerInvocationHandler.invokeTrigger(triggerId, dependencyProvider);
+
+        final var valueUpdates = triggerResult.valueUpdates().entrySet().stream()
+            .map(entry -> UpdateResult.forPath(toScope(entry.getKey()), entry.getValue()));
+        final var otherUpdates = triggerResult.otherUpdates().entrySet().stream()
+            .map(entry -> UpdateResult.forId(entry.getKey(), entry.getValue()));
+        return Stream.concat(valueUpdates, otherUpdates).toList();
 
     }
 

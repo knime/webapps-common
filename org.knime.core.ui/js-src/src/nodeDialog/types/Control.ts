@@ -1,7 +1,5 @@
 import type { useJsonFormsControl } from "@jsonforms/vue";
 import type { FlowSettings } from "../api/types";
-import type { ChoicesUiSchema } from "./ChoicesUiSchema";
-import { FileChooserUiSchema } from "./FileChooserUiSchema";
 
 export interface ObjectSchema<S> {
   type: "object";
@@ -33,7 +31,6 @@ type Control = ReturnType<typeof useJsonFormsControl>["control"] & {
     flowVariablesMap?: Record<string, FlowSettings>;
   } & Schema;
   schema: Schema;
-  uischema: ChoicesUiSchema | FileChooserUiSchema;
 };
 
 export default Control;

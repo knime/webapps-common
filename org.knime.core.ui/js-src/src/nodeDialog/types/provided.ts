@@ -16,6 +16,12 @@ type registerWatcher = (params: {
   init?: (newData: SettingsData) => Promise<void>;
   dependencies: string[];
 }) => Promise<() => void>;
+
+type addStateProviderListener<T> = (
+  id: string,
+  callback: (data: T) => void,
+) => void;
+
 type getData = (
   params: Parameters<JsonDataService["data"]>[0] & object,
 ) => Promise<any>;
@@ -23,6 +29,7 @@ type sendAlert = (params: Parameters<AlertingService["sendAlert"]>[0]) => void;
 
 interface Provided {
   getPossibleValuesFromUiSchema: getPossibleValuesFromUiSchema;
+  addStateProviderListener: addStateProviderListener<any>;
   registerWatcher: registerWatcher;
   trigger: (triggerId: string) => void;
   updateData: any;

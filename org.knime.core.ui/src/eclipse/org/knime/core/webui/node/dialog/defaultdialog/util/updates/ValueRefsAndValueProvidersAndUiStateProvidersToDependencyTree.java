@@ -57,34 +57,34 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueRefsAndValueProviders.ValueProviderWrapper;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueRefsAndValueProviders.ValueRefWrapper;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueRefsAndValueProviders.ValueRefsAndValueProviders;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueRefsAndStateProviders.ValueProviderWrapper;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueRefsAndStateProviders.ValueRefWrapper;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueRefsAndStateProviders.ValueRefsAndStateProviders;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.Vertex.VertexVisitor;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonRef;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
 
-final class ValueRefsAndValueProvidersToDependencyTree {
+final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
 
-    private ValueRefsAndValueProvidersToDependencyTree() {
+    private ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree() {
         // Utility
     }
 
     /**
-     * Converts collected valueRefs and valueUpdates to a tree structure connecting these
+     * Converts collected valueRefs and state providers to a tree structure connecting these
      *
-     * @param valueRefsAndValueProviders collected from settings
+     * @param valueRefsAndStateProviders collected from settings
      * @return the trigger vertices of the resulting tree of vertices
      */
     static Collection<TriggerVertex>
-        valueRefsAndValueProvidersToDependencyTree(final ValueRefsAndValueProviders valueRefsAndValueProviders) {
-        return new DependencyTreeCreator(valueRefsAndValueProviders).getTriggerVertices();
+        valueRefsAndStateProvidersToDependencyTree(final ValueRefsAndStateProviders valueRefsAndStateProviders) {
+        return new DependencyTreeCreator(valueRefsAndStateProviders).getTriggerVertices();
     }
 
     private static final class DependencyTreeCreator {
 
-        private final Collection<ValueProviderWrapper> m_updates;
+        private final Collection<ValueProviderWrapper> m_valueProviders;
 
         private final Map<Class<? extends StateProvider>, StateVertex> m_stateVertices = new HashMap<>();
 
@@ -98,13 +98,17 @@ final class ValueRefsAndValueProvidersToDependencyTree {
 
         private final Collection<ValueRefWrapper> m_valueRefs;
 
-        DependencyTreeCreator(final ValueRefsAndValueProviders valueRefsAndUpdates) {
-            m_valueRefs = valueRefsAndUpdates.valueRefs();
-            m_updates = valueRefsAndUpdates.valueProviders();
+        private final Collection<Class<? extends StateProvider>> m_uiStateProviders;
+
+        DependencyTreeCreator(final ValueRefsAndStateProviders valueRefsAndStateProviders) {
+            m_valueRefs = valueRefsAndStateProviders.valueRefs();
+            m_valueProviders = valueRefsAndStateProviders.valueProviders();
+            m_uiStateProviders = valueRefsAndStateProviders.uiStateProviders();
         }
 
         Collection<TriggerVertex> getTriggerVertices() {
-            m_updates.forEach(update -> addToQueue(new UpdateVertex(update)));
+            m_valueProviders.forEach(update -> addToQueue(new UpdateVertex(update)));
+            m_uiStateProviders.forEach(update -> addToQueue(new UpdateVertex(update)));
             while (!m_queue.isEmpty()) {
                 addParentsForVertex(m_queue.poll());
             }

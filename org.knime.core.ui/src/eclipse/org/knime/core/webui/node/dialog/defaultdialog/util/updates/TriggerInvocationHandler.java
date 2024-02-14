@@ -72,17 +72,33 @@ public class TriggerInvocationHandler {
     }
 
     /**
+     * The resulting updates of a trigger invocation
+     *
+     * @param valueUpdates keys here are the path locations of fields whose value is updated
+     * @param otherUpdates keys here are the ids (the names) of the state providers
+     */
+    public record TriggerResult(Map<PathWithSettingsKey, Object> valueUpdates, Map<String, Object> otherUpdates) {
+
+    }
+
+    /**
      *
      * @param triggerId matching an id of the triggers in the provided settingsClasses
      * @param dependencyProvider providing values for dependencies of this trigger (see {@link TriggerAndDependencies})
      * @return a mapping from identifiers of fields to their updated value
      */
-    public Map<PathWithSettingsKey, Object> invokeTrigger(final String triggerId,
+    public TriggerResult invokeTrigger(final String triggerId,
         final Function<Class<? extends ValueRef>, Object> dependencyProvider) {
         final var trigger = m_triggers.stream().filter(t -> t.getId().equals(triggerId)).findAny().orElseThrow();
         final var resultPerUpdateHandler = new InvokeTrigger(dependencyProvider).invokeTrigger(trigger);
-        return resultPerUpdateHandler.entrySet().stream()
-            .collect(Collectors.toMap(e -> e.getKey().getFieldLocation(), Entry::getValue));
+        final var partitionedResult = resultPerUpdateHandler.entrySet().stream()
+            .collect(Collectors.partitioningBy(e -> e.getKey().getFieldLocation().isPresent()));
+
+        final var valueUpdates = partitionedResult.get(true).stream()
+            .collect(Collectors.toMap(e -> e.getKey().getFieldLocation().get(), Entry::getValue));
+        final var otherUpdates = partitionedResult.get(false).stream()
+            .collect(Collectors.toMap(e -> e.getKey().getStateProviderClass().getName(), Entry::getValue));
+        return new TriggerResult(valueUpdates, otherUpdates);
     }
 
 }

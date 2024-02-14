@@ -24,8 +24,16 @@ export interface Update {
    */
   trigger: Trigger | ValueReference;
 }
-
 export interface PathAndValue {
   path: string;
+  id: null;
   value: unknown;
 }
+
+export interface IdAndValue {
+  path: null;
+  id: string;
+  value: unknown;
+}
+
+export type UpdateResult = PathAndValue | IdAndValue;

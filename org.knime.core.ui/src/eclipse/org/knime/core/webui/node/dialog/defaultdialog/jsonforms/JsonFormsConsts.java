@@ -186,6 +186,16 @@ public final class JsonFormsConsts {
         public static final String TAG_IS_WRITER = "isWriter";
 
         /**
+         * Used for providing a single valid file extension to a file chooser/writer widget.
+         */
+        public static final String TAG_FILE_EXTENSION = "fileExtension";
+
+        /**
+         * Used for providing a reference to a file extension provider to a file chooser/writer widget.
+         */
+        public static final String TAG_FILE_EXTENSION_PROVIDER = "fileExtensionProvider";
+
+        /**
          * Several formats which are written to the options of the ui-schema of an ui element
          *
          * @author Paul Bärnreuther

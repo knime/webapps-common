@@ -26,7 +26,7 @@ import { inject, markRaw } from "vue";
 import type ProvidedMethods from "./types/provided";
 import type { ProvidedForFlowVariables } from "./types/provided";
 import type SettingsData from "./types/SettingsData";
-import type { Update, PathAndValue } from "./types/Update";
+import type { Update, UpdateResult } from "./types/Update";
 import type Control from "./types/Control";
 import getChoices from "./api/getChoices";
 import * as flowVariablesApi from "./api/flowVariables";
@@ -63,6 +63,7 @@ export default {
     return {
       trigger: this.trigger,
       registerWatcher: this.registerWatcher,
+      addStateProviderListener: this.addStateProviderListener,
       updateData: this.updateData,
       getData: this.callDataService,
       getPossibleValuesFromUiSchema: this.getPossibleValuesFromUiSchema,
@@ -95,6 +96,7 @@ export default {
         string,
         (settings: DialogSettings & object) => Promise<DialogSettings & object>
       >(),
+      stateProviderListeners: new Map<string, (value: unknown) => void>(),
       currentData: {} as SettingsData,
       schema: {} as JsonSchema & {
         showAdvancedSettings: boolean;
@@ -152,8 +154,12 @@ export default {
             options: [null, trigger.id, currentDependencies],
           });
           if (result) {
-            result.forEach(({ path, value }: PathAndValue) => {
-              set(newSettings, toDataPath(path), value);
+            result.forEach(({ path, value, id }: UpdateResult) => {
+              if (path) {
+                set(newSettings, toDataPath(path), value);
+              } else if (id) {
+                this.callStateProviderListener(id, value);
+              }
             });
           }
         };
@@ -173,6 +179,12 @@ export default {
           this.registeredTriggers.set(trigger.id, transformSettings);
         }
       });
+    },
+    addStateProviderListener(id: string, callback: (value: any) => void) {
+      this.stateProviderListeners.set(id, callback);
+    },
+    callStateProviderListener(id: string, value: unknown) {
+      this.stateProviderListeners.get(id)?.(value);
     },
     getData() {
       return {

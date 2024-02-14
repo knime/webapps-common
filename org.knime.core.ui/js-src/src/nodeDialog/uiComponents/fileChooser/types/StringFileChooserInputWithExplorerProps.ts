@@ -6,7 +6,8 @@ interface StringFileChooserInputWithExplorerProps {
   options?: {
     placeholder?: string;
     isWriter?: boolean;
-    fileExtension?: string; // TODO use fileExtensionProvider instead
+    fileExtension?: string;
+    fileExtensionProvider?: string;
   };
   id: string | null;
   backendType: BackendType;

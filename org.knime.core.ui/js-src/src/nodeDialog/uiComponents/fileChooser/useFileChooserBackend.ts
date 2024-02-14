@@ -59,26 +59,24 @@ type GetFilePath = (params: {
   ];
 }) => Promise<string>;
 
-export default (
-  {
-    filteredExtensions,
-    appendedExtension,
-    isWriter,
-    backendType
-  }: {
-    /**
-     * The extensions by which files listed in a folder are filtered
-     */
-    filteredExtensions: Ref<string[]>;
-    /**
-     * The extension to append when selecting a file.
-     * Only appended if the file does not already exist or end with the extension.
-     */
-    appendedExtension: Ref<string | null>;
-    isWriter: Ref<boolean>;
-    backendType: Ref<BackendType>;
-  }
-) => {
+export default ({
+  filteredExtensions,
+  appendedExtension,
+  isWriter,
+  backendType,
+}: {
+  /**
+   * The extensions by which files listed in a folder are filtered
+   */
+  filteredExtensions: Ref<string[]>;
+  /**
+   * The extension to append when selecting a file.
+   * Only appended if the file does not already exist or end with the extension.
+   */
+  appendedExtension: Ref<string | null>;
+  isWriter: Ref<boolean>;
+  backendType: Ref<BackendType>;
+}) => {
   const getData = inject("getData") as GetFilePath & ListItems;
 
   const listItems = (path: string | null, nextFolder: string | null) => {

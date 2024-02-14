@@ -50,7 +50,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
 import java.util.Optional;
 
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueRefsAndValueProviders.ValueRefWrapper;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueRefsAndStateProviders.ValueRefWrapper;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonRef;
 
 /**
