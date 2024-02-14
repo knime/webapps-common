@@ -105,10 +105,13 @@ public class ColumnFilter implements PersistableSettings {
     }
 
     /**
-     * Exclude the unknown columns while in manual mode
+     * Set the column filter to exclude unknown columns while in manual mode.
+     *
+     * @return the instance
      */
-    public void excludeUnknownColumn() {
+    public ColumnFilter withExcludeUnknownColumns() {
         m_manualFilter.m_includeUnknownColumns = false;
+        return this;
     }
 
     /**
