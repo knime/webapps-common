@@ -130,7 +130,7 @@ describe("LabeledLocalFileChooserInput.vue", () => {
       },
     );
     expect(
-      wrapper.findComponent(LocalFileChooserInput).props().options,
+      wrapper.findComponent(StringFileChooserInputWithExplorer).props().options,
     ).toMatchObject({
       fileExtension: "pdf",
       isWriter: true,

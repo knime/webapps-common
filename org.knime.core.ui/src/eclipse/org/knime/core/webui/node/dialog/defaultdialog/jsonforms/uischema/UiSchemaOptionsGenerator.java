@@ -204,6 +204,10 @@ final class UiSchemaOptionsGenerator {
                 case FILE_CHOOSER:
                     options.put(TAG_FORMAT, Format.FILE_CHOOSER);
                     break;
+                case FILE_WRITER:
+                    options.put(TAG_FORMAT, Format.FILE_CHOOSER);
+                    options.put(TAG_IS_WRITER, true);
+                    break;
             }
         }
 

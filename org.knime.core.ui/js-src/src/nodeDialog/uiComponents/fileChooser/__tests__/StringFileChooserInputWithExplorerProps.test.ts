@@ -35,7 +35,7 @@ describe("LocalFileChooserInput.vue", () => {
 
   it("sets props on input field", () => {
     props = {
-      ...props
+      ...props,
       options: {
         placeholder: "myPlaceholder",
       },

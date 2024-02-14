@@ -86,20 +86,9 @@ describe("LabeledFileChooserInput.vue", () => {
     expect(wrapper.findComponent(LabeledInput).exists()).toBe(true);
     expect(wrapper.findComponent(ValueSwitch).exists()).toBe(true);
     expect(
-      wrapper.findComponent(StringFileChooserInputWithExplorer).exists()
+      wrapper.findComponent(StringFileChooserInputWithExplorer).exists(),
     ).toBe(true);
     expect(wrapper.findComponent(Checkbox).exists()).toBe(false);
-  });
-
-
-  it("shows a 'Create missing folders' checkbox in case of a writer", async () => {
-    props.control.data.createMissingFolders = true;
-    props.control.uischema.options.isWriter = true;
-    const { wrapper } = await mountJsonFormsComponent(LabeledFileChooserInput, {
-      props,
-    });
-    expect(wrapper.findComponent(Checkbox).exists()).toBe(true);
-    expect(wrapper.findComponent(Checkbox).props().modelValue).toBe(true);
   });
 
   it("sets labelForId", () => {
@@ -174,7 +163,7 @@ describe("LabeledFileChooserInput.vue", () => {
       props,
     });
     expect(
-      wrapper.findComponent(LocalFileChooserInput).props().options,
+      wrapper.findComponent(StringFileChooserInputWithExplorer).props().options,
     ).toMatchObject({
       fileExtension: "pdf",
       isWriter: true,

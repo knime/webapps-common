@@ -59,6 +59,7 @@ import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -67,6 +68,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.knime.core.webui.node.dialog.defaultdialog.dataservice.filechooser.FileChooserDataService.FolderAndError;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.filechooser.FileChooserDataService.ListItemsConfig;
 import org.knime.core.webui.node.dialog.defaultdialog.dataservice.filechooser.SimpleFileChooserBackend.Item;
 import org.mockito.ArgumentMatchers;
 import org.mockito.MockedConstruction;
@@ -114,24 +116,24 @@ class FileChooserDataServiceTest {
         void testThrowsOnWrongFileSystemId() {
             final var dataService = new FileChooserDataService();
             assertThrows(IllegalArgumentException.class,
-                () -> dataService.listItems("notAValidFileSystemId", null, null));
+                () -> dataService.listItems("notAValidFileSystemId", null, null, new ListItemsConfig(false, null)));
         }
 
         @Test
         void testReusesFileSystem() throws IOException {
             final var dataService = new FileChooserDataService();
-            dataService.listItems("local", null, null);
-            dataService.listItems("local", null, null);
+            dataService.listItems("local", null, null, new ListItemsConfig(false, null));
+            dataService.listItems("local", null, null, new ListItemsConfig(false, null));
             assertThat(fileChooserBackendMock.constructed()).hasSize(1);
         }
 
         @Test
         void testClosesAndClearsFileSystemOnClear() throws IOException {
             final var dataService = new FileChooserDataService();
-            dataService.listItems("local", null, null);
+            dataService.listItems("local", null, null, new ListItemsConfig(false, null));
             dataService.clear();
             verify(fileChooserBackendMock.constructed().get(0)).close();
-            dataService.listItems("local", null, null);
+            dataService.listItems("local", null, null, new ListItemsConfig(false, null));
             assertThat(fileChooserBackendMock.constructed()).hasSize(2);
         }
 
@@ -206,7 +208,7 @@ class FileChooserDataServiceTest {
 
         @Test
         void testGetItemsWithoutParameters() throws IOException {
-            final var result = performListItems(null, null);
+            final var result = new PerformListItemsBuilder().build().performListItems();
 
             getItemsInInitialFolder()
                 .forEach(item -> verify(fileChooserBackendMock.constructed().get(0)).pathToObject(eq(item)));
@@ -225,7 +227,8 @@ class FileChooserDataServiceTest {
             final var folderName = directory.getFileName().toString();
             when(m_fileSystem.getPath(eq(path), eq(folderName))).thenReturn(relativizeIfNecessary(directory));
 
-            final var result = performListItems(path, folderName);
+            final var result =
+                new PerformListItemsBuilder().withPath(path).withFolder(folderName).build().performListItems();
 
             final var fileChooserBackend = fileChooserBackendMock.constructed().get(0);
             verify(fileChooserBackend).pathToObject(eq(subDirectory));
@@ -234,12 +237,39 @@ class FileChooserDataServiceTest {
         }
 
         @Test
+        void testListItemsWithFilteredFileExtensions() throws IOException {
+
+            final var fileExtensions = List.of("pdf", "png");
+
+            when(m_fileSystem.getPathMatcher(ArgumentMatchers.any())).thenReturn(new PathMatcher() {
+
+                @Override
+                public boolean matches(final Path path) {
+                    return fileExtensions.stream().anyMatch(ext -> path.toString().endsWith(ext));
+                }
+            });
+            final var directory = Files.createTempDirectory(m_subFolder, "aDirectory");
+            Files.createTempDirectory(directory, "aSubDirectory");
+            Files.createTempFile(directory, "aFile", ".pdf");
+            Files.createTempFile(directory, "aFile", ".txt");
+            final var path = relativizeIfNecessary(m_subFolder).toString();
+            final var folderName = directory.getFileName().toString();
+            when(m_fileSystem.getPath(eq(path), eq(folderName))).thenReturn(relativizeIfNecessary(directory));
+
+            final var result = new PerformListItemsBuilder().withPath(path).withFolder(folderName)
+                .withExtensions(fileExtensions).build().performListItems();
+            // One folder (which is not checked against file extensions) and the pdf file but not the txt file
+            verify(m_fileSystem).getPathMatcher(eq("glob:**.{pdf,png}"));
+            assertThat(result.folder().items()).hasSize(2);
+        }
+
+        @Test
         void testListItemsWithoutPath() throws IOException {
             final var directory = Files.createTempDirectory(m_subFolder, "aDirectory");
             final var file = Files.writeString(m_subFolder.resolve("aFile"), "");
             final var pathToDir = pathToString(relativizeIfNecessary(m_subFolder));
 
-            final var result = performListItems(null, pathToDir);
+            final var result = new PerformListItemsBuilder().withFolder(pathToDir).build().performListItems();
 
             final var fileChooserBackend = fileChooserBackendMock.constructed().get(0);
             verify(fileChooserBackend).pathToObject(eq(directory));
@@ -256,11 +286,25 @@ class FileChooserDataServiceTest {
             Files.delete(deletedFolder);
             final var invalidPath = pathToString(relativizeIfNecessary(deletedFolder));
 
-            final var result = performListItems(null, invalidPath);
+            final var result = new PerformListItemsBuilder().withFolder(invalidPath).build().performListItems();
 
             assertThat(result.errorMessage().get())
                 .isEqualTo(String.format("The selected path %s does not exist", deletedFolder));
             assertThat(result.folder().path()).isEqualTo(m_subFolder.toString());
+        }
+
+        @Test
+        void testListItemsWithInvalidPathWriter() throws IOException {
+            final var deletedFolder = Files.createTempDirectory(m_subFolder, "aDirectory");
+            Files.delete(deletedFolder);
+            final var invalidPath = pathToString(relativizeIfNecessary(deletedFolder));
+
+            final var result =
+                new PerformListItemsBuilder().asWriter().withFolder(invalidPath).build().performListItems();
+
+            assertThat(result.errorMessage()).isEmpty();
+            assertThat(result.folder().path()).isEqualTo(m_subFolder.toString());
+            assertThat(result.filePathRelativeToFolder()).isEqualTo(deletedFolder.getFileName().toString());
         }
 
         @Test
@@ -269,7 +313,8 @@ class FileChooserDataServiceTest {
             final var file = Files.writeString(m_subFolder.resolve("aFile"), "");
             final var path = pathToString(relativizeIfNecessary(directory));
 
-            final var rootItems = performListItems(path, "..");
+            final var rootItems =
+                new PerformListItemsBuilder().withFolder("..").withPath(path).build().performListItems();
 
             final var fileChooserBackend = fileChooserBackendMock.constructed().get(0);
             verify(fileChooserBackend).pathToObject(eq(directory));
@@ -285,8 +330,58 @@ class FileChooserDataServiceTest {
             final var path = relativizeIfNecessary(m_subFolder).toString();
             final var fileName = file.getFileName().toString();
             when(m_fileSystem.getPath(eq(path), eq(fileName))).thenReturn(file);
-            final var filePath = new FileChooserDataService().getFilePath("local", path, fileName);
+            final var filePath = new FileChooserDataService().getFilePath("local", path, fileName, null);
             assertThat(filePath).isEqualTo(file.toString());
+        }
+
+        @Nested
+        class GetFilePathAppendExtensionTest {
+
+            final static String APPENDEN_EXTENSION = "ext";
+
+            @Test
+            void testGetFilePathDoesNotAppendExtensionForExistingFile() throws IOException {
+                final var file = Files.writeString(m_subFolder.resolve("aFile"), "");
+                final var path = relativizeIfNecessary(m_subFolder).toString();
+                final var fileName = file.getFileName().toString();
+                when(m_fileSystem.getPath(eq(path), eq(fileName))).thenReturn(file);
+                final var filePath =
+                    new FileChooserDataService().getFilePath("local", path, fileName, APPENDEN_EXTENSION);
+                assertThat(filePath).doesNotEndWith("." + APPENDEN_EXTENSION);
+            }
+
+            @Test
+            void testGetFilePathDoesAppendExtensionIfADirectoryOfThatNameExists() throws IOException {
+                final var directory = Files.createTempDirectory(m_subFolder, "aDirectory");
+                final var path = relativizeIfNecessary(m_subFolder).toString();
+                final var fileName = directory.getFileName().toString();
+                when(m_fileSystem.getPath(eq(path), eq(fileName))).thenReturn(directory);
+                final var filePath =
+                    new FileChooserDataService().getFilePath("local", path, fileName, APPENDEN_EXTENSION);
+                assertThat(filePath).endsWith("." + APPENDEN_EXTENSION);
+            }
+
+            @Test
+            void testGetFilePathDoesAppendExtensionTheFileDoesNotYetExists() throws IOException {
+                final var file = m_subFolder.resolve("aFile");
+                final var path = relativizeIfNecessary(m_subFolder).toString();
+                final var fileName = file.getFileName().toString();
+                when(m_fileSystem.getPath(eq(path), eq(fileName))).thenReturn(file);
+                final var filePath =
+                    new FileChooserDataService().getFilePath("local", path, fileName, APPENDEN_EXTENSION);
+                assertThat(filePath).endsWith("." + APPENDEN_EXTENSION);
+            }
+
+            @Test
+            void testGetFilePathDoesNotAppendExtensionIfExtensionAlreadyPresent() throws IOException {
+                final var file = Files.writeString(m_subFolder.resolve("aFile." + APPENDEN_EXTENSION), "");
+                final var path = relativizeIfNecessary(m_subFolder).toString();
+                final var fileName = file.getFileName().toString();
+                when(m_fileSystem.getPath(eq(path), eq(fileName))).thenReturn(file);
+                final var filePath =
+                    new FileChooserDataService().getFilePath("local", path, fileName, APPENDEN_EXTENSION);
+                assertThat(filePath).doesNotEndWith(APPENDEN_EXTENSION + "." + APPENDEN_EXTENSION);
+            }
         }
 
         private Path relativizeIfNecessary(final Path absolutePath) {
@@ -302,15 +397,70 @@ class FileChooserDataServiceTest {
             return pathString;
         }
 
-        private static FolderAndError performListItems(final FileChooserDataService dataService, final String path,
-            final String folder) throws IOException {
-            return dataService.listItems("local", path, folder);
+        interface PerformListItems {
+            FolderAndError performListItems() throws IOException;
         }
 
-        private static FolderAndError performListItems(final String path, final String folder) throws IOException {
-            return performListItems(new FileChooserDataService(), path, folder);
+        static final class PerformListItemsBuilder {
+
+            private String m_folder;
+
+            private String m_path;
+
+            private boolean m_isWriter;
+
+            private List<String> m_extensions;
+
+            private FileChooserDataService m_dataService;
+
+            private String m_fileSystemId;
+
+            PerformListItems build() {
+                if (m_dataService == null) {
+                    m_dataService = new FileChooserDataService();
+                }
+                final var config = new ListItemsConfig(m_isWriter, m_extensions);
+                return new PerformListItems() {
+
+                    @Override
+                    public FolderAndError performListItems() throws IOException {
+                        return m_dataService.listItems(m_fileSystemId, m_path, m_folder, config);
+                    }
+
+                };
+
+            }
+
+            PerformListItemsBuilder() {
+                m_fileSystemId = "local";
+            }
+
+            PerformListItemsBuilder withPath(final String path) {
+                m_path = path;
+                return this;
+            }
+
+            PerformListItemsBuilder withFolder(final String folder) {
+                m_folder = folder;
+                return this;
+            }
+
+            PerformListItemsBuilder asWriter() {
+                m_isWriter = true;
+                return this;
+            }
+
+            PerformListItemsBuilder withExtensions(final List<String> extensions) {
+                m_extensions = extensions;
+                return this;
+            }
+
+            PerformListItemsBuilder fromDataService(final FileChooserDataService dataService) {
+                m_dataService = dataService;
+                return this;
+            }
+
         }
     }
-
 
 }

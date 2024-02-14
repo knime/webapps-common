@@ -42,6 +42,17 @@ const possibleCategories: { id: keyof typeof FSCategory; text: string }[] = [
   },
 ];
 
+const stringFileChooserPlaceholder = computed(() =>
+  props.modelValue.fsCategory === "LOCAL"
+    ? "Local file path"
+    : "Path relative to hub space",
+);
+
+const stringFileChooserOptions = computed(() => ({
+  placeholder: stringFileChooserPlaceholder.value,
+  ...props.browseOptions,
+}));
+
 const isSupported = computed(() =>
   possibleCategories.map(({ id }) => id).includes(props.modelValue.fsCategory),
 );
@@ -74,12 +85,9 @@ const isSupported = computed(() =>
           : 'relativeToCurrentHubSpace'
       "
       :disabled="disabled"
-              :disabled="disabled"
-        :model-value="modelValue.path.path"
-        :options="{ placeholder: modelValue.fsCategory === 'LOCAL'
-          ? 'Local file path'
-          : 'Path relative to hub space', ...browseOptions }"
-        @update:model-value="onPathUpdate"
+      :model-value="modelValue.path"
+      :options="stringFileChooserOptions"
+      @update:model-value="onPathUpdate"
     />
   </template>
   <InputField

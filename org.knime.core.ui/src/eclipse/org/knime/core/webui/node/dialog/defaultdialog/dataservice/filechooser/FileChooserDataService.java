@@ -92,15 +92,14 @@ public final class FileChooserDataService {
     }
 
     record Folder(List<Object> items, String path) {
-        static FolderAndError asRootFolder(final List<Object> items, final String inputPath) {
-            return asRootFolder(items, null, inputPath);
+
+        static FolderAndError asRootFolder(final List<Object> items, final String errorMessage,
+            final String inputPath) {
+            return new FolderAndError(new Folder(items, null), Optional.ofNullable(errorMessage), inputPath);
         }
 
-        static FolderAndError asRootFolder(final List<Object> items, final String errorMessage, final String inputPath) {
-            return new FolderAndError(new Folder(items, null), Optional.ofNullable(errorMessage, inputPath));
-        }
-
-        static FolderAndError asNonRootFolder(final Path path, final List<Object> items, final String errorMessage, final Path inputPath) {
+        static FolderAndError asNonRootFolder(final Path path, final List<Object> items, final String errorMessage,
+            final Path inputPath) {
             final var folder = new Folder(items, path.toString());
             return new FolderAndError(folder, Optional.ofNullable(errorMessage), path.relativize(inputPath).toString());
         }
@@ -151,7 +150,7 @@ public final class FileChooserDataService {
         final var fileChooserBackend = m_fsConnector.getFileChooserBackend(fileSystemId);
         final Path nextPath = getNextPath(path, nextFolder, fileChooserBackend.getFileSystem());
         if (nextPath == null && fileChooserBackend.isAbsoluteFileSystem()) {
-            return Folder.asRootFolder(getRootItems(fileChooserBackend), "");
+            return Folder.asRootFolder(getRootItems(fileChooserBackend), null, "");
         }
         final Deque<Path> pathStack = toFragments(fileChooserBackend, nextPath);
         return getItemsInFolder(fileChooserBackend, pathStack, listItemConfig);
@@ -240,8 +239,9 @@ public final class FileChooserDataService {
         while (!pathStack.isEmpty()) {
             final var path = pathStack.pop();
             try {
-                final var folderContent = listFilteredAndSortedItems(path, fileChooserBackend.getFileSystem(), listItemConfig) //
-                    .stream().map(fileChooserBackend::pathToObject).toList();
+                final var folderContent =
+                    listFilteredAndSortedItems(path, fileChooserBackend.getFileSystem(), listItemConfig) //
+                        .stream().map(fileChooserBackend::pathToObject).toList();
                 return createFolder(path, folderContent, errorMessage, fileChooserBackend, inputPath);
             } catch (NotDirectoryException ex) { //NOSONAR
                 /**
@@ -264,13 +264,13 @@ public final class FileChooserDataService {
     }
 
     private static FolderAndError createFolder(final Path path, final List<Object> folderContent,
-        final String errorMessage, final FileChooserBackend fileChooserBackend) {
+        final String errorMessage, final FileChooserBackend fileChooserBackend, final Path inputPath) {
         if (fileChooserBackend.isAbsoluteFileSystem()) {
-            return Folder.asNonRootFolder(path.toAbsolutePath(), folderContent, errorMessage);
+            return Folder.asNonRootFolder(path.toAbsolutePath(), folderContent, errorMessage, inputPath);
         } else {
             return getEmptyPathFolder(fileChooserBackend).equals(path)
-                ? Folder.asRootFolder(folderContent, errorMessage)
-                : Folder.asNonRootFolder(path, folderContent, errorMessage);
+                ? Folder.asRootFolder(folderContent, errorMessage, path.relativize(inputPath).toString())
+                : Folder.asNonRootFolder(path, folderContent, errorMessage, inputPath);
         }
     }
 

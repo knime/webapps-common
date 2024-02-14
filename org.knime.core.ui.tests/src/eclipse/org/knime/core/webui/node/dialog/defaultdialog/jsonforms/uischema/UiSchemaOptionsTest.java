@@ -56,6 +56,7 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -69,12 +70,15 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.Colum
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FileChooser;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FileWriter;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ComboBoxWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileChooserWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileReaderWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RichTextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
@@ -134,6 +138,9 @@ class UiSchemaOptionsTest {
 
             @Widget
             FileChooser m_fileChooser;
+
+            @Widget
+            FileWriter m_fileWriter;
         }
         var response = buildTestUiSchema(DefaultStylesSettings.class);
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("string");
@@ -155,6 +162,9 @@ class UiSchemaOptionsTest {
         assertThatJson(response).inPath("$.elements[6].options.format").isString().isEqualTo("credentials");
         assertThatJson(response).inPath("$.elements[7].scope").isString().contains("fileChooser");
         assertThatJson(response).inPath("$.elements[7].options.format").isString().isEqualTo("fileChooser");
+        assertThatJson(response).inPath("$.elements[8].scope").isString().contains("fileWriter");
+        assertThatJson(response).inPath("$.elements[8].options.format").isString().isEqualTo("fileChooser");
+        assertThatJson(response).inPath("$.elements[8].options.isWriter").isBoolean().isTrue();
     }
 
     @Test
@@ -831,15 +841,15 @@ class UiSchemaOptionsTest {
     }
 
     @Test
-    void testLocalFileChooserWidget() {
+    void testLocalFileReaderWidget() {
         class LocalFileChooserWidgetTestSettings implements DefaultNodeSettings {
 
             @Widget
-            @LocalFileChooserWidget
+            @LocalFileReaderWidget
             String m_defaultOptions;
 
             @Widget
-            @LocalFileChooserWidget(placeholder = "myPlaceholder")
+            @LocalFileReaderWidget(placeholder = "myPlaceholder")
             String m_specialOptions;
 
         }
@@ -847,9 +857,67 @@ class UiSchemaOptionsTest {
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("defaultOptions");
         assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("localFileChooser");
         assertThatJson(response).inPath("$.elements[0].options.placeholder").isString().isEqualTo("");
+        assertThatJson(response).inPath("$.elements[0].options").isObject().doesNotContainKey("isWriter");
         assertThatJson(response).inPath("$.elements[1].scope").isString().contains("specialOptions");
-        assertThatJson(response).inPath("$.elements[1].options.format").isString().isEqualTo("localFileChooser");
         assertThatJson(response).inPath("$.elements[1].options.placeholder").isString().isEqualTo("myPlaceholder");
+    }
+
+    @Test
+    void testLocalFileWriterWidget() {
+        class LocalFileWriterWidgetTestSettings implements DefaultNodeSettings {
+
+            @Widget
+            @LocalFileWriterWidget
+            String m_defaultOptions;
+
+            static final class MyFileExtensionProvider implements Supplier<String> {
+
+                @Override
+                public String get() {
+                    return "pdf";
+                }
+
+            }
+
+            @Widget
+            @LocalFileWriterWidget(placeholder = "myPlaceholder", fileExtensionProvider = MyFileExtensionProvider.class)
+            String m_specialOptions;
+
+        }
+        var response = buildTestUiSchema(LocalFileWriterWidgetTestSettings.class);
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("defaultOptions");
+        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("localFileChooser");
+        assertThatJson(response).inPath("$.elements[0].options.placeholder").isString().isEqualTo("");
+        assertThatJson(response).inPath("$.elements[0].options").isObject().doesNotContainKey("extension");
+        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("specialOptions");
+        assertThatJson(response).inPath("$.elements[1].options.placeholder").isString().isEqualTo("myPlaceholder");
+        assertThatJson(response).inPath("$.elements[1].options.fileExtension").isString().isEqualTo("pdf");
+        assertThatJson(response).inPath("$.elements[1].options.isWriter").isBoolean().isTrue();
+    }
+
+    @Test
+    void testFileWriterWidget() {
+        class FileWriterWidgetTestSettings implements DefaultNodeSettings {
+
+            static final class MyFileExtensionProvider implements Supplier<String> {
+
+                @Override
+                public String get() {
+                    return "pdf";
+                }
+
+            }
+
+            @Widget
+            @FileWriterWidget(fileExtensionProvider = MyFileExtensionProvider.class)
+            FileWriter m_specialOptions;
+
+        }
+        var response = buildTestUiSchema(FileWriterWidgetTestSettings.class);
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("specialOptions");
+        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("fileChooser");
+        assertThatJson(response).inPath("$.elements[0].options.fileExtension").isString().isEqualTo("pdf");
+        assertThatJson(response).inPath("$.elements[0].options.isWriter").isBoolean().isTrue();
     }
 
 }

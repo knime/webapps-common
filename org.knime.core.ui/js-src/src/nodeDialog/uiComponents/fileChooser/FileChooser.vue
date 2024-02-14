@@ -32,10 +32,6 @@ const props = withDefaults(
   },
 );
 
-const { listItems, getFilePath } = useFileChooserBackend(
-  toRef(props, "backendType"),
-);
-
 const isLoading = ref(true);
 
 const setNextItems = (folder: Folder) => {
@@ -63,12 +59,14 @@ const handleListItemsResult = (folderAndError: FolderAndError) => {
   setRelativeFilePathFromBackend(folderAndError.filePathRelativeToFolder);
 };
 
-const { filteredExtensions, appendedExtension, isWriter } = toRefs(props);
+const { filteredExtensions, appendedExtension, isWriter, backendType } =
+  toRefs(props);
 
 const { listItems, getFilePath } = useFileChooserBackend({
   filteredExtensions,
   appendedExtension,
   isWriter,
+  backendType,
 });
 
 onMounted(() => {
