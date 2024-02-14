@@ -9,6 +9,7 @@ import RichTextEditorToolbar from "./RichTextEditorToolbar.vue";
 import type { BaseExtensionsConfig } from "./types";
 import { CustomTextAlign } from "./custom-text-align";
 import { SmallText } from "./paragraphTextStyle/extension";
+import { CustomHardBreak } from "./custom-hard-break";
 
 type BaseExtensions =
   | BaseExtensionsConfig
@@ -131,6 +132,7 @@ const extensions = [
     horizontalRule: getStarterKitExtensionConfig("horizontalRule"),
     strike: getStarterKitExtensionConfig("strike"),
     ...(isToolEnabled("paragraphTextStyle") && { paragraph: false }),
+    hardBreak: false,
   }),
   ...(isToolEnabled("underline") ? [UnderLine] : []),
   ...(isToolEnabled("paragraphTextStyle") ? [SmallText] : []),
@@ -146,6 +148,8 @@ const extensions = [
         }),
       ]
     : []),
+
+  CustomHardBreak,
 
   ...customExtensions.value,
 ];

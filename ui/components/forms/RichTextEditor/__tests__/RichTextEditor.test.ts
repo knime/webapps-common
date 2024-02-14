@@ -133,7 +133,7 @@ describe("RichTextEditor.vue", () => {
       }),
     );
 
-    expect(mockEditor.value.params.extensions.length).toBe(4);
+    expect(mockEditor.value.params.extensions.length).toBe(5);
     expect(wrapper.classes("with-border")).toBeTruthy();
     expect(wrapper.classes("disabled")).toBeFalsy();
   });
