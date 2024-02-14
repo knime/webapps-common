@@ -59,8 +59,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import org.knime.core.node.NodeSettings;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.util.workflow.def.FallibleSupplier;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts;
@@ -79,7 +79,9 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 @SuppressWarnings("restriction")
 final class JsonFormsSnapshot extends Snapshot {
-    private final Map<SettingsType, Class<? extends DefaultNodeSettings>> m_settingsClasses;
+    private final int m_instance;
+
+    private final Map<SettingsType, FallibleSupplier<DefaultNodeSettings>> m_settings;
 
     private final PortObjectSpec[] m_specs;
 
@@ -88,35 +90,38 @@ final class JsonFormsSnapshot extends Snapshot {
 
     /**
      * @param testClassName
-     * @param classes in case the node has model and view settings
+     * @param settings in case the node has model and view settings
      * @param specs to configure the settings
      * @throws JsonProcessingException
      */
-    JsonFormsSnapshot(final Map<SettingsType, Class<? extends DefaultNodeSettings>> classes,
+    JsonFormsSnapshot(final int instance, final Map<SettingsType, FallibleSupplier<DefaultNodeSettings>> settings,
         final PortObjectSpec[] specs) {
-        m_settingsClasses = classes;
+        m_instance = instance;
+        m_settings = settings;
         m_specs = specs;
     }
 
     @Override
     public String getFilename() {
-        return m_testClassName + ".snap";
+        return m_testClassName + (m_instance == 0 ? "" : m_instance) + ".snap";
     }
 
-    private static JsonNode jsonForms(final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses,
+    private static JsonNode jsonForms(final Map<SettingsType, FallibleSupplier<DefaultNodeSettings>> settings,
         final PortObjectSpec[] specs) throws JsonProcessingException {
 
-        // create an instance of the settings-class and save to node settings
-        final var settingsObjects = settingsClasses.entrySet().stream().map(e -> {
-            var nodeSettings = new NodeSettings("ignore");
-            var settingsObj = DefaultNodeSettings.createSettings(e.getValue(), specs);
-            DefaultNodeSettings.saveSettings(e.getValue(), settingsObj, nodeSettings);
-            return Map.entry(e.getKey(), settingsObj);
-        }).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+        Map<SettingsType, DefaultNodeSettings> instances =
+            settings.entrySet().stream().collect(Collectors.toMap(Entry::getKey, e -> {
+                try {
+                    return e.getValue().get();
+                } catch (Exception ex) {
+                    throw new IllegalStateException(
+                        String.format("Exception while trying to write snapshot: %s", ex.getMessage()), ex);
+                }
+            }));
 
         // turn it into the json-forms representation
         var jsonFormsSettings =
-            new JsonFormsSettingsImpl(settingsObjects, DefaultNodeSettings.createDefaultNodeSettingsContext(specs));
+            new JsonFormsSettingsImpl(instances, DefaultNodeSettings.createDefaultNodeSettingsContext(specs));
         var mapper = JsonFormsDataUtil.getMapper();
         var objectNode = mapper.createObjectNode();
         objectNode.set(JsonFormsConsts.FIELD_NAME_DATA, jsonFormsSettings.getData());
@@ -128,7 +133,7 @@ final class JsonFormsSnapshot extends Snapshot {
     @Override
     public void writeGroundTruth(final Path snapshotFile) throws IOException {
         if (m_jsonForms == null) {
-            m_jsonForms = jsonForms(m_settingsClasses, m_specs);
+            m_jsonForms = jsonForms(m_settings, m_specs);
         }
         try {
             var jsonFormsString =
@@ -143,7 +148,7 @@ final class JsonFormsSnapshot extends Snapshot {
     @Override
     public void compareWithSnapshotAndWriteDebugFile(final Path snapshotFile) throws IOException {
         if (m_jsonForms == null) {
-            m_jsonForms = jsonForms(m_settingsClasses, m_specs);
+            m_jsonForms = jsonForms(m_settings, m_specs);
         }
         var expectedJsonFormsString = Files.readString(snapshotFile, StandardCharsets.UTF_8);
         var debugFile = snapshotFile.getParent().resolve(getDebugFilename());

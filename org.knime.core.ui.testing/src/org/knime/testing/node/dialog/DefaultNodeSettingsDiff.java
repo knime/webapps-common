@@ -53,6 +53,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -91,6 +92,8 @@ final class DefaultNodeSettingsDiff {
     private final List<Difference> m_differences;
 
     private DefaultNodeSettingsDiff(final List<Difference> differences) {
+        Objects.requireNonNull(differences,
+            "Cannot instatiate " + getClass().getSimpleName() + " with a `null` difference list");
         m_differences = differences;
     }
 
@@ -104,10 +107,17 @@ final class DefaultNodeSettingsDiff {
 
     /**
      * @param message prefix for the exception message. For instance "Test number 5 failed. "
-     * @return something to throw
+     * @return a {@linkplain DifferencesFoundException} to throw
      */
-    public RuntimeException toException(final String message) {
-        return new RuntimeException("%s%s differences found.%n%s".formatted(message, m_differences.size(), summary()));
+    public DifferencesFoundException toException(final String message) {
+        return new DifferencesFoundException(message, m_differences.size(), summary());
+    }
+
+    @SuppressWarnings("serial")
+    public static class DifferencesFoundException extends Exception {
+        public DifferencesFoundException(final String message, final int num_differences, final String summary) {
+            super("%s%s differences found.%n%s".formatted(message, num_differences, summary));
+        }
     }
 
     static DefaultNodeSettingsDiff of(final DefaultNodeSettings actual, final DefaultNodeSettings expected)

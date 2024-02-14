@@ -13,7 +13,9 @@ Bundle-Vendor: KNIME AG, Zurich, Switzerland
 Export-Package: org.knime.testing.node,
  org.knime.testing.node.dialog,
  org.knime.testing.node.ui,
- org.knime.testing.node.view
+ org.knime.testing.node.view,
+ org.xmlunit.builder,
+ org.xmlunit.diff
 Require-Bundle: org.knime.core;bundle-version="[5.3.0,6.0.0)",
  org.knime.core.ui;bundle-version="[5.3.0,6.0.0)",
  org.knime.testing;bundle-version="[5.3.0,6.0.0)",

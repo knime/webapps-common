@@ -49,18 +49,19 @@
 package org.knime.testing.node.dialog;
 
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
+import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.util.workflow.def.FallibleSupplier;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.testing.node.dialog.SnapshotTestConfiguration.BuilderStage.OptionalTests;
 
 /**
  * @author Carl Witt, KNIME AG, Zurich, Switzerland
@@ -116,32 +117,61 @@ public final class SnapshotTestConfiguration {
         }
 
         /** Optionally add a number of snapshot tests (json forms or node settings structure). Can build. */
-        interface OptionalTests extends OptionalNodeSettingsStructureTests {
+        interface OptionalTests extends BuildStage {
             /**
-             * Specifies that the json forms representation of the given class is to be tested.
+             * Add a test for the JSON Forms representation of the given classes, specifying which {@link SettingsType}
+             * the class represents.
              *
-             * @param type of settings to test
+             * @param type of settings to test (view/model)
              * @param clazz of settings to test
              */
             OptionalTests testJsonForms(SettingsType type, Class<? extends DefaultNodeSettings> clazz);
 
             /**
-             * Replaces all data provided previously with {@link #testJsonForms(SettingsType)} or
-             * {@link #testJsonForms(SettingsType, Class)}; Specifies that the json forms representation of the given
-             * classes are to be tested.
+             * Add a test for the JSON Forms representation of the given classes.
              *
              * @param map settings types and classes to test
              */
-            OptionalTests testJsonForms(final Map<SettingsType, Class<? extends DefaultNodeSettings>> map);
+            OptionalTests testJsonForms(Map<SettingsType, Class<? extends DefaultNodeSettings>> clazzes);
+
+            /**
+             * Add a test for the JSON Forms representation of the given instance, specifying which {@link SettingsType}
+             * the class represents.
+             *
+             * @param type of settings to test (view/model)
+             * @param instance a provider of an instance to test
+             */
+            OptionalTests testJsonFormsWithInstance(SettingsType type, FallibleSupplier<DefaultNodeSettings> instance);
+
+            /**
+             * Add a test for the JSON Forms representation of the given instances.
+             *
+             * @param map settings types and instances to test
+             */
+            OptionalTests
+                testJsonFormsWithInstances(Map<SettingsType, FallibleSupplier<DefaultNodeSettings>> instances);
+
+            default OptionalTests testJsonFormsWithInstance(final SettingsType type,
+                final DefaultNodeSettings instance) {
+                return testJsonFormsWithInstance(type, () -> instance);
+            }
 
             default OptionalTests testJsonFormsForModel(final Class<? extends DefaultNodeSettings> clazz) {
                 return testJsonForms(Map.of(SettingsType.MODEL, clazz));
             }
 
-        }
+            default OptionalTests testJsonFormsForModel(final DefaultNodeSettings instance) {
+                return testJsonFormsWithInstance(SettingsType.MODEL, instance);
+            }
 
-        /** Optionally add node settings structure tests. Can build. */
-        interface OptionalNodeSettingsStructureTests extends BuildStage {
+            default OptionalTests testJsonFormsForView(final Class<? extends DefaultNodeSettings> clazz) {
+                return testJsonForms(Map.of(SettingsType.VIEW, clazz));
+            }
+
+            default OptionalTests testJsonFormsForView(final DefaultNodeSettings instance) {
+                return testJsonFormsWithInstance(SettingsType.VIEW, instance);
+            }
+
             /**
              * Makes sure that the representation of a settings object loaded from legacy settings does not change.
              *
@@ -190,14 +220,13 @@ public final class SnapshotTestConfiguration {
 
         private List<PortObjectSpec> m_portObjectSpecs = new ArrayList<>();
 
-        private Map<SettingsType, Class<? extends DefaultNodeSettings>> m_jsonFormsTests =
-            new EnumMap<>(SettingsType.class);
+        private List<Map<SettingsType, FallibleSupplier<DefaultNodeSettings>>> m_jsonFormsTests = new ArrayList<>();
 
         private BuilderImplementation() {
         }
 
         @Override
-        public OptionalTests withInputPortObjectSpecs(final PortObjectSpec[] specs) {
+        public BuilderStage.OptionalTests withInputPortObjectSpecs(final PortObjectSpec[] specs) {
             m_portObjectSpecs = List.of(specs);
             return this;
         }
@@ -227,16 +256,36 @@ public final class SnapshotTestConfiguration {
 
         @Override
         public BuilderStage.OptionalTests
-            testJsonForms(final Map<SettingsType, Class<? extends DefaultNodeSettings>> map) {
-            m_jsonFormsTests = map;
+            testJsonForms(final Map<SettingsType, Class<? extends DefaultNodeSettings>> clazzes) {
+            m_jsonFormsTests.add(clazzes.entrySet().stream()
+                .map(e -> Map.entry(e.getKey(), (FallibleSupplier<DefaultNodeSettings>)() -> {
+                    var nodeSettings = new NodeSettings("ignore");
+                    // At this point, the port object specs are already configured.
+                    var settingsObj = DefaultNodeSettings.createSettings(e.getValue(),
+                        m_portObjectSpecs.toArray(PortObjectSpec[]::new));
+                    DefaultNodeSettings.saveSettings(e.getValue(), settingsObj, nodeSettings);
+                    return settingsObj;
+                })).collect(Collectors.toMap(Entry::getKey, Entry::getValue)));
+            return this;
+        }
+
+        @Override
+        public BuilderStage.OptionalTests testJsonFormsWithInstance(final SettingsType type,
+            final FallibleSupplier<DefaultNodeSettings> instance) {
+            return testJsonFormsWithInstances(Map.of(type, instance));
+        }
+
+        @Override
+        public BuilderStage.OptionalTests
+            testJsonFormsWithInstances(final Map<SettingsType, FallibleSupplier<DefaultNodeSettings>> instances) {
+            m_jsonFormsTests.add(instances);
             return this;
         }
 
         @Override
         public BuilderStage.OptionalTests testJsonForms(final SettingsType type,
-            final Class<? extends DefaultNodeSettings> settingsClass) {
-            m_jsonFormsTests.put(type, settingsClass);
-            return this;
+            final Class<? extends DefaultNodeSettings> clazz) {
+            return testJsonForms(Map.of(type, clazz));
         }
 
         @Override
@@ -257,9 +306,10 @@ public final class SnapshotTestConfiguration {
         public SnapshotTestConfiguration build() {
             List<Snapshot> snapshotTests = new ArrayList<>();
 
-            // TODO can there be only one json forms test?
-            snapshotTests
-                .add(new JsonFormsSnapshot(m_jsonFormsTests, m_portObjectSpecs.toArray(PortObjectSpec[]::new)));
+            for (var i = 0; i < m_jsonFormsTests.size(); i++) {
+                snapshotTests.add(new JsonFormsSnapshot(i, m_jsonFormsTests.get(i),
+                    m_portObjectSpecs.toArray(PortObjectSpec[]::new)));
+            }
 
             for (var i = 0; i < m_settingsAsserts.size(); i++) {
                 snapshotTests.add(new NodeSettingsSnapshot(i, m_settingsAsserts.get(i)));
@@ -267,6 +317,7 @@ public final class SnapshotTestConfiguration {
 
             return new SnapshotTestConfiguration(snapshotTests);
         }
+
     }
 
 }
