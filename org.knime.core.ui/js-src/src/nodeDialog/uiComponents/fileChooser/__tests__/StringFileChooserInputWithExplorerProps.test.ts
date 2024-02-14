@@ -78,6 +78,7 @@ describe("LocalFileChooserInput.vue", () => {
     await activateFileChooser(wrapper);
     expect(wrapper.findComponent(FileChooser).props()).toMatchObject({
       filteredExtensions: ["pdf"],
+      appendedExtension: "pdf",
       isWriter: true,
     });
   });

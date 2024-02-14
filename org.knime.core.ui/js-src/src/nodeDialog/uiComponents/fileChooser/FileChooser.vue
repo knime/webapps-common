@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, computed, toRef } from "vue";
+import { onMounted, ref, computed, toRefs } from "vue";
 import FileExplorer from "webapps-common/ui/components/FileExplorer/FileExplorer.vue";
 import type { FileExplorerItem } from "webapps-common/ui/components/FileExplorer/types";
 import useFileChooserBackend from "./useFileChooserBackend";
@@ -21,12 +21,14 @@ const props = withDefaults(
     initialFilePath?: string;
     isWriter?: boolean;
     filteredExtensions?: string[];
+    appendedExtension?: string | null;
     backendType: BackendType;
   }>(),
   {
     initialFilePath: "",
     isWriter: false,
     filteredExtensions: () => [],
+    appendedExtension: null,
   },
 );
 
@@ -47,13 +49,26 @@ const setErrorMessage = (errorMessage: string | undefined) => {
   displayedError.value = errorMessage ?? null;
 };
 
+const selectedFileName = ref("");
+
+const setRelativeFilePathFromBackend = (filePathRelativeToFolder: string) => {
+  if (props.isWriter) {
+    selectedFileName.value = filePathRelativeToFolder;
+  }
+};
+
 const handleListItemsResult = (folderAndError: FolderAndError) => {
   setNextItems(folderAndError.folder);
   setErrorMessage(folderAndError.errorMessage);
+  setRelativeFilePathFromBackend(folderAndError.filePathRelativeToFolder);
 };
 
+const { filteredExtensions, appendedExtension, isWriter } = toRefs(props);
+
 const { listItems, getFilePath } = useFileChooserBackend({
-  filteredExtensions: toRef(props, "filteredExtensions"),
+  filteredExtensions,
+  appendedExtension,
+  isWriter,
 });
 
 onMounted(() => {
@@ -61,7 +76,6 @@ onMounted(() => {
 });
 
 const selectedDirectoryName = ref("");
-const selectedFileName = ref("");
 
 const changeDirectory = (nextFolder: string) => {
   selectedDirectoryName.value = "";

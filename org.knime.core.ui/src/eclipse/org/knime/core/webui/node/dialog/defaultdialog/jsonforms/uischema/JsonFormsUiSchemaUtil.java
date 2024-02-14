@@ -118,8 +118,7 @@ public final class JsonFormsUiSchemaUtil {
     }
 
     /**
-     * @param setting
-     * @param mapper
+     * @param settings
      * @param context
      * @param asyncChoicesAdder
      * @return the ui schema resolved by the mapper from the given settings

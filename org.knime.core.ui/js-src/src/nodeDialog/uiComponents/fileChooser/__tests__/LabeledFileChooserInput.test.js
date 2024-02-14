@@ -14,6 +14,7 @@ import NumberInput from "webapps-common/ui/components/forms/NumberInput.vue";
 import InputField from "webapps-common/ui/components/forms/InputField.vue";
 import CustomUrlFileChooser from "../CustomUrlFileChooser.vue";
 import flushPromises from "flush-promises";
+import Checkbox from "webapps-common/ui/components/forms/Checkbox.vue";
 
 describe("LabeledFileChooserInput.vue", () => {
   let props, wrapper, component;
@@ -85,8 +86,20 @@ describe("LabeledFileChooserInput.vue", () => {
     expect(wrapper.findComponent(LabeledInput).exists()).toBe(true);
     expect(wrapper.findComponent(ValueSwitch).exists()).toBe(true);
     expect(
-      wrapper.findComponent(StringFileChooserInputWithExplorer).exists(),
+      wrapper.findComponent(StringFileChooserInputWithExplorer).exists()
     ).toBe(true);
+    expect(wrapper.findComponent(Checkbox).exists()).toBe(false);
+  });
+
+
+  it("shows a 'Create missing folders' checkbox in case of a writer", async () => {
+    props.control.data.createMissingFolders = true;
+    props.control.uischema.options.isWriter = true;
+    const { wrapper } = await mountJsonFormsComponent(LabeledFileChooserInput, {
+      props,
+    });
+    expect(wrapper.findComponent(Checkbox).exists()).toBe(true);
+    expect(wrapper.findComponent(Checkbox).props().modelValue).toBe(true);
   });
 
   it("sets labelForId", () => {

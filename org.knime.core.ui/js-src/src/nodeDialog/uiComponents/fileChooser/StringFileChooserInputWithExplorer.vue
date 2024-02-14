@@ -12,9 +12,11 @@ const emit = defineEmits(["update:modelValue"]);
 const placeholder = computed(() => props.options?.placeholder);
 const isWriter = computed(() => props.options?.isWriter);
 const filteredExtensions = ref<string[]>([]);
+const appendedExtension = ref<string | null>(null);
 onMounted(() => {
   if (props.options?.fileExtension) {
     filteredExtensions.value = [props.options?.fileExtension]; // TODO
+    appendedExtension.value = props.options?.fileExtension;
   }
 });
 
@@ -59,6 +61,7 @@ const chooseFile = (chosen: string) => {
       :backend-type="backendType"
       :initial-file-path="modelValue"
       :is-writer="isWriter"
+      :appended-extension="appendedExtension"
       :filtered-extensions="filteredExtensions"
       @choose-file="chooseFile"
       @cancel="deactivateFileChooser"

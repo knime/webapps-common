@@ -92,26 +92,42 @@ public final class FileChooserDataService {
     }
 
     record Folder(List<Object> items, String path) {
-        static FolderAndError asRootFolder(final List<Object> items) {
-            return asRootFolder(items, null);
+        static FolderAndError asRootFolder(final List<Object> items, final String inputPath) {
+            return asRootFolder(items, null, inputPath);
         }
 
-        static FolderAndError asRootFolder(final List<Object> items, final String errorMessage) {
-            return new FolderAndError(new Folder(items, null), Optional.ofNullable(errorMessage));
+        static FolderAndError asRootFolder(final List<Object> items, final String errorMessage, final String inputPath) {
+            return new FolderAndError(new Folder(items, null), Optional.ofNullable(errorMessage, inputPath));
         }
 
-        static FolderAndError asNonRootFolder(final Path path, final List<Object> items, final String errorMessage) {
+        static FolderAndError asNonRootFolder(final Path path, final List<Object> items, final String errorMessage, final Path inputPath) {
             final var folder = new Folder(items, path.toString());
-            return new FolderAndError(folder, Optional.ofNullable(errorMessage));
+            return new FolderAndError(folder, Optional.ofNullable(errorMessage), path.relativize(inputPath).toString());
         }
+    }
+
+    /**
+     * Input parameter for {@link #listItems}
+     */
+    record ListItemsConfig(
+        /**
+         * Setting this will impact whether non-readable or non-writable files are not displayed
+         */
+        Boolean isWriter,
+        /**
+         * the extensions with respect to which the files are filtered. If empty or null, no filters will be applied.
+         */
+        List<String> extensions) {
     }
 
     /**
      * @param folder a representation of the path and the to be displayed items
      * @param errorMessage which if present explains why the folder is not the requested one (e.g. when the requested
      *            one does not exist)
+     * @param filePathRelativeToFolder this is the rest of path given by the input of {@link #listItems}. It might be an
+     *            empty string if this input consisted only of the returned folder.
      */
-    record FolderAndError(Folder folder, Optional<String> errorMessage) {
+    record FolderAndError(Folder folder, Optional<String> errorMessage, String filePathRelativeToFolder) {
     }
 
     /**
@@ -123,8 +139,7 @@ public final class FileChooserDataService {
      * @param path the current path or null to reference the root level.
      * @param nextFolder - the name of the to be accessed folder relative to the path or ".." if the parent folder
      *            should be accessed. Set to null in order to access the path directly.
-     * @param filteredEndings the endings with respect to which the files are filtered. If empty or null, no filters
-     *            will be applied.
+     * @param listItemConfig additional configuration for the filters applied to the listed files
      * @return A list of items in the next folder possibly together with an error message explaining why the returned
      *         folder is not the requested one.
      *
@@ -132,14 +147,14 @@ public final class FileChooserDataService {
      * @throws IOException
      */
     public FolderAndError listItems(final String fileSystemId, final String path, final String nextFolder,
-        final List<String> filteredEndings) throws IOException {
+        final ListItemsConfig listItemConfig) throws IOException {
         final var fileChooserBackend = m_fsConnector.getFileChooserBackend(fileSystemId);
         final Path nextPath = getNextPath(path, nextFolder, fileChooserBackend.getFileSystem());
         if (nextPath == null && fileChooserBackend.isAbsoluteFileSystem()) {
-            return Folder.asRootFolder(getRootItems(fileChooserBackend));
+            return Folder.asRootFolder(getRootItems(fileChooserBackend), "");
         }
         final Deque<Path> pathStack = toFragments(fileChooserBackend, nextPath);
-        return getItemsInFolder(fileChooserBackend, pathStack, filteredEndings);
+        return getItemsInFolder(fileChooserBackend, pathStack, listItemConfig);
     }
 
     private static Deque<Path> toFragments(final FileChooserBackend fileChooserBackend, final Path nextPath) {
@@ -174,13 +189,31 @@ public final class FileChooserDataService {
      * @param fileSystemId specifying the file system.
      * @param path of the folder containing the file
      * @param fileName the name of the to be accessed file relative to the path.
+     * @param appendedExtension a file extension that is added to the filename whenever it does not already exist or end
+     *            with the extension.
      * @return the full path of the file
      */
-    public String getFilePath(final String fileSystemId, final String path, final String fileName) {
+    public String getFilePath(final String fileSystemId, final String path, final String fileName,
+        final String appendedExtension) {
         final var fileChooserBackend = m_fsConnector.getFileChooserBackend(fileSystemId);
         final var fileSystem = fileChooserBackend.getFileSystem();
-        final Path nextPath = path == null ? fileSystem.getPath(fileName) : fileSystem.getPath(path, fileName);
+        Path nextPath = path == null ? fileSystem.getPath(fileName) : fileSystem.getPath(path, fileName);
+        if (appendedExtension != null) {
+            nextPath = appendExtensionIfNotPresent(nextPath, appendedExtension);
+        }
         return nextPath.toString();
+    }
+
+    /**
+     * @param appendedExtension is non null here
+     */
+    private static Path appendExtensionIfNotPresent(final Path nextPath, final String appendedExtension) {
+        final var isExistingWritableFile = Files.isWritable(nextPath) && !Files.isDirectory(nextPath);
+        if (isExistingWritableFile) {
+            return nextPath;
+        }
+        return nextPath.resolveSibling(String.format("%s.%s", nextPath.getFileName(), appendedExtension));
+
     }
 
     private static Path getNextPath(final String path, final String nextFolder, final FileSystem fileSystem) {
@@ -201,14 +234,15 @@ public final class FileChooserDataService {
     }
 
     private static FolderAndError getItemsInFolder(final FileChooserBackend fileChooserBackend,
-        final Deque<Path> pathStack, final List<String> filteredEndings) throws IOException {
+        final Deque<Path> pathStack, final ListItemsConfig listItemConfig) throws IOException {
         String errorMessage = null;
+        Path inputPath = pathStack.peek();
         while (!pathStack.isEmpty()) {
             final var path = pathStack.pop();
             try {
-                final var folderContent = listFilteredAndSortedItems(path, fileChooserBackend.getFileSystem(), filteredEndings) //
+                final var folderContent = listFilteredAndSortedItems(path, fileChooserBackend.getFileSystem(), listItemConfig) //
                     .stream().map(fileChooserBackend::pathToObject).toList();
-                return createFolder(path, folderContent, errorMessage, fileChooserBackend);
+                return createFolder(path, folderContent, errorMessage, fileChooserBackend, inputPath);
             } catch (NotDirectoryException ex) { //NOSONAR
                 /**
                  * Do not set an error message in this case, since we intentionally get here when opening the file
@@ -216,7 +250,7 @@ public final class FileChooserDataService {
                  * instead
                  */
             } catch (NoSuchFileException ex) { //NOSONAR
-                if (errorMessage == null) {
+                if (errorMessage == null && !listItemConfig.isWriter()) {
                     errorMessage = String.format("The selected path %s does not exist", path);
                 }
             } catch (AccessDeniedException ex) { //NOSONAR
@@ -245,12 +279,11 @@ public final class FileChooserDataService {
     }
 
     private static List<Path> listFilteredAndSortedItems(final Path folder, final FileSystem fileSystem,
-                                                         final List<String> filteredEndings) throws IOException {
+        final ListItemsConfig listItemConfig) throws IOException {
 
-        final Predicate<Path> fileEndingPredicate = getFileEndingPredicate(fileSystem, filteredEndings);
+        final Predicate<Path> filterPredicate = getFilterPredicate(fileSystem, listItemConfig);
 
         return Files.list(folder) //
-            .filter(Files::isReadable) //
             .filter(t -> {
                 try {
                     return !Files.isHidden(t);
@@ -258,17 +291,27 @@ public final class FileChooserDataService {
                     return true;
                 }
             }) //
-            .filter(item -> Files.isDirectory(item) || fileEndingPredicate.test(item))
+            .filter(item -> Files.isDirectory(item) || filterPredicate.test(item))
             .sorted(
                 Comparator.comparingInt(FileChooserDataService::getFileTypeOrdinal).thenComparing(Path::getFileName))
             .toList();
     }
 
-    private static Predicate<Path> getFileEndingPredicate(final FileSystem fileSystem,
-        final List<String> filteredEndings) {
-        if (filteredEndings != null && !filteredEndings.isEmpty()) {
+    private static Predicate<Path> getFilterPredicate(final FileSystem fileSystem,
+        final ListItemsConfig listItemConfig) {
+        final var extensionsPredicate = getExtensionPredicate(fileSystem, listItemConfig.extensions());
+        final var readerOrWriterPredicate = getReaderOrWriterPredicate(listItemConfig.isWriter());
+        return extensionsPredicate.and(readerOrWriterPredicate);
+    }
+
+    private static Predicate<Path> getReaderOrWriterPredicate(final Boolean isWriter) {
+        return isWriter ? Files::isWritable : Files::isReadable;
+    }
+
+    private static Predicate<Path> getExtensionPredicate(final FileSystem fileSystem, final List<String> extensions) {
+        if (extensions != null && !extensions.isEmpty()) {
             final var endingsMatcher =
-                fileSystem.getPathMatcher(String.format("glob:**.{%s}", String.join(",", filteredEndings)));
+                fileSystem.getPathMatcher(String.format("glob:**.{%s}", String.join(",", extensions)));
             return endingsMatcher::matches;
         }
         return path -> true;

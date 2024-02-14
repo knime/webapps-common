@@ -14,6 +14,7 @@ export interface Folder {
 export type FolderAndError = {
   folder: Folder;
   errorMessage?: string;
+  filePathRelativeToFolder: string;
 };
 
 export type BackendType = "local" | "relativeToCurrentHubSpace";

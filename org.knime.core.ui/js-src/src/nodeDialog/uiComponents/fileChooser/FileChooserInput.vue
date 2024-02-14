@@ -74,14 +74,12 @@ const isSupported = computed(() =>
           : 'relativeToCurrentHubSpace'
       "
       :disabled="disabled"
-      :placeholder="
-        modelValue.fsCategory === 'LOCAL'
+              :disabled="disabled"
+        :model-value="modelValue.path.path"
+        :options="{ placeholder: modelValue.fsCategory === 'LOCAL'
           ? 'Local file path'
-          : 'Path relative to hub space'
-      "
-      :model-value="modelValue.path"
-      :options="browseOptions"
-      @update:model-value="onPathUpdate"
+          : 'Path relative to hub space', ...browseOptions }"
+        @update:model-value="onPathUpdate"
     />
   </template>
   <InputField

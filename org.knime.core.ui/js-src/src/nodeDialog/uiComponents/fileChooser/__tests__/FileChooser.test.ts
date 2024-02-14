@@ -17,6 +17,7 @@ describe("FileChooser.vue", () => {
   const filePath = "/path/to/containing/folder/aFile";
   const directoryName = "aDirectory";
   let folderFromBackend: Folder;
+  const filePathRelativeToFolderFromBackend = "aFile";
   const getNewRootFolderMock = (): Folder => ({
     items: [
       { isDirectory: true, name: directoryName },
@@ -34,6 +35,7 @@ describe("FileChooser.vue", () => {
       initialFilePath?: string;
       isWriter?: boolean;
       filteredExtensions?: string[];
+      appendedExtension?: string;
     } = {},
     customDataServiceMethod?: MockInstance,
   ) => {
@@ -41,7 +43,10 @@ describe("FileChooser.vue", () => {
       customDataServiceMethod ??
       vi.fn((params: { method?: string | undefined } | undefined) => {
         if (params?.method === "fileChooser.listItems") {
-          return Promise.resolve({ folder: folderFromBackend });
+          return Promise.resolve({
+            folder: folderFromBackend,
+            filePathRelativeToFolder: filePathRelativeToFolderFromBackend,
+          });
         } else if (params?.method === "fileChooser.getFilePath") {
           return Promise.resolve(filePath);
         }
@@ -85,7 +90,7 @@ describe("FileChooser.vue", () => {
     const wrapper = shallowMountFileChooser();
     expect(dataServiceSpy).toHaveBeenCalledWith({
       method: "fileChooser.listItems",
-      options: ["local", null, "", []],
+      options: ["local", null, "", { extensions: [], isWriter: false }],
     });
     expect(wrapper.findComponent(FileExplorer).exists()).toBeFalsy();
     expect(wrapper.findComponent(LoadingIcon).exists()).toBeTruthy();
@@ -108,19 +113,15 @@ describe("FileChooser.vue", () => {
     const wrapper = shallowMountFileChooser({ initialFilePath });
     expect(dataServiceSpy).toHaveBeenCalledWith({
       method: "fileChooser.listItems",
-      options: ["local", null, initialFilePath, []],
+      options: [
+        "local",
+        null,
+        initialFilePath,
+        { extensions: [], isWriter: false },
+      ],
     });
     await flushPromises();
     expect(wrapper.find("span").text()).toBe(folderFromBackend.path);
-  });
-
-  it("uses file extensions when requesting listed items", () => {
-    const filteredExtensions = ["pdf"];
-    shallowMountFileChooser({ filteredExtensions });
-    expect(dataServiceSpy).toHaveBeenCalledWith({
-      method: "fileChooser.listItems",
-      options: ["local", null, "", filteredExtensions],
-    });
   });
 
   it("shows error message", async () => {
@@ -157,7 +158,7 @@ describe("FileChooser.vue", () => {
       await chooseButton?.vm.$emit("click");
       expect(dataServiceSpy).toHaveBeenCalledWith({
         method: "fileChooser.getFilePath",
-        options: ["local", null, fileName],
+        options: ["local", null, fileName, null],
       });
       await flushPromises();
       expect(wrapper.emitted("chooseFile")).toStrictEqual([[filePath]]);
@@ -171,7 +172,7 @@ describe("FileChooser.vue", () => {
         .vm.$emit("openFile", toFileExplorerItem(folderFromBackend.items[1]));
       expect(dataServiceSpy).toHaveBeenCalledWith({
         method: "fileChooser.getFilePath",
-        options: ["local", null, fileName],
+        options: ["local", null, fileName, null],
       });
       await flushPromises();
       expect(wrapper.emitted("chooseFile")).toStrictEqual([[filePath]]);
@@ -192,7 +193,12 @@ describe("FileChooser.vue", () => {
       await openButton?.vm.$emit("click");
       expect(dataServiceSpy).toHaveBeenCalledWith({
         method: "fileChooser.listItems",
-        options: ["local", folderFromBackend.path, directoryName, []],
+        options: [
+          "local",
+          folderFromBackend.path,
+          directoryName,
+          { extensions: [], isWriter: false },
+        ],
       });
     });
 
@@ -204,7 +210,41 @@ describe("FileChooser.vue", () => {
         .vm.$emit("changeDirectory", directoryName);
       expect(dataServiceSpy).toHaveBeenCalledWith({
         method: "fileChooser.listItems",
-        options: ["local", folderFromBackend.path, directoryName, []],
+        options: [
+          "local",
+          folderFromBackend.path,
+          directoryName,
+          { extensions: [], isWriter: false },
+        ],
+      });
+    });
+  });
+
+  describe("file extensions", () => {
+    it("uses file extensions when requesting listed items", () => {
+      const filteredExtensions = ["pdf"];
+      shallowMountFileChooser({ filteredExtensions });
+      expect(dataServiceSpy).toHaveBeenCalledWith({
+        method: "fileChooser.listItems",
+        options: [
+          "local",
+          null,
+          "",
+          { extensions: filteredExtensions, isWriter: false },
+        ],
+      });
+    });
+
+    it("uses file extensions when requesting file name", async () => {
+      const appendedExtension = "pdf";
+      const wrapper = shallowMountFileChooser({ appendedExtension });
+      await flushPromises();
+      await wrapper
+        .findComponent(FileExplorer)
+        .vm.$emit("openFile", toFileExplorerItem(folderFromBackend.items[1]));
+      expect(dataServiceSpy).toHaveBeenCalledWith({
+        method: "fileChooser.getFilePath",
+        options: ["local", null, fileName, appendedExtension],
       });
     });
   });
@@ -213,11 +253,20 @@ describe("FileChooser.vue", () => {
     it("shows an input field to write a field name and emits it on choose button click", async () => {
       const wrapper = shallowMountFileChooser({ isWriter: true });
       await flushPromises();
+      expect(dataServiceSpy).toHaveBeenCalledWith({
+        method: "fileChooser.listItems",
+        options: ["local", null, "", { isWriter: true, extensions: [] }],
+      });
       const inputField = wrapper.findComponent(InputField);
       expect(inputField.exists()).toBeTruthy();
-      expect(inputField.props().modelValue).toBe("");
+      // Predefined file name from input path
+      expect(inputField.props().modelValue).toBe(
+        filePathRelativeToFolderFromBackend,
+      );
+      expect(wrapper.findAllComponents(Button).length).toBe(2);
+      // Deselect the predefined file name
+      await inputField.vm.$emit("update:model-value", "");
       expect(wrapper.findAllComponents(Button).length).toBe(1);
-
       const inputText = "newFile.txt";
       await inputField.vm.$emit("update:model-value", inputText);
       expect(inputField.props().modelValue).toBe(inputText);
@@ -228,7 +277,7 @@ describe("FileChooser.vue", () => {
       await chooseButton?.vm.$emit("click");
       expect(dataServiceSpy).toHaveBeenCalledWith({
         method: "fileChooser.getFilePath",
-        options: ["local", null, inputText],
+        options: ["local", null, inputText, null],
       });
       await flushPromises();
       expect(wrapper.emitted("chooseFile")).toStrictEqual([[filePath]]);

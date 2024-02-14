@@ -2,6 +2,18 @@ import type { Ref } from "vue";
 import type { BackendType, FolderAndError } from "./types";
 import inject from "@/nodeDialog/utils/inject";
 
+interface ListItemsConfig {
+  /**
+   * the endings with respect to which the files are filtered. If empty or null, no filters
+   * will be applied.
+   */
+  extensions: string[] | null;
+  /**
+   * Setting this will impact whether non-readable or non-writable files are not displayed
+   */
+  isWriter: boolean;
+}
+
 type ListItems = (params: {
   method: "fileChooser.listItems";
   options: [
@@ -19,10 +31,9 @@ type ListItems = (params: {
      */
     string | null,
     /**
-     * the endings with respect to which the files are filtered. If empty or null, no filters
-     * will be applied.
+     *  additional configuration for the filters applied to the listed files
      */
-    string[] | null,
+    ListItemsConfig,
   ];
 }) => Promise<FolderAndError>;
 
@@ -41,14 +52,32 @@ type GetFilePath = (params: {
      * The name of the to be accessed file relative to the path.
      */
     string,
+    /**
+     * A file extension that is added to the filename whenever it does not already exist or end with the extension.
+     */
+    string | null,
   ];
 }) => Promise<string>;
 
 export default (
-  props: {
-    filteredExtensions?: Ref<string[]>;
+  {
+    filteredExtensions,
+    appendedExtension,
+    isWriter,
+    backendType
+  }: {
+    /**
+     * The extensions by which files listed in a folder are filtered
+     */
+    filteredExtensions: Ref<string[]>;
+    /**
+     * The extension to append when selecting a file.
+     * Only appended if the file does not already exist or end with the extension.
+     */
+    appendedExtension: Ref<string | null>;
+    isWriter: Ref<boolean>;
     backendType: Ref<BackendType>;
-  } = {},
+  }
 ) => {
   const getData = inject("getData") as GetFilePath & ListItems;
 
@@ -56,17 +85,20 @@ export default (
     return getData({
       method: "fileChooser.listItems",
       options: [
-        props.backendType.value,
+        backendType.value,
         path,
         nextFolder,
-        props.filteredExtensions?.value ?? null,
+        {
+          extensions: filteredExtensions.value,
+          isWriter: isWriter.value,
+        },
       ],
     });
   };
   const getFilePath = (path: string | null, fileName: string) => {
     return getData({
       method: "fileChooser.getFilePath",
-      options: [backendType.value, path, fileName],
+      options: [backendType.value, path, fileName, appendedExtension?.value],
     });
   };
 
