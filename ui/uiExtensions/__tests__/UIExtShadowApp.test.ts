@@ -1,7 +1,7 @@
 import { expect, afterEach, vi, describe, it } from "vitest";
 import flushPromises from "flush-promises";
 import { shallowMount } from "@vue/test-utils";
-import UIExtComponent from "../UIExtComponent.vue";
+import UIExtShadowApp from "../UIExtShadowApp.vue";
 import type { UIExtensionServiceAPILayer } from "@knime/ui-extension-service";
 import * as ExtensionServiceModule from "@knime/ui-extension-service";
 import { createApp, defineComponent } from "vue";
@@ -29,7 +29,7 @@ vi.mock("../useDynamicImport", () => {
   };
 });
 
-describe("UIExtComponent.vue", () => {
+describe("UIExtShadowApp.vue", () => {
   const resourceInfo = {
     id: "org.knime.base.views.scatterplot.ScatterPlotNodeFactory",
   };
@@ -48,12 +48,12 @@ describe("UIExtComponent.vue", () => {
   });
 
   it("renders", async () => {
-    const wrapper = shallowMount(UIExtComponent, context);
+    const wrapper = shallowMount(UIExtShadowApp, context);
     await flushPromises();
 
     expect(dynamicImportMock).toHaveBeenCalledWith(resourceLocation);
-    expect(wrapper.findComponent(UIExtComponent).exists()).toBeTruthy();
-    const loadContainer = wrapper.find(".ui-ext-component");
+    expect(wrapper.findComponent(UIExtShadowApp).exists()).toBeTruthy();
+    const loadContainer = wrapper.find(".ui-ext-shadow-app");
     const mockComponent =
       loadContainer.element.shadowRoot!.querySelector(".mock");
     expect(mockComponent).not.toBeNull();
@@ -68,7 +68,7 @@ describe("UIExtComponent.vue", () => {
     const setUpEmbedderServiceSpy = vi
       .spyOn(ExtensionServiceModule, "setUpEmbedderService")
       .mockReturnValue(mockedEmbedderService);
-    const wrapper = shallowMount(UIExtComponent, context);
+    const wrapper = shallowMount(UIExtShadowApp, context);
     expect(setUpEmbedderServiceSpy).toHaveBeenCalledWith(apiLayer);
     expect(wrapper.emitted("serviceCreated")![0][0]).toBe(
       mockedEmbedderService,

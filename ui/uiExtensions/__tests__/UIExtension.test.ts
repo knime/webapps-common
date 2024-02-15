@@ -1,7 +1,7 @@
 import { expect, describe, afterEach, it, vi, beforeEach } from "vitest";
 import { shallowMount } from "@vue/test-utils";
 import UIExtension from "../UIExtension.vue";
-import UIExtComponent from "../UIExtComponent.vue";
+import UIExtShadowApp from "../UIExtShadowApp.vue";
 import UIExtIFrame from "../UIExtIFrame.vue";
 import AlertLocal from "../AlertLocal.vue";
 import WarningLocal from "../WarningLocal.vue";
@@ -46,7 +46,7 @@ describe("UIExtension.vue", () => {
     const wrapper = shallowMount(UIExtension, {
       props,
     });
-    expect(wrapper.findComponent(UIExtComponent).exists()).toBeTruthy();
+    expect(wrapper.findComponent(UIExtShadowApp).exists()).toBeTruthy();
     expect(wrapper.findComponent(UIExtIFrame).exists()).toBeFalsy();
   });
 
@@ -56,7 +56,7 @@ describe("UIExtension.vue", () => {
       props,
     });
     expect(wrapper.findComponent(UIExtIFrame).exists()).toBeTruthy();
-    expect(wrapper.findComponent(UIExtComponent).exists()).toBeFalsy();
+    expect(wrapper.findComponent(UIExtShadowApp).exists()).toBeFalsy();
   });
 
   it("increments key on UIExtIFrame component when a new extension config is passes in", async () => {
@@ -89,7 +89,7 @@ describe("UIExtension.vue", () => {
       wrapper = shallowMount(UIExtension, {
         props,
       });
-      wrapper.findComponent(UIExtComponent).vm.$emit("serviceCreated", service);
+      wrapper.findComponent(UIExtShadowApp).vm.$emit("serviceCreated", service);
     });
 
     it("registers a service instance during mount", () => {
@@ -109,7 +109,7 @@ describe("UIExtension.vue", () => {
     const wrapper = shallowMount(UIExtension, {
       props,
     });
-    const serviceApiLayer = wrapper.findComponent(UIExtComponent).props()
+    const serviceApiLayer = wrapper.findComponent(UIExtShadowApp).props()
       .apiLayer as UIExtensionServiceAPILayer;
     expect(serviceApiLayer.getConfig()).toStrictEqual({
       ...componentExtensionConfig,
@@ -164,7 +164,7 @@ describe("UIExtension.vue", () => {
       wrapper: ReturnType<typeof shallowMount>,
       alert: Alert,
     ) => {
-      const serviceApiLayer = wrapper.findComponent(UIExtComponent).props()
+      const serviceApiLayer = wrapper.findComponent(UIExtShadowApp).props()
         .apiLayer as UIExtensionServiceAPILayer;
       serviceApiLayer.sendAlert(alert);
     };

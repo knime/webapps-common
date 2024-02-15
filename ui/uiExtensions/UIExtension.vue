@@ -1,5 +1,5 @@
 <script lang="ts">
-import UIExtComponent from "./UIExtComponent.vue";
+import UIExtShadowApp from "./UIExtShadowApp.vue";
 import UIExtIFrame from "./UIExtIFrame.vue";
 import AlertLocal from "./AlertLocal.vue";
 import WarningLocal from "./WarningLocal.vue";
@@ -20,7 +20,7 @@ import { toServiceAPILayer } from "./toServiceAPILayer";
  */
 export default {
   components: {
-    UIExtComponent,
+    UIExtShadowApp,
     UIExtIFrame,
     AlertLocal,
     WarningLocal,
@@ -60,8 +60,8 @@ export default {
     };
   },
   computed: {
-    isUIExtComponent() {
-      return this.extensionConfig?.resourceInfo?.type === "VUE_COMPONENT_LIB";
+    isUIExtShadowApp() {
+      return this.extensionConfig?.resourceInfo?.type === "SHADOW_APP";
     },
     displayError() {
       return this.alert?.type === "error" && !this.isReporting;
@@ -131,8 +131,8 @@ export default {
 </script>
 
 <template>
-  <UIExtComponent
-    v-if="isUIExtComponent"
+  <UIExtShadowApp
+    v-if="isUIExtShadowApp"
     :key="`comp_${configKey}`"
     :api-layer="serviceAPILayer"
     :resource-location="resourceLocation"
