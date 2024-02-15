@@ -19,7 +19,8 @@ describe("test-service.ts", () => {
     simpleToast: Toast,
     persistentToast: Toast,
     toastWithId: Toast,
-    toastWithKey: Toast;
+    toastWithKey: Toast,
+    toastWithMeta: Toast;
 
   beforeEach(() => {
     serviceProvider = new ToastServiceProvider();
@@ -39,6 +40,12 @@ describe("test-service.ts", () => {
       headline: "This toast has an id",
       key: "my-key",
     };
+    toastWithMeta = {
+      headline: "This toast has an id",
+      meta: {
+        group: "myGroup",
+      },
+    };
   });
 
   describe("toast service provider class", () => {
@@ -48,6 +55,7 @@ describe("test-service.ts", () => {
           "toasts",
           "show",
           "remove",
+          "removeBy",
           "autoRemove",
           "removeAll",
         ];
@@ -110,6 +118,14 @@ describe("test-service.ts", () => {
           persistentToast.headline,
         );
       });
+
+      it("can set metadata object on toast", () => {
+        toastService.show(toastWithMeta);
+
+        expect(toastService.toasts.value[0].meta).toStrictEqual({
+          group: "myGroup",
+        });
+      });
     });
 
     describe("remove", () => {
@@ -123,6 +139,25 @@ describe("test-service.ts", () => {
         toastService.show(simpleToast);
         toastService.remove("konstanz-information-miner");
         expect(toastService.toasts.value).toHaveLength(1);
+      });
+    });
+
+    describe("removeBy", () => {
+      it("removes toast that match the predicate", () => {
+        const groupAToast = { ...toastWithMeta, meta: { group: "a" } };
+        const groupBToast = { ...toastWithMeta, meta: { group: "b" } };
+        toastService.show(groupAToast);
+        toastService.show(groupBToast);
+
+        toastService.removeBy((toast) => toast.meta?.group === "a");
+
+        expect(toastService.toasts.value).toStrictEqual([
+          {
+            ...groupBToast,
+            autoRemove: expect.any(Boolean),
+            id: expect.any(String),
+          },
+        ]);
       });
     });
 

@@ -52,9 +52,15 @@ export class ToastServiceProvider {
     return clonedToast.id;
   };
 
-  remove = (id: string): void => {
+  remove(id: string): void {
     this.toasts.value = this.toasts.value.filter(
       (toast: Toast) => toast.id !== id,
+    );
+  }
+
+  removeBy = (predicate: (toast: Toast) => boolean): void => {
+    this.toasts.value = this.toasts.value.filter(
+      (toast: Toast) => !predicate(toast),
     );
   };
 
@@ -73,7 +79,8 @@ export class ToastServiceProvider {
   toastServiceObject: ToastService = {
     toasts: this.readonlyToasts,
     show: this.show,
-    remove: this.remove,
+    remove: this.remove.bind(this),
+    removeBy: this.removeBy.bind(this),
     autoRemove: this.autoRemove,
     removeAll: this.removeAll,
   };

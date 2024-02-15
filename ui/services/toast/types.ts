@@ -60,6 +60,7 @@ export interface Toast {
   active?: boolean;
   id?: string;
   key?: string;
+  meta?: unknown;
   stackId?: string;
 }
 
@@ -76,6 +77,10 @@ export interface ToastService {
    * Removes the specified Toast object from the `toasts` array.
    */
   remove: (id: string) => void;
+  /**
+   * Removes all Toast objects that match the provided predicate.
+   */
+  removeBy: (predicate: (toast: Toast) => boolean) => void;
   /**
    * Removes all Toast objects with `autoRemove` set to `true` from the `toasts` array.
    */
