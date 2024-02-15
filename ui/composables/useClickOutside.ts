@@ -1,4 +1,4 @@
-import { watch, unref, onUnmounted, type Ref } from "vue";
+import { watch, unref, onUnmounted, type Ref, ref } from "vue";
 import { onClickOutside } from "@vueuse/core";
 
 type ClickOutsideParams = {
@@ -11,7 +11,7 @@ type ClickOutsideParams = {
 // wrapper for the vueuse onClickOutside component to only listen for clicks if active
 export default (
   { targets, callback }: ClickOutsideParams,
-  active: Ref<boolean>,
+  active: Ref<boolean> = ref(true),
 ) => {
   let stop: (() => void) | undefined;
 
