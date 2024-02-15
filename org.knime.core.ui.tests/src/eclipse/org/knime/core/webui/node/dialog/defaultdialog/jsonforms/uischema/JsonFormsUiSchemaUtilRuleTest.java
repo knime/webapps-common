@@ -79,7 +79,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.Co
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.IsNoneColumnCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.IsSpecificColumnCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.LatentWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 
 /**
  *
@@ -981,6 +983,42 @@ class JsonFormsUiSchemaUtilRuleTest {
             .isEqualTo(response.get("elements").get(0).get("scope").asText());
         assertThatJson(response).inPath("$.elements[1].rule.condition.schema.contains.properties.value.const")
             .isString().isEqualTo(ArrayContainsConditionTestSettings.IsFooCondition.FOO);
+    }
+
+    @Test
+    void testLatentWidgetSignals() {
+        final class SettingsWithLatentWidgetSignal implements DefaultNodeSettings {
+
+            static final class ValueProvider implements StateProvider<Boolean> {
+
+                @Override
+                public void init(final StateProviderInitializer initializer) {
+                    // fill with dependencies
+                }
+
+                @Override
+                public Boolean computeState() {
+                    // whenever the condition is fulfilled
+                    return true;
+                }
+
+            }
+
+            @LatentWidget
+            @Widget(valueProvider = ValueProvider.class)
+            @Signal(condition = TrueCondition.class)
+            Boolean m_bool;
+
+            @Widget
+            @Effect(signals = TrueCondition.class, type = EffectType.HIDE)
+            String m_effected;
+
+        }
+
+        final var response = buildTestUiSchema(SettingsWithLatentWidgetSignal.class);
+
+        assertThatJson(response).inPath("$.elements").isArray().hasSize(1);
+        assertThatJson(response).inPath("$.elements[0].rule.effect").isString().isEqualTo("HIDE");
     }
 
 }

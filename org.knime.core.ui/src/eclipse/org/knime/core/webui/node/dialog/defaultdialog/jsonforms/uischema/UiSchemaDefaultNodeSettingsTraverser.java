@@ -66,6 +66,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.rule.Signals;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.LatentWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
 import com.fasterxml.jackson.databind.ser.PropertyWriter;
@@ -118,12 +119,15 @@ class UiSchemaDefaultNodeSettingsTraverser {
         final Consumer<TraversalConsumerPayload> addSignal, final String settingsKey, final Class<?> setting) {
         final var traverser = new DefaultNodeSettingsFieldTraverser(setting);
         traverser.traverse(field -> {
-            final var scope =  JsonFormsScopeUtil.toScope(field.path(), settingsKey);
+            final var scope = JsonFormsScopeUtil.toScope(field.path(), settingsKey);
             final var payload = new TraversalConsumerPayload(scope, field, setting);
-            // TODO UIEXT-1573 only allow signals on widgets
-            addSignal.accept(payload);
+            final var isWidget = payload.field.propertyWriter().getAnnotation(Widget.class) != null;
+            final var isLatent = payload.field.propertyWriter().getAnnotation(LatentWidget.class) != null;
+            if (isWidget || isLatent) {
+                addSignal.accept(payload);
+            }
             // ignore all fields that are not annotated with Widget for ui-schema-generation
-            if (payload.field.propertyWriter().getAnnotation(Widget.class) == null) {
+            if (!isWidget || isLatent) {
                 return;
             }
             addField.accept(payload);

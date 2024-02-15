@@ -70,6 +70,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPe
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorFactory;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.ReflectionUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.LatentWidget;
 
 /**
  * Creates persistors for fields of a {@link PersistableSettings} class.
@@ -114,6 +115,10 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
     }
 
     private NodeSettingsPersistor<?> createPersistorForField(final Field field) {
+        var isLatentWidget = field.getAnnotation(LatentWidget.class) != null;
+        if (isLatentWidget) {
+            return new LatentWidgetPersistor<>();
+        }
         var persistence = field.getAnnotation(Persist.class);
         if (persistence != null) {
             return createPersistorFromPersistAnnotation(persistence, field);
