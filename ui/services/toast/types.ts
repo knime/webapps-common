@@ -60,7 +60,7 @@ export interface Toast {
   active?: boolean;
   id?: string;
   key?: string;
-  meta?: unknown;
+  meta?: any;
   stackId?: string;
 }
 
