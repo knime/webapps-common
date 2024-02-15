@@ -100,19 +100,19 @@ class ChoicesWidgetUiSchemaOptionsTest {
         @SuppressWarnings("unused")
         class SeveralChoicesSettings implements DefaultNodeSettings {
             @Widget
-            @ChoicesWidget
+            @ChoicesWidget(choices = TestChoicesProvider.class)
             ColumnSelection m_columnSelection;
 
             @Widget
-            @ChoicesWidget
+            @ChoicesWidget(choices = TestChoicesProvider.class)
             ColumnFilter m_columnFilter;
 
             @Widget
-            @ChoicesWidget
+            @ChoicesWidget(choices = TestChoicesProvider.class)
             String[] m_stringArray;
 
             @Widget
-            @ChoicesWidget
+            @ChoicesWidget(choices = TestChoicesProvider.class)
             String m_string;
 
             enum MyEnum {
@@ -120,7 +120,7 @@ class ChoicesWidgetUiSchemaOptionsTest {
             }
 
             @Widget
-            @ChoicesWidget
+            @ChoicesWidget(choices = TestChoicesProvider.class)
             MyEnum m_foo;
         }
 
@@ -386,11 +386,11 @@ class ChoicesWidgetUiSchemaOptionsTest {
         class ChoicesWidgetTestSettings implements DefaultNodeSettings {
 
             @Widget
-            @ChoicesWidget(showNoneColumn = true)
+            @ChoicesWidget(choices = TestChoicesProvider.class, showNoneColumn = true)
             ColumnSelection m_foo;
 
             @Widget
-            @ChoicesWidget()
+            @ChoicesWidget(choices = TestChoicesProvider.class)
             ColumnSelection m_bar;
 
         }
@@ -406,11 +406,11 @@ class ChoicesWidgetUiSchemaOptionsTest {
         class ChoicesWidgetTestSettings implements DefaultNodeSettings {
 
             @Widget
-            @ChoicesWidget(showRowKeysColumn = true)
+            @ChoicesWidget(choices = TestChoicesProvider.class, showRowKeysColumn = true)
             ColumnSelection m_foo;
 
             @Widget
-            @ChoicesWidget()
+            @ChoicesWidget(choices = TestChoicesProvider.class)
             ColumnSelection m_bar;
 
         }
@@ -426,11 +426,11 @@ class ChoicesWidgetUiSchemaOptionsTest {
         class ChoicesWidgetTestSettings implements DefaultNodeSettings {
 
             @Widget
-            @ChoicesWidget(showSearch = false)
+            @ChoicesWidget(choices = TestChoicesProvider.class, showSearch = false)
             ColumnSelection m_foo;
 
             @Widget
-            @ChoicesWidget()
+            @ChoicesWidget(choices = TestChoicesProvider.class)
             ColumnSelection m_bar;
 
         }
@@ -446,11 +446,11 @@ class ChoicesWidgetUiSchemaOptionsTest {
         class ChoicesWidgetTestSettings implements DefaultNodeSettings {
 
             @Widget
-            @ChoicesWidget(showMode = false)
+            @ChoicesWidget(choices = TestChoicesProvider.class, showMode = false)
             ColumnSelection m_foo;
 
             @Widget
-            @ChoicesWidget()
+            @ChoicesWidget(choices = TestChoicesProvider.class)
             ColumnSelection m_bar;
 
         }
@@ -466,11 +466,11 @@ class ChoicesWidgetUiSchemaOptionsTest {
         class ChoicesWidgetTestSettings implements DefaultNodeSettings {
 
             @Widget
-            @ChoicesWidget(includedLabel = "Label for included columns.")
+            @ChoicesWidget(choices = TestChoicesProvider.class, includedLabel = "Label for included columns.")
             ColumnFilter m_foo;
 
             @Widget
-            @ChoicesWidget()
+            @ChoicesWidget(choices = TestChoicesProvider.class)
             ColumnFilter m_bar;
 
         }
@@ -487,11 +487,11 @@ class ChoicesWidgetUiSchemaOptionsTest {
         class ChoicesWidgetTestSettings implements DefaultNodeSettings {
 
             @Widget
-            @ChoicesWidget(excludedLabel = "Label for excluded columns.")
+            @ChoicesWidget(choices = TestChoicesProvider.class, excludedLabel = "Label for excluded columns.")
             ColumnFilter m_foo;
 
             @Widget
-            @ChoicesWidget()
+            @ChoicesWidget(choices = TestChoicesProvider.class)
             ColumnFilter m_bar;
 
         }
@@ -501,6 +501,18 @@ class ChoicesWidgetUiSchemaOptionsTest {
             .isEqualTo("Label for excluded columns.");
         assertThatJson(response).inPath("$.elements[1].scope").isString().contains("bar");
         assertThatJson(response).inPath("$.elements[1].options.excludedLabel").isAbsent();
+    }
+
+    @Test
+    void testThrowsIfNoChoicesAndNoChoicesUpdateHandlerIsDefined() {
+        class ChoicesWidgetTestSettings implements DefaultNodeSettings {
+
+            @Widget
+            @ChoicesWidget
+            ColumnFilter m_foo;
+
+        }
+        assertThrows(UiSchemaGenerationException.class, () -> buildTestUiSchema(ChoicesWidgetTestSettings.class));
     }
 
     @Test

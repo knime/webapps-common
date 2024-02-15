@@ -74,6 +74,7 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.stream.Stream;
 
+import org.knime.core.node.util.CheckUtils;
 import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
@@ -316,11 +317,18 @@ final class UiSchemaOptionsGenerator {
             if (AsyncChoicesProvider.class.isAssignableFrom(choicesProviderClass)) {
                 prepareAsyncChoices(options, choicesProviderClass, () -> generatePossibleValues(choicesProviderClass));
             } else {
-                final var possibleValues = generatePossibleValues(choicesProviderClass);
-                if (possibleValues.length < ASYNC_CHOICES_THRESHOLD) {
-                    options.set("possibleValues", JsonFormsUiSchemaUtil.getMapper().valueToTree(possibleValues));
+                if (choicesProviderClass.equals(ChoicesProvider.class)) {
+                    CheckUtils.check(!choicesWidget.choicesUpdateHandler().equals(NoopChoicesUpdateHandler.class),
+                        UiSchemaGenerationException::new,
+                        () -> "Either the property \"choices\" or \"choicesUpdateHandler\" has to be defined in "
+                            + "a \"ChoicesWidget\" annotation");
                 } else {
-                    prepareAsyncChoices(options, choicesProviderClass, () -> possibleValues);
+                    final var possibleValues = generatePossibleValues(choicesProviderClass);
+                    if (possibleValues.length < ASYNC_CHOICES_THRESHOLD) {
+                        options.set("possibleValues", JsonFormsUiSchemaUtil.getMapper().valueToTree(possibleValues));
+                    } else {
+                        prepareAsyncChoices(options, choicesProviderClass, () -> possibleValues);
+                    }
                 }
             }
             if (!m_fieldClass.equals(ColumnSelection.class) && !m_fieldClass.equals(ColumnFilter.class)) {

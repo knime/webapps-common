@@ -247,7 +247,7 @@ class JsonFormsUiSchemaUtilRuleTest {
                 }
             }
 
-           static final class AlwaysFalseSignal implements ConstantSignal {
+            static final class AlwaysFalseSignal implements ConstantSignal {
 
                 @Override
                 public boolean applies(final DefaultNodeSettingsContext context) {
@@ -259,17 +259,16 @@ class JsonFormsUiSchemaUtilRuleTest {
             @Effect(signals = AlwaysTrueSignal.class, type = EffectType.DISABLE)
             boolean m_constantlyDisabled;
 
-
             @Widget
             @Effect(signals = AlwaysFalseSignal.class, type = EffectType.DISABLE)
             boolean m_constantlyEnabled;
         }
 
-
         final var response = buildTestUiSchema(ConstantEffectSettings.class);
         assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
         assertThatJson(response).inPath("$.elements[0].rule.effect").isString().isEqualTo("DISABLE");
-        assertThatJson(response).inPath("$.elements[0].rule.condition").isObject().doesNotContainKeys("schema", "scope");
+        assertThatJson(response).inPath("$.elements[0].rule.condition").isObject().doesNotContainKeys("schema",
+            "scope");
         assertThatJson(response).inPath("$.elements[1].rule.effect").isString().isEqualTo("DISABLE");
         assertThatJson(response).inPath("$.elements[1].rule.condition").isObject().doesNotContainKey("scope");
         assertThatJson(response).inPath("$.elements[1].rule.condition.schema.const").isBoolean().isTrue();
@@ -829,7 +828,7 @@ class JsonFormsUiSchemaUtilRuleTest {
             }
 
             @Widget(title = "Foo")
-            @ChoicesWidget()
+            @ChoicesWidget(choices = TestChoicesProvider.class)
             @Signal(id = TestColumnCondition.class, condition = IsTestColumnCondition.class)
             ColumnSelection columnSelection = new ColumnSelection();
 
@@ -854,7 +853,7 @@ class JsonFormsUiSchemaUtilRuleTest {
     void testIsNoneColumnCondition() {
         final class ChoicesWithNoneColumnCondition implements DefaultNodeSettings {
             @Widget(title = "Foo")
-            @ChoicesWidget()
+            @ChoicesWidget(choices = TestChoicesProvider.class)
             @Signal(condition = IsNoneColumnCondition.class)
             ColumnSelection columnSelection = new ColumnSelection();
 
@@ -878,7 +877,7 @@ class JsonFormsUiSchemaUtilRuleTest {
     void testIsNoneStringCondition() {
         final class ChoicesWithNoneColumnCondition implements DefaultNodeSettings {
             @Widget(title = "Foo")
-            @ChoicesWidget()
+            @ChoicesWidget(choices = TestChoicesProvider.class)
             @Signal(condition = IsNoneColumnStringCondition.class)
             String columnSelection;
 
@@ -942,7 +941,6 @@ class JsonFormsUiSchemaUtilRuleTest {
 
             static class IsFooCondition extends IsSpecificStringCondition {
 
-
                 static final String FOO = "Foo";
 
                 @Override
@@ -981,8 +979,8 @@ class JsonFormsUiSchemaUtilRuleTest {
         assertThatJson(response).inPath("$.elements[1].rule.effect").isString().isEqualTo("SHOW");
         assertThatJson(response).inPath("$.elements[1].rule.condition.scope").isString()
             .isEqualTo(response.get("elements").get(0).get("scope").asText());
-        assertThatJson(response).inPath("$.elements[1].rule.condition.schema.contains.properties.value.const").isString()
-            .isEqualTo(ArrayContainsConditionTestSettings.IsFooCondition.FOO);
+        assertThatJson(response).inPath("$.elements[1].rule.condition.schema.contains.properties.value.const")
+            .isString().isEqualTo(ArrayContainsConditionTestSettings.IsFooCondition.FOO);
     }
 
 }

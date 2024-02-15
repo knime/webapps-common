@@ -183,8 +183,10 @@ class UiSchemaOptionsTest {
             @Widget
             String[] m_comboBox;
 
+
+
             @Widget
-            @ChoicesWidget
+            @ChoicesWidget(choices = TestChoicesProvider.class)
             @ComboBoxWidget
             String[] m_comboBoxWithChoices;
 
@@ -199,6 +201,7 @@ class UiSchemaOptionsTest {
         assertThatJson(response).inPath("$.elements[1].scope").isString().contains("comboBoxWithChoices");
         assertThatJson(response).inPath("$.elements[1].options").isObject().containsKey("format");
         assertThatJson(response).inPath("$.elements[1].options.format").isString().isEqualTo(Format.COMBO_BOX);
+        assertThatJson(response).inPath("$.elements[1].options.possibleValues").isArray().hasSize(0);
     }
 
     @Test

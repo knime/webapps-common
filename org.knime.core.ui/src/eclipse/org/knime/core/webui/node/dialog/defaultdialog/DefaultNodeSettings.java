@@ -175,7 +175,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.Usernam
  * <td>Enums(*)</td>
  * <td>Drop Down</td>
  * <td>{@link ValueSwitchWidget}<br>
- * {@link RadioButtonsWidget}</td>
+ * {@link RadioButtonsWidget}<br>
+ * {@link ChoicesWidget} (Drop Down; Can be used to set dynamic values. This will be replaced with a different
+ * annotation with UIEXT-1681)</td>
  * </tr>
  * <tr>
  * <td>Arrays/Collections of objects(**)</td>
@@ -246,8 +248,8 @@ public interface DefaultNodeSettings extends PersistableSettings, WidgetGroup {
 
         private final CredentialsProvider m_credentialsProvider;
 
-        DefaultNodeSettingsContext(final PortType[] inTypes, final PortObjectSpec[] specs,
-            final FlowObjectStack stack, final CredentialsProvider credentialsProvider) {
+        DefaultNodeSettingsContext(final PortType[] inTypes, final PortObjectSpec[] specs, final FlowObjectStack stack,
+            final CredentialsProvider credentialsProvider) {
             m_inTypes = inTypes;
             m_specs = specs;
             m_stack = stack;
@@ -256,6 +258,7 @@ public interface DefaultNodeSettings extends PersistableSettings, WidgetGroup {
 
         /**
          * The node's input types. Not null and not containing null.
+         *
          * @return the inTypes
          */
         public PortType[] getInPortTypes() {
@@ -464,8 +467,8 @@ public interface DefaultNodeSettings extends PersistableSettings, WidgetGroup {
         if (nc instanceof NativeNodeContainer nnc) {
             credentialsProvider = nnc.getNode().getCredentialsProvider();
             // skip hidden flow variable input (mickey mouse ear) - not exposed to node implementation
-            inPortTypes = IntStream.range(1, nnc.getNrInPorts()).mapToObj(nnc::getInPort)
-                .map(NodeInPort::getPortType).toArray(PortType[]::new);
+            inPortTypes = IntStream.range(1, nnc.getNrInPorts()).mapToObj(nnc::getInPort).map(NodeInPort::getPortType)
+                .toArray(PortType[]::new);
         } else {
             credentialsProvider = null;
             inPortTypes = fallbackPortTypesFor(specs);
