@@ -103,7 +103,7 @@ const scale = toRef(viewSettings, "shrinkToFit");
 
 <style scoped>
 /**
- * div is required here to make the selector more specific than a ui-ext-component class selector in
+ * div is required here to make the selector more specific than a ui-ext-shadow-app class selector in
  * knime-js-pagebuilder that sets overflow to hidden
  */
 div.scroll-container {

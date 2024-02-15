@@ -73,9 +73,9 @@ public interface Resource {
              */
             HTML,
             /**
-             * If the resource represents a vue component to be loaded dynamically.
+             * If the resource represents a shadow dom based app to be loaded dynamically.
              */
-            VUE_COMPONENT_LIB,
+            SHADOW_APP,
             /**
              * The resource is a svg image.
              */
@@ -86,7 +86,7 @@ public interface Resource {
             PNG;
 
         static final Map<String, ContentType> FILE_EXTENSION_TO_CONTENT_TYPE_MAP = Map.of( //
-            ".js", VUE_COMPONENT_LIB, //
+            ".js", SHADOW_APP, //
             ".html", HTML, //
             ".svg", SVG, //
             ".png", PNG);

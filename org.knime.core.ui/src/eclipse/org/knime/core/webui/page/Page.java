@@ -189,7 +189,7 @@ public final class Page implements Resource {
         }
 
         switch (getContentType()) {
-            case VUE_COMPONENT_LIB:
+            case SHADOW_APP:
                 return Optional.of(m_pageNameForReusablePage);
             case HTML:
                 // combine page-name with identity hash code of this object in order to guarantee global uniqueness

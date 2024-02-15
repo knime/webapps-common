@@ -94,8 +94,8 @@ public class PageTest {
         var page = Page.builder(BUNDLE_ID, "files", "page.html").build();
         assertThat(page.getContentType()).isEqualTo(ContentType.HTML);
 
-        page = Page.builder(BUNDLE_ID, "files", "component.umd.js").build();
-        assertThat(page.getContentType()).isEqualTo(ContentType.VUE_COMPONENT_LIB);
+        page = Page.builder(BUNDLE_ID, "files", "component.js").build();
+        assertThat(page.getContentType()).isEqualTo(ContentType.SHADOW_APP);
 
         var page2 = Page.builder(() -> "content", "component.blub").build();
         Assertions.assertThatThrownBy(page2::getContentType).isInstanceOf(IllegalArgumentException.class);
