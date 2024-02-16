@@ -152,7 +152,7 @@ public class DefaultNodeSettingsSnapshotTest {
      *         root of the bundle that contains the test class
      * @throws IOException
      */
-    private static Path getSnapshotPath(final Class<?> clazz) throws IOException {
+    public static Path getSnapshotPath(final Class<?> clazz) throws IOException {
         var url = FileLocator.toFileURL(resolveToURL(SNAPSHOT_FILE_LOCATION, clazz));
         return FileUtil.getFileFromURL(url).toPath();
     }
