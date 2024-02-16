@@ -19,8 +19,6 @@ import {
   getPossibleValuesFromUiSchema,
   hasAdvancedOptions,
 } from "../nodeDialog/utils";
-import Button from "webapps-common/ui/components/Button.vue";
-import { getMetaOrCtrlKey } from "webapps-common/util/navigator";
 import { cloneDeep, set, get, isEqual } from "lodash-es";
 import { inject, markRaw } from "vue";
 import type ProvidedMethods from "./types/provided";
@@ -46,17 +44,9 @@ type RegisteredWatcher = {
   transformSettings: (newData: SettingsData) => void;
 };
 
-const doIfBodyActive =
-  (fn: (event: KeyboardEvent) => void) => (event: KeyboardEvent) => {
-    if (event.target === document.body) {
-      fn(event);
-    }
-  };
-
 export default {
   components: {
     JsonForms,
-    Button,
   },
   inject: ["getKnimeService"],
   provide() {
@@ -109,7 +99,6 @@ export default {
         globalUpdates?: Update[];
       },
       ready: false,
-      isWriteProtected: false,
       isMetaKeyPressed: false,
     };
   },
@@ -127,17 +116,7 @@ export default {
     this.currentData = initialSettings.data;
     this.setOriginalModelSettings(this.currentData);
     this.dialogService.setApplyListener(this.applySettings.bind(this));
-    this.isWriteProtected = this.dialogService.isWriteProtected();
     this.ready = true;
-    window.addEventListener("keydown", doIfBodyActive(this.keyDown.bind(this)));
-    window.addEventListener("keyup", doIfBodyActive(this.keyUp.bind(this)));
-  },
-  unmounted() {
-    window.removeEventListener(
-      "keydown",
-      doIfBodyActive(this.keyDown.bind(this)),
-    );
-    window.removeEventListener("keyup", doIfBodyActive(this.keyUp.bind(this)));
   },
   methods: {
     registerGlobalWatchers(globalUpdates: Update[]) {
@@ -372,14 +351,6 @@ export default {
       this.setOriginalModelSettings(this.currentData);
       return this.jsonDataService!.applyData(this.getData());
     },
-    async applySettingsCloseDialog() {
-      const response = await this.applySettings();
-      if (response.result) {
-        alert(response.result);
-      } else {
-        this.closeDialog();
-      }
-    },
     closeDialog() {
       new CloseService(this.getKnimeService()).close(this.isMetaKeyPressed);
     },
@@ -395,21 +366,6 @@ export default {
       }
       return hasAdvancedOptions(this.uischema);
     },
-    keyDown(e: KeyboardEvent) {
-      this.isMetaKeyPressed = e[getMetaOrCtrlKey()];
-      if (e.defaultPrevented) {
-        return;
-      }
-      if (e.key === "Enter") {
-        this.applySettingsCloseDialog();
-      }
-      if (e.key === "Escape") {
-        this.closeDialog();
-      }
-    },
-    keyUp(e: KeyboardEvent) {
-      this.isMetaKeyPressed = e[getMetaOrCtrlKey()];
-    },
     markRaw,
   },
 };
@@ -417,7 +373,7 @@ export default {
 
 <template>
   <div class="dialog">
-    <div class="form" :tabindex="-1" @keydown="keyDown" @keyup="keyUp">
+    <div class="form">
       <JsonForms
         v-if="ready"
         ref="jsonforms"
@@ -435,17 +391,6 @@ export default {
         {{ schema.showAdvancedSettings ? "Hide" : "Show" }} advanced settings
       </a>
     </div>
-    <div class="controls">
-      <Button with-border compact @click="closeDialog"> Cancel</Button>
-      <Button
-        :disabled="isWriteProtected"
-        primary
-        compact
-        @click.prevent="applySettingsCloseDialog"
-      >
-        {{ isMetaKeyPressed ? "Ok and Execute" : "Ok" }}
-      </Button>
-    </div>
   </div>
 </template>
 
@@ -457,9 +402,7 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100vh;
   background-color: var(--knime-gray-ultra-light);
-  padding-bottom: 11px; /* Padding set at 11px to align with the commons "Messages" component */
 
   & .form {
     display: flex;
@@ -498,15 +441,6 @@ export default {
         flex: 1;
       }
     }
-  }
-
-  & .controls {
-    display: flex;
-    justify-content: space-between;
-    height: var(--controls-height);
-    padding: 14px 20px 4px;
-    background-color: var(--knime-gray-ultra-light);
-    border-top: 1px solid var(--knime-silver-sand);
   }
 
   & .advanced-options {

@@ -7,30 +7,19 @@ import {
   JsonDataService,
   DialogService,
   AlertingService,
-  CloseService,
 } from "@knime/ui-extension-service";
 import {
   dialogApplyData,
   dialogInitialData,
 } from "/test-setup/mocks/dialogData";
-import Button from "webapps-common/ui/components/Button.vue";
 
 import NodeDialog from "../NodeDialog.vue";
 import flushPromises from "flush-promises";
 
 import { getOptions } from "./utils";
 
-const metaOrCtrlKey = "metaKey";
-
-vi.mock("webapps-common/util/navigator", () => {
-  return {
-    getMetaOrCtrlKey: () => metaOrCtrlKey,
-  };
-});
-
 describe("NodeDialog.vue", () => {
   let initialDataSpy,
-    closeSpy,
     setApplyListenerSpy,
     setCleanSettingsSpy,
     setDirtyModelSettingsSpy;
@@ -53,7 +42,6 @@ describe("NodeDialog.vue", () => {
       DialogService.prototype,
       "setDirtyModelSettings",
     );
-    closeSpy = vi.spyOn(CloseService.prototype, "close").mockResolvedValue();
   });
 
   it("renders empty wrapper", async () => {
@@ -196,88 +184,6 @@ describe("NodeDialog.vue", () => {
       await flushPromises();
 
       expect(wrapper.vm.applySettingsCloseDialog()).rejects.toThrowError();
-    });
-  });
-
-  it("calls window.closeCEFWindow in closeDialog", () => {
-    const wrapper = shallowMount(NodeDialog, getOptions());
-
-    wrapper.vm.closeDialog();
-
-    expect(closeSpy).toHaveBeenCalledWith(false);
-  });
-
-  describe("keyboard shortcuts", () => {
-    let wrapper, formWrapper, applyDataSpy;
-
-    beforeEach(() => {
-      wrapper = shallowMount(
-        NodeDialog,
-        getOptions({ stubButtonsBySlot: true }),
-      );
-      applyDataSpy = vi
-        .spyOn(wrapper.vm.jsonDataService, "applyData")
-        .mockResolvedValue({});
-      formWrapper = wrapper.find(".form");
-    });
-
-    it("executes node when metaOrCtrlKey is pressed on closeDialog", () => {
-      formWrapper.trigger("keydown", { [metaOrCtrlKey]: true });
-
-      wrapper.vm.closeDialog();
-
-      expect(closeSpy).toHaveBeenCalledWith(true);
-    });
-
-    it("does not executes node when metaOrCtrlKey was pressed and released again on closeDialog", async () => {
-      const okButton = wrapper.findAllComponents(Button).at(1);
-      expect(okButton.html()).toBe("Ok");
-      await formWrapper.trigger("keydown", { [metaOrCtrlKey]: true });
-      expect(okButton.html()).toBe("Ok and Execute");
-      await formWrapper.trigger("keyup", { [metaOrCtrlKey]: false });
-      expect(okButton.html()).toBe("Ok");
-
-      wrapper.vm.closeDialog();
-
-      expect(closeSpy).toHaveBeenCalledWith(false);
-    });
-
-    it("triggers cancel on escape", async () => {
-      await formWrapper.trigger("keydown", { key: "Escape" });
-      expect(closeSpy).toHaveBeenCalledWith(false);
-    });
-
-    it("triggers on window keyboard event with body as target", () => {
-      const event = new Event("keydown");
-      event.key = "Escape";
-      event[metaOrCtrlKey] = false;
-      Object.defineProperty(event, "target", { value: document.body });
-      window.dispatchEvent(event);
-      expect(closeSpy).toHaveBeenCalledWith(false);
-    });
-
-    it("does not trigger on window keyboard event if target is not body", () => {
-      const event = new Event("keydown");
-      event.key = "Escape";
-      event[metaOrCtrlKey] = false;
-      Object.defineProperty(event, "target", { value: "not-the-body" });
-      window.dispatchEvent(event);
-      expect(closeSpy).not.toHaveBeenCalled();
-    });
-
-    it("triggers apply + close on enter", async () => {
-      await formWrapper.trigger("keydown", { key: "Enter" });
-      expect(applyDataSpy).toHaveBeenCalled();
-      expect(closeSpy).toHaveBeenCalledWith(false);
-    });
-
-    it("triggers apply + close + execute on metaOrCtrlKey + enter", async () => {
-      await formWrapper.trigger("keydown", {
-        key: "Enter",
-        [metaOrCtrlKey]: true,
-      });
-      expect(applyDataSpy).toHaveBeenCalled();
-      expect(closeSpy).toHaveBeenCalledWith(true);
     });
   });
 
@@ -980,13 +886,5 @@ describe("NodeDialog.vue", () => {
 
       expect(setCleanSettingsSpy).toHaveBeenCalled();
     });
-  });
-
-  it("disables the ok-button if dialog is write-protected", async () => {
-    vi.spyOn(DialogService.prototype, "isWriteProtected").mockReturnValue(true);
-    const wrapper = shallowMount(NodeDialog, getOptions());
-    await flushPromises();
-    const button = wrapper.findAllComponents(Button).at(1);
-    expect(button.props("disabled")).toBe(true);
   });
 });
