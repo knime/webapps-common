@@ -78,6 +78,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.Defaul
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.EnumDefinitionProvider.ConstantEntry;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.ConfigKeyUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DeprecatedConfigs;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget.DoubleProvider;
@@ -87,6 +88,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.victools.jsonschema.generator.FieldScope;
 import com.github.victools.jsonschema.generator.Option;
@@ -178,8 +180,7 @@ public final class JsonFormsSchemaUtil {
             .withTitleResolver(field -> Optional.ofNullable(field.getAnnotationConsideringFieldAndGetter(Widget.class))
                 .map(Widget::title).filter(l -> !field.isFakeContainerItemScope() && !l.isEmpty()).orElse(null));
 
-        builder.forFields()
-            .withDescriptionResolver(JsonFormsSchemaUtil::resolveDescription);
+        builder.forFields().withDescriptionResolver(JsonFormsSchemaUtil::resolveDescription);
 
         builder.forFields().withNumberInclusiveMinimumResolver(
             field -> Optional.ofNullable(field.getAnnotationConsideringFieldAndGetter(NumberInputWidget.class))//
@@ -226,9 +227,9 @@ public final class JsonFormsSchemaUtil {
     private static String resolveDescription(final FieldScope fieldScope) {
         var type = fieldScope.getType().getErasedType();
         return Optional.ofNullable(fieldScope.getAnnotationConsideringFieldAndGetter(Widget.class))//
-                .filter(w -> !fieldScope.isFakeContainerItemScope())//
-                .flatMap(w -> resolveDescription(w, type))//
-                .orElse(null);
+            .filter(w -> !fieldScope.isFakeContainerItemScope())//
+            .flatMap(w -> resolveDescription(w, type))//
+            .orElse(null);
     }
 
     /**
@@ -250,15 +251,14 @@ public final class JsonFormsSchemaUtil {
         return Optional.of(description);
     }
 
-
     private static <E extends Enum<E>> String getConstantList(final Class<?> erasedEnumType) {
         @SuppressWarnings("unchecked") // the calling method checks that erasedEnumType is an enum
         var enumClass = (Class<E>)erasedEnumType;
         var constantEntries = EnumDefinitionProvider.getEnumConstantDescription(enumClass);
         if (constantEntries.stream().anyMatch(ConstantEntry::hasDescription)) {
             return constantEntries.stream()//
-                    .map(JsonFormsSchemaUtil::createConstantListItem)//
-                    .collect(Collectors.joining("", "\n<ul>", "\n</ul>"));
+                .map(JsonFormsSchemaUtil::createConstantListItem)//
+                .collect(Collectors.joining("", "\n<ul>", "\n</ul>"));
         }
         return "";
     }
@@ -285,10 +285,30 @@ public final class JsonFormsSchemaUtil {
         final SchemaGenerationContext context) {
         var configKeys = ConfigKeyUtil.getConfigKeysUsedByField(field.getRawMember());
         if (configKeys.length > 0) {
-            var configKeysNode = context.getGeneratorConfig().createArrayNode();
+            var configKeysNode = node.putArray("configKeys");
             Arrays.stream(configKeys).forEach(configKeysNode::add);
-            node.set("configKeys", configKeysNode);
         }
+        var deprecatedConfigsArray = ConfigKeyUtil.getDeprecatedConfigsUsedByField(field.getRawMember());
+        if (deprecatedConfigsArray.length > 0) {
+            final var deprecatedConfigsNode = node.putArray("deprecatedConfigKeys");
+            Arrays.stream(deprecatedConfigsArray)
+                .forEach(deprecatedConfigs -> putDeprecatedConfig(deprecatedConfigsNode, deprecatedConfigs));
+        }
+    }
+
+    private static void putDeprecatedConfig(final ArrayNode deprecatedConfigsNode,
+        final DeprecatedConfigs deprecatedConfigs) {
+        final var nextDeprecatedConfigs = deprecatedConfigsNode.addObject();
+        add2DStingArray(nextDeprecatedConfigs, "new", deprecatedConfigs.getNewConfigPaths());
+        add2DStingArray(nextDeprecatedConfigs, "deprecated", deprecatedConfigs.getDeprecatedConfigPaths());
+    }
+
+    private static void add2DStingArray(final ObjectNode node, final String key, final String[][] twoDimensionalArray) {
+        final var parentArrayNode = node.putArray(key);
+        Arrays.stream(twoDimensionalArray).forEach(oneDimensionalArray -> {
+            final var childArray = parentArrayNode.addArray();
+            Arrays.stream(oneDimensionalArray).forEach(childArray::add);
+        });
     }
 
     private static List<ResolvedType> overrideClass(final FieldScope field) {

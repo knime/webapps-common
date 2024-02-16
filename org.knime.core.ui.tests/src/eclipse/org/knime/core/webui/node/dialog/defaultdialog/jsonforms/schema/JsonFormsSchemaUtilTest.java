@@ -75,6 +75,8 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DeprecatedConfigs;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DeprecatedConfigs.DeprecatedConfigsBuilder;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
@@ -444,9 +446,72 @@ class JsonFormsSchemaUtilTest {
         public int test;
     }
 
+    private static class CustomPersistorWithDeprecatedConfigs implements FieldNodeSettingsPersistor<Integer> {
+
+        @Override
+        public Integer load(final NodeSettingsRO settings) throws InvalidSettingsException {
+            throw new UnsupportedOperationException("should not be called by this test");
+        }
+
+        @Override
+        public void save(final Integer obj, final NodeSettingsWO settings) {
+            throw new UnsupportedOperationException("should not be called by this test");
+        }
+
+        @Override
+        public String[] getConfigKeys() {
+            return new String[0];
+        }
+
+        @Override
+        public DeprecatedConfigs[] getDeprecatedConfigs() {
+            return new DeprecatedConfigs[]{//
+                new DeprecatedConfigsBuilder()//
+                    .forDeprecatedConfigPath("A", "B")//
+                    .forDeprecatedConfigPath("C")//
+                    .forNewConfigPath("D", "E")//
+                    .forNewConfigPath("F")//
+                    .build(), //
+                new DeprecatedConfigsBuilder()//
+                    .forNewConfigPath("I", "J")//
+                    .forDeprecatedConfigPath("G", "H")//
+                    .build()//
+            };
+        }
+
+    }
+
     @Test
     void testConfigKeyFromCustomPersistor() throws JsonProcessingException {
         testSettingsWithoutContext(SettingWithCustomPersistor.class);
+    }
+
+    private static class SettingWithCustomPersistorWithDeprecatedConfigs {
+
+        private static String SNAPSHOT = "{\"test\":{" //
+            + "\"type\":\"integer\"," //
+            + "\"format\":\"int32\"," //
+            + "\"title\":\"my_title\"," //
+            + "\"default\":0," //
+            + "\"deprecatedConfigKeys\":[" //
+            + "{" //
+            + "\"deprecated\": [[\"A\", \"B\"], [\"C\"]]," //
+            + "\"new\": [[\"D\", \"E\"], [\"F\"]]" //
+            + "}, {" //
+            + "\"deprecated\": [[\"G\", \"H\"]]," //
+            + "\"new\": [[\"I\", \"J\"]]" //
+            + "}" //
+            + "]" //
+            + "}}";
+
+        @Persist(customPersistor = CustomPersistorWithDeprecatedConfigs.class)
+        @Widget(title = "my_title")
+        public int test;
+    }
+
+    @Test
+    void testConfigKeyFromCustomPersistorWithDeprecatedConfigs() throws JsonProcessingException {
+        testSettingsWithoutContext(SettingWithCustomPersistorWithDeprecatedConfigs.class);
     }
 
     private record MyStringWrapper(String m_test) {

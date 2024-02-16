@@ -66,6 +66,14 @@ public interface FieldNodeSettingsPersistor<T> extends NodeSettingsPersistor<T> 
     String[] getConfigKeys();
 
     /**
+     * @return an array of all pairs of collections of deprecated and accociated new configs (see
+     *         {@link DeprecatedConfigs})
+     */
+    default DeprecatedConfigs[] getDeprecatedConfigs() {
+        return new DeprecatedConfigs[0];
+    }
+
+    /**
      * Create an instance of a {@link FieldNodeSettingsPersistor} by calling
      * {@link NodeSettingsPersistor#createInstance(Class, Class)} and sets the config key if the result implements
      * {@link NodeSettingsPersistorWithConfigKey}.
