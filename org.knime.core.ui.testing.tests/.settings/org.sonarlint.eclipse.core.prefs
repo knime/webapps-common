@@ -1,0 +1,7 @@
+autoEnabled=true
+bindingSuggestionsDisabled=false
+eclipse.preferences.version=1
+idePrefixKey=lib/fetch_jars
+projectKey=KNIME_knime-core-ui
+serverId=SonarCloud
+sqPrefixKey=

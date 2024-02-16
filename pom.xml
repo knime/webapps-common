@@ -32,6 +32,7 @@
 		<module>org.knime.core.ui</module>
 		<module>org.knime.core.ui.testing</module>
 		<module>org.knime.core.ui.tests</module>
+		<module>org.knime.core.ui.testing.tests</module>
 		<module>org.knime.features.core.ui</module>
 		<module>org.knime.update.core.ui</module>
 	</modules>
