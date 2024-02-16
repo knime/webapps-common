@@ -50,7 +50,9 @@ describe("paths", () => {
         subConfigKeys: undefined,
         control,
       });
-      expect(configPaths).toStrictEqual([path]);
+      expect(configPaths).toStrictEqual([
+        { configPath: path, deprecatedConfigPaths: [] },
+      ]);
     });
 
     it("appends subConfigKeys", () => {
@@ -71,10 +73,11 @@ describe("paths", () => {
         subConfigKeys: ["first", "second"],
         control,
       });
-      expect(configPaths).toStrictEqual([
-        "model.mySetting.first",
-        "model.mySetting.second",
-      ]);
+      expect(configPaths).toStrictEqual(
+        ["model.mySetting.first", "model.mySetting.second"].map(
+          (configPath) => ({ configPath, deprecatedConfigPaths: [] }),
+        ),
+      );
     });
 
     it("uses configKeys", () => {
@@ -98,12 +101,14 @@ describe("paths", () => {
         subConfigKeys: ["subConfigKey"],
         control,
       });
-      expect(configPaths).toStrictEqual([
-        "model_1.mySetting_1.subConfigKey",
-        "model_1.mySetting_2.subConfigKey",
-        "model_2.mySetting_1.subConfigKey",
-        "model_2.mySetting_2.subConfigKey",
-      ]);
+      expect(configPaths).toStrictEqual(
+        [
+          "model_1.mySetting_1.subConfigKey",
+          "model_1.mySetting_2.subConfigKey",
+          "model_2.mySetting_1.subConfigKey",
+          "model_2.mySetting_2.subConfigKey",
+        ].map((configPath) => ({ configPath, deprecatedConfigPaths: [] })),
+      );
     });
 
     it("navigates to items and ignores config keys for array schema ", () => {
@@ -131,11 +136,88 @@ describe("paths", () => {
         subConfigKeys: ["subConfigKey"],
         control,
       });
+      expect(configPaths).toStrictEqual(
+        [
+          "model_1.3.mySetting_1.subConfigKey",
+          "model_1.3.mySetting_2.subConfigKey",
+          "model_2.3.mySetting_1.subConfigKey",
+          "model_2.3.mySetting_2.subConfigKey",
+        ].map((configPath) => ({ configPath, deprecatedConfigPaths: [] })),
+      );
+    });
+
+    it("detects deprecated configKeys", () => {
+      const path = "model.mySetting";
+      const control: Control = createControl({
+        type: "object",
+        properties: {
+          model: {
+            type: "object",
+            configKeys: ["model_1", "model_2"],
+            deprecatedConfigKeys: [
+              {
+                deprecated: [
+                  ["deprecated", "1"],
+                  ["deprecated", "2"],
+                ],
+                new: [["model_1"], ["model_1", "mySetting", "subSetting"]],
+              },
+              {
+                deprecated: [["deprecated", "3"]],
+                new: [
+                  ["model_2", "mySetting_2"],
+                  ["view", "otherSetting"],
+                ],
+              },
+            ],
+            properties: {
+              mySetting: {
+                deprecatedConfigKeys: [
+                  {
+                    deprecated: [["deprecated", "4"]],
+                    new: [["mySetting_2"]],
+                  },
+                ],
+                configKeys: ["mySetting_1", "mySetting_2"],
+              },
+            },
+          },
+          view: {
+            type: "object",
+          },
+        },
+      });
+      const configPaths = getConfigPaths({
+        path,
+        subConfigKeys: ["subConfigKey"],
+        control,
+      });
       expect(configPaths).toStrictEqual([
-        "model_1.3.mySetting_1.subConfigKey",
-        "model_1.3.mySetting_2.subConfigKey",
-        "model_2.3.mySetting_1.subConfigKey",
-        "model_2.3.mySetting_2.subConfigKey",
+        {
+          configPath: "model_1.mySetting_1.subConfigKey",
+          deprecatedConfigPaths: ["deprecated.1", "deprecated.2"],
+        },
+        {
+          configPath: "model_1.mySetting_2.subConfigKey",
+          deprecatedConfigPaths: [
+            "deprecated.1",
+            "deprecated.2",
+            "model_1.deprecated.4",
+            "model_2.deprecated.4",
+          ],
+        },
+        {
+          configPath: "model_2.mySetting_1.subConfigKey",
+          deprecatedConfigPaths: [],
+        },
+        {
+          configPath: "model_2.mySetting_2.subConfigKey",
+          deprecatedConfigPaths: [
+            "deprecated.3",
+            "model_1.deprecated.4",
+            "model_2.deprecated.4",
+          ],
+        },
       ]);
     });
   });

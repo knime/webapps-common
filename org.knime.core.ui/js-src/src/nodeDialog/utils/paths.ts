@@ -3,6 +3,12 @@ import Control, {
   isArraySchema,
   isObjectSchema,
 } from "../types/Control";
+import {
+  DeprecatedConfigPathsCandidate,
+  createNewCandidate,
+  toConfigPathsWithDeprecatedConfigPaths,
+  updateCandidates,
+} from "./deprecatedPathsUtil";
 
 export const composePaths = (path1: string, path2: string) => {
   if (path1 === "") {
@@ -11,20 +17,18 @@ export const composePaths = (path1: string, path2: string) => {
   return `${path1}.${path2}`;
 };
 
-const getNextSubPaths = ({
-  parentPath,
+const getNextConfigPathSegments = ({
   schema,
   segment,
 }: {
-  parentPath: string;
   schema: Schema;
   segment: string;
 }) => {
   const configKeys = schema.configKeys;
   if (typeof configKeys === "undefined" || !configKeys.length) {
-    return [composePaths(parentPath, segment)];
+    return [segment];
   }
-  return configKeys.map((key) => composePaths(parentPath, key));
+  return configKeys;
 };
 
 /**
@@ -46,11 +50,12 @@ export const getConfigPaths = (params: {
   control: Control;
   path: string;
   subConfigKeys: string[] | undefined;
-}): string[] => {
+}): { configPath: string; deprecatedConfigPaths: string[] }[] => {
   const { path, control, subConfigKeys } = params;
   const segments = path.split(".");
   let configPaths = [""];
   let schema: Schema = control.rootSchema;
+  let deprecatedConfigPathsCandidates: DeprecatedConfigPathsCandidate[] = [];
   for (const segment of segments) {
     if (isArraySchema(schema)) {
       configPaths = configPaths.map((p) => composePaths(p, segment));
@@ -60,14 +65,33 @@ export const getConfigPaths = (params: {
        * properties is guaranteed to exist here, since the schema is the schema of the given subpath
        */
       schema = schema.properties[segment];
-      configPaths = configPaths.flatMap((parentPath) =>
-        getNextSubPaths({ parentPath, schema, segment }),
+
+      (schema.deprecatedConfigKeys ?? []).forEach((part) =>
+        deprecatedConfigPathsCandidates.push(
+          createNewCandidate(part, configPaths),
+        ),
+      );
+
+      const nextPathSegments = getNextConfigPathSegments({ schema, segment });
+
+      configPaths = configPaths.flatMap((parent) =>
+        nextPathSegments.map((newSegment) => composePaths(parent, newSegment)),
+      );
+
+      deprecatedConfigPathsCandidates = updateCandidates(
+        deprecatedConfigPathsCandidates,
+        new Set(nextPathSegments),
       );
     }
   }
-  return subConfigKeys?.length //
-    ? configPaths.flatMap((configPath) =>
-        subConfigKeys.map((subKey) => composePaths(configPath, subKey)),
-      ) //
-    : configPaths;
+  if (subConfigKeys?.length) {
+    configPaths = configPaths.flatMap((configPath) =>
+      subConfigKeys.map((subKey) => composePaths(configPath, subKey)),
+    );
+  }
+
+  return toConfigPathsWithDeprecatedConfigPaths(
+    configPaths,
+    deprecatedConfigPathsCandidates,
+  );
 };

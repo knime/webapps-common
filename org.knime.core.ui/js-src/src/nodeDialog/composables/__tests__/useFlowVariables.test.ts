@@ -74,7 +74,9 @@ describe("useFlowVariables", () => {
     });
     const provided = wrapper.findComponent(InjectingSlot).vm[providedKey];
     expect(provided.flowSettings).toBeDefined();
-    expect(provided.configPaths.value).toEqual(["configKey.subConfigKey"]);
+    expect(provided.configPaths.value).toEqual([
+      { configPath: "configKey.subConfigKey", deprecatedConfigPaths: [] },
+    ]);
     expect(provided.dataPaths.value).toEqual(["path.subConfigKey"]);
   });
 

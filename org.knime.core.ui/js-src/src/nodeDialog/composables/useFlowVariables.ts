@@ -7,7 +7,12 @@ import Control from "../types/Control";
 export interface FlowVariableSettingsProvidedByControl {
   flowSettings: Ref<FlowSettings | null>;
   dataPaths: Ref<string[]>;
-  configPaths: Ref<string[]>;
+  configPaths: Ref<
+    {
+      configPath: string;
+      deprecatedConfigPaths: string[];
+    }[]
+  >;
 }
 
 /** Exported only for tests */
@@ -18,20 +23,28 @@ export const getFlowVariableSettingsProvidedByControl = () =>
 export const getFlowVariablesMap = () =>
   injectForFlowVariables("getFlowVariablesMap")();
 
-const isFlowSettings = (
-  flowSettings: FlowSettings | undefined | null,
-): flowSettings is FlowSettings => {
-  return Boolean(flowSettings);
-};
+const getFlowSettingsFromMap =
+  (flowVariablesMap: Record<string, FlowSettings>) =>
+  (configPaths: string[]) => {
+    return configPaths.map((key) => flowVariablesMap[key]).filter(Boolean);
+  };
 
 const toFlowSetting = (
   flowVariablesMap: Record<string, FlowSettings>,
-  configPaths: string[],
+  configPaths: {
+    configPath: string;
+    deprecatedConfigPaths: string[];
+  }[],
 ) => {
-  const flowSettings = configPaths
-    .map((key) => flowVariablesMap[key])
-    .filter(isFlowSettings);
-  return flowSettings.reduce(
+  const getFlowSettings = getFlowSettingsFromMap(flowVariablesMap);
+  const deprecatedFlowSettings = getFlowSettings(
+    configPaths.flatMap(({ deprecatedConfigPaths }) => deprecatedConfigPaths),
+  );
+  const flowSettings = getFlowSettings(
+    configPaths.map(({ configPath }) => configPath),
+  );
+
+  return [...deprecatedFlowSettings, ...flowSettings].reduce(
     (a, b) => {
       return {
         controllingFlowVariableAvailable:

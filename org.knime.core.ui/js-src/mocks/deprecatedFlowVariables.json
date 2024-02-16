@@ -1,0 +1,59 @@
+{
+  "result": {
+    "name": "Deprecated Flow Variables",
+    "data": {
+      "model": {
+        "settingWithDeprecatedFlowVariables": ""
+      }
+    },
+    "schema": {
+      "type": "object",
+      "properties": {
+        "model": {
+          "type": "object",
+          "properties": {
+            "settingWithDeprecatedFlowVariables": {
+              "configKeys": [],
+              "deprecatedConfigKeys": [
+                {
+                  "new": [["settingWithDeprecatedFlowVariables"]],
+                  "deprecated": [
+                    ["i", "am", "deprecated"],
+                    ["me", "too"],
+                    ["also", "me", "but", "i", "am", "not", "set"]
+                  ]
+                }
+              ],
+              "type": "string",
+              "title": "Deprecated flow variables set",
+              "description": "Icon + disabled + text and unset-buttons in popover"
+            }
+          }
+        }
+      }
+    },
+    "ui_schema": {
+      "elements": [
+        {
+          "type": "Section",
+          "label": "Deprecated flow variables",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/settingWithDeprecatedFlowVariables"
+            }
+          ]
+        }
+      ]
+    },
+    "flowVariableSettings": {
+      "model.i.am.deprecated": {
+        "controllingFlowVariableAvailable": true,
+        "controllingFlowVariableName": "oldVariable1"
+      },
+      "model.me.too": {
+        "exposedFlowVariableName": "oldVariable2"
+      }
+    }
+  }
+}

@@ -5,21 +5,28 @@ import Fieldset from "webapps-common/ui/components/forms/Fieldset.vue";
 import FlowVariablePopover from "../FlowVariablePopover.vue";
 import FlowVariableSelector from "../FlowVariableSelector.vue";
 import FlowVariableExposer from "../FlowVariableExposer.vue";
-import MulitpleConfigKeysNotYetSupported from "../MultipleConfigKeysNotYetSupported.vue";
+import MultipleConfigKeysNotYetSupported from "../MultipleConfigKeysNotYetSupported.vue";
 import { providedKey as providedByComponentKey } from "@/nodeDialog/composables/useFlowVariables";
 import { type Ref, ref } from "vue";
+import { FlowSettings } from "@/nodeDialog/api/types";
+import DeprecatedFlowVariables from "../DeprecatedFlowVariables.vue";
 
 describe("FlowVariablePopover", () => {
-  let configPaths: Ref<string[]>, dataPaths: Ref<string[]>;
+  let configPaths: Ref<
+      { configPath: string; deprecatedConfigPaths: string[] }[]
+    >,
+    dataPaths: Ref<string[]>,
+    flowVariablesMap: Record<string, FlowSettings>;
 
   const path = "model.myPath";
 
   beforeEach(() => {
-    configPaths = ref([path]);
+    flowVariablesMap = {};
+    configPaths = ref([{ configPath: path, deprecatedConfigPaths: [] }]);
     dataPaths = ref(["firstDataPath"]);
   });
 
-  const mountFlowVaiablePopover = () => {
+  const mountFlowVariablePopover = () => {
     return shallowMount(FlowVariablePopover, {
       global: {
         provide: {
@@ -27,14 +34,15 @@ describe("FlowVariablePopover", () => {
             dataPaths,
             configPaths,
           },
+          getFlowVariablesMap: () => flowVariablesMap,
         },
-        stubs: { MulitpleConfigKeysNotYetSupported, Label, Fieldset },
+        stubs: { MultipleConfigKeysNotYetSupported, Label, Fieldset },
       },
     });
   };
 
   it("renders selector", () => {
-    const wrapper = mountFlowVaiablePopover();
+    const wrapper = mountFlowVariablePopover();
 
     const labelForSelector = wrapper.findComponent(Label);
     const selector = wrapper.findComponent(FlowVariableSelector);
@@ -51,28 +59,32 @@ describe("FlowVariablePopover", () => {
     expect(exposer.attributes().id).toBe(
       labelForExposer.find("label").attributes().for,
     );
+    expect(wrapper.findComponent(DeprecatedFlowVariables).exists()).toBe(false);
   });
 
   it("does not render selector in case of multiple config keys", () => {
     const localConfigPaths = ["firstPath", "secondPath"];
-    configPaths.value = localConfigPaths;
-    const wrapper = mountFlowVaiablePopover();
+    configPaths.value = localConfigPaths.map((configPath) => ({
+      configPath,
+      deprecatedConfigPaths: [],
+    }));
+    const wrapper = mountFlowVariablePopover();
     expect(wrapper.findComponent(FlowVariableSelector).exists()).toBeFalsy();
     expect(
-      wrapper.findComponent(MulitpleConfigKeysNotYetSupported).exists(),
+      wrapper.findComponent(MultipleConfigKeysNotYetSupported).exists(),
     ).toBeTruthy();
     localConfigPaths.forEach((key) => expect(wrapper.text()).toContain(key));
   });
 
   it("sets persist path from single element config paths", () => {
-    const wrapper = mountFlowVaiablePopover();
+    const wrapper = mountFlowVariablePopover();
     expect(
       wrapper.findComponent(FlowVariableSelector).props().persistPath,
     ).toBe(path);
   });
 
   it("sets first data path as path", () => {
-    const wrapper = mountFlowVaiablePopover();
+    const wrapper = mountFlowVariablePopover();
     expect(wrapper.findComponent(FlowVariableSelector).props().dataPath).toBe(
       dataPaths.value[0],
     );
@@ -81,7 +93,7 @@ describe("FlowVariablePopover", () => {
   describe("events", () => {
     it("emits controllingFlowVariableSet", () => {
       const flowVarName = "myFlowVar";
-      const wrapper = mountFlowVaiablePopover();
+      const wrapper = mountFlowVariablePopover();
       wrapper
         .findComponent(FlowVariableSelector)
         .vm.$emit("controllingFlowVariableSet", flowVarName);
@@ -89,5 +101,26 @@ describe("FlowVariablePopover", () => {
         [flowVarName],
       ]);
     });
+  });
+
+  it("renders DeprecatedFlowVariables component if deprecated flow variables exist", () => {
+    const deprecatedPath = "model.myDeprecatedPath";
+    flowVariablesMap = {
+      [deprecatedPath]: {
+        controllingFlowVariableName: "aFlowVariableSetAgesAgo",
+        controllingFlowVariableAvailable: true,
+        exposedFlowVariableName: null,
+      },
+    };
+    configPaths.value = [
+      {
+        configPath: path,
+        deprecatedConfigPaths: [deprecatedPath, "some other deprecated path"],
+      },
+    ];
+    const wrapper = mountFlowVariablePopover();
+    expect(
+      wrapper.findComponent(DeprecatedFlowVariables).exists(),
+    ).toBeTruthy();
   });
 });

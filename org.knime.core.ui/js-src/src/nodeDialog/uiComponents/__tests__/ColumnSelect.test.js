@@ -195,6 +195,6 @@ describe("ColumnSelect.vue", () => {
     const provided =
       wrapper.getComponent(DialogLabel).vm[providedByComponentKey];
     expect(provided.flowSettings.value).toBeTruthy();
-    expect(provided.configPaths.value).toEqual([totalPath]);
+    expect(provided.configPaths.value[0].configPath).toEqual(totalPath);
   });
 });

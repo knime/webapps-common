@@ -13,8 +13,11 @@ export interface ArraySchema<S> {
   items: S;
 }
 
+type DeprecatedConfigs = { new: string[][]; deprecated: string[][] };
+
 export type Schema = (ArraySchema<Schema> | ObjectSchema<Schema> | {}) & {
   configKeys?: string[];
+  deprecatedConfigKeys?: DeprecatedConfigs[];
 };
 
 export const isArraySchema = (schema: any): schema is ArraySchema<Schema> => {
