@@ -5,7 +5,6 @@
 import { UIExtensionServiceAPILayer } from "src/types";
 import {
   AlertingServiceAPILayer,
-  CloseServiceAPILayer,
   ColorServiceAPILayer,
   DialogServiceAPILayer,
   ImageGenerationServiceAPILayer,
@@ -67,7 +66,6 @@ type ServicesAPILayer = MergeReturnTypes<
     ReportingServiceAPILayer,
     ResourceServiceAPILayer,
     SelectionServiceAPILayer,
-    CloseServiceAPILayer,
   ]
 >;
 

@@ -95,8 +95,6 @@ export type UIExtensionServiceAPILayer = {
 
   sendAlert: (alert: Alert) => void;
 
-  close: (isMetaKeyPressed: boolean) => void;
-
   getConfig: () => UIExtensionServiceConfig;
 };
 
