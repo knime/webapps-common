@@ -291,6 +291,7 @@ class JsonFormsUiSchemaUtilRuleTest {
             @Effect(signals = InvalidSignal.class, type = EffectType.DISABLE)
             boolean m_fieldWithInvalidSignal;
 
+            @Widget
             @Signal(id = InvalidSignal.class, condition = TrueCondition.class)
             boolean m_signalBoolean;
         }
