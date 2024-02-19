@@ -12,15 +12,12 @@ const {
   disabled,
 } = useDialogControl<string>({ props });
 
-const richTextEditorElement = ref<HTMLElement | null>(null);
+const richTextEditorElement = ref<{ $el: HTMLElement } | null>(null);
 /**
  * TODO: Remove and resolve properly with https://knime-com.atlassian.net/browse/UIEXT-1461-
  */
 const CloseDialogOnEscape = createOnEscapeExtension(() => {
-  const escapeEvent = new KeyboardEvent("keydown", {
-    key: "Escape",
-  });
-  richTextEditorElement.value!.dispatchEvent(escapeEvent);
+  richTextEditorElement.value!.$el.focus();
   return true;
 });
 </script>
@@ -34,6 +31,8 @@ const CloseDialogOnEscape = createOnEscapeExtension(() => {
   >
     <RichTextEditor
       :id="labelForId"
+      ref="richTextEditorElement"
+      :tabindex="-1"
       class="editor"
       :class="{ 'editor-editable': !disabled }"
       :min-height="400"
