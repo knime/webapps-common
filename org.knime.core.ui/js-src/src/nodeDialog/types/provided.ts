@@ -34,7 +34,6 @@ interface Provided {
   trigger: (triggerId: string) => void;
   updateData: any;
   sendAlert: sendAlert;
-  closeDialog: () => void;
   getData: getData;
   setDirtyModelSettings: () => void;
 }

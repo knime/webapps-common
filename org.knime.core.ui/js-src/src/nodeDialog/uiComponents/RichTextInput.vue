@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import RichTextEditor from "webapps-common/ui/components/forms/RichTextEditor/RichTextEditor.vue";
 import createOnEscapeExtension from "webapps-common/ui/components/forms/RichTextEditor/createOnEscapeExtension";
-import inject from "../utils/inject";
 import useDialogControl from "../composables/useDialogControl";
 import { rendererProps } from "@jsonforms/vue";
 import LabeledInput from "./label/LabeledInput.vue";
+import { ref } from "vue";
 const props = defineProps(rendererProps());
 const {
   control,
@@ -12,12 +12,15 @@ const {
   disabled,
 } = useDialogControl<string>({ props });
 
-const closeDialog = inject("closeDialog");
+const richTextEditorElement = ref<HTMLElement | null>(null);
 /**
  * TODO: Remove and resolve properly with https://knime-com.atlassian.net/browse/UIEXT-1461-
  */
 const CloseDialogOnEscape = createOnEscapeExtension(() => {
-  closeDialog();
+  const escapeEvent = new KeyboardEvent("keydown", {
+    key: "Escape",
+  });
+  richTextEditorElement.value!.dispatchEvent(escapeEvent);
   return true;
 });
 </script>

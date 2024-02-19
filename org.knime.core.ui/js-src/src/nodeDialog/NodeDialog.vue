@@ -4,7 +4,6 @@ import {
   DialogService,
   UIExtensionService,
   AlertingService,
-  CloseService,
 } from "@knime/ui-extension-service";
 import { vanillaRenderers } from "@jsonforms/vue-vanilla";
 import { JsonForms } from "@jsonforms/vue";
@@ -63,7 +62,6 @@ export default {
         getFlowVariableOverrideValue: this.getFlowVariableOverrideValue,
         clearControllingFlowVariable: this.clearControllingFlowVariable,
       },
-      closeDialog: this.closeDialog,
       getFlowVariablesMap: () => this.schema.flowVariablesMap,
       setDirtyModelSettings: this.setDirtyModelSettings,
     } satisfies ProvidedMethods & ProvidedForFlowVariables;
@@ -347,12 +345,14 @@ export default {
         );
       }
     },
-    applySettings() {
+    async applySettings() {
       this.setOriginalModelSettings(this.currentData);
-      return this.jsonDataService!.applyData(this.getData());
-    },
-    closeDialog() {
-      new CloseService(this.getKnimeService()).close(this.isMetaKeyPressed);
+      const { result } = await this.jsonDataService!.applyData(this.getData());
+      if (result) {
+        alert(result);
+        return { isApplied: false };
+      }
+      return { isApplied: true };
     },
     changeAdvancedSettings() {
       if (this.schema === null) {

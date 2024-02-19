@@ -146,44 +146,45 @@ describe("NodeDialog.vue", () => {
   });
 
   describe("applySettings", () => {
-    it("calls apply data and closes window", async () => {
-      const wrapper = shallowMount(NodeDialog, getOptions());
-      const closeDialogSpy = vi.spyOn(wrapper.vm, "closeDialog");
+    let wrapper;
+
+    beforeEach(async () => {
+      setApplyListenerSpy.mockReset();
+      wrapper = shallowMount(NodeDialog, getOptions());
+      await flushPromises();
+    });
+
+    it("calls apply data with successful response", async () => {
+      const applyListener = setApplyListenerSpy.mock.calls[0][0];
+
       const applyDataSpy = vi
         .spyOn(wrapper.vm.jsonDataService, "applyData")
         .mockReturnValue({});
       await flushPromises();
 
-      await wrapper.vm.applySettingsCloseDialog();
+      expect(await applyListener()).toStrictEqual({ isApplied: true });
 
       expect(applyDataSpy).toHaveBeenCalled();
-      expect(closeDialogSpy).toHaveBeenCalled();
     });
 
-    it("calls apply data and does not close window if settings are invalid", async () => {
-      const wrapper = shallowMount(NodeDialog, getOptions());
-      const closeDialogSpy = vi.spyOn(wrapper.vm, "closeDialog");
+    it("calls apply data with erroneous response", async () => {
+      const applyListener = setApplyListenerSpy.mock.calls[0][0];
+
       const applyDataSpy = vi
         .spyOn(wrapper.vm.jsonDataService, "applyData")
-        .mockReturnValue({
-          result: "test",
-        });
+        .mockReturnValue({ result: "Settings are bad!" });
       await flushPromises();
 
-      await wrapper.vm.applySettingsCloseDialog();
-
+      expect(await applyListener()).toStrictEqual({ isApplied: false });
       expect(applyDataSpy).toHaveBeenCalled();
-      expect(closeDialogSpy).not.toHaveBeenCalled();
     });
 
-    it("logs error that apply data been thrown", async () => {
+    it("logs error that apply data been thrown", () => {
       vi.spyOn(JsonDataService.prototype, "applyData").mockRejectedValue(
         new Error(),
       );
-      const wrapper = shallowMount(NodeDialog, getOptions());
-      await flushPromises();
 
-      expect(wrapper.vm.applySettingsCloseDialog()).rejects.toThrowError();
+      expect(wrapper.vm.applySettings()).rejects.toThrowError();
     });
   });
 
