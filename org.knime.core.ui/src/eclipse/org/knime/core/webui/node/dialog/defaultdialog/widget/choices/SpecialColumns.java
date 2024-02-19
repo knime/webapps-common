@@ -67,23 +67,23 @@ public enum SpecialColumns {
          */
         ROW_NUMBERS("<row-numbers>", StringCell.TYPE);
 
-    private final String m_schemaId;
+    private final String m_id;
 
     private final DataType m_type;
 
     /**
-     * @param schemaId the identifier used in the schema to indicate the special column
+     * @param id the identifier used to indicate the special column
      */
-    SpecialColumns(final String schemaId, final DataType type) {
-        m_schemaId = schemaId;
+    SpecialColumns(final String id, final DataType type) {
+        m_id = id;
         m_type = type;
     }
 
     /**
-     * @return the identifier used in the schema to indicate the special column
+     * @return the identifier used to indicate the special column
      */
-    public String getSchemaId() {
-        return m_schemaId;
+    public String getId() {
+        return m_id;
     }
 
     /**
@@ -91,7 +91,7 @@ public enum SpecialColumns {
      *         dataType, while a null data type yields no compatible columns.
      */
     public ColumnSelection toColumnSelection() {
-        return new ColumnSelection(m_schemaId, m_type);
+        return new ColumnSelection(m_id, m_type);
     }
 
 }

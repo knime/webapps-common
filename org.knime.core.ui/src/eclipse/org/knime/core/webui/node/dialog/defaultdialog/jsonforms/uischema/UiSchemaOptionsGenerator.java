@@ -363,7 +363,9 @@ final class UiSchemaOptionsGenerator {
             }
             options.put("showNoneColumn", choicesWidget.showNoneColumn());
             options.put("showRowKeys", choicesWidget.showRowKeysColumn());
-            options.put("showRowNumbers", choicesWidget.showRowNumbersColumn());
+            if (choicesWidget.showRowNumbersColumn()) {
+                options.put("showRowNumbers", choicesWidget.showRowNumbersColumn());
+            }
             options.put("showSearch", choicesWidget.showSearch());
             options.put("showMode", choicesWidget.showMode());
             if (!choicesWidget.includedLabel().isEmpty()) {

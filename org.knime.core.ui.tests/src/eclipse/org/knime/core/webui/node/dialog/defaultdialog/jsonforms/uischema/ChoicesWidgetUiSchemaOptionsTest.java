@@ -427,11 +427,11 @@ class ChoicesWidgetUiSchemaOptionsTest {
         class ChoicesWidgetTestSettings implements DefaultNodeSettings {
 
             @Widget
-            @ChoicesWidget(showRowNumbersColumn = true)
+            @ChoicesWidget(choices = TestChoicesProvider.class, showRowNumbersColumn = true)
             ColumnSelection m_foo;
 
             @Widget
-            @ChoicesWidget()
+            @ChoicesWidget(choices = TestChoicesProvider.class)
             ColumnSelection m_bar;
 
         }
@@ -439,7 +439,7 @@ class ChoicesWidgetUiSchemaOptionsTest {
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("foo");
         assertThatJson(response).inPath("$.elements[0].options.showRowNumbers").isBoolean().isTrue();
         assertThatJson(response).inPath("$.elements[1].scope").isString().contains("bar");
-        assertThatJson(response).inPath("$.elements[1].options.showRowNumbers").isBoolean().isFalse();
+        assertThatJson(response).inPath("$.elements[1].options.showRowNumbers").isAbsent();
     }
 
     @Test
