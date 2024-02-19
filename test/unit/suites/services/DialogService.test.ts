@@ -61,17 +61,33 @@ describe("DialogService", () => {
     expect(setDirtyModelSettings).toHaveBeenCalled();
   });
 
-  it("listens to ApplyData push events and sets isApplied when finished", async () => {
+  it("listens to ApplyData push events and sets isApplied when finished successfully", async () => {
     const { dialogService, onApplied, dispatchPushEvent } =
       constructDialogService();
-    const applySettingsMock = jest.fn().mockResolvedValue({});
+    let isApplied = true;
+    const applySettingsMock = jest
+      .fn()
+      .mockImplementation(() => Promise.resolve({ isApplied }));
     dialogService.setApplyListener(applySettingsMock);
-    dispatchPushEvent<UIExtensionPushEvents.EventTypes.ApplyDataEvent>({
-      name: UIExtensionPushEvents.EventTypes.ApplyDataEvent,
-    });
+
+    const dispatchApplyEvent = () => {
+      dispatchPushEvent<UIExtensionPushEvents.EventTypes.ApplyDataEvent>({
+        name: UIExtensionPushEvents.EventTypes.ApplyDataEvent,
+      });
+    };
+
+    dispatchApplyEvent();
+
     expect(applySettingsMock).toHaveBeenCalled();
     expect(onApplied).not.toHaveBeenCalled();
     await flushPromises();
     expect(onApplied).toHaveBeenCalled();
+    onApplied.mockReset();
+
+    isApplied = false;
+    dispatchApplyEvent();
+    expect(applySettingsMock).toHaveBeenCalled();
+    await flushPromises();
+    expect(onApplied).not.toHaveBeenCalled();
   });
 });

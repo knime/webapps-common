@@ -58,11 +58,13 @@ export class DialogService extends AbstractService<DialogServiceAPILayer> {
   /**
    * This should be used to listen to push events of the embedder to apply the settings in the dialog.
    */
-  setApplyListener(applyListener: () => Promise<void>) {
+  setApplyListener(applyListener: () => Promise<{ isApplied: boolean }>) {
     return this.baseService.addPushEventListener(
       UIExtensionPushEvents.EventTypes.ApplyDataEvent,
       () => {
-        applyListener().then(() => this.baseService.onApplied());
+        applyListener().then(
+          ({ isApplied }) => isApplied && this.baseService.onApplied(),
+        );
       },
     );
   }
