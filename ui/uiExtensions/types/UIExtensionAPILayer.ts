@@ -12,7 +12,6 @@ type UIExtensionAPILayer = Pick<
   | "publishData"
   | "updateDataPointSelection"
   | "getResourceLocation"
-  | "close"
   | "setSettingsWithCleanModelSettings"
   | "setDirtyModelSettings"
   | "onApplied"
