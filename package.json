@@ -30,7 +30,7 @@
     "@floating-ui/vue": "1.0.2",
     "@fontsource/roboto": "4.5.8",
     "@fontsource/roboto-mono": "4.5.10",
-    "@knime/ui-extension-service": "^0.23.0",
+    "@knime/ui-extension-service": "0.25.0",
     "@tiptap/extension-link": "2.0.3",
     "@tiptap/extension-text-align": "2.0.3",
     "@tiptap/extension-underline": "2.0.3",
