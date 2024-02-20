@@ -137,11 +137,6 @@ export default {
           console.log("updateDataPointSelection called");
           return Promise.resolve();
         },
-        close(isMetaKeyPresent: boolean) {
-          console.log(
-            `close called ${isMetaKeyPresent ? "with meta key pressed" : ""}`,
-          );
-        },
       };
     },
     onDialogSelect(e: any) {
