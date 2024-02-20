@@ -58,6 +58,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.config.base.JSONConfig;
@@ -71,11 +72,14 @@ import org.knime.core.webui.node.dialog.NodeDialog;
 import org.knime.core.webui.node.dialog.NodeDialog.OnApplyNodeModifier;
 import org.knime.core.webui.node.dialog.NodeSettingsService;
 import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.VariableSettingsRO;
 import org.knime.core.webui.node.dialog.VariableSettingsWO;
 import org.knime.core.webui.page.Page;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Allows one to create {@link NodeDialog NodeDialogs} for testing purposes.
@@ -191,13 +195,15 @@ public final class NodeDialogTestUtil {
             @Override
             public String fromNodeSettings(final Map<SettingsType, NodeAndVariableSettingsRO> settings,
                 final PortObjectSpec[] specs) {
-                return settingsToString(settings.get(SettingsType.MODEL), settings.get(SettingsType.VIEW));
+                return settingsToString(settings.get(SettingsType.MODEL), settings.get(SettingsType.VIEW),
+                    settings.get(SettingsType.MODEL), settings.get(SettingsType.VIEW));
             }
 
             @Override
             public void toNodeSettings(final String textSettings,
                 final Map<SettingsType, NodeAndVariableSettingsWO> settings) {
-                stringToSettings(textSettings, settings.get(SettingsType.MODEL), settings.get(SettingsType.VIEW));
+                stringToSettings(textSettings, settings.get(SettingsType.MODEL), settings.get(SettingsType.VIEW),
+                    settings.get(SettingsType.MODEL), settings.get(SettingsType.VIEW));
                 if (variableSettingsWriter != null) {
                     variableSettingsWriter.accept(
                         settings.entrySet().stream().map(e -> Map.entry(e.getKey(), (VariableSettingsWO)e.getValue()))
@@ -215,26 +221,96 @@ public final class NodeDialogTestUtil {
      * @return the model and view settings serialized into a single string
      */
     public static String settingsToString(final NodeSettingsRO modelSettings, final NodeSettingsRO viewSettings) {
+        return settingsToString(modelSettings, viewSettings, null, null);
+    }
+
+    /**
+     * @param modelSettings
+     * @param viewSettings
+     * @param modelVariablesSettings can be {@code null}
+     * @param viewVariablesSettings can be {@code null}
+     * @return the model and view settings serialized into a single string
+     */
+    public static String settingsToString(final NodeSettingsRO modelSettings, final NodeSettingsRO viewSettings,
+        final VariableSettingsRO modelVariablesSettings, final VariableSettingsRO viewVariablesSettings) {
         var root = MAPPER.createObjectNode();
         try {
             root.set("model",
                 MAPPER.readTree(JSONConfig.toJSONString(extractNodeSettings(modelSettings), WriterConfig.DEFAULT)));
             root.set("view",
                 MAPPER.readTree(JSONConfig.toJSONString(extractNodeSettings(viewSettings), WriterConfig.DEFAULT)));
-        } catch (JsonProcessingException ex) {
+            if (modelVariablesSettings != null) {
+                var variables = MAPPER.createObjectNode();
+                variableSettingsToJson(modelVariablesSettings, variables);
+                root.set("modelVariables", variables);
+            }
+
+            if (viewVariablesSettings != null) {
+                var variables = MAPPER.createObjectNode();
+                variableSettingsToJson(viewVariablesSettings, variables);
+                root.set("viewVariables", variables);
+            }
+
+        } catch (JsonProcessingException | InvalidSettingsException ex) {
             throw new RuntimeException(ex); // NOSONAR
         }
         return root.toString();
     }
 
+    private static void variableSettingsToJson(final VariableSettingsRO variableSettings, final ObjectNode root)
+        throws InvalidSettingsException {
+        for (var key : variableSettings.getVariableSettingsIterable()) {
+            var variable = MAPPER.createObjectNode();
+            var used = variableSettings.getUsedVariable(key);
+            if (used != null) {
+                variable.put("used", used);
+            }
+            var exposed = variableSettings.getExposedVariable(key);
+            if (exposed != null) {
+                variable.put("exposed", exposed);
+            }
+
+            if (used == null && exposed == null) {
+                variableSettingsToJson(variableSettings.getVariableSettings(key), variable);
+            }
+            root.set(key, variable);
+        }
+    }
+
     private static void stringToSettings(final String s, final NodeSettingsWO modelSettings,
-        final NodeSettingsWO viewSettings) {
+        final NodeSettingsWO viewSettings, final VariableSettingsWO modelVariablesSettings,
+        final VariableSettingsWO viewVariablesSettings) {
         try {
             var jsonNode = MAPPER.readTree(s);
             JSONConfig.readJSON(extractNodeSettings(modelSettings), new StringReader(jsonNode.get("model").toString()));
             JSONConfig.readJSON(extractNodeSettings(viewSettings), new StringReader(jsonNode.get("view").toString()));
-        } catch (IOException ex) {
+
+            jsonToVariableSettings(jsonNode.get("modelVariables"), modelVariablesSettings);
+            jsonToVariableSettings(jsonNode.get("viewVariables"), viewVariablesSettings);
+        } catch (IOException | InvalidSettingsException ex) {
             throw new RuntimeException(ex); // NOSONAR
+        }
+    }
+
+    private static void jsonToVariableSettings(final JsonNode root, final VariableSettingsWO variableSettings)
+        throws InvalidSettingsException {
+        if (root == null) {
+            return;
+        }
+        var iterator = root.fieldNames();
+        while (iterator.hasNext()) {
+            var key = iterator.next();
+            var variable = root.get(key);
+            if (!variable.has("used") && !variable.has("exposed")) {
+                jsonToVariableSettings(root.get(key), variableSettings.getOrCreateVariableSettings(key));
+            } else {
+                if (variable.has("used")) {
+                    variableSettings.addUsedVariable(key, variable.get("used").textValue());
+                }
+                if (variable.has("exposed")) {
+                    variableSettings.addExposedVariable(key, variable.get("exposed").textValue());
+                }
+            }
         }
     }
 
