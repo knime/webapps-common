@@ -95,6 +95,21 @@ class ManualFilter implements PersistableSettings {
     }
 
     /**
+     * Returns the manually selected columns which are not missing plus any unknown columns if these are included. Note
+     * that the manually selected and manually deselected do not get updated by this method. The only place where these
+     * get altered is if the dialog gets opened and new settings get saved. This way, excluded columns stay marked as
+     * excluded when a view is executed without opening the dialog.
+     *
+     * @param choices for selected values from which previously unknown ones are either selected or deselected.
+     * @return the manually selected columns plus the new previously unknown ones if these are included.
+     */
+    List<String> getNonMissingUpdatedManuallySelected(final String[] choices) {
+        return m_includeUnknownColumns //
+            ? filterExcludingDeselected(choices) //
+            : getManuallySelectedIn(choices);
+    }
+
+    /**
      * Returns the manually selected columns plus any unknown columns if these are included. Note that the manually
      * selected and manually deselected do not get updated by this method. The only place where these get altered is if
      * the dialog gets opened and new settings get saved. This way, excluded columns stay marked as excluded when a view
@@ -104,9 +119,7 @@ class ManualFilter implements PersistableSettings {
      * @return the manually selected columns plus the new previously unknown ones if these are included.
      */
     String[] getUpdatedManuallySelected(final String[] choices) {
-        final List<String> validSelectedValues = m_includeUnknownColumns //
-            ? filterExcludingDeselected(choices) //
-            : getManuallySelectedIn(choices);
+        final List<String> validSelectedValues = getNonMissingUpdatedManuallySelected(choices);
         final var missingManuallySelected = getMissingManuallySelected(new HashSet<>(validSelectedValues));
         return Stream.concat(missingManuallySelected, validSelectedValues.stream()).toArray(String[]::new);
     }

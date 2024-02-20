@@ -161,4 +161,18 @@ public class ColumnFilter implements PersistableSettings {
                 return m_patternFilter.getSelected(PatternMode.of(m_mode), choices);
         }
     }
+
+    /**
+     * @param allCurrentChoices the non-null list of all possible column names
+     * @param spec of the input data table (for type selection)
+     * @return the array of currently selected columns with respect to the mode which are contained in the given array
+     *         of choices
+     */
+    public String[] getNonMissingSelected(final String[] allCurrentChoices, final DataTableSpec spec) {
+        if (m_mode == ColumnFilterMode.MANUAL) {
+            return m_manualFilter.getNonMissingUpdatedManuallySelected(allCurrentChoices).toArray(String[]::new);
+        } else {
+            return getSelected(allCurrentChoices, spec);
+        }
+    }
 }

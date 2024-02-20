@@ -50,12 +50,9 @@ package org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter;
 
 import java.util.Objects;
 
-import org.knime.core.data.DataTableSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.PatternFilter.PatternMode;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  *
@@ -82,7 +79,6 @@ public class NameFilter {
      * Settings regarding manual selection
      */
     public ManualFilter m_manualFilter; //NOSONAR
-
 
     /**
      * Use this to construct a string array filter with an initial array of columns which are manually selected
@@ -119,17 +115,29 @@ public class NameFilter {
     }
 
     /**
-     * @param choices the non-null list of all possible column names
-     * @param spec of the input data table (for type selection)
-     * @return the array of currently selected columns with respect to the mode
+     * @param allCurrentChoices the non-null list of all possible names
+     * @return the array of currently selected names with respect to the mode
      */
-    @JsonIgnore
-    public String[] getSelected(final String[] choices, final DataTableSpec spec) {
+    public String[] getSelected(final String[] allCurrentChoices) {
         switch (m_mode) {
             case MANUAL:
-                return m_manualFilter.getUpdatedManuallySelected(Objects.requireNonNull(choices));
+                return m_manualFilter.getUpdatedManuallySelected(Objects.requireNonNull(allCurrentChoices));
             default:
-                return m_patternFilter.getSelected(PatternMode.of(m_mode), choices);
+                return m_patternFilter.getSelected(PatternMode.of(m_mode), allCurrentChoices);
+        }
+    }
+
+    /**
+     * @param allCurrentChoices the non-null list of all possible names
+     * @return the array of currently selected names with respect to the mode which are contained in the given array of
+     *         choices
+     */
+    public String[] getNonMissingSelected(final String[] allCurrentChoices) {
+        if (m_mode == NameFilterMode.MANUAL) {
+            return m_manualFilter.getNonMissingUpdatedManuallySelected(Objects.requireNonNull(allCurrentChoices))
+                .toArray(String[]::new);
+        } else {
+            return getSelected(allCurrentChoices);
         }
     }
 }
