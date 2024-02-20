@@ -62,9 +62,7 @@ export class DialogService extends AbstractService<DialogServiceAPILayer> {
     return this.baseService.addPushEventListener(
       UIExtensionPushEvents.EventTypes.ApplyDataEvent,
       () => {
-        applyListener().then(
-          ({ isApplied }) => isApplied && this.baseService.onApplied(),
-        );
+        applyListener().then(this.baseService.onApplied);
       },
     );
   }

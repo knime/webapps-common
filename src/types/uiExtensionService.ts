@@ -91,7 +91,12 @@ export type UIExtensionServiceAPILayer = {
 
   setSettingsWithCleanModelSettings: (cleanData: any) => void;
 
-  onApplied: () => void;
+  onApplied: (payload: {
+    /**
+     * Whether applying has been successful
+     */
+    isApplied: boolean;
+  }) => void;
 
   sendAlert: (alert: Alert) => void;
 

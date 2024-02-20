@@ -81,13 +81,13 @@ describe("DialogService", () => {
     expect(applySettingsMock).toHaveBeenCalled();
     expect(onApplied).not.toHaveBeenCalled();
     await flushPromises();
-    expect(onApplied).toHaveBeenCalled();
+    expect(onApplied).toHaveBeenCalledWith({ isApplied: true });
     onApplied.mockReset();
 
     isApplied = false;
     dispatchApplyEvent();
     expect(applySettingsMock).toHaveBeenCalled();
     await flushPromises();
-    expect(onApplied).not.toHaveBeenCalled();
+    expect(onApplied).toHaveBeenCalledWith({ isApplied: false });
   });
 });
