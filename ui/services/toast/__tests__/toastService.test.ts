@@ -37,11 +37,11 @@ describe("test-service.ts", () => {
       id: "my-id",
     };
     toastWithKey = {
-      headline: "This toast has an id",
+      headline: "This toast has a key",
       key: "my-key",
     };
     toastWithMeta = {
-      headline: "This toast has an id",
+      headline: "This toast has a meta object",
       meta: {
         group: "myGroup",
       },
