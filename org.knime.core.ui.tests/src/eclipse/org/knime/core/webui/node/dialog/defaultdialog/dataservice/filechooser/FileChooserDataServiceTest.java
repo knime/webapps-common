@@ -58,6 +58,7 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.util.List;
@@ -314,12 +315,12 @@ class FileChooserDataServiceTest {
         }
 
         @Test
-        void testListItemsWithInvalidPath() throws IOException {
+        void testListItemsWithMissingPath() throws IOException {
             final var deletedFolder = Files.createTempDirectory(m_subFolder, "aDirectory");
             Files.delete(deletedFolder);
-            final var invalidPath = pathToString(relativizeIfNecessary(deletedFolder));
+            final var missingPath = pathToString(relativizeIfNecessary(deletedFolder));
 
-            final var result = new PerformListItemsBuilder().withFolder(invalidPath).build().performListItems();
+            final var result = new PerformListItemsBuilder().withFolder(missingPath).build().performListItems();
 
             assertThat(result.errorMessage().get())
                 .isEqualTo(String.format("The selected path %s does not exist", deletedFolder));
@@ -327,17 +328,29 @@ class FileChooserDataServiceTest {
         }
 
         @Test
-        void testListItemsWithInvalidPathWriter() throws IOException {
+        void testListItemsWithMissingPathWriter() throws IOException {
             final var deletedFolder = Files.createTempDirectory(m_subFolder, "aDirectory");
             Files.delete(deletedFolder);
-            final var invalidPath = pathToString(relativizeIfNecessary(deletedFolder));
+            final var missingPath = pathToString(relativizeIfNecessary(deletedFolder));
 
             final var result =
-                new PerformListItemsBuilder().asWriter().withFolder(invalidPath).build().performListItems();
+                new PerformListItemsBuilder().asWriter().withFolder(missingPath).build().performListItems();
 
             assertThat(result.errorMessage()).isEmpty();
             assertThat(result.folder().path()).isEqualTo(m_subFolder.toString());
             assertThat(result.filePathRelativeToFolder()).isEqualTo(deletedFolder.getFileName().toString());
+        }
+
+        @Test
+        void testListItemsWithInvalidPath() throws IOException {
+            final var invalidPath = "an invalid path";
+            when(m_fileSystem.getPath(eq(invalidPath))).thenThrow(InvalidPathException.class);
+            when(m_fileSystem.getPath(eq(""))).thenReturn(getDefaultDirectory());
+
+            final var result = new PerformListItemsBuilder().withFolder(invalidPath).build().performListItems();
+
+            assertThat(result.errorMessage().get())
+                .isEqualTo(String.format("The selected path %s is not a valid path", invalidPath));
         }
 
         @Test
@@ -364,13 +377,25 @@ class FileChooserDataServiceTest {
             final var fileName = file.getFileName().toString();
             when(m_fileSystem.getPath(eq(path), eq(fileName))).thenReturn(file);
             final var filePath = new FileChooserDataService().getFilePath("local", path, fileName, null);
-            assertThat(filePath).isEqualTo(file.toString());
+            assertThat(filePath.errorMessage()).isNull();
+            assertThat(filePath.path()).isEqualTo(file.toString());
+        }
+
+        @Test
+        void testGetFilePathForInvalidFileName() throws IOException {
+            final var file = Files.writeString(m_subFolder.resolve("aFile"), "");
+            final var path = relativizeIfNecessary(m_subFolder).toString();
+            final var fileName = file.getFileName().toString();
+            when(m_fileSystem.getPath(eq(path), eq(fileName))).thenThrow(InvalidPathException.class);
+            final var filePath = new FileChooserDataService().getFilePath("local", path, fileName, null);
+            assertThat(filePath.path()).isNull();
+            assertThat(filePath.errorMessage()).isEqualTo("aFile is not a valid file name.");
         }
 
         @Nested
         class GetFilePathAppendExtensionTest {
 
-            final static String APPENDEN_EXTENSION = "ext";
+            final static String APPENDED_EXTENSION = "ext";
 
             @Test
             void testGetFilePathDoesNotAppendExtensionForExistingFile() throws IOException {
@@ -379,8 +404,8 @@ class FileChooserDataServiceTest {
                 final var fileName = file.getFileName().toString();
                 when(m_fileSystem.getPath(eq(path), eq(fileName))).thenReturn(file);
                 final var filePath =
-                    new FileChooserDataService().getFilePath("local", path, fileName, APPENDEN_EXTENSION);
-                assertThat(filePath).doesNotEndWith("." + APPENDEN_EXTENSION);
+                    new FileChooserDataService().getFilePath("local", path, fileName, APPENDED_EXTENSION);
+                assertThat(filePath.path()).doesNotEndWith("." + APPENDED_EXTENSION);
             }
 
             @Test
@@ -390,8 +415,8 @@ class FileChooserDataServiceTest {
                 final var fileName = directory.getFileName().toString();
                 when(m_fileSystem.getPath(eq(path), eq(fileName))).thenReturn(directory);
                 final var filePath =
-                    new FileChooserDataService().getFilePath("local", path, fileName, APPENDEN_EXTENSION);
-                assertThat(filePath).endsWith("." + APPENDEN_EXTENSION);
+                    new FileChooserDataService().getFilePath("local", path, fileName, APPENDED_EXTENSION);
+                assertThat(filePath.path()).endsWith("." + APPENDED_EXTENSION);
             }
 
             @Test
@@ -401,19 +426,19 @@ class FileChooserDataServiceTest {
                 final var fileName = file.getFileName().toString();
                 when(m_fileSystem.getPath(eq(path), eq(fileName))).thenReturn(file);
                 final var filePath =
-                    new FileChooserDataService().getFilePath("local", path, fileName, APPENDEN_EXTENSION);
-                assertThat(filePath).endsWith("." + APPENDEN_EXTENSION);
+                    new FileChooserDataService().getFilePath("local", path, fileName, APPENDED_EXTENSION);
+                assertThat(filePath.path()).endsWith("." + APPENDED_EXTENSION);
             }
 
             @Test
             void testGetFilePathDoesNotAppendExtensionIfExtensionAlreadyPresent() throws IOException {
-                final var file = m_subFolder.resolve("aFile." + APPENDEN_EXTENSION);
+                final var file = m_subFolder.resolve("aFile." + APPENDED_EXTENSION);
                 final var path = relativizeIfNecessary(m_subFolder).toString();
                 final var fileName = file.getFileName().toString();
                 when(m_fileSystem.getPath(eq(path), eq(fileName))).thenReturn(file);
                 final var filePath =
-                    new FileChooserDataService().getFilePath("local", path, fileName, APPENDEN_EXTENSION);
-                assertThat(filePath).doesNotEndWith(APPENDEN_EXTENSION + "." + APPENDEN_EXTENSION);
+                    new FileChooserDataService().getFilePath("local", path, fileName, APPENDED_EXTENSION);
+                assertThat(filePath.path()).doesNotEndWith(APPENDED_EXTENSION + "." + APPENDED_EXTENSION);
             }
         }
 

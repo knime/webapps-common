@@ -92,8 +92,12 @@ const emit = defineEmits<{
   cancel: [];
 }>();
 const onOpenFile = async (name: string) => {
-  const filePath = await getFilePath(currentPath.value, name);
-  emit("chooseFile", filePath);
+  const { path, errorMessage } = await getFilePath(currentPath.value, name);
+  if (errorMessage) {
+    setErrorMessage(errorMessage);
+  } else if (path) {
+    emit("chooseFile", path);
+  }
 };
 
 const onChangeSelection = (itemIds: string[]) => {

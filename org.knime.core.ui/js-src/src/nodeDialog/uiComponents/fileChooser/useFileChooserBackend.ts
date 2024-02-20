@@ -1,5 +1,5 @@
 import type { Ref } from "vue";
-import type { BackendType, FolderAndError } from "./types";
+import type { BackendType, FolderAndError, PathAndError } from "./types";
 import inject from "@/nodeDialog/utils/inject";
 
 interface ListItemsConfig {
@@ -57,7 +57,7 @@ type GetFilePath = (params: {
      */
     string | null,
   ];
-}) => Promise<string>;
+}) => Promise<PathAndError>;
 
 export default ({
   filteredExtensions,

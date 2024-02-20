@@ -1,7 +1,7 @@
 import { shallowMount } from "@vue/test-utils";
 import { describe, expect, it, vi, beforeEach, MockInstance } from "vitest";
 import flushPromises from "flush-promises";
-import type { Folder } from "../types";
+import type { Folder, PathAndError } from "../types";
 import { toFileExplorerItem } from "../utils";
 
 import FileChooser from "../FileChooser.vue";
@@ -16,8 +16,8 @@ describe("FileChooser.vue", () => {
   const fileName = "aFile";
   const filePath = "/path/to/containing/folder/aFile";
   const directoryName = "aDirectory";
-  let folderFromBackend: Folder;
   const filePathRelativeToFolderFromBackend = "aFile";
+
   const getNewRootFolderMock = (): Folder => ({
     items: [
       { isDirectory: true, name: directoryName },
@@ -26,7 +26,10 @@ describe("FileChooser.vue", () => {
     path: null,
   });
 
+  let getFilePathResult: PathAndError, folderFromBackend: Folder;
+
   beforeEach(() => {
+    getFilePathResult = { path: filePath, errorMessage: null };
     folderFromBackend = getNewRootFolderMock();
   });
 
@@ -48,7 +51,7 @@ describe("FileChooser.vue", () => {
             filePathRelativeToFolder: filePathRelativeToFolderFromBackend,
           });
         } else if (params?.method === "fileChooser.getFilePath") {
-          return Promise.resolve(filePath);
+          return Promise.resolve(getFilePathResult);
         }
         return Promise.resolve(null);
       });
@@ -176,6 +179,24 @@ describe("FileChooser.vue", () => {
       });
       await flushPromises();
       expect(wrapper.emitted("chooseFile")).toStrictEqual([[filePath]]);
+    });
+
+    it("does not choose invalid files displaying an error instead", async () => {
+      const wrapper = shallowMountFileChooser();
+      const errorMessage = "myErrorMessage";
+      getFilePathResult = { path: null, errorMessage };
+      await flushPromises();
+      await wrapper
+        .findComponent(FileExplorer)
+        .vm.$emit("openFile", toFileExplorerItem(folderFromBackend.items[1]));
+      expect(dataServiceSpy).toHaveBeenCalledWith({
+        method: "fileChooser.getFilePath",
+        options: ["local", null, fileName, null],
+      });
+      await flushPromises();
+      expect(wrapper.emitted("chooseFile")).toBeUndefined();
+      const errorMessageSpan = wrapper.find("span.error");
+      expect(errorMessageSpan.text()).toBe(`(${errorMessage})`);
     });
   });
 

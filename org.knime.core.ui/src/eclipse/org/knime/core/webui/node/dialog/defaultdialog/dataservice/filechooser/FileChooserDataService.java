@@ -52,6 +52,7 @@ import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
@@ -153,7 +154,7 @@ public final class FileChooserDataService {
      * @param path the current path or null to reference the root level.
      * @param nextFolder - the name of the to be accessed folder relative to the path or ".." if the parent folder
      *            should be accessed. Set to null in order to access the path directly.
-     * @param listItemConfig additional configuration for the filters applied to the listed files
+     * @param listItemsConfig additional configuration for the filters applied to the listed files
      * @return A list of items in the next folder possibly together with an error message explaining why the returned
      *         folder is not the requested one.
      *
@@ -161,14 +162,25 @@ public final class FileChooserDataService {
      * @throws IOException
      */
     public FolderAndError listItems(final String fileSystemId, final String path, final String nextFolder,
-        final ListItemsConfig listItemConfig) throws IOException {
+        final ListItemsConfig listItemsConfig) throws IOException {
         final var fileChooserBackend = m_fsConnector.getFileChooserBackend(fileSystemId);
-        final Path nextPath = getNextPath(path, nextFolder, fileChooserBackend.getFileSystem());
-        if (nextPath == null && fileChooserBackend.isAbsoluteFileSystem()) {
+        final Path nextPath;
+        try {
+            nextPath = getNextPath(path, nextFolder, fileChooserBackend.getFileSystem());
+        } catch (InvalidPathException ex) { // NOSONAR
+            final var errorMessage = String.format("The selected path %s is not a valid path", nextFolder);
+            if ("".equals(nextFolder)) {
+
+                return Folder.asRootFolder(getRootItems(fileChooserBackend), errorMessage, nextFolder);
+            }
+            final var folderAndErrorForEmptyPath = listItems(fileSystemId, null, "", listItemsConfig);
+            return new FolderAndError(folderAndErrorForEmptyPath.folder(), Optional.of(errorMessage), "");
+        }
+        if ((nextPath == null && fileChooserBackend.isAbsoluteFileSystem())) {
             return Folder.asRootFolder(getRootItems(fileChooserBackend), null, "");
         }
         final Deque<Path> pathStack = toFragments(fileChooserBackend, nextPath);
-        return getItemsInFolder(fileChooserBackend, pathStack, listItemConfig);
+        return getItemsInFolder(fileChooserBackend, pathStack, listItemsConfig);
     }
 
     private static Deque<Path> toFragments(final FileChooserBackend fileChooserBackend, final Path nextPath) {
@@ -198,6 +210,21 @@ public final class FileChooserDataService {
     }
 
     /**
+     * Either a null path with a non-null explaning error message for it or a non-null path without an error
+     *
+     * @author Paul Bärnreuther
+     */
+    record PathAndError(String path, String errorMessage) {
+        static PathAndError ofError(final String errorMessage) {
+            return new PathAndError(null, errorMessage);
+        }
+
+        static PathAndError ofPath(final String path) {
+            return new PathAndError(path, null);
+        }
+    }
+
+    /**
      * Get the path of the file at the specified path
      *
      * @param fileSystemId specifying the file system.
@@ -207,15 +234,20 @@ public final class FileChooserDataService {
      *            with the extension.
      * @return the full path of the file
      */
-    public String getFilePath(final String fileSystemId, final String path, final String fileName,
+    public PathAndError getFilePath(final String fileSystemId, final String path, final String fileName,
         final String appendedExtension) {
         final var fileChooserBackend = m_fsConnector.getFileChooserBackend(fileSystemId);
         final var fileSystem = fileChooserBackend.getFileSystem();
-        Path nextPath = path == null ? fileSystem.getPath(fileName) : fileSystem.getPath(path, fileName);
+        Path nextPath;
+        try {
+            nextPath = path == null ? fileSystem.getPath(fileName) : fileSystem.getPath(path, fileName);
+        } catch (InvalidPathException ex) { // NOSONAR
+            return PathAndError.ofError(String.format("%s is not a valid file name.", fileName));
+        }
         if (appendedExtension != null) {
             nextPath = appendExtensionIfNotPresent(nextPath, appendedExtension);
         }
-        return nextPath.toString();
+        return PathAndError.ofPath(nextPath.toString());
     }
 
     /**
@@ -235,7 +267,8 @@ public final class FileChooserDataService {
 
     }
 
-    private static Path getNextPath(final String path, final String nextFolder, final FileSystem fileSystem) {
+    private static Path getNextPath(final String path, final String nextFolder, final FileSystem fileSystem)
+        throws InvalidPathException {
         if (path == null) {
             return nextFolder == null ? null : fileSystem.getPath(nextFolder);
         }
@@ -243,6 +276,7 @@ public final class FileChooserDataService {
             return fileSystem.getPath(path).getParent();
         }
         return fileSystem.getPath(path, nextFolder);
+
     }
 
     private static List<Object> getRootItems(final FileChooserBackend fileChooserBackend) {

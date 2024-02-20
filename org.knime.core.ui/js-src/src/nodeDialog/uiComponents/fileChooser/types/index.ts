@@ -17,4 +17,14 @@ export type FolderAndError = {
   filePathRelativeToFolder: string;
 };
 
+export type PathAndError =
+  | {
+      path: string;
+      errorMessage: null;
+    }
+  | {
+      path: null;
+      errorMessage: string;
+    };
+
 export type BackendType = "local" | "relativeToCurrentHubSpace";
