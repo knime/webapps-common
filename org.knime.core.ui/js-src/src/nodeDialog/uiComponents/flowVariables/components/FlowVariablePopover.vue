@@ -5,28 +5,16 @@ import FlowVariableSelector from "./FlowVariableSelector.vue";
 import { computed } from "vue";
 import FlowVariableExposer from "./FlowVariableExposer.vue";
 
-import {
-  getFlowVariableSettingsProvidedByControl,
-  getFlowVariablesMap,
-} from "../../../composables/useFlowVariables";
+import { getFlowVariableSettingsProvidedByControl } from "../../../composables/useFlowVariables";
 import DeprecatedFlowVariables from "./DeprecatedFlowVariables.vue";
+import useDeprecatedConfigPaths from "../composables/useDeprecatedConfigPaths";
 const { dataPaths, configPaths } = getFlowVariableSettingsProvidedByControl();
 
-const deprecatedConfigPaths = computed(() => {
-  return configPaths.value.flatMap(
-    ({ deprecatedConfigPaths }) => deprecatedConfigPaths,
-  );
-});
-
-const flowVariablesMap = getFlowVariablesMap();
-
-const setDeprecatedConfigPaths = computed(() =>
-  deprecatedConfigPaths.value.filter((key) => Boolean(flowVariablesMap[key])),
-);
+const { deprecatedSetConfigPaths } = useDeprecatedConfigPaths();
 
 const configPathsAndLegacyConfigPaths = computed(() => [
   ...configPaths.value.map(({ configPath }) => configPath),
-  ...setDeprecatedConfigPaths.value,
+  ...deprecatedSetConfigPaths.value,
 ]);
 
 /**
@@ -44,7 +32,7 @@ const emit = defineEmits(["controllingFlowVariableSet"]);
 </script>
 
 <template>
-  <DeprecatedFlowVariables v-if="setDeprecatedConfigPaths.length" />
+  <DeprecatedFlowVariables v-if="deprecatedSetConfigPaths.length" />
   <template v-if="singleConfigPath">
     <div class="popover">
       <Label

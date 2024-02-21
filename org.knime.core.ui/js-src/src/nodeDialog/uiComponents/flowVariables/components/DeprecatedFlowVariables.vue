@@ -1,25 +1,11 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import {
-  getFlowVariableSettingsProvidedByControl,
-  getFlowVariablesMap,
-} from "../../../composables/useFlowVariables";
+import { getFlowVariablesMap } from "../../../composables/useFlowVariables";
 import Button from "webapps-common/ui/components/Button.vue";
+import useDeprecatedConfigPaths from "../composables/useDeprecatedConfigPaths";
+
+const { deprecatedSetConfigPaths } = useDeprecatedConfigPaths();
 
 const flowVariablesMap = getFlowVariablesMap();
-
-const { configPaths } = getFlowVariableSettingsProvidedByControl();
-
-const deprecatedConfigPaths = computed(() => {
-  return configPaths.value.flatMap(
-    ({ deprecatedConfigPaths }) => deprecatedConfigPaths,
-  );
-});
-
-const setDeprecatedConfigPaths = computed(() =>
-  deprecatedConfigPaths.value.filter((key) => Boolean(flowVariablesMap[key])),
-);
-
 const getFlowVariableName = (path: string) =>
   flowVariablesMap[path].controllingFlowVariableName ??
   flowVariablesMap[path].exposedFlowVariableName;
@@ -31,7 +17,7 @@ const unsetDeprecatedPath = (path: string) => {
 
 <template>
   <p>The following set flow variables are deprecated:</p>
-  <div v-for="path in setDeprecatedConfigPaths" :key="path">
+  <div v-for="path in deprecatedSetConfigPaths" :key="path">
     <ul>
       <li>
         <p>

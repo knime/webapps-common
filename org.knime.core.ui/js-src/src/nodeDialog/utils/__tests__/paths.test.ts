@@ -184,6 +184,7 @@ describe("paths", () => {
           },
           view: {
             type: "object",
+            properties: {},
           },
         },
       });
