@@ -44,56 +44,31 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Aug 30, 2023 (Paul Bärnreuther): created
+ *   Apr 9, 2024 (hornm): created
  */
-package org.knime.core.webui.data.util;
+package org.knime.core.webui.node.dialog.defaultdialog;
 
-import java.util.Arrays;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.Test;
+import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
-import org.knime.core.node.workflow.NodeContainer;
-import org.knime.core.node.workflow.NodeOutPort;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 
 /**
- * Utilities around a nodes input {@link PortObjectSpec}s.
+ * Tests for {@link DefaultNodeSettingsContext}.
  *
- * @noreference
- *
- * @author Paul Bärnreuther
+ * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public final class InputSpecUtil {
+class DefaultNodeSettingsContextTest {
 
-    private InputSpecUtil() {
-        // utility
-    }
-
-    /**
-     * @param nc to extract the input specs from
-     * @return the associated array of input {@link PortObjectSpec PortObjectSpecs} excluding the flow variables port.
-     *         NOTE: array of specs can contain {@code null} values, e.g., if input port is not connected or inactive!
-     */
-    public static PortObjectSpec[] getInputSpecsExcludingVariablePort(final NodeContainer nc) {
-        final var rawSpecs = getInputSpecsIncludingVariablePort(nc);
-        // copy input port object specs, ignoring the 0-variable port:
-        return Arrays.copyOfRange(rawSpecs, 1, rawSpecs.length);
-    }
-
-    private static PortObjectSpec[] getInputSpecsIncludingVariablePort(final NodeContainer nc) {
-        final var rawSpecs = new PortObjectSpec[nc.getNrInPorts()];
-        final var wfm = nc.getParent();
-        for (var cc : wfm.getIncomingConnectionsFor(nc.getID())) {
-            var sourceId = cc.getSource();
-            NodeOutPort outPort;
-            if (sourceId.equals(wfm.getID())) {
-                outPort = wfm.getWorkflowIncomingPort(cc.getSourcePort());
-            } else {
-                outPort = wfm.getNodeContainer(sourceId).getOutPort(cc.getSourcePort());
-            }
-            var spec = outPort.getPortObjectSpec();
-            rawSpecs[cc.getDestPort()] = spec instanceof InactiveBranchPortObjectSpec ? null : spec;
-        }
-        return rawSpecs;
+    @Test
+    void testGetDataTableSpecsWithInactivePortObjectSpec() {
+        var context = new DefaultNodeSettingsContext(null,
+            new PortObjectSpec[]{new DataTableSpec("test"), InactiveBranchPortObjectSpec.INSTANCE}, null, null);
+        var specs = context.getDataTableSpecs();
+        assertThat(specs).isEqualTo(new PortObjectSpec[]{new DataTableSpec("test"), null});
     }
 
 }
