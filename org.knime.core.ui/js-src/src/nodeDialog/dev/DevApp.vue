@@ -99,7 +99,7 @@ export default {
             setTimeout(() => resolve({ result: { result } }), delay),
           );
         },
-        addPushEventListener: (name: UIExtensionPushEvents.Name) => {
+        addPushEventListener: (name: UIExtensionPushEvents.EventType) => {
           console.log(`Push event listener added for event ${name}`);
           return () => {};
         },
