@@ -21,7 +21,7 @@ type UIExtensionAPILayer = Pick<
    * @returns the respective deregistration method
    */
   registerPushEventService: (service: {
-    dispatchPushEvent: <T extends UIExtensionPushEvents.Name>(
+    dispatchPushEvent: <T extends UIExtensionPushEvents.EventType>(
       event: UIExtensionPushEvents.PushEvent<T>,
     ) => void;
   }) => () => void;
