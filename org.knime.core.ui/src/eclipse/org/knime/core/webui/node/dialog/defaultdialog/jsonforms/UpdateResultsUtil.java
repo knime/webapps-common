@@ -44,40 +44,61 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Feb 7, 2024 (Paul Bärnreuther): created
+ *   Feb 21, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
+package org.knime.core.webui.node.dialog.defaultdialog.jsonforms;
 
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
+import java.util.stream.Stream;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.UpdateResultsUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.PathWithSettingsKey;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerInvocationHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerInvocationHandler.TriggerResult;
 
 /**
- * Used to convert triggers to a list of resulting updates given a map of dependencies.
+ * Containing a utility method for converting the result of a {@link TriggerInvocationHandler} to something
+ * interpretable by the DefaultNodeDialog frontend
  *
  * @author Paul Bärnreuther
  */
-final class DataServiceTriggerInvocationHandler {
+public final class UpdateResultsUtil {
 
-    private TriggerInvocationHandler m_triggerInvocationHandler;
-
-    DataServiceTriggerInvocationHandler(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
-        m_triggerInvocationHandler = new TriggerInvocationHandler(settingsClasses);
+    private UpdateResultsUtil() {
+        // Utility
     }
 
-    List<UpdateResultsUtil.UpdateResult> trigger(final String triggerId, final Map<String, Object> rawDependencies,
-        final DefaultNodeSettingsContext context) {
-        final Function<Class<? extends ValueRef>, Object> dependencyProvider = valueRef -> {
-            final var rawDependencyObject = rawDependencies.get(valueRef.getName());
-            return ConvertValueUtil.convertValueRef(rawDependencyObject, valueRef, context);
-        };
-        final var triggerResult = m_triggerInvocationHandler.invokeTrigger(triggerId, dependencyProvider);
-        return UpdateResultsUtil.toUpdateResults(triggerResult);
+    /**
+     * An instruction for an update. Either a value update defined by a path or a ui state update defined by an id
+     *
+     * @param path to the field in case of a value update
+     * @param id of the state provider in other cases
+     * @param value
+     */
+    public record UpdateResult(String path, String id, Object value) {
+
+        private static UpdateResult forPath(final String path, final Object value) {
+            return new UpdateResult(path, null, value);
+        }
+
+        private static UpdateResult forId(final String id, final Object value) {
+            return new UpdateResult(null, id, value);
+        }
     }
+
+    /**
+     * @param triggerResult
+     * @return the list of resulting instructions
+     */
+    public static List<UpdateResult> toUpdateResults(final TriggerResult triggerResult) {
+        final var valueUpdates = triggerResult.valueUpdates().entrySet().stream()
+            .map(entry -> UpdateResult.forPath(toScope(entry.getKey()), entry.getValue()));
+        final var otherUpdates = triggerResult.otherUpdates().entrySet().stream()
+            .map(entry -> UpdateResult.forId(entry.getKey(), entry.getValue()));
+        return Stream.concat(valueUpdates, otherUpdates).toList();
+    }
+
+    private static String toScope(final PathWithSettingsKey scope) {
+        return JsonFormsScopeUtil.toScope(scope.path(), scope.settingsKey());
+    }
+
 }

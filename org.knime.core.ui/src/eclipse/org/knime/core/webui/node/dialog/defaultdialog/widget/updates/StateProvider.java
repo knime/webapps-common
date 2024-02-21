@@ -131,6 +131,17 @@ public interface StateProvider<S> {
          */
         void computeOnButtonClick(Class<? extends ButtonRef> ref);
 
+        /**
+         * Call this method to compute the state in a synchronous way when the dialog is opened. Combining this with
+         * {@link #computeFromValueSupplier} or {@link #getValueSupplier} is currently not supported.
+         */
+        void computeBeforeOpenDiaog();
+
+        /**
+         * Call this method to compute the state immediately after the dialog is opened
+         */
+        void computeAfterOpenDialog();
+
     }
 
     /**

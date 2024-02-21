@@ -59,9 +59,18 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonRef;
  */
 final class TriggerVertex extends Vertex {
 
+    static final String BEFORE_OPEN_DIALOG_ID = "before-open-dialog";
+
+    static final String AFTER_OPEN_DIALOG_ID = "after-open-dialog";
+
     private final String m_id;
 
     private final Optional<PathWithSettingsKey> m_fieldLocation;
+
+    TriggerVertex(final String specialTriggerVertexId) {
+        m_id = specialTriggerVertexId;
+        m_fieldLocation = Optional.empty();
+    }
 
     TriggerVertex(final Class<? extends ButtonRef> buttonRef) {
         m_id = buttonRef.getName();

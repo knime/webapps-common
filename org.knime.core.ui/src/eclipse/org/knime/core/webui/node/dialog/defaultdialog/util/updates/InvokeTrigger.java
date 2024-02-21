@@ -169,6 +169,18 @@ final class InvokeTrigger {
             }
 
             @Override
+            public void computeBeforeOpenDiaog() {
+                // Nothing to do here during invocation
+
+            }
+
+            @Override
+            public void computeAfterOpenDialog() {
+                // Nothing to do here during invocation
+
+            }
+
+            @Override
             public <T> Supplier<T> getValueSupplier(final Class<? extends ValueRef<T>> id) {
                 return vertexToSupplier(getParentDependencyVertex(m_stateVertex, id));
             }

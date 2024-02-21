@@ -8,17 +8,13 @@ import {
 import { vanillaRenderers } from "@jsonforms/vue-vanilla";
 import { JsonForms } from "@jsonforms/vue";
 import "../common/main.css";
-import {
-  toDataPath,
-  type JsonSchema,
-  type UISchemaElement,
-} from "@jsonforms/core";
+import { type JsonSchema, type UISchemaElement } from "@jsonforms/core";
 import { fallbackRenderers, defaultRenderers } from "./renderers";
 import {
   getPossibleValuesFromUiSchema,
   hasAdvancedOptions,
 } from "../nodeDialog/utils";
-import { cloneDeep, set, get, isEqual } from "lodash-es";
+import { cloneDeep, isEqual } from "lodash-es";
 import { inject, markRaw } from "vue";
 import type ProvidedMethods from "./types/provided";
 import type { ProvidedForFlowVariables } from "./types/provided";
@@ -28,20 +24,17 @@ import type Control from "./types/Control";
 import getChoices from "./api/getChoices";
 import * as flowVariablesApi from "./api/flowVariables";
 import type { FlowSettings } from "./api/types";
-import { DialogSettings } from "@knime/ui-extension-service/dist/DialogSettings-33e63dd7";
-import { v4 as uuidv4 } from "uuid";
+
+import useStateProviders from "./useStateProviders";
+import useUpdates from "./useUpdates";
+import useTriggers from "./useTriggers";
+import useGlobalWatchers from "./useGlobalWatchers";
 
 const renderers = [
   ...vanillaRenderers,
   ...fallbackRenderers,
   ...defaultRenderers,
 ];
-
-type RegisteredWatcher = {
-  id: string;
-  dataPaths: string[];
-  transformSettings: (newData: SettingsData) => void;
-};
 
 export default {
   components: {
@@ -67,8 +60,26 @@ export default {
     } satisfies ProvidedMethods & ProvidedForFlowVariables;
   },
   setup() {
+    const { addStateProviderListener, callStateProviderListener } =
+      useStateProviders();
+    const { registerWatcher, updateData, registeredWatchers } =
+      useGlobalWatchers();
+    const { registerTrigger, getTriggerCallback } = useTriggers();
+    const { registerUpdates, resolveUpdateResults } = useUpdates({
+      callStateProviderListener,
+      registerTrigger,
+      registerWatcher,
+    });
     return {
       getKnimeService: inject<() => UIExtensionService>("getKnimeService")!,
+      addStateProviderListener,
+      callStateProviderListener,
+      registerUpdates,
+      resolveUpdateResults,
+      getTriggerCallback,
+      updateDataInternal: updateData,
+      registerWatcherInternal: registerWatcher,
+      registeredWatchers,
     };
   },
   data() {
@@ -79,12 +90,6 @@ export default {
       flawedControllingVariablePaths: new Set() satisfies Set<string>,
       possiblyFlawedControllingVariablePaths: new Set() satisfies Set<string>,
       renderers: Object.freeze(renderers),
-      registeredWatchers: [] as RegisteredWatcher[],
-      registeredTriggers: new Map<
-        string,
-        (settings: DialogSettings & object) => Promise<DialogSettings & object>
-      >(),
-      stateProviderListeners: new Map<string, (value: unknown) => void>(),
       currentData: {} as SettingsData,
       schema: {} as JsonSchema & {
         showAdvancedSettings: boolean;
@@ -92,9 +97,13 @@ export default {
       },
       uischema: {} as UISchemaElement & {
         /**
-         * Data defining the value updates from dependenies to targets
+         * Data defining the value updates from dependencies to targets
          */
         globalUpdates?: Update[];
+        /**
+         * Data defining values that have been computed while opening the dialog
+         */
+        initialUpdates?: UpdateResult[];
       },
       ready: false,
       isMetaKeyPressed: false,
@@ -110,58 +119,30 @@ export default {
     schema.showAdvancedSettings = false;
     this.schema = schema;
     this.uischema = initialSettings.ui_schema;
-    this.registerGlobalWatchers(this.uischema?.globalUpdates ?? []);
     this.currentData = initialSettings.data;
     this.setOriginalModelSettings(this.currentData);
+    this.resolveInitialUpdates(this.uischema?.initialUpdates ?? []);
+    this.registerGlobalUpdates(this.uischema?.globalUpdates ?? []);
     this.dialogService.setApplyListener(this.applySettings.bind(this));
     this.ready = true;
   },
   methods: {
-    registerGlobalWatchers(globalUpdates: Update[]) {
-      globalUpdates.forEach(({ dependencies, trigger }) => {
-        const updateCallback = async (newSettings: DialogSettings & object) => {
-          const currentDependencies = Object.fromEntries(
-            dependencies.map((dep) => [
-              dep.id,
-              get(newSettings, toDataPath(dep.scope)),
-            ]),
-          );
-          const { result } = await this.jsonDataService!.data({
-            method: "settings.update2",
-            options: [null, trigger.id, currentDependencies],
-          });
-          if (result) {
-            result.forEach(({ path, value, id }: UpdateResult) => {
-              if (path) {
-                set(newSettings, toDataPath(path), value);
-              } else if (id) {
-                this.callStateProviderListener(id, value);
-              }
-            });
-          }
-        };
-        if (trigger.scope) {
-          this.registerWatcher({
-            dependencies: [trigger.scope],
-            transformSettings: updateCallback,
-          });
-        } else {
-          const transformSettings = async (
-            settings: DialogSettings & object,
-          ) => {
-            const newSettings = cloneDeep(settings);
-            await updateCallback(newSettings);
-            return newSettings;
-          };
-          this.registeredTriggers.set(trigger.id, transformSettings);
-        }
-      });
+    async trigger(triggerId: string) {
+      this.currentData = await this.getTriggerCallback(triggerId)(
+        this.currentData,
+      );
     },
-    addStateProviderListener(id: string, callback: (value: any) => void) {
-      this.stateProviderListeners.set(id, callback);
+    resolveInitialUpdates(initialUpdates: UpdateResult[]) {
+      this.currentData = this.resolveUpdateResults(
+        initialUpdates,
+        this.currentData,
+      );
     },
-    callStateProviderListener(id: string, value: unknown) {
-      this.stateProviderListeners.get(id)?.(value);
+    async registerGlobalUpdates(globalUpdates: Update[]) {
+      const initialTransformation = this.registerUpdates(globalUpdates);
+      if (initialTransformation) {
+        this.currentData = await initialTransformation(this.currentData);
+      }
     },
     getData() {
       return {
@@ -206,57 +187,34 @@ export default {
      * @param {any} data The new data that should be stored at the path
      * @returns {void}
      */
-    async updateData(
+    updateData(
       handleChange: (path: string, value: any) => any,
       path: string,
       data: any,
     ) {
-      const startsWithPath = (dataPath: string) => {
-        return path.startsWith(`${dataPath}.`);
-      };
-
-      const triggeredWatchers = this.registeredWatchers.filter(
-        ({ dataPaths }) =>
-          dataPaths.includes(path) || dataPaths.some(startsWithPath),
+      return this.updateDataInternal(
+        handleChange,
+        path,
+        data,
+        this.currentData,
       );
-      if (triggeredWatchers.length === 0) {
-        handleChange(path, data);
-        return;
-      }
-      const newData = cloneDeep(this.currentData);
-      set(newData, path, data);
-
-      for (const watcher of triggeredWatchers) {
-        await watcher.transformSettings(newData);
-      }
-      handleChange("", newData);
-    },
-    async trigger(trigger: string) {
-      const callback = this.registeredTriggers.get(trigger);
-      if (!callback) {
-        throw Error(`No trigger registered for id ${trigger}`);
-      }
-      this.currentData = await callback(this.currentData);
     },
     async registerWatcher({
       transformSettings,
       init,
       dependencies,
     }: Parameters<ProvidedMethods["registerWatcher"]>[0]) {
-      const registered = {
-        id: uuidv4(),
-        transformSettings,
-        dataPaths: dependencies.map(toDataPath),
-      };
-      this.registeredWatchers.push(registered);
+      const removeWatcher = this.registerWatcherInternal({
+        transformSettings: async (newSettings) => {
+          await transformSettings(newSettings);
+          return newSettings;
+        },
+        dependencies,
+      });
       if (typeof init === "function") {
         await init(this.currentData);
       }
-      return () => {
-        this.registeredWatchers = this.registeredWatchers.filter(
-          (item) => item.id !== registered.id,
-        );
-      };
+      return removeWatcher;
     },
     getAvailableFlowVariables(persistPath: string) {
       return flowVariablesApi.getAvailableFlowVariables(

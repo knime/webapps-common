@@ -59,15 +59,12 @@ import java.util.Optional;
  */
 public class TriggerAndDependencies {
 
-    private final Optional<PathWithSettingsKey> m_triggerFieldLocation;
-
-    private final String m_triggerId;
-
     private final List<Dependency> m_dependencies;
 
+    private final TriggerVertex m_triggerVertex;
+
     TriggerAndDependencies(final TriggerVertex triggerVertex, final Collection<DependencyVertex> dependencyVertices) {
-        m_triggerFieldLocation = triggerVertex.getFieldLocation();
-        m_triggerId = triggerVertex.getId();
+        m_triggerVertex = triggerVertex;
         m_dependencies = getDependencyPaths(dependencyVertices);
     }
 
@@ -82,7 +79,7 @@ public class TriggerAndDependencies {
      * @return Information on the field associated to the trigger, if such a field exists. Otherwise empty.
      */
     public Optional<PathWithSettingsKey> getTriggerFieldLocation() {
-        return m_triggerFieldLocation;
+        return m_triggerVertex.getFieldLocation();
     }
 
     /**
@@ -103,6 +100,20 @@ public class TriggerAndDependencies {
      * @return the id of the trigger
      */
     public String getTriggerId() {
-        return m_triggerId;
+        return m_triggerVertex.getId();
+    }
+
+    /**
+     * @return Whether the trigger is "Before the dialog is opened"
+     */
+    public boolean isBeforeOpenDialogTrigger() {
+        return TriggerVertex.BEFORE_OPEN_DIALOG_ID.equals(getTriggerId());
+    }
+
+    /**
+     * @return Whether the trigger is "After the dialog was opened"
+     */
+    public boolean isAfterOpenDialogTrigger() {
+        return TriggerVertex.AFTER_OPEN_DIALOG_ID.equals(getTriggerId());
     }
 }

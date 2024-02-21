@@ -56,6 +56,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueRefsAndStateProviders.ValueProviderWrapper;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueRefsAndStateProviders.ValueRefWrapper;
@@ -90,6 +91,11 @@ final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
 
         private final Map<Class<?>, TriggerVertex> m_triggerVertices = new HashMap<>();
 
+        /**
+         * Special-role static triggers like "before the dialog is opened"
+         */
+        private final Map<String, TriggerVertex> m_specialTriggerVertices = new HashMap<>();
+
         private final Map<Class<? extends ValueRef>, DependencyVertex> m_dependencyVertices = new HashMap<>();
 
         private final Set<Vertex> m_visited = new HashSet<>();
@@ -107,12 +113,17 @@ final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
         }
 
         Collection<TriggerVertex> getTriggerVertices() {
+            collectVertices();
+            return Stream.concat(m_triggerVertices.values().stream(), m_specialTriggerVertices.values().stream())
+                .toList();
+        }
+
+        private void collectVertices() {
             m_valueProviders.forEach(update -> addToQueue(new UpdateVertex(update)));
             m_uiStateProviders.forEach(update -> addToQueue(new UpdateVertex(update)));
             while (!m_queue.isEmpty()) {
                 addParentsForVertex(m_queue.poll());
             }
-            return m_triggerVertices.values();
         }
 
         private void addParentsForVertex(final Vertex vertex) {
@@ -141,6 +152,15 @@ final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
 
             TriggerVertex getButtonTriggerVertex(final Class<? extends ButtonRef> buttonRef) {
                 return m_triggerVertices.computeIfAbsent(buttonRef, v -> new TriggerVertex(buttonRef));
+            }
+
+            TriggerVertex getBeforeOpenDialogVertex() {
+                return m_specialTriggerVertices.computeIfAbsent(TriggerVertex.BEFORE_OPEN_DIALOG_ID,
+                    TriggerVertex::new);
+            }
+
+            TriggerVertex getAfterOpenDialogVertex() {
+                return m_specialTriggerVertices.computeIfAbsent(TriggerVertex.AFTER_OPEN_DIALOG_ID, TriggerVertex::new);
             }
 
             DependencyVertex getDependencyVertex(final Class<? extends ValueRef> valueRef) {
@@ -183,6 +203,12 @@ final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
                     .map(this::getButtonTriggerVertex).toList());
                 parentVertices.addAll(
                     stateProviderDependencyReceiver.getDependencies().stream().map(this::getDependencyVertex).toList());
+                if (stateProviderDependencyReceiver.m_computeBeforeOpenDialog) {
+                    parentVertices.add(getBeforeOpenDialogVertex());
+                }
+                if (stateProviderDependencyReceiver.m_computeAfterOpenDialog) {
+                    parentVertices.add(getAfterOpenDialogVertex());
+                }
                 return parentVertices;
             }
 
@@ -209,6 +235,10 @@ final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
         private final Collection<Class<? extends ValueRef>> m_dependencies = new HashSet<>();
 
         private final Collection<Class<? extends StateProvider>> m_stateProviders = new HashSet<>();
+
+        boolean m_computeBeforeOpenDialog;
+
+        boolean m_computeAfterOpenDialog;
 
         @Override
         public <T> Supplier<T> computeFromValueSupplier(final Class<? extends ValueRef<T>> id) {
@@ -238,6 +268,16 @@ final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
         public <T> Supplier<T> computeFromProvidedState(final Class<? extends StateProvider<T>> stateProviderClass) {
             getStateProviders().add(stateProviderClass);
             return null;
+        }
+
+        @Override
+        public void computeBeforeOpenDiaog() {
+            m_computeBeforeOpenDialog = true;
+        }
+
+        @Override
+        public void computeAfterOpenDialog() {
+            m_computeAfterOpenDialog = true;
         }
 
         Collection<Class<? extends ValueRef>> getValueRefTriggers() {

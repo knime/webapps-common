@@ -364,7 +364,6 @@ describe("NodeDialog.vue", () => {
 
       expect(wrapper.vm.registeredWatchers.length).toBe(1);
       expect(wrapper.vm.registeredWatchers[0]).toMatchObject({
-        transformSettings,
         dataPaths: ["test", "test2"],
       });
       expect(init).not.toHaveBeenCalled();
@@ -377,7 +376,6 @@ describe("NodeDialog.vue", () => {
 
       expect(wrapper.vm.registeredWatchers.length).toBe(2);
       expect(wrapper.vm.registeredWatchers[1]).toMatchObject({
-        transformSettings,
         dataPaths: ["test", "test2"],
       });
       expect(init).toHaveBeenCalled();
@@ -499,7 +497,7 @@ describe("NodeDialog.vue", () => {
 
   describe("value updates, triggers and stateProviderListeners", () => {
     const uiSchemaKey = "ui_schema";
-    let globalUpdates;
+    let globalUpdates, initialUpdates;
 
     beforeEach(() => {
       initialDataSpy.mockImplementation(
@@ -516,6 +514,7 @@ describe("NodeDialog.vue", () => {
             schema: {},
             [uiSchemaKey]: {
               globalUpdates,
+              initialUpdates,
             },
             flowVariableSettings: {},
           }),
@@ -523,14 +522,14 @@ describe("NodeDialog.vue", () => {
       );
     });
 
-    const getDataServiceSpy = (wrapper) => {
-      return vi.spyOn(wrapper.vm.jsonDataService, "data");
+    const getDataServiceSpy = () => {
+      return vi.spyOn(JsonDataService.prototype, "data");
     };
 
     const getWrapperWithDataServiceSpy = async () => {
+      const dataServiceSpy = getDataServiceSpy();
       const wrapper = shallowMount(NodeDialog, getOptions());
       await flushPromises();
-      const dataServiceSpy = getDataServiceSpy(wrapper);
       return { wrapper, dataServiceSpy };
     };
 
@@ -554,6 +553,9 @@ describe("NodeDialog.vue", () => {
 
       const { wrapper, dataServiceSpy } = await getWrapperWithDataServiceSpy();
 
+      const triggeringValue = "some data";
+      const handleChange = vi.fn(() => {});
+
       const updatedValue = "updated";
       dataServiceSpy.mockResolvedValue({
         result: [
@@ -563,8 +565,6 @@ describe("NodeDialog.vue", () => {
           },
         ],
       });
-      const triggeringValue = "some data";
-      const handleChange = vi.fn(() => {});
 
       await wrapper.vm.updateData(
         handleChange,
@@ -671,6 +671,67 @@ describe("NodeDialog.vue", () => {
       });
 
       expect(stateProviderListener).toHaveBeenCalledWith(updatedValue);
+    });
+
+    it("handles updates triggered before the dialog is opened", async () => {
+      const updatedValue = "updatedValue";
+      initialUpdates = [
+        {
+          path: "#/properties/model/properties/secondSetting",
+          value: updatedValue,
+        },
+      ];
+
+      const wrapper = shallowMount(NodeDialog, getOptions());
+      await flushPromises();
+      expect(wrapper.vm.currentData).toStrictEqual({
+        view: {
+          firstSetting: "firstSetting",
+        },
+        model: {
+          secondSetting: updatedValue,
+        },
+      });
+    });
+
+    it("handles updates triggered after the dialog is opened", async () => {
+      const triggerId = "after-open-dialog";
+
+      globalUpdates = [
+        {
+          trigger: {
+            id: triggerId,
+            triggerInitially: true,
+          },
+          dependencies: [],
+        },
+      ];
+
+      const dataServiceSpy = getDataServiceSpy();
+      const updatedValue = "updated";
+      dataServiceSpy.mockResolvedValue({
+        result: [
+          {
+            path: "#/properties/model/properties/secondSetting",
+            value: updatedValue,
+          },
+        ],
+      });
+      const wrapper = shallowMount(NodeDialog, getOptions());
+      await flushPromises();
+
+      expect(dataServiceSpy).toHaveBeenCalledWith({
+        method: "settings.update2",
+        options: [null, triggerId, {}],
+      });
+      expect(wrapper.vm.currentData).toStrictEqual({
+        view: {
+          firstSetting: "firstSetting",
+        },
+        model: {
+          secondSetting: updatedValue,
+        },
+      });
     });
   });
 

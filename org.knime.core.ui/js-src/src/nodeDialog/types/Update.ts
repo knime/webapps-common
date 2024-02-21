@@ -12,6 +12,7 @@ export interface ValueReference {
 export interface Trigger {
   id: string;
   scope: undefined;
+  triggerInitially?: true;
 }
 
 export interface Update {
@@ -22,7 +23,7 @@ export interface Update {
   /**
    * The trigger of this update
    */
-  trigger: Trigger | ValueReference;
+  trigger: Trigger | (ValueReference & { triggerInitially: undefined });
 }
 export interface PathAndValue {
   path: string;
