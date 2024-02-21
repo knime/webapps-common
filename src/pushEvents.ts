@@ -29,21 +29,21 @@ export class DefaultEventHandler
   implements Events.AddPushEventListener, Events.DispatchPushEvent
 {
   private callbacksMap = new MapOfArrays<
-    Events.Name,
+    Events.EventType,
     Events.PushEventListenerCallback<any>
   >();
 
-  addPushEventListener<T extends Events.Name>(
-    eventName: Events.Name,
+  addPushEventListener<T extends Events.EventType>(
+    eventType: Events.EventType,
     callback: Events.PushEventListenerCallback<T>,
   ): () => void {
-    this.callbacksMap.add(eventName, callback);
-    return () => this.callbacksMap.removeFrom(eventName, callback);
+    this.callbacksMap.add(eventType, callback);
+    return () => this.callbacksMap.removeFrom(eventType, callback);
   }
 
-  dispatchPushEvent<T extends Events.Name>(event: Events.PushEvent<T>) {
+  dispatchPushEvent<T extends Events.EventType>(event: Events.PushEvent<T>) {
     this.callbacksMap
-      .get(event.name)
+      .get(event.eventType)
       .forEach((callback) => callback(event.payload));
   }
 }

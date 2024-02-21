@@ -72,7 +72,7 @@ describe("DialogService", () => {
 
     const dispatchApplyEvent = () => {
       dispatchPushEvent<UIExtensionPushEvents.EventTypes.ApplyDataEvent>({
-        name: UIExtensionPushEvents.EventTypes.ApplyDataEvent,
+        eventType: UIExtensionPushEvents.EventTypes.ApplyDataEvent,
       });
     };
 

@@ -90,7 +90,7 @@ describe("SelectionService", () => {
       selectionService.addOnSelectionChangeCallback(callback);
 
       const payload = { ...extensionConfig, ...selectionPayload };
-      dispatchPushEvent({ name: "SelectionEvent", payload });
+      dispatchPushEvent({ eventType: "SelectionEvent", payload });
       expect(callback).toHaveBeenCalledWith(selectionPayload);
     });
 
@@ -106,12 +106,12 @@ describe("SelectionService", () => {
       selectionService.addOnSelectionChangeCallback(callback);
 
       dispatchPushEvent({
-        name: "SelectionEvent",
+        eventType: "SelectionEvent",
         payload: { nodeId: "otherNodeId", ...selectionPayload },
       });
       expect(callback).not.toHaveBeenCalled();
       dispatchPushEvent({
-        name: "SelectionEvent",
+        eventType: "SelectionEvent",
         payload: { nodeId: extensionConfig.nodeId, ...selectionPayload },
       });
       expect(callback).not.toHaveBeenCalledWith(testPayload);

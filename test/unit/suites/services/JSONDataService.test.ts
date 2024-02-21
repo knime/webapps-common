@@ -142,7 +142,7 @@ describe("JsonDataService", () => {
     const payload = {};
 
     dispatchPushEvent({
-      name: UIExtensionPushEvents.EventTypes.DataEvent,
+      eventType: UIExtensionPushEvents.EventTypes.DataEvent,
       payload,
     });
     expect(mockDataChangeCallback).toHaveBeenCalledWith(payload);

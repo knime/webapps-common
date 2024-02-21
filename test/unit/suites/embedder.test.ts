@@ -40,17 +40,17 @@ describe("setUpEmbedderService", () => {
   it("enables adding pushEvent listeners and dispatching events", () => {
     const defaultEmbedder = setUpCustomEmbedderService({});
     const listener = jest.fn();
-    const pushEventName = "my-push-event";
-    defaultEmbedder.service.addPushEventListener(pushEventName, listener);
+    const pushEventType = "my-push-event";
+    defaultEmbedder.service.addPushEventListener(pushEventType, listener);
 
     defaultEmbedder.dispatchPushEvent({
-      name: "other-push-event",
+      eventType: "other-push-event",
       payload: "foo",
     });
     expect(listener).not.toHaveBeenCalled();
 
     const payload = "bar";
-    defaultEmbedder.dispatchPushEvent({ name: pushEventName, payload });
+    defaultEmbedder.dispatchPushEvent({ eventType: pushEventType, payload });
     expect(listener).toHaveBeenCalledWith(payload);
   });
 });

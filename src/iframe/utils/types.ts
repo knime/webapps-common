@@ -7,7 +7,7 @@ export interface WrappedIframePushEvent<T, S> {
 
 export type IframeMessageEvent = MessageEvent<
   WrappedIframePushEvent<
-    UIExtensionPushEvents.PushEvent<UIExtensionPushEvents.Name>,
+    UIExtensionPushEvents.PushEvent<UIExtensionPushEvents.EventType>,
     "UIExtensionPushEvent"
   >
 >;

@@ -7,7 +7,7 @@ const iframePushEventId = "UIExtensionPushEvent";
 const isUIExtensionPushEvent = (event: IframeMessageEvent) =>
   isWrappedEventOfType(event, iframePushEventId);
 
-const toUIExtensionPushEventMessage = <T extends Events.Name>(
+const toUIExtensionPushEventMessage = <T extends Events.EventType>(
   event: Events.PushEvent<T>,
 ) => toWrappedEventOfType(event, iframePushEventId);
 
@@ -23,7 +23,7 @@ export class IframeDispatchEvent implements Events.DispatchPushEvent {
     this.contentWindow = contentWindow;
   }
 
-  dispatchPushEvent<T extends Events.Name>(event: Events.PushEvent<T>) {
+  dispatchPushEvent<T extends Events.EventType>(event: Events.PushEvent<T>) {
     this.contentWindow.postMessage(toUIExtensionPushEventMessage(event), "*");
   }
 }
@@ -40,8 +40,8 @@ export class IframeAddEventListener implements Events.AddPushEventListener {
     this.contentWindow = contentWindow;
   }
 
-  addPushEventListener<T extends Events.Name>(
-    eventName: T,
+  addPushEventListener<T extends Events.EventType>(
+    eventType: T,
     callback: Events.PushEventListenerCallback<T>,
   ): () => void {
     const handler = (messageEvent: IframeMessageEvent) => {
@@ -49,7 +49,7 @@ export class IframeAddEventListener implements Events.AddPushEventListener {
         return;
       }
       const event = messageEvent.data.payload;
-      if (event.name !== eventName) {
+      if (event.eventType !== eventType) {
         return;
       }
       callback(event.payload);

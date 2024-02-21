@@ -56,7 +56,7 @@ describe("CachingSelectionService", () => {
       };
 
       dispatchPushEvent({
-        name: "SelectionEvent",
+        eventType: "SelectionEvent",
         payload: selectionPayload,
       });
 

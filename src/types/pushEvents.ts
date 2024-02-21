@@ -15,22 +15,22 @@ export namespace UIExtensionPushEvents {
     [EventTypes.ApplyDataEvent]: never;
   };
 
-  type KnownPushEventName = keyof KnownPushEvents;
+  type KnownPushEventType = keyof KnownPushEvents;
 
   /**
    * For autocompletion
    */
-  export type Name = KnownPushEventName | Omit<string, KnownPushEventName>;
+  export type EventType = KnownPushEventType | Omit<string, KnownPushEventType>;
 
-  export type PushEvent<N extends Name = any, P = any> = {
-    name: N;
+  export type PushEvent<N extends EventType = any, P = any> = {
+    eventType: N;
     payload?: N extends keyof KnownPushEvents ? KnownPushEvents[N] : P;
   };
 
   export type SelectionEvent = PushEvent<EventTypes.SelectionEvent>;
   export type DataEvent = PushEvent<EventTypes.DataEvent>;
 
-  export type PushEventListenerCallback<T extends Name> = (
+  export type PushEventListenerCallback<T extends EventType> = (
     payload: PushEvent<T>["payload"],
   ) => void;
 
@@ -40,8 +40,8 @@ export namespace UIExtensionPushEvents {
      * for events dispatched by an embedder
      * @returns a method to remove the added listener
      */
-    addPushEventListener<T extends Name>(
-      eventName: T,
+    addPushEventListener<T extends EventType>(
+      eventType: T,
       callback: PushEventListenerCallback<T>,
     ): () => void;
   }
@@ -51,6 +51,6 @@ export namespace UIExtensionPushEvents {
      * This method is to be used by the embedder of a ui extension to
      * trigger registered client event listeners.
      */
-    dispatchPushEvent<T extends Name>(event: PushEvent<T>);
+    dispatchPushEvent<T extends EventType>(event: PushEvent<T>);
   }
 }

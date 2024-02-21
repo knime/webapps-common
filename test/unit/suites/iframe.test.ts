@@ -108,7 +108,7 @@ describe("iframe UIExtension embedding", () => {
     return new Promise<void>((resolve) => {
       window.addEventListener("message", (event: MessageEvent) => {
         if (event.data === "ready") {
-          embedder.dispatchPushEvent({ name: "my-push-event", payload });
+          embedder.dispatchPushEvent({ eventType: "my-push-event", payload });
         }
         if (event.data.type !== "pushEventListenerCalled") {
           return;
