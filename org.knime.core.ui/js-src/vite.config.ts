@@ -4,6 +4,8 @@ import vue from "@vitejs/plugin-vue";
 import svgLoader from "vite-svg-loader";
 import type { LibraryOptions } from "vite";
 import { loadEnv } from "vite";
+// @ts-ignore
+import { svgoConfig } from "webapps-common/config/svgo.config";
 
 const camelCase = (input: string) => {
   return input
@@ -88,7 +90,7 @@ export default defineConfig(({ mode }) => {
     define: {
       "process.env": env, // needed by v-calendar
     },
-    plugins: [vue(), svgLoader()],
+    plugins: [vue(), svgLoader({ svgoConfig })],
     resolve: {
       alias: {
         "@": fileURLToPath(new URL("./src", import.meta.url)),
