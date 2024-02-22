@@ -49,8 +49,20 @@
 package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.ConvertValueUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * A single trigger together with all dependencies of all of it triggered updates.
@@ -59,13 +71,13 @@ import java.util.Optional;
  */
 public class TriggerAndDependencies {
 
-    private final List<Dependency> m_dependencies;
-
     private final TriggerVertex m_triggerVertex;
+
+    private final Collection<DependencyVertex> m_dependencyVertices;
 
     TriggerAndDependencies(final TriggerVertex triggerVertex, final Collection<DependencyVertex> dependencyVertices) {
         m_triggerVertex = triggerVertex;
-        m_dependencies = getDependencyPaths(dependencyVertices);
+        m_dependencyVertices = dependencyVertices;
     }
 
     private static List<Dependency> getDependencyPaths(final Collection<DependencyVertex> dependencyVertices) {
@@ -93,7 +105,47 @@ public class TriggerAndDependencies {
      * @return the dependencies
      */
     public List<Dependency> getDependencies() {
-        return m_dependencies;
+        return getDependencyPaths(m_dependencyVertices);
+    }
+
+    /**
+     * @param settingsClasses
+     * @param settings
+     * @param context the current {@link DefaultNodeSettingsContext}
+     * @return a mapping to the values of the required dependencies
+     */
+    public Map<Class<? extends ValueRef>, Object> extractDependencyValues(
+        final Map<String, Class<? extends WidgetGroup>> settingsClasses, final Map<String, WidgetGroup> settings,
+        final DefaultNodeSettingsContext context) {
+        final var mapper = JsonFormsDataUtil.getMapper();
+        final Map<String, JsonNode> jsonNodes = getDependencySettingsKeys().stream().collect(
+            Collectors.toMap(Function.identity(), settingsKey -> mapper.valueToTree(settings.get(settingsKey))));
+        return createDependenciesValuesMap(context, jsonNodes);
+    }
+
+    private Map<Class<? extends ValueRef>, Object> createDependenciesValuesMap(final DefaultNodeSettingsContext context,
+        final Map<String, JsonNode> jsonNodes) {
+        final Map<Class<? extends ValueRef>, Object> dependencyValues = new HashMap<>();
+        for (var vertex : m_dependencyVertices) {
+            dependencyValues.put(vertex.getValueRef(), extractValue(vertex, jsonNodes, context));
+        }
+        return dependencyValues;
+    }
+
+    private static Object extractValue(final DependencyVertex vertex, final Map<String, JsonNode> jsonNodes,
+        final DefaultNodeSettingsContext context) {
+        var groupJsonNode = jsonNodes.get(vertex.getFieldLocation().settingsKey());
+        var fieldJsonNode = groupJsonNode.at(toJsonPointer(vertex.getFieldLocation().path()));
+        return ConvertValueUtil.convertValueRef(fieldJsonNode, vertex.getValueRef(), context);
+    }
+
+    private static String toJsonPointer(final List<String> path) {
+        return "/" + String.join("/", path);
+    }
+
+    private Collection<String> getDependencySettingsKeys() {
+        return getDependencies().stream().map(Dependency::fieldLocation).map(PathWithSettingsKey::settingsKey)
+            .collect(Collectors.toSet());
     }
 
     /**

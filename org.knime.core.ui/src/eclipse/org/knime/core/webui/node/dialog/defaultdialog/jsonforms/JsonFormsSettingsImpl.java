@@ -51,7 +51,6 @@ package org.knime.core.webui.node.dialog.defaultdialog.jsonforms;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
@@ -59,6 +58,7 @@ import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.JsonFormsSchemaUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UpdatesUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
@@ -126,14 +126,14 @@ public final class JsonFormsSettingsImpl implements JsonFormsSettings {
     }
 
     private RawValue generateUiSchema(final AsyncChoicesHolder asyncChoicesHolder) {
-        final var settings = new LinkedHashMap<String, Class<? extends WidgetGroup>>();
-        if (m_modelSettingsClass != null) {
-            settings.put(SettingsType.MODEL.getConfigKey(), m_modelSettingsClass);
-        }
-        if (m_viewSettingsClass != null) {
-            settings.put(SettingsType.VIEW.getConfigKey(), m_viewSettingsClass);
-        }
-        return new RawValue(JsonFormsUiSchemaUtil.buildUISchema(settings, m_context, asyncChoicesHolder).toString());
+        final var settingsClasses = JsonFormsSettingsImpl
+            .<Class<? extends WidgetGroup>> createSettingsTypeMap(m_modelSettingsClass, m_viewSettingsClass);
+        final var settings =
+            JsonFormsSettingsImpl.<WidgetGroup> createSettingsTypeMap(m_modelSettings, m_viewSettings);
+
+        final var uiSchema = JsonFormsUiSchemaUtil.buildUISchema(settingsClasses, m_context, asyncChoicesHolder);
+        UpdatesUtil.addUpdates(uiSchema, settingsClasses, settings, m_context);
+        return new RawValue(uiSchema.toString());
     }
 
     @Override

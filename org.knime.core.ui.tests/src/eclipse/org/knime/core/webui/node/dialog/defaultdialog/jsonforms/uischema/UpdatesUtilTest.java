@@ -51,13 +51,19 @@ package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtilTest.buildUiSchema;
 
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
+import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.port.PortType;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialogTest;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileExtensionProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
@@ -67,17 +73,38 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonRef;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 /**
  *
  * @author Paul Bärnreuther
  */
-public class UiSchemaUpdatesTest {
+public class UpdatesUtilTest {
+
+    private static DefaultNodeSettingsContext createDefaultNodeSettingsContext() {
+        return DefaultNodeDialogTest.createDefaultNodeSettingsContext(new PortType[]{BufferedDataTable.TYPE},
+            new PortObjectSpec[]{null}, null, null);
+    }
+
+    static ObjectNode buildUpdates(final Map<String, WidgetGroup> settings) {
+        final var objectNode = new ObjectMapper().createObjectNode();
+        final Map<String, Class<? extends WidgetGroup>> settingsClasses =
+            settings.entrySet().stream().collect(Collectors.toMap(Entry::getKey, e -> e.getValue().getClass()));
+
+        UpdatesUtil.addUpdates(objectNode, settingsClasses, settings, createDefaultNodeSettingsContext());
+        return objectNode;
+    }
 
     @Test
     void testValueUpdates() {
 
         @SuppressWarnings("unused")
         class TestSettings implements DefaultNodeSettings {
+
+            public TestSettings() {
+
+            }
 
             class Dependency implements ValueRef<String> {
 
@@ -129,9 +156,9 @@ public class UiSchemaUpdatesTest {
             String anotherTarget;
         }
 
-        final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", TestSettings.class);
+        final Map<String, WidgetGroup> settings = Map.of("test", new TestSettings());
 
-        final var response = buildUiSchema(settings);
+        final var response = buildUpdates(settings);
 
         assertThatJson(response).inPath("$.globalUpdates").isArray().hasSize(2);
         assertThatJson(response).inPath("$.globalUpdates").isArray().anySatisfy(globalUpdate -> {
@@ -165,6 +192,9 @@ public class UiSchemaUpdatesTest {
 
         @SuppressWarnings("unused")
         class WrongTypeReferenceSettings implements DefaultNodeSettings {
+            WrongTypeReferenceSettings() {
+
+            }
 
             class IntegerReference implements ValueRef<Integer> {
 
@@ -191,9 +221,9 @@ public class UiSchemaUpdatesTest {
             String target;
         }
 
-        final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", WrongTypeReferenceSettings.class);
+        final Map<String, WidgetGroup> settings = Map.of("test", new WrongTypeReferenceSettings());
 
-        assertThat(assertThrows(UiSchemaGenerationException.class, () -> buildUiSchema(settings)).getMessage())
+        assertThat(assertThrows(UiSchemaGenerationException.class, () -> buildUpdates(settings)).getMessage())
             .isEqualTo(
                 "The generic type \"Integer\" of the ValueRef \"IntegerReference\" does not match the type \"String\" of the annotated field");
 
@@ -204,6 +234,9 @@ public class UiSchemaUpdatesTest {
 
         @SuppressWarnings("unused")
         class WrongTypeReferenceSettings implements DefaultNodeSettings {
+            WrongTypeReferenceSettings() {
+
+            }
 
             class MyReference implements ValueRef<String> {
 
@@ -230,9 +263,9 @@ public class UiSchemaUpdatesTest {
             String target;
         }
 
-        final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", WrongTypeReferenceSettings.class);
+        final Map<String, WidgetGroup> settings = Map.of("test", new WrongTypeReferenceSettings());
 
-        assertThat(assertThrows(UiSchemaGenerationException.class, () -> buildUiSchema(settings)).getMessage())
+        assertThat(assertThrows(UiSchemaGenerationException.class, () -> buildUpdates(settings)).getMessage())
             .isEqualTo(
                 "The generic type \"Integer\" of the StateProvider \"IntegerStateProvider\" does not match the type \"String\" of the annotated field");
 
@@ -243,6 +276,10 @@ public class UiSchemaUpdatesTest {
 
         @SuppressWarnings("unused")
         class DanglingReferenceSettings implements DefaultNodeSettings {
+
+            DanglingReferenceSettings() {
+
+            }
 
             class DanglingReference implements ValueRef<Integer> {
 
@@ -266,9 +303,9 @@ public class UiSchemaUpdatesTest {
             String target;
         }
 
-        final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", DanglingReferenceSettings.class);
+        final Map<String, WidgetGroup> settings = Map.of("test", new DanglingReferenceSettings());
 
-        assertThat(assertThrows(RuntimeException.class, () -> buildUiSchema(settings)).getMessage())
+        assertThat(assertThrows(RuntimeException.class, () -> buildUpdates(settings)).getMessage())
             .isEqualTo("The value reference DanglingReference is used in a state provider but could not be found. "
                 + "It should used as valueRef for a widget.");
 
@@ -276,7 +313,12 @@ public class UiSchemaUpdatesTest {
 
     void testSimpleButtonWidgetUpdate() {
 
+        @SuppressWarnings("unused")
         class TestSettings implements DefaultNodeSettings {
+
+            TestSettings() {
+
+            }
 
             class MyButtonRef implements ButtonRef {
 
@@ -304,9 +346,9 @@ public class UiSchemaUpdatesTest {
             String m_updated;
         }
 
-        final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", TestSettings.class);
+        final Map<String, WidgetGroup> settings = Map.of("test", new TestSettings());
 
-        final var response = buildUiSchema(settings);
+        final var response = buildUpdates(settings);
 
         assertThatJson(response).inPath("$.globalUpdates").isArray().hasSize(2);
         assertThatJson(response).inPath("$.globalUpdates[0].trigger").isObject().doesNotContainKey("scope");
@@ -317,7 +359,12 @@ public class UiSchemaUpdatesTest {
 
     @Test
     void testUpdateBeforeOpenDialog() {
+        @SuppressWarnings("unused")
         class TestSettings implements DefaultNodeSettings {
+
+            TestSettings() {
+
+            }
 
             static final class MyInitialFileExtensionProvider implements FileExtensionProvider {
 
@@ -359,9 +406,9 @@ public class UiSchemaUpdatesTest {
             String m_valueUpdateSetting;
 
         }
-        final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", TestSettings.class);
+        final Map<String, WidgetGroup> settings = Map.of("test", new TestSettings());
 
-        final var response = buildUiSchema(settings);
+        final var response = buildUpdates(settings);
 
         assertThatJson(response).inPath("$").isObject().doesNotContainKey("globalUpdates");
         assertThatJson(response).inPath("$.initialUpdates").isArray().hasSize(2);
@@ -381,26 +428,41 @@ public class UiSchemaUpdatesTest {
     }
 
     @Test
-    void testThrowsOnUpdateBeforeOpenDialogWithDependencies() {
+    void testUpdateBeforeOpenDialogWithDependency() {
 
+        @SuppressWarnings("unused")
         class TestSettings implements DefaultNodeSettings {
+
+            TestSettings() {
+            }
+
             static final class MyValueRef implements ValueRef<String> {
 
             }
+
+            static final class MyOtherValueRef implements ValueRef<String> {
+
+            }
+
+            @Widget(valueRef = MyOtherValueRef.class)
+            String m_otherSetting = "foo";
 
             static final class MyValueProvider implements StateProvider<String> {
 
                 Supplier<String> m_valueSupplier;
 
+                Supplier<String> m_otherValueSupplier;
+
                 @Override
                 public void init(final StateProviderInitializer initializer) {
                     m_valueSupplier = initializer.getValueSupplier(MyValueRef.class);
+                    m_otherValueSupplier = initializer.computeFromValueSupplier(MyOtherValueRef.class);
                     initializer.computeBeforeOpenDiaog();
                 }
 
                 @Override
                 public String computeState() {
-                    return m_valueSupplier.get();
+                    return String.format("{self:%s,other:%s}", m_valueSupplier.get(), m_otherValueSupplier.get());
                 }
 
             }
@@ -409,15 +471,22 @@ public class UiSchemaUpdatesTest {
             String m_valueUpdateSetting;
 
         }
-        final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", TestSettings.class);
-
-        assertThrows(UiSchemaGenerationException.class, () -> buildUiSchema(settings));
+        final Map<String, WidgetGroup> settings = Map.of("test", new TestSettings());
+        final var response = buildUpdates(settings);
+        assertThatJson(response).inPath("$.initialUpdates").isArray().hasSize(1);
+        assertThatJson(response).inPath("$.initialUpdates[0].path").isString()
+            .isEqualTo("#/properties/test/properties/valueUpdateSetting");
+        assertThatJson(response).inPath("$.initialUpdates[0].value").isString().isEqualTo("{self:null,other:foo}");
 
     }
 
     @Test
     void testUpdateAfterOpenDialog() {
+        @SuppressWarnings("unused")
         class TestSettings implements DefaultNodeSettings {
+
+            TestSettings() {
+            }
 
             static final class MyInitialFileExtensionProvider implements FileExtensionProvider {
 
@@ -459,9 +528,9 @@ public class UiSchemaUpdatesTest {
             String m_valueUpdateSetting;
 
         }
-        final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", TestSettings.class);
+        final Map<String, WidgetGroup> settings = Map.of("test", new TestSettings());
 
-        final var response = buildUiSchema(settings);
+        final var response = buildUpdates(settings);
 
         assertThatJson(response).inPath("$").isObject().doesNotContainKey("initialUpdates");
         assertThatJson(response).inPath("$.globalUpdates").isArray().hasSize(1);

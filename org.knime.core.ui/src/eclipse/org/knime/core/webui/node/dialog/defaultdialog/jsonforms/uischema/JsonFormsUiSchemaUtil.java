@@ -107,25 +107,23 @@ public final class JsonFormsUiSchemaUtil {
      *
      * @param parentFields the fields of the "outside" layout
      */
-    static ObjectNode buildUISchema(final Map<String, Class<? extends WidgetGroup>> settings,
+    static ObjectNode buildUISchema(final Map<String, Class<? extends WidgetGroup>> settingsClasses,
         final DefaultNodeSettingsContext context, final AsyncChoicesAdder asyncChoicesAdder,
         final Collection<JsonFormsControl> parentFields) {
-        final var layoutSkeleton = resolveLayout(settings);
+        final var layoutSkeleton = resolveLayout(settingsClasses);
         layoutSkeleton.fields().addAll(parentFields);
-        final var uiSchema = new LayoutNodesGenerator(layoutSkeleton, context, asyncChoicesAdder).build();
-        GlobalUpdatesUtil.addGlobalUpdates(uiSchema, settings);
-        return uiSchema;
+        return new LayoutNodesGenerator(layoutSkeleton, context, asyncChoicesAdder).build();
     }
 
     /**
-     * @param settings
+     * @param settingsClasses
      * @param context
      * @param asyncChoicesAdder
      * @return the ui schema resolved by the mapper from the given settings
      */
-    public static ObjectNode buildUISchema(final Map<String, Class<? extends WidgetGroup>> settings,
+    public static ObjectNode buildUISchema(final Map<String, Class<? extends WidgetGroup>> settingsClasses,
         final DefaultNodeSettingsContext context, final AsyncChoicesAdder asyncChoicesAdder) {
-        return buildUISchema(settings, context, asyncChoicesAdder, Collections.emptyList());
+        return buildUISchema(settingsClasses, context, asyncChoicesAdder, Collections.emptyList());
     }
 
     /**

@@ -48,8 +48,8 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
-import static org.knime.core.webui.node.dialog.defaultdialog.dataservice.ConvertValueUtil.convertDependencies;
-import static org.knime.core.webui.node.dialog.defaultdialog.dataservice.ConvertValueUtil.convertValue;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.ConvertValueUtil.convertDependencies;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.ConvertValueUtil.convertValue;
 
 import java.util.HashMap;
 import java.util.Map;

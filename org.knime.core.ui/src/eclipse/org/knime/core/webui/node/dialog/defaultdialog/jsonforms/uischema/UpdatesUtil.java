@@ -50,9 +50,9 @@ package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsScopeUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.UpdateResultsUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.UpdateResultsUtil.UpdateResult;
@@ -62,7 +62,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClass
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerAndDependencies;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerInvocationHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -72,48 +71,51 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  *
  * @author Paul Bärnreuther
  */
-final class GlobalUpdatesUtil {
+public final class UpdatesUtil {
 
-    private GlobalUpdatesUtil() {
+    private UpdatesUtil() {
         // Utility
     }
 
     /**
      * Adds an array with one element for each trigger of an update defined by {@link StateProviders} to the rootNode if
      * any are present.
+     *
+     * @param rootNode
+     * @param settingsClasses
+     * @param settings
+     * @param context
      */
-    static void addGlobalUpdates(final ObjectNode rootNode,
-        final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
+    public static void addUpdates(final ObjectNode rootNode,
+        final Map<String, Class<? extends WidgetGroup>> settingsClasses, final Map<String, WidgetGroup> settings,
+        final DefaultNodeSettingsContext context) {
         final var triggersWithDependencies =
             SettingsClassesToDependencyTreeUtil.getTriggersWithDependencies(settingsClasses);
         final var partitioned = triggersWithDependencies.stream()
             .collect(Collectors.partitioningBy(TriggerAndDependencies::isBeforeOpenDialogTrigger));
 
-        addInitialUpdates(rootNode, settingsClasses, partitioned.get(true));
+        addInitialUpdates(rootNode, settingsClasses, settings, partitioned.get(true), context);
         addGlobalUpdates(rootNode, partitioned.get(false));
     }
 
     private static void addInitialUpdates(final ObjectNode rootNode,
-        final Map<String, Class<? extends WidgetGroup>> settingsClasses,
-        final List<TriggerAndDependencies> initialTriggersWithDependencies) {
+        final Map<String, Class<? extends WidgetGroup>> settingsClasses, final Map<String, WidgetGroup> settings,
+        final List<TriggerAndDependencies> initialTriggersWithDependencies, final DefaultNodeSettingsContext context) {
         if (!initialTriggersWithDependencies.isEmpty()) {
             assert initialTriggersWithDependencies.size() == 1;
-            addInitialUpdates(rootNode, initialTriggersWithDependencies.get(0), settingsClasses);
+            addInitialUpdates(rootNode, initialTriggersWithDependencies.get(0), settingsClasses, settings, context);
         }
     }
 
     private static void addInitialUpdates(final ObjectNode rootNode,
         final TriggerAndDependencies triggerWithDependencies,
-        final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
+        final Map<String, Class<? extends WidgetGroup>> settingsClasses, final Map<String, WidgetGroup> settings,
+        final DefaultNodeSettingsContext context) {
         final var invocationHandler = new TriggerInvocationHandler(settingsClasses);
-
-        Function<Class<? extends ValueRef>, Object> trowErrorWhenAskedForADependency = clazz -> {
-            throw new UiSchemaGenerationException(
-                "StateProviders which call #computeBeforeOpenDiaog() are not yet supported to depend on other settings");
-        };
-
+        final var dependencyValues =
+            triggerWithDependencies.extractDependencyValues(settingsClasses, settings, context);
         final var triggerResult =
-            invocationHandler.invokeTrigger(triggerWithDependencies.getTriggerId(), trowErrorWhenAskedForADependency);
+            invocationHandler.invokeTrigger(triggerWithDependencies.getTriggerId(), dependencyValues::get);
         final var updateResults = UpdateResultsUtil.toUpdateResults(triggerResult);
 
         final var initialUpdates = rootNode.putArray("initialUpdates");

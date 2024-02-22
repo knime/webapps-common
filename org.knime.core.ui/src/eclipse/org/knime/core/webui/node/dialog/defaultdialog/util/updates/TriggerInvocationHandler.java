@@ -49,8 +49,8 @@
 package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -94,10 +94,16 @@ public class TriggerInvocationHandler {
         final var partitionedResult = resultPerUpdateHandler.entrySet().stream()
             .collect(Collectors.partitioningBy(e -> e.getKey().getFieldLocation().isPresent()));
 
-        final var valueUpdates = partitionedResult.get(true).stream()
-            .collect(Collectors.toMap(e -> e.getKey().getFieldLocation().get(), Entry::getValue));
-        final var otherUpdates = partitionedResult.get(false).stream()
-            .collect(Collectors.toMap(e -> e.getKey().getStateProviderClass().getName(), Entry::getValue));
+        final Map<PathWithSettingsKey, Object> valueUpdates = new HashMap<>();
+        for (var entry : partitionedResult.get(true)) {
+            valueUpdates.put(entry.getKey().getFieldLocation().get(), entry.getValue());
+        }
+
+        final Map<String, Object> otherUpdates = new HashMap<>();
+        for (var entry : partitionedResult.get(false)) {
+            otherUpdates.put(entry.getKey().getStateProviderClass().getName(), entry.getValue());
+        }
+
         return new TriggerResult(valueUpdates, otherUpdates);
     }
 

@@ -46,10 +46,9 @@
  * History
  *   Jan 25, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
+package org.knime.core.webui.node.dialog.defaultdialog.jsonforms;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.PasswordHolder;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
@@ -58,30 +57,49 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * A utility class for converting objects which are untyped parameters of rpc method calls to resolved objects of the
- * correct type by using {@link ObjectMapper#convertValue}.
+ * A utility class for converting untyped objects to resolved objects of the correct type by using
+ * {@link ObjectMapper#convertValue}.
  *
  * @author Paul Bärnreuther
  */
-final class ConvertValueUtil {
+public final class ConvertValueUtil {
 
     private ConvertValueUtil() {
         // Utility
     }
 
+    /**
+     * @param objectSettings
+     * @param valueRef
+     * @param context
+     * @return an object of the generic type of the {@link ValueRef}
+     */
     public static Object convertValueRef(final Object objectSettings, final Class<? extends ValueRef> valueRef,
         final DefaultNodeSettingsContext context) {
         final var settingsType = GenericTypeFinderUtil.getFirstGenericType(valueRef, ValueRef.class);
         return convertValue(objectSettings, settingsType, context);
     }
 
+    /**
+     *
+     * @param objectSettings
+     * @param handler
+     * @param context
+     * @return an object of the generic type of the {@link DependencyHandler}
+     */
     public static Object convertDependencies(final Object objectSettings, final DependencyHandler<?> handler,
         final DefaultNodeSettingsContext context) {
         final var settingsType = GenericTypeFinderUtil.getFirstGenericType(handler.getClass(), DependencyHandler.class);
         return convertValue(objectSettings, settingsType, context);
     }
 
-    public static Object convertValue(final Object objectSettings, final Class<?> settingsType,
+    /**
+     * @param objectSettings
+     * @param settingsType
+     * @param context
+     * @return an object of the given settings type
+     */
+    public static <T> T convertValue(final Object objectSettings, final Class<T> settingsType,
         final DefaultNodeSettingsContext context) {
         PasswordHolder.setCredentialsProvider(context.getCredentialsProvider().orElse(null));
         try {

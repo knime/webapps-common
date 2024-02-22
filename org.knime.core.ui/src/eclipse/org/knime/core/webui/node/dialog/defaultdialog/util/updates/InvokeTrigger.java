@@ -91,8 +91,11 @@ final class InvokeTrigger {
      */
     public Map<UpdateVertex, Object> invokeTrigger(final TriggerVertex trigger) {
         final var updateVertices = trigger.visit(new GetTriggeredUpdatesVisitor());
-        return updateVertices.stream().collect(Collectors.toUnmodifiableMap(Function.identity(),
-            updateVertex -> updateVertex.visit(new ComputeVisitor())));
+        final Map<UpdateVertex, Object> updateVertexToValue = new HashMap<>();
+        for (var updateVertex : updateVertices) {
+            updateVertexToValue.put(updateVertex, updateVertex.visit(new ComputeVisitor()));
+        }
+        return updateVertexToValue;
     }
 
     private static final class GetTriggeredUpdatesVisitor implements VertexVisitor<Collection<UpdateVertex>> {
