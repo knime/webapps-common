@@ -1,5 +1,6 @@
 <script lang="ts">
-import { ref, inject, toRefs, computed } from "vue";
+import { ref, inject, toRefs, computed, type PropType } from "vue";
+import { onClickOutside, type OnClickOutsideOptions } from "@vueuse/core";
 import {
   useFloating,
   type Strategy,
@@ -11,10 +12,8 @@ import {
 
 import FunctionButton from "./FunctionButton.vue";
 import MenuItems from "./MenuItems.vue";
-import useClickOutside from "../composables/useClickOutside";
 
 import type { MenuItem, Props as MenuItemsProps } from "./MenuItems.vue";
-import type { PropType } from "vue";
 
 const orientations = ["right", "top", "left"] as const;
 
@@ -111,6 +110,11 @@ export default {
       type: Object as PropType<Partial<MenuItemsProps>>,
       default: () => ({}) as Partial<MenuItemsProps>,
     },
+
+    clickOutsideOptions: {
+      type: Object as PropType<OnClickOutsideOptions>,
+      default: () => ({}),
+    },
   },
   emits: ["item-click", "toggle", "open", "close"],
   setup(props) {
@@ -130,10 +134,10 @@ export default {
       expanded.value = false;
     };
 
-    useClickOutside(
-      { targets: [submenu, menuItems], callback: closeMenu },
-      expanded,
-    );
+    onClickOutside(submenu, closeMenu, {
+      capture: false,
+      ...props.clickOutsideOptions,
+    });
 
     // floating menu
     const placement = computed(() => placementMap[props.orientation]);

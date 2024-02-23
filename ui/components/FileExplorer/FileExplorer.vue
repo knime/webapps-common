@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, toRefs, toRef, computed, watch } from "vue";
+import { onClickOutside, type OnClickOutsideOptions } from "@vueuse/core";
 
 import { useItemDragging } from "./useItemDragging";
 import { useMultiSelection } from "./useMultiSelection";
@@ -11,7 +12,6 @@ import type {
   FileExplorerContextMenu as FileExplorerContextMenuNamespace,
   ItemIconRenderer,
 } from "./types";
-import useClickOutside from "../../composables/useClickOutside";
 
 /**
  * Component that handles FileExplorer interactions.
@@ -74,7 +74,7 @@ export interface Props {
   /**
    * Pass in an html elements here which, when clicked, should not unset the current selection.
    */
-  clickOutsideException?: HTMLElement | null;
+  clickOutsideOptions?: OnClickOutsideOptions;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -86,7 +86,7 @@ const props = withDefaults(defineProps<Props>(), {
   disableMultiSelect: false,
   disableDragging: false,
   draggingAnimationMode: "auto",
-  clickOutsideException: null,
+  clickOutsideOptions: () => ({}),
 });
 
 const emit = defineEmits<{
@@ -285,9 +285,9 @@ const onItemDoubleClick = (item: FileExplorerItemType) => {
 };
 
 const table = ref<null | HTMLElement>(null);
-useClickOutside({
-  targets: [table, toRef(props, "clickOutsideException")],
-  callback: resetSelection,
+onClickOutside(table, resetSelection, {
+  capture: false,
+  ...props.clickOutsideOptions,
 });
 </script>
 

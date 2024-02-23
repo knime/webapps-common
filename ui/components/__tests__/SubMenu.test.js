@@ -4,9 +4,8 @@ import { mount, shallowMount } from "@vue/test-utils";
 import MenuItems from "../MenuItems.vue";
 import SubMenu from "../SubMenu.vue";
 import FunctionButton from "../FunctionButton.vue";
-import { ref, unref } from "vue";
+import { nextTick, ref, unref } from "vue";
 import { useFloating } from "@floating-ui/vue";
-import useClickOutside from "../../composables/useClickOutside";
 
 const dropdownNavigation = {
   currentIndex: ref(1),
@@ -26,7 +25,6 @@ vi.mock("@floating-ui/vue", () => ({
   shift: vi.fn(),
   flip: vi.fn(),
 }));
-vi.mock("../../composables/useClickOutside", () => ({ default: vi.fn() }));
 
 describe("SubMenu.vue", () => {
   let props;
@@ -169,19 +167,13 @@ describe("SubMenu.vue", () => {
   it("uses click outside", async () => {
     const wrapper = mount(SubMenu, { props });
     await wrapper.find(".submenu-toggle").trigger("click"); // open
-    const [{ targets, callback }, active] = useClickOutside.mock.calls[0];
 
-    expect(unref(targets[0])).toStrictEqual(wrapper.find(".submenu").element);
-    expect(unref(targets[1]).$el).toStrictEqual(
-      wrapper.findComponent(MenuItems).element,
-    );
+    // some click somewhere else
+    window.dispatchEvent(new Event("click"));
 
-    expect(wrapper.findComponent(MenuItems).exists()).toBeTruthy();
-    callback();
-    await wrapper.vm.$nextTick();
+    await nextTick();
+
     expect(wrapper.findComponent(MenuItems).exists()).toBeFalsy();
-
-    expect(unref(active)).toBe(false);
   });
 
   it("calls keydown callback", async () => {
