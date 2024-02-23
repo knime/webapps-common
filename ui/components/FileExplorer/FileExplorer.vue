@@ -160,9 +160,16 @@ watch(activeRenamedItemId, () => {
 
 /** DRAGGING */
 const itemBack = ref<{ $el: HTMLElement } | null>(null);
-const itemRefs = ref<{ $el: HTMLElement }[]>([]);
 const customPreviewContainer = ref<HTMLElement | null>(null);
 const customDragPreviewPlaceholder = ref<HTMLElement | null>(null);
+
+const table = ref<null | HTMLElement>(null);
+
+const getItems = () =>
+  // using Vue template refs to get the items causes max recursive updates
+  // during development and making changes to this or child components.
+  // Because the refs are in a v-for and this somehow fires dependency tracking
+  Array.from(table.value!.querySelectorAll("[item-ref]")) as HTMLElement[];
 
 const {
   isDragging,
@@ -175,9 +182,7 @@ const {
   onDrop,
 } = useItemDragging({
   itemBACK: computed(() => (itemBack.value ? itemBack.value.$el : null)),
-  itemRefs: computed(() =>
-    itemRefs.value ? itemRefs.value.map(({ $el }) => $el) : null,
-  ),
+  itemRefs: computed(() => getItems()),
   draggingAnimationMode: toRef(props, "draggingAnimationMode"),
   isDirectory,
   items: toRefs(props).items,
@@ -232,7 +237,7 @@ const openContextMenu = (
   clickedItem: FileExplorerItemType,
   index: number,
 ) => {
-  const element = itemRefs.value[index].$el;
+  const element = getItems()[index];
   contextMenuPos.value.x = event.clientX;
   contextMenuPos.value.y = event.clientY;
   contextMenuAnchor.value = { item: clickedItem, index, element };
@@ -284,7 +289,6 @@ const onItemDoubleClick = (item: FileExplorerItemType) => {
   }
 };
 
-const table = ref<null | HTMLElement>(null);
 onClickOutside(table, resetSelection, {
   capture: false,
   ...props.clickOutsideOptions,
@@ -314,7 +318,7 @@ onClickOutside(table, resetSelection, {
       <FileExplorerItem
         v-for="(item, index) in items"
         :key="index"
-        ref="itemRefs"
+        item-ref
         :item="item"
         :title="item.name"
         :is-dragging="isDragging"
