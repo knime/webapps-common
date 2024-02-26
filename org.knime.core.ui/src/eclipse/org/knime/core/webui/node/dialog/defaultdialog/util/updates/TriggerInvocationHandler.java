@@ -90,7 +90,8 @@ public class TriggerInvocationHandler {
      * @return a mapping from identifiers of fields to their updated value
      */
     public TriggerResult invokeTrigger(final String triggerId,
-        final Function<Class<? extends ValueRef>, Object> dependencyProvider, final DefaultNodeSettingsContext context) {
+        final Function<Class<? extends ValueRef>, Object> dependencyProvider,
+        final DefaultNodeSettingsContext context) {
         final var trigger = m_triggers.stream().filter(t -> t.getId().equals(triggerId)).findAny().orElseThrow();
         final var resultPerUpdateHandler = new InvokeTrigger(dependencyProvider, context).invokeTrigger(trigger);
         final var partitionedResult = resultPerUpdateHandler.entrySet().stream()
@@ -98,7 +99,10 @@ public class TriggerInvocationHandler {
 
         final Map<PathWithSettingsKey, Object> valueUpdates = new HashMap<>();
         for (var entry : partitionedResult.get(true)) {
-            valueUpdates.put(entry.getKey().getFieldLocation().get(), entry.getValue());
+            valueUpdates.put(//
+                entry.getKey().getFieldLocation().get(), // NOSONAR isPresent() is checked during partitioning
+                entry.getValue()//
+            );
         }
 
         final Map<String, Object> otherUpdates = new HashMap<>();

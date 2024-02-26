@@ -109,13 +109,11 @@ public class TriggerAndDependencies {
     }
 
     /**
-     * @param settingsClasses
      * @param settings
      * @param context the current {@link DefaultNodeSettingsContext}
      * @return a mapping to the values of the required dependencies
      */
-    public Map<Class<? extends ValueRef>, Object> extractDependencyValues(
-        final Map<String, Class<? extends WidgetGroup>> settingsClasses, final Map<String, WidgetGroup> settings,
+    public Map<Class<? extends ValueRef>, Object> extractDependencyValues(final Map<String, WidgetGroup> settings,
         final DefaultNodeSettingsContext context) {
         final var mapper = JsonFormsDataUtil.getMapper();
         final Map<String, JsonNode> jsonNodes = getDependencySettingsKeys().stream().collect(

@@ -80,7 +80,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  *
  * @author Paul Bärnreuther
  */
-public class UpdatesUtilTest {
+@SuppressWarnings("java:S2698") // we accept assertions without messages
+class UpdatesUtilTest {
 
     private static DefaultNodeSettingsContext createDefaultNodeSettingsContext() {
         return DefaultNodeDialogTest.createDefaultNodeSettingsContext(new PortType[]{BufferedDataTable.TYPE},

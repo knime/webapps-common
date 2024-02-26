@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.knime.core.node.util.CheckUtils;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsScopeUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.UpdateResultsUtil;
@@ -102,7 +103,8 @@ public final class UpdatesUtil {
         final Map<String, Class<? extends WidgetGroup>> settingsClasses, final Map<String, WidgetGroup> settings,
         final List<TriggerAndDependencies> initialTriggersWithDependencies, final DefaultNodeSettingsContext context) {
         if (!initialTriggersWithDependencies.isEmpty()) {
-            assert initialTriggersWithDependencies.size() == 1;
+            CheckUtils.check(initialTriggersWithDependencies.size() == 1, IllegalStateException::new,
+                () -> "There should not exist more than one initial trigger.");
             addInitialUpdates(rootNode, initialTriggersWithDependencies.get(0), settingsClasses, settings, context);
         }
     }
@@ -112,8 +114,7 @@ public final class UpdatesUtil {
         final Map<String, Class<? extends WidgetGroup>> settingsClasses, final Map<String, WidgetGroup> settings,
         final DefaultNodeSettingsContext context) {
         final var invocationHandler = new TriggerInvocationHandler(settingsClasses);
-        final var dependencyValues =
-            triggerWithDependencies.extractDependencyValues(settingsClasses, settings, context);
+        final var dependencyValues = triggerWithDependencies.extractDependencyValues(settings, context);
         final var triggerResult =
             invocationHandler.invokeTrigger(triggerWithDependencies.getTriggerId(), dependencyValues::get, context);
         final var updateResults = UpdateResultsUtil.toUpdateResults(triggerResult);
