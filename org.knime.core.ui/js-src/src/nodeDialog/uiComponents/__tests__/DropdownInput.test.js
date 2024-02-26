@@ -316,6 +316,22 @@ describe("DropdownInput.vue", () => {
       expect(newSettings[path]).toBe(valueBeforeUpdate);
     });
 
+    it("does change the value even if setFirstValueOnUpdate is false if the previous value is falsy", async () => {
+      props.control.uischema.options.setFirstValueOnUpdate = false;
+      props.control.data = null;
+      const { callbacks } = mountJsonFormsComponent(DropdownInput, {
+        props,
+        provide: { getDataMock },
+      });
+
+      const firstWatcherCall = callbacks[0];
+      const settingsChangeCallback = firstWatcherCall.transformSettings;
+
+      settingsChangeCallback(newSettings);
+      await flushPromises();
+      expect(newSettings[path]).toBe(result[0].id);
+    });
+
     it("sets empty options and warns about error on state FAIL", async () => {
       const message = "Error message";
       getDataMock.mockImplementation(() => ({

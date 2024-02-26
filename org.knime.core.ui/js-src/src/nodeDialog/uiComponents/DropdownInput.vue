@@ -57,6 +57,10 @@ const getFirstValueFromDropdownOrNull = (result: IdAndText[]) => {
   );
 };
 
+const dropdownValue = computed(() =>
+  props.controlDataToDropdownValue(control.value.data),
+);
+
 const choicesUpdateHandler = computed(
   () => control.value.uischema.options?.choicesUpdateHandler,
 );
@@ -76,7 +80,7 @@ const updateOptions = async (
 
   const handleResult = (result: IdAndText[]) => {
     options.value = result;
-    if (setNewValue) {
+    if (setNewValue || !dropdownValue.value) {
       set(
         newSettings,
         control.value.path,
@@ -135,10 +139,6 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   unregisterWatcher();
 });
-
-const dropdownValue = computed(() =>
-  props.controlDataToDropdownValue(control.value.data),
-);
 
 const onChange = (value: string) => {
   handleDirtyChange(props.dropdownValueToControlData(value));
