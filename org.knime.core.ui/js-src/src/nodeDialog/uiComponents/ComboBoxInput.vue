@@ -24,12 +24,12 @@ const ComboBoxInput = defineComponent({
   },
   data(): {
     options: PossibleValue[] | undefined;
-    initialSelectedIds: string[];
+    selectedIds: string[];
     loaded: boolean;
   } {
     return {
       options: [],
-      initialSelectedIds: [],
+      selectedIds: [],
       loaded: false,
     };
   },
@@ -53,7 +53,7 @@ const ComboBoxInput = defineComponent({
     },
   },
   mounted() {
-    this.initialSelectedIds = this.control.data;
+    this.selectedIds = this.control.data;
     this.options = this.control.uischema?.options?.possibleValues;
     this.loaded = true;
   },
@@ -94,8 +94,8 @@ export default ComboBoxInput;
         :aria-label="control.label"
         :disabled="disabled"
         :possible-values="noPossibleValuesPresent ? [] : options"
-        :initial-selected-ids="initialSelectedIds"
-        @update:selected-ids="onChange"
+        :model-value="selectedIds"
+        @update:model-value="onChange"
       />
     </LabeledInput>
   </DialogComponentWrapper>
