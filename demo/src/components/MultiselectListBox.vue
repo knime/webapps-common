@@ -1,9 +1,8 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
-import MultiselectListBox from "webapps-common/ui/components/forms/MultiselectListBox.vue";
-import code from "webapps-common/ui/components/forms/MultiselectListBox.vue?raw";
-
-const codeExample = `<MultiselectListBox
+import code from "webapps-common/ui/components/forms/SearchableList.vue?raw";
+import SearchableList from "../../../ui/components/forms/SearchableList.vue";
+const codeExample = `<SearchableList
   v-model="selected"
   :size="4"
   aria-label="Select stuff here!"
@@ -17,11 +16,66 @@ const codeExample = `<MultiselectListBox
     id: 'baz',
     text: 'Baz'
   }]"
-/>`;
+/>
+
+<SearchableList
+  v-model="selected"
+  :size="4"
+  aria-label="Select stuff here!"
+  :possible-values="[{
+    id: 'foo',
+    text: 'Foo'
+  }, {
+    id: 'bar',
+    text: 'Bar'
+  }, {
+    id: 'baz',
+    text: 'Baz'
+  }]"
+  disabled
+/>
+
+<SearchableList
+  v-model="selected"
+  :size="4"
+  aria-label="Select stuff here!"
+  with-bottom-value="true"
+            :bottom-value="{
+              id: bottomValueSymbol,
+              text: 'Custom text',
+            }"
+  :possible-values="[{
+    id: 'foo',
+    text: 'Foo'
+  }, {
+    id: 'bar',
+    text: 'Bar'
+  }, {
+    id: 'baz',
+    text: 'Baz'
+  }]"
+/>
+
+<SearchableList
+  v-model="selected"
+  :size="4"
+  :show-search = "true"
+  :possible-values="[{
+    id: 'foo',
+    text: 'Foo'
+  }, {
+    id: 'bar',
+    text: 'Bar'
+  }, {
+    id: 'baz',
+    text: 'Baz'
+  }]"
+/>
+`;
 
 export default {
   components: {
-    MultiselectListBox,
+    SearchableList,
     CodeExample,
   },
   data() {
@@ -62,7 +116,7 @@ export default {
       </div>
       <div class="grid-container">
         <div class="grid-item-6">
-          <MultiselectListBox
+          <SearchableList
             v-model="selected"
             :size="4"
             aria-label="Select stuff here!"
@@ -91,7 +145,7 @@ export default {
       <br />
       <div class="grid-container">
         <div class="grid-item-6">
-          <MultiselectListBox
+          <SearchableList
             v-model="disabledSelected"
             :size="4"
             aria-label="Disabled..."
@@ -134,6 +188,7 @@ export default {
         </div>
         <div class="grid-item-6">selected ids: {{ disabledSelected }}</div>
       </div>
+      <br />
       <div class="grid-container">
         <div class="grid-item-12">
           <p>
@@ -146,11 +201,11 @@ export default {
       </div>
       <div class="grid-container">
         <div class="grid-item-6">
-          <MultiselectListBox
+          <SearchableList
             v-model="selected2"
             :size="4"
             aria-label="Select stuff here!"
-            with-bottom-value
+            with-bottom-value="true"
             :bottom-value="{
               id: bottomValueSymbol,
               text: 'Custom text',
@@ -196,7 +251,7 @@ export default {
       <br />
       <div class="grid-container">
         <div class="grid-item-6">
-          <MultiselectListBox
+          <SearchableList
             v-model="disabledSelected2"
             :size="4"
             aria-label="Disabled..."
@@ -243,6 +298,85 @@ export default {
           />
         </div>
         <div class="grid-item-6">selected ids: {{ disabledSelected2 }}</div>
+      </div>
+      <br />
+      <div class="grid-container">
+        <div class="grid-item-6">
+          <p>
+            The MulitselectListBox with a search field enabled and an initial
+            search term defined. Case-sensitive search can be enabled through a
+            button on the right.
+          </p>
+        </div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-6">
+          <SearchableList
+            v-model="selected"
+            :size="4"
+            aria-label="Select stuff here!"
+            :show-search="true"
+            :possible-values="[
+              {
+                id: 'foo',
+                text: 'Foo',
+              },
+              {
+                id: 'bar',
+                text: 'Bar',
+              },
+              {
+                id: 'baz',
+                text: 'Baz',
+              },
+              ...Array.from({ length: 100 }, (_v, i) => ({
+                id: `baz${i}`,
+                text: `Baz ${i}`,
+              })),
+            ]"
+          />
+        </div>
+        <div class="grid-item-6">selected ids: {{ selected }}</div>
+      </div>
+      <br />
+      <div class="grid-container">
+        <div class="grid-item-6">
+          <p>The MulitselectListBox can show a customizable search label.</p>
+        </div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-6">
+          <SearchableList
+            v-model="selected"
+            :size="4"
+            aria-label="Select stuff here!"
+            :show-search="true"
+            left-label="Select from the visible items"
+            right-label="The selected stuff"
+            search-label="Search items"
+            search-placeholder="Placeholder"
+            :with-search-label="true"
+            :possible-values="[
+              {
+                id: 'foo',
+                text: 'Foo',
+              },
+              {
+                id: 'bar',
+                text: 'Bar',
+              },
+              {
+                id: 'baz',
+                text: 'Baz',
+              },
+              ...Array.from({ length: 100 }, (_v, i) => ({
+                id: `baz${i}`,
+                text: `Baz ${i}`,
+              })),
+            ]"
+          />
+        </div>
+        <div class="grid-item-6">selected ids: {{ selected }}</div>
       </div>
     </section>
     <section>

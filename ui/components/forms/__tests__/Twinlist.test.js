@@ -39,6 +39,7 @@ describe("Twinlist.vue", () => {
     });
     expect(wrapper.html()).toBeTruthy();
     expect(wrapper.isVisible()).toBeTruthy();
+
     expect(
       wrapper.findAllComponents(MultiselectListBox)[0].props("possibleValues")
         .length,
@@ -86,6 +87,7 @@ describe("Twinlist.vue", () => {
     const list2 = wrapper.findAllComponents(MultiselectListBox)[1];
 
     // with no size set it is still 5 even if we only have one element
+
     expect(list1.props("size")).toBe(defaultListSize);
     expect(list2.props("size")).toBe(defaultListSize);
 
@@ -124,7 +126,7 @@ describe("Twinlist.vue", () => {
     expect(left.vm.isValid).toBe(true);
   });
 
-  it("has invalid state if invalid values are selected", async () => {
+  it("has invalid state if invalid values are selected", () => {
     let props = {
       possibleValues: [
         {
@@ -150,7 +152,8 @@ describe("Twinlist.vue", () => {
     expect(wrapper.vm.invalidValueIds).toStrictEqual(["invalidId"]);
 
     // make it valid again
-    await wrapper.setData({ chosenValues: ["test1"] });
+    wrapper.vm.chosenValues = ["test1"];
+
     expect(wrapper.vm.validate().isValid).toBe(true);
   });
 
@@ -219,7 +222,7 @@ describe("Twinlist.vue", () => {
     expect(wrapper.vm.chosenValues).toStrictEqual(["invalidId", "test1"]);
   });
 
-  it("provides a valid hasSelection method", async () => {
+  it("provides a valid hasSelection method", () => {
     const wrapper = mount(Twinlist, {
       props: {
         possibleValues: defaultPossibleValues,
@@ -229,7 +232,8 @@ describe("Twinlist.vue", () => {
     });
     expect(wrapper.vm.hasSelection()).toBe(false);
 
-    await wrapper.setData({ chosenValues: ["test1"] });
+    wrapper.vm.chosenValues = ["test3"];
+
     expect(wrapper.vm.hasSelection()).toBe(true);
   });
 
@@ -891,6 +895,7 @@ describe("Twinlist.vue", () => {
         props,
       });
       let boxes = wrapper.findAllComponents(MultiselectListBox);
+
       let left = boxes.at(0);
       let right = boxes.at(1);
 
@@ -901,7 +906,8 @@ describe("Twinlist.vue", () => {
       expect(right.props("possibleValues").length).toBe(1);
       expect(right.props("possibleValues")[0].text).toBe("Text 2");
 
-      await wrapper.setData({ caseSensitiveSearch: true });
+      const childComponent = wrapper.findComponent(SearchInput);
+      await childComponent.vm.toggleCaseSensitiveSearch();
 
       expect(left.props("possibleValues").length).toBe(0);
       expect(right.props("possibleValues").length).toBe(0);
@@ -1126,6 +1132,7 @@ describe("Twinlist.vue", () => {
     it("displays empty state box if it does not contain any element", async () => {
       const wrapper = mount(Twinlist, { props });
       let right = wrapper.findAllComponents(MultiselectListBox)[1];
+
       expect(right.find(".empty-state").text()).toBe("No entries in this list");
       const emptyStateLabel = "Custom label";
       await wrapper.setProps({ emptyStateLabel });

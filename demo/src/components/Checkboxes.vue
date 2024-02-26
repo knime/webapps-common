@@ -1,9 +1,9 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
-import Checkboxes from "webapps-common/ui/components/forms/Checkboxes.vue";
-import code from "webapps-common/ui/components/forms/Checkboxes.vue?raw";
+import code from "webapps-common/ui/components/forms/SearchableCheckboxes.vue?raw";
+import SearchableCheckboxes from "../../../ui/components/forms/SearchableCheckboxes.vue";
 
-const codeExample = `<Checkboxes
+const codeExample = `<SearchableCheckboxes
   v-model="selected"
   :possible-values="[{
     id: 'foo',
@@ -15,12 +15,52 @@ const codeExample = `<Checkboxes
     id: 'baz',
     text: 'Baz'
   }]"
+
+  <SearchableCheckboxes
+            v-model="selected"
+            show-search="true"
+            placeholder="Select stuff here!"
+            :possible-values="[
+              {
+                id: 'foo',
+                text: 'Foo',
+              },
+              {
+                id: 'bar',
+                text: 'Bar',
+              },
+              {
+                id: 'baz',
+                text: 'Baz',
+              },
+            ]"
+          />
+
+          <SearchableCheckboxes
+            v-model="selected"
+            :disabled="true"
+            :possible-values="[
+              {
+                id: 'foo',
+                text: 'Foo',
+              },
+              {
+                id: 'bar',
+                text: 'Bar',
+              },
+              {
+                id: 'baz',
+                text: 'Baz',
+              },
+            ]"
+          />
+
 />`;
 
 export default {
   components: {
-    Checkboxes,
     CodeExample,
+    SearchableCheckboxes,
   },
   data() {
     return {
@@ -50,7 +90,7 @@ export default {
       <div class="grid-container">
         <div class="grid-item-5">
           <span>Horizontal</span>
-          <Checkboxes
+          <SearchableCheckboxes
             v-model="selected"
             placeholder="Select stuff here!"
             :possible-values="[
@@ -69,9 +109,46 @@ export default {
             ]"
           />
         </div>
+      </div>
+      <br />
+      <div class="grid-container">
+        <div class="grid-item-12">
+          <p>
+            Checkboxes with a search field enabled and an initial search term
+            defined. Case-sensitive search can be enabled through a button on
+            the right.
+          </p>
+        </div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-5">
+          <span>Horizontal</span>
+          <SearchableCheckboxes
+            v-model="selected"
+            show-search="true"
+            placeholder="Select stuff here!"
+            :possible-values="[
+              {
+                id: 'foo',
+                text: 'Foo',
+              },
+              {
+                id: 'bar',
+                text: 'Bar',
+              },
+              {
+                id: 'baz',
+                text: 'Baz',
+              },
+            ]"
+          />
+        </div>
+      </div>
+      <br />
+      <div class="grid-container">
         <div class="grid-item-5">
           <span>Vertical</span>
-          <Checkboxes
+          <SearchableCheckboxes
             v-model="selected"
             alignment="vertical"
             placeholder="Select stuff here vertical!"
@@ -91,11 +168,14 @@ export default {
             ]"
           />
         </div>
+      </div>
+      <br />
+      <div class="grid-container">
         <div class="grid-item-5">
           <span>Disabled</span>
-          <Checkboxes
+          <SearchableCheckboxes
             v-model="selected"
-            disabled
+            :disabled="true"
             :possible-values="[
               {
                 id: 'foo',

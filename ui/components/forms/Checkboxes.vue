@@ -17,6 +17,7 @@ export default {
      *   text: 'Excel',
      * }]
      */
+
     possibleValues: {
       type: Array,
       default: () => [],
