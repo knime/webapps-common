@@ -23,7 +23,7 @@
     "generate-css": "node ./ui/colors/generateCSS.mjs",
     "opensourcecredits": "npm run --prefix buildtools/ opensourcecredits",
     "preinstall": "node ./install-subDependencies.cjs",
-    "postinstall": "run-p generate-css opensourcecredits",
+    "postinstall": "npm run generate-css",
     "prepare": "husky install"
   },
   "dependencies": {

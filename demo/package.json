@@ -17,7 +17,8 @@
     "format": "prettier --write --cache .",
     "format:check": "prettier --check --cache .",
     "deploy": "gh-pages -d dist -m 'Deploy to GitHub pages' --dotfiles",
-    "preinstall": "npm i --prefix ../ && npm i --prefix ../lint"
+    "preinstall": "npm i --prefix ../ && npm i --prefix ../lint",
+    "postinstall": "npm run opensourcecredits --prefix ../"
   },
   "dependencies": {
     "prismjs": "1.29.0",
