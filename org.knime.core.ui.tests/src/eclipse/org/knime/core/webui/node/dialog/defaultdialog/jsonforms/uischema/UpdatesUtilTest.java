@@ -128,7 +128,7 @@ public class UpdatesUtilTest {
                 }
 
                 @Override
-                public String computeState() {
+                public String computeState(final DefaultNodeSettingsContext context) {
                     throw new RuntimeException("Should not be called in this test");
                 }
 
@@ -146,7 +146,7 @@ public class UpdatesUtilTest {
                 }
 
                 @Override
-                public String computeState() {
+                public String computeState(final DefaultNodeSettingsContext context) {
                     throw new RuntimeException("Should not be called in this test");
 
                 }
@@ -211,7 +211,7 @@ public class UpdatesUtilTest {
                 }
 
                 @Override
-                public String computeState() {
+                public String computeState(final DefaultNodeSettingsContext context) {
                     throw new RuntimeException("Should not be called in this test");
                 }
 
@@ -253,7 +253,7 @@ public class UpdatesUtilTest {
                 }
 
                 @Override
-                public Integer computeState() {
+                public Integer computeState(final DefaultNodeSettingsContext context) {
                     throw new RuntimeException("Should not be called in this test");
                 }
 
@@ -293,7 +293,7 @@ public class UpdatesUtilTest {
                 }
 
                 @Override
-                public String computeState() {
+                public String computeState(final DefaultNodeSettingsContext context) {
                     throw new RuntimeException("Should not be called in this test");
                 }
 
@@ -336,7 +336,7 @@ public class UpdatesUtilTest {
                 }
 
                 @Override
-                public String computeState() {
+                public String computeState(final DefaultNodeSettingsContext context) {
                     throw new RuntimeException("Should not be called in this test");
                 }
 
@@ -376,7 +376,7 @@ public class UpdatesUtilTest {
                 public static final String RESULT = "txt";
 
                 @Override
-                public String computeState() {
+                public String computeState(final DefaultNodeSettingsContext context) {
                     return RESULT;
                 }
 
@@ -396,7 +396,7 @@ public class UpdatesUtilTest {
                 public static final String RESULT = "updated string";
 
                 @Override
-                public String computeState() {
+                public String computeState(final DefaultNodeSettingsContext context) {
                     return RESULT;
                 }
 
@@ -461,7 +461,7 @@ public class UpdatesUtilTest {
                 }
 
                 @Override
-                public String computeState() {
+                public String computeState(final DefaultNodeSettingsContext context) {
                     return String.format("{self:%s,other:%s}", m_valueSupplier.get(), m_otherValueSupplier.get());
                 }
 
@@ -498,7 +498,7 @@ public class UpdatesUtilTest {
                 public static final String RESULT = "txt";
 
                 @Override
-                public String computeState() {
+                public String computeState(final DefaultNodeSettingsContext context) {
                     return RESULT;
                 }
 
@@ -518,7 +518,7 @@ public class UpdatesUtilTest {
                 public static final String RESULT = "updated string";
 
                 @Override
-                public String computeState() {
+                public String computeState(final DefaultNodeSettingsContext context) {
                     return RESULT;
                 }
 

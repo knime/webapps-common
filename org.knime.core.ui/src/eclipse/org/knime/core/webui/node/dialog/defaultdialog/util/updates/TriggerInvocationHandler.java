@@ -54,6 +54,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
 
@@ -85,12 +86,13 @@ public class TriggerInvocationHandler {
      *
      * @param triggerId matching an id of the triggers in the provided settingsClasses
      * @param dependencyProvider providing values for dependencies of this trigger (see {@link TriggerAndDependencies})
+     * @param context provided to the triggered state providers
      * @return a mapping from identifiers of fields to their updated value
      */
     public TriggerResult invokeTrigger(final String triggerId,
-        final Function<Class<? extends ValueRef>, Object> dependencyProvider) {
+        final Function<Class<? extends ValueRef>, Object> dependencyProvider, final DefaultNodeSettingsContext context) {
         final var trigger = m_triggers.stream().filter(t -> t.getId().equals(triggerId)).findAny().orElseThrow();
-        final var resultPerUpdateHandler = new InvokeTrigger(dependencyProvider).invokeTrigger(trigger);
+        final var resultPerUpdateHandler = new InvokeTrigger(dependencyProvider, context).invokeTrigger(trigger);
         final var partitionedResult = resultPerUpdateHandler.entrySet().stream()
             .collect(Collectors.partitioningBy(e -> e.getKey().getFieldLocation().isPresent()));
 

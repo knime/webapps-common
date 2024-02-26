@@ -78,7 +78,7 @@ final class DataServiceTriggerInvocationHandler {
             final var rawDependencyObject = rawDependencies.get(valueRef.getName());
             return ConvertValueUtil.convertValueRef(rawDependencyObject, valueRef, context);
         };
-        final var triggerResult = m_triggerInvocationHandler.invokeTrigger(triggerId, dependencyProvider);
+        final var triggerResult = m_triggerInvocationHandler.invokeTrigger(triggerId, dependencyProvider, context);
         return UpdateResultsUtil.toUpdateResults(triggerResult);
     }
 }

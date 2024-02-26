@@ -48,6 +48,8 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.widget;
 
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+
 /**
  *
  * Marker class that is only meant to serve as a default in {@link FileWriterWidget#fileExtensionProvider()} and
@@ -64,7 +66,7 @@ public final class AllFileExtensionsAllowedProvider implements FileExtensionProv
     }
 
     @Override
-    public String computeState() {
+    public String computeState(final DefaultNodeSettingsContext context) {
         throw new IllegalStateException("This method should never be called");
     }
 

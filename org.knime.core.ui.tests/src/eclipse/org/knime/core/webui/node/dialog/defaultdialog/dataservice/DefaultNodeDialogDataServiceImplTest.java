@@ -159,9 +159,10 @@ class DefaultNodeDialogDataServiceImplTest {
              * {@inheritDoc}
              */
             @Override
-            public String computeState() {
+            public String computeState(final DefaultNodeSettingsContext context) {
                 return m_dependencySupplier.get();
             }
+
 
         }
 
@@ -207,7 +208,7 @@ class DefaultNodeDialogDataServiceImplTest {
                     }
 
                     @Override
-                    public String computeState() {
+                    public String computeState(final DefaultNodeSettingsContext context) {
                         return m_valueSupplier.get();
                     }
 
@@ -257,7 +258,7 @@ class DefaultNodeDialogDataServiceImplTest {
              * {@inheritDoc}
              */
             @Override
-            public CommonFirstState computeState() {
+            public CommonFirstState computeState(final DefaultNodeSettingsContext context) {
                 return new CommonFirstState(m_firstDependencyProvider.get() + "_first",
                     m_secondDependencyProvider.get() + "_second");
             }
@@ -274,7 +275,7 @@ class DefaultNodeDialogDataServiceImplTest {
             }
 
             @Override
-            public String computeState() {
+            public String computeState(final DefaultNodeSettingsContext context) {
                 return m_pairProvider.get().first();
             }
 
@@ -289,7 +290,7 @@ class DefaultNodeDialogDataServiceImplTest {
             }
 
             @Override
-            public String computeState() {
+            public String computeState(final DefaultNodeSettingsContext context) {
                 return m_pairProvider.get().second();
             }
         }

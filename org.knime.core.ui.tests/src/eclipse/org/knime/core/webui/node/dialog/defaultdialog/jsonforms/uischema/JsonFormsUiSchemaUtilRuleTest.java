@@ -998,7 +998,7 @@ class JsonFormsUiSchemaUtilRuleTest {
                 }
 
                 @Override
-                public Boolean computeState() {
+                public Boolean computeState(final DefaultNodeSettingsContext context) {
                     // whenever the condition is fulfilled
                     return true;
                 }

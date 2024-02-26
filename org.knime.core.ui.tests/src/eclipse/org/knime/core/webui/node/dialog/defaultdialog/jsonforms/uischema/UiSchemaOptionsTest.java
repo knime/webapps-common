@@ -187,8 +187,6 @@ class UiSchemaOptionsTest {
             @Widget
             String[] m_comboBox;
 
-
-
             @Widget
             @ChoicesWidget(choices = TestChoicesProvider.class)
             @ComboBoxWidget
@@ -867,7 +865,7 @@ class UiSchemaOptionsTest {
         }
 
         @Override
-        public String computeState() {
+        public String computeState(final DefaultNodeSettingsContext context) {
             throw new RuntimeException("Should not be called within this test");
         }
 

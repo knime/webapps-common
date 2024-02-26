@@ -64,7 +64,6 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_IS_WRITER;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_LABEL;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_OPTIONS;
-import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.StateProviderInitialStateUtil.getInitialState;
 import static org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.getApplicableDefaults;
 import static org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.partitionWidgetAnnotationsByApplicability;
 
@@ -413,7 +412,6 @@ final class UiSchemaOptionsGenerator {
                 () -> "The parameter \"fileExtension\" and \"fileExtensionProvider\" "
                     + "cannot be used in combination.");
             options.put(TAG_FILE_EXTENSION_PROVIDER, fileExtensionProvider.getName());
-            getInitialState(fileExtensionProvider).ifPresent(extension -> options.put(TAG_FILE_EXTENSION, extension));
         }
     }
 

@@ -115,7 +115,7 @@ public final class UpdatesUtil {
         final var dependencyValues =
             triggerWithDependencies.extractDependencyValues(settingsClasses, settings, context);
         final var triggerResult =
-            invocationHandler.invokeTrigger(triggerWithDependencies.getTriggerId(), dependencyValues::get);
+            invocationHandler.invokeTrigger(triggerWithDependencies.getTriggerId(), dependencyValues::get, context);
         final var updateResults = UpdateResultsUtil.toUpdateResults(triggerResult);
 
         final var initialUpdates = rootNode.putArray("initialUpdates");

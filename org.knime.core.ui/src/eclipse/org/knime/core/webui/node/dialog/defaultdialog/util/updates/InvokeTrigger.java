@@ -57,6 +57,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.Vertex.VertexVisitor;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonRef;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
@@ -74,13 +75,18 @@ final class InvokeTrigger {
 
     private final Function<Class<? extends ValueRef>, Object> m_dependencyProvider;
 
+    private final DefaultNodeSettingsContext m_context;
+
     /**
      *
-     * @param dependencyProvider providing the values of all {@link ValueRef} dependencies that the triggered updates
-     *            will depend on.
+     * @param dependencyProvider providing the values of all {@link ValueRef} dependencies that the triggered state
+     *            providers will depend on.
+     * @param context the context provided to triggered state providers
      */
-    InvokeTrigger(final Function<Class<? extends ValueRef>, Object> dependencyProvider) {
+    InvokeTrigger(final Function<Class<? extends ValueRef>, Object> dependencyProvider,
+        final DefaultNodeSettingsContext context) {
         m_dependencyProvider = dependencyProvider;
+        m_context = context;
     }
 
     /**
@@ -218,7 +224,7 @@ final class InvokeTrigger {
             final var initializer = new StateProviderInvocationInitializer(stateVertex);
             final var stateProvider = stateVertex.getStateProvider();
             stateProvider.init(initializer);
-            return stateProvider.computeState();
+            return stateProvider.computeState(m_context);
         }
 
         @Override
