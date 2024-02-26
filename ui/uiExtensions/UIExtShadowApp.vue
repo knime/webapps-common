@@ -7,15 +7,18 @@ import {
   JsonDataService,
 } from "@knime/ui-extension-service";
 
-import { markRaw, onMounted, ref } from "vue";
+import { markRaw, onMounted, ref, type StyleValue } from "vue";
 import { useDynamicImport } from "./useDynamicImport";
 const { dynamicImport } = useDynamicImport();
 
 interface Props {
   resourceLocation: string;
   apiLayer: UIExtensionServiceAPILayer;
+  style?: StyleValue;
 }
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  style: null,
+});
 
 const emit = defineEmits<{
   serviceCreated: [
@@ -73,13 +76,11 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div ref="container" class="ui-ext-shadow-app" />
+  <div ref="container" class="ui-ext-shadow-app" :style="style" />
 </template>
 
 <style scoped>
 .ui-ext-shadow-app {
-  /** required for the table view */
-  height: 100%;
   overflow: hidden;
 }
 </style>

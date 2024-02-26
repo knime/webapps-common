@@ -8,7 +8,7 @@ import {
   type Alert,
   type UIExtensionPushEvents,
 } from "@knime/ui-extension-service";
-import type { PropType } from "vue";
+import type { PropType, StyleValue } from "vue";
 import { toRaw } from "vue";
 import type { UIExtensionAPILayer } from "./types/UIExtensionAPILayer";
 import type { ExtensionConfig } from "./types/ExtensionConfig";
@@ -50,6 +50,10 @@ export default {
     isDialogLayout: {
       default: false,
       type: Boolean,
+    },
+    shadowAppStyle: {
+      type: String as PropType<StyleValue>,
+      default: null,
     },
   },
   data() {
@@ -135,6 +139,7 @@ export default {
     v-if="isUIExtShadowApp"
     :key="`comp_${configKey}`"
     :api-layer="serviceAPILayer"
+    :style="shadowAppStyle"
     :resource-location="resourceLocation"
     @service-created="onServiceCreated"
   />
