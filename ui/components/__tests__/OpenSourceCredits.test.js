@@ -4,7 +4,7 @@ import { mount } from "@vue/test-utils";
 import OpenSourceCredits from "../OpenSourceCredits.vue";
 import Description from "../Description.vue";
 
-vi.mock("../../buildtools/opensourcecredits/used-packages.json", () => ({
+vi.mock("../../../buildtools/opensourcecredits/used-packages.json", () => ({
   default: [
     {
       name: "a-package",
@@ -37,8 +37,7 @@ describe("OpenSourceCredits.vue", () => {
     );
   });
 
-  it.skip("de-duplicates packages", () => {
-    // TODO fix json import mock
+  it("de-duplicates packages", () => {
     expect(wrapper.vm.packages.length).toBe(2);
     let packages = wrapper.findAll("button");
     expect(packages.length).toBe(2);
