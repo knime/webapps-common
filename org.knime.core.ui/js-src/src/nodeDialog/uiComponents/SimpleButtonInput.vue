@@ -2,7 +2,7 @@
 import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
 import inject from "../utils/inject";
 import { computed, ref } from "vue";
-import useDialogControl from "../composables/useDialogControl";
+import useDialogControl from "../composables/components/useDialogControl";
 import { rendererProps } from "@jsonforms/vue";
 import DescriptionPopover from "./description/DescriptionPopover.vue";
 import DialogComponentWrapper from "./DialogComponentWrapper.vue";

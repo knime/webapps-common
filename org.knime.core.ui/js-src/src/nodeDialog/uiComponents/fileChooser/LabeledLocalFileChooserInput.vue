@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import useDialogControl from "../../composables/useDialogControl";
+import useDialogControl from "../../composables/components/useDialogControl";
 import StringFileChooserInputWithExplorer from "./StringFileChooserInputWithExplorer.vue";
 import LabeledInput from "../label/LabeledInput.vue";
 import { rendererProps } from "@jsonforms/vue";

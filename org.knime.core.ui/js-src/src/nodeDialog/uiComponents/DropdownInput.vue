@@ -16,7 +16,7 @@ import { v4 as uuidv4 } from "uuid";
 import inject from "../utils/inject";
 import type SettingsData from "../types/SettingsData";
 import type { IdAndText } from "../types/ChoicesUiSchema";
-import useDialogControl from "../composables/useDialogControl";
+import useDialogControl from "../composables/components/useDialogControl";
 import LabeledInput from "./label/LabeledInput.vue";
 
 const props = defineProps({

@@ -5,7 +5,7 @@ import Twinlist from "webapps-common/ui/components/forms/Twinlist.vue";
 import inject from "../utils/inject";
 import TwinlistLoadingInfo from "./loading/TwinlistLoadingInfo.vue";
 import type { IdAndText } from "../types/ChoicesUiSchema";
-import useDialogControl from "../composables/useDialogControl";
+import useDialogControl from "../composables/components/useDialogControl";
 import LabeledInput from "./label/LabeledInput.vue";
 
 const props = defineProps({

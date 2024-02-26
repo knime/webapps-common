@@ -7,7 +7,7 @@ import {
 import ColumnSelect from "../ColumnSelect.vue";
 import DropdownInput from "../DropdownInput.vue";
 import Dropdown from "webapps-common/ui/components/forms/Dropdown.vue";
-import { providedKey as providedByComponentKey } from "@/nodeDialog/composables/useFlowVariables";
+import { providedKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
 import DialogLabel from "../label/DialogLabel.vue";
 
 describe("ColumnSelect.vue", () => {

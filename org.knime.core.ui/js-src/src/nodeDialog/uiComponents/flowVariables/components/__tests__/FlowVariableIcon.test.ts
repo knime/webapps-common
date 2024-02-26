@@ -9,7 +9,7 @@ import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";
 import FlowVariableIcon from "../FlowVariableIcon.vue";
 
 import type FlowVariableIconProps from "../../types/FlowVariableIconProps";
-import { providedKey as providedByComponentKey } from "@/nodeDialog/composables/useFlowVariables";
+import { providedKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
 import { Ref, ref } from "vue";
 import { FlowSettings } from "@/nodeDialog/api/types";
 

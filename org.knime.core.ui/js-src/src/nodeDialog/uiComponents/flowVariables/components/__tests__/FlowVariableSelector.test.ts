@@ -16,7 +16,7 @@ import FlowVariableSelector from "../FlowVariableSelector.vue";
 import type FlowVariableSelectorProps from "../../types/FlowVariableSelectorProps";
 import { ProvidedForFlowVariables } from "@/nodeDialog/types/provided";
 import { FlowSettings } from "@/nodeDialog/api/types";
-import { providedKey as providedByComponentKey } from "@/nodeDialog/composables/useFlowVariables";
+import { providedKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
 type MockedMethods<T extends Record<string, (...args: any[]) => any>> = {
   [K in keyof T]?: Mock<Parameters<T[K]>, ReturnType<T[K]>>;
 };

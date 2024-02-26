@@ -1,8 +1,8 @@
 import { Ref, computed, inject, provide } from "vue";
-import { getConfigPaths, getDataPaths } from "../utils/paths";
-import { FlowSettings } from "../api/types";
-import { injectForFlowVariables } from "../utils/inject";
-import Control from "../types/Control";
+import { getConfigPaths, getDataPaths } from "@/nodeDialog/utils/paths";
+import { FlowSettings } from "@/nodeDialog/api/types";
+import { injectForFlowVariables } from "@/nodeDialog/utils/inject";
+import Control from "@/nodeDialog/types/Control";
 
 export interface FlowVariableSettingsProvidedByControl {
   flowSettings: Ref<FlowSettings | null>;

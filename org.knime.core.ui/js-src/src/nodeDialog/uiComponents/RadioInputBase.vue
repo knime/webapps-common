@@ -4,7 +4,7 @@ import { rendererProps } from "@jsonforms/vue";
 import { optionsMapper } from "../utils";
 import RadioButtons from "webapps-common/ui/components/forms/RadioButtons.vue";
 import ValueSwitch from "webapps-common/ui/components/forms/ValueSwitch.vue";
-import useDialogControl from "../composables/useDialogControl";
+import useDialogControl from "../composables/components/useDialogControl";
 import { IdAndText } from "../types/ChoicesUiSchema";
 import LabeledInput from "./label/LabeledInput.vue";
 

@@ -7,7 +7,7 @@ import { expect, vi } from "vitest";
 import { mount } from "@vue/test-utils";
 import { useJsonFormsLayout, useJsonFormsArrayControl } from "@jsonforms/vue";
 
-import * as useJsonFormsControlWithUpdateModule from "@/nodeDialog/composables/useJsonFormsControlWithUpdate";
+import * as useJsonFormsControlWithUpdateModule from "@/nodeDialog/composables/components/useJsonFormsControlWithUpdate";
 import * as jsonformsVueModule from "@jsonforms/vue";
 
 import { getPossibleValuesFromUiSchema } from "@/nodeDialog/utils";

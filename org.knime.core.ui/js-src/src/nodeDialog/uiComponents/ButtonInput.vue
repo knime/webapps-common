@@ -5,7 +5,7 @@ import LoadingIcon from "webapps-common/ui/components/LoadingIcon.vue";
 import { v4 as uuidv4 } from "uuid";
 import inject from "../utils/inject";
 import { computed, onMounted, ref } from "vue";
-import useDialogControl from "../composables/useDialogControl";
+import useDialogControl from "../composables/components/useDialogControl";
 import getFlattenedSettings from "../utils/getFlattenedSettings";
 import type SettingsData from "../types/SettingsData";
 import { rendererProps } from "@jsonforms/vue";

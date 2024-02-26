@@ -7,7 +7,7 @@ import flushPromises from "flush-promises";
 import FlowVariableExposer from "../FlowVariableExposer.vue";
 import type FlowVariableExposerProps from "../../types/FlowVariableExposerProps";
 import ErrorMessage from "../../../ErrorMessage.vue";
-import { providedKey as providedByComponentKey } from "@/nodeDialog/composables/useFlowVariables";
+import { providedKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
 import { FlowSettings } from "@/nodeDialog/api/types";
 import { ref, type Ref } from "vue";
 

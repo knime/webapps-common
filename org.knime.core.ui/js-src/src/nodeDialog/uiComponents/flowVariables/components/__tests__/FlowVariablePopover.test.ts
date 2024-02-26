@@ -6,7 +6,7 @@ import FlowVariablePopover from "../FlowVariablePopover.vue";
 import FlowVariableSelector from "../FlowVariableSelector.vue";
 import FlowVariableExposer from "../FlowVariableExposer.vue";
 import MultipleConfigKeysNotYetSupported from "../MultipleConfigKeysNotYetSupported.vue";
-import { providedKey as providedByComponentKey } from "@/nodeDialog/composables/useFlowVariables";
+import { providedKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
 import { type Ref, ref } from "vue";
 import { FlowSettings } from "@/nodeDialog/api/types";
 import DeprecatedFlowVariables from "../DeprecatedFlowVariables.vue";

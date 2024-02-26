@@ -5,7 +5,7 @@ import BothFlowVariables from "webapps-common/ui/assets/img/icons/both-flow-vari
 
 import type FlowVariableIconProps from "../types/FlowVariableIconProps";
 import { computed, watch } from "vue";
-import { getFlowVariableSettingsProvidedByControl } from "../../../composables/useFlowVariables";
+import { getFlowVariableSettingsProvidedByControl } from "../../../composables/components/useFlowVariables";
 
 const { flowSettings } = getFlowVariableSettingsProvidedByControl();
 

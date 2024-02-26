@@ -8,7 +8,7 @@ import DescriptionPopover from "./description/DescriptionPopover.vue";
 import DialogComponentWrapper from "./DialogComponentWrapper.vue";
 import useDialogControl, {
   useTriggersReexecution,
-} from "../composables/useDialogControl";
+} from "../composables/components/useDialogControl";
 import { rendererProps } from "@jsonforms/vue";
 const props = defineProps(rendererProps());
 const {

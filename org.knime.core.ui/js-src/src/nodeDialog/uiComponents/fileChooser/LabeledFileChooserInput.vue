@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, watch } from "vue";
 import FileChooserInput from "./FileChooserInput.vue";
-import useDialogControl from "../../composables/useDialogControl";
+import useDialogControl from "../../composables/components/useDialogControl";
 import LabeledInput from "../label/LabeledInput.vue";
 import { rendererProps } from "@jsonforms/vue";
 import { FileChooserUiSchemaOptions } from "@/nodeDialog/types/FileChooserUiSchema";

@@ -1,5 +1,5 @@
 import { DialogSettings } from "@knime/ui-extension-service/dist/DialogSettings-33e63dd7";
-import { Update, UpdateResult } from "./types/Update";
+import { Update, UpdateResult } from "../../types/Update";
 import { cloneDeep, set, get } from "lodash-es";
 import { toDataPath } from "@jsonforms/core";
 import { inject } from "vue";

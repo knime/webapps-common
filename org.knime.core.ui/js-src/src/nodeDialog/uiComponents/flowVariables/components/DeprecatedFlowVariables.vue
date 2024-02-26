@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getFlowVariablesMap } from "../../../composables/useFlowVariables";
+import { getFlowVariablesMap } from "@/nodeDialog/composables/components/useFlowVariables";
 import Button from "webapps-common/ui/components/Button.vue";
 import useDeprecatedConfigPaths from "../composables/useDeprecatedConfigPaths";
 

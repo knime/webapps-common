@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import DateInput from "webapps-common/ui/components/forms/DateTimeInput.vue";
-import useDialogControl from "../composables/useDialogControl";
+import useDialogControl from "../composables/components/useDialogControl";
 import LabeledInput from "./label/LabeledInput.vue";
 import { rendererProps } from "@jsonforms/vue";
 const props = defineProps(rendererProps());

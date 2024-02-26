@@ -5,7 +5,7 @@ import type { PossibleValue } from "../types/ChoicesUiSchema";
 import inject from "../utils/inject";
 import DropdownInput from "./DropdownInput.vue";
 import { isEqual } from "lodash-es";
-import useDialogControl from "../composables/useDialogControl";
+import useDialogControl from "../composables/components/useDialogControl";
 
 const props = defineProps(rendererProps());
 const jsonFormsControl = useDialogControl({

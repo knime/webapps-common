@@ -2,7 +2,7 @@
 import { computed, ref } from "vue";
 import InputField from "webapps-common/ui/components/forms/InputField.vue";
 import LabeledInput from "./label/LabeledInput.vue";
-import useDialogControl from "../composables/useDialogControl";
+import useDialogControl from "../composables/components/useDialogControl";
 import { rendererProps } from "@jsonforms/vue";
 import useHideOnNull from "./composables/useHideOnNull";
 import Checkbox from "webapps-common/ui/components/forms/Checkbox.vue";

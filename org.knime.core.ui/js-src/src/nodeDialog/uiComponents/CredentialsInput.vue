@@ -2,7 +2,7 @@
 import { computed, watch } from "vue";
 import { mergeDeep } from "../utils";
 import InputField from "webapps-common/ui/components/forms/InputField.vue";
-import useDialogControl from "../composables/useDialogControl";
+import useDialogControl from "../composables/components/useDialogControl";
 import LabeledInput from "./label/LabeledInput.vue";
 import { rendererProps } from "@jsonforms/vue";
 

@@ -1,5 +1,5 @@
 import { rendererProps } from "@jsonforms/vue";
-import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
+import { useJsonFormsControlWithUpdate } from "./useJsonFormsControlWithUpdate";
 import {
   type Ref,
   type MaybeRef,
@@ -7,10 +7,10 @@ import {
   ExtractPropTypes,
   unref,
 } from "vue";
-import { isModelSettingAndHasNodeView } from "../utils";
+import { isModelSettingAndHasNodeView } from "@/nodeDialog/utils";
 import { useFlowSettings } from "./useFlowVariables";
-import Control from "../types/Control";
-import inject from "../utils/inject";
+import Control from "@/nodeDialog/types/Control";
+import inject from "@/nodeDialog/utils/inject";
 
 export const useTriggersReexecution = (control: Ref<Control>) => {
   return computed(() => Boolean(isModelSettingAndHasNodeView(control.value)));

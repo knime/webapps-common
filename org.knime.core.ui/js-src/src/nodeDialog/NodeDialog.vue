@@ -25,10 +25,10 @@ import getChoices from "./api/getChoices";
 import * as flowVariablesApi from "./api/flowVariables";
 import type { FlowSettings } from "./api/types";
 
-import useStateProviders from "./useStateProviders";
-import useUpdates from "./useUpdates";
-import useTriggers from "./useTriggers";
-import useGlobalWatchers from "./useGlobalWatchers";
+import useStateProviders from "./composables/nodeDialog/useStateProviders";
+import useUpdates from "./composables/nodeDialog/useUpdates";
+import useTriggers from "./composables/nodeDialog/useTriggers";
+import useGlobalWatchers from "./composables/nodeDialog/useGlobalWatchers";
 
 const renderers = [
   ...vanillaRenderers,

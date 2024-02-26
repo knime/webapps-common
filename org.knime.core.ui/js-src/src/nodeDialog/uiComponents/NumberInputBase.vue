@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import NumberInput from "webapps-common/ui/components/forms/NumberInput.vue";
 import { rendererProps } from "@jsonforms/vue";
-import useDialogControl from "../composables/useDialogControl";
+import useDialogControl from "../composables/components/useDialogControl";
 import { type PropType, computed } from "vue";
 import LabeledInput from "./label/LabeledInput.vue";
 

@@ -123,9 +123,12 @@ const useJsonFormsControlMock = {
   control: ref(control),
 };
 
-vi.mock("@/nodeDialog/composables/useJsonFormsControlWithUpdate", () => ({
-  useJsonFormsControlWithUpdate: () => useJsonFormsControlMock,
-}));
+vi.mock(
+  "@/nodeDialog/composables/components/useJsonFormsControlWithUpdate",
+  () => ({
+    useJsonFormsControlWithUpdate: () => useJsonFormsControlMock,
+  }),
+);
 
 describe("ArrayLayout.vue", () => {
   let wrapper;

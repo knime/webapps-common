@@ -5,7 +5,7 @@ import FlowVariableSelector from "./FlowVariableSelector.vue";
 import { computed } from "vue";
 import FlowVariableExposer from "./FlowVariableExposer.vue";
 
-import { getFlowVariableSettingsProvidedByControl } from "../../../composables/useFlowVariables";
+import { getFlowVariableSettingsProvidedByControl } from "../../../composables/components/useFlowVariables";
 import DeprecatedFlowVariables from "./DeprecatedFlowVariables.vue";
 import useDeprecatedConfigPaths from "../composables/useDeprecatedConfigPaths";
 const { dataPaths, configPaths } = getFlowVariableSettingsProvidedByControl();

@@ -2,7 +2,7 @@
 import { rendererProps } from "@jsonforms/vue";
 import { optionsMapper } from "../utils";
 import DropdownInput from "./DropdownInput.vue";
-import { useJsonFormsControlWithUpdate } from "../composables/useJsonFormsControlWithUpdate";
+import { useJsonFormsControlWithUpdate } from "../composables/components/useJsonFormsControlWithUpdate";
 
 const props = defineProps(rendererProps());
 const { control } = useJsonFormsControlWithUpdate(props);
@@ -16,3 +16,4 @@ const asyncInitialOptions = Promise.resolve(options);
     :async-initial-options="asyncInitialOptions"
   />
 </template>
+../composables/components/useJsonFormsControlWithUpdate

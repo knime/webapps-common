@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from "vue";
 import { optionsMapper } from "../utils";
 import Checkboxes from "webapps-common/ui/components/forms/Checkboxes.vue";
-import useDialogControl from "../composables/useDialogControl";
+import useDialogControl from "../composables/components/useDialogControl";
 import { IdAndText } from "../types/ChoicesUiSchema";
 import LabeledInput from "./label/LabeledInput.vue";
 import { rendererProps } from "@jsonforms/vue";

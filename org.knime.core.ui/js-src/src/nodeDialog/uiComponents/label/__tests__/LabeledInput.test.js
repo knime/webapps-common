@@ -6,7 +6,7 @@ import ErrorMessage from "../../ErrorMessage.vue";
 import FlowVariableButton from "../../flowVariables/components/FlowVariableButton.vue";
 import DescriptionPopover from "../../description/DescriptionPopover.vue";
 import ReexecutionIcon from "webapps-common/ui/assets/img/icons/reexecution.svg";
-import { providedKey as providedByComponentKey } from "@/nodeDialog/composables/useFlowVariables";
+import { providedKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
 import { ref } from "vue";
 import DialogLabel from "../DialogLabel.vue";
 import DialogComponentWrapper from "../../DialogComponentWrapper.vue";

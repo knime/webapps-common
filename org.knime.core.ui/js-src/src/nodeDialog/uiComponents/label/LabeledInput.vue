@@ -2,7 +2,7 @@
 import DialogComponentWrapper from "../DialogComponentWrapper.vue";
 import DialogLabel from "./DialogLabel.vue";
 import { toRefs } from "vue";
-import { useTriggersReexecution } from "../../composables/useDialogControl";
+import { useTriggersReexecution } from "../../composables/components/useDialogControl";
 import type Control from "../../types/Control";
 
 const props = withDefaults(

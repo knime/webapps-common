@@ -8,7 +8,7 @@ import type { IdAndText, PossibleValue } from "../types/ChoicesUiSchema";
 import type Control from "../types/Control";
 import type { PartialDeep } from "type-fest";
 import TwinlistLoadingInfo from "./loading/TwinlistLoadingInfo.vue";
-import useDialogControl from "../composables/useDialogControl";
+import useDialogControl from "../composables/components/useDialogControl";
 import LabeledInput from "./label/LabeledInput.vue";
 
 type TwinlistData = {

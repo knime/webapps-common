@@ -6,7 +6,7 @@ import {
   useJsonFormsArrayControl,
 } from "@jsonforms/vue";
 import { composePaths } from "@jsonforms/core";
-import { useJsonFormsControlWithUpdate } from "@/nodeDialog/composables/useJsonFormsControlWithUpdate";
+import { useJsonFormsControlWithUpdate } from "@/nodeDialog/composables/components/useJsonFormsControlWithUpdate";
 import Label from "webapps-common/ui/components/forms/Label.vue";
 import Button from "webapps-common/ui/components/Button.vue";
 import PlusIcon from "webapps-common/ui/assets/img/icons/plus.svg";
@@ -196,3 +196,4 @@ export default ArrayLayout;
   margin-bottom: 0;
 }
 </style>
+@/nodeDialog/composables/components/useJsonFormsControlWithUpdate
