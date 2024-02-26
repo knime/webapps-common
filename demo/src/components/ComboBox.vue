@@ -15,10 +15,10 @@ const codeExample = `<ComboBox
     text: 'Baz'
   }]"
   :possible-values="values"
-  :initialSelectedIds="selected"
+  :model-value="selected"
   :size-visible-options="3"
   close-dropdown-on-selection
-  @update:selected-ids="selectedValues => selected = selectedValues"
+  @update:model-value="selectedIds => selected = selectedIds"
 />`;
 
 export default {
@@ -66,8 +66,8 @@ export default {
         <div class="grid-item-6">
           <ComboBox
             :possible-values="values"
-            :initial-selected-ids="selected[0]"
-            @update:selected-ids="
+            :model-value="selected[0]"
+            @update:model-value="
               (selectedValues) => (selected[0] = selectedValues)
             "
             @change="selectedValues = $event"
@@ -81,9 +81,9 @@ export default {
         <div class="grid-item-6">
           <ComboBox
             :possible-values="values"
-            :initial-selected-ids="selected[1]"
+            :model-value="selected[1]"
             :size-visible-options="3"
-            @update:selected-ids="
+            @update:model-value="
               (selectedValues) => (selected[1] = selectedValues)
             "
             @change="selectedValues = $event"
@@ -97,9 +97,9 @@ export default {
         <div class="grid-item-6">
           <ComboBox
             :possible-values="values"
-            :initial-selected-ids="selected[0]"
+            :model-value="selected[0]"
             allow-new-values
-            @update:selected-ids="
+            @update:model-value="
               (selectedValues) => (selected[0] = selectedValues)
             "
             @change="selectedValues = $event"
@@ -113,9 +113,9 @@ export default {
         <div class="grid-item-6">
           <ComboBox
             :possible-values="values"
-            :initial-selected-ids="selected[2]"
+            :model-value="selected[2]"
             close-dropdown-on-selection
-            @update:selected-ids="
+            @update:model-value="
               (selectedValues) => (selected[2] = selectedValues)
             "
             @change="selectedValues = $event"

@@ -15,7 +15,6 @@ interface ComboBoxItem {
 }
 
 interface ComponentData {
-  selectedIds: Array<string>;
   searchValue: string;
   inputOrOptionsFocussed: boolean;
   /*
@@ -56,7 +55,7 @@ export default defineComponent({
     /**
      * List of initial selected ids.
      */
-    initialSelectedIds: {
+    modelValue: {
       type: Array as PropType<Array<string>>,
       default: () => [],
     },
@@ -92,14 +91,13 @@ export default defineComponent({
 
   emits: {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    "update:selectedIds": (_payload: Array<string>) => true,
+    "update:modelValue": (_payload: Array<string>) => true,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     change: (_payload: Array<ComboBoxItem>) => true,
   },
 
   data(): ComponentData {
     return {
-      selectedIds: this.initialSelectedIds,
       searchValue: "",
       inputOrOptionsFocussed: false,
       /*
@@ -149,12 +147,7 @@ export default defineComponent({
     },
 
     selectedValues() {
-      return this.selectedIds.length === 0
-        ? []
-        : this.selectedIds.map((id) => {
-            const item = this.allPossibleItems.find((item) => item.id === id);
-            return item || { id, text: id };
-          });
+      return this.getSelectedValues(this.modelValue);
     },
 
     maxSizeVisibleOptions() {
@@ -163,32 +156,22 @@ export default defineComponent({
         : this.sizeVisibleOptions;
     },
   },
-  watch: {
-    initialSelectedIds(newValue: string[], prevValue: string[]) {
-      const lengthIsEqual = newValue.length === prevValue?.length;
 
-      const isEqual =
-        lengthIsEqual &&
-        newValue.slice().sort().join(".") ===
-          prevValue.slice().sort().join(".");
-
-      if (isEqual) {
-        return;
-      }
-
-      this.changeSelectedIds(newValue);
-    },
-  },
   mounted() {
     this.focusElement = this.$refs.searchInput as HTMLInputElement;
     this.refocusElement = this.$refs.listBox as HTMLDivElement;
   },
 
   methods: {
-    changeSelectedIds(newSelected: string[]) {
-      this.selectedIds = newSelected;
-      this.$emit("update:selectedIds", this.selectedIds);
-      this.$emit("change", this.selectedValues);
+    emitNewSelection(newSelectedIds: string[]) {
+      this.$emit("update:modelValue", newSelectedIds);
+      this.$emit("change", this.getSelectedValues(newSelectedIds));
+    },
+    getSelectedValues(selectedIds: string[]) {
+      return selectedIds.map((id) => {
+        const item = this.allPossibleItems.find((item) => item.id === id);
+        return item || { id, text: id };
+      });
     },
     focusInput() {
       (this.$refs.searchInput as HTMLInputElement).focus();
@@ -201,12 +184,12 @@ export default defineComponent({
         return;
       }
 
-      this.updateSelectedIds([...this.selectedIds, this.searchResults[0]?.id]);
+      this.updateSelectedIds([...this.modelValue, this.searchResults[0]?.id]);
       this.searchValue = "";
     },
     onBackspace() {
       if (!this.searchValue) {
-        this.changeSelectedIds(this.selectedIds.slice(0, -1));
+        this.emitNewSelection(this.modelValue.slice(0, -1));
       }
       // else regular backspace behavior
     },
@@ -228,7 +211,7 @@ export default defineComponent({
 
     updateSelectedIds(selectedIds: Array<string>) {
       const setSelectedIds = (value: Array<string>) => {
-        this.changeSelectedIds(uniq(value).filter(Boolean));
+        this.emitNewSelection(uniq(value).filter(Boolean));
       };
 
       const hasNewItem = selectedIds.includes(DRAFT_ITEM_ID);
@@ -259,9 +242,7 @@ export default defineComponent({
     },
 
     removeTag(idToRemove: string) {
-      this.updateSelectedIds(
-        this.selectedIds.filter((id) => id !== idToRemove),
-      );
+      this.updateSelectedIds(this.modelValue.filter((id) => id !== idToRemove));
       this.closeOptions();
     },
 
@@ -282,7 +263,7 @@ export default defineComponent({
 <template>
   <Multiselect
     ref="combobox"
-    :model-value="selectedIds"
+    :model-value="modelValue"
     :possible-values="searchResults"
     use-custom-list-box
     :size-visible-options="maxSizeVisibleOptions"
