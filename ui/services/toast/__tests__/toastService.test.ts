@@ -20,7 +20,8 @@ describe("test-service.ts", () => {
     persistentToast: Toast,
     toastWithId: Toast,
     toastWithKey: Toast,
-    toastWithMeta: Toast;
+    toastWithMeta: Toast,
+    toastWithButton: Toast;
 
   beforeEach(() => {
     serviceProvider = new ToastServiceProvider();
@@ -45,6 +46,10 @@ describe("test-service.ts", () => {
       meta: {
         group: "myGroup",
       },
+    };
+    toastWithButton = {
+      headline: "This toast has a button",
+      buttons: [{ text: "Click me", callback: () => {} }],
     };
   });
 
@@ -125,6 +130,22 @@ describe("test-service.ts", () => {
         expect(toastService.toasts.value[0].meta).toStrictEqual({
           group: "myGroup",
         });
+      });
+
+      it("should add a toast with a button", () => {
+        toastService.show(toastWithButton);
+
+        expect(toastService.toasts.value[0]).toEqual(
+          expect.objectContaining({
+            headline: "This toast has a button",
+            buttons: [
+              expect.objectContaining({
+                text: "Click me",
+                callback: expect.any(Function),
+              }),
+            ],
+          }),
+        );
       });
     });
 
