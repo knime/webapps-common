@@ -65,7 +65,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialogTest;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FileChooser;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileExtensionProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SimpleButtonWidget;
@@ -356,6 +358,56 @@ class UpdatesUtilTest {
         assertThatJson(response).inPath("$.globalUpdates[0].trigger.id").isString()
             .isEqualTo(TestSettings.MyButtonRef.class.getName());
         assertThatJson(response).inPath("$.globalUpdates[0].dependencies").isArray().hasSize(0);
+    }
+
+    static final class MyExtensionProvider implements FileExtensionProvider {
+
+        @Override
+        public void init(final StateProviderInitializer initializer) {
+            initializer.computeAfterOpenDialog();
+        }
+
+        @Override
+        public String computeState(final DefaultNodeSettingsContext context) {
+            throw new IllegalStateException("Should not be called within this test");
+        }
+
+    }
+
+    @Test
+    void testFileWriterWidgetFileExtensionProvider() {
+
+        class TestSettings implements DefaultNodeSettings {
+
+            @FileWriterWidget(fileExtensionProvider = MyExtensionProvider.class)
+            FileChooser m_fileChooser;
+
+        }
+
+        final Map<String, WidgetGroup> settings = Map.of("test", new TestSettings());
+
+        final var response = buildUpdates(settings);
+
+        assertThatJson(response).inPath("$.globalUpdates").isArray().hasSize(1);
+
+    }
+
+    @Test
+    void testLocalFileWriterWidgetFileExtensionProvider() {
+
+        class TestSettings implements DefaultNodeSettings {
+
+            @LocalFileWriterWidget(fileExtensionProvider = MyExtensionProvider.class)
+            String m_fileChooser;
+
+        }
+
+        final Map<String, WidgetGroup> settings = Map.of("test", new TestSettings());
+
+        final var response = buildUpdates(settings);
+
+        assertThatJson(response).inPath("$.globalUpdates").isArray().hasSize(1);
+
     }
 
     @Test

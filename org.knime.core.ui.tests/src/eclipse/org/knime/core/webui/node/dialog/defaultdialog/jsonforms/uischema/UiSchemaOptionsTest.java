@@ -941,8 +941,6 @@ class UiSchemaOptionsTest {
         assertThatJson(response).inPath("$.elements[2].options.fileExtensionProvider").isString()
             .isEqualTo(MyFileExtensionProvider.class.getName());
         assertThatJson(response).inPath("$.elements[2].options.isWriter").isBoolean().isTrue();
-        assertThatJson(response).inPath("$.globalUpdates[0].trigger.id").isString()
-            .isEqualTo(MyValueRef.class.getName());
     }
 
 }
