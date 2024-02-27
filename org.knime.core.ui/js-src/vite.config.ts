@@ -96,7 +96,21 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [
       vue(),
-      svgLoader(),
+      svgLoader({
+        svgoConfig: {
+          plugins: [
+            {
+              name: "preset-default",
+              params: {
+                overrides: {
+                  // disable converting lines to paths as it breaks our 'dots' and might also introduce stroke-width attributes
+                  convertShapeToPath: false,
+                },
+              },
+            },
+          ],
+        },
+      }),
       // not supported natively in Vite yet, see https://github.com/vitejs/vite/issues/1579
       cssInjectedByJsPlugin({
         styleId: "knime-ui-table",
