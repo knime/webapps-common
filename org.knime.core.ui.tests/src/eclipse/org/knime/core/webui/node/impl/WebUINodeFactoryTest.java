@@ -188,10 +188,10 @@ class WebUINodeFactoryTest {
         final var testSpecs =
             new DataTableSpec[]{new TableTestUtil.SpecBuilder().addColumn("intCol", IntCell.TYPE).build()};
 
-        // test that no settings are when node unconfigured
+        // test that default settings are constructed when node is unconfigured
         final var nodeSettings = new NodeSettings("test");
         model.saveSettingsTo(nodeSettings);
-        assertThat(nodeSettings.getChildCount()).isZero();
+        assertThat(nodeSettings.getChildCount()).isEqualTo(2);
 
         // test that settings are initialized and correctly saved when node is configured
         model.configure(testSpecs);
