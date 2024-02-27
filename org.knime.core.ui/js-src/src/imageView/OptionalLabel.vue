@@ -10,7 +10,7 @@ defineProps<{
   <Label
     v-if="title"
     #default="{ labelForId }"
-    :class="{ scale }"
+    :class="['label', { scale }]"
     :text="title"
     large
   >
@@ -20,6 +20,12 @@ defineProps<{
 </template>
 
 <style scoped lang="postcss">
+@media print {
+  .label {
+    break-inside: avoid;
+  }
+}
+
 .scale {
   max-height: 100%;
   display: flex;

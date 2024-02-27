@@ -20,6 +20,7 @@ import {
   type Ref,
 } from "vue";
 import type { UIExtensionService } from "@knime/ui-extension-service";
+import NoPageBreak from "./NoPageBreak.vue";
 
 const viewSettings: Settings = reactive({
   title: "",
@@ -88,14 +89,16 @@ const scale = toRef(viewSettings, "shrinkToFit");
         :scale="scale"
         :caption="viewSettings.caption"
       >
-        <img
-          :id="id"
-          ref="image"
-          :class="[{ scale }]"
-          :style="naturalHeight ? { maxHeight: `${naturalHeight}px` } : {}"
-          :src="imgSrc"
-          :alt="viewSettings.altText"
-        />
+        <NoPageBreak :scale="scale">
+          <img
+            :id="id"
+            ref="image"
+            :class="[{ scale }]"
+            :style="naturalHeight ? { maxHeight: `${naturalHeight}px` } : {}"
+            :src="imgSrc"
+            :alt="viewSettings.altText"
+          />
+        </NoPageBreak>
       </OptionalFigure>
     </OptionalLabel>
   </div>

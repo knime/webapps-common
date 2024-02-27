@@ -7,7 +7,7 @@ defineProps<{
 </script>
 
 <template>
-  <figure v-if="caption" :id="id" :class="{ scale }">
+  <figure v-if="caption" :id="id" :class="['figure', { scale }]">
     <slot />
     <figcaption class="figcaption">{{ caption }}</figcaption>
   </figure>
@@ -15,6 +15,12 @@ defineProps<{
 </template>
 
 <style scoped>
+@media print {
+  .figure {
+    break-inside: avoid;
+  }
+}
+
 figure {
   margin: 0;
 
