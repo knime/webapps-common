@@ -18,11 +18,12 @@ import {
  * Helper type because Promise<A> & Promise<B> is not the same as
  * Promise<A & B> but we want that to be the case for the combiner below
  */
-type MergePromises<T, S> = T extends Promise<infer A>
-  ? S extends Promise<infer B>
-    ? Promise<A & B>
-    : never
-  : S & T;
+type MergePromises<T, S> =
+  T extends Promise<infer A>
+    ? S extends Promise<infer B>
+      ? Promise<A & B>
+      : never
+    : S & T;
 
 /**
  * Merges the fields of two APIs so that return types are combined
@@ -38,8 +39,8 @@ type MergeReturnTypesOfTwo<F1, F2> = {
         : F1[K]
       : never
     : K extends keyof F2
-    ? F2[K]
-    : never;
+      ? F2[K]
+      : never;
 };
 
 type MergeReturnTypes<T extends any[]> = T extends [
@@ -49,8 +50,8 @@ type MergeReturnTypes<T extends any[]> = T extends [
 ]
   ? MergeReturnTypes<[MergeReturnTypesOfTwo<F1, F2>, ...Rest]>
   : T extends [infer Last]
-  ? Last
-  : never;
+    ? Last
+    : never;
 
 /**
  * The API Layer required by all services.
