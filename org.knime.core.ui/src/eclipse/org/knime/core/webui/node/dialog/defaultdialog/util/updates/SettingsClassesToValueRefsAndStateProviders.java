@@ -67,6 +67,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.AllFileExtensionsAl
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.CredentialsWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.NoopBooleanProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
 
@@ -122,8 +124,17 @@ final class SettingsClassesToValueRefsAndStateProviders {
                 LocalFileWriterWidget.class, //
                 LocalFileWriterWidget::fileExtensionProvider, //
                 AllFileExtensionsAllowedProvider.class//
+            ), //
+            new UiStateProviderSpec<>(//
+                CredentialsWidget.class, //
+                CredentialsWidget::hasPasswordProvider, //
+                NoopBooleanProvider.class//
+            ), //
+            new UiStateProviderSpec<>(//
+                CredentialsWidget.class, //
+                CredentialsWidget::hasUsernameProvider, //
+                NoopBooleanProvider.class//
             ) //
-
         );
 
     private static void addUiStateProviderForField(final TraversedField field,

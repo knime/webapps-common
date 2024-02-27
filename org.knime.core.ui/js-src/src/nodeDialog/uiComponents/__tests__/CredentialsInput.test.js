@@ -260,6 +260,38 @@ describe("CredentialsInput.vue", () => {
     );
   });
 
+  it("hides username by state provider", async () => {
+    const addStateProviderListenerMock = vi.fn();
+    const hasUsernameProvider = "myHasUsernameProvider";
+    props.control.uischema.options.hasUsernameProvider = hasUsernameProvider;
+    const { wrapper } = mountJsonFormsComponent(CredentialsInput, {
+      props,
+      provide: { addStateProviderListenerMock },
+    });
+    const [id, callback] = addStateProviderListenerMock.mock.calls[0];
+    expect(id).toBe(hasUsernameProvider);
+    expect(wrapper.findAllComponents(InputField)).toHaveLength(2);
+    callback(false);
+    await flushPromises();
+    expect(wrapper.findAllComponents(InputField)).toHaveLength(1);
+  });
+
+  it("hides password by state provider", async () => {
+    const addStateProviderListenerMock = vi.fn();
+    const hasPasswordProvider = "myUsernameProvider";
+    props.control.uischema.options.hasPasswordProvider = hasPasswordProvider;
+    const { wrapper } = mountJsonFormsComponent(CredentialsInput, {
+      props,
+      provide: { addStateProviderListenerMock },
+    });
+    const [id, callback] = addStateProviderListenerMock.mock.calls[0];
+    expect(id).toBe(hasPasswordProvider);
+    expect(wrapper.findAllComponents(InputField)).toHaveLength(2);
+    callback(false);
+    await flushPromises();
+    expect(wrapper.findAllComponents(InputField)).toHaveLength(1);
+  });
+
   it("hides password input field when configured to do so", () => {
     props.control.uischema.options.hidePassword = true;
     const { wrapper } = mountJsonFormsComponent(CredentialsInput, { props });

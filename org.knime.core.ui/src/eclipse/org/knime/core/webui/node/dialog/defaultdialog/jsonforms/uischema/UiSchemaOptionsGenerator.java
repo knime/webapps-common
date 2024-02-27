@@ -113,6 +113,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncC
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.NoopChoicesUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.PersistentAsyncChoicesAdder;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.CredentialsWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.NoopBooleanProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.PasswordWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.UsernameWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
@@ -319,6 +320,14 @@ final class UiSchemaOptionsGenerator {
             if (credentialsWidget.hasSecondAuthenticationFactor()) {
                 options.put("showSecondFactor", true);
                 options.put("secondFactorLabel", credentialsWidget.secondFactorLabel());
+            }
+            final var hasPasswordProvider = credentialsWidget.hasPasswordProvider();
+            if (!hasPasswordProvider.equals(NoopBooleanProvider.class)) {
+                options.put("hasPasswordProvider", hasPasswordProvider.getName());
+            }
+            final var hasUsernameProvider = credentialsWidget.hasUsernameProvider();
+            if (!hasUsernameProvider.equals(NoopBooleanProvider.class)) {
+                options.put("hasUsernameProvider", hasUsernameProvider.getName());
             }
         }
         if (hasUsernameWidgetAnnotation) {

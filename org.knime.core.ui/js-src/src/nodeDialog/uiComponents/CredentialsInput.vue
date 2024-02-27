@@ -5,6 +5,7 @@ import InputField from "webapps-common/ui/components/forms/InputField.vue";
 import useDialogControl from "../composables/components/useDialogControl";
 import LabeledInput from "./label/LabeledInput.vue";
 import { rendererProps } from "@jsonforms/vue";
+import useProvidedState from "../composables/components/useProvidedState";
 
 interface Credentials {
   username: string;
@@ -54,10 +55,25 @@ const displayedSecondFactor = computed(() => {
     : data.value.secondFactor;
 });
 const options = computed(() => control.value.uischema.options ?? {});
+
+// Username visibility
+const hasUsername = useProvidedState(
+  computed(() => options.value.hasUsernameProvider),
+  true,
+);
 const hideUsername = computed(() => options.value.hideUsername ?? false);
-const hidePassword = computed(() => options.value?.hidePassword ?? false);
+const showUsername = computed(() => hasUsername.value && !hideUsername.value);
+
+// Password visibility
+const hasPassword = useProvidedState(
+  computed(() => options.value.hasPasswordProvider),
+  true,
+);
+const hidePassword = computed(() => options.value.hidePassword ?? false);
+const showPassword = computed(() => hasPassword.value && !hidePassword.value);
+
 const showSecondFactor = computed(
-  () => !hidePassword.value && (options.value.showSecondFactor ?? false),
+  () => showPassword.value && (options.value.showSecondFactor ?? false),
 );
 const usernameLabel = computed(
   () => options.value?.usernameLabel ?? "Username",
@@ -97,7 +113,7 @@ const onControllingFlowVariableSet = (value: Credentials) => {
   >
     <div :id="labelForId ?? undefined" class="credentials-input-wrapper">
       <InputField
-        v-if="!hideUsername"
+        v-if="showUsername"
         :placeholder="usernameLabel"
         :model-value="data.username"
         :disabled="disabled"
@@ -105,8 +121,8 @@ const onControllingFlowVariableSet = (value: Credentials) => {
         @update:model-value="onChangeUsername"
       />
       <InputField
-        v-if="!hidePassword"
-        :class="{ margin: !hideUsername }"
+        v-if="showPassword"
+        :class="{ margin: showUsername }"
         :placeholder="passwordLabel"
         :model-value="displayedPassword"
         :disabled="disabled"
@@ -115,7 +131,7 @@ const onControllingFlowVariableSet = (value: Credentials) => {
       />
       <InputField
         v-if="showSecondFactor"
-        :class="{ margin: !hideUsername || !hidePassword }"
+        :class="{ margin: showUsername || showPassword }"
         :placeholder="secondFactorLabel"
         :model-value="displayedSecondFactor"
         :disabled="disabled"

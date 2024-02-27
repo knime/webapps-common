@@ -44,64 +44,30 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 5, 2023 (Paul Bärnreuther): created
+ *   Feb 27, 2024 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.widget.credentials;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 
 /**
- * The widget annotation to customize the labels of a {@link Credentials} setting.
+ * Marker class used as ignored default only.
  *
  * @author Paul Bärnreuther
  */
-@Retention(RUNTIME)
-@Target(FIELD)
-public @interface CredentialsWidget {
+public final class NoopBooleanProvider implements StateProvider<Boolean> {
 
-    /**
-     * @return A label for the password input field.
-     */
-    String passwordLabel() default PasswordWidget.DEFAULT_PASSWORD_LABEL;
+    @Override
+    public void init(final StateProviderInitializer initializer) {
+        throw new IllegalStateException("This method should never be called");
 
-    /**
-     * Only to be used when the same credentials should be used both with and without a password depending on
-     * circumstances. When the credentials should never contain a password, use the {@link UsernameWidget} annotation
-     * instead.
-     *
-     * @return a provider for whether the password should be configurable
-     */
-    Class<? extends StateProvider<Boolean>> hasPasswordProvider() default NoopBooleanProvider.class;
+    }
 
-    /**
-     * @return A label for the password input field.
-     */
-    String usernameLabel() default UsernameWidget.DEFAULT_USERNAME_LABEL;
+    @Override
+    public Boolean computeState(final DefaultNodeSettingsContext context) {
+        throw new IllegalStateException("This method should never be called");
 
-    /**
-     * Only to be used when the same credentials should be used both with and without a username depending on
-     * circumstances. When the credentials should never contain a username, use the {@link PasswordWidget} annotation
-     * instead.
-     *
-     * @return a provider for whether the username should be configurable
-     */
-    Class<? extends StateProvider<Boolean>> hasUsernameProvider() default NoopBooleanProvider.class;
-
-    /**
-     * @return whether this widget should provide a second authentication factor input field.
-     */
-    boolean hasSecondAuthenticationFactor() default false;
-
-    /**
-     * @return the label for the second factor input field.
-     */
-    String secondFactorLabel() default PasswordWidget.DEFAULT_SECOND_FACTOR_LABEL;
+    }
 
 }

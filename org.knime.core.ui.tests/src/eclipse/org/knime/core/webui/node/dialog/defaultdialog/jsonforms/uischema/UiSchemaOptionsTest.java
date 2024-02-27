@@ -93,6 +93,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.Usernam
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DeclaringDefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonRef;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -739,6 +740,32 @@ class UiSchemaOptionsTest {
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("richTextContent");
     }
 
+    static final class MyHasPasswordProvider implements StateProvider<Boolean> {
+
+        @Override
+        public void init(final StateProviderInitializer initializer) {
+        }
+
+        @Override
+        public Boolean computeState(final DefaultNodeSettingsContext context) {
+            return true;
+        }
+
+    }
+
+    static final class MyHasUsernameProvider implements StateProvider<Boolean> {
+
+        @Override
+        public void init(final StateProviderInitializer initializer) {
+        }
+
+        @Override
+        public Boolean computeState(final DefaultNodeSettingsContext context) {
+            return true;
+        }
+
+    }
+
     @Test
     void testCredentials() {
         class CredentialsWidgetSettings implements DefaultNodeSettings {
@@ -761,6 +788,11 @@ class UiSchemaOptionsTest {
             @Widget
             @PasswordWidget(hasSecondAuthenticationFactor = true, secondFactorLabel = "mySecondFactorLabel")
             Credentials m_passwordWithSecondFactor;
+
+            @Widget()
+            @CredentialsWidget(hasPasswordProvider = MyHasPasswordProvider.class,
+                hasUsernameProvider = MyHasUsernameProvider.class)
+            Credentials m_withStateProviders;
         }
 
         var response = buildTestUiSchema(CredentialsWidgetSettings.class);
@@ -769,6 +801,7 @@ class UiSchemaOptionsTest {
         assertResponseUsername(response);
         assertResponseCredentialsWithSecondFactor(response);
         assertResponsePasswordWithSecondFactor(response);
+        assertResponseWithStateProviders(response);
     }
 
     private static void assertResponseCredentials(final ObjectNode response) {
@@ -817,6 +850,20 @@ class UiSchemaOptionsTest {
         assertThatJson(response).inPath("$.elements[4].options.hidePassword").isAbsent();
         assertThatJson(response).inPath("$.elements[4].options.showSecondFactor").isBoolean().isTrue();
         assertThatJson(response).inPath("$.elements[4].options.hideUsername").isBoolean().isTrue();
+    }
+
+    private static void assertResponseWithStateProviders(final ObjectNode response) {
+        assertThatJson(response).inPath("$.elements[5].scope").isString().contains("withStateProviders");
+        assertThatJson(response).inPath("$.elements[5].options.format").isString().isEqualTo("credentials");
+        assertThatJson(response).inPath("$.elements[5].options.secondFactorLabel").isAbsent();
+        assertThatJson(response).inPath("$.elements[5].options.hidePassword").isAbsent();
+        assertThatJson(response).inPath("$.elements[5].options.hideUsername").isAbsent();
+        assertThatJson(response).inPath("$.elements[5].options.showSecondFactor").isAbsent();
+        assertThatJson(response).inPath("$.elements[5].options.hasUsernameProvider").isString()
+            .isEqualTo(MyHasUsernameProvider.class.getName());
+        assertThatJson(response).inPath("$.elements[5].options.hasPasswordProvider").isString()
+            .isEqualTo(MyHasPasswordProvider.class.getName());
+
     }
 
     @Test
