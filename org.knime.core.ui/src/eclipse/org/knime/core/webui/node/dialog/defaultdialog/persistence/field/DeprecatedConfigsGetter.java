@@ -44,14 +44,23 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Dec 4, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
+ *   Feb 28, 2024 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 
 /**
- * Interface for the implementation of FieldPersistors that allows convenient implementation by an enum.
+ * Provides the capability to define deprecated config keys (see {@link DeprecatedConfigs}) for a field persistor.
  *
- * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
+ * @author Paul Bärnreuther
  */
-interface FieldPersistor<T> extends FieldLoader<T>, FieldSaver<T>, DeprecatedConfigsGetter {
+interface DeprecatedConfigsGetter {
+    /**
+     * @param configKey the config key used during save and load
+     * @return an array of all pairs of collections of deprecated and accociated new configs (see
+     *         {@link DeprecatedConfigs})
+     */
+    default DeprecatedConfigs[] getDeprecatedConfigs(final String configKey) {
+        return new DeprecatedConfigs[0];
+    }
+
 }

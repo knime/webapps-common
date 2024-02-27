@@ -61,9 +61,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPe
 final class DefaultFieldNodeSettingsPersistor<T> implements FieldNodeSettingsPersistor<T> {
     private final String m_configKey;
 
-    private final FieldPersistor m_impl;
+    private final FieldPersistor<T> m_impl;
 
-    DefaultFieldNodeSettingsPersistor(final String configKey, final FieldPersistor impl) {
+    DefaultFieldNodeSettingsPersistor(final String configKey, final FieldPersistor<T> impl) {
         m_impl = impl;
         m_configKey = configKey;
     }
@@ -82,4 +82,11 @@ final class DefaultFieldNodeSettingsPersistor<T> implements FieldNodeSettingsPer
     public String[] getConfigKeys() {
         return new String[]{m_configKey};
     }
+
+    @Override
+    public DeprecatedConfigs[] getDeprecatedConfigs() {
+        return m_impl.getDeprecatedConfigs(m_configKey);
+    }
+
+
 }

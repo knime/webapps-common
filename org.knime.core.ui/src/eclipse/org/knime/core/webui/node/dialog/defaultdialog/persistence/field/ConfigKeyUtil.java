@@ -49,6 +49,7 @@
 package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 
 import java.lang.reflect.Field;
+import java.util.Optional;
 
 import org.knime.core.node.defaultnodesettings.SettingsModel;
 
@@ -103,13 +104,23 @@ public final class ConfigKeyUtil {
         if (persist == null) {
             return new DeprecatedConfigs[]{};
         }
+        return extractCustomFieldNodeSettingsPersistor(field, persist)
+            .map(FieldNodeSettingsPersistor::getDeprecatedConfigs).orElse(new DeprecatedConfigs[]{});
+    }
+
+    private static Optional<FieldNodeSettingsPersistor<?>> extractCustomFieldNodeSettingsPersistor(final Field field,
+        final Persist persist) {
         final var customPersistor = persist.customPersistor();
-        if (customPersistor.equals(FieldNodeSettingsPersistor.class)) {
-            return new DeprecatedConfigs[]{};
-        }
         var configKey = getConfigKey(field);
-        return FieldNodeSettingsPersistor.createInstance(customPersistor, field.getType(), configKey)
-            .getDeprecatedConfigs();
+        if (!customPersistor.equals(FieldNodeSettingsPersistor.class)) {
+            return Optional.of(FieldNodeSettingsPersistor.createInstance(customPersistor, field.getType(), configKey));
+        }
+        final var settingsModelClass = persist.settingsModel();
+        if (!settingsModelClass.equals(SettingsModel.class)) {
+            return Optional.of(SettingsModelFieldNodeSettingsPersistorFactory.createPersistor(field.getType(),
+                settingsModelClass, configKey));
+        }
+        return Optional.empty();
     }
 
     /**

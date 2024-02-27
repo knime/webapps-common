@@ -48,6 +48,7 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -57,9 +58,9 @@ import org.junit.jupiter.api.Test;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.ConfigKeyUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistor;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
+import org.knime.core.node.defaultnodesettings.SettingsModelAuthentication;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DeprecatedConfigs.DeprecatedConfigsBuilder;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.AuthenticationSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
 /**
@@ -85,6 +86,13 @@ class ConfigKeyUtilTest {
         public String[] getConfigKeys() {
             return new String[]{"custom_key0", "custom_key1"};
         }
+
+        @Override
+        public DeprecatedConfigs[] getDeprecatedConfigs() {
+            return new DeprecatedConfigs[]{new DeprecatedConfigsBuilder().forNewConfigPath("custom_key0")
+                .forDeprecatedConfigPath("old_config_key").build()};
+        }
+
     }
 
     private static class Settings {
@@ -110,6 +118,9 @@ class ConfigKeyUtilTest {
         @Persist(customPersistor = CustomPersistor.class)
         @Widget
         int setting5;
+
+        @Persist(settingsModel = SettingsModelAuthentication.class)
+        AuthenticationSettings setting6;
     }
 
     @Test
@@ -167,8 +178,25 @@ class ConfigKeyUtilTest {
             "configKeys should come from the custom persistor");
     }
 
+    @Test
+    void testDeprecatedConfigKeysFromCustomPersistor() throws NoSuchFieldException {
+        final var deprecatedConfigKeys = deprecatedConfigKeysFor("setting5");
+        assertArrayEquals(new String[] {"custom_key0"}, deprecatedConfigKeys[0].getNewConfigPaths()[0], "newConfigPaths of deprecatedConfigs should be set from custom persistor");
+        assertArrayEquals(new String[] {"old_config_key"}, deprecatedConfigKeys[0].getDeprecatedConfigPaths()[0], "deprecatedConfigPaths of deprecatedConfigs should be set from custom persistor");
+    }
+
+    @Test
+    void testDeprecatedConfigKeysFromSettingsModelPersistor() throws NoSuchFieldException {
+        final var deprecatedConfigKeys = deprecatedConfigKeysFor("setting6");
+        assertThat(deprecatedConfigKeys).hasSize(2);
+    }
+
     private static String[] usedConfigKeysFor(final String fieldName) throws NoSuchFieldException {
         return ConfigKeyUtil.getConfigKeysUsedByField(getField(fieldName));
+    }
+
+    private static DeprecatedConfigs[] deprecatedConfigKeysFor(final String fieldName) throws NoSuchFieldException {
+        return ConfigKeyUtil.getDeprecatedConfigsUsedByField(getField(fieldName));
     }
 
     private static Field getField(final String fieldName) throws NoSuchFieldException {

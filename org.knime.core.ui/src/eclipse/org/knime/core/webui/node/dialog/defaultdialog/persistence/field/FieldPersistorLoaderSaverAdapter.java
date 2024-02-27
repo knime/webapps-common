@@ -44,14 +44,32 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Dec 4, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
+ *   Feb 28, 2024 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 
-/**
- * Interface for the implementation of FieldPersistors that allows convenient implementation by an enum.
- *
- * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
- */
-interface FieldPersistor<T> extends FieldLoader<T>, FieldSaver<T>, DeprecatedConfigsGetter {
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+
+final class FieldPersistorLoaderSaverAdapter<T> implements FieldPersistor<T> {
+    private final FieldLoader<T> m_loader;
+
+    private final FieldSaver<T> m_saver;
+
+    FieldPersistorLoaderSaverAdapter(final FieldLoader<T> loader, final FieldSaver<T> saver) {
+        m_loader = loader;
+        m_saver = saver;
+    }
+
+    @Override
+    public T load(final NodeSettingsRO settings, final String configKey) throws InvalidSettingsException {
+        return m_loader.load(settings, configKey);
+    }
+
+    @Override
+    public void save(final T obj, final NodeSettingsWO settings, final String configKey) {
+        m_saver.save(obj, settings, configKey);
+    }
+
 }

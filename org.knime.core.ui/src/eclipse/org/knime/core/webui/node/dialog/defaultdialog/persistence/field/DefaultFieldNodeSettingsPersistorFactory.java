@@ -54,7 +54,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.knime.core.node.InvalidSettingsException;
@@ -72,8 +71,8 @@ import org.knime.filehandling.core.connections.FSLocation;
  */
 final class DefaultFieldNodeSettingsPersistorFactory {
 
-    private static final Map<Class<?>, PersistorImpl> IMPL_MAP = Stream.of(PersistorImpl.values())//
-        .collect(toMap(PersistorImpl::getFieldType, Function.identity()));
+    private static final Map<Class<?>, FieldPersistor<?>> IMPL_MAP = Stream.of(PersistorImpl.values())//
+        .collect(toMap(PersistorImpl::getFieldType, PersistorImpl::getFieldPersistor));
 
     /**
      * Creates a persistor for the provided type that uses the configKey to store and retrieve the value.
@@ -85,13 +84,14 @@ final class DefaultFieldNodeSettingsPersistorFactory {
      * @throws IllegalArgumentException if there is no persistor available for the provided fieldType
      */
     public static <T> NodeSettingsPersistor<T> createPersistor(final Class<T> fieldType, final String configKey) {
-        var impl = IMPL_MAP.get(fieldType);
+        @SuppressWarnings("unchecked") // Type-save since IMPL_MAP maps Class<T> to FieldPersistor<T>
+        var impl = (FieldPersistor<T>) IMPL_MAP.get(fieldType);
         return createPersistorFromImpl(fieldType, configKey, impl);
     }
 
     @SuppressWarnings("unchecked")
     private static <T> NodeSettingsPersistor<T> createPersistorFromImpl(final Class<T> fieldType,
-        final String configKey, final FieldPersistor impl) {
+        final String configKey, final FieldPersistor<T> impl) {
         if (impl != null) {
             return new DefaultFieldNodeSettingsPersistor<>(configKey, impl);
         } else if (fieldType.isEnum()) {
@@ -114,9 +114,9 @@ final class DefaultFieldNodeSettingsPersistorFactory {
      *
      * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
      */
-    private enum PersistorImpl implements FieldPersistor {
+    private enum PersistorImpl {
             VOID(Void.class, (s, k) -> null, (v, s, k) -> {
-            }),//
+            }), //
             INT(int.class, ConfigBaseRO::getInt, (v, s, k) -> s.addInt(k, v)),
             DOUBLE(double.class, ConfigBaseRO::getDouble, (v, s, k) -> s.addDouble(k, v)),
             LONG(long.class, ConfigBaseRO::getLong, (v, s, k) -> s.addLong(k, v)),
@@ -134,33 +134,21 @@ final class DefaultFieldNodeSettingsPersistorFactory {
             CHAR_ARRAY(char[].class, ConfigBaseRO::getCharArray, (v, s, k) -> s.addCharArray(k, v)),
             BYTE_ARRAY(byte[].class, ConfigBaseRO::getByteArray, (v, s, k) -> s.addByteArray(k, v));
 
-        private Class<?> m_type;
+        private final Class<?> m_type;
 
-        private FieldLoader<?> m_loader;
-
-        private FieldSaver<?> m_saver;
+        private final FieldPersistor<?> m_fieldPersistor;
 
         <T> PersistorImpl(final Class<T> type, final FieldLoader<T> loader, final FieldSaver<T> saver) {
             m_type = type;
-            m_loader = loader;
-            m_saver = saver;
+            m_fieldPersistor = new FieldPersistorLoaderSaverAdapter<>(loader, saver);
         }
 
         Class<?> getFieldType() {
             return m_type;
         }
 
-        @Override
-        @SuppressWarnings("unchecked")
-        public <T> T load(final NodeSettingsRO settings, final String configKey) throws InvalidSettingsException {
-            return (T)m_loader.load(settings, configKey);
-        }
-
-        @Override
-        public <T> void save(final T obj, final NodeSettingsWO settings, final String configKey) {
-            @SuppressWarnings("unchecked") // type-safety is ensured via the constructor
-            var saver = (FieldSaver<T>)m_saver;
-            saver.save(obj, settings, configKey);
+        FieldPersistor<?> getFieldPersistor() {
+            return m_fieldPersistor;
         }
 
     }

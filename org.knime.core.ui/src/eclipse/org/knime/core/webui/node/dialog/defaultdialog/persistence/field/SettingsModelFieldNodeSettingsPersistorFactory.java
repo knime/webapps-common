@@ -52,6 +52,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
+import org.knime.core.node.defaultnodesettings.SettingsModelAuthentication;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelColumnFilter2;
 import org.knime.core.node.defaultnodesettings.SettingsModelColumnName;
@@ -59,9 +60,9 @@ import org.knime.core.node.defaultnodesettings.SettingsModelDouble;
 import org.knime.core.node.defaultnodesettings.SettingsModelInteger;
 import org.knime.core.node.defaultnodesettings.SettingsModelLong;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.LegacyColumnFilterPersistor;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.LegacyCredentials;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FileChooser;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.LegacyReaderFilerChooserPersistor;
 import org.knime.filehandling.core.defaultnodesettings.filechooser.reader.SettingsModelReaderFileChooser;
@@ -76,12 +77,13 @@ import com.google.common.collect.Table;
  */
 final class SettingsModelFieldNodeSettingsPersistorFactory {
 
-    private static final Table<Class<?>, Class<? extends SettingsModel>, FieldPersistor> IMPL_TABLE = createImplTable();
+    private static final Table<Class<?>, Class<? extends SettingsModel>, FieldPersistor<?>> IMPL_TABLE =
+        createImplTable();
 
-    private static Table<Class<?>, Class<? extends SettingsModel>, FieldPersistor> createImplTable() {
-        Table<Class<?>, Class<? extends SettingsModel>, FieldPersistor> table = HashBasedTable.create();
+    private static Table<Class<?>, Class<? extends SettingsModel>, FieldPersistor<?>> createImplTable() {
+        Table<Class<?>, Class<? extends SettingsModel>, FieldPersistor<?>> table = HashBasedTable.create();
         for (var value : SettingsModelFieldPersistor.values()) {
-            table.put(value.getFieldType(), value.getSettingsModelType(), value);
+            table.put(value.getFieldType(), value.getSettingsModelType(), value.getFieldPersistor());
         }
         return table;
     }
@@ -95,13 +97,14 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
      * @throws IllegalArgumentException if there is no persistor available for the fieldType-settingsModelType
      *             combination
      */
-    public static <T> NodeSettingsPersistor<T> createPersistor(final Class<T> fieldType,
+    @SuppressWarnings("unchecked") // type-save because IMPL_TABLE maps Class<T>, ... to FieldPersistor<T>
+    public static <T> FieldNodeSettingsPersistor<T> createPersistor(final Class<T> fieldType,
         final Class<? extends SettingsModel> settingsModelType, final String configKey) {
         if (fieldType.isEnum() && settingsModelType.equals(SettingsModelString.class)) {
             return createEnumPersistor(fieldType, configKey);
         } else if (IMPL_TABLE.contains(fieldType, settingsModelType)) {
             var impl = IMPL_TABLE.get(fieldType, settingsModelType);
-            return new DefaultFieldNodeSettingsPersistor<>(configKey, impl);
+            return new DefaultFieldNodeSettingsPersistor<>(configKey, (FieldPersistor<T>)impl);
         }
         throw new IllegalArgumentException(
             String.format("There is no persistor registered for the type '%s' and the SettingModel type '%s'.",
@@ -109,11 +112,12 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static <T> NodeSettingsPersistor<T> createEnumPersistor(final Class<T> fieldType, final String configKey) {
+    private static <T> FieldNodeSettingsPersistor<T> createEnumPersistor(final Class<T> fieldType,
+        final String configKey) {
         return new EnumSettingsModelStringPersistor<>((Class)fieldType, configKey);
     }
 
-    private enum SettingsModelFieldPersistor implements FieldPersistor {
+    private enum SettingsModelFieldPersistor {
             INT(int.class, SettingsModelInteger.class, SettingsModelFieldPersistor::loadInt,
                 SettingsModelFieldPersistor::saveInt),
             STRING(String.class, SettingsModelString.class, SettingsModelFieldPersistor::loadString,
@@ -137,30 +141,23 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
 
         private final Class<? extends SettingsModel> m_settingsModelType;
 
-        private final FieldLoader<?> m_loader;
-
-        private final FieldSaver<?> m_saver;
+        private final FieldPersistor<?> m_fieldPersistor;
 
         <T> SettingsModelFieldPersistor(final Class<T> fieldType,
             final Class<? extends SettingsModel> settingsModelType, final FieldLoader<T> loader,
             final FieldSaver<T> saver) {
             m_fieldType = fieldType;
             m_settingsModelType = settingsModelType;
-            m_loader = loader;
-            m_saver = saver;
+            m_fieldPersistor = new FieldPersistorLoaderSaverAdapter<>(loader, saver);
         }
 
-        @SuppressWarnings("unchecked") // type-safety is ensured by createPersistor
-        @Override
-        public <T> T load(final NodeSettingsRO settings, final String configKey) throws InvalidSettingsException {
-            return (T)m_loader.load(settings, configKey);
-        }
-
-        @Override
-        public <T> void save(final T obj, final NodeSettingsWO settings, final String configKey) {
-            @SuppressWarnings("unchecked") // type-safety is ensured by createPersistor
-            var saver = (FieldSaver<T>)m_saver;
-            saver.save(obj, settings, configKey);
+        <T> SettingsModelFieldPersistor(final Class<T> fieldType,
+            final Class<? extends SettingsModel> settingsModelType,
+            final Class<? extends FieldNodeSettingsPersistor<T>> fieldNodeSettingsPersistorClass) {
+            m_fieldType = fieldType;
+            m_settingsModelType = settingsModelType;
+            m_fieldPersistor =
+                new FieldPersistorNodeSettingsPersistorAdapter<>(fieldNodeSettingsPersistorClass, fieldType);
         }
 
         Class<?> getFieldType() {
@@ -169,6 +166,10 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
 
         Class<? extends SettingsModel> getSettingsModelType() {
             return m_settingsModelType;
+        }
+
+        FieldPersistor<?> getFieldPersistor() {
+            return m_fieldPersistor;
         }
 
         private static int loadInt(final NodeSettingsRO settings, final String configKey)
@@ -241,14 +242,50 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
 
     }
 
-    private static final class EnumSettingsModelStringPersistor<E extends Enum<E>> implements NodeSettingsPersistor<E> {
+    static final class FieldPersistorNodeSettingsPersistorAdapter<T> implements FieldPersistor<T> {
+        private final Class<? extends FieldNodeSettingsPersistor<T>> m_persistorClass;
+
+        private final Class<T> m_fieldType;
+
+        FieldPersistorNodeSettingsPersistorAdapter(final Class<? extends FieldNodeSettingsPersistor<T>> persistor,
+            final Class<T> fieldType) {
+            m_persistorClass = persistor;
+            m_fieldType = fieldType;
+        }
+
+        FieldNodeSettingsPersistor<T> createPersistorInstance(final String configKey) {
+            return FieldNodeSettingsPersistor.createInstance(m_persistorClass, m_fieldType, configKey);
+        }
+
+        @Override
+        public T load(final NodeSettingsRO settings, final String configKey) throws InvalidSettingsException {
+            return createPersistorInstance(configKey).load(settings);
+        }
+
+        @Override
+        public void save(final T obj, final NodeSettingsWO settings, final String configKey) {
+            createPersistorInstance(configKey).save(obj, settings);
+        }
+
+        @Override
+        public DeprecatedConfigs[] getDeprecatedConfigs(final String configKey) {
+            return createPersistorInstance(configKey).getDeprecatedConfigs();
+        }
+
+    }
+
+    private static final class EnumSettingsModelStringPersistor<E extends Enum<E>>
+        implements FieldNodeSettingsPersistor<E> {
 
         private final Class<E> m_enumType;
 
         private final SettingsModelString m_model;
 
+        private final String m_configKey;
+
         EnumSettingsModelStringPersistor(final Class<E> enumType, final String configKey) {
             m_enumType = enumType;
+            m_configKey = configKey;
             m_model = new SettingsModelString(configKey, "");
         }
 
@@ -263,6 +300,11 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
             m_model.loadSettingsFrom(settings);
             var name = m_model.getStringValue();
             return name != null ? Enum.valueOf(m_enumType, name) : null;
+        }
+
+        @Override
+        public String[] getConfigKeys() {
+            return new String[]{m_configKey};
         }
 
     }
