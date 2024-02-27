@@ -62,7 +62,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelLong;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.LegacyColumnFilterPersistor;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.LegacyCredentials;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.AuthenticationSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FileChooser;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.LegacyReaderFilerChooserPersistor;
 import org.knime.filehandling.core.defaultnodesettings.filechooser.reader.SettingsModelReaderFileChooser;
@@ -133,7 +133,9 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
             COLUMN_FILTER2(ColumnFilter.class, SettingsModelColumnFilter2.class, LegacyColumnFilterPersistor::load,
                 LegacyColumnFilterPersistor::save),
             READER_FILE_CHOOSER(FileChooser.class, SettingsModelReaderFileChooser.class,
-                LegacyReaderFilerChooserPersistor::load, LegacyReaderFilerChooserPersistor::save);
+                LegacyReaderFilerChooserPersistor::load, LegacyReaderFilerChooserPersistor::save),
+            AUTHENTICATION(AuthenticationSettings.class, SettingsModelAuthentication.class,
+                AuthenticationSettings.SettingsModelAuthenticationPersistor.class);
 
         private static final String ROW_KEYS_PLACEHOLDER = "<row-keys>";
 

@@ -149,15 +149,11 @@ public final class Credentials {
         if (this == obj) {
             return true;
         }
-        if (obj == null) {
-            return false;
+        if (obj instanceof Credentials other) {
+            return Objects.equals(m_username, other.m_username) && Objects.equals(m_password, other.m_password)
+                    && Objects.equals(m_secondFactor, other.m_secondFactor);
         }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final var other = (Credentials)obj;
-        return Objects.equals(m_username, other.m_username) && Objects.equals(m_password, other.m_password)
-            && Objects.equals(m_secondFactor, other.m_secondFactor);
+        return false;
     }
 
     @Override

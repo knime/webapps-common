@@ -48,21 +48,30 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.function.BiConsumer;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
+import org.knime.core.node.defaultnodesettings.SettingsModelAuthentication;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelDouble;
 import org.knime.core.node.defaultnodesettings.SettingsModelInteger;
 import org.knime.core.node.defaultnodesettings.SettingsModelLong;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.AuthenticationSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.AuthenticationSettings.AuthenticationType;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 
 /**
  *
@@ -83,6 +92,36 @@ class SettingsModelFieldNodeSettingsPersistorFactoryTest {
     void testEnumSettingsModelString() throws Exception {
         testSaveLoad(TestEnum.class, SettingsModelString.class, TestEnum.B);
         testSaveLoad(TestEnum.class, SettingsModelString.class, null);
+    }
+
+    @Test
+    void testSettingsModelAuthenticationSaveLoad() throws Exception {
+        testSaveLoad(AuthenticationSettings.class, SettingsModelAuthentication.class, new AuthenticationSettings());
+        testSaveLoad(AuthenticationSettings.class, SettingsModelAuthentication.class, new AuthenticationSettings(
+            AuthenticationSettings.AuthenticationType.USER_PWD, new Credentials("myUsername", "myPassword")));
+    }
+
+    static Stream<Arguments> settingsModelAuthenticationLoadSource() {
+        return Stream.of( //
+            Arguments.of(SettingsModelAuthentication.AuthenticationType.PWD, AuthenticationType.PWD, "password", ""), //
+            Arguments.of(SettingsModelAuthentication.AuthenticationType.USER_PWD, AuthenticationType.USER_PWD,
+                "password", "username"), //
+            Arguments.of(SettingsModelAuthentication.AuthenticationType.USER, AuthenticationType.USER, "", "username"), //
+            Arguments.of(SettingsModelAuthentication.AuthenticationType.NONE, AuthenticationType.NONE, "", ""), //
+            Arguments.of(SettingsModelAuthentication.AuthenticationType.KERBEROS, AuthenticationType.KERBEROS, "", ""));
+    }
+
+    @ParameterizedTest
+    @MethodSource("settingsModelAuthenticationLoadSource")
+    void testSettingsModelAuthenticationLoadLegacy(final SettingsModelAuthentication.AuthenticationType oldType,
+        final AuthenticationType newType, final String password, final String username)
+        throws InvalidSettingsException {
+        final var persistor = createPersistor(AuthenticationSettings.class, SettingsModelAuthentication.class);
+        final var savedSettings = new NodeSettings("node_settings");
+        new SettingsModelAuthentication(CFG_KEY, oldType, username, password, null).saveSettingsTo(savedSettings);
+        var loaded = persistor.load(savedSettings);
+        final var expected = new AuthenticationSettings(newType, new Credentials(username, password));
+        assertEquals(expected, loaded);
     }
 
     @Test
