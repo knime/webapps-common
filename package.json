@@ -59,7 +59,7 @@
     "dist"
   ],
   "engines": {
-    "node": "18.x"
+    "node": "18.x - 20.x"
   },
   "volta": {
     "node": "18.10.0"
