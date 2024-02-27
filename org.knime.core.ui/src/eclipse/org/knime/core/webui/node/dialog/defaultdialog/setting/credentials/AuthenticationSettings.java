@@ -48,12 +48,15 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.setting.credentials;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelAuthentication;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
@@ -62,6 +65,17 @@ import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Deprecat
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DeprecatedConfigs.DeprecatedConfigsBuilder;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldBasedNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect.EffectType;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.OneOfEnumCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.AuthenticationSettings.AuthenticationType.RequiresCredentialsCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.CredentialsWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
 
 /**
  * A switch on the type of authentication that is to be used plus a {@link Credentials} widget that is shown
@@ -69,7 +83,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
  *
  * @author Paul Bärnreuther
  */
-public class AuthenticationSettings implements WidgetGroup, PersistableSettings {
+public final class AuthenticationSettings implements WidgetGroup, PersistableSettings {
 
     /**
      * The types of authentications
@@ -78,33 +92,86 @@ public class AuthenticationSettings implements WidgetGroup, PersistableSettings 
      */
     public enum AuthenticationType {
             /** No authentication required. */
+            @Label(value = "None", description = "No authentication is required.")
             NONE,
             /** Authentication with username. */
+            @Label(value = "Username", description = "Username-based authentication. No password required.")
             USER,
             /** Authentication with username and password. */
+            @Label(value = "Username and Password", description = "Username and password based authentication.")
             USER_PWD,
             /** Authentication with password. */
+            @Label(value = "Password", description = "Password based authentication. No username required.")
             PWD,
             /** Authentication with kerberos. */
+            @Label(value = "Kerberos", description = "Kerberos ticket based authentication")
             KERBEROS;
 
-        private final boolean m_requiresCredentials;
-
-        AuthenticationType() {
-            this(false);
+        boolean requiresUsername() {
+            return List.of(USER, USER_PWD).contains(this);
         }
 
-        AuthenticationType(final boolean requiredCredentials) {
-            m_requiresCredentials = requiredCredentials;
+        boolean requiresPassword() {
+            return List.of(PWD, USER_PWD).contains(this);
         }
 
-        boolean requiresCredentials() {
-            return m_requiresCredentials;
+        static final AuthenticationType[] REQUIRE_CREDENTIALS = new AuthenticationType[]{USER_PWD, PWD, USER};
+
+        static class RequiresCredentialsCondition extends OneOfEnumCondition<AuthenticationType> {
+
+            @Override
+            public AuthenticationType[] oneOf() {
+                return REQUIRE_CREDENTIALS;
+            }
+
         }
+
     }
 
+    static final class AuthenticationTypeRef implements ValueRef<AuthenticationType> {
+
+    }
+
+    @Widget(valueRef = AuthenticationTypeRef.class, title = "Authentication type",
+        description = "The type of the used authentication.")
+    @RadioButtonsWidget(horizontal = true)
+    @Signal(condition = AuthenticationType.RequiresCredentialsCondition.class)
     final AuthenticationType m_type;
 
+    abstract static class AuthenticationTypeDependentProvider implements StateProvider<Boolean> {
+
+        protected Supplier<AuthenticationType> m_typeSupplier;
+
+        @Override
+        public void init(final StateProviderInitializer initializer) {
+            initializer.computeBeforeOpenDiaog();
+            m_typeSupplier = initializer.computeFromValueSupplier(AuthenticationTypeRef.class);
+        }
+
+    }
+
+    static final class RequiresUsernameProvider extends AuthenticationTypeDependentProvider {
+
+        @Override
+        public Boolean computeState(final DefaultNodeSettingsContext context) {
+            return m_typeSupplier.get().requiresUsername();
+        }
+
+    }
+
+    static final class RequiresPasswordProvider extends AuthenticationTypeDependentProvider {
+
+        @Override
+        public Boolean computeState(final DefaultNodeSettingsContext context) {
+            return m_typeSupplier.get().requiresPassword();
+        }
+
+    }
+
+    @Widget(title = "Credentials", description = "The credentials used for the authentication.")
+    @Effect(signals = RequiresCredentialsCondition.class, type = EffectType.SHOW)
+    @CredentialsWidget(hasPasswordProvider = RequiresPasswordProvider.class,
+        hasUsernameProvider = RequiresUsernameProvider.class)
     final Credentials m_credentials;
 
     /**
