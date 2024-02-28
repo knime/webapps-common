@@ -15,6 +15,7 @@ export const inputFormats = {
   simpleButton: "simpleButton",
   textArea: "textArea",
   credentials: "credentials",
+  legacyCredentials: "legacyCredentials",
   localFileChooser: "localFileChooser",
   fileChooser: "fileChooser",
 };

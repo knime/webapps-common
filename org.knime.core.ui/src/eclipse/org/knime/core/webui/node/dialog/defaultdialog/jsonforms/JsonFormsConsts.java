@@ -235,6 +235,8 @@ public final class JsonFormsConsts {
             public static final String FILE_CHOOSER = "fileChooser";
 
             public static final String CREDENTIALS = "credentials";
+
+            public static final String LEGACY_CREDENTIALS = "legacyCredentials";
         }
 
         /**
