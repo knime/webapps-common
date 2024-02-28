@@ -3,6 +3,7 @@ import useDialogControl from "@/nodeDialog/composables/components/useDialogContr
 import { rendererProps } from "@jsonforms/vue";
 import CredentialsInputBase from "./CredentialsInputBase.vue";
 import type Credentials from "./types/Credentials";
+import LegacyFlowVariableHandler from "./LegacyFlowVariableHandler.vue";
 
 interface LegacyCredentials {
   credentials: Credentials;
@@ -19,6 +20,10 @@ const { control, handleDirtyChange, disabled, flowSettings } =
 const onChange = (credentials: Credentials) => {
   handleDirtyChange({ credentials, flowVarName: null });
 };
+
+const onLegacyFlowVariableSet = (flowVariableValue?: Credentials) => {
+  onChange(flowVariableValue ?? control.value.data.credentials);
+};
 </script>
 
 <template>
@@ -28,5 +33,9 @@ const onChange = (credentials: Credentials) => {
     :flow-settings="flowSettings"
     :disabled="disabled"
     @change="onChange"
+  />
+  <LegacyFlowVariableHandler
+    :flow-variable-name="control.data.flowVarName"
+    @flow-variable-set="onLegacyFlowVariableSet"
   />
 </template>

@@ -67,6 +67,58 @@ describe("CredentialsInput.vue", () => {
     vi.clearAllMocks();
   });
 
+  it("sets legacy flow variable on mounted", async () => {
+    const flowVarName = "myFlowVar";
+    const flowVarValue = {
+      username: "flowVarUsername",
+      password: "flowVarPassword",
+    };
+    const flowVariablesApiMock = {
+      getFlowVariableOverrideValue: vi.fn().mockReturnValue(flowVarValue),
+    };
+    props.control.data.flowVarName = flowVarName;
+    const { flowVariablesMap, updateData } = mountJsonFormsComponent(
+      LegacyCredentialsInput,
+      { props, provide: { flowVariablesApiMock } },
+    );
+    expect(flowVariablesMap[`${props.control.path}.credentials`]).toStrictEqual(
+      {
+        controllingFlowVariableAvailable: true,
+        controllingFlowVariableName: flowVarName,
+      },
+    );
+    await flushPromises();
+    expect(updateData).toHaveBeenCalledWith(
+      expect.anything(),
+      props.control.path,
+      { credentials: flowVarValue, flowVarName: null },
+    );
+  });
+
+  it("sets legacy flow variable on mounted which is not available", async () => {
+    const flowVarName = "myFlowVar";
+    const flowVariablesApiMock = {
+      getFlowVariableOverrideValue: vi.fn(),
+    };
+    props.control.data.flowVarName = flowVarName;
+    const { flowVariablesMap, updateData } = mountJsonFormsComponent(
+      LegacyCredentialsInput,
+      { props, provide: { flowVariablesApiMock } },
+    );
+    expect(flowVariablesMap[`${props.control.path}.credentials`]).toStrictEqual(
+      {
+        controllingFlowVariableAvailable: true,
+        controllingFlowVariableName: flowVarName,
+      },
+    );
+    await flushPromises();
+    expect(updateData).toHaveBeenCalledWith(
+      expect.anything(),
+      props.control.path,
+      { credentials: props.control.data.credentials, flowVarName: null },
+    );
+  });
+
   it("renders", () => {
     expect(wrapper.getComponent(LegacyCredentialsInput).exists()).toBeTruthy();
     expect(wrapper.findComponent(LabeledInput).exists()).toBeTruthy();
