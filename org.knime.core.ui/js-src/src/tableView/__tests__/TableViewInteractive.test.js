@@ -307,6 +307,7 @@ describe("TableViewInteractive.vue", () => {
           currentPage: 1,
           columnCount: 4,
           showTableSize: true,
+          showPageControls: true,
         },
         searchConfig: {
           searchQuery: "",

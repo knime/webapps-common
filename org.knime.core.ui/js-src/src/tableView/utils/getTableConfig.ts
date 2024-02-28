@@ -15,7 +15,7 @@ const getPageConfig = (
     totalRowCount,
     currentPage,
     columnCount,
-    showPageControls,
+    showPageControls = true,
   } = pageParams;
 
   return {

@@ -102,7 +102,8 @@ describe("TableViewReport.vue", () => {
       page: {
         columnCount: 0,
         currentPage: 1,
-        currentRowCount: 2,
+        currentRowCount: 1000,
+        showPageControls: false,
       },
       header: expect.objectContaining({
         columnDataTypeIds: initialDataMock.table.columnDataTypeIds,
@@ -170,7 +171,8 @@ describe("TableViewReport.vue", () => {
       page: {
         columnCount,
         currentPage: 1,
-        currentRowCount: 3,
+        currentRowCount: 0,
+        showPageControls: false,
       },
     });
   });
