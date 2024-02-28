@@ -47,6 +47,7 @@
 package org.knime.core.webui.node.dialog.defaultdialog.widget.choices;
 
 import org.knime.core.data.DataType;
+import org.knime.core.data.def.LongCell;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 
@@ -65,7 +66,7 @@ public enum SpecialColumns {
         /**
          * Option for treating row numbers of a table similar to all other columns
          */
-        ROW_NUMBERS("<row-numbers>", StringCell.TYPE);
+        ROW_NUMBERS("<row-numbers>", LongCell.TYPE);
 
     private final String m_id;
 
