@@ -198,23 +198,28 @@ public final class AuthenticationSettings implements WidgetGroup, PersistableSet
      */
     public static final class SettingsModelAuthenticationPersistor
         extends NodeSettingsPersistorWithConfigKey<AuthenticationSettings> {
-
+        /**
+         * The name of a field in {@link AuthenticationSettings}
+         */
         private static final String KEY_TYPE = "type";
 
+        /**
+         * The name of a field in {@link AuthenticationSettings}
+         */
         private static final String KEY_CREDENTIALS = "credentials";
 
-        private static final String SETTINGS_MODEL_KEY_TYPE = "settingsType";
+        static final String SETTINGS_MODEL_KEY_TYPE = "settingsType";
 
-        private static final String SETTINGS_MODEL_KEY_CREDENTIAL = "credentials";
+        static final String SETTINGS_MODEL_KEY_CREDENTIAL = "credentials";
 
-        private static final String SETTINGS_MODEL_KEY_PASSWORD = "password";
+        static final String SETTINGS_MODEL_KEY_PASSWORD = "password";
 
-        private static final String SETTINGS_MODEL_KEY_USERNAME = "username";
+        static final String SETTINGS_MODEL_KEY_USERNAME = "username";
 
         /**
          * This method should never be called with {@link SettingsModelAuthentication.AuthenticationType#CREDENTIALS}.
          *
-         * If it is, this probably means that {@link TODO: UIEXT-1712} are to be used here instead of
+         * If it is, this probably means that {@link LegacyAuthenticationSettings} are to be used here instead of
          * {@link AuthenticationSettings}.
          *
          * @throws InvalidSettingsException
@@ -243,10 +248,19 @@ public final class AuthenticationSettings implements WidgetGroup, PersistableSet
 
         @Override
         public AuthenticationSettings load(final NodeSettingsRO settings) throws InvalidSettingsException {
-            if (settings.getNodeSettings(getConfigKey()).containsKey(KEY_TYPE)) {
-                return m_defaultPersistor.load(settings.getNodeSettings(getConfigKey()));
+            if (isSavedWithNewConfigKeys(settings)) {
+                return loadFromNewConfigKeys(settings);
             }
             return loadFromModel(loadModelFromSettings(settings));
+        }
+
+        AuthenticationSettings loadFromNewConfigKeys(final NodeSettingsRO settings)
+            throws InvalidSettingsException {
+            return m_defaultPersistor.load(settings.getNodeSettings(getConfigKey()));
+        }
+
+        boolean isSavedWithNewConfigKeys(final NodeSettingsRO settings) throws InvalidSettingsException {
+            return settings.getNodeSettings(getConfigKey()).containsKey(KEY_TYPE);
         }
 
         SettingsModelAuthentication loadModelFromSettings(final NodeSettingsRO settings)
@@ -263,7 +277,7 @@ public final class AuthenticationSettings implements WidgetGroup, PersistableSet
             return new AuthenticationSettings(type, toCredentials(model));
         }
 
-        private static Credentials toCredentials(final SettingsModelAuthentication model) {
+        static Credentials toCredentials(final SettingsModelAuthentication model) {
             return new Credentials(model.getUsername(), model.getPassword());
         }
 

@@ -42,42 +42,51 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
+ *
+ * History
+ *   Feb 28, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.persistence;
+package org.knime.core.webui.node.dialog.defaultdialog.setting.credentials;
 
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistor;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
+import org.knime.core.node.util.CheckUtils;
+import org.knime.core.node.workflow.CredentialsProvider;
 
 /**
- * Extend this persistor in order to write custom persistors which need to access the configKey of a field during save
- * or load. See {@link Persist}
+ * Wrapper around {@link Credentials} to help support
+ * {@link org.knime.core.node.defaultnodesettings.SettingsModelAuthentication.AuthenticationType#CREDENTIALS legacy
+ * "Credentials" option}
  *
  * @author Paul Bärnreuther
- * @param <T> type of object loaded by the persistor
  */
-public abstract class NodeSettingsPersistorWithConfigKey<T> implements FieldNodeSettingsPersistor<T> {
+public final class LegacyCredentials {
 
-    private String m_configKey;
+    private final Credentials m_credentials;
 
-    /**
-     * @return the configKey. Note that this method yields null when run from the constructor, as the setter method
-     *         below is called afterwards.
-     */
-    protected String getConfigKey() {
-        return m_configKey;
+    private final String m_flowVarName;
+
+    LegacyCredentials(final Credentials credentials) {
+        this(credentials, null);
     }
 
-    /**
-     * Sets the config key for this persistor. Is only ever called once, directly after initialization.
-     *
-     * @param configKey the configKey to set
-     */
-    public void setConfigKey(final String configKey) {
-        m_configKey = configKey;
+    LegacyCredentials(final Credentials credentials, final String flowVarName) {
+        m_credentials = credentials;
+        m_flowVarName = flowVarName;
     }
 
-    @Override
-    public String[] getConfigKeys() {
-        return new String[]{m_configKey};
+    Credentials toCredentials(final CredentialsProvider provider) {
+        if (m_flowVarName != null) {
+            final var flowVarValue = provider.get(m_flowVarName);
+            final var secondFactor = flowVarValue.getSecondAuthenticationFactor();
+            return secondFactor.isPresent()
+                ? new Credentials(flowVarValue.getLogin(), flowVarValue.getPassword(), secondFactor.get())
+                : new Credentials(flowVarValue.getLogin(), flowVarValue.getPassword());
+        }
+        return m_credentials;
+    }
+
+    Credentials toCredentials() {
+        CheckUtils.check(m_flowVarName == null, IllegalStateException::new,
+            () -> "Loading credentials from legacy credentials is only permitted if no flow variable is set.");
+        return m_credentials;
     }
 }
