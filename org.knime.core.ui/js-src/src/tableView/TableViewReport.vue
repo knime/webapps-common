@@ -95,8 +95,9 @@ watch(ready, () => ready.value && emit("rendered"));
       columnNamesColors: table?.columnNamesColors || null,
     }"
     :page="{
-      currentRowCount: table?.rows.length || 0,
+      currentRowCount: table?.rowCount || 0,
       currentPage: 1,
+      showPageControls: false,
       columnCount: table?.columnCount || 0,
     }"
     :enable-cell-selection="false"

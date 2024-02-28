@@ -10,8 +10,13 @@ const getPageConfig = (
   enablePagination: boolean,
   showTableSize: boolean,
 ) => {
-  const { currentRowCount, totalRowCount, currentPage, columnCount } =
-    pageParams;
+  const {
+    currentRowCount,
+    totalRowCount,
+    currentPage,
+    columnCount,
+    showPageControls,
+  } = pageParams;
 
   return {
     pageConfig: {
@@ -21,6 +26,7 @@ const getPageConfig = (
       currentPage,
       columnCount,
       showTableSize,
+      showPageControls,
     } satisfies PageConfig,
   };
 };
