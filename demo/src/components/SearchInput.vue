@@ -120,6 +120,20 @@ export default {
             placeholder="Search"
             @focus="onFocus"
           />
+          Custom title for the buttons
+          <SearchInput
+            v-model="inputValue5"
+            :show-case-sensitive-search-button="true"
+            :show-inverse-search-button="true"
+            :initial-inverse-search="true"
+            :tooltips="{
+              clear: 'Custom clear tooltip',
+              inverseSearch: 'Custom inverse tooltip',
+              caseSensitive: 'Custom case sensitive tooltip',
+            }"
+            placeholder="Search"
+            @focus="onFocus"
+          />
         </div>
         <div class="grid-item-6">input value: {{ inputValue }}</div>
       </div>

@@ -7,6 +7,12 @@ import UpperLowerCaseIcon from "../../assets/img/icons/upper-lower-case.svg";
 import InputField from "./InputField.vue";
 import FunctionButton from "../FunctionButton.vue";
 
+const defaultTooltips = {
+  clear: "Clear",
+  inverseSearch: "Exclude results that match query",
+  caseSensitive: "Case sensitive",
+};
+
 /**
  * Search input box for searches in other components, like the Twinlist.
  * Implements the v-model pattern.
@@ -62,6 +68,10 @@ export default {
       default: false,
       type: Boolean,
     },
+    tooltips: {
+      type: Object,
+      default: () => ({}),
+    },
   },
   emits: [
     "clear",
@@ -85,6 +95,9 @@ export default {
         this.showClearButton &&
         (this.showCaseSensitiveSearchButton || this.showInverseSearchButton)
       );
+    },
+    tooltipsWithDefaults() {
+      return { ...defaultTooltips, ...this.tooltips };
     },
   },
   methods: {
@@ -137,6 +150,7 @@ export default {
       <FunctionButton
         v-if="showClearButton"
         class="clear-search"
+        :title="tooltipsWithDefaults.clear"
         @click="clearSearch"
       >
         <CloseIcon />
@@ -146,6 +160,7 @@ export default {
         v-if="!disabled && showCaseSensitiveSearchButton"
         class="toggle-case-sensitive-search"
         :active="caseSensitiveSearch"
+        :title="tooltipsWithDefaults.caseSensitive"
         @click="toggleCaseSensitiveSearch"
       >
         <UpperLowerCaseIcon />
@@ -153,6 +168,7 @@ export default {
       <FunctionButton
         v-if="!disabled && showInverseSearchButton"
         class="toggle-inverse-search"
+        :title="tooltipsWithDefaults.inverseSearch"
         :active="inverseSearch"
         @click="toggleInverseSearch"
       >

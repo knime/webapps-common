@@ -363,6 +363,9 @@ export default {
         show-case-sensitive-search-button
         show-inverse-search-button
         :disabled="disabled"
+        :tooltips="{
+          inverseSearch: 'Move matching to other side',
+        }"
         @update:model-value="onPatternInput"
         @toggle-case-sensitive-search="onToggleCaseSensitivePattern"
         @toggle-inverse-search="onToggleInvsersePattern"

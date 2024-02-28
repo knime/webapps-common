@@ -364,6 +364,7 @@ export default {
               />
               <span
                 :class="['button', { active: popoverIsVisible, disabled }]"
+                title="Select date"
                 @click="disabled ? () => {} : togglePopover()"
               >
                 <CalendarIcon />

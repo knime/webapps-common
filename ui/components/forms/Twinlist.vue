@@ -498,6 +498,9 @@ export default {
         :initial-case-sensitive-search="initialCaseSensitiveSearch"
         show-case-sensitive-search-button
         :disabled="disabled"
+        :tooltips="{
+          inverseSearch: 'Move matching to other side',
+        }"
         @update:model-value="onSearchInput"
         @toggle-case-sensitive-search="caseSensitiveSearch = $event"
       />

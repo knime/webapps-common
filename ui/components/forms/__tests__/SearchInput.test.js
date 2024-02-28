@@ -164,5 +164,33 @@ describe("SearchInput", () => {
       await inverseSearchButton.vm.$emit("click");
       expect(wrapper.emitted("toggle-inverse-search")).toStrictEqual([[true]]);
     });
+
+    it("sets custom tooltips", () => {
+      props = {
+        showInverseSearchButton: true,
+        showCaseSensitiveSearchButton: true,
+        modelValue: "Some node",
+        tooltips: {
+          clear: "custom clear",
+          caseSensitive: "custom sensitive",
+          inverseSearch: "custom inverse",
+        },
+      };
+
+      doMount();
+
+      const clearButton = wrapper.findAllComponents(FunctionButton).at(0);
+      expect(clearButton.attributes("title")).toBe("custom clear");
+
+      const caseSensitiveButton = wrapper
+        .findAllComponents(FunctionButton)
+        .at(1);
+      expect(caseSensitiveButton.attributes("title")).toBe("custom sensitive");
+
+      const inverseSearchButton = wrapper
+        .findAllComponents(FunctionButton)
+        .at(2);
+      expect(inverseSearchButton.attributes("title")).toBe("custom inverse");
+    });
   });
 });
