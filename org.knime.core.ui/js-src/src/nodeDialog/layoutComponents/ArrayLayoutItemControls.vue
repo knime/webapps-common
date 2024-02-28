@@ -39,6 +39,7 @@ export default {
     <FunctionButton
       v-if="showSortControls"
       :disabled="isFirst"
+      title="Move up"
       @click="$emit('moveUp')"
     >
       <ArrowUpIcon />
@@ -46,6 +47,7 @@ export default {
     <FunctionButton
       v-if="showSortControls"
       :disabled="isLast"
+      title="Move down"
       @click="$emit('moveDown')"
     >
       <ArrowDownIcon />
@@ -53,6 +55,7 @@ export default {
     <FunctionButton
       v-if="showDeleteButton"
       class="trashButton"
+      title="Remove"
       @click="$emit('delete')"
     >
       <TrashIcon class="trash" />
