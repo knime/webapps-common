@@ -5,8 +5,8 @@ import {
   getControlBase,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import CredentialsInput from "../CredentialsInput.vue";
-import LabeledInput from "../label/LabeledInput.vue";
-import DialogLabel from "../label/DialogLabel.vue";
+import LabeledInput from "../../label/LabeledInput.vue";
+import DialogLabel from "../../label/DialogLabel.vue";
 import InputField from "webapps-common/ui/components/forms/InputField.vue";
 import { inputFormats } from "@/nodeDialog/constants";
 import flushPromises from "flush-promises";

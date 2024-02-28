@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { computed, watch } from "vue";
-import { mergeDeep } from "../utils";
+import { PropType, computed, watch } from "vue";
+import { mergeDeep } from "@/nodeDialog/utils";
 import InputField from "webapps-common/ui/components/forms/InputField.vue";
-import useDialogControl from "../composables/components/useDialogControl";
-import LabeledInput from "./label/LabeledInput.vue";
+import useDialogControl from "@/nodeDialog/composables/components/useDialogControl";
+import LabeledInput from "@/nodeDialog/uiComponents/label/LabeledInput.vue";
 import { rendererProps } from "@jsonforms/vue";
-import useProvidedState from "../composables/components/useProvidedState";
+import useProvidedState from "@/nodeDialog/composables/components/useProvidedState";
 
 interface Credentials {
   username: string;
@@ -15,7 +15,14 @@ interface Credentials {
   isHiddenSecondFactor?: boolean;
   flowVariableName?: string | null;
 }
-const props = defineProps(rendererProps());
+const props = defineProps({
+  ...rendererProps(),
+  jsonFormsControl: {
+    type: Object as PropType<null | ReturnType<typeof useDialogControl>>,
+    required: false,
+    default: null,
+  },
+});
 const {
   control,
   handleDirtyChange: onChange,
@@ -54,6 +61,7 @@ const displayedSecondFactor = computed(() => {
     ? hiddenPassword
     : data.value.secondFactor;
 });
+
 const options = computed(() => control.value.uischema.options ?? {});
 
 // Username visibility
