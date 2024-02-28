@@ -21,6 +21,7 @@ import { textAreaRenderer } from "./textAreaRenderer";
 import { credentialsRenderer } from "./credentialsRenderer";
 import { localFileChooserRenderer } from "./localFileChooserRenderer";
 import { fileChooserRenderer } from "./fileChooserRenderer";
+import { legacyCredentialsRenderer } from "./legacyCredentialsRenderer";
 
 export const defaultRenderers = [
   /* layout renderers */
@@ -47,6 +48,7 @@ export const defaultRenderers = [
   valueSwitchRenderer,
   textAreaRenderer,
   credentialsRenderer,
+  legacyCredentialsRenderer,
   localFileChooserRenderer,
   fileChooserRenderer,
 ];
