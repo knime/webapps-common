@@ -52,7 +52,7 @@ export default {
       type: Boolean,
     },
     shadowAppStyle: {
-      type: String as PropType<StyleValue>,
+      type: Object as PropType<StyleValue>,
       default: null,
     },
   },
