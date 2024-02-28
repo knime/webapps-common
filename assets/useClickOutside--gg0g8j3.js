@@ -1,0 +1,1 @@
+import{J as r,Z as u,K as a,E as f,X as c}from"./index-ea908eqs.js";const p=({targets:s,callback:n},i=f(!0))=>{let e;const o=()=>{e=c(s[0],n,{ignore:s})},t=()=>{typeof e<"u"&&e()};r(()=>u(i),d=>{d?o():t()},{immediate:!0}),a(t)};export{p as u};
