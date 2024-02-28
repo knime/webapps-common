@@ -361,6 +361,7 @@ export default {
   flex-direction: column;
   justify-content: space-between;
   background-color: var(--knime-gray-ultra-light);
+  height: 100%;
 
   & .form {
     display: flex;
