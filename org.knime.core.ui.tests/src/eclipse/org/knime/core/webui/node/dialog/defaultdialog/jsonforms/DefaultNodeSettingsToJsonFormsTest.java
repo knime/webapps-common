@@ -73,13 +73,13 @@ class DefaultNodeSettingsToJsonFormsTest {
         @Widget(title = "title", description = "desc")
         String field = "field";
 
-        @Widget
+        @Widget(title = "", description = "")
         String m_fieldWithPrefix = "setting with m_-prefix";
 
-        @Widget
+        @Widget(title = "", description = "")
         private String privateField = "private field";
 
-        @Widget
+        @Widget(title = "", description = "")
         String fieldWithNullValue = null;
 
         String fieldWithoutAnnotation = "field without annotation";
@@ -98,7 +98,7 @@ class DefaultNodeSettingsToJsonFormsTest {
 
     static class NestedSettings implements WidgetGroup {
 
-        @Widget
+        @Widget(title = "", description = "")
         String nestedField = "nested field";
 
         String nestedFieldWithoutAnnotation = "nested field without annotation";

@@ -115,7 +115,7 @@ class JsonFormsSchemaUtilTest {
         private static String SNAPSHOT =
             "{\"test\":{\"type\":\"integer\",\"format\":\"int32\",\"title\":\"some title\",\"default\":0}}";
 
-        @Widget(title = "some title")
+        @Widget(title = "some title", description = "")
         int test;
     }
 
@@ -128,7 +128,7 @@ class JsonFormsSchemaUtilTest {
         private static String SNAPSHOT =
             "{\"test\":{\"type\":\"integer\",\"format\":\"int32\",\"default\":0,\"description\":\"some description\"}}";
 
-        @Widget(description = "some description")
+        @Widget(title = "", description = "some description")
         int test;
     }
 
@@ -162,7 +162,7 @@ class JsonFormsSchemaUtilTest {
         class EnumTestSettingWidgetAnnotation {
             enum TestEnum {
                     SOME_CHOICE, //
-                    @Widget(title = "second choice")
+                    @Widget(title = "second choice", description = "")
                     SOME_OTHER_CHOICE
             }
 
@@ -319,7 +319,7 @@ class JsonFormsSchemaUtilTest {
             + "\"items\":{\"type\":\"integer\",\"format\":\"int32\"}"//
             + "}}";
 
-        @Widget(title = "foo")
+        @Widget(title = "foo", description = "")
         public int[] testIntArray;
     }
 
@@ -404,7 +404,7 @@ class JsonFormsSchemaUtilTest {
             + "}}";
 
         @Persist(configKey = "my_config_key")
-        @Widget(title = "my_title")
+        @Widget(title = "my_title", description = "")
         public int test;
     }
 
@@ -442,7 +442,7 @@ class JsonFormsSchemaUtilTest {
             + "}}";
 
         @Persist(customPersistor = CustomPersistor.class)
-        @Widget(title = "my_title")
+        @Widget(title = "my_title", description = "")
         public int test;
     }
 
@@ -505,7 +505,7 @@ class JsonFormsSchemaUtilTest {
             + "}}";
 
         @Persist(customPersistor = CustomPersistorWithDeprecatedConfigs.class)
-        @Widget(title = "my_title")
+        @Widget(title = "my_title", description = "")
         public int test;
     }
 
@@ -535,7 +535,7 @@ class JsonFormsSchemaUtilTest {
             + "\"default\":\"42\"" //
             + "}}";
 
-        @Widget
+        @Widget(title = "", description = "")
         public MyStringWrapper m_test = new MyStringWrapper("42");
     }
 

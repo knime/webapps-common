@@ -82,10 +82,10 @@ class DefaultNodeSettingsFieldTraverserTest {
     void testTraversal() throws JsonProcessingException {
 
         class ClusterOfSettings implements WidgetGroup {
-            @Widget
+            @Widget(title = "", description = "")
             String m_sub1;
 
-            @Widget
+            @Widget(title = "", description = "")
             String m_sub2;
         }
 
@@ -96,12 +96,12 @@ class DefaultNodeSettingsFieldTraverserTest {
         }
 
         class TestControlSettings implements DefaultNodeSettings {
-            @Widget
+            @Widget(title = "", description = "")
             String m_normalSetting;
 
             ClusterOfSettings m_settingWithNestedUiElements;
 
-            @Widget
+            @Widget(title = "", description = "")
             ControlSetting m_customSetting;
         }
 
@@ -141,7 +141,7 @@ class DefaultNodeSettingsFieldTraverserTest {
         void testDoesNotTrackAnnotationsIfNoneProvided() {
             class TestAnnotationSettings implements DefaultNodeSettings {
 
-                @Widget
+                @Widget(title = "", description = "")
                 @TestId(2)
                 String m_sectionSetting;
             }
@@ -166,7 +166,7 @@ class DefaultNodeSettingsFieldTraverserTest {
 
             class TestAnnotationSettings implements DefaultNodeSettings {
 
-                @Widget
+                @Widget(title = "", description = "")
                 @TestId(1)
                 @TestId2(1)
                 String m_sectionSetting;
@@ -190,21 +190,21 @@ class DefaultNodeSettingsFieldTraverserTest {
 
             class ClusterOfSettings implements WidgetGroup {
 
-                @Widget
+                @Widget(title = "", description = "")
                 @TestId(3)
                 String m_sub1;
 
-                @Widget
+                @Widget(title = "", description = "")
                 String m_sub2;
             }
 
             @TestId(1)
             class TestDefaultParentSettings implements DefaultNodeSettings {
 
-                @Widget
+                @Widget(title = "", description = "")
                 String m_defaultParentSetting;
 
-                @Widget
+                @Widget(title = "", description = "")
                 @TestId(2)
                 String m_simpleSetting;
 
@@ -232,10 +232,10 @@ class DefaultNodeSettingsFieldTraverserTest {
 
             class TestNoAnnotationSettings implements DefaultNodeSettings {
 
-                @Widget
+                @Widget(title = "", description = "")
                 String m_setting;
 
-                @Widget
+                @Widget(title = "", description = "")
                 @TestId(1)
                 String m_foo;
 

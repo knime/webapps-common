@@ -123,11 +123,11 @@ class JsonFormsUiSchemaUtilTest {
     @Layout(TestSettingsLayout.class)
     class DummySettings implements DefaultNodeSettings {
 
-        @Widget
+        @Widget(title = "", description = "")
         @Layout(TestSettingsLayout.Section1.class)
         String m_setting1;
 
-        @Widget
+        @Widget(title = "", description = "")
         @Layout(TestSettingsLayout.Section2.NestedSection.class)
         String m_setting2;
     }
@@ -146,21 +146,21 @@ class JsonFormsUiSchemaUtilTest {
     }
 
     class TestLayoutViewSettings implements DefaultNodeSettings {
-        @Widget
+        @Widget(title = "", description = "")
         @Layout(TestSettingsLayout.Section1.class)
         String m_testViewSetting1;
 
-        @Widget
+        @Widget(title = "", description = "")
         @Layout(TestSettingsLayout.Section2.class)
         String m_testViewSetting2;
     }
 
     class TestLayoutModelSettings implements DefaultNodeSettings {
-        @Widget
+        @Widget(title = "", description = "")
         @Layout(TestSettingsLayout.Section1.class)
         String m_testModelSetting1;
 
-        @Widget
+        @Widget(title = "", description = "")
         @Layout(TestSettingsLayout.Section2.NestedSection.class)
         String m_nestedModelSetting;
     }
@@ -188,10 +188,10 @@ class JsonFormsUiSchemaUtilTest {
     }
 
     class ClusterOfSettings implements WidgetGroup {
-        @Widget
+        @Widget(title = "", description = "")
         String m_sub1;
 
-        @Widget
+        @Widget(title = "", description = "")
         String m_sub2;
     }
 
@@ -202,12 +202,12 @@ class JsonFormsUiSchemaUtilTest {
     }
 
     class TestControlSettings implements DefaultNodeSettings {
-        @Widget
+        @Widget(title = "", description = "")
         String m_normalSetting;
 
         ClusterOfSettings m_settingWithNestedUiElements;
 
-        @Widget
+        @Widget(title = "", description = "")
         ControlSetting m_customSetting;
     }
 
@@ -229,7 +229,7 @@ class JsonFormsUiSchemaUtilTest {
     void testHiddenSettings() throws JsonProcessingException {
         @SuppressWarnings("unused")
         class TestHiddenSettings implements DefaultNodeSettings {
-            @Widget
+            @Widget(title = "", description = "")
             String m_normalSetting;
 
             String m_hiddenSetting;
@@ -253,17 +253,17 @@ class JsonFormsUiSchemaUtilTest {
 
     @Layout(TestDefaultParentLayout.DefaultSection.class)
     class TestDefaultParentSettings implements DefaultNodeSettings {
-        @Widget
+        @Widget(title = "", description = "")
         String m_defaultParentSetting;
 
-        @Widget
+        @Widget(title = "", description = "")
         @Layout(TestDefaultParentLayout.Section1.class)
         String m_sectionSetting;
 
-        @Widget
+        @Widget(title = "", description = "")
         ClusterOfSettings m_clusterOfSettingsDefaultParent;
 
-        @Widget
+        @Widget(title = "", description = "")
         @Layout(TestDefaultParentLayout.Section1.class)
         ClusterOfSettings m_clusterOfSettingsInSection;
     }
@@ -299,10 +299,10 @@ class JsonFormsUiSchemaUtilTest {
 
     class TestNoLayoutAnnotationSettings implements DefaultNodeSettings {
 
-        @Widget
+        @Widget(title = "", description = "")
         String m_rootSetting;
 
-        @Widget
+        @Widget(title = "", description = "")
         @Layout(TestNoLayoutAnnotationLayout.Section1.class)
         String m_sectionSetting;
 
@@ -329,11 +329,11 @@ class JsonFormsUiSchemaUtilTest {
         static interface Section2 {
         }
 
-        @Widget
+        @Widget(title = "", description = "")
         @Layout(Section1.class)
         String m_foo;
 
-        @Widget
+        @Widget(title = "", description = "")
         @Layout(Section2.class)
         String m_bar;
     }
@@ -358,7 +358,7 @@ class JsonFormsUiSchemaUtilTest {
     }
 
     static class NoRootForSectionSettings implements DefaultNodeSettings {
-        @Widget
+        @Widget(title = "", description = "")
         @Layout(SectionWithoutEnclosingClass.class)
         String m_foo;
     }
@@ -378,14 +378,14 @@ class JsonFormsUiSchemaUtilTest {
         static interface Section1 {
         }
 
-        @Widget
+        @Widget(title = "", description = "")
         @Layout(Section1.class)
         String m_foo;
     }
 
     static class TestMultipleRootsTwo implements DefaultNodeSettings {
 
-        @Widget
+        @Widget(title = "", description = "")
         @Layout(GeneralTestLayout.GeneralSection1.class)
         String m_bar;
     }
@@ -439,15 +439,15 @@ class JsonFormsUiSchemaUtilTest {
         }
 
         class VirtualLayoutSettings implements DefaultNodeSettings {
-            @Widget
+            @Widget(title = "", description = "")
             @Layout(TestVirtualSectionLayout.Section1.class)
             String m_setting1;
 
-            @Widget
+            @Widget(title = "", description = "")
             @Layout(TestVirtualSectionLayout.Section2.class)
             String m_setting2;
 
-            @Widget
+            @Widget(title = "", description = "")
             @Layout(TestVirtualSectionLayout.Section3.class)
             String m_setting3;
         }
@@ -476,7 +476,7 @@ class JsonFormsUiSchemaUtilTest {
         }
 
         class TestEmptySectionSettings implements DefaultNodeSettings {
-            @Widget
+            @Widget(title = "", description = "")
             @Layout(TestEmptySectionLayout.Section1.class)
             String m_setting1;
         }
@@ -499,11 +499,11 @@ class JsonFormsUiSchemaUtilTest {
         }
 
         class TestHorizontalLayoutSettings implements DefaultNodeSettings {
-            @Widget
+            @Widget(title = "", description = "")
             @Layout(TestHorizontalLayout.HorizontalGroup.class)
             String m_setting1;
 
-            @Widget
+            @Widget(title = "", description = "")
             @Layout(TestHorizontalLayout.HorizontalGroup.class)
             String m_setting2;
         }
@@ -528,11 +528,11 @@ class JsonFormsUiSchemaUtilTest {
         }
 
         class CenterLayoutExtended extends CenterLayout {
-            @Widget
+            @Widget(title = "", description = "")
             @Layout(CenterLayoutInnerLayout.class)
             String centerLayoutElement1;
 
-            @Widget
+            @Widget(title = "", description = "")
             @Layout(CenterLayoutInnerLayout.class)
             String centerLayoutElement2;
         }
@@ -551,17 +551,17 @@ class JsonFormsUiSchemaUtilTest {
 
         class TestSettings implements DefaultNodeSettings {
 
-            @Widget
+            @Widget(title = "", description = "")
             @Layout(BeforeCenterLayout.class)
             int intBeforeCenterLayout;
 
             CenterLayoutExtended secondSection = new CenterLayoutExtended();
 
-            @Widget
+            @Widget(title = "", description = "")
             @Layout(AfterCenterLayout.class)
             String stringAfterCenterLayout;
 
-            @Widget
+            @Widget(title = "", description = "")
             @Layout(SecondSection.class)
             String stringInSecondSection;
         }

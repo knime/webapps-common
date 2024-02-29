@@ -101,7 +101,7 @@ class ButtonWidgetActionHandlerHolderTest {
     void testValidatesReturnType() {
 
         class ButtonSettings implements DefaultNodeSettings {
-            @Widget
+            @Widget(description = "", title = "")
             @ButtonWidget(actionHandler = WrongResultTypeActionHandler.class)
             String m_button;
         }

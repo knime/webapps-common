@@ -113,14 +113,14 @@ class UpdatesUtilTest {
 
             }
 
-            @Widget(valueRef = Dependency.class)
+            @Widget(title = "", description = "", valueRef = Dependency.class)
             String dependency;
 
             class AnotherDependency implements ValueRef<String> {
 
             }
 
-            @Widget(valueRef = AnotherDependency.class)
+            @Widget(title = "", description = "", valueRef = AnotherDependency.class)
             String anotherDependency;
 
             static final class TestStateProvider implements StateProvider<String> {
@@ -137,7 +137,7 @@ class UpdatesUtilTest {
 
             }
 
-            @Widget(valueProvider = TestStateProvider.class)
+            @Widget(title = "", description = "", valueProvider = TestStateProvider.class)
             String target;
 
             static final class AnotherTestStateProvider implements StateProvider<String> {
@@ -155,7 +155,7 @@ class UpdatesUtilTest {
                 }
             }
 
-            @Widget(valueProvider = AnotherTestStateProvider.class)
+            @Widget(title = "", description = "", valueProvider = AnotherTestStateProvider.class)
             String anotherTarget;
         }
 
@@ -203,7 +203,7 @@ class UpdatesUtilTest {
 
             }
 
-            @Widget(valueRef = IntegerReference.class)
+            @Widget(title = "", description = "", valueRef = IntegerReference.class)
             String dependency;
 
             static final class TestStateProvider implements StateProvider<String> {
@@ -220,7 +220,7 @@ class UpdatesUtilTest {
 
             }
 
-            @Widget(valueProvider = TestStateProvider.class)
+            @Widget(title = "", description = "", valueProvider = TestStateProvider.class)
             String target;
         }
 
@@ -245,7 +245,7 @@ class UpdatesUtilTest {
 
             }
 
-            @Widget(valueRef = MyReference.class)
+            @Widget(title = "", description = "", valueRef = MyReference.class)
             String dependency;
 
             static final class IntegerStateProvider implements StateProvider<Integer> {
@@ -262,7 +262,7 @@ class UpdatesUtilTest {
 
             }
 
-            @Widget(valueProvider = IntegerStateProvider.class)
+            @Widget(title = "", description = "", valueProvider = IntegerStateProvider.class)
             String target;
         }
 
@@ -302,7 +302,7 @@ class UpdatesUtilTest {
 
             }
 
-            @Widget(valueProvider = TestStateProvider.class)
+            @Widget(title = "", description = "", valueProvider = TestStateProvider.class)
             String target;
         }
 
@@ -327,7 +327,7 @@ class UpdatesUtilTest {
 
             }
 
-            @Widget
+            @Widget(title = "", description = "")
             @SimpleButtonWidget(ref = MyButtonRef.class)
             Void m_button;
 
@@ -345,7 +345,7 @@ class UpdatesUtilTest {
 
             }
 
-            @Widget(valueProvider = MyButtonStateProvider.class)
+            @Widget(title = "", description = "", valueProvider = MyButtonStateProvider.class)
             String m_updated;
         }
 
@@ -435,7 +435,7 @@ class UpdatesUtilTest {
 
             }
 
-            @Widget
+            @Widget(title = "", description = "")
             @LocalFileWriterWidget(fileExtensionProvider = MyInitialFileExtensionProvider.class)
             String m_localFileWriter;
 
@@ -455,7 +455,7 @@ class UpdatesUtilTest {
 
             }
 
-            @Widget(valueProvider = MyValueProvider.class)
+            @Widget(title = "", description = "", valueProvider = MyValueProvider.class)
             String m_valueUpdateSetting;
 
         }
@@ -497,7 +497,7 @@ class UpdatesUtilTest {
 
             }
 
-            @Widget(valueRef = MyOtherValueRef.class)
+            @Widget(title = "", description = "", valueRef = MyOtherValueRef.class)
             String m_otherSetting = "foo";
 
             static final class MyValueProvider implements StateProvider<String> {
@@ -520,7 +520,7 @@ class UpdatesUtilTest {
 
             }
 
-            @Widget(valueProvider = MyValueProvider.class, valueRef = MyValueRef.class)
+            @Widget(title = "", description = "", valueProvider = MyValueProvider.class, valueRef = MyValueRef.class)
             String m_valueUpdateSetting;
 
         }
@@ -557,7 +557,7 @@ class UpdatesUtilTest {
 
             }
 
-            @Widget
+            @Widget(title = "", description = "")
             @LocalFileWriterWidget(fileExtensionProvider = MyInitialFileExtensionProvider.class)
             String m_localFileWriter;
 
@@ -577,7 +577,7 @@ class UpdatesUtilTest {
 
             }
 
-            @Widget(valueProvider = MyValueProvider.class)
+            @Widget(title = "", description = "", valueProvider = MyValueProvider.class)
             String m_valueUpdateSetting;
 
         }

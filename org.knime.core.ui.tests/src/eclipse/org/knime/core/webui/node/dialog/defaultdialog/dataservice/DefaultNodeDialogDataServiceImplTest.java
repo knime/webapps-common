@@ -106,7 +106,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
 class DefaultNodeDialogDataServiceImplTest {
 
     static class TestDefaultNodeSettings implements DefaultNodeSettings {
-        @Widget
+        @Widget(title = "", description = "")
         String m_foo = "bar";
     }
 
@@ -163,7 +163,6 @@ class DefaultNodeDialogDataServiceImplTest {
                 return m_dependencySupplier.get();
             }
 
-
         }
 
         @Test
@@ -171,10 +170,10 @@ class DefaultNodeDialogDataServiceImplTest {
 
             class UpdateSettings implements DefaultNodeSettings {
 
-                @Widget(valueRef = MyValueRef.class)
+                @Widget(title = "", description = "", valueRef = MyValueRef.class)
                 String m_dependency;
 
-                @Widget(valueProvider = TestStateProvider.class)
+                @Widget(title = "", description = "", valueProvider = TestStateProvider.class)
                 String m_updatedWidget;
 
             }
@@ -194,7 +193,7 @@ class DefaultNodeDialogDataServiceImplTest {
 
             class UpdateSettings implements DefaultNodeSettings {
 
-                @Widget(valueRef = MyValueRef.class)
+                @Widget(title = "", description = "", valueRef = MyValueRef.class)
                 String m_dependency;
 
                 static final class MyFileExtensionProvider implements FileExtensionProvider {
@@ -300,16 +299,16 @@ class DefaultNodeDialogDataServiceImplTest {
 
             class UpdateSettings implements DefaultNodeSettings {
 
-                @Widget(valueRef = MyFirstValueRef.class)
+                @Widget(title = "", description = "", valueRef = MyFirstValueRef.class)
                 String m_foo;
 
-                @Widget(valueRef = MySecondValueRef.class)
+                @Widget(title = "", description = "", valueRef = MySecondValueRef.class)
                 String m_bar;
 
-                @Widget(valueProvider = FirstResolver.class)
+                @Widget(title = "", description = "", valueProvider = FirstResolver.class)
                 String m_firstUpdatedWidget;
 
-                @Widget(valueProvider = SecondResolver.class)
+                @Widget(title = "", description = "", valueProvider = SecondResolver.class)
                 String m_secondUpdatedWidget;
 
             }
@@ -352,11 +351,11 @@ class DefaultNodeDialogDataServiceImplTest {
         void testUpdate() throws ExecutionException, InterruptedException {
 
             class ChoicesSettings implements DefaultNodeSettings {
-                @Widget
+                @Widget(title = "", description = "")
                 @ChoicesWidget(choicesUpdateHandler = TestChoicesUpdateHandler.class)
                 String m_choicesWidgetElement;
 
-                @Widget
+                @Widget(title = "", description = "")
                 @SuppressWarnings("unused")
                 String m_otherSetting;
             }
@@ -373,12 +372,12 @@ class DefaultNodeDialogDataServiceImplTest {
 
             class ChoicesSettings implements DefaultNodeSettings {
                 static class ArrayElem implements DefaultNodeSettings {
-                    @Widget
+                    @Widget(title = "", description = "")
                     @ChoicesWidget(choicesUpdateHandler = TestChoicesUpdateHandler.class)
                     String m_choicesWidgetElement;
                 }
 
-                @Widget
+                @Widget(title = "", description = "")
                 @SuppressWarnings("unused")
                 ArrayElem[] m_array;
             }
@@ -424,7 +423,7 @@ class DefaultNodeDialogDataServiceImplTest {
         void testGetChoicesWithError() throws ExecutionException, InterruptedException {
 
             class ChoicesSettings implements DefaultNodeSettings {
-                @Widget
+                @Widget(title = "", description = "")
                 @ChoicesWidget(choices = TestChoicesProviderWithError.class)
                 String m_foo;
             }
@@ -496,7 +495,7 @@ class DefaultNodeDialogDataServiceImplTest {
         void testInitializeButton() throws ExecutionException, InterruptedException {
 
             class ButtonSettings implements DefaultNodeSettings {
-                @Widget
+                @Widget(title = "", description = "")
                 @ButtonWidget(actionHandler = GenericTypesTestHandler.class)
                 String m_button;
             }
@@ -514,7 +513,7 @@ class DefaultNodeDialogDataServiceImplTest {
         void testInvokeButtonAction() throws ExecutionException, InterruptedException {
 
             class ButtonSettings implements DefaultNodeSettings {
-                @Widget
+                @Widget(title = "", description = "")
                 @ButtonWidget(actionHandler = GenericTypesTestHandler.class)
                 String m_button;
             }
@@ -533,7 +532,7 @@ class DefaultNodeDialogDataServiceImplTest {
 
             Credentials m_credentials;
 
-            @Widget
+            @Widget(title = "", description = "")
             @ButtonWidget(actionHandler = CredentialsButtonTestHandler.class)
             String m_button;
         }
@@ -626,7 +625,7 @@ class DefaultNodeDialogDataServiceImplTest {
         void testUpdate() throws ExecutionException, InterruptedException {
 
             class ButtonSettings implements DefaultNodeSettings {
-                @Widget
+                @Widget(title = "", description = "")
                 @ButtonWidget(actionHandler = GenericTypesTestHandler.class,
                     updateHandler = GenericTypesUpdateHandler.class)
                 String m_button;
@@ -684,11 +683,11 @@ class DefaultNodeDialogDataServiceImplTest {
         void testMultipleHandlers() throws ExecutionException, InterruptedException {
 
             class TestSettings implements DefaultNodeSettings {
-                @Widget
+                @Widget(title = "", description = "")
                 @ChoicesWidget(choicesUpdateHandler = FirstTestHandler.class)
                 String m_button;
 
-                @Widget
+                @Widget(title = "", description = "")
                 @ChoicesWidget(choicesUpdateHandler = SecondTestHandler.class)
                 String m_otherButton;
             }
@@ -704,7 +703,7 @@ class DefaultNodeDialogDataServiceImplTest {
         void testThrowsIfNoHandlerPresent() throws ExecutionException, InterruptedException {
 
             class TestSettings implements DefaultNodeSettings {
-                @Widget
+                @Widget(title = "", description = "")
                 @ChoicesWidget(choicesUpdateHandler = FirstTestHandler.class)
                 String m_button;
             }
@@ -735,13 +734,13 @@ class DefaultNodeDialogDataServiceImplTest {
         void testMultipleSettingsClasses() throws ExecutionException, InterruptedException {
 
             class TestSettings implements DefaultNodeSettings {
-                @Widget
+                @Widget(title = "", description = "")
                 @ChoicesWidget(choicesUpdateHandler = FirstTestHandler.class)
                 String m_button;
             }
 
             class OtherTestSettings implements DefaultNodeSettings {
-                @Widget
+                @Widget(title = "", description = "")
                 @ChoicesWidget(choicesUpdateHandler = SecondTestHandler.class)
                 String m_button;
             }
@@ -771,7 +770,7 @@ class DefaultNodeDialogDataServiceImplTest {
         void testSuppliesDefaultNodeSettingsContextToHandler() throws ExecutionException, InterruptedException {
 
             class ButtonSettings implements DefaultNodeSettings {
-                @Widget
+                @Widget(title = "", description = "")
                 @ChoicesWidget(choicesUpdateHandler = DefaultNodeSettingsContextHandler.class)
                 Boolean m_button;
             }

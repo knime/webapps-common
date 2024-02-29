@@ -74,27 +74,27 @@ class JsonFormsUiSchemaUtilArrayTest {
     void testArrayLayout() {
         class TestArrayLayoutSettings implements DefaultNodeSettings {
 
-            @Widget
+            @Widget(title = "", description = "")
             ArrayElements[] m_arraySetting;
 
-            @Widget
+            @Widget(title = "", description = "")
             Collection<CollectionElements> m_collectionSetting;
 
             class ArrayElements implements WidgetGroup {
 
-                @Widget
+                @Widget(title = "", description = "")
                 String m_innerSetting1;
 
-                @Widget
+                @Widget(title = "", description = "")
                 String m_innerSetting2;
             }
 
             class CollectionElements implements WidgetGroup {
 
-                @Widget
+                @Widget(title = "", description = "")
                 String m_innerCollectionSetting1;
 
-                @Widget
+                @Widget(title = "", description = "")
                 String m_innerCollectionSetting2;
             }
         }
@@ -134,36 +134,36 @@ class JsonFormsUiSchemaUtilArrayTest {
 
             private static final String EXPECTED_TITLE = "Expected Title";
 
-            @Widget
+            @Widget(title = "", description = "")
             @ArrayWidget(addButtonText = EXPECTED_ADD_TEXT)
             ArrayElements[] m_arraySetting1;
 
-            @Widget
+            @Widget(title = "", description = "")
             @ArrayWidget(elementTitle = EXPECTED_TITLE)
             ArrayElements[] m_arraySetting2;
 
-            @Widget
+            @Widget(title = "", description = "")
             @ArrayWidget(elementTitle = "", addButtonText = "")
             ArrayElements[] m_arraySetting3;
 
-            @Widget
+            @Widget(title = "", description = "")
             @ArrayWidget(addButtonText = EXPECTED_ADD_TEXT)
             Collection<ArrayElements> m_collectionSetting1;
 
-            @Widget
+            @Widget(title = "", description = "")
             @ArrayWidget(elementTitle = EXPECTED_TITLE)
             Collection<ArrayElements> m_collectionSetting2;
 
-            @Widget
+            @Widget(title = "", description = "")
             @ArrayWidget(elementTitle = "", addButtonText = "")
             Collection<ArrayElements> m_collectionSetting3;
 
-            @Widget(advanced = true)
+            @Widget(title = "", description = "", advanced = true)
             ArrayElements[] m_arrayAdvancedSetting;
 
             class ArrayElements implements WidgetGroup {
 
-                @Widget
+                @Widget(title = "", description = "")
                 String m_innerSetting1;
             }
         }
@@ -241,7 +241,7 @@ class JsonFormsUiSchemaUtilArrayTest {
 
         class TestStringArraySettings implements DefaultNodeSettings {
 
-            @Widget
+            @Widget(title = "", description = "")
             String[] m_stringArray;
         }
 
@@ -254,7 +254,7 @@ class JsonFormsUiSchemaUtilArrayTest {
 
         class TestArrayLayoutWithUpdateSettings implements DefaultNodeSettings {
 
-            @Widget
+            @Widget(title = "", description = "")
             String m_dependency;
 
             static class Dependency {
@@ -271,12 +271,12 @@ class JsonFormsUiSchemaUtilArrayTest {
 
             }
 
-            @Widget
+            @Widget(title = "", description = "")
             ArrayElements[] m_arraySetting;
 
             class ArrayElements implements WidgetGroup {
 
-                @Widget
+                @Widget(title = "", description = "")
                 @ChoicesWidget(choicesUpdateHandler = DependencyHandler.class)
                 String m_innerSetting;
             }

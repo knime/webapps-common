@@ -113,35 +113,35 @@ class UiSchemaOptionsTest {
     void testDefaultFormats() {
         @SuppressWarnings("unused")
         class DefaultStylesSettings implements DefaultNodeSettings {
-            @Widget
+            @Widget(title = "", description = "")
             String m_string;
 
-            @Widget
+            @Widget(title = "", description = "")
             boolean m_boolean;
 
             enum MyEnum {
                     A, B, C
             }
 
-            @Widget
+            @Widget(title = "", description = "")
             MyEnum m_enum;
 
-            @Widget
+            @Widget(title = "", description = "")
             ColumnFilter m_columnFilter;
 
-            @Widget
+            @Widget(title = "", description = "")
             ColumnSelection m_columnSelection;
 
-            @Widget
+            @Widget(title = "", description = "")
             LocalDate m_localDate;
 
-            @Widget
+            @Widget(title = "", description = "")
             Credentials m_credentials;
 
-            @Widget
+            @Widget(title = "", description = "")
             LegacyCredentials m_legacyCredentials;
 
-            @Widget
+            @Widget(title = "", description = "")
             FileChooser m_fileChooser;
         }
         var response = buildTestUiSchema(DefaultStylesSettings.class);
@@ -173,7 +173,7 @@ class UiSchemaOptionsTest {
         @SuppressWarnings("unused")
         class HidableStringSettings implements DefaultNodeSettings {
 
-            @Widget
+            @Widget(title = "", description = "")
             @TextInputWidget(optional = true)
             String m_string;
 
@@ -191,10 +191,10 @@ class UiSchemaOptionsTest {
         @SuppressWarnings("unused")
         class ComboBoxFormatSettings implements DefaultNodeSettings {
 
-            @Widget
+            @Widget(title = "", description = "")
             String[] m_comboBox;
 
-            @Widget
+            @Widget(title = "", description = "")
             @ChoicesWidget(choices = TestChoicesProvider.class)
             @ComboBoxWidget
             String[] m_comboBoxWithChoices;
@@ -217,10 +217,10 @@ class UiSchemaOptionsTest {
     void testAdvancedSettings() {
         class AdvancedSettings implements DefaultNodeSettings {
 
-            @Widget(advanced = true)
+            @Widget(title = "", description = "", advanced = true)
             ColumnSelection m_foo;
 
-            @Widget()
+            @Widget(title = "", description = "")
             ColumnSelection m_bar;
 
         }
@@ -239,15 +239,15 @@ class UiSchemaOptionsTest {
                     A, B, C
             }
 
-            @Widget
+            @Widget(title = "", description = "")
             @RadioButtonsWidget()
             MyEnum m_foo;
 
-            @Widget
+            @Widget(title = "", description = "")
             @RadioButtonsWidget(horizontal = true)
             MyEnum m_bar;
 
-            @Widget
+            @Widget(title = "", description = "")
             @RadioButtonsWidget(horizontal = false)
             MyEnum m_baz;
 
@@ -272,7 +272,7 @@ class UiSchemaOptionsTest {
                     A, B, C
             }
 
-            @Widget
+            @Widget(title = "", description = "")
             @ValueSwitchWidget
             MyEnum m_foo;
         }
@@ -285,7 +285,7 @@ class UiSchemaOptionsTest {
     @Test
     void testThrowsIfIsNotApplicable() {
         class NonApplicableStyleSettings implements DefaultNodeSettings {
-            @Widget
+            @Widget(title = "", description = "")
             @RadioButtonsWidget()
             String m_prop;
         }
@@ -305,11 +305,11 @@ class UiSchemaOptionsTest {
             }
 
             class ShowSortButtonsTestSettings implements DefaultNodeSettings {
-                @Widget
+                @Widget(title = "", description = "")
                 @ArrayWidget
                 ArrayElement[] m_arrayElementNoSortButtons;
 
-                @Widget
+                @Widget(title = "", description = "")
                 @ArrayWidget(showSortButtons = true)
                 ArrayElement[] m_arrayElementWithSortButtons;
             }
@@ -325,10 +325,10 @@ class UiSchemaOptionsTest {
         @Test
         void testHideTitle() {
             class HideTitleSettings implements DefaultNodeSettings {
-                @Widget(title = "foo1")
+                @Widget(title = "foo1", description = "")
                 String m_foo1;
 
-                @Widget(title = "foo2", hideTitle = true)
+                @Widget(title = "foo2", description = "", hideTitle = true)
                 String m_foo2;
             }
 
@@ -348,11 +348,11 @@ class UiSchemaOptionsTest {
             }
 
             class HasFixedSizeTestSettings implements DefaultNodeSettings {
-                @Widget
+                @Widget(title = "", description = "")
                 @ArrayWidget
                 ArrayElement[] m_arrayElementVariableSize;
 
-                @Widget
+                @Widget(title = "", description = "")
                 @ArrayWidget(hasFixedSize = true)
                 ArrayElement[] m_arrayElementFixedSize;
             }
@@ -377,7 +377,7 @@ class UiSchemaOptionsTest {
         void testDefaultButtonWidgetOptions() {
             class ButtonWidgetDefaultTestSettings implements DefaultNodeSettings {
 
-                @Widget
+                @Widget(title = "", description = "")
                 @ButtonWidget(actionHandler = ButtonActionHandlerWithoutDependencies.class)
                 String m_foo;
             }
@@ -396,7 +396,7 @@ class UiSchemaOptionsTest {
         @Test
         void testButtonWidgetOptions() {
             class ButtonWidgetOptionsTestSettings implements DefaultNodeSettings {
-                @Widget
+                @Widget(title = "", description = "")
                 @ButtonWidget(actionHandler = ButtonActionHandlerWithoutDependencies.class, displayErrorMessage = false,
                     showTitleAndDescription = false)
                 String m_foo;
@@ -416,7 +416,7 @@ class UiSchemaOptionsTest {
         @Test
         void testButtonStates() {
             class ButtonWidgetDefaultTestSettings implements DefaultNodeSettings {
-                @Widget
+                @Widget(title = "", description = "")
                 @ButtonWidget(actionHandler = ButtonActionHandlerWithoutDependencies.class)
                 String m_foo;
             }
@@ -453,33 +453,33 @@ class UiSchemaOptionsTest {
         }
 
         static class GroupOfSettings implements WidgetGroup {
-            @Widget
+            @Widget(title = "", description = "")
             String m_sub1;
 
-            @Widget
+            @Widget(title = "", description = "")
             String m_sub2;
         }
 
         class ButtonWidgetWithDependenciesTestSettings implements DefaultNodeSettings {
-            @Widget
+            @Widget(title = "", description = "")
             @ButtonWidget(actionHandler = ButtonActionHandlerWithDependencies.class,
                 updateHandler = ButtonUpdateHandlerWithDependencies.class)
             String m_foo;
 
-            @Widget
+            @Widget(title = "", description = "")
             Boolean m_otherSetting1;
 
-            @Widget
+            @Widget(title = "", description = "")
             ColumnFilter m_otherSetting2;
 
             GroupOfSettings m_otherSetting3;
 
-            @Widget
+            @Widget(title = "", description = "")
             String m_otherSetting4;
         }
 
         static class OtherGroupOfSettings implements WidgetGroup {
-            @Widget
+            @Widget(title = "", description = "")
             String m_sub2;
         }
 
@@ -533,19 +533,19 @@ class UiSchemaOptionsTest {
         }
 
         class ButtonWidgetWithMissingDependenciesTestSettings implements DefaultNodeSettings {
-            @Widget
+            @Widget(title = "", description = "")
             @ButtonWidget(actionHandler = ButtonActionHandlerWithMissingDependencies.class)
             String m_foo;
 
-            @Widget
+            @Widget(title = "", description = "")
             Boolean m_otherSetting1;
         }
 
         static class OtherSettingsWithMissing {
-            @Widget
+            @Widget(title = "", description = "")
             Boolean m_otherSetting1;
 
-            @Widget
+            @Widget(title = "", description = "")
             ColumnFilter m_missingSetting;
 
         }
@@ -562,23 +562,23 @@ class UiSchemaOptionsTest {
         }
 
         class ButtonWidgetWithAmbigousDependenciesTestSettings implements DefaultNodeSettings {
-            @Widget
+            @Widget(title = "", description = "")
             @ButtonWidget(actionHandler = ButtonActionHandlerWithAmbiguousDependencies.class)
             String m_foo;
 
-            @Widget
+            @Widget(title = "", description = "")
             Boolean m_otherSetting1;
         }
 
         class SecondSettings implements DefaultNodeSettings {
 
-            @Widget
+            @Widget(title = "", description = "")
             Boolean m_otherSetting1;
         }
 
         static class OtherSettingsWithAmbigous implements DefaultNodeSettings {
 
-            @Widget
+            @Widget(title = "", description = "")
             Boolean m_otherSetting1;
 
         }
@@ -596,17 +596,17 @@ class UiSchemaOptionsTest {
         }
 
         class ButtonWidgetWithDisAmbigousDependenciesTestSettings implements DefaultNodeSettings {
-            @Widget
+            @Widget(title = "", description = "")
             @ButtonWidget(actionHandler = TestButtonActionHandlerWithDisAmbiguousDependencies.class)
             String m_foo;
 
-            @Widget
+            @Widget(title = "", description = "")
             Boolean m_otherSetting1;
         }
 
         static class OtherSettingsWithSpecification implements DefaultNodeSettings {
 
-            @Widget
+            @Widget(title = "", description = "")
             @DeclaringDefaultNodeSettings(SecondSettings.class)
             Boolean m_otherSetting1;
 
@@ -630,16 +630,16 @@ class UiSchemaOptionsTest {
         }
 
         class ButtonWidgetWithWrongTypeDependenciesTestSettings implements DefaultNodeSettings {
-            @Widget
+            @Widget(title = "", description = "")
             @ButtonWidget(actionHandler = TestButtonActionHandlerWithWrongType.class)
             String m_foo;
 
-            @Widget
+            @Widget(title = "", description = "")
             Boolean m_otherSetting1;
         }
 
         static class OtherSettingsWithWrongType implements DefaultNodeSettings {
-            @Widget
+            @Widget(title = "", description = "")
             String m_otherSetting1;
         }
 
@@ -662,7 +662,7 @@ class UiSchemaOptionsTest {
 
             }
 
-            @Widget
+            @Widget(title = "", description = "")
             @SimpleButtonWidget(ref = MyButtonTrigger.class)
             Void m_button;
 
@@ -679,7 +679,7 @@ class UiSchemaOptionsTest {
     void testDateTimeWidgetDefaultOptions() {
         class DateTimeDefaultTestSettings implements DefaultNodeSettings {
 
-            @Widget
+            @Widget(title = "", description = "")
             @DateTimeWidget
             String m_dateTime;
         }
@@ -700,7 +700,7 @@ class UiSchemaOptionsTest {
     void testDateTimeWidgetCustomOptions() {
         class DateTimeDefaultTestSettings implements DefaultNodeSettings {
 
-            @Widget
+            @Widget(title = "", description = "")
             @DateTimeWidget(showTime = true, showSeconds = true, showMilliseconds = true, minDate = "2023-06-12",
                 maxDate = "2023-06-14", timezone = "America/Dawson_Creek")
             String m_dateTime;
@@ -721,7 +721,7 @@ class UiSchemaOptionsTest {
     void testDateWidgetOptions() {
         class DateTimeDefaultTestSettings implements DefaultNodeSettings {
 
-            @Widget
+            @Widget(title = "", description = "")
             @DateWidget(minDate = "2023-06-12", maxDate = "2023-06-14")
             LocalDate m_date;
         }
@@ -735,7 +735,7 @@ class UiSchemaOptionsTest {
     @Test
     void testRichTextInputWidget() {
         class RichTextInputWidgetSettings implements DefaultNodeSettings {
-            @Widget
+            @Widget(title = "", description = "")
             @RichTextInputWidget
             String m_richTextContent;
         }
@@ -775,27 +775,27 @@ class UiSchemaOptionsTest {
     @Test
     void testCredentials() {
         class CredentialsWidgetSettings implements DefaultNodeSettings {
-            @Widget
+            @Widget(title = "", description = "")
             @CredentialsWidget(passwordLabel = "myPasswordLabel", usernameLabel = "myUsernameLabel")
             Credentials m_credentials;
 
-            @Widget
+            @Widget(title = "", description = "")
             @PasswordWidget(passwordLabel = "myPasswordLabel")
             Credentials m_password;
 
-            @Widget
+            @Widget(title = "", description = "")
             @UsernameWidget("myUsernameLabel")
             Credentials m_username;
 
-            @Widget
+            @Widget(title = "", description = "")
             @CredentialsWidget(hasSecondAuthenticationFactor = true, secondFactorLabel = "mySecondFactorLabel")
             Credentials m_credentialsWithSecondFactor;
 
-            @Widget
+            @Widget(title = "", description = "")
             @PasswordWidget(hasSecondAuthenticationFactor = true, secondFactorLabel = "mySecondFactorLabel")
             Credentials m_passwordWithSecondFactor;
 
-            @Widget()
+            @Widget(title = "", description = "")
             @CredentialsWidget(hasPasswordProvider = MyHasPasswordProvider.class,
                 hasUsernameProvider = MyHasUsernameProvider.class)
             Credentials m_withStateProviders;
@@ -875,7 +875,7 @@ class UiSchemaOptionsTest {
     @Test
     void testThrowsIfUsernameWidget() {
         class CredentialsWidgetSettings implements DefaultNodeSettings {
-            @Widget
+            @Widget(title = "", description = "")
             @PasswordWidget(passwordLabel = "myPasswordLabel")
             @UsernameWidget("myUsernameLabel")
             Credentials m_credentials;
@@ -889,11 +889,11 @@ class UiSchemaOptionsTest {
     void testLocalFileReaderWidget() {
         class LocalFileChooserWidgetTestSettings implements DefaultNodeSettings {
 
-            @Widget
+            @Widget(title = "", description = "")
             @LocalFileReaderWidget
             String m_defaultOptions;
 
-            @Widget
+            @Widget(title = "", description = "")
             @LocalFileReaderWidget(placeholder = "myPlaceholder")
             String m_specialOptions;
 
@@ -928,19 +928,19 @@ class UiSchemaOptionsTest {
     void testLocalFileWriterWidget() {
         class LocalFileWriterWidgetTestSettings implements DefaultNodeSettings {
 
-            @Widget
+            @Widget(title = "", description = "")
             @LocalFileWriterWidget
             String m_defaultOptions;
 
-            @Widget
+            @Widget(title = "", description = "")
             @LocalFileWriterWidget(placeholder = "myPlaceholder", fileExtension = "pdf")
             String m_specialOptions;
 
-            @Widget
+            @Widget(title = "", description = "")
             @LocalFileWriterWidget(fileExtensionProvider = MyFileExtensionProvider.class)
             String m_providedExtension;
 
-            @Widget(valueRef = MyValueRef.class)
+            @Widget(title = "", description = "", valueRef = MyValueRef.class)
             String m_dependency;
         }
         var response = buildTestUiSchema(LocalFileWriterWidgetTestSettings.class);
@@ -964,19 +964,19 @@ class UiSchemaOptionsTest {
     void testFileWriterWidget() {
         class FileWriterWidgetTestSettings implements DefaultNodeSettings {
 
-            @Widget
+            @Widget(title = "", description = "")
             @FileWriterWidget
             FileChooser m_defaultOptions;
 
-            @Widget
+            @Widget(title = "", description = "")
             @FileWriterWidget(fileExtension = "pdf")
             FileChooser m_staticExtension;
 
-            @Widget
+            @Widget(title = "", description = "")
             @FileWriterWidget(fileExtensionProvider = MyFileExtensionProvider.class)
             FileChooser m_providedExtension;
 
-            @Widget(valueRef = MyValueRef.class)
+            @Widget(title = "", description = "", valueRef = MyValueRef.class)
             String m_dependency;
 
         }

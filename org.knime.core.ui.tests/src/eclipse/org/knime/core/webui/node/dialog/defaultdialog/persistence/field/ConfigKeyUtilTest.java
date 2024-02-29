@@ -97,26 +97,26 @@ class ConfigKeyUtilTest {
 
     private static class Settings {
 
-        @Widget
+        @Widget(title = "", description = "")
         int setting0;
 
-        @Widget
+        @Widget(title = "", description = "")
         int m_setting1;
 
         @Persist
-        @Widget
+        @Widget(title = "", description = "")
         int setting2;
 
         @Persist(configKey = "foo")
-        @Widget
+        @Widget(title = "", description = "")
         int setting3;
 
         @Persist(hidden = true)
-        @Widget
+        @Widget(title = "", description = "")
         int setting4;
 
         @Persist(customPersistor = CustomPersistor.class)
-        @Widget
+        @Widget(title = "", description = "")
         int setting5;
 
         @Persist(settingsModel = SettingsModelAuthentication.class)

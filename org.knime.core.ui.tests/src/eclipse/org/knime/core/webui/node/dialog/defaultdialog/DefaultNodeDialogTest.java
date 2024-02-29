@@ -121,7 +121,7 @@ public class DefaultNodeDialogTest {
     }
 
     static class ModelSettings implements DefaultNodeSettings {
-        @Widget
+        @Widget(title = "", description = "")
         @Persist(configKey = "model setting")
         String m_modelSetting = "1";
     }
@@ -132,11 +132,11 @@ public class DefaultNodeDialogTest {
                 A, B, C
         }
 
-        @Widget
+        @Widget(title = "", description = "")
         @Persist(configKey = "view setting")
         MyEnum m_viewSetting = MyEnum.A;
 
-        @Widget
+        @Widget(title = "", description = "")
         @Persist(configKey = "nested")
         NestedViewSettings m_nestedViewSetting = new NestedViewSettings();
 
@@ -144,11 +144,11 @@ public class DefaultNodeDialogTest {
     }
 
     static class NestedViewSettings implements DefaultNodeSettings {
-        @Widget
+        @Widget(title = "", description = "")
         @Persist(configKey = "nested view setting")
         String m_nestedViewSettings = "3";
 
-        @Widget
+        @Widget(title = "", description = "")
         @Persist(configKey = "nested view setting 2")
         String m_nestedViewSettings2 = "4";
 

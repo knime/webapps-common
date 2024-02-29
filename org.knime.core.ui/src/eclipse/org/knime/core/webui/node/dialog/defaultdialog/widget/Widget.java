@@ -77,12 +77,12 @@ public @interface Widget {
     /**
      * @return the title / label of the field
      */
-    String title() default "";
+    String title();
 
     /**
      * @return the description of the field (for tooltips or node descriptions)
      */
-    String description() default "";
+    String description();
 
     /**
      * @return true if the annotated setting is advanced

@@ -61,10 +61,10 @@ class NestedExampleDefaultNodeSettings implements DefaultNodeSettings {
             FLOP,
     }
 
-    @Widget(title = "Enum Setting")
+    @Widget(title = "Enum Setting", description = "")
     NestedExampleDefaultNodeSettings.DummyEnum m_enumV = DummyEnum.TOP;
 
-    @Widget(title = "Integer Setting")
+    @Widget(title = "Integer Setting", description = "")
     int m_numberV = 42;
 
     /** empty constructor */

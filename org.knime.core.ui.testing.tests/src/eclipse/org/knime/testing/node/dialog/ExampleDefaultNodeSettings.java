@@ -57,10 +57,10 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
  */
 class ExampleDefaultNodeSettings implements DefaultNodeSettings {
 
-    @Widget(title = "String Setting")
+    @Widget(title = "String Setting", description = "")
     String m_stringV = "default string";
 
-    @Widget(title = "Boolean Setting")
+    @Widget(title = "Boolean Setting", description = "")
     boolean m_boolV = true;
 
     NestedExampleDefaultNodeSettings m_nested = new NestedExampleDefaultNodeSettings();
