@@ -85,11 +85,13 @@ export type UIExtensionServiceAPILayer = {
 
   imageGenerated: (image: string) => void;
 
-  publishData: (data: any) => void;
-
-  setDirtyModelSettings: () => void;
-
-  setSettingsWithCleanModelSettings: (cleanData: any) => void;
+  publishSettings: (payload: {
+    settings: any;
+    settingsModified: {
+      model: boolean;
+      view: boolean;
+    };
+  }) => void;
 
   onApplied: (payload: {
     /**

@@ -1,11 +1,15 @@
 import { UIExtensionPushEvents } from "src/types";
 import { AbstractService } from "./AbstractService";
 import { DialogServiceAPILayer } from "./types/serviceApiLayers";
+import { SettingsComparator } from "./SettingsComparator";
 
 /**
  * A utility class to interact with Dialog settings implemented by a UI Extension node.
+ * @param T the type of the settings
  */
-export class DialogService extends AbstractService<DialogServiceAPILayer> {
+export class DialogService<
+  T = any,
+> extends AbstractService<DialogServiceAPILayer> {
   /**
    * @returns {boolean} - true, if the node this dialog belongs to also has a node view, otherwise false
    */
@@ -22,48 +26,99 @@ export class DialogService extends AbstractService<DialogServiceAPILayer> {
   }
 
   /**
-   * Whether the method {@link setCleanModelSettings} has beed called since the
-   * method {@link setDirtyModelSettings} has last been called
+   * This method is to be called once initially, to set up handlers used when settings are applied or modified
    */
-  private dirtyModelSettings = false;
-
-  /**
-   * To be called whenever settings change and the model settings are clean afterwards (possibly also before)
-   * @param {any} data - the current data without dirty model settings
-   */
-  setSettingsWithCleanModelSettings(data: any) {
-    this.dirtyModelSettings = false;
-    this.baseService.setSettingsWithCleanModelSettings(data);
+  configureSettingsLifecycle({
+    applyListener,
+    modifyConfig,
+  }: {
+    /**
+     * Used to listen to push events of the embedder to apply the settings in the dialog.
+     */
+    applyListener: () => Promise<
+      | { isApplied: true; appliedSettings: T }
+      | { isApplied: false; appliedSettings?: T }
+    >;
+    /**
+     * Defines whether model and/or view settings are communicated as modified to the embedder
+     * with every call to {@link publishSettings}.
+     */
+    modifyConfig: {
+      /**
+       * Settings that serve as a clean starting point
+       */
+      initialSettings: T;
+      /**
+       * To be supplied if model settings exist in the dialog.
+       * For a simple implementation to extend from { @see DefaultSettingsComparator }.
+       */
+      modelSettingsComparator?: SettingsComparator<T>;
+      /**
+       * To be supplied if view settings exist in the dialog.
+       * For a simple implementation to extend from { @see DefaultSettingsComparator }.
+       */
+      viewSettingsComparator?: SettingsComparator<T>;
+    };
+  }) {
+    this.setApplyListener(applyListener);
+    this.setModifyConfig(modifyConfig);
   }
 
   /**
-   * To be called when the last applied model settings do not match the current ones
-   */
-  setDirtyModelSettings() {
-    this.dirtyModelSettings = true;
-    this.baseService.setDirtyModelSettings();
-  }
-
-  /**
-   * Publish a data update event to the embedder to be sent to other UIExtensions.
-   * @param {any} data - the data to send.
+   * Publish updated settings to the embedder.
+   * This may be used on embedder side by sending the settings to dependent other UI Extensions.
+   * @param {T} settings - the updated settings.
    * @returns {void}
    */
-  publishSettings(data: any) {
-    if (!this.dirtyModelSettings) {
-      this.baseService.publishData(data);
-    }
+  publishSettings(settings: T) {
+    this.baseService.publishSettings({
+      settings,
+      settingsModified: {
+        model: this.modelSettingsComparator?.isModified(settings) ?? true,
+        view: this.viewSettingsComparator?.isModified(settings) ?? true,
+      },
+    });
   }
 
-  /**
-   * This should be used to listen to push events of the embedder to apply the settings in the dialog.
-   */
-  setApplyListener(applyListener: () => Promise<{ isApplied: boolean }>) {
+  private modelSettingsComparator: SettingsComparator<unknown>;
+  private viewSettingsComparator: SettingsComparator<unknown>;
+
+  setModifyConfig({
+    modelSettingsComparator,
+    viewSettingsComparator,
+    initialSettings,
+  }: {
+    modelSettingsComparator?: SettingsComparator<T>;
+    viewSettingsComparator?: SettingsComparator<T>;
+    initialSettings: T;
+  }) {
+    this.modelSettingsComparator = modelSettingsComparator;
+    this.viewSettingsComparator = viewSettingsComparator;
+    this.setCleanSettings(initialSettings);
+  }
+
+  private setApplyListener(
+    applyListener: () => Promise<
+      | { isApplied: true; appliedSettings: T }
+      | { isApplied: false; appliedSettings?: T }
+    >,
+  ) {
     return this.baseService.addPushEventListener(
       UIExtensionPushEvents.EventTypes.ApplyDataEvent,
       () => {
-        applyListener().then(this.baseService.onApplied);
+        applyListener().then(({ isApplied, appliedSettings }) => {
+          if (isApplied) {
+            this.setCleanSettings(appliedSettings);
+            this.publishSettings(appliedSettings);
+          }
+          this.baseService.onApplied({ isApplied });
+        });
       },
     );
+  }
+
+  private setCleanSettings(cleanSettings: T) {
+    this.modelSettingsComparator?.setSettings(cleanSettings);
+    this.viewSettingsComparator?.setSettings(cleanSettings);
   }
 }

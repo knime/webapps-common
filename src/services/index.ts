@@ -12,3 +12,5 @@ export {
   NominalColorHandler,
   ColorHandler,
 } from "./ColorService";
+
+export { SettingsComparator } from "./SettingsComparator";

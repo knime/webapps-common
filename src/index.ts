@@ -12,6 +12,7 @@ export {
   AlertingService,
   ResourceService,
   ImageGenerationService,
+  SettingsComparator,
 } from "./services";
 
 export * from "./types";
