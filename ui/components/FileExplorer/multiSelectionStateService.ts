@@ -10,7 +10,7 @@ export type MultiSelectionState = {
 };
 
 /**
- * Initalize the state of the multi selection service
+ * Initialize the state of the multi selection service
  */
 export const getInitialState = (): MultiSelectionState => ({
   anchorHistory: [],
@@ -116,7 +116,7 @@ export const ctrlClick = (
   // If the item was selected
   if (isSelected) {
     // then we need to add it to the anchor exceptions to make sure
-    // it's not higlighted
+    // it's not highlighted
     return mergeStates(withUpdatedAnchorHistory, {
       anchorExceptions: [...anchorExceptions, clickedItem],
     });
@@ -246,7 +246,7 @@ const sliceOnExceptions = (
       ({ from, to }) => from <= exception && exception <= to,
     );
 
-    // everytime a range is found that includes an exception,
+    // every time a range is found that includes an exception,
     // we have to slice that range to exclude said exception
     if (rangeContainingException) {
       const { from, to } = rangeContainingException;

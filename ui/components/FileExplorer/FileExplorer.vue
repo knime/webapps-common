@@ -42,7 +42,7 @@ export interface Props {
   /**
    * Used to externally bind which item should be in the "rename" state.
    * This prop is not required but it's useful
-   * if you want to extenally activate the rename state (e.g via the store)
+   * if you want to externally activate the rename state (e.g via the store)
    */
   activeRenamedItemId?: string | null;
   /**
@@ -75,6 +75,10 @@ export interface Props {
    * Pass in an html elements here which, when clicked, should not unset the current selection.
    */
   clickOutsideException?: HTMLElement | null;
+  /**
+   * Selected item ids
+   */
+  selectedItemIds?: string[];
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -87,10 +91,13 @@ const props = withDefaults(defineProps<Props>(), {
   disableDragging: false,
   draggingAnimationMode: "auto",
   clickOutsideException: null,
+  selectedItemIds: () => [],
 });
 
 const emit = defineEmits<{
+  /** @deprecated please use update:selectedItemIds */
   (e: "changeSelection", selectedItemIds: Array<string>): void;
+  (e: "update:selectedItemIds", selectedItemIds: Array<string>): void;
   (e: "changeDirectory", pathId: string): void;
   (e: "openFile", item: FileExplorerItemType): void;
   (e: "deleteItems", payload: { items: Array<FileExplorerItemType> }): void;
@@ -136,12 +143,26 @@ const {
 const selectedItems = computed(() =>
   selectedIndexes.value.map((index) => props.items[index]),
 );
-const selectedItemIds = computed(() =>
-  selectedItems.value.map((item) => item.id),
-);
+
+// handle selection of items via prop change
+watch(toRef(props, "selectedItemIds"), (itemIds, oldItemIds) => {
+  // check if they really changed
+  if (itemIds.slice().sort().join() === oldItemIds.slice().sort().join()) {
+    return;
+  }
+  resetSelection();
+  itemIds
+    .map((id) => props.items.findIndex((item) => item.id === id))
+    .filter((index) => index >= 0)
+    .forEach((index) =>
+      handleSelectionClick(index, { ctrlKey: true } as MouseEvent),
+    );
+});
 
 watch(multiSelectionState, () => {
-  emit("changeSelection", selectedItemIds.value);
+  const itemIds = selectedItems.value.map((item) => item.id);
+  emit("changeSelection", itemIds);
+  emit("update:selectedItemIds", itemIds);
 });
 /** MULTISELECTION */
 

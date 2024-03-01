@@ -206,33 +206,49 @@ describe("FileExplorer.vue", () => {
   });
 
   describe("selection", () => {
-    it("should select items and emit selected ones", async () => {
-      const { wrapper } = doMount();
-      await getRenderedItems(wrapper).at(1)?.trigger("click");
-      await getRenderedItems(wrapper)
-        .at(3)
-        ?.trigger("click", { shiftKey: true });
-      await getRenderedItems(wrapper)
-        .at(5)
-        ?.trigger("click", { ctrlKey: true });
+    it.each(["update:selectedItemIds", "changeSelection"])(
+      "should select items and emit '%s' for selected ones",
+      async (eventName) => {
+        const { wrapper } = doMount();
+        await getRenderedItems(wrapper).at(1)?.trigger("click");
+        await getRenderedItems(wrapper)
+          .at(3)
+          ?.trigger("click", { shiftKey: true });
+        await getRenderedItems(wrapper)
+          .at(5)
+          ?.trigger("click", { ctrlKey: true });
 
-      expect(getRenderedItems(wrapper).at(1)?.classes()).toContain("selected");
+        expect(getRenderedItems(wrapper).at(1)?.classes()).toContain(
+          "selected",
+        );
+        expect(getRenderedItems(wrapper).at(2)?.classes()).toContain(
+          "selected",
+        );
+        expect(getRenderedItems(wrapper).at(3)?.classes()).toContain(
+          "selected",
+        );
+        expect(getRenderedItems(wrapper).at(5)?.classes()).toContain(
+          "selected",
+        );
+
+        expect(wrapper.emitted(eventName)?.[0][0]).toEqual(["1"]);
+        expect(wrapper.emitted(eventName)?.[1][0]).toEqual(["1", "2", "3"]);
+        expect(wrapper.emitted(eventName)?.[2][0]).toEqual([
+          "1",
+          "2",
+          "3",
+          "5",
+        ]);
+      },
+    );
+
+    it("should select items on prop change", async () => {
+      const { wrapper } = doMount({ props: { mode: "mini" } });
+
+      await wrapper.setProps({ selectedItemIds: ["2", "3"] });
+
       expect(getRenderedItems(wrapper).at(2)?.classes()).toContain("selected");
       expect(getRenderedItems(wrapper).at(3)?.classes()).toContain("selected");
-      expect(getRenderedItems(wrapper).at(5)?.classes()).toContain("selected");
-
-      expect(wrapper.emitted("changeSelection")?.[0][0]).toEqual(["1"]);
-      expect(wrapper.emitted("changeSelection")?.[1][0]).toEqual([
-        "1",
-        "2",
-        "3",
-      ]);
-      expect(wrapper.emitted("changeSelection")?.[2][0]).toEqual([
-        "1",
-        "2",
-        "3",
-        "5",
-      ]);
     });
 
     it("should disable multi-selection based on configuration", async () => {
