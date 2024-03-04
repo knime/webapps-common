@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import * as Vue from "vue";
-import { expect, describe, beforeEach, it, vi } from "vitest";
+import { expect, describe, beforeEach, it, vi, beforeAll } from "vitest";
 import { DOMWrapper, mount, VueWrapper } from "@vue/test-utils";
 
 import FolderIcon from "../../../assets/img/icons/folder.svg";
@@ -117,6 +117,12 @@ describe("FileExplorer.vue", () => {
     props?: Props | {};
     customSlots?: { contextMenu: any };
   };
+
+  const scrollIntoView = vi.fn();
+
+  beforeAll(() => {
+    HTMLElement.prototype.scrollIntoView = scrollIntoView;
+  });
 
   const doMount = ({
     props = {},
@@ -249,6 +255,7 @@ describe("FileExplorer.vue", () => {
 
       expect(getRenderedItems(wrapper).at(2)?.classes()).toContain("selected");
       expect(getRenderedItems(wrapper).at(3)?.classes()).toContain("selected");
+      expect(scrollIntoView).toHaveBeenCalled();
     });
 
     it("should disable multi-selection based on configuration", async () => {

@@ -69,7 +69,7 @@ describe("ComboBox.vue", () => {
     expect(wrapper.vm.sizeVisibleOptions).toBe(sizeVisibleOptions);
 
     const multiselectComponent = wrapper.findComponent(Multiselect);
-    expect(multiselectComponent.props("possibleValues").length).toBe(1);
+    expect(multiselectComponent.props("possibleValues")!.length).toBe(1);
     expect(multiselectComponent.props("sizeVisibleOptions")).toBe(1);
   });
 

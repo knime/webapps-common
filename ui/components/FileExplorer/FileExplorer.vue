@@ -127,6 +127,9 @@ const canOpenFile = (item: FileExplorerItemType) => item.isOpenableFile;
 
 const changeDirectory = (pathId: string) => emit("changeDirectory", pathId);
 
+/** Refs */
+const itemRefs = ref<{ $el: HTMLElement }[]>([]);
+
 /** MULTISELECTION */
 const multiSelection = useMultiSelection({
   singleSelectionOnly: toRef(props, "disableMultiSelect"),
@@ -145,18 +148,27 @@ const selectedItems = computed(() =>
 );
 
 // handle selection of items via prop change
-watch(toRef(props, "selectedItemIds"), (itemIds, oldItemIds) => {
-  // check if they really changed
-  if (itemIds.slice().sort().join() === oldItemIds.slice().sort().join()) {
+watch(toRef(props, "selectedItemIds"), (itemIds) => {
+  // look up item indices
+  const itemIndices = itemIds
+    .map((id) => props.items.findIndex((item) => item.id === id))
+    .filter((index) => index !== -1);
+
+  // all items are already selected
+  if (itemIndices.every(isSelected)) {
     return;
   }
+
+  // reset and select all via index
   resetSelection();
-  itemIds
-    .map((id) => props.items.findIndex((item) => item.id === id))
-    .filter((index) => index >= 0)
-    .forEach((index) =>
-      handleSelectionClick(index, { ctrlKey: true } as MouseEvent),
-    );
+  itemIndices.forEach((index) =>
+    handleSelectionClick(index, { ctrlKey: true } as MouseEvent),
+  );
+
+  // scroll to first selected item
+  const firstIndex = itemIndices.slice().sort().at(0) ?? -1;
+  const element = itemRefs.value[firstIndex]?.$el;
+  element?.scrollIntoView({ behavior: "smooth", block: "center" });
 });
 
 watch(multiSelectionState, () => {
@@ -181,7 +193,6 @@ watch(activeRenamedItemId, () => {
 
 /** DRAGGING */
 const itemBack = ref<{ $el: HTMLElement } | null>(null);
-const itemRefs = ref<{ $el: HTMLElement }[]>([]);
 const customPreviewContainer = ref<HTMLElement | null>(null);
 const customDragPreviewPlaceholder = ref<HTMLElement | null>(null);
 
