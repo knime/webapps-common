@@ -134,8 +134,8 @@ const onCaseSensitiveChange = (isCaseSensitive: boolean) => {
 // Initial updates
 
 const loadingInfo = ref(markRaw(TwinlistLoadingInfo) as Raw<any> | null);
-const possibleValues = ref(null as null | PossibleValue[]);
-const previouslySelectedTypes = ref(null as null | IdAndText[]);
+const possibleValues = ref<PossibleValue[]>([]);
+const previouslySelectedTypes = ref<IdAndText[]>([]);
 const initialManuallySelected = ref(null as null | string[]);
 /**
  *  add unknown columns either to the manually selected or manually deselected
@@ -186,12 +186,9 @@ inject("getPossibleValuesFromUiSchema")(control.value).then((result) => {
 
 // Hiding controls
 
-const withTypes = computed(() => {
-  return (
-    possibleValues.value !== null &&
-    Boolean(possibleValues.value[0]?.hasOwnProperty("type"))
-  );
-});
+const withTypes = computed(() =>
+  Boolean(possibleValues.value[0]?.hasOwnProperty("type")),
+);
 const showMode = computed(
   () => control.value.uischema.options?.showMode ?? true,
 );
@@ -223,7 +220,7 @@ const rightLabel = computed(
       :disabled="disabled"
       :with-types="withTypes"
       :initial-selected-types="control.data.typeFilter.selectedTypes"
-      :additional-possible-types="previouslySelectedTypes!"
+      :additional-possible-types="previouslySelectedTypes"
       :initial-pattern="control.data.patternFilter.pattern"
       :initial-mode="control.data.mode.toLowerCase()"
       :initial-case-sensitive-pattern="
@@ -237,7 +234,7 @@ const rightLabel = computed(
       "
       :filter-chosen-values-on-possible-values-change="false"
       mode-label="Selection mode"
-      :possible-values="possibleValues ?? []"
+      :possible-values="possibleValues"
       :size="twinlistSize"
       :left-label="leftLabel"
       :right-label="rightLabel"
