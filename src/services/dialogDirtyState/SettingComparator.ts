@@ -1,9 +1,9 @@
 /**
  *  @param T the type of the settings (same as in {@link DialogService})
  *
- * E.g. ({@see DefaultSettingsComparator }) .
+ * E.g. ({@see DefaultSettingComparator }) .
  */
-export interface SettingsComparator<T> {
+export interface SettingComparator<T> {
   /**
    * @param settings new settings
    * @returns whether the new settings were modified with respect to the scope of this comparator
@@ -18,7 +18,7 @@ export interface SettingsComparator<T> {
 }
 
 /**
- * Default implementation of a {@link SettingsComparator} that holds an internal clean state
+ * Default implementation of a {@link SettingComparator} that holds an internal clean state
  *  updated by {@link setCleanSettings} to compare against on {@link isModified}
  *
  * @param T the type of the settings (same as in {@link DialogService})
@@ -26,8 +26,8 @@ export interface SettingsComparator<T> {
  *
  * The methods {@link toInternalState} and {@link equals} need to be implemented.
  */
-export class DefaultSettingsComparator<T = any, S = any>
-  implements SettingsComparator<T>
+export class DefaultSettingComparator<T = any, S = any>
+  implements SettingComparator<T>
 {
   /**
    * Internal state to compare against

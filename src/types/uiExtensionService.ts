@@ -61,6 +61,22 @@ export type UIExtensionServiceConfig = AlertConfig &
     columnNamesColorModel?: ColorModel;
   };
 
+export enum ApplyState {
+  CLEAN,
+  EXEC,
+  CONFIG,
+  IDLE,
+}
+
+export enum ViewState {
+  CLEAN,
+  EXEC,
+  CONFIG,
+  IDLE,
+}
+
+export type APILayerDirtyState = { apply: ApplyState; view: ViewState };
+
 /**
  * API layer definition for the UIExtension service. This contract
  * represents the method implementations that the embedder of Extensions
@@ -85,13 +101,9 @@ export type UIExtensionServiceAPILayer = {
 
   imageGenerated: (image: string) => void;
 
-  publishSettings: (payload: {
-    settings: any;
-    settingsModified: {
-      model: boolean;
-      view: boolean;
-    };
-  }) => void;
+  publishData: (settings: any) => void;
+
+  onDirtyStateChange: (newDirtyState: APILayerDirtyState) => void;
 
   onApplied: (payload: {
     /**

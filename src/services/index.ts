@@ -13,4 +13,8 @@ export {
   ColorHandler,
 } from "./ColorService";
 
-export { SettingsComparator } from "./SettingsComparator";
+export {
+  SettingComparator,
+  DefaultSettingComparator,
+} from "./dialogDirtyState/SettingComparator";
+export { SettingState } from "./dialogDirtyState/types";
