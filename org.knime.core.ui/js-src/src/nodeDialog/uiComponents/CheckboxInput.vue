@@ -11,11 +11,7 @@ import useDialogControl, {
 } from "../composables/components/useDialogControl";
 import { rendererProps } from "@jsonforms/vue";
 const props = defineProps(rendererProps());
-const {
-  control,
-  handleDirtyChange: onChange,
-  disabled,
-} = useDialogControl({ props });
+const { control, onChange, disabled } = useDialogControl({ props });
 const hover = ref(false);
 const triggersReexecution = useTriggersReexecution(control);
 </script>

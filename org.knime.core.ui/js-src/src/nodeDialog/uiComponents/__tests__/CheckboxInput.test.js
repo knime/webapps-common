@@ -79,33 +79,6 @@ describe("CheckboxInput.vue", () => {
     expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
   });
 
-  it("indicates model settings change when model setting is changed", async () => {
-    const setDirtyModelSettingsMock = vi.fn();
-    const { wrapper, updateData } = await mountJsonFormsComponent(
-      CheckboxInput,
-      {
-        props: {
-          ...defaultProps,
-          control: {
-            ...defaultProps.control,
-            uischema: {
-              ...defaultProps.control.schema,
-              scope: "#/properties/model/filterMissingValues",
-            },
-          },
-        },
-        provide: { setDirtyModelSettingsMock },
-      },
-    );
-    await wrapper.findComponent(Checkbox).vm.$emit("update:modelValue", true);
-    expect(updateData).toHaveBeenCalledWith(
-      expect.anything(),
-      defaultProps.control.path,
-      true,
-    );
-    expect(setDirtyModelSettingsMock).toHaveBeenCalled();
-  });
-
   it("checks that re-execution icon is present if it is a model setting", async () => {
     const { wrapper } = await mountJsonFormsComponent(CheckboxInput, {
       props: {

@@ -6,11 +6,7 @@ import { rendererProps } from "@jsonforms/vue";
 import LabeledInput from "./label/LabeledInput.vue";
 import { ref } from "vue";
 const props = defineProps(rendererProps());
-const {
-  control,
-  handleDirtyChange: onChange,
-  disabled,
-} = useDialogControl<string>({ props });
+const { control, onChange, disabled } = useDialogControl<string>({ props });
 
 const richTextEditorElement = ref<{ $el: HTMLElement } | null>(null);
 /**

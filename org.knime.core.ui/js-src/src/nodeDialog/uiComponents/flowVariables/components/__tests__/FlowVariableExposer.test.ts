@@ -1,20 +1,23 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import InputField from "webapps-common/ui/components/forms/InputField.vue";
 import { mount } from "@vue/test-utils";
-import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, afterEach, describe, expect, it, vi, Mock } from "vitest";
 import flushPromises from "flush-promises";
 
 import FlowVariableExposer from "../FlowVariableExposer.vue";
 import type FlowVariableExposerProps from "../../types/FlowVariableExposerProps";
 import ErrorMessage from "../../../ErrorMessage.vue";
 import { providedKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
+import { injectionKey as dirtySettingInjectionKey } from "@/nodeDialog/composables/components/useDirtySetting";
 import { FlowSettings } from "@/nodeDialog/api/types";
 import { ref, type Ref } from "vue";
 
 describe("FlowVariableExposer", () => {
   let props: FlowVariableExposerProps,
     flowSettings: Ref<FlowSettings | undefined>,
-    flowVariablesMap: Record<string, FlowSettings>;
+    flowVariablesMap: Record<string, FlowSettings>,
+    setDirtyState: Mock,
+    unsetDirtyState: Mock;
 
   beforeEach(() => {
     flowVariablesMap = {};
@@ -33,12 +36,22 @@ describe("FlowVariableExposer", () => {
   }: {
     props: FlowVariableExposerProps;
   }) => {
+    setDirtyState = vi.fn();
+    unsetDirtyState = vi.fn();
     return mount(FlowVariableExposer as any, {
       props,
       global: {
         provide: {
           [providedByComponentKey]: {
             flowSettings,
+          },
+          [dirtySettingInjectionKey as symbol]: {
+            exposed: {
+              get: () => ({
+                set: setDirtyState,
+                unset: unsetDirtyState,
+              }),
+            },
           },
           getFlowVariablesMap: () => flowVariablesMap,
         },
@@ -69,6 +82,7 @@ describe("FlowVariableExposer", () => {
     };
     const wrapper = mountFlowVariableExposer({ props });
     expect(wrapper.findComponent(InputField).props().modelValue).toBe(varName);
+    expect(setDirtyState).not.toHaveBeenCalled();
   });
 
   it("sets exposed flow variable", async () => {
@@ -80,6 +94,7 @@ describe("FlowVariableExposer", () => {
     expect(flowVariablesMap[props.persistPath]).toStrictEqual({
       exposedFlowVariableName: inputValue,
     });
+    expect(setDirtyState).toHaveBeenCalledWith(inputValue);
   });
 
   it.each([["", "  "]])(
@@ -106,6 +121,7 @@ describe("FlowVariableExposer", () => {
       expect(wrapper.findComponent(InputField).props().modelValue).toBe(
         unsettingFlowVarName,
       );
+      expect(unsetDirtyState).toHaveBeenCalled();
     },
   );
 

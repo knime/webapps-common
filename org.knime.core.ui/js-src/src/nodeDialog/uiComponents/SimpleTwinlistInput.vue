@@ -32,11 +32,7 @@ const props = defineProps({
   },
 });
 
-const {
-  control,
-  handleDirtyChange: onChange,
-  disabled,
-} = useDialogControl<string[]>({ props });
+const { control, onChange, disabled } = useDialogControl<string[]>({ props });
 const getPossibleValuesFromUiSchema = inject("getPossibleValuesFromUiSchema");
 const possibleValues: Ref<null | IdAndText[]> = ref(null);
 const TwinlistLoadingInfoRaw = markRaw(TwinlistLoadingInfo) as any;

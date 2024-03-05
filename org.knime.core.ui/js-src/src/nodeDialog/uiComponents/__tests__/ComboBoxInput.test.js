@@ -97,19 +97,6 @@ describe("ComboBoxInput.vue", () => {
     );
   });
 
-  it("indicates model settings change when model setting is changed", async () => {
-    const setDirtyModelSettingsMock = vi.fn();
-    props.control.uischema.scope = "#/properties/model/properties/yAxisColumn";
-    const { wrapper } = await mountJsonFormsComponent(ComboBoxInput, {
-      props,
-      provide: { setDirtyModelSettingsMock },
-    });
-    expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
-    const comboBox = wrapper.findComponent(ComboBox);
-    comboBox.vm.$emit("update:modelValue", ["id_1", "id_2"]);
-    expect(setDirtyModelSettingsMock).toHaveBeenCalled();
-  });
-
   it("sets correct label", () => {
     expect(wrapper.find("label").text()).toBe(props.control.label);
   });

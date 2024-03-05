@@ -4,11 +4,7 @@ import LabeledInput from "./label/LabeledInput.vue";
 import TextArea from "webapps-common/ui/components/forms/TextArea.vue";
 import { rendererProps } from "@jsonforms/vue";
 const props = defineProps(rendererProps());
-const {
-  control,
-  handleDirtyChange: onChange,
-  disabled,
-} = useDialogControl<string>({ props });
+const { control, onChange, disabled } = useDialogControl<string>({ props });
 </script>
 
 <template>

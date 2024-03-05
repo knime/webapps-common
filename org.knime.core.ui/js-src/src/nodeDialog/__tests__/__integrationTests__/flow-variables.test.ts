@@ -1,6 +1,8 @@
-import { beforeEach, describe, expect, it, vi, type SpyInstance } from "vitest";
+import { MockInstance, beforeEach, describe, expect, it, vi } from "vitest";
 import { DOMWrapper, mount, VueWrapper } from "@vue/test-utils";
 import Dropdown from "webapps-common/ui/components/forms/Dropdown.vue";
+import InputField from "webapps-common/ui/components/forms/InputField.vue";
+
 import { JsonDataService } from "@knime/ui-extension-service";
 
 import NodeDialog from "../../NodeDialog.vue";
@@ -8,6 +10,7 @@ import flushPromises from "flush-promises";
 
 import FlowVariableButton from "@/nodeDialog/uiComponents/flowVariables/components/FlowVariableButton.vue";
 import { getOptions } from "../utils";
+import { mockRegisterSettings, registeredSettingState, controllingFlowVariableState, exposedFlowVariableState } from "@@/test-setup/utils/integration/dirtySettingState";
 
 import type {
   FlowSettings,
@@ -43,12 +46,13 @@ describe("flow variables", () => {
     };
   };
 
-  let dataServiceSpy: SpyInstance<any>,
+  let dataServiceSpy: MockInstance,
     wrapper: Wrapper,
     flowVariablesMap: FlowVariablesMap,
     flowVarButton: VueWrapper<any>,
     dropdownButton: DOMWrapper<HTMLButtonElement>,
-    listItems: DOMWrapper<HTMLLIElement>[];
+    listItems: DOMWrapper<HTMLLIElement>[],
+    exposedVariableInput: DOMWrapper<HTMLInputElement>;
 
   const mountNodeDialog = async () => {
     wrapper = mount(NodeDialog as any, getOptions()) as Wrapper;
@@ -61,6 +65,7 @@ describe("flow variables", () => {
     await flowVarButton.find("button").trigger("mouseup");
     await flushPromises();
     const dropdown = flowVarButton.findComponent(Dropdown);
+    exposedVariableInput = flowVarButton.findComponent(InputField).find("input");
     dropdownButton = dropdown.find("[role=button]");
     listItems = dropdown.findAll("li");
   };
@@ -103,6 +108,7 @@ describe("flow variables", () => {
         }
         return Promise.resolve();
       });
+    mockRegisterSettings()
     await mountNodeDialog();
     await expandFlowVariablesPopover();
   });
@@ -134,9 +140,9 @@ describe("flow variables", () => {
   });
 
   it("sets controlling flow variables", async () => {
+    expect(registeredSettingState.addControllingFlowVariable).toHaveBeenCalledTimes(1)
     // Click on "flowVar1"
     listItems.at(1)?.trigger("click");
-
     // Data service is called to get the value of the flow variable
     expect(dataServiceSpy).toHaveBeenNthCalledWith(2, {
       method: "flowVariables.getFlowVariableOverrideValue",
@@ -150,6 +156,7 @@ describe("flow variables", () => {
     });
     await flushPromises();
 
+    expect(controllingFlowVariableState.set).toHaveBeenCalledWith(flowVar1.name, {isFlawed: false})
     expect(dropdownButton.text()).toBe(flowVar1.name);
     expect(flowVariablesMap).toStrictEqual({
       "model.customConfigKey": {
@@ -161,6 +168,15 @@ describe("flow variables", () => {
       fetchedFlowVariableValue,
     );
   });
+
+  it("sets exposed flow variables", async () => {
+    const exposedFlowVarName = "myExposed"
+    await exposedVariableInput.setValue(exposedFlowVarName)
+    expect(exposedFlowVariableState.set).toHaveBeenCalledWith(exposedFlowVarName)
+    await exposedVariableInput.setValue(" ")
+    expect(exposedFlowVariableState.unset).toHaveBeenCalled()
+
+  })
 
   it("unsets controlling flow variables", async () => {
     // Click on "flowVar1"
@@ -176,6 +192,8 @@ describe("flow variables", () => {
       },
     });
     await flushPromises();
+
+    expect(controllingFlowVariableState.unset).toHaveBeenCalled()
     expect(dropdownButton.text()).toBe("No flow variable selected");
 
     // We keep the last value to keep a valid state

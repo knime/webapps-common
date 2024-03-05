@@ -83,33 +83,6 @@ describe("DateTimeInput.vue", () => {
     expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
   });
 
-  it("indicates model settings change when model setting is changed", () => {
-    const setDirtyModelSettingsMock = vi.fn();
-    const { wrapper, updateData } = mountJsonFormsComponent(DateTimeInput, {
-      props: {
-        ...defaultProps,
-        control: {
-          ...defaultProps.control,
-          uischema: {
-            ...defaultProps.control.schema,
-            scope: "#/properties/model/properties/dateTime",
-          },
-        },
-      },
-      provide: { setDirtyModelSettingsMock },
-    });
-    const changedDateTimeInput = "Shaken not stirred";
-    wrapper
-      .findComponent(DateTimeInputBase)
-      .vm.$emit("update:modelValue", changedDateTimeInput);
-    expect(setDirtyModelSettingsMock).toHaveBeenCalled();
-    expect(updateData).toHaveBeenCalledWith(
-      expect.anything(),
-      defaultProps.control.path,
-      changedDateTimeInput,
-    );
-  });
-
   it("sets correct initial value", () => {
     expect(
       wrapper.findComponent(DateTimeInputBase).vm.modelValue,

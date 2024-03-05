@@ -91,28 +91,6 @@ describe("LabeledLocalFileChooserInput.vue", () => {
     expect(setDirtyModeSettingsMock).not.toHaveBeenCalled();
   });
 
-  it("indicates model settings change when model setting is changed", () => {
-    const setDirtyModelSettingsMock = vi.fn();
-    props.control.uischema.scope = "#/properties/model/properties/yAxisColumn";
-    const { wrapper, updateData } = mountJsonFormsComponent(
-      LabeledLocalFileChooserInput,
-      {
-        props,
-        provide: { setDirtyModelSettingsMock },
-      },
-    );
-    const changedTextInput = "Shaken not stirred";
-    wrapper
-      .findComponent(StringFileChooserInputWithExplorer)
-      .vm.$emit("update:modelValue", changedTextInput);
-    expect(setDirtyModelSettingsMock).toHaveBeenCalledWith();
-    expect(updateData).toHaveBeenCalledWith(
-      expect.anything(),
-      props.control.path,
-      changedTextInput,
-    );
-  });
-
   it("sets correct initial value", () => {
     expect(
       wrapper.findComponent(StringFileChooserInputWithExplorer).vm.modelValue,

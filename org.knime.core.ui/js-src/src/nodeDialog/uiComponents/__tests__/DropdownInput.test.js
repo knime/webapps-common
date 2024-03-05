@@ -109,35 +109,6 @@ describe("DropdownInput.vue", () => {
       );
       expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
     });
-
-    it("indicates model settings change when model setting is changed", async () => {
-      const { wrapper, updateData } = await mountJsonFormsComponent(
-        DropdownInput,
-        {
-          props: {
-            ...props,
-            control: {
-              ...props.control,
-              uischema: {
-                ...props.control.schema,
-                scope: "#/properties/model/properties/yAxisColumn",
-              },
-            },
-          },
-          provide: { setDirtyModelSettingsMock },
-        },
-      );
-      const changedDropdownInput = "Shaken not stirred";
-      wrapper
-        .findComponent(Dropdown)
-        .vm.$emit("update:modelValue", changedDropdownInput);
-      expect(setDirtyModelSettingsMock).toHaveBeenCalled();
-      expect(updateData).toHaveBeenCalledWith(
-        expect.anything(),
-        props.control.path,
-        changedDropdownInput,
-      );
-    });
   });
 
   it("sets correct initial value", () => {

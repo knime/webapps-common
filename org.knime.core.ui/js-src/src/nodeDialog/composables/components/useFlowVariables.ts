@@ -65,7 +65,10 @@ const toFlowSetting = (
 export const useFlowSettings = (params: {
   control: Ref<Control>;
   subConfigKeys?: string[];
-}): Ref<FlowSettings | null> => {
+}): {
+  flowSettings: Ref<FlowSettings | null>;
+  configPaths: Ref<{ configPath: string; deprecatedConfigPaths: string[] }[]>;
+} => {
   const { control, subConfigKeys } = params;
   const flowVariablesMap = getFlowVariablesMap();
   const path = computed(() => control.value.path);
@@ -82,5 +85,5 @@ export const useFlowSettings = (params: {
     ),
     configPaths,
   } satisfies FlowVariableSettingsProvidedByControl);
-  return flowSettings;
+  return { flowSettings, configPaths };
 };

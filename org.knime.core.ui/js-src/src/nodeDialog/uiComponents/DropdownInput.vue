@@ -42,8 +42,11 @@ const props = defineProps({
     default: (value: string | null) => value,
   },
 });
-const { control, handleDirtyChange, disabled } =
-  props.jsonFormsControl ?? useDialogControl<string>({ props });
+const {
+  control,
+  onChange: onChangeControl,
+  disabled,
+} = props.jsonFormsControl ?? useDialogControl<string>({ props });
 const getPossibleValuesFromUiSchema = inject("getPossibleValuesFromUiSchema");
 const registerWatcher = inject("registerWatcher");
 const getData = inject("getData");
@@ -141,7 +144,7 @@ onBeforeUnmount(() => {
 });
 
 const onChange = (value: string) => {
-  handleDirtyChange(props.dropdownValueToControlData(value));
+  onChangeControl(props.dropdownValueToControlData(value));
 };
 </script>
 

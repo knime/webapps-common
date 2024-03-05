@@ -5,11 +5,7 @@ import useDialogControl from "../composables/components/useDialogControl";
 import LabeledInput from "./label/LabeledInput.vue";
 import { rendererProps } from "@jsonforms/vue";
 const props = defineProps(rendererProps());
-const {
-  control,
-  disabled,
-  handleDirtyChange: onChange,
-} = useDialogControl<string>({ props });
+const { control, disabled, onChange } = useDialogControl<string>({ props });
 
 const options = computed(() => control.value.uischema.options);
 const minimum = computed(() =>

@@ -11,7 +11,7 @@ import ReexecutionIcon from "webapps-common/ui/assets/img/icons/reexecution.svg"
 import Checkboxes from "webapps-common/ui/components/forms/Checkboxes.vue";
 
 describe("CheckboxesInput.vue", () => {
-  let wrapper, defaultProps, component, setDirtyModelSettingsMock, updateData;
+  let wrapper, defaultProps, component, updateData;
 
   beforeEach(async () => {
     defaultProps = {
@@ -45,10 +45,8 @@ describe("CheckboxesInput.vue", () => {
         },
       },
     };
-    setDirtyModelSettingsMock = vi.fn();
     component = await mountJsonFormsComponent(CheckboxesInput, {
       props: defaultProps,
-      provide: { setDirtyModelSettingsMock },
     });
     wrapper = component.wrapper;
     updateData = component.updateData;
@@ -85,20 +83,6 @@ describe("CheckboxesInput.vue", () => {
       defaultProps.control.path,
       ["ADDED", "MODIFIED"],
     );
-    expect(setDirtyModelSettingsMock).toHaveBeenCalled();
-  });
-
-  it("indicates model settings change when model setting is changed", async () => {
-    await wrapper
-      .findComponent(Checkboxes)
-      .vm.$emit("update:modelValue", ["ADDED"]);
-    expect(updateData).toHaveBeenCalledWith(
-      expect.anything(),
-      defaultProps.control.path,
-      ["ADDED"],
-    );
-
-    expect(setDirtyModelSettingsMock).toHaveBeenCalled();
   });
 
   it("checks that re-execution icon is present if it is a model setting", () => {

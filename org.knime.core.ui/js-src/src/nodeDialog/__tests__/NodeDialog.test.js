@@ -20,9 +20,7 @@ import { getOptions } from "./utils";
 
 describe("NodeDialog.vue", () => {
   let initialDataSpy,
-    setApplyListenerSpy,
-    setCleanSettingsSpy,
-    setDirtyModelSettingsSpy;
+    setApplyListenerSpy; 
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -34,14 +32,6 @@ describe("NodeDialog.vue", () => {
     vi.spyOn(JsonDataService.prototype, "applyData").mockResolvedValue();
     vi.spyOn(DialogService.prototype, "publishSettings").mockResolvedValue();
     setApplyListenerSpy = vi.spyOn(DialogService.prototype, "setApplyListener");
-    setCleanSettingsSpy = vi.spyOn(
-      DialogService.prototype,
-      "setSettingsWithCleanModelSettings",
-    );
-    setDirtyModelSettingsSpy = vi.spyOn(
-      DialogService.prototype,
-      "setDirtyModelSettings",
-    );
   });
 
   it("renders empty wrapper", async () => {
@@ -131,17 +121,6 @@ describe("NodeDialog.vue", () => {
 
       expect(wrapper.vm.getData()).toStrictEqual(dialogApplyData);
       expect(publishDataSpy).not.toHaveBeenCalled();
-    });
-
-    it("cleans settings if new data match original data", async () => {
-      const payload = {
-        data: { ...dialogInitialData.data, model: { yAxisScale: "NEW_VALUE" } },
-      };
-      wrapper.vm.setOriginalModelSettings(payload.data);
-      await jsonformsStub.vm.$emit("change", payload);
-      expect(onSettingsChangedSpy).toHaveBeenCalledWith(payload);
-      expect(publishDataSpy).toHaveBeenCalled();
-      expect(setCleanSettingsSpy).toHaveBeenCalledWith(payload.data);
     });
   });
 
@@ -749,7 +728,6 @@ describe("NodeDialog.vue", () => {
       expect(wrapper.vm.flawedControllingVariablePaths).toStrictEqual(
         new Set([persistPath]),
       );
-      expect(setDirtyModelSettingsSpy).toHaveBeenCalled();
       expect(flowSettings.controllingFlowVariableFlawed).toBeTruthy();
     });
 
@@ -904,49 +882,6 @@ describe("NodeDialog.vue", () => {
         new Set([]),
       );
       expect(flowSettings.controllingFlowVariableFlawed).toBeFalsy();
-    });
-
-    it("dispatched 'cleanSettings' when the last flawed path is cleaned", async () => {
-      const wrapper = shallowMount(NodeDialog, getOptions());
-      vi.spyOn(wrapper.vm.jsonDataService, "data").mockResolvedValue(
-        "notUndefined",
-      );
-      const persistPaths = ["path1", "path2", "path3"];
-      await flushPromises();
-      wrapper.vm.flawedControllingVariablePaths = new Set(persistPaths);
-
-      await wrapper.vm.getFlowVariableOverrideValue(
-        persistPaths[0],
-        "_dataPath",
-      );
-      await wrapper.vm.getFlowVariableOverrideValue(
-        persistPaths[1],
-        "_dataPath",
-      );
-
-      expect(setCleanSettingsSpy).not.toHaveBeenCalled();
-
-      await wrapper.vm.getFlowVariableOverrideValue(
-        persistPaths[2],
-        "_dataPath",
-      );
-
-      expect(setCleanSettingsSpy).toHaveBeenCalled();
-    });
-
-    it("unsets flawed variable path if 'clearControllingFlowVariable' is called", async () => {
-      const wrapper = shallowMount(NodeDialog, getOptions());
-      const persistPath = "path.to.my.setting";
-      await flushPromises();
-      const flowVariablesMap = {
-        [persistPath]: {
-          controllingFlowVariableFlawed: true,
-        },
-      };
-      wrapper.vm.schema.flowVariablesMap = flowVariablesMap;
-      wrapper.vm.clearControllingFlowVariable(persistPath);
-
-      expect(setCleanSettingsSpy).toHaveBeenCalled();
     });
   });
 });

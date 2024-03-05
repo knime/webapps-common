@@ -14,7 +14,7 @@ import {
   getPossibleValuesFromUiSchema,
   hasAdvancedOptions,
 } from "../nodeDialog/utils";
-import { cloneDeep, isEqual } from "lodash-es";
+import { cloneDeep } from "lodash-es";
 import { inject, markRaw } from "vue";
 import type ProvidedMethods from "./types/provided";
 import type { ProvidedForFlowVariables } from "./types/provided";
@@ -29,6 +29,7 @@ import useStateProviders from "./composables/nodeDialog/useStateProviders";
 import useUpdates from "./composables/nodeDialog/useUpdates";
 import useTriggers from "./composables/nodeDialog/useTriggers";
 import useGlobalWatchers from "./composables/nodeDialog/useGlobalWatchers";
+import { provideAndGetSetupMethod } from "./composables/nodeDialog/useDirtySettings";
 
 const renderers = [
   ...vanillaRenderers,
@@ -56,7 +57,6 @@ export default {
         clearControllingFlowVariable: this.clearControllingFlowVariable,
       },
       getFlowVariablesMap: () => this.schema.flowVariablesMap,
-      setDirtyModelSettings: this.setDirtyModelSettings,
     } satisfies ProvidedMethods & ProvidedForFlowVariables;
   },
   setup() {
@@ -70,6 +70,7 @@ export default {
       registerTrigger,
       registerWatcher,
     });
+    const { setRegisterSettingsMethod } = provideAndGetSetupMethod();
     return {
       getKnimeService: inject<() => UIExtensionService>("getKnimeService")!,
       addStateProviderListener,
@@ -80,13 +81,13 @@ export default {
       updateDataInternal: updateData,
       registerWatcherInternal: registerWatcher,
       registeredWatchers,
+      setRegisterSettingsMethod,
     };
   },
   data() {
     return {
       jsonDataService: null as JsonDataService | null,
       dialogService: null as DialogService | null,
-      originalModelSettings: null as any,
       flawedControllingVariablePaths: new Set() satisfies Set<string>,
       possiblyFlawedControllingVariablePaths: new Set() satisfies Set<string>,
       renderers: Object.freeze(renderers),
@@ -120,7 +121,9 @@ export default {
     this.schema = schema;
     this.uischema = initialSettings.ui_schema;
     this.currentData = initialSettings.data;
-    this.setOriginalModelSettings(this.currentData);
+     this.setRegisterSettingsMethod(
+      this.dialogService.registerSettings.bind(this.dialogService),
+    );
     this.resolveInitialUpdates(this.uischema?.initialUpdates ?? []);
     this.registerGlobalUpdates(this.uischema?.globalUpdates ?? []);
     this.dialogService.setApplyListener(this.applySettings.bind(this));
@@ -153,12 +156,6 @@ export default {
     publishSettings() {
       const publishedData = cloneDeep(this.getData());
       this.dialogService!.publishSettings(publishedData);
-    },
-    setOriginalModelSettings(data: SettingsData) {
-      this.originalModelSettings = this.getModelSettings(data);
-    },
-    hasOriginalModelSettings(data: SettingsData) {
-      return isEqual(this.originalModelSettings, this.getModelSettings(data));
     },
     getModelSettings(data: SettingsData) {
       return data.model;
@@ -257,13 +254,10 @@ export default {
       );
       const valid = typeof overrideValue !== "undefined";
       const flowSettings = this.schema.flowVariablesMap[persistPath];
-      if (valid) {
-        if (flowSettings) {
+      if (flowSettings) {
+        if (valid) {
           delete flowSettings.controllingFlowVariableFlawed;
-        }
-      } else {
-        this.setDirtyModelSettings();
-        if (flowSettings) {
+        } else {
           flowSettings.controllingFlowVariableFlawed = true;
         }
       }
@@ -271,16 +265,11 @@ export default {
         persistPath,
       );
       this.possiblyFlawedControllingVariablePaths.delete(persistPath);
-      this.cleanIfNecessary();
       return overrideValue;
-    },
-    setDirtyModelSettings() {
-      this.dialogService?.setDirtyModelSettings();
     },
     clearControllingFlowVariable(persistPath: string) {
       this.flawedControllingVariablePaths.delete(persistPath);
       this.possiblyFlawedControllingVariablePaths.delete(persistPath);
-      this.cleanIfNecessary();
     },
     onSettingsChanged({ data }: { data: SettingsData }) {
       if (data) {
@@ -289,22 +278,10 @@ export default {
         Object.keys(data).forEach((key: string) => {
           this.currentData[key] = data[key];
         });
-        this.cleanIfNecessary();
         this.publishSettings();
       }
     },
-    cleanIfNecessary() {
-      if (
-        this.hasOriginalModelSettings(this.currentData) &&
-        this.flawedControllingVariablePaths.size === 0
-      ) {
-        this.dialogService?.setSettingsWithCleanModelSettings(
-          cloneDeep(this.currentData),
-        );
-      }
-    },
     async applySettings() {
-      this.setOriginalModelSettings(this.currentData);
       const { result } = await this.jsonDataService!.applyData(this.getData());
       if (result) {
         alert(result);

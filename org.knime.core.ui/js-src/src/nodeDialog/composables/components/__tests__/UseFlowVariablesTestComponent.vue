@@ -6,7 +6,7 @@ const props = defineProps<{
   control: Ref<Pick<Control, "path" | "rootSchema">>;
   subConfigKeys?: string[];
 }>();
-const flowSettings = useFlowSettings(props as any);
+const flowSettings = useFlowSettings(props as any).flowSettings;
 
 defineExpose({
   flowSettings,

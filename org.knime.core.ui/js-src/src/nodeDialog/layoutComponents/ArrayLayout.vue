@@ -1,5 +1,5 @@
 <script>
-import { defineComponent } from "vue";
+import { computed, defineComponent, ref } from "vue";
 import {
   rendererProps,
   DispatchRenderer,
@@ -12,6 +12,7 @@ import PlusIcon from "webapps-common/ui/assets/img/icons/plus.svg";
 import DialogComponentWrapper from "../uiComponents/DialogComponentWrapper.vue";
 import ArrayLayoutItemControls from "./ArrayLayoutItemControls.vue";
 import ArrayLayoutItem from "./ArrayLayoutItem.vue";
+import { useDirtySetting } from "../composables/components/useDirtySetting";
 
 const ArrayLayout = defineComponent({
   name: "ArrayLayout",
@@ -28,10 +29,25 @@ const ArrayLayout = defineComponent({
   },
   setup(props) {
     const { handleChange, control } = useJsonFormsControlWithUpdate(props);
-    const triggerUpdates = () =>
+    const numElements = computed(() => control.value.data?.length ?? 0);
+    const cleanArrayLength = ref(numElements.value);
+    useDirtySetting({
+      dataPath: control.value.path,
+      value: numElements,
+      valueComparator: {
+        setSettings: (length) => {
+          cleanArrayLength.value = length;
+        },
+        isModified: (length) => cleanArrayLength.value !== length,
+      },
+    });
+    const triggerUpdates = () => {
       handleChange(control.value.path, control.value.data);
+    };
+
     return {
       ...useJsonFormsArrayControl(props),
+      cleanArrayLength,
       triggerUpdates,
     };
   },
@@ -106,6 +122,7 @@ export default ArrayLayout;
           :array-element-title="arrayElementTitle"
           :index="objIndex"
           :path="control.path"
+          :has-been-added="objIndex >= cleanArrayLength"
         >
           <template #renderer="{ element }">
             <DispatchRenderer
@@ -123,8 +140,8 @@ export default ArrayLayout;
               :is-last="objIndex === control.data.length - 1"
               :show-sort-controls="showSortControls"
               :show-delete-button="showAddAndDeleteButtons"
-              @move-up="moveUp(control.path, objIndex)()"
-              @move-down="moveDown(control.path, objIndex)()"
+              @move-up="moveItemUp(objIndex)"
+              @move-down="moveItemDown(objIndex)"
               @delete="deleteItem(objIndex)"
             />
           </template>

@@ -35,7 +35,6 @@ interface Provided {
   updateData: any;
   sendAlert: sendAlert;
   getData: getData;
-  setDirtyModelSettings: () => void;
 }
 
 type ProvidedFlowVariablesApi = {

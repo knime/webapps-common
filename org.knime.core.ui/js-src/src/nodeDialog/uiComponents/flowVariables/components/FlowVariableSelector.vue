@@ -5,6 +5,7 @@ import { computed, onMounted, ref, type Ref } from "vue";
 import type { PossibleFlowVariable } from "@/nodeDialog/api/types";
 import useControllingFlowVariable from "../composables/useControllingFlowVariable";
 import { injectForFlowVariables } from "../../../utils/inject";
+import { useDirtyFlowVariables } from "@/nodeDialog/composables/components/useDirtySetting";
 const {
   setControllingFlowVariable,
   unsetControllingFlowVariable,
@@ -15,6 +16,10 @@ const {
   getFlowVariableOverrideValue,
   clearControllingFlowVariable,
 } = injectForFlowVariables("flowVariablesApi")!;
+
+const {
+  controlling: { get: getDirtyControllingFlowVariable },
+} = useDirtyFlowVariables();
 
 const props = defineProps<FlowVariableSelectorProps>();
 
@@ -65,9 +70,11 @@ onMounted(async () => {
 const emit = defineEmits(["controllingFlowVariableSet"]);
 
 const selectValue = async (selectedId: string | number) => {
+  const dirtyFlowVariable = getDirtyControllingFlowVariable(props.persistPath)!;
   if (selectedId === noFlowVariableOption.id) {
     unsetControllingFlowVariable({ path: props.persistPath });
     clearControllingFlowVariable(props.persistPath);
+    dirtyFlowVariable.unset();
     return;
   }
   const flowVar = nameToFlowVariable.value[selectedId];
@@ -79,7 +86,9 @@ const selectValue = async (selectedId: string | number) => {
     props.persistPath,
     props.dataPath,
   );
-  if (typeof value !== "undefined") {
+  const isFlawed = typeof value === "undefined";
+  dirtyFlowVariable.set(flowVar.name, { isFlawed });
+  if (!isFlawed) {
     emit("controllingFlowVariableSet", value);
   }
 };

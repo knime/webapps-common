@@ -177,21 +177,6 @@ describe("CredentialsInput.vue", () => {
     expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
   });
 
-  it("indicates model settings change when model setting is changed", () => {
-    props.control.uischema.scope = "#/properties/model/properties/credentials";
-
-    const setDirtyModelSettingsMock = vi.fn();
-    const { wrapper } = mountJsonFormsComponent(CredentialsInput, {
-      props,
-      provide: { setDirtyModelSettingsMock },
-    });
-    const username = "new user";
-    wrapper
-      .findAllComponents(InputField)[0]
-      .vm.$emit("update:modelValue", username);
-    expect(setDirtyModelSettingsMock).toHaveBeenCalled();
-  });
-
   it("sets flow variable value in data if controlling flow variable is set", async () => {
     await wrapper
       .findComponent(LabeledInput)

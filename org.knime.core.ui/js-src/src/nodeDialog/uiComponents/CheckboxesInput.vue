@@ -7,11 +7,7 @@ import { IdAndText } from "../types/ChoicesUiSchema";
 import LabeledInput from "./label/LabeledInput.vue";
 import { rendererProps } from "@jsonforms/vue";
 const props = defineProps(rendererProps());
-const {
-  control,
-  disabled,
-  handleDirtyChange: onChange,
-} = useDialogControl({ props });
+const { control, disabled, onChange } = useDialogControl({ props });
 
 const alignment = computed(
   () => control.value.uischema.options?.checkboxLayout,

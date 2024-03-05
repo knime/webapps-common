@@ -8,7 +8,7 @@ import { rendererProps } from "@jsonforms/vue";
 const props = defineProps(rendererProps());
 const {
   control,
-  handleDirtyChange: onChange,
+  onChange,
   disabled: disabledByDefault,
 } = useDialogControl<string[]>({ props });
 

@@ -8,11 +8,9 @@ import useHideOnNull from "./composables/useHideOnNull";
 import Checkbox from "webapps-common/ui/components/forms/Checkbox.vue";
 
 const props = defineProps(rendererProps());
-const {
-  handleDirtyChange: onChange,
-  control,
-  disabled,
-} = useDialogControl<string | null | undefined>({ props });
+const { onChange, control, disabled } = useDialogControl<
+  string | null | undefined
+>({ props });
 
 const placeholder = computed(
   () => control.value.uischema.options?.placeholder ?? "",

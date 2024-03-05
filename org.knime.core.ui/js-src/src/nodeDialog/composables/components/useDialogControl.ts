@@ -10,51 +10,45 @@ import {
 import { isModelSettingAndHasNodeView } from "@/nodeDialog/utils";
 import { useFlowSettings } from "./useFlowVariables";
 import Control from "@/nodeDialog/types/Control";
-import inject from "@/nodeDialog/utils/inject";
+import { SettingComparator } from "@knime/ui-extension-service";
+import { Stringifyable } from "./JsonSettingsComparator";
+import { useDirtySetting } from "./useDirtySetting";
 
 export const useTriggersReexecution = (control: Ref<Control>) => {
   return computed(() => Boolean(isModelSettingAndHasNodeView(control.value)));
 };
 
-const getHandleDirtyChangeMethods = <ValueType>(
-  control: Ref<Control>,
-  handleChange: (path: string, value: ValueType) => void,
-) => {
-  const triggersReexecution = useTriggersReexecution(control);
-  const setDirtyModelSettings = inject("setDirtyModelSettings");
-  const triggerReexecution = () => {
-    if (triggersReexecution.value) {
-      setDirtyModelSettings();
-    }
-  };
-  const handleDirtyChange = (newValue: ValueType) => {
-    handleChange(control.value.path, newValue);
-    triggerReexecution();
-  };
-  return { handleDirtyChange, triggerReexecution };
-};
-
-export default <ValueType>({
+export const useDialogControl = <ValueType extends Stringifyable = any>({
   props,
   subConfigKeys,
+  valueComparator,
 }: {
   props: Readonly<ExtractPropTypes<ReturnType<typeof rendererProps>>>;
   subConfigKeys?: MaybeRef<string[] | undefined>;
+  valueComparator?: SettingComparator<ValueType | undefined>;
 }) => {
-  const { control, handleChange: handleChangeUntyped } =
-    useJsonFormsControlWithUpdate(props);
-  const handleChange = handleChangeUntyped as (
-    path: string,
-    value: ValueType,
-  ) => void;
+  const { control, handleChange } = useJsonFormsControlWithUpdate(props);
 
-  const { handleDirtyChange, triggerReexecution } =
-    getHandleDirtyChangeMethods<ValueType>(control, handleChange);
-
-  const flowSettings = useFlowSettings({
+  const { flowSettings, configPaths } = useFlowSettings({
     control,
     subConfigKeys: unref(subConfigKeys),
   });
+
+  useDirtySetting({
+    dataPath: control.value.path,
+    value: computed(() => control.value.data),
+    valueComparator,
+    configPaths: configPaths.value.flatMap(
+      ({ configPath, deprecatedConfigPaths }) => [
+        configPath,
+        ...deprecatedConfigPaths,
+      ],
+    ),
+  });
+
+  const onChange = (newValue: ValueType) => {
+    handleChange(control.value.path, newValue);
+  };
 
   const disabled = computed(() => {
     return (
@@ -64,11 +58,11 @@ export default <ValueType>({
   });
 
   return {
-    handleChange,
-    handleDirtyChange,
-    triggerReexecution,
+    onChange,
     flowSettings,
     control,
     disabled,
   };
 };
+
+export default useDialogControl;

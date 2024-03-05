@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi, beforeEach } from "vitest";
 import { mount, VueWrapper } from "@vue/test-utils";
 import { JsonDataService } from "@knime/ui-extension-service";
 
@@ -9,6 +9,7 @@ import { getOptions } from "@/nodeDialog/__tests__/utils";
 import TextInput from "@/nodeDialog/uiComponents/TextInput.vue";
 import Checkbox from "webapps-common/ui/components/forms/Checkbox.vue";
 import InputField from "webapps-common/ui/components/forms/InputField.vue";
+import { mockRegisterSettings } from "@@/test-setup/utils/integration/dirtySettingState";
 
 describe("hide on null", () => {
   type Wrapper = VueWrapper<any> & {
@@ -26,6 +27,10 @@ describe("hide on null", () => {
     const textInput = wrapper.findComponent(TextInput);
     return textInput.findComponent(Checkbox);
   };
+
+  beforeEach(() => {
+    mockRegisterSettings()
+  })
 
   const mountNodeDialog = async () => {
     wrapper = mount(NodeDialog as any, getOptions()) as Wrapper;

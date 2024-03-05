@@ -17,11 +17,7 @@ const props = defineProps({
   },
 });
 
-const {
-  handleDirtyChange: onChange,
-  control,
-  disabled,
-} = useDialogControl<string>({ props });
+const { onChange, control, disabled } = useDialogControl<string>({ props });
 
 const alignment = computed(() => control.value.uischema.options?.radioLayout);
 const uiComponent = computed(() => {

@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="SettingValue">
+<script setup lang="ts" generic="SettingValue extends Stringifyable">
 import LabeledInput from "./label/LabeledInput.vue";
 import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
 import LoadingIcon from "webapps-common/ui/components/LoadingIcon.vue";
@@ -9,6 +9,7 @@ import useDialogControl from "../composables/components/useDialogControl";
 import getFlattenedSettings from "../utils/getFlattenedSettings";
 import type SettingsData from "../types/SettingsData";
 import { rendererProps } from "@jsonforms/vue";
+import { Stringifyable } from "../JsonSettingsComparator";
 type Id = string; // NOSONAR intended type alias
 interface State {
   id: Id;
@@ -43,7 +44,7 @@ type Result = SuccessResult | FailResult | CanceledResult;
 const registerWatcher = inject("registerWatcher");
 const getData = inject("getData");
 const props = defineProps(rendererProps());
-const { control, handleChange } = useDialogControl({ props });
+const { control, onChange } = useDialogControl({ props });
 
 const errorMessage = ref(null as null | string);
 const clearError = () => {
@@ -67,7 +68,7 @@ const setButtonState = (newButtonStateId: Id) => {
 
 const saveResult = (newVal: SettingValue) => {
   // without setTimeout, the value is not updated when triggered via onUpdate
-  setTimeout(() => handleChange(control.value.path, newVal));
+  setTimeout(() => onChange(newVal));
 };
 
 const setNextState = (dataServiceResult: ButtonChange) => {

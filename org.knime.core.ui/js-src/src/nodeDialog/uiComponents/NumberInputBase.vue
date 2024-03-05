@@ -13,11 +13,7 @@ const props = defineProps({
     default: "double",
   },
 });
-const {
-  control,
-  handleDirtyChange: onChange,
-  disabled,
-} = useDialogControl<number>({ props });
+const { control, onChange, disabled } = useDialogControl<number>({ props });
 
 const min = computed(() => control.value.schema.minimum);
 const max = computed(() => control.value.schema.maximum);

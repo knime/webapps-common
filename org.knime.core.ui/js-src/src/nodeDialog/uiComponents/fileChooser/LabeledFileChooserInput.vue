@@ -6,12 +6,15 @@ import LabeledInput from "../label/LabeledInput.vue";
 import { rendererProps } from "@jsonforms/vue";
 import { FileChooserUiSchemaOptions } from "@/nodeDialog/types/FileChooserUiSchema";
 const props = defineProps(rendererProps());
-const { control, handleDirtyChange, disabled, flowSettings } = useDialogControl(
-  {
-    subConfigKeys: ["path"],
-    props,
-  },
-);
+const {
+  control,
+  onChange: onChangeControl,
+  disabled,
+  flowSettings,
+} = useDialogControl({
+  subConfigKeys: ["path"],
+  props,
+});
 
 const getDefaultData = () => {
   return {
@@ -26,7 +29,7 @@ const data = computed(() => {
 });
 
 const onChange = (value: any) => {
-  handleDirtyChange({ path: value });
+  onChangeControl({ path: value });
 };
 
 const browseOptions = computed(() => {

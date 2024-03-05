@@ -1,13 +1,19 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import Label from "webapps-common/ui/components/forms/Label.vue";
+import { provideForAddedArrayLayoutElements } from "@/nodeDialog/composables/components/useAddedArrayLayoutItem";
 
 const props = defineProps<{
   elements: [string, any][];
   arrayElementTitle: false | string;
   index: number;
   path: string;
+  hasBeenAdded: boolean;
 }>();
+
+if (props.hasBeenAdded) {
+  provideForAddedArrayLayoutElements();
+}
 
 const showElementTitles = computed(() => props.arrayElementTitle !== false);
 

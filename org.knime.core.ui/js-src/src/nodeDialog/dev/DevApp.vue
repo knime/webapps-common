@@ -125,13 +125,8 @@ export default {
         onApplied() {
           console.log("onApplied called");
         },
-        setDirtyModelSettings() {
-          console.log("setDirtyModelSettings called");
-        },
-        setSettingsWithCleanModelSettings(cleanData) {
-          console.log(
-            `setSettingsWithCleanModelSettings called with ${cleanData}`,
-          );
+        onDirtyStateChange(dirtyState) {
+          console.log("onDirtyStateChange called with", dirtyState);
         },
         updateDataPointSelection() {
           console.log("updateDataPointSelection called");

@@ -1,3 +1,4 @@
+<!-- eslint-disable class-methods-use-this -->
 <script setup lang="ts">
 import { rendererProps } from "@jsonforms/vue";
 import { onMounted, ref, watchEffect, type Ref } from "vue";
@@ -6,11 +7,31 @@ import inject from "../utils/inject";
 import DropdownInput from "./DropdownInput.vue";
 import { isEqual } from "lodash-es";
 import useDialogControl from "../composables/components/useDialogControl";
+import { DefaultSettingComparator } from "@knime/ui-extension-service";
+
+class ColumnSelectValueComparator extends DefaultSettingComparator<
+  { selected: string | null } | undefined,
+  string | null | undefined
+> {
+  toInternalState(
+    cleanSettings: { selected: string | null } | undefined,
+  ): string | null | undefined {
+    return cleanSettings?.selected;
+  }
+
+  equals(
+    newState: string | null | undefined,
+    cleanState: string | null | undefined,
+  ): boolean {
+    return newState === cleanState;
+  }
+}
 
 const props = defineProps(rendererProps());
 const jsonFormsControl = useDialogControl({
   props,
   subConfigKeys: ["selected"],
+  valueComparator: new ColumnSelectValueComparator(),
 });
 
 const getPossibleValuesFromUiSchema = inject("getPossibleValuesFromUiSchema");
@@ -40,10 +61,7 @@ const updateInitialData = () => {
   const initialData = jsonFormsControl.control.value.data;
   const updatedInitialData = toData(toValue(initialData));
   if (!isEqual(initialData, updatedInitialData)) {
-    jsonFormsControl.handleChange(
-      jsonFormsControl.control.value.path,
-      updatedInitialData,
-    );
+    jsonFormsControl.onChange(updatedInitialData);
   }
 };
 

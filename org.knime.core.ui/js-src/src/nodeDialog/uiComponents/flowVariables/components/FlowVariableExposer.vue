@@ -4,10 +4,15 @@ import { computed, ref, watchEffect } from "vue";
 import type FlowVariableExposerProps from "../types/FlowVariableExposerProps";
 import ErrorMessage from "../../ErrorMessage.vue";
 import useExposedFlowVariable from "../composables/useExposedFlowVariable";
+import { useDirtyFlowVariables } from "@/nodeDialog/composables/components/useDirtySetting";
 
 const props = defineProps<FlowVariableExposerProps>();
 const { setExposedFlowVariable, exposedFlowVariableName } =
   useExposedFlowVariable();
+
+const {
+  exposed: { get: getDirtyExposedVariable },
+} = useDirtyFlowVariables();
 
 const modelValue = ref("");
 watchEffect(() => {
@@ -23,6 +28,13 @@ const isValid = computed(
 
 const onUpdate = (value: string) => {
   modelValue.value = value;
+
+  const dirtyExposedVariable = getDirtyExposedVariable(props.persistPath)!;
+  if (value.trim()) { // TODO: Deduplicate
+    dirtyExposedVariable.set(value);
+  } else {
+    dirtyExposedVariable.unset();
+  }
   setExposedFlowVariable({
     path: props.persistPath,
     flowVariableName: value,

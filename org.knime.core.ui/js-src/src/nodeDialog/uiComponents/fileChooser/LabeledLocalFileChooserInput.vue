@@ -6,11 +6,7 @@ import LabeledInput from "../label/LabeledInput.vue";
 import { rendererProps } from "@jsonforms/vue";
 import { FileChooserUiSchemaOptions } from "@/nodeDialog/types/FileChooserUiSchema";
 const props = defineProps(rendererProps());
-const {
-  control,
-  handleDirtyChange: onChange,
-  disabled,
-} = useDialogControl<string>({ props });
+const { control, onChange, disabled } = useDialogControl<string>({ props });
 const uiSchemaOptions = computed(
   () => control.value.uischema.options as FileChooserUiSchemaOptions,
 );

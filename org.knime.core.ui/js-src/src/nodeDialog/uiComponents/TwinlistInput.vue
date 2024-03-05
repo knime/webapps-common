@@ -1,3 +1,5 @@
+<!-- eslint-disable no-undefined -->
+<!-- eslint-disable class-methods-use-this -->
 <script setup lang="ts">
 import { markRaw, type Ref, type Raw, ref, computed } from "vue";
 import { rendererProps } from "@jsonforms/vue";
@@ -10,6 +12,7 @@ import type { PartialDeep } from "type-fest";
 import TwinlistLoadingInfo from "./loading/TwinlistLoadingInfo.vue";
 import useDialogControl from "../composables/components/useDialogControl";
 import LabeledInput from "./label/LabeledInput.vue";
+import { DefaultSettingComparator } from "@knime/ui-extension-service";
 
 type TwinlistData = {
   mode: string;
@@ -64,20 +67,35 @@ const subConfigKeys = [
   "typeFilter.selectedTypes",
 ];
 
+class TwinlistValueComparator extends DefaultSettingComparator<
+  TwinlistData | undefined,
+  string
+> {
+  toInternalState(cleanSettings: TwinlistData | undefined): string {
+    return JSON.stringify(cleanSettings, (key, value) =>
+      key === "selected" ? undefined : value,
+    );
+  }
+
+  equals(newState: string, cleanState: string): boolean {
+    return newState === cleanState;
+  }
+}
+
 const {
   control: untypedControl,
   disabled,
-  handleChange,
-  triggerReexecution,
-} = useDialogControl<TwinlistData>({
+  onChange: onChangeControl,
+} = useDialogControl<TwinlistData | undefined>({
   props,
   subConfigKeys,
+  valueComparator: new TwinlistValueComparator(),
 });
 const control = untypedControl as Ref<ControlWithTwinlistData>;
 
 const onChange = (obj: PartialDeep<TwinlistData>) => {
   const newData = mergeDeep(control.value.data, obj) as TwinlistData;
-  handleChange(control.value.path, newData);
+  onChangeControl(newData);
 };
 const onSelectedChange = ({
   selected,
@@ -106,7 +124,7 @@ const onSelectedChange = ({
    * once the initial value is set correctly in the backend.
    * */
   if (!isFirstInput) {
-    triggerReexecution();
+    // triggerReexecution();
   }
 };
 const onIncludeUnknownColumnsChange = (includeUnknownColumns: boolean) => {

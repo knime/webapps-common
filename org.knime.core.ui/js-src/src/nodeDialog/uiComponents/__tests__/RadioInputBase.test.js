@@ -131,36 +131,6 @@ describe("RadioInputBase.vue", () => {
     expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
   });
 
-  it("indicates model settings change when model setting is changed", async () => {
-    const setDirtyModelSettingsMock = vi.fn();
-    const { wrapper, updateData } = await mountJsonFormsComponent(
-      RadioInputBase,
-      {
-        props: {
-          ...defaultProps,
-          control: {
-            ...defaultProps.control,
-            uischema: {
-              ...defaultProps.control.schema,
-              scope: "#/properties/model/properties/testColumn",
-            },
-          },
-        },
-        provide: { setDirtyModelSettingsMock },
-      },
-    );
-    const changedRadioInputBase = "Shaken not stirred";
-    await wrapper
-      .findComponent(RadioButtons)
-      .vm.$emit("update:modelValue", changedRadioInputBase);
-    expect(setDirtyModelSettingsMock).toHaveBeenCalled();
-    expect(updateData).toHaveBeenCalledWith(
-      expect.anything(),
-      defaultProps.control.path,
-      changedRadioInputBase,
-    );
-  });
-
   it("sets correct initial value", () => {
     expect(wrapper.findComponent(BaseRadioButtons).vm.modelValue).toBe(
       defaultProps.control.data,

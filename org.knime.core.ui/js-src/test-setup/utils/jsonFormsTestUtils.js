@@ -8,6 +8,7 @@ import { mount } from "@vue/test-utils";
 import { useJsonFormsLayout, useJsonFormsArrayControl } from "@jsonforms/vue";
 
 import * as useJsonFormsControlWithUpdateModule from "@/nodeDialog/composables/components/useJsonFormsControlWithUpdate";
+import { injectionKey as dirtySettingsInjectionKey } from "@/nodeDialog/composables/nodeDialog/useDirtySettings";
 import * as jsonformsVueModule from "@jsonforms/vue";
 
 import { getPossibleValuesFromUiSchema } from "@/nodeDialog/utils";
@@ -32,7 +33,6 @@ export const mountJsonFormsComponent = (
     getDataMock,
     updateDataMock,
     sendAlertMock,
-    setDirtyModelSettingsMock,
     triggerMock,
     asyncChoicesProviderMock,
     addStateProviderListenerMock,
@@ -44,7 +44,6 @@ export const mountJsonFormsComponent = (
   const getData = getDataMock ?? vi.fn();
   const sendAlert = sendAlertMock ?? vi.fn();
   const trigger = triggerMock ?? vi.fn();
-  const setDirtyModelSettings = setDirtyModelSettingsMock ?? vi.fn();
   const asyncChoicesProvider = asyncChoicesProviderMock ?? vi.fn();
   const addStateProviderListener = addStateProviderListenerMock ?? vi.fn();
   const flowVariablesApi = flowVariablesApiMock ?? {
@@ -68,6 +67,9 @@ export const mountJsonFormsComponent = (
       control: ref(props.control),
     });
   }
+  const settingState = {
+    setValue: (..._args2) => {},
+  };
   const unregisterWatcher = vi.fn();
   const wrapper = mount(component, {
     props,
@@ -85,12 +87,15 @@ export const mountJsonFormsComponent = (
           }
           return unregisterWatcher;
         },
+        [dirtySettingsInjectionKey]: {
+          getSettingState: (..._args) => settingState,
+          constructSettingState: (..._args) => settingState,
+        },
         getPossibleValuesFromUiSchema: (control) =>
           getPossibleValuesFromUiSchema(control, asyncChoicesProvider),
         updateData,
         getData,
         sendAlert,
-        setDirtyModelSettings,
         addStateProviderListener,
         trigger,
         flowVariablesApi,
