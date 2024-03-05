@@ -132,8 +132,9 @@ watch(ready, () => ready.value && emit("rendered"));
       vertical-align: top;
     }
 
-    & thead.base-controls {
-      display: table-caption;
+    & .base-controls {
+      /** fixes first blank page, does not repeat that header as its no real thead */
+      display: table-header-group;
     }
 
     & thead.table-header {

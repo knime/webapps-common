@@ -2,7 +2,7 @@
   "extends": "@vue/tsconfig/tsconfig.dom.json",
   "include": [
     "vite-env.d.ts",
-    "webapps-common/globals.d.ts",
+    "webapps-common/ui/globals.d.ts",
     "src/**/*",
     "webapps-common/**/*",
     "webapps-common/**/*.vue"
