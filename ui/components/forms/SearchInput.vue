@@ -10,7 +10,7 @@ import FunctionButton from "../FunctionButton.vue";
 const defaultTooltips = {
   clear: "Clear",
   inverseSearch: "Exclude results that match query",
-  caseSensitive: "Case sensitive",
+  caseSensitive: "Toggle case sensitivity",
 };
 
 /**
