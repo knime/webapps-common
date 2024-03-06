@@ -3,8 +3,7 @@ import { shallowMount } from "@vue/test-utils";
 import UIExtension from "../UIExtension.vue";
 import UIExtShadowApp from "../UIExtShadowApp.vue";
 import UIExtIFrame from "../UIExtIFrame.vue";
-import AlertLocal from "../AlertLocal.vue";
-import WarningLocal from "../WarningLocal.vue";
+
 import {
   iFrameExtensionConfig,
   componentExtensionConfig,
@@ -12,7 +11,6 @@ import {
 import type { ExtensionConfig } from "../types/ExtensionConfig";
 import type { UIExtensionAPILayer } from "../types/UIExtensionAPILayer";
 import {
-  type Alert,
   AlertType,
   type UIExtensionServiceAPILayer,
 } from "@knime/ui-extension-service";
@@ -118,127 +116,6 @@ describe("UIExtension.vue", () => {
   });
 
   describe("handling alerts", () => {
-    let closeAlertCallback: (() => void) | undefined;
-
-    beforeEach(() => {
-      props.apiLayer.sendAlert = vi.fn((_alert, closeAlert) => {
-        closeAlertCallback = closeAlert;
-      });
-    });
-
-    const expectLocalAlert = async (
-      wrapper: ReturnType<typeof shallowMount>,
-      alertComponent: any,
-      event: string,
-      expectedAlert: Alert,
-    ) => {
-      await wrapper.vm.$nextTick();
-      const localAlertWrapper = wrapper.findComponent(alertComponent);
-      expect(localAlertWrapper.exists()).toBeTruthy();
-      await localAlertWrapper.vm.$emit(event);
-      expect(props.apiLayer.sendAlert).toHaveBeenCalledWith(
-        expectedAlert,
-        expect.anything(),
-      );
-      expect(closeAlertCallback).toBeDefined();
-      closeAlertCallback?.();
-      await wrapper.vm.$nextTick();
-      expect(wrapper.findComponent(alertComponent).exists()).toBeFalsy();
-    };
-
-    const expectLocalError = (
-      wrapper: ReturnType<typeof shallowMount>,
-      expectedError: Alert,
-    ) => {
-      return expectLocalAlert(wrapper, AlertLocal, "showAlert", expectedError);
-    };
-
-    const expectLocalWarning = (
-      wrapper: ReturnType<typeof shallowMount>,
-      expectedWarning: Alert,
-    ) => {
-      return expectLocalAlert(wrapper, WarningLocal, "click", expectedWarning);
-    };
-
-    const sendAlertFromServiceAPILayer = (
-      wrapper: ReturnType<typeof shallowMount>,
-      alert: Alert,
-    ) => {
-      const serviceApiLayer = wrapper.findComponent(UIExtShadowApp).props()
-        .apiLayer as UIExtensionServiceAPILayer;
-      serviceApiLayer.sendAlert(alert);
-    };
-
-    const alertBase = { message: "Shaken not stirred.", nodeId: "123" };
-    const mockWarning = { ...alertBase, type: AlertType.WARN };
-    const mockError = { ...alertBase, type: AlertType.ERROR };
-
-    describe("sendAlert in serviceAPILayer", () => {
-      it("displays warnings from the serviceApiLayer", async () => {
-        const wrapper = shallowMount(UIExtension, {
-          props,
-        });
-        sendAlertFromServiceAPILayer(wrapper, mockWarning);
-        await expectLocalWarning(wrapper, mockWarning);
-      });
-
-      it("displays errors from the serviceApiLayer", async () => {
-        const wrapper = shallowMount(UIExtension, {
-          props,
-        });
-        sendAlertFromServiceAPILayer(wrapper, mockError);
-        await expectLocalError(wrapper, mockError);
-      });
-    });
-
-    describe("alerts in dialog layout", () => {
-      let wrapper: ReturnType<typeof shallowMount>;
-
-      beforeEach(() => {
-        wrapper = shallowMount(UIExtension, {
-          props: { ...props, isDialogLayout: true },
-        });
-      });
-
-      it("does not show local warnings if isDialogLayout is true", async () => {
-        sendAlertFromServiceAPILayer(wrapper, mockWarning);
-        expect(props.apiLayer.sendAlert).toHaveBeenCalledWith(mockWarning);
-        await wrapper.vm.$nextTick();
-        expect(wrapper.findComponent(WarningLocal).exists()).toBeFalsy();
-      });
-
-      it("does not show local errors if isDialogLayout is true", async () => {
-        sendAlertFromServiceAPILayer(wrapper, mockError);
-        expect(props.apiLayer.sendAlert).toHaveBeenCalledWith(mockError);
-        await wrapper.vm.$nextTick();
-        expect(wrapper.findComponent(AlertLocal).exists()).toBeFalsy();
-      });
-    });
-
-    describe("alerts in report", () => {
-      let wrapper: ReturnType<typeof shallowMount>;
-
-      beforeEach(() => {
-        wrapper = shallowMount(UIExtension, {
-          props: { ...props, isReporting: true },
-        });
-      });
-
-      it("does not display errors in reporting", async () => {
-        sendAlertFromServiceAPILayer(wrapper, mockError);
-        expect(props.apiLayer.sendAlert).not.toHaveBeenCalledWith(mockError);
-        await wrapper.vm.$nextTick();
-        expect(wrapper.findComponent(AlertLocal).exists()).toBeFalsy();
-      });
-
-      it("does not display warnings in reporting", async () => {
-        sendAlertFromServiceAPILayer(wrapper, mockWarning);
-        expect(props.apiLayer.sendAlert).not.toHaveBeenCalledWith(mockWarning);
-        await wrapper.vm.$nextTick();
-        expect(wrapper.findComponent(WarningLocal).exists()).toBeFalsy();
-      });
-    });
-
     describe("alerts from the extensionConfig", () => {
       const nodeInfoBase = {
         nodeState: "executed",
@@ -252,34 +129,48 @@ describe("UIExtension.vue", () => {
         nodeId: componentExtensionConfig.nodeId,
       };
 
-      it("displays errors from the extensionConfig", async () => {
+      it("displays errors from the extensionConfig", () => {
+        const sendAlertSpy = vi.fn();
         props.extensionConfig.nodeInfo = {
           ...nodeInfoBase,
           nodeErrorMessage: message,
         };
-        const wrapper = shallowMount(UIExtension, {
+        props.apiLayer = {
+          ...props.apiLayer,
+          sendAlert: sendAlertSpy,
+        };
+
+        shallowMount(UIExtension, {
           props,
         });
+
         const expectedAlert = {
           ...expectedAlertBase,
           type: AlertType.ERROR,
         };
-        await expectLocalError(wrapper, expectedAlert);
+
+        expect(sendAlertSpy).toHaveBeenCalledWith(expectedAlert);
       });
 
-      it("displays warnings from the extensionConfig", async () => {
+      it("displays warnings from the extensionConfig", () => {
+        const sendAlertSpy = vi.fn();
         props.extensionConfig.nodeInfo = {
           ...nodeInfoBase,
           nodeWarnMessage: message,
         };
-        const wrapper = shallowMount(UIExtension, {
+        props.apiLayer = {
+          ...props.apiLayer,
+          sendAlert: sendAlertSpy,
+        };
+        shallowMount(UIExtension, {
           props,
         });
+
         const expectedAlert = {
           ...expectedAlertBase,
           type: AlertType.WARN,
         };
-        await expectLocalWarning(wrapper, expectedAlert);
+        expect(sendAlertSpy).toHaveBeenCalledWith(expectedAlert);
       });
     });
   });

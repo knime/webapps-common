@@ -8,7 +8,7 @@ import CloseIcon from "../../../assets/img/icons/close.svg";
 import InfoIcon from "../../../assets/img/icons/circle-info.svg";
 import ErrorIcon from "../../../assets/img/icons/circle-close.svg";
 import SuccessIcon from "../../../assets/img/icons/circle-check.svg";
-import WarnIcon from "../../../assets/img/icons/circle-warning.svg";
+import WarnIcon from "../../../assets/img/icons/sign-warning.svg";
 
 import truncateString from "../../../../util/truncateString";
 import { capitalize } from "../../../../util/capitalize";

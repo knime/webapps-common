@@ -116,12 +116,6 @@ onUnmounted(() => {
     :resource-location="resourceLocation"
     @service-created="onServiceCreated"
   />
-  <!-- <UIExtensionErrorOverlay v-if="displayError" active @show-alert="showAlert" /> -->
-  <!-- <WarningLocal
-    v-if="displayWarning"
-    class="local-warning"
-    @click="showAlert"
-  /> -->
 </template>
 
 <style lang="postcss" scoped>
