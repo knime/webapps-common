@@ -1,6 +1,6 @@
-<script>
+<script setup lang="ts">
 import Popover from "./Popover.vue";
-import SignWarningIcon from "../assets/img/icons/sign-warning.svg";
+import CloseIcon from "../assets/img/icons/close.svg";
 
 /**
  * This is the local alert/error management component created for use with the NodeViewIFrame. Its main use is to
@@ -9,30 +9,18 @@ import SignWarningIcon from "../assets/img/icons/sign-warning.svg";
  * parent container. If parent container lacks dimensions, you must assign a min-width/height conditionally when
  * this component is active for proper display.
  */
-export default {
-  components: {
-    Popover,
-    SignWarningIcon,
-  },
-  props: {
-    active: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  emits: ["showAlert"],
-  methods: {
-    /**
-     * Emits an event when the popover icon is clicked to allow the parent component to display more information.
-     *
-     * @emits {showAlert}
-     * @returns {undefined}
-     */
-    showAlert() {
-      this.$emit("showAlert");
-    },
-  },
+
+type Props = {
+  active?: boolean;
 };
+
+withDefaults(defineProps<Props>(), {
+  active: false,
+});
+
+const emit = defineEmits<{
+  showError: [];
+}>();
 </script>
 
 <template>
@@ -45,9 +33,9 @@ export default {
       <div
         class="error-wrapper"
         title="Click to see more details."
-        @click="showAlert"
+        @click="emit('showError')"
       >
-        <SignWarningIcon class="icon" />
+        <CloseIcon class="icon" />
       </div>
     </template>
   </Popover>
@@ -76,9 +64,8 @@ export default {
     cursor: pointer;
 
     & .icon {
-      stroke-width: calc(32px / 24);
+      stroke-width: 4;
       stroke: white;
-      margin-top: -2px;
     }
 
     &:hover {
@@ -86,7 +73,6 @@ export default {
 
       & .icon {
         stroke: var(--theme-color-error);
-        stroke-width: 2px;
       }
     }
 

@@ -1,5 +1,4 @@
 import type {
-  Alert,
   UIExtensionPushEvents,
   UIExtensionServiceAPILayer,
 } from "@knime/ui-extension-service";
@@ -14,8 +13,8 @@ type UIExtensionAPILayer = Pick<
   | "getResourceLocation"
   | "onDirtyStateChange"
   | "onApplied"
+  | "sendAlert"
 > & {
-  sendAlert: (alert: Alert, closeAlert?: () => void) => void;
   /**
    * @returns the respective deregistration method
    */
