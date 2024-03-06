@@ -7,21 +7,21 @@ import {
 } from "@jsonforms/vue";
 import { composePaths } from "@jsonforms/core";
 import { useJsonFormsControlWithUpdate } from "@/nodeDialog/composables/components/useJsonFormsControlWithUpdate";
-import Label from "webapps-common/ui/components/forms/Label.vue";
 import Button from "webapps-common/ui/components/Button.vue";
 import PlusIcon from "webapps-common/ui/assets/img/icons/plus.svg";
 import DialogComponentWrapper from "../uiComponents/DialogComponentWrapper.vue";
 import ArrayLayoutItemControls from "./ArrayLayoutItemControls.vue";
+import ArrayLayoutItem from "./ArrayLayoutItem.vue";
 
 const ArrayLayout = defineComponent({
   name: "ArrayLayout",
   components: {
     DispatchRenderer,
-    Label,
     Button,
     PlusIcon,
     DialogComponentWrapper,
     ArrayLayoutItemControls,
+    ArrayLayoutItem,
   },
   props: {
     ...rendererProps(),
@@ -53,9 +53,9 @@ const ArrayLayout = defineComponent({
       }
       return [];
     },
-    showElementTitles() {
-      return this.control.uischema.options.hasOwnProperty(
-        this.arrayElementTitleKey,
+    arrayElementTitle() {
+      return (
+        this.control.uischema.options?.[this.arrayElementTitleKey] ?? false
       );
     },
   },
@@ -89,12 +89,6 @@ const ArrayLayout = defineComponent({
       this.removeItems(composePaths(this.control.path, ""), [index])();
       this.triggerUpdates();
     },
-    returnLabel(index) {
-      let convertedIndex = parseInt(index, 10);
-      return `${this.control.uischema.options[this.arrayElementTitleKey]} ${
-        convertedIndex + 1
-      }`;
-    },
   },
 });
 export default ArrayLayout;
@@ -107,44 +101,34 @@ export default ArrayLayout;
         v-for="(obj, objIndex) in control.data"
         :key="`${control.path}-${objIndex}`"
       >
-        <div v-if="showElementTitles" class="item-header">
-          <Label :text="returnLabel(objIndex)" :compact="true" />
-          <ArrayLayoutItemControls
-            :is-first="objIndex === 0"
-            :is-last="objIndex === control.data.length - 1"
-            :show-sort-controls="showSortControls"
-            :show-delete-button="showAddAndDeleteButtons"
-            @move-up="moveItemUp(objIndex)"
-            @move-down="moveItemDown(objIndex)"
-            @delete="deleteItem(objIndex)"
-          />
-        </div>
-        <div
-          v-for="([elemKey, element], elemIndex) in elements"
-          :key="`${control.path}-${objIndex}-${elemKey}`"
-          class="element"
+        <ArrayLayoutItem
+          :elements="elements"
+          :array-element-title="arrayElementTitle"
+          :index="objIndex"
+          :path="control.path"
         >
-          <DispatchRenderer
-            class="form-component"
-            :schema="control.schema"
-            :uischema="element"
-            :path="createIndexedPath(objIndex)"
-            :enabled="control.enabled"
-            :renderers="control.renderers"
-            :cells="control.cells"
-          />
-          <ArrayLayoutItemControls
-            v-if="elemIndex === 0 && !showElementTitles"
-            class="compensate-label"
-            :is-first="objIndex === 0"
-            :is-last="objIndex === control.data.length - 1"
-            :show-sort-controls="showSortControls"
-            :show-delete-button="showAddAndDeleteButtons"
-            @move-up="moveUp(control.path, objIndex)()"
-            @move-down="moveDown(control.path, objIndex)()"
-            @delete="deleteItem(objIndex)"
-          />
-        </div>
+          <template #renderer="{ element }">
+            <DispatchRenderer
+              :schema="control.schema"
+              :uischema="element"
+              :path="createIndexedPath(objIndex)"
+              :enabled="control.enabled"
+              :renderers="control.renderers"
+              :cells="control.cells"
+            />
+          </template>
+          <template #controls>
+            <ArrayLayoutItemControls
+              :is-first="objIndex === 0"
+              :is-last="objIndex === control.data.length - 1"
+              :show-sort-controls="showSortControls"
+              :show-delete-button="showAddAndDeleteButtons"
+              @move-up="moveUp(control.path, objIndex)()"
+              @move-down="moveDown(control.path, objIndex)()"
+              @delete="deleteItem(objIndex)"
+            />
+          </template>
+        </ArrayLayoutItem>
       </div>
       <Button
         v-if="showAddAndDeleteButtons"
@@ -162,38 +146,9 @@ export default ArrayLayout;
 <style lang="postcss" scoped>
 .array {
   margin-bottom: 30px;
-
-  & .item-header {
-    margin-bottom: 10px;
-    margin-top: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-  }
-
-  & .item-controls {
-    display: flex;
-  }
-
-  & .element {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-
-    /* Needed to align buttons centererd with controls that have a label */
-    & .compensate-label {
-      margin-top: 10px;
-    }
-
-    & .form-component {
-      flex-grow: 1;
-      min-width: 0;
-    }
-  }
 }
 
 & > *:last-child > * {
   margin-bottom: 0;
 }
 </style>
-@/nodeDialog/composables/components/useJsonFormsControlWithUpdate
