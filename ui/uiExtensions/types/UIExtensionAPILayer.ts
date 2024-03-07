@@ -12,8 +12,7 @@ type UIExtensionAPILayer = Pick<
   | "publishData"
   | "updateDataPointSelection"
   | "getResourceLocation"
-  | "setSettingsWithCleanModelSettings"
-  | "setDirtyModelSettings"
+  | "onDirtyStateChange"
   | "onApplied"
 > & {
   sendAlert: (alert: Alert, closeAlert?: () => void) => void;
