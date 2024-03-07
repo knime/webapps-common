@@ -4,8 +4,8 @@ import {
   expect,
   it,
   vi,
-  type SpyInstance,
   type Mock,
+  MockInstance,
 } from "vitest";
 import * as UseJsonFromsControlWithUpdateModule from "../useJsonFormsControlWithUpdate";
 import * as UseFlowVariablesModule from "../useFlowVariables";
@@ -22,23 +22,13 @@ describe("useDialogControl", () => {
   const props: any = "foo";
 
   let flowSettings: Ref<FlowSettings | null>,
-    useFlowSettingsSpy: SpyInstance<any>,
-    useJsonFormsControlWithUpdateSpy: SpyInstance<any>,
+    useFlowSettingsSpy: MockInstance,
+    useJsonFormsControlWithUpdateSpy: MockInstance,
     control: Ref<Control>,
     handleChange: Mock,
     constructSettingState: Mock,
     settingState: {
-      setValue: Mock,
-      flowVariables: {
-        controlling: {
-          get: Mock,
-          create: Mock
-        },
-        exposed: {
-          get: Mock,
-          create: Mock
-        }
-      }
+      setValue: Mock;
     },
     getSettingState: Mock;
 
@@ -93,16 +83,6 @@ describe("useDialogControl", () => {
       .mockImplementation(() => ({ control, handleChange }));
 
     settingState = {
-      flowVariables: {
-        controlling: {
-          create: vi.fn(),
-          get: vi.fn(() => null),
-        },
-        exposed: {
-          create: vi.fn(),
-          get: vi.fn(() => null),
-        },
-      },
       setValue: vi.fn(),
     };
     constructSettingState = vi.fn(() => settingState);
@@ -125,7 +105,7 @@ describe("useDialogControl", () => {
           getFlowVariablesMap: () => ({
             [configPaths[0]]: {
               controllingFlowVariableName: "first",
-              exposedFlowVariableName: "second"
+              exposedFlowVariableName: "second",
             },
           }),
           ...(asChildOfAddedArrayLayoutElement
@@ -158,7 +138,7 @@ describe("useDialogControl", () => {
     it("calls getSettingState", () => {
       mountTestComponent();
       expect(getSettingState).toHaveBeenCalledWith(path);
-      expect(settingState.setValue).toHaveBeenCalledWith(initialValue)
+      expect(settingState.setValue).toHaveBeenCalledWith(initialValue);
       expect(constructSettingState).not.toHaveBeenCalled();
     });
 
@@ -170,10 +150,6 @@ describe("useDialogControl", () => {
         path,
         expect.objectContaining({ initialValue }),
       );
-      expect(settingState.flowVariables.controlling.create).toHaveBeenCalledWith("path.configKey1", "first")
-      expect(settingState.flowVariables.controlling.create).toHaveBeenCalledWith("path.configKey2", null)
-      expect(settingState.flowVariables.exposed.create).toHaveBeenCalledWith("path.configKey1", "second")
-      expect(settingState.flowVariables.exposed.create).toHaveBeenCalledWith("path.configKey2", null)
     });
 
     it("initializes with undefined value and sets initial value afterwards on a child of an added array layout element", () => {
@@ -184,21 +160,21 @@ describe("useDialogControl", () => {
         path,
         expect.objectContaining({ initialValue: undefined }),
       );
-      expect(settingState.setValue).toHaveBeenCalledWith(initialValue)
+      expect(settingState.setValue).toHaveBeenCalledWith(initialValue);
     });
 
     it("sets value on change", async () => {
-      const {vm} = mountTestComponent();
-      const changedValue =  "changed"
-      vm.control.data = changedValue
+      const { vm } = mountTestComponent();
+      const changedValue = "changed";
+      vm.control.data = changedValue;
       await flushPromises();
-      expect(settingState.setValue).toHaveBeenCalledWith(changedValue)
+      expect(settingState.setValue).toHaveBeenCalledWith(changedValue);
     });
 
     it("sets undefined value on unmounted", () => {
       const wrapper = mountTestComponent();
-      wrapper.unmount()
-      expect(settingState.setValue).toHaveBeenCalledWith(undefined)
+      wrapper.unmount();
+      expect(settingState.setValue).toHaveBeenCalledWith(undefined);
     });
   });
 

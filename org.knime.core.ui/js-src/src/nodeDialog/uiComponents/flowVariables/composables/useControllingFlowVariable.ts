@@ -7,7 +7,12 @@ import {
 export default () => {
   const flowVariablesMap = getFlowVariablesMap();
 
-  const { flowSettings } = getFlowVariableSettingsProvidedByControl();
+  const {
+    flowSettings,
+    settingStateFlowVariables: {
+      controlling: { get: getDirtyControllingFlowVariable },
+    },
+  } = getFlowVariableSettingsProvidedByControl();
   const controllingFlowVariableName = computed(
     () => flowSettings.value?.controllingFlowVariableName ?? "",
   );
@@ -23,6 +28,7 @@ export default () => {
     flowVarAtPath.controllingFlowVariableName = flowVariableName;
     flowVarAtPath.controllingFlowVariableAvailable = true;
     flowVariablesMap[path] = flowVarAtPath;
+    getDirtyControllingFlowVariable(path)?.set(flowVariableName);
   };
 
   const unsetControllingFlowVariable = ({ path }: { path: string }) => {
@@ -31,10 +37,26 @@ export default () => {
       flowVariablesMap[path].controllingFlowVariableAvailable = false;
       flowVariablesMap[path].controllingFlowVariableName = null;
     }
+
+    getDirtyControllingFlowVariable(path)?.unset();
   };
+
+  const invalidateSetFlowVariable = ({
+    path,
+    flowVariableName,
+  }: {
+    path: string;
+    flowVariableName: string;
+  }) => {
+    getDirtyControllingFlowVariable(path)?.set(flowVariableName, {
+      isFlawed: true,
+    });
+  };
+
   return {
     controllingFlowVariableName,
     setControllingFlowVariable,
     unsetControllingFlowVariable,
+    invalidateSetFlowVariable,
   };
 };

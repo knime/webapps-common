@@ -1,33 +1,16 @@
-import { InjectionKey, Ref, inject, onUnmounted, provide, watch } from "vue";
-import { getFlowVariablesMap } from "./useFlowVariables";
+import { Ref, onUnmounted, watch } from "vue";
 import { SettingComparator } from "@knime/ui-extension-service";
 import {
   JsonSettingsComparator,
   Stringifyable,
 } from "./JsonSettingsComparator";
-import useDirtySettings, {
-  FlowVariablesForSettings,
-  SettingStateWrapper,
-} from "../nodeDialog/useDirtySettings";
+import useDirtySettings from "../nodeDialog/useDirtySettings";
 import { injectIsChildOfAddedArrayLayoutElement } from "./useAddedArrayLayoutItem";
-
-/**
- * Export only for testing
- */
-export const injectionKey: InjectionKey<FlowVariablesForSettings> = Symbol(
-  "providedByUseDirtySetting",
-);
-
-const provideFlowVariables = (settingState: SettingStateWrapper) => {
-  provide(injectionKey, settingState.flowVariables);
-};
-export const useDirtyFlowVariables = () => inject(injectionKey)!;
 
 export const useDirtySetting = <ValueType extends Stringifyable>({
   dataPath,
   value,
   valueComparator: valueComparatorProp,
-  configPaths,
 }: {
   dataPath: string;
   value: Ref<ValueType>;
@@ -40,7 +23,7 @@ export const useDirtySetting = <ValueType extends Stringifyable>({
   const initialValueShouldBeUndefined =
     injectIsChildOfAddedArrayLayoutElement();
   const initialValue = value.value;
-  const constructNewSettingAndAddInitialVariables = () => {
+  const constructNewSettingState = () => {
     const settingState = constructSettingState<ValueType | undefined>(
       dataPath,
       {
@@ -52,22 +35,6 @@ export const useDirtySetting = <ValueType extends Stringifyable>({
     if (initialValueShouldBeUndefined) {
       settingState.setValue(initialValue);
     }
-
-    const flowVariablesMap = getFlowVariablesMap();
-    configPaths?.forEach((persistPath) => {
-      const {
-        controllingFlowVariableName = null,
-        exposedFlowVariableName = null,
-      } = flowVariablesMap[persistPath] ?? {};
-      settingState.flowVariables.controlling.create(
-        persistPath,
-        controllingFlowVariableName,
-      );
-      settingState.flowVariables.exposed.create(
-        persistPath,
-        exposedFlowVariableName,
-      );
-    });
     return settingState;
   };
 
@@ -77,14 +44,26 @@ export const useDirtySetting = <ValueType extends Stringifyable>({
     return settingState;
   };
 
-  const settingState =
-    getExistingSettingStateAndSetCurrentValue() ??
-    constructNewSettingAndAddInitialVariables();
-  provideFlowVariables(settingState);
+  const getOrConstructSettingState = () => {
+    const existing = getExistingSettingStateAndSetCurrentValue();
+    if (existing === null) {
+      const newSettingState = constructNewSettingState();
+      return { isNew: true, settingState: newSettingState };
+    } else {
+      return { isNew: false, settingState: existing };
+    }
+  };
 
-  watch(() => value.value, (newValue) => settingState.setValue(newValue));
+  const { settingState, isNew } = getOrConstructSettingState();
+
+  watch(
+    () => value.value,
+    (newValue) => settingState.setValue(newValue),
+  );
   onUnmounted(() => {
     // eslint-disable-next-line no-undefined
     settingState.setValue(undefined);
   });
+
+  return { settingState, isNew };
 };

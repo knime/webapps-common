@@ -7,8 +7,7 @@ import flushPromises from "flush-promises";
 import FlowVariableExposer from "../FlowVariableExposer.vue";
 import type FlowVariableExposerProps from "../../types/FlowVariableExposerProps";
 import ErrorMessage from "../../../ErrorMessage.vue";
-import { providedKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
-import { injectionKey as dirtySettingInjectionKey } from "@/nodeDialog/composables/components/useDirtySetting";
+import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
 import { FlowSettings } from "@/nodeDialog/api/types";
 import { ref, type Ref } from "vue";
 
@@ -42,15 +41,15 @@ describe("FlowVariableExposer", () => {
       props,
       global: {
         provide: {
-          [providedByComponentKey]: {
+          [providedByComponentKey as symbol]: {
             flowSettings,
-          },
-          [dirtySettingInjectionKey as symbol]: {
-            exposed: {
-              get: () => ({
-                set: setDirtyState,
-                unset: unsetDirtyState,
-              }),
+            settingStateFlowVariables: {
+              exposed: {
+                get: () => ({
+                  set: setDirtyState,
+                  unset: unsetDirtyState,
+                }),
+              },
             },
           },
           getFlowVariablesMap: () => flowVariablesMap,

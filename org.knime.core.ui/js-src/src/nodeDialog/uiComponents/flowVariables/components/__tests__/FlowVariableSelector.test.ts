@@ -16,8 +16,7 @@ import FlowVariableSelector from "../FlowVariableSelector.vue";
 import type FlowVariableSelectorProps from "../../types/FlowVariableSelectorProps";
 import { ProvidedForFlowVariables } from "@/nodeDialog/types/provided";
 import { FlowSettings } from "@/nodeDialog/api/types";
-import { providedKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
-import { injectionKey as dirtySettingInjectionKey } from "@/nodeDialog/composables/components/useDirtySetting";
+import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
 
 type MockedMethods<T extends Record<string, (...args: any[]) => any>> = {
   [K in keyof T]?: Mock<Parameters<T[K]>, ReturnType<T[K]>>;
@@ -57,15 +56,15 @@ describe("FlowVariableSelector.vue", () => {
       props,
       global: {
         provide: {
-          [providedByComponentKey]: {
+          [providedByComponentKey as symbol]: {
             flowSettings,
-          },
-          [dirtySettingInjectionKey as symbol]: {
-            controlling: {
-              get: () => ({
-                set: setDirtyState,
-                unset: unsetDirtyState,
-              }),
+            settingStateFlowVariables: {
+              controlling: {
+                get: () => ({
+                  set: setDirtyState,
+                  unset: unsetDirtyState,
+                }),
+              },
             },
           },
           getFlowVariablesMap: () => flowVariablesMap,
@@ -206,9 +205,7 @@ describe("FlowVariableSelector.vue", () => {
     expect(wrapper.emitted("controllingFlowVariableSet")?.[0]?.[0]).toBe(
       flowVarValue,
     );
-    expect(setDirtyState).toHaveBeenCalledWith(flowVar2.name, {
-      isFlawed: false,
-    });
+    expect(setDirtyState).toHaveBeenCalledWith(flowVar2.name);
   });
 
   it("sets flawed controlling flow variable", async () => {

@@ -11,7 +11,7 @@ import flushPromises from "flush-promises";
 import LegacyCredentialsInput from "../LegacyCredentialsInput.vue";
 import CredentialsInputBase from "../CredentialsInputBase.vue";
 
-describe("CredentialsInput.vue", () => {
+describe("LegacyCredentialsInput.vue", () => {
   let props, wrapper, component;
 
   beforeEach(() => {
@@ -58,7 +58,6 @@ describe("CredentialsInput.vue", () => {
         },
       },
     };
-
     component = mountJsonFormsComponent(LegacyCredentialsInput, { props });
     wrapper = component.wrapper;
   });
@@ -76,10 +75,17 @@ describe("CredentialsInput.vue", () => {
     const flowVariablesApiMock = {
       getFlowVariableOverrideValue: vi.fn().mockReturnValue(flowVarValue),
     };
+    const setFlowVarState = vi.fn();
+    const settingStateControllingGetMock = () => ({
+      set: setFlowVarState,
+    });
     props.control.data.flowVarName = flowVarName;
     const { flowVariablesMap, updateData } = mountJsonFormsComponent(
       LegacyCredentialsInput,
-      { props, provide: { flowVariablesApiMock } },
+      {
+        props,
+        provide: { flowVariablesApiMock, settingStateControllingGetMock },
+      },
     );
     expect(flowVariablesMap[`${props.control.path}.credentials`]).toStrictEqual(
       {
@@ -87,6 +93,7 @@ describe("CredentialsInput.vue", () => {
         controllingFlowVariableName: flowVarName,
       },
     );
+    expect(setFlowVarState).toHaveBeenCalledWith(flowVarName);
     await flushPromises();
     expect(updateData).toHaveBeenCalledWith(
       expect.anything(),
@@ -100,10 +107,17 @@ describe("CredentialsInput.vue", () => {
     const flowVariablesApiMock = {
       getFlowVariableOverrideValue: vi.fn(),
     };
+    const setFlowVarState = vi.fn();
+    const settingStateControllingGetMock = () => ({
+      set: setFlowVarState,
+    });
     props.control.data.flowVarName = flowVarName;
     const { flowVariablesMap, updateData } = mountJsonFormsComponent(
       LegacyCredentialsInput,
-      { props, provide: { flowVariablesApiMock } },
+      {
+        props,
+        provide: { flowVariablesApiMock, settingStateControllingGetMock },
+      },
     );
     expect(flowVariablesMap[`${props.control.path}.credentials`]).toStrictEqual(
       {
@@ -111,12 +125,16 @@ describe("CredentialsInput.vue", () => {
         controllingFlowVariableName: flowVarName,
       },
     );
+    expect(setFlowVarState).toHaveBeenNthCalledWith(1, flowVarName);
     await flushPromises();
     expect(updateData).toHaveBeenCalledWith(
       expect.anything(),
       props.control.path,
       { credentials: props.control.data.credentials, flowVarName: null },
     );
+    expect(setFlowVarState).toHaveBeenNthCalledWith(2, flowVarName, {
+      isFlawed: true,
+    });
   });
 
   it("renders", () => {

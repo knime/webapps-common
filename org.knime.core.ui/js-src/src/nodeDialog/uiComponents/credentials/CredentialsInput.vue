@@ -5,12 +5,8 @@ import CredentialsInputBase from "./CredentialsInputBase.vue";
 import type Credentials from "./types/Credentials";
 
 const props = defineProps(rendererProps());
-const {
-  control,
-  handleDirtyChange: onChange,
-  disabled,
-  flowSettings,
-} = useDialogControl<Credentials>({ props });
+const { control, onChange, disabled, flowSettings } =
+  useDialogControl<Credentials>({ props });
 </script>
 
 <template>

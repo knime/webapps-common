@@ -7,10 +7,27 @@ import {
 export default () => {
   const flowVariablesMap = getFlowVariablesMap();
 
-  const { flowSettings } = getFlowVariableSettingsProvidedByControl();
+  const {
+    flowSettings,
+    settingStateFlowVariables: {
+      exposed: { get: getDirtyExposedVariable },
+    },
+  } = getFlowVariableSettingsProvidedByControl();
   const exposedFlowVariableName = computed(
     () => flowSettings.value?.exposedFlowVariableName ?? "",
   );
+
+  const setExposedVariableState = (
+    persistPath: string,
+    nonEmptyStringOrNull: string | null,
+  ) => {
+    const exposedVariableState = getDirtyExposedVariable(persistPath);
+    if (nonEmptyStringOrNull === null) {
+      exposedVariableState?.unset();
+    } else {
+      exposedVariableState?.set(nonEmptyStringOrNull);
+    }
+  };
 
   const setExposedFlowVariable = ({
     path,
@@ -19,10 +36,13 @@ export default () => {
     path: string;
     flowVariableName: string;
   }) => {
-    const flowVarAtPath = flowVariablesMap[path] || {};
-    flowVarAtPath.exposedFlowVariableName = flowVariableName.trim()
+    const nonEmptyStringOrNull = flowVariableName.trim()
       ? flowVariableName
       : null;
+    setExposedVariableState(path, nonEmptyStringOrNull);
+
+    const flowVarAtPath = flowVariablesMap[path] || {};
+    flowVarAtPath.exposedFlowVariableName = nonEmptyStringOrNull;
     flowVariablesMap[path] = flowVarAtPath;
   };
   return { exposedFlowVariableName, setExposedFlowVariable };

@@ -29,21 +29,16 @@ export const useDialogControl = <ValueType extends Stringifyable = any>({
 }) => {
   const { control, handleChange } = useJsonFormsControlWithUpdate(props);
 
-  const { flowSettings, configPaths } = useFlowSettings({
-    control,
-    subConfigKeys: unref(subConfigKeys),
-  });
-
-  useDirtySetting({
+  const settingState = useDirtySetting({
     dataPath: control.value.path,
     value: computed(() => control.value.data),
     valueComparator,
-    configPaths: configPaths.value.flatMap(
-      ({ configPath, deprecatedConfigPaths }) => [
-        configPath,
-        ...deprecatedConfigPaths,
-      ],
-    ),
+  });
+
+  const { flowSettings } = useFlowSettings({
+    control,
+    subConfigKeys: unref(subConfigKeys),
+    settingState,
   });
 
   const onChange = (newValue: ValueType) => {

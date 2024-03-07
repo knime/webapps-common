@@ -10,7 +10,12 @@ import flushPromises from "flush-promises";
 
 import FlowVariableButton from "@/nodeDialog/uiComponents/flowVariables/components/FlowVariableButton.vue";
 import { getOptions } from "../utils";
-import { mockRegisterSettings, registeredSettingState, controllingFlowVariableState, exposedFlowVariableState } from "@@/test-setup/utils/integration/dirtySettingState";
+import {
+  mockRegisterSettings,
+  registeredSettingState,
+  controllingFlowVariableState,
+  exposedFlowVariableState,
+} from "@@/test-setup/utils/integration/dirtySettingState";
 
 import type {
   FlowSettings,
@@ -65,7 +70,9 @@ describe("flow variables", () => {
     await flowVarButton.find("button").trigger("mouseup");
     await flushPromises();
     const dropdown = flowVarButton.findComponent(Dropdown);
-    exposedVariableInput = flowVarButton.findComponent(InputField).find("input");
+    exposedVariableInput = flowVarButton
+      .findComponent(InputField)
+      .find("input");
     dropdownButton = dropdown.find("[role=button]");
     listItems = dropdown.findAll("li");
   };
@@ -108,7 +115,7 @@ describe("flow variables", () => {
         }
         return Promise.resolve();
       });
-    mockRegisterSettings()
+    mockRegisterSettings();
     await mountNodeDialog();
     await expandFlowVariablesPopover();
   });
@@ -140,7 +147,9 @@ describe("flow variables", () => {
   });
 
   it("sets controlling flow variables", async () => {
-    expect(registeredSettingState.addControllingFlowVariable).toHaveBeenCalledTimes(1)
+    expect(
+      registeredSettingState.addControllingFlowVariable,
+    ).toHaveBeenCalledTimes(1);
     // Click on "flowVar1"
     listItems.at(1)?.trigger("click");
     // Data service is called to get the value of the flow variable
@@ -156,7 +165,9 @@ describe("flow variables", () => {
     });
     await flushPromises();
 
-    expect(controllingFlowVariableState.set).toHaveBeenCalledWith(flowVar1.name, {isFlawed: false})
+    expect(controllingFlowVariableState.set).toHaveBeenCalledWith(
+      flowVar1.name,
+    );
     expect(dropdownButton.text()).toBe(flowVar1.name);
     expect(flowVariablesMap).toStrictEqual({
       "model.customConfigKey": {
@@ -170,13 +181,14 @@ describe("flow variables", () => {
   });
 
   it("sets exposed flow variables", async () => {
-    const exposedFlowVarName = "myExposed"
-    await exposedVariableInput.setValue(exposedFlowVarName)
-    expect(exposedFlowVariableState.set).toHaveBeenCalledWith(exposedFlowVarName)
-    await exposedVariableInput.setValue(" ")
-    expect(exposedFlowVariableState.unset).toHaveBeenCalled()
-
-  })
+    const exposedFlowVarName = "myExposed";
+    await exposedVariableInput.setValue(exposedFlowVarName);
+    expect(exposedFlowVariableState.set).toHaveBeenCalledWith(
+      exposedFlowVarName,
+    );
+    await exposedVariableInput.setValue(" ");
+    expect(exposedFlowVariableState.unset).toHaveBeenCalled();
+  });
 
   it("unsets controlling flow variables", async () => {
     // Click on "flowVar1"
@@ -193,7 +205,7 @@ describe("flow variables", () => {
     });
     await flushPromises();
 
-    expect(controllingFlowVariableState.unset).toHaveBeenCalled()
+    expect(controllingFlowVariableState.unset).toHaveBeenCalled();
     expect(dropdownButton.text()).toBe("No flow variable selected");
 
     // We keep the last value to keep a valid state

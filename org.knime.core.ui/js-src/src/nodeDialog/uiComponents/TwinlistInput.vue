@@ -100,12 +100,10 @@ const onChange = (obj: PartialDeep<TwinlistData>) => {
 const onSelectedChange = ({
   selected,
   isManual,
-  isFirstInput,
   deselected,
 }: {
   selected: string[];
   isManual: boolean;
-  isFirstInput: boolean;
   deselected: string[];
 }) => {
   onChange({
@@ -119,13 +117,6 @@ const onSelectedChange = ({
         }
       : {}),
   });
-  /**
-   * TODO: UIEXT-1122 do not use isFirstInput anymore but instead compare the value with the initial one,
-   * once the initial value is set correctly in the backend.
-   * */
-  if (!isFirstInput) {
-    // triggerReexecution();
-  }
 };
 const onIncludeUnknownColumnsChange = (includeUnknownColumns: boolean) => {
   onChange({ manualFilter: { includeUnknownColumns } });

@@ -11,14 +11,18 @@ interface LegacyCredentials {
 }
 
 const props = defineProps(rendererProps());
-const { control, handleDirtyChange, disabled, flowSettings } =
-  useDialogControl<LegacyCredentials>({
-    props,
-    subConfigKeys: ["credentials"],
-  });
+const {
+  control,
+  onChange: onChangeControl,
+  disabled,
+  flowSettings,
+} = useDialogControl<LegacyCredentials>({
+  props,
+  subConfigKeys: ["credentials"],
+});
 
 const onChange = (credentials: Credentials) => {
-  handleDirtyChange({ credentials, flowVarName: null });
+  onChangeControl({ credentials, flowVarName: null });
 };
 
 const onLegacyFlowVariableSet = (flowVariableValue?: Credentials) => {

@@ -1,6 +1,6 @@
 import { shallowMount } from "@vue/test-utils";
 import { beforeEach, describe, expect, it } from "vitest";
-import { providedKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
+import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
 import { type Ref, ref } from "vue";
 import { FlowSettings } from "@/nodeDialog/api/types";
 import DeprecatedFlowVariables from "../DeprecatedFlowVariables.vue";

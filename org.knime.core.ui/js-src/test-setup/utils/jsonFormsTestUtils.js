@@ -37,6 +37,8 @@ export const mountJsonFormsComponent = (
     asyncChoicesProviderMock,
     addStateProviderListenerMock,
     flowVariablesApiMock,
+    settingStateControllingGetMock,
+    settingStateExposedGetMock,
   } = provide || {};
   const updateData =
     updateDataMock ||
@@ -69,6 +71,24 @@ export const mountJsonFormsComponent = (
   }
   const settingState = {
     setValue: (..._args2) => {},
+    flowVariables: {
+      controlling: {
+        get:
+          settingStateControllingGetMock ??
+          vi.fn(() => ({
+            set: vi.fn(),
+            unset: vi.fn(),
+          })),
+      },
+      exposed: {
+        get:
+          settingStateExposedGetMock ??
+          vi.fn(() => ({
+            set: vi.fn(),
+            unset: vi.fn(),
+          })),
+      },
+    },
   };
   const unregisterWatcher = vi.fn();
   const wrapper = mount(component, {
