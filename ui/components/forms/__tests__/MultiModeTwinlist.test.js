@@ -131,7 +131,6 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
     expect(wrapper.emitted().input[0][0]).toStrictEqual({
       selected: initialSelection,
       isManual: true,
-      isFirstInput: true,
       deselected: ["test1"],
     });
   });
@@ -397,7 +396,6 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
       expect(wrapper.emitted().input[1][0]).toStrictEqual({
         selected: ["test1"],
         isManual: false,
-        isFirstInput: false,
       });
 
       expectTwinlistIncludes(wrapper, ["Text 2", "Text 3"], ["Text 1"]);
@@ -418,7 +416,6 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
       expect(wrapper.emitted().input[1][0]).toStrictEqual({
         selected: ["test1", "test2", "test3"],
         isManual: false,
-        isFirstInput: false,
       });
       expectTwinlistIncludes(wrapper, [], ["Text 1", "Text 2", "Text 3"]);
     });
@@ -589,7 +586,6 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
       expect(wrapper.emitted().input[1][0]).toStrictEqual({
         selected: ["test1", "test3"],
         isManual: false,
-        isFirstInput: false,
       });
       expectTwinlistIncludes(wrapper, ["Text 2"], ["Text 1", "Text 3"]);
     });
