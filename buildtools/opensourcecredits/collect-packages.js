@@ -48,6 +48,14 @@ if (!skip) {
 
   config.excludePackages.push(excludeScopedPackages(parentPkg));
 
+  // add packages form WAC itself in non dev mode, this fixes problems when two different versions are used
+  const webappsCommonPkgPath = pkgUp.sync({ cwd: ".." });
+  if (parentPkgPath !== webappsCommonPkgPath) {
+    config.excludePackages.push(
+      excludeScopedPackages(require(webappsCommonPkgPath)),
+    );
+  }
+
   // collect all used production packages and their licenses
   const options = {
     start: parentRoot,
