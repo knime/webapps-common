@@ -1,7 +1,6 @@
 <script lang="ts">
 import "./variables.css";
 import { defineComponent, type PropType } from "vue";
-import { kebabCase, uniq } from "lodash-es";
 
 import Multiselect from "./Multiselect.vue";
 import FunctionButton from "../FunctionButton.vue";
@@ -92,8 +91,6 @@ export default defineComponent({
   emits: {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     "update:modelValue": (_payload: Array<string>) => true,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    change: (_payload: Array<ComboBoxItem>) => true,
   },
 
   data(): ComponentData {
@@ -107,26 +104,36 @@ export default defineComponent({
        */
       focusElement: null,
       refocusElement: null,
-      allPossibleItems: this.possibleValues,
+      allPossibleItems: [...this.possibleValues],
     };
   },
 
   computed: {
+    trimmedSearchValue() {
+      return this.searchValue.trim();
+    },
+
     isSearchEmpty() {
-      return !this.searchValue.trim();
+      return !this.trimmedSearchValue;
     },
 
     searchResults() {
+      const searchValueLowerCased = this.searchValue.toLowerCase();
+
       const hasExactSearchMatch = this.allPossibleItems.some(
-        ({ text }) => text.toLowerCase() === this.searchValue.toLowerCase(),
+        ({ id, text }) =>
+          text.toLowerCase() === searchValueLowerCased ||
+          id === this.trimmedSearchValue,
       );
 
-      const fuzzyMatchedItems = this.allPossibleItems.filter(({ text }) =>
-        text.toLowerCase().includes(this.searchValue.toLowerCase()),
+      const fuzzyMatchedItems = this.allPossibleItems.filter(
+        ({ id, text }) =>
+          text.toLowerCase().includes(searchValueLowerCased) ||
+          id === this.trimmedSearchValue,
       );
 
       if (this.allowNewValues && !hasExactSearchMatch && !this.isSearchEmpty) {
-        // add a preview for a non existing items
+        // add a preview for a non existing item
         return [
           { id: DRAFT_ITEM_ID, text: `${this.searchValue} (new item)` },
           ...fuzzyMatchedItems,
@@ -147,7 +154,13 @@ export default defineComponent({
     },
 
     selectedValues() {
-      return this.getSelectedValues(this.modelValue);
+      return this.modelValue.map(
+        (id) =>
+          this.allPossibleItems.find((item) => item.id === id) || {
+            id,
+            text: id,
+          },
+      );
     },
 
     maxSizeVisibleOptions() {
@@ -165,13 +178,6 @@ export default defineComponent({
   methods: {
     emitNewSelection(newSelectedIds: string[]) {
       this.$emit("update:modelValue", newSelectedIds);
-      this.$emit("change", this.getSelectedValues(newSelectedIds));
-    },
-    getSelectedValues(selectedIds: string[]) {
-      return selectedIds.map((id) => {
-        const item = this.allPossibleItems.find((item) => item.id === id);
-        return item || { id, text: id };
-      });
     },
     focusInput() {
       (this.$refs.searchInput as HTMLInputElement).focus();
@@ -180,11 +186,15 @@ export default defineComponent({
       (this.$refs.combobox as MultiselectRef).onDown();
     },
     onEnter() {
-      if (this.isSearchEmpty) {
+      if (
+        this.isSearchEmpty ||
+        typeof this.searchResults[0]?.id === "undefined" ||
+        this.modelValue.includes(this.searchResults[0].id)
+      ) {
         return;
       }
 
-      this.updateSelectedIds([...this.modelValue, this.searchResults[0]?.id]);
+      this.updateSelectedIds([...this.modelValue, this.searchResults[0].id]);
       this.searchValue = "";
     },
     onBackspace() {
@@ -210,44 +220,32 @@ export default defineComponent({
     },
 
     updateSelectedIds(selectedIds: Array<string>) {
-      const setSelectedIds = (value: Array<string>) => {
-        this.emitNewSelection(uniq(value).filter(Boolean));
-      };
-
       const hasNewItem = selectedIds.includes(DRAFT_ITEM_ID);
 
       if (!hasNewItem) {
-        setSelectedIds(selectedIds);
+        this.emitNewSelection(selectedIds);
         return;
       }
 
       const newItem: ComboBoxItem = {
-        id: kebabCase(this.searchValue),
-        text: this.searchValue.trim(),
+        id: this.trimmedSearchValue,
+        text: this.trimmedSearchValue,
       };
-
-      const isDuplicateItem = this.allPossibleItems.some(
-        (item) => item.id === newItem.id,
-      );
-
-      if (isDuplicateItem) {
-        return;
-      }
 
       this.allPossibleItems.push(newItem);
 
-      setSelectedIds(
+      this.emitNewSelection(
         selectedIds.map((id) => (id === DRAFT_ITEM_ID ? newItem.id : id)),
       );
     },
 
     removeTag(idToRemove: string) {
-      this.updateSelectedIds(this.modelValue.filter((id) => id !== idToRemove));
+      this.emitNewSelection(this.modelValue.filter((id) => id !== idToRemove));
       this.closeOptions();
     },
 
     removeAllTags() {
-      this.updateSelectedIds([]);
+      this.emitNewSelection([]);
       this.closeOptions();
     },
     closeOptionsAndStop(event: KeyboardEvent) {
