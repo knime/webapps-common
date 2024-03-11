@@ -395,7 +395,10 @@ const callbackToast: Toast = {
             action by spawning toast notifications using the buttons below.
           </p>
           <p>
-            <b>Current number of toasts in the stack: {{ toasts.length }}</b>
+            <b
+              >Current number of toasts in the stack:
+              {{ (toasts as any).length }}</b
+            >
           </p>
           <h5>Basic examples</h5>
           <div class="grid-container">
