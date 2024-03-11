@@ -13,7 +13,7 @@ defineProps<{
   <span v-if="hotkeyText" class="hotkey">{{ hotkeyText }}</span>
 </template>
 
-<style lang="postcss">
+<style lang="postcss" scoped>
 .text {
   font-weight: 500;
   flex-shrink: 1;
