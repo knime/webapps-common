@@ -7,15 +7,15 @@ import Multiselect from "../Multiselect.vue";
 const possibleValues = [
   {
     id: "test1",
-    text: "test1",
+    text: "Test1",
   },
   {
     id: "test2",
-    text: "test2",
+    text: "Test2",
   },
   {
     id: "test3",
-    text: "test3",
+    text: "Test3",
   },
 ];
 
@@ -186,6 +186,28 @@ describe("ComboBox.vue", () => {
       ]);
     });
 
+    it.each([
+      ["text", "Test1"],
+      ["id", "test1"],
+    ])(
+      "does not create a new tag if it would have the same %s as an existing one",
+      async (_, searchInput) => {
+        const wrapper = doMount({
+          modelValue: ["test2", "test3"],
+          allowNewValues: true,
+        });
+        await wrapper.find(".search-input").setValue(searchInput);
+        await wrapper.find(".search-input").trigger("keydown.enter");
+
+        expect(wrapper.emitted("update:modelValue")?.[0][0]).toEqual([
+          "test2",
+          "test3",
+          "test1",
+        ]);
+        expect(wrapper.vm.allPossibleItems).toStrictEqual(possibleValues);
+      },
+    );
+
     it("removes tags with backspace", async () => {
       const wrapper = doMount({
         modelValue: ["test2", "test3"],
@@ -207,7 +229,7 @@ describe("ComboBox.vue", () => {
       await wrapper.find(".search-input").trigger("keydown.enter");
 
       expect(wrapper.findAll(".tag").length).toBe(2);
-      expect(wrapper.findAll(".tag").at(-1)?.text()).toMatch("test3");
+      expect(wrapper.findAll(".tag").at(-1)?.text()).toMatch("Test3");
       expect(wrapper.emitted("update:modelValue")).toBeUndefined();
     });
 

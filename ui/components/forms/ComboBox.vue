@@ -112,30 +112,33 @@ export default defineComponent({
     trimmedSearchValue() {
       return this.searchValue.trim();
     },
-
+    trimmedLowerCasedSearchValue() {
+      return this.trimmedSearchValue.toLowerCase();
+    },
     isSearchEmpty() {
       return !this.trimmedSearchValue;
     },
 
     searchResults() {
-      const searchValueLowerCased = this.searchValue.toLowerCase();
-
-      const hasExactSearchMatch = this.allPossibleItems.some(
+      const newIdIsExistingIdOrText = this.allPossibleItems.some(
         ({ id, text }) =>
-          text.toLowerCase() === searchValueLowerCased ||
-          id === this.trimmedSearchValue,
+          id === this.trimmedSearchValue || text === this.trimmedSearchValue,
       );
 
       const fuzzyMatchedItems = this.allPossibleItems.filter(
         ({ id, text }) =>
-          text.toLowerCase().includes(searchValueLowerCased) ||
+          text.toLowerCase().includes(this.trimmedLowerCasedSearchValue) ||
           id === this.trimmedSearchValue,
       );
 
-      if (this.allowNewValues && !hasExactSearchMatch && !this.isSearchEmpty) {
+      if (
+        this.allowNewValues &&
+        !newIdIsExistingIdOrText &&
+        !this.isSearchEmpty
+      ) {
         // add a preview for a non existing item
         return [
-          { id: DRAFT_ITEM_ID, text: `${this.searchValue} (new item)` },
+          { id: DRAFT_ITEM_ID, text: `${this.trimmedSearchValue} (new item)` },
           ...fuzzyMatchedItems,
         ];
       }
