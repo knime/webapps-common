@@ -1,7 +1,17 @@
 {
   "extends": "@vue/tsconfig/tsconfig.dom.json",
-  "include": ["env.d.ts", "src/**/*", "webapps-common/**/*.ts"],
-  "exclude": ["src/**/__tests__/*", "webapps-common/**/__tests__/*"],
+  "include": [
+    "vite-env.d.ts",
+    "webapps-common/globals.d.ts",
+    "src/**/*",
+    "webapps-common/**/*",
+    "webapps-common/**/*.vue"
+  ],
+  "exclude": [
+    "src/**/__tests__/*",
+    "webapps-common/**/__tests__/*",
+    "webapps-common/demo/*"
+  ],
   "compilerOptions": {
     "composite": true,
     "baseUrl": ".",
