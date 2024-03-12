@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import { describe, it, expect, beforeEach } from "vitest";
-import { mount } from "@vue/test-utils";
+import { mount, flushPromises } from "@vue/test-utils";
 
 import SearchInput from "../SearchInput.vue";
 import MultiModeTwinlist from "../MultiModeTwinlist.vue";
@@ -10,7 +10,6 @@ import ValueSwitch from "../ValueSwitch.vue";
 import Checkboxes from "../Checkboxes.vue";
 import Label from "../Label.vue";
 import FilterIcon from "../../..//assets/img/icons/filter.svg";
-import flushPromises from "flush-promises";
 
 describe("MultiModeMultiModeTwinlist.vue", () => {
   let defaultPossibleValues;

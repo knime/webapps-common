@@ -1,6 +1,5 @@
 import { expect, afterEach, vi, describe, it } from "vitest";
-import flushPromises from "flush-promises";
-import { shallowMount } from "@vue/test-utils";
+import { shallowMount, flushPromises } from "@vue/test-utils";
 import UIExtShadowApp from "../UIExtShadowApp.vue";
 import type { UIExtensionServiceAPILayer } from "@knime/ui-extension-service";
 import * as ExtensionServiceModule from "@knime/ui-extension-service";
