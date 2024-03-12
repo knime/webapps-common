@@ -16,6 +16,7 @@ export type UseMultiSelectionReturn = {
   isMultipleSelectionActive: (index: number) => boolean;
   resetSelection: () => void;
   handleSelectionClick: (index: number, event?: MouseEvent | null) => void;
+  ctrlClickItem: (index: number) => void;
 };
 
 export const useMultiSelection = (
@@ -91,5 +92,6 @@ export const useMultiSelection = (
     isMultipleSelectionActive,
     resetSelection,
     handleSelectionClick,
+    ctrlClickItem,
   };
 };

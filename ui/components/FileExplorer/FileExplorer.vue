@@ -141,6 +141,7 @@ const {
   selectedIndexes,
   isMultipleSelectionActive,
   resetSelection,
+  ctrlClickItem,
 } = multiSelection;
 
 const selectedItems = computed(() =>
@@ -161,12 +162,10 @@ watch(toRef(props, "selectedItemIds"), (itemIds) => {
 
   // reset and select all via index
   resetSelection();
-  itemIndices.forEach((index) =>
-    handleSelectionClick(index, { ctrlKey: true } as MouseEvent),
-  );
+  itemIndices.forEach((index) => ctrlClickItem(index));
 
   // scroll to first selected item
-  const firstIndex = itemIndices.slice().sort().at(0) ?? -1;
+  const firstIndex = itemIndices.slice().sort().at(0) ?? -1; // NOSONAR
   const element = itemRefs.value[firstIndex]?.$el;
   element?.scrollIntoView({ behavior: "smooth", block: "center" });
 });
