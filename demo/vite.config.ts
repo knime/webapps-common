@@ -7,7 +7,7 @@ import { svgoConfig } from "webapps-common/config/svgo.config";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue(), svgLoader({ svgoConfig })],
+  plugins: [vue(), svgLoader({ svgoConfig }) as any],
   base: "/webapps-common/",
   resolve: {
     alias: {

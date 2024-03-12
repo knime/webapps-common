@@ -7,7 +7,7 @@ import { svgoConfig } from "./config/svgo.config";
 // https://vitejs.dev/config/
 // https://vitest.dev/config/
 export default defineConfig({
-  plugins: [vue(), svgLoader({ svgoConfig })],
+  plugins: [vue(), svgLoader({ svgoConfig }) as any],
   test: {
     include: ["**/__tests__/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
     environment: "jsdom",
