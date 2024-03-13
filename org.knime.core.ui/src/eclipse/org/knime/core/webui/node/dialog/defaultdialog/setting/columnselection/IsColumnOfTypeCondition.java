@@ -74,6 +74,6 @@ public abstract class IsColumnOfTypeCondition implements Condition {
     /**
      * @return the data type to check compatibility against
      */
-    public abstract  Class<? extends DataValue> getDataValueClass();
+    public abstract Class<? extends DataValue> getDataValueClass();
 
 }
