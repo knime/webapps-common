@@ -29,8 +29,8 @@ const toData = (value: string | null) => {
   if (allColumns === null) {
     throw new Error("Must not convert data before column choices are fetched.");
   }
-  const compatibleTypes = allColumns.find((item) => item.id === value)
-    ?.compatibleTypes;
+  const compatibleTypes =
+    allColumns.find((item) => item.id === value)?.compatibleTypes ?? [];
   return { selected: value, compatibleTypes };
 };
 

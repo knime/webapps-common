@@ -106,6 +106,16 @@ describe("ColumnSelect.vue", () => {
         compatibleTypes: ["Type_1_1", "OtherType_1_1"],
       });
     });
+
+    it("sets empty compatible types on missing value", () => {
+      const dropdownInput = wrapper.findComponent(DropdownInput);
+      const dropdown = dropdownInput.findComponent(Dropdown);
+      dropdown.vm.$emit("update:modelValue", "I am Missing");
+      expect(updateData).toHaveBeenNthCalledWith(2, expect.anything(), path, {
+        selected: "I am Missing",
+        compatibleTypes: [],
+      });
+    });
   });
 
   describe("optionsGenerator", () => {
