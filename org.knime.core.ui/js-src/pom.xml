@@ -89,27 +89,6 @@
 							<arguments>ci</arguments>
 						</configuration>
 					</execution>
-
-					<execution>
-						<id>npm run build</id>
-						<phase>compile</phase>
-						<goals>
-							<goal>npm</goal>
-						</goals>
-						<configuration>
-							<arguments>run build</arguments>
-						</configuration>
-					</execution>
-					<execution>
-						<id>npm run coverage</id>
-						<phase>test</phase>
-						<goals>
-							<goal>npm</goal>
-						</goals>
-						<configuration>
-							<arguments>run coverage</arguments>
-						</configuration>
-					</execution>
 					<execution>
 						<id>npm check css</id>
 						<phase>test</phase>
@@ -128,6 +107,36 @@
 						</goals>
 						<configuration>
 							<arguments>run ci:lint:js</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>npm run coverage</id>
+						<phase>test</phase>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<configuration>
+							<arguments>run coverage</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>npm run sbom</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<configuration>
+							<arguments>run sbom</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>npm run build</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<configuration>
+							<arguments>run build</arguments>
 						</configuration>
 					</execution>
 				</executions>

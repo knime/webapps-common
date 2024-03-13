@@ -22,6 +22,8 @@ try {
         stage('Sonarqube analysis') {
             workflowTests.runSonar(withOutNode: true)
         }
+
+        owasp.sendNodeJSSBOMs('5.3.0-beta-0-84e14157')
     }
 } catch (ex) {
     currentBuild.result = 'FAILURE'

@@ -34,7 +34,8 @@
     "test:unit": "vitest",
     "test:integration": "vitest --mode integration",
     "coverage": "vitest run --coverage",
-    "prepare": "cd ../.. && husky install ./org.knime.core.ui/js-src/.husky"
+    "prepare": "cd ../.. && husky ./org.knime.core.ui/js-src/.husky",
+    "sbom": "npx @cyclonedx/cyclonedx-npm --output-file bom.json --ignore-npm-errors --omit dev"
   },
   "license": "UNLICENSED",
   "author": "KNIME AG, Zurich, Switzerland",
@@ -53,6 +54,7 @@
     "webapps-common": "file:webapps-common"
   },
   "devDependencies": {
+    "@cyclonedx/cyclonedx-npm": "1.16.1",
     "@knime/eslint-config": "8.0.11",
     "@tsconfig/node20": "20.1.2",
     "@types/jsdom": "21.1.0",

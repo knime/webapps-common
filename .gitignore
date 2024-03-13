@@ -82,6 +82,9 @@ typings/
 # Nuxt generate
 dist
 
+# Generated Sbom file
+bom.json
+
 # vuepress build output
 .vuepress/dist
 
