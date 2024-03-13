@@ -379,17 +379,40 @@ export default {
       if (this.currentKeyNavIndex === this.bottomIndex) {
         return;
       }
+      this.scrollIntoView(this.currentKeyNavIndex);
+    },
+    scrollIntoView(index, mode = "auto") {
+      if (!this.containerProps.ref.value) {
+        return;
+      }
       const listBoxNode = this.containerProps.ref.value;
       if (listBoxNode.scrollHeight > listBoxNode.clientHeight) {
         const scrollBottom = listBoxNode.clientHeight + listBoxNode.scrollTop;
-        const elementTop = this.currentKeyNavIndex * this.optionLineHeight;
+        const elementTop = index * this.optionLineHeight;
         const elementBottom = elementTop + this.optionLineHeight;
-        if (elementBottom > scrollBottom) {
-          listBoxNode.scrollTop = elementBottom - listBoxNode.clientHeight;
-        } else if (elementTop < listBoxNode.scrollTop) {
+        const elementIsAboveScreen = elementTop < listBoxNode.scrollTop;
+        const elementIsBelowScreen = elementBottom > scrollBottom;
+        if (!(elementIsBelowScreen || elementIsAboveScreen)) {
+          return;
+        }
+        const scrollToTopEdge =
+          mode === "up" || (mode === "auto" && elementIsAboveScreen);
+
+        if (scrollToTopEdge) {
           listBoxNode.scrollTop = elementTop;
+        } else {
+          listBoxNode.scrollTop = elementBottom - listBoxNode.clientHeight;
         }
       }
+    },
+    scrollUpIntoView(index) {
+      this.scrollIntoView(index, "up");
+    },
+    scrollDownIntoView(index) {
+      this.scrollIntoView(index, "down");
+    },
+    setCurrentKeyNavIndex(index) {
+      this.currentKeyNavIndex = index;
     },
     isOutOfRange(index) {
       if (index < 0) {
@@ -566,6 +589,7 @@ export default {
             :line-height="optionLineHeight"
             :selected="isCurrentValue(item.id)"
             :invalid="item.invalid"
+            :special="item.special"
             :disabled="disabled"
             @click="handleClick($event, item.id, index)"
             @dblclick-shift="handleShiftDblClick()"

@@ -8,17 +8,11 @@ import ArrowPrevIcon from "../../assets/img/icons/arrow-prev.svg";
 import ArrowPrevDoubleIcon from "../../assets/img/icons/arrow-prev-double.svg";
 import { filters } from "../../../util/filters";
 import type { PropType } from "vue";
+import type { Id, PossibleValue } from "./possibleValues/PossibleValue";
+import createMissingItem from "./possibleValues/createMissingItem";
 
 const KEY_ENTER = "Enter";
 const MIN_LIST_SIZE = 5;
-
-export type Id = string | number | symbol;
-
-export interface PossibleValue {
-  id: Id;
-  text: string;
-  invalid?: boolean;
-}
 
 export default {
   components: {
@@ -190,7 +184,7 @@ export default {
     },
     matchingInvalidValueIds() {
       return this.invalidValueIds.filter((item) =>
-        this.itemMatchesSearch(this.generateInvalidItem(item)),
+        this.itemMatchesSearch(createMissingItem(item)),
       );
     },
     matchingValidIds() {
@@ -224,8 +218,7 @@ export default {
       return this.chosenValues
         .map(
           (value) =>
-            this.possibleValueMap[value]?.item ||
-            this.generateInvalidItem(value),
+            this.possibleValueMap[value]?.item || createMissingItem(value),
         )
         .filter((value) => this.visibleValueIds.has(value.id));
     },
@@ -330,9 +323,6 @@ export default {
     },
   },
   methods: {
-    generateInvalidItem(id: Id) {
-      return { id, text: `(MISSING) ${String(id)}`, invalid: true };
-    },
     getIndex(id: Id) {
       return this.possibleValueMap[id]?.index ?? -1;
     },

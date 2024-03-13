@@ -3,10 +3,11 @@ import Label from "./Label.vue";
 import SearchInput from "./SearchInput.vue";
 import Checkboxes from "./Checkboxes.vue";
 import ValueSwitch from "./ValueSwitch.vue";
-import Twinlist, {
+import Twinlist from "./Twinlist.vue";
+import {
   type PossibleValue as TwinlistPossibleValue,
   type Id,
-} from "./Twinlist.vue";
+} from "./possibleValues/PossibleValue";
 import FilterIcon from "../../assets/img/icons/filter.svg";
 import { filters } from "../../../util/filters";
 import type { PropType } from "vue";
