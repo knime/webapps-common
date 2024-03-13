@@ -63,6 +63,7 @@ describe("generatePossibleValues", () => {
         {
           id: "<row-keys>",
           text: "RowIDs",
+          compatibleTypes: ["org.knime.core.data.StringValue"],
         },
       ]),
     );
@@ -84,6 +85,7 @@ describe("generatePossibleValues", () => {
         {
           id: "<row-numbers>",
           text: "Row numbers",
+          compatibleTypes: ["org.knime.core.data.DoubleValue"],
         },
       ]),
     );
@@ -116,6 +118,7 @@ describe("generatePossibleValues", () => {
         {
           id: "<row-keys>",
           text: "RowIDs",
+          compatibleTypes: ["org.knime.core.data.StringValue"],
         },
         ...successResultChoices,
       ]);

@@ -76,8 +76,24 @@ export default async (
   );
   return [
     ...(showNoneColumn ? [{ id: "<none>", text: "None" }] : []),
-    ...(showRowKeys ? [{ id: "<row-keys>", text: "RowIDs" }] : []),
-    ...(showRowNumbers ? [{ id: "<row-numbers>", text: "Row numbers" }] : []),
+    ...(showRowKeys
+      ? [
+          {
+            id: "<row-keys>",
+            text: "RowIDs",
+            compatibleTypes: ["org.knime.core.data.StringValue"],
+          },
+        ]
+      : []),
+    ...(showRowNumbers
+      ? [
+          {
+            id: "<row-numbers>",
+            text: "Row numbers",
+            compatibleTypes: ["org.knime.core.data.DoubleValue"],
+          },
+        ]
+      : []),
     ...normalPossibleValues,
   ];
 };
