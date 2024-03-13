@@ -23,7 +23,7 @@ try {
             workflowTests.runSonar(withOutNode: true)
         }
 
-        owasp.sendNodeJSSBOMs('5.3.0-beta-0-84e14157')
+        owasp.sendNodeJSSBOMs(readMavenPom(file: 'pom.xml').properties['revision'])
     }
 } catch (ex) {
     currentBuild.result = 'FAILURE'
