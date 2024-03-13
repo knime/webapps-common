@@ -25,8 +25,8 @@
 		<sonar.javascript.lcov.reportPaths>coverage/lcov.info</sonar.javascript.lcov.reportPaths>
 		<sonar.css.stylelint.reportPaths>test-results/stylelint.json</sonar.css.stylelint.reportPaths>
 		<sonar.eslint.reportPaths>test-results/eslint.json</sonar.eslint.reportPaths>
-		<node.version>v18.14.2</node.version>
-		<npm.version>9.5.0</npm.version>
+		<node.version>v20.11.1</node.version>
+		<npm.version>10.2.4</npm.version>
 	</properties>
 
 	<build>

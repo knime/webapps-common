@@ -81,6 +81,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileReaderWidg
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RichTextInputWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.SortListWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
@@ -204,13 +205,30 @@ class UiSchemaOptionsTest {
         var response = buildTestUiSchema(ComboBoxFormatSettings.class);
 
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("comboBox");
-        assertThatJson(response).inPath("$.elements[0].options").isObject().containsKey("format");
         assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo(Format.COMBO_BOX);
 
         assertThatJson(response).inPath("$.elements[1].scope").isString().contains("comboBoxWithChoices");
-        assertThatJson(response).inPath("$.elements[1].options").isObject().containsKey("format");
         assertThatJson(response).inPath("$.elements[1].options.format").isString().isEqualTo(Format.COMBO_BOX);
         assertThatJson(response).inPath("$.elements[1].options.possibleValues").isArray().hasSize(0);
+    }
+
+    @Test
+    void testSortListFormat() {
+        @SuppressWarnings("unused")
+        class ComboBoxFormatSettings implements DefaultNodeSettings {
+
+            @Widget(title = "", description = "")
+            @ChoicesWidget(choices = TestChoicesProvider.class)
+            @SortListWidget
+            String[] m_sortList;
+
+        }
+
+        var response = buildTestUiSchema(ComboBoxFormatSettings.class);
+
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("sortList");
+        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo(Format.SORT_LIST);
+
     }
 
     @Test

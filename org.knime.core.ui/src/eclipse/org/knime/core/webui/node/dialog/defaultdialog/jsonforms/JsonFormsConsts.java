@@ -220,6 +220,8 @@ public final class JsonFormsConsts {
 
             public static final String COMBO_BOX = "comboBox";
 
+            public static final String SORT_LIST = "sortList";
+
             public static final String RADIO = "radio";
 
             public static final String BUTTON = "button";

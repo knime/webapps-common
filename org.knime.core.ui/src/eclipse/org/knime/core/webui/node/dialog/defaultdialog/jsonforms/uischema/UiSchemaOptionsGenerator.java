@@ -101,6 +101,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileReaderWidg
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RichTextInputWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.SortListWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
@@ -396,6 +397,9 @@ final class UiSchemaOptionsGenerator {
             }
             if (annotatedWidgets.contains(ComboBoxWidget.class)) {
                 options.put(TAG_FORMAT, Format.COMBO_BOX);
+            }
+            if (annotatedWidgets.contains(SortListWidget.class)) {
+                options.put(TAG_FORMAT, Format.SORT_LIST);
             }
         }
 

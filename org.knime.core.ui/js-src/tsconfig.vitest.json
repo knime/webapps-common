@@ -3,7 +3,7 @@
   "exclude": ["webapps-common/**/__tests__/*", "webapps-common/demo/*"],
   "compilerOptions": {
     "composite": true,
-    "lib": [],
+    "lib": ["ES2023.Array"],
     "types": ["node", "jsdom"],
     "jsx": "preserve",
     "allowJs": true,

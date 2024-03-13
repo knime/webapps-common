@@ -83,6 +83,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FileCh
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ComboBoxWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
@@ -92,6 +93,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidg
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RichTextInputWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.SortListWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
@@ -172,7 +174,10 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.Usernam
  * <tr>
  * <td>String[]</td>
  * <td></td>
- * <td>{@link ChoicesWidget} (drop-down)</td>
+ * <td>{@link ChoicesWidget} (drop-down) <br>
+ * {@link ComboBoxWidget} <br>
+ * {@link SortListWidget} <br>
+ * </td>
  * </tr>
  * <tr>
  * <td>Enums(*)</td>

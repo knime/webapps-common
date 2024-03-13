@@ -11,6 +11,7 @@ export const inputFormats = {
   richTextInput: "richTextInput",
   twinList: "twinList",
   comboBox: "comboBox",
+  sortList: "sortList",
   button: "button",
   simpleButton: "simpleButton",
   textArea: "textArea",

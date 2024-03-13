@@ -8,7 +8,7 @@ defineProps(rendererProps());
 <template>
   <TwinlistInput
     v-bind="{ ...$props, ...$attrs }"
-    unknown-values-text="Any unknown columns"
+    unknown-values-text="Any unknown column"
     show-unknown-values
     empty-state-label="No columns in this list"
   />

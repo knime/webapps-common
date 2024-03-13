@@ -9,7 +9,7 @@ const renderers = [
   ...defaultRenderers,
 ];
 
-describe("SimpleTwinlistInput", () => {
+describe("SortListInput", () => {
   const schema = {
     type: "object",
     properties: {
@@ -24,12 +24,12 @@ describe("SimpleTwinlistInput", () => {
       type: "Control",
       scope: "#/properties/twinlist",
       options: {
-        format: "twinList",
+        format: "sortList",
       },
     };
 
     expect(determineRenderer(uiSchema, schema, renderers)).toBe(
-      "SimpleTwinlistInput",
+      "SortListInput",
     );
   });
 });

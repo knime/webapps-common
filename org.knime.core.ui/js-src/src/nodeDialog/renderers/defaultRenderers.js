@@ -16,6 +16,7 @@ import { numberRenderer } from "./numberRenderer";
 import { radioRenderer } from "./radioRenderer";
 import { richTextInputRenderer } from "./richTextInputRenderer";
 import { twinlistRenderer, simpleTwinlistRenderer } from "./twinlistRenderer";
+import { sortListRenderer } from "./sortListRenderer";
 import { valueSwitchRenderer } from "./valueSwitchRenderer";
 import { textAreaRenderer } from "./textAreaRenderer";
 import { credentialsRenderer } from "./credentialsRenderer";
@@ -45,6 +46,7 @@ export const defaultRenderers = [
   richTextInputRenderer,
   simpleTwinlistRenderer,
   twinlistRenderer,
+  sortListRenderer,
   valueSwitchRenderer,
   textAreaRenderer,
   credentialsRenderer,
