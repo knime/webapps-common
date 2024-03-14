@@ -80,8 +80,8 @@ const TwinlistInput = defineComponent({
   data() {
     return {
       loadingInfo: markRaw(TwinlistLoadingInfo) as Raw<any> | null,
-      possibleValues: null as null | PossibleValue[],
-      previouslySelectedTypes: null as null | IdAndText[],
+      possibleValues: [] as PossibleValue[],
+      previouslySelectedTypes: [] as IdAndText[],
       initialManuallySelected: null as null | string[],
     };
   },
@@ -99,10 +99,7 @@ const TwinlistInput = defineComponent({
       );
     },
     withTypes() {
-      return (
-        this.possibleValues !== null &&
-        Boolean(this.possibleValues[0]?.hasOwnProperty("type"))
-      );
+      return Boolean(this.possibleValues[0]?.hasOwnProperty("type"));
     },
     showMode() {
       return (
@@ -300,7 +297,7 @@ export default TwinlistInput;
         "
         :filter-chosen-values-on-possible-values-change="false"
         mode-label="Selection mode"
-        :possible-values="possibleValues ?? []"
+        :possible-values="possibleValues"
         :size="twinlistSize"
         :left-label="twinlistLeftLabel"
         :right-label="twinlistRightLabel"
