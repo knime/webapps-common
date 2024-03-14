@@ -130,6 +130,10 @@ export default {
     watch(
       () => props.possibleValues,
       () => {
+        if (!containerProps.ref.value) {
+          return;
+        }
+
         scrollTo(
           Math.max(
             Math.min(

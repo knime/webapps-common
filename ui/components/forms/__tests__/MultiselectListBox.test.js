@@ -137,6 +137,27 @@ describe("MultiselectListBox.vue", () => {
     expect(scrollTo).toHaveBeenCalledWith(0);
   });
 
+  it("does not update the scroll position on possible values change when the ref is not available", async () => {
+    scrollTo.mockReset();
+    const wrapper = mount(MultiselectListBox, {
+      props: {
+        possibleValues,
+        modelValue: ["test1", "test3"],
+        ariaLabel: "A Label",
+      },
+    });
+    expect(scrollTo).not.toHaveBeenCalled();
+
+    wrapper.vm.containerProps.ref.value = null;
+    await wrapper.setProps({
+      possibleValues: [
+        { id: "new1", text: "new1" },
+        { id: "new2", text: "new2" },
+      ],
+    });
+    expect(scrollTo).not.toHaveBeenCalled();
+  });
+
   describe("mouse click", () => {
     it("selects item on click", async () => {
       const wrapper = mount(MultiselectListBox, {
