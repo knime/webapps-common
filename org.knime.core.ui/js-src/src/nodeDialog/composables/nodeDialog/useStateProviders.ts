@@ -1,24 +1,29 @@
 export default () => {
-  const stateProviderListeners = new Map<string, (value: unknown) => void>();
-  const pendingStates = new Map<string, unknown>();
+  const stateProviderListeners = new Map<
+    string,
+    ((value: unknown) => void)[]
+  >();
+  /**
+   * States remembered for yet to be registered listeners
+   */
+  const states = new Map<string, unknown>();
   const addStateProviderListener = (
     id: string,
     callback: (value: any) => void,
   ) => {
-    stateProviderListeners.set(id, callback);
-    if (pendingStates.has(id)) {
-      callback(pendingStates.get(id));
-      pendingStates.delete(id);
+    if (stateProviderListeners.has(id)) {
+      stateProviderListeners.get(id)!.push(callback);
+    } else {
+      stateProviderListeners.set(id, [callback]);
+    }
+    if (states.has(id)) {
+      callback(states.get(id));
     }
   };
 
   const callStateProviderListener = (id: string, value: unknown) => {
-    const listener = stateProviderListeners.get(id);
-    if (listener) {
-      listener(value);
-    } else {
-      pendingStates.set(id, value);
-    }
+    states.set(id, value);
+    stateProviderListeners.get(id)?.forEach((callback) => callback(value));
   };
 
   return { addStateProviderListener, callStateProviderListener };
