@@ -145,8 +145,8 @@ export default {
 .overlay {
   z-index: 1;
   position: absolute;
-  top: 0;
-  left: 0;
+  top: var(--error-overlay-top, 0);
+  left: var(--error-overlay-left, 0);
   width: 100%;
   height: 100%;
   box-shadow: inset 0 0 0 1px var(--knime-white);

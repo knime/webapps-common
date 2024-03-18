@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import Popover from "./Popover.vue";
+import { computed } from "vue";
+import type { Alert } from "@knime/ui-extension-service";
+
 import CloseIcon from "../assets/img/icons/close.svg";
+import Popover from "./Popover.vue";
 
 /**
  * This is the local alert/error management component created for use with the NodeViewIFrame. Its main use is to
@@ -11,29 +14,32 @@ import CloseIcon from "../assets/img/icons/close.svg";
  */
 
 type Props = {
-  active?: boolean;
+  alert?: Alert | null;
 };
 
-withDefaults(defineProps<Props>(), {
-  active: false,
+const props = withDefaults(defineProps<Props>(), {
+  alert: null,
 });
 
 const emit = defineEmits<{
-  showError: [];
+  display: [];
 }>();
+
+const isActive = computed(() => props.alert && props.alert?.type === "error");
 </script>
 
 <template>
   <Popover
-    :active="active"
-    :class="['node-popover', { active }]"
+    v-if="isActive"
+    active
+    :class="['node-popover', { active: isActive }]"
     :type="'error'"
   >
     <template #popoverContent>
       <div
         class="error-wrapper"
         title="Click to see more details."
-        @click="emit('showError')"
+        @click="emit('display')"
       >
         <CloseIcon class="icon" />
       </div>
@@ -43,12 +49,6 @@ const emit = defineEmits<{
 
 <style lang="postcss" scoped>
 .node-popover {
-  pointer-events: none;
-
-  &.active {
-    pointer-events: all;
-  }
-
   & .error-wrapper {
     width: 40px;
     height: 40px;

@@ -30,7 +30,7 @@ type Props = {
   apiLayer: UIExtensionAPILayer;
   extensionConfig: ExtensionConfig;
   resourceLocation: string;
-  settingsOnClean?: Record<string, unknown> | null; // TODO: better type?
+  settingsOnClean?: Record<string, unknown> | null;
   isReporting?: boolean;
   isDialogLayout?: boolean;
   shadowAppStyle?: StyleValue | null;
@@ -117,11 +117,3 @@ onUnmounted(() => {
     @service-created="onServiceCreated"
   />
 </template>
-
-<style lang="postcss" scoped>
-.local-warning {
-  position: absolute;
-  bottom: 0;
-  top: unset;
-}
-</style>
