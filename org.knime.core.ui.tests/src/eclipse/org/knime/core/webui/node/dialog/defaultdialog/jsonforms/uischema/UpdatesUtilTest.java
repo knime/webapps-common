@@ -378,6 +378,16 @@ class UpdatesUtilTest {
 
             }
 
+            static final class MySetting {
+
+                final String m_value;
+
+                MySetting(final String value) {
+                    m_value = value;
+                }
+
+            }
+
             static final class MyInitialFileExtensionProvider implements FileExtensionProvider {
 
                 @Override
@@ -398,7 +408,7 @@ class UpdatesUtilTest {
             @LocalFileWriterWidget(fileExtensionProvider = MyInitialFileExtensionProvider.class)
             String m_localFileWriter;
 
-            static final class MyValueProvider implements StateProvider<String> {
+            static final class MyValueProvider implements StateProvider<MySetting> {
 
                 @Override
                 public void init(final StateProviderInitializer initializer) {
@@ -408,14 +418,14 @@ class UpdatesUtilTest {
                 public static final String RESULT = "updated string";
 
                 @Override
-                public String computeState(final DefaultNodeSettingsContext context) {
-                    return RESULT;
+                public MySetting computeState(final DefaultNodeSettingsContext context) {
+                    return new MySetting(RESULT);
                 }
 
             }
 
             @Widget(title = "", description = "", valueProvider = MyValueProvider.class)
-            String m_valueUpdateSetting;
+            MySetting m_valueUpdateSetting;
 
         }
         final Map<String, WidgetGroup> settings = Map.of("test", new TestSettings());
@@ -428,7 +438,7 @@ class UpdatesUtilTest {
         assertThatJson(response).inPath("$.initialUpdates").isArray().anySatisfy(initialUpdate -> {
             assertThatJson(initialUpdate).inPath("$.path").isString()
                 .isEqualTo("#/properties/test/properties/valueUpdateSetting");
-            assertThatJson(initialUpdate).inPath("$.value").isString().isEqualTo(TestSettings.MyValueProvider.RESULT);
+            assertThatJson(initialUpdate).inPath("$.value").isObject().containsEntry("value", TestSettings.MyValueProvider.RESULT);
         });
 
         assertThatJson(response).inPath("$.initialUpdates").isArray().anySatisfy(initialUpdate -> {

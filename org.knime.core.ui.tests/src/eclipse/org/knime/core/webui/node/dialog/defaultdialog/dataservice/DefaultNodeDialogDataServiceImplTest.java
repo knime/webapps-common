@@ -49,7 +49,6 @@
 package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.groups.Tuple.tuple;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -96,6 +95,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncC
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
+
+import com.fasterxml.jackson.databind.node.TextNode;
 
 /**
  * Tests DefaultNodeSettingsService.
@@ -184,7 +185,7 @@ class DefaultNodeDialogDataServiceImplTest {
                 Map.of(MyValueRef.class.getName(), testDepenenciesFooValue));
             final var result = (List<UpdateResult>)(resultWrapper.result());
             assertThat(result).hasSize(1);
-            assertThat(result.get(0).value()).isEqualTo(testDepenenciesFooValue);
+            assertThat(((TextNode)result.get(0).value()).textValue()).isEqualTo(testDepenenciesFooValue);
             assertThat(result.get(0).path()).isEqualTo("#/properties/model/properties/updatedWidget");
         }
 
@@ -322,9 +323,16 @@ class DefaultNodeDialogDataServiceImplTest {
                     testDepenenciesFooValue, MySecondValueRef.class.getName(), testDepenenciesBarValue));
             final var result = (List<UpdateResult>)(resultWrapper.result());
             assertThat(result).hasSize(2);
-            assertThat(result).extracting("value", "path").contains(
-                tuple(testDepenenciesFooValue + "_first", "#/properties/model/properties/firstUpdatedWidget"),
-                tuple(testDepenenciesBarValue + "_second", "#/properties/model/properties/secondUpdatedWidget"));
+            final var valuesAndPaths = assertThat(result).extracting("value", "path");
+            valuesAndPaths.anySatisfy(tuple -> {
+                assertThat(((TextNode)tuple.toList().get(0)).textValue()).isEqualTo(testDepenenciesFooValue + "_first");
+                assertThat(tuple.toList().get(1)).isEqualTo("#/properties/model/properties/firstUpdatedWidget");
+            });
+            valuesAndPaths.anySatisfy(tuple -> {
+                assertThat(((TextNode)tuple.toList().get(0)).textValue())
+                    .isEqualTo(testDepenenciesBarValue + "_second");
+                assertThat(tuple.toList().get(1)).isEqualTo("#/properties/model/properties/secondUpdatedWidget");
+            });
         }
     }
 

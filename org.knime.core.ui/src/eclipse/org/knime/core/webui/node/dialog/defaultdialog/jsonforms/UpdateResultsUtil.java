@@ -77,7 +77,7 @@ public final class UpdateResultsUtil {
     public record UpdateResult(String path, String id, Object value) {
 
         private static UpdateResult forPath(final String path, final Object value) {
-            return new UpdateResult(path, null, value);
+            return new UpdateResult(path, null, JsonFormsDataUtil.getMapper().valueToTree(value));
         }
 
         private static UpdateResult forId(final String id, final Object value) {
