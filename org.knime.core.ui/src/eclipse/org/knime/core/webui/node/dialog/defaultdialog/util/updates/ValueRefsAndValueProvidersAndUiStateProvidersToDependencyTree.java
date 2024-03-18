@@ -58,6 +58,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import org.knime.core.node.util.CheckUtils;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueRefsAndStateProviders.ValueProviderWrapper;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueRefsAndStateProviders.ValueRefWrapper;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueRefsAndStateProviders.ValueRefsAndStateProviders;
@@ -190,6 +191,8 @@ final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
             @Override
             public Collection<Vertex> accept(final StateVertex stateVertex) {
                 final var stateProvider = stateVertex.getStateProvider();
+                CheckUtils.checkNotNull(stateProvider, "Failed to instantiate state provider class %s.",
+                    stateVertex.getStateProviderClass());
                 final var stateProviderDependencyReceiver = new StateProviderDependencyReceiver();
                 stateProvider.init(stateProviderDependencyReceiver);
 
