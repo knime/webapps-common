@@ -328,4 +328,30 @@ describe("DropdownInput.vue", () => {
     await flushPromises();
     expect(wrapper.vm.options).toStrictEqual(customOptions);
   });
+
+  it("uses choicesProvider if present", () => {
+    const choicesProvider = "myChoicesProvider";
+    props.control.uischema.options.choicesProvider = choicesProvider;
+
+    let provideChoices;
+    const addStateProviderListenerMock = vi.fn((_id, callback) => {
+      provideChoices = callback;
+    });
+    const { wrapper } = mountJsonFormsComponent(DropdownInput, {
+      props,
+      provide: { addStateProviderListenerMock },
+    });
+    expect(addStateProviderListenerMock).toHaveBeenCalledWith(
+      choicesProvider,
+      expect.anything(),
+    );
+    const providedChoices = [
+      {
+        id: "Universe_0_0",
+        text: "Universe_0_0",
+      },
+    ];
+    provideChoices(providedChoices);
+    expect(wrapper.vm.options).toStrictEqual(providedChoices);
+  });
 });

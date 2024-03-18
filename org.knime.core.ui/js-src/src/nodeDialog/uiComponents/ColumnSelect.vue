@@ -1,12 +1,13 @@
 <!-- eslint-disable class-methods-use-this -->
 <script setup lang="ts">
 import { rendererProps } from "@jsonforms/vue";
-import { onMounted, ref, watchEffect, type Ref } from "vue";
+import { computed, onMounted, watch, watchEffect } from "vue";
 import type { PossibleValue } from "../types/ChoicesUiSchema";
 import inject from "../utils/inject";
 import DropdownInput from "./DropdownInput.vue";
 import { isEqual } from "lodash-es";
 import useDialogControl from "../composables/components/useDialogControl";
+import useProvidedState from "../composables/components/useProvidedState";
 import { DefaultSettingComparator } from "@knime/ui-extension-service";
 
 class ColumnSelectValueComparator extends DefaultSettingComparator<
@@ -34,8 +35,15 @@ const jsonFormsControl = useDialogControl({
   valueComparator: new ColumnSelectValueComparator(),
 });
 
+const choicesProvider = computed<string | undefined>(
+  () => jsonFormsControl.control.value.uischema.options?.choicesProvider,
+);
+
 const getPossibleValuesFromUiSchema = inject("getPossibleValuesFromUiSchema");
-const possibleValues: Ref<null | PossibleValue[]> = ref(null);
+const possibleValues = useProvidedState<null | PossibleValue[]>(
+  choicesProvider,
+  null,
+);
 
 const asyncInitialOptions = new Promise<PossibleValue[]>((resolve) => {
   watchEffect(() => {
@@ -57,7 +65,7 @@ const toData = (value: string | null) => {
 
 const toValue = ({ selected }: any) => selected;
 
-const updateInitialData = () => {
+const updateData = () => {
   const initialData = jsonFormsControl.control.value.data;
   const updatedInitialData = toData(toValue(initialData));
   if (!isEqual(initialData, updatedInitialData)) {
@@ -65,11 +73,14 @@ const updateInitialData = () => {
   }
 };
 
+watch(() => possibleValues.value, updateData);
+
 onMounted(async () => {
-  possibleValues.value = await getPossibleValuesFromUiSchema(
-    jsonFormsControl.control.value,
-  );
-  updateInitialData();
+  if (!choicesProvider.value) {
+    possibleValues.value = await getPossibleValuesFromUiSchema(
+      jsonFormsControl.control.value,
+    );
+  }
 });
 </script>
 

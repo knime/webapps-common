@@ -1,12 +1,5 @@
 <script setup lang="ts">
-import {
-  type Ref,
-  type PropType,
-  ref,
-  computed,
-  onMounted,
-  onBeforeUnmount,
-} from "vue";
+import { type PropType, computed, onMounted, onBeforeUnmount } from "vue";
 import { rendererProps } from "@jsonforms/vue";
 import LoadingDropdown from "./loading/LoadingDropdown.vue";
 import { AlertType } from "@knime/ui-extension-service";
@@ -20,6 +13,7 @@ import useDialogControl, {
   type DialogControl,
 } from "../composables/components/useDialogControl";
 import LabeledInput from "./label/LabeledInput.vue";
+import useProvidedState from "../composables/components/useProvidedState";
 
 const props = defineProps({
   ...rendererProps(),
@@ -54,7 +48,13 @@ const registerWatcher = inject("registerWatcher");
 const getData = inject("getData");
 const sendAlert = inject("sendAlert");
 
-const options: Ref<null | IdAndText[]> = ref(null);
+const choicesProvider = computed(
+  () => control.value.uischema.options?.choicesProvider,
+);
+const options = useProvidedState<null | IdAndText[]>(
+  choicesProvider.value,
+  null,
+);
 
 const getFirstValueFromDropdownOrNull = (result: IdAndText[]) => {
   return props.dropdownValueToControlData(
@@ -113,12 +113,12 @@ const fetchInitialOptions = async (newSettings: SettingsData) => {
 };
 
 const setInitialOptions = async () => {
-  if (props.asyncInitialOptions === null) {
+  if (props.asyncInitialOptions !== null) {
+    options.value = await props.asyncInitialOptions;
+  } else if (!choicesProvider.value) {
     getPossibleValuesFromUiSchema(control.value).then((result) => {
       options.value = result;
     });
-  } else {
-    options.value = await props.asyncInitialOptions;
   }
 };
 

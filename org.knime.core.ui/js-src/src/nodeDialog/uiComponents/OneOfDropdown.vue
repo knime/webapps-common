@@ -16,4 +16,3 @@ const asyncInitialOptions = Promise.resolve(options);
     :async-initial-options="asyncInitialOptions"
   />
 </template>
-../composables/components/useJsonFormsControlWithUpdate
