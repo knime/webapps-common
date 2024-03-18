@@ -124,4 +124,33 @@ describe("ComboBoxInput.vue", () => {
     await flushPromises();
     expect(wrapper.findComponent(ComboBox).attributes().disabled).toBeTruthy();
   });
+
+  it("uses choicesProvider if present", async () => {
+    const choicesProvider = "myChoicesProvider";
+    props.control.uischema.options.choicesProvider = choicesProvider;
+
+    let provideChoices;
+    const addStateProviderListenerMock = vi.fn((_id, callback) => {
+      provideChoices = callback;
+    });
+    const { wrapper } = mountJsonFormsComponent(ComboBoxInput, {
+      props,
+      provide: { addStateProviderListenerMock },
+    });
+    expect(addStateProviderListenerMock).toHaveBeenCalledWith(
+      choicesProvider,
+      expect.anything(),
+    );
+    const providedChoices = [
+      {
+        id: "Universe_0_0",
+        text: "Universe_0_0",
+      },
+    ];
+    provideChoices(providedChoices);
+    await flushPromises();
+    expect(
+      wrapper.findComponent(ComboBox).props().possibleValues,
+    ).toStrictEqual(providedChoices);
+  });
 });

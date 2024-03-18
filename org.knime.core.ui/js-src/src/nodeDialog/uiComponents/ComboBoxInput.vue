@@ -5,6 +5,7 @@ import type { PossibleValue } from "../types/ChoicesUiSchema";
 import useDialogControl from "../composables/components/useDialogControl";
 import LabeledInput from "./label/LabeledInput.vue";
 import { rendererProps } from "@jsonforms/vue";
+import useProvidedState from "../composables/components/useProvidedState";
 const props = defineProps(rendererProps());
 const {
   control,
@@ -12,13 +13,18 @@ const {
   disabled: disabledByDefault,
 } = useDialogControl<string[]>({ props });
 
-const options = ref([] as PossibleValue[] | undefined);
+const choicesProvider = computed<string | undefined>(
+  () => control.value.uischema?.options?.choicesProvider,
+);
+const options = useProvidedState<PossibleValue[]>(choicesProvider, []);
 const selectedIds = ref([] as string[]);
 const loaded = ref(false);
 
 onMounted(() => {
   selectedIds.value = control.value.data;
-  options.value = control.value.uischema?.options?.possibleValues;
+  if (!choicesProvider.value) {
+    options.value = control.value.uischema?.options?.possibleValues;
+  }
   loaded.value = true;
 });
 
