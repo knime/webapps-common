@@ -77,7 +77,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.AsyncChoicesProvide
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileReaderWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.StringChoicesStateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.IdAndText;
@@ -525,7 +525,7 @@ class ChoicesWidgetUiSchemaOptionsTest {
     }
 
     @Test
-    void testThrowsIfNoChoicesAndNoChoicesUpdateHandlerIsDefined() {
+    void testThrowsIfNoChoicesParameterIsDefined() {
         class ChoicesWidgetTestSettings implements DefaultNodeSettings {
 
             @Widget(title = "", description = "")
@@ -609,6 +609,41 @@ class ChoicesWidgetUiSchemaOptionsTest {
             .isEqualTo(ChoicesWidgetTestSettings.MyChoicesUpdateHandlerWithoutSetFirstValue.class.getName());
         assertThatJson(response).inPath("$.elements[1].options.dependencies").isArray().hasSize(1);
         assertThatJson(response).inPath("$.elements[1].options.setFirstValueOnUpdate").isBoolean().isFalse();
+    }
+
+    static class TestChoicesStateProvider implements StringChoicesStateProvider {
+
+        @Override
+        public String[] choices(final DefaultNodeSettingsContext context) {
+            return new String[]{"column1", "column2"};
+        }
+    }
+
+    @Test
+    void testChoicesStateProvider() {
+        final class ChoicesStateProviderTestSettings implements DefaultNodeSettings {
+
+            @Widget(description = "", title="")
+            @ChoicesWidget(choicesProvider = TestChoicesStateProvider.class)
+            ColumnFilter m_columnFilter;
+
+        }
+        var response = buildTestUiSchema(ChoicesStateProviderTestSettings.class);
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("columnFilter");
+        assertThatJson(response).inPath("$.elements[0].options.choicesProvider").isString()
+            .isEqualTo(TestChoicesStateProvider.class.getName());
+    }
+
+    @Test
+    void testThrowsIfNewAndOldMechanismAreUsedSimultaneously() {
+        class ChoicesWidgetTestSettings implements DefaultNodeSettings {
+
+            @Widget(description = "", title="")
+            @ChoicesWidget(choices = TestChoicesProvider.class, choicesProvider = TestChoicesStateProvider.class)
+            ColumnFilter m_foo;
+
+        }
+        assertThrows(UiSchemaGenerationException.class, () -> buildTestUiSchema(ChoicesWidgetTestSettings.class));
     }
 
 }

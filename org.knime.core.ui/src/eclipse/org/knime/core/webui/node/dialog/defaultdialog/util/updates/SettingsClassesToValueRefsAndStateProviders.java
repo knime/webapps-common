@@ -64,6 +64,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFi
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.AllFileExtensionsAllowedProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesStateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
@@ -134,8 +136,12 @@ final class SettingsClassesToValueRefsAndStateProviders {
                 CredentialsWidget.class, //
                 CredentialsWidget::hasUsernameProvider, //
                 NoopBooleanProvider.class//
-            ) //
-        );
+            ), //
+            new UiStateProviderSpec<>(//
+                ChoicesWidget.class, //
+                ChoicesWidget::choicesProvider, //
+                ChoicesStateProvider.class//
+            ));
 
     private static void addUiStateProviderForField(final TraversedField field,
         final Collection<Class<? extends StateProvider>> uiStateProviders) {

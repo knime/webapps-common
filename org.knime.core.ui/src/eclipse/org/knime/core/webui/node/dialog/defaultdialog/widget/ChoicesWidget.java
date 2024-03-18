@@ -58,6 +58,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.Colum
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilterMode;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.NoopChoicesUpdateHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 
 /**
  * A widget supplied with an array of possible values, which are the choices for a selection.
@@ -69,10 +70,11 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.NoopCh
 public @interface ChoicesWidget {
 
     /**
+     * TODO UIEXT-1491 Remove this in favor of using {@link #choicesProvider} instead.
+     *
      * @return the provider for the list of possible values. Use a {@link ColumnChoicesProvider} to supply additional
      *         information like the type of a column alongside its name to the frontend. Make the choices provider
-     *         asynchronous by additionally implementing {@link AsyncChoicesProvider}. TODO UIEXT-907 use a separate
-     *         annotation instead for column choices.
+     *         asynchronous by additionally implementing {@link AsyncChoicesProvider}.
      *
      */
     Class<? extends ChoicesProvider> choices() default ChoicesProvider.class;
@@ -117,11 +119,20 @@ public @interface ChoicesWidget {
     String excludedLabel() default "";
 
     /**
+     * TODO: UIEXT-1491 Remove this in favor of using {@link #choicesProvider} instead
+     *
      * @return a handler which defined dependencies from one or multiple setting to this one and updates the possible
      *         values when such a dependency changes. On an update, per default, the value of the dropdown is also
      *         updated to the first of the new possible values. This feature can be disabled by overriding
      *         {@link ChoicesUpdateHandler#setFirstValueOnUpdate}.
      */
     Class<? extends ChoicesUpdateHandler<?>> choicesUpdateHandler() default NoopChoicesUpdateHandler.class; // NOSONAR
+
+    /**
+     * @return the provider for the list of possible values. Use a {@link ColumnChoicesStateProvider} to supply
+     *         additional information like the type of a column alongside its name to the frontend. Make the choices
+     *         provider asynchronous by overriding its {@link StateProvider#init} method appropriately.
+     */
+    Class<? extends ChoicesStateProvider> choicesProvider() default ChoicesStateProvider.class;
 
 }

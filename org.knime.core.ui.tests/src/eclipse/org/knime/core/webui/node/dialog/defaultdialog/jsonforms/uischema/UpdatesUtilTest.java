@@ -52,12 +52,17 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.knime.core.data.DataColumnSpec;
+import org.knime.core.data.DataColumnSpecCreator;
+import org.knime.core.data.def.StringCell;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
@@ -65,10 +70,14 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialogTest;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FileChooser;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesStateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileExtensionProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.StringChoicesStateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SimpleButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonRef;
@@ -360,56 +369,6 @@ class UpdatesUtilTest {
         assertThatJson(response).inPath("$.globalUpdates[0].dependencies").isArray().hasSize(0);
     }
 
-    static final class MyExtensionProvider implements FileExtensionProvider {
-
-        @Override
-        public void init(final StateProviderInitializer initializer) {
-            initializer.computeAfterOpenDialog();
-        }
-
-        @Override
-        public String computeState(final DefaultNodeSettingsContext context) {
-            throw new IllegalStateException("Should not be called within this test");
-        }
-
-    }
-
-    @Test
-    void testFileWriterWidgetFileExtensionProvider() {
-
-        class TestSettings implements DefaultNodeSettings {
-
-            @FileWriterWidget(fileExtensionProvider = MyExtensionProvider.class)
-            FileChooser m_fileChooser;
-
-        }
-
-        final Map<String, WidgetGroup> settings = Map.of("test", new TestSettings());
-
-        final var response = buildUpdates(settings);
-
-        assertThatJson(response).inPath("$.globalUpdates").isArray().hasSize(1);
-
-    }
-
-    @Test
-    void testLocalFileWriterWidgetFileExtensionProvider() {
-
-        class TestSettings implements DefaultNodeSettings {
-
-            @LocalFileWriterWidget(fileExtensionProvider = MyExtensionProvider.class)
-            String m_fileChooser;
-
-        }
-
-        final Map<String, WidgetGroup> settings = Map.of("test", new TestSettings());
-
-        final var response = buildUpdates(settings);
-
-        assertThatJson(response).inPath("$.globalUpdates").isArray().hasSize(1);
-
-    }
-
     @Test
     void testUpdateBeforeOpenDialog() {
         @SuppressWarnings("unused")
@@ -483,7 +442,6 @@ class UpdatesUtilTest {
     @Test
     void testUpdateBeforeOpenDialogWithDependency() {
 
-        @SuppressWarnings("unused")
         class TestSettings implements DefaultNodeSettings {
 
             TestSettings() {
@@ -535,7 +493,6 @@ class UpdatesUtilTest {
 
     @Test
     void testUpdateAfterOpenDialog() {
-        @SuppressWarnings("unused")
         class TestSettings implements DefaultNodeSettings {
 
             TestSettings() {
@@ -592,5 +549,129 @@ class UpdatesUtilTest {
         assertThatJson(response).inPath("$.globalUpdates[0].trigger.triggerInitially").isBoolean().isTrue();
         assertThatJson(response).inPath("$.globalUpdates[0].trigger.id").isString().isEqualTo("after-open-dialog");
         assertThatJson(response).inPath("$.globalUpdates[0].dependencies").isArray().hasSize(0);
+    }
+
+    @Nested
+    class UIStateUpdateTest {
+
+        static final class MyExtensionProvider implements FileExtensionProvider {
+
+            @Override
+            public void init(final StateProviderInitializer initializer) {
+                initializer.computeAfterOpenDialog();
+            }
+
+            @Override
+            public String computeState(final DefaultNodeSettingsContext context) {
+                throw new IllegalStateException("Should not be called within this test");
+            }
+
+        }
+
+        @Test
+        void testFileWriterWidgetFileExtensionProvider() {
+
+            class TestSettings implements DefaultNodeSettings {
+
+                @FileWriterWidget(fileExtensionProvider = MyExtensionProvider.class)
+                FileChooser m_fileChooser;
+
+            }
+
+            final Map<String, WidgetGroup> settings = Map.of("test", new TestSettings());
+
+            final var response = buildUpdates(settings);
+
+            assertThatJson(response).inPath("$.globalUpdates").isArray().hasSize(1);
+
+        }
+
+        @Test
+        void testLocalFileWriterWidgetFileExtensionProvider() {
+
+            class TestSettings implements DefaultNodeSettings {
+
+                @LocalFileWriterWidget(fileExtensionProvider = MyExtensionProvider.class)
+                String m_fileChooser;
+
+            }
+
+            final Map<String, WidgetGroup> settings = Map.of("test", new TestSettings());
+
+            final var response = buildUpdates(settings);
+
+            assertThatJson(response).inPath("$.globalUpdates").isArray().hasSize(1);
+
+        }
+
+        static final class TestStringChoicesProvider implements StringChoicesStateProvider {
+
+            static final String[] RESULT = new String[]{"A", "B", "C"};
+
+            @Override
+            public String[] choices(final DefaultNodeSettingsContext context) {
+                return RESULT;
+            }
+
+        }
+
+        @Test
+        void testChoicesWidgetStringChoicesStateProvider() {
+            class TestSettings implements DefaultNodeSettings {
+
+                @ChoicesWidget(choicesProvider = TestStringChoicesProvider.class)
+                String m_string;
+
+            }
+            final Map<String, WidgetGroup> settings = Map.of("test", new TestSettings());
+
+            final var response = buildUpdates(settings);
+
+            assertThatJson(response).inPath("$.initialUpdates").isArray().hasSize(1);
+            assertThatJson(response).inPath("$.initialUpdates[0].id").isString()
+                .isEqualTo(TestStringChoicesProvider.class.getName());
+            assertThatJson(response).inPath("$.initialUpdates[0].value").isArray().hasSize(3);
+            List.of(0, 1, 2).forEach(i -> {
+                assertThatJson(response).inPath(String.format("$.initialUpdates[0].value[%s].id", i)).isString()
+                    .isEqualTo(TestStringChoicesProvider.RESULT[i]);
+                assertThatJson(response).inPath(String.format("$.initialUpdates[0].value[%s].text", i)).isString()
+                    .isEqualTo(TestStringChoicesProvider.RESULT[i]);
+            });
+
+        }
+
+        static final class TestColumnChoicesProvider implements ColumnChoicesStateProvider {
+
+            @Override
+            public DataColumnSpec[] columnChoices(final DefaultNodeSettingsContext context) {
+                return new DataColumnSpec[]{new DataColumnSpecCreator("A", StringCell.TYPE).createSpec()};
+            }
+
+        }
+
+        @Test
+        void testChoicesWidgetColumnChoicesStateProvider() {
+            class TestSettings implements DefaultNodeSettings {
+
+                @ChoicesWidget(choicesProvider = TestColumnChoicesProvider.class)
+                ColumnSelection m_columnSelection;
+
+            }
+            final Map<String, WidgetGroup> settings = Map.of("test", new TestSettings());
+
+            final var response = buildUpdates(settings);
+
+            assertThatJson(response).inPath("$.initialUpdates").isArray().hasSize(1);
+            assertThatJson(response).inPath("$.initialUpdates[0].id").isString()
+                .isEqualTo(TestColumnChoicesProvider.class.getName());
+            assertThatJson(response).inPath("$.initialUpdates[0].value").isArray().hasSize(1);
+            assertThatJson(response).inPath("$.initialUpdates[0].value[0].id").isString().isEqualTo("A");
+            assertThatJson(response).inPath("$.initialUpdates[0].value[0].text").isString().isEqualTo("A");
+            assertThatJson(response).inPath("$.initialUpdates[0].value[0].type.id").isString()
+                .isEqualTo(StringCell.TYPE.getPreferredValueClass().getName());
+            assertThatJson(response).inPath("$.initialUpdates[0].value[0].type.text").isString()
+                .isEqualTo(StringCell.TYPE.getName());
+            assertThatJson(response).inPath("$.initialUpdates[0].value[0].compatibleTypes").isArray().hasSize(3);
+        }
     }
 }

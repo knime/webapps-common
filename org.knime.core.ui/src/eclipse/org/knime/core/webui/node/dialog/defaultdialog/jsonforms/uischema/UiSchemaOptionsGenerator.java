@@ -92,6 +92,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.AllFileExtensionsAl
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.AsyncChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesStateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ComboBoxWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
@@ -344,7 +345,6 @@ final class UiSchemaOptionsGenerator {
             final var usernameWidget = m_field.getAnnotation(UsernameWidget.class);
             options.put("hidePassword", true);
             options.put("usernameLabel", usernameWidget.value());
-
         }
         if (hasPasswordWidgetAnnotation) {
             final var passwordWidget = m_field.getAnnotation(PasswordWidget.class);
@@ -359,14 +359,29 @@ final class UiSchemaOptionsGenerator {
         if (annotatedWidgets.contains(ChoicesWidget.class)) {
             final var choicesWidget = m_field.getAnnotation(ChoicesWidget.class);
             final var choicesProviderClass = choicesWidget.choices();
-            if (AsyncChoicesProvider.class.isAssignableFrom(choicesProviderClass)) {
-                prepareAsyncChoices(options, choicesProviderClass, () -> generatePossibleValues(choicesProviderClass));
-            } else {
-                if (choicesProviderClass.equals(ChoicesProvider.class)) {
-                    CheckUtils.check(!choicesWidget.choicesUpdateHandler().equals(NoopChoicesUpdateHandler.class),
-                        UiSchemaGenerationException::new,
-                        () -> "Either the property \"choices\" or \"choicesUpdateHandler\" has to be defined in "
-                            + "a \"ChoicesWidget\" annotation");
+
+            final var choicesUpdateHandlerClass = choicesWidget.choicesUpdateHandler();
+            final var choicesStateProviderClass = choicesWidget.choicesProvider();
+            final var choicesProviderClassSet = !choicesProviderClass.equals(ChoicesProvider.class);
+            final var choicesUpdateHandlerClassSet = !choicesUpdateHandlerClass.equals(NoopChoicesUpdateHandler.class);
+            final var choicesStateProviderClassSet = !choicesStateProviderClass.equals(ChoicesStateProvider.class);
+
+            CheckUtils.check(choicesProviderClassSet || choicesUpdateHandlerClassSet || choicesStateProviderClassSet,
+                UiSchemaGenerationException::new,
+                () -> "Either the property \"choices\", \"choicesUpdateHandler\" or \"choicesProvider\" "
+                    + "has to be defined in a \"ChoicesWidget\" annotation");
+            if (choicesStateProviderClassSet) {
+                CheckUtils.check(!choicesProviderClassSet && !choicesUpdateHandlerClassSet,
+                    UiSchemaGenerationException::new,
+                    () -> "When the property \"choicesProvider\" is used, the properties \"choicesUpdateHandler\" "
+                        + "or \"choicesProvider\" cannot be used, too.");
+                options.put("choicesProvider", choicesStateProviderClass.getName());
+            }
+
+            if (choicesProviderClassSet) {
+                if (AsyncChoicesProvider.class.isAssignableFrom(choicesProviderClass)) {
+                    prepareAsyncChoices(options, choicesProviderClass,
+                        () -> generatePossibleValues(choicesProviderClass));
                 } else {
                     final var possibleValues = generatePossibleValues(choicesProviderClass);
                     if (possibleValues.length < ASYNC_CHOICES_THRESHOLD) {
@@ -376,6 +391,16 @@ final class UiSchemaOptionsGenerator {
                     }
                 }
             }
+
+            if (choicesUpdateHandlerClassSet) {
+                options.put(TAG_CHOICES_UPDATE_HANDLER, choicesWidget.choicesUpdateHandler().getName());
+                final var dependencies = options.putArray(TAG_DEPENDENCIES);
+                addDependencies(dependencies, choicesWidget.choicesUpdateHandler());
+                final var choicesUpdateHandlerInstance =
+                    InstantiationUtil.createInstance(choicesWidget.choicesUpdateHandler());
+                options.put("setFirstValueOnUpdate", choicesUpdateHandlerInstance.setFirstValueOnUpdate());
+            }
+
             if (!m_fieldClass.equals(ColumnSelection.class) && !m_fieldClass.equals(ColumnFilter.class)) {
                 String format = getChoicesComponentFormat();
                 options.put(TAG_FORMAT, format);
@@ -392,14 +417,6 @@ final class UiSchemaOptionsGenerator {
             }
             if (!choicesWidget.excludedLabel().isEmpty()) {
                 options.put("excludedLabel", choicesWidget.excludedLabel());
-            }
-            if (!choicesWidget.choicesUpdateHandler().equals(NoopChoicesUpdateHandler.class)) {
-                options.put(TAG_CHOICES_UPDATE_HANDLER, choicesWidget.choicesUpdateHandler().getName());
-                final var dependencies = options.putArray(TAG_DEPENDENCIES);
-                addDependencies(dependencies, choicesWidget.choicesUpdateHandler());
-                final var choicesUpdateHandlerInstance =
-                    InstantiationUtil.createInstance(choicesWidget.choicesUpdateHandler());
-                options.put("setFirstValueOnUpdate", choicesUpdateHandlerInstance.setFirstValueOnUpdate());
             }
             if (annotatedWidgets.contains(ComboBoxWidget.class)) {
                 options.put(TAG_FORMAT, Format.COMBO_BOX);
