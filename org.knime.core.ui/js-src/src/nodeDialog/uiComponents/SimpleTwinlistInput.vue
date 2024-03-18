@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type Ref, markRaw, ref } from "vue";
+import { computed, markRaw } from "vue";
 import { rendererProps } from "@jsonforms/vue";
 import Twinlist from "webapps-common/ui/components/forms/Twinlist.vue";
 import inject from "../utils/inject";
@@ -7,6 +7,7 @@ import TwinlistLoadingInfo from "./loading/TwinlistLoadingInfo.vue";
 import type { IdAndText } from "../types/ChoicesUiSchema";
 import useDialogControl from "../composables/components/useDialogControl";
 import LabeledInput from "./label/LabeledInput.vue";
+import useProvidedState from "../composables/components/useProvidedState";
 
 const props = defineProps({
   ...rendererProps(),
@@ -34,15 +35,23 @@ const props = defineProps({
 
 const { control, onChange, disabled } = useDialogControl<string[]>({ props });
 const getPossibleValuesFromUiSchema = inject("getPossibleValuesFromUiSchema");
-const possibleValues: Ref<null | IdAndText[]> = ref(null);
+const choicesProvider = computed(
+  () => control.value.uischema.options?.choicesProvider,
+);
+const possibleValues = useProvidedState<null | IdAndText[]>(
+  choicesProvider,
+  null,
+);
 const TwinlistLoadingInfoRaw = markRaw(TwinlistLoadingInfo) as any;
 
-if (props.optionsGenerator === null) {
-  getPossibleValuesFromUiSchema(control.value).then((result) => {
-    possibleValues.value = result;
-  });
-} else {
-  possibleValues.value = props.optionsGenerator(control.value);
+if (!choicesProvider.value) {
+  if (props.optionsGenerator === null) {
+    getPossibleValuesFromUiSchema(control.value).then((result) => {
+      possibleValues.value = result;
+    });
+  } else {
+    possibleValues.value = props.optionsGenerator(control.value);
+  }
 }
 </script>
 

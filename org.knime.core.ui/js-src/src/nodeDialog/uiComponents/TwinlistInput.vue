@@ -1,7 +1,7 @@
 <!-- eslint-disable no-undefined -->
 <!-- eslint-disable class-methods-use-this -->
 <script setup lang="ts">
-import { markRaw, type Ref, type Raw, ref, computed } from "vue";
+import { markRaw, type Ref, type Raw, ref, computed, watch } from "vue";
 import { rendererProps } from "@jsonforms/vue";
 import { mergeDeep, getValuesInSet, getValuesNotInSet } from "../utils";
 import MultiModeTwinlist from "webapps-common/ui/components/forms/MultiModeTwinlist.vue";
@@ -12,6 +12,7 @@ import type { PartialDeep } from "type-fest";
 import TwinlistLoadingInfo from "./loading/TwinlistLoadingInfo.vue";
 import useDialogControl from "../composables/components/useDialogControl";
 import LabeledInput from "./label/LabeledInput.vue";
+import useProvidedState from "../composables/components/useProvidedState";
 import { DefaultSettingComparator } from "@knime/ui-extension-service";
 
 type TwinlistData = {
@@ -143,7 +144,10 @@ const onCaseSensitiveChange = (isCaseSensitive: boolean) => {
 // Initial updates
 
 const loadingInfo = ref(markRaw(TwinlistLoadingInfo) as Raw<any> | null);
-const possibleValues = ref<PossibleValue[]>([]);
+const choicesProvider = computed<string | undefined>(
+  () => control.value.uischema.options?.choicesProvider,
+);
+const possibleValues = useProvidedState<PossibleValue[]>(choicesProvider, []);
 const previouslySelectedTypes = ref<IdAndText[]>([]);
 const initialManuallySelected = ref(null as null | string[]);
 /**
@@ -187,11 +191,30 @@ const getPreviouslySelectedTypes = () => {
   }));
 };
 
-inject("getPossibleValuesFromUiSchema")(control.value).then((result) => {
-  possibleValues.value = result;
-  setInitialManuallySelected(possibleValues.value.map(({ id }) => id));
-  previouslySelectedTypes.value = getPreviouslySelectedTypes();
-});
+previouslySelectedTypes.value = getPreviouslySelectedTypes();
+
+if (!choicesProvider.value) {
+  inject("getPossibleValuesFromUiSchema")(control.value).then((result) => {
+    possibleValues.value = result;
+  });
+}
+
+/**
+ * Needed to freshly mount the TwinList whenever new possible values come in,
+ * because it is not reactive in the initially manually selected prop.
+ */
+const refreshKey = ref(0);
+
+watch(
+  () => possibleValues.value,
+  (newPossibleValues: IdAndText[]) => {
+    const refreshNeeded = loadingInfo.value === null;
+    setInitialManuallySelected(newPossibleValues.map(({ id }) => id));
+    if (refreshNeeded) {
+      refreshKey.value++;
+    }
+  },
+);
 
 // Hiding controls
 
@@ -224,6 +247,7 @@ const rightLabel = computed(
     <MultiModeTwinlist
       v-bind="$attrs"
       :id="labelForId"
+      :key="refreshKey"
       :show-mode="showMode"
       :show-search="showSearch"
       :disabled="disabled"

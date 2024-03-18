@@ -1,17 +1,18 @@
 import inject from "@/nodeDialog/utils/inject";
-import { type Ref, onMounted, ref } from "vue";
+import { onMounted, ref, type MaybeRef, unref } from "vue";
 
 export default <T>(
-  stateProviderId: Ref<string | undefined>,
+  stateProviderId: MaybeRef<string | undefined>,
   defaultValue: T,
 ) => {
   const addStateProviderListener = inject("addStateProviderListener");
 
-  const state = ref(defaultValue);
+  const state = ref<T>(defaultValue);
 
   onMounted(() => {
-    if (stateProviderId.value) {
-      addStateProviderListener(stateProviderId.value, (providedValue) => {
+    const id = unref(stateProviderId);
+    if (id) {
+      addStateProviderListener(id, (providedValue) => {
         state.value = providedValue;
       });
     }
