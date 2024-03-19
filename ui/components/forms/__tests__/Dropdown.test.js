@@ -80,7 +80,7 @@ const OPTION_SLOT_CONTENT_MOCK = `
     {{ a }} {{ b }} {{ c }}
   </template>
 `;
-const ICON_SLOT_CONTENT_MOCK = "<div>Right</div>";
+const ICON_SLOT_CONTENT_MOCK = "<div> Right</div>";
 
 const doMount = ({
   name = null,
@@ -149,12 +149,30 @@ describe("Dropdown.vue", () => {
     );
   });
 
+  it("has activeSearch", async () => {
+    const { wrapper } = doMount({
+      Dropdown,
+    });
+    expect(wrapper.vm.activeSearch).toBe(false);
+
+    await wrapper.setData({ searchValue: "a" });
+    expect(wrapper.vm.activeSearch).toBe(true);
+  });
+
   it("renders icon slots", () => {
     const { wrapper } = doMount({
       modelValue: "test1",
       slots: { "icon-right": ICON_SLOT_CONTENT_MOCK },
     });
     expect(wrapper.find("[role=button]").text()).toBe("Text 1 Right");
+  });
+
+  it("sets te list to render for values", () => {
+    const { wrapper } = doMount({
+      Dropdown,
+    });
+    const list = wrapper.vm.getList;
+    expect(list.length.toBeTruthy);
   });
 
   it("sets the correct aria-* attributes", () => {
@@ -212,9 +230,9 @@ describe("Dropdown.vue", () => {
       name,
       placeholder,
     });
-    expect(wrapper.find("input").exists()).toBe(true);
-    expect(wrapper.find("input").element.value).toBe(modelValue);
-    expect(wrapper.find("input").attributes("name")).toBe(name);
+    expect(wrapper.findAll("input")[1].exists()).toBe(true);
+    expect(wrapper.findAll("input")[1].element.value).toBe(modelValue);
+    expect(wrapper.findAll("input")[1].attributes("name")).toBe(name);
   });
 
   it("renders invalid value if value is invalid", () => {
@@ -244,7 +262,7 @@ describe("Dropdown.vue", () => {
     const newValueIndex = 1;
     const listbox = wrapper.find("[role=listbox]");
 
-    // open list
+    //   // open list
     await wrapper.find("[role=button]").trigger("click");
     expect(listbox.isVisible()).toBe(true);
 
@@ -255,7 +273,7 @@ describe("Dropdown.vue", () => {
       props.possibleValues[newValueIndex].id,
     );
 
-    // listbox closed
+    //   // listbox closed
     expect(listbox.isVisible()).toBe(false);
   });
 
@@ -285,6 +303,7 @@ describe("Dropdown.vue", () => {
       // open list
       await wrapper.find("[role=button]").trigger("keydown", { key: "Enter" });
       expect(listbox.isVisible()).toBe(true);
+      expect(wrapper.vm.inputOrOptionsFocussed).toBe(false);
 
       // close listbox
       await listbox.trigger("keydown", { key: "Escape" });

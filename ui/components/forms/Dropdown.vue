@@ -3,7 +3,7 @@ import "./variables.css";
 import { isEmpty } from "lodash-es";
 
 import DropdownIcon from "../../assets/img/icons/arrow-dropdown.svg";
-import { type PropType } from "vue";
+import { type PropType, defineComponent } from "vue";
 import { OnClickOutside } from "@vueuse/components";
 
 type Id = string | number;
@@ -16,6 +16,16 @@ interface PossibleValue {
   };
 }
 
+interface componentData {
+  searchValue: string;
+  typingTimeout: null | ReturnType<typeof setTimeout>;
+  inputOrOptionsFocussed: boolean;
+  isExpanded: boolean;
+  searchQuery: string;
+  candidate: string;
+  emptyState: string;
+}
+
 let count = 0;
 const KEY_DOWN = "ArrowDown";
 const KEY_UP = "ArrowUp";
@@ -26,7 +36,7 @@ const KEY_ENTER = "Enter";
 
 const TYPING_TIMEOUT = 1000; // in ms
 
-export default {
+export default defineComponent({
   components: {
     DropdownIcon,
     OnClickOutside,
@@ -91,11 +101,15 @@ export default {
     },
   },
   emits: ["update:modelValue"],
-  data() {
+  data(): componentData {
     return {
-      typingTimeout: null as null | ReturnType<typeof setTimeout>,
+      searchValue: "",
+      typingTimeout: null,
+      inputOrOptionsFocussed: false,
       isExpanded: false,
       searchQuery: "",
+      candidate: this.modelValue as string,
+      emptyState: "Nothing found",
     };
   },
   computed: {
@@ -134,15 +148,56 @@ export default {
         (value) => value.slotData && !isEmpty(value.slotData),
       );
     },
+    getList() {
+      if (this.searchValue === null) {
+        return this.possibleValues;
+      }
+      const filteredItems = this.possibleValues.filter(
+        (possibleValue: PossibleValue) =>
+          possibleValue.text
+            .toLowerCase()
+            .includes(this.searchValue.toLowerCase()),
+      );
+
+      return filteredItems;
+    },
+    activateSearchedItem() {
+      return this.getList.length === 1;
+    },
+    renderEmptyState() {
+      return this.getList.length > 0;
+    },
+    handlePlaceholder(): string {
+      return this.inputOrOptionsFocussed ? (this.modelValue as string) : "";
+    },
+    activeSearch() {
+      return this.searchValue.length > 0;
+    },
+  },
+  watch: {
+    inputOrOptionsFocussed(newVal: boolean) {
+      if (newVal === true) {
+        (this.$refs.searchInput as HTMLInputElement).focus();
+      } else {
+        (this.$refs.searchInput as HTMLInputElement).blur();
+      }
+    },
+    getList(updateList: PossibleValue[]) {
+      if (this.activateSearchedItem) {
+        this.candidate = updateList[0].text;
+      }
+    },
   },
 
   methods: {
+    updateCandidate(candidate: string) {
+      this.candidate = candidate;
+    },
     isCurrentValue(candidate: Id) {
       return this.modelValue === candidate;
     },
     setSelected(id: Id) {
       consola.trace("ListBox setSelected on", id);
-
       /**
        * Fired when the selection changes.
        */
@@ -161,6 +216,9 @@ export default {
       this.setSelected(id);
       this.isExpanded = false;
       this.getButtonRef().focus();
+      (this.$refs.searchInput as HTMLInputElement).blur();
+      this.inputOrOptionsFocussed = false;
+      this.searchValue = "";
     },
     scrollTo(optionIndex: number) {
       let listBoxNode = this.getListBoxNodeRef();
@@ -250,8 +308,13 @@ export default {
     },
     handleKeyDownButton(e: KeyboardEvent) {
       if (e.key === KEY_ENTER) {
-        this.toggleExpanded();
         e.preventDefault();
+        this.toggleExpanded();
+
+        if (this.inputOrOptionsFocussed) {
+          this.searchValue = "";
+          this.inputOrOptionsFocussed = false;
+        }
         return;
       }
       if (e.key === KEY_DOWN) {
@@ -301,9 +364,23 @@ export default {
     },
     clickAway() {
       this.isExpanded = false;
+      this.searchValue = "";
+      this.inputOrOptionsFocussed = false;
+    },
+    onInputFocus() {
+      (this.$refs.searchInput as HTMLInputElement).focus();
+      if (this.inputOrOptionsFocussed) {
+        this.inputOrOptionsFocussed = false;
+      } else {
+        this.inputOrOptionsFocussed = true;
+      }
+    },
+    onFocusOutside() {
+      this.inputOrOptionsFocussed = false;
+      this.searchValue = "";
     },
   },
-};
+});
 </script>
 
 <template>
@@ -315,25 +392,37 @@ export default {
         { collapsed: !isExpanded, invalid: !isValid, disabled },
       ]"
     >
-      <div
-        :id="generateId('button')"
-        ref="button"
-        role="button"
-        tabindex="0"
-        aria-haspopup="listbox"
-        :class="{ placeholder: showPlaceholder, missing: isMissing }"
-        :aria-label="ariaLabel"
-        :aria-labelledby="generateId('button')"
-        :aria-expanded="isExpanded"
-        @click="toggleExpanded"
-        @keydown="handleKeyDownButton"
-      >
-        {{ displayText }}
-        <div v-if="hasRightIcon" class="loading-icon">
-          <slot name="icon-right" />
+      <div @click="onInputFocus">
+        <div
+          :id="generateId('button')"
+          ref="button"
+          role="button"
+          tabindex="0"
+          aria-haspopup="listbox"
+          :class="{ placeholder: showPlaceholder, missing: isMissing }"
+          :aria-label="ariaLabel"
+          :aria-labelledby="generateId('button')"
+          :aria-expanded="isExpanded"
+          @click="toggleExpanded"
+          @keydown="handleKeyDownButton"
+        >
+          <template v-if="!inputOrOptionsFocussed">
+            {{ displayText }}
+          </template>
+          <div v-if="hasRightIcon" class="loading-icon">
+            <slot name="icon-right" />
+          </div>
+          <div class="summary-input-wrapper">
+            <input
+              ref="searchInput"
+              v-model="searchValue"
+              class="search-input"
+              type="text"
+              :placeholder="handlePlaceholder"
+            />
+          </div>
+          <DropdownIcon class="icon" />
         </div>
-        <!-- @vue-ignore -->
-        <DropdownIcon class="icon" />
       </div>
       <ul
         v-show="isExpanded"
@@ -345,14 +434,16 @@ export default {
         "
         @keydown="handleKeyDownList"
       >
+        <template v-if="!renderEmptyState">{{ emptyState }}</template>
         <li
-          v-for="item of possibleValues"
+          v-for="item of getList"
           :id="generateId('option', item.id)"
           :key="`listbox-${item.id}`"
           ref="options"
           role="option"
           :title="typeof item.title === 'undefined' ? item.text : item.title"
           :class="{
+            active: activateSearchedItem,
             focused: isCurrentValue(item.id),
             noselect: true,
             empty: item.text.trim() === '',
@@ -377,6 +468,24 @@ export default {
 <style lang="postcss" scoped>
 .dropdown {
   position: relative;
+
+  & .summary-input-wrapper {
+    width: 100%;
+    cursor: text;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    flex: 1;
+
+    & .search-input {
+      all: unset;
+      height: var(--inner-height);
+      font-size: 13px;
+      font-weight: 300;
+      line-height: normal;
+      flex: 1;
+    }
+  }
 
   &.collapsed {
     background: var(--theme-dropdown-background-color);
@@ -523,6 +632,15 @@ export default {
 
       & :slotted(svg) {
         stroke: var(--theme-dropdown-foreground-color-focus);
+      }
+    }
+
+    &.active {
+      background: var(--theme-dropdown-background-color-selected);
+      color: var(--theme-dropdown-foreground-color-selected);
+
+      & :slotted(svg) {
+        stroke: var(--theme-dropdown-foreground-color-selected);
       }
     }
 
