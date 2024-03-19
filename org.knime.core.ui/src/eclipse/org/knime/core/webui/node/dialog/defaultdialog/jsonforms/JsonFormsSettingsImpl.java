@@ -50,16 +50,16 @@ package org.knime.core.webui.node.dialog.defaultdialog.jsonforms;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.commons.io.IOUtils;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.JsonFormsSchemaUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UpdatesUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UpdatesUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
 
@@ -128,8 +128,7 @@ public final class JsonFormsSettingsImpl implements JsonFormsSettings {
     private RawValue generateUiSchema(final AsyncChoicesHolder asyncChoicesHolder) {
         final var settingsClasses = JsonFormsSettingsImpl
             .<Class<? extends WidgetGroup>> createSettingsTypeMap(m_modelSettingsClass, m_viewSettingsClass);
-        final var settings =
-            JsonFormsSettingsImpl.<WidgetGroup> createSettingsTypeMap(m_modelSettings, m_viewSettings);
+        final var settings = JsonFormsSettingsImpl.<WidgetGroup> createSettingsTypeMap(m_modelSettings, m_viewSettings);
 
         final var uiSchema = JsonFormsUiSchemaUtil.buildUISchema(settingsClasses, m_context, asyncChoicesHolder);
         UpdatesUtil.addUpdates(uiSchema, settingsClasses, settings, m_context);
@@ -143,14 +142,17 @@ public final class JsonFormsSettingsImpl implements JsonFormsSettings {
     }
 
     private static <T> Map<String, T> createSettingsTypeMap(final T modelSettingsObj, final T viewSettingsObj) {
-        if (modelSettingsObj != null && viewSettingsObj != null) {
-            return Map.of(SettingsType.MODEL.getConfigKey(), modelSettingsObj, SettingsType.VIEW.getConfigKey(),
-                viewSettingsObj);
-        } else if (modelSettingsObj != null) {
-            return Collections.singletonMap(SettingsType.MODEL.getConfigKey(), modelSettingsObj);
-        } else {
-            return Collections.singletonMap(SettingsType.VIEW.getConfigKey(), viewSettingsObj);
+        /**
+         * Some nodes rely on view settings within the same section as model settings appear beneath those.
+         */
+        final Map<String, T> sortedMap = new TreeMap<>();
+        if (modelSettingsObj != null) {
+            sortedMap.put(SettingsType.MODEL.getConfigKey(), modelSettingsObj);
         }
+        if (viewSettingsObj != null) {
+            sortedMap.put(SettingsType.VIEW.getConfigKey(), viewSettingsObj);
+        }
+        return sortedMap;
     }
 
 }
