@@ -4,26 +4,28 @@ import { mount } from "@vue/test-utils";
 import ComboBox from "../ComboBox.vue";
 import Multiselect from "../Multiselect.vue";
 
+const possibleValues = [
+  {
+    id: "test1",
+    text: "Test1",
+  },
+  {
+    id: "test2",
+    text: "Test2",
+  },
+  {
+    id: "test3",
+    text: "Test3",
+  },
+];
+
 const doMount = (
   dynamicProps?: Record<string, any>,
   options?: { attachTo: HTMLElement },
 ) =>
   mount(ComboBox, {
     props: {
-      possibleValues: [
-        {
-          id: "test1",
-          text: "test1",
-        },
-        {
-          id: "test2",
-          text: "test2",
-        },
-        {
-          id: "test3",
-          text: "test3",
-        },
-      ],
+      possibleValues,
       ...dynamicProps,
     },
     ...options,
@@ -38,17 +40,16 @@ describe("ComboBox.vue", () => {
     expect(wrapper.find(".summary-input-icon-wrapper")).toBeTruthy();
   });
 
-  it("updates the selected ids and emits update:selectedIds when updateSelectedIds is called", async () => {
+  it("emits update:modelValue when tag is removed", async () => {
     const wrapper = doMount({
-      initialSelectedIds: ["test1", "test2", "test3"],
+      modelValue: ["test1", "test2", "test3"],
     });
 
     await wrapper.findAll(".remove-tag-button").at(1)?.trigger("click");
 
-    const selectedIds = ["test1", "test3"];
-    expect(wrapper.vm.selectedIds).toEqual(selectedIds);
-    expect(wrapper.emitted()).toHaveProperty("update:selectedIds");
-    expect(wrapper.emitted()["update:selectedIds"][0]).toEqual([selectedIds]);
+    const modelValue = ["test1", "test3"];
+    expect(wrapper.emitted()).toHaveProperty("update:modelValue");
+    expect(wrapper.emitted()["update:modelValue"][0]).toEqual([modelValue]);
   });
 
   it("calls the child function to update focus options when the searchInput changes", async () => {
@@ -70,8 +71,24 @@ describe("ComboBox.vue", () => {
     expect(wrapper.vm.sizeVisibleOptions).toBe(sizeVisibleOptions);
 
     const multiselectComponent = wrapper.findComponent(Multiselect);
-    expect(multiselectComponent.props("possibleValues").length).toBe(1);
+    expect(multiselectComponent.props("possibleValues")!.length).toBe(1);
     expect(multiselectComponent.props("sizeVisibleOptions")).toBe(1);
+  });
+
+  it("doesn't have reactive possible values", async () => {
+    const possibleValuesCopy = [...possibleValues];
+    const wrapper = doMount({ possibleValues: possibleValuesCopy });
+
+    possibleValuesCopy.push({
+      id: "newPossibleValue",
+      text: "newPossibleValue",
+    });
+    expect(wrapper.vm.allPossibleItems).toStrictEqual(possibleValues);
+
+    await wrapper.setProps({
+      possibleValues: [{ id: "newPossibleValue", text: "newPossibleValue" }],
+    });
+    expect(wrapper.vm.allPossibleItems).toStrictEqual(possibleValues);
   });
 
   describe("focussing", () => {
@@ -124,7 +141,7 @@ describe("ComboBox.vue", () => {
 
     it("closes the dropdown when focussing a remove-tag-button", async () => {
       const wrapper = doMount(
-        { initialSelectedIds: ["test1"] },
+        { modelValue: ["test1"] },
         { attachTo: document.body },
       );
       const closeOptionsSpy = vi.spyOn(
@@ -140,7 +157,7 @@ describe("ComboBox.vue", () => {
 
     it("closes the dropdown when focussing the remove-all-tags-button", async () => {
       const wrapper = doMount(
-        { initialSelectedIds: ["test1"] },
+        { modelValue: ["test1"] },
         { attachTo: document.body },
       );
       const closeOptionsSpy = vi.spyOn(
@@ -154,87 +171,107 @@ describe("ComboBox.vue", () => {
   });
 
   describe("tag interactions", () => {
-    it("creates a new tag", async () => {
+    it("creates a new tag with the trimmed search value as id and text", async () => {
       const wrapper = doMount({
-        initialSelectedIds: ["test2", "test3"],
+        modelValue: ["test2", "test3"],
         allowNewValues: true,
       });
-      await wrapper.find(".search-input").setValue("another");
+      await wrapper.find(".search-input").setValue(" another   ");
       await wrapper.find(".search-input").trigger("keydown.enter");
 
-      expect(wrapper.findAll(".tag").length).toBe(3);
-      expect(wrapper.findAll(".tag").at(-1)?.text()).toMatch("another");
-      expect(wrapper.emitted("change")?.[0][0]).toEqual([
-        { id: "test2", text: "test2" },
-        { id: "test3", text: "test3" },
-        { id: "another", text: "another" },
+      expect(wrapper.emitted("update:modelValue")?.[0][0]).toEqual([
+        "test2",
+        "test3",
+        "another",
       ]);
     });
 
+    it.each([
+      ["text", "Test1"],
+      ["id", "test1"],
+    ])(
+      "does not create a new tag if it would have the same %s as an existing one",
+      async (_, searchInput) => {
+        const wrapper = doMount({
+          modelValue: ["test2", "test3"],
+          allowNewValues: true,
+        });
+        await wrapper.find(".search-input").setValue(searchInput);
+        await wrapper.find(".search-input").trigger("keydown.enter");
+
+        expect(wrapper.emitted("update:modelValue")?.[0][0]).toEqual([
+          "test2",
+          "test3",
+          "test1",
+        ]);
+        expect(wrapper.vm.allPossibleItems).toStrictEqual(possibleValues);
+      },
+    );
+
     it("removes tags with backspace", async () => {
       const wrapper = doMount({
-        initialSelectedIds: ["test2", "test3"],
+        modelValue: ["test2", "test3"],
         allowNewValues: true,
       });
 
       expect(wrapper.findAll(".tag").length).toBe(2);
 
       await wrapper.find(".search-input").trigger("keydown.backspace");
-      expect(wrapper.findAll(".tag").length).toBe(1);
-      expect(wrapper.findAll(".tag").at(-1)?.text()).toMatch("test2");
-      expect(wrapper.emitted("change")?.[0][0]).toEqual([
-        { id: "test2", text: "test2" },
-      ]);
+      expect(wrapper.emitted("update:modelValue")?.[0][0]).toEqual(["test2"]);
     });
 
     it("does not create tag when search is empty", async () => {
       const wrapper = doMount({
-        initialSelectedIds: ["test2", "test3"],
+        modelValue: ["test2", "test3"],
         allowNewValues: true,
       });
       await wrapper.find(".search-input").setValue("");
       await wrapper.find(".search-input").trigger("keydown.enter");
 
       expect(wrapper.findAll(".tag").length).toBe(2);
-      expect(wrapper.findAll(".tag").at(-1)?.text()).toMatch("test3");
-      expect(wrapper.emitted("change")).toBeUndefined();
+      expect(wrapper.findAll(".tag").at(-1)?.text()).toMatch("Test3");
+      expect(wrapper.emitted("update:modelValue")).toBeUndefined();
     });
 
     it("does not create repeated tags", async () => {
       const wrapper = doMount({
-        initialSelectedIds: ["test2", "test3"],
         allowNewValues: true,
+        "onUpdate:modelValue": async (modelValue: string[]) => {
+          await wrapper.setProps({ modelValue });
+        },
       });
-      await wrapper.find(".search-input").setValue("another");
+
+      await wrapper.find(".search-input").setValue("   another");
       await wrapper.find(".search-input").trigger("keydown.enter");
 
-      await wrapper.find(".search-input").setValue("another");
+      expect(wrapper.emitted("update:modelValue")).toHaveLength(1);
+      expect(wrapper.emitted("update:modelValue")?.[0][0]).toEqual(["another"]);
+      expect(wrapper.vm.modelValue).toStrictEqual(["another"]);
+
+      await wrapper.find(".search-input").setValue("another   ");
       await wrapper.find(".search-input").trigger("keydown.enter");
 
-      expect(wrapper.findAll(".tag").length).toBe(3);
+      expect(wrapper.emitted("update:modelValue")).toHaveLength(1);
     });
 
     it("removes a tag on click of removeTag button", async () => {
-      const wrapper = doMount({ initialSelectedIds: ["test2", "test3"] });
-      const updateSelectedIdsSpy = vi.spyOn(wrapper.vm, "updateSelectedIds");
+      const wrapper = doMount({ modelValue: ["test2", "test3"] });
       await wrapper.findAll(".remove-tag-button").at(0)?.trigger("click");
-      expect(updateSelectedIdsSpy).toHaveBeenCalledWith(["test3"]);
-      expect(wrapper.emitted("change")?.[0][0]).toEqual([
-        { id: "test3", text: "test3" },
-      ]);
+      expect(wrapper.emitted("update:modelValue")?.[0][0]).toEqual(["test3"]);
     });
 
-    it("clears all selected values and focusses the listBox on click of removeAllTags button", async () => {
+    it("clears all selected values and closes the options on click of removeAllTags button", async () => {
       const wrapper = doMount(
-        { initialSelectedIds: ["test2", "test3"] },
+        { modelValue: ["test2", "test3"] },
         { attachTo: document.body },
       );
-      const updateSelectedIdsSpy = vi.spyOn(wrapper.vm, "updateSelectedIds");
+      const closeOptionsSpy = vi.spyOn(
+        wrapper.findComponent(Multiselect).vm,
+        "closeOptions",
+      );
       await wrapper.find(".remove-all-tags-button").trigger("click");
-      const summaryWrapper = wrapper.find({ ref: "listBox" });
-      expect(summaryWrapper.element).toStrictEqual(document.activeElement);
-      expect(updateSelectedIdsSpy).toHaveBeenCalledWith([]);
-      expect(wrapper.emitted("change")?.[0][0]).toEqual([]);
+      expect(closeOptionsSpy).toHaveBeenCalled();
+      expect(wrapper.emitted("update:modelValue")?.[0][0]).toEqual([]);
     });
   });
 

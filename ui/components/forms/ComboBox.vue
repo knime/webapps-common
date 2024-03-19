@@ -1,6 +1,5 @@
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
-import { kebabCase, uniq } from "lodash";
 
 import Multiselect from "./Multiselect.vue";
 import FunctionButton from "../FunctionButton.vue";
@@ -14,7 +13,6 @@ interface ComboBoxItem {
 }
 
 interface ComponentData {
-  selectedIds: Array<string>;
   searchValue: string;
   inputOrOptionsFocussed: boolean;
   /*
@@ -55,7 +53,7 @@ export default defineComponent({
     /**
      * List of initial selected ids.
      */
-    initialSelectedIds: {
+    modelValue: {
       type: Array as PropType<Array<string>>,
       default: () => [],
     },
@@ -91,14 +89,11 @@ export default defineComponent({
 
   emits: {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    "update:selectedIds": (_payload: Array<string>) => true,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    change: (_payload: Array<ComboBoxItem>) => true,
+    "update:modelValue": (_payload: Array<string>) => true,
   },
 
   data(): ComponentData {
     return {
-      selectedIds: this.initialSelectedIds,
       searchValue: "",
       inputOrOptionsFocussed: false,
       /*
@@ -108,28 +103,41 @@ export default defineComponent({
        */
       focusElement: null,
       refocusElement: null,
-      allPossibleItems: this.possibleValues,
+      allPossibleItems: [...this.possibleValues],
     };
   },
 
   computed: {
+    trimmedSearchValue() {
+      return this.searchValue.trim();
+    },
+    trimmedLowerCasedSearchValue() {
+      return this.trimmedSearchValue.toLowerCase();
+    },
     isSearchEmpty() {
-      return !this.searchValue.trim();
+      return !this.trimmedSearchValue;
     },
 
     searchResults() {
-      const hasExactSearchMatch = this.allPossibleItems.some(
-        ({ text }) => text.toLowerCase() === this.searchValue.toLowerCase(),
+      const newIdIsExistingIdOrText = this.allPossibleItems.some(
+        ({ id, text }) =>
+          id === this.trimmedSearchValue || text === this.trimmedSearchValue,
       );
 
-      const fuzzyMatchedItems = this.allPossibleItems.filter(({ text }) =>
-        text.toLowerCase().includes(this.searchValue.toLowerCase()),
+      const fuzzyMatchedItems = this.allPossibleItems.filter(
+        ({ id, text }) =>
+          text.toLowerCase().includes(this.trimmedLowerCasedSearchValue) ||
+          id === this.trimmedSearchValue,
       );
 
-      if (this.allowNewValues && !hasExactSearchMatch && !this.isSearchEmpty) {
-        // add a preview for a non existing items
+      if (
+        this.allowNewValues &&
+        !newIdIsExistingIdOrText &&
+        !this.isSearchEmpty
+      ) {
+        // add a preview for a non existing item
         return [
-          { id: DRAFT_ITEM_ID, text: `${this.searchValue} (new item)` },
+          { id: DRAFT_ITEM_ID, text: `${this.trimmedSearchValue} (new item)` },
           ...fuzzyMatchedItems,
         ];
       }
@@ -148,12 +156,13 @@ export default defineComponent({
     },
 
     selectedValues() {
-      return this.selectedIds.length === 0
-        ? []
-        : this.selectedIds.map((id) => {
-            const item = this.allPossibleItems.find((item) => item.id === id);
-            return item || { id, text: id };
-          });
+      return this.modelValue.map(
+        (id) =>
+          this.allPossibleItems.find((item) => item.id === id) || {
+            id,
+            text: id,
+          },
+      );
     },
 
     maxSizeVisibleOptions() {
@@ -169,6 +178,9 @@ export default defineComponent({
   },
 
   methods: {
+    emitNewSelection(newSelectedIds: string[]) {
+      this.$emit("update:modelValue", newSelectedIds);
+    },
     focusInput() {
       (this.$refs.searchInput as HTMLInputElement).focus();
     },
@@ -176,18 +188,20 @@ export default defineComponent({
       (this.$refs.combobox as MultiselectRef).onDown();
     },
     onEnter() {
-      if (this.isSearchEmpty) {
+      if (
+        this.isSearchEmpty ||
+        typeof this.searchResults[0]?.id === "undefined" ||
+        this.modelValue.includes(this.searchResults[0].id)
+      ) {
         return;
       }
 
-      this.updateSelectedIds([...this.selectedIds, this.searchResults[0]?.id]);
+      this.updateSelectedIds([...this.modelValue, this.searchResults[0].id]);
       this.searchValue = "";
     },
     onBackspace() {
       if (!this.searchValue) {
-        this.selectedIds = this.selectedIds.slice(0, -1);
-        this.$emit("update:selectedIds", this.selectedIds);
-        this.$emit("change", this.selectedValues);
+        this.emitNewSelection(this.modelValue.slice(0, -1));
       }
       // else regular backspace behavior
     },
@@ -208,51 +222,34 @@ export default defineComponent({
     },
 
     updateSelectedIds(selectedIds: Array<string>) {
-      const setSelectedIds = (value: Array<string>) => {
-        this.selectedIds = uniq(value).filter(Boolean);
-        this.$emit("update:selectedIds", this.selectedIds);
-        this.$emit("change", this.selectedValues);
-      };
-
       const hasNewItem = selectedIds.includes(DRAFT_ITEM_ID);
 
       if (!hasNewItem) {
-        setSelectedIds(selectedIds);
+        this.emitNewSelection(selectedIds);
         return;
       }
 
       const newItem: ComboBoxItem = {
-        id: kebabCase(this.searchValue),
-        text: this.searchValue.trim(),
+        id: this.trimmedSearchValue,
+        text: this.trimmedSearchValue,
       };
-
-      const isDuplicateItem = this.allPossibleItems.some(
-        (item) => item.id === newItem.id,
-      );
-
-      if (isDuplicateItem) {
-        return;
-      }
 
       this.allPossibleItems.push(newItem);
 
-      setSelectedIds(
+      this.emitNewSelection(
         selectedIds.map((id) => (id === DRAFT_ITEM_ID ? newItem.id : id)),
       );
     },
 
     removeTag(idToRemove: string) {
-      this.updateSelectedIds(
-        this.selectedIds.filter((id) => id !== idToRemove),
-      );
+      this.emitNewSelection(this.modelValue.filter((id) => id !== idToRemove));
       this.closeOptions();
     },
 
     removeAllTags() {
-      this.updateSelectedIds([]);
+      this.emitNewSelection([]);
       this.closeOptions();
     },
-
     closeOptions() {
       (this.$refs.combobox as MultiselectRef).closeOptions();
     },
@@ -263,7 +260,7 @@ export default defineComponent({
 <template>
   <Multiselect
     ref="combobox"
-    :model-value="selectedIds"
+    :model-value="modelValue"
     :possible-values="searchResults"
     use-custom-list-box
     :size-visible-options="maxSizeVisibleOptions"

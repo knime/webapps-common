@@ -4,6 +4,7 @@ import ComboBox from "webapps-common/ui/components/forms/ComboBox.vue";
 import code from "webapps-common/ui/components/forms/ComboBox.vue?raw";
 
 const codeExample = `<ComboBox
+  v-model="modelValue"
   :possible-values="[{
     id: 'foo',
     text: 'Foo'
@@ -15,10 +16,8 @@ const codeExample = `<ComboBox
     text: 'Baz'
   }]"
   :possible-values="values"
-  :initialSelectedIds="selected"
   :size-visible-options="3"
   close-dropdown-on-selection
-  @update:selected-ids="selectedValues => selected = selectedValues"
 />`;
 
 export default {
@@ -29,8 +28,7 @@ export default {
   data() {
     return {
       codeExample,
-      selected: [[], [], []],
-      selectedValues: [],
+      selected: [[], [], [], []],
       values: [
         { id: "foo", text: "Foo" },
         { id: "bar", text: "Bar" },
@@ -64,14 +62,7 @@ export default {
       <div class="grid-container">
         <div class="grid-item-3">default</div>
         <div class="grid-item-6">
-          <ComboBox
-            :possible-values="values"
-            :initial-selected-ids="selected[0]"
-            @update:selected-ids="
-              (selectedValues) => (selected[0] = selectedValues)
-            "
-            @change="selectedValues = $event"
-          />
+          <ComboBox v-model="selected[0]" :possible-values="values" />
         </div>
         <div class="grid-item-3">selected-ids: {{ selected[0] }}</div>
       </div>
@@ -80,13 +71,9 @@ export default {
         <div class="grid-item-3">max visible options: 3</div>
         <div class="grid-item-6">
           <ComboBox
+            v-model="selected[1]"
             :possible-values="values"
-            :initial-selected-ids="selected[1]"
             :size-visible-options="3"
-            @update:selected-ids="
-              (selectedValues) => (selected[1] = selectedValues)
-            "
-            @change="selectedValues = $event"
           />
         </div>
         <div class="grid-item-3">selected-ids: {{ selected[1] }}</div>
@@ -96,35 +83,24 @@ export default {
         <div class="grid-item-3">allow new values</div>
         <div class="grid-item-6">
           <ComboBox
+            v-model="selected[2]"
             :possible-values="values"
-            :initial-selected-ids="selected[0]"
             allow-new-values
-            @update:selected-ids="
-              (selectedValues) => (selected[0] = selectedValues)
-            "
-            @change="selectedValues = $event"
           />
         </div>
-        <div class="grid-item-3">selected-ids: {{ selected[0] }}</div>
+        <div class="grid-item-3">selected-ids: {{ selected[2] }}</div>
       </div>
       <br />
       <div class="grid-container">
         <div class="grid-item-3">close dropdown on selection</div>
         <div class="grid-item-6">
           <ComboBox
+            v-model="selected[3]"
             :possible-values="values"
-            :initial-selected-ids="selected[2]"
             close-dropdown-on-selection
-            @update:selected-ids="
-              (selectedValues) => (selected[2] = selectedValues)
-            "
-            @change="selectedValues = $event"
           />
         </div>
-        <div class="grid-item-3">selected-ids: {{ selected[2] }}</div>
-      </div>
-      <div class="grid-container">
-        <div class="grid-item-12">Selected Values: {{ selectedValues }}</div>
+        <div class="grid-item-3">selected-ids: {{ selected[3] }}</div>
       </div>
     </section>
     <section>
