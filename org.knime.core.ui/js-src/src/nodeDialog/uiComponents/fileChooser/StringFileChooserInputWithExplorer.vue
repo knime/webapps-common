@@ -31,6 +31,10 @@ onMounted(() => {
       setFileExtension,
     );
   }
+  const multipleFileExtensions = props.options?.fileExtensions;
+  if (multipleFileExtensions) {
+    filteredExtensions.value = multipleFileExtensions;
+  }
 });
 
 const active = ref(false);

@@ -6,7 +6,7 @@ import InputField from "webapps-common/ui/components/forms/InputField.vue";
 import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
 import type StringFileChooserInputWithExplorerProps from "../types/StringFileChooserInputWithExplorerProps";
 
-describe("LocalFileChooserInput.vue", () => {
+describe("StringFileChooserInputWithExplorer.vue", () => {
   let props: StringFileChooserInputWithExplorerProps;
 
   beforeEach(() => {
@@ -80,6 +80,18 @@ describe("LocalFileChooserInput.vue", () => {
       filteredExtensions: ["pdf"],
       appendedExtension: "pdf",
       isWriter: true,
+    });
+  });
+
+  it("sets multiple file extensions to be filtered by", async () => {
+    props.options = {
+      fileExtensions: ["pdf"],
+    };
+    const wrapper = shallowMountLocalFileChooser();
+    await activateFileChooser(wrapper);
+    expect(wrapper.findComponent(FileChooser).props()).toMatchObject({
+      filteredExtensions: ["pdf"],
+      appendedExtension: null,
     });
   });
 

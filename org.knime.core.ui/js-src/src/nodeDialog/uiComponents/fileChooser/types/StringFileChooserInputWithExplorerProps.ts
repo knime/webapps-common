@@ -7,6 +7,7 @@ interface StringFileChooserInputWithExplorerProps {
     placeholder?: string;
     isWriter?: boolean;
     fileExtension?: string;
+    fileExtensions?: string[];
     fileExtensionProvider?: string;
   };
   id: string | null;

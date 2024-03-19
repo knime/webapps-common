@@ -20,6 +20,7 @@ interface FileChooserProps {
   browseOptions?: {
     isWriter?: boolean;
     fileExtension?: string;
+    fileExtensions?: string[];
   };
 }
 
