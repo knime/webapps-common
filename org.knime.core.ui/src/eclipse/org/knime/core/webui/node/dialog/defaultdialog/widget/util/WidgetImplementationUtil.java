@@ -66,6 +66,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ComboBoxWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.FileReaderWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileReaderWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
@@ -148,6 +149,7 @@ public final class WidgetImplementationUtil {
         new WidgetAnnotation(List.of(Credentials.class, LegacyCredentials.class), CredentialsWidget.class), //
         new WidgetAnnotation(List.of(Credentials.class, LegacyCredentials.class), PasswordWidget.class), //
         new WidgetAnnotation(List.of(Credentials.class, LegacyCredentials.class), UsernameWidget.class), //
+        new WidgetAnnotation(List.of(FileChooser.class), FileReaderWidget.class), //
         new WidgetAnnotation(List.of(FileChooser.class), FileWriterWidget.class), //
         new WidgetAnnotation(List.of(String.class), LocalFileReaderWidget.class), //
         new WidgetAnnotation(List.of(String.class), LocalFileWriterWidget.class), //

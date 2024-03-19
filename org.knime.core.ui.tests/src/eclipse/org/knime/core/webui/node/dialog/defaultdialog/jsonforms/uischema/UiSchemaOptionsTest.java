@@ -76,6 +76,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ComboBoxWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileExtensionProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.FileReaderWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileReaderWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
@@ -912,7 +913,7 @@ class UiSchemaOptionsTest {
             String m_defaultOptions;
 
             @Widget(title = "", description = "")
-            @LocalFileReaderWidget(placeholder = "myPlaceholder")
+            @LocalFileReaderWidget(placeholder = "myPlaceholder", fileExtensions = {"txt", "csv"})
             String m_specialOptions;
 
         }
@@ -923,6 +924,7 @@ class UiSchemaOptionsTest {
         assertThatJson(response).inPath("$.elements[0].options").isObject().doesNotContainKey("isWriter");
         assertThatJson(response).inPath("$.elements[1].scope").isString().contains("specialOptions");
         assertThatJson(response).inPath("$.elements[1].options.placeholder").isString().isEqualTo("myPlaceholder");
+        assertThatJson(response).inPath("$.elements[1].options.fileExtensions").isArray().containsExactly("txt", "csv");
     }
 
     static final class MyValueRef implements ValueRef<String> {
@@ -1012,6 +1014,20 @@ class UiSchemaOptionsTest {
         assertThatJson(response).inPath("$.elements[2].options.fileExtensionProvider").isString()
             .isEqualTo(MyFileExtensionProvider.class.getName());
         assertThatJson(response).inPath("$.elements[2].options.isWriter").isBoolean().isTrue();
+    }
+
+    @Test
+    void testFileReaderWidget() {
+        class FileWriterWidgetTestSettings implements DefaultNodeSettings {
+
+            @Widget(title = "", description = "")
+            @FileReaderWidget(fileExtensions = {"txt", "csv"})
+            FileChooser m_fileReader;
+
+        }
+        var response = buildTestUiSchema(FileWriterWidgetTestSettings.class);
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("fileReader");
+        assertThatJson(response).inPath("$.elements[0].options.fileExtensions").isArray().containsExactly("txt", "csv");
     }
 
 }

@@ -44,7 +44,7 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Oct 30, 2023 (Paul Bärnreuther): created
+ *   Mar 19, 2024 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.widget;
 
@@ -54,19 +54,16 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FileChooser;
+
 /**
- * Put this annotation on a String setting in order to enable a file chooser next to the string input field.
+ * Put this annotation on a {@link FileChooser} field in order to equip it with additional reader features.
  *
  * @author Paul Bärnreuther
  */
 @Retention(RUNTIME)
 @Target(FIELD)
-public @interface LocalFileReaderWidget {
-
-    /**
-     * @return the placeholder of the string input field
-     */
-    String placeholder() default "";
+public @interface FileReaderWidget {
 
     /**
      * @return the valid extensions by which the browsable files should be filtered

@@ -59,6 +59,7 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_DEPENDENCIES;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ELEMENTS;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_FILE_EXTENSION;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_FILE_EXTENSIONS;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_FILE_EXTENSION_PROVIDER;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_FORMAT;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_IS_WRITER;
@@ -96,6 +97,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ComboBoxWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileExtensionProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.FileReaderWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileReaderWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
@@ -244,8 +246,11 @@ final class UiSchemaOptionsGenerator {
             options.put(TAG_FORMAT, Format.RICH_TEXT_INPUT);
         }
 
+        if (annotatedWidgets.contains(FileReaderWidget.class)) {
+            final var fileReaderWidget = m_field.getAnnotation(FileReaderWidget.class);
+            resolveFileExtensions(options, fileReaderWidget.fileExtensions());
+        }
         if (annotatedWidgets.contains(FileWriterWidget.class)) {
-            options.put(TAG_FORMAT, Format.FILE_CHOOSER);
             options.put(TAG_IS_WRITER, true);
             final var fileWriterWidget = m_field.getAnnotation(FileWriterWidget.class);
             resolveFileExtension(options, fileWriterWidget.fileExtension(), fileWriterWidget.fileExtensionProvider());
@@ -258,6 +263,7 @@ final class UiSchemaOptionsGenerator {
             }
             options.put(TAG_FORMAT, Format.LOCAL_FILE_CHOOSER);
             final var localFileReaderWidget = m_field.getAnnotation(LocalFileReaderWidget.class);
+            resolveFileExtensions(options, localFileReaderWidget.fileExtensions());
             options.put("placeholder", localFileReaderWidget.placeholder());
         }
         if (annotatedWidgets.contains(LocalFileWriterWidget.class)) {
@@ -415,6 +421,13 @@ final class UiSchemaOptionsGenerator {
 
         if (options.isEmpty()) {
             control.remove(TAG_OPTIONS);
+        }
+    }
+
+    private static void resolveFileExtensions(final ObjectNode options, final String[] extensions) {
+        if (extensions.length > 0) {
+            final var fileExtensionsNode = options.putArray(TAG_FILE_EXTENSIONS);
+            Arrays.stream(extensions).forEach(fileExtensionsNode::add);
         }
     }
 

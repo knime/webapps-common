@@ -186,6 +186,11 @@ public final class JsonFormsConsts {
         public static final String TAG_IS_WRITER = "isWriter";
 
         /**
+         * Used for providing multiple valid file extension to a file reader widget.
+         */
+        public static final String TAG_FILE_EXTENSIONS = "fileExtensions";
+
+        /**
          * Used for providing a single valid file extension to a file chooser/writer widget.
          */
         public static final String TAG_FILE_EXTENSION = "fileExtension";
