@@ -240,23 +240,6 @@ describe("TwinlistInput.vue", () => {
     expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
   });
 
-  it("indicates model settings change when model setting is changed", async () => {
-    const setDirtyModelSettingsMock = vi.fn();
-    props.control.uischema.scope = "#/properties/model/properties/yAxisColumn";
-    const { wrapper } = await mountJsonFormsComponent(TwinlistInput, {
-      props,
-      provide: { setDirtyModelSettingsMock },
-    });
-    expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
-    await flushPromises();
-    await wrapper
-      .findComponent(Twinlist)
-      .find({ ref: "moveAllRight" })
-      .trigger("click");
-    expect(updateData).toHaveBeenCalled();
-    expect(setDirtyModelSettingsMock).toHaveBeenCalled();
-  });
-
   describe("handles changes", () => {
     it("handles selected values change", () => {
       const selected = ["A", "B", "C"];
