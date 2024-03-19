@@ -3,7 +3,7 @@ import "./variables.css";
 import { isEmpty } from "lodash-es";
 
 import DropdownIcon from "../../assets/img/icons/arrow-dropdown.svg";
-import { type PropType } from "vue";
+import { type PropType, defineComponent } from "vue";
 import { OnClickOutside } from "@vueuse/components";
 
 type Id = string | number;
@@ -16,6 +16,17 @@ interface PossibleValue {
   };
 }
 
+interface ComponentData {
+  searchValue: string;
+  typingTimeout: null | ReturnType<typeof setTimeout>;
+  isExpanded: boolean;
+  searchQuery: string;
+  candidate: string;
+  emptyState: string;
+  optionRefs: Map<Id, HTMLElement>;
+  isActive: boolean;
+}
+
 let count = 0;
 const KEY_DOWN = "ArrowDown";
 const KEY_UP = "ArrowUp";
@@ -23,10 +34,11 @@ const KEY_HOME = "Home";
 const KEY_END = "End";
 const KEY_ESC = "Escape";
 const KEY_ENTER = "Enter";
+const KEY_RIGHT = "ArrowRight";
 
 const TYPING_TIMEOUT = 1000; // in ms
 
-export default {
+export default defineComponent({
   components: {
     DropdownIcon,
     OnClickOutside,
@@ -103,23 +115,30 @@ export default {
     },
   },
   emits: ["update:modelValue"],
-  data() {
+  data(): ComponentData {
     return {
-      typingTimeout: null as null | ReturnType<typeof setTimeout>,
+      searchValue: "",
+      typingTimeout: null,
       isExpanded: false,
       searchQuery: "",
+      candidate: this.modelValue as string,
+      emptyState: "Nothing found",
+      optionRefs: new Map(),
+      isActive: false,
     };
   },
   computed: {
     selectedIndex() {
-      return this.possibleValues.map((x) => x.id).indexOf(this.modelValue);
+      return this.filteredPossibleValues
+        .map((x) => x.id)
+        .indexOf(this.candidate);
     },
     showPlaceholder() {
       return !this.modelValue;
     },
     displayTextMap() {
       let map = {} as Record<Id, string>;
-      for (let value of this.possibleValues) {
+      for (let value of this.filteredPossibleValues) {
         map[value.id] = value.text;
       }
       return map;
@@ -146,11 +165,38 @@ export default {
         (value) => value.slotData && !isEmpty(value.slotData),
       );
     },
-  },
+    filteredPossibleValues() {
+      if (this.searchValue.length === 0) {
+        return this.possibleValues;
+      }
 
+      const filteredItems = this.possibleValues.filter(
+        (possibleValue: PossibleValue) =>
+          (possibleValue.text as string)
+            .toLowerCase()
+            .includes(this.searchValue.toLowerCase()),
+      );
+      return filteredItems;
+    },
+    renderEmptyState() {
+      return this.filteredPossibleValues.length === 0;
+    },
+
+    activeSearch() {
+      return this.searchValue.length > 0;
+    },
+  },
+  watch: {
+    filteredPossibleValues(newVal: PossibleValue[]) {
+      this.candidate = newVal[0]?.id as string;
+    },
+  },
   methods: {
+    updateCandidate(candidate: string) {
+      this.candidate = candidate;
+    },
     isCurrentValue(candidate: Id) {
-      return this.modelValue === candidate;
+      return this.candidate === candidate;
     },
     setSelected(id: Id) {
       consola.trace("ListBox setSelected on", id);
@@ -158,7 +204,7 @@ export default {
       /**
        * Fired when the selection changes.
        */
-      this.$emit("update:modelValue", id);
+      this.updateCandidate(id as string);
     },
     getButtonRef() {
       return this.$refs.button as HTMLElement;
@@ -171,13 +217,24 @@ export default {
     },
     onOptionClick(id: Id) {
       this.setSelected(id);
+      this.$emit("update:modelValue", id);
       this.isExpanded = false;
       this.getButtonRef().focus();
+      this.$nextTick(
+        () => (this.$refs.searchInput as HTMLInputElement)?.blur(),
+      );
+      this.searchValue = "";
     },
-    scrollTo(optionIndex: number) {
+    scrollTo(id: Id) {
       let listBoxNode = this.getListBoxNodeRef();
-      if (listBoxNode.scrollHeight > listBoxNode.clientHeight) {
-        let element = this.getOptionsRefs()[optionIndex];
+      if (listBoxNode.scrollHeight >= listBoxNode.clientHeight) {
+        let element = this.optionRefs.get(id);
+        if (!element) {
+          consola.error(
+            `trying to scroll to element with Id ${id} which does not exist`,
+          );
+          return;
+        }
         let scrollBottom = listBoxNode.clientHeight + listBoxNode.scrollTop;
         let elementBottom = element.offsetTop + element.offsetHeight;
         if (elementBottom > scrollBottom) {
@@ -189,49 +246,102 @@ export default {
     },
     onArrowDown() {
       let next = this.selectedIndex + 1;
-      if (next >= this.possibleValues.length) {
+
+      if (next >= this.filteredPossibleValues.length) {
         return;
       }
-      this.setSelected(this.possibleValues[next].id);
-      this.scrollTo(next);
+      const nextId = this.filteredPossibleValues[next].id as string;
+
+      this.setSelected(nextId);
+      this.scrollTo(nextId);
+
+      if (
+        document.activeElement === (this.$refs.searchInput as HTMLInputElement)
+      ) {
+        this.$nextTick(
+          () =>
+            ((this.$refs.searchInput as HTMLInputElement).value =
+              this.candidate),
+        );
+      }
     },
     onArrowUp() {
       let next = this.selectedIndex - 1;
+
       if (next < 0) {
         return;
       }
-      this.setSelected(this.possibleValues[next].id);
-      this.scrollTo(next);
+      const nextId = this.filteredPossibleValues[next].id as string;
+      this.setSelected(nextId);
+      this.scrollTo(nextId);
+
+      if (
+        document.activeElement === (this.$refs.searchInput as HTMLInputElement)
+      ) {
+        this.$nextTick(
+          () =>
+            ((this.$refs.searchInput as HTMLInputElement).value =
+              this.candidate),
+        );
+      }
+    },
+    onArrowRight() {
+      this.$nextTick(() => {
+        (this.$refs.searchInput as HTMLInputElement).value = this
+          .modelValue as string;
+      });
+    },
+    onEnter() {
+      this.toggleExpanded();
+      if (!this.isExpanded) {
+        this.$emit("update:modelValue", this.candidate);
+      }
+      this.searchValue = "";
     },
     onEndKey() {
-      let next = this.possibleValues.length - 1;
-      this.setSelected(this.possibleValues[next].id);
+      let next = this.filteredPossibleValues.length - 1;
+      this.setSelected(this.filteredPossibleValues[next].id);
       const listBoxNode = this.getListBoxNodeRef();
       listBoxNode.scrollTop = listBoxNode.scrollHeight;
     },
-    onHomeKey() {
+    selectFirst() {
       let next = 0;
-      this.setSelected(this.possibleValues[next].id);
+      this.setSelected(this.filteredPossibleValues[next]?.id);
       this.getListBoxNodeRef().scrollTop = 0;
+      this.candidate = this.filteredPossibleValues[0]?.id as string;
     },
     toggleExpanded() {
       if (this.disabled) {
         return;
       }
+
       this.isExpanded = !this.isExpanded;
+
       if (this.isExpanded) {
-        this.$nextTick(() => this.getListBoxNodeRef().focus());
+        this.selectFirst();
+      } else {
+        this.isActive = false;
+        this.$nextTick(() => this.getButtonRef().focus());
       }
     },
-    handleKeyDownList(e: KeyboardEvent) {
-      /* NOTE: we use a single keyDown method because @keydown.up bindings are not testable. */
-      if (e.key === KEY_DOWN) {
-        this.onArrowDown();
-        e.preventDefault();
-        return;
+
+    handleKeyDownButton(e: KeyboardEvent) {
+      if (
+        this.isExpanded &&
+        e.key !== KEY_DOWN &&
+        e.key !== KEY_UP &&
+        e.key !== KEY_ENTER &&
+        e.key !== KEY_END &&
+        e.key !== KEY_HOME &&
+        e.key !== KEY_HOME
+      ) {
+        this.isActive = true;
+        this.$nextTick(() =>
+          (this.$refs.searchInput as HTMLInputElement).focus(),
+        );
       }
-      if (e.key === KEY_UP) {
-        this.onArrowUp();
+      if (e.key === KEY_ENTER) {
+        this.onEnter();
         e.preventDefault();
         return;
       }
@@ -240,40 +350,33 @@ export default {
         e.preventDefault();
         return;
       }
-      if (e.key === KEY_HOME) {
-        this.onHomeKey();
-        e.preventDefault();
-        return;
-      }
-      if (e.key === KEY_ESC) {
-        this.isExpanded = false;
-        this.getButtonRef().focus();
-        e.preventDefault();
-        e.stopPropagation();
-        return;
-      }
-      if (e.key === KEY_ENTER) {
-        this.isExpanded = false;
-        this.getButtonRef().focus();
-        e.preventDefault();
-        return;
-      }
-      this.searchItem(e);
-    },
-    handleKeyDownButton(e: KeyboardEvent) {
-      if (e.key === KEY_ENTER) {
-        this.toggleExpanded();
-        e.preventDefault();
-        return;
-      }
       if (e.key === KEY_DOWN) {
         this.onArrowDown();
         e.preventDefault();
         return;
       }
+      if (e.key === KEY_RIGHT) {
+        this.onArrowRight();
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        return;
+      }
       if (e.key === KEY_UP) {
         this.onArrowUp();
         e.preventDefault();
+        return;
+      }
+      if (e.key === KEY_HOME) {
+        this.selectFirst();
+        e.preventDefault();
+        return;
+      }
+      if (e.key === KEY_ESC) {
+        this.isExpanded = false;
+        this.searchValue = "";
+        this.getButtonRef().focus();
+        e.preventDefault();
+        e.stopPropagation();
         return;
       }
       this.searchItem(e);
@@ -286,8 +389,10 @@ export default {
         this.searchQuery = "";
       }, TYPING_TIMEOUT);
       this.searchQuery += e.key;
+
       consola.trace(`Searching for ${this.searchQuery}`);
-      const candidate = this.possibleValues.find((item) =>
+
+      const candidate = this.filteredPossibleValues.find((item) =>
         item.text.toLowerCase().startsWith(this.searchQuery.toLowerCase()),
       );
       if (candidate) {
@@ -299,7 +404,7 @@ export default {
     },
     getCurrentSelectedId() {
       try {
-        return this.possibleValues[this.selectedIndex].id;
+        return this.filteredPossibleValues[this.selectedIndex].id;
       } catch (e) {
         return "";
       }
@@ -313,9 +418,13 @@ export default {
     },
     clickAway() {
       this.isExpanded = false;
+      this.searchValue = "";
+    },
+    handleSearch(e: Event) {
+      this.searchValue = (e.target as HTMLInputElement).value;
     },
   },
-};
+});
 </script>
 
 <template>
@@ -327,25 +436,44 @@ export default {
         { collapsed: !isExpanded, invalid: !isValid, disabled, compact },
       ]"
     >
-      <div
-        :id="generateId('button')"
-        ref="button"
-        role="button"
-        tabindex="0"
-        aria-haspopup="listbox"
-        :class="{ placeholder: showPlaceholder, missing: isMissing }"
-        :aria-label="ariaLabel"
-        :aria-labelledby="generateId('button')"
-        :aria-expanded="isExpanded"
-        @click="toggleExpanded"
-        @keydown="handleKeyDownButton"
-      >
-        {{ displayText }}
-        <div v-if="hasRightIcon" class="loading-icon">
-          <slot name="icon-right" />
+      <div>
+        <div
+          :id="generateId('button')"
+          ref="button"
+          role="button"
+          tabindex="0"
+          aria-haspopup="listbox"
+          :class="{
+            placeholder: showPlaceholder,
+            missing: isMissing && !isExpanded,
+          }"
+          :aria-label="ariaLabel"
+          :aria-labelledby="generateId('button')"
+          :aria-expanded="isExpanded"
+          @click="toggleExpanded"
+          @keydown="handleKeyDownButton"
+        >
+          <template v-if="!isActive">
+            <span ref="span" :class="{ span: isExpanded && !isActive }">{{
+              displayText
+            }}</span>
+          </template>
+          <div v-else class="summary-input-wrapper">
+            <input
+              ref="searchInput"
+              :value="searchValue"
+              tabindex="-1"
+              role="searchbox"
+              class="search-input"
+              type="text"
+              @input="handleSearch"
+            />
+          </div>
+          <div v-if="hasRightIcon" class="loading-icon">
+            <slot name="icon-right" />
+          </div>
+          <DropdownIcon class="icon" />
         </div>
-        <!-- @vue-ignore -->
-        <DropdownIcon class="icon" />
       </div>
       <ul
         v-show="isExpanded"
@@ -355,14 +483,17 @@ export default {
         :aria-activedescendant="
           isExpanded ? generateId('option', getCurrentSelectedId()) : undefined
         "
-        :class="{ 'drops-upwards': direction === 'up' }"
-        @keydown="handleKeyDownList"
       >
+        <template v-if="renderEmptyState">
+          <div class="empty-state">
+            {{ emptyState }}
+          </div>
+        </template>
         <li
-          v-for="item of possibleValues"
+          v-for="item of isActive ? filteredPossibleValues : possibleValues"
           :id="generateId('option', item.id)"
           :key="`listbox-${item.id}`"
-          ref="options"
+          :ref="(element) => optionRefs.set(item.id, element as HTMLElement)"
           role="option"
           :title="typeof item.title === 'undefined' ? item.text : item.title"
           :class="{
@@ -390,6 +521,36 @@ export default {
 <style lang="postcss" scoped>
 .dropdown {
   position: relative;
+
+  & .span {
+    background-color: var(--knime-cornflower-semi);
+  }
+
+  & .summary-input-wrapper {
+    width: 100%;
+    cursor: text;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    flex: 1;
+
+    & .search-input {
+      all: unset;
+      height: var(--inner-height);
+      font-size: 13px;
+      font-weight: 300;
+      line-height: normal;
+      flex: 1;
+    }
+  }
+
+  & .empty-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    padding: 0.5rem;
+  }
 
   &.collapsed {
     background: var(--theme-dropdown-background-color);
@@ -559,8 +720,7 @@ export default {
     }
 
     &.focused {
-      background: var(--theme-dropdown-background-color-selected);
-      color: var(--theme-dropdown-foreground-color-selected);
+      background: var(--knime-silver-sand-semi);
 
       & :slotted(svg) {
         stroke: var(--theme-dropdown-foreground-color-selected);
