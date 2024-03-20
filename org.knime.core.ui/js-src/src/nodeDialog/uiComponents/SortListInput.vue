@@ -22,11 +22,7 @@ const props = defineProps({
     default: "Any unknown column",
   },
 });
-const {
-  handleDirtyChange: onChange,
-  control,
-  disabled,
-} = useDialogControl<string[]>({ props });
+const { onChange, control, disabled } = useDialogControl<string[]>({ props });
 
 const data = computed<string[]>(() => control.value.data);
 const possibleValues = computed<{ id: string; text: string; special?: true }[]>(
