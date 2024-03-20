@@ -19,8 +19,7 @@ import flushPromises from "flush-promises";
 import { getOptions } from "./utils";
 
 describe("NodeDialog.vue", () => {
-  let initialDataSpy,
-    setApplyListenerSpy; 
+  let initialDataSpy, setApplyListenerSpy;
 
   beforeEach(() => {
     vi.clearAllMocks();

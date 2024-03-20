@@ -30,7 +30,7 @@ describe("FlowVariablePopover", () => {
     return shallowMount(FlowVariablePopover, {
       global: {
         provide: {
-          [providedByComponentKey]: {
+          [providedByComponentKey as symbol]: {
             dataPaths,
             configPaths,
           },

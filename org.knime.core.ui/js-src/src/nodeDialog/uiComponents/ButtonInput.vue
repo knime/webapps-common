@@ -9,7 +9,7 @@ import useDialogControl from "../composables/components/useDialogControl";
 import getFlattenedSettings from "../utils/getFlattenedSettings";
 import type SettingsData from "../types/SettingsData";
 import { rendererProps } from "@jsonforms/vue";
-import { Stringifyable } from "../JsonSettingsComparator";
+import { Stringifyable } from "../composables/components/JsonSettingsComparator";
 type Id = string; // NOSONAR intended type alias
 interface State {
   id: Id;

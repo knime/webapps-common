@@ -24,7 +24,7 @@ describe("FlowVariablePopover", () => {
     return shallowMount(DeprecatedFlowVariables, {
       global: {
         provide: {
-          [providedByComponentKey]: {
+          [providedByComponentKey as symbol]: {
             dataPaths,
             configPaths,
           },

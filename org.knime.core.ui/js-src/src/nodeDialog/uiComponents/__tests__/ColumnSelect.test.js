@@ -9,6 +9,7 @@ import DropdownInput from "../DropdownInput.vue";
 import Dropdown from "webapps-common/ui/components/forms/Dropdown.vue";
 import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
 import DialogLabel from "../label/DialogLabel.vue";
+import { inject } from "vue";
 
 describe("ColumnSelect.vue", () => {
   let wrapper, props, path, component, updateData;
@@ -198,7 +199,9 @@ describe("ColumnSelect.vue", () => {
   it("sets subConfigKeys for LabeledInput and computed flow settings with them", async () => {
     const subConfigKey = "selected";
     const DialogLabelStub = {
-      inject: [providedByComponentKey],
+      setup() {
+        return { providedByComponent: inject(providedByComponentKey) };
+      },
       template: "<div/>",
     };
     const totalPath = `${path}.${subConfigKey}`;
@@ -207,8 +210,7 @@ describe("ColumnSelect.vue", () => {
       withControllingFlowVariable: totalPath,
       stubs: { DialogLabel: DialogLabelStub },
     });
-    const provided =
-      wrapper.getComponent(DialogLabel).vm[providedByComponentKey];
+    const provided = wrapper.getComponent(DialogLabel).vm.providedByComponent;
     expect(provided.flowSettings.value).toBeTruthy();
     expect(provided.configPaths.value[0].configPath).toEqual(totalPath);
   });

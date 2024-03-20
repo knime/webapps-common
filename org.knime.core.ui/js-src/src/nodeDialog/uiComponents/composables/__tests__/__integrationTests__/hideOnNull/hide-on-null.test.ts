@@ -29,8 +29,8 @@ describe("hide on null", () => {
   };
 
   beforeEach(() => {
-    mockRegisterSettings()
-  })
+    mockRegisterSettings();
+  });
 
   const mountNodeDialog = async () => {
     wrapper = mount(NodeDialog as any, getOptions()) as Wrapper;

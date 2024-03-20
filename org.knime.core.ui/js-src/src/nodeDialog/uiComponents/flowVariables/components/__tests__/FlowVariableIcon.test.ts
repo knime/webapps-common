@@ -36,7 +36,7 @@ describe("FlowVariableIcon.vue", () => {
       props,
       global: {
         provide: {
-          [providedByComponentKey]: {
+          [providedByComponentKey as symbol]: {
             flowSettings,
           },
         },

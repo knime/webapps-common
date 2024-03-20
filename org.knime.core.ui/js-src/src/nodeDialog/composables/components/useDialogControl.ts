@@ -13,10 +13,18 @@ import Control from "@/nodeDialog/types/Control";
 import { SettingComparator } from "@knime/ui-extension-service";
 import { Stringifyable } from "./JsonSettingsComparator";
 import { useDirtySetting } from "./useDirtySetting";
+import { FlowSettings } from "@/nodeDialog/api/types";
 
 export const useTriggersReexecution = (control: Ref<Control>) => {
   return computed(() => Boolean(isModelSettingAndHasNodeView(control.value)));
 };
+
+export interface DialogControl<T = any> {
+  onChange: (newValue: T) => void;
+  flowSettings: Ref<null | FlowSettings>;
+  control: Ref<Control>;
+  disabled: Ref<boolean>;
+}
 
 export const useDialogControl = <ValueType extends Stringifyable = any>({
   props,
@@ -26,7 +34,7 @@ export const useDialogControl = <ValueType extends Stringifyable = any>({
   props: Readonly<ExtractPropTypes<ReturnType<typeof rendererProps>>>;
   subConfigKeys?: MaybeRef<string[] | undefined>;
   valueComparator?: SettingComparator<ValueType | undefined>;
-}) => {
+}): DialogControl<ValueType> => {
   const { control, handleChange } = useJsonFormsControlWithUpdate(props);
 
   const settingState = useDirtySetting({

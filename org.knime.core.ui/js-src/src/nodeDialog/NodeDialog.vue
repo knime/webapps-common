@@ -121,7 +121,7 @@ export default {
     this.schema = schema;
     this.uischema = initialSettings.ui_schema;
     this.currentData = initialSettings.data;
-     this.setRegisterSettingsMethod(
+    this.setRegisterSettingsMethod(
       this.dialogService.registerSettings.bind(this.dialogService),
     );
     this.resolveInitialUpdates(this.uischema?.initialUpdates ?? []);
