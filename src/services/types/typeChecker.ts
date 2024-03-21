@@ -12,6 +12,7 @@ import {
   ReportingServiceAPILayer,
   ResourceServiceAPILayer,
   SelectionServiceAPILayer,
+  SharedDataServiceAPILayer,
 } from "./serviceApiLayers";
 
 /**
@@ -67,6 +68,7 @@ type ServicesAPILayer = MergeReturnTypes<
     ReportingServiceAPILayer,
     ResourceServiceAPILayer,
     SelectionServiceAPILayer,
+    SharedDataServiceAPILayer,
   ]
 >;
 

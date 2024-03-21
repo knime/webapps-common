@@ -3,7 +3,6 @@ import { extensionConfig, longMessage } from "test/mocks";
 import { DataServiceType } from "src/types/DataServiceType";
 import { Alert, AlertType } from "src/types/alert";
 import { setUpCustomEmbedderService } from "src/embedder";
-import { UIExtensionPushEvents } from "src/types/pushEvents";
 
 describe("JsonDataService", () => {
   const defaultExtensionConfig = extensionConfig;
@@ -130,22 +129,6 @@ describe("JsonDataService", () => {
         dataServiceRequest: JSON.stringify(appliedData),
       });
     });
-  });
-
-  it("adds callback to event with addOnDataChangeCallback", () => {
-    const { jsonDataService, dispatchPushEvent } = constructJsonDataService();
-
-    const mockDataChangeCallback = jest.fn();
-
-    jsonDataService.addOnDataChangeCallback(mockDataChangeCallback);
-
-    const payload = {};
-
-    dispatchPushEvent({
-      eventType: UIExtensionPushEvents.EventTypes.DataEvent,
-      payload,
-    });
-    expect(mockDataChangeCallback).toHaveBeenCalledWith(payload);
   });
 
   describe("handling errors", () => {
@@ -331,21 +314,6 @@ describe("JsonDataService", () => {
       expect(sentMessage.message).toContain("NullPointerException");
       expect(sentMessage.message).toContain("Something went wrong");
       expect(sentMessage.message).toContain("Line1\n\tLine2");
-    });
-  });
-
-  describe("dialog settings", () => {
-    it("returns the supplied dialog settings", () => {
-      const dialogSettings = { view: { foo: "bar" } };
-      const localExtensionConfig = { ...extensionConfig, dialogSettings };
-      const { jsonDataService } =
-        constructJsonDataService(localExtensionConfig);
-      expect(jsonDataService.getDialogSettings()).toStrictEqual(dialogSettings);
-    });
-
-    it("returns null if no dialog settings are supplied", () => {
-      const { jsonDataService } = constructJsonDataService();
-      expect(jsonDataService.getDialogSettings()).toBeNull();
     });
   });
 });

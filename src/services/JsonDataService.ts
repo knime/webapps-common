@@ -1,11 +1,9 @@
-import { DialogSettings } from "src/types/DialogSettings";
 import { createJsonRpcRequest } from "src/utils";
 
 import { createAlert } from "./utils";
 import { AlertType } from "src/types/alert";
 import { AbstractService } from "./AbstractService";
 import { DataServiceType } from "src/types/DataServiceType";
-import { UIExtensionPushEvents } from "src/types/pushEvents";
 import { JsonDataServiceAPILayer } from "./types/serviceApiLayers";
 
 const MAX_MESSAGE_LEN = 160;
@@ -73,18 +71,6 @@ export class JsonDataService extends AbstractService<JsonDataServiceAPILayer> {
   }
 
   /**
-   * The state of the settings in a coexisting dialog (if any) when the extension is first loaded.
-   * More precisely, this is the state of the settings on the last clean state of the dialog before
-   * the initialization of the knime service.
-   * It is null if there is no dialog or there was no such state before the initialization.
-   * In particular it is null if the knime service of the view and the dialog are consturcted at the same time.
-   * @returns {DialogSettings | null} the initial dialog state
-   */
-  getDialogSettings(): DialogSettings | null {
-    return this.baseService.getConfig().dialogSettings || null;
-  }
-
-  /**
    * Retrieve data from the node using the @see DataServiceType.DATA api. Different method names can be registered
    * with the data service in the node implementation to provide targets (specified by the {@param method}). Any
    * optional parameter will be provided directly to the data service target and can be used to specify the nature of
@@ -128,18 +114,6 @@ export class JsonDataService extends AbstractService<JsonDataServiceAPILayer> {
     return this.callDataService(
       DataServiceType.APPLY_DATA,
       JSON.stringify(data),
-    );
-  }
-
-  /**
-   * Adds callback that will be triggered when data changes.
-   * @param {Function} callback - called on data change.
-   * @returns {() => void} - method for removing the listener again
-   */
-  addOnDataChangeCallback(callback: (data: any) => void) {
-    return this.baseService.addPushEventListener(
-      UIExtensionPushEvents.EventTypes.DataEvent,
-      callback,
     );
   }
 

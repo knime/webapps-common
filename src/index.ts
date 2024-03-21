@@ -4,6 +4,7 @@ export {
   SelectionModes,
   CachingSelectionService,
   DialogService,
+  SharedDataService,
   ReportingService,
   ColorService,
   NumericColorHandler,

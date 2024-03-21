@@ -3,6 +3,7 @@ export { SelectionService, SelectionModes } from "./SelectionService";
 export { CachingSelectionService } from "./CachingSelectionService";
 export { ReportingService } from "./ReportingService";
 export { DialogService } from "./DialogService";
+export { SharedDataService } from "./SharedDataService";
 export { AlertingService } from "./AlertingService";
 export { ResourceService } from "./ResourceService";
 export { ImageGenerationService } from "./ImageGenerationService";

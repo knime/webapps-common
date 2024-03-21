@@ -9,7 +9,6 @@ describe("DialogService", () => {
   const constructDialogService = () => {
     const apiLayer = {
       onApplied: jest.fn(),
-      publishData: jest.fn(),
       onDirtyStateChange: jest.fn(),
       setControlsVisibility: jest.fn(),
       getConfig: () => extensionConfig,
@@ -28,13 +27,6 @@ describe("DialogService", () => {
 
     expect(dialogService.hasNodeView()).toBeTruthy();
     expect(dialogService.isWriteProtected()).toBeFalsy();
-  });
-
-  it("publishes settings", () => {
-    const { dialogService, publishData } = constructDialogService();
-    const testData = { agent: "007" };
-    dialogService.publishSettings(testData);
-    expect(publishData).toHaveBeenCalledWith(testData);
   });
 
   it("sets controls visibility", () => {

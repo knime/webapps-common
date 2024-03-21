@@ -1,7 +1,6 @@
 import { ExtensionTypes } from "src/types/ExtensionTypes";
 import { DataServiceType } from "src/types/DataServiceType";
 import { Alert, AlertConfig } from "src/types/alert";
-import { DialogSettings } from "./DialogSettings";
 import { ColorModel } from "./ColorModel";
 import { UIExtensionPushEvents } from "./pushEvents";
 
@@ -38,12 +37,13 @@ export type UIExtensionServiceConfig = AlertConfig &
      */
     initialSelection?: any;
     /**
-     * optional initial dialog state supplying the UI Extension with the state of a dialog if present.
+     * optional initial state supplying the UI Extension with the shared state of
+     * already existing other UI Extensions.
      */
-    dialogSettings?: DialogSettings;
+    initialSharedData?: any;
     /**
      * optional action-id to communicate the generated image back to Java.
-     *  TODO UIEXT-1031: We are also (mis)using this prop for cpmmunicating the report back to Java. The two concerns
+     *  TODO UIEXT-1031: We are also (mis)using this prop for communicating the report back to Java. The two concerns
      *  should either be unified or separated.
      */
     generatedImageActionId?: string | null;
@@ -101,7 +101,10 @@ export type UIExtensionServiceAPILayer = {
 
   imageGenerated: (image: string) => void;
 
-  publishData: (settings: any) => void;
+  /**
+   * TODO Rename with UIEXT-1791
+   */
+  publishData: (data: any) => void;
 
   onDirtyStateChange: (newDirtyState: APILayerDirtyState) => void;
 

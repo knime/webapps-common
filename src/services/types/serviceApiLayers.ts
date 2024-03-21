@@ -5,7 +5,6 @@ import {
   UIExtensionServiceAPILayer,
 } from "src/types";
 import { ColorModel } from "src/types/ColorModel";
-import { DialogSettings } from "src/types/DialogSettings";
 
 export type AlertingServiceAPILayer = Pick<
   UIExtensionServiceAPILayer,
@@ -33,7 +32,7 @@ type DialogServiceExtensionConfig = {
 
 export type DialogServiceAPILayer = Pick<
   UIExtensionServiceAPILayer,
-  "publishData" | "onApplied" | "onDirtyStateChange" | "setControlsVisibility"
+  "onApplied" | "onDirtyStateChange" | "setControlsVisibility"
 > & {
   getConfig: () => DialogServiceExtensionConfig;
 };
@@ -51,13 +50,21 @@ type JsonDataServiceExtensionConfig = AlertConfig &
   Identifiers & {
     extensionType: ExtensionTypes;
     initialData?: any;
-    dialogSettings?: DialogSettings;
   };
 
 export type JsonDataServiceAPILayer = Pick<
   UIExtensionServiceAPILayer,
   "callNodeDataService" | "sendAlert"
 > & { getConfig: () => JsonDataServiceExtensionConfig };
+
+type SharedDataServiceExtensionConfig = {
+  initialSharedData?: any;
+};
+
+export type SharedDataServiceAPILayer = Pick<
+  UIExtensionServiceAPILayer,
+  "publishData"
+> & { getConfig: () => SharedDataServiceExtensionConfig };
 
 type ReportingServiceExtensionConfig = {
   generatedImageActionId?: string | null;

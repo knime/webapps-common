@@ -4,6 +4,9 @@ export type Foo = "";
 
 export namespace UIExtensionPushEvents {
   export enum EventTypes {
+    /**
+     * TODO: Rename with UIEXT-1791
+     */
     DataEvent = "DataEvent",
     SelectionEvent = "SelectionEvent",
     ApplyDataEvent = "ApplyDataEvent",

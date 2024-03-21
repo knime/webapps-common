@@ -5,11 +5,8 @@ import { createDialogDirtyStateHandler } from "./dialogDirtyState";
 
 /**
  * A utility class to interact with Dialog settings implemented by a UI Extension node.
- * @param T the type of the settings
  */
-export class DialogService<
-  T = any,
-> extends AbstractService<DialogServiceAPILayer> {
+export class DialogService extends AbstractService<DialogServiceAPILayer> {
   /**
    * @returns {boolean} - true, if the node this dialog belongs to also has a node view, otherwise false
    */
@@ -23,16 +20,6 @@ export class DialogService<
    */
   isWriteProtected() {
     return this.baseService.getConfig().writeProtected;
-  }
-
-  /**
-   * Publish updated settings to the embedder.
-   * This may be used on embedder side by sending the settings to dependent other UI Extensions.
-   * @param {T} settings - the updated settings.
-   * @returns {void}
-   */
-  publishSettings(settings: T) {
-    this.baseService.publishData(settings);
   }
 
   private dirtyStateHandler = createDialogDirtyStateHandler(
