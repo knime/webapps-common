@@ -42,7 +42,7 @@ const elementTitle = computed(
 </template>
 
 <style scoped lang="postcss">
-& .item-header {
+.item-header {
   margin-bottom: 10px;
   margin-top: 10px;
   display: flex;
