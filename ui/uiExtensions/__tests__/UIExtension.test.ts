@@ -21,7 +21,7 @@ describe("UIExtension.vue", () => {
     apiLayer: UIExtensionAPILayer;
     extensionConfig: ExtensionConfig;
     resourceLocation: string;
-    settingsOnClean?: any;
+    initialSharedData?: any;
     isReporting?: true;
     isDialogLayout?: true;
   };
@@ -102,8 +102,8 @@ describe("UIExtension.vue", () => {
   });
 
   it("provides extensionConfig and dialogSettings in getConfig method in the apiLayer", () => {
-    const dialogSettings = { agent: "007" };
-    props.settingsOnClean = dialogSettings;
+    const initialSharedData = { agent: "007" };
+    props.initialSharedData = initialSharedData;
     const wrapper = shallowMount(UIExtension, {
       props,
     });
@@ -111,7 +111,7 @@ describe("UIExtension.vue", () => {
       .apiLayer as UIExtensionServiceAPILayer;
     expect(serviceApiLayer.getConfig()).toStrictEqual({
       ...componentExtensionConfig,
-      dialogSettings,
+      initialSharedData,
     });
   });
 

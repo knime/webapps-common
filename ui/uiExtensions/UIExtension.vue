@@ -30,14 +30,17 @@ type Props = {
   apiLayer: UIExtensionAPILayer;
   extensionConfig: ExtensionConfig;
   resourceLocation: string;
-  settingsOnClean?: Record<string, unknown> | null;
+  /**
+   * See ExtensionConfig.initialSharedData
+   */
+  initialSharedData?: any;
   isReporting?: boolean;
   isDialogLayout?: boolean;
   shadowAppStyle?: StyleValue | null;
 };
 
 const props = withDefaults(defineProps<Props>(), {
-  settingsOnClean: null,
+  initialSharedData: null,
   shadowAppStyle: null,
 });
 
@@ -51,7 +54,7 @@ const isUIExtShadowApp = computed(() => {
 const serviceAPILayer = computed(() => {
   const config = {
     ...toRaw(props.extensionConfig),
-    dialogSettings: toRaw(props.settingsOnClean),
+    initialSharedData: toRaw(props.initialSharedData),
   };
 
   return {
