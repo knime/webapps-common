@@ -22,6 +22,7 @@ module.exports = {
     "webapps-common/",
     "knime-ui-extension-service/",
     "knime-js-pagebuilder/",
+    "*env.d.ts",
   ],
   rules: {
     "accessor-pairs": "warn",
