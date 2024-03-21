@@ -113,6 +113,52 @@ describe("SortListInput.vue", () => {
     );
   });
 
+  it("uses choicesProvider if present", async () => {
+    const choicesProvider = "myChoicesProvider";
+    props.control.uischema.options.choicesProvider = choicesProvider;
+
+    let provideChoices;
+    const addStateProviderListenerMock = vi.fn((_id, callback) => {
+      provideChoices = callback;
+    });
+    const { wrapper, updateData } = mountJsonFormsComponent(SortListInput, {
+      props,
+      provide: { addStateProviderListenerMock },
+    });
+    expect(addStateProviderListenerMock).toHaveBeenCalledWith(
+      choicesProvider,
+      expect.anything(),
+    );
+    const providedChoices = [
+      {
+        id: "Universe_0_0",
+        text: "Universe_0_0",
+      },
+    ];
+    provideChoices(providedChoices);
+    await flushPromises();
+    const sortListProps = wrapper.findComponent(SortList).props();
+    expect(sortListProps.possibleValues).toStrictEqual([
+      ...providedChoices,
+      {
+        id: DEFAULT_ANY_UNKNOWN_VALUES_ID,
+        text: "Any unknown column",
+        special: true,
+      },
+    ]);
+    expect(updateData).toHaveBeenCalledWith(
+      expect.anything(),
+      props.control.path,
+      [
+        "test_1",
+        "test_3",
+        DEFAULT_ANY_UNKNOWN_VALUES_ID,
+        providedChoices[0].id,
+        "test_2",
+      ],
+    );
+  });
+
   it("sets correct label", () => {
     expect(wrapper.find("label").text()).toBe(props.control.label);
   });

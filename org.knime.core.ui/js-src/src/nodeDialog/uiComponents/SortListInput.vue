@@ -8,8 +8,9 @@ import Button from "webapps-common/ui/components/Button.vue";
 import useDialogControl from "../composables/components/useDialogControl";
 import { rendererProps } from "@jsonforms/vue";
 import LabeledInput from "./label/LabeledInput.vue";
-import { computed, onMounted } from "vue";
+import { computed, onMounted, watch } from "vue";
 import { indexOf } from "lodash-es";
+import useProvidedState from "../composables/components/useProvidedState";
 
 const props = defineProps({
   ...rendererProps(),
@@ -25,11 +26,14 @@ const props = defineProps({
 const { onChange, control, disabled } = useDialogControl<string[]>({ props });
 
 const data = computed<string[]>(() => control.value.data);
-const possibleValues = computed<{ id: string; text: string; special?: true }[]>(
-  () => control.value.uischema.options!.possibleValues,
+const choicesProvider = computed(
+  () => control.value.uischema.options!.choicesProvider,
 );
+const possibleValues = useProvidedState<
+  { id: string; text: string; special?: true }[]
+>(choicesProvider, []);
 
-const possibleValueWithUnknownValues = computed(() =>
+const possibleValuesWithUnknownValues = computed(() =>
   possibleValues.value.concat({
     id: props.anyUnknownValuesId,
     text: props.anyUnknownValuesText,
@@ -37,7 +41,7 @@ const possibleValueWithUnknownValues = computed(() =>
   }),
 );
 
-onMounted(() => {
+const addUnknownValuesToData = (currentPossibleValues: { id: string }[]) => {
   const unknownValuesIndex = indexOf(data.value, props.anyUnknownValuesId);
   if (unknownValuesIndex === -1) {
     throw new Error(
@@ -47,13 +51,22 @@ onMounted(() => {
   const before = data.value.slice(0, unknownValuesIndex + 1);
   const after = data.value.slice(unknownValuesIndex + 1);
   const dataSet = new Set(data.value);
-  const unknownValues = possibleValues.value
+  const unknownValues = currentPossibleValues
     .map(({ id }) => id)
     .filter((id) => !dataSet.has(id));
   if (unknownValues.length > 0) {
     onChange(before.concat(unknownValues, after));
   }
+};
+
+onMounted(() => {
+  const staticPossibleValues = control.value.uischema.options!.possibleValues;
+  if (staticPossibleValues) {
+    possibleValues.value = staticPossibleValues;
+  }
 });
+
+watch(() => possibleValues.value, addUnknownValuesToData);
 
 const sortAToZ = () => {
   onChange(data.value.toSorted((a, b) => a.localeCompare(b)));
@@ -62,7 +75,7 @@ const sortZToA = () => {
   onChange(data.value.toSorted((a, b) => b.localeCompare(a)));
 };
 const resetAll = () => {
-  onChange(possibleValueWithUnknownValues.value.map(({ id }) => id));
+  onChange(possibleValuesWithUnknownValues.value.map(({ id }) => id));
 };
 </script>
 
@@ -82,7 +95,7 @@ const resetAll = () => {
     <!--  eslint-disable vue/attribute-hyphenation ariaLabel needs to be given like this for typescript to not complain -->
     <SortList
       :id="labelForId ?? undefined"
-      :possible-values="possibleValueWithUnknownValues"
+      :possible-values="possibleValuesWithUnknownValues"
       :model-value="data"
       :ariaLabel="control.label"
       :disabled="disabled"
