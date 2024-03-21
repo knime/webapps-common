@@ -13,6 +13,7 @@ type UIExtensionAPILayer = Pick<
   | "getResourceLocation"
   | "onDirtyStateChange"
   | "onApplied"
+  | "setControlsVisibility"
   | "sendAlert"
 > & {
   /**
