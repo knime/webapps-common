@@ -90,7 +90,7 @@ class AuthenticationSettingsTest {
         }
 
         @Override
-        public void computeBeforeOpenDiaog() {
+        public void computeBeforeOpenDialog() {
             m_computedBeforeOpenDialog = true;
         }
 

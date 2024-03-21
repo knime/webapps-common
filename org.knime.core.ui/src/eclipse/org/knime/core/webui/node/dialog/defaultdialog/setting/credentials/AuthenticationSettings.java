@@ -144,7 +144,7 @@ public final class AuthenticationSettings implements WidgetGroup, PersistableSet
 
         @Override
         public void init(final StateProviderInitializer initializer) {
-            initializer.computeBeforeOpenDiaog();
+            initializer.computeBeforeOpenDialog();
             m_typeSupplier = initializer.computeFromValueSupplier(AuthenticationTypeRef.class);
         }
 

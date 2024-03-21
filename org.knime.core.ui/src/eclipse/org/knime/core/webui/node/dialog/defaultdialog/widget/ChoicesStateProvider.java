@@ -68,7 +68,7 @@ public abstract sealed interface ChoicesStateProvider<T> extends StateProvider<T
      * method without calling super.init to configure the initializer to do so.
      */
     @Override
-    public default void init(final StateProviderInitializer initializer) {
+    default void init(final StateProviderInitializer initializer) {
         initializer.computeBeforeOpenDialog();
 
     }

@@ -392,7 +392,7 @@ class UpdatesUtilTest {
 
                 @Override
                 public void init(final StateProviderInitializer initializer) {
-                    initializer.computeBeforeOpenDiaog();
+                    initializer.computeBeforeOpenDialog();
                 }
 
                 public static final String RESULT = "txt";
@@ -412,7 +412,7 @@ class UpdatesUtilTest {
 
                 @Override
                 public void init(final StateProviderInitializer initializer) {
-                    initializer.computeBeforeOpenDiaog();
+                    initializer.computeBeforeOpenDialog();
                 }
 
                 public static final String RESULT = "updated string";
@@ -478,7 +478,7 @@ class UpdatesUtilTest {
                 public void init(final StateProviderInitializer initializer) {
                     m_valueSupplier = initializer.getValueSupplier(MyValueRef.class);
                     m_otherValueSupplier = initializer.computeFromValueSupplier(MyOtherValueRef.class);
-                    initializer.computeBeforeOpenDiaog();
+                    initializer.computeBeforeOpenDialog();
                 }
 
                 @Override

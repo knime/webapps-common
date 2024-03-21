@@ -274,7 +274,7 @@ final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
         }
 
         @Override
-        public void computeBeforeOpenDiaog() {
+        public void computeBeforeOpenDialog() {
             m_computeBeforeOpenDialog = true;
         }
 

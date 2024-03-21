@@ -136,7 +136,7 @@ public interface StateProvider<S> {
          * Call this method to compute the state in a synchronous way when the dialog is opened. For an asynchronous
          * initial computation, use {@link #computeAfterOpenDialog} instead.
          */
-        void computeBeforeOpenDiaog();
+        void computeBeforeOpenDialog();
 
         /**
          * Call this method to compute the state immediately after the dialog is opened, i.e. in an asynchronous way.

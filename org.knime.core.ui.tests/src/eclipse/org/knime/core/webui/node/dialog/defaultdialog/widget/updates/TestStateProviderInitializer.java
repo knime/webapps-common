@@ -89,7 +89,7 @@ public class TestStateProviderInitializer implements StateProviderInitializer {
     }
 
     @Override
-    public void computeBeforeOpenDiaog() {
+    public void computeBeforeOpenDialog() {
         throw new IllegalStateException("This method should not have been called in this test.");
 
     }

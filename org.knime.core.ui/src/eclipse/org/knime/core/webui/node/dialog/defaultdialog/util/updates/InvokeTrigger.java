@@ -178,7 +178,7 @@ final class InvokeTrigger {
             }
 
             @Override
-            public void computeBeforeOpenDiaog() {
+            public void computeBeforeOpenDialog() {
                 // Nothing to do here during invocation
 
             }
