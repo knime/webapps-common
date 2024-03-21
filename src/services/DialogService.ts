@@ -64,4 +64,8 @@ export class DialogService<
       },
     );
   }
+
+  setControlsVisibility(param: { shouldBeVisible: boolean }) {
+    this.baseService.setControlsVisibility(param);
+  }
 }

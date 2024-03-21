@@ -105,6 +105,8 @@ export type UIExtensionServiceAPILayer = {
 
   onDirtyStateChange: (newDirtyState: APILayerDirtyState) => void;
 
+  setControlsVisibility: (param: { shouldBeVisible: boolean }) => void;
+
   onApplied: (payload: {
     /**
      * Whether applying has been successful

@@ -33,7 +33,7 @@ type DialogServiceExtensionConfig = {
 
 export type DialogServiceAPILayer = Pick<
   UIExtensionServiceAPILayer,
-  "publishData" | "onApplied" | "onDirtyStateChange"
+  "publishData" | "onApplied" | "onDirtyStateChange" | "setControlsVisibility"
 > & {
   getConfig: () => DialogServiceExtensionConfig;
 };

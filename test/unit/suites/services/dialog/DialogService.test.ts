@@ -11,6 +11,7 @@ describe("DialogService", () => {
       onApplied: jest.fn(),
       publishData: jest.fn(),
       onDirtyStateChange: jest.fn(),
+      setControlsVisibility: jest.fn(),
       getConfig: () => extensionConfig,
     };
     const embedder = setUpCustomEmbedderService(apiLayer);
@@ -34,6 +35,13 @@ describe("DialogService", () => {
     const testData = { agent: "007" };
     dialogService.publishSettings(testData);
     expect(publishData).toHaveBeenCalledWith(testData);
+  });
+
+  it("sets controls visibility", () => {
+    const { dialogService, setControlsVisibility } = constructDialogService();
+    const param = { shouldBeVisible: true };
+    dialogService.setControlsVisibility(param);
+    expect(setControlsVisibility).toHaveBeenCalledWith(param);
   });
 
   it("exposes dirty settings state", () => {
