@@ -1,0 +1,35 @@
+<script setup lang="ts">
+import ArrowLeft from "webapps-common/ui/assets/img/icons/arrow-left.svg";
+import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
+
+const emit = defineEmits(["click"]);
+</script>
+
+<template>
+  <div class="flex-horizontal">
+    <FunctionButton class="arrow-left-button" @click="() => emit('click')"
+      ><ArrowLeft
+    /></FunctionButton>
+    <span class="spacer" />
+    <span class="bold">Back to node configuration</span>
+  </div>
+</template>
+
+<style scoped lang="postcss">
+.flex-horizontal {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+
+  & .spacer {
+    border: 0.4pt solid var(--knime-silver-sand);
+    height: 25px;
+    margin: auto 0.6em auto 0.2em;
+  }
+
+  & .bold {
+    font-size: 14px;
+    font-weight: 500;
+  }
+}
+</style>

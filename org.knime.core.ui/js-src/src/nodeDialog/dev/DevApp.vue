@@ -132,6 +132,10 @@ export default {
           console.log("updateDataPointSelection called");
           return Promise.resolve();
         },
+        setControlsVisibility(param) {
+          console.log("setControlsVisibility called with", param);
+          return Promise.resolve();
+        },
       };
     },
     onDialogSelect(e: any) {
@@ -174,8 +178,8 @@ export default {
         v-if="currentDialog && currentKS"
         :key="currentDialog.result.name"
       />
-      <button @click="applySettings">Simulate Apply (prints to console)</button>
     </div>
+    <button @click="applySettings">Simulate Apply (prints to console)</button>
   </div>
 </template>
 
@@ -200,5 +204,7 @@ body {
   border: 5px solid orange;
   max-width: 400px;
   min-width: 340px;
+  height: 600px;
+  overflow-y: auto;
 }
 </style>

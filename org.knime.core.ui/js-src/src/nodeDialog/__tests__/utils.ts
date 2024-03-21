@@ -1,3 +1,5 @@
+import Form from "@/nodeDialog/layoutComponents/Form.vue";
+
 export const getOptions = ({
   stubButtonsBySlot,
 }: {
@@ -8,14 +10,15 @@ export const getOptions = ({
       provide: {
         getKnimeService: () => ({}),
       },
-      ...(stubButtonsBySlot && {
-        stubs: {
+      stubs: {
+        Form,
+        ...(stubButtonsBySlot && {
           Button: {
             inheritAttrs: false,
             template: "<slot/>",
           },
-        },
-      }),
+        }),
+      },
     },
     props: {
       dialogSettings: {

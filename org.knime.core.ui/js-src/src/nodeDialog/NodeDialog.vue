@@ -7,6 +7,7 @@ import {
 } from "@knime/ui-extension-service";
 import { vanillaRenderers } from "@jsonforms/vue-vanilla";
 import { JsonForms } from "@jsonforms/vue";
+import Form from "./layoutComponents/Form.vue";
 import "../common/main.css";
 import { type JsonSchema, type UISchemaElement } from "@jsonforms/core";
 import { fallbackRenderers, defaultRenderers } from "./renderers";
@@ -40,6 +41,7 @@ const renderers = [
 export default {
   components: {
     JsonForms,
+    Form,
   },
   inject: ["getKnimeService"],
   provide() {
@@ -57,6 +59,7 @@ export default {
         clearControllingFlowVariable: this.clearControllingFlowVariable,
       },
       getFlowVariablesMap: () => this.schema.flowVariablesMap,
+      setSubPanelExpanded: this.setSubPanelExpanded,
     } satisfies ProvidedMethods & ProvidedForFlowVariables;
   },
   setup() {
@@ -130,6 +133,11 @@ export default {
     this.ready = true;
   },
   methods: {
+    setSubPanelExpanded({ isExpanded }: { isExpanded: boolean }) {
+      this.dialogService?.setControlsVisibility({
+        shouldBeVisible: !isExpanded,
+      });
+    },
     async trigger(triggerId: string) {
       this.currentData = await this.getTriggerCallback(triggerId)(
         this.currentData,
@@ -308,7 +316,7 @@ export default {
 
 <template>
   <div class="dialog">
-    <div class="form">
+    <Form>
       <JsonForms
         v-if="ready"
         ref="jsonforms"
@@ -325,13 +333,12 @@ export default {
       >
         {{ schema.showAdvancedSettings ? "Hide" : "Show" }} advanced settings
       </a>
-    </div>
+    </Form>
   </div>
 </template>
 
 <style lang="postcss" scoped>
 .dialog {
-  --controls-height: 49px;
   --description-button-size: 15px;
 
   display: flex;
@@ -340,44 +347,11 @@ export default {
   background-color: var(--knime-gray-ultra-light);
   height: 100%;
 
-  & .form {
-    display: flex;
-    flex-direction: column;
-    height: calc(100vh - var(--controls-height));
-    padding: 0 20px;
-    overflow: hidden;
-    overflow-y: auto;
-
-    &:focus {
-      outline: none;
-    }
-
-    /* if a dialog starts with a section header we don't need extra top padding, otherwise adding it here */
-    &:not(
-        :has(
-            > .vertical-layout
-              > .vertical-layout-item:first-child
-              > div
-              > .section:first-child
-          )
-      ) {
-      padding-top: 11px;
-    }
-
-    /* TODO: UIEXT-1061 workaround to make the last dialog element fill the remaining height, used in RichTextInput */
-
-    & .vertical-layout:last-child {
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-
-      & :deep(.vertical-layout-item:last-child) {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-      }
-    }
-  }
+  /**
+   * The settings subpanel does overflow for animation reasons
+  */
+  overflow-x: hidden;
+  position: relative;
 
   & .advanced-options {
     display: flex;
