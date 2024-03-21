@@ -23,19 +23,24 @@ const elementTitle = computed(
 </script>
 
 <template>
-  <div v-if="showElementTitles" class="item-header">
-    <Label :text="elementTitle" :compact="true" />
-    <slot name="controls" />
-  </div>
-  <div
-    v-for="([elemKey, element], elemIndex) in elements"
-    :key="`${path}-${index}-${elemKey}`"
-    class="element"
-  >
-    <div class="form-component">
-      <slot name="renderer" :element="element" />
+  <template v-if="showElementTitles">
+    <div class="item-header">
+      <Label :text="elementTitle" :compact="true" />
+      <slot name="controls" />
     </div>
-    <div v-if="elemIndex === 0 && !showElementTitles" class="compensate-label">
+
+    <slot
+      v-for="[elemKey, element] in elements"
+      :key="`${path}-${index}-${elemKey}`"
+      name="renderer"
+      :element="element"
+    />
+  </template>
+  <div v-else class="element">
+    <div class="form-component">
+      <slot name="renderer" :element="elements[0][1]" />
+    </div>
+    <div class="compensate-label">
       <slot name="controls" />
     </div>
   </div>
@@ -43,8 +48,7 @@ const elementTitle = computed(
 
 <style scoped lang="postcss">
 .item-header {
-  margin-bottom: 10px;
-  margin-top: 10px;
+  margin-bottom: -10px;
   display: flex;
   justify-content: space-between;
   align-items: baseline;
@@ -55,7 +59,7 @@ const elementTitle = computed(
   align-items: center;
   gap: 5px;
 
-  /* Needed to align buttons centererd with controls that have a label */
+  /* Needed to align buttons centered with controls that have a label */
   & .compensate-label {
     margin-top: 10px;
   }

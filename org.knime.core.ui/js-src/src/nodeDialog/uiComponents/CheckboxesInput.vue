@@ -23,7 +23,7 @@ onMounted(() => {
   <LabeledInput
     #default="{ labelForId }"
     :control="control"
-    :margin-bottom="10"
+    :margin-bottom="-10"
     @controlling-flow-variable-set="onChange"
   >
     <Checkboxes

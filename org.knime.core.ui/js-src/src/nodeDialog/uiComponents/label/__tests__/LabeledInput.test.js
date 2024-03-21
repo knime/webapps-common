@@ -71,7 +71,7 @@ describe("LabeledInput.vue", () => {
     expect(
       mountLabeledInput().findComponent(DialogComponentWrapper).element.style
         .marginBottom,
-    ).toBe("20px");
+    ).toBe("0px");
     props.marginBottom = 30;
     expect(
       mountLabeledInput().findComponent(DialogComponentWrapper).element.style

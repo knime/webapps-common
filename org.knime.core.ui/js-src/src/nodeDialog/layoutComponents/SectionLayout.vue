@@ -26,12 +26,14 @@ export default SectionLayout;
 <template>
   <LayoutComponentWrapper :layout="layout">
     <div class="section">
-      <h3>{{ layout.uischema.label }}</h3>
-      <div
-        v-for="(element, index) in layout.uischema.elements"
-        :key="`${layout.path}-${index}`"
-      >
+      <div class="section-header">
+        <h3>{{ layout.uischema.label }}</h3>
+      </div>
+
+      <div class="section-elements">
         <DispatchRenderer
+          v-for="(element, index) in layout.uischema.elements"
+          :key="`${layout.path}-${index}`"
           :schema="layout.schema"
           :uischema="element"
           :path="layout.path"
@@ -48,20 +50,30 @@ export default SectionLayout;
 .section {
   margin-bottom: 30px;
 
-  & h3 {
-    margin: 0 0 20px;
-    border-bottom: 1px solid var(--knime-silver-sand);
-    color: var(--knime-masala);
-    font-size: 16px;
-    line-height: 40px;
+  & .section-header {
     position: sticky;
     top: 0;
     background-color: var(--knime-gray-ultra-light);
     z-index: 1;
+    margin: 0 calc(-1 * var(--horizontal-dialog-padding));
+
+    & h3 {
+      margin: 0 var(--horizontal-dialog-padding) 20px;
+      border-bottom: 1px solid var(--knime-silver-sand);
+      color: var(--knime-masala);
+      font-size: 16px;
+      line-height: 40px;
+    }
   }
 
-  & > *:last-child > * {
-    margin-bottom: 0;
+  & .section-elements {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    & > *:last-child > :deep(*) {
+      margin-bottom: 0;
+    }
   }
 }
 </style>

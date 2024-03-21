@@ -13,7 +13,7 @@ const props = withDefaults(
     fill?: boolean;
   }>(),
   {
-    marginBottom: 20,
+    marginBottom: 0,
     show: true,
     fill: false,
   },

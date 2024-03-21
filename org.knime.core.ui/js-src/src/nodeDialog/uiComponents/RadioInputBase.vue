@@ -8,6 +8,9 @@ import useDialogControl from "../composables/components/useDialogControl";
 import { IdAndText } from "../types/ChoicesUiSchema";
 import LabeledInput from "./label/LabeledInput.vue";
 
+const marginBottomValueSwitch = 0;
+const marginBottomRadioButtons = -10;
+
 const props = defineProps({
   ...rendererProps(),
   type: {
@@ -53,13 +56,19 @@ const setControllingFlowVariable = (value: string) => {
     onChange(value);
   }
 };
+
+const marginBottom = computed(() =>
+  props.type === "valueSwitch"
+    ? marginBottomValueSwitch
+    : marginBottomRadioButtons,
+);
 </script>
 
 <template>
   <LabeledInput
     #default="{ labelForId }"
     :control="control"
-    :margin-bottom="10"
+    :margin-bottom="marginBottom"
     @controlling-flow-variable-set="setControllingFlowVariable"
   >
     <component

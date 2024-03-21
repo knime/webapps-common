@@ -74,6 +74,9 @@ const ArrayLayout = defineComponent({
         this.control.uischema.options?.[this.arrayElementTitleKey] ?? false
       );
     },
+    useCardLayout() {
+      return this.arrayElementTitle !== false;
+    },
   },
   methods: {
     createDefaultValue(schema) {
@@ -116,6 +119,7 @@ export default ArrayLayout;
       <div
         v-for="(obj, objIndex) in control.data"
         :key="`${control.path}-${objIndex}`"
+        :class="['item', { card: useCardLayout }]"
       >
         <ArrayLayoutItem
           :elements="elements"
@@ -149,6 +153,7 @@ export default ArrayLayout;
       </div>
       <Button
         v-if="showAddAndDeleteButtons"
+        class="add-item-button"
         with-border
         compact
         @click="addDefaultItem"
@@ -162,10 +167,29 @@ export default ArrayLayout;
 
 <style lang="postcss" scoped>
 .array {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
   margin-bottom: 30px;
-}
 
-& > *:last-child > * {
-  margin-bottom: 0;
+  & .item {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    &.card {
+      padding: 5px 10px 10px;
+      background-color: white;
+      box-shadow: 0 1px 4px 0 var(--knime-gray-dark-semi);
+    }
+  }
+
+  & .add-item-button {
+    width: fit-content;
+
+    &:not(:first-child) {
+      margin-top: 10px;
+    }
+  }
 }
 </style>

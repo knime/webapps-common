@@ -268,15 +268,16 @@ describe("ArrayLayout.vue", () => {
     expect(itemControlsWithArrowDown).toHaveLength(0);
   });
 
-  it("renders headers", () => {
+  it("renders headers and uses card styled items", () => {
     const { wrapper } = mountJsonFormsComponent(ArrayLayout, {
       props: { control },
     });
     expect(wrapper.find(".item-header").exists()).toBeTruthy();
     expect(wrapper.find(".item-header").text()).toBe("ElementTitle 1");
+    expect(wrapper.vm.useCardLayout).toBeTruthy();
   });
 
-  it("does not render headers but renders controls if arrayElementTitle is missing", () => {
+  it("does not render headers and items as card but renders controls if arrayElementTitle is missing", () => {
     delete control.uischema.options.arrayElementTitle;
     const { wrapper } = mountJsonFormsComponent(ArrayLayout, {
       props: { control },
@@ -285,6 +286,7 @@ describe("ArrayLayout.vue", () => {
     const numberDataItems = control.data.length;
     const itemControls = wrapper.findAllComponents(ArrayLayoutItemControls);
     expect(itemControls).toHaveLength(numberDataItems);
+    expect(wrapper.vm.useCardLayout).toBeFalsy();
   });
 
   it.each([

@@ -48,7 +48,7 @@ const triggersReexecution = useTriggersReexecution(control);
 
 <style lang="postcss" scoped>
 .checkbox-input {
-  margin-bottom: 10px;
+  margin-bottom: -10px;
   position: relative;
   display: flex;
 

@@ -112,6 +112,15 @@ describe("RadioInputBase.vue", () => {
     },
   );
 
+  it.each([
+    ["radio", -10],
+    ["valueSwitch", 0],
+    ["unknown", -10],
+  ])("type %s uses %d px as bottom margin", async (type, marginBottom) => {
+    const { wrapper } = await createTypedWrapper(type);
+    expect(wrapper.vm.marginBottom).toBe(marginBottom);
+  });
+
   it("calls updateData when radio button is changed", async () => {
     const setDirtyModelSettingsMock = vi.fn();
     const { wrapper, updateData } = await mountJsonFormsComponent(
