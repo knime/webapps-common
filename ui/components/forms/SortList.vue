@@ -5,7 +5,6 @@ import MultiselectListBox from "./MultiselectListBox.vue";
 import ArrowDownIcon from "../../assets/img/icons/arrow-down.svg";
 import ArrowUpIcon from "../../assets/img/icons/arrow-up.svg";
 import ArrowDownloadIcon from "../../assets/img/icons/arrow-download.svg";
-import ArrowUploadIcon from "../../assets/img/icons/arrows-upload.svg";
 import FunctionButton from "../FunctionButton.vue";
 import createMissingItem from "./possibleValues/createMissingItem";
 import type { PossibleValue } from "./possibleValues/PossibleValue";
@@ -131,7 +130,7 @@ const moveToEnd = () => moveDown({ to: props.modelValue.length });
       title="Move to top"
       compact
       @click="moveToStart"
-      ><ArrowUploadIcon
+      ><ArrowDownloadIcon class="rotated"
     /></FunctionButton>
     <FunctionButton
       :disabled="noneSelected"
@@ -164,5 +163,9 @@ const moveToEnd = () => moveDown({ to: props.modelValue.length });
   gap: 4px;
   justify-content: flex-end;
   padding: 10px;
+
+  & .rotated {
+    transform: rotate(180deg);
+  }
 }
 </style>

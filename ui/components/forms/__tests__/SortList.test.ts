@@ -7,7 +7,6 @@ import FunctionButton from "../../FunctionButton.vue";
 import ArrowDownIcon from "../../../assets/img/icons/arrow-down.svg";
 import ArrowUpIcon from "../../../assets/img/icons/arrow-up.svg";
 import ArrowDownloadIcon from "../../../assets/img/icons/arrow-download.svg";
-import ArrowUploadIcon from "../../../assets/img/icons/arrows-upload.svg";
 import type { FunctionalComponent } from "vue";
 
 describe("SortList.vue", () => {
@@ -182,9 +181,22 @@ describe("SortList.vue", () => {
       );
 
     const getButtons = () => wrapper.findAllComponents(FunctionButton);
-    const clickButtonWithIcon = (icon: FunctionalComponent<any>) =>
+    const clickButtonWithIcon = (
+      icon: FunctionalComponent<any>,
+      cssClasses?: string[],
+    ) =>
       getButtons()
-        .filter((button) => button.findComponent(icon).exists())[0]
+        .filter((button) => {
+          const component = button.findComponent(icon);
+          if (cssClasses) {
+            return (
+              component.exists() &&
+              cssClasses.every((cl) => component.classes().includes(cl)) &&
+              component.classes().every((cl) => cssClasses.includes(cl))
+            );
+          }
+          return component.exists();
+        })[0]
         .trigger("click");
 
     const triggerKeydown = (event: KeyboardEventInit) =>
@@ -198,8 +210,9 @@ describe("SortList.vue", () => {
         {
           oneUp: () => clickButtonWithIcon(ArrowUpIcon),
           oneDown: () => clickButtonWithIcon(ArrowDownIcon),
-          moveToStart: () => clickButtonWithIcon(ArrowUploadIcon),
-          moveToEnd: () => clickButtonWithIcon(ArrowDownloadIcon),
+          moveToStart: () =>
+            clickButtonWithIcon(ArrowDownloadIcon, ["rotated"]),
+          moveToEnd: () => clickButtonWithIcon(ArrowDownloadIcon, []),
         },
       ],
       [
