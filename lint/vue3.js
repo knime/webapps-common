@@ -6,6 +6,7 @@ module.exports = {
     "./prettierOverwrites-vue.js",
   ],
   parserOptions: {
+    ecmaVersion: "latest", // needs to be repeated here since plugin:vue/vue3-recommended sets it
     ecmaFeatures: {
       jsx: true,
     },
