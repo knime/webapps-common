@@ -78,6 +78,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileExtensionProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileReaderWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileReaderWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
@@ -255,7 +256,11 @@ class UiSchemaOptionsTest {
         class RadioButtonsSettings implements DefaultNodeSettings {
 
             enum MyEnum {
-                    A, B, C
+                    A, //
+                    @Label(value = "Option B", disabled = true)
+                    B, //
+                    @Label(value = "Option C")
+                    C
             }
 
             @Widget(title = "", description = "")
@@ -275,6 +280,7 @@ class UiSchemaOptionsTest {
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("foo");
         assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("radio");
         assertThatJson(response).inPath("$.elements[0].options.radioLayout").isString().isEqualTo("vertical");
+        assertThatJson(response).inPath("$.elements[0].options.disabledOptions").isArray().containsExactly("B");
         assertThatJson(response).inPath("$.elements[1].scope").isString().contains("bar");
         assertThatJson(response).inPath("$.elements[1].options.format").isString().isEqualTo("radio");
         assertThatJson(response).inPath("$.elements[1].options.radioLayout").isString().isEqualTo("horizontal");
@@ -288,7 +294,11 @@ class UiSchemaOptionsTest {
         class ValueSwitchSettings implements DefaultNodeSettings {
 
             enum MyEnum {
-                    A, B, C
+                    A, //
+                    @Label(value = "Option B", disabled = true)
+                    B, //
+                    @Label(value = "Option C")
+                    C
             }
 
             @Widget(title = "", description = "")
@@ -299,6 +309,7 @@ class UiSchemaOptionsTest {
         var response = buildTestUiSchema(ValueSwitchSettings.class);
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("foo");
         assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("valueSwitch");
+        assertThatJson(response).inPath("$.elements[0].options.disabledOptions").isArray().containsExactly("B");
     }
 
     @Test

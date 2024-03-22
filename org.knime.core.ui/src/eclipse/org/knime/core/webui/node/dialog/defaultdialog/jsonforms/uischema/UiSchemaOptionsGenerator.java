@@ -78,6 +78,7 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.stream.Stream;
 
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
@@ -100,6 +101,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileExtensionProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileReaderWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileReaderWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
@@ -302,17 +304,31 @@ final class UiSchemaOptionsGenerator {
             options.put("triggerId", simpleButtonWidget.ref().getName());
         }
 
-        if (annotatedWidgets.contains(ValueSwitchWidget.class)) {
+        final var isValueSwitch = annotatedWidgets.contains(ValueSwitchWidget.class);
+
+        final var isRadioButtons = annotatedWidgets.contains(RadioButtonsWidget.class);
+
+        if (isValueSwitch) {
             options.put(TAG_FORMAT, Format.VALUE_SWITCH);
         }
 
-        if (annotatedWidgets.contains(RadioButtonsWidget.class)) {
+        if (isRadioButtons) {
             final var radioButtons = m_field.getAnnotation(RadioButtonsWidget.class);
             options.put(TAG_FORMAT, Format.RADIO);
-            if (radioButtons.horizontal()) {
-                options.put("radioLayout", "horizontal");
-            } else {
-                options.put("radioLayout", "vertical");
+            options.put("radioLayout", radioButtons.horizontal() ? "horizontal" : "vertical");
+        }
+
+        if (isValueSwitch || isRadioButtons) {
+            /**
+             * That fieldClass is an enum is ensured by the {@link WidgetImplementationUtil}
+             */
+            final var fieldClass = m_fieldClass;
+            if (fieldClass.isEnum()) {
+                final var disabledOptions = getDisabledEnumConstants();
+                if (!disabledOptions.isEmpty()) {
+                    final var disabledOptionsNode = options.putArray("disabledOptions");
+                    disabledOptions.forEach(disabledOptionsNode::add);
+                }
             }
         }
 
@@ -439,6 +455,31 @@ final class UiSchemaOptionsGenerator {
         if (options.isEmpty()) {
             control.remove(TAG_OPTIONS);
         }
+    }
+
+    private <E extends Enum<E>> List<String> getDisabledEnumConstants() {
+        @SuppressWarnings("unchecked")
+        var enumClass = (Class<E>)m_fieldClass;
+        return Stream.of(enumClass.getEnumConstants())//
+            .map(constant -> constNameIfDisabled(enumClass, constant)).filter(Optional::isPresent).map(Optional::get)
+            .toList();
+    }
+
+    private static <E extends Enum<E>> Optional<String> constNameIfDisabled(final Class<E> enumClass,
+        final E constant) {
+        Field field;
+        final var constantName = constant.name();
+        try {
+            field = enumClass.getField(constantName);
+            final var label = field.getAnnotation(Label.class);
+            if (label != null && label.disabled()) {
+                return Optional.of(constantName);
+            }
+        } catch (NoSuchFieldException | SecurityException ex) {
+            NodeLogger.getLogger(UiSchemaOptionsGenerator.class)
+                .error(String.format("Exception when accessing field %s.", constantName), ex);
+        }
+        return Optional.empty();
     }
 
     private static void resolveFileExtensions(final ObjectNode options, final String[] extensions) {

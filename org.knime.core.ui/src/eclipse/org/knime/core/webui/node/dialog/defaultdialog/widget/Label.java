@@ -55,8 +55,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * This annotation can be used to label the values of an enum as they should appear in the desired widget (value
- * switch, radio buttons, ...)
+ * This annotation can be used to label the values of an enum as they should appear in the desired widget (value switch,
+ * radio buttons, ...)
  *
  * @author Paul Bärnreuther
  */
@@ -72,4 +72,12 @@ public @interface Label {
      * @return The description of the enum constant.
      */
     String description() default "";
+
+    /**
+     * Currently this is only supported if used together with the {@link RadioButtonsWidget} or
+     * {@link ValueSwitchWidget}.
+     *
+     * @return whether the option should be disabled or not.
+     */
+    boolean disabled() default false;
 }
