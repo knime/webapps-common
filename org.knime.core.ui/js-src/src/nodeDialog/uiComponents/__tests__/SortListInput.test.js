@@ -105,6 +105,17 @@ describe("SortListInput.vue", () => {
     ]);
   });
 
+  it("sets data if none are present", async () => {
+    props.control.data = [];
+    const { updateData } = mountJsonFormsComponent(SortListInput, { props });
+    await flushPromises();
+    expect(updateData).toHaveBeenCalledWith(
+      expect.anything(),
+      props.control.path,
+      ["test_1", "test_2", "test_3", "unknown", DEFAULT_ANY_UNKNOWN_VALUES_ID],
+    );
+  });
+
   it("sets unknown values", () => {
     expect(component.updateData).toHaveBeenCalledWith(
       expect.anything(),

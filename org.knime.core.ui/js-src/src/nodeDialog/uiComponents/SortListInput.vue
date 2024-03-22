@@ -42,6 +42,13 @@ const possibleValuesWithUnknownValues = computed(() =>
 );
 
 const addUnknownValuesToData = (currentPossibleValues: { id: string }[]) => {
+  /**
+   * This way, the dialog does not need to receive an initial materialized default order
+   */
+  if (data.value.length === 0) {
+    resetAll();
+    return;
+  }
   const unknownValuesIndex = indexOf(data.value, props.anyUnknownValuesId);
   if (unknownValuesIndex === -1) {
     throw new Error(
