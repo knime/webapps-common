@@ -30,17 +30,14 @@ type Props = {
   apiLayer: UIExtensionAPILayer;
   extensionConfig: ExtensionConfig;
   resourceLocation: string;
-  /**
-   * See ExtensionConfig.initialDataChange
-   */
-  initialDataChange?: any | null;
+  settingsOnClean?: Record<string, unknown> | null;
   isReporting?: boolean;
   isDialogLayout?: boolean;
   shadowAppStyle?: StyleValue | null;
 };
 
 const props = withDefaults(defineProps<Props>(), {
-  initialDataChange: null,
+  settingsOnClean: null,
   shadowAppStyle: null,
 });
 
@@ -54,7 +51,7 @@ const isUIExtShadowApp = computed(() => {
 const serviceAPILayer = computed(() => {
   const config = {
     ...toRaw(props.extensionConfig),
-    initialDataChange: toRaw(props.initialDataChange),
+    dialogSettings: toRaw(props.settingsOnClean),
   };
 
   return {
