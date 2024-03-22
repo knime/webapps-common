@@ -12,25 +12,27 @@ import ValueSwitch from "webapps-common/ui/components/forms/ValueSwitch.vue";
 import BaseRadioButtons from "webapps-common/ui/components/forms/BaseRadioButtons.vue";
 
 describe("RadioInputBase.vue", () => {
-  let defaultProps, wrapper, component;
+  let props, wrapper, component;
+
+  const possibleValues = [
+    {
+      const: "LOG",
+      title: "Logarithmic",
+    },
+    {
+      const: "VALUE",
+      title: "Linear",
+    },
+  ];
 
   beforeEach(async () => {
-    defaultProps = {
+    props = {
       type: "radio",
       control: {
         ...getControlBase("test"),
         data: "LOG",
         schema: {
-          oneOf: [
-            {
-              const: "LOG",
-              title: "Logarithmic",
-            },
-            {
-              const: "VALUE",
-              title: "Linear",
-            },
-          ],
+          oneOf: possibleValues,
         },
         uischema: {
           type: "Control",
@@ -44,7 +46,7 @@ describe("RadioInputBase.vue", () => {
     };
 
     component = await mountJsonFormsComponent(RadioInputBase, {
-      props: defaultProps,
+      props,
     });
     wrapper = component.wrapper;
   });
@@ -76,12 +78,12 @@ describe("RadioInputBase.vue", () => {
   const createTypedWrapper = (type) =>
     mountJsonFormsComponent(RadioInputBase, {
       props: {
-        ...defaultProps,
+        ...props,
         type,
         control: {
-          ...defaultProps.control,
+          ...props.control,
           uischema: {
-            ...defaultProps.control.schema,
+            ...props.control.schema,
             scope: "#/properties/model/properties/testColumn",
           },
         },
@@ -115,7 +117,7 @@ describe("RadioInputBase.vue", () => {
     const { wrapper, updateData } = await mountJsonFormsComponent(
       RadioInputBase,
       {
-        props: defaultProps,
+        props,
         provide: { setDirtyModelSettingsMock },
       },
     );
@@ -125,7 +127,7 @@ describe("RadioInputBase.vue", () => {
       .vm.$emit("update:modelValue", changedRadioInputBase);
     expect(updateData).toHaveBeenCalledWith(
       expect.anything(),
-      defaultProps.control.path,
+      props.control.path,
       changedRadioInputBase,
     );
     expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
@@ -133,36 +135,46 @@ describe("RadioInputBase.vue", () => {
 
   it("sets correct initial value", () => {
     expect(wrapper.findComponent(BaseRadioButtons).vm.modelValue).toBe(
-      defaultProps.control.data,
+      props.control.data,
     );
   });
 
   it("sets correct label", () => {
-    expect(wrapper.find("label").text()).toBe(defaultProps.control.label);
+    expect(wrapper.find("label").text()).toBe(props.control.label);
   });
 
   it("sets correct possible values", () => {
-    const possibleValues = [
-      { id: "LOG", text: "Logarithmic" },
-      { id: "VALUE", text: "Linear" },
-    ];
     expect(
       wrapper.findComponent(BaseRadioButtons).props().possibleValues,
-    ).toStrictEqual(possibleValues);
+    ).toStrictEqual([
+      { id: "LOG", text: "Logarithmic" },
+      { id: "VALUE", text: "Linear" },
+    ]);
+  });
+
+  it("disables individual possible values if desired", async () => {
+    props.control.uischema.options.disabledOptions = possibleValues[0].const;
+    const { wrapper } = await mountJsonFormsComponent(RadioInputBase, {
+      props,
+    });
+    expect(
+      wrapper.findComponent(BaseRadioButtons).props().possibleValues,
+    ).toStrictEqual([
+      { id: "LOG", text: "Logarithmic", disabled: true },
+      { id: "VALUE", text: "Linear" },
+    ]);
   });
 
   it("disables radioInput when controlled by a flow variable", () => {
     const { wrapper } = mountJsonFormsComponent(RadioInputBase, {
-      props: defaultProps,
+      props,
       withControllingFlowVariable: true,
     });
     expect(wrapper.vm.disabled).toBeTruthy();
   });
 
   it("does not disable radioInput when not controlled by a flow variable", () => {
-    defaultProps.control.rootSchema.flowVariablesMap[
-      defaultProps.control.path
-    ] = {};
+    props.control.rootSchema.flowVariablesMap[props.control.path] = {};
     expect(wrapper.vm.disabled).toBeFalsy();
   });
 });

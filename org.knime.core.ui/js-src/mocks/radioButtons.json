@@ -1,9 +1,11 @@
 {
   "result": {
-    "name": "Radio Buttons",
+    "name": "Radio Buttons / Value Switch",
     "data": {
       "vertical": "Foo",
-      "horizontal": "Bar"
+      "horizontal": "Bar",
+      "valueSwitch": "Foo",
+      "withDisabledOptions": "disabled"
     },
     "schema": {
       "type": "object",
@@ -45,26 +47,95 @@
           "title": "Horizontal Radio Buttons",
           "description": "Example of horizontal Radio buttons",
           "default": "Bar"
+        },
+        "withDisabledOptions": {
+          "oneOf": [
+            {
+              "const": "enabled",
+              "title": "Enabled"
+            },
+            {
+              "const": "disabled",
+              "title": "Disabled"
+            }
+          ],
+          "title": "With disabled options",
+          "description": "Example of Radio buttons where the 'Disabled' option is disabled",
+          "default": "Foo"
+        },
+        "valueSwitch": {
+          "oneOf": [
+            {
+              "const": "Foo",
+              "title": "Foo"
+            },
+            {
+              "const": "Bar",
+              "title": "Bar"
+            },
+            {
+              "const": "FooBar",
+              "title": "FooBar"
+            }
+          ],
+          "title": "Value Switch",
+          "description": "Example of value switch",
+          "default": "Foo"
         }
       }
     },
     "ui_schema": {
       "elements": [
         {
-          "type": "Control",
-          "scope": "#/properties/vertical",
-          "options": {
-            "format": "radio",
-            "radioLayout": "vertical"
-          }
+          "type": "Section",
+          "label": "Radio Buttons",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/vertical",
+              "options": {
+                "format": "radio",
+                "radioLayout": "vertical"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/horizontal",
+              "options": {
+                "format": "radio",
+                "radioLayout": "horizontal"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/withDisabledOptions",
+              "options": {
+                "format": "radio",
+                "disabledOptions": ["disabled"]
+              }
+            }
+          ]
         },
         {
-          "type": "Control",
-          "scope": "#/properties/horizontal",
-          "options": {
-            "format": "radio",
-            "radioLayout": "horizontal"
-          }
+          "type": "Section",
+          "label": "Value Switch",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/vertical",
+              "options": {
+                "format": "valueSwitch"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/withDisabledOptions",
+              "options": {
+                "format": "valueSwitch",
+                "disabledOptions": ["disabled"]
+              }
+            }
+          ]
         }
       ]
     }

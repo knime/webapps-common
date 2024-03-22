@@ -19,7 +19,17 @@ const props = defineProps({
 
 const { onChange, control, disabled } = useDialogControl<string>({ props });
 
+type PossiblyDisabledOption = IdAndText & { disabled?: true };
+
 const alignment = computed(() => control.value.uischema.options?.radioLayout);
+const disabledOptions = computed<string[]>(
+  () => control.value.uischema.options?.disabledOptions ?? [],
+);
+const disableOption = (option: IdAndText): PossiblyDisabledOption =>
+  disabledOptions.value.includes(option.id)
+    ? { ...option, disabled: true }
+    : option;
+
 const uiComponent = computed(() => {
   switch (props.type) {
     case "valueSwitch":
@@ -31,9 +41,11 @@ const uiComponent = computed(() => {
   }
 });
 
-const options: Ref<IdAndText[] | null | undefined> = ref(null);
+const options: Ref<PossiblyDisabledOption[] | null | undefined> = ref(null);
 onMounted(() => {
-  options.value = control.value?.schema?.oneOf?.map(optionsMapper);
+  options.value = control.value?.schema?.oneOf
+    ?.map(optionsMapper)
+    .map(disableOption);
 });
 
 const setControllingFlowVariable = (value: string) => {
