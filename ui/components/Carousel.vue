@@ -8,6 +8,12 @@ const scrollThreshold = 5; // to prevent clicks not being bubbled to child by ac
 let startX: number, scrollLeft: number, slider: HTMLDivElement;
 
 export default defineComponent({
+  props: {
+    tabindex: {
+      type: Number,
+      default: null,
+    },
+  },
   data() {
     return {
       isMouseDown: false,
@@ -56,6 +62,7 @@ export default defineComponent({
       ref="carousel"
       class="carousel"
       :class="{ 'is-mouse-down': isMouseDown }"
+      :tabindex="tabindex"
       @mousedown="onMouseDown"
       @mousemove="onMouseMove"
       @mouseup="onMouseEnd"

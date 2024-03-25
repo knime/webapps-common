@@ -95,7 +95,7 @@ export default {
 </script>
 
 <template>
-  <Carousel>
+  <Carousel :tabindex="-1">
     <div class="tab-bar">
       <div class="overflow">
         <label
