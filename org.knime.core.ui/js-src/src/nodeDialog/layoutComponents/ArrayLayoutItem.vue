@@ -50,7 +50,7 @@ const elementTitle = computed(
   align-items: baseline;
 }
 
-& .element {
+.element {
   display: flex;
   align-items: center;
   gap: 5px;

@@ -64,7 +64,7 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-& .item-controls {
+.item-controls {
   display: flex;
 }
 </style>
