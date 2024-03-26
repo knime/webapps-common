@@ -57,7 +57,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.UpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 
 /**
  * This is the interface for the rpc data service of the {@link DefaultNodeDialog}. Its use enables e.g. lazyloaded data
@@ -112,13 +112,13 @@ interface DefaultNodeDialogDataService {
         throws InterruptedException, ExecutionException;
 
     /**
-     * Update method for the new updating mechanism using {@link ValueRef} and {@link StateProvider}. This will eventually
+     * Update method for the new updating mechanism using {@link Reference} and {@link StateProvider}. This will eventually
      * replace the {@link #update} method.
      *
      * @param widgetId identifying which pending requests came from the same widget and thus have to be canceled
      * @param triggerClass
-     * @param rawDependencies a map from a {@link ValueRef} class names to objects which need to be converted to the
-     *            correct type defined by the generic of the {@link ValueRef} using a mapper
+     * @param rawDependencies a map from a {@link Reference} class names to objects which need to be converted to the
+     *            correct type defined by the generic of the {@link Reference} using a mapper
      * @return A list of instructions on what is to be updated.
      * @throws InterruptedException
      * @throws ExecutionException

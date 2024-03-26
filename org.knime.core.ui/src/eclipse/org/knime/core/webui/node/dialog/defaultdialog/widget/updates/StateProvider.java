@@ -89,7 +89,7 @@ public interface StateProvider<S> {
          * @return a supplier to be used during {@link #computeState}. If the returned supplier is not needed, use
          *         {@link #computeOnValueChange} instead.
          */
-        <T> Supplier<T> computeFromValueSupplier(Class<? extends ValueRef<T>> ref);
+        <T> Supplier<T> computeFromValueSupplier(Class<? extends Reference<T>> ref);
 
         /**
          * Sets value ref as <b>Dependency</b> and not as <b>Trigger</b>, i.e.:
@@ -101,7 +101,7 @@ public interface StateProvider<S> {
          * @param ref used for {@link Widget#ref} of a field
          * @return a supplier to be used during {@link #computeState}.
          */
-        <T> Supplier<T> getValueSupplier(Class<? extends ValueRef<T>> ref);
+        <T> Supplier<T> getValueSupplier(Class<? extends Reference<T>> ref);
 
         /**
          * Sets value ref as <b>Trigger</b> and not as <b>Dependency</b>, i.e.:
@@ -113,7 +113,7 @@ public interface StateProvider<S> {
          * @param id used for {@link Widget#ref} of a field
          * @param <T> the type of the dependency
          */
-        <T> void computeOnValueChange(Class<? extends ValueRef<T>> id);
+        <T> void computeOnValueChange(Class<? extends Reference<T>> id);
 
         /**
          * Refer to another {@link StateProvider} with this method to recompute this state whenever the provided state
@@ -130,7 +130,7 @@ public interface StateProvider<S> {
          *
          * @param ref used as {@link SimpleButtonWidget#ref}
          */
-        void computeOnButtonClick(Class<? extends ButtonRef> ref);
+        void computeOnButtonClick(Class<? extends ButtonReference> ref);
 
         /**
          * Call this method to compute the state in a synchronous way when the dialog is opened. For an asynchronous

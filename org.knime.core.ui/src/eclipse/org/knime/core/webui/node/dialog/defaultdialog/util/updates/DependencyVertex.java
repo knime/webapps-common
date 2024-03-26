@@ -49,7 +49,7 @@
 package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueRefsAndStateProviders.ValueRefWrapper;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 
 /**
  * An object representing a reference to a value of a widget
@@ -58,7 +58,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
  */
 final class DependencyVertex extends Vertex {
 
-    private final Class<? extends ValueRef> m_ref;
+    private final Class<? extends Reference> m_ref;
 
     private final PathWithSettingsKey m_fieldLocation;
 
@@ -72,7 +72,7 @@ final class DependencyVertex extends Vertex {
         return visitor.accept(this);
     }
 
-    Class<? extends ValueRef> getValueRef() {
+    Class<? extends Reference> getValueRef() {
         return m_ref;
     }
 

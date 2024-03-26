@@ -75,6 +75,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Authen
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.CredentialsWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
 
 /**
  * Similarly to {@link AuthenticationSettings}, but additionally supports the
@@ -91,8 +92,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.Credent
  */
 public final class LegacyAuthenticationSettings implements WidgetGroup {
 
-    @Widget(valueRef = AuthenticationTypeRef.class, title = "Authentication type",
-        description = "The type of the used authentication.")
+    @Widget(title = "Authentication type", description = "The type of the used authentication.")
+    @ValueReference(AuthenticationTypeRef.class)
     @RadioButtonsWidget(horizontal = true)
     @Signal(condition = AuthenticationType.RequiresCredentialsCondition.class)
     final AuthenticationType m_type;

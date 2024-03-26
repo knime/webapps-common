@@ -96,9 +96,10 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.Passwor
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.UsernameWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DeclaringDefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonRef;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonReference;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -688,7 +689,7 @@ class UiSchemaOptionsTest {
     void testSimpleButtonWidgetOptions() {
         class SimpleButtonWidgetTestSettings implements DefaultNodeSettings {
 
-            class MyButtonTrigger implements ButtonRef {
+            class MyButtonTrigger implements ButtonReference {
 
             }
 
@@ -938,7 +939,7 @@ class UiSchemaOptionsTest {
         assertThatJson(response).inPath("$.elements[1].options.fileExtensions").isArray().containsExactly("txt", "csv");
     }
 
-    static final class MyValueRef implements ValueRef<String> {
+    static final class MyValueRef implements Reference<String> {
     }
 
     static final class MyFileExtensionProvider implements FileExtensionProvider {
@@ -971,7 +972,8 @@ class UiSchemaOptionsTest {
             @LocalFileWriterWidget(fileExtensionProvider = MyFileExtensionProvider.class)
             String m_providedExtension;
 
-            @Widget(title = "", description = "", valueRef = MyValueRef.class)
+            @Widget(title = "", description = "")
+            @ValueReference(MyValueRef.class)
             String m_dependency;
         }
         var response = buildTestUiSchema(LocalFileWriterWidgetTestSettings.class);
@@ -1007,7 +1009,8 @@ class UiSchemaOptionsTest {
             @FileWriterWidget(fileExtensionProvider = MyFileExtensionProvider.class)
             FileChooser m_providedExtension;
 
-            @Widget(title = "", description = "", valueRef = MyValueRef.class)
+            @Widget(title = "", description = "")
+            @ValueReference(MyValueRef.class)
             String m_dependency;
 
         }

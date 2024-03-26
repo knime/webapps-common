@@ -93,8 +93,10 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesUpda
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.IdAndText;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
 
 import com.fasterxml.jackson.databind.node.TextNode;
 
@@ -144,7 +146,7 @@ class DefaultNodeDialogDataServiceImplTest {
     @Nested
     class UpdatesDataServiceTest {
 
-        static final class MyValueRef implements ValueRef<String> {
+        static final class MyValueRef implements Reference<String> {
         }
 
         private static final class TestStateProvider implements StateProvider<String> {
@@ -171,10 +173,12 @@ class DefaultNodeDialogDataServiceImplTest {
 
             class UpdateSettings implements DefaultNodeSettings {
 
-                @Widget(title = "", description = "", valueRef = MyValueRef.class)
+                @Widget(title = "", description = "")
+                @ValueReference(MyValueRef.class)
                 String m_dependency;
 
-                @Widget(title = "", description = "", valueProvider = TestStateProvider.class)
+                @Widget(title = "", description = "")
+                @ValueProvider(TestStateProvider.class)
                 String m_updatedWidget;
 
             }
@@ -194,7 +198,8 @@ class DefaultNodeDialogDataServiceImplTest {
 
             class UpdateSettings implements DefaultNodeSettings {
 
-                @Widget(title = "", description = "", valueRef = MyValueRef.class)
+                @Widget(title = "", description = "")
+                @ValueReference(MyValueRef.class)
                 String m_dependency;
 
                 static final class MyFileExtensionProvider implements FileExtensionProvider {
@@ -230,10 +235,10 @@ class DefaultNodeDialogDataServiceImplTest {
             assertThat(result.get(0).id()).isEqualTo(UpdateSettings.MyFileExtensionProvider.class.getName());
         }
 
-        static final class MyFirstValueRef implements ValueRef<String> {
+        static final class MyFirstValueRef implements Reference<String> {
         }
 
-        static final class MySecondValueRef implements ValueRef<String> {
+        static final class MySecondValueRef implements Reference<String> {
         }
 
         record CommonFirstState(String first, String second) {
@@ -300,16 +305,20 @@ class DefaultNodeDialogDataServiceImplTest {
 
             class UpdateSettings implements DefaultNodeSettings {
 
-                @Widget(title = "", description = "", valueRef = MyFirstValueRef.class)
+                @Widget(title = "", description = "")
+                @ValueReference(MyFirstValueRef.class)
                 String m_foo;
 
-                @Widget(title = "", description = "", valueRef = MySecondValueRef.class)
+                @Widget(title = "", description = "")
+                @ValueReference(MySecondValueRef.class)
                 String m_bar;
 
-                @Widget(title = "", description = "", valueProvider = FirstResolver.class)
+                @Widget(title = "", description = "")
+                @ValueProvider(FirstResolver.class)
                 String m_firstUpdatedWidget;
 
-                @Widget(title = "", description = "", valueProvider = SecondResolver.class)
+                @Widget(title = "", description = "")
+                @ValueProvider(SecondResolver.class)
                 String m_secondUpdatedWidget;
 
             }

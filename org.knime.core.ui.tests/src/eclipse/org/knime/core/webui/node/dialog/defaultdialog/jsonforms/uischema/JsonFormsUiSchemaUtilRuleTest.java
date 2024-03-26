@@ -85,6 +85,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LatentWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueProvider;
 
 /**
  *
@@ -1034,7 +1035,7 @@ class JsonFormsUiSchemaUtilRuleTest {
     void testLatentWidgetSignals() {
         final class SettingsWithLatentWidgetSignal implements DefaultNodeSettings {
 
-            static final class ValueProvider implements StateProvider<Boolean> {
+            static final class MyValueProvider implements StateProvider<Boolean> {
 
                 @Override
                 public void init(final StateProviderInitializer initializer) {
@@ -1050,7 +1051,8 @@ class JsonFormsUiSchemaUtilRuleTest {
             }
 
             @LatentWidget
-            @Widget(title = "", description = "", valueProvider = ValueProvider.class)
+            @Widget(title = "", description = "")
+            @ValueProvider(MyValueProvider.class)
             @Signal(condition = TrueCondition.class)
             Boolean m_bool;
 

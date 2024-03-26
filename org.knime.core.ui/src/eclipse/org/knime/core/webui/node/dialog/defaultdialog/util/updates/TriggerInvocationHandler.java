@@ -56,7 +56,7 @@ import java.util.stream.Collectors;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 
 /**
  * @author Paul Bärnreuther
@@ -90,7 +90,7 @@ public class TriggerInvocationHandler {
      * @return a mapping from identifiers of fields to their updated value
      */
     public TriggerResult invokeTrigger(final String triggerId,
-        final Function<Class<? extends ValueRef>, Object> dependencyProvider,
+        final Function<Class<? extends Reference>, Object> dependencyProvider,
         final DefaultNodeSettingsContext context) {
         final var trigger = m_triggers.stream().filter(t -> t.getId().equals(triggerId)).findAny().orElseThrow();
         final var resultPerUpdateHandler = new InvokeTrigger(dependencyProvider, context).invokeTrigger(trigger);

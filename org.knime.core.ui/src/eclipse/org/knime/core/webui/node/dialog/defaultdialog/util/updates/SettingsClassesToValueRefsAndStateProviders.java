@@ -57,10 +57,12 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Function;
 
+import org.apache.commons.lang3.ClassUtils;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaGenerationException;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
+import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.Configuration;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.AllFileExtensionsAllowedProvider;
@@ -68,15 +70,16 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesStateProvide
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.CredentialsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.NoopBooleanProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
 
 final class SettingsClassesToValueRefsAndStateProviders {
 
-    record ValueRefWrapper(Class<? extends ValueRef> valueRef, PathWithSettingsKey fieldLocation) {
+    record ValueRefWrapper(Class<? extends Reference> valueRef, PathWithSettingsKey fieldLocation) {
     }
 
     record ValueProviderWrapper(Class<? extends StateProvider> stateProviderClass, PathWithSettingsKey fieldLocation) {
@@ -97,10 +100,14 @@ final class SettingsClassesToValueRefsAndStateProviders {
         final Collection<ValueProviderWrapper> valueProviders = new ArrayList<>();
         final Collection<Class<? extends StateProvider>> uiStateProviders = new ArrayList<>();
 
+        final var config = new Configuration.Builder()//
+            .includeFieldsNestedInArrayLayout()//
+            .includeWidgetGroupFields()//
+            .build();
         settingsClasses.entrySet().forEach(entry -> {
-            final var traverser = new DefaultNodeSettingsFieldTraverser(entry.getValue());
+            final var traverser = new DefaultNodeSettingsFieldTraverser(entry.getValue(), config);
             traverser.getAllFields().stream().forEach(field -> {
-                addWidgetAnnotationValueRefAndValueProviderForField(field, entry, valueRefs, valueProviders);
+                addWidgetValueAnnotationValueRefAndValueProviderForField(field, entry, valueRefs, valueProviders);
                 addUiStateProviderForField(field, uiStateProviders);
             });
         });
@@ -164,30 +171,33 @@ final class SettingsClassesToValueRefsAndStateProviders {
 
     }
 
-    private static void addWidgetAnnotationValueRefAndValueProviderForField(final TraversedField field,
+    private static void addWidgetValueAnnotationValueRefAndValueProviderForField(final TraversedField field,
         final Entry<String, Class<? extends WidgetGroup>> entry, final Collection<ValueRefWrapper> valueRefs,
         final Collection<ValueProviderWrapper> valueProviders) {
-        final var widgetAnnotation = field.propertyWriter().getAnnotation(Widget.class);
-        if (widgetAnnotation != null) {
-            final var pathWithSettingsKey = new PathWithSettingsKey(field.path(), entry.getKey());
-            final var fieldType = field.propertyWriter().getType().getRawClass();
-            addValueRef(valueRefs, widgetAnnotation, fieldType, pathWithSettingsKey);
-            addValueProvider(valueProviders, widgetAnnotation, fieldType, pathWithSettingsKey);
+        final var pathWithSettingsKey = new PathWithSettingsKey(field.path(), entry.getKey());
+        final var fieldType = field.propertyWriter().getType().getRawClass();
+        final var valueReferenceAnnotation = field.propertyWriter().getAnnotation(ValueReference.class);
+        if (valueReferenceAnnotation != null) {
+            addValueRef(valueRefs, valueReferenceAnnotation.value(), fieldType, pathWithSettingsKey);
+        }
+        final var valueProviderAnnotation = field.propertyWriter().getAnnotation(ValueProvider.class);
+        if (valueProviderAnnotation != null) {
+            addValueProvider(valueProviders, valueProviderAnnotation.value(), fieldType, pathWithSettingsKey);
         }
     }
 
-    private static void addValueRef(final Collection<ValueRefWrapper> valueRefs, final Widget widgetAnnotation,
-        final Class<?> fieldType, final PathWithSettingsKey pathWithSettingsKey) {
-        final var valueRef = widgetAnnotation.valueRef();
-        if (!valueRef.equals(ValueRef.class)) {
-            validateAgainstFieldType(fieldType, valueRef, ValueRef.class);
-            valueRefs.add(new ValueRefWrapper(widgetAnnotation.valueRef(), pathWithSettingsKey));
+    private static void addValueRef(final Collection<ValueRefWrapper> valueRefs,
+        final Class<? extends Reference> valueRef, final Class<?> fieldType,
+        final PathWithSettingsKey pathWithSettingsKey) {
+        if (!valueRef.equals(Reference.class)) {
+            validateAgainstFieldType(fieldType, valueRef, Reference.class);
+            valueRefs.add(new ValueRefWrapper(valueRef, pathWithSettingsKey));
         }
     }
 
     private static void addValueProvider(final Collection<ValueProviderWrapper> valueProviders,
-        final Widget widgetAnnotation, final Class<?> fieldType, final PathWithSettingsKey pathWithSettingsKey) {
-        final var valueProviderClass = widgetAnnotation.valueProvider();
+        final Class<? extends StateProvider> valueProviderClass, final Class<?> fieldType,
+        final PathWithSettingsKey pathWithSettingsKey) {
         if (!valueProviderClass.equals(StateProvider.class)) {
             validateAgainstFieldType(fieldType, valueProviderClass, StateProvider.class);
             valueProviders.add(new ValueProviderWrapper(valueProviderClass, pathWithSettingsKey));
@@ -197,7 +207,8 @@ final class SettingsClassesToValueRefsAndStateProviders {
     private static <T> void validateAgainstFieldType(final Class<?> fieldType,
         final Class<? extends T> implementingClass, final Class<T> genericInterface) {
         final var genericType = GenericTypeFinderUtil.getFirstGenericType(implementingClass, genericInterface);
-        CheckUtils.check(fieldType.isAssignableFrom(genericType), UiSchemaGenerationException::new,
+        CheckUtils.check(ClassUtils.primitiveToWrapper(fieldType).isAssignableFrom(genericType),
+            UiSchemaGenerationException::new,
             () -> String.format(
                 "The generic type \"%s\" of the %s \"%s\" does not match the type \"%s\" of the annotated field",
                 genericType.getSimpleName(), genericInterface.getSimpleName(), implementingClass.getSimpleName(),

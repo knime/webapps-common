@@ -52,7 +52,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.Defaul
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.PasswordHolder;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -72,11 +72,11 @@ public final class ConvertValueUtil {
      * @param objectSettings
      * @param valueRef
      * @param context
-     * @return an object of the generic type of the {@link ValueRef}
+     * @return an object of the generic type of the {@link Reference}
      */
-    public static Object convertValueRef(final Object objectSettings, final Class<? extends ValueRef> valueRef,
+    public static Object convertValueRef(final Object objectSettings, final Class<? extends Reference> valueRef,
         final DefaultNodeSettingsContext context) {
-        final var settingsType = GenericTypeFinderUtil.getFirstGenericType(valueRef, ValueRef.class);
+        final var settingsType = GenericTypeFinderUtil.getFirstGenericType(valueRef, Reference.class);
         return convertValue(objectSettings, settingsType, context);
     }
 

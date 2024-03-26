@@ -60,18 +60,18 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvid
 public class TestStateProviderInitializer implements StateProviderInitializer {
 
     @Override
-    public <T> Supplier<T> computeFromValueSupplier(final Class<? extends ValueRef<T>> ref) {
+    public <T> Supplier<T> computeFromValueSupplier(final Class<? extends Reference<T>> ref) {
         throw new IllegalStateException("This method should not have been called in this test.");
     }
 
     @Override
-    public <T> Supplier<T> getValueSupplier(final Class<? extends ValueRef<T>> ref) {
+    public <T> Supplier<T> getValueSupplier(final Class<? extends Reference<T>> ref) {
 
         throw new IllegalStateException("This method should not have been called in this test.");
     }
 
     @Override
-    public <T> void computeOnValueChange(final Class<? extends ValueRef<T>> id) {
+    public <T> void computeOnValueChange(final Class<? extends Reference<T>> id) {
 
         throw new IllegalStateException("This method should not have been called in this test.");
     }
@@ -83,7 +83,7 @@ public class TestStateProviderInitializer implements StateProviderInitializer {
     }
 
     @Override
-    public void computeOnButtonClick(final Class<? extends ButtonRef> ref) {
+    public void computeOnButtonClick(final Class<? extends ButtonReference> ref) {
 
         throw new IllegalStateException("This method should not have been called in this test.");
     }

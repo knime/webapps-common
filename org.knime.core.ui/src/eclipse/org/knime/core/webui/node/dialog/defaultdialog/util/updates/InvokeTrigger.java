@@ -59,10 +59,10 @@ import java.util.stream.Collectors;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.Vertex.VertexVisitor;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonRef;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonReference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider.StateProviderInitializer;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 
 /**
  * This class is used to convert a trigger to a map indexed by its triggered updates.
@@ -73,17 +73,17 @@ final class InvokeTrigger {
 
     private Map<Vertex, Object> m_cache = new HashMap<>();
 
-    private final Function<Class<? extends ValueRef>, Object> m_dependencyProvider;
+    private final Function<Class<? extends Reference>, Object> m_dependencyProvider;
 
     private final DefaultNodeSettingsContext m_context;
 
     /**
      *
-     * @param dependencyProvider providing the values of all {@link ValueRef} dependencies that the triggered state
+     * @param dependencyProvider providing the values of all {@link Reference} dependencies that the triggered state
      *            providers will depend on.
      * @param context the context provided to triggered state providers
      */
-    InvokeTrigger(final Function<Class<? extends ValueRef>, Object> dependencyProvider,
+    InvokeTrigger(final Function<Class<? extends Reference>, Object> dependencyProvider,
         final DefaultNodeSettingsContext context) {
         m_dependencyProvider = dependencyProvider;
         m_context = context;
@@ -135,7 +135,7 @@ final class InvokeTrigger {
     }
 
     private static DependencyVertex getParentDependencyVertex(final Vertex vertex,
-        final Class<? extends ValueRef<?>> valueRef) {
+        final Class<? extends Reference<?>> valueRef) {
         final var getParentDependencyVertexVisitor = new VertexVisitor<DependencyVertex>() {
             @Override
             public DependencyVertex accept(final DependencyVertex dependencyVertex) {
@@ -168,12 +168,12 @@ final class InvokeTrigger {
             }
 
             @Override
-            public <T> void computeOnValueChange(final Class<? extends ValueRef<T>> id) {
+            public <T> void computeOnValueChange(final Class<? extends Reference<T>> id) {
                 // Nothing to do here during invocation
             }
 
             @Override
-            public void computeOnButtonClick(final Class<? extends ButtonRef> trigger) {
+            public void computeOnButtonClick(final Class<? extends ButtonReference> trigger) {
                 // Nothing to do here during invocation
             }
 
@@ -190,12 +190,12 @@ final class InvokeTrigger {
             }
 
             @Override
-            public <T> Supplier<T> getValueSupplier(final Class<? extends ValueRef<T>> id) {
+            public <T> Supplier<T> getValueSupplier(final Class<? extends Reference<T>> id) {
                 return vertexToSupplier(getParentDependencyVertex(m_stateVertex, id));
             }
 
             @Override
-            public <T> Supplier<T> computeFromValueSupplier(final Class<? extends ValueRef<T>> id) {
+            public <T> Supplier<T> computeFromValueSupplier(final Class<? extends Reference<T>> id) {
                 return vertexToSupplier(getParentDependencyVertex(m_stateVertex, id));
             }
 

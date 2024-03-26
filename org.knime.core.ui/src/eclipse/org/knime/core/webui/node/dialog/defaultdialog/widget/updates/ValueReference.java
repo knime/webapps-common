@@ -44,41 +44,47 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Feb 7, 2024 (Paul Bärnreuther): created
+ *   Mar 28, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
+package org.knime.core.webui.node.dialog.defaultdialog.widget.updates;
 
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.ConvertValueUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.UpdateResultsUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerInvocationHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 
 /**
- * Used to convert triggers to a list of resulting updates given a map of dependencies.
+ * Add this annotation to a field nested within {@link DefaultNodeSettings} to make a {@link StateProvider} used in
+ * other annotations depend on its value.
+ *
+ * <p>
+ * Possible use cases include:
+ * <ul>
+ * <li>Updating the possible values of a second dropdown depending on the selected value in the one referenced here (see
+ * {@link ChoicesWidget#choicesProvider()})</li>
+ * <li>Updating the value of another setting depending on this one (see {@link ValueProvider})</li>
+ * </ul>
+ * </p>
+ *
+ * @see StateProvider.StateProviderInitializer
+ * @see StateProvider.StateProviderInitializer#computeFromValueSupplier using the value as trigger and dependency
+ * @see StateProvider.StateProviderInitializer#getValueSupplier using the value as dependency only
+ * @see StateProvider.StateProviderInitializer#computeOnValueChange using the value as trigger only
  *
  * @author Paul Bärnreuther
  */
-final class DataServiceTriggerInvocationHandler {
+@Retention(RUNTIME)
+@Target(FIELD)
+public @interface ValueReference {
 
-    private TriggerInvocationHandler m_triggerInvocationHandler;
-
-    DataServiceTriggerInvocationHandler(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
-        m_triggerInvocationHandler = new TriggerInvocationHandler(settingsClasses);
-    }
-
-    List<UpdateResultsUtil.UpdateResult> trigger(final String triggerId, final Map<String, Object> rawDependencies,
-        final DefaultNodeSettingsContext context) {
-        final Function<Class<? extends Reference>, Object> dependencyProvider = valueRef -> {
-            final var rawDependencyObject = rawDependencies.get(valueRef.getName());
-            return ConvertValueUtil.convertValueRef(rawDependencyObject, valueRef, context);
-        };
-        final var triggerResult = m_triggerInvocationHandler.invokeTrigger(triggerId, dependencyProvider, context);
-        return UpdateResultsUtil.toUpdateResults(triggerResult);
-    }
+    /**
+     * @return An id that can be referenced by {@link StateProvider StateProviders} of other fields. The generic type of
+     *         {@link Reference} has to match the type of the annotated field or its boxed type in case of a primitive.
+     *         Otherwise a runtime exception is thrown when the dialog is opened.
+     */
+    Class<? extends Reference> value();
 }

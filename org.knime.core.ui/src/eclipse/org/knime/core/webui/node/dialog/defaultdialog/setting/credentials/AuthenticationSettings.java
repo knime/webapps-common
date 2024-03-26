@@ -74,8 +74,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.CredentialsWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
 
 /**
  * A switch on the type of authentication that is to be used plus a {@link Credentials} widget that is shown
@@ -128,12 +129,12 @@ public final class AuthenticationSettings implements WidgetGroup, PersistableSet
 
     }
 
-    static final class AuthenticationTypeRef implements ValueRef<AuthenticationType> {
+    static final class AuthenticationTypeRef implements Reference<AuthenticationType> {
 
     }
 
-    @Widget(valueRef = AuthenticationTypeRef.class, title = "Authentication type",
-        description = "The type of the used authentication.")
+    @Widget(title = "Authentication type", description = "The type of the used authentication.")
+    @ValueReference(AuthenticationTypeRef.class)
     @RadioButtonsWidget(horizontal = true)
     @Signal(condition = AuthenticationType.RequiresCredentialsCondition.class)
     final AuthenticationType m_type;
@@ -254,8 +255,7 @@ public final class AuthenticationSettings implements WidgetGroup, PersistableSet
             return loadFromModel(loadModelFromSettings(settings));
         }
 
-        AuthenticationSettings loadFromNewConfigKeys(final NodeSettingsRO settings)
-            throws InvalidSettingsException {
+        AuthenticationSettings loadFromNewConfigKeys(final NodeSettingsRO settings) throws InvalidSettingsException {
             return m_defaultPersistor.load(settings.getNodeSettings(getConfigKey()));
         }
 

@@ -60,7 +60,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.Defaul
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.ConvertValueUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -113,7 +113,7 @@ public class TriggerAndDependencies {
      * @param context the current {@link DefaultNodeSettingsContext}
      * @return a mapping to the values of the required dependencies
      */
-    public Map<Class<? extends ValueRef>, Object> extractDependencyValues(final Map<String, WidgetGroup> settings,
+    public Map<Class<? extends Reference>, Object> extractDependencyValues(final Map<String, WidgetGroup> settings,
         final DefaultNodeSettingsContext context) {
         final var mapper = JsonFormsDataUtil.getMapper();
         final Map<String, JsonNode> jsonNodes = getDependencySettingsKeys().stream().collect(
@@ -121,9 +121,9 @@ public class TriggerAndDependencies {
         return createDependenciesValuesMap(context, jsonNodes);
     }
 
-    private Map<Class<? extends ValueRef>, Object> createDependenciesValuesMap(final DefaultNodeSettingsContext context,
-        final Map<String, JsonNode> jsonNodes) {
-        final Map<Class<? extends ValueRef>, Object> dependencyValues = new HashMap<>();
+    private Map<Class<? extends Reference>, Object>
+        createDependenciesValuesMap(final DefaultNodeSettingsContext context, final Map<String, JsonNode> jsonNodes) {
+        final Map<Class<? extends Reference>, Object> dependencyValues = new HashMap<>();
         for (var vertex : m_dependencyVertices) {
             dependencyValues.put(vertex.getValueRef(), extractValue(vertex, jsonNodes, context));
         }

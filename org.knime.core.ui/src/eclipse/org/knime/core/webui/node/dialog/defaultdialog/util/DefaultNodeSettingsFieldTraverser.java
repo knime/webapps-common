@@ -54,6 +54,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -119,18 +120,87 @@ public class DefaultNodeSettingsFieldTraverser {
 
     private final Class<?> m_settingsClass;
 
+    private final Configuration m_config;
+
+    /**
+     * Per default, only leaf nested fields inside {@link DefaultNodeSettings} are listed by a traversal. Use this
+     * Configuration as argument to the {@link DefaultNodeSettingsFieldTraverser} constructor to add more fields to the
+     * output of the traversal.
+     */
+    public static final class Configuration {
+
+        final boolean m_includeWidgetGroupFields;
+
+        final boolean m_includeFieldsNestedInArrayLayout;
+
+        private Configuration(final boolean includeWidgetGroupFields, final boolean includeFieldsNestedInArrayLayout) {
+            m_includeWidgetGroupFields = includeWidgetGroupFields;
+            m_includeFieldsNestedInArrayLayout = includeFieldsNestedInArrayLayout;
+        }
+
+        /**
+         * Per default, only leaf nested fields inside {@link DefaultNodeSettings} are listed. Use this Builder to add
+         * more fields to the output of the traversal.
+         */
+        public static class Builder {
+
+            boolean m_includeWidgetGroupFields;
+
+            boolean m_includeFieldsNestedInArrayLayout;
+
+            /**
+             * Call to not only list the fields nested within a {@link WidgetGroup} but additionally also make the
+             * {@link WidgetGroup} field itself appear as a listed field.
+             *
+             * @return the builder
+             */
+            public Builder includeWidgetGroupFields() {
+                m_includeWidgetGroupFields = true;
+                return this;
+            }
+
+            /**
+             * Call to not stop traversal when reaching an array layout field but to instead traverse the element class
+             * widget group further. In any case, the array layout field will appear as part of the listed fields.
+             *
+             * @return the builder
+             */
+            public Builder includeFieldsNestedInArrayLayout() {
+                m_includeFieldsNestedInArrayLayout = true;
+                return this;
+            }
+
+            /**
+             * @return the built configuration to be used as constructor argument
+             */
+            public Configuration build() {
+                return new Configuration(m_includeWidgetGroupFields, m_includeFieldsNestedInArrayLayout);
+            }
+
+        }
+
+    }
+
     /**
      * @param settingsClass the class to be traversed.
      */
     public DefaultNodeSettingsFieldTraverser(final Class<?> settingsClass) {
-        m_serializerProvider = getMapper().getSerializerProviderInstance();
-        m_settingsClass = settingsClass;
+        this(settingsClass, new Configuration.Builder().build());
     }
 
-    private DefaultNodeSettingsFieldTraverser(final SerializerProvider serializerProvider,
-        final Class<?> settingsClass) {
+    /**
+     * @param settingsClass the class to be traversed.
+     * @param config defining which fields are part of the output or given to the provided callback
+     */
+    public DefaultNodeSettingsFieldTraverser(final Class<?> settingsClass, final Configuration config) {
+        this(getMapper().getSerializerProviderInstance(), settingsClass, config);
+    }
+
+    private DefaultNodeSettingsFieldTraverser(final SerializerProvider serializerProvider, final Class<?> settingsClass,
+        final Configuration config) {
         m_serializerProvider = serializerProvider;
         m_settingsClass = settingsClass;
+        m_config = config;
     }
 
     /**
@@ -189,11 +259,14 @@ public class DefaultNodeSettingsFieldTraverser {
         final var path = getPath(parentPath, field.getName());
         final var fieldType = field.getType().getRawClass();
         final var annotations = classAnnotations.toFieldAnnotationsHolder(field);
-        if (WidgetGroup.class.isAssignableFrom(fieldType)) {
-            this.traverseClass(fieldType, fieldCallback, path, annotations);
-        } else {
+        final var isWidgetGroup = WidgetGroup.class.isAssignableFrom(fieldType);
+        if (!isWidgetGroup || m_config.m_includeWidgetGroupFields) {
             fieldCallback.accept(new TraversedField(field, path, annotations));
         }
+        if (isWidgetGroup) {
+            this.traverseClass(fieldType, fieldCallback, path, annotations);
+        }
+        getArrayLayoutFieldTraverser(field).ifPresent(traverser -> traverser.traverse(fieldCallback));
     }
 
     private static List<String> getPath(final List<String> parentPath, final String next) {
@@ -203,32 +276,29 @@ public class DefaultNodeSettingsFieldTraverser {
     }
 
     /**
-     * @return A list of all traversed fields including fields nested within array layout elements.
+     * @return A list of all traversed fields including fields nested within array layout elements, excluding
+     *         {@link WidgetGroup} fields.
      */
     public List<TraversedField> getAllFields() {
         List<TraversedField> fields = new ArrayList<>();
-        final Consumer<TraversedField> addActionHandlerClass = getAddTravesedFieldCallback(fields);
+        final Consumer<TraversedField> addActionHandlerClass = fields::add;
         traverse(addActionHandlerClass);
         return fields;
     }
 
-    private Consumer<TraversedField> getAddTravesedFieldCallback(final List<TraversedField> fields) {
-        return field -> {
-            fields.addAll(getArrayLayoutElementFields(field));
-            fields.add(field);
-        };
+    private Optional<DefaultNodeSettingsFieldTraverser> getArrayLayoutFieldTraverser(final PropertyWriter field) {
 
-    }
-
-    private List<TraversedField> getArrayLayoutElementFields(final TraversedField field) {
-        final var javaType = field.propertyWriter().getType();
+        if (!m_config.m_includeFieldsNestedInArrayLayout) {
+            return Optional.empty();
+        }
+        final var javaType = field.getType();
         if (ArrayLayoutUtil.isArrayLayoutField(javaType)) {
             final var elementClass = javaType.getContentType().getRawClass();
             if (DefaultNodeSettings.class.isAssignableFrom(elementClass)) {
-                return new DefaultNodeSettingsFieldTraverser(m_serializerProvider, elementClass).getAllFields();
+                return Optional.of(new DefaultNodeSettingsFieldTraverser(m_serializerProvider, elementClass, m_config));
             }
         }
-        return new ArrayList<>(0);
+        return Optional.empty();
     }
 
 }

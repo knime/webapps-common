@@ -80,9 +80,11 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidg
 import org.knime.core.webui.node.dialog.defaultdialog.widget.StringChoicesStateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SimpleButtonWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonRef;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonReference;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -118,19 +120,26 @@ class UpdatesUtilTest {
 
             }
 
-            class Dependency implements ValueRef<String> {
+            class Dependency implements Reference<Integer> {
 
             }
 
-            @Widget(title = "", description = "", valueRef = Dependency.class)
-            String dependency;
+            @Widget(title = "", description = "")
+            @ValueReference(Dependency.class)
+            int dependency;
 
-            class AnotherDependency implements ValueRef<String> {
+            static class MyWidgetGroup implements WidgetGroup {
+                @Widget(title = "", description = "")
+                String anotherDependency;
 
             }
 
-            @Widget(title = "", description = "", valueRef = AnotherDependency.class)
-            String anotherDependency;
+            class AnotherDependency implements Reference<MyWidgetGroup> {
+
+            }
+
+            @ValueReference(AnotherDependency.class)
+            MyWidgetGroup anotherDependency;
 
             static final class TestStateProvider implements StateProvider<String> {
 
@@ -146,7 +155,8 @@ class UpdatesUtilTest {
 
             }
 
-            @Widget(title = "", description = "", valueProvider = TestStateProvider.class)
+            @Widget(title = "", description = "")
+            @ValueProvider(TestStateProvider.class)
             String target;
 
             static final class AnotherTestStateProvider implements StateProvider<String> {
@@ -164,7 +174,8 @@ class UpdatesUtilTest {
                 }
             }
 
-            @Widget(title = "", description = "", valueProvider = AnotherTestStateProvider.class)
+            @Widget(title = "", description = "")
+            @ValueProvider(AnotherTestStateProvider.class)
             String anotherTarget;
         }
 
@@ -208,11 +219,12 @@ class UpdatesUtilTest {
 
             }
 
-            class IntegerReference implements ValueRef<Integer> {
+            class IntegerReference implements Reference<Integer> {
 
             }
 
-            @Widget(title = "", description = "", valueRef = IntegerReference.class)
+            @Widget(title = "", description = "")
+            @ValueReference(IntegerReference.class)
             String dependency;
 
             static final class TestStateProvider implements StateProvider<String> {
@@ -229,7 +241,8 @@ class UpdatesUtilTest {
 
             }
 
-            @Widget(title = "", description = "", valueProvider = TestStateProvider.class)
+            @Widget(title = "", description = "")
+            @ValueProvider(TestStateProvider.class)
             String target;
         }
 
@@ -237,7 +250,7 @@ class UpdatesUtilTest {
 
         assertThat(assertThrows(UiSchemaGenerationException.class, () -> buildUpdates(settings)).getMessage())
             .isEqualTo(
-                "The generic type \"Integer\" of the ValueRef \"IntegerReference\" does not match the type \"String\" of the annotated field");
+                "The generic type \"Integer\" of the Reference \"IntegerReference\" does not match the type \"String\" of the annotated field");
 
     }
 
@@ -250,11 +263,12 @@ class UpdatesUtilTest {
 
             }
 
-            class MyReference implements ValueRef<String> {
+            class MyReference implements Reference<String> {
 
             }
 
-            @Widget(title = "", description = "", valueRef = MyReference.class)
+            @Widget(title = "", description = "")
+            @ValueReference(MyReference.class)
             String dependency;
 
             static final class IntegerStateProvider implements StateProvider<Integer> {
@@ -271,7 +285,8 @@ class UpdatesUtilTest {
 
             }
 
-            @Widget(title = "", description = "", valueProvider = IntegerStateProvider.class)
+            @Widget(title = "", description = "")
+            @ValueProvider(IntegerStateProvider.class)
             String target;
         }
 
@@ -293,7 +308,7 @@ class UpdatesUtilTest {
 
             }
 
-            class DanglingReference implements ValueRef<Integer> {
+            class DanglingReference implements Reference<Integer> {
 
             }
 
@@ -311,7 +326,8 @@ class UpdatesUtilTest {
 
             }
 
-            @Widget(title = "", description = "", valueProvider = TestStateProvider.class)
+            @Widget(title = "", description = "")
+            @ValueProvider(TestStateProvider.class)
             String target;
         }
 
@@ -332,7 +348,7 @@ class UpdatesUtilTest {
 
             }
 
-            class MyButtonRef implements ButtonRef {
+            class MyButtonRef implements ButtonReference {
 
             }
 
@@ -354,7 +370,8 @@ class UpdatesUtilTest {
 
             }
 
-            @Widget(title = "", description = "", valueProvider = MyButtonStateProvider.class)
+            @Widget(title = "", description = "")
+            @ValueProvider(MyButtonStateProvider.class)
             String m_updated;
         }
 
@@ -424,7 +441,8 @@ class UpdatesUtilTest {
 
             }
 
-            @Widget(title = "", description = "", valueProvider = MyValueProvider.class)
+            @Widget(title = "", description = "")
+            @ValueProvider(MyValueProvider.class)
             MySetting m_valueUpdateSetting;
 
         }
@@ -438,7 +456,8 @@ class UpdatesUtilTest {
         assertThatJson(response).inPath("$.initialUpdates").isArray().anySatisfy(initialUpdate -> {
             assertThatJson(initialUpdate).inPath("$.path").isString()
                 .isEqualTo("#/properties/test/properties/valueUpdateSetting");
-            assertThatJson(initialUpdate).inPath("$.value").isObject().containsEntry("value", TestSettings.MyValueProvider.RESULT);
+            assertThatJson(initialUpdate).inPath("$.value").isObject().containsEntry("value",
+                TestSettings.MyValueProvider.RESULT);
         });
 
         assertThatJson(response).inPath("$.initialUpdates").isArray().anySatisfy(initialUpdate -> {
@@ -457,15 +476,16 @@ class UpdatesUtilTest {
             TestSettings() {
             }
 
-            static final class MyValueRef implements ValueRef<String> {
+            static final class MyValueRef implements Reference<String> {
 
             }
 
-            static final class MyOtherValueRef implements ValueRef<String> {
+            static final class MyOtherValueRef implements Reference<String> {
 
             }
 
-            @Widget(title = "", description = "", valueRef = MyOtherValueRef.class)
+            @Widget(title = "", description = "")
+            @ValueReference(MyOtherValueRef.class)
             String m_otherSetting = "foo";
 
             static final class MyValueProvider implements StateProvider<String> {
@@ -488,7 +508,9 @@ class UpdatesUtilTest {
 
             }
 
-            @Widget(title = "", description = "", valueProvider = MyValueProvider.class, valueRef = MyValueRef.class)
+            @Widget(title = "", description = "")
+            @ValueProvider(MyValueProvider.class)
+            @ValueReference(MyValueRef.class)
             String m_valueUpdateSetting;
 
         }
@@ -544,7 +566,8 @@ class UpdatesUtilTest {
 
             }
 
-            @Widget(title = "", description = "", valueProvider = MyValueProvider.class)
+            @Widget(title = "", description = "")
+            @ValueProvider(MyValueProvider.class)
             String m_valueUpdateSetting;
 
         }

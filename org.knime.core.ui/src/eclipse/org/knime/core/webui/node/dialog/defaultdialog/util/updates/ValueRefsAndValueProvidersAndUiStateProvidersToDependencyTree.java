@@ -63,9 +63,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClass
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueRefsAndStateProviders.ValueRefWrapper;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueRefsAndStateProviders.ValueRefsAndStateProviders;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.Vertex.VertexVisitor;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonRef;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonReference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 
 final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
 
@@ -97,7 +97,7 @@ final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
          */
         private final Map<String, TriggerVertex> m_specialTriggerVertices = new HashMap<>();
 
-        private final Map<Class<? extends ValueRef>, DependencyVertex> m_dependencyVertices = new HashMap<>();
+        private final Map<Class<? extends Reference>, DependencyVertex> m_dependencyVertices = new HashMap<>();
 
         private final Set<Vertex> m_visited = new HashSet<>();
 
@@ -146,12 +146,12 @@ final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
                 return m_stateVertices.computeIfAbsent(stateProviderClass, StateVertex::new);
             }
 
-            TriggerVertex getValueTriggerVertex(final Class<? extends ValueRef> valueRef) {
+            TriggerVertex getValueTriggerVertex(final Class<? extends Reference> valueRef) {
                 final var valueRefWrapper = findValueRefWrapper(valueRef);
                 return m_triggerVertices.computeIfAbsent(valueRef, v -> new TriggerVertex(valueRefWrapper));
             }
 
-            TriggerVertex getButtonTriggerVertex(final Class<? extends ButtonRef> buttonRef) {
+            TriggerVertex getButtonTriggerVertex(final Class<? extends ButtonReference> buttonRef) {
                 return m_triggerVertices.computeIfAbsent(buttonRef, v -> new TriggerVertex(buttonRef));
             }
 
@@ -164,12 +164,12 @@ final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
                 return m_specialTriggerVertices.computeIfAbsent(TriggerVertex.AFTER_OPEN_DIALOG_ID, TriggerVertex::new);
             }
 
-            DependencyVertex getDependencyVertex(final Class<? extends ValueRef> valueRef) {
+            DependencyVertex getDependencyVertex(final Class<? extends Reference> valueRef) {
                 final var valueRefWrapper = findValueRefWrapper(valueRef);
                 return m_dependencyVertices.computeIfAbsent(valueRef, v -> new DependencyVertex(valueRefWrapper));
             }
 
-            private ValueRefWrapper findValueRefWrapper(final Class<? extends ValueRef> valueRef) {
+            private ValueRefWrapper findValueRefWrapper(final Class<? extends Reference> valueRef) {
                 return m_valueRefs.stream().filter(wrapper -> wrapper.valueRef().equals(valueRef)).findAny()
                     .orElseThrow(() -> new RuntimeException(
                         String.format("The value reference %s is used in a state provider but could not be found. "
@@ -231,11 +231,11 @@ final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
      */
     private static final class StateProviderDependencyReceiver implements StateProvider.StateProviderInitializer {
 
-        private final Collection<Class<? extends ValueRef>> m_valueRefTriggers = new HashSet<>();
+        private final Collection<Class<? extends Reference>> m_valueRefTriggers = new HashSet<>();
 
-        private final Collection<Class<? extends ButtonRef>> m_buttonRefTriggers = new HashSet<>();
+        private final Collection<Class<? extends ButtonReference>> m_buttonRefTriggers = new HashSet<>();
 
-        private final Collection<Class<? extends ValueRef>> m_dependencies = new HashSet<>();
+        private final Collection<Class<? extends Reference>> m_dependencies = new HashSet<>();
 
         private final Collection<Class<? extends StateProvider>> m_stateProviders = new HashSet<>();
 
@@ -244,25 +244,25 @@ final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
         boolean m_computeAfterOpenDialog;
 
         @Override
-        public <T> Supplier<T> computeFromValueSupplier(final Class<? extends ValueRef<T>> id) {
+        public <T> Supplier<T> computeFromValueSupplier(final Class<? extends Reference<T>> id) {
             getValueRefTriggers().add(id);
             getDependencies().add(id);
             return null;
         }
 
         @Override
-        public <T> Supplier<T> getValueSupplier(final Class<? extends ValueRef<T>> id) {
+        public <T> Supplier<T> getValueSupplier(final Class<? extends Reference<T>> id) {
             getDependencies().add(id);
             return null;
         }
 
         @Override
-        public <T> void computeOnValueChange(final Class<? extends ValueRef<T>> id) {
+        public <T> void computeOnValueChange(final Class<? extends Reference<T>> id) {
             getValueRefTriggers().add(id);
         }
 
         @Override
-        public void computeOnButtonClick(final Class<? extends ButtonRef> trigger) {
+        public void computeOnButtonClick(final Class<? extends ButtonReference> trigger) {
             getButtonRefTriggers().add(trigger);
 
         }
@@ -283,15 +283,15 @@ final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
             m_computeAfterOpenDialog = true;
         }
 
-        Collection<Class<? extends ValueRef>> getValueRefTriggers() {
+        Collection<Class<? extends Reference>> getValueRefTriggers() {
             return m_valueRefTriggers;
         }
 
-        Collection<Class<? extends ButtonRef>> getButtonRefTriggers() {
+        Collection<Class<? extends ButtonReference>> getButtonRefTriggers() {
             return m_buttonRefTriggers;
         }
 
-        Collection<Class<? extends ValueRef>> getDependencies() {
+        Collection<Class<? extends Reference>> getDependencies() {
             return m_dependencies;
         }
 

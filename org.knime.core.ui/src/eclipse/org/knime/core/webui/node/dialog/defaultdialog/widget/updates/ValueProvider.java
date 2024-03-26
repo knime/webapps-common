@@ -44,41 +44,44 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Feb 7, 2024 (Paul Bärnreuther): created
+ *   Mar 28, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
+package org.knime.core.webui.node.dialog.defaultdialog.widget.updates;
 
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.ConvertValueUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.UpdateResultsUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerInvocationHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SimpleButtonWidget;
 
 /**
- * Used to convert triggers to a list of resulting updates given a map of dependencies.
+ * Add this annotation to a field nested within {@link DefaultNodeSettings} to dynamically set and alter its value.
+ *
+ * <p>
+ * Possible use cases include:
+ * <ul>
+ * <li>Setting the initial value every time the dialog is opened depending on e.g. input specs (see
+ * {@link ValueReference}).</li>
+ * <li>Updating the value when another setting changes depending on the value of that setting (see
+ * {@link ValueReference})</li>
+ * <li>Updating the value depending on other settings when the user clicks on a {@link SimpleButtonWidget}</li>
+ * </ul>
+ * </p>
+ *
+ * @see StateProvider.StateProviderInitializer
  *
  * @author Paul Bärnreuther
  */
-final class DataServiceTriggerInvocationHandler {
-
-    private TriggerInvocationHandler m_triggerInvocationHandler;
-
-    DataServiceTriggerInvocationHandler(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
-        m_triggerInvocationHandler = new TriggerInvocationHandler(settingsClasses);
-    }
-
-    List<UpdateResultsUtil.UpdateResult> trigger(final String triggerId, final Map<String, Object> rawDependencies,
-        final DefaultNodeSettingsContext context) {
-        final Function<Class<? extends Reference>, Object> dependencyProvider = valueRef -> {
-            final var rawDependencyObject = rawDependencies.get(valueRef.getName());
-            return ConvertValueUtil.convertValueRef(rawDependencyObject, valueRef, context);
-        };
-        final var triggerResult = m_triggerInvocationHandler.invokeTrigger(triggerId, dependencyProvider, context);
-        return UpdateResultsUtil.toUpdateResults(triggerResult);
-    }
+@Retention(RUNTIME)
+@Target(FIELD)
+public @interface ValueProvider {
+    /**
+     * @return a {@link StateProvider} defining how the value of this widget should depend on user actions and other
+     *         settings. See {@link StateProvider#init} for more information on what kind of actions can trigger such a
+     *         value change.
+     */
+    Class<? extends StateProvider> value(); // NOSONAR
 }

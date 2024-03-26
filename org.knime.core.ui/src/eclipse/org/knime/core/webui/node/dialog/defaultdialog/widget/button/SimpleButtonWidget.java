@@ -54,7 +54,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonRef;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonReference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 
 /**
@@ -70,6 +70,6 @@ public @interface SimpleButtonWidget {
      * @return the trigger that can be referenced by an {@link StateProvider} using
      *         {@link StateProvider.StateProviderInitializer#computeOnButtonClick}
      */
-    Class<? extends ButtonRef> ref();
+    Class<? extends ButtonReference> ref();
 
 }

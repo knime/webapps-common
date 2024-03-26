@@ -62,7 +62,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Authen
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.AuthenticationSettings.RequiresPasswordProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.AuthenticationSettings.RequiresUsernameProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.TestStateProviderInitializer;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRef;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
@@ -96,7 +96,7 @@ class AuthenticationSettingsTest {
 
         @SuppressWarnings("unchecked")
         @Override
-        public <T> Supplier<T> computeFromValueSupplier(final Class<? extends ValueRef<T>> ref) {
+        public <T> Supplier<T> computeFromValueSupplier(final Class<? extends Reference<T>> ref) {
             return () -> (T)m_type;
         }
 

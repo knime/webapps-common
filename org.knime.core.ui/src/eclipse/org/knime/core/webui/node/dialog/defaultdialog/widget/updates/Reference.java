@@ -44,14 +44,18 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Feb 7, 2024 (Paul Bärnreuther): created
+ *   Feb 6, 2024 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.widget.updates;
 
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+
 /**
- * Marker interface for a class used as id for a button. It can be used in
- * {@link StateProvider.StateProviderInitializer#computeOnButtonClick}.
+ * This interface can be extended by classes used as {@link ValueReference#value()}.
+ *
+ * @param <V> the type of the associated field in the {@link DefaultNodeSettings}.
+ * @author Paul Bärnreuther
  */
-public interface ButtonRef {
+public interface Reference<V> {
 
 }

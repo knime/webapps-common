@@ -51,7 +51,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 import java.util.Optional;
 
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueRefsAndStateProviders.ValueRefWrapper;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonRef;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonReference;
 
 /**
  *
@@ -72,7 +72,7 @@ final class TriggerVertex extends Vertex {
         m_fieldLocation = Optional.empty();
     }
 
-    TriggerVertex(final Class<? extends ButtonRef> buttonRef) {
+    TriggerVertex(final Class<? extends ButtonReference> buttonRef) {
         m_id = buttonRef.getName();
         m_fieldLocation = Optional.empty();
     }
