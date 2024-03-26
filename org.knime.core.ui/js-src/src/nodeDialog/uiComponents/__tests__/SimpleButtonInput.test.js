@@ -3,10 +3,12 @@ import {
   mountJsonFormsComponent,
   getControlBase,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
+import ReloadIcon from "webapps-common/ui/assets/img/icons/reload.svg";
 import SimpleButtonInput from "../SimpleButtonInput.vue";
+import Button from "webapps-common/ui/components/Button.vue";
 
 describe("SimpleButtonInput.vue", () => {
-  let defaultProps, wrapper, component;
+  let props, wrapper, component;
 
   const triggerId = "myTriggerId";
   const buttonText = "myText";
@@ -15,7 +17,7 @@ describe("SimpleButtonInput.vue", () => {
 
   beforeEach(async () => {
     triggerMock = vi.fn();
-    defaultProps = {
+    props = {
       control: {
         ...getControlBase("path"),
         label: buttonText,
@@ -38,7 +40,7 @@ describe("SimpleButtonInput.vue", () => {
       },
     };
     component = await mountJsonFormsComponent(SimpleButtonInput, {
-      props: defaultProps,
+      props,
       provide: { triggerMock },
     });
     wrapper = component.wrapper;
@@ -49,11 +51,21 @@ describe("SimpleButtonInput.vue", () => {
   });
 
   it("renders button with text", () => {
-    expect(wrapper.find("button.button-input").text()).toBe(buttonText);
+    expect(wrapper.findComponent(Button).text()).toBe(buttonText);
   });
 
   it("calls provided trigger method when the button is clicked", async () => {
-    await wrapper.find("button.button-input").trigger("click");
+    await wrapper.findComponent(Button).trigger("click");
     expect(triggerMock).toHaveBeenCalledWith(triggerId);
+  });
+
+  it("shows icon defined by the options if desired", async () => {
+    props.control.uischema.options.icon = "reload";
+    const { wrapper } = await mountJsonFormsComponent(SimpleButtonInput, {
+      props,
+    });
+    expect(
+      wrapper.findComponent(Button).findComponent(ReloadIcon).exists(),
+    ).toBeTruthy();
   });
 });

@@ -44,37 +44,24 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Feb 7, 2024 (Paul Bärnreuther): created
+ *   Mar 26, 2024 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.widget.button;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonReference;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
-
 /**
- * A widget whose whole purpose is to trigger an {@link StateProvider}
+ * A set of predefined icons that can be used in annotations for certain widget components.
  *
  * @author Paul Bärnreuther
  */
-@Retention(RUNTIME)
-@Target(FIELD)
-public @interface SimpleButtonWidget {
+public enum Icon {
 
-    /**
-     * @return the trigger that can be referenced by an {@link StateProvider} using
-     *         {@link StateProvider.StateProviderInitializer#computeOnButtonClick}
-     */
-    Class<? extends ButtonReference> ref();
-
-    /**
-     * @return one of the supported icons
-     */
-    Icon icon() default Icon.NONE;
+        /**
+         * Without icon
+         */
+        NONE, //
+        /**
+         * A reload icon
+         */
+        RELOAD;
 
 }

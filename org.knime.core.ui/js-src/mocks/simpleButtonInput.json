@@ -21,6 +21,16 @@
             "showTitleAndDescription": true,
             "triggerId": "buttonTriggerId (from simpleButtonInput.json)"
           }
+        },
+        {
+          "scope": "#/properties/button",
+          "type": "Control",
+          "options": {
+            "format": "simpleButton",
+            "showTitleAndDescription": true,
+            "icon": "reload",
+            "triggerId": "buttonTriggerId (from simpleButtonInput.json)"
+          }
         }
       ],
       "globalUpdates": [

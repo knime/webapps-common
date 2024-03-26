@@ -113,6 +113,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonState;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.Icon;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.NoopButtonUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SimpleButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesAdder;
@@ -302,6 +303,12 @@ final class UiSchemaOptionsGenerator {
             options.put(TAG_FORMAT, Format.SIMPLE_BUTTON);
             final var simpleButtonWidget = m_field.getAnnotation(SimpleButtonWidget.class);
             options.put("triggerId", simpleButtonWidget.ref().getName());
+            if (simpleButtonWidget.icon() != Icon.NONE) {
+                options.put("icon", switch (simpleButtonWidget.icon()) {
+                    case RELOAD -> "reload";
+                    default -> throw new IllegalArgumentException("Unexpected value: " + simpleButtonWidget.icon());
+                });
+            }
         }
 
         final var isValueSwitch = annotatedWidgets.contains(ValueSwitchWidget.class);

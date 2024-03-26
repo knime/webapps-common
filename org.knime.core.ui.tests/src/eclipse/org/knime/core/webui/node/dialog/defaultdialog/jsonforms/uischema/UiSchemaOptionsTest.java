@@ -90,6 +90,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonChange;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.Icon;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SimpleButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.CredentialsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.PasswordWidget;
@@ -697,12 +698,19 @@ class UiSchemaOptionsTest {
             @SimpleButtonWidget(ref = MyButtonTrigger.class)
             Void m_button;
 
+            @Widget(title = "", description = "")
+            @SimpleButtonWidget(ref = MyButtonTrigger.class, icon = Icon.RELOAD)
+            Void m_buttonWithIcon;
+
         }
         var response = buildTestUiSchema(SimpleButtonWidgetTestSettings.class);
         assertThatJson(response).inPath("$.elements[0]").isObject().containsKey("options");
         assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("simpleButton");
         assertThatJson(response).inPath("$.elements[0].options.triggerId").isString()
             .isEqualTo(SimpleButtonWidgetTestSettings.MyButtonTrigger.class.getName());
+        assertThatJson(response).inPath("$.elements[0].options").isObject().doesNotContainKey("icon");
+        assertThatJson(response).inPath("$.elements[1]").isObject().containsKey("options");
+        assertThatJson(response).inPath("$.elements[1].options.icon").isString().isEqualTo("reload");
 
     }
 

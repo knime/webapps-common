@@ -1,16 +1,21 @@
 <script setup lang="ts" generic="SettingValue">
-import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
 import inject from "../utils/inject";
 import { computed, ref } from "vue";
 import useDialogControl from "../composables/components/useDialogControl";
 import { rendererProps } from "@jsonforms/vue";
 import DescriptionPopover from "./description/DescriptionPopover.vue";
 import DialogComponentWrapper from "./DialogComponentWrapper.vue";
+import Button from "webapps-common/ui/components/Button.vue";
+import DynamicIcon, { type Icon } from "./DynamicIcon.vue";
 
 const props = defineProps(rendererProps());
 const { control } = useDialogControl({ props });
 
 const triggerId = computed(() => control.value.uischema.options!.triggerId);
+
+const icon = computed<Icon | undefined>(
+  () => control.value.uischema.options!.icon,
+);
 
 const trigger = inject("trigger");
 
@@ -27,9 +32,9 @@ const hover = ref(false);
       @mouseover="hover = true"
       @mouseleave="hover = false"
     >
-      <FunctionButton class="button-input" @click="onClick">
-        <div class="button-input-text">{{ control.label }}</div>
-      </FunctionButton>
+      <Button compact with-border class="button-input" @click="onClick">
+        <DynamicIcon v-if="icon" :icon="icon" />{{ control.label }}
+      </Button>
       <DescriptionPopover
         v-if="control.description"
         :html="control.description"
@@ -52,8 +57,6 @@ const hover = ref(false);
   }
 
   & .button-input-text {
-    display: flex;
-    justify-content: center;
     width: 100%;
   }
 }
