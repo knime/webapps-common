@@ -95,6 +95,33 @@ describe("filters", () => {
     expect(
       filter.test("--A--", normalized, isCaseSensitive, isInverted),
     ).toBeFalsy();
+
+    // or concantenated expressions
+    isCaseSensitive = false;
+    isInverted = false;
+    normalized = filter.normalize("test1|test2", isCaseSensitive, isInverted);
+    expect(
+      filter.test("test1", normalized, isCaseSensitive, isInverted),
+    ).toBeTruthy();
+    expect(
+      filter.test("test2", normalized, isCaseSensitive, isInverted),
+    ).toBeTruthy();
+    expect(
+      filter.test(
+        "something ending with test2",
+        normalized,
+        isCaseSensitive,
+        isInverted,
+      ),
+    ).toBeFalsy();
+    expect(
+      filter.test(
+        "test1 starting with the correct word",
+        normalized,
+        isCaseSensitive,
+        isInverted,
+      ),
+    ).toBeFalsy();
   });
 
   it("matches the wildcard general cases", () => {
