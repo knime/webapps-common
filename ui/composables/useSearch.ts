@@ -53,9 +53,9 @@ export default function useSearch(
     },
   );
 
-  function generateInvalidItem(id: Id) {
+  const generateInvalidItem = (id: Id) => {
     return { id, text: `(MISSING) ${String(id)}`, invalid: true };
-  }
+  };
 
   const normalizedSearchTerm = computed(() => {
     if (!showSearch) {
@@ -66,14 +66,14 @@ export default function useSearch(
       caseSensitiveSearch.value,
     );
   });
-  function itemMatchesSearch(item: PossibleValue) {
+  const itemMatchesSearch = (item: PossibleValue) => {
     return filters.search.test(
       item.text,
       normalizedSearchTerm.value,
       caseSensitiveSearch.value,
       false,
     );
-  }
+  };
 
   const possibleValueMap = computed(() => {
     return Object.assign(

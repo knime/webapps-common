@@ -84,7 +84,7 @@ export default {
       default: "Search",
     },
     /**
-     * controls the alignment (TODO : update this with provide-inject to prevent props drilling)
+     * controls the alignment
      */
     alignment: {
       type: String,
