@@ -1,3 +1,4 @@
+<!-- eslint-disable max-lines -->
 <script lang="ts">
 import debounce from "../../../util/debounce";
 import StyledListItem from "../StyledListItem.vue";
@@ -9,9 +10,7 @@ import type {
   BottomValue,
 } from "../../services/types/types";
 
-// with out this comment doesn't let to specify the type in number 577
-// eslint-disable-next-line unused-imports/no-unused-imports
-import type { HTMLAttributes, PropType } from "vue";
+import type { PropType, HTMLAttributes } from "vue";
 
 let count = 0;
 const CLICK_META_KEY_TIMEOUT = 250; // ms
@@ -173,6 +172,9 @@ export default {
     };
   },
   computed: {
+    getContainerProps() {
+      return this.containerProps as HTMLAttributes;
+    },
     cssStyleSize() {
       // add two pixel to prevent scrollbar bugs
       const pxSize = `${this.size * this.optionLineHeight + 2}px`;
@@ -574,7 +576,7 @@ export default {
   >
     <div class="box">
       <ul
-        v-bind="containerProps as HTMLAttributes"
+        v-bind="getContainerProps"
         :id="id"
         role="listbox"
         tabindex="0"
