@@ -91,13 +91,13 @@ export default {
           type: { id: "type1", text: "Type 1" },
         },
         {
-          id: "Foo",
-          text: "Foo",
+          id: "Channel Name",
+          text: "Channel Name",
           type: { id: "type1", text: "Type 1" },
         },
         {
-          id: "bar",
-          text: "Bar",
+          id: "Reservation AOV",
+          text: "Reservation AOV",
           type: { id: "type2", text: "Type 2" },
         },
         ...Array.from({ length: 6 }, (_, i) => ({
