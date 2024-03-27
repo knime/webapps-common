@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsScopeUtil;
@@ -142,7 +143,12 @@ public final class UpdatesUtil {
         final var updateObjectNode = globalUpdates.addObject();
         addTriggerNode(triggerWithDependencies, updateObjectNode);
         final var dependenciesArrayNode = updateObjectNode.putArray("dependencies");
-        triggerWithDependencies.getDependencies().forEach(dep -> {
+        /**
+         * Sorting is necessary for deterministic behavior in snapshot tests.
+         */
+        final var dependencies = triggerWithDependencies.getDependencies().stream()
+            .sorted((d1, d2) -> StringUtils.compare(d1.valueRef(), d2.valueRef()));
+        dependencies.forEach(dep -> {
             final var newDependency = dependenciesArrayNode.addObject();
             newDependency.put("scope", resolveFiledLocationToScope(dep.fieldLocation()));
             newDependency.put("id", dep.valueRef());
