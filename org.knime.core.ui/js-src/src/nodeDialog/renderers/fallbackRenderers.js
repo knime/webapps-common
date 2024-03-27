@@ -6,6 +6,7 @@ import {
   isStringControl,
   isOneOfControl,
   isAnyOfControl,
+  uiTypeIs,
 } from "@jsonforms/core";
 import { priorityRanks } from "../constants";
 import { numberRenderer } from "./numberRenderer";
@@ -14,6 +15,7 @@ import { integerRenderer } from "./integerRenderer";
 import OneOfDropdown from "../uiComponents/OneOfDropdown.vue";
 import AnyOfTwinlist from "../uiComponents/AnyOfTwinlist.vue";
 import { textRenderer } from "./textRenderer";
+import { verticalLayoutRenderer } from "./verticalLayoutRenderer";
 
 export const fallbackRenderers = [
   {
@@ -39,5 +41,10 @@ export const fallbackRenderers = [
   {
     ...textRenderer,
     tester: rankWith(priorityRanks.fallback, isStringControl),
+  },
+  {
+    ...verticalLayoutRenderer,
+    // eslint-disable-next-line no-undefined
+    tester: rankWith(priorityRanks.fallback, uiTypeIs(undefined)),
   },
 ];

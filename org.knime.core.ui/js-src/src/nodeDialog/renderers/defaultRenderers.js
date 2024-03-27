@@ -1,5 +1,6 @@
 import { arrayLayoutRenderer } from "./arrayLayoutRenderer";
 import { horizontalLayoutRenderer } from "./horizontalLayoutRenderer";
+import { verticalLayoutRenderer } from "./verticalLayoutRenderer";
 import { sectionLayoutRenderer } from "./sectionLayoutRenderer";
 
 import { buttonRenderer } from "./buttonRenderer";
@@ -28,6 +29,7 @@ export const defaultRenderers = [
   /* layout renderers */
   arrayLayoutRenderer,
   horizontalLayoutRenderer,
+  verticalLayoutRenderer,
   sectionLayoutRenderer,
 
   /* component renderers */

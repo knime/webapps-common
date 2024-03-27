@@ -170,7 +170,7 @@ export default ArrayLayout;
   display: flex;
   flex-direction: column;
   gap: 15px;
-  margin-bottom: 30px;
+  margin-bottom: 10px;
 
   & .item {
     display: flex;

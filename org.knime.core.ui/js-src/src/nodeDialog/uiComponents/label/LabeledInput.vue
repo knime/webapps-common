@@ -40,7 +40,6 @@ const triggersReexecution = useTriggersReexecution(control);
       :description="control.description"
       :errors="[control.errors]"
       :show="show"
-      :fill="fill"
       @controlling-flow-variable-set="
         (event) => $emit('controllingFlowVariableSet', event)
       "
@@ -57,6 +56,8 @@ const triggersReexecution = useTriggersReexecution(control);
 
 <style scoped>
 .fill {
-  height: 100%;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 </style>

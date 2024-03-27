@@ -61,7 +61,7 @@ const elementTitle = computed(
 
   /* Needed to align buttons centered with controls that have a label */
   & .compensate-label {
-    margin-top: 10px;
+    margin-top: 25px;
   }
 
   & .form-component {

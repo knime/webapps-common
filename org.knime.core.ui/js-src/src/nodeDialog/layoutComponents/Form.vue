@@ -30,31 +30,5 @@ container
   &:focus {
     outline: none;
   }
-
-  /* if a dialog starts with a section header we don't need extra top padding, otherwise adding it here */
-  &:not(
-      :has(
-          > .vertical-layout
-            > .vertical-layout-item:first-child
-            > div
-            > .section:first-child
-        )
-    ) {
-    padding-top: 11px;
-  }
-
-  /* TODO: UIEXT-1061 workaround to make the last dialog element fill the remaining height, used in RichTextInput */
-
-  & .vertical-layout:last-child {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-
-    & :deep(.vertical-layout-item:last-child) {
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-    }
-  }
 }
 </style>

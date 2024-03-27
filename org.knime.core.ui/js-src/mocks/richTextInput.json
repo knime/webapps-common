@@ -2,8 +2,7 @@
   "result": {
     "name": "New Node Dialog",
     "data": {
-      "richTextContent": "test",
-      "checkbox": true
+      "richTextContent": "test"
     },
     "schema": {
       "type": "object",
@@ -15,8 +14,7 @@
           "default": "Rich text content"
         },
         "checkbox": {
-          "type": "boolean",
-          "title": "checkbox"
+          "type": "boolean"
         }
       }
     },
@@ -27,13 +25,6 @@
           "scope": "#/properties/richTextContent",
           "options": {
             "format": "richTextInput"
-          }
-        },
-        {
-          "type": "Control",
-          "scope": "#/properties/checkbox",
-          "options": {
-            "format": "checkbox"
           }
         }
       ]
