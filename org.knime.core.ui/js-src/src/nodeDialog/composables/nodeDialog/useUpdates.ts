@@ -4,9 +4,11 @@ import { cloneDeep, set, get } from "lodash-es";
 import { toDataPath } from "@jsonforms/core";
 import { inject } from "vue";
 import {
+  CreateAlertParams,
   JsonDataService,
   UIExtensionService,
 } from "@knime/ui-extension-service";
+import Result from "@/nodeDialog/api/types/Result";
 
 type DialogSettingsObject = DialogSettings & object;
 
@@ -18,6 +20,7 @@ export default ({
   callStateProviderListener,
   registerWatcher,
   registerTrigger,
+  sendAlert,
 }: {
   callStateProviderListener: (id: string, value: unknown) => void;
   registerWatcher: (params: {
@@ -25,6 +28,7 @@ export default ({
     transformSettings: TransformSettingsMethod;
   }) => void;
   registerTrigger: (id: string, callback: TransformSettingsMethod) => void;
+  sendAlert: (params: CreateAlertParams) => void;
 }) => {
   const baseService = inject<() => UIExtensionService>("getKnimeService")!();
   const jsonDataService = new JsonDataService(baseService);
@@ -91,19 +95,17 @@ export default ({
     return null;
   };
 
-  const callDataServiceUpdate2 = async ({
+  const callDataServiceUpdate2 = ({
     triggerId,
     currentDependencies,
   }: {
     triggerId: string;
     currentDependencies: Record<string, any>;
-  }) => {
-    const { result } = await jsonDataService.data({
+  }): Promise<Result<UpdateResult[]>> =>
+    jsonDataService.data({
       method: "settings.update2",
       options: [null, triggerId, currentDependencies],
     });
-    return result;
-  };
 
   const getTriggerCallback =
     ({ dependencies, trigger }: Update): TransformSettingsMethod =>
@@ -114,13 +116,20 @@ export default ({
           get(newSettings, toDataPath(dep.scope)),
         ]),
       );
-      const result = await callDataServiceUpdate2({
+      const response = await callDataServiceUpdate2({
         triggerId: trigger.id,
         currentDependencies,
       });
-      (result ?? []).forEach((updateResult: UpdateResult) => {
-        newSettings = resolveUpdateResult(updateResult)(newSettings);
-      });
+      if (response.state === "FAIL") {
+        sendAlert({
+          message: response.message,
+        });
+      }
+      if (response.state === "SUCCESS") {
+        (response.result ?? []).forEach((updateResult: UpdateResult) => {
+          newSettings = resolveUpdateResult(updateResult)(newSettings);
+        });
+      }
       return newSettings;
     };
 

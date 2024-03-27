@@ -536,6 +536,7 @@ describe("NodeDialog.vue", () => {
 
       const updatedValue = "updated";
       dataServiceSpy.mockResolvedValue({
+        state: "SUCCESS",
         result: [
           {
             path: "#/properties/model/properties/secondSetting",
@@ -584,6 +585,7 @@ describe("NodeDialog.vue", () => {
 
       const updatedValue = "updated";
       dataServiceSpy.mockResolvedValue({
+        state: "SUCCESS",
         result: [
           {
             path: "#/properties/model/properties/secondSetting",
@@ -635,6 +637,7 @@ describe("NodeDialog.vue", () => {
       );
       const updatedValue = "updated";
       dataServiceSpy.mockResolvedValue({
+        state: "SUCCESS",
         result: [
           {
             id: stateProviderId,
@@ -649,6 +652,38 @@ describe("NodeDialog.vue", () => {
       });
 
       expect(stateProviderListener).toHaveBeenCalledWith(updatedValue);
+    });
+
+    it("shows errors on updates", async () => {
+      const triggerId = "myTriggerId";
+      globalUpdates = [
+        {
+          trigger: {
+            id: triggerId,
+          },
+          dependencies: [],
+        },
+      ];
+
+      const { wrapper, dataServiceSpy } = await getWrapperWithDataServiceSpy();
+
+      const errorMessage = "my error message";
+      dataServiceSpy.mockResolvedValue({
+        state: "FAIL",
+        message: errorMessage,
+      });
+
+      const sendAlert = vi.fn();
+      AlertingService.mockImplementation(() => ({
+        sendAlert,
+      }));
+      await wrapper.vm.trigger(triggerId);
+      expect(sendAlert).toHaveBeenCalledWith(
+        {
+          message: errorMessage,
+        },
+        true,
+      );
     });
 
     it("handles updates triggered before the dialog is opened", async () => {
@@ -688,6 +723,7 @@ describe("NodeDialog.vue", () => {
       const dataServiceSpy = getDataServiceSpy();
       const updatedValue = "updated";
       dataServiceSpy.mockResolvedValue({
+        state: "SUCCESS",
         result: [
           {
             path: "#/properties/model/properties/secondSetting",

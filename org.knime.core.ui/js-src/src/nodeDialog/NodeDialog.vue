@@ -4,6 +4,7 @@ import {
   DialogService,
   UIExtensionService,
   AlertingService,
+  CreateAlertParams,
 } from "@knime/ui-extension-service";
 import { vanillaRenderers } from "@jsonforms/vue-vanilla";
 import { JsonForms } from "@jsonforms/vue";
@@ -63,6 +64,10 @@ export default {
     } satisfies ProvidedMethods & ProvidedForFlowVariables;
   },
   setup() {
+    const getKnimeService =
+      inject<() => UIExtensionService>("getKnimeService")!;
+    const sendAlert = (params: CreateAlertParams) =>
+      new AlertingService(getKnimeService()).sendAlert(params, true);
     const { addStateProviderListener, callStateProviderListener } =
       useStateProviders();
     const { registerWatcher, updateData, registeredWatchers } =
@@ -72,10 +77,12 @@ export default {
       callStateProviderListener,
       registerTrigger,
       registerWatcher,
+      sendAlert,
     });
     const { setRegisterSettingsMethod } = provideAndGetSetupMethod();
     return {
-      getKnimeService: inject<() => UIExtensionService>("getKnimeService")!,
+      getKnimeService,
+      sendAlert,
       addStateProviderListener,
       callStateProviderListener,
       registerUpdates,
@@ -180,11 +187,6 @@ export default {
         getChoices(this.callDataService.bind(this)),
         this.sendAlert.bind(this),
       );
-    },
-    sendAlert(params: Parameters<ProvidedMethods["sendAlert"]>[0]) {
-      const knimeService = this.getKnimeService();
-      const alertService = new AlertingService(knimeService);
-      alertService.sendAlert(params, true);
     },
     /**
      * @param {Function} handleChange The handler function that is used to handle the change of a dialog setting
