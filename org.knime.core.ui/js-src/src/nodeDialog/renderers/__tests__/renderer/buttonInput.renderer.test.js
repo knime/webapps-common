@@ -1,13 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { vanillaRenderers } from "@jsonforms/vue-vanilla";
-import { fallbackRenderers, defaultRenderers } from "..";
-import { determineRenderer } from "../rendererTestUtils";
 
-const renderers = [
-  ...vanillaRenderers,
-  ...fallbackRenderers,
-  ...defaultRenderers,
-];
+import { determineRenderer } from "../rendererTestUtils";
 
 describe("ButtonInput", () => {
   const schema = {
@@ -23,7 +16,7 @@ describe("ButtonInput", () => {
       scope: "#/properties/buttonInput",
     };
 
-    expect(determineRenderer(uiSchema, schema, renderers)).toBeUndefined();
+    expect(determineRenderer(uiSchema, schema)).toBeUndefined();
   });
 
   it("buttonInput with options", () => {
@@ -35,7 +28,7 @@ describe("ButtonInput", () => {
       },
     };
 
-    expect(determineRenderer(uiSchema, schema, renderers)).toBe("ButtonInput");
+    expect(determineRenderer(uiSchema, schema)).toBe("ButtonInput");
   });
 
   it("buttonInput with string type", () => {
@@ -52,7 +45,7 @@ describe("ButtonInput", () => {
         format: "button",
       },
     };
-    expect(determineRenderer(uiSchema, schema, renderers)).toBe("ButtonInput");
+    expect(determineRenderer(uiSchema, schema)).toBe("ButtonInput");
   });
 
   it("string type without button format", () => {
@@ -68,6 +61,6 @@ describe("ButtonInput", () => {
       type: "Control",
       scope: "#/properties/buttonInput",
     };
-    expect(determineRenderer(uiSchema, schema, renderers)).toBe("TextInput");
+    expect(determineRenderer(uiSchema, schema)).toBe("TextInput");
   });
 });

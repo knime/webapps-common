@@ -1,13 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { vanillaRenderers } from "@jsonforms/vue-vanilla";
-import { fallbackRenderers, defaultRenderers } from "..";
 import { determineRenderer } from "../rendererTestUtils";
-
-const renderers = [
-  ...vanillaRenderers,
-  ...fallbackRenderers,
-  ...defaultRenderers,
-];
 
 describe("TextInput", () => {
   const schema = {
@@ -25,7 +17,7 @@ describe("TextInput", () => {
       scope: "#/properties/text",
     };
 
-    expect(determineRenderer(uiSchema, schema, renderers)).toBeUndefined();
+    expect(determineRenderer(uiSchema, schema)).toBeUndefined();
   });
 
   it("textInput with options", () => {
@@ -37,7 +29,7 @@ describe("TextInput", () => {
       },
     };
 
-    expect(determineRenderer(uiSchema, schema, renderers)).toBe("TextInput");
+    expect(determineRenderer(uiSchema, schema)).toBe("TextInput");
   });
 
   it("textInput without options", () => {
@@ -46,6 +38,6 @@ describe("TextInput", () => {
       scope: "#/properties/text",
     };
 
-    expect(determineRenderer(uiSchema, schema, renderers)).toBe("TextInput");
+    expect(determineRenderer(uiSchema, schema)).toBe("TextInput");
   });
 });

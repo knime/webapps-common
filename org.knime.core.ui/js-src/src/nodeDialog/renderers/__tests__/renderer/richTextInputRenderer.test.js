@@ -1,14 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { vanillaRenderers } from "@jsonforms/vue-vanilla";
-import { fallbackRenderers, defaultRenderers } from "..";
 import { determineRenderer } from "../rendererTestUtils";
 import { inputFormats } from "@/nodeDialog/constants";
-
-const renderers = [
-  ...vanillaRenderers,
-  ...fallbackRenderers,
-  ...defaultRenderers,
-];
 
 describe("RichTextInput", () => {
   const schema = {
@@ -28,7 +20,7 @@ describe("RichTextInput", () => {
         format: inputFormats.richTextInput,
       },
     };
-    expect(determineRenderer(uiSchema, schema, renderers)).toBeUndefined();
+    expect(determineRenderer(uiSchema, schema)).toBeUndefined();
   });
 
   it("richTextInput with options", () => {
@@ -40,9 +32,7 @@ describe("RichTextInput", () => {
       },
     };
 
-    expect(determineRenderer(uiSchema, schema, renderers)).toBe(
-      "RichTextInput",
-    );
+    expect(determineRenderer(uiSchema, schema)).toBe("RichTextInput");
   });
 
   it("richTextInput without options uses fallback text renderer", () => {
@@ -51,6 +41,6 @@ describe("RichTextInput", () => {
       scope: "#/properties/richTextContent",
     };
 
-    expect(determineRenderer(uiSchema, schema, renderers)).toBe("TextInput");
+    expect(determineRenderer(uiSchema, schema)).toBe("TextInput");
   });
 });

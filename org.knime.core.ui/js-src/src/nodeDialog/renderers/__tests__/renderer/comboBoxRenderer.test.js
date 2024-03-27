@@ -1,13 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { vanillaRenderers } from "@jsonforms/vue-vanilla";
-import { fallbackRenderers, defaultRenderers } from "..";
-import { determineRenderer } from "../rendererTestUtils";
 
-const renderers = [
-  ...vanillaRenderers,
-  ...fallbackRenderers,
-  ...defaultRenderers,
-];
+import { determineRenderer } from "../rendererTestUtils";
 
 describe("ColumnSelect", () => {
   const schema = {
@@ -29,8 +22,6 @@ describe("ColumnSelect", () => {
         format: "comboBox",
       },
     };
-    expect(determineRenderer(uiSchema, schema, renderers)).toBe(
-      "ComboBoxInput",
-    );
+    expect(determineRenderer(uiSchema, schema)).toBe("ComboBoxInput");
   });
 });

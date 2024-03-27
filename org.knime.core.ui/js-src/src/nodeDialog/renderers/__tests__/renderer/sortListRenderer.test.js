@@ -1,13 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { vanillaRenderers } from "@jsonforms/vue-vanilla";
-import { fallbackRenderers, defaultRenderers } from "..";
 import { determineRenderer } from "../rendererTestUtils";
-
-const renderers = [
-  ...vanillaRenderers,
-  ...fallbackRenderers,
-  ...defaultRenderers,
-];
 
 describe("SortListInput", () => {
   const schema = {
@@ -28,8 +20,6 @@ describe("SortListInput", () => {
       },
     };
 
-    expect(determineRenderer(uiSchema, schema, renderers)).toBe(
-      "SortListInput",
-    );
+    expect(determineRenderer(uiSchema, schema)).toBe("SortListInput");
   });
 });

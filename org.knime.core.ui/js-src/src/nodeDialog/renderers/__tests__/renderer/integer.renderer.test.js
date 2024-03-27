@@ -1,13 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { vanillaRenderers } from "@jsonforms/vue-vanilla";
-import { fallbackRenderers, defaultRenderers } from "..";
-import { determineRenderer } from "../rendererTestUtils";
 
-const renderers = [
-  ...vanillaRenderers,
-  ...fallbackRenderers,
-  ...defaultRenderers,
-];
+import { determineRenderer } from "../rendererTestUtils";
 
 describe("IntegerInput", () => {
   const schema = {
@@ -25,7 +18,7 @@ describe("IntegerInput", () => {
       scope: "#/properties/integer",
     };
 
-    expect(determineRenderer(uiSchema, schema, renderers)).toBeUndefined();
+    expect(determineRenderer(uiSchema, schema)).toBeUndefined();
   });
 
   it("integerInput with options", () => {
@@ -37,7 +30,7 @@ describe("IntegerInput", () => {
       },
     };
 
-    expect(determineRenderer(uiSchema, schema, renderers)).toBe("IntegerInput");
+    expect(determineRenderer(uiSchema, schema)).toBe("IntegerInput");
   });
 
   it("integerInput without options", () => {
@@ -46,6 +39,6 @@ describe("IntegerInput", () => {
       scope: "#/properties/integer",
     };
 
-    expect(determineRenderer(uiSchema, schema, renderers)).toBe("IntegerInput");
+    expect(determineRenderer(uiSchema, schema)).toBe("IntegerInput");
   });
 });

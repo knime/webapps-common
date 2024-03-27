@@ -1,13 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { vanillaRenderers } from "@jsonforms/vue-vanilla";
-import { fallbackRenderers, defaultRenderers } from "..";
-import { determineRenderer } from "../rendererTestUtils";
 
-const renderers = [
-  ...vanillaRenderers,
-  ...fallbackRenderers,
-  ...defaultRenderers,
-];
+import { determineRenderer } from "../rendererTestUtils";
 
 describe("HorizontalLayout", () => {
   const schema = {};
@@ -18,8 +11,6 @@ describe("HorizontalLayout", () => {
       scope: "#/properties/test",
     };
 
-    expect(determineRenderer(uiSchema, schema, renderers)).toBe(
-      "HorizontalLayout",
-    );
+    expect(determineRenderer(uiSchema, schema)).toBe("HorizontalLayout");
   });
 });

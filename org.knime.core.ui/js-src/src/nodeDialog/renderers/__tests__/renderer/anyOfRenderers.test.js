@@ -1,13 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { vanillaRenderers } from "@jsonforms/vue-vanilla";
-import { fallbackRenderers, defaultRenderers } from "..";
-import { determineRenderer } from "../rendererTestUtils";
 
-const renderers = [
-  ...vanillaRenderers,
-  ...fallbackRenderers,
-  ...defaultRenderers,
-];
+import { determineRenderer } from "../rendererTestUtils";
 
 describe("controls with an anyOf schema", () => {
   const schema = {
@@ -34,8 +27,6 @@ describe("controls with an anyOf schema", () => {
       scope: "#/properties/anyOfControl",
     };
 
-    expect(determineRenderer(uiSchema, schema, renderers)).toBe(
-      "AnyOfTwinlist",
-    );
+    expect(determineRenderer(uiSchema, schema)).toBe("AnyOfTwinlist");
   });
 });

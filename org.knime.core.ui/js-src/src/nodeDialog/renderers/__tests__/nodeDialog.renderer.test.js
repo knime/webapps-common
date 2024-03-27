@@ -1,17 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { vanillaRenderers } from "@jsonforms/vue-vanilla";
-import { fallbackRenderers, defaultRenderers } from "..";
 import {
   dialogInitialData,
   expectedRenderers,
 } from "@@/test-setup/mocks/dialogData";
 import { determineRenderer } from "./rendererTestUtils";
-
-const renderers = [
-  ...vanillaRenderers,
-  ...fallbackRenderers,
-  ...defaultRenderers,
-];
 
 const getElementsToTest = (elements) =>
   elements
@@ -40,9 +32,9 @@ describe("nodeDialog renderer", () => {
         (el) => expectedRenderer.scope === el.scope,
       );
       expect(element).toBeDefined();
-      expect(
-        determineRenderer(element, dialogInitialData.schema, renderers),
-      ).toBe(expectedRenderer.component);
+      expect(determineRenderer(element, dialogInitialData.schema)).toBe(
+        expectedRenderer.component,
+      );
     });
   });
 });

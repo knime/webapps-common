@@ -1,13 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { vanillaRenderers } from "@jsonforms/vue-vanilla";
-import { fallbackRenderers, defaultRenderers } from "..";
-import { determineRenderer } from "../rendererTestUtils";
 
-const renderers = [
-  ...vanillaRenderers,
-  ...fallbackRenderers,
-  ...defaultRenderers,
-];
+import { determineRenderer } from "../rendererTestUtils";
 
 describe("DateTimeInput", () => {
   const schema = {
@@ -26,7 +19,7 @@ describe("DateTimeInput", () => {
       scope: "#/properties/dateTime",
     };
 
-    expect(determineRenderer(uiSchema, schema, renderers)).toBeUndefined();
+    expect(determineRenderer(uiSchema, schema)).toBeUndefined();
   });
 
   it("textInput with options", () => {
@@ -38,9 +31,7 @@ describe("DateTimeInput", () => {
       },
     };
 
-    expect(determineRenderer(uiSchema, schema, renderers)).toBe(
-      "DateTimeInput",
-    );
+    expect(determineRenderer(uiSchema, schema)).toBe("DateTimeInput");
   });
 
   it("textInput without options", () => {
@@ -49,8 +40,6 @@ describe("DateTimeInput", () => {
       scope: "#/properties/dateTime",
     };
 
-    expect(determineRenderer(uiSchema, schema, renderers)).toBe(
-      "DateTimeInput",
-    );
+    expect(determineRenderer(uiSchema, schema)).toBe("DateTimeInput");
   });
 });

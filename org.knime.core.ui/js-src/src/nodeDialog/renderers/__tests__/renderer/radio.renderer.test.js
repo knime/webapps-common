@@ -1,13 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { vanillaRenderers } from "@jsonforms/vue-vanilla";
-import { fallbackRenderers, defaultRenderers } from "..";
-import { determineRenderer } from "../rendererTestUtils";
 
-const renderers = [
-  ...vanillaRenderers,
-  ...fallbackRenderers,
-  ...defaultRenderers,
-];
+import { determineRenderer } from "../rendererTestUtils";
 
 describe("RadioInput", () => {
   const schema = {
@@ -37,6 +30,6 @@ describe("RadioInput", () => {
       },
     };
 
-    expect(determineRenderer(uiSchema, schema, renderers)).toBe("RadioInput");
+    expect(determineRenderer(uiSchema, schema)).toBe("RadioInput");
   });
 });

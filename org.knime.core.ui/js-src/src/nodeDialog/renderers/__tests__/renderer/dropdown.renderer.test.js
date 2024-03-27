@@ -1,13 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { vanillaRenderers } from "@jsonforms/vue-vanilla";
-import { fallbackRenderers, defaultRenderers } from "..";
 import { determineRenderer } from "../rendererTestUtils";
-
-const renderers = [
-  ...vanillaRenderers,
-  ...fallbackRenderers,
-  ...defaultRenderers,
-];
 
 describe("Dropdown", () => {
   const schema = {
@@ -41,8 +33,6 @@ describe("Dropdown", () => {
       },
     };
 
-    expect(determineRenderer(uiSchema, schema, renderers)).toBe(
-      "DropdownInput",
-    );
+    expect(determineRenderer(uiSchema, schema)).toBe("DropdownInput");
   });
 });

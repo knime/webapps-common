@@ -1,13 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { vanillaRenderers } from "@jsonforms/vue-vanilla";
-import { fallbackRenderers, defaultRenderers } from "..";
-import { determineRenderer } from "../rendererTestUtils";
 
-const renderers = [
-  ...vanillaRenderers,
-  ...fallbackRenderers,
-  ...defaultRenderers,
-];
+import { determineRenderer } from "../rendererTestUtils";
 
 describe("controls with an oneOf schema", () => {
   const schema = {
@@ -37,9 +30,7 @@ describe("controls with an oneOf schema", () => {
       },
     };
 
-    expect(determineRenderer(uiSchema, schema, renderers)).toBe(
-      "ValueSwitchInput",
-    );
+    expect(determineRenderer(uiSchema, schema)).toBe("ValueSwitchInput");
   });
 
   it("creates radio buttons if requested", () => {
@@ -51,7 +42,7 @@ describe("controls with an oneOf schema", () => {
       },
     };
 
-    expect(determineRenderer(uiSchema, schema, renderers)).toBe("RadioInput");
+    expect(determineRenderer(uiSchema, schema)).toBe("RadioInput");
   });
 
   it("falls back to dropdown without format", () => {
@@ -60,8 +51,6 @@ describe("controls with an oneOf schema", () => {
       scope: "#/properties/oneOfControl",
     };
 
-    expect(determineRenderer(uiSchema, schema, renderers)).toBe(
-      "OneOfDropdown",
-    );
+    expect(determineRenderer(uiSchema, schema)).toBe("OneOfDropdown");
   });
 });

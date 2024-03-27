@@ -1,13 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { vanillaRenderers } from "@jsonforms/vue-vanilla";
-import { fallbackRenderers, defaultRenderers } from "..";
 import { determineRenderer } from "../rendererTestUtils";
-
-const renderers = [
-  ...vanillaRenderers,
-  ...fallbackRenderers,
-  ...defaultRenderers,
-];
 
 describe("ColumnSelect", () => {
   const schema = {
@@ -37,7 +29,7 @@ describe("ColumnSelect", () => {
         format: "columnSelection",
       },
     };
-    expect(determineRenderer(uiSchema, schema, renderers)).toBe("ColumnSelect");
+    expect(determineRenderer(uiSchema, schema)).toBe("ColumnSelect");
   });
 
   it("determines TwinList renderer", () => {
@@ -49,9 +41,7 @@ describe("ColumnSelect", () => {
       },
     };
 
-    expect(determineRenderer(uiSchema, schema, renderers)).toBe(
-      "TwinlistInput",
-    );
+    expect(determineRenderer(uiSchema, schema)).toBe("TwinlistInput");
   });
 
   it("determines SimpleTwinList renderer", () => {
@@ -63,8 +53,6 @@ describe("ColumnSelect", () => {
       },
     };
 
-    expect(determineRenderer(uiSchema, schema, renderers)).toBe(
-      "SimpleTwinlistInput",
-    );
+    expect(determineRenderer(uiSchema, schema)).toBe("SimpleTwinlistInput");
   });
 });

@@ -1,13 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { vanillaRenderers } from "@jsonforms/vue-vanilla";
-import { fallbackRenderers, defaultRenderers } from "..";
-import { determineRenderer } from "../rendererTestUtils";
 
-const renderers = [
-  ...vanillaRenderers,
-  ...fallbackRenderers,
-  ...defaultRenderers,
-];
+import { determineRenderer } from "../rendererTestUtils";
 
 describe("NumberInput", () => {
   const uiSchema = {
@@ -24,9 +17,7 @@ describe("NumberInput", () => {
         },
       },
     };
-    expect(determineRenderer(uiSchema, integerSchema, renderers)).toBe(
-      "IntegerInput",
-    );
+    expect(determineRenderer(uiSchema, integerSchema)).toBe("IntegerInput");
   });
 
   it("determines double renderer", () => {
@@ -38,6 +29,6 @@ describe("NumberInput", () => {
         },
       },
     };
-    expect(determineRenderer(uiSchema, schema, renderers)).toBe("NumberInput");
+    expect(determineRenderer(uiSchema, schema)).toBe("NumberInput");
   });
 });
