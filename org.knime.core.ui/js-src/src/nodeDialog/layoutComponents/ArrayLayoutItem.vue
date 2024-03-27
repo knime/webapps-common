@@ -28,13 +28,14 @@ const elementTitle = computed(
       <Label :text="elementTitle" :compact="true" />
       <slot name="controls" />
     </div>
-
-    <slot
-      v-for="[elemKey, element] in elements"
-      :key="`${path}-${index}-${elemKey}`"
-      name="renderer"
-      :element="element"
-    />
+    <div class="elements">
+      <slot
+        v-for="[elemKey, element] in elements"
+        :key="`${path}-${index}-${elemKey}`"
+        name="renderer"
+        :element="element"
+      />
+    </div>
   </template>
   <div v-else class="element">
     <div class="form-component">
@@ -48,10 +49,16 @@ const elementTitle = computed(
 
 <style scoped lang="postcss">
 .item-header {
-  margin-bottom: -10px;
+  margin-bottom: 5px;
   display: flex;
   justify-content: space-between;
   align-items: baseline;
+}
+
+.elements {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 .element {

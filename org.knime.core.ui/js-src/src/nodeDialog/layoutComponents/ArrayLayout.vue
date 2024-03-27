@@ -175,7 +175,6 @@ export default ArrayLayout;
   & .item {
     display: flex;
     flex-direction: column;
-    gap: 15px;
 
     &.card {
       padding: 5px 10px 10px;
