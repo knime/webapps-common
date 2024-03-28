@@ -92,7 +92,10 @@ describe("generatePossibleValues", () => {
         {
           id: "<row-numbers>",
           text: "Row numbers",
-          compatibleTypes: ["org.knime.core.data.DoubleValue"],
+          compatibleTypes: [
+            "org.knime.core.data.LongValue",
+            "org.knime.core.data.DoubleValue",
+          ],
         },
       ]),
     );
