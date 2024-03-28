@@ -81,6 +81,11 @@ export default {
     width: max-content;
     cursor: pointer;
 
+    &.disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+
     & input {
       opacity: 0;
       position: absolute;
@@ -146,15 +151,7 @@ export default {
   }
 }
 
-.disabled {
-  opacity: 0.5;
-
-  & :deep(label) {
-    cursor: initial;
-  }
-}
-
-.radio-buttons:focus-within :deep(label input + span::before) {
+.radio-buttons:focus-within :deep(label input:not(:disabled) + span::before) {
   border: 1px solid var(--theme-radio-border-color-focus);
 }
 

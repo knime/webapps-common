@@ -72,7 +72,7 @@ export default defineComponent({
     <label
       v-for="item of possibleValues"
       :key="`radio-${item.id}`"
-      class="radio-group-label"
+      :class="{ disabled: disabled || item.disabled }"
     >
       <input
         ref="input"
@@ -95,9 +95,6 @@ export default defineComponent({
 <style type="postcss" scoped>
 label {
   display: flex;
-}
-
-.radio-group-label {
   margin: var(--radio-button-margin, 0);
 }
 </style>
