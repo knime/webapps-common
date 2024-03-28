@@ -12,9 +12,6 @@
           "title": "Rich Text Content",
           "description": "Test rich text Content",
           "default": "Rich text content"
-        },
-        "checkbox": {
-          "type": "boolean"
         }
       }
     },
