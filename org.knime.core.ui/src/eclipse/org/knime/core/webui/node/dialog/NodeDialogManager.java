@@ -103,11 +103,11 @@ public final class NodeDialogManager {
      * @return whether the node provides a {@link NodeDialogAdapter}
      */
     public static boolean hasNodeDialog(final NodeContainer nc) {
-        if (nc instanceof NativeNodeContainer) {
-            var nodeFactory = ((NativeNodeContainer)nc).getNode().getFactory();
-            return nodeFactory instanceof NodeDialogFactory && ((NodeDialogFactory)nodeFactory).hasNodeDialog();
-        } else if (nc instanceof SubNodeContainer) {
-            return new SubNodeContainerDialogFactory((SubNodeContainer)nc).hasNodeDialog();
+        if (nc instanceof NativeNodeContainer nnc) {
+            var nodeFactory = nnc.getNode().getFactory();
+            return nodeFactory instanceof NodeDialogFactory nodeDialogFactory && nodeDialogFactory.hasNodeDialog();
+        } else if (nc instanceof SubNodeContainer snc) {
+            return new SubNodeContainerDialogFactory(snc).hasNodeDialog();
         } else {
             return false;
         }
@@ -125,14 +125,12 @@ public final class NodeDialogManager {
             throw new IllegalArgumentException("The node " + nc.getNameWithID() + " doesn't provide a node dialog");
         }
 
-        if (nc instanceof NativeNodeContainer) {
-            var nnc = (NativeNodeContainer)nc;
+        if (nc instanceof NativeNodeContainer nnc) {
             return m_nodeDialogAdapterMap.computeIfAbsent(nc, id -> {
                 NodeCleanUpCallback.builder(nnc, () -> removeNodeDialogAdapter(nnc)).build();
                 return createNativeNodeDialog(nnc);
             });
-        } else if (nc instanceof SubNodeContainer) {
-            var snc = (SubNodeContainer)nc;
+        } else if (nc instanceof SubNodeContainer snc) {
             return m_nodeDialogAdapterMap.computeIfAbsent(nc, id -> {
                 NodeCleanUpCallback.builder(nc, () -> removeNodeDialogAdapter(nc)).build();
                 return createSubNodeContainerDialog(snc);
