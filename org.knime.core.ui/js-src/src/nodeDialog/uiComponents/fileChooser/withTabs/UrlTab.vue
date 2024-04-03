@@ -10,6 +10,7 @@ export { Props };
 import CustomUrlFileChooser from "../CustomUrlFileChooser.vue";
 import { useApplyButton } from "@/nodeDialog/layoutComponents/settingsSubPanel";
 import { computed, onMounted, watch } from "vue";
+import { startsWithSchemeRegex } from "./urlUtil";
 
 const props = defineProps<Props>();
 
@@ -22,7 +23,6 @@ onMounted(() => {
   onApply.value = () => Promise.resolve();
 });
 
-const startsWithSchemeRegex = /^[A-Za-z0-9]+:/;
 const urlIsValid = computed(() =>
   startsWithSchemeRegex.test(props.modelValue.path),
 );

@@ -127,7 +127,7 @@ export default (rpcRequest: { method: string; params: any[] }) => {
           : {}),
       };
     case "fileChooser.getFilePath":
-      return `/path/to/folder/${rpcRequest.params[2]}`;
+      return { path: `path/to/folder/${rpcRequest.params[2]}` };
     default:
       return null;
   }

@@ -9,6 +9,7 @@ import { FileChooserOptions } from "@/nodeDialog/types/FileChooserUiSchema";
 import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
 import FolderLenseIcon from "webapps-common/ui/assets/img/icons/folder-lense.svg";
 import FileChooserProps from "../types/FileChooserProps";
+import FSLocationTextInput from "./FSLocationTextInput.vue";
 const props = defineProps(rendererProps());
 const {
   control,
@@ -67,15 +68,13 @@ const onApply = () => {
     @controlling-flow-variable-set="onChange"
   >
     <div class="flex-row">
-      <div class="flex-grow">TODO: Add text input field</div>
-      <!--InputField
+      <FSLocationTextInput
         :id="labelForId"
         class="flex-grow"
-        :model-value="control.data"
+        :model-value="data"
         :disabled="disabled"
         @update:model-value="onChange"
-      -->
-      {{ JSON.stringify(control.data) }}
+      />
       <SettingsSubPanel @apply="onApply">
         <template #expand-button="{ expand }">
           <FunctionButton

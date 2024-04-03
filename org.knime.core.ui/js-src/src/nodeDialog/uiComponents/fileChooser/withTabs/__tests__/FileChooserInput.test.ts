@@ -15,6 +15,7 @@ import SideDrawerContent from "../SideDrawerContent.vue";
 import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
 import SideDrawerContentBase from "../SideDrawerContentBase.vue";
 import flushPromises from "flush-promises";
+import FSLocationTextInput from "../FSLocationTextInput.vue";
 
 describe("FileChooserInput.vue", () => {
   let props: any, wrapper: VueWrapper<any, any>, component: any;
@@ -101,6 +102,7 @@ describe("FileChooserInput.vue", () => {
   };
 
   it("renders", () => {
+    expect(wrapper.findComponent(FSLocationTextInput).exists()).toBe(true);
     expect(wrapper.findComponent(SettingsSubPanel).exists()).toBe(true);
     expect(wrapper.findComponent(LabeledInput).exists()).toBe(true);
   });
