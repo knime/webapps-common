@@ -8,6 +8,8 @@ import ArrowDownloadIcon from "../../assets/img/icons/arrow-download.svg";
 import FunctionButton from "../FunctionButton.vue";
 import createMissingItem from "./possibleValues/createMissingItem";
 import type { PossibleValue } from "./possibleValues/PossibleValue";
+import { formatHotkeys } from "../../../util/formatHotkeys";
+import type { Hotkey } from "../../../util/formatHotkeys";
 
 export interface Props {
   modelValue: string[];
@@ -106,6 +108,10 @@ const moveUp = move("up");
 const moveDown = move("down");
 const moveToStart = () => moveUp({ to: 0 });
 const moveToEnd = () => moveDown({ to: props.modelValue.length });
+
+const getFormattedTooltip = (text: string, hotkey: Array<Hotkey>) => {
+  return `${text} (${formatHotkeys(hotkey)})`;
+};
 </script>
 
 <template>
@@ -127,28 +133,28 @@ const moveToEnd = () => moveDown({ to: props.modelValue.length });
   <div class="buttons">
     <FunctionButton
       :disabled="noneSelected"
-      title="Move to top"
+      :title="getFormattedTooltip('Move to top', ['Alt', 'Home'])"
       compact
       @click="moveToStart"
       ><ArrowDownloadIcon class="rotated"
     /></FunctionButton>
     <FunctionButton
       :disabled="noneSelected"
-      title="Move to bottom"
+      :title="getFormattedTooltip('Move to bottom', ['Alt', 'End'])"
       compact
       @click="moveToEnd"
       ><ArrowDownloadIcon
     /></FunctionButton>
     <FunctionButton
       :disabled="noneSelected"
-      title="Move up"
+      :title="getFormattedTooltip('Move up', ['Alt', 'ArrowUp'])"
       compact
       @click="moveUp"
       ><ArrowUpIcon
     /></FunctionButton>
     <FunctionButton
       :disabled="noneSelected"
-      title="Move down"
+      :title="getFormattedTooltip('Move down', ['Alt', 'ArrowDown'])"
       compact
       @click="moveDown"
       ><ArrowDownIcon
