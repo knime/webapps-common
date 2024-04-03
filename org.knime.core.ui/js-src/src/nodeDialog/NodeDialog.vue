@@ -17,7 +17,7 @@ import {
   hasAdvancedOptions,
 } from "../nodeDialog/utils";
 import { cloneDeep } from "lodash-es";
-import { inject, markRaw } from "vue";
+import { inject, markRaw, ref } from "vue";
 import type ProvidedMethods from "./types/provided";
 import type { ProvidedForFlowVariables } from "./types/provided";
 import type SettingsData from "./types/SettingsData";
@@ -61,6 +61,7 @@ export default {
       },
       getFlowVariablesMap: () => this.schema.flowVariablesMap,
       setSubPanelExpanded: this.setSubPanelExpanded,
+      getPanelsContainer: () => this.subPanels,
     } satisfies ProvidedMethods & ProvidedForFlowVariables;
   },
   setup() {
@@ -80,6 +81,7 @@ export default {
       sendAlert,
     });
     const { setRegisterSettingsMethod } = provideAndGetSetupMethod();
+    const subPanels = ref<null | HTMLElement>(null);
     return {
       getKnimeService,
       sendAlert,
@@ -92,6 +94,7 @@ export default {
       registerWatcherInternal: registerWatcher,
       registeredWatchers,
       setRegisterSettingsMethod,
+      subPanels,
     };
   },
   data() {
@@ -318,6 +321,7 @@ export default {
 
 <template>
   <div class="dialog">
+    <div ref="subPanels" />
     <Form>
       <JsonForms
         v-if="ready"

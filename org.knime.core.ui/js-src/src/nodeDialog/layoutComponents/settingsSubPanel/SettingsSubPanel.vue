@@ -38,6 +38,7 @@ watch(
   () => isExpanded.value,
   (isExpanded) => setSubPanelExpanded({ isExpanded }),
 );
+const subSettingsPanels = inject("getPanelsContainer")!()!;
 </script>
 
 <template>
@@ -58,6 +59,7 @@ watch(
       </template>
     </Form>
   </SideDrawer>
+  <Teleport :disabled="!isExpanded" :to="subSettingsPanels" />
 </template>
 
 <style scoped lang="postcss">

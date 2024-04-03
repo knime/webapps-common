@@ -36,6 +36,7 @@ interface Provided {
   sendAlert: sendAlert;
   getData: getData;
   setSubPanelExpanded: (param: { isExpanded: boolean }) => void;
+  getPanelsContainer: () => null | HTMLElement;
 }
 
 type ProvidedFlowVariablesApi = {

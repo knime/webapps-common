@@ -76,19 +76,10 @@ onMounted(() => {
 
 <style lang="postcss" scoped>
 .dialog-label {
+  /**
+   * This is necessary to fixate the dialog popovers
+  */
   position: relative;
-
-  & > *:last-child {
-    margin-top: 7px;
-  }
-
-  & span {
-    font-weight: 300;
-    font-size: 13px;
-    color: var(--theme-color-error);
-    display: inline-block;
-    position: relative;
-  }
 
   & .control-header {
     display: flex;

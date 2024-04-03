@@ -49,6 +49,10 @@ const triggersReexecution = useTriggersReexecution(control);
 <style lang="postcss" scoped>
 .checkbox-input {
   margin-bottom: -10px;
+
+  /**
+   * This is necessary to fixate the dialog popovers
+  */
   position: relative;
   display: flex;
 

@@ -29,6 +29,7 @@ describe("SettingsSubPanel", () => {
       global: {
         provide: {
           setSubPanelExpanded,
+          getPanelsContainer: () => "body",
         },
       },
     });
@@ -36,9 +37,10 @@ describe("SettingsSubPanel", () => {
   const clickExpandButton = (wrapper: VueWrapper<any>) =>
     wrapper.find(`#${expandButtonId}`).trigger("click");
   const findContent = (wrapper: VueWrapper<any>) =>
-    wrapper.find(`#${contentId}`);
+    wrapper.findComponent(SideDrawer).find(`#${contentId}`);
   const findButtonByText = (text: string) => (wrapper: VueWrapper<any>) =>
     wrapper
+      .findComponent(SideDrawer)
       .findAllComponents(Button)
       .filter((wrapper) => wrapper.text() === text)[0];
 
