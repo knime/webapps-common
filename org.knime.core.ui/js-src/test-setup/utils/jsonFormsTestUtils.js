@@ -18,7 +18,7 @@ export const mountJsonFormsComponent = (
   component,
   {
     props = {},
-    provide,
+    provide = {},
     showAdvanced = false,
     withControllingFlowVariable = false,
     stubs = {},
@@ -39,7 +39,8 @@ export const mountJsonFormsComponent = (
     flowVariablesApiMock,
     settingStateControllingGetMock,
     settingStateExposedGetMock,
-  } = provide || {};
+    getPanelsContainerMock,
+  } = provide;
   const updateData =
     updateDataMock ||
     vi.fn((handleChange, path, value) => handleChange(path, value));
@@ -51,6 +52,7 @@ export const mountJsonFormsComponent = (
   const flowVariablesApi = flowVariablesApiMock ?? {
     getFlowVariableOverrideValue: vi.fn(),
   };
+  const getPanelsContainer = getPanelsContainerMock ?? vi.fn(() => "body");
   const flowVariablesMap = reactive(
     withControllingFlowVariable
       ? {
@@ -120,6 +122,8 @@ export const mountJsonFormsComponent = (
         trigger,
         flowVariablesApi,
         getFlowVariablesMap: () => flowVariablesMap,
+        getPanelsContainer,
+        setSubPanelExpanded: vi.fn(),
       },
       stubs: {
         DispatchRenderer: true,

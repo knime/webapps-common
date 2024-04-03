@@ -1,5 +1,5 @@
 import type { Ref } from "vue";
-import type { BackendType, FolderAndError, PathAndError } from "./types";
+import type { BackendType, FolderAndError, PathAndError } from "../types";
 import inject from "@/nodeDialog/utils/inject";
 
 interface ListItemsConfig {

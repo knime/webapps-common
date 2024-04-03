@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed, watch } from "vue";
 import FileChooserInput from "./FileChooserInput.vue";
-import useDialogControl from "../../composables/components/useDialogControl";
-import LabeledInput from "../label/LabeledInput.vue";
+import useDialogControl from "@/nodeDialog/composables/components/useDialogControl";
+import LabeledInput from "@/nodeDialog/uiComponents/label/LabeledInput.vue";
 import { rendererProps } from "@jsonforms/vue";
-import { FileChooserUiSchemaOptions } from "@/nodeDialog/types/FileChooserUiSchema";
+import { FileChooserOptions } from "@/nodeDialog/types/FileChooserUiSchema";
 const props = defineProps(rendererProps());
 const {
   control,
@@ -32,8 +32,8 @@ const onChange = (value: any) => {
   onChangeControl({ path: value });
 };
 
-const browseOptions = computed(() => {
-  return control.value.uischema.options as FileChooserUiSchemaOptions;
+const options = computed(() => {
+  return control.value.uischema.options as FileChooserOptions;
 });
 
 watch(
@@ -56,7 +56,7 @@ watch(
       :id="labelForId"
       :disabled="disabled"
       :model-value="data"
-      :browse-options="browseOptions"
+      :options="options"
       @update:model-value="onChange"
     />
   </LabeledInput>

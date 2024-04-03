@@ -2,12 +2,20 @@
 import InputField from "webapps-common/ui/components/forms/InputField.vue";
 import NumberInput from "webapps-common/ui/components/forms/NumberInput.vue";
 import Label from "webapps-common/ui/components/forms/Label.vue";
+import ErrorMessage from "../ErrorMessage.vue";
 
-defineProps<{
-  disabled: boolean;
-  modelValue: { path: string; timeout: number };
-  id: string | null;
-}>();
+withDefaults(
+  defineProps<{
+    disabled?: boolean;
+    modelValue: { path: string; timeout: number };
+    id: string | null;
+    urlErrorMessage?: string | null;
+  }>(),
+  {
+    disabled: false,
+    urlErrorMessage: null,
+  },
+);
 defineEmits(["update:path", "update:timeout"]);
 </script>
 
@@ -18,6 +26,11 @@ defineEmits(["update:path", "update:timeout"]);
     :model-value="modelValue.path"
     placeholder="URL"
     @update:model-value="$emit('update:path', $event)"
+  />
+  <ErrorMessage
+    v-if="urlErrorMessage"
+    :style="{ display: 'unset' }"
+    :errors="[{ message: urlErrorMessage }]"
   />
   <Label #default="{ labelForId }" class="timeout" text="Timeout">
     <NumberInput

@@ -5,14 +5,14 @@ import {
   getControlBase,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import LabeledFileChooserInput from "../LabeledFileChooserInput.vue";
-import LabeledInput from "../../label/LabeledInput.vue";
-import DialogLabel from "../../label/DialogLabel.vue";
+import LabeledInput from "@/nodeDialog/uiComponents/label/LabeledInput.vue";
+import DialogLabel from "@/nodeDialog/uiComponents/label/DialogLabel.vue";
 import StringFileChooserInputWithExplorer from "../StringFileChooserInputWithExplorer.vue";
 import ValueSwitch from "webapps-common/ui/components/forms/ValueSwitch.vue";
 import Label from "webapps-common/ui/components/forms/Label.vue";
 import NumberInput from "webapps-common/ui/components/forms/NumberInput.vue";
 import InputField from "webapps-common/ui/components/forms/InputField.vue";
-import CustomUrlFileChooser from "../CustomUrlFileChooser.vue";
+import CustomUrlFileChooser from "../../CustomUrlFileChooser.vue";
 import flushPromises from "flush-promises";
 import Checkbox from "webapps-common/ui/components/forms/Checkbox.vue";
 

@@ -1,5 +1,5 @@
 import { rankWith, isStringControl, and } from "@jsonforms/core";
-import LabeledLocalFileChooserInput from "../uiComponents/fileChooser/LabeledLocalFileChooserInput.vue";
+import LabeledLocalFileChooserInput from "../uiComponents/fileChooser/withValueSwitch/LabeledLocalFileChooserInput.vue";
 import { priorityRanks, inputFormats } from "../constants";
 
 export const localFileChooserTester = and(

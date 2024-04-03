@@ -1,41 +1,40 @@
+<script lang="ts">
+import { BackendType } from "../types";
+
+interface StringFileChooserInputWithExplorerProps {
+  modelValue: string;
+  disabled: boolean;
+  options?: {
+    placeholder?: string;
+    isWriter?: boolean;
+    fileExtension?: string;
+    fileExtensions?: string[];
+    fileExtensionProvider?: string;
+  };
+  id: string | null;
+  backendType: BackendType;
+}
+
+export { StringFileChooserInputWithExplorerProps };
+</script>
+
 <script setup lang="ts">
-import FileChooser from "./FileChooser.vue";
-import { computed, onMounted, ref } from "vue";
+import FileChooserWithButtons from "./FileChooserWithButtons.vue";
+import { computed, ref, toRef } from "vue";
 import InputField from "webapps-common/ui/components/forms/InputField.vue";
 import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
 import FolderLenseIcon from "webapps-common/ui/assets/img/icons/folder-lense.svg";
-import type StringFileChooserInputWithExplorerProps from "./types/StringFileChooserInputWithExplorerProps";
-import inject from "@/nodeDialog/utils/inject";
+import { useFileChooserBrowseOptions } from "../composables/useFileChooserBrowseOptions";
 
-const props = defineProps<StringFileChooserInputWithExplorerProps>();
+const props = withDefaults(
+  defineProps<StringFileChooserInputWithExplorerProps>(),
+  { options: () => ({}) },
+);
 const emit = defineEmits(["update:modelValue"]);
 
 const placeholder = computed(() => props.options?.placeholder);
-const isWriter = computed(() => props.options?.isWriter);
-const filteredExtensions = ref<string[]>([]);
-const appendedExtension = ref<string | null>(null);
-const addStateProviderListener = inject("addStateProviderListener");
-
-const setFileExtension = (fileExtension: string) => {
-  filteredExtensions.value = [fileExtension];
-  appendedExtension.value = fileExtension;
-};
-
-onMounted(() => {
-  if (props.options?.fileExtension) {
-    setFileExtension(props.options?.fileExtension);
-  }
-  if (props.options?.fileExtensionProvider) {
-    addStateProviderListener(
-      props.options?.fileExtensionProvider,
-      setFileExtension,
-    );
-  }
-  const multipleFileExtensions = props.options?.fileExtensions;
-  if (multipleFileExtensions) {
-    filteredExtensions.value = multipleFileExtensions;
-  }
-});
+const { filteredExtensions, appendedExtension, isWriter } =
+  useFileChooserBrowseOptions(toRef(props, "options"));
 
 const active = ref(false);
 const deactivateFileChooser = () => {
@@ -74,7 +73,7 @@ const chooseFile = (chosen: string) => {
     </template>
   </InputField>
   <div v-if="active" class="modal-overlay">
-    <FileChooser
+    <FileChooserWithButtons
       :backend-type="backendType"
       :initial-file-path="modelValue"
       :is-writer="isWriter"

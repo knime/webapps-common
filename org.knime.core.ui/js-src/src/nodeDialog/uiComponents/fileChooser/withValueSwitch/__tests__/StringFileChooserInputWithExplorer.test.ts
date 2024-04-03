@@ -1,10 +1,11 @@
 import { shallowMount, VueWrapper } from "@vue/test-utils";
 import { beforeEach, describe, expect, it } from "vitest";
-import StringFileChooserInputWithExplorer from "../StringFileChooserInputWithExplorer.vue";
-import FileChooser from "../FileChooser.vue";
+import StringFileChooserInputWithExplorer, {
+  type StringFileChooserInputWithExplorerProps,
+} from "../StringFileChooserInputWithExplorer.vue";
+import FileChooser from "../FileChooserWithButtons.vue";
 import InputField from "webapps-common/ui/components/forms/InputField.vue";
 import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
-import type StringFileChooserInputWithExplorerProps from "../types/StringFileChooserInputWithExplorerProps";
 
 describe("StringFileChooserInputWithExplorer.vue", () => {
   let props: StringFileChooserInputWithExplorerProps;

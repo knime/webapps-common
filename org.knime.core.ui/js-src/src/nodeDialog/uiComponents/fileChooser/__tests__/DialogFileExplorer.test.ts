@@ -4,13 +4,12 @@ import flushPromises from "flush-promises";
 import type { Folder, PathAndError } from "../types";
 import { toFileExplorerItem } from "../utils";
 
-import FileChooser from "../FileChooser.vue";
+import DialogFileExplorer from "../DialogFileExplorer.vue";
 import FileExplorer from "webapps-common/ui/components/FileExplorer/FileExplorer.vue";
-import Button from "webapps-common/ui/components/Button.vue";
 import LoadingIcon from "webapps-common/ui/components/LoadingIcon.vue";
 import InputField from "webapps-common/ui/components/forms/InputField.vue";
 
-describe("FileChooser.vue", () => {
+describe("DialogFileExplorer.vue", () => {
   let dataServiceSpy: MockInstance;
 
   const fileName = "aFile";
@@ -58,21 +57,16 @@ describe("FileChooser.vue", () => {
     const context = {
       props: {
         ...props,
-        backendType: "local",
+        backendType: "local" as const,
       },
       global: {
         provide: {
           getData: dataServiceSpy,
-        },
-        stubs: {
-          Button: {
-            inheritAttrs: false,
-            template: "<slot/>",
-          },
+          addStateProviderListener: vi.fn(),
         },
       },
     };
-    return shallowMount(FileChooser as any, context);
+    return shallowMount(DialogFileExplorer, context);
   };
 
   it("maps backend items to fileExplorer items", () => {
@@ -105,9 +99,6 @@ describe("FileChooser.vue", () => {
       folderFromBackend.items.map(toFileExplorerItem),
     );
     expect(explorerProps.isRootFolder).toBeTruthy();
-
-    const buttons = wrapper.findAllComponents(Button);
-    expect(buttons.length).toBe(1);
   });
 
   it("loads initial file path", async () => {
@@ -138,33 +129,37 @@ describe("FileChooser.vue", () => {
     expect(errorMessageSpan.text()).toBe(`(${errorMessage})`);
   });
 
-  it("shows a cancel button", async () => {
-    const wrapper = shallowMountFileChooser();
-    const buttons = wrapper.findAllComponents(Button);
-    const cancelButton = buttons.at(0);
-    expect(cancelButton?.text()).toContain("Cancel");
-    await cancelButton?.vm.$emit("click");
-    expect(wrapper.emitted("cancel")).toStrictEqual([[]]);
-  });
-
   describe("choose file", () => {
-    it("shows a 'Choose' button when a file is selected", async () => {
+    it("exposes a method to open the current file", async () => {
       const wrapper = shallowMountFileChooser();
       await flushPromises();
       await wrapper
         .findComponent(FileExplorer)
         .vm.$emit("changeSelection", [fileName]);
-      const buttons = wrapper.findAllComponents(Button);
-      expect(buttons.length).toBe(2);
-      const chooseButton = buttons.at(1);
-      expect(chooseButton?.text()).toContain("Choose");
-      await chooseButton?.vm.$emit("click");
+
+      wrapper.vm.openFile();
+
       expect(dataServiceSpy).toHaveBeenCalledWith({
         method: "fileChooser.getFilePath",
         options: ["local", null, fileName, null],
       });
       await flushPromises();
       expect(wrapper.emitted("chooseFile")).toStrictEqual([[filePath]]);
+    });
+
+    it("emits whether a file is selected", async () => {
+      const wrapper = shallowMountFileChooser();
+      await flushPromises();
+      await wrapper
+        .findComponent(FileExplorer)
+        .vm.$emit("changeSelection", [fileName]);
+      await flushPromises();
+      expect(wrapper.emitted("fileIsSelected")).toStrictEqual([[true]]);
+      await wrapper.findComponent(FileExplorer).vm.$emit("changeSelection", []);
+      expect(wrapper.emitted("fileIsSelected")).toStrictEqual([
+        [true],
+        [false],
+      ]);
     });
 
     it("chooses files via FileExplorer event", async () => {
@@ -201,28 +196,6 @@ describe("FileChooser.vue", () => {
   });
 
   describe("open directory", () => {
-    it("shows a 'Open' button when a directory is selected", async () => {
-      const wrapper = shallowMountFileChooser();
-      await flushPromises();
-      await wrapper
-        .findComponent(FileExplorer)
-        .vm.$emit("changeSelection", [directoryName]);
-      const buttons = wrapper.findAllComponents(Button);
-      expect(buttons.length).toBe(2);
-      const openButton = buttons.at(1);
-      expect(openButton?.text()).toContain("Open");
-      await openButton?.vm.$emit("click");
-      expect(dataServiceSpy).toHaveBeenCalledWith({
-        method: "fileChooser.listItems",
-        options: [
-          "local",
-          folderFromBackend.path,
-          directoryName,
-          { extensions: [], isWriter: false },
-        ],
-      });
-    });
-
     it("opens a directory via FileExplorer event", async () => {
       const wrapper = shallowMountFileChooser();
       await flushPromises();
@@ -271,7 +244,7 @@ describe("FileChooser.vue", () => {
   });
 
   describe("writer", () => {
-    it("shows an input field to write a field name and emits it on choose button click", async () => {
+    it("shows an input field to write a field name and emits it on choose", async () => {
       const wrapper = shallowMountFileChooser({ isWriter: true });
       await flushPromises();
       expect(dataServiceSpy).toHaveBeenCalledWith({
@@ -284,18 +257,12 @@ describe("FileChooser.vue", () => {
       expect(inputField.props().modelValue).toBe(
         filePathRelativeToFolderFromBackend,
       );
-      expect(wrapper.findAllComponents(Button).length).toBe(2);
       // Deselect the predefined file name
       await inputField.vm.$emit("update:model-value", "");
-      expect(wrapper.findAllComponents(Button).length).toBe(1);
       const inputText = "newFile.txt";
       await inputField.vm.$emit("update:model-value", inputText);
       expect(inputField.props().modelValue).toBe(inputText);
-      const buttons = wrapper.findAllComponents(Button);
-      expect(buttons.length).toBe(2);
-      const chooseButton = buttons.at(1);
-      expect(chooseButton?.text()).toContain("Choose");
-      await chooseButton?.vm.$emit("click");
+      await wrapper.vm.openFile();
       expect(dataServiceSpy).toHaveBeenCalledWith({
         method: "fileChooser.getFilePath",
         options: ["local", null, inputText, null],

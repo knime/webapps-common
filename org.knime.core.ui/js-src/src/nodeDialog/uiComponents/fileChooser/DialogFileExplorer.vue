@@ -1,11 +1,21 @@
+<script lang="ts">
+import type { BackendType, Folder, FolderAndError } from "./types";
+interface Props {
+  initialFilePath?: string;
+  isWriter?: boolean;
+  filteredExtensions?: string[];
+  appendedExtension?: string | null;
+  backendType: BackendType;
+}
+export { Props };
+</script>
+
 <script setup lang="ts">
-import { onMounted, ref, computed, toRefs } from "vue";
+import { onMounted, ref, computed, toRefs, watch } from "vue";
 import FileExplorer from "webapps-common/ui/components/FileExplorer/FileExplorer.vue";
 import type { FileExplorerItem } from "webapps-common/ui/components/FileExplorer/types";
-import useFileChooserBackend from "./useFileChooserBackend";
-import type { BackendType, Folder, FolderAndError } from "./types";
+import useFileChooserBackend from "./composables/useFileChooserBackend";
 import { toFileExplorerItem } from "./utils";
-import Button from "webapps-common/ui/components/Button.vue";
 import LoadingIcon from "webapps-common/ui/components/LoadingIcon.vue";
 import FolderIcon from "webapps-common/ui/assets/img/icons/folder.svg";
 import InputField from "webapps-common/ui/components/forms/InputField.vue";
@@ -17,20 +27,29 @@ const currentPathDisplay = computed(() => {
 });
 const items = ref<FileExplorerItem[]>([]);
 const props = withDefaults(
-  defineProps<{
-    initialFilePath?: string;
-    isWriter?: boolean;
-    filteredExtensions?: string[];
-    appendedExtension?: string | null;
-    backendType: BackendType;
-  }>(),
+  defineProps<
+    Props & {
+      clickOutsideException?: null | HTMLElement;
+    }
+  >(),
   {
     initialFilePath: "",
     isWriter: false,
     filteredExtensions: () => [],
     appendedExtension: null,
+    clickOutsideException: null,
   },
 );
+
+const emit = defineEmits<{
+  fileIsSelected: [boolean];
+  chooseFile: [
+    /**
+     * The full path of the chosen file
+     */
+    filePath: string,
+  ];
+}>();
 
 const isLoading = ref(true);
 
@@ -46,6 +65,11 @@ const setErrorMessage = (errorMessage: string | undefined) => {
 };
 
 const selectedFileName = ref("");
+
+watch(
+  () => selectedFileName.value,
+  (file) => emit("fileIsSelected", file !== ""),
+);
 
 const setRelativeFilePathFromBackend = (filePathRelativeToFolder: string) => {
   if (props.isWriter) {
@@ -82,23 +106,20 @@ const changeDirectory = (nextFolder: string) => {
   listItems(currentPath.value, nextFolder).then(handleListItemsResult);
 };
 
-const emit = defineEmits<{
-  chooseFile: [
-    /**
-     * The full path of the chosen file
-     */
-    filePath: string,
-  ];
-  cancel: [];
-}>();
 const onOpenFile = async (name: string) => {
   const { path, errorMessage } = await getFilePath(currentPath.value, name);
-  if (errorMessage) {
+  if (path === null) {
     setErrorMessage(errorMessage);
-  } else if (path) {
+    return Promise.reject(errorMessage);
+  } else {
     emit("chooseFile", path);
+    return Promise.resolve();
   }
 };
+
+defineExpose({
+  openFile: () => onOpenFile(selectedFileName.value),
+});
 
 const onChangeSelection = (itemIds: string[]) => {
   if (itemIds.length === 0) {
@@ -117,120 +138,83 @@ const onChangeSelection = (itemIds: string[]) => {
     selectedFileName.value = newSelectedItem.name;
   }
 };
-
-const onCancel = () => {
-  emit("cancel");
-};
-const buttonWrapper = ref<null | HTMLElement>(null);
 </script>
 
 <template>
-  <div class="wrapper">
-    <div v-if="isLoading" class="loading-animaton">
-      <LoadingIcon class="icon" />
-    </div>
-    <template v-else>
-      <div class="current-path">
-        <FolderIcon />
-        <span :title="currentPathDisplay"> {{ currentPathDisplay }}</span>
-        <span v-if="displayedError !== null" class="error"
-          >({{ displayedError }})</span
-        >
-      </div>
-      <div v-if="isWriter" class="name-input-wrapper">
-        <span>Name:</span>
-        <InputField v-model="selectedFileName" />
-      </div>
-      <FileExplorer
-        class="explorer"
-        :is-root-folder="currentPath === null"
-        :items="items"
-        :disable-context-menu="true"
-        :disable-multi-select="true"
-        :disable-dragging="true"
-        :click-outside-exception="buttonWrapper"
-        @change-directory="changeDirectory"
-        @open-file="onOpenFile($event.name)"
-        @change-selection="onChangeSelection"
-      />
-    </template>
-    <div ref="buttonWrapper" class="button-wrapper">
-      <Button compact with-border @click="onCancel">Cancel</Button>
-      <Button
-        v-if="selectedFileName"
-        compact
-        primary
-        @click="() => onOpenFile(selectedFileName)"
-        >Choose</Button
-      >
-      <Button
-        v-if="selectedDirectoryName"
-        compact
-        primary
-        @click="() => changeDirectory(selectedDirectoryName)"
-        >Open</Button
-      >
-    </div>
+  <div v-if="isLoading" class="loading-animaton">
+    <LoadingIcon class="icon" />
   </div>
+  <template v-else>
+    <div class="current-path">
+      <FolderIcon />
+      <span :title="currentPathDisplay"> {{ currentPathDisplay }}</span>
+      <span v-if="displayedError !== null" class="error"
+        >({{ displayedError }})</span
+      >
+    </div>
+    <div v-if="isWriter" class="name-input-wrapper">
+      <span>Name:</span>
+      <InputField v-model="selectedFileName" />
+    </div>
+    <FileExplorer
+      class="explorer"
+      :is-root-folder="currentPath === null"
+      :items="items"
+      :disable-context-menu="true"
+      :disable-multi-select="true"
+      :disable-dragging="true"
+      :click-outside-exception="clickOutsideException"
+      @change-directory="changeDirectory"
+      @open-file="onOpenFile($event.name).catch(() => {})"
+      @change-selection="onChangeSelection"
+    />
+  </template>
 </template>
 
 <style scoped lang="postcss">
-.wrapper {
+.loading-animaton {
+  align-items: center;
+  flex: 1;
   display: flex;
-  height: 100%;
+  min-height: 0;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
+
+  & .icon {
+    width: 15px;
+    height: 15px;
+  }
+}
+
+.current-path {
   font-size: 13px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin: 5px;
 
-  & .loading-animaton {
-    align-items: center;
-    flex: 1;
-    display: flex;
-    min-height: 0;
-    flex-direction: column;
-    justify-content: center;
-
-    & .icon {
-      width: 15px;
-      height: 15px;
-    }
+  & svg {
+    width: 15px;
+    height: 15px;
   }
 
-  & .current-path {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    margin: 5px;
-
-    & svg {
-      width: 15px;
-      height: 15px;
-    }
-
-    & span.error {
-      color: var(--theme-color-error);
-    }
+  & span.error {
+    color: var(--theme-color-error);
   }
+}
 
-  & .name-input-wrapper {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    align-items: baseline;
-    margin: 5px;
-  }
+.name-input-wrapper {
+  display: flex;
+  font-size: 13px;
+  flex-direction: row;
+  gap: 10px;
+  align-items: baseline;
+  margin: 5px;
+}
 
-  & .explorer {
-    min-height: 0;
-    overflow-y: auto;
-    flex: 1;
-  }
-
-  & .button-wrapper {
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: space-between;
-    padding: 10px 0;
-  }
+.explorer {
+  min-height: 0;
+  overflow-y: auto;
+  flex: 1;
 }
 </style>

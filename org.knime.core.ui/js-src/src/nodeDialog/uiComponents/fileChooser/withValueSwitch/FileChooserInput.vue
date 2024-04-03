@@ -1,31 +1,23 @@
 <script setup lang="ts">
-import type FileChooserProps from "./types/FileChooserProps";
-import type { FileChooserValue, FSCategory } from "./types/FileChooserProps";
+import type FileChooserProps from "../types/FileChooserProps";
+import type { FileChooserValue, FSCategory } from "../types/FileChooserProps";
 import StringFileChooserInputWithExplorer from "./StringFileChooserInputWithExplorer.vue";
 import ValueSwitch from "webapps-common/ui/components/forms/ValueSwitch.vue";
-import CustomUrlFileChooser from "./CustomUrlFileChooser.vue";
-import { mergeDeep } from "@/nodeDialog/utils";
-import { computed } from "vue";
+import CustomUrlFileChooser from "../CustomUrlFileChooser.vue";
+import { computed, toRef } from "vue";
 import InputField from "webapps-common/ui/components/forms/InputField.vue";
+import useFileChooserStateChange from "../composables/useFileChooserStateChange";
 
 const props = defineProps<FileChooserProps>();
 const emit = defineEmits(["update:modelValue"]);
 
-const onChange = (value: FileChooserValue) => {
-  emit("update:modelValue", value);
-};
-
-const onPathUpdate = (path: string) => {
-  onChange(mergeDeep(props.modelValue, { path }));
-};
-
-const onTimeoutUpdate = (timeout: number) => {
-  onChange(mergeDeep(props.modelValue, { timeout }));
-};
-
-const onFsCategoryUpdate = (fsCategory: keyof typeof FSCategory) => {
-  onChange(mergeDeep(props.modelValue, { fsCategory }));
-};
+const { onFsCategoryUpdate, onPathUpdate, onTimeoutUpdate } =
+  useFileChooserStateChange(
+    toRef(props, "modelValue"),
+    (value: FileChooserValue) => {
+      emit("update:modelValue", value);
+    },
+  );
 
 const possibleCategories: { id: keyof typeof FSCategory; text: string }[] = [
   {
@@ -50,7 +42,7 @@ const stringFileChooserPlaceholder = computed(() =>
 
 const stringFileChooserOptions = computed(() => ({
   placeholder: stringFileChooserPlaceholder.value,
-  ...props.browseOptions,
+  ...props.options,
 }));
 
 const isSupported = computed(() =>

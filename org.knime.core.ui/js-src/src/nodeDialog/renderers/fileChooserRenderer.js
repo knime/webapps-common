@@ -1,5 +1,5 @@
 import { rankWith } from "@jsonforms/core";
-import LabeledFileChooserInput from "../uiComponents/fileChooser/LabeledFileChooserInput.vue";
+import LabeledFileChooserInput from "../uiComponents/fileChooser/withTabs/FileChooserInput.vue";
 import { priorityRanks, inputFormats } from "../constants";
 
 export const fileChooserTester = (uischema, _schema) =>

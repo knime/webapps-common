@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import useDialogControl from "../../composables/components/useDialogControl";
+import useDialogControl from "@/nodeDialog/composables/components/useDialogControl";
 import StringFileChooserInputWithExplorer from "./StringFileChooserInputWithExplorer.vue";
-import LabeledInput from "../label/LabeledInput.vue";
+import LabeledInput from "@/nodeDialog/uiComponents/label/LabeledInput.vue";
 import { rendererProps } from "@jsonforms/vue";
-import { FileChooserUiSchemaOptions } from "@/nodeDialog/types/FileChooserUiSchema";
+import { FileChooserOptions } from "@/nodeDialog/types/FileChooserUiSchema";
 const props = defineProps(rendererProps());
 const { control, onChange, disabled } = useDialogControl<string>({ props });
 const uiSchemaOptions = computed(
-  () => control.value.uischema.options as FileChooserUiSchemaOptions,
+  () => control.value.uischema.options as FileChooserOptions,
 );
 </script>
 

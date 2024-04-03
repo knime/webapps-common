@@ -1,10 +1,10 @@
-export type FileChooserUiSchemaOptions = {
+export interface FileChooserOptions {
   isWriter?: boolean;
-  placeholder?: string;
   fileExtension?: string;
+  fileExtensions?: string[];
   fileExtensionProvider?: string;
-};
+}
 
 export type FileChooserUiSchema = {
-  options?: FileChooserUiSchemaOptions;
+  options?: FileChooserOptions;
 };

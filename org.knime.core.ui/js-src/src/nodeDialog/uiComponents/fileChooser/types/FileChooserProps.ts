@@ -1,3 +1,5 @@
+import { FileChooserOptions } from "@/nodeDialog/types/FileChooserUiSchema";
+
 export enum FSCategory {
   LOCAL,
   CUSTOM_URL,
@@ -17,11 +19,6 @@ interface FileChooserProps {
   modelValue: FileChooserValue;
   disabled: boolean;
   id: string | null;
-  browseOptions?: {
-    isWriter?: boolean;
-    fileExtension?: string;
-    fileExtensions?: string[];
-  };
+  options?: FileChooserOptions;
 }
-
 export default FileChooserProps;

@@ -5,8 +5,8 @@ import {
   getControlBase,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import LabeledLocalFileChooserInput from "../LabeledLocalFileChooserInput.vue";
-import LabeledInput from "../../label/LabeledInput.vue";
-import DialogLabel from "../../label/DialogLabel.vue";
+import LabeledInput from "@/nodeDialog/uiComponents/label/LabeledInput.vue";
+import DialogLabel from "@/nodeDialog/uiComponents/label/DialogLabel.vue";
 import StringFileChooserInputWithExplorer from "../StringFileChooserInputWithExplorer.vue";
 
 describe("LabeledLocalFileChooserInput.vue", () => {
