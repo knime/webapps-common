@@ -8,6 +8,7 @@ import { VueWrapper, mount } from "@vue/test-utils";
 import flushPromises from "flush-promises";
 import Button from "webapps-common/ui/components/Button.vue";
 import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
+import SideDrawer from "webapps-common/ui/components/SideDrawer.vue";
 
 describe("SettingsSubPanel", () => {
   let props: TestComponentProps,
@@ -85,19 +86,22 @@ describe("SettingsSubPanel", () => {
   });
 
   it("disables the apply button", async () => {
-    props.settingsSubPanelConfig.applyDisabled = true;
     const wrapper = mountTestComponent();
     await clickExpandButton(wrapper);
     const applyButton = findButtonByText("Apply")(wrapper);
+    expect(applyButton.props().disabled).toBeFalsy();
+    wrapper.vm.getApplyButton()!.disabled.value = true;
+    await flushPromises();
     expect(applyButton.props().disabled).toBeTruthy();
   });
 
   it("sets the apply button text", async () => {
     const applyText = "My Apply";
-    props.settingsSubPanelConfig.applyText = applyText;
     onApply.mockResolvedValue();
     const wrapper = mountTestComponent();
     await clickExpandButton(wrapper);
+    wrapper.vm.getApplyButton()!.text.value = applyText;
+    await flushPromises();
     const applyButton = findButtonByText(applyText)(wrapper);
     await applyButton.trigger("click");
     await flushPromises();

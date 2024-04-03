@@ -1,7 +1,5 @@
 <script lang="ts">
 export interface Props {
-  applyText?: string;
-  applyDisabled?: boolean;
   showBackArrow?: boolean;
 }
 </script>
@@ -13,13 +11,12 @@ import Form from "../Form.vue";
 import inject from "../../utils/inject";
 import Button from "webapps-common/ui/components/Button.vue";
 import SidePanelBackArrow from "./SidePanelBackArrow.vue";
+import { setUpApplyButton } from ".";
 withDefaults(defineProps<Props>(), {
-  applyText: "Apply",
-  applyDisabled: false,
   showBackArrow: false,
 });
 
-const emit = defineEmits<{ apply: [] }>();
+const emit = defineEmits(["apply"]);
 
 const isExpanded = ref(false);
 const expand = () => {
@@ -28,12 +25,25 @@ const expand = () => {
 const close = () => {
   isExpanded.value = false;
 };
-
-const apply = () => emit("apply");
+const emitApplyAndClose = () => {
+  emit("apply");
+  close();
+};
 
 const setSubPanelExpanded = inject("setSubPanelExpanded")!;
 
-defineExpose({ close });
+const {
+  text: applyText,
+  disabled: applyDisabled,
+  element: applyButton,
+  onApply,
+} = setUpApplyButton();
+
+const apply = () =>
+  onApply
+    .value?.()
+    .then(emitApplyAndClose)
+    .catch(() => {});
 watch(
   () => isExpanded.value,
   (isExpanded) => setSubPanelExpanded({ isExpanded }),
@@ -43,23 +53,30 @@ const subSettingsPanels = inject("getPanelsContainer")!()!;
 
 <template>
   <slot name="expand-button" :expand="expand" />
-  <SideDrawer :is-expanded="isExpanded" class="side-drawer">
-    <Form>
-      <template #default>
-        <SidePanelBackArrow v-if="showBackArrow" @click="close" />
-        <slot />
-      </template>
-      <template #bottom-content>
-        <div class="bottom-buttons">
-          <Button with-border compact @click="close"> Cancel </Button>
-          <Button compact primary :disabled="applyDisabled" @click="apply">
-            {{ applyText }}
-          </Button>
-        </div>
-      </template>
-    </Form>
-  </SideDrawer>
-  <Teleport :disabled="!isExpanded" :to="subSettingsPanels" />
+  <Teleport :disabled="!isExpanded" :to="subSettingsPanels">
+    <SideDrawer :is-expanded="isExpanded" class="side-drawer">
+      <Form>
+        <template #default>
+          <SidePanelBackArrow v-if="showBackArrow" @click="close" />
+          <slot />
+        </template>
+        <template #bottom-content>
+          <div class="bottom-buttons">
+            <Button with-border compact @click="close"> Cancel </Button>
+            <Button
+              ref="applyButton"
+              compact
+              primary
+              :disabled="applyDisabled"
+              @click="apply"
+            >
+              {{ applyText }}
+            </Button>
+          </div>
+        </template>
+      </Form>
+    </SideDrawer>
+  </Teleport>
 </template>
 
 <style scoped lang="postcss">
