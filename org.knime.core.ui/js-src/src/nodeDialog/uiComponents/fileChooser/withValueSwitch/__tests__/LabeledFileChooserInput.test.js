@@ -105,14 +105,6 @@ describe("LabeledFileChooserInput.vue", () => {
   });
 
   it("calls updateData when local file text input is changed", () => {
-    const setDirtyModelSettingsMock = vi.fn();
-    const { wrapper, updateData } = mountJsonFormsComponent(
-      LabeledFileChooserInput,
-      {
-        props,
-        provide: { setDirtyModelSettingsMock },
-      },
-    );
     const changedTextInput = "Shaken not stirred";
     wrapper
       .findComponent(StringFileChooserInputWithExplorer)
@@ -124,12 +116,11 @@ describe("LabeledFileChooserInput.vue", () => {
         timeout: 1000,
       },
     };
-    expect(updateData).toHaveBeenCalledWith(
+    expect(component.updateData).toHaveBeenCalledWith(
       expect.anything(),
       props.control.path,
       onChangePayload,
     );
-    expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
   });
 
   it("sets correct initial value", () => {
