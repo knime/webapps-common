@@ -50,10 +50,13 @@ package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 
 import static java.util.stream.Collectors.toMap;
 
+import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import org.knime.core.node.InvalidSettingsException;
@@ -61,15 +64,116 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.config.base.ConfigBaseRO;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorFactory;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 import org.knime.filehandling.core.connections.FSLocation;
 
 /**
- * Factory for default persistors that store values directly in NodeSettings.
+ * Factory for default persistors either for arrays or {@link PersistableSettings} or settings that store values
+ * directly in NodeSettings.
  *
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  */
-final class DefaultFieldNodeSettingsPersistorFactory {
+public final class DefaultFieldNodeSettingsPersistorFactory {
+
+    /**
+     * This method can be used in a {@link Persist#customPersistor()} for additional adaptations of the default
+     * persistors either for arrays or {@link PersistableSettings} or settings that store values directly in
+     * NodeSettings.
+     *
+     * @param <T> the type of field
+     * @param fieldType the type of field the created persistor should persist
+     * @param configKey the key to use for storing and retrieving the value to and from the NodeSettings
+     * @return a new persistor
+     * @throws IllegalArgumentException if there is no persistor available for the provided fieldType
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> NodeSettingsPersistor<T> createDefaultPersistor(final Class<T> type, final String configKey) {
+        if (type.isArray() && PersistableSettings.class.isAssignableFrom(type.getComponentType())) {
+            return (NodeSettingsPersistor<T>)createDefaultArrayPersistor(type.getComponentType(), configKey);
+        } else if (PersistableSettings.class.isAssignableFrom(type)) {
+            return (NodeSettingsPersistor<T>)new NestedFieldBasedNodeSettingsPersistor<>(configKey,
+                type.asSubclass(PersistableSettings.class));
+        } else {
+            return DefaultFieldNodeSettingsPersistorFactory.createPersistor(type, configKey);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <S extends PersistableSettings> NodeSettingsPersistor<S[]>
+        createDefaultArrayPersistor(final Class<?> elementType, final String configKey) {
+        return new ArrayFieldPersistor<>((Class<S>)elementType, configKey);
+    }
+
+    static final class NestedFieldBasedNodeSettingsPersistor<S extends PersistableSettings>
+        implements NodeSettingsPersistor<S> {
+
+        private final String m_configKey;
+
+        private final NodeSettingsPersistor<S> m_persistor;
+
+        NestedFieldBasedNodeSettingsPersistor(final String configKey, final Class<S> settingsClass) {
+            m_configKey = configKey;
+            m_persistor = NodeSettingsPersistorFactory.createPersistor(settingsClass);
+        }
+
+        @Override
+        public S load(final NodeSettingsRO settings) throws InvalidSettingsException {
+            return m_persistor.load(settings.getNodeSettings(m_configKey));
+        }
+
+        @Override
+        public void save(final S obj, final NodeSettingsWO settings) {
+            m_persistor.save(obj, settings.addNodeSettings(m_configKey));
+        }
+
+    }
+
+    static final class ArrayFieldPersistor<S extends PersistableSettings> implements NodeSettingsPersistor<S[]> {
+
+        private final String m_configKey;
+
+        private final Class<S> m_elementType;
+
+        private final ArrayList<NodeSettingsPersistor<S>> m_persistors = new ArrayList<>();
+
+        public static final Pattern IS_DIGIT = Pattern.compile("^\\d+$");
+
+        ArrayFieldPersistor(final Class<S> elementType, final String configKey) {
+            m_configKey = configKey;
+            m_elementType = elementType;
+        }
+
+        @Override
+        public S[] load(final NodeSettingsRO settings) throws InvalidSettingsException {
+            var arraySettings = settings.getNodeSettings(m_configKey);
+            int size = arraySettings.keySet().stream().filter(s -> IS_DIGIT.matcher(s).matches()).toList().size();
+            ensureEnoughPersistors(size);
+            @SuppressWarnings("unchecked")
+            var values = (S[])Array.newInstance(m_elementType, size);
+            for (int i = 0; i < size; i++) {//NOSONAR
+                values[i] = m_persistors.get(i).load(arraySettings);
+            }
+            return values;
+        }
+
+        private void ensureEnoughPersistors(final int numPersistors) {
+            for (int i = m_persistors.size(); i < numPersistors; i++) {
+                m_persistors.add(new NestedFieldBasedNodeSettingsPersistor<>(Integer.toString(i), m_elementType));
+            }
+        }
+
+        @Override
+        public void save(final S[] array, final NodeSettingsWO settings) {
+            ensureEnoughPersistors(array.length);
+            var arraySettings = settings.addNodeSettings(m_configKey);
+            for (int i = 0; i < array.length; i++) {//NOSONAR
+                m_persistors.get(i).save(array[i], arraySettings);
+            }
+        }
+
+    }
 
     private static final Map<Class<?>, FieldPersistor<?>> IMPL_MAP = Stream.of(PersistorImpl.values())//
         .collect(toMap(PersistorImpl::getFieldType, PersistorImpl::getFieldPersistor));
@@ -83,9 +187,9 @@ final class DefaultFieldNodeSettingsPersistorFactory {
      * @return a new persistor
      * @throws IllegalArgumentException if there is no persistor available for the provided fieldType
      */
-    public static <T> NodeSettingsPersistor<T> createPersistor(final Class<T> fieldType, final String configKey) {
+    private static <T> NodeSettingsPersistor<T> createPersistor(final Class<T> fieldType, final String configKey) {
         @SuppressWarnings("unchecked") // Type-save since IMPL_MAP maps Class<T> to FieldPersistor<T>
-        var impl = (FieldPersistor<T>) IMPL_MAP.get(fieldType);
+        var impl = (FieldPersistor<T>)IMPL_MAP.get(fieldType);
         return createPersistorFromImpl(fieldType, configKey, impl);
     }
 
