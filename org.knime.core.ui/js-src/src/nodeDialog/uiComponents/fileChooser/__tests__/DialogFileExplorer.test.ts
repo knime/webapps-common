@@ -4,13 +4,13 @@ import flushPromises from "flush-promises";
 import type { Folder, PathAndError } from "../types";
 import { toFileExplorerItem } from "../utils";
 
-import DialogFileExplorer from "../DialogFileExplorer.vue";
+import DialogFileExplorer, { type Props } from "../DialogFileExplorer.vue";
 import FileExplorer from "webapps-common/ui/components/FileExplorer/FileExplorer.vue";
 import LoadingIcon from "webapps-common/ui/components/LoadingIcon.vue";
 import InputField from "webapps-common/ui/components/forms/InputField.vue";
 
 describe("DialogFileExplorer.vue", () => {
-  let dataServiceSpy: MockInstance;
+  let dataServiceSpy: MockInstance, props: Props;
 
   const fileName = "aFile";
   const filePath = "/path/to/containing/folder/aFile";
@@ -32,15 +32,7 @@ describe("DialogFileExplorer.vue", () => {
     folderFromBackend = getNewRootFolderMock();
   });
 
-  const shallowMountFileChooser = (
-    props: {
-      initialFilePath?: string;
-      isWriter?: boolean;
-      filteredExtensions?: string[];
-      appendedExtension?: string;
-    } = {},
-    customDataServiceMethod?: MockInstance,
-  ) => {
+  const shallowMountFileChooser = (customDataServiceMethod?: MockInstance) => {
     dataServiceSpy =
       customDataServiceMethod ??
       vi.fn((params: { method?: string | undefined } | undefined) => {
@@ -55,10 +47,7 @@ describe("DialogFileExplorer.vue", () => {
         return Promise.resolve(null);
       });
     const context = {
-      props: {
-        ...props,
-        backendType: "local" as const,
-      },
+      props,
       global: {
         provide: {
           getData: dataServiceSpy,
@@ -68,6 +57,12 @@ describe("DialogFileExplorer.vue", () => {
     };
     return shallowMount(DialogFileExplorer, context);
   };
+
+  beforeEach(() => {
+    props = {
+      backendType: "local",
+    };
+  });
 
   it("maps backend items to fileExplorer items", () => {
     expect(
@@ -104,7 +99,8 @@ describe("DialogFileExplorer.vue", () => {
   it("loads initial file path", async () => {
     const initialFilePath = "myPath";
     folderFromBackend.path = "currentPath";
-    const wrapper = shallowMountFileChooser({ initialFilePath });
+    props.initialFilePath = initialFilePath;
+    const wrapper = shallowMountFileChooser();
     expect(dataServiceSpy).toHaveBeenCalledWith({
       method: "fileChooser.listItems",
       options: [
@@ -123,7 +119,7 @@ describe("DialogFileExplorer.vue", () => {
     const errorReturningDataService = vi
       .fn()
       .mockResolvedValue({ folder: folderFromBackend, errorMessage });
-    const wrapper = shallowMountFileChooser({}, errorReturningDataService);
+    const wrapper = shallowMountFileChooser(errorReturningDataService);
     await flushPromises();
     const errorMessageSpan = wrapper.find("span.error");
     expect(errorMessageSpan.text()).toBe(`(${errorMessage})`);
@@ -162,7 +158,22 @@ describe("DialogFileExplorer.vue", () => {
       ]);
     });
 
-    it("chooses files via FileExplorer event", async () => {
+    it("does not choose files via FileExplorer event pre default", async () => {
+      const wrapper = shallowMountFileChooser();
+      await flushPromises();
+      await wrapper
+        .findComponent(FileExplorer)
+        .vm.$emit("openFile", toFileExplorerItem(folderFromBackend.items[1]));
+      expect(dataServiceSpy).not.toHaveBeenCalledWith({
+        method: "fileChooser.getFilePath",
+        options: ["local", null, fileName, null],
+      });
+      await flushPromises();
+      expect(wrapper.emitted("chooseFile")).toBeUndefined();
+    });
+
+    it("chooses files via FileExplorer event if desired", async () => {
+      props.openFileByExplorer = true;
       const wrapper = shallowMountFileChooser();
       await flushPromises();
       await wrapper
@@ -177,6 +188,7 @@ describe("DialogFileExplorer.vue", () => {
     });
 
     it("does not choose invalid files displaying an error instead", async () => {
+      props.openFileByExplorer = true;
       const wrapper = shallowMountFileChooser();
       const errorMessage = "myErrorMessage";
       getFilePathResult = { path: null, errorMessage };
@@ -216,36 +228,41 @@ describe("DialogFileExplorer.vue", () => {
 
   describe("file extensions", () => {
     it("uses file extensions when requesting listed items", () => {
-      const filteredExtensions = ["pdf"];
-      shallowMountFileChooser({ filteredExtensions });
+      props.filteredExtensions = ["pdf"];
+      shallowMountFileChooser();
       expect(dataServiceSpy).toHaveBeenCalledWith({
         method: "fileChooser.listItems",
         options: [
           "local",
           null,
           "",
-          { extensions: filteredExtensions, isWriter: false },
+          { extensions: props.filteredExtensions, isWriter: false },
         ],
       });
     });
 
     it("uses file extensions when requesting file name", async () => {
-      const appendedExtension = "pdf";
-      const wrapper = shallowMountFileChooser({ appendedExtension });
+      props.appendedExtension = "pdf";
+      props.openFileByExplorer = true;
+      const wrapper = shallowMountFileChooser();
       await flushPromises();
       await wrapper
         .findComponent(FileExplorer)
         .vm.$emit("openFile", toFileExplorerItem(folderFromBackend.items[1]));
       expect(dataServiceSpy).toHaveBeenCalledWith({
         method: "fileChooser.getFilePath",
-        options: ["local", null, fileName, appendedExtension],
+        options: ["local", null, fileName, props.appendedExtension],
       });
     });
   });
 
   describe("writer", () => {
+    beforeEach(() => {
+      props.isWriter = true;
+    });
+
     it("shows an input field to write a field name and emits it on choose", async () => {
-      const wrapper = shallowMountFileChooser({ isWriter: true });
+      const wrapper = shallowMountFileChooser();
       await flushPromises();
       expect(dataServiceSpy).toHaveBeenCalledWith({
         method: "fileChooser.listItems",
@@ -272,7 +289,7 @@ describe("DialogFileExplorer.vue", () => {
     });
 
     it("sets the value of the selected file as input", async () => {
-      const wrapper = shallowMountFileChooser({ isWriter: true });
+      const wrapper = shallowMountFileChooser();
       await flushPromises();
 
       await wrapper
@@ -284,7 +301,7 @@ describe("DialogFileExplorer.vue", () => {
     });
 
     it("unsets the value of the selected file as input", async () => {
-      const wrapper = shallowMountFileChooser({ isWriter: true });
+      const wrapper = shallowMountFileChooser();
       await flushPromises();
 
       const inputField = wrapper.findComponent(InputField);

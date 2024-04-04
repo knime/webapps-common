@@ -6,6 +6,8 @@ interface Props {
   filteredExtensions?: string[];
   appendedExtension?: string | null;
   backendType: BackendType;
+  clickOutsideException?: null | HTMLElement;
+  openFileByExplorer?: boolean;
 }
 export { Props };
 </script>
@@ -26,20 +28,14 @@ const currentPathDisplay = computed(() => {
   return currentPath.value ?? "";
 });
 const items = ref<FileExplorerItem[]>([]);
-const props = withDefaults(
-  defineProps<
-    Props & {
-      clickOutsideException?: null | HTMLElement;
-    }
-  >(),
-  {
-    initialFilePath: "",
-    isWriter: false,
-    filteredExtensions: () => [],
-    appendedExtension: null,
-    clickOutsideException: null,
-  },
-);
+const props = withDefaults(defineProps<Props>(), {
+  initialFilePath: "",
+  isWriter: false,
+  filteredExtensions: () => [],
+  appendedExtension: null,
+  clickOutsideException: null,
+  openFileByExplorer: false,
+});
 
 const emit = defineEmits<{
   fileIsSelected: [boolean];
@@ -165,7 +161,7 @@ const onChangeSelection = (itemIds: string[]) => {
       :disable-dragging="true"
       :click-outside-exception="clickOutsideException"
       @change-directory="changeDirectory"
-      @open-file="onOpenFile($event.name).catch(() => {})"
+      @open-file="openFileByExplorer && onOpenFile($event.name).catch(() => {})"
       @change-selection="onChangeSelection"
     />
   </template>

@@ -54,6 +54,7 @@ const buttonWrapper = ref<null | HTMLElement>(null);
       ref="explorer"
       v-bind="props"
       :click-outside-exception="buttonWrapper"
+      open-file-by-explorer
       @choose-file="onOpenFile"
       @file-is-selected="
         (isSelected) => {
