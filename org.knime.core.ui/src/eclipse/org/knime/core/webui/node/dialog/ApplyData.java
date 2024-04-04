@@ -52,6 +52,7 @@ import java.io.IOException;
 import java.util.EnumMap;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
@@ -89,8 +90,8 @@ final class ApplyData {
         m_nc = nc;
         m_settingsTypes = settingsTypes;
         m_nodeSettingsService = nodeSettingsService;
-        m_onApplyModifierWrapper = (onApplyModifier != null && nc instanceof NativeNodeContainer)
-            ? new OnApplyNodeModiferWrapper((NativeNodeContainer)nc, onApplyModifier) : null;
+        m_onApplyModifierWrapper = (onApplyModifier != null && nc instanceof NativeNodeContainer nnc)
+            ? new OnApplyNodeModiferWrapper(onApplyModifier, nnc) : null;
     }
 
     static NodeSettings getOrCreateSubSettings(final NodeSettings settings, final SettingsType type)
@@ -291,34 +292,47 @@ final class ApplyData {
     private void callOnChangeModifyer(final Optional<ApplyDataSettings> modelApplyDataSettings,
         final Optional<ApplyDataSettings> viewApplyDataSettings) {
         if (m_onApplyModifierWrapper != null) {
-            m_onApplyModifierWrapper.onApply( //
+            m_onApplyModifierWrapper.setAppliedSettings( //
                 modelApplyDataSettings.map(m -> m.getSettings()).orElse(new NodeSettings("empty")), //
                 viewApplyDataSettings.map(v -> v.getSettings()).orElse(null), //
                 modelApplyDataSettings.map(m -> m.getPreviousSettings()).orElse(new NodeSettings("empty")), //
                 viewApplyDataSettings.map(v -> v.getPreviousSettings()).orElse(null) //
             );
+            if (calledForEmbeddedDialog()) {
+                // directly apply the settings and don't defer it to the 'cleanUp'
+                m_onApplyModifierWrapper.onApply();
+            }
         }
     }
 
     void cleanUp() {
         if (m_onApplyModifierWrapper != null) {
-            m_onApplyModifierWrapper.onClose();
+            m_onApplyModifierWrapper.onApply();
         }
+    }
+
+    /*
+     * Returns whether a call is made for the embedded node dialog and not for an detached node dialog.
+     */
+    private static boolean calledForEmbeddedDialog() {
+        var thread = Thread.currentThread();
+        return Stream.of(thread.getStackTrace())
+            .noneMatch(e -> e.getClassName().equals("org.knime.core.wizard.rpc.DefaultNodeService")
+                && e.getMethodName().equals("callNodeDataService"));
     }
 
     /**
      * Wraps an {@link OnApplyNodeModifier}, stores / defers settings updates on apply and finally delegates the applied
      * updates to the underlying {@link OnApplyNodeModifier} on dialog close.
      *
-     * This wrapper is mandatory since apply is also called when clicking on "Save and Execute" when having a dialog and
-     * a view opened.
-     * It is to be removed this with the introduction of embedded dialogs
+     * The 'deferred' onApply-call is only required for 'detached' dialogs since apply is also called when clicking on
+     * "Save and Execute" when having a dialog and a view opened.
      */
     private static final class OnApplyNodeModiferWrapper {
 
-        private final NativeNodeContainer m_nnc;
-
         private final OnApplyNodeModifier m_modifier;
+
+        private final NativeNodeContainer m_nnc;
 
         private NodeSettingsRO m_initialModelSettings;
 
@@ -328,12 +342,12 @@ final class ApplyData {
 
         private NodeSettingsRO m_updatedViewSettings;
 
-        private OnApplyNodeModiferWrapper(final NativeNodeContainer nnc, final OnApplyNodeModifier modifier) {
-            m_nnc = nnc;
+        private OnApplyNodeModiferWrapper(final OnApplyNodeModifier modifier, final NativeNodeContainer nnc) {
             m_modifier = modifier;
+            m_nnc = nnc;
         }
 
-        private void onApply(final NodeSettings modelSettings, final NodeSettings viewSettings,
+        private void setAppliedSettings(final NodeSettings modelSettings, final NodeSettings viewSettings,
             final NodeSettings previousModelSettings, final NodeSettings previousViewSettings) {
             if (modelSettings != null) {
                 if (m_initialModelSettings == null) {
@@ -349,7 +363,14 @@ final class ApplyData {
             }
         }
 
-        private void onClose() {
+        /**
+         * Delegates the onApply-call to the wrapped {@link OnApplyNodeModifier}.But only if there are (still) settings
+         * to be applied (i.e. can be called multiple times in a row where subsequent calls won't have an effect).
+         */
+        private void onApply() {
+            if (m_updatedModelSettings == null && m_updatedViewSettings == null) {
+                return;
+            }
             final var currentInitialModelSettings = m_initialModelSettings;
             final var currentInitialViewSettings = m_initialViewSettings;
             final var currentUpdatedModelSettings = m_updatedModelSettings;
