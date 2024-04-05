@@ -329,7 +329,7 @@ describe("DropdownInput.vue", () => {
     expect(wrapper.vm.options).toStrictEqual(customOptions);
   });
 
-  it("uses choicesProvider if present", () => {
+  it("uses choicesProvider if present", async () => {
     const choicesProvider = "myChoicesProvider";
     props.control.uischema.options.choicesProvider = choicesProvider;
 
@@ -352,6 +352,10 @@ describe("DropdownInput.vue", () => {
       },
     ];
     provideChoices(providedChoices);
+    /**
+     * TODO: UIEXT-1401 remove flushPromises here (see getPossibleValuesFromUiSchema)
+     */
+    await flushPromises();
     expect(wrapper.vm.options).toStrictEqual(providedChoices);
   });
 });

@@ -14,6 +14,7 @@ import useDialogControl, {
 } from "../composables/components/useDialogControl";
 import LabeledInput from "./label/LabeledInput.vue";
 import useProvidedState from "../composables/components/useProvidedState";
+import { withSpecialChoices } from "../utils/getPossibleValuesFromUiSchema";
 
 const props = defineProps({
   ...rendererProps(),
@@ -51,9 +52,9 @@ const sendAlert = inject("sendAlert");
 const choicesProvider = computed(
   () => control.value.uischema.options?.choicesProvider,
 );
-const options = useProvidedState<null | IdAndText[]>(
-  choicesProvider.value,
-  null,
+const options = withSpecialChoices(
+  useProvidedState<null | IdAndText[]>(choicesProvider.value, null),
+  control.value,
 );
 
 const getFirstValueFromDropdownOrNull = (result: IdAndText[]) => {

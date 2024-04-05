@@ -9,6 +9,7 @@ import { isEqual } from "lodash-es";
 import useDialogControl from "../composables/components/useDialogControl";
 import useProvidedState from "../composables/components/useProvidedState";
 import { DefaultSettingComparator } from "@knime/ui-extension-service";
+import { withSpecialChoices } from "../utils/getPossibleValuesFromUiSchema";
 
 class ColumnSelectValueComparator extends DefaultSettingComparator<
   { selected: string | null } | undefined,
@@ -40,9 +41,9 @@ const choicesProvider = computed<string | undefined>(
 );
 
 const getPossibleValuesFromUiSchema = inject("getPossibleValuesFromUiSchema");
-const possibleValues = useProvidedState<null | PossibleValue[]>(
-  choicesProvider,
-  null,
+const possibleValues = withSpecialChoices(
+  useProvidedState<null | PossibleValue[]>(choicesProvider, null),
+  jsonFormsControl.control.value,
 );
 
 const asyncInitialOptions = new Promise<PossibleValue[]>((resolve) => {

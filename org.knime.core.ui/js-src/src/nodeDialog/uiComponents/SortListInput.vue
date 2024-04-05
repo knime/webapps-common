@@ -11,6 +11,7 @@ import LabeledInput from "./label/LabeledInput.vue";
 import { computed, onMounted, watch } from "vue";
 import { indexOf } from "lodash-es";
 import useProvidedState from "../composables/components/useProvidedState";
+import { withSpecialChoices } from "../utils/getPossibleValuesFromUiSchema";
 
 const props = defineProps({
   ...rendererProps(),
@@ -29,9 +30,13 @@ const data = computed<string[]>(() => control.value.data);
 const choicesProvider = computed(
   () => control.value.uischema.options!.choicesProvider,
 );
-const possibleValues = useProvidedState<
-  { id: string; text: string; special?: true }[]
->(choicesProvider, []);
+const possibleValues = withSpecialChoices(
+  useProvidedState<{ id: string; text: string; special?: true }[]>(
+    choicesProvider,
+    [],
+  ),
+  control.value,
+);
 
 const possibleValuesWithUnknownValues = computed(() =>
   possibleValues.value.concat({

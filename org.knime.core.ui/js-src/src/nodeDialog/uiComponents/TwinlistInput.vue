@@ -14,6 +14,7 @@ import useDialogControl from "../composables/components/useDialogControl";
 import LabeledInput from "./label/LabeledInput.vue";
 import useProvidedState from "../composables/components/useProvidedState";
 import { DefaultSettingComparator } from "@knime/ui-extension-service";
+import { withSpecialChoices } from "../utils/getPossibleValuesFromUiSchema";
 
 type TwinlistData = {
   mode: string;
@@ -147,7 +148,10 @@ const loadingInfo = ref(markRaw(TwinlistLoadingInfo) as Raw<any> | null);
 const choicesProvider = computed<string | undefined>(
   () => control.value.uischema.options?.choicesProvider,
 );
-const possibleValues = useProvidedState<PossibleValue[]>(choicesProvider, []);
+const possibleValues = withSpecialChoices(
+  useProvidedState<PossibleValue[]>(choicesProvider, []),
+  control.value,
+);
 const previouslySelectedTypes = ref<IdAndText[]>([]);
 const initialManuallySelected = ref(null as null | string[]);
 /**

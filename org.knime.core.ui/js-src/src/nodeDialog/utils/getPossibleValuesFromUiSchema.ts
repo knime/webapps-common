@@ -5,6 +5,7 @@ import type {
   ChoicesUiSchema,
   PossibleValue,
 } from "../types/ChoicesUiSchema";
+import { Ref, ref, watch } from "vue";
 
 const extractFromUiSchemaOptions = <Key extends keyof ChoicesUiSchemaOptions>(
   control: { uischema: ChoicesUiSchema },
@@ -40,31 +41,10 @@ const extractPossibleValues = (
   }
 };
 
-export default async (
+const addSpecialColumns = (
+  normalPossibleValues: PossibleValue[],
   control: { uischema: ChoicesUiSchema },
-  getAsyncPossibleValues: (
-    choicesProviderClass: string,
-  ) => Promise<Result<PossibleValue[]> | undefined>,
-  sendAlert: (params: Parameters<AlertingService["sendAlert"]>[0]) => void,
 ) => {
-  let normalPossibleValues = extractFromUiSchemaOptions(
-    control,
-    "possibleValues",
-  );
-  if (!normalPossibleValues) {
-    const choicesProviderClass = extractFromUiSchemaOptions(
-      control,
-      "choicesProviderClass",
-    );
-    if (typeof choicesProviderClass === "string") {
-      const asyncResult = await getAsyncPossibleValues(choicesProviderClass);
-      normalPossibleValues = asyncResult
-        ? extractPossibleValues(asyncResult, sendAlert, choicesProviderClass)
-        : [];
-    } else {
-      normalPossibleValues = [];
-    }
-  }
   const showNoneColumn = Boolean(
     extractFromUiSchemaOptions(control, "showNoneColumn"),
   );
@@ -96,4 +76,60 @@ export default async (
       : []),
     ...normalPossibleValues,
   ];
+};
+
+export const withSpecialChoices = <T extends PossibleValue[] | null>(
+  choicesRef: Ref<T>,
+  control: { uischema: ChoicesUiSchema },
+) => {
+  /**
+   * TODO UIEXT-1491 Ideally we want to use a computed property here like so:
+   *  computed(() =>
+        choicesRef.value === null
+          ? null
+          : addSpecialColumns(choicesRef.value, control),
+      )
+      but this is only possible until we get rid of the other ways to update these
+      choices in the respective input components
+   */
+  const withSpecialColumns = ref(choicesRef.value);
+  watch(
+    () => choicesRef.value,
+    () => {
+      // @ts-expect-error
+      withSpecialColumns.value =
+        choicesRef.value === null
+          ? null
+          : addSpecialColumns(choicesRef.value, control);
+    },
+  );
+  return withSpecialColumns;
+};
+
+export default async (
+  control: { uischema: ChoicesUiSchema },
+  getAsyncPossibleValues: (
+    choicesProviderClass: string,
+  ) => Promise<Result<PossibleValue[]> | undefined>,
+  sendAlert: (params: Parameters<AlertingService["sendAlert"]>[0]) => void,
+) => {
+  let normalPossibleValues = extractFromUiSchemaOptions(
+    control,
+    "possibleValues",
+  );
+  if (!normalPossibleValues) {
+    const choicesProviderClass = extractFromUiSchemaOptions(
+      control,
+      "choicesProviderClass",
+    );
+    if (typeof choicesProviderClass === "string") {
+      const asyncResult = await getAsyncPossibleValues(choicesProviderClass);
+      normalPossibleValues = asyncResult
+        ? extractPossibleValues(asyncResult, sendAlert, choicesProviderClass)
+        : [];
+    } else {
+      normalPossibleValues = [];
+    }
+  }
+  return addSpecialColumns(normalPossibleValues, control);
 };

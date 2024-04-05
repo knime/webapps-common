@@ -1,7 +1,14 @@
 import type Result from "@/nodeDialog/api/types/Result";
-import type { PossibleValue } from "@/nodeDialog/types/ChoicesUiSchema";
+import type {
+  ChoicesUiSchema,
+  PossibleValue,
+} from "@/nodeDialog/types/ChoicesUiSchema";
 import { describe, expect, it, vi } from "vitest";
-import getPossibleValuesFromUiSchema from "../getPossibleValuesFromUiSchema";
+import getPossibleValuesFromUiSchema, {
+  withSpecialChoices,
+} from "../getPossibleValuesFromUiSchema";
+import { ref } from "vue";
+import flushPromises from "flush-promises";
 
 describe("generatePossibleValues", () => {
   const possibleValues = [
@@ -154,6 +161,36 @@ describe("generatePossibleValues", () => {
       expect(undefinedAsyncChoicesProvider).toHaveBeenCalledWith(
         choicesProviderClass,
       );
+    });
+  });
+
+  describe("withSpecialChoices", () => {
+    it("adds special choices to the existing ones given as ref", async () => {
+      const existing = ref<PossibleValue[] | null>(null);
+
+      const uischema: ChoicesUiSchema = {
+        options: {
+          showRowKeys: true,
+        },
+      };
+
+      const withSpecial = withSpecialChoices(existing, { uischema });
+      expect(withSpecial.value).toBeNull();
+
+      existing.value = [];
+      await flushPromises();
+
+      expect(withSpecial.value).toStrictEqual([
+        expect.objectContaining({ id: "<row-keys>" }),
+      ]);
+
+      existing.value = [{ id: "foo", text: "bar" }];
+      await flushPromises();
+
+      expect(withSpecial.value).toStrictEqual([
+        expect.objectContaining({ id: "<row-keys>" }),
+        { id: "foo", text: "bar" },
+      ]);
     });
   });
 });
