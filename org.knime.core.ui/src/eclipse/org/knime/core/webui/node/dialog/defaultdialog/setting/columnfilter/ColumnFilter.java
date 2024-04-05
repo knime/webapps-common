@@ -115,6 +115,16 @@ public class ColumnFilter implements PersistableSettings {
     }
 
     /**
+     * Set the column filter to include unknown columns while in manual mode.
+     *
+     * @return the instance
+     */
+    public ColumnFilter withIncludeUnknownColumns() {
+        m_manualFilter.m_includeUnknownColumns = true;
+        return this;
+    }
+
+    /**
      * Initialises the column selection with no initially selected columns.
      */
     public ColumnFilter() {
@@ -140,10 +150,7 @@ public class ColumnFilter implements PersistableSettings {
     public static ColumnFilter createDefault(final Class<? extends ChoicesProvider> choicesProviderClass,
         final DefaultNodeSettingsContext context) {
         ChoicesProvider choicesProvider = InstantiationUtil.createInstance(choicesProviderClass);
-        var choices = choicesProvider.choices(context);
-        var columnFilter = new ColumnFilter(choices);
-        columnFilter.m_manualFilter.m_includeUnknownColumns = true;
-        return columnFilter;
+        return new ColumnFilter(choicesProvider.choices(context)).withIncludeUnknownColumns();
     }
 
     /**
