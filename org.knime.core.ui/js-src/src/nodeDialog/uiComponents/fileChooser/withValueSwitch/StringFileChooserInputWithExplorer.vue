@@ -33,7 +33,7 @@ const props = withDefaults(
 const emit = defineEmits(["update:modelValue"]);
 
 const placeholder = computed(() => props.options?.placeholder);
-const { filteredExtensions, appendedExtension, isWriter } =
+const { filteredExtensions, appendedExtension, isWriter, isLoaded } =
   useFileChooserBrowseOptions(toRef(props, "options"));
 
 const active = ref(false);
@@ -72,7 +72,7 @@ const chooseFile = (chosen: string) => {
       </FunctionButton>
     </template>
   </InputField>
-  <div v-if="active" class="modal-overlay">
+  <div v-if="active && isLoaded" class="modal-overlay">
     <FileChooserWithButtons
       :backend-type="backendType"
       :initial-file-path="modelValue"

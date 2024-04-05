@@ -22,7 +22,7 @@ const { onFsCategoryUpdate, onPathUpdate, onTimeoutUpdate } =
       emit("update:modelValue", value);
     },
   );
-const { filteredExtensions, appendedExtension, isWriter } =
+const { filteredExtensions, appendedExtension, isWriter, isLoaded } =
   useFileChooserBrowseOptions(toRef(props, "options"));
 
 const possibleCategories: {
@@ -74,7 +74,7 @@ onMounted(() => {
         @update:timeout="onTimeoutUpdate"
       />
       <FileExplorerTab
-        v-else
+        v-else-if="isLoaded"
         :id="id"
         :filtered-extensions="filteredExtensions"
         :appended-extension="appendedExtension"

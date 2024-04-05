@@ -9,25 +9,30 @@ export const useFileChooserBrowseOptions = (
   const filteredExtensions = ref<string[]>([]);
   const appendedExtension = ref<string | null>(null);
   const isWriter = computed(() => options.value.isWriter);
+  const isLoaded = ref(false);
 
   const setFileExtension = (fileExtension: string) => {
     filteredExtensions.value = [fileExtension];
     appendedExtension.value = fileExtension;
+    isLoaded.value = true;
   };
 
   onMounted(() => {
-    if (options.value.fileExtension) {
-      setFileExtension(options.value?.fileExtension);
+    const { fileExtension, fileExtensionProvider, fileExtensions } =
+      options.value;
+    if (!fileExtension && !fileExtensionProvider && !fileExtensions) {
+      isLoaded.value = true;
+      return;
     }
-    if (options.value.fileExtensionProvider) {
-      addStateProviderListener(
-        options.value.fileExtensionProvider,
-        setFileExtension,
-      );
+    if (fileExtension) {
+      setFileExtension(fileExtension);
     }
-    const multipleFileExtensions = options.value.fileExtensions;
-    if (multipleFileExtensions) {
-      filteredExtensions.value = multipleFileExtensions;
+    if (fileExtensionProvider) {
+      addStateProviderListener(fileExtensionProvider, setFileExtension);
+    }
+    if (fileExtensions) {
+      filteredExtensions.value = fileExtensions;
+      isLoaded.value = true;
     }
   });
 
@@ -35,5 +40,6 @@ export const useFileChooserBrowseOptions = (
     filteredExtensions,
     appendedExtension,
     isWriter,
+    isLoaded,
   };
 };

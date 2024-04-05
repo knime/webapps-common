@@ -5,6 +5,7 @@ import { shallowMount } from "@vue/test-utils";
 import TabBar from "webapps-common/ui/components/TabBar.vue";
 import FileExplorerTab from "../FileExplorerTab.vue";
 import UrlTab from "../UrlTab.vue";
+import flushPromises from "flush-promises";
 
 describe("SideDrawerContent.vue", () => {
   let props: Props;
@@ -58,6 +59,7 @@ describe("SideDrawerContent.vue", () => {
     expect(wrapper.findComponent(TabBar).props().modelValue).toBe(
       "relative-to-current-hubspace",
     );
+    await flushPromises();
     const fileExplorerTab = wrapper.findComponent(FileExplorerTab);
     expect(fileExplorerTab.exists()).toBeTruthy();
     const updatedPath = "updatedPath";
