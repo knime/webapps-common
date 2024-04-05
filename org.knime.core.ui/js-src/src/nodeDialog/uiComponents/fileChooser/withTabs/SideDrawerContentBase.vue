@@ -7,7 +7,7 @@ import TabBar from "webapps-common/ui/components/TabBar.vue";
 import LinkIcon from "webapps-common/ui/assets/img/icons/link.svg";
 import KnimeIcon from "webapps-common/ui/assets/img/icons/knime.svg";
 import { useFileChooserBrowseOptions } from "../composables/useFileChooserBrowseOptions";
-import { FunctionalComponent, toRef } from "vue";
+import { FunctionalComponent, onMounted, toRef } from "vue";
 import useFileChooserStateChange from "../composables/useFileChooserStateChange";
 
 const props = withDefaults(defineProps<FileChooserProps>(), {
@@ -41,6 +41,20 @@ const possibleCategories: {
     icon: LinkIcon,
   },
 ];
+
+/**
+ * This currently can happen in case a node implementation sets the default value to one that is not supported in this frontend.
+ * In this case, we switch to a default when the drawer is opened.
+ */
+onMounted(() => {
+  if (
+    !possibleCategories
+      .map(({ value }) => value)
+      .includes(props.modelValue.fsCategory)
+  ) {
+    onFsCategoryUpdate("relative-to-current-hubspace");
+  }
+});
 </script>
 
 <template>

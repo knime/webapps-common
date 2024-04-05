@@ -85,4 +85,13 @@ describe("SideDrawerContent.vue", () => {
       fsCategory: "CUSTOM_URL",
     });
   });
+
+  it("switcher to current hub space if non-supported fsCategory is given", () => {
+    props.initialValue.fsCategory = "LOCAL";
+    const wrapper = mountSideDrawerContent();
+    expect(wrapper.vm.modelValue).toStrictEqual({
+      ...props.initialValue,
+      fsCategory: "relative-to-current-hubspace",
+    });
+  });
 });
