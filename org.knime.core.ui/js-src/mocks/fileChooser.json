@@ -163,6 +163,53 @@
               }
             }
           ]
+        },
+        {
+          "type": "Section",
+          "label": "File Chooser With Side Drawer",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/empty",
+              "options": {
+                "format": "fileChooser",
+                "isLabs": true
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/writer",
+              "options": {
+                "format": "fileChooser",
+                "isWriter": true,
+                "isLabs": true
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/disabledPath",
+              "options": {
+                "format": "fileChooser",
+                "isLabs": true
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/overwrittenByNonSupported",
+              "options": {
+                "format": "fileChooser",
+                "isLabs": true
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/pathCustom",
+              "options": {
+                "format": "fileChooser",
+                "isLabs": true
+              }
+            }
+          ]
         }
       ]
     },

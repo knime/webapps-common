@@ -22,7 +22,10 @@ import { valueSwitchRenderer } from "./valueSwitchRenderer";
 import { textAreaRenderer } from "./textAreaRenderer";
 import { credentialsRenderer } from "./credentialsRenderer";
 import { localFileChooserRenderer } from "./localFileChooserRenderer";
-import { fileChooserRenderer } from "./fileChooserRenderer";
+import {
+  fileChooserRenderer,
+  fileChooserLabsRenderer,
+} from "./fileChooserRenderer";
 import { legacyCredentialsRenderer } from "./legacyCredentialsRenderer";
 
 export const defaultRenderers = [
@@ -55,4 +58,5 @@ export const defaultRenderers = [
   legacyCredentialsRenderer,
   localFileChooserRenderer,
   fileChooserRenderer,
+  fileChooserLabsRenderer,
 ];
