@@ -74,12 +74,12 @@ public final class InputSpecUtil {
      *         NOTE: array of specs can contain {@code null} values, e.g., if input port is not connected or inactive!
      */
     public static PortObjectSpec[] getInputSpecsExcludingVariablePort(final NodeContainer nc) {
-        final var rawSpecs = getInputSpecsIncludingVariablePort(nc);
+        final var allSpecs = getInputSpecsIncludingVariablePort(nc);
         // copy input port object specs, ignoring the 0-variable port:
-        return Arrays.copyOfRange(rawSpecs, 1, rawSpecs.length);
+        return Arrays.copyOfRange(allSpecs, 1, allSpecs.length);
     }
 
-    private static PortObjectSpec[] getInputSpecsIncludingVariablePort(final NodeContainer nc) {
+    public static PortObjectSpec[] getInputSpecsIncludingVariablePort(final NodeContainer nc) {
         final var rawSpecs = new PortObjectSpec[nc.getNrInPorts()];
         final var wfm = nc.getParent();
         for (var cc : wfm.getIncomingConnectionsFor(nc.getID())) {
