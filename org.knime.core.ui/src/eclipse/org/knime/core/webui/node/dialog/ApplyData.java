@@ -52,6 +52,7 @@ import java.io.IOException;
 import java.util.EnumMap;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
 import java.util.stream.Stream;
 
 import org.knime.core.node.InvalidSettingsException;
@@ -312,13 +313,20 @@ final class ApplyData {
     }
 
     /*
-     * Returns whether a call is made for the embedded node dialog and not for an detached node dialog.
+     * Replaceable for testing purposes.
      */
-    private static boolean calledForEmbeddedDialog() {
+    static BooleanSupplier calledForEmbeddedDialogsPredicate = () -> {
         var thread = Thread.currentThread();
         return Stream.of(thread.getStackTrace())
             .noneMatch(e -> e.getClassName().equals("org.knime.core.wizard.rpc.DefaultNodeService")
                 && e.getMethodName().equals("callNodeDataService"));
+    };
+
+    /*
+     * Returns whether a call is made for the embedded node dialog and not for an detached node dialog.
+     */
+    private static boolean calledForEmbeddedDialog() {
+        return calledForEmbeddedDialogsPredicate.getAsBoolean();
     }
 
     /**

@@ -189,7 +189,7 @@ public class NodeDialogTest {
 
         private boolean m_onApplyCalled;
 
-        private NativeNodeContainer m_ExpectedNnc;
+        private NativeNodeContainer m_expectedNnc;
 
         private NodeSettingsRO m_expectedPreviousModelSettings;
 
@@ -203,7 +203,7 @@ public class NodeDialogTest {
             final NodeSettingsRO updatedModelSettings, final NodeSettingsRO previousViewSettings,
             final NodeSettingsRO updatedViewSettings) {
             m_onApplyCalled = false;
-            m_ExpectedNnc = nnc;
+            m_expectedNnc = nnc;
             m_expectedPreviousModelSettings = previousModelSettings;
             m_expectedUpdatedModelSettings = updatedModelSettings;
             m_expectedPreviousViewSettings = previousViewSettings;
@@ -215,7 +215,7 @@ public class NodeDialogTest {
             final NodeSettingsRO updatedModelSettings, final NodeSettingsRO initialViewSettings,
             final NodeSettingsRO updatedViewSettings) {
             m_onApplyCalled = true;
-            assertThat(nnc).isEqualTo(m_ExpectedNnc);
+            assertThat(nnc).isEqualTo(m_expectedNnc);
             assertThat(initialModelSettings).isEqualTo(m_expectedPreviousModelSettings);
             assertThat(updatedModelSettings).isEqualTo(m_expectedUpdatedModelSettings);
             assertThat(initialViewSettings).isEqualTo(m_expectedPreviousViewSettings);
@@ -224,13 +224,80 @@ public class NodeDialogTest {
     }
 
     /**
-     * Tests that a given TestOnApplyNodeModifer is correctly called (i.e., called with the correct parameters) when
-     * data services are cleaned up.
+     * Tests that a given TestOnApplyNodeModifer is correctly called for 'detached dialogs' (i.e., called with the
+     * correct parameters), especially when data services are cleaned up.
      *
      * @throws Exception
      */
     @Test
-    void testOnApplyNodeModifier() throws Exception {
+    void testOnApplyNodeModifierForEmbeddedDialogs() throws Exception {
+
+        var onApplyModifier = new TestOnApplyNodeModifer();
+        var wfm = WorkflowManagerUtil.createEmptyWorkflow();
+        var nnc = WorkflowManagerUtil.createAndAddNode(wfm,
+            new NodeDialogNodeFactory(() -> createNodeDialog(Page.builder(() -> "test", "test.html").build(),
+                createNodeSettingsService(), null, onApplyModifier)));
+        var nncWrapper = NodeWrapper.of(nnc);
+
+        var initialModelSettings = new NodeSettings("model");
+        initialModelSettings.addString("key", "initial_value");
+        var initialViewSettings = new NodeSettings("view");
+        initialViewSettings.addString("key", "initial_value");
+        var dataServiceManager = NodeDialogManager.getInstance().getDataServiceManager();
+        onApplyModifier.setExpected(nnc, new NodeSettings("model"), initialModelSettings, new NodeSettings("view"),
+            initialViewSettings);
+        dataServiceManager.callApplyDataService(nncWrapper,
+            settingsToString(initialModelSettings, initialViewSettings));
+        assertThat(onApplyModifier.m_onApplyCalled).isTrue();
+
+        // update settings again
+        var updatedModelSettings = new NodeSettings("model");
+        updatedModelSettings.addString("key", "updatedOnce");
+        var updatedViewSettings = new NodeSettings("view");
+        updatedViewSettings.addString("key", "updatedOnce");
+        onApplyModifier.setExpected(nnc, initialModelSettings, updatedModelSettings, initialViewSettings,
+            updatedViewSettings);
+        dataServiceManager.callApplyDataService(nncWrapper,
+            settingsToString(updatedModelSettings, updatedViewSettings));
+        assertThat(onApplyModifier.m_onApplyCalled).isTrue();
+
+        // Test that when settings are overridden by flow variables, these settings are always passed unchanged to the
+        // on apply modifier, i.e., their value is changed neither to the value of the overriding flow variable nor to
+        // any updated value provided via callApplyDataService.
+        var nodeSettings = new NodeSettings("node_settings");
+        wfm.saveNodeSettings(nnc.getID(), nodeSettings);
+        var viewVariables = (NodeSettings) nodeSettings.addNodeSettings("view_variables");
+        viewVariables.addString("version", "V_2019_09_13");
+        var viewVariable = viewVariables.addNodeSettings("tree").addNodeSettings("key");
+        viewVariable.addString("used_variable", "view_variable");
+        viewVariable.addString("exposed_variable", null);
+        var modelVariables = (NodeSettings) nodeSettings.addNodeSettings("variables");
+        modelVariables.addString("version", "V_2019_09_13");
+        var modelVariable = modelVariables.addNodeSettings("tree").addNodeSettings("key");
+        modelVariable.addString("used_variable", "model_variable");
+        modelVariable.addString("exposed_variable", null);
+        nnc.getFlowObjectStack().push(new FlowVariable("view_variable", "view_variable_value"));
+        nnc.getFlowObjectStack().push(new FlowVariable("model_variable", "model_variable_value"));
+        onApplyModifier.setExpected(nnc, updatedModelSettings, updatedModelSettings, updatedViewSettings,
+            updatedViewSettings);
+        dataServiceManager.callApplyDataService(nncWrapper,
+            settingsToString(initialModelSettings, initialViewSettings,
+                new VariableSettings(nodeSettings, SettingsType.MODEL),
+                new VariableSettings(nodeSettings, SettingsType.VIEW)));
+        assertThat(onApplyModifier.m_onApplyCalled).isTrue();
+    }
+
+    /**
+     * Tests that a given TestOnApplyNodeModifer is correctly called for 'detached dialogs' (i.e., called with the
+     * correct parameters), especially when data services are cleaned up.
+     *
+     * @throws Exception
+     */
+    @Test
+    void testOnApplyNodeModifierForDetachedDialogs() throws Exception {
+
+        var originalPredicate = ApplyData.calledForEmbeddedDialogsPredicate;
+        ApplyData.calledForEmbeddedDialogsPredicate = () -> false;
 
         var onApplyModifier = new TestOnApplyNodeModifer();
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
@@ -293,6 +360,8 @@ public class NodeDialogTest {
             updatedViewSettings);
         dataServiceManager.deactivateDataServices(nncWrapper); // clean up data services (simulate closing of the dialog)
         assertThat(onApplyModifier.m_onApplyCalled).isTrue();
+
+        ApplyData.calledForEmbeddedDialogsPredicate = originalPredicate;
     }
 
     /**
