@@ -12,6 +12,7 @@ import {
   JsonDataService,
   ReportingService,
   ResourceService,
+  SharedDataService,
 } from "@knime/ui-extension-service";
 import Label from "webapps-common/ui/components/forms/Label.vue";
 import flushPromises from "flush-promises";
@@ -21,9 +22,11 @@ import type ImageViewSettings from "../types/ImageViewSettings";
 
 describe("ImageView.vue", () => {
   let jsonDataServiceMock: {
-    initialData: Mock<any>;
-    addOnDataChangeCallback: Mock<any, any>;
-  };
+      initialData: Mock<any>;
+    },
+    sharedDataServiceMock: {
+      addSharedDataListener: Mock<any, any>;
+    };
 
   const defaultImagePath = "defaultImagePath";
   const defaultSettings = {
@@ -42,7 +45,10 @@ describe("ImageView.vue", () => {
       settings,
       imagePath,
     })),
-    addOnDataChangeCallback: vi.fn(),
+  });
+
+  const createSharedDataServiceMock = () => ({
+    addSharedDataListener: vi.fn(),
   });
 
   let getResourceUrl: Mock;
@@ -84,7 +90,9 @@ describe("ImageView.vue", () => {
 
   beforeEach(() => {
     jsonDataServiceMock = createJsonDataServiceMock();
+    sharedDataServiceMock = createSharedDataServiceMock();
     (JsonDataService as any).mockImplementation(() => jsonDataServiceMock);
+    (SharedDataService as any).mockImplementation(() => sharedDataServiceMock);
     const setRenderCompleted = vi.fn();
     (ReportingService as any).mockImplementation((baseService: any) => ({
       isReportingActive: () => baseService.isReport,
@@ -196,8 +204,8 @@ describe("ImageView.vue", () => {
 
   it("adds on data change callback on mount", () => {
     const addOnDataChangeCallbackSpy = vi.spyOn(
-      jsonDataServiceMock,
-      "addOnDataChangeCallback",
+      sharedDataServiceMock,
+      "addSharedDataListener",
     );
     mountComponent();
     expect(addOnDataChangeCallbackSpy).toHaveBeenCalled();

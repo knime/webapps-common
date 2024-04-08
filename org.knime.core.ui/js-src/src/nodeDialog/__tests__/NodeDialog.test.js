@@ -7,6 +7,7 @@ import {
   JsonDataService,
   DialogService,
   AlertingService,
+  SharedDataService,
 } from "@knime/ui-extension-service";
 import {
   dialogApplyData,
@@ -29,7 +30,7 @@ describe("NodeDialog.vue", () => {
         ...dialogInitialData,
       });
     vi.spyOn(JsonDataService.prototype, "applyData").mockResolvedValue();
-    vi.spyOn(DialogService.prototype, "publishSettings").mockResolvedValue();
+    vi.spyOn(SharedDataService.prototype, "shareData").mockResolvedValue();
     setApplyListenerSpy = vi.spyOn(DialogService.prototype, "setApplyListener");
   });
 
@@ -88,7 +89,7 @@ describe("NodeDialog.vue", () => {
     beforeEach(async () => {
       wrapper = shallowMount(NodeDialog, getOptions());
       onSettingsChangedSpy = vi.spyOn(wrapper.vm, "onSettingsChanged");
-      publishDataSpy = vi.spyOn(wrapper.vm.dialogService, "publishSettings");
+      publishDataSpy = vi.spyOn(wrapper.vm.sharedDataService, "shareData");
 
       await flushPromises();
 

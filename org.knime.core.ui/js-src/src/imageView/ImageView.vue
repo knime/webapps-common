@@ -3,6 +3,7 @@ import {
   JsonDataService,
   ReportingService,
   ResourceService,
+  SharedDataService,
 } from "@knime/ui-extension-service";
 import { fetchImage } from "@/utils/images";
 import OptionalLabel from "./OptionalLabel.vue";
@@ -49,7 +50,8 @@ const loaded = ref(false);
 onMounted(async () => {
   const knimeService = inject<() => UIExtensionService>("getKnimeService")!();
   const jsonDataService = new JsonDataService(knimeService);
-  jsonDataService.addOnDataChangeCallback(onViewSettingsChange);
+  const sharedDataService = new SharedDataService(knimeService);
+  sharedDataService.addSharedDataListener(onViewSettingsChange);
   const initialData = await jsonDataService.initialData();
   setData(initialData.settings);
   const imageUrl = await new ResourceService(knimeService).getResourceUrl(

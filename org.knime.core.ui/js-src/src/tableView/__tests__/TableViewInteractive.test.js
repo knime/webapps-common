@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   JsonDataService,
   CachingSelectionService,
+  SharedDataService,
 } from "@knime/ui-extension-service";
 import {
   shallowMountInteractive,
@@ -180,7 +181,10 @@ describe("TableViewInteractive.vue", () => {
             return Promise.resolve(dataRequestResult);
         }
       }),
-      addOnDataChangeCallback: vi.fn(),
+      knimeService: {},
+    }));
+    SharedDataService.mockImplementation(() => ({
+      addSharedDataListener: vi.fn(),
       knimeService: {},
     }));
 

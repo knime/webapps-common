@@ -5,6 +5,7 @@ import {
   UIExtensionService,
   SelectionModes,
   SelectionService,
+  SharedDataService,
 } from "@knime/ui-extension-service";
 import TableViewDisplay from "./TableViewDisplay.vue";
 import { createDefaultFilterConfig, arrayEquals } from "@/tableView/utils";
@@ -101,6 +102,7 @@ export default {
       displayedColumns: [] as string[],
       columnCount: 0,
       jsonDataService: null as null | JsonDataService,
+      sharedDataService: null as null | SharedDataService,
       selectionService: null as null | SelectionService,
       searchTerm: "",
       columnFiltersMap: new Map() as Map<string | symbol, FilterConfig>,
@@ -231,7 +233,8 @@ export default {
   },
   async mounted() {
     this.jsonDataService = new JsonDataService(this.knimeService);
-    this.jsonDataService.addOnDataChangeCallback(
+    this.sharedDataService = new SharedDataService(this.knimeService);
+    this.sharedDataService.addSharedDataListener(
       this.onViewSettingsChange.bind(this),
     );
     const initialData =

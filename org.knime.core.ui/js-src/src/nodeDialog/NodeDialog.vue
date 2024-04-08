@@ -5,6 +5,7 @@ import {
   UIExtensionService,
   AlertingService,
   CreateAlertParams,
+  SharedDataService,
 } from "@knime/ui-extension-service";
 import { vanillaRenderers } from "@jsonforms/vue-vanilla";
 import { JsonForms } from "@jsonforms/vue";
@@ -101,6 +102,7 @@ export default {
     return {
       jsonDataService: null as JsonDataService | null,
       dialogService: null as DialogService | null,
+      sharedDataService: null as SharedDataService | null,
       flawedControllingVariablePaths: new Set() satisfies Set<string>,
       possiblyFlawedControllingVariablePaths: new Set() satisfies Set<string>,
       renderers: Object.freeze(renderers),
@@ -126,6 +128,7 @@ export default {
   async mounted() {
     this.jsonDataService = new JsonDataService(this.getKnimeService());
     this.dialogService = new DialogService(this.getKnimeService());
+    this.sharedDataService = new SharedDataService(this.getKnimeService());
     const initialSettings = await this.jsonDataService.initialData();
     const { schema } = initialSettings;
     schema.flowVariablesMap = this.initializeFlowVariablesMap(initialSettings);
@@ -173,7 +176,7 @@ export default {
     },
     publishSettings() {
       const publishedData = cloneDeep(this.getData());
-      this.dialogService!.publishSettings(publishedData);
+      this.sharedDataService!.shareData(publishedData);
     },
     getModelSettings(data: SettingsData) {
       return data.model;
