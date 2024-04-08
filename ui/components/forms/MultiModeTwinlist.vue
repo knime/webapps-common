@@ -44,6 +44,16 @@ export default {
       type: Array as PropType<Id[] | null>,
       default: () => [],
     },
+    /**
+     * Passed on to the Twinlist prop "excludedValues" in case of manual mode
+     * Only required (in combination with the @update:excludedValues event) whenever missing excluded values are desired.
+     * Because, if this prop is not set, the excluded list will simply be the possible values which are not part of the modelValue.
+     */
+    initialManuallyDeselected: {
+      required: false,
+      type: Array as PropType<Id[] | null>,
+      default: null,
+    },
     initialIncludeUnknownValues: {
       type: Boolean,
       default: false,
@@ -160,10 +170,15 @@ export default {
     "modeInput",
     "caseSensitivePatternInput",
     "inversePatternInput",
+    /**
+     * Propagated 1 to 1 from Twinlist.
+     */
+    "update:excludedValues",
   ],
   data() {
     return {
       chosenValues: this.initialManuallySelected,
+      manuallyDeselected: this.initialManuallyDeselected,
       chosenPattern: this.initialPattern,
       chosenTypes: this.initialSelectedTypes,
       invalidPossibleValueIds: new Set(),
@@ -203,7 +218,13 @@ export default {
     selectedValues() {
       return this.mode === "manual" ? this.chosenValues : this.matchingValueIds;
     },
+    excludedValues() {
+      return this.mode === "manual" ? this.manuallyDeselected : null;
+    },
     deselectedValues() {
+      if (this.excludedValues) {
+        return this.excludedValues;
+      }
       const selectedValuesSet = new Set(this.selectedValues ?? []);
       return this.possibleValueIds.filter((id) => !selectedValuesSet.has(id));
     },
@@ -237,11 +258,10 @@ export default {
     selectedValues: {
       immediate: true,
       handler(newVal: Id[] | null, oldVal: Id[] | null | undefined) {
-        if (newVal === null) {
+        if (!oldVal || newVal === null) {
           return;
         }
         if (
-          !oldVal ||
           newVal.length !== oldVal.length ||
           oldVal.some((item, i) => item !== newVal[i])
         ) {
@@ -269,12 +289,20 @@ export default {
         this.chosenValues = newVal;
       }
     },
+    initialManuallyDeselected(newVal, oldVal) {
+      if (newVal === null || oldVal === null) {
+        this.manuallyDeselected = newVal;
+      }
+    },
   },
   methods: {
     onManualInput(value: Id[]) {
       if (this.mode === "manual") {
         this.chosenValues = value;
       }
+    },
+    onExcludedValuesUpdate(excludedValues: Id[]) {
+      this.manuallyDeselected = excludedValues;
     },
     onPatternInput(value: string) {
       this.chosenPattern = value;
@@ -387,10 +415,12 @@ export default {
       :disabled="selectionDisabled"
       :show-search="mode === 'manual' && showSearch"
       :model-value="selectedValues"
+      :excluded-values="excludedValues"
       :possible-values="possibleValues"
       :show-unknown-values="unknownValuesVisible"
       :initial-include-unknown-values="includeUnknownValues"
       @update:model-value="onManualInput"
+      @update:excluded-values="onExcludedValuesUpdate"
       @include-unknown-values-input="onUnkownColumnsInput"
     />
   </div>

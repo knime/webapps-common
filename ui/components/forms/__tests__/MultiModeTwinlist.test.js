@@ -110,31 +110,6 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
     assertLeftRightAmount(wrapper, 2, 1);
   });
 
-  it("emits selection on mounted", async () => {
-    let initialSelection = ["A", "B", "C"];
-    let propsData = {
-      possibleValues: [
-        {
-          id: "test1",
-          text: "test1",
-        },
-      ],
-      initialManuallySelected: initialSelection,
-      leftLabel: "Choose",
-      rightLabel: "The value",
-      isValid: false,
-    };
-    const wrapper = mount(MultiModeTwinlist, {
-      propsData,
-    });
-    await flushPromises();
-    expect(wrapper.emitted().input[0][0]).toStrictEqual({
-      selected: initialSelection,
-      isManual: true,
-      deselected: ["test1"],
-    });
-  });
-
   it("has invalid state if invalid values are selected", async () => {
     let propsData = {
       possibleValues: [
@@ -393,7 +368,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
       wrapper.findComponent(SearchInput).vm.$emit("update:modelValue", ".*1");
       await wrapper.vm.$nextTick();
       expect(wrapper.emitted().patternInput[0][0]).toBe(".*1");
-      expect(wrapper.emitted().input[1][0]).toStrictEqual({
+      expect(wrapper.emitted().input[0][0]).toStrictEqual({
         selected: ["test1"],
         isManual: false,
       });
@@ -413,7 +388,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
       wrapper.findComponent(SearchInput).vm.$emit("update:modelValue", "t*");
       await wrapper.vm.$nextTick();
       expect(wrapper.emitted().patternInput[0][0]).toBe("t*");
-      expect(wrapper.emitted().input[1][0]).toStrictEqual({
+      expect(wrapper.emitted().input[0][0]).toStrictEqual({
         selected: ["test1", "test2", "test3"],
         isManual: false,
       });
@@ -583,7 +558,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
         .vm.$emit("update:modelValue", ["StringValue"]);
       await wrapper.vm.$nextTick();
       expect(wrapper.emitted().typesInput[0][0]).toStrictEqual(["StringValue"]);
-      expect(wrapper.emitted().input[1][0]).toStrictEqual({
+      expect(wrapper.emitted().input[0][0]).toStrictEqual({
         selected: ["test1", "test3"],
         isManual: false,
       });

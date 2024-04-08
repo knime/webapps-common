@@ -70,6 +70,20 @@ export default {
       codeExample,
       selected: [],
       selectedMissing: ["foo", "I am missing", "bar"],
+      excludedMissing: [
+        "baz",
+        "I am missing on the left",
+        "baz2",
+        "baz3",
+        "baz4",
+        "baz5",
+        "baz6",
+        "baz7",
+        "baz8",
+        "baz9",
+        "baz10",
+        "baz11",
+      ],
       selectedUnknown: [],
       selectedSearchLabel: [],
       loadingIconRef: markRaw(LoadingIcon),
@@ -134,6 +148,11 @@ export default {
           text: "Baz 11",
         },
       ];
+    },
+  },
+  methods: {
+    updateExcludedMissing(newMissingValues) {
+      this.excludedMissing = newMissingValues;
     },
   },
 };
@@ -215,6 +234,9 @@ export default {
         <div class="grid-item-6">
           <Twinlist
             v-model="selectedMissing"
+            :excluded-values="excludedMissing"
+            show-unknown-values
+            :initial-include-unknown-values="false"
             :size="7"
             show-search
             left-label="Select from the visible items"
@@ -222,9 +244,13 @@ export default {
             search-label="Search items"
             search-placeholder="Placeholder"
             :possible-values="demoValues"
+            @update:excluded-values="updateExcludedMissing"
           />
         </div>
-        <div class="grid-item-6">selected ids: {{ selectedMissing }}</div>
+        <div class="grid-item-6">
+          selected ids: {{ selectedMissing }}, excluded ids:
+          {{ excludedMissing }}
+        </div>
       </div>
       <div class="grid-container">
         <div class="grid-item-6">
