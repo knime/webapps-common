@@ -1,5 +1,5 @@
 import { isControl, rankWith } from "@jsonforms/core";
-import ColumnFilter from "../uiComponents/ColumnFilter.vue";
+import ColumnFilter from "../uiComponents/twinlist/ColumnFilter.vue";
 import { priorityRanks, inputFormats } from "../constants";
 
 export const columnFilterTester = (uischema, _schema) =>

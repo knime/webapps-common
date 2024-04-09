@@ -5,9 +5,9 @@ import {
   getControlBase,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import SimpleTwinlistInput from "../SimpleTwinlistInput.vue";
-import TwinlistLoadingInfo from "../loading/TwinlistLoadingInfo.vue";
-import LabeledInput from "../label/LabeledInput.vue";
-import DialogLabel from "../label/DialogLabel.vue";
+import TwinlistLoadingInfo from "../../loading/TwinlistLoadingInfo.vue";
+import LabeledInput from "../../label/LabeledInput.vue";
+import DialogLabel from "../../label/DialogLabel.vue";
 import Twinlist from "webapps-common/ui/components/forms/Twinlist.vue";
 import MultiselectListBox from "webapps-common/ui/components/forms/MultiselectListBox.vue";
 import flushPromises from "flush-promises";

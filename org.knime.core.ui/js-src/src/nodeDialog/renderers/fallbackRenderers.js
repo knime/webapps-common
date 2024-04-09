@@ -13,7 +13,7 @@ import { numberRenderer } from "./numberRenderer";
 import { checkboxRenderer } from "./checkboxRenderer";
 import { integerRenderer } from "./integerRenderer";
 import OneOfDropdown from "../uiComponents/OneOfDropdown.vue";
-import AnyOfTwinlist from "../uiComponents/AnyOfTwinlist.vue";
+import AnyOfTwinlist from "../uiComponents/twinlist/AnyOfTwinlist.vue";
 import { textRenderer } from "./textRenderer";
 import { verticalLayoutRenderer } from "./verticalLayoutRenderer";
 

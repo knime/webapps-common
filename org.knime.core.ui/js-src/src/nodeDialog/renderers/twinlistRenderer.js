@@ -1,6 +1,6 @@
 import { and, isControl, not, rankWith, schemaMatches } from "@jsonforms/core";
-import TwinlistInput from "../uiComponents/TwinlistInput.vue";
-import SimpleTwinlistInput from "../uiComponents/SimpleTwinlistInput.vue";
+import TwinlistInput from "../uiComponents/twinlist/TwinlistInput.vue";
+import SimpleTwinlistInput from "../uiComponents/twinlist/SimpleTwinlistInput.vue";
 
 import { inputFormats, priorityRanks } from "../constants";
 

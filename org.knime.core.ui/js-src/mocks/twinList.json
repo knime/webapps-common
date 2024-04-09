@@ -22,7 +22,22 @@
         "mode": "MANUAL",
         "manualFilter": {
           "manuallySelected": ["foo", "foo2"],
-          "manuallyDeselected": ["bar"]
+          "manuallyDeselected": ["bar", "bar2"]
+        },
+        "typeFilter": {
+          "selectedTypes": ["typeA"]
+        },
+
+        "patternFilter": {
+          "pattern": ""
+        }
+      },
+      "ColumnFilterWithIncludedUnknownColumns": {
+        "mode": "MANUAL",
+        "manualFilter": {
+          "manuallySelected": ["foo", "foo2"],
+          "manuallyDeselected": ["bar", "bar2"],
+          "includeUnknownColumns": true
         },
         "typeFilter": {
           "selectedTypes": ["typeA"]
@@ -95,6 +110,14 @@
             }
           }
         },
+        "ColumnFilterWithIncludedUnknownColumns": {
+          "type": "object",
+          "properties": {
+            "selected": {
+              "type": "array"
+            }
+          }
+        },
         "AsyncChoices": {
           "type": "object",
           "properties": {
@@ -156,6 +179,31 @@
         {
           "type": "Control",
           "scope": "properties/ColumnFilter",
+          "options": {
+            "format": "columnFilter",
+            "possibleValues": [
+              {
+                "id": "foo",
+                "text": "Foo",
+                "type": {
+                  "id": "typeA",
+                  "text": "Type A"
+                }
+              },
+              {
+                "id": "bar",
+                "text": "Bar",
+                "type": {
+                  "id": "typeB",
+                  "text": "Type B"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "properties/ColumnFilterWithIncludedUnknownColumns",
           "options": {
             "format": "columnFilter",
             "possibleValues": [

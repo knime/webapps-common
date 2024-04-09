@@ -3,18 +3,22 @@
 <script setup lang="ts">
 import { markRaw, type Ref, type Raw, ref, computed, watch } from "vue";
 import { rendererProps } from "@jsonforms/vue";
-import { mergeDeep, getValuesInSet, getValuesNotInSet } from "../utils";
+import { mergeDeep } from "@/nodeDialog/utils";
 import MultiModeTwinlist from "webapps-common/ui/components/forms/MultiModeTwinlist.vue";
-import inject from "../utils/inject";
-import type { IdAndText, PossibleValue } from "../types/ChoicesUiSchema";
-import type Control from "../types/Control";
+import inject from "@/nodeDialog/utils/inject";
+import type {
+  IdAndText,
+  PossibleValue,
+} from "@/nodeDialog//types/ChoicesUiSchema";
+import type Control from "@/nodeDialog/types/Control";
 import type { PartialDeep } from "type-fest";
-import TwinlistLoadingInfo from "./loading/TwinlistLoadingInfo.vue";
-import useDialogControl from "../composables/components/useDialogControl";
-import LabeledInput from "./label/LabeledInput.vue";
-import useProvidedState from "../composables/components/useProvidedState";
+import TwinlistLoadingInfo from "../loading/TwinlistLoadingInfo.vue";
+import useDialogControl from "@/nodeDialog/composables/components/useDialogControl";
+import LabeledInput from "../label/LabeledInput.vue";
+import useProvidedState from "@/nodeDialog/composables/components/useProvidedState";
 import { DefaultSettingComparator } from "@knime/ui-extension-service";
-import { withSpecialChoices } from "../utils/getPossibleValuesFromUiSchema";
+import { withSpecialChoices } from "@/nodeDialog/utils/getPossibleValuesFromUiSchema";
+import { adjustManualSelection } from "./utils";
 
 type TwinlistData = {
   mode: string;
@@ -154,6 +158,7 @@ const possibleValues = withSpecialChoices(
 );
 const previouslySelectedTypes = ref<IdAndText[]>([]);
 const initialManuallySelected = ref(null as null | string[]);
+const initialManuallyDeselected = ref(null as null | string[]);
 /**
  *  add unknown columns either to the manually selected or manually deselected
  * @param {string[]} possibleValueIds the possible values from which unknown values are determined.
@@ -163,14 +168,21 @@ const setInitialManuallySelected = (possibleValueIds: string[]) => {
   const { manuallySelected, manuallyDeselected, includeUnknownColumns } =
     control.value.data.manualFilter;
 
-  const includedPossibleValueIds = includeUnknownColumns //
-    ? getValuesNotInSet(possibleValueIds, new Set(manuallyDeselected)) //
-    : getValuesInSet(possibleValueIds, new Set(manuallySelected));
-
-  initialManuallySelected.value = [
-    ...getValuesNotInSet(manuallySelected, new Set(includedPossibleValueIds)),
-    ...includedPossibleValueIds,
-  ];
+  const leftSide = {
+    previous: manuallyDeselected,
+    next: initialManuallyDeselected,
+  };
+  const rightSide = {
+    previous: manuallySelected,
+    next: initialManuallySelected,
+  };
+  const knownValuesSide = includeUnknownColumns ? leftSide : rightSide;
+  const unknownValuesSide = includeUnknownColumns ? rightSide : leftSide;
+  adjustManualSelection({
+    possibleValueIds,
+    knownValuesSide,
+    unknownValuesSide,
+  });
   loadingInfo.value = null;
 };
 
@@ -266,6 +278,7 @@ const rightLabel = computed(
       :empty-state-component="loadingInfo"
       :initial-inverse-pattern="control.data.patternFilter.isInverted"
       :initial-manually-selected="initialManuallySelected"
+      :initial-manually-deselected="initialManuallyDeselected"
       :initial-include-unknown-values="
         control.data.manualFilter.includeUnknownColumns
       "

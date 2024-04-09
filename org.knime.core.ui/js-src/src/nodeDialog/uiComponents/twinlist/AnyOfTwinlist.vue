@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { rendererProps } from "@jsonforms/vue";
-import Control from "../types/Control";
-import { optionsMapper } from "../utils";
+import Control from "@/nodeDialog/types/Control";
+import { optionsMapper } from "@/nodeDialog/utils";
 import SimpleTwinlistInput from "./SimpleTwinlistInput.vue";
 
 defineProps(rendererProps());
