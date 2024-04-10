@@ -1,11 +1,14 @@
 import { describe, it, beforeEach, expect, vi, afterEach } from "vitest";
 import TextView from "../TextView.vue";
-import { JsonDataService } from "@knime/ui-extension-service";
+import {
+  JsonDataService,
+  SharedDataService,
+} from "@knime/ui-extension-service";
 import shallowMountReportingComponent from "@@/test-setup/utils/shallowMountReportingComponent";
 import flushPromises from "flush-promises";
 
 describe("TextView.vue", () => {
-  let wrapper, initialDataSpy, addOnDataChangeCallbackSpy;
+  let wrapper, initialDataSpy, addSharedDataListenerSpy;
 
   const defaultContent = "test data";
   const defaultFlowVariablesMap = {
@@ -21,15 +24,19 @@ describe("TextView.vue", () => {
       content,
       flowVariablesMap,
     })),
-    addOnDataChangeCallback: vi.fn(),
   });
 
-  const createSpies = (jsonDataServiceMock) => {
+  const createSharedDataServiceMock = () => ({
+    addSharedDataListener: vi.fn(),
+  });
+
+  const createSpies = (jsonDataServiceMock, sharedDataServiceMock) => {
     JsonDataService.mockImplementation(() => jsonDataServiceMock);
     initialDataSpy = vi.spyOn(jsonDataServiceMock, "initialData");
-    addOnDataChangeCallbackSpy = vi.spyOn(
-      jsonDataServiceMock,
-      "addOnDataChangeCallback",
+    SharedDataService.mockImplementation(() => sharedDataServiceMock);
+    addSharedDataListenerSpy = vi.spyOn(
+      sharedDataServiceMock,
+      "addSharedDataListener",
     );
   };
 
@@ -40,7 +47,8 @@ describe("TextView.vue", () => {
 
   beforeEach(() => {
     const jsonDataServiceMock = createJsonDataServiceMock();
-    createSpies(jsonDataServiceMock);
+    const sharedDataServiceMock = createSharedDataServiceMock();
+    createSpies(jsonDataServiceMock, sharedDataServiceMock);
     mountWrapper();
   });
 
@@ -58,7 +66,7 @@ describe("TextView.vue", () => {
   });
 
   it("adds on data change callback on mount", () => {
-    expect(addOnDataChangeCallbackSpy).toHaveBeenCalled();
+    expect(addSharedDataListenerSpy).toHaveBeenCalled();
   });
 
   describe("onViewSettingsChange", () => {
@@ -138,7 +146,8 @@ describe("TextView.vue", () => {
   it("replaces flow variables in text content on mount", async () => {
     const content = '$$["key1"] $$["key2"]';
     const jsonDataServiceMock = createJsonDataServiceMock(content);
-    createSpies(jsonDataServiceMock);
+    const sharedDataServiceMock = createSharedDataServiceMock();
+    createSpies(jsonDataServiceMock, sharedDataServiceMock);
     mountWrapper();
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.richTextContent).toBe("value1 value2");

@@ -1,5 +1,9 @@
 <script>
-import { JsonDataService, ReportingService } from "@knime/ui-extension-service";
+import {
+  JsonDataService,
+  ReportingService,
+  SharedDataService,
+} from "@knime/ui-extension-service";
 
 export default {
   inject: ["getKnimeService"],
@@ -21,12 +25,12 @@ export default {
     },
   },
   async mounted() {
-    this.jsonDataService = new JsonDataService(this.knimeService);
-    this.jsonDataService.addOnDataChangeCallback(
+    const jsonDataService = new JsonDataService(this.knimeService);
+    const sharedDataService = new SharedDataService(this.knimeService);
+    sharedDataService.addSharedDataListener(
       this.onViewSettingsChange.bind(this),
     );
-    const { content, flowVariablesMap } =
-      await this.jsonDataService.initialData();
+    const { content, flowVariablesMap } = await jsonDataService.initialData();
     this.flowVariablesMap = flowVariablesMap;
     this.richTextContent = this.replaceFlowVariablesInContent(content);
     const reportingService = new ReportingService(this.knimeService);
