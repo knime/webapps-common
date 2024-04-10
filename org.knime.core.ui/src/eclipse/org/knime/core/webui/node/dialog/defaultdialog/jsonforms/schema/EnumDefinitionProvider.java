@@ -58,6 +58,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.knime.core.node.NodeLogger;
+import org.knime.core.webui.node.dialog.defaultdialog.util.DescriptionUtil.TitleAndDescription;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
@@ -102,7 +103,6 @@ final class EnumDefinitionProvider implements CustomPropertyDefinitionProvider<F
         return arrayNode;
     }
 
-
     private static <E extends Enum<E>> void addEnumFieldToArrayNode(final E constant, final ArrayNode arrayNode) {
         var name = constant.name();
         final var innerObjectNode = arrayNode.addObject();
@@ -111,21 +111,12 @@ final class EnumDefinitionProvider implements CustomPropertyDefinitionProvider<F
         innerObjectNode.put(TAG_TITLE, constantEntry.title());
     }
 
-    record ConstantEntry(String title, String description) {
-
-        boolean hasDescription() {
-            return description != null && description.trim().length() > 0;
-        }
-
-    }
-
-    static <E extends Enum<E>> List<ConstantEntry> getEnumConstantDescription(final Class<E> enumClass) {
+    static <E extends Enum<E>> List<TitleAndDescription> getEnumConstantDescription(final Class<E> enumClass) {
         return Stream.of(enumClass.getEnumConstants())//
-                .map(EnumDefinitionProvider::createConstantEntry)
-                .toList();
+            .map(EnumDefinitionProvider::createConstantEntry).toList();
     }
 
-    static <E extends Enum<E>> ConstantEntry createConstantEntry(final E constant) {
+    static <E extends Enum<E>> TitleAndDescription createConstantEntry(final E constant) {
         var enumClass = constant.getDeclaringClass();
         var name = constant.name();
         try {
@@ -137,15 +128,14 @@ final class EnumDefinitionProvider implements CustomPropertyDefinitionProvider<F
             }
             if (field.isAnnotationPresent(Label.class)) {
                 final var label = field.getAnnotation(Label.class);
-                return new ConstantEntry(label.value(), label.description());
+                return new TitleAndDescription(label.value(), label.description());
             }
         } catch (NoSuchFieldException | SecurityException e) {
             NodeLogger.getLogger(EnumDefinitionProvider.class)
                 .error(String.format("Exception when accessing field %s.", name), e);
         }
         var label = StringUtils.capitalize(name.toLowerCase(Locale.getDefault()).replace("_", " "));
-        return new ConstantEntry(label, null);
+        return new TitleAndDescription(label, null);
     }
-
 
 }

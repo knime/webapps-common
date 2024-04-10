@@ -48,8 +48,11 @@
  */
 package org.knime.core.webui.node.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
@@ -60,9 +63,13 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFor
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.LayoutTreeNode;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.util.ArrayLayoutUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.util.DescriptionUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.util.DescriptionUtil.TitleAndDescription;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.w3c.dom.Element;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ser.PropertyWriter;
 
 /**
@@ -95,6 +102,11 @@ final class OptionsAdder {
         if (viewSettingsClass != null) {
             settings.put(SettingsType.VIEW.getConfigKey(), viewSettingsClass);
         }
+        addOptions(addField, settings);
+    }
+
+    private static void addOptions(final Consumer<PropertyWriter> addField,
+        final Map<String, Class<? extends WidgetGroup>> settings) {
         final var layoutTree = JsonFormsUiSchemaUtil.resolveLayout(settings).layoutTreeRoot();
         applyToAllLeaves(layoutTree, addField);
     }
@@ -106,11 +118,37 @@ final class OptionsAdder {
 
     private static void createOption(final PropertyWriter field, final Element tab,
         final BiFunction<String, String, Element> optionCreator) {
+        getTitleAndDescription(field).ifPresent(titleAndDescription -> {
+            var option = optionCreator.apply(titleAndDescription.title(), titleAndDescription.description());
+            tab.appendChild(option);
+
+        });
+    }
+
+    private static Optional<TitleAndDescription> getTitleAndDescription(final PropertyWriter field) {
+
         final var widget = field.getAnnotation(Widget.class);
         if (widget != null) {
-            var description = JsonFormsSchemaUtil.resolveDescription(widget, field.getType().getRawClass());
-            var option = optionCreator.apply(widget.title(), description.orElse(""));
-            tab.appendChild(option);
+            var description = JsonFormsSchemaUtil.resolveDescription(widget, field.getType().getRawClass()).orElse("");
+            final var fieldType = field.getType();
+            if (ArrayLayoutUtil.isArrayLayoutField(fieldType)) {
+                description = getDescriptionPlusChildDescriptions(description, fieldType);
+            }
+            return Optional.of(new TitleAndDescription(widget.title(), description));
         }
+        return Optional.empty();
+
     }
+
+    private static String getDescriptionPlusChildDescriptions(final String description, final JavaType fieldType) {
+        final var contentType = (Class<? extends WidgetGroup>)fieldType.getContentType().getRawClass();
+        Map<String, Class<? extends WidgetGroup>> arraySettings = new HashMap<>();
+        arraySettings.put(null, contentType);
+        final List<TitleAndDescription> childElementDescriptions = new ArrayList<>();
+
+        addOptions(childField -> getTitleAndDescription(childField).ifPresent(childElementDescriptions::add),
+            arraySettings);
+        return description + DescriptionUtil.getDescriptionsUlString(childElementDescriptions);
+    }
+
 }

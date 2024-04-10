@@ -44,39 +44,53 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   9 Nov 2022 (marcbux): created
+ *   Apr 10, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.impl;
+package org.knime.core.webui.node.dialog.defaultdialog.util;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.Before;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
- * @author Marc Bux, KNIME GmbH, Berlin, Germany
+ * A utility class for creating nested settings descriptions (e.g. for enums and array layouts)
+ *
+ * @author Paul Bärnreuther
  */
-public final class TestWebUINodeModelSettings implements DefaultNodeSettings {
+public final class DescriptionUtil {
 
-    @Before(Second.class)
-    interface First {
+    private DescriptionUtil() {
+        // Utility
     }
 
-    interface Second {
+    /**
+     * @param title must be non-null
+     * @param description might be null or empty
+     */
+    public record TitleAndDescription(String title, String description) {
+
+        boolean hasDescription() {
+            return description != null && description.trim().length() > 0;
+        }
+
     }
 
-    static final class Element implements DefaultNodeSettings {
-
-        @Widget(title = "An element setting", description = "An element description")
-        int m_elementSetting;
+    /**
+     * @param items
+     * @return a string representation of the collection of listed items. Items without description are not shown. If
+     *         none of the items has a description, an empty string is returned.
+     */
+    public static String getDescriptionsUlString(final Collection<TitleAndDescription> items) {
+        if (items.stream().anyMatch(TitleAndDescription::hasDescription)) {
+            return items.stream()//
+                .map(DescriptionUtil::createConstantListItem)//
+                .collect(Collectors.joining("", "\n<ul>", "\n</ul>"));
+        }
+        return "";
     }
 
-    @Widget(title = "Some array layout setting", description = "Some other description")
-    @Layout(Second.class)
-    Element[] m_secondSetting = new Element[0];
-
-    @Widget(title = "Some Model Setting", description = "Some Description")
-    @Layout(First.class)
-    int m_someModelSetting;
+    private static String createConstantListItem(final TitleAndDescription entry) {
+        var description = entry.hasDescription() ? (": " + entry.description()) : "";
+        return "\n<li><b>%s</b>%s</li>".formatted(entry.title(), description);//NOSONAR
+    }
 
 }

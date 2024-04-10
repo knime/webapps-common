@@ -172,6 +172,11 @@ class WebUINodeFactoryTest {
             "Output description is not set correctly.");
         assertEquals("Some Model Setting", nodeDescription.getDialogOptionGroups().get(0).getOptions().get(0).getName(),
             "Option description is not set correctly");
+        assertEquals("Some other description\n" //
+            + "<ul>\n" //
+            + "<li><b>An element setting</b>: An element description</li>\n" //
+            + "</ul>", nodeDescription.getDialogOptionGroups().get(0).getOptions().get(1).getDescription(),
+            "Nested option description is not set correctly");
         final var nodeKeywords = nodeDescription.getKeywords();
         assertEquals(keywords.length, nodeKeywords.length, "Number of keywords is not set correctly.");
         for (int i = 0; i < keywords.length; i++) {

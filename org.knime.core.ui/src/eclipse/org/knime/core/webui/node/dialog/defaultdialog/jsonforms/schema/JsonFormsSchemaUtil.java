@@ -76,9 +76,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.EnumDefinitionProvider.ConstantEntry;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.ConfigKeyUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DeprecatedConfigs;
+import org.knime.core.webui.node.dialog.defaultdialog.util.DescriptionUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget.DoubleProvider;
@@ -255,17 +255,7 @@ public final class JsonFormsSchemaUtil {
         @SuppressWarnings("unchecked") // the calling method checks that erasedEnumType is an enum
         var enumClass = (Class<E>)erasedEnumType;
         var constantEntries = EnumDefinitionProvider.getEnumConstantDescription(enumClass);
-        if (constantEntries.stream().anyMatch(ConstantEntry::hasDescription)) {
-            return constantEntries.stream()//
-                .map(JsonFormsSchemaUtil::createConstantListItem)//
-                .collect(Collectors.joining("", "\n<ul>", "\n</ul>"));
-        }
-        return "";
-    }
-
-    private static String createConstantListItem(final ConstantEntry entry) {
-        var description = entry.hasDescription() ? (": " + entry.description()) : "";
-        return "\n<li><b>%s</b>%s</li>".formatted(entry.title(), description);//NOSONAR
+        return DescriptionUtil.getDescriptionsUlString(constantEntries);
     }
 
     private static BigDecimal resolveDouble(final DefaultNodeSettingsContext context,
