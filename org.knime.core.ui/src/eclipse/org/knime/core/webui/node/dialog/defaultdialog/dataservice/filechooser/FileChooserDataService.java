@@ -311,6 +311,10 @@ public final class FileChooserDataService {
                 if (errorMessage == null) {
                     errorMessage = String.format("Access to the selected path %s is denied", path);
                 }
+            } catch (InvalidPathException ex) { //NOSONAR
+                if (errorMessage == null) {
+                    errorMessage = String.format("The selected path %s is not a valid path", path);
+                }
             }
         }
         throw new IllegalStateException(
