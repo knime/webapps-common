@@ -8,5 +8,11 @@
             factoryClass="org.knime.core.ui.node.workflow.async.NodeContainerRpcTransportFactory">
       </RpcTransportFactory>
    </extension>
+   <extension
+         point="org.knime.core.ui.nodetriples">
+      <tripleprovider
+            factory-class="org.knime.core.ui.workflowcoach.data.PrefsTripleProvider$Factory">
+      </tripleprovider>
+   </extension>
 
 </plugin>
