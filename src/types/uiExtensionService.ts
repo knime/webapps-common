@@ -85,6 +85,7 @@ export type APILayerDirtyState = { apply: ApplyState; view: ViewState };
 export type UIExtensionServiceAPILayer = {
   getResourceLocation: (path: string) => Promise<string>;
 
+  // TODO rename - UIEXT-1697
   callNodeDataService: (
     params: Identifiers & {
       extensionType: string;
