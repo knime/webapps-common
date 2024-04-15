@@ -5,7 +5,7 @@ import FileExplorerTab from "./FileExplorerTab.vue";
 import UrlTab from "./UrlTab.vue";
 import TabBar from "webapps-common/ui/components/TabBar.vue";
 import LinkIcon from "webapps-common/ui/assets/img/icons/link.svg";
-import KnimeIcon from "webapps-common/ui/assets/img/icons/knime.svg";
+import KnimeIcon from "./knime.svg";
 import { useFileChooserBrowseOptions } from "../composables/useFileChooserBrowseOptions";
 import { FunctionalComponent, onMounted, toRef } from "vue";
 import useFileChooserStateChange from "../composables/useFileChooserStateChange";
