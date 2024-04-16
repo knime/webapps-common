@@ -77,6 +77,17 @@ export enum ViewState {
 
 export type APILayerDirtyState = { apply: ApplyState; view: ViewState };
 
+type SomeKnimeUiApiResponse = {
+  isSome: true;
+  data: any;
+};
+
+type NoneKnimeUiApiResponse = {
+  isSome: false;
+};
+
+type KnimeUiApiResponse = SomeKnimeUiApiResponse | NoneKnimeUiApiResponse;
+
 /**
  * API layer definition for the UIExtension service. This contract
  * represents the method implementations that the embedder of Extensions
@@ -93,6 +104,12 @@ export type UIExtensionServiceAPILayer = {
       dataServiceRequest: string;
     },
   ) => Promise<any>;
+
+  // TODO get rid of this method - This is for providing data for an input-port-view in the scripting editor
+  callKnimeUiApi: (
+    method: string,
+    params: object | readonly unknown[] | undefined,
+  ) => Promise<KnimeUiApiResponse>;
 
   updateDataPointSelection: (
     params: Identifiers & { mode: string; selection: string[] },
