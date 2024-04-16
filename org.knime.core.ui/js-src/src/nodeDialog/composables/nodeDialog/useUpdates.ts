@@ -22,24 +22,30 @@ export default ({
   registerTrigger,
   sendAlert,
 }: {
-  callStateProviderListener: (id: string, value: unknown) => void;
+  callStateProviderListener: (
+    location: { id: string; indices?: number[] },
+    value: unknown,
+  ) => void;
   registerWatcher: (params: {
     dependencies: string[];
     transformSettings: TransformSettingsMethod;
   }) => void;
-  registerTrigger: (id: string, callback: TransformSettingsMethod) => void;
+  registerTrigger: (
+    id: string,
+    callback: (indices: number[]) => TransformSettingsMethod,
+  ) => void;
   sendAlert: (params: CreateAlertParams) => void;
 }) => {
   const baseService = inject<() => UIExtensionService>("getKnimeService")!();
   const jsonDataService = new JsonDataService(baseService);
 
   const resolveUpdateResult =
-    ({ path, value, id }: UpdateResult) =>
+    ({ path, value, id }: UpdateResult, indices?: number[]) =>
     (newSettings: DialogSettingsObject) => {
       if (path) {
         set(newSettings, toDataPath(path), value);
       } else if (id) {
-        callStateProviderListener(id, value); // TODO: id + index
+        callStateProviderListener({ id, indices }, value);
       }
       return newSettings;
     };
@@ -60,9 +66,11 @@ export default ({
       return currentSettings;
     }
     return copyAndTransform(currentSettings, (newSettings) => {
-      initialUpdates.map(resolveUpdateResult).forEach((transform) => {
-        newSettings = transform(newSettings);
-      });
+      initialUpdates
+        .map((updateResult) => resolveUpdateResult(updateResult))
+        .forEach((transform) => {
+          newSettings = transform(newSettings);
+        });
       return newSettings;
     });
   };
@@ -79,17 +87,24 @@ export default ({
 
   const setTrigger = (
     trigger: Update["trigger"],
-    triggerCallback: TransformSettingsMethod,
+    triggerCallback: (indices: number[]) => TransformSettingsMethod,
   ): null | TransformSettingsMethod => {
     if (trigger.scope) {
-      setValueTrigger(trigger.scope, triggerCallback);
+      setValueTrigger(
+        trigger.scope,
+        triggerCallback(
+          [] /** TODO: Make trigger.scope an array and set a value trigger for all possible indices */,
+        ),
+      );
       return null;
     }
-    const transformSettings: TransformSettingsMethod = (settings) =>
-      copyAndTransform(settings, triggerCallback);
+    const transformSettings =
+      (indices: number[]): TransformSettingsMethod =>
+      (settings) =>
+        copyAndTransform(settings, triggerCallback(indices));
 
     if (trigger.triggerInitially) {
-      return transformSettings;
+      return transformSettings([]);
     }
     registerTrigger(trigger.id, transformSettings);
     return null;
@@ -108,7 +123,8 @@ export default ({
     });
 
   const getTriggerCallback =
-    ({ dependencies, trigger }: Update): TransformSettingsMethod =>
+    ({ dependencies, trigger }: Update) =>
+    (indices: number[]): TransformSettingsMethod =>
     async (newSettings) => {
       const currentDependencies = Object.fromEntries(
         dependencies.map((dep) => [
@@ -129,7 +145,7 @@ export default ({
       }
       if (response.state === "SUCCESS") {
         (response.result ?? []).forEach((updateResult: UpdateResult) => {
-          newSettings = resolveUpdateResult(updateResult)(newSettings); // TODO enrich with index
+          newSettings = resolveUpdateResult(updateResult, indices)(newSettings); // TODO enrich with index
         });
       }
       return newSettings;

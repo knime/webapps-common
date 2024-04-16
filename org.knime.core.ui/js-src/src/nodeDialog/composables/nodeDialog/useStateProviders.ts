@@ -1,3 +1,6 @@
+const toMapKey = ({ id, indices }: { id: string; indices?: number[] }) =>
+  JSON.stringify({ id, indices: indices ?? [] });
+
 export default () => {
   const stateProviderListeners = new Map<
     string,
@@ -8,22 +11,27 @@ export default () => {
    */
   const states = new Map<string, unknown>();
   const addStateProviderListener = (
-    { id }: { id: string; indices?: number[] },
+    location: { id: string; indices?: number[] },
     callback: (value: any) => void,
   ) => {
-    if (stateProviderListeners.has(id)) {
-      stateProviderListeners.get(id)!.push(callback);
+    const key = toMapKey(location);
+    if (stateProviderListeners.has(key)) {
+      stateProviderListeners.get(key)!.push(callback);
     } else {
-      stateProviderListeners.set(id, [callback]);
+      stateProviderListeners.set(key, [callback]);
     }
-    if (states.has(id)) {
-      callback(states.get(id));
+    if (states.has(key)) {
+      callback(states.get(key));
     }
   };
 
-  const callStateProviderListener = (id: string, value: unknown) => {
-    states.set(id, value);
-    stateProviderListeners.get(id)?.forEach((callback) => callback(value));
+  const callStateProviderListener = (
+    location: { id: string; indices?: number[] },
+    value: unknown,
+  ) => {
+    const key = toMapKey(location);
+    states.set(key, value);
+    stateProviderListeners.get(key)?.forEach((callback) => callback(value));
   };
 
   return { addStateProviderListener, callStateProviderListener };

@@ -1,21 +1,30 @@
 import { TransformSettingsMethod } from "./useUpdates";
 
 export default () => {
-  const registeredTriggers = new Map<string, TransformSettingsMethod>();
+  const registeredTriggers = new Map<
+    string,
+    (indices: number[]) => TransformSettingsMethod
+  >();
 
   const registerTrigger = (
     triggerId: string,
-    callback: TransformSettingsMethod,
+    callback: (indices: number[]) => TransformSettingsMethod,
   ) => {
     registeredTriggers.set(triggerId, callback);
   };
 
-  const getTriggerCallback = (trigger: string) => {
-    const callback = registeredTriggers.get(trigger);
+  const getTriggerCallback = ({
+    id,
+    indices,
+  }: {
+    id: string;
+    indices?: number[];
+  }) => {
+    const callback = registeredTriggers.get(id);
     if (!callback) {
-      throw Error(`No trigger registered for id ${trigger}`);
+      throw Error(`No trigger registered for id ${id}`);
     }
-    return callback;
+    return callback(indices ?? []);
   };
 
   return { registerTrigger, getTriggerCallback };
