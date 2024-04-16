@@ -58,14 +58,15 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueRefsAndStateProviders.ValueProviderWrapper;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueRefsAndStateProviders.ValueRefWrapper;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueRefsAndStateProviders.ValueRefsAndStateProviders;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.Vertex.VertexVisitor;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonReference;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 
 final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
 
@@ -116,7 +117,7 @@ final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
         Collection<TriggerVertex> getTriggerVertices() {
             collectVertices();
             return Stream.concat(m_triggerVertices.values().stream(), m_specialTriggerVertices.values().stream())
-                .toList();
+                .sorted((t1, t2) -> StringUtils.compare(t1.getId(), t2.getId())).toList();
         }
 
         private void collectVertices() {

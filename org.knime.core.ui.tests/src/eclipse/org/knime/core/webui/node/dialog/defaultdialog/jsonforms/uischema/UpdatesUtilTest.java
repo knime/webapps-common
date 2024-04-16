@@ -120,12 +120,12 @@ class UpdatesUtilTest {
 
             }
 
-            class Dependency implements Reference<Integer> {
+            class DependencyA implements Reference<Integer> {
 
             }
 
             @Widget(title = "", description = "")
-            @ValueReference(Dependency.class)
+            @ValueReference(DependencyA.class)
             int dependency;
 
             static class MyWidgetGroup implements WidgetGroup {
@@ -134,18 +134,18 @@ class UpdatesUtilTest {
 
             }
 
-            class AnotherDependency implements Reference<MyWidgetGroup> {
+            class DependencyB implements Reference<MyWidgetGroup> {
 
             }
 
-            @ValueReference(AnotherDependency.class)
+            @ValueReference(DependencyB.class)
             MyWidgetGroup anotherDependency;
 
             static final class TestStateProvider implements StateProvider<String> {
 
                 @Override
                 public void init(final StateProviderInitializer initializer) {
-                    initializer.computeFromValueSupplier(Dependency.class);
+                    initializer.computeFromValueSupplier(DependencyA.class);
                 }
 
                 @Override
@@ -163,8 +163,8 @@ class UpdatesUtilTest {
 
                 @Override
                 public void init(final StateProviderInitializer initializer) {
-                    initializer.getValueSupplier(Dependency.class);
-                    initializer.computeOnValueChange(AnotherDependency.class);
+                    initializer.getValueSupplier(DependencyA.class);
+                    initializer.computeOnValueChange(DependencyB.class);
                 }
 
                 @Override
@@ -184,29 +184,26 @@ class UpdatesUtilTest {
         final var response = buildUpdates(settings);
 
         assertThatJson(response).inPath("$.globalUpdates").isArray().hasSize(2);
-        assertThatJson(response).inPath("$.globalUpdates").isArray().anySatisfy(globalUpdate -> {
-            assertThatJson(globalUpdate).inPath("$.trigger.id").isString()
-                .isEqualTo(TestSettings.Dependency.class.getName());
-            assertThatJson(globalUpdate).inPath("$.trigger.scope").isString()
-                .isEqualTo("#/properties/test/properties/dependency");
-            assertThatJson(globalUpdate).inPath("$.dependencies").isArray().hasSize(1);
-            assertThatJson(globalUpdate).inPath("$.dependencies[0].scope").isString()
-                .isEqualTo("#/properties/test/properties/dependency");
-            assertThatJson(globalUpdate).inPath("$.dependencies[0].id").isString()
-                .isEqualTo(TestSettings.Dependency.class.getName());
-        });
 
-        assertThatJson(response).inPath("$.globalUpdates").isArray().anySatisfy(globalUpdate -> {
-            assertThatJson(globalUpdate).inPath("$.trigger.id").isString()
-                .isEqualTo(TestSettings.AnotherDependency.class.getName());
-            assertThatJson(globalUpdate).inPath("$.trigger.scope").isString()
-                .isEqualTo("#/properties/test/properties/anotherDependency");
-            assertThatJson(globalUpdate).inPath("$.dependencies").isArray().hasSize(1);
-            assertThatJson(globalUpdate).inPath("$.dependencies[0].scope").isString()
-                .isEqualTo("#/properties/test/properties/dependency");
-            assertThatJson(globalUpdate).inPath("$.dependencies[0].id").isString()
-                .isEqualTo(TestSettings.Dependency.class.getName());
-        });
+        assertThatJson(response).inPath("$.globalUpdates[0].trigger.id").isString()
+            .isEqualTo(TestSettings.DependencyA.class.getName());
+        assertThatJson(response).inPath("$.globalUpdates[0].trigger.scope").isString()
+            .isEqualTo("#/properties/test/properties/dependency");
+        assertThatJson(response).inPath("$.globalUpdates[0].dependencies").isArray().hasSize(1);
+        assertThatJson(response).inPath("$.globalUpdates[0].dependencies[0].scope").isString()
+            .isEqualTo("#/properties/test/properties/dependency");
+        assertThatJson(response).inPath("$.globalUpdates[0].dependencies[0].id").isString()
+            .isEqualTo(TestSettings.DependencyA.class.getName());
+
+        assertThatJson(response).inPath("$.globalUpdates[1].trigger.id").isString()
+            .isEqualTo(TestSettings.DependencyB.class.getName());
+        assertThatJson(response).inPath("$.globalUpdates[1].trigger.scope").isString()
+            .isEqualTo("#/properties/test/properties/anotherDependency");
+        assertThatJson(response).inPath("$.globalUpdates[1].dependencies").isArray().hasSize(1);
+        assertThatJson(response).inPath("$.globalUpdates[1].dependencies[0].scope").isString()
+            .isEqualTo("#/properties/test/properties/dependency");
+        assertThatJson(response).inPath("$.globalUpdates[1].dependencies[0].id").isString()
+            .isEqualTo(TestSettings.DependencyA.class.getName());
 
     }
 
