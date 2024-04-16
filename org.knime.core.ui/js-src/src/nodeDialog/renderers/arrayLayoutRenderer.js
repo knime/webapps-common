@@ -1,5 +1,5 @@
 import { isObjectArray, rankWith } from "@jsonforms/core";
-import ArrayLayout from "@/nodeDialog/layoutComponents/ArrayLayout.vue";
+import ArrayLayout from "@/nodeDialog/layoutComponents/arrayLayout/ArrayLayout.vue";
 import { priorityRanks } from "@/nodeDialog/constants";
 
 export const arrayLayoutTester = isObjectArray;

@@ -18,7 +18,7 @@ type registerWatcher = (params: {
 }) => Promise<() => void>;
 
 type addStateProviderListener<T> = (
-  id: string,
+  identity: { id: string; indices?: number[] },
   callback: (data: T) => void,
 ) => void;
 
@@ -31,7 +31,7 @@ interface Provided {
   getPossibleValuesFromUiSchema: getPossibleValuesFromUiSchema;
   addStateProviderListener: addStateProviderListener<any>;
   registerWatcher: registerWatcher;
-  trigger: (triggerId: string) => void;
+  trigger: (triggerId: { id: string; indices?: number[] }) => void;
   updateData: any;
   sendAlert: sendAlert;
   getData: getData;

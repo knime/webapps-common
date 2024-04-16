@@ -8,7 +8,7 @@ export default () => {
    */
   const states = new Map<string, unknown>();
   const addStateProviderListener = (
-    id: string,
+    { id }: { id: string; indices?: number[] },
     callback: (value: any) => void,
   ) => {
     if (stateProviderListeners.has(id)) {

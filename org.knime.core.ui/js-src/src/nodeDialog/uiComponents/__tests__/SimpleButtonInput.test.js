@@ -56,7 +56,7 @@ describe("SimpleButtonInput.vue", () => {
 
   it("calls provided trigger method when the button is clicked", async () => {
     await wrapper.findComponent(Button).trigger("click");
-    expect(triggerMock).toHaveBeenCalledWith(triggerId);
+    expect(triggerMock).toHaveBeenCalledWith({ id: triggerId });
   });
 
   it("shows icon defined by the options if desired", async () => {

@@ -2,7 +2,7 @@ export interface ValueReference {
   /**
    * The schema path of the setting
    */
-  scope: string;
+  scope: string; // TODO? does this need to be an array in order to represent nested locations?
   /**
    * A unique identifyer
    */
@@ -10,7 +10,7 @@ export interface ValueReference {
 }
 
 export interface Trigger {
-  id: string;
+  id: string; // TODO: This id is no longer unique (e.g. a button inside an array layout exists in each element)
   scope: undefined;
   triggerInitially?: true;
 }

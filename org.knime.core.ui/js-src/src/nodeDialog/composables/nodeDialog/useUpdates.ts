@@ -39,7 +39,7 @@ export default ({
       if (path) {
         set(newSettings, toDataPath(path), value);
       } else if (id) {
-        callStateProviderListener(id, value);
+        callStateProviderListener(id, value); // TODO: id + index
       }
       return newSettings;
     };
@@ -129,7 +129,7 @@ export default ({
       }
       if (response.state === "SUCCESS") {
         (response.result ?? []).forEach((updateResult: UpdateResult) => {
-          newSettings = resolveUpdateResult(updateResult)(newSettings);
+          newSettings = resolveUpdateResult(updateResult)(newSettings); // TODO enrich with index
         });
       }
       return newSettings;

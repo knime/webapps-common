@@ -253,7 +253,7 @@ describe("CredentialsInput.vue", () => {
       props,
       provide: { addStateProviderListenerMock },
     });
-    const [id, callback] = addStateProviderListenerMock.mock.calls[0];
+    const [{ id }, callback] = addStateProviderListenerMock.mock.calls[0];
     expect(id).toBe(hasUsernameProvider);
     expect(wrapper.findAllComponents(InputField)).toHaveLength(2);
     callback(false);
@@ -269,7 +269,7 @@ describe("CredentialsInput.vue", () => {
       props,
       provide: { addStateProviderListenerMock },
     });
-    const [id, callback] = addStateProviderListenerMock.mock.calls[0];
+    const [{ id }, callback] = addStateProviderListenerMock.mock.calls[0];
     expect(id).toBe(hasPasswordProvider);
     expect(wrapper.findAllComponents(InputField)).toHaveLength(2);
     callback(false);

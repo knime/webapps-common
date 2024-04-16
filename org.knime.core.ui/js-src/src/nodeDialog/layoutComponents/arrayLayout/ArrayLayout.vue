@@ -9,10 +9,10 @@ import { composePaths } from "@jsonforms/core";
 import { useJsonFormsControlWithUpdate } from "@/nodeDialog/composables/components/useJsonFormsControlWithUpdate";
 import Button from "webapps-common/ui/components/Button.vue";
 import PlusIcon from "webapps-common/ui/assets/img/icons/plus.svg";
-import DialogComponentWrapper from "../uiComponents/DialogComponentWrapper.vue";
+import DialogComponentWrapper from "@/nodeDialog/uiComponents/DialogComponentWrapper.vue";
 import ArrayLayoutItemControls from "./ArrayLayoutItemControls.vue";
 import ArrayLayoutItem from "./ArrayLayoutItem.vue";
-import { useDirtySetting } from "../composables/components/useDirtySetting";
+import { useDirtySetting } from "@/nodeDialog/composables/components/useDirtySetting";
 
 const ArrayLayout = defineComponent({
   name: "ArrayLayout",

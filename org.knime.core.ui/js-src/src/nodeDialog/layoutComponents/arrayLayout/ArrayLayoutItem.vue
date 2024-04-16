@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import Label from "webapps-common/ui/components/forms/Label.vue";
 import { provideForAddedArrayLayoutElements } from "@/nodeDialog/composables/components/useAddedArrayLayoutItem";
+import { addIndexToStateProviders, addIndexToTriggers } from "./composables";
 
 const props = defineProps<{
   elements: [string, any][];
@@ -14,6 +15,9 @@ const props = defineProps<{
 if (props.hasBeenAdded) {
   provideForAddedArrayLayoutElements();
 }
+
+addIndexToStateProviders(props.index);
+addIndexToTriggers(props.index);
 
 const showElementTitles = computed(() => props.arrayElementTitle !== false);
 

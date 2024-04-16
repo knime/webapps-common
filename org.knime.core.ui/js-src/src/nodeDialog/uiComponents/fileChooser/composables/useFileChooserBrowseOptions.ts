@@ -28,7 +28,7 @@ export const useFileChooserBrowseOptions = (
       setFileExtension(fileExtension);
     }
     if (fileExtensionProvider) {
-      addStateProviderListener(fileExtensionProvider, setFileExtension);
+      addStateProviderListener({ id: fileExtensionProvider }, setFileExtension);
     }
     if (fileExtensions) {
       filteredExtensions.value = fileExtensions;

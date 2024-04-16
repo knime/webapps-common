@@ -74,12 +74,12 @@ describe("dirty array layout", () => {
             scope: "#/properties/model/properties/values",
             type: "Control",
             options: {
-              detail: {
-                value: {
+              detail: [
+                {
                   scope: "#/properties/value",
                   type: "Control",
                 },
-              },
+              ],
             },
           },
         ],

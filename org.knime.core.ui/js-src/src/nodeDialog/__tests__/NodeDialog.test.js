@@ -601,7 +601,7 @@ describe("NodeDialog.vue", () => {
         message: ["Success message."],
       });
 
-      await wrapper.vm.trigger(triggerId);
+      await wrapper.vm.trigger({ id: triggerId });
       expect(dataServiceSpy).toHaveBeenCalledWith({
         method: "settings.update2",
         options: [null, triggerId, { [dependencyId]: "secondSetting" }],
@@ -639,7 +639,7 @@ describe("NodeDialog.vue", () => {
 
       const stateProviderListener = vi.fn();
       wrapper.vm.addStateProviderListener(
-        stateProviderId,
+        { id: stateProviderId },
         stateProviderListener,
       );
       const updatedValue = "updated";
@@ -653,7 +653,7 @@ describe("NodeDialog.vue", () => {
         ],
         message: ["Success message."],
       });
-      await wrapper.vm.trigger(triggerId);
+      await wrapper.vm.trigger({ id: triggerId });
       expect(dataServiceSpy).toHaveBeenCalledWith({
         method: "settings.update2",
         options: [null, triggerId, { [dependencyId]: "secondSetting" }],
@@ -685,7 +685,7 @@ describe("NodeDialog.vue", () => {
       AlertingService.mockImplementation(() => ({
         sendAlert,
       }));
-      await wrapper.vm.trigger(triggerId);
+      await wrapper.vm.trigger({ id: triggerId });
       expect(sendAlert).toHaveBeenCalledWith(
         {
           message: errorMessage,

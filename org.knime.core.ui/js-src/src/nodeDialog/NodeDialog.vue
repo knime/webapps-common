@@ -151,10 +151,8 @@ export default {
         shouldBeVisible: !isExpanded,
       });
     },
-    async trigger(triggerId: string) {
-      this.currentData = await this.getTriggerCallback(triggerId)(
-        this.currentData,
-      );
+    async trigger({ id }: { id: string; indices?: number[] }) {
+      this.currentData = await this.getTriggerCallback(id)(this.currentData);
     },
     resolveInitialUpdates(initialUpdates: UpdateResult[]) {
       this.currentData = this.resolveUpdateResults(

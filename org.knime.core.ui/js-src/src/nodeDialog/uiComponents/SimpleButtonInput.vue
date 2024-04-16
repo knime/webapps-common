@@ -20,7 +20,7 @@ const icon = computed<Icon | undefined>(
 const trigger = inject("trigger");
 
 const onClick = () => {
-  trigger(triggerId.value);
+  trigger({ id: triggerId.value });
 };
 const hover = ref(false);
 </script>

@@ -228,7 +228,7 @@ describe("ColumnSelect.vue", () => {
       provide: { addStateProviderListenerMock },
     });
     expect(addStateProviderListenerMock).toHaveBeenCalledWith(
-      choicesProvider,
+      { id: choicesProvider },
       expect.anything(),
     );
     const providedChoices = [

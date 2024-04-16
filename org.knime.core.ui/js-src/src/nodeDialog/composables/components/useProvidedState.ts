@@ -12,7 +12,7 @@ export default <T>(
   onMounted(() => {
     const id = unref(stateProviderId);
     if (id) {
-      addStateProviderListener(id, (providedValue) => {
+      addStateProviderListener({ id }, (providedValue) => {
         state.value = providedValue;
       });
     }
