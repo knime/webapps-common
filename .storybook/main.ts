@@ -7,10 +7,10 @@ const config: StorybookConfig = {
     "../ui/**/__stories__/**/*.mdx",
   ],
   addons: [
+    "@storybook/addon-a11y",
     "@storybook/addon-links",
     "@storybook/addon-essentials",
     "@storybook/addon-interactions",
-    "storybook-addon-vue-slots",
   ],
   framework: {
     name: "@storybook/vue3-vite",

@@ -189,7 +189,7 @@ export default {
     ref="listContainer"
     :aria-label="menuAriaLabel"
     class="base-menu-items"
-    role="menu"
+    role="list"
     tabindex="-1"
     @pointerleave="$emit('item-hovered', null, id)"
   >
