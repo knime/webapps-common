@@ -120,10 +120,12 @@ export default ({
         triggerId: trigger.id,
         currentDependencies,
       });
-      if (response.state === "FAIL") {
-        sendAlert({
-          message: response.message,
-        });
+      if (response.state === "FAIL" || response.state === "SUCCESS") {
+        response.message.forEach((message) =>
+          sendAlert({
+            message,
+          }),
+        );
       }
       if (response.state === "SUCCESS") {
         (response.result ?? []).forEach((updateResult: UpdateResult) => {

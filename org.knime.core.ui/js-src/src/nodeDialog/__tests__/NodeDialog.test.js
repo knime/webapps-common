@@ -255,7 +255,11 @@ describe("NodeDialog.vue", () => {
       const wrapper = shallowMount(NodeDialog, getOptions());
       const getDataSpy = vi
         .spyOn(wrapper.vm.jsonDataService, "data")
-        .mockResolvedValue({ state: "SUCCESS", result: mockChoices });
+        .mockResolvedValue({
+          state: "SUCCESS",
+          result: mockChoices,
+          message: ["Success message."],
+        });
       const choicesProviderClass = "myChoicesProviderClass";
       const choices = await wrapper.vm.getPossibleValuesFromUiSchema({
         uischema: {
@@ -274,7 +278,7 @@ describe("NodeDialog.vue", () => {
       const wrapper = shallowMount(NodeDialog, getOptions());
       vi.spyOn(wrapper.vm.jsonDataService, "data").mockResolvedValue({
         state: "FAIL",
-        message: myMessage,
+        message: [myMessage],
       });
       const choices = await wrapper.vm.getPossibleValuesFromUiSchema({
         uischema: {
@@ -544,6 +548,7 @@ describe("NodeDialog.vue", () => {
             value: updatedValue,
           },
         ],
+        message: ["Success message."],
       });
 
       await wrapper.vm.updateData(
@@ -593,6 +598,7 @@ describe("NodeDialog.vue", () => {
             value: updatedValue,
           },
         ],
+        message: ["Success message."],
       });
 
       await wrapper.vm.trigger(triggerId);
@@ -645,6 +651,7 @@ describe("NodeDialog.vue", () => {
             value: updatedValue,
           },
         ],
+        message: ["Success message."],
       });
       await wrapper.vm.trigger(triggerId);
       expect(dataServiceSpy).toHaveBeenCalledWith({
@@ -671,7 +678,7 @@ describe("NodeDialog.vue", () => {
       const errorMessage = "my error message";
       dataServiceSpy.mockResolvedValue({
         state: "FAIL",
-        message: errorMessage,
+        message: [errorMessage],
       });
 
       const sendAlert = vi.fn();
@@ -731,6 +738,7 @@ describe("NodeDialog.vue", () => {
             value: updatedValue,
           },
         ],
+        message: ["Success message."],
       });
       const wrapper = shallowMount(NodeDialog, getOptions());
       await flushPromises();

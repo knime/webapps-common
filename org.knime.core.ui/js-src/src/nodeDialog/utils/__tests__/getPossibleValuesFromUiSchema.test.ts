@@ -107,7 +107,11 @@ describe("generatePossibleValues", () => {
       const successfulAsyncChoicesProvider: () => Promise<
         Result<PossibleValue[]>
       > = vi.fn(() =>
-        Promise.resolve({ state: "SUCCESS", result: successResultChoices }),
+        Promise.resolve({
+          state: "SUCCESS",
+          result: successResultChoices,
+          message: [],
+        }),
       );
       const choicesProviderClass = "myChoicesProviderClass";
 

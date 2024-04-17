@@ -34,7 +34,7 @@ const extractPossibleValues = (
       sendAlert({
         type: AlertType.ERROR,
         subtitle: "Failed to fetch possible values.",
-        message: asyncResult.message,
+        message: asyncResult.message[0],
       });
     }
     return [];

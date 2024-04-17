@@ -64,6 +64,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil
 import org.knime.core.webui.node.dialog.defaultdialog.widget.UpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesGetter;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.ErrorHandlingSingleton;
 
 /**
  * Implementation of the {@link DefaultNodeDialogDataService}.
@@ -161,6 +162,9 @@ public final class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialog
     @Override
     public Result<?> update2(final String widgetId, final String triggerClass,
         final Map<String, Object> rawDependencies) throws InterruptedException, ExecutionException {
+
+        ErrorHandlingSingleton.reset();
+
         final var context = createContext();
         return m_requestHandler.handleRequest(widgetId,
             () -> m_triggerInvocationHandler.trigger(triggerClass, rawDependencies, context));

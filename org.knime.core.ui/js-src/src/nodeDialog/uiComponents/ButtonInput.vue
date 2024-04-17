@@ -10,6 +10,7 @@ import getFlattenedSettings from "../utils/getFlattenedSettings";
 import type SettingsData from "../types/SettingsData";
 import { rendererProps } from "@jsonforms/vue";
 import { Stringifyable } from "../composables/components/JsonSettingsComparator";
+import type ResultOfType from "@/nodeDialog/api/types/Result";
 type Id = string; // NOSONAR intended type alias
 interface State {
   id: Id;
@@ -25,21 +26,7 @@ interface ButtonChange {
   buttonState: Id;
 }
 
-interface SuccessResult {
-  result: ButtonChange;
-  state: "SUCCESS";
-}
-
-interface FailResult {
-  state: "FAIL";
-  message: string;
-}
-
-interface CanceledResult {
-  state: "CANCELED";
-}
-
-type Result = SuccessResult | FailResult | CanceledResult;
+type Result = ResultOfType<ButtonChange>;
 
 const registerWatcher = inject("registerWatcher");
 const getData = inject("getData");
@@ -92,7 +79,7 @@ const handleDataServiceResult = (
     return;
   }
   if (state === "FAIL") {
-    errorMessage.value = receivedData.message;
+    errorMessage.value = receivedData.message[0];
   }
   resetCallback();
 };

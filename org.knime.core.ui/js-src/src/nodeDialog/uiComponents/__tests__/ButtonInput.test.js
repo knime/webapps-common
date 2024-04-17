@@ -236,7 +236,7 @@ describe("ButtonInput", () => {
   describe("errors", () => {
     const errorReult = {
       state: "FAIL",
-      message: "some error",
+      message: ["some error"],
       result: {
         buttonState: states[1].id,
         setSettingValue: false,

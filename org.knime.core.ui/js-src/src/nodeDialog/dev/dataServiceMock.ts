@@ -100,7 +100,7 @@ export default (rpcRequest: { method: string; params: any[] }) => {
       } else {
         return {
           state: "FAIL",
-          message: "Async choices fetching failed because xyz",
+          message: ["Async choices fetching failed because xyz"],
         };
       }
     case "fileChooser.listItems":

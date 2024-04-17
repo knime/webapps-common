@@ -44,51 +44,48 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 16, 2023 (Paul Bärnreuther): created
+ *   Apr 8, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
+package org.knime.core.webui.node.dialog.defaultdialog.widget.handler;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The result of the invocation of a data service method from a dialog component.
- *
- * @param result the result of a successful response
- * @param state the state of the result.
- * @param message the error message in case of a failed response.
- * @param <R> The type of the result
+ * This class was created for update handlers to have an effect even when an error occurs.
+ * TODO Remove with UIEXT-1842
  * @author Paul Bärnreuther
  */
-record Result<R>(R result, ResultState state, List<String> message) {
+public final class ErrorHandlingSingleton {
+
+    private ErrorHandlingSingleton() {
+
+    }
+
+    static final List<String> MESSAGES = new ArrayList<>(0);
 
     /**
-     * @param result the value of the successful result
-     * @return an {@link Result} with state {@link ResultState#SUCCESS}
+     *
+     * @return all added error messages
      */
-    static <R> Result<R> succeed(final R result) {
-        return new Result<>(result, ResultState.SUCCESS, null);
+    public static List<String> getErrorMessages() {
+        return MESSAGES;
     }
 
     /**
-     * @param result the value of the successful result
-     * @return an {@link Result} with state {@link ResultState#SUCCESS}
+     *
+     * @param errorMessage
      */
-    static <R> Result<R> succeed(final R result, final List<String> errorMessages) {
-        return new Result<>(result, ResultState.SUCCESS, errorMessages);
+    public static void addErrorMessage(final String errorMessage) {
+        MESSAGES.add(errorMessage);
     }
 
     /**
-     * @param message the supplied error message
-     * @return an {@link Result} with state {@link ResultState#FAIL}
+     *
      */
-    static <R> Result<R> fail(final String message) {
-        return new Result<>(null, ResultState.FAIL, List.of(message));
+    public static void reset() {
+        MESSAGES.clear();
+
     }
 
-    /**
-     * @return an {@link Result} with state {@link ResultState#CANCELED}
-     */
-    static <R> Result<R> cancel() {
-        return new Result<>(null, ResultState.CANCELED, null);
-    }
 }

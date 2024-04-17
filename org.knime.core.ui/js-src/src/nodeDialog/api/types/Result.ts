@@ -1,11 +1,12 @@
 type SuccessResult<R> = {
   result: R;
   state: "SUCCESS";
+  message: string[];
 };
 
 type FailResult = {
   state: "FAIL";
-  message: string;
+  message: [string];
 };
 
 type CanceledResult = {

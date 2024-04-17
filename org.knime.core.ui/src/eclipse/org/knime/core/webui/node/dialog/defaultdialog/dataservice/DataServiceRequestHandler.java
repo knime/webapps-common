@@ -58,6 +58,7 @@ import java.util.concurrent.Future;
 
 import org.knime.core.node.KNIMEConstants;
 import org.knime.core.node.NodeLogger;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.ErrorHandlingSingleton;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
 
 /**
@@ -94,7 +95,9 @@ class DataServiceRequestHandler {
             if (widgetId != null) {
                 m_pendingRequests.remove(widgetId);
             }
-            return Result.succeed(result);
+            final var errorMessages = ErrorHandlingSingleton.getErrorMessages();
+
+            return Result.succeed(result, errorMessages);
         } catch (CancellationException ex) {
             LOGGER.info(ex);
             return Result.cancel();
