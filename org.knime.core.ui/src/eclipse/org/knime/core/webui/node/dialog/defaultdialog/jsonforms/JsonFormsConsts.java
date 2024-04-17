@@ -217,6 +217,8 @@ public final class JsonFormsConsts {
 
             public static final String COLUMN_FILTER = "columnFilter";
 
+            public static final String NAME_FILTER = "nameFilter";
+
             public static final String COLUMN_SELECTION = "columnSelection";
 
             public static final String DROP_DOWN = "dropDown";

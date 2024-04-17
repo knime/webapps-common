@@ -456,7 +456,7 @@ class DefaultNodeDialogDataServiceImplTest {
             final var result1 = dataService.getChoices(TestChoicesProvider.class.getName());
             assertThat(result1.result()).isEqualTo(choices);
             final var result2 = dataService.getChoices(TestColumnChoicesProvider.class.getName());
-            assertThat(result2.message()).isEqualTo(errorMessage);
+            assertThat(result2.message()).isEqualTo(List.of(errorMessage));
         }
     }
 

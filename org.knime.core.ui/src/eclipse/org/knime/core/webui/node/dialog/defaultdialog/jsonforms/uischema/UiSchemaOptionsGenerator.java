@@ -86,6 +86,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.Defaul
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.Format;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.NameFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.util.ArrayLayoutUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
@@ -198,6 +199,9 @@ final class UiSchemaOptionsGenerator {
                     break;
                 case COLUMN_FILTER:
                     options.put(TAG_FORMAT, Format.COLUMN_FILTER);
+                    break;
+                case NAME_FILTER:
+                    options.put(TAG_FORMAT, Format.NAME_FILTER);
                     break;
                 case COLUMN_SELECTION:
                     options.put(TAG_FORMAT, Format.COLUMN_SELECTION);
@@ -427,7 +431,8 @@ final class UiSchemaOptionsGenerator {
                 options.put("setFirstValueOnUpdate", choicesUpdateHandlerInstance.setFirstValueOnUpdate());
             }
 
-            if (!m_fieldClass.equals(ColumnSelection.class) && !m_fieldClass.equals(ColumnFilter.class)) {
+            if (!m_fieldClass.equals(ColumnSelection.class) && !m_fieldClass.equals(ColumnFilter.class)
+                && !m_fieldClass.equals(NameFilter.class)) {
                 String format = getChoicesComponentFormat();
                 options.put(TAG_FORMAT, format);
             }

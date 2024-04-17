@@ -18,6 +18,17 @@
           "pattern": ""
         }
       },
+      "NameFilter": {
+        "mode": "MANUAL",
+        "manualFilter": {
+          "manuallySelected": ["foo", "foo2"],
+          "manuallyDeselected": ["bar"]
+        },
+
+        "patternFilter": {
+          "pattern": ""
+        }
+      },
       "ColumnFilter": {
         "mode": "MANUAL",
         "manualFilter": {
@@ -96,6 +107,15 @@
         },
         "MultiModeTwinlist": {
           "type": "object",
+          "title": "Multi Mode Twinlist without types",
+          "properties": {
+            "selected": {
+              "type": "array"
+            }
+          }
+        },
+        "NameFilter": {
+          "type": "object",
           "properties": {
             "selected": {
               "type": "array"
@@ -162,6 +182,23 @@
         {
           "type": "Control",
           "scope": "properties/MultiModeTwinlist",
+          "options": {
+            "format": "twinList",
+            "possibleValues": [
+              {
+                "id": "foo",
+                "text": "Foo"
+              },
+              {
+                "id": "bar",
+                "text": "Bar"
+              }
+            ]
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "properties/NameFilter",
           "options": {
             "format": "twinList",
             "possibleValues": [

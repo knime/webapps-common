@@ -8,6 +8,7 @@ export const inputFormats = {
   integer: "integer",
   number: "number",
   columnFilter: "columnFilter",
+  nameFilter: "nameFilter",
   richTextInput: "richTextInput",
   twinList: "twinList",
   comboBox: "comboBox",

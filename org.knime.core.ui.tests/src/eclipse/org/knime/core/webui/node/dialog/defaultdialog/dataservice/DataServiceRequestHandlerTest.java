@@ -51,6 +51,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -88,7 +89,7 @@ class DataServiceRequestHandlerTest {
         };
         final var result = requestHandler.handleRequest("foo", callable);
         assertThat(result.state()).isEqualTo(ResultState.FAIL);
-        assertThat(result.message()).isEqualTo(message);
+        assertThat(result.message()).isEqualTo(List.of(message));
 
     }
 

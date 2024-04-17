@@ -86,8 +86,8 @@ public final class LegacyNameFilterPersistor extends NodeSettingsPersistorWithCo
         var nameFilter = new NameFilter();
         nameFilter.m_mode = loadMode(nameFilterSettings);
         nameFilter.m_manualFilter = LegacyManualFilterPersistorUtil.loadManualFilter(nameFilterSettings);
-        nameFilter.m_patternFilter =
-            loadPatternMatching(nameFilterSettings.getNodeSettings(PatternFilterConfiguration.TYPE));
+        nameFilter.m_patternFilter = LegacyPatternFilterPersistorUtil
+            .loadPatternMatching(nameFilterSettings.getNodeSettings(PatternFilterConfiguration.TYPE));
         return nameFilter;
     }
 
@@ -101,15 +101,6 @@ public final class LegacyNameFilterPersistor extends NodeSettingsPersistorWithCo
         } else {
             throw new InvalidSettingsException("Unsupported name filter type: " + filterType);
         }
-    }
-
-    private static PatternFilter loadPatternMatching(final NodeSettingsRO patternMatchingSettings)
-        throws InvalidSettingsException {
-        var patternFilter = new PatternFilter();
-        patternFilter.m_pattern = patternMatchingSettings.getString("pattern");
-        patternFilter.m_isCaseSensitive = patternMatchingSettings.getBoolean("caseSensitive");
-        patternFilter.m_isInverted = patternMatchingSettings.getBoolean("excludeMatching");
-        return patternFilter;
     }
 
     @SuppressWarnings("javadoc")

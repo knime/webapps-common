@@ -8,6 +8,7 @@ import { simpleButtonRenderer } from "./simpleButtonRenderer";
 import { checkboxRenderer } from "./checkboxRenderer";
 import { checkboxesRenderer } from "./checkboxesRenderer";
 import { columnFilterRenderer } from "./columnFilterRenderer";
+import { nameFilterRenderer } from "./nameFilterRenderer";
 import { columnSelectRenderer } from "./columnSelectRenderer";
 import { comboBoxRenderer } from "./comboBoxRenderer";
 import { dateTimeRenderer } from "./dateTimeRenderer";
@@ -41,6 +42,7 @@ export const defaultRenderers = [
   checkboxRenderer,
   checkboxesRenderer,
   columnFilterRenderer,
+  nameFilterRenderer,
   columnSelectRenderer,
   comboBoxRenderer,
   dateTimeRenderer,

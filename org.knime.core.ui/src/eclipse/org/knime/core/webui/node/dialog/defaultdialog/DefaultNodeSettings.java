@@ -77,6 +77,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPe
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.NameFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FileChooser;
@@ -200,6 +201,11 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.Usernam
  * </tr>
  * <tr>
  * <td>{@link ColumnFilter}</td>
+ * <td></td>
+ * <td>{@link ChoicesWidget} (twin-list)</td>
+ * </tr>
+ * <tr>
+ * <td>{@link NameFilter}</td>
  * <td></td>
  * <td>{@link ChoicesWidget} (twin-list)</td>
  * </tr>

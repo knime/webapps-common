@@ -58,6 +58,7 @@ import java.util.stream.Collectors;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.NameFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.LegacyCredentials;
@@ -118,8 +119,8 @@ public final class WidgetImplementationUtil {
      */
     @SuppressWarnings("javadoc")
     public enum DefaultWidgetType {
-            CHECKBOX, COLUMN_FILTER, COLUMN_SELECTION, LOCAL_DATE, STRING_ARRAY, CREDENTIALS, LEGACY_CREDENTIALS,
-            FILE_CHOOSER
+            CHECKBOX, COLUMN_FILTER, NAME_FILTER, COLUMN_SELECTION, LOCAL_DATE, STRING_ARRAY, CREDENTIALS,
+            LEGACY_CREDENTIALS, FILE_CHOOSER
     }
 
     /**
@@ -164,6 +165,7 @@ public final class WidgetImplementationUtil {
     private static DefaultWidget[] defaultWidgets = new DefaultWidget[]{//
         new DefaultWidget(List.of(boolean.class, Boolean.class), DefaultWidgetType.CHECKBOX), //
         new DefaultWidget(List.of(ColumnFilter.class), DefaultWidgetType.COLUMN_FILTER), //
+        new DefaultWidget(List.of(NameFilter.class), DefaultWidgetType.NAME_FILTER), //
         new DefaultWidget(List.of(ColumnSelection.class), DefaultWidgetType.COLUMN_SELECTION), //
         new DefaultWidget(List.of(LocalDate.class), DefaultWidgetType.LOCAL_DATE), //
         new DefaultWidget(List.of(String[].class), DefaultWidgetType.STRING_ARRAY), //

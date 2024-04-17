@@ -66,6 +66,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.JsonForms
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.TestButtonActionHandler.TestStates;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.NameFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.LegacyCredentials;
@@ -148,6 +149,9 @@ class UiSchemaOptionsTest {
 
             @Widget(title = "", description = "")
             FileChooser m_fileChooser;
+
+            @Widget(title = "", description = "")
+            NameFilter m_nameFilter;
         }
         var response = buildTestUiSchema(DefaultStylesSettings.class);
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("string");
@@ -171,6 +175,8 @@ class UiSchemaOptionsTest {
         assertThatJson(response).inPath("$.elements[7].options.format").isString().isEqualTo("legacyCredentials");
         assertThatJson(response).inPath("$.elements[8].scope").isString().contains("fileChooser");
         assertThatJson(response).inPath("$.elements[8].options.format").isString().isEqualTo("fileChooser");
+        assertThatJson(response).inPath("$.elements[9].scope").isString().contains("nameFilter");
+        assertThatJson(response).inPath("$.elements[9].options.format").isString().isEqualTo("nameFilter");
     }
 
     @Test

@@ -44,9 +44,9 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 28, 2023 (Paul Bärnreuther): created
+ *   4 Apr 2024 (Robin Gerling): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget.choices;
+package org.knime.core.webui.node.dialog.defaultdialog.widget.updates;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -63,42 +63,69 @@ import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialogTest;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.DomainValuesProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.ErrorHandlingSingleton;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
 
 /**
  *
- * @author Paul Bärnreuther
+ * @author Robin Gerling
  */
-@SuppressWarnings("java:S2698") // we accept assertions without messages
-class DomainChoicesUpdateHandlerTest {
+class DomainValuesProviderTest {
+
+    static final String testColumn = "colName";
+
+    static class DomainValuesProviderTester implements DomainValuesProvider {
+
+        @Override
+        public String getSelectedColumn() {
+            return testColumn;
+        }
+
+        @Override
+        public void init(final StateProviderInitializer initializer) {
+            // Do nothing in this test
+        }
+    }
 
     @Test
-    void testDomainChoicesUpdateHandler() throws WidgetHandlerException {
+    void testDomainValuesProvider() throws WidgetHandlerException {
 
-        final var colName = "colName";
         final var rows = List.of("row1", "row2");
         final var domain = rows.stream().map(StringCell::new).collect(Collectors.toSet());
         final var colDomain = new DataColumnDomainCreator(domain).createDomain();
 
-        final var colSpecCreator = new DataColumnSpecCreator(colName, StringCell.TYPE);
+        final var colSpecCreator = new DataColumnSpecCreator(testColumn, StringCell.TYPE);
         colSpecCreator.setDomain(colDomain);
         final var colSpec = colSpecCreator.createSpec();
 
-        final var context = DefaultNodeDialogTest.createDefaultNodeSettingsContext(new PortType[]{BufferedDataTable.TYPE},
-            new PortObjectSpec[]{new DataTableSpec(//
+        final var context = DefaultNodeDialogTest.createDefaultNodeSettingsContext(
+            new PortType[]{BufferedDataTable.TYPE}, new PortObjectSpec[]{new DataTableSpec(//
                 new DataColumnSpec[]{colSpec} //
             )}, null, null);
 
-        final var handler = new DomainChoicesUpdateHandler<ColumnNameSupplier>();
+        final var domainChoicesStateProviderTester = new DomainValuesProviderTester();
 
-        final var response = handler.update(new ColumnNameSupplier() {
+        assertThat(domainChoicesStateProviderTester.computeState(context)).hasSize(2);
+    }
 
-            @Override
-            public String columnName() {
-                return colName;
-            }
-        }, context);
+    @Test
+    void testDomainValuesProviderThrowsException() {
 
-        assertThat(response).hasSize(2);
+        final var colSpecCreator = new DataColumnSpecCreator(testColumn, StringCell.TYPE);
+        final var colSpec = colSpecCreator.createSpec();
+
+        final var context = DefaultNodeDialogTest.createDefaultNodeSettingsContext(
+            new PortType[]{BufferedDataTable.TYPE}, new PortObjectSpec[]{new DataTableSpec(//
+                new DataColumnSpec[]{colSpec} //
+            )}, null, null);
+
+        final var domainChoicesStateProviderTester = new DomainValuesProviderTester();
+
+        assertThat(domainChoicesStateProviderTester.computeState(context)).isEmpty();;
+        final var messages = ErrorHandlingSingleton.getErrorMessages();
+        assertThat(messages).hasSize(1);
+        assertThat(messages.get(0))
+            .contains("No column domain values present for column \"colName\". Consider using a Domain Calculator node.");
     }
 }

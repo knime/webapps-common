@@ -44,61 +44,110 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 28, 2023 (Paul Bärnreuther): created
+ *   4 Apr 2024 (Robin Gerling): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.widget.choices;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
+import org.knime.core.data.DataColumnDomain;
 import org.knime.core.data.DataColumnDomainCreator;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DataType;
+import org.knime.core.data.def.BooleanCell;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialogTest;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
 
 /**
  *
- * @author Paul Bärnreuther
+ * @author Robin Gerling
  */
-@SuppressWarnings("java:S2698") // we accept assertions without messages
-class DomainChoicesUpdateHandlerTest {
+class DomainChoicesUtilTest {
 
-    @Test
-    void testDomainChoicesUpdateHandler() throws WidgetHandlerException {
+    private static DefaultNodeSettingsContext createContext(final String colName, final List<String> domain) {
+        final var colDomainCreator = new DataColumnDomainCreator();
+        colDomainCreator.setValues(domain.stream().map(StringCell::new).collect(Collectors.toSet()));
+        final var colDomain = colDomainCreator.createDomain();
 
-        final var colName = "colName";
-        final var rows = List.of("row1", "row2");
-        final var domain = rows.stream().map(StringCell::new).collect(Collectors.toSet());
-        final var colDomain = new DataColumnDomainCreator(domain).createDomain();
+        return createContextFromDomain(colName, colDomain, StringCell.TYPE);
 
-        final var colSpecCreator = new DataColumnSpecCreator(colName, StringCell.TYPE);
+    }
+
+    private static DefaultNodeSettingsContext createContextFromDomain(final String colName,
+        final DataColumnDomain colDomain, final DataType dataType) {
+        final var colSpecCreator = new DataColumnSpecCreator(colName, dataType);
         colSpecCreator.setDomain(colDomain);
         final var colSpec = colSpecCreator.createSpec();
 
-        final var context = DefaultNodeDialogTest.createDefaultNodeSettingsContext(new PortType[]{BufferedDataTable.TYPE},
+        return DefaultNodeDialogTest.createDefaultNodeSettingsContext(new PortType[]{BufferedDataTable.TYPE},
             new PortObjectSpec[]{new DataTableSpec(//
                 new DataColumnSpec[]{colSpec} //
             )}, null, null);
-
-        final var handler = new DomainChoicesUpdateHandler<ColumnNameSupplier>();
-
-        final var response = handler.update(new ColumnNameSupplier() {
-
-            @Override
-            public String columnName() {
-                return colName;
-            }
-        }, context);
-
-        assertThat(response).hasSize(2);
     }
+
+    @Test
+    void testDomainChoicesMissingColumn() throws WidgetHandlerException {
+
+        final var colName = "existingColName";
+
+        final var domainValues = DomainChoicesUtil
+            .getChoicesByContextAndColumn(createContext(colName, List.of("foo", "bar")), "missingColName");
+
+        assertThat(domainValues).isEmpty();
+
+    }
+
+    @Test
+    void testDomainChoicesBooleanColumn() throws WidgetHandlerException {
+
+        final var colName = "colName";
+        final var booleanDomain =
+            new DataColumnDomainCreator(Set.of(BooleanCell.TRUE, BooleanCell.FALSE)).createDomain();
+
+        final var domainValues = DomainChoicesUtil
+            .getChoicesByContextAndColumn(createContextFromDomain(colName, booleanDomain, BooleanCell.TYPE), colName);
+
+        assertThat(domainValues).hasSize(2);
+
+    }
+
+    @Test
+    void testChoicesUpdateHandlerMissingSpec() throws WidgetHandlerException {
+
+        final var colName = "colName";
+
+        final var context = DefaultNodeDialogTest.createDefaultNodeSettingsContext(
+            new PortType[]{BufferedDataTable.TYPE}, new PortObjectSpec[]{null}, null, null);
+
+        final var domainValues = DomainChoicesUtil.getChoicesByContextAndColumn(context, colName);
+
+        assertThat(domainValues).isEmpty();
+    }
+
+    @Test
+    void testChoicesUpdateHandlerMissingDomain() throws InterruptedException, ExecutionException {
+
+        final var colName = "colName";
+
+        final var exception = assertThrows(WidgetHandlerException.class, () -> DomainChoicesUtil
+            .getChoicesByContextAndColumn(createContextFromDomain(colName, null, StringCell.TYPE), colName));
+
+        assertThat(exception.getMessage()).isEqualTo(
+            "No column domain values present for column \"colName\". Consider using a Domain Calculator node.");
+    }
+
 }

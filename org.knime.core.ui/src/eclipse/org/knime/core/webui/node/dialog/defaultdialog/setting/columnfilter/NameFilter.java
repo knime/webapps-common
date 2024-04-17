@@ -51,6 +51,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter;
 import java.util.Objects;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.PatternFilter.PatternMode;
 
@@ -58,7 +59,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.Patte
  *
  * @author Paul Bärnreuther
  */
-public class NameFilter {
+public class NameFilter implements PersistableSettings {
     /**
      * The setting representing the selected strings
      */
