@@ -1,26 +1,9 @@
-<!-- eslint-disable no-undefined -->
-<!-- eslint-disable class-methods-use-this -->
-<script setup lang="ts">
-import { markRaw, type Ref, type Raw, ref, computed, watch } from "vue";
-import { rendererProps } from "@jsonforms/vue";
-import { mergeDeep } from "@/nodeDialog/utils";
-import MultiModeTwinlist from "webapps-common/ui/components/forms/MultiModeTwinlist.vue";
-import inject from "@/nodeDialog/utils/inject";
+<script lang="ts">
 import type {
   IdAndText,
   PossibleValue,
 } from "@/nodeDialog//types/ChoicesUiSchema";
-import type Control from "@/nodeDialog/types/Control";
-import type { PartialDeep } from "type-fest";
-import TwinlistLoadingInfo from "../loading/TwinlistLoadingInfo.vue";
-import useDialogControl from "@/nodeDialog/composables/components/useDialogControl";
-import LabeledInput from "../label/LabeledInput.vue";
-import useProvidedState from "@/nodeDialog/composables/components/useProvidedState";
-import { DefaultSettingComparator } from "@knime/ui-extension-service";
-import { withSpecialChoices } from "@/nodeDialog/utils/getPossibleValuesFromUiSchema";
-import { adjustManualSelection } from "./utils";
-
-type TwinlistData = {
+export type TwinlistData = {
   mode: string;
   manualFilter: {
     manuallySelected: string[];
@@ -38,6 +21,27 @@ type TwinlistData = {
   };
   selected: string[] | null | undefined;
 };
+</script>
+
+<!-- eslint-disable no-undefined -->
+<!-- eslint-disable class-methods-use-this -->
+<script setup lang="ts">
+import { markRaw, type Ref, type Raw, ref, computed, watch } from "vue";
+import { rendererProps } from "@jsonforms/vue";
+import { mergeDeep } from "@/nodeDialog/utils";
+import MultiModeTwinlist from "webapps-common/ui/components/forms/MultiModeTwinlist.vue";
+import inject from "@/nodeDialog/utils/inject";
+
+import type Control from "@/nodeDialog/types/Control";
+import type { PartialDeep } from "type-fest";
+import TwinlistLoadingInfo from "../loading/TwinlistLoadingInfo.vue";
+import useDialogControl from "@/nodeDialog/composables/components/useDialogControl";
+import LabeledInput from "../label/LabeledInput.vue";
+import useProvidedState from "@/nodeDialog/composables/components/useProvidedState";
+import { DefaultSettingComparator } from "@knime/ui-extension-service";
+import { withSpecialChoices } from "@/nodeDialog/utils/getPossibleValuesFromUiSchema";
+import { adjustManualSelection } from "./utils";
+import useWatcherForNominalValueRowFilter from "./useWatcherForNominalValueRowFilter";
 
 type ControlWithTwinlistData = {
   [P in keyof Control]: P extends "data" ? TwinlistData : Control[P];
@@ -99,9 +103,16 @@ const {
 });
 const control = untypedControl as Ref<ControlWithTwinlistData>;
 
+// TODO: Remove with UIEXT-1844
+let onChangeNominalValueRowFilter: (newData: TwinlistData) => void,
+  setInitialManuallySelectedNominalValueRowFilter: (
+    initialManuallySelected: string[],
+  ) => void;
+
 const onChange = (obj: PartialDeep<TwinlistData>) => {
   const newData = mergeDeep(control.value.data, obj) as TwinlistData;
   onChangeControl(newData);
+  onChangeNominalValueRowFilter(newData);
 };
 const onSelectedChange = ({
   selected,
@@ -183,6 +194,9 @@ const setInitialManuallySelected = (possibleValueIds: string[]) => {
     knownValuesSide,
     unknownValuesSide,
   });
+  setInitialManuallySelectedNominalValueRowFilter(
+    initialManuallySelected.value!,
+  );
   loadingInfo.value = null;
 };
 
@@ -235,6 +249,17 @@ watch(
     }
   },
 );
+
+({
+  onChange: onChangeNominalValueRowFilter,
+  setInitialManuallySelected: setInitialManuallySelectedNominalValueRowFilter,
+} = useWatcherForNominalValueRowFilter({
+  data: computed(() => control.value.data),
+  refreshTwinlist: () => {
+    setInitialManuallySelected(possibleValues.value.map(({ id }) => id));
+    refreshKey.value++;
+  },
+}));
 
 // Hiding controls
 
