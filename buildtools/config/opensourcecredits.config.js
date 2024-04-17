@@ -26,6 +26,13 @@ module.exports = {
     "argparse@2.0.1", // licensed under Python-2.0 but not included in the production app
     "jackspeak@2.3.6", // licensed under BlueOak-1.0.0 but not included in the production app
     "path-scurry@1.10.1", // licensed under BlueOak-1.0.0 but not included in the production app
+    "@img/sharp-libvips-darwin-arm64@1.0.2", // licensed under LGPL-3.0, included in the production app without modifications and with attribution; macOS ARM
+    "@img/sharp-libvips-darwin-x64@1.0.2", // licensed under LGPL-3.0, included in the production app without modifications and with attribution; macOS x64
+    "@img/sharp-libvips-linux-arm64@1.0.2", // licensed under LGPL-3.0, included in the production app without modifications and with attribution; Linux ARM
+    "@img/sharp-libvips-linux-x64@1.0.2", // licensed under LGPL-3.0, included in the production app without modifications and with attribution; Linux x64
+    "@img/sharp-libvips-linuxmusl-arm64@1.0.2", // licensed under LGPL-3.0, included in the production app without modifications and with attribution; Linux (musl) ARM
+    "@img/sharp-libvips-linuxmusl-x64@1.0.2", // licensed under LGPL-3.0, included in the production app without modifications and with attribution; Linux (musl) x64
+    "@img/sharp-libvips-win32-x64", // licensed under LGPL-3.0, included in the production app without modifications and with attribution; Windows x64
   ],
 
   // manually add packages to the credits, e.g.:
