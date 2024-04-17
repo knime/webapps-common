@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#000" viewBox="0 0 32 32">
+<path stroke-linejoin="round" stroke-miterlimit="10" d="M24 26c3.652 0 6.208-3.565 6.208-7.273a7.271 7.271 0 0 0-7.273-7.273c-.154 0-.31.009-.463.027C21.352 8.29 18.326 6 14.754 6a8.183 8.183 0 0 0-8.182 8.182c0 .409.037.8.1 1.191a5.447 5.447 0 0 0-3.737 5.172C2.935 23.553 4.992 26 8 26"/>
+<path stroke-linejoin="round" stroke-miterlimit="10" d="m21 29-1-1-2-2 2-2 1-1M12 23l1 1 2 2-2 2-1 1"/>
+<path d="M10 26h5M18 26h5"/>
+</svg>

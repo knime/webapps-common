@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"
+    fill="none" stroke="#000" stroke-linejoin="round">
+  <path d="M4 4l8 8M12 6.4V12H6.4M28 4l-8 8M25.6 12H20V6.4M28 28l-8-8M20 25.6V20h5.6M4 28l8-8M6.4 20H12v5.6"/>
+  <path d="M13.4 13.4h5.1v5.1h-5.1z" transform="rotate(-45 15.99991978 15.91313323)"/>
+</svg>
