@@ -62,6 +62,14 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.IdAndText;
 public non-sealed interface StringChoicesStateProvider extends ChoicesStateProvider<IdAndText[]> {
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    default void init(final StateProviderInitializer initializer) {
+        ChoicesStateProvider.super.init(initializer);
+    }
+
+    /**
      * Computes the array of possible values based on the {@link DefaultNodeSettingsContext}.
      *
      * @param context the context that holds any available information that might be relevant for determining available

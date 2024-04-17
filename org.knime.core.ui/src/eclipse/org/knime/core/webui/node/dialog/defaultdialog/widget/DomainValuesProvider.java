@@ -44,27 +44,45 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 28, 2023 (Paul Bärnreuther): created
+ *   4 Apr 2024 (Robin Gerling): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget.choices;
+package org.knime.core.webui.node.dialog.defaultdialog.widget;
+
+import java.util.Arrays;
+import java.util.List;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.DomainChoicesUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.ErrorHandlingSingleton;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 
 /**
  *
- * @author Paul Bärnreuther
- * @param <S> the supplier of the column name whose domain should be used. Other settings can be referenced by using the
- *            same name/paths for fields in this class as described in {@link DependencyHandler}.
+ * @author Robin Gerling
  */
-public class DomainChoicesUpdateHandler<S extends ColumnNameSupplier> implements ChoicesUpdateHandler<S> {
+public interface DomainValuesProvider extends StateProvider<List<String>> {
 
     @Override
-    public IdAndText[] update(final S settings, final DefaultNodeSettingsContext context)
-        throws WidgetHandlerException {
-        final var columnName = settings.columnName();
-        final var domainValues = DomainChoicesUtil.getChoicesByContextAndColumn(context, columnName);
-        return domainValues.stream().map(IdAndText::fromId).toArray(IdAndText[]::new);
+    default List<String> computeState(final DefaultNodeSettingsContext context) {
+        return getDomainChoices(context);
     }
+
+    private List<String> getDomainChoices(final DefaultNodeSettingsContext context) {
+        try {
+            return DomainChoicesUtil.getChoicesByContextAndColumn(context, getSelectedColumn());
+        } catch (WidgetHandlerException e) { //NOSONAR
+            final var stackTrace = String.join("\n",
+                Arrays.stream(e.getStackTrace()).map(StackTraceElement::toString).toArray(String[]::new));
+            ErrorHandlingSingleton.addErrorMessage(e.getMessage() + "\n\n" + stackTrace);
+            return List.of();
+        }
+    }
+
+    /**
+     *
+     * @return the column for which the possible domain choices should be calculated
+     */
+    String getSelectedColumn();
+
 }

@@ -44,27 +44,52 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 28, 2023 (Paul Bärnreuther): created
+ *   4 Apr 2024 (Robin Gerling): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.widget.choices;
 
+import java.util.Collections;
+import java.util.List;
+
+import org.knime.core.data.def.BooleanCell;
+import org.knime.core.data.def.StringCell;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
 
 /**
  *
- * @author Paul Bärnreuther
- * @param <S> the supplier of the column name whose domain should be used. Other settings can be referenced by using the
- *            same name/paths for fields in this class as described in {@link DependencyHandler}.
+ * @author Robin Gerling
  */
-public class DomainChoicesUpdateHandler<S extends ColumnNameSupplier> implements ChoicesUpdateHandler<S> {
+public final class DomainChoicesUtil {
 
-    @Override
-    public IdAndText[] update(final S settings, final DefaultNodeSettingsContext context)
-        throws WidgetHandlerException {
-        final var columnName = settings.columnName();
-        final var domainValues = DomainChoicesUtil.getChoicesByContextAndColumn(context, columnName);
-        return domainValues.stream().map(IdAndText::fromId).toArray(IdAndText[]::new);
+    private DomainChoicesUtil() {
     }
+
+    /**
+     *
+     * @param context the context which possibly contains the column spec to calculate the domain on
+     * @param colName the column for which the domain should be calculated
+     * @return the domain values for the given column
+     * @throws WidgetHandlerException in case of no domain or an empty domain
+     */
+    public static List<String> getChoicesByContextAndColumn(final DefaultNodeSettingsContext context,
+        final String colName) throws WidgetHandlerException {
+        final var spec = context.getDataTableSpec(0);
+        if (spec.isEmpty()) {
+            return Collections.emptyList();
+        }
+        final var colSpec = spec.get().getColumnSpec(colName);
+        if (colSpec == null) {
+            return Collections.emptyList();
+        }
+        final var colDomain = colSpec.getDomain().getValues();
+        if (colDomain == null) {
+            throw new WidgetHandlerException(String.format(
+                "No column domain values present for column \"%s\". Consider using a Domain Calculator node.",
+                colName));
+        }
+        return (colDomain.stream().map(cell -> cell.getClass() == BooleanCell.class ? ((BooleanCell)cell).toString()
+            : ((StringCell)cell).getStringValue())).toList();
+    }
+
 }
