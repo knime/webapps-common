@@ -49,6 +49,14 @@ export default {
       default: false,
       type: Boolean,
     },
+    ariaActivedescendant: {
+      type: String,
+      default: null,
+    },
+    ariaOwns: {
+      type: String,
+      default: null,
+    },
   },
   emits: ["update:modelValue", "focus", "keyup", "keypress", "keydown"],
   computed: {
@@ -119,6 +127,8 @@ export default {
       :pattern="pattern"
       :placeholder="placeholder"
       :autofocus="autofocus"
+      :aria-activedescendant="ariaActivedescendant"
+      :aria-owns="ariaOwns"
       :autocomplete="autocomplete"
       :disabled="disabled"
       @input="onInput"

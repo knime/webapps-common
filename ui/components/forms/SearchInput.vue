@@ -72,6 +72,18 @@ export default {
       type: Object,
       default: () => ({}),
     },
+    focusOnMount: {
+      type: Boolean,
+      default: false,
+    },
+    ariaActivedescendant: {
+      type: String,
+      default: null,
+    },
+    ariaOwns: {
+      type: String,
+      default: null,
+    },
   },
   emits: [
     "clear",
@@ -99,6 +111,13 @@ export default {
     tooltipsWithDefaults() {
       return { ...defaultTooltips, ...this.tooltips };
     },
+  },
+  expose: ["focus"],
+  async mounted() {
+    if (this.focusOnMount) {
+      await this.$nextTick();
+      this.focus();
+    }
   },
   methods: {
     clearSearch() {
@@ -135,6 +154,8 @@ export default {
     class="search-input"
     :class="{ disabled }"
     autocomplete="off"
+    :aria-owns="ariaOwns"
+    :aria-activedescendant="ariaActivedescendant"
     role="searchbox"
     @focus="$emit('focus', $event)"
     @update:model-value="$emit('update:modelValue', $event)"
