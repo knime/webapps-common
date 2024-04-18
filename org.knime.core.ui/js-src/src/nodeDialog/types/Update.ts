@@ -2,7 +2,7 @@ export interface ValueReference {
   /**
    * The schema path of the setting
    */
-  scope: string; // TODO? does this need to be an array in order to represent nested locations?
+  scope: string;
   /**
    * A unique identifyer
    */
@@ -10,8 +10,8 @@ export interface ValueReference {
 }
 
 export interface Trigger {
-  id: string; // TODO: This id is no longer unique (e.g. a button inside an array layout exists in each element)
-  scope: undefined;
+  id: string;
+  scopes: undefined;
   triggerInitially?: true;
 }
 
@@ -23,10 +23,17 @@ export interface Update {
   /**
    * The trigger of this update
    */
-  trigger: Trigger | (ValueReference & { triggerInitially: undefined });
+  trigger:
+    | Trigger
+    | ({
+        scopes: string[]; // TODO Adapt the backend accordingly
+        id: string;
+      } /* TODO Use the same in the ValueReference. We need the same thing for dependencies */ & {
+        triggerInitially: undefined;
+      });
 }
 export interface PathAndValue {
-  path: string;
+  path: string | string[]; // Consider using only string[] here
   id: null;
   value: unknown;
 }

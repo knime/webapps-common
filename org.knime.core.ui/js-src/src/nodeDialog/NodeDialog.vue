@@ -218,11 +218,11 @@ export default {
       dependencies,
     }: Parameters<ProvidedMethods["registerWatcher"]>[0]) {
       const removeWatcher = this.registerWatcherInternal({
-        transformSettings: async (newSettings) => {
+        transformSettings: () => async (newSettings) => {
           await transformSettings(newSettings);
           return newSettings;
         },
-        dependencies,
+        dependencies: dependencies.map((dep) => [dep]),
       });
       if (typeof init === "function") {
         await init(this.currentData);

@@ -1,15 +1,49 @@
-const toMapKey = ({ id, indices }: { id: string; indices?: number[] }) =>
-  JSON.stringify({ id, indices: indices ?? [] });
+interface Key {
+  id: string;
+  indices: number[];
+}
+
+const isInvokedBy = (invocationKey: Key) => (otherKey: Key) => {
+  if (invocationKey.id !== otherKey.id) {
+    return false;
+  }
+  if (invocationKey.indices.length > otherKey.indices.length) {
+    return false;
+  }
+  return invocationKey.indices.every(
+    (value, index) => otherKey.indices[index] === value,
+  );
+};
+
+const invokes = (otherKey: Key) => (invocationKey: Key) =>
+  isInvokedBy(invocationKey)(otherKey);
+
+const getValuesFromPredicate =
+  <T>(map: Map<Key, T>) =>
+  (predicate: (key: Key) => boolean) =>
+    Array.from(map.entries())
+      .filter(([key]) => predicate(key))
+      .map(([, value]) => value);
+
+const toMapKey = ({ id, indices }: { id: string; indices?: number[] }) => ({
+  id,
+  indices: indices ?? [],
+});
 
 export default () => {
-  const stateProviderListeners = new Map<
-    string,
-    ((value: unknown) => void)[]
-  >();
+  const stateProviderListeners = new Map<Key, ((value: unknown) => void)[]>();
+
   /**
    * States remembered for yet to be registered listeners
    */
-  const states = new Map<string, unknown>();
+  const states = new Map<Key, unknown>();
+
+  const getListenersInvokedBy = (key: Key) =>
+    getValuesFromPredicate(stateProviderListeners)(isInvokedBy(key));
+
+  const getStatesInvoking = (key: Key) =>
+    getValuesFromPredicate(states)(invokes(key));
+
   const addStateProviderListener = (
     location: { id: string; indices?: number[] },
     callback: (value: any) => void,
@@ -20,9 +54,7 @@ export default () => {
     } else {
       stateProviderListeners.set(key, [callback]);
     }
-    if (states.has(key)) {
-      callback(states.get(key));
-    }
+    getStatesInvoking(key).forEach(callback);
   };
 
   const callStateProviderListener = (
@@ -31,7 +63,9 @@ export default () => {
   ) => {
     const key = toMapKey(location);
     states.set(key, value);
-    stateProviderListeners.get(key)?.forEach((callback) => callback(value));
+    getListenersInvokedBy(key)
+      .flatMap((callbacks) => callbacks)
+      .forEach((callback) => callback(value));
   };
 
   return { addStateProviderListener, callStateProviderListener };

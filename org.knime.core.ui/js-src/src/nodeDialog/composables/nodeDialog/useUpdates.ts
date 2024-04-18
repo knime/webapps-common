@@ -16,6 +16,25 @@ export type TransformSettingsMethod = (
   newSettings: DialogSettingsObject,
 ) => Promise<DialogSettingsObject>;
 
+/**
+ * @returns an array of paths. If there are multiple, all but the first one lead to an array in which every index is to be adjusted.
+ */
+const combinePathWithIndices = (path: string | string[], indices: number[]) => {
+  if (typeof path === "string") {
+    return [toDataPath(path)];
+  }
+  return path.map(toDataPath).reduce((segments, dataPath, i) => {
+    if (i === 0) {
+      segments[0] = dataPath;
+    } else if (i <= indices.length) {
+      segments[0] = `${segments[0]}.${indices[i - 1]}.${dataPath}`;
+    } else {
+      segments.push(dataPath);
+    }
+    return segments;
+  }, [] as string[]);
+};
+
 export default ({
   callStateProviderListener,
   registerWatcher,
@@ -27,8 +46,8 @@ export default ({
     value: unknown,
   ) => void;
   registerWatcher: (params: {
-    dependencies: string[];
-    transformSettings: TransformSettingsMethod;
+    dependencies: string[][];
+    transformSettings: (indices: number[]) => TransformSettingsMethod;
   }) => void;
   registerTrigger: (
     id: string,
@@ -43,7 +62,17 @@ export default ({
     ({ path, value, id }: UpdateResult, indices?: number[]) =>
     (newSettings: DialogSettingsObject) => {
       if (path) {
-        set(newSettings, toDataPath(path), value);
+        const pathSegments = combinePathWithIndices(path, indices ?? []);
+        const toBeAdjustedByLastPathSegment = pathSegments
+          .slice(0, pathSegments.length - 1)
+          .reduce(
+            (arrayOfSettings, dataPath) =>
+              arrayOfSettings.flatMap((settings) => get(settings, dataPath)),
+            [newSettings] as object[],
+          );
+        toBeAdjustedByLastPathSegment.forEach((settings) =>
+          set(settings, pathSegments[pathSegments.length - 1], value),
+        );
       } else if (id) {
         callStateProviderListener({ id, indices }, value);
       }
@@ -76,8 +105,8 @@ export default ({
   };
 
   const setValueTrigger = (
-    scope: string,
-    callback: TransformSettingsMethod,
+    scope: string[],
+    callback: (indices: number[]) => TransformSettingsMethod,
   ) => {
     registerWatcher({
       dependencies: [scope],
@@ -89,13 +118,8 @@ export default ({
     trigger: Update["trigger"],
     triggerCallback: (indices: number[]) => TransformSettingsMethod,
   ): null | TransformSettingsMethod => {
-    if (trigger.scope) {
-      setValueTrigger(
-        trigger.scope,
-        triggerCallback(
-          [] /** TODO: Make trigger.scope an array and set a value trigger for all possible indices */,
-        ),
-      );
+    if (trigger.scopes) {
+      setValueTrigger(trigger.scopes, triggerCallback);
       return null;
     }
     const transformSettings =
@@ -145,7 +169,7 @@ export default ({
       }
       if (response.state === "SUCCESS") {
         (response.result ?? []).forEach((updateResult: UpdateResult) => {
-          newSettings = resolveUpdateResult(updateResult, indices)(newSettings); // TODO enrich with index
+          newSettings = resolveUpdateResult(updateResult, indices)(newSettings);
         });
       }
       return newSettings;

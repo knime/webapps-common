@@ -1,15 +1,15 @@
 <script setup lang="ts" generic="SettingValue">
 import inject from "../utils/inject";
 import { computed, ref } from "vue";
-import useDialogControl from "../composables/components/useDialogControl";
 import { rendererProps } from "@jsonforms/vue";
 import DescriptionPopover from "./description/DescriptionPopover.vue";
 import DialogComponentWrapper from "./DialogComponentWrapper.vue";
 import Button from "webapps-common/ui/components/Button.vue";
 import DynamicIcon, { type Icon } from "./DynamicIcon.vue";
+import { useJsonFormsControlWithUpdate } from "../composables/components/useJsonFormsControlWithUpdate";
 
 const props = defineProps(rendererProps());
-const { control } = useDialogControl({ props });
+const { control } = useJsonFormsControlWithUpdate(props);
 
 const triggerId = computed(() => control.value.uischema.options!.triggerId);
 
