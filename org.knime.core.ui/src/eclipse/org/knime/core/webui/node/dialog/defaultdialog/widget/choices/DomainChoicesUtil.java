@@ -50,7 +50,9 @@ package org.knime.core.webui.node.dialog.defaultdialog.widget.choices;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
+import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.def.BooleanCell;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
@@ -82,14 +84,26 @@ public final class DomainChoicesUtil {
         if (colSpec == null) {
             return Collections.emptyList();
         }
-        final var colDomain = colSpec.getDomain().getValues();
-        if (colDomain == null) {
+        final var colDomain = getDomainValues(colSpec);
+        if (colDomain.isEmpty()) {
             throw new WidgetHandlerException(String.format(
                 "No column domain values present for column \"%s\". Consider using a Domain Calculator node.",
                 colName));
         }
-        return (colDomain.stream().map(cell -> cell.getClass() == BooleanCell.class ? ((BooleanCell)cell).toString()
-            : ((StringCell)cell).getStringValue())).toList();
+        return colDomain.get();
+    }
+
+    /**
+     * @param colSpec the {@link DataColumnSpec} to obtain the domain values from
+     * @return the possible domain values of the given {@link DataColumnSpec}
+     */
+    public static Optional<List<String>> getDomainValues(final DataColumnSpec colSpec) {
+        var colDomain = colSpec.getDomain().getValues();
+        if (colDomain == null) {
+            return Optional.empty();
+        }
+        return Optional.of((colDomain.stream().map(cell -> cell.getClass() == BooleanCell.class
+            ? ((BooleanCell)cell).toString() : ((StringCell)cell).getStringValue())).toList());
     }
 
 }
