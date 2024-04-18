@@ -1,4 +1,5 @@
-<script>
+<script lang="ts">
+import { defineComponent } from "vue";
 import { FocusTrap } from "focus-trap-vue";
 
 /**
@@ -10,7 +11,7 @@ import { FocusTrap } from "focus-trap-vue";
  *
  * Note that the widget width can be set vial the `--modal-width` CSS property, which defaults to `550px`.
  */
-export default {
+export default defineComponent({
   components: {
     FocusTrap,
   },
@@ -21,6 +22,10 @@ export default {
     active: {
       type: Boolean,
       default: false,
+    },
+    implicitDismiss: {
+      type: Boolean,
+      default: true,
     },
   },
   emits: ["cancel"],
@@ -47,8 +52,8 @@ export default {
     window.removeEventListener("keyup", this.onGlobalKeyUp);
   },
   methods: {
-    onGlobalKeyUp(e) {
-      if (e.key === "Escape") {
+    onGlobalKeyUp(event: KeyboardEvent) {
+      if (event.key === "Escape" && this.implicitDismiss) {
         consola.trace("ESC key press, closing modal");
         this.cancel();
       }
@@ -57,21 +62,20 @@ export default {
      * Detects any clicks on the overlay or the escape key, allowing the modal to be dismissed
      * without having to click a specific button or control.
      *
-     * @param {Object} e - the browser mouse event.
-     * @returns {undefined}
      */
     onOverlayClick() {
-      this.cancel();
+      if (this.implicitDismiss) {
+        this.cancel();
+      }
     },
     /**
-     * @emits {cancel} - can be used by parent to close the modal.
-     * @returns {undefined}
+     * can be used by parent to close the modal.
      */
     cancel() {
       this.$emit("cancel");
     },
   },
-};
+});
 </script>
 
 <template>
@@ -83,7 +87,7 @@ export default {
     <FocusTrap
       v-if="active"
       :active="active && showContent"
-      :initial-focus="() => $refs.dialog"
+      :initial-focus="() => $refs.dialog as HTMLElement"
       allow-outside-click
       class="container"
     >

@@ -1,4 +1,5 @@
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from "vue";
 import BaseModal from "./BaseModal.vue";
 import FunctionButton from "./FunctionButton.vue";
 import CloseIcon from "../assets/img/icons/close.svg";
@@ -6,7 +7,7 @@ import CloseIcon from "../assets/img/icons/close.svg";
 /**
  * See demo for documentation
  */
-export default {
+export default defineComponent({
   components: {
     BaseModal,
     CloseIcon,
@@ -26,11 +27,15 @@ export default {
      * This has no implication on functionality, only styling,
      */
     styleType: {
-      type: String,
+      type: String as PropType<"info" | "warn">,
       default: "info",
-      validator(type = "info") {
+      validator(type: "info" | "warn" = "info") {
         return ["info", "warn"].includes(type);
       },
+    },
+    implicitDismiss: {
+      type: Boolean,
+      default: true,
     },
   },
   emits: ["cancel"],
@@ -39,13 +44,17 @@ export default {
       this.$emit("cancel");
     },
   },
-};
+});
 </script>
 
 <template>
-  <BaseModal :class="['modal', styleType]" @cancel="$emit('cancel', $event)">
+  <BaseModal
+    :implicit-dismiss="implicitDismiss"
+    :class="['modal', styleType]"
+    @cancel="$emit('cancel', $event)"
+  >
     <div class="header">
-      <span class="header-icon">
+      <span v-if="$slots.icon" class="header-icon">
         <slot name="icon" />
       </span>
       <h2>{{ title }}</h2>
