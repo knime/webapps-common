@@ -17,13 +17,11 @@ export type TransformSettingsMethod = (
 ) => Promise<DialogSettingsObject>;
 
 /**
- * @returns an array of paths. If there are multiple, all but the first one lead to an array in which every index is to be adjusted.
+ * @returns an array of paths. If there are multiple, all but the first one lead to an array in
+ * which every index is to be adjusted.
  */
-const combinePathWithIndices = (path: string | string[], indices: number[]) => {
-  if (typeof path === "string") {
-    return [toDataPath(path)];
-  }
-  return path.map(toDataPath).reduce((segments, dataPath, i) => {
+const combineScopesWithIndices = (scopes: string[], indices: number[]) => {
+  return scopes.map(toDataPath).reduce((segments, dataPath, i) => {
     if (i === 0) {
       segments[0] = dataPath;
     } else if (i <= indices.length) {
@@ -58,11 +56,28 @@ export default ({
   const baseService = inject<() => UIExtensionService>("getKnimeService")!();
   const jsonDataService = new JsonDataService(baseService);
 
+  const getSingleDataPathOrThrow = (scopes: string[], indices: number[]) => {
+    const combined = combineScopesWithIndices(scopes, indices);
+    if (combined.length > 1) {
+      const message =
+        "Having dependencies within array layout elements for an update that is not triggered within " +
+        "the array layout is not yet supported";
+      sendAlert({
+        message,
+      });
+      // @ts-expect-errors
+      if (!window.isTest) {
+        throw Error(message);
+      }
+    }
+    return combined[0];
+  };
+
   const resolveUpdateResult =
     ({ path, value, id }: UpdateResult, indices?: number[]) =>
     (newSettings: DialogSettingsObject) => {
       if (path) {
-        const pathSegments = combinePathWithIndices(path, indices ?? []);
+        const pathSegments = combineScopesWithIndices(path, indices ?? []);
         const toBeAdjustedByLastPathSegment = pathSegments
           .slice(0, pathSegments.length - 1)
           .reduce(
@@ -153,7 +168,7 @@ export default ({
       const currentDependencies = Object.fromEntries(
         dependencies.map((dep) => [
           dep.id,
-          get(newSettings, toDataPath(dep.scope)),
+          get(newSettings, getSingleDataPathOrThrow(dep.scopes, indices)),
         ]),
       );
       const response = await callDataServiceUpdate2({
@@ -161,7 +176,7 @@ export default ({
         currentDependencies,
       });
       if (response.state === "FAIL" || response.state === "SUCCESS") {
-        response.message.forEach((message) =>
+        response.message?.forEach((message) =>
           sendAlert({
             message,
           }),

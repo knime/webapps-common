@@ -1,8 +1,8 @@
 export interface ValueReference {
   /**
-   * The schema path of the setting
+   * The sequence of schema paths (multiple in case of array layout elements) of the setting
    */
-  scope: string;
+  scopes: string[]; // TODO also string array in backend
   /**
    * A unique identifyer
    */
@@ -25,15 +25,12 @@ export interface Update {
    */
   trigger:
     | Trigger
-    | ({
-        scopes: string[]; // TODO Adapt the backend accordingly
-        id: string;
-      } /* TODO Use the same in the ValueReference. We need the same thing for dependencies */ & {
+    | (ValueReference & {
         triggerInitially: undefined;
       });
 }
 export interface PathAndValue {
-  path: string | string[]; // Consider using only string[] here
+  path: string[]; // TODO also string array in backend
   id: null;
   value: unknown;
 }

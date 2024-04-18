@@ -347,7 +347,7 @@ describe("NodeDialog.vue", () => {
 
       expect(wrapper.vm.registeredWatchers.length).toBe(1);
       expect(wrapper.vm.registeredWatchers[0]).toMatchObject({
-        dataPaths: ["test", "test2"],
+        dataPaths: [["test"], ["test2"]],
       });
       expect(init).not.toHaveBeenCalled();
 
@@ -359,7 +359,7 @@ describe("NodeDialog.vue", () => {
 
       expect(wrapper.vm.registeredWatchers.length).toBe(2);
       expect(wrapper.vm.registeredWatchers[1]).toMatchObject({
-        dataPaths: ["test", "test2"],
+        dataPaths: [["test"], ["test2"]],
       });
       expect(init).toHaveBeenCalled();
     });
@@ -522,13 +522,13 @@ describe("NodeDialog.vue", () => {
       globalUpdates = [
         {
           trigger: {
-            scope: "#/properties/view/properties/firstSetting",
+            scopes: ["#/properties/view/properties/firstSetting"],
             id: triggerId,
           },
           dependencies: [
             {
               id: dependencyId,
-              scope: "#/properties/model/properties/secondSetting",
+              scopes: ["#/properties/model/properties/secondSetting"],
             },
           ],
         },
@@ -544,7 +544,7 @@ describe("NodeDialog.vue", () => {
         state: "SUCCESS",
         result: [
           {
-            path: "#/properties/model/properties/secondSetting",
+            path: ["#/properties/model/properties/secondSetting"],
             value: updatedValue,
           },
         ],
@@ -581,7 +581,7 @@ describe("NodeDialog.vue", () => {
           dependencies: [
             {
               id: dependencyId,
-              scope: "#/properties/model/properties/secondSetting",
+              scopes: ["#/properties/model/properties/secondSetting"],
             },
           ],
         },
@@ -594,7 +594,7 @@ describe("NodeDialog.vue", () => {
         state: "SUCCESS",
         result: [
           {
-            path: "#/properties/model/properties/secondSetting",
+            path: ["#/properties/model/properties/secondSetting"],
             value: updatedValue,
           },
         ],
@@ -627,7 +627,7 @@ describe("NodeDialog.vue", () => {
           dependencies: [
             {
               id: dependencyId,
-              scope: "#/properties/model/properties/secondSetting",
+              scopes: ["#/properties/model/properties/secondSetting"],
             },
           ],
         },
@@ -698,7 +698,7 @@ describe("NodeDialog.vue", () => {
       const updatedValue = "updatedValue";
       initialUpdates = [
         {
-          path: "#/properties/model/properties/secondSetting",
+          path: ["#/properties/model/properties/secondSetting"],
           value: updatedValue,
         },
       ];
@@ -734,7 +734,7 @@ describe("NodeDialog.vue", () => {
         state: "SUCCESS",
         result: [
           {
-            path: "#/properties/model/properties/secondSetting",
+            path: ["#/properties/model/properties/secondSetting"],
             value: updatedValue,
           },
         ],

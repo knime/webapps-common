@@ -1,7 +1,7 @@
 type SuccessResult<R> = {
   result: R;
   state: "SUCCESS";
-  message: string[];
+  message?: string[];
 };
 
 type FailResult = {
