@@ -30,7 +30,7 @@ const possibleCategories: { id: keyof typeof FSCategory; text: string }[] = [
   },
   {
     id: "relative-to-current-hubspace",
-    text: "Current HUB space",
+    text: "Current Hub space",
   },
 ];
 
