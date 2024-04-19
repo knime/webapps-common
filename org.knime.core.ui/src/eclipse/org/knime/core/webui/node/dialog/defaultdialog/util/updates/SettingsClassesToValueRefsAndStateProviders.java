@@ -53,9 +53,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.knime.core.node.util.CheckUtils;
@@ -79,39 +79,56 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRefere
 
 final class SettingsClassesToValueRefsAndStateProviders {
 
-    record ValueRefWrapper(Class<? extends Reference> valueRef, PathWithSettingsKey fieldLocation) {
+    record ValueRefWrapper(Class<? extends Reference> valueRef, PathsWithSettingsKey fieldLocation) {
     }
 
-    record ValueProviderWrapper(Class<? extends StateProvider> stateProviderClass, PathWithSettingsKey fieldLocation) {
+    record ValueProviderWrapper(Class<? extends StateProvider> stateProviderClass, PathsWithSettingsKey fieldLocation) {
     }
 
     record ValueRefsAndStateProviders(Collection<ValueRefWrapper> valueRefs,
         Collection<ValueProviderWrapper> valueProviders, Collection<Class<? extends StateProvider>> uiStateProviders) {
     }
 
+    static final Configuration TRAVERSAL_CONFIG = new Configuration.Builder()//
+        .includeWidgetGroupFields()//
+        .build();
+
+    private final Collection<ValueRefWrapper> m_valueRefs = new ArrayList<>();
+
+    private final Collection<ValueProviderWrapper> m_valueProviders = new ArrayList<>();
+
+    private final Collection<Class<? extends StateProvider>> m_uiStateProviders = new ArrayList<>();
+
     /**
      * @param settingsClasses a map of settings classes to collect annotated fields from
      * @return the valueRef and updates annotations
      */
-    static ValueRefsAndStateProviders
+    ValueRefsAndStateProviders
         settingsClassesToValueRefsAndStateProviders(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
 
-        final Collection<ValueRefWrapper> valueRefs = new ArrayList<>();
-        final Collection<ValueProviderWrapper> valueProviders = new ArrayList<>();
-        final Collection<Class<? extends StateProvider>> uiStateProviders = new ArrayList<>();
-
-        final var config = new Configuration.Builder()//
-            .includeFieldsNestedInArrayLayout()//
-            .includeWidgetGroupFields()//
-            .build();
         settingsClasses.entrySet().forEach(entry -> {
-            final var traverser = new DefaultNodeSettingsFieldTraverser(entry.getValue(), config);
-            traverser.getAllFields().stream().forEach(field -> {
-                addWidgetValueAnnotationValueRefAndValueProviderForField(field, entry, valueRefs, valueProviders);
-                addUiStateProviderForField(field, uiStateProviders);
-            });
+            final var traverser = new DefaultNodeSettingsFieldTraverser(entry.getValue(), TRAVERSAL_CONFIG);
+            final var allFields = traverser.getAllFields();
+            allFields.forEach(field -> addField(field, List.of(), entry.getKey()));
         });
-        return new ValueRefsAndStateProviders(valueRefs, valueProviders, uiStateProviders);
+        return new ValueRefsAndStateProviders(m_valueRefs, m_valueProviders, m_uiStateProviders);
+
+    }
+
+    private void addField(final TraversedField field, final List<TraversedField> parentFields,
+        final String settingsKey) {
+        addWidgetValueAnnotationValueRefAndValueProviderForField(field, parentFields, settingsKey);
+        addUiStateProviderForField(field);
+        traverseElementsOfArrayLayouts(field, parentFields, settingsKey);
+    }
+
+    private void traverseElementsOfArrayLayouts(final TraversedField field, final List<TraversedField> parentFields,
+        final String settingsKey) {
+        final var newParents = Stream.concat(parentFields.stream(), Stream.of(field)).toList();
+        field.getElementTraverser(TRAVERSAL_CONFIG)
+            .ifPresent(traverser -> traverser.getAllFields().forEach(elementField -> {
+                addField(elementField, newParents, settingsKey);
+            }));
 
     }
 
@@ -150,10 +167,9 @@ final class SettingsClassesToValueRefsAndStateProviders {
                 ChoicesStateProvider.class//
             ));
 
-    private static void addUiStateProviderForField(final TraversedField field,
-        final Collection<Class<? extends StateProvider>> uiStateProviders) {
+    private void addUiStateProviderForField(final TraversedField field) {
         uiStateProviderSpecs.stream().forEach(
-            spec -> getUiStateProviderForFieldAndSpecificAnnotation(field, spec).ifPresent(uiStateProviders::add));
+            spec -> getUiStateProviderForFieldAndSpecificAnnotation(field, spec).ifPresent(m_uiStateProviders::add));
     }
 
     private static <T extends Annotation, S extends StateProvider> Optional<Class<? extends S>>
@@ -171,36 +187,35 @@ final class SettingsClassesToValueRefsAndStateProviders {
 
     }
 
-    private static void addWidgetValueAnnotationValueRefAndValueProviderForField(final TraversedField field,
-        final Entry<String, Class<? extends WidgetGroup>> entry, final Collection<ValueRefWrapper> valueRefs,
-        final Collection<ValueProviderWrapper> valueProviders) {
-        final var pathWithSettingsKey = new PathWithSettingsKey(field.path(), entry.getKey());
+    private void addWidgetValueAnnotationValueRefAndValueProviderForField(final TraversedField field,
+        final List<TraversedField> parentFields, final String settingsKey) {
+        final var listOfPaths =
+            Stream.concat(parentFields.stream(), Stream.of(field)).map(TraversedField::path).toList();
+        final var pathWithSettingsKey = new PathsWithSettingsKey(listOfPaths, settingsKey);
         final var fieldType = field.propertyWriter().getType().getRawClass();
         final var valueReferenceAnnotation = field.propertyWriter().getAnnotation(ValueReference.class);
         if (valueReferenceAnnotation != null) {
-            addValueRef(valueRefs, valueReferenceAnnotation.value(), fieldType, pathWithSettingsKey);
+            addValueRef(valueReferenceAnnotation.value(), fieldType, pathWithSettingsKey);
         }
         final var valueProviderAnnotation = field.propertyWriter().getAnnotation(ValueProvider.class);
         if (valueProviderAnnotation != null) {
-            addValueProvider(valueProviders, valueProviderAnnotation.value(), fieldType, pathWithSettingsKey);
+            addValueProvider(valueProviderAnnotation.value(), fieldType, pathWithSettingsKey);
         }
     }
 
-    private static void addValueRef(final Collection<ValueRefWrapper> valueRefs,
-        final Class<? extends Reference> valueRef, final Class<?> fieldType,
-        final PathWithSettingsKey pathWithSettingsKey) {
+    private void addValueRef(final Class<? extends Reference> valueRef, final Class<?> fieldType,
+        final PathsWithSettingsKey pathWithSettingsKey) {
         if (!valueRef.equals(Reference.class)) {
             validateAgainstFieldType(fieldType, valueRef, Reference.class);
-            valueRefs.add(new ValueRefWrapper(valueRef, pathWithSettingsKey));
+            m_valueRefs.add(new ValueRefWrapper(valueRef, pathWithSettingsKey));
         }
     }
 
-    private static void addValueProvider(final Collection<ValueProviderWrapper> valueProviders,
-        final Class<? extends StateProvider> valueProviderClass, final Class<?> fieldType,
-        final PathWithSettingsKey pathWithSettingsKey) {
+    private void addValueProvider(final Class<? extends StateProvider> valueProviderClass, final Class<?> fieldType,
+        final PathsWithSettingsKey pathWithSettingsKey) {
         if (!valueProviderClass.equals(StateProvider.class)) {
             validateAgainstFieldType(fieldType, valueProviderClass, StateProvider.class);
-            valueProviders.add(new ValueProviderWrapper(valueProviderClass, pathWithSettingsKey));
+            m_valueProviders.add(new ValueProviderWrapper(valueProviderClass, pathWithSettingsKey));
         }
     }
 

@@ -544,7 +544,7 @@ describe("NodeDialog.vue", () => {
         state: "SUCCESS",
         result: [
           {
-            path: ["#/properties/model/properties/secondSetting"],
+            scopes: ["#/properties/model/properties/secondSetting"],
             value: updatedValue,
           },
         ],
@@ -594,7 +594,7 @@ describe("NodeDialog.vue", () => {
         state: "SUCCESS",
         result: [
           {
-            path: ["#/properties/model/properties/secondSetting"],
+            scopes: ["#/properties/model/properties/secondSetting"],
             value: updatedValue,
           },
         ],
@@ -698,7 +698,7 @@ describe("NodeDialog.vue", () => {
       const updatedValue = "updatedValue";
       initialUpdates = [
         {
-          path: ["#/properties/model/properties/secondSetting"],
+          scopes: ["#/properties/model/properties/secondSetting"],
           value: updatedValue,
         },
       ];
@@ -734,7 +734,7 @@ describe("NodeDialog.vue", () => {
         state: "SUCCESS",
         result: [
           {
-            path: ["#/properties/model/properties/secondSetting"],
+            scopes: ["#/properties/model/properties/secondSetting"],
             value: updatedValue,
           },
         ],

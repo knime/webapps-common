@@ -78,7 +78,7 @@ public class TriggerInvocationHandler {
      * @param valueUpdates keys here are the path locations of fields whose value is updated
      * @param otherUpdates keys here are the ids (the names) of the state providers
      */
-    public record TriggerResult(Map<PathWithSettingsKey, Object> valueUpdates, Map<String, Object> otherUpdates) {
+    public record TriggerResult(Map<PathsWithSettingsKey, Object> valueUpdates, Map<String, Object> otherUpdates) {
 
     }
 
@@ -97,7 +97,7 @@ public class TriggerInvocationHandler {
         final var partitionedResult = resultPerUpdateHandler.entrySet().stream()
             .collect(Collectors.partitioningBy(e -> e.getKey().getFieldLocation().isPresent()));
 
-        final Map<PathWithSettingsKey, Object> valueUpdates = new HashMap<>();
+        final Map<PathsWithSettingsKey, Object> valueUpdates = new HashMap<>();
         for (var entry : partitionedResult.get(true)) {
             valueUpdates.put(//
                 entry.getKey().getFieldLocation().get(), // NOSONAR isPresent() is checked during partitioning

@@ -74,10 +74,10 @@ export default ({
   };
 
   const resolveUpdateResult =
-    ({ path, value, id }: UpdateResult, indices?: number[]) =>
+    ({ scopes, value, id }: UpdateResult, indices?: number[]) =>
     (newSettings: DialogSettingsObject) => {
-      if (path) {
-        const pathSegments = combineScopesWithIndices(path, indices ?? []);
+      if (scopes) {
+        const pathSegments = combineScopesWithIndices(scopes, indices ?? []);
         const toBeAdjustedByLastPathSegment = pathSegments
           .slice(0, pathSegments.length - 1)
           .reduce(

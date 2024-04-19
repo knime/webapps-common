@@ -260,7 +260,7 @@ describe("updates in array layouts", () => {
       {
         id: choicesProviderId,
         value: possibleValues,
-        path: null,
+        scopes: null,
       },
     ]);
     return {
@@ -282,7 +282,7 @@ describe("updates in array layouts", () => {
       {
         id: null,
         value: newValue,
-        path: ["#/properties/model/properties/values", "#/properties/value"],
+        scopes: ["#/properties/model/properties/values", "#/properties/value"],
       },
     ]);
     return {

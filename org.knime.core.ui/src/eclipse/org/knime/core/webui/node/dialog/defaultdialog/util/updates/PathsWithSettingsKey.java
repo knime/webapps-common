@@ -55,9 +55,10 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 /**
  *
  * @author Paul Bärnreuther
- * @param path the path of the field in a {@link DefaultNodeSettings} class
+ * @param paths the path to the field in a {@link DefaultNodeSettings} class. It contains mulitple paths whenever the
+ *            field is nested inside an array layout
  * @param settingsKey the key of the {@link DefaultNodeSettings} class
  */
-public record PathWithSettingsKey(List<String> path, String settingsKey) {
+public record PathsWithSettingsKey(List<List<String>> paths, String settingsKey) {
 
 }

@@ -190,7 +190,7 @@ class DefaultNodeDialogDataServiceImplTest {
             final var result = (List<UpdateResult>)(resultWrapper.result());
             assertThat(result).hasSize(1);
             assertThat(((TextNode)result.get(0).value()).textValue()).isEqualTo(testDepenenciesFooValue);
-            assertThat(result.get(0).path()).isEqualTo("#/properties/model/properties/updatedWidget");
+            assertThat(result.get(0).scopes()).isEqualTo(List.of("#/properties/model/properties/updatedWidget"));
         }
 
         @Test
@@ -231,7 +231,7 @@ class DefaultNodeDialogDataServiceImplTest {
             final var result = (List<UpdateResult>)(resultWrapper.result());
             assertThat(result).hasSize(1);
             assertThat(result.get(0).value()).isEqualTo(testDepenencyValue);
-            assertThat(result.get(0).path()).isNull();
+            assertThat(result.get(0).scopes()).isNull();
             assertThat(result.get(0).id()).isEqualTo(UpdateSettings.MyFileExtensionProvider.class.getName());
         }
 
@@ -332,16 +332,12 @@ class DefaultNodeDialogDataServiceImplTest {
                     testDepenenciesFooValue, MySecondValueRef.class.getName(), testDepenenciesBarValue));
             final var result = (List<UpdateResult>)(resultWrapper.result());
             assertThat(result).hasSize(2);
-            final var valuesAndPaths = assertThat(result).extracting("value", "path");
-            valuesAndPaths.anySatisfy(tuple -> {
-                assertThat(((TextNode)tuple.toList().get(0)).textValue()).isEqualTo(testDepenenciesFooValue + "_first");
-                assertThat(tuple.toList().get(1)).isEqualTo("#/properties/model/properties/firstUpdatedWidget");
-            });
-            valuesAndPaths.anySatisfy(tuple -> {
-                assertThat(((TextNode)tuple.toList().get(0)).textValue())
-                    .isEqualTo(testDepenenciesBarValue + "_second");
-                assertThat(tuple.toList().get(1)).isEqualTo("#/properties/model/properties/secondUpdatedWidget");
-            });
+            final var first = result.get(0);
+            assertThat(((TextNode)first.value()).textValue()).isEqualTo(testDepenenciesFooValue + "_first");
+            assertThat(first.scopes()).isEqualTo(List.of("#/properties/model/properties/firstUpdatedWidget"));
+            final var second = result.get(1);
+            assertThat(((TextNode)second.value()).textValue()).isEqualTo(testDepenenciesBarValue + "_second");
+            assertThat(second.scopes()).isEqualTo(List.of("#/properties/model/properties/secondUpdatedWidget"));
         }
     }
 

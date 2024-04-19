@@ -51,6 +51,8 @@ package org.knime.core.webui.node.dialog.defaultdialog.jsonforms;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.PathsWithSettingsKey;
+
 /**
  * The scope of a setting is its json schema path (i.e. #/properties/...) We use this scope whenever we need to point to
  * a setting when generating the uiSchema or within a dialogs data service
@@ -85,5 +87,20 @@ public final class JsonFormsScopeUtil {
      */
     public static String toScope(final List<String> path) {
         return String.join("/properties/", path);
+    }
+
+    /**
+     *
+     * @param location of a state provider or trigger
+     * @return the list of jsonforms scopes
+     */
+    public static List<String> resolveFieldLocationToScope(final PathsWithSettingsKey location) {
+        final var numScopes = location.paths().size();
+        final List<String> scopes = new ArrayList<>(numScopes);
+        scopes.add(JsonFormsScopeUtil.toScope(location.paths().get(0), location.settingsKey()));
+        for (int i = 1; i < numScopes; i++) {
+            scopes.add(JsonFormsScopeUtil.toScope(location.paths().get(i), null));
+        }
+        return scopes;
     }
 }

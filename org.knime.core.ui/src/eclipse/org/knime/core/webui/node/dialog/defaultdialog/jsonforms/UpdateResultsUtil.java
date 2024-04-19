@@ -51,7 +51,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.jsonforms;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.PathWithSettingsKey;
+import org.apache.commons.lang3.StringUtils;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerInvocationHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerInvocationHandler.TriggerResult;
 
@@ -70,19 +70,32 @@ public final class UpdateResultsUtil {
     /**
      * An instruction for an update. Either a value update defined by a path or a ui state update defined by an id
      *
-     * @param path to the field in case of a value update
+     * @param scopes to the field in case of a value update
      * @param id of the state provider in other cases
      * @param value
      */
-    public record UpdateResult(String path, String id, Object value) {
+    public record UpdateResult(List<String> scopes, String id, Object value) implements Comparable<UpdateResult> {
 
-        private static UpdateResult forPath(final String path, final Object value) {
+        private static UpdateResult forScopes(final List<String> path, final Object value) {
             return new UpdateResult(path, null, JsonFormsDataUtil.getMapper().valueToTree(value));
         }
 
         private static UpdateResult forId(final String id, final Object value) {
             return new UpdateResult(null, id, value);
         }
+
+        @Override
+        public int compareTo(final UpdateResult other) {
+            return internalId().compareTo(other.internalId());
+        }
+
+        private String internalId() {
+            if (scopes != null) {
+                return "0" + StringUtils.join(scopes);
+            }
+            return "1" + id;
+        }
+
     }
 
     /**
@@ -90,15 +103,14 @@ public final class UpdateResultsUtil {
      * @return the list of resulting instructions
      */
     public static List<UpdateResult> toUpdateResults(final TriggerResult triggerResult) {
-        final var valueUpdates = triggerResult.valueUpdates().entrySet().stream()
-            .map(entry -> UpdateResult.forPath(toScope(entry.getKey()), entry.getValue()));
+        final var valueUpdates =
+            triggerResult
+                .valueUpdates().entrySet().stream().map(entry -> UpdateResult
+                    .forScopes(JsonFormsScopeUtil.resolveFieldLocationToScope(entry.getKey()), entry.getValue()))
+                .sorted();
         final var otherUpdates = triggerResult.otherUpdates().entrySet().stream()
-            .map(entry -> UpdateResult.forId(entry.getKey(), entry.getValue()));
+            .map(entry -> UpdateResult.forId(entry.getKey(), entry.getValue())).sorted();
         return Stream.concat(valueUpdates, otherUpdates).toList();
-    }
-
-    private static String toScope(final PathWithSettingsKey scope) {
-        return JsonFormsScopeUtil.toScope(scope.path(), scope.settingsKey());
     }
 
 }

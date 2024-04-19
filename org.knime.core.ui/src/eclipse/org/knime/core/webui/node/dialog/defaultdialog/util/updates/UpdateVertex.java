@@ -61,7 +61,7 @@ final class UpdateVertex extends Vertex {
 
     private final Class<? extends StateProvider> m_stateProviderClass;
 
-    private final Optional<PathWithSettingsKey> m_fieldLocation;
+    private final Optional<PathsWithSettingsKey> m_fieldLocation;
 
     UpdateVertex(final ValueProviderWrapper wrapper) {
         m_stateProviderClass = wrapper.stateProviderClass();
@@ -85,7 +85,7 @@ final class UpdateVertex extends Vertex {
     /**
      * @return information on the associated field
      */
-    Optional<PathWithSettingsKey> getFieldLocation() {
+    Optional<PathsWithSettingsKey> getFieldLocation() {
         return m_fieldLocation;
     }
 

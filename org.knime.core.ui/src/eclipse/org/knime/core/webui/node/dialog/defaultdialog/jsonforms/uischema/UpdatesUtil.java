@@ -59,7 +59,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsScopeUt
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.UpdateResultsUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.UpdateResultsUtil.UpdateResult;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.PathWithSettingsKey;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.PathsWithSettingsKey;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToDependencyTreeUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerAndDependencies;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerInvocationHandler;
@@ -150,7 +150,7 @@ public final class UpdatesUtil {
             .sorted((d1, d2) -> StringUtils.compare(d1.valueRef(), d2.valueRef()));
         dependencies.forEach(dep -> {
             final var newDependency = dependenciesArrayNode.addObject();
-            newDependency.put("scope", resolveFiledLocationToScope(dep.fieldLocation()));
+            addLocationTo(newDependency, "scopes", dep.fieldLocation());
             newDependency.put("id", dep.valueRef());
         });
     }
@@ -161,14 +161,16 @@ public final class UpdatesUtil {
         final var triggerNode = updateObjectNode.putObject("trigger");
         triggerNode.put("id", triggerWithDependencies.getTriggerId());
         triggerWithDependencies.getTriggerFieldLocation()
-            .ifPresent(fieldLocation -> triggerNode.put("scope", resolveFiledLocationToScope(fieldLocation)));
+            .ifPresent(fieldLocation -> addLocationTo(triggerNode, "scopes", fieldLocation));
         if (triggerWithDependencies.isAfterOpenDialogTrigger()) {
             triggerNode.put("triggerInitially", true);
         }
 
     }
 
-    private static String resolveFiledLocationToScope(final PathWithSettingsKey fieldLocation) {
-        return JsonFormsScopeUtil.toScope(fieldLocation.path(), fieldLocation.settingsKey());
+    private static void addLocationTo(final ObjectNode newDependency, final String propertyName,
+        final PathsWithSettingsKey location) {
+        final var scopesNodes = newDependency.putArray(propertyName);
+        JsonFormsScopeUtil.resolveFieldLocationToScope(location).forEach(scopesNodes::add);
     }
 }

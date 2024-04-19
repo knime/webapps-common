@@ -56,9 +56,11 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.knime.core.node.util.CheckUtils;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.ConvertValueUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaGenerationException;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 
@@ -90,7 +92,7 @@ public class TriggerAndDependencies {
     /**
      * @return Information on the field associated to the trigger, if such a field exists. Otherwise empty.
      */
-    public Optional<PathWithSettingsKey> getTriggerFieldLocation() {
+    public Optional<PathsWithSettingsKey> getTriggerFieldLocation() {
         return m_triggerVertex.getFieldLocation();
     }
 
@@ -98,7 +100,7 @@ public class TriggerAndDependencies {
      * @param fieldLocation - information on the field associated to this dependency
      * @param valueRef - an id of the reference class
      */
-    public record Dependency(PathWithSettingsKey fieldLocation, String valueRef) {
+    public record Dependency(PathsWithSettingsKey fieldLocation, String valueRef) {
     }
 
     /**
@@ -133,16 +135,24 @@ public class TriggerAndDependencies {
     private static Object extractValue(final DependencyVertex vertex, final Map<String, JsonNode> jsonNodes,
         final DefaultNodeSettingsContext context) {
         var groupJsonNode = jsonNodes.get(vertex.getFieldLocation().settingsKey());
-        var fieldJsonNode = groupJsonNode.at(toJsonPointer(vertex.getFieldLocation().path()));
+        var fieldJsonNode = groupJsonNode.at(toJsonPointer(vertex.getFieldLocation().paths()));
         return ConvertValueUtil.convertValueRef(fieldJsonNode, vertex.getValueRef(), context);
     }
 
-    private static String toJsonPointer(final List<String> path) {
-        return "/" + String.join("/", path);
+    private static String toJsonPointer(final List<List<String>> paths) {
+
+        /**
+         * TODO: UIEXT-1841 remove this and treat the case of multiple paths here.
+         */
+        CheckUtils.check(paths.size() == 1, UiSchemaGenerationException::new,
+            () -> String
+                .format("There exists an initially triggered state provider with dependencies inside an array layout "
+                    + "(with paths %s). This is not yet supported.", paths));
+        return "/" + String.join("/", paths.get(0));
     }
 
     private Collection<String> getDependencySettingsKeys() {
-        return getDependencies().stream().map(Dependency::fieldLocation).map(PathWithSettingsKey::settingsKey)
+        return getDependencies().stream().map(Dependency::fieldLocation).map(PathsWithSettingsKey::settingsKey)
             .collect(Collectors.toSet());
     }
 

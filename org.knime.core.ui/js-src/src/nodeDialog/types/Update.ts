@@ -2,7 +2,7 @@ export interface ValueReference {
   /**
    * The sequence of schema paths (multiple in case of array layout elements) of the setting
    */
-  scopes: string[]; // TODO also string array in backend
+  scopes: string[];
   /**
    * A unique identifyer
    */
@@ -29,16 +29,16 @@ export interface Update {
         triggerInitially: undefined;
       });
 }
-export interface PathAndValue {
-  path: string[]; // TODO also string array in backend
+export interface ScopesAndValue {
+  scopes: string[];
   id: null;
   value: unknown;
 }
 
 export interface IdAndValue {
-  path: null;
+  scopes: null;
   id: string;
   value: unknown;
 }
 
-export type UpdateResult = PathAndValue | IdAndValue;
+export type UpdateResult = ScopesAndValue | IdAndValue;

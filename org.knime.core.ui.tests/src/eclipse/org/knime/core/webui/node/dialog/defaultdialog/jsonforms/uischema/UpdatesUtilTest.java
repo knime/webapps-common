@@ -187,21 +187,21 @@ class UpdatesUtilTest {
 
         assertThatJson(response).inPath("$.globalUpdates[0].trigger.id").isString()
             .isEqualTo(TestSettings.DependencyA.class.getName());
-        assertThatJson(response).inPath("$.globalUpdates[0].trigger.scope").isString()
-            .isEqualTo("#/properties/test/properties/dependency");
+        assertThatJson(response).inPath("$.globalUpdates[0].trigger.scopes").isArray()
+            .isEqualTo(List.of("#/properties/test/properties/dependency"));
         assertThatJson(response).inPath("$.globalUpdates[0].dependencies").isArray().hasSize(1);
-        assertThatJson(response).inPath("$.globalUpdates[0].dependencies[0].scope").isString()
-            .isEqualTo("#/properties/test/properties/dependency");
+        assertThatJson(response).inPath("$.globalUpdates[0].dependencies[0].scopes").isArray()
+            .isEqualTo(List.of("#/properties/test/properties/dependency"));
         assertThatJson(response).inPath("$.globalUpdates[0].dependencies[0].id").isString()
             .isEqualTo(TestSettings.DependencyA.class.getName());
 
         assertThatJson(response).inPath("$.globalUpdates[1].trigger.id").isString()
             .isEqualTo(TestSettings.DependencyB.class.getName());
-        assertThatJson(response).inPath("$.globalUpdates[1].trigger.scope").isString()
-            .isEqualTo("#/properties/test/properties/anotherDependency");
+        assertThatJson(response).inPath("$.globalUpdates[1].trigger.scopes").isArray()
+            .isEqualTo(List.of("#/properties/test/properties/anotherDependency"));
         assertThatJson(response).inPath("$.globalUpdates[1].dependencies").isArray().hasSize(1);
-        assertThatJson(response).inPath("$.globalUpdates[1].dependencies[0].scope").isString()
-            .isEqualTo("#/properties/test/properties/dependency");
+        assertThatJson(response).inPath("$.globalUpdates[1].dependencies[0].scopes").isArray()
+            .isEqualTo(List.of("#/properties/test/properties/dependency"));
         assertThatJson(response).inPath("$.globalUpdates[1].dependencies[0].id").isString()
             .isEqualTo(TestSettings.DependencyA.class.getName());
 
@@ -332,7 +332,7 @@ class UpdatesUtilTest {
 
         assertThat(assertThrows(RuntimeException.class, () -> buildUpdates(settings)).getMessage())
             .isEqualTo("The value reference DanglingReference is used in a state provider but could not be found. "
-                + "It should used as valueRef for a widget.");
+                + "It should be used as @ValueReference for some field.");
 
     }
 
@@ -449,20 +449,14 @@ class UpdatesUtilTest {
 
         assertThatJson(response).inPath("$").isObject().doesNotContainKey("globalUpdates");
         assertThatJson(response).inPath("$.initialUpdates").isArray().hasSize(2);
-
-        assertThatJson(response).inPath("$.initialUpdates").isArray().anySatisfy(initialUpdate -> {
-            assertThatJson(initialUpdate).inPath("$.path").isString()
-                .isEqualTo("#/properties/test/properties/valueUpdateSetting");
-            assertThatJson(initialUpdate).inPath("$.value").isObject().containsEntry("value",
-                TestSettings.MyValueProvider.RESULT);
-        });
-
-        assertThatJson(response).inPath("$.initialUpdates").isArray().anySatisfy(initialUpdate -> {
-            assertThatJson(initialUpdate).inPath("$.id").isString()
-                .isEqualTo(TestSettings.MyInitialFileExtensionProvider.class.getName());
-            assertThatJson(initialUpdate).inPath("$.value").isString()
-                .isEqualTo(TestSettings.MyInitialFileExtensionProvider.RESULT);
-        });
+        assertThatJson(response).inPath("$.initialUpdates[0].scopes").isArray()
+            .isEqualTo(List.of("#/properties/test/properties/valueUpdateSetting"));
+        assertThatJson(response).inPath("$.initialUpdates[0].value").isObject().containsEntry("value",
+            TestSettings.MyValueProvider.RESULT);
+        assertThatJson(response).inPath("$.initialUpdates[1].id").isString()
+            .isEqualTo(TestSettings.MyInitialFileExtensionProvider.class.getName());
+        assertThatJson(response).inPath("$.initialUpdates[1].value").isString()
+            .isEqualTo(TestSettings.MyInitialFileExtensionProvider.RESULT);
     }
 
     @Test
@@ -514,8 +508,8 @@ class UpdatesUtilTest {
         final Map<String, WidgetGroup> settings = Map.of("test", new TestSettings());
         final var response = buildUpdates(settings);
         assertThatJson(response).inPath("$.initialUpdates").isArray().hasSize(1);
-        assertThatJson(response).inPath("$.initialUpdates[0].path").isString()
-            .isEqualTo("#/properties/test/properties/valueUpdateSetting");
+        assertThatJson(response).inPath("$.initialUpdates[0].scopes").isArray()
+            .isEqualTo(List.of("#/properties/test/properties/valueUpdateSetting"));
         assertThatJson(response).inPath("$.initialUpdates[0].value").isString().isEqualTo("{self:null,other:foo}");
 
     }
@@ -703,5 +697,121 @@ class UpdatesUtilTest {
                 .isEqualTo(StringCell.TYPE.getName());
             assertThatJson(response).inPath("$.initialUpdates[0].value[0].compatibleTypes").isArray().hasSize(3);
         }
+    }
+
+    @Nested
+    class ArrayLayoutUpdatesTest {
+
+        @Test
+        void testUpdateWithDependenciesInsideArrayElements() {
+
+            class TestSettings implements DefaultNodeSettings {
+                static final class DependencyOutsideArray implements Reference<String> {
+                }
+
+                static final class ElementSettings implements DefaultNodeSettings {
+                    static final class DependencyInsideArray implements Reference<String> {
+                    }
+
+                    @ValueReference(DependencyInsideArray.class)
+                    String m_dependencyInsideArray;
+
+                    static final class TriggerReference implements ButtonReference {
+                    }
+
+                    @SimpleButtonWidget(ref = TriggerReference.class)
+                    Void m_trigger;
+
+                    static final class MyProvider implements StateProvider<String> {
+
+                        @Override
+                        public void init(final StateProviderInitializer initializer) {
+                            initializer.computeOnButtonClick(TriggerReference.class);
+                            initializer.getValueSupplier(DependencyInsideArray.class);
+                            initializer.getValueSupplier(DependencyOutsideArray.class);
+
+                        }
+
+                        @Override
+                        public String computeState(final DefaultNodeSettingsContext context) {
+                            throw new IllegalStateException("Should not be called in this test");
+                        }
+
+                    }
+
+                    @ValueProvider(MyProvider.class)
+                    String m_effectField;
+
+                }
+
+                @ValueReference(DependencyOutsideArray.class)
+                String m_dependencyOutsideArray;
+
+                @SuppressWarnings("unused")
+                ElementSettings[] m_array;
+
+            }
+
+            final Map<String, WidgetGroup> settings = Map.of("test", new TestSettings());
+            final var response = buildUpdates(settings);
+            assertThatJson(response).inPath("$.globalUpdates[0].trigger.id").isString()
+                .isEqualTo(TestSettings.ElementSettings.TriggerReference.class.getName());
+            assertThatJson(response).inPath("$.globalUpdates[0].dependencies").isArray().hasSize(2);
+            assertThatJson(response).inPath("$.globalUpdates[0].dependencies[0].id").isString()
+                .isEqualTo(TestSettings.DependencyOutsideArray.class.getName());
+            assertThatJson(response).inPath("$.globalUpdates[0].dependencies[0].scopes").isArray()
+                .isEqualTo(List.of("#/properties/test/properties/dependencyOutsideArray"));
+            assertThatJson(response).inPath("$.globalUpdates[0].dependencies[1].id").isString()
+                .isEqualTo(TestSettings.ElementSettings.DependencyInsideArray.class.getName());
+            assertThatJson(response).inPath("$.globalUpdates[0].dependencies[1].scopes").isArray()
+                .isEqualTo(List.of("#/properties/test/properties/array", "#/properties/dependencyInsideArray"));
+
+        }
+
+        @Test
+        void testThrowsOnInitialTriggerWithDependencyInsideArray() {
+
+            class TestSettings implements DefaultNodeSettings {
+
+                static final class ElementSettings implements DefaultNodeSettings {
+                    static final class DependencyInsideArray implements Reference<String> {
+                    }
+
+                    @ValueReference(DependencyInsideArray.class)
+                    String m_dependencyInsideArray;
+
+                    static final class MyProvider implements StateProvider<String> {
+
+                        @Override
+                        public void init(final StateProviderInitializer initializer) {
+                            initializer.computeBeforeOpenDialog();
+                            initializer.getValueSupplier(DependencyInsideArray.class);
+
+                        }
+
+                        @Override
+                        public String computeState(final DefaultNodeSettingsContext context) {
+                            throw new IllegalStateException("Should not be called in this test");
+                        }
+
+                    }
+
+                    @ValueProvider(MyProvider.class)
+                    String m_effectField;
+
+                }
+
+                @SuppressWarnings("unused")
+                ElementSettings[] m_array;
+
+            }
+
+            final Map<String, WidgetGroup> settings = Map.of("test", new TestSettings());
+            assertThat(assertThrows(UiSchemaGenerationException.class, () -> buildUpdates(settings)).getMessage())
+                .isEqualTo("There exists an initially triggered state provider with dependencies inside an "
+                    + "array layout (with paths [[array], [dependencyInsideArray]]). This is not yet supported.");
+
+        }
+
     }
 }

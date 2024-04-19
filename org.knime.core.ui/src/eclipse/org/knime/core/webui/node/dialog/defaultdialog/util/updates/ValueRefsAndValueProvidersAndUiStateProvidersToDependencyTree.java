@@ -67,6 +67,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.util.updates.Vertex.Vertex
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonReference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
 
 final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
 
@@ -172,9 +173,10 @@ final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
 
             private ValueRefWrapper findValueRefWrapper(final Class<? extends Reference> valueRef) {
                 return m_valueRefs.stream().filter(wrapper -> wrapper.valueRef().equals(valueRef)).findAny()
-                    .orElseThrow(() -> new RuntimeException(
-                        String.format("The value reference %s is used in a state provider but could not be found. "
-                            + "It should used as valueRef for a widget.", valueRef.getSimpleName())));
+                    .orElseThrow(() -> new RuntimeException(String.format(
+                        "The value reference %s is used in a state provider but could not be found. "
+                            + "It should be used as @%s for some field.",
+                        valueRef.getSimpleName(), ValueReference.class.getSimpleName())));
             }
 
             /**
