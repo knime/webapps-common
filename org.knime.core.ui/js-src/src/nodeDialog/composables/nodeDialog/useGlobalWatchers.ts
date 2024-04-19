@@ -45,18 +45,18 @@ const testMatchesAndGetIndices = (
   if (segmentsWithoutFirstDataPath === null) {
     return null;
   }
-  if (
-    segmentsWithoutFirstDataPath.length === 0 ||
-    dataPathSegments.length === 1
-  ) {
+  if (dataPathSegments.length === 1) {
     return [];
+  }
+  if (segmentsWithoutFirstDataPath.length === 0) {
+    return null;
   }
   const [needsToBeANumber, ...rest] = segmentsWithoutFirstDataPath;
   const nextNumber = parseInt(needsToBeANumber, 10);
   if (isNaN(nextNumber)) {
     return null;
   }
-  const otherMatchingNumbers = testMatchesAndGetIndices(
+  const restMatchingIndices = testMatchesAndGetIndices(
     rest,
     dataPathSegments.slice(1),
   );

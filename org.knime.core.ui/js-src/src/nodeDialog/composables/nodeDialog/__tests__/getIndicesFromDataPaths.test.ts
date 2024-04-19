@@ -44,12 +44,6 @@ describe("getIndicesFromDataPaths", () => {
     expect(
       splitPathAndGetIndicesFromDataPaths(
         [["lorem", "ipsum", "dolor"]],
-        "lorem.123.ipsum",
-      ),
-    ).toStrictEqual([123]);
-    expect(
-      splitPathAndGetIndicesFromDataPaths(
-        [["lorem", "ipsum", "dolor"]],
         "lorem.123.ipsum.45",
       ),
     ).toStrictEqual([123, 45]);
@@ -79,6 +73,22 @@ describe("getIndicesFromDataPaths", () => {
     ).toBeNull();
     expect(
       splitPathAndGetIndicesFromDataPaths([["loremipsum"]], "lorem"),
+    ).toBeNull();
+  });
+
+  /**
+   * E.g. when an array element is added, a value trigger inside of the array should not trigger.
+   */
+  it("return null if matched but the number of indices in the output would be smaller than required", () => {
+    expect(
+      splitPathAndGetIndicesFromDataPaths([["lorem", "ipsum"]], "lorem"),
+    ).toBeNull();
+
+    expect(
+      splitPathAndGetIndicesFromDataPaths(
+        [["lorem", "ipsum", "dolor"]],
+        "lorem.123.ipsum",
+      ),
     ).toBeNull();
   });
 
