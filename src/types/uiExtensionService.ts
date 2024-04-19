@@ -79,7 +79,7 @@ export type APILayerDirtyState = { apply: ApplyState; view: ViewState };
 
 type SomeKnimeUiApiResponse = {
   isSome: true;
-  data: any;
+  result: any;
 };
 
 type NoneKnimeUiApiResponse = {
