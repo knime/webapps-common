@@ -114,6 +114,8 @@ public final class NodeRecommendationManager {
 
     private static final String SOURCE_NODES_KEY = "<source_nodes>";
 
+    private static final String ALL_NODES_KEY = "<all_nodes>";
+
     private static final String NODE_NAME_SEP = "#";
 
     private static final String TRIPLE_PROVIDER_EXTENSION_POINT_ID = "org.knime.core.ui.nodetriples";
@@ -126,7 +128,8 @@ public final class NodeRecommendationManager {
 
     private static List<Map<String, List<NodeRecommendation>>> cachedRecommendations;
 
-    private static List<NodeTripleProvider> nodeTripleProviders;
+    /* modifiable for testing purposes */
+    static List<NodeTripleProvider> nodeTripleProviders;
 
     private Function<String, NodeType> m_nodeTypeSupplier;
 
@@ -227,19 +230,7 @@ public final class NodeRecommendationManager {
 
                 provider.getNodeTriples().forEach(
                     nf -> fillRecommendationsMap(recommendationMap, nf, m_nodeTypeSupplier));
-
-                // Aggregate multiple occurring id's but apply a different aggregation method to source nodes
-                BiConsumer<NodeRecommendation, NodeRecommendation> avgAggr =
-                    (np1, np2) -> np1.increaseFrequency(np2.getFrequency(), 1);
-                BiConsumer<NodeRecommendation, NodeRecommendation> sumAggr =
-                    (np1, np2) -> np1.increaseFrequency(np2.getFrequency(), 0);
-                recommendationMap.keySet().stream().forEach(s -> {
-                    if (s.equals(SOURCE_NODES_KEY)) {
-                        aggregate(recommendationMap.get(s), sumAggr);
-                    } else {
-                        aggregate(recommendationMap.get(s), avgAggr);
-                    }
-                });
+                aggregateNodeRecommendations(recommendationMap);
             }
         }
 
@@ -252,12 +243,46 @@ public final class NodeRecommendationManager {
         m_listeners.stream().forEach(IUpdateListener::updated); // Notify all update listeners after (un-)loading node recommendations
     }
 
+    /*
+     * Aggregate multiple occurring id's.
+     */
+    private static void aggregateNodeRecommendations(final Map<String, List<NodeRecommendation>> recommendationMap) {
+        // apply different aggregation methods for 'independent recommendations' (e.g. source nodes)
+        BiConsumer<NodeRecommendation, NodeRecommendation> avgAggr =
+            (np1, np2) -> np1.increaseFrequency(np2.getFrequency(), 1);
+        BiConsumer<NodeRecommendation, NodeRecommendation> sumAggr =
+            (np1, np2) -> np1.increaseFrequency(np2.getFrequency(), 0);
+        recommendationMap.keySet().stream().forEach(s -> {
+            List<NodeRecommendation> independentRecommendations = null;
+            if (s.equals(SOURCE_NODES_KEY)) {
+                independentRecommendations = recommendationMap.get(SOURCE_NODES_KEY);
+            }
+            if (s.equals(ALL_NODES_KEY)) {
+                independentRecommendations = recommendationMap.get(ALL_NODES_KEY);
+            }
+
+            if (independentRecommendations != null) {
+                aggregate(independentRecommendations, sumAggr);
+                Collections.sort(independentRecommendations);
+                var totalFrequency =
+                    independentRecommendations.stream().mapToInt(NodeRecommendation::getFrequency).sum();
+                independentRecommendations.forEach(nr -> nr.setTotalFrequency(totalFrequency));
+            } else {
+                aggregate(recommendationMap.get(s), avgAggr);
+            }
+        });
+    }
+
     private static void fillRecommendationsMap(final Map<String, List<NodeRecommendation>> recommendationMap,
         final NodeTriple nt, final Function<String, NodeType> getNodeType) {
 
         var successor = getInternalNodeInfo(nt.getSuccessor(), getNodeType);
         var node = getInternalNodeInfo(nt.getNode().orElse(null), getNodeType);
         var predecessor = getInternalNodeInfo(nt.getPredecessor().orElse(null), getNodeType);
+
+        if (node != null && node.isKnown()) {
+            add(recommendationMap, ALL_NODES_KEY, node.id, nt.getCount());
+        }
 
         /* considering the successor only, i.e. for all entries where the predecessor and the node
          * itself is not present
@@ -423,18 +448,34 @@ public final class NodeRecommendationManager {
                     "Recommendations for more than one node are not supported, yet.");
             }
 
-            /* post-process result */
-            Collections.sort(res[idx]);
             if (nnc.length == 1) {
+                /* post-process result */
+                Collections.sort(res[idx]);
+
                 // remove the node, the recommendations have been requested for, from the list
                 res[idx] = res[idx].stream()//
                     .filter(nr -> !nr.m_factoryId.equals(nnc[0].getNodeFactoryId()))//
                     .collect(Collectors.toList());
-            }
 
-            // update the total frequencies
-            var totalFrequency = res[idx].stream().mapToInt(NodeRecommendation::getFrequency).sum();
-            res[idx].forEach(nr -> nr.setTotalFrequency(totalFrequency));
+                // update the total frequencies
+                var totalFrequency = res[idx].stream().mapToInt(NodeRecommendation::getFrequency).sum();
+                res[idx].forEach(nr -> nr.setTotalFrequency(totalFrequency));
+            }
+        }
+        return res;
+    }
+
+    /**
+     * @return list of nodes sorted by they frequency of being used in general
+     */
+    @SuppressWarnings("static-method") // Not static to avoid failing initialization
+    public List<NodeRecommendation>[] getMostFrequentlyUsedNodes() {
+        List<NodeRecommendation>[] res = new List[cachedRecommendations.size()];
+        for (var idx = 0; idx < res.length; idx++) {
+            res[idx] = cachedRecommendations.get(idx).get(ALL_NODES_KEY);
+            if (res[idx] == null) {
+                res[idx] = Collections.emptyList();
+            }
         }
         return res;
     }

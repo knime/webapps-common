@@ -70,6 +70,8 @@ import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.ui.node.workflow.NativeNodeContainerUI;
 import org.knime.core.ui.workflowcoach.NodeRecommendationManager.IUpdateListener;
 import org.knime.core.ui.workflowcoach.NodeRecommendationManager.NodeRecommendation;
+import org.knime.core.ui.workflowcoach.TestNodeTripleProviderFactory.TestNodeTripleProvider;
+import org.knime.core.ui.workflowcoach.TestNodeTripleProviderFactory.TestNodeTripleProvider2;
 import org.knime.core.ui.workflowcoach.data.NodeTripleProvider;
 import org.knime.core.ui.workflowcoach.data.NodeTripleProviderFactory;
 import org.knime.core.ui.wrapper.NativeNodeContainerWrapper;
@@ -219,6 +221,37 @@ class NodeRecommendationManagerTest {
         var tripleProviderFactory = NodeRecommendationManager.getNodeTripleProviderFactories();
         tripleProviderFactory.forEach(
             tpf -> assertThat(tpf).as("This is not a triple provider").isInstanceOf(NodeTripleProviderFactory.class));
+
+    }
+
+    /**
+     * Tests {@link NodeRecommendationManager#getMostFrequentlyUsedNodes()}.
+     *
+     * @throws IOException
+     */
+    @Test
+    void testGetMostFrequentlyUsedNodes() throws IOException {
+        var originalProviders = NodeRecommendationManager.getNodeTripleProviders();
+        NodeRecommendationManager.nodeTripleProviders =
+            List.of(new TestNodeTripleProvider(), new TestNodeTripleProvider2());
+        NodeRecommendationManager.getInstance().loadRecommendations();
+        try {
+            var recommendations = NodeRecommendationManager.getInstance().getMostFrequentlyUsedNodes();
+            assertThat(recommendations[0].get(0).getFactoryId())
+                .isEqualTo("test_org.knime.base.node.preproc.filter.row.RowFilterNodeFactory");
+            assertThat(recommendations[0].get(0).getFrequency()).isEqualTo(2);
+            assertThat(recommendations[0].get(1).getFactoryId())
+                .isEqualTo("org.knime.core.node.exec.dataexchange.in.PortObjectInNodeFactory");
+            assertThat(recommendations[0].get(1).getFrequency()).isEqualTo(2);
+            assertThat(recommendations[0]).hasSize(3);
+
+            assertThat(recommendations[1].get(0).getFactoryId())
+                .isEqualTo("org.knime.core.node.exec.dataexchange.in.PortObjectInNodeFactory");
+            assertThat(recommendations[1].get(0).getFrequency()).isEqualTo(3);
+            assertThat(recommendations[1]).hasSize(1);
+        } finally {
+            NodeRecommendationManager.nodeTripleProviders = originalProviders;
+        }
     }
 
 }

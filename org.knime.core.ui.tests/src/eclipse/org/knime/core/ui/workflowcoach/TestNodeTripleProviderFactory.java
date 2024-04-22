@@ -83,7 +83,7 @@ public class TestNodeTripleProviderFactory implements NodeTripleProviderFactory 
         return "";
     }
 
-    private static final class TestNodeTripleProvider implements NodeTripleProvider {
+    static final class TestNodeTripleProvider implements NodeTripleProvider {
 
         @Override
         public String getName() {
@@ -123,7 +123,10 @@ public class TestNodeTripleProviderFactory implements NodeTripleProviderFactory 
                 new NodeTriple(rowSplitter, null, portObjectIn), //
                 new NodeTriple(null, rowFilter, rowSplitter), //
                 new NodeTriple(rowFilter, nonExisting, rowFilter)//
-            );
+            ).map(nt -> {
+                nt.incrementCount();
+                return nt;
+            });
         }
 
         @Override
@@ -132,7 +135,7 @@ public class TestNodeTripleProviderFactory implements NodeTripleProviderFactory 
         }
     }
 
-    private static final class TestNodeTripleProvider2 implements NodeTripleProvider {
+    static final class TestNodeTripleProvider2 implements NodeTripleProvider {
 
         /**
          * {@inheritDoc}
@@ -179,7 +182,10 @@ public class TestNodeTripleProviderFactory implements NodeTripleProviderFactory 
                 new NodeTriple(null, null, rowFilter), //
                 new NodeTriple(null, null, rowFilterStripped), //
                 new NodeTriple(null, null, rowFilterNotStripped), //
-                new NodeTriple(null, null, portObjectIn));
+                new NodeTriple(null, null, portObjectIn)).map(nt -> {
+                    nt.incrementCount();
+                    return nt;
+                });
         }
 
         /**
