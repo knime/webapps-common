@@ -1,6 +1,7 @@
 import { IframeDispatchEvent } from "./pushEvents";
 import type { UIExtensionServiceAPILayer } from "../types/uiExtensionService";
 import { PayloadForKey, RequestFor, Response } from "./types";
+import { addDefaults } from "src/embedder";
 
 /**
  * Sets up the necessary handler on the window to receive
@@ -57,7 +58,7 @@ export const setUpIframeEmbedderService = (
   apiLayer: UIExtensionServiceAPILayer,
   iframeContentWindow: Window,
 ) => {
-  enableRequestsToMethods(iframeContentWindow, apiLayer);
+  enableRequestsToMethods(iframeContentWindow, addDefaults(apiLayer));
   const dispatchEventService = new IframeDispatchEvent(iframeContentWindow);
   const boundDispatchPushEvent = dispatchEventService.dispatchPushEvent.bind(
     dispatchEventService,

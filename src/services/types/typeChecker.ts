@@ -86,6 +86,4 @@ type IsUIExtensionAPILayer<_T extends UIExtensionServiceAPILayer> = true;
  */
 export type APILayerIsExactlyAsRequired =
   CanBeUsedInServices<UIExtensionServiceAPILayer> &
-    IsUIExtensionAPILayer<
-      ServicesAPILayer & Pick<UIExtensionServiceAPILayer, "callKnimeUiApi">
-    >;
+    IsUIExtensionAPILayer<ServicesAPILayer>;

@@ -7,6 +7,13 @@ import type {
   UIExtensionService,
 } from "./types/uiExtensionService";
 
+export const addDefaults = (
+  apiLayer: UIExtensionServiceAPILayer,
+): UIExtensionServiceAPILayer => ({
+  callKnimeUiApi: () => Promise.resolve({ isSome: false }),
+  ...apiLayer,
+});
+
 /**
  * exported for test purposes
  */
@@ -35,5 +42,5 @@ export const setUpEmbedderService = (
 ): UIExtensionPushEvents.DispatchPushEvent & {
   service: UIExtensionService;
 } => {
-  return setUpCustomEmbedderService(apiLayer);
+  return setUpCustomEmbedderService(addDefaults(apiLayer));
 };

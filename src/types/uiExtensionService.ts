@@ -106,7 +106,7 @@ export type UIExtensionServiceAPILayer = {
   ) => Promise<any>;
 
   // TODO get rid of this method - This is for providing data for an input-port-view in the scripting editor
-  callKnimeUiApi: (
+  callKnimeUiApi?: (
     method: string,
     params: object | readonly unknown[] | undefined,
   ) => Promise<KnimeUiApiResponse>;
