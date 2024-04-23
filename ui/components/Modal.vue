@@ -37,6 +37,10 @@ export default defineComponent({
       type: Boolean,
       default: true,
     },
+    animate: {
+      type: Boolean,
+      default: true,
+    },
   },
   emits: ["cancel"],
   methods: {
@@ -51,6 +55,7 @@ export default defineComponent({
   <BaseModal
     :implicit-dismiss="implicitDismiss"
     :class="['modal', styleType]"
+    :animate="animate"
     @cancel="$emit('cancel', $event)"
   >
     <div class="header">

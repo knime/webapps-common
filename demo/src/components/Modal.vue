@@ -6,6 +6,7 @@ import CodeExample from "./demo/CodeExample.vue";
 
 import code from "webapps-common/ui/components/Modal.vue?raw";
 import baseModalCode from "webapps-common/ui/components/BaseModal.vue?raw";
+import Checkbox from "webapps-common/ui/components/forms/Checkbox.vue";
 
 const codeExample = `<script>
 import Modal from '~/webapps-common/ui/components/Modal.vue';
@@ -64,6 +65,7 @@ export default {
     PlayIcon,
     Button,
     CodeExample,
+    Checkbox,
   },
   data() {
     return {
@@ -72,6 +74,8 @@ export default {
       baseModalCode,
       modalActive: false,
       modalStyleType: "info",
+      animate: true,
+      implicitDismiss: true,
     };
   },
 };
@@ -100,13 +104,21 @@ export default {
               >W3C best practices for modal dialogs</a
             >.
           </p>
-          <Button primary @click="modalActive = true"> Trigger modal </Button>
+          <div class="options">
+            <Button primary @click="modalActive = true"> Trigger modal </Button>
+            <Checkbox v-model="animate"> Animate on enter </Checkbox>
+            <Checkbox v-model="implicitDismiss">
+              Autodismiss via "Esc" or clicking on backdrop
+            </Checkbox>
+          </div>
 
           <Modal
             :active="modalActive"
             title="Modal title"
             class="modal"
             :style-type="modalStyleType"
+            :animate="animate"
+            :implicit-dismiss="implicitDismiss"
             @cancel="modalActive = false"
           >
             <template #icon><PlayIcon /></template>
@@ -144,5 +156,11 @@ export default {
 <style lang="postcss" scoped>
 .modal {
   --modal-width: 500px; /* optional, only needed in case you want to adjust the width. Default: 550px */
+}
+
+.options {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 </style>

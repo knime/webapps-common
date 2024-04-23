@@ -86,4 +86,19 @@ describe("BaseModal", () => {
     await wrapper.find({ ref: "dialog" }).trigger("click", fakeEvent);
     expect(fakeEvent.stopPropagation).toHaveBeenCalled();
   });
+
+  it("removes implicit dismiss", async () => {
+    let wrapper = shallowMount(BaseModal, {
+      props: { implicitDismiss: false },
+    });
+
+    // only manual activation is supported
+    await wrapper.setProps({ active: true });
+
+    await wrapper.find(".overlay").trigger("click");
+    expect(wrapper.emitted("cancel")).toBeUndefined();
+
+    window.dispatchEvent(new KeyboardEvent("keyup", { key: "Escape" }));
+    expect(wrapper.emitted("cancel")).toBeUndefined();
+  });
 });

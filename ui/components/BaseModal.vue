@@ -27,6 +27,10 @@ export default defineComponent({
       type: Boolean,
       default: true,
     },
+    animate: {
+      type: Boolean,
+      default: true,
+    },
   },
   emits: ["cancel"],
   data() {
@@ -81,6 +85,7 @@ export default defineComponent({
 <template>
   <Transition
     name="fade"
+    :css="animate"
     @after-enter="showContent = true"
     @leave="showContent = false"
   >
@@ -93,7 +98,7 @@ export default defineComponent({
     >
       <div ref="dialog" tabindex="-1" @click.stop>
         <div class="overlay" @click.stop="onOverlayClick" />
-        <Transition name="slide">
+        <Transition name="slide" :css="animate">
           <div v-if="showContent" class="wrapper">
             <div class="inner">
               <slot />
