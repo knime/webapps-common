@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import CodeExample from "./demo/CodeExample.vue";
 import MultiModeTwinlist from "webapps-common/ui/components/forms/MultiModeTwinlist.vue";
 import code from "webapps-common/ui/components/forms/MultiModeTwinlist.vue?raw";
@@ -6,12 +6,12 @@ import code from "webapps-common/ui/components/forms/MultiModeTwinlist.vue?raw";
 const codeExample = `<MultiModeTwinlist
   :size="7"
   show-mode
-  initial-case-sensitive-pattern
+  case-sensitive-pattern
   left-label="Select from the 7 visible items (size)"
   right-label="The selected stuff"
   mode-label="Selection mode"
-  initial-pattern="^[ab].*[357]$|\$"
-  :initial-selected-types="['Type1', 'Type3']"
+  pattern="^[ab].*[357]$|\$"
+  :selected-types="['Type1', 'Type3']"
   :possible-values="[{
     id: 'foo',
     text: 'foo',
@@ -60,7 +60,13 @@ export default {
     return {
       codeExample,
       selected: [],
-      manuallySelected: ["missing"],
+      manuallyDeselected: [
+        "also missing",
+        "foo",
+        "Channel Name",
+        "Reservation AOV",
+      ],
+      manuallySelected: ["missing", "spec1", "spec2"],
       isCaseSensitivePattern: true,
       isInverted: false,
       mode: "regex",
@@ -147,12 +153,13 @@ export default {
           <MultiModeTwinlist
             :size="7"
             show-mode
-            :initial-case-sensitive-pattern="isCaseSensitivePattern"
-            :initial-selected-types="selectedTypes"
-            :initial-pattern="pattern"
-            :initial-mode="mode"
-            :initial-inverse-pattern="isInverted"
-            :initial-manually-selected="manuallySelected"
+            :case-sensitive-pattern="isCaseSensitivePattern"
+            :selected-types="selectedTypes"
+            :pattern="pattern"
+            :mode="mode"
+            :inverse-pattern="isInverted"
+            :manually-selected="manuallySelected"
+            :manually-deselected="manuallyDeselected"
             :additional-possible-types="[
               { id: 'additionalId', text: 'additionalOption' },
             ]"
@@ -160,28 +167,35 @@ export default {
             right-label="The selected stuff"
             mode-label="Selection mode"
             :possible-values="demoValues"
-            @input="
-              (event) => {
-                selected = event;
-                if (event.isManual) {
-                  manuallySelected = event.selected;
-                }
+            @update:selected="
+              (newSelected) => {
+                selected = newSelected;
               }
             "
-            @pattern-input="(event) => (pattern = event)"
-            @mode-input="(event) => (mode = event)"
-            @types-input="(event) => (selectedTypes = event)"
-            @inverse-pattern-input="(event) => (isInverted = event)"
-            @case-sensitive-pattern-input="
+            @update:manually-selected="
+              (newManuallySelected) => {
+                manuallySelected = newManuallySelected;
+              }
+            "
+            @update:manually-deselected="
+              (newManuallyDeselected) => {
+                manuallyDeselected = newManuallyDeselected;
+              }
+            "
+            @update:pattern="(event) => (pattern = event)"
+            @update:mode="(event) => (mode = event)"
+            @update:selected-types="(event) => (selectedTypes = event)"
+            @update:inverse-pattern="(event) => (isInverted = event)"
+            @update:case-sensitive-pattern="
               (event) => (isCaseSensitivePattern = event)
             "
           />
         </div>
         <div class="grid-item-6">
-          selected ids: {{ selected.selected }}
-          <br v-if="selected.isManual" />
-          {{ selected.isManual ? "deselected ids: " : ""
-          }}{{ selected.deselected }}
+          selected ids: {{ selected }}
+          <br v-if="mode === 'manual'" />
+          {{ "left side ids: " }}{{ manuallyDeselected }} {{ "right side ids: "
+          }}{{ manuallySelected }}
         </div>
       </div>
       <br />
@@ -192,12 +206,12 @@ export default {
             disabled
             :size="7"
             show-mode
-            :initial-case-sensitive-pattern="isCaseSensitivePattern"
-            :initial-selected-types="selectedTypes"
-            :initial-pattern="pattern"
-            :initial-mode="mode"
-            :initial-inverse-pattern="isInverted"
-            :initial-manually-selected="manuallySelected"
+            :case-sensitive-pattern="isCaseSensitivePattern"
+            :selected-types="selectedTypes"
+            :pattern="pattern"
+            :mode="mode"
+            :inverse-pattern="isInverted"
+            :manually-selected="manuallySelected"
             :additional-possible-types="[
               { id: 'additionalId', text: 'additionalOption' },
             ]"

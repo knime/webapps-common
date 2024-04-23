@@ -7,16 +7,12 @@ import ArrowNextDoubleIcon from "../../assets/img/icons/arrow-next-double.svg";
 import ArrowPrevIcon from "../../assets/img/icons/arrow-prev.svg";
 import ArrowPrevDoubleIcon from "../../assets/img/icons/arrow-prev-double.svg";
 import { filters } from "../../../util/filters";
-import type { PropType } from "vue";
+import { type PropType } from "vue";
 import type { Id, PossibleValue } from "./possibleValues/PossibleValue";
 import createMissingItem from "./possibleValues/createMissingItem";
 
 const KEY_ENTER = "Enter";
 const MIN_LIST_SIZE = 5;
-
-const arraysDiffer = (first: Id[] | null, second: Id[]) =>
-  first?.length !== second?.length ||
-  JSON.stringify(first) !== JSON.stringify(second);
 
 interface TransformOnMovePayload {
   /**
@@ -27,7 +23,7 @@ interface TransformOnMovePayload {
     /**
      * The moved items that are not the "unknown values"
      */
-    knownValues: Set<Id>;
+    knownValues: Array<Id>;
     /**
      * Whether the unknown values are part of the moved items
      */
@@ -46,13 +42,13 @@ export default {
     SearchInput,
   },
   props: {
-    modelValue: {
+    includedValues: {
       type: Array as PropType<Id[] | null>,
       default: null,
     },
     /**
      * Only required (in combination with the @update:excludedValues event) whenever missing excluded values are desired.
-     * Because, if this prop is not set, the excluded list will simply be the possible values which are not part of the modelValue.
+     * Because, if this prop is not set, the excluded list will simply be the possible values which are not part of the includedValues.
      */
     excludedValues: {
       type: Array as PropType<Id[] | null>,
@@ -68,7 +64,7 @@ export default {
       required: false,
       default: "",
     },
-    initialIncludeUnknownValues: {
+    includeUnknownValues: {
       type: Boolean,
       default: false,
     },
@@ -183,27 +179,24 @@ export default {
   },
   emits: [
     /**
-     * Enable whenever the modelValue needs to be adjusted to match what is to be displayed.
+     * Enable whenever the includedValues needs to be adjusted to match what is to be displayed.
      */
-    "update:modelValue",
+    "update:includedValues",
     /**
      * Emitted whenever the excluded values prop is set and these need to be adjusted to match
      * what is to be displayed.
      * In particular, there is no such update initially whenever any unknown value is excluded, too.
      */
     "update:excludedValues",
-    "includeUnknownValuesInput",
+    "update:includeUnknownValues",
   ],
   data() {
     return {
-      chosenValues: this.modelValue,
-      currentExcludedValues: this.excludedValues,
       invalidPossibleValueIds: new Set(),
       rightSelected: [] as Id[],
       leftSelected: [] as Id[],
       searchTerm: this.initialSearchTerm,
       caseSensitiveSearch: this.initialCaseSensitiveSearch,
-      includeUnknownValues: this.initialIncludeUnknownValues,
       unknownValuesId: Symbol("Unknown values"),
     };
   },
@@ -223,27 +216,27 @@ export default {
       return new Set(this.possibleValueIds);
     },
     knownExcludedValues() {
-      if (!this.currentExcludedValues) {
-        const chosenValuesSet = new Set(this.chosenValues);
+      if (!this.excludedValues) {
+        const chosenValuesSet = new Set(this.includedValues);
         return this.possibleValueIds.filter((id) => !chosenValuesSet.has(id));
       }
       if (this.showUnknownValuesLeft) {
-        return this.currentExcludedValues.filter((id) =>
+        return this.excludedValues.filter((id) =>
           this.possibleValueIdsSet.has(id),
         );
       }
-      return this.currentExcludedValues;
+      return this.excludedValues;
     },
     knownChosenValues() {
-      if (!this.chosenValues) {
+      if (!this.includedValues) {
         return null;
       }
       if (this.showUnknownValuesRight) {
-        return this.chosenValues.filter((id) =>
+        return this.includedValues.filter((id) =>
           this.possibleValueIdsSet.has(id),
         );
       }
-      return this.chosenValues;
+      return this.includedValues;
     },
     leftItems() {
       if (this.knownChosenValues === null) {
@@ -329,16 +322,6 @@ export default {
     },
   },
   watch: {
-    modelValue(newValue) {
-      if (arraysDiffer(this.chosenValues, newValue)) {
-        this.chosenValues = newValue;
-      }
-    },
-    excludedValues(newValue) {
-      if (arraysDiffer(this.currentExcludedValues, newValue)) {
-        this.currentExcludedValues = newValue;
-      }
-    },
     possibleValues(newPossibleValues: PossibleValue[]) {
       if (this.filterChosenValuesOnPossibleValuesChange) {
         // Required to prevent invalid values from appearing (e.g. missing b/c of upstream filtering)
@@ -347,24 +330,11 @@ export default {
           return arr;
         }, [] as Id[]);
         // Reset chosenValues as subset of original to prevent re-execution from resetting value
-        this.chosenValues = (this.chosenValues ?? []).filter((item) =>
+        const newIncludedValues = (this.includedValues ?? []).filter((item) =>
           allValues.includes(item),
         );
+        this.$emit("update:includedValues", newIncludedValues);
       }
-    },
-    chosenValues(newVal: Id[], oldVal: Id[] | null) {
-      if (oldVal === null) {
-        return;
-      }
-      if (
-        newVal.length !== oldVal.length ||
-        oldVal.some((item, i) => item !== newVal[i])
-      ) {
-        this.$emit("update:modelValue", newVal);
-      }
-    },
-    includeUnknownValues(newVal) {
-      this.$emit("includeUnknownValuesInput", newVal);
     },
   },
   methods: {
@@ -393,27 +363,29 @@ export default {
       const knownValues = items.filter((item) => item !== this.unknownValuesId);
       const movingUnknownValues = items.length > knownValues.length;
       const movingParts = {
-        knownValues: new Set(knownValues),
+        knownValues,
         movingUnknownValues,
       };
-      if (this.chosenValues !== null) {
-        this.chosenValues = toNewChosenValues({
-          previous: this.chosenValues,
-          movingParts,
-        });
+      if (this.includedValues !== null) {
+        this.$emit(
+          "update:includedValues",
+          toNewChosenValues({
+            previous: this.includedValues,
+            movingParts,
+          }),
+        );
       }
       if (movingUnknownValues) {
-        this.includeUnknownValues = moveToIncluded;
+        this.$emit("update:includeUnknownValues", moveToIncluded);
       }
-      if (
-        this.currentExcludedValues &&
-        this.inducesExcludedValuesChange(items)
-      ) {
-        this.currentExcludedValues = toNewExcludedValues({
-          previous: this.currentExcludedValues,
-          movingParts,
-        });
-        this.emitUpdatedExcludedColumns();
+      if (this.excludedValues) {
+        this.$emit(
+          "update:excludedValues",
+          toNewExcludedValues({
+            previous: this.knownExcludedValues,
+            movingParts,
+          }),
+        );
       }
       this.clearSelections();
     },
@@ -438,9 +410,10 @@ export default {
       previous,
       movingParts: { movingUnknownValues, knownValues },
     }: TransformOnMovePayload) {
+      const knownValuesSet = new Set(knownValues);
       return previous.filter(
         (item) =>
-          !knownValues.has(item) &&
+          !knownValuesSet.has(item) &&
           (!movingUnknownValues || this.possibleValueIdsSet.has(item)),
       );
     },
@@ -456,21 +429,8 @@ export default {
         ...(movingUnknownValues
           ? previous.filter((item) => this.possibleValueIdsSet.has(item))
           : previous),
-        ...knownValues,
+        ...knownValues.filter((item) => this.possibleValueIdsSet.has(item)),
       ].sort(this.compareByOriginalSorting);
-    },
-    emitUpdatedExcludedColumns() {
-      this.$emit("update:excludedValues", this.knownExcludedValues);
-    },
-    inducesExcludedValuesChange(itemsDiff: Id[]) {
-      const validItemIsPartOfDiff = itemsDiff.some((item) =>
-        this.possibleValueIdsSet.has(item),
-      );
-      if (validItemIsPartOfDiff) {
-        return true;
-      }
-      // only invalid values moved. In this case we only do not need to update if unknown values are not on the left
-      return !this.showUnknownValuesLeft;
     },
     onMoveRightButtonClick() {
       this.moveRight();
@@ -546,17 +506,11 @@ export default {
       }
       this.rightSelected = value;
     },
-    onKeyRightArrow() {
-      this.moveRight();
-    },
-    onKeyLeftArrow() {
-      this.moveLeft();
-    },
     onSearchInput(value: string) {
       this.searchTerm = value;
     },
     hasSelection() {
-      return (this.chosenValues?.length ?? 0) > 0;
+      return (this.includedValues?.length ?? 0) > 0;
     },
     validate() {
       let isValid =
@@ -648,7 +602,7 @@ export default {
         :disabled="disabled"
         @double-click-on-item="onLeftListBoxDoubleClick"
         @double-click-shift="onLeftListBoxShiftDoubleClick"
-        @key-arrow-right="onKeyRightArrow"
+        @key-arrow-right="moveRight"
         @update:model-value="onLeftInput"
       />
       <!--  eslint-enable vue/attribute-hyphenation -->
@@ -711,7 +665,7 @@ export default {
         :disabled="disabled"
         @double-click-on-item="onRightListBoxDoubleClick"
         @double-click-shift="onRightListBoxShiftDoubleClick"
-        @key-arrow-left="onKeyLeftArrow"
+        @key-arrow-left="moveLeft"
         @update:model-value="onRightInput"
       />
       <!--  eslint-enable vue/attribute-hyphenation -->

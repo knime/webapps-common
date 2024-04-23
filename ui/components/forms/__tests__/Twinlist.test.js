@@ -10,6 +10,13 @@ import MultiselectListBox from "../MultiselectListBox.vue";
 describe("Twinlist.vue", () => {
   let defaultPossibleValues;
 
+  const expectEmittedIncludedValuesAndSetAsProp = (wrapper, includedValues) => {
+    expect(wrapper.emitted("update:includedValues")[0][0]).toStrictEqual(
+      includedValues,
+    );
+    return wrapper.setProps({ includedValues });
+  };
+
   beforeEach(() => {
     defaultPossibleValues = [
       {
@@ -30,7 +37,7 @@ describe("Twinlist.vue", () => {
   it("renders", () => {
     let props = {
       possibleValues: defaultPossibleValues,
-      modelValue: ["test3"],
+      includedValues: ["test3"],
       leftLabel: "Choose",
       rightLabel: "The value",
       size: 3,
@@ -49,10 +56,10 @@ describe("Twinlist.vue", () => {
     ).toStrictEqual([defaultPossibleValues[2]]);
   });
 
-  it("renders with null model value", () => {
+  it("renders with null includedValues", () => {
     let props = {
       possibleValues: defaultPossibleValues,
-      modelValue: null,
+      includedValues: null,
       leftLabel: "Choose",
       rightLabel: "The value",
       size: 3,
@@ -137,7 +144,7 @@ describe("Twinlist.vue", () => {
           text: "Some Text",
         },
       ],
-      modelValue: ["invalidId", "test1"],
+      includedValues: ["invalidId", "test1"],
       leftLabel: "Choose",
       rightLabel: "The value",
     };
@@ -150,7 +157,7 @@ describe("Twinlist.vue", () => {
     });
 
     // make it valid again
-    await wrapper.setData({ chosenValues: ["test1"] });
+    await wrapper.setProps({ includedValues: ["test1"] });
     expect(wrapper.vm.validate().isValid).toBe(true);
   });
 
@@ -166,14 +173,13 @@ describe("Twinlist.vue", () => {
           text: "Some Text",
         },
       ],
-      modelValue: ["invalidId", "test1"],
+      includedValues: ["invalidId", "test1"],
       leftLabel: "Choose",
       rightLabel: "The value",
     };
     const wrapper = mount(Twinlist, {
       props,
     });
-    expect(wrapper.vm.chosenValues).toStrictEqual(["invalidId", "test1"]);
 
     await wrapper.setProps({
       possibleValues: [
@@ -183,7 +189,9 @@ describe("Twinlist.vue", () => {
         },
       ],
     });
-    expect(wrapper.vm.chosenValues).toStrictEqual(["test1"]);
+    expect(wrapper.emitted("update:includedValues")[0][0]).toStrictEqual([
+      "test1",
+    ]);
   });
 
   it("does not remove invalid chosen values on possible values change if desired", async () => {
@@ -199,14 +207,13 @@ describe("Twinlist.vue", () => {
           text: "Some Text",
         },
       ],
-      modelValue: ["invalidId", "test1"],
+      includedValues: ["invalidId", "test1"],
       leftLabel: "Choose",
       rightLabel: "The value",
     };
     const wrapper = mount(Twinlist, {
       props,
     });
-    expect(wrapper.vm.chosenValues).toStrictEqual(["invalidId", "test1"]);
 
     await wrapper.setProps({
       possibleValues: [
@@ -216,7 +223,7 @@ describe("Twinlist.vue", () => {
         },
       ],
     });
-    expect(wrapper.vm.chosenValues).toStrictEqual(["invalidId", "test1"]);
+    expect(wrapper.emitted("update:includedValues")).toBeUndefined();
   });
 
   it("provides a valid hasSelection method", async () => {
@@ -229,7 +236,7 @@ describe("Twinlist.vue", () => {
     });
     expect(wrapper.vm.hasSelection()).toBe(false);
 
-    await wrapper.setData({ chosenValues: ["test1"] });
+    await wrapper.setProps({ includedValues: ["test1"] });
     expect(wrapper.vm.hasSelection()).toBe(true);
   });
 
@@ -239,7 +246,7 @@ describe("Twinlist.vue", () => {
     beforeEach(() => {
       props = {
         possibleValues: defaultPossibleValues,
-        modelValue: ["test3"],
+        includedValues: ["test3"],
         leftLabel: "Choose",
         rightLabel: "The value",
       };
@@ -255,7 +262,7 @@ describe("Twinlist.vue", () => {
       let right = boxes[1];
       left.vm.$emit("doubleClickOnItem", "test2", 1);
       await wrapper.vm.$nextTick();
-      expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
+      await expectEmittedIncludedValuesAndSetAsProp(wrapper, [
         "test2",
         "test3",
       ]);
@@ -275,7 +282,7 @@ describe("Twinlist.vue", () => {
       let right = boxes[1];
       left.vm.$emit("doubleClickShift", ["test1", "test2"]);
       await wrapper.vm.$nextTick();
-      expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
+      await expectEmittedIncludedValuesAndSetAsProp(wrapper, [
         "test1",
         "test2",
         "test3",
@@ -288,7 +295,7 @@ describe("Twinlist.vue", () => {
     });
 
     it("removes from value on double click in right box", async () => {
-      props.modelValue = ["test2", "test3"];
+      props.includedValues = ["test2", "test3"];
       const wrapper = mount(Twinlist, {
         props,
       });
@@ -298,9 +305,7 @@ describe("Twinlist.vue", () => {
       let right = boxes[1];
       right.vm.$emit("doubleClickOnItem", "test2", 1);
       await wrapper.vm.$nextTick();
-      expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
-        "test3",
-      ]);
+      await expectEmittedIncludedValuesAndSetAsProp(wrapper, ["test3"]);
       expect(left.vm.$props.possibleValues).toStrictEqual([
         props.possibleValues[0],
         props.possibleValues[1],
@@ -308,7 +313,7 @@ describe("Twinlist.vue", () => {
     });
 
     it("removes from values on shift double click in right box", async () => {
-      props.modelValue = ["test1", "test2", "test3"];
+      props.includedValues = ["test1", "test2", "test3"];
       const wrapper = mount(Twinlist, {
         props,
       });
@@ -318,9 +323,7 @@ describe("Twinlist.vue", () => {
       let right = boxes[1];
       right.vm.$emit("doubleClickShift", ["test1", "test2"]);
       await wrapper.vm.$nextTick();
-      expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
-        "test3",
-      ]);
+      await expectEmittedIncludedValuesAndSetAsProp(wrapper, ["test3"]);
       expect(left.vm.$props.possibleValues).toStrictEqual([
         props.possibleValues[0],
         props.possibleValues[1],
@@ -331,7 +334,7 @@ describe("Twinlist.vue", () => {
   it("moves selected values to right on right arrow key", async () => {
     let props = {
       possibleValues: defaultPossibleValues,
-      modelValue: [],
+      includedValues: [],
       leftLabel: "Choose",
       rightLabel: "The value",
     };
@@ -345,10 +348,7 @@ describe("Twinlist.vue", () => {
     left.vm.setSelected(["test2", "test3"]);
     left.vm.$emit("keyArrowRight");
     await wrapper.vm.$nextTick();
-    expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
-      "test2",
-      "test3",
-    ]);
+    await expectEmittedIncludedValuesAndSetAsProp(wrapper, ["test2", "test3"]);
     expect(right.vm.$props.possibleValues).toStrictEqual([
       props.possibleValues[1],
       props.possibleValues[2],
@@ -358,7 +358,7 @@ describe("Twinlist.vue", () => {
   it("moves selected values to left on left arrow key", async () => {
     let props = {
       possibleValues: defaultPossibleValues,
-      modelValue: ["test2", "test3"],
+      includedValues: ["test2", "test3"],
       leftLabel: "Choose",
       rightLabel: "The value",
     };
@@ -372,7 +372,7 @@ describe("Twinlist.vue", () => {
     right.vm.setSelected(["test2", "test3"]);
     right.vm.$emit("keyArrowLeft");
     await wrapper.vm.$nextTick();
-    expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([]);
+    await expectEmittedIncludedValuesAndSetAsProp(wrapper, []);
     expect(left.vm.$props.possibleValues).toStrictEqual(props.possibleValues);
   });
 
@@ -380,7 +380,7 @@ describe("Twinlist.vue", () => {
     it("moves selected values to right on move button click", async () => {
       let props = {
         possibleValues: defaultPossibleValues,
-        modelValue: [],
+        includedValues: [],
         leftLabel: "Choose",
         rightLabel: "The value",
       };
@@ -394,7 +394,7 @@ describe("Twinlist.vue", () => {
       left.vm.setSelected(["test2", "test3"]);
       wrapper.find({ ref: "moveRight" }).trigger("click");
       await wrapper.vm.$nextTick();
-      expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
+      await expectEmittedIncludedValuesAndSetAsProp(wrapper, [
         "test2",
         "test3",
       ]);
@@ -407,7 +407,7 @@ describe("Twinlist.vue", () => {
     it("moves selected values to left on move button click", async () => {
       let props = {
         possibleValues: defaultPossibleValues,
-        modelValue: ["test2", "test3"],
+        includedValues: ["test2", "test3"],
         leftLabel: "Choose",
         rightLabel: "The value",
       };
@@ -421,14 +421,14 @@ describe("Twinlist.vue", () => {
       right.vm.setSelected(["test2", "test3"]);
       wrapper.find({ ref: "moveLeft" }).trigger("click");
       await wrapper.vm.$nextTick();
-      expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([]);
+      await expectEmittedIncludedValuesAndSetAsProp(wrapper, []);
       expect(left.vm.$props.possibleValues).toStrictEqual(props.possibleValues);
     });
 
     it("moves all values to right on all button click", async () => {
       let props = {
         possibleValues: defaultPossibleValues,
-        modelValue: [],
+        includedValues: [],
         leftLabel: "Choose",
         rightLabel: "The value",
       };
@@ -440,7 +440,7 @@ describe("Twinlist.vue", () => {
       let right = boxes[1];
       wrapper.find({ ref: "moveAllRight" }).trigger("click");
       await wrapper.vm.$nextTick();
-      expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
+      await expectEmittedIncludedValuesAndSetAsProp(wrapper, [
         "test1",
         "test2",
         "test3",
@@ -453,7 +453,7 @@ describe("Twinlist.vue", () => {
     it("makes the invalid columns disappear upon moving them to the left", async () => {
       let props = {
         possibleValues: defaultPossibleValues,
-        modelValue: ["invalidId"],
+        includedValues: ["invalidId"],
         leftLabel: "Choose",
         rightLabel: "The value",
       };
@@ -467,6 +467,7 @@ describe("Twinlist.vue", () => {
 
       // move all left to get the invalid left
       await wrapper.find({ ref: "moveAllLeft" }).trigger("click");
+      await expectEmittedIncludedValuesAndSetAsProp(wrapper, []);
       expect(left.props("possibleValues").map((x) => x.id)).not.toContain(
         "invalidId",
       );
@@ -478,7 +479,7 @@ describe("Twinlist.vue", () => {
     it("moves all values to left on all button click", async () => {
       let props = {
         possibleValues: defaultPossibleValues,
-        modelValue: ["test2", "test3"],
+        includedValues: ["test2", "test3"],
         leftLabel: "Choose",
         rightLabel: "The value",
       };
@@ -490,14 +491,14 @@ describe("Twinlist.vue", () => {
       let left = boxes[0];
       wrapper.find({ ref: "moveAllLeft" }).trigger("click");
       await wrapper.vm.$nextTick();
-      expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([]);
+      await expectEmittedIncludedValuesAndSetAsProp(wrapper, []);
       expect(left.vm.$props.possibleValues).toStrictEqual(props.possibleValues);
     });
 
     it("moves selected values to right on move button enter", async () => {
       let props = {
         possibleValues: defaultPossibleValues,
-        modelValue: [],
+        includedValues: [],
         leftLabel: "Choose",
         rightLabel: "The value",
       };
@@ -517,7 +518,7 @@ describe("Twinlist.vue", () => {
       expect(stopPropagation).toHaveBeenCalled();
       expect(preventDefault).toHaveBeenCalled();
       await wrapper.vm.$nextTick();
-      expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
+      await expectEmittedIncludedValuesAndSetAsProp(wrapper, [
         "test2",
         "test3",
       ]);
@@ -530,7 +531,7 @@ describe("Twinlist.vue", () => {
     it("non applicable buttons are disabled", async () => {
       let props = {
         possibleValues: defaultPossibleValues,
-        modelValue: [],
+        includedValues: [],
         leftLabel: "Choose",
         rightLabel: "The value",
       };
@@ -563,7 +564,7 @@ describe("Twinlist.vue", () => {
       expect(moveRight.classes()).not.toContain("disabled");
 
       // move all right
-      await wrapper.vm.moveRight(["test1", "test2", "test3"]);
+      await wrapper.setProps({ includedValues: ["test1", "test2", "test3"] });
 
       // now we can move all to the left (as we have values)
       expect(moveAllLeft.classes()).not.toContain("disabled");
@@ -581,7 +582,7 @@ describe("Twinlist.vue", () => {
     it("moves selected values to left on move button enter", async () => {
       let props = {
         possibleValues: defaultPossibleValues,
-        modelValue: ["test2", "test3"],
+        includedValues: ["test2", "test3"],
         leftLabel: "Choose",
         rightLabel: "The value",
       };
@@ -601,14 +602,14 @@ describe("Twinlist.vue", () => {
       expect(stopPropagation).toHaveBeenCalled();
       expect(preventDefault).toHaveBeenCalled();
       await wrapper.vm.$nextTick();
-      expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([]);
+      await expectEmittedIncludedValuesAndSetAsProp(wrapper, []);
       expect(left.vm.$props.possibleValues).toStrictEqual(props.possibleValues);
     });
 
     it("moves all values to right on all button enter", async () => {
       let props = {
         possibleValues: defaultPossibleValues,
-        modelValue: [],
+        includedValues: [],
         leftLabel: "Choose",
         rightLabel: "The value",
       };
@@ -626,7 +627,7 @@ describe("Twinlist.vue", () => {
       expect(stopPropagation).toHaveBeenCalled();
       expect(preventDefault).toHaveBeenCalled();
       await wrapper.vm.$nextTick();
-      expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
+      await expectEmittedIncludedValuesAndSetAsProp(wrapper, [
         "test1",
         "test2",
         "test3",
@@ -639,7 +640,7 @@ describe("Twinlist.vue", () => {
     it("moves all values to left on all button enter", async () => {
       let props = {
         possibleValues: defaultPossibleValues,
-        modelValue: ["test2", "test3"],
+        includedValues: ["test2", "test3"],
         leftLabel: "Choose",
         rightLabel: "The value",
       };
@@ -657,7 +658,7 @@ describe("Twinlist.vue", () => {
       expect(stopPropagation).toHaveBeenCalled();
       expect(preventDefault).toHaveBeenCalled();
       await wrapper.vm.$nextTick();
-      expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([]);
+      await expectEmittedIncludedValuesAndSetAsProp(wrapper, []);
       expect(left.vm.$props.possibleValues).toStrictEqual(props.possibleValues);
     });
   });
@@ -669,7 +670,7 @@ describe("Twinlist.vue", () => {
           ...defaultPossibleValues,
           { id: "test4", text: "Text 4" },
         ],
-        modelValue: ["test2", "test3"],
+        includedValues: ["test2", "test3"],
         leftLabel: "Choose",
         rightLabel: "The value",
       },
@@ -702,7 +703,7 @@ describe("Twinlist.vue", () => {
     beforeEach(() => {
       props = {
         possibleValues: defaultPossibleValues,
-        modelValue: ["test2"],
+        includedValues: ["test2"],
         leftLabel: "Choose",
         rightLabel: "The value",
         size: 3,
@@ -821,7 +822,7 @@ describe("Twinlist.vue", () => {
       expect(left.props("possibleValues").length).toBe(2);
       expect(right.props("possibleValues").length).toBe(1);
 
-      expect(wrapper.emitted("update:modelValue")).toBeUndefined();
+      expect(wrapper.emitted("update:includedValues")).toBeUndefined();
     });
 
     it("moves only all filtered values to right on all button click", async () => {
@@ -829,7 +830,7 @@ describe("Twinlist.vue", () => {
         ...props,
         showSearch: true,
         initialSearchTerm: "3",
-        modelValue: [],
+        includedValues: [],
       };
       const wrapper = mount(Twinlist, {
         props,
@@ -839,9 +840,8 @@ describe("Twinlist.vue", () => {
       let left = boxes[0];
       let right = boxes[1];
       await wrapper.find({ ref: "moveAllRight" }).trigger("click");
-      expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
-        "test3",
-      ]);
+      await expectEmittedIncludedValuesAndSetAsProp(wrapper, ["test3"]);
+      wrapper.setProps({ selectedValues: ["test3"] });
 
       expect(left.props("possibleValues").length).toBe(0);
 
@@ -914,11 +914,11 @@ describe("Twinlist.vue", () => {
     beforeEach(() => {
       const props = {
         possibleValues: defaultPossibleValues,
-        modelValue: [],
+        includedValues: [],
         leftLabel: "Choose",
         rightLabel: "The value",
         showUnknownValues: true,
-        initialIncludeUnknownValues: false,
+        includeUnknownValues: false,
         excludedValues: ["test2", "invalidId"],
       };
       wrapper = mount(Twinlist, {
@@ -945,7 +945,7 @@ describe("Twinlist.vue", () => {
     it("shows missing excluded values", () => {
       const props = {
         possibleValues: defaultPossibleValues,
-        modelValue: [],
+        includedValues: [],
         leftLabel: "Choose",
         rightLabel: "The value",
         excludedValues: ["test2", "invalidId"],
@@ -975,10 +975,12 @@ describe("Twinlist.vue", () => {
       // move all right
       await wrapper.vm.moveRight(["test2"]);
 
-      expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
-        "test2",
-      ]);
+      await expectEmittedIncludedValuesAndSetAsProp(wrapper, ["test2"]);
       expect(wrapper.emitted("update:excludedValues")[0][0]).toStrictEqual([]);
+      await wrapper.setProps({
+        includedValues: ["test2"],
+        excludedValues: [],
+      });
 
       // select something on the right
       await right.vm.setSelected(["test2"]);
@@ -986,7 +988,7 @@ describe("Twinlist.vue", () => {
       // move selected to left is now possible
       await wrapper.vm.moveLeft(["test2"]);
       await flushPromises();
-      expect(wrapper.emitted("update:modelValue")[1][0]).toStrictEqual([]);
+      expect(wrapper.emitted("update:includedValues")[1][0]).toStrictEqual([]);
       expect(wrapper.emitted("update:excludedValues")[1][0]).toStrictEqual([
         "test2",
       ]);
@@ -1032,7 +1034,7 @@ describe("Twinlist.vue", () => {
     beforeEach(() => {
       props = {
         possibleValues: defaultPossibleValues,
-        modelValue: ["test2"],
+        includedValues: ["test2"],
         leftLabel: "Choose",
         rightLabel: "The value",
         size: 3,
@@ -1052,7 +1054,7 @@ describe("Twinlist.vue", () => {
 
     it("includes unknown values if wanted", () => {
       props.showUnknownValues = true;
-      props.initialIncludeUnknownValues = true;
+      props.includeUnknownValues = true;
       const wrapper = mount(Twinlist, { props });
       expectUnknownValuesAreIncluded(wrapper);
     });
@@ -1069,11 +1071,11 @@ describe("Twinlist.vue", () => {
             text: "Some Text",
           },
         ],
-        modelValue: ["invalidId", "test1"],
+        includedValues: ["invalidId", "test1"],
         leftLabel: "Choose",
         rightLabel: "The value",
         showUnknownValues: true,
-        initialIncludeUnknownValues: true,
+        includeUnknownValues: true,
       };
       const wrapper = mount(Twinlist, {
         props,
@@ -1083,7 +1085,7 @@ describe("Twinlist.vue", () => {
         wrapper.findAllComponents(MultiselectListBox).at(1).props()
           .possibleValues.length,
       ).toBe(1);
-      expect(wrapper.emitted("update:modelValue")).toBeUndefined();
+      expect(wrapper.emitted("update:includedValues")).toBeUndefined();
     });
 
     it("makes invalid excluded values vanish without emitting an update if unknown values are left", () => {
@@ -1098,11 +1100,11 @@ describe("Twinlist.vue", () => {
             text: "Some Text",
           },
         ],
-        modelValue: ["test1"],
+        includedValues: ["test1"],
         leftLabel: "Choose",
         rightLabel: "The value",
         showUnknownValues: true,
-        initialIncludeUnknownValues: false,
+        includeUnknownValues: false,
         excludedValues: ["invalidId", "test2"],
       };
       const wrapper = mount(Twinlist, {
@@ -1119,7 +1121,7 @@ describe("Twinlist.vue", () => {
     describe("move right", () => {
       beforeEach(() => {
         props.showUnknownValues = true;
-        props.initialIncludeUnknownValues = false;
+        props.includeUnknownValues = false;
       });
 
       it("moves unknown values right on moveAllRightButton", async () => {
@@ -1130,11 +1132,12 @@ describe("Twinlist.vue", () => {
           .find('[role="option"]')
           .trigger("click");
         await wrapper.find({ ref: "moveAllRight" }).trigger("click");
+        expect(wrapper.emitted("update:includeUnknownValues")[0][0]).toBe(true);
+        await wrapper.setProps({ includeUnknownValues: true });
         expectUnknownValuesAreIncluded(wrapper);
-        expect(wrapper.emitted().includeUnknownValuesInput[0][0]).toBe(true);
       });
 
-      it("moves unkown values right if selected on moveRightButton", async () => {
+      it("moves unknown values right if selected on moveRightButton", async () => {
         const wrapper = mount(Twinlist, { props });
         const leftBox = wrapper.findAllComponents(MultiselectListBox).at(0);
         await leftBox
@@ -1142,11 +1145,12 @@ describe("Twinlist.vue", () => {
           .find('[role="option"]')
           .trigger("click");
         await wrapper.find({ ref: "moveRight" }).trigger("click");
+        expect(wrapper.emitted("update:includeUnknownValues")[0][0]).toBe(true);
+        await wrapper.setProps({ includeUnknownValues: true });
         expectUnknownValuesAreIncluded(wrapper);
-        expect(wrapper.emitted().includeUnknownValuesInput[0][0]).toBe(true);
       });
 
-      it("moves unkown values right if selected on right arrow key", async () => {
+      it("moves unknown values right if selected on right arrow key", async () => {
         const wrapper = mount(Twinlist, { props });
         const leftBox = wrapper.findAllComponents(MultiselectListBox).at(0);
         await leftBox
@@ -1154,12 +1158,13 @@ describe("Twinlist.vue", () => {
           .find('[role="option"]')
           .trigger("click");
         await leftBox.find('[role="listbox"]').trigger("keydown.right");
+        expect(wrapper.emitted("update:includeUnknownValues")[0][0]).toBe(true);
+        await wrapper.setProps({ includeUnknownValues: true });
         expectUnknownValuesAreIncluded(wrapper);
-        expect(wrapper.emitted().includeUnknownValuesInput[0][0]).toBe(true);
       });
 
       it("moveAllRight buttons is not disabled", () => {
-        props.modelValue = props.possibleValues.map((val) => val.id);
+        props.includedValues = props.possibleValues.map((val) => val.id);
         const wrapper = mount(Twinlist, { props });
         const moveAllRight = wrapper.find({ ref: "moveAllRight" });
         expect(moveAllRight.classes()).not.toContain("disabled");
@@ -1177,11 +1182,11 @@ describe("Twinlist.vue", () => {
               text: "Some Text",
             },
           ],
-          modelValue: ["test1"],
+          includedValues: ["test1"],
           leftLabel: "Choose",
           rightLabel: "The value",
           showUnknownValues: true,
-          initialIncludeUnknownValues: false,
+          includeUnknownValues: false,
           excludedValues: ["invalidId", "test2"],
         };
         const wrapper = mount(Twinlist, {
@@ -1201,7 +1206,7 @@ describe("Twinlist.vue", () => {
       describe("move left", () => {
         beforeEach(() => {
           props.showUnknownValues = true;
-          props.initialIncludeUnknownValues = true;
+          props.includeUnknownValues = true;
         });
 
         it("moves unknown values left on moveAllLeftButton", async () => {
@@ -1212,11 +1217,14 @@ describe("Twinlist.vue", () => {
             .find('[role="option"]')
             .trigger("click");
           await wrapper.find({ ref: "moveAllLeft" }).trigger("click");
+          expect(wrapper.emitted("update:includeUnknownValues")[0][0]).toBe(
+            false,
+          );
+          await wrapper.setProps({ includeUnknownValues: false });
           expectUnknownValuesAreExcluded(wrapper);
-          expect(wrapper.emitted().includeUnknownValuesInput[0][0]).toBe(false);
         });
 
-        it("moves unkown values left if selected on moveLeftButton", async () => {
+        it("moves unknown values left if selected on moveLeftButton", async () => {
           const wrapper = mount(Twinlist, { props });
           const rightBox = wrapper.findAllComponents(MultiselectListBox).at(1);
           await rightBox
@@ -1224,11 +1232,14 @@ describe("Twinlist.vue", () => {
             .find('[role="option"]')
             .trigger("click");
           await wrapper.find({ ref: "moveLeft" }).trigger("click");
+          expect(wrapper.emitted("update:includeUnknownValues")[0][0]).toBe(
+            false,
+          );
+          await wrapper.setProps({ includeUnknownValues: false });
           expectUnknownValuesAreExcluded(wrapper);
-          expect(wrapper.emitted().includeUnknownValuesInput[0][0]).toBe(false);
         });
 
-        it("moves unkown values left if selected on left arrow key", async () => {
+        it("moves unknown values left if selected on left arrow key", async () => {
           const wrapper = mount(Twinlist, { props });
           const rightBox = wrapper.findAllComponents(MultiselectListBox).at(1);
           await rightBox
@@ -1236,12 +1247,15 @@ describe("Twinlist.vue", () => {
             .find('[role="option"]')
             .trigger("click");
           await rightBox.find('[role="listbox"]').trigger("keydown.left");
+          expect(wrapper.emitted("update:includeUnknownValues")[0][0]).toBe(
+            false,
+          );
+          await wrapper.setProps({ includeUnknownValues: false });
           expectUnknownValuesAreExcluded(wrapper);
-          expect(wrapper.emitted().includeUnknownValuesInput[0][0]).toBe(false);
         });
 
         it("moveAllLeft buttons is not disabled", () => {
-          props.modelValue = [];
+          props.includedValues = [];
           const wrapper = mount(Twinlist, { props });
           const moveAllLeft = wrapper.find({ ref: "moveAllLeft" });
           expect(moveAllLeft.classes()).not.toContain("disabled");
@@ -1259,11 +1273,11 @@ describe("Twinlist.vue", () => {
                 text: "Some Text",
               },
             ],
-            modelValue: ["invalidId", "test1"],
+            includedValues: ["invalidId", "test1"],
             leftLabel: "Choose",
             rightLabel: "The value",
             showUnknownValues: true,
-            initialIncludeUnknownValues: true,
+            includeUnknownValues: true,
           };
           const wrapper = mount(Twinlist, {
             props,
@@ -1276,9 +1290,7 @@ describe("Twinlist.vue", () => {
             .trigger("click");
           await wrapper.find({ ref: "moveLeft" }).trigger("click");
 
-          expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
-            "test1",
-          ]);
+          await expectEmittedIncludedValuesAndSetAsProp(wrapper, ["test1"]);
         });
       });
     });
@@ -1290,7 +1302,7 @@ describe("Twinlist.vue", () => {
     beforeEach(() => {
       props = {
         possibleValues: defaultPossibleValues,
-        initialManuallySelected: ["test2"],
+        includedValues: ["test2"],
         leftLabel: "Choose",
         rightLabel: "The value",
         size: 3,
@@ -1304,7 +1316,7 @@ describe("Twinlist.vue", () => {
     });
 
     it("shows number of visible items and total number on search", () => {
-      props.modelValue = ["test2", "Missing"];
+      props.includedValues = ["test2", "Missing"];
       props.initialSearchTerm = "t";
       const wrapper = mount(Twinlist, { props });
       const infos = wrapper.findAll(".info");
@@ -1326,7 +1338,7 @@ describe("Twinlist.vue", () => {
     beforeEach(() => {
       props = {
         possibleValues: defaultPossibleValues,
-        initialManuallySelected: [],
+        includedValues: [],
         leftLabel: "Choose",
         rightLabel: "The value",
         size: 3,

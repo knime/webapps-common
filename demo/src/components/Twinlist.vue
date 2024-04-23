@@ -6,7 +6,7 @@ import code from "webapps-common/ui/components/forms/Twinlist.vue?raw";
 import LoadingIcon from "webapps-common/ui/components/LoadingIcon.vue";
 
 const codeExample = `<Twinlist
-  v-model="selected"
+  v-model:included-values="selected"
   left-label="Select stuff here"
   right-label="The selected stuff"
   initial-search-term=""
@@ -22,7 +22,7 @@ const codeExample = `<Twinlist
   }]"
 />
 <Twinlist
-  v-model="selected"
+  v-model:included-values="selected"
   show-search
   left-label="Select stuff here"
   right-label="The selected stuff"
@@ -40,7 +40,7 @@ const codeExample = `<Twinlist
     text: 'Baz'
   }]"
 <Twinlist
-  v-model="selectedSearchLabel"
+  v-model:included-values="selectedSearchLabel"
   show-search
   left-label="Select from the visible items"
   right-label="The selected stuff"
@@ -69,6 +69,7 @@ export default {
     return {
       codeExample,
       selected: [],
+      includeUnknownValues: false,
       selectedMissing: ["foo", "I am missing", "bar"],
       excludedMissing: [
         "baz",
@@ -176,7 +177,7 @@ export default {
       <div class="grid-container">
         <div class="grid-item-6">
           <Twinlist
-            v-model="selected"
+            v-model:included-values="selected"
             :size="7"
             left-label="Select from the 7 visible items (size)"
             right-label="The selected stuff"
@@ -189,7 +190,7 @@ export default {
       <div class="grid-container">
         <div class="grid-item-6">
           <Twinlist
-            v-model="selected"
+            v-model:included-values="selected"
             :size="7"
             left-label="Select from the visible items"
             right-label="The selected stuff"
@@ -212,7 +213,7 @@ export default {
       <div class="grid-container">
         <div class="grid-item-6">
           <Twinlist
-            v-model="selected"
+            v-model:included-values="selected"
             :size="7"
             show-search
             left-label="Select from the visible items"
@@ -233,10 +234,10 @@ export default {
       <div class="grid-container">
         <div class="grid-item-6">
           <Twinlist
-            v-model="selectedMissing"
-            :excluded-values="excludedMissing"
+            v-model:included-values="selectedMissing"
+            v-model:excluded-values="excludedMissing"
+            v-model:include-unknown-values="includeUnknownValues"
             show-unknown-values
-            :initial-include-unknown-values="false"
             :size="7"
             show-search
             left-label="Select from the visible items"
@@ -244,7 +245,6 @@ export default {
             search-label="Search items"
             search-placeholder="Placeholder"
             :possible-values="demoValues"
-            @update:excluded-values="updateExcludedMissing"
           />
         </div>
         <div class="grid-item-6">
@@ -260,7 +260,7 @@ export default {
       <div class="grid-container">
         <div class="grid-item-6">
           <Twinlist
-            v-model="selectedUnknown"
+            v-model:included-values="selectedUnknown"
             :size="7"
             show-search
             show-unknown-values
@@ -281,7 +281,7 @@ export default {
       <div class="grid-container">
         <div class="grid-item-6">
           <Twinlist
-            v-model="selectedSearchLabel"
+            v-model:included-values="selectedSearchLabel"
             :size="7"
             show-search
             left-label="Select from the visible items"
@@ -302,7 +302,7 @@ export default {
       <div class="grid-container">
         <div class="grid-item-6">
           <Twinlist
-            :model-value="[]"
+            :included-values="[]"
             :size="7"
             :possible-values="demoValues"
             left-label="Select from the visible items"

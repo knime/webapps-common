@@ -35,12 +35,12 @@ export default {
     /**
      * initial values
      */
-    initialMode: {
+    mode: {
       type: String,
       required: false,
       default: "manual",
     },
-    initialManuallySelected: {
+    manuallySelected: {
       type: Array as PropType<Id[] | null>,
       default: () => [],
     },
@@ -49,24 +49,24 @@ export default {
      * Only required (in combination with the @update:excludedValues event) whenever missing excluded values are desired.
      * Because, if this prop is not set, the excluded list will simply be the possible values which are not part of the modelValue.
      */
-    initialManuallyDeselected: {
+    manuallyDeselected: {
       required: false,
       type: Array as PropType<Id[] | null>,
       default: null,
     },
-    initialIncludeUnknownValues: {
+    includeUnknownValues: {
       type: Boolean,
       default: false,
     },
-    initialPattern: {
+    pattern: {
       type: String,
       default: "",
     },
-    initialCaseSensitivePattern: {
+    caseSensitivePattern: {
       default: false,
       type: Boolean,
     },
-    initialInversePattern: {
+    inversePattern: {
       default: false,
       type: Boolean,
     },
@@ -74,7 +74,7 @@ export default {
       type: Boolean,
       default: true,
     },
-    initialSelectedTypes: {
+    selectedTypes: {
       type: Array as PropType<Array<string>>,
       default: () => [],
     },
@@ -163,29 +163,21 @@ export default {
     },
   },
   emits: [
-    "input",
-    "includeUnknownValuesInput",
-    "patternInput",
-    "typesInput",
-    "modeInput",
-    "caseSensitivePatternInput",
-    "inversePatternInput",
-    /**
-     * Propagated 1 to 1 from Twinlist.
-     */
-    "update:excludedValues",
+    // Prop updates
+    "update:manuallySelected",
+    "update:manuallyDeselected",
+    "update:includeUnknownValues",
+    "update:pattern",
+    "update:selectedTypes",
+    "update:mode",
+    "update:caseSensitivePattern",
+    "update:inversePattern",
+    // Non-prop update
+    "update:selected",
   ],
   data() {
     return {
-      chosenValues: this.initialManuallySelected,
-      manuallyDeselected: this.initialManuallyDeselected,
-      chosenPattern: this.initialPattern,
-      chosenTypes: this.initialSelectedTypes,
       invalidPossibleValueIds: new Set(),
-      mode: this.initialMode,
-      caseSensitivePattern: this.initialCaseSensitivePattern,
-      inversePattern: this.initialInversePattern,
-      includeUnknownValues: this.initialIncludeUnknownValues,
     };
   },
   computed: {
@@ -216,7 +208,9 @@ export default {
         .map((possibleValue) => possibleValue.id);
     },
     selectedValues() {
-      return this.mode === "manual" ? this.chosenValues : this.matchingValueIds;
+      return this.mode === "manual"
+        ? this.manuallySelected
+        : this.matchingValueIds;
     },
     excludedValues() {
       return this.mode === "manual" ? this.manuallyDeselected : null;
@@ -236,7 +230,7 @@ export default {
         return null;
       }
       return filters[this.mode].normalize(
-        this.mode === "type" ? this.chosenTypes : this.chosenPattern,
+        this.mode === "type" ? this.selectedTypes : this.pattern,
         this.caseSensitivePattern,
       );
     },
@@ -246,9 +240,6 @@ export default {
         modes = modes.filter((mode) => mode.id !== "type");
       }
       return modes;
-    },
-    possibleModeIds() {
-      return this.possibleModes.map((mode) => mode.id);
     },
     unknownValuesVisible() {
       return this.showUnknownValues && this.mode === "manual";
@@ -265,69 +256,37 @@ export default {
           newVal.length !== oldVal.length ||
           oldVal.some((item, i) => item !== newVal[i])
         ) {
-          const isManual = this.mode === "manual";
-          const event = {
-            selected: this.selectedValues,
-            isManual,
-          } as {
-            selected: Id[];
-            isManual: boolean;
-            deselected?: Id[];
-          };
-          if (isManual) {
-            event.deselected = this.deselectedValues;
-          }
-          this.$emit("input", event);
+          this.$emit("update:selected", this.selectedValues);
         }
       },
-    },
-    includeUnknownValues(newVal) {
-      this.$emit("includeUnknownValuesInput", newVal);
-    },
-    initialManuallySelected(newVal, oldVal) {
-      if (newVal === null || oldVal === null) {
-        this.chosenValues = newVal;
-      }
-    },
-    initialManuallyDeselected(newVal, oldVal) {
-      if (newVal === null || oldVal === null) {
-        this.manuallyDeselected = newVal;
-      }
     },
   },
   methods: {
     onManualInput(value: Id[]) {
       if (this.mode === "manual") {
-        this.chosenValues = value;
+        this.$emit("update:manuallySelected", value);
       }
     },
     onExcludedValuesUpdate(excludedValues: Id[]) {
-      this.manuallyDeselected = excludedValues;
+      this.$emit("update:manuallyDeselected", excludedValues);
     },
     onPatternInput(value: string) {
-      this.chosenPattern = value;
-      this.$emit("patternInput", value);
+      this.$emit("update:pattern", value);
     },
     onTypeInput(value: string[]) {
-      this.chosenTypes = value;
-      this.$emit("typesInput", value, this.possibleTypes);
+      this.$emit("update:selectedTypes", value, this.possibleTypes);
     },
     onModeChange(value: keyof typeof allModes) {
-      if (this.possibleModeIds.indexOf(value) !== -1) {
-        this.mode = value;
-        this.$emit("modeInput", value);
-      }
+      this.$emit("update:mode", value);
     },
     onToggleCaseSensitivePattern(value: boolean) {
-      this.caseSensitivePattern = value;
-      this.$emit("caseSensitivePatternInput", value);
+      this.$emit("update:caseSensitivePattern", value);
     },
-    onToggleInvsersePattern(value: boolean) {
-      this.inversePattern = value;
-      this.$emit("inversePatternInput", value);
+    onToggleInversePattern(value: boolean) {
+      this.$emit("update:inversePattern", value);
     },
-    onUnkownColumnsInput(value: boolean) {
-      this.includeUnknownValues = value;
+    updateUnknownColumns(value: boolean) {
+      this.$emit("update:includeUnknownValues", value);
     },
     validate() {
       return (this.$refs.twinlist as any).validate();
@@ -376,10 +335,10 @@ export default {
       <SearchInput
         :id="labelForId"
         ref="search"
-        :model-value="chosenPattern"
+        :model-value="pattern"
         :label="patternLabel"
-        :initial-case-sensitive-search="initialCaseSensitivePattern"
-        :initial-inverse-search="initialInversePattern"
+        :initial-case-sensitive-search="caseSensitivePattern"
+        :initial-inverse-search="inversePattern"
         placeholder="Pattern"
         show-case-sensitive-search-button
         show-inverse-search-button
@@ -389,7 +348,7 @@ export default {
         }"
         @update:model-value="onPatternInput"
         @toggle-case-sensitive-search="onToggleCaseSensitivePattern"
-        @toggle-inverse-search="onToggleInvsersePattern"
+        @toggle-inverse-search="onToggleInversePattern"
       >
         <template #icon>
           <FilterIcon />
@@ -403,7 +362,7 @@ export default {
       class="label"
     >
       <Checkboxes
-        :model-value="chosenTypes"
+        :model-value="selectedTypes"
         :possible-values="possibleTypes"
         :disabled="disabled"
         @update:model-value="onTypeInput"
@@ -414,14 +373,14 @@ export default {
       ref="twinlist"
       :disabled="selectionDisabled"
       :show-search="mode === 'manual' && showSearch"
-      :model-value="selectedValues"
+      :included-values="selectedValues"
       :excluded-values="excludedValues"
       :possible-values="possibleValues"
       :show-unknown-values="unknownValuesVisible"
-      :initial-include-unknown-values="includeUnknownValues"
-      @update:model-value="onManualInput"
+      :include-unknown-values="includeUnknownValues"
+      @update:included-values="onManualInput"
       @update:excluded-values="onExcludedValuesUpdate"
-      @include-unknown-values-input="onUnkownColumnsInput"
+      @update:include-unknown-values="updateUnknownColumns"
     />
   </div>
 </template>
