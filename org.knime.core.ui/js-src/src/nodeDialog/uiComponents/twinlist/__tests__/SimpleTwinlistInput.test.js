@@ -141,9 +141,9 @@ describe("SimpleTwinlistInput.vue", () => {
   });
 
   it("sets correct initial value", () => {
-    expect(wrapper.findComponent(Twinlist).vm.chosenValues).toStrictEqual(
-      props.control.data,
-    );
+    expect(
+      wrapper.findComponent(Twinlist).props().includedValues,
+    ).toStrictEqual(props.control.data);
   });
 
   it("sets correct label", () => {
@@ -179,15 +179,6 @@ describe("SimpleTwinlistInput.vue", () => {
       props.control.path,
       [],
     );
-    await wrapper
-      .findComponent(Twinlist)
-      .find({ ref: "moveAllRight" })
-      .trigger("click");
-    expect(updateData).toBeCalledWith(expect.anything(), props.control.path, [
-      "test_1",
-      "test_2",
-      "test_3",
-    ]);
   });
 
   it("does not render content of SimpleTwinlistInput when visible is false", async () => {
