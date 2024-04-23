@@ -64,6 +64,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.TestLay
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.TestLayout.SecondSection;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Before;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.CheckboxesWithVennDiagram;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.HorizontalLayout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Inside;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
@@ -516,6 +517,41 @@ class JsonFormsUiSchemaUtilTest {
             .isEqualTo("#/properties/test/properties/setting1");
         assertThatJson(response).inPath("$.elements[0].elements[1].scope").isString()
             .isEqualTo("#/properties/test/properties/setting2");
+    }
+
+    @Test
+    void testVennDiagram() {
+        interface TestVennDiagramLayout {
+
+            @CheckboxesWithVennDiagram
+            interface Venn {
+            }
+        }
+
+        class TestHorizontalLayoutSettings implements DefaultNodeSettings {
+            @Widget(title = "", description = "")
+            @Layout(TestVennDiagramLayout.Venn.class)
+            String m_inner;
+
+            @Widget(title = "", description = "")
+            @Layout(TestVennDiagramLayout.Venn.class)
+            String m_left;
+
+            @Widget(title = "", description = "")
+            @Layout(TestVennDiagramLayout.Venn.class)
+            String m_right;
+        }
+
+        final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", TestHorizontalLayoutSettings.class);
+        final var response = buildUiSchema(settings);
+
+        assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("VennDiagram");
+        assertThatJson(response).inPath("$.elements[0].elements[0].scope").isString()
+            .isEqualTo("#/properties/test/properties/inner");
+        assertThatJson(response).inPath("$.elements[0].elements[1].scope").isString()
+            .isEqualTo("#/properties/test/properties/left");
+        assertThatJson(response).inPath("$.elements[0].elements[2].scope").isString()
+            .isEqualTo("#/properties/test/properties/right");
     }
 
     @Inside(FirstSection.class)

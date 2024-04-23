@@ -61,6 +61,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.CheckboxesWithVennDiagram;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.HorizontalLayout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
@@ -76,7 +77,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 enum LayoutPart {
         SECTION(LayoutPart::getSection), //
         HORIZONTAL_LAYOUT(LayoutPart::getHorizontalLayout), //
-        VIRTUAL_SECTION(LayoutNodeCreationContext::parent);
+        VIRTUAL_SECTION(LayoutNodeCreationContext::parent), //
+        VENN(LayoutPart::getVenn);
 
     private Function<LayoutNodeCreationContext, ArrayNode> m_create;
 
@@ -90,6 +92,9 @@ enum LayoutPart {
         }
         if (clazz.isAnnotationPresent(Section.class)) {
             return SECTION;
+        }
+        if (clazz.isAnnotationPresent(CheckboxesWithVennDiagram.class)) {
+            return VENN;
         }
         if (clazz.isAnnotationPresent(HorizontalLayout.class)) {
             return HORIZONTAL_LAYOUT;
@@ -114,6 +119,12 @@ enum LayoutPart {
             node.putObject(TAG_OPTIONS).put(OPTIONS_IS_ADVANCED, true);
         }
         applyRules(node, creationContext);
+        return node.putArray(TAG_ELEMENTS);
+    }
+
+    private static ArrayNode getVenn(final LayoutNodeCreationContext creationContext) {
+        final var node = creationContext.parent().addObject();
+        node.put(TAG_TYPE, "VennDiagram");
         return node.putArray(TAG_ELEMENTS);
     }
 

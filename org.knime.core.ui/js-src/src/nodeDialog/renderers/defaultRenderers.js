@@ -28,6 +28,7 @@ import {
   fileChooserLabsRenderer,
 } from "./fileChooserRenderer";
 import { legacyCredentialsRenderer } from "./legacyCredentialsRenderer";
+import { vennDiagramLayoutRenderer } from "./vennDiagramRenderer";
 
 export const defaultRenderers = [
   /* layout renderers */
@@ -35,6 +36,7 @@ export const defaultRenderers = [
   horizontalLayoutRenderer,
   verticalLayoutRenderer,
   sectionLayoutRenderer,
+  vennDiagramLayoutRenderer,
 
   /* component renderers */
   buttonRenderer,
