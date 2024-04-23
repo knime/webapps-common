@@ -1,4 +1,4 @@
-import { Update, UpdateResult } from "../../types/Update";
+import { Update, UpdateResult, ValueReference } from "../../types/Update";
 import { cloneDeep, set, get } from "lodash-es";
 import { toDataPath } from "@jsonforms/core";
 import { inject } from "vue";
@@ -73,18 +73,28 @@ export default ({
     return combined[0];
   };
 
+  const getToBeAdjustedSegments = (
+    scopes: string[],
+    indices: number[] | undefined,
+    newSettings: { view?: any; model?: any } & object,
+  ) => {
+    const pathSegments = combineScopesWithIndices(scopes, indices ?? []);
+    const toBeAdjustedByLastPathSegment = pathSegments
+      .slice(0, pathSegments.length - 1)
+      .reduce(
+        (arrayOfSettings, dataPath) =>
+          arrayOfSettings.flatMap((settings) => get(settings, dataPath)),
+        [newSettings] as object[],
+      );
+    return { toBeAdjustedByLastPathSegment, pathSegments };
+  };
+
   const resolveUpdateResult =
     ({ scopes, value, id }: UpdateResult, indices?: number[]) =>
     (newSettings: DialogSettingsObject) => {
       if (scopes) {
-        const pathSegments = combineScopesWithIndices(scopes, indices ?? []);
-        const toBeAdjustedByLastPathSegment = pathSegments
-          .slice(0, pathSegments.length - 1)
-          .reduce(
-            (arrayOfSettings, dataPath) =>
-              arrayOfSettings.flatMap((settings) => get(settings, dataPath)),
-            [newSettings] as object[],
-          );
+        const { toBeAdjustedByLastPathSegment, pathSegments } =
+          getToBeAdjustedSegments(scopes, indices, newSettings);
         toBeAdjustedByLastPathSegment.forEach((settings) =>
           set(settings, pathSegments[pathSegments.length - 1], value),
         );
@@ -149,6 +159,19 @@ export default ({
     return null;
   };
 
+  const extractCurrentDependencies = (
+    dependencies: ValueReference[],
+    newSettings: object,
+    indices: number[],
+  ) => {
+    return Object.fromEntries(
+      dependencies.map((dep) => [
+        dep.id,
+        get(newSettings, getSingleDataPathOrThrow(dep.scopes, indices)),
+      ]),
+    );
+  };
+
   const callDataServiceUpdate2 = ({
     triggerId,
     currentDependencies,
@@ -161,26 +184,29 @@ export default ({
       options: [null, triggerId, currentDependencies],
     });
 
+  const sendAlerts = (messages: string[] | undefined) => {
+    messages?.forEach((message) =>
+      sendAlert({
+        message,
+      }),
+    );
+  };
+
   const getTriggerCallback =
     ({ dependencies, trigger }: Update) =>
     (indices: number[]): TransformSettingsMethod =>
     async (newSettings) => {
-      const currentDependencies = Object.fromEntries(
-        dependencies.map((dep) => [
-          dep.id,
-          get(newSettings, getSingleDataPathOrThrow(dep.scopes, indices)),
-        ]),
+      const currentDependencies = extractCurrentDependencies(
+        dependencies,
+        newSettings,
+        indices,
       );
       const response = await callDataServiceUpdate2({
         triggerId: trigger.id,
         currentDependencies,
       });
       if (response.state === "FAIL" || response.state === "SUCCESS") {
-        response.message?.forEach((message) =>
-          sendAlert({
-            message,
-          }),
-        );
+        sendAlerts(response.message);
       }
       if (response.state === "SUCCESS") {
         (response.result ?? []).forEach((updateResult: UpdateResult) => {

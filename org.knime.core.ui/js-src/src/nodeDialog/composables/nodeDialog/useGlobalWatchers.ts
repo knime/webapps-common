@@ -98,14 +98,21 @@ export default () => {
   const registeredWatchers = ref<RegisteredWatcher[]>([]);
 
   /**
-   * @param {Function} handleChange The handler function that is used to handle the change of a dialog setting
-   * @param {string} path The path of the setting that is changed
-   * @param {any} data The new data that should be stored at the path
-   * @returns {void}
+   * A method called on every settings update before the to be handled change is committed to jsonforms
+   * It is used to possible perform updates of other settings or ui states before doing so.
    */
   const updateData = async (
+    /**
+     * The handler function that is used to handle the change of a dialog setting
+     */
     handleChange: (path: string, value: any) => any,
+    /**
+     * The path of the setting that is changed
+     */
     path: string,
+    /**
+     * The new data that should be stored at the path
+     */
     data: any,
     currentData: SettingsData,
   ) => {
@@ -142,12 +149,24 @@ export default () => {
     }
     handleChange("", newData);
   };
-
+  /**
+   * With this method a watcher for data changes that can be triggered within the updateData method can be registered.
+   */
   const registerWatcher = ({
     transformSettings,
     dependencies,
   }: {
+    /**
+     *
+     * @param indices The indices of the trigger of the transformation
+     *    (e.g. a value change within the third element of an array layout induces indices `[3]`)
+     * @returns a transformation of the current settings of the dialog.
+     */
     transformSettings: (indices: number[]) => TransformSettingsMethod;
+    /**
+     * 2d-array: Outer dimension, because there can be multiple dependencies. Inner dimension,
+     * because a dependency consists of multiple scopes when nested within an array layout.
+     */
     dependencies: string[][];
   }) => {
     const registered = {

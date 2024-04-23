@@ -125,10 +125,8 @@ final class SettingsClassesToValueRefsAndStateProviders {
     private void traverseElementsOfArrayLayouts(final TraversedField field, final List<TraversedField> parentFields,
         final String settingsKey) {
         final var newParents = Stream.concat(parentFields.stream(), Stream.of(field)).toList();
-        field.getElementTraverser(TRAVERSAL_CONFIG)
-            .ifPresent(traverser -> traverser.getAllFields().forEach(elementField -> {
-                addField(elementField, newParents, settingsKey);
-            }));
+        field.getElementTraverser(TRAVERSAL_CONFIG).ifPresent(traverser -> traverser.getAllFields()
+            .forEach(elementField -> addField(elementField, newParents, settingsKey)));
 
     }
 
