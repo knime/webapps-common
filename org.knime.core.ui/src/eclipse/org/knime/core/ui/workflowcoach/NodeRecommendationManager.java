@@ -252,23 +252,16 @@ public final class NodeRecommendationManager {
             (np1, np2) -> np1.increaseFrequency(np2.getFrequency(), 1);
         BiConsumer<NodeRecommendation, NodeRecommendation> sumAggr =
             (np1, np2) -> np1.increaseFrequency(np2.getFrequency(), 0);
-        recommendationMap.keySet().stream().forEach(s -> {
-            List<NodeRecommendation> independentRecommendations = null;
-            if (s.equals(SOURCE_NODES_KEY)) {
-                independentRecommendations = recommendationMap.get(SOURCE_NODES_KEY);
-            }
-            if (s.equals(ALL_NODES_KEY)) {
-                independentRecommendations = recommendationMap.get(ALL_NODES_KEY);
-            }
-
-            if (independentRecommendations != null) {
-                aggregate(independentRecommendations, sumAggr);
-                Collections.sort(independentRecommendations);
-                var totalFrequency =
-                    independentRecommendations.stream().mapToInt(NodeRecommendation::getFrequency).sum();
-                independentRecommendations.forEach(nr -> nr.setTotalFrequency(totalFrequency));
+        recommendationMap.entrySet().stream().forEach(entry -> {
+            var key = entry.getKey();
+            var recommendations = entry.getValue();
+            if (key.equals(SOURCE_NODES_KEY) || key.equals(ALL_NODES_KEY)) {
+                aggregate(recommendations, sumAggr);
+                Collections.sort(recommendations);
+                var totalFrequency = recommendations.stream().mapToInt(NodeRecommendation::getFrequency).sum();
+                recommendations.forEach(nr -> nr.setTotalFrequency(totalFrequency));
             } else {
-                aggregate(recommendationMap.get(s), avgAggr);
+                aggregate(recommendations, avgAggr);
             }
         });
     }
@@ -280,6 +273,7 @@ public final class NodeRecommendationManager {
         var node = getInternalNodeInfo(nt.getNode().orElse(null), getNodeType);
         var predecessor = getInternalNodeInfo(nt.getPredecessor().orElse(null), getNodeType);
 
+        /* keep track of 'all nodes' to be able to determine the most frequently used nodes */
         if (node != null && node.isKnown()) {
             add(recommendationMap, ALL_NODES_KEY, node.id, nt.getCount());
         }
@@ -466,10 +460,11 @@ public final class NodeRecommendationManager {
     }
 
     /**
-     * @return list of nodes sorted by they frequency of being used in general
+     * @return list of nodes sorted by their frequency of being used in general
      */
     @SuppressWarnings("static-method") // Not static to avoid failing initialization
     public List<NodeRecommendation>[] getMostFrequentlyUsedNodes() {
+        @SuppressWarnings("unchecked")
         List<NodeRecommendation>[] res = new List[cachedRecommendations.size()];
         for (var idx = 0; idx < res.length; idx++) {
             res[idx] = cachedRecommendations.get(idx).get(ALL_NODES_KEY);
