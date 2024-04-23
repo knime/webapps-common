@@ -24,6 +24,8 @@ type UIExtensionAPILayer = Pick<
       event: UIExtensionPushEvents.PushEvent<T>,
     ) => void;
   }) => () => void;
+
+  callKnimeUiApi?: UIExtensionServiceAPILayer["callKnimeUiApi"];
 };
 
 export type { UIExtensionAPILayer };
