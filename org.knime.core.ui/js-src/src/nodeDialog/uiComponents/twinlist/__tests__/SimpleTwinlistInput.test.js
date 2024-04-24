@@ -141,9 +141,9 @@ describe("SimpleTwinlistInput.vue", () => {
   });
 
   it("sets correct initial value", () => {
-    expect(
-      wrapper.findComponent(Twinlist).props().includedValues,
-    ).toStrictEqual(props.control.data);
+    expect(wrapper.findComponent(Twinlist).props().modelValue).toStrictEqual(
+      props.control.data,
+    );
   });
 
   it("sets correct label", () => {

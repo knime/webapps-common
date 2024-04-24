@@ -131,7 +131,11 @@ describe("NameFilter.vue", () => {
     const twinListProps = wrapper.getComponent(Twinlist).props();
     expect(twinListProps.unknownValuesText).toBe("Any unknown values");
     expect(twinListProps.emptyStateLabel).toBe("No values in this list");
-    expect(twinListProps.showUnknownValues).toBeTruthy();
+    expect(twinListProps.modelValue).toStrictEqual({
+      includedValues: ["test_1"],
+      excludedValues: ["test_2"],
+      includeUnknownValues: false,
+    });
   });
 
   it("initializes jsonforms on pass-through component", () => {

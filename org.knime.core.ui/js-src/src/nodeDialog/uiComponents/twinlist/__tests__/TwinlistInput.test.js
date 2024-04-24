@@ -247,11 +247,11 @@ describe("TwinlistInput.vue", () => {
       );
     });
 
-    it("handles manuallySelected values change", () => {
+    it("handles array manual selection values change", () => {
       const selected = ["A", "B", "C"];
       wrapper
         .findComponent(MultiModeTwinlist)
-        .vm.$emit("update:manuallySelected", selected);
+        .vm.$emit("update:manualSelection", selected);
       expect(updateData).toHaveBeenCalledWith(
         expect.anything(),
         props.control.path,
@@ -263,33 +263,26 @@ describe("TwinlistInput.vue", () => {
       );
     });
 
-    it("handles manuallyDeselected values change", () => {
+    it("handles object manual selection values change", () => {
+      const selected = ["A", "B", "C"];
       const deselected = ["E", "F", "G"];
+      const includeUnknownValues = true;
       wrapper
         .findComponent(MultiModeTwinlist)
-        .vm.$emit("update:manuallyDeselected", deselected);
+        .vm.$emit("update:manualSelection", {
+          includedValues: selected,
+          excludedValues: deselected,
+          includeUnknownValues,
+        });
       expect(updateData).toHaveBeenCalledWith(
         expect.anything(),
         props.control.path,
         expect.objectContaining({
-          manualFilter: expect.objectContaining({
+          manualFilter: {
+            manuallySelected: selected,
             manuallyDeselected: deselected,
-          }),
-        }),
-      );
-    });
-
-    it("handles includeUnknownColumns change", () => {
-      const includeUnknownColumns = false;
-      wrapper
-        .findComponent(MultiModeTwinlist)
-        .vm.$emit("update:includeUnknownValues", includeUnknownColumns);
-      expect(updateData).toHaveBeenNthCalledWith(
-        1,
-        expect.anything(),
-        props.control.path,
-        expect.objectContaining({
-          manualFilter: expect.objectContaining({ includeUnknownColumns }),
+            includeUnknownColumns: includeUnknownValues,
+          },
         }),
       );
     });
@@ -437,8 +430,12 @@ describe("TwinlistInput.vue", () => {
       const manuallySelected = ["A", "B"];
       expect(updateData).not.toHaveBeenCalled();
       expect(
-        wrapper.findComponent(MultiModeTwinlist).props().manuallySelected,
-      ).toStrictEqual(manuallySelected);
+        wrapper.findComponent(MultiModeTwinlist).props().manualSelection,
+      ).toStrictEqual({
+        includedValues: manuallySelected,
+        excludedValues: ["C", "D", "E"],
+        includeUnknownValues: false,
+      });
     });
 
     it("includes unknown columns without emitting an update", async () => {
@@ -469,7 +466,7 @@ describe("TwinlistInput.vue", () => {
       const manuallySelected = ["A", "B", "E"];
       expect(updateData).not.toHaveBeenCalled();
       expect(
-        wrapper.findComponent(MultiModeTwinlist).props().manuallySelected,
+        wrapper.findComponent(MultiModeTwinlist).props().manualSelection,
       ).toStrictEqual(manuallySelected);
     });
   });
@@ -482,7 +479,7 @@ describe("TwinlistInput.vue", () => {
       wrapper.findComponent(MultiModeTwinlist).props().selectedTypes,
     ).toStrictEqual(props.control.data.typeFilter.selectedTypes);
     expect(
-      wrapper.findComponent(MultiModeTwinlist).props().manuallySelected,
+      wrapper.findComponent(MultiModeTwinlist).props().manualSelection,
     ).toStrictEqual(props.control.data.manualFilter.manuallySelected);
     expect(wrapper.findComponent(MultiModeTwinlist).props().mode).toBe(
       "manual",

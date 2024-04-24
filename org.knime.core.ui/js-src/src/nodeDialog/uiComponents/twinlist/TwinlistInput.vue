@@ -3,6 +3,7 @@ import type {
   IdAndText,
   PossibleValue,
 } from "@/nodeDialog//types/ChoicesUiSchema";
+import type { TwinlistModelValue } from "webapps-common/ui/components/forms/Twinlist.vue";
 export type TwinlistData = {
   mode: string;
   manualFilter: {
@@ -57,6 +58,10 @@ const props = defineProps({
     type: String,
     required: false,
     default: "Excludes",
+  },
+  showUnknownValues: {
+    type: Boolean,
+    default: false,
   },
   twinlistRightLabel: {
     type: String,
@@ -113,17 +118,30 @@ const onSelectedChange = (selected: string[]) => {
   onChange({ selected });
 };
 
-const onManuallySelectedChange = (manuallySelected: string[]) => {
-  onChange({ manualFilter: { manuallySelected } });
+type ManualSelection = TwinlistModelValue<string>;
+
+const onManualSelectionChange = (manualSelection: ManualSelection) => {
+  if (manualSelection === null) {
+    return;
+  }
+  if ("includedValues" in manualSelection) {
+    const { includedValues, excludedValues, includeUnknownValues } =
+      manualSelection;
+    if (!includedValues || !excludedValues) {
+      return;
+    }
+    onChange({
+      manualFilter: {
+        manuallySelected: includedValues,
+        manuallyDeselected: excludedValues,
+        includeUnknownColumns: includeUnknownValues,
+      },
+    });
+  } else {
+    onChange({ manualFilter: { manuallySelected: manualSelection } });
+  }
 };
 
-const onManuallyDeselectedChange = (manuallyDeselected: string[]) => {
-  onChange({ manualFilter: { manuallyDeselected } });
-};
-
-const onIncludeUnknownColumnsChange = (includeUnknownColumns: boolean) => {
-  onChange({ manualFilter: { includeUnknownColumns } });
-};
 const onPatternChange = (pattern: string) => {
   onChange({ patternFilter: { pattern } });
 };
@@ -154,16 +172,32 @@ const possibleValues = withSpecialChoices(
 );
 const previouslySelectedTypes = ref<IdAndText[]>([]);
 
-const { manualSelection, setCurrentManualFilter } = useUnknownValuesInTwinlist({
-  data: computed(() => control.value.data),
-  possibleValueIds: computed(
-    () => possibleValues.value?.map(({ id }) => id) ?? null,
-  ),
-});
+const { selectedAndDeselected, setCurrentManualFilter } =
+  useUnknownValuesInTwinlist({
+    data: computed(() => control.value.data),
+    possibleValueIds: computed(
+      () => possibleValues.value?.map(({ id }) => id) ?? null,
+    ),
+  });
 setManualFilterOnChange = setCurrentManualFilter;
 
+const manualSelection = computed<ManualSelection>(() => {
+  const { selected, deselected } = selectedAndDeselected.value;
+  if (props.showUnknownValues) {
+    return {
+      includedValues: selected,
+      excludedValues: deselected,
+      includeUnknownValues:
+        control.value.data.manualFilter.includeUnknownColumns,
+    };
+  }
+  return selected;
+});
+
 const loadingInfo = computed(() =>
-  manualSelection.value === null ? (markRaw(TwinlistLoadingInfo) as any) : null,
+  selectedAndDeselected.value.selected === null
+    ? (markRaw(TwinlistLoadingInfo) as any)
+    : null,
 );
 
 const typeDisplaysToMap = (keyValuePairs: IdAndText[] | undefined) => {
@@ -241,8 +275,7 @@ const rightLabel = computed(
       :case-sensitive-pattern="control.data.patternFilter.isCaseSensitive"
       :empty-state-component="loadingInfo"
       :inverse-pattern="control.data.patternFilter.isInverted"
-      :manually-selected="manualSelection?.selected ?? null"
-      :manually-deselected="manualSelection?.deselected ?? null"
+      :manual-selection="manualSelection"
       :include-unknown-values="control.data.manualFilter.includeUnknownColumns"
       :filter-chosen-values-on-possible-values-change="false"
       mode-label="Selection mode"
@@ -251,9 +284,7 @@ const rightLabel = computed(
       :left-label="leftLabel"
       :right-label="rightLabel"
       @update:selected="onSelectedChange"
-      @update:manually-selected="onManuallySelectedChange"
-      @update:manually-deselected="onManuallyDeselectedChange"
-      @update:include-unknown-values="onIncludeUnknownColumnsChange"
+      @update:manual-selection="onManualSelectionChange"
       @update:pattern="onPatternChange"
       @update:mode="onModeChange"
       @update:selected-types="onSelectedTypesChange"

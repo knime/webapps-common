@@ -64,7 +64,7 @@ if (!choicesProvider.value) {
     <Twinlist
       :id="labelForId"
       :disabled="disabled"
-      :included-values="control.data"
+      :model-value="control.data"
       :possible-values="possibleValues ?? []"
       :empty-state-component="
         possibleValues === null ? TwinlistLoadingInfoRaw : null
@@ -74,7 +74,7 @@ if (!choicesProvider.value) {
       :left-label="twinlistLeftLabel"
       :right-label="twinlistRightLabel"
       :filter-chosen-values-on-possible-values-change="false"
-      @update:included-values="onChange"
+      @update:model-value="onChange"
     />
   </LabeledInput>
 </template>

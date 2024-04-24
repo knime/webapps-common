@@ -8,7 +8,8 @@
         "mode": "MANUAL",
         "manualFilter": {
           "manuallySelected": ["foo", "foo2"],
-          "manuallyDeselected": ["bar"]
+          "manuallyDeselected": ["bar"],
+          "includeUnknownColumns": false
         },
         "typeFilter": {
           "selectedTypes": []
@@ -22,7 +23,8 @@
         "mode": "MANUAL",
         "manualFilter": {
           "manuallySelected": ["foo", "foo2"],
-          "manuallyDeselected": ["bar"]
+          "manuallyDeselected": ["bar"],
+          "includeUnknownColumns": false
         },
 
         "patternFilter": {
@@ -33,7 +35,8 @@
         "mode": "MANUAL",
         "manualFilter": {
           "manuallySelected": ["foo", "foo2"],
-          "manuallyDeselected": ["bar", "bar2"]
+          "manuallyDeselected": ["bar", "bar2"],
+          "includeUnknownColumns": false
         },
         "typeFilter": {
           "selectedTypes": ["typeA"]
@@ -62,7 +65,8 @@
         "mode": "MANUAL",
         "manualFilter": {
           "manuallySelected": ["AVG", "foo"],
-          "manuallyDeselected": ["bar"]
+          "manuallyDeselected": ["bar"],
+          "includeUnknownColumns": false
         },
         "typeFilter": {
           "selectedTypes": ["typeA"]
@@ -76,7 +80,8 @@
         "mode": "MANUAL",
         "manualFilter": {
           "manuallySelected": ["AVG", "foo"],
-          "manuallyDeselected": ["bar"]
+          "manuallyDeselected": ["bar"],
+          "includeUnknownColumns": false
         },
         "typeFilter": {
           "selectedTypes": ["typeA"]

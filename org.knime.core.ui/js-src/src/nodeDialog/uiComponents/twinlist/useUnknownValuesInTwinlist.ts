@@ -42,10 +42,13 @@ export default ({
    */
   possibleValueIds: Ref<Array<string> | null>;
 }) => {
-  const manualSelection = ref<{
-    selected: string[];
-    deselected: string[];
-  } | null>(null);
+  const selectedAndDeselected = ref<{
+    selected: string[] | null;
+    deselected: string[] | null;
+  }>({
+    selected: null,
+    deselected: null,
+  });
 
   const currentManualFilter = ref<null | TwinlistData["manualFilter"]>(null);
 
@@ -83,7 +86,7 @@ export default ({
       knownValuesSide,
       unknownValuesSide,
     });
-    manualSelection.value = {
+    selectedAndDeselected.value = {
       selected: newManuallySelected!,
       deselected: newManuallyDeselected!,
     };
@@ -99,7 +102,7 @@ export default ({
         /**
          * The change comes from an internal update of the Twinlist.
          */
-        manualSelection.value = {
+        selectedAndDeselected.value = {
           selected: newData.manuallySelected,
           deselected: newData.manuallyDeselected,
         };
@@ -120,5 +123,5 @@ export default ({
     immediate: true,
   });
 
-  return { manualSelection, setCurrentManualFilter };
+  return { selectedAndDeselected, setCurrentManualFilter };
 };
