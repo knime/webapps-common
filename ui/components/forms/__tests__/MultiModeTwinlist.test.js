@@ -66,7 +66,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
   it("renders", async () => {
     let props = {
       possibleValues: defaultPossibleValues,
-      manuallySelected: ["test3"],
+      manualSelection: ["test3"],
       leftLabel: "Choose",
       rightLabel: "The value",
       size: 3,
@@ -93,7 +93,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
   it("renders with null initial manually selected", async () => {
     let props = {
       possibleValues: defaultPossibleValues,
-      manuallySelected: null,
+      manualSelection: null,
       leftLabel: "Choose",
       rightLabel: "The value",
       size: 3,
@@ -105,7 +105,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
 
     assertLeftRightAmount(wrapper, 0, 0);
 
-    await wrapper.setProps({ manuallySelected: ["test3"] });
+    await wrapper.setProps({ manualSelection: ["test3"] });
 
     assertLeftRightAmount(wrapper, 2, 1);
   });
@@ -122,7 +122,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
           text: "Some Text",
         },
       ],
-      manuallySelected: ["invalidId", "test1"],
+      manualSelection: ["invalidId", "test1"],
       leftLabel: "Choose",
       rightLabel: "The value",
     };
@@ -146,19 +146,19 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
     });
     expect(wrapper.vm.hasSelection()).toBe(false);
 
-    await wrapper.setProps({ manuallySelected: ["test1"] });
+    await wrapper.setProps({ manualSelection: ["test1"] });
     expect(wrapper.vm.hasSelection()).toBe(true);
   });
 
   it("does not update manually chosen values if mode is not manual", async () => {
-    const manuallySelected = ["test1"];
+    const manualSelection = ["test1"];
     const wrapper = mount(MultiModeTwinlist, {
       props: {
         possibleValues: defaultPossibleValues,
         leftLabel: "Choose",
         rightLabel: "The value",
         showMode: true,
-        manuallySelected,
+        manualSelection,
       },
     });
     await flushPromises();
@@ -215,7 +215,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
   describe("mode selection", () => {
     const props = {
       possibleValues: defaultPossibleValues,
-      manuallySelected: ["test3"],
+      manualSelection: ["test3"],
       leftLabel: "Choose",
       rightLabel: "The value",
       size: 3,
@@ -364,7 +364,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
     it("can do case-sensitive searches", async () => {
       let props = {
         possibleValues: defaultPossibleValues,
-        manuallySelected: ["test2"],
+        manualSelection: ["test2"],
         leftLabel: "Choose",
         rightLabel: "The value",
         size: 3,
@@ -385,7 +385,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
     it("can do inverse searches", async () => {
       let props = {
         possibleValues: defaultPossibleValues,
-        manuallySelected: ["test2"],
+        manualSelection: ["test2"],
         leftLabel: "Choose",
         rightLabel: "The value",
         size: 3,
@@ -568,7 +568,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
     });
   });
 
-  describe("unknown columns", () => {
+  describe("twinlist model value", () => {
     let props;
 
     beforeEach(() => {
@@ -579,37 +579,40 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
       };
     });
 
-    it("does not render unknown columns by default", () => {
-      const wrapper = mount(MultiModeTwinlist, { props });
-      expect(wrapper.findComponent(Twinlist).vm.showUnknownValues).toBeFalsy();
+    it("provides twinlist model value on manual selection with unknown values", () => {
+      const manualSelection = {
+        includedValues: ["test1"],
+        excludedValues: ["test2"],
+        includeUnknownValues: true,
+      };
+      const wrapper = mount(MultiModeTwinlist, {
+        props: { ...props, manualSelection },
+      });
+      expect(wrapper.findComponent(Twinlist).props().modelValue).toStrictEqual(
+        manualSelection,
+      );
     });
 
-    it("renders and excludes unkown columns by default", () => {
-      props.showUnknownValues = true;
-      const wrapper = mount(MultiModeTwinlist, { props });
-      expect(
-        wrapper.findComponent(Twinlist).vm.includeUnknownValues,
-      ).toBeFalsy();
+    it("provides twinlist model value on manual selection without unknown values", () => {
+      const manualSelection = ["test1"];
+      const wrapper = mount(MultiModeTwinlist, {
+        props: { ...props, manualSelection },
+      });
+      expect(wrapper.findComponent(Twinlist).props().modelValue).toStrictEqual(
+        manualSelection,
+      );
     });
 
-    it("does not render unknown columns if wanted", () => {
-      props.showUnknownValues = false;
-      const wrapper = mount(MultiModeTwinlist, { props });
-      expect(wrapper.findComponent(Twinlist).vm.showUnknownValues).toBeFalsy();
-    });
-
-    it("does not render unknown columns on non-manual mode", () => {
-      props.mode = "regex";
-      const wrapper = mount(MultiModeTwinlist, { props });
-      expect(wrapper.findComponent(Twinlist).vm.showUnknownValues).toBeFalsy();
-    });
-
-    it("emits includeUnknownValuesInput event", async () => {
-      const wrapper = mount(MultiModeTwinlist, { props });
-      await wrapper
-        .findComponent(Twinlist)
-        .vm.$emit("update:includeUnknownValues", true);
-      expect(wrapper.emitted("update:includeUnknownValues")[0][0]).toBe(true);
+    it("does not render unknown values on non-manual mode", async () => {
+      const wrapper = mount(MultiModeTwinlist, {
+        props: { ...props, mode: "regex", pattern: ".*" },
+      });
+      await flushPromises();
+      expect(wrapper.findComponent(Twinlist).props().modelValue).toStrictEqual([
+        "test1",
+        "test2",
+        "test3",
+      ]);
     });
   });
 });

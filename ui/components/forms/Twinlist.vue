@@ -1,3 +1,4 @@
+<!-- eslint-disable max-lines -->
 <script lang="ts">
 import Label from "./Label.vue";
 import SearchInput from "../forms/SearchInput.vue";
@@ -7,7 +8,7 @@ import ArrowNextDoubleIcon from "../../assets/img/icons/arrow-next-double.svg";
 import ArrowPrevIcon from "../../assets/img/icons/arrow-prev.svg";
 import ArrowPrevDoubleIcon from "../../assets/img/icons/arrow-prev-double.svg";
 import { filters } from "../../../util/filters";
-import { type PropType } from "vue";
+import { computed, toRef, type PropType, type Ref } from "vue";
 import type { Id, PossibleValue } from "./possibleValues/PossibleValue";
 import createMissingItem from "./possibleValues/createMissingItem";
 
@@ -31,6 +32,91 @@ interface TransformOnMovePayload {
   };
 }
 
+/** The included values or null if not yet known. Values which are not an id in the possible values will be shown as missing. */
+type SimpleTwinlistModelValue<T extends Id> = null | T[];
+
+/**
+ * using this form of model value allows showing unknown values. With that the logic for missing values also changes:
+ * Missing values on the same side as unknown values are not displayed and removed as soon as the user moves items.
+ * Also missing values now can always exist on the opposite side of the unknown values which is why we also need to
+ *  keep track of the excluded values as data.
+ */
+interface TwinlistModelValueWithUnknownValues<T extends Id> {
+  /**
+   * null if not yet known
+   */
+  includedValues: T[] | null;
+  /**
+   * null if not yet known
+   */
+  excludedValues: T[] | null;
+  includeUnknownValues: boolean;
+}
+
+type TwinlistModelValue<T extends Id = Id> =
+  | SimpleTwinlistModelValue<T>
+  | TwinlistModelValueWithUnknownValues<T>;
+
+const useTwinlistModelValue = (modelValue: Ref<TwinlistModelValue>) => {
+  /**
+   * Either the model value if it is of the object form (with unknown and excluded values) or null if not
+   */
+  const splitModelValue = computed(() =>
+    modelValue.value !== null && "includeUnknownValues" in modelValue.value
+      ? { withUnknownValues: modelValue.value }
+      : { standard: modelValue.value },
+  );
+
+  const includedValues = computed(() => {
+    if (typeof splitModelValue.value.standard !== "undefined") {
+      return splitModelValue.value.standard;
+    }
+    return splitModelValue.value.withUnknownValues.includedValues;
+  });
+
+  const excludedValues = computed(
+    () => splitModelValue.value.withUnknownValues?.excludedValues ?? null,
+  );
+
+  const includeUnknownValues = computed(
+    () => splitModelValue.value.withUnknownValues?.includeUnknownValues ?? null,
+  );
+  const showUnknownValuesLeft = computed(
+    () => includeUnknownValues.value === false,
+  );
+  const showUnknownValuesRight = computed(
+    () => includeUnknownValues.value === true,
+  );
+  const getEmitValue = (
+    newIncludedValues: Id[] | null,
+    toNewExcluded: (oldVal: Id[] | null) => Id[] | null = (oldVal) => oldVal,
+    toNewIncludeUnknownValues: (oldVal: boolean) => boolean = (oldVal) =>
+      oldVal,
+  ): TwinlistModelValue => {
+    if (splitModelValue.value.withUnknownValues) {
+      return {
+        includedValues: newIncludedValues,
+        excludedValues: toNewExcluded(excludedValues.value),
+        includeUnknownValues: toNewIncludeUnknownValues(
+          splitModelValue.value.withUnknownValues.includeUnknownValues,
+        ),
+      };
+    } else {
+      return newIncludedValues;
+    }
+  };
+
+  return {
+    includedValues,
+    excludedValues,
+    showUnknownValuesLeft,
+    showUnknownValuesRight,
+    getEmitValue,
+  };
+};
+
+export { type TwinlistModelValue, useTwinlistModelValue };
+
 export default {
   components: {
     ArrowNextDoubleIcon,
@@ -42,17 +128,8 @@ export default {
     SearchInput,
   },
   props: {
-    includedValues: {
-      type: Array as PropType<Id[] | null>,
-      default: null,
-    },
-    /**
-     * Only required (in combination with the @update:excludedValues event) whenever missing excluded values are desired.
-     * Because, if this prop is not set, the excluded list will simply be the possible values which are not part of the includedValues.
-     */
-    excludedValues: {
-      type: Array as PropType<Id[] | null>,
-      required: false,
+    modelValue: {
+      type: [Object, Array, null] as PropType<TwinlistModelValue>,
       default: null,
     },
     initialCaseSensitiveSearch: {
@@ -64,10 +141,6 @@ export default {
       required: false,
       default: "",
     },
-    includeUnknownValues: {
-      type: Boolean,
-      default: false,
-    },
 
     /**
      * Hiding and disabling
@@ -75,10 +148,6 @@ export default {
     showSearch: {
       default: false,
       type: Boolean,
-    },
-    showUnknownValues: {
-      type: Boolean,
-      default: false,
     },
     disabled: {
       default: false,
@@ -179,17 +248,27 @@ export default {
   },
   emits: [
     /**
-     * Enable whenever the includedValues needs to be adjusted to match what is to be displayed.
+     * This event gets emitted whenever the user changes the selection.
+     * In case the modelValue of this Twinlist is with unknown values, the emitted value here will also be.
      */
-    "update:includedValues",
-    /**
-     * Emitted whenever the excluded values prop is set and these need to be adjusted to match
-     * what is to be displayed.
-     * In particular, there is no such update initially whenever any unknown value is excluded, too.
-     */
-    "update:excludedValues",
-    "update:includeUnknownValues",
+    "update:modelValue",
   ],
+  setup(props) {
+    const {
+      includedValues,
+      excludedValues,
+      showUnknownValuesLeft,
+      showUnknownValuesRight,
+      getEmitValue,
+    } = useTwinlistModelValue(toRef(props, "modelValue"));
+    return {
+      includedValues,
+      excludedValues,
+      showUnknownValuesLeft,
+      showUnknownValuesRight,
+      getEmitValue,
+    };
+  },
   data() {
     return {
       invalidPossibleValueIds: new Set(),
@@ -266,12 +345,6 @@ export default {
       // limit size to minimum
       return size > MIN_LIST_SIZE ? size : MIN_LIST_SIZE;
     },
-    showUnknownValuesLeft() {
-      return this.showUnknownValues && !this.includeUnknownValues;
-    },
-    showUnknownValuesRight() {
-      return this.showUnknownValues && this.includeUnknownValues;
-    },
     moveAllRightButtonDisabled() {
       return this.leftItems.length === 0 && !this.showUnknownValuesLeft;
     },
@@ -333,7 +406,7 @@ export default {
         const newIncludedValues = (this.includedValues ?? []).filter((item) =>
           allValues.includes(item),
         );
-        this.$emit("update:includedValues", newIncludedValues);
+        this.$emit("update:modelValue", this.getEmitValue(newIncludedValues));
       }
     },
   },
@@ -351,13 +424,11 @@ export default {
     moveItems(
       items: Id[],
       {
-        toNewChosenValues,
+        toNewIncludedValues,
         toNewExcludedValues,
-        moveToIncluded,
       }: {
-        toNewChosenValues: (params: TransformOnMovePayload) => Id[];
+        toNewIncludedValues: (params: TransformOnMovePayload) => Id[];
         toNewExcludedValues: (params: TransformOnMovePayload) => Id[];
-        moveToIncluded: boolean;
       },
     ) {
       const knownValues = items.filter((item) => item !== this.unknownValuesId);
@@ -366,41 +437,43 @@ export default {
         knownValues,
         movingUnknownValues,
       };
+      let newIncludedValues: Id[] | null = null;
+      let newExcludedValues: Id[] | null = null;
       if (this.includedValues !== null) {
-        this.$emit(
-          "update:includedValues",
-          toNewChosenValues({
-            previous: this.includedValues,
-            movingParts,
-          }),
-        );
-      }
-      if (movingUnknownValues) {
-        this.$emit("update:includeUnknownValues", moveToIncluded);
+        newIncludedValues = toNewIncludedValues({
+          previous: this.includedValues,
+          movingParts,
+        });
       }
       if (this.excludedValues) {
-        this.$emit(
-          "update:excludedValues",
-          toNewExcludedValues({
-            previous: this.knownExcludedValues,
-            movingParts,
-          }),
-        );
+        newExcludedValues = toNewExcludedValues({
+          previous: this.knownExcludedValues,
+          movingParts,
+        });
       }
       this.clearSelections();
+      this.$emit(
+        "update:modelValue",
+        this.getEmitValue(
+          newIncludedValues,
+          () => newExcludedValues,
+          (currentIncludeUnknownValues) =>
+            movingUnknownValues
+              ? !currentIncludeUnknownValues
+              : currentIncludeUnknownValues,
+        ),
+      );
     },
     moveRight(itemsParam: Id[] | null = null) {
       this.moveItems(itemsParam ?? this.leftSelected, {
-        toNewChosenValues: this.addMovedItems.bind(this),
+        toNewIncludedValues: this.addMovedItems.bind(this),
         toNewExcludedValues: this.filterMovedItems.bind(this),
-        moveToIncluded: true,
       });
     },
     moveLeft(itemsParam: Id[] | null = null) {
       this.moveItems(itemsParam ?? this.rightSelected, {
-        toNewChosenValues: this.filterMovedItems.bind(this),
+        toNewIncludedValues: this.filterMovedItems.bind(this),
         toNewExcludedValues: this.addMovedItems.bind(this),
-        moveToIncluded: false,
       });
     },
     /**

@@ -60,13 +60,16 @@ export default {
     return {
       codeExample,
       selected: [],
-      manuallyDeselected: [
-        "also missing",
-        "foo",
-        "Channel Name",
-        "Reservation AOV",
-      ],
-      manuallySelected: ["missing", "spec1", "spec2"],
+      manualSelection: {
+        includedValues: ["missing", "spec1", "spec2"],
+        excludedValues: [
+          "also missing",
+          "foo",
+          "Channel Name",
+          "Reservation AOV",
+        ],
+        includeUnknownValues: true,
+      },
       isCaseSensitivePattern: true,
       isInverted: false,
       mode: "regex",
@@ -81,7 +84,7 @@ export default {
     },
     settingsHash() {
       return [
-        `${this.manuallySelected}`,
+        `${this.manualSelection}`,
         `${this.isCaseSensitivePattern}`,
         `${this.isInverted}`,
         `${this.mode}`,
@@ -151,51 +154,36 @@ export default {
       <div class="grid-container">
         <div class="grid-item-6">
           <MultiModeTwinlist
-            :size="7"
+            v-model:pattern="pattern"
+            v-model:manualSelection="manualSelection"
+            v-model:case-sensitive-pattern="isCaseSensitivePattern"
+            v-model:inverse-pattern="isInverted"
+            v-model:mode="mode"
+            v-model:selected-types="selectedTypes"
             show-mode
-            :case-sensitive-pattern="isCaseSensitivePattern"
-            :selected-types="selectedTypes"
-            :pattern="pattern"
-            :mode="mode"
-            :inverse-pattern="isInverted"
-            :manually-selected="manuallySelected"
-            :manually-deselected="manuallyDeselected"
+            :size="7"
+            :possible-values="demoValues"
             :additional-possible-types="[
               { id: 'additionalId', text: 'additionalOption' },
             ]"
             left-label="Select from the visible items"
             right-label="The selected stuff"
             mode-label="Selection mode"
-            :possible-values="demoValues"
             @update:selected="
               (newSelected) => {
                 selected = newSelected;
               }
             "
-            @update:manually-selected="
-              (newManuallySelected) => {
-                manuallySelected = newManuallySelected;
-              }
-            "
-            @update:manually-deselected="
-              (newManuallyDeselected) => {
-                manuallyDeselected = newManuallyDeselected;
-              }
-            "
-            @update:pattern="(event) => (pattern = event)"
-            @update:mode="(event) => (mode = event)"
-            @update:selected-types="(event) => (selectedTypes = event)"
-            @update:inverse-pattern="(event) => (isInverted = event)"
-            @update:case-sensitive-pattern="
-              (event) => (isCaseSensitivePattern = event)
-            "
           />
         </div>
         <div class="grid-item-6">
           selected ids: {{ selected }}
-          <br v-if="mode === 'manual'" />
-          {{ "left side ids: " }}{{ manuallyDeselected }} {{ "right side ids: "
-          }}{{ manuallySelected }}
+          <template v-if="mode === 'manual'">
+            <br />
+            <span> left: {{ manualSelection.excludedValues }} </span>
+            <br />
+            <span> right: {{ manualSelection.includedValues }} </span>
+          </template>
         </div>
       </div>
       <br />
@@ -211,7 +199,7 @@ export default {
             :pattern="pattern"
             :mode="mode"
             :inverse-pattern="isInverted"
-            :manually-selected="manuallySelected"
+            :manual-selection="manualSelection.includedValues"
             :additional-possible-types="[
               { id: 'additionalId', text: 'additionalOption' },
             ]"

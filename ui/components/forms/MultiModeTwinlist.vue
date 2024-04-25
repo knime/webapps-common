@@ -3,14 +3,17 @@ import Label from "./Label.vue";
 import SearchInput from "./SearchInput.vue";
 import Checkboxes from "./Checkboxes.vue";
 import ValueSwitch from "./ValueSwitch.vue";
-import Twinlist from "./Twinlist.vue";
+import Twinlist, {
+  type TwinlistModelValue,
+  useTwinlistModelValue,
+} from "./Twinlist.vue";
 import {
   type PossibleValue as TwinlistPossibleValue,
   type Id,
 } from "./possibleValues/PossibleValue";
 import FilterIcon from "../../assets/img/icons/filter.svg";
 import { filters } from "../../../util/filters";
-import type { PropType } from "vue";
+import { toRef, type PropType } from "vue";
 
 type PossibleType = { id: string; text: string };
 type PossibleValue = TwinlistPossibleValue & { type?: PossibleType };
@@ -40,23 +43,9 @@ export default {
       required: false,
       default: "manual",
     },
-    manuallySelected: {
-      type: Array as PropType<Id[] | null>,
+    manualSelection: {
+      type: [Object, Array, null] as PropType<TwinlistModelValue>,
       default: () => [],
-    },
-    /**
-     * Passed on to the Twinlist prop "excludedValues" in case of manual mode
-     * Only required (in combination with the @update:excludedValues event) whenever missing excluded values are desired.
-     * Because, if this prop is not set, the excluded list will simply be the possible values which are not part of the modelValue.
-     */
-    manuallyDeselected: {
-      required: false,
-      type: Array as PropType<Id[] | null>,
-      default: null,
-    },
-    includeUnknownValues: {
-      type: Boolean,
-      default: false,
     },
     pattern: {
       type: String,
@@ -83,10 +72,6 @@ export default {
      * Hiding and disabling
      */
     showMode: {
-      default: false,
-      type: Boolean,
-    },
-    showUnknownValues: {
       default: false,
       type: Boolean,
     },
@@ -164,9 +149,7 @@ export default {
   },
   emits: [
     // Prop updates
-    "update:manuallySelected",
-    "update:manuallyDeselected",
-    "update:includeUnknownValues",
+    "update:manualSelection",
     "update:pattern",
     "update:selectedTypes",
     "update:mode",
@@ -175,6 +158,12 @@ export default {
     // Non-prop update
     "update:selected",
   ],
+  setup(props) {
+    const { includedValues: manuallySelected } = useTwinlistModelValue(
+      toRef(props, "manualSelection"),
+    );
+    return { manuallySelected };
+  },
   data() {
     return {
       invalidPossibleValueIds: new Set(),
@@ -207,20 +196,15 @@ export default {
         .filter((possibleValue) => this.itemMatches(possibleValue))
         .map((possibleValue) => possibleValue.id);
     },
+    twinlistModelValue() {
+      return this.mode === "manual"
+        ? this.manualSelection
+        : this.matchingValueIds;
+    },
     selectedValues() {
       return this.mode === "manual"
         ? this.manuallySelected
         : this.matchingValueIds;
-    },
-    excludedValues() {
-      return this.mode === "manual" ? this.manuallyDeselected : null;
-    },
-    deselectedValues() {
-      if (this.excludedValues) {
-        return this.excludedValues;
-      }
-      const selectedValuesSet = new Set(this.selectedValues ?? []);
-      return this.possibleValueIds.filter((id) => !selectedValuesSet.has(id));
     },
     selectionDisabled() {
       return this.disabled || this.mode !== "manual";
@@ -241,9 +225,6 @@ export default {
       }
       return modes;
     },
-    unknownValuesVisible() {
-      return this.showUnknownValues && this.mode === "manual";
-    },
   },
   watch: {
     selectedValues: {
@@ -262,13 +243,10 @@ export default {
     },
   },
   methods: {
-    onManualInput(value: Id[]) {
+    onManualInput(value: TwinlistModelValue) {
       if (this.mode === "manual") {
-        this.$emit("update:manuallySelected", value);
+        this.$emit("update:manualSelection", value);
       }
-    },
-    onExcludedValuesUpdate(excludedValues: Id[]) {
-      this.$emit("update:manuallyDeselected", excludedValues);
     },
     onPatternInput(value: string) {
       this.$emit("update:pattern", value);
@@ -284,9 +262,6 @@ export default {
     },
     onToggleInversePattern(value: boolean) {
       this.$emit("update:inversePattern", value);
-    },
-    updateUnknownColumns(value: boolean) {
-      this.$emit("update:includeUnknownValues", value);
     },
     validate() {
       return (this.$refs.twinlist as any).validate();
@@ -373,14 +348,9 @@ export default {
       ref="twinlist"
       :disabled="selectionDisabled"
       :show-search="mode === 'manual' && showSearch"
-      :included-values="selectedValues"
-      :excluded-values="excludedValues"
+      :model-value="twinlistModelValue"
       :possible-values="possibleValues"
-      :show-unknown-values="unknownValuesVisible"
-      :include-unknown-values="includeUnknownValues"
-      @update:included-values="onManualInput"
-      @update:excluded-values="onExcludedValuesUpdate"
-      @update:include-unknown-values="updateUnknownColumns"
+      @update:model-value="onManualInput"
     />
   </div>
 </template>
