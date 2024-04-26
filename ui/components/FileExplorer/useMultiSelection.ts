@@ -1,12 +1,13 @@
 import { computed, ref, type ComputedRef, type Ref } from "vue";
 import * as multiSelectionService from "./multiSelectionStateService";
+import { getMetaOrCtrlKey } from "../../../util/navigator";
 
-const isMac = () => navigator?.userAgent?.toLowerCase()?.includes("mac");
-
-export const getMetaOrCtrlKey = () => (isMac() ? "metaKey" : "ctrlKey");
+const INVALID_INDEX = -100;
 
 type UseMultiSelectionOptions = {
   singleSelectionOnly: Ref<boolean>;
+  numberOfItems: Ref<number>;
+  startIndex: Ref<number>;
 };
 
 export type UseMultiSelectionReturn = {
@@ -16,7 +17,9 @@ export type UseMultiSelectionReturn = {
   isMultipleSelectionActive: (index: number) => boolean;
   resetSelection: () => void;
   handleSelectionClick: (index: number, event?: MouseEvent | null) => void;
+  handleKeyboardNavigation: (event: KeyboardEvent | null) => void;
   ctrlClickItem: (index: number) => void;
+  focusedIndex: Ref<number>;
 };
 
 export const useMultiSelection = (
@@ -25,6 +28,8 @@ export const useMultiSelection = (
   const multiSelectionState = ref<multiSelectionService.MultiSelectionState>(
     multiSelectionService.getInitialState(),
   );
+
+  const focusedIndex = ref<number>(INVALID_INDEX);
 
   const isSelected = (index: number) =>
     multiSelectionService.isItemSelected(multiSelectionState.value, index);
@@ -39,7 +44,8 @@ export const useMultiSelection = (
       index,
     );
 
-  const resetSelection = () => {
+  const resetSelection = (focusIndex = 0) => {
+    focusedIndex.value = focusIndex;
     multiSelectionState.value = multiSelectionService.getInitialState();
   };
 
@@ -63,8 +69,27 @@ export const useMultiSelection = (
 
   const handleSelectionClick = (
     index: number,
-    event: MouseEvent | null = null,
+    event: MouseEvent | KeyboardEvent | null = null,
+    handleCtrl = true,
   ) => {
+    // check bounds (for keyboard nav)
+    if (
+      index < options.startIndex.value ||
+      index >= options.numberOfItems.value
+    ) {
+      return;
+    }
+
+    // focus last clicked item (start key nav from there)
+    focusedIndex.value = index;
+
+    // special handling
+    if (index === -1) {
+      resetSelection(-1);
+      return;
+    }
+
+    // single select
     if (!event || options.singleSelectionOnly.value) {
       clickItem(index);
       return;
@@ -78,11 +103,55 @@ export const useMultiSelection = (
     }
 
     if (event[metaOrCtrlKey]) {
-      ctrlClickItem(index);
+      if (handleCtrl) {
+        ctrlClickItem(index);
+      }
       return;
     }
 
     clickItem(index);
+  };
+
+  const handleKeyboardNavigation = (event: KeyboardEvent | null) => {
+    if (!event) {
+      return;
+    }
+
+    const metaOrCtrl = getMetaOrCtrlKey();
+    const isHandledKey = [
+      "Enter",
+      " " /* Space */,
+      "ArrowUp",
+      "ArrowDown",
+    ].includes(event.key);
+
+    if (isHandledKey) {
+      event.preventDefault();
+      if (event[metaOrCtrl] || event.shiftKey) {
+        event.stopPropagation();
+      }
+    }
+
+    const index = Math.max(focusedIndex.value, options.startIndex.value);
+
+    switch (event.key) {
+      case "ArrowUp":
+        handleSelectionClick(index - 1, event, false);
+        break;
+      case "ArrowDown":
+        handleSelectionClick(index + 1, event, false);
+        break;
+      case "Enter":
+        if (event[metaOrCtrl] && !options.singleSelectionOnly.value) {
+          ctrlClickItem(index);
+        }
+        break;
+      case "Space":
+        if (!options.singleSelectionOnly.value) {
+          ctrlClickItem(index);
+        }
+        break;
+    }
   };
 
   return {
@@ -92,6 +161,8 @@ export const useMultiSelection = (
     isMultipleSelectionActive,
     resetSelection,
     handleSelectionClick,
+    handleKeyboardNavigation,
+    focusedIndex,
     ctrlClickItem,
   };
 };

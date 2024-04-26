@@ -34,6 +34,13 @@ onMounted(() => {
   });
 
   intersectionObserver.observe(props.anchor.element);
+
+  if (shouldShowMenu.value) {
+    const focusableElement = menuWrapper.value?.querySelector(
+      '[tabindex="-1"]',
+    ) as HTMLElement;
+    focusableElement?.focus();
+  }
 });
 
 onUnmounted(() => {
@@ -166,7 +173,9 @@ onClickOutside(menuWrapper, closeMenu);
     >
       <MenuItems
         menu-aria-label="File explorer context menu"
+        register-keydown
         :items="items"
+        @close="closeMenu"
         @item-click="(_: MouseEvent, item: BaseMenuItem) => onItemClick(item)"
       />
     </slot>

@@ -95,8 +95,8 @@ describe("FileExplorer.vue", () => {
       isDirectory: false,
       isOpenableFile: false,
       isOpen: false,
-      canBeRenamed: true,
-      canBeDeleted: true,
+      canBeRenamed: false,
+      canBeDeleted: false,
     },
   ];
 
@@ -281,6 +281,129 @@ describe("FileExplorer.vue", () => {
         "selected",
       );
       expect(getRenderedItems(wrapper).at(5)?.classes()).toContain("selected");
+    });
+  });
+
+  describe("keyboard navigation", () => {
+    it("should allow navigating into directories with enter", () => {
+      const { wrapper } = doMount();
+
+      const allItems = getRenderedItems(wrapper);
+      allItems.at(0)?.trigger("keydown.enter");
+
+      expect(wrapper.emitted("changeDirectory")?.[0][0]).toBe(
+        MOCK_DATA.at(0)?.id,
+      );
+
+      allItems.at(3)?.trigger("keydown.enter");
+      expect(wrapper.emitted("changeDirectory")?.[1]).toBeUndefined();
+    });
+
+    it("should allow open file with enter", () => {
+      const { wrapper } = doMount();
+
+      const allItems = getRenderedItems(wrapper);
+      allItems.at(2)?.trigger("keydown.enter");
+
+      expect(wrapper.emitted("openFile")?.[0][0]).toMatchObject({
+        id: MOCK_DATA.at(2)?.id,
+      });
+    });
+
+    it("should select items on arrow up/down", async () => {
+      const { wrapper } = doMount();
+      wrapper.find("table").trigger("keydown", { key: "ArrowDown" });
+      wrapper.find("table").trigger("keydown", { key: "ArrowUp" });
+      await Vue.nextTick();
+      expect(getRenderedItems(wrapper).at(0)?.classes()).toContain("selected");
+      expect(wrapper.emitted("update:selectedItemIds")?.[0][0]).toStrictEqual([
+        "0",
+      ]);
+    });
+
+    it("should rename item on F2", async () => {
+      const renamedItemIndex = 0;
+      const { wrapper } = doMount();
+      const allItems = getRenderedItems(wrapper);
+      allItems.at(renamedItemIndex)?.trigger("keydown.f2");
+
+      const firstItemComponent = wrapper
+        .findAllComponents(FileExplorerItemComp)
+        .at(renamedItemIndex)!;
+
+      await Vue.nextTick();
+
+      expect(firstItemComponent.props("isRenameActive")).toBe(true);
+    });
+
+    it("should not rename item on F2 if now allowed", async () => {
+      const renamedItemIndex = 5;
+      const { wrapper } = doMount();
+      const allItems = getRenderedItems(wrapper);
+      allItems.at(renamedItemIndex)?.trigger("keydown.f2");
+
+      const firstItemComponent = wrapper
+        .findAllComponents(FileExplorerItemComp)
+        .at(renamedItemIndex)!;
+
+      await Vue.nextTick();
+
+      expect(firstItemComponent.props("isRenameActive")).toBe(false);
+    });
+
+    it("should delete items on DELETE key", async () => {
+      const renamedItemIndex = 0;
+      const { wrapper } = doMount();
+
+      // select some items
+      wrapper.find("table").trigger("keydown", { key: "ArrowDown" });
+      wrapper
+        .find("table")
+        .trigger("keydown", { key: "ArrowDown", shiftKey: true });
+      wrapper
+        .find("table")
+        .trigger("keydown", { key: "ArrowDown", shiftKey: true });
+
+      const allItems = getRenderedItems(wrapper);
+      allItems.at(renamedItemIndex)?.trigger("keydown.delete");
+
+      await Vue.nextTick();
+
+      const event = wrapper.emitted("deleteItems")?.[0][0] as {
+        items: Array<FileExplorerItem>;
+      };
+      const names = event.items.map(({ name }) => name);
+      expect(names).toStrictEqual(["Folder 2", "File 1", "File 2"]);
+    });
+
+    it("should not delete items on DELETE key if now allowed", async () => {
+      const renamedItemIndex = 0;
+      const { wrapper } = doMount();
+
+      // select all items (including index/id 5 which is now allowed to be deleted)
+      wrapper.find("table").trigger("keydown", { key: "ArrowDown" });
+      wrapper
+        .find("table")
+        .trigger("keydown", { key: "ArrowDown", shiftKey: true });
+      wrapper
+        .find("table")
+        .trigger("keydown", { key: "ArrowDown", shiftKey: true });
+      wrapper
+        .find("table")
+        .trigger("keydown", { key: "ArrowDown", shiftKey: true });
+      wrapper
+        .find("table")
+        .trigger("keydown", { key: "ArrowDown", shiftKey: true });
+      wrapper
+        .find("table")
+        .trigger("keydown", { key: "ArrowDown", shiftKey: true });
+
+      const allItems = getRenderedItems(wrapper);
+      allItems.at(renamedItemIndex)?.trigger("keydown.delete");
+
+      await Vue.nextTick();
+
+      expect(wrapper.emitted("deleteItems")).toBeUndefined();
     });
   });
 

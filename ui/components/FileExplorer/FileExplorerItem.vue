@@ -73,9 +73,15 @@ watch(isRenameActive, async (isActive) => {
   }
 });
 
+const baseItem = ref<InstanceType<typeof FileExplorerItemBase>>();
+const focusItem = () => {
+  // give back focus
+  baseItem.value?.$el.focus();
+};
 const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
   if (keyupEvent.key === "Escape") {
     emit("rename:clear");
+    focusItem();
   }
 
   if ((keyupEvent.key === "Enter" || isClickAway) && isValid.value) {
@@ -92,12 +98,14 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
       newName,
     });
     emit("rename:clear");
+    focusItem();
   }
 };
 </script>
 
 <template>
   <FileExplorerItemBase
+    ref="baseItem"
     class="file-explorer-item"
     :is-dragging="isDragging"
     :is-selected="isSelected"
@@ -140,6 +148,7 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
               title="rename"
               :is-valid="isValid"
               @keyup="onRenameSubmit($event)"
+              @keydown.stop
             />
             <div v-if="!isValid" class="item-error">
               <span>{{ errorMessage }}</span>
@@ -163,6 +172,14 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+  }
+
+  &:focus {
+    outline: none;
+
+    &.keyboard-focus {
+      @mixin focus-style;
+    }
   }
 
   & .item-error {
