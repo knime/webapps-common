@@ -45,7 +45,7 @@ import BaseMenuItems from "./BaseMenuItems.vue";
 import BaseMenuItem from "./BaseMenuItem.vue";
 import ArrowNextIcon from "../assets/img/icons/arrow-next.svg";
 
-export interface MenuItem {
+export interface MenuItem<TMetadata = any, TChildrenMetadata = TMetadata> {
   text: string;
   icon?: FunctionalComponent<SVGAttributes>;
   disabled?: boolean;
@@ -68,9 +68,9 @@ export interface MenuItem {
   /** shown aligned right besides the text */
   hotkeyText?: string;
   /** sub menu */
-  children?: Array<MenuItem>;
+  children?: Array<MenuItem<TChildrenMetadata>>;
   /** any typed field that can be used to put any data in the item by users of this component */
-  metadata?: any;
+  metadata?: TMetadata;
   /** If this field is set, the item will be displayed as a checkbox with initial state checkbox.checked, triggering
   checkbox.setBoolean on toggle */
   checkbox?: {

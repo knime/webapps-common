@@ -83,6 +83,7 @@ const demoComponents = {
     LocalDateTime: defineAsyncComponent(
       () => import("./components/LocalDateTime.vue"),
     ),
+    Pill: defineAsyncComponent(() => import("./components/Pill.vue")),
   },
   toasts: {
     "Toast Service": defineAsyncComponent(
