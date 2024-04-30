@@ -166,7 +166,7 @@ export default {
     }
 
     &:focus-visible {
-      @mixin focus-style;
+      @mixin focus-outline;
     }
 
     & svg {

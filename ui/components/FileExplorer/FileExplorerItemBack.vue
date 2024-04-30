@@ -48,7 +48,7 @@ export default defineComponent({
     outline: none;
 
     &.keyboard-focus {
-      @mixin focus-style;
+      @mixin focus-outline;
     }
   }
 

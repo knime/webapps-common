@@ -549,7 +549,7 @@ table:focus {
   outline: none;
 
   &.keyboard-focus {
-    @mixin focus-style;
+    @mixin focus-outline;
   }
 }
 

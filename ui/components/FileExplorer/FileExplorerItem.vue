@@ -178,7 +178,7 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
     outline: none;
 
     &.keyboard-focus {
-      @mixin focus-style;
+      @mixin focus-outline;
     }
   }
 

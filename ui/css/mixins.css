@@ -7,8 +7,8 @@
   @mixin-content;
 }
 
-@define-mixin focus-style $size: 2, $offset: -1 {
-  outline: calc($size * 1px) auto var(--knime-cornflower);
+@define-mixin focus-outline $size: 2, $offset: -1 {
+  outline: calc($size * 1px) auto var(--theme-color-focus-ring);
   outline-offset: calc($offset * 1px);
 
   @mixin-content;
