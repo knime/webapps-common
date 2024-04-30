@@ -146,7 +146,7 @@ export const useMultiSelection = (
           ctrlClickItem(index);
         }
         break;
-      case "Space":
+      case " " /* Space */:
         if (!options.singleSelectionOnly.value) {
           ctrlClickItem(index);
         }

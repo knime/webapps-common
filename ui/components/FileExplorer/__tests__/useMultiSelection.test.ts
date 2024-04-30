@@ -122,7 +122,7 @@ describe("useMultiSelection", () => {
       new KeyboardEvent("keydown", { key: "ArrowUp", ctrlKey: true }),
     );
     handleKeyboardNavigation(
-      new KeyboardEvent("keydown", { key: "Space", ctrlKey: true }),
+      new KeyboardEvent("keydown", { key: " " /* Space */, ctrlKey: true }),
     );
 
     expect(selectedIndexes.value).toStrictEqual([0, 2, 3]);
