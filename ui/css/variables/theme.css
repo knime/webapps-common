@@ -8,6 +8,7 @@
   --theme-color-kudos: hsl(339.1, 88.4%, 43.9%) /* #D30D52 */;
 
   --theme-color-error-semi: hsla(357.5, 71.6%, 45.5%, 0.2); /* #C72128 */
+  --theme-color-success-semi: hsl(127.5, 50%, 47.1%, 0.2); /* #3CB44B */
   --theme-color-action-required-semi: hsla(
     29.3,
     100%,
