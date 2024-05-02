@@ -348,8 +348,6 @@ export default {
 
 <style lang="postcss" scoped>
 .dialog {
-  --description-button-size: 15px;
-
   display: flex;
   flex-direction: column;
   justify-content: space-between;

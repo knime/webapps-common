@@ -57,9 +57,8 @@ const triggersReexecution = useTriggersReexecution(control);
   display: flex;
 
   & .checkbox {
+    min-width: 0;
     flex: 1;
-    width: calc(100% - var(--description-button-size) - 3px);
-    position: relative;
   }
 }
 

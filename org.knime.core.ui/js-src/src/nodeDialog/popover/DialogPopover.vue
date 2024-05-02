@@ -1,7 +1,14 @@
 <script setup lang="ts">
 import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
 import { computed, ref, toRef, watch, type Ref } from "vue";
-import { useFloating, shift, arrow, offset, flip } from "@floating-ui/vue";
+import {
+  useFloating,
+  shift,
+  arrow,
+  offset,
+  flip,
+  autoUpdate,
+} from "@floating-ui/vue";
 import type { Side, Placement } from "@floating-ui/vue";
 import useClickOutside from "webapps-common/ui/composables/useClickOutside";
 import type DialogPopoverProps from "./types/DialogPopoverProps";
@@ -57,6 +64,7 @@ useClickOutside(
 // configuration using floating-ui
 const { x, y, middlewareData, placement } = useFloating(referenceEl, floating, {
   placement: "top",
+  whileElementsMounted: autoUpdate,
   middleware: [
     /**
      * Clip the floating popover to the dialog (i.e. it reaches from its left to its right side no matter where the referenceEl lies)
