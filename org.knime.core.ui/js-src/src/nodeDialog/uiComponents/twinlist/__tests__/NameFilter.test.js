@@ -129,7 +129,7 @@ describe("NameFilter.vue", () => {
 
   it("passes default props", () => {
     const twinListProps = wrapper.getComponent(Twinlist).props();
-    expect(twinListProps.unknownValuesText).toBe("Any unknown values");
+    expect(twinListProps.unknownValuesText).toBe("Any unknown value");
     expect(twinListProps.emptyStateLabel).toBe("No values in this list");
     expect(twinListProps.modelValue).toStrictEqual({
       includedValues: ["test_1"],
