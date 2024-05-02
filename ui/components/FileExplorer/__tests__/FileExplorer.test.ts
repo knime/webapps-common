@@ -324,7 +324,14 @@ describe("FileExplorer.vue", () => {
     it("should rename item on F2", async () => {
       const renamedItemIndex = 0;
       const { wrapper } = doMount();
+
       const allItems = getRenderedItems(wrapper);
+
+      // select item
+      allItems.at(renamedItemIndex)?.trigger("click");
+      await Vue.nextTick();
+
+      // rename with keyboard
       allItems.at(renamedItemIndex)?.trigger("keydown.f2");
 
       const firstItemComponent = wrapper
@@ -835,7 +842,7 @@ describe("FileExplorer.vue", () => {
         const newName = "this is the new name";
         const itemElement = getRenderedItems(wrapper).at(renamedItemIndex)!;
         itemElement.find("input").setValue(newName);
-        itemElement.find("input").trigger("keyup", { key: "Enter" });
+        itemElement.find("input").trigger("keydown", { key: "Enter" });
 
         expect(wrapper.emitted("renameFile")?.[0][0]).toEqual({
           itemId: MOCK_DATA.at(0)?.id,
@@ -850,7 +857,7 @@ describe("FileExplorer.vue", () => {
         await triggerRename(wrapper, renamedItemIndex);
 
         const itemElement = getRenderedItems(wrapper).at(renamedItemIndex)!;
-        await itemElement.find("input").trigger("keyup", { key: "Escape" });
+        await itemElement.find("input").trigger("keydown", { key: "Escape" });
 
         const firstItemComponent = wrapper
           .findAllComponents(FileExplorerItemComp)

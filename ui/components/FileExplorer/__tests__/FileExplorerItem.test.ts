@@ -85,7 +85,7 @@ describe("FileExplorerItem.vue", () => {
       const { wrapper } = doMount({ props });
 
       wrapper.find("input").setValue('invalid [*?#:"<>%~|.] string');
-      await wrapper.find("input").trigger("keyup", { key: "Enter" });
+      await wrapper.find("input").trigger("keydown", { key: "Enter" });
 
       expect(wrapper.find(".item-error").exists()).toBe(true);
       expect(wrapper.findComponent(InputField).props("isValid")).toBe(false);
@@ -95,7 +95,7 @@ describe("FileExplorerItem.vue", () => {
       const { wrapper } = doMount({ props });
 
       wrapper.find("input").setValue("new name");
-      await wrapper.find("input").trigger("keyup", { key: "Enter" });
+      await wrapper.find("input").trigger("keydown", { key: "Enter" });
 
       expect(wrapper.emitted("rename:submit")![0][0]).toEqual({
         itemId: defaultProps.item.id,
@@ -108,7 +108,7 @@ describe("FileExplorerItem.vue", () => {
       const { wrapper } = doMount({ props });
 
       wrapper.find("input").setValue("");
-      await wrapper.find("input").trigger("keyup", { key: "Enter" });
+      await wrapper.find("input").trigger("keydown", { key: "Enter" });
 
       expect(wrapper.emitted("rename:submit")).toBeUndefined();
       expect(wrapper.emitted("rename:clear")).toBeDefined();
@@ -118,7 +118,7 @@ describe("FileExplorerItem.vue", () => {
       const { wrapper } = doMount({ props });
 
       wrapper.find("input").setValue(defaultProps.item.name);
-      await wrapper.find("input").trigger("keyup", { key: "Enter" });
+      await wrapper.find("input").trigger("keydown", { key: "Enter" });
 
       expect(wrapper.emitted("rename:submit")).toBeUndefined();
       expect(wrapper.emitted("rename:clear")).toBeDefined();
@@ -128,7 +128,7 @@ describe("FileExplorerItem.vue", () => {
       const { wrapper } = doMount({ props });
 
       wrapper.find("input").setValue("new name");
-      await wrapper.find("input").trigger("keyup", { key: "Escape" });
+      await wrapper.find("input").trigger("keydown", { key: "Escape" });
 
       expect(wrapper.emitted("rename:submit")).toBeUndefined();
       expect(wrapper.emitted("rename:clear")).toBeDefined();

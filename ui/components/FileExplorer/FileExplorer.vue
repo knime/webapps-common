@@ -189,6 +189,14 @@ watch(multiSelectionState, () => {
   emit("changeSelection", itemIds);
   emit("update:selectedItemIds", itemIds);
 });
+
+watch(toRef(props, "items"), (itemIds) => {
+  // reset selection and focus value if current focus is not possible anymore
+  if (focusedIndex.value >= itemIds.length) {
+    resetSelection(focusedIndex.value);
+  }
+});
+
 /** MULTISELECTION */
 
 /** RENAME */
@@ -260,6 +268,10 @@ const keyPressedUntilMouseClick = useKeyPressedUntilMouseClick([
   " ",
   "ArrowUp",
   "ArrowDown",
+  "PageUp",
+  "PageDown",
+  "End",
+  "Home",
 ]);
 
 const focusIndex = (index: number, updateState = true) => {
@@ -269,9 +281,10 @@ const focusIndex = (index: number, updateState = true) => {
     return;
   }
 
-  // focus item back if its the only thing
-  if (props.items.length === 0) {
-    itemBack.value?.$el.focus();
+  // focus item back if its the only thing we have
+  if (props.items.length === 0 && itemBack.value) {
+    itemBack.value.$el.focus();
+    return;
   }
 
   getItemElement(index)?.focus();
@@ -284,13 +297,14 @@ const handleFocusOnTable = (event: FocusEvent) => {
   if (table.value?.contains(event.relatedTarget as Node)) {
     return;
   }
-  focusIndex(0);
+  focusIndex(focusedIndex.value, false);
 };
 
-watch(focusedIndex, async (index) => {
-  // cancel rename on keyboard move
+watch(focusedIndex, async (index, oldIndex) => {
+  // block key navigation if rename is active
   if (renamedItemId.value) {
-    renamedItemId.value = null;
+    focusedIndex.value = oldIndex;
+    return;
   }
   await nextTick();
   focusIndex(index, false);
@@ -304,18 +318,20 @@ const contextMenuAnchor = ref<FileExplorerContextMenuNamespace.Anchor | null>(
   null,
 );
 
-const closeContextMenu = () => {
+const closeContextMenu = (focusLastItem = true) => {
   isContextMenuVisible.value = false;
   contextMenuAnchor.value = null;
   // focus element again where we left of
-  getItemElement(focusedIndex.value)?.focus();
+  if (focusLastItem) {
+    focusIndex(focusedIndex.value, false);
+  }
 };
 
 const { fullPath } = toRefs(props);
 watch(fullPath, async () => {
   resetSelection();
   closeContextMenu();
-  // call this here on path change to ensure something will be focused
+  // path change is equal to a directory change, focus the first element
   await nextTick();
   focusIndex(0);
 });
@@ -347,18 +363,24 @@ const openContextMenu = (
 };
 
 const deleteSelectedItems = () => {
+  const hasNoSelectedItems = selectedItems.value.length === 0;
   const hasNonDeletableItem = selectedItems.value.some(
     (item) => !item.canBeDeleted,
   );
-  if (hasNonDeletableItem) {
+  if (hasNonDeletableItem || hasNoSelectedItems) {
     return;
   }
   emit("deleteItems", { items: selectedItems.value });
+  resetSelection(focusedIndex.value);
+  focusIndex(focusedIndex.value, false);
 };
 
-const renameItem = (item: FileExplorerItemType) => {
-  // do not rename if multiple items are selected
-  if (item.canBeRenamed && selectedIndexes.value.length < 2) {
+const renameItem = (item: FileExplorerItemType, index: number) => {
+  if (item.canBeRenamed) {
+    // select item if its not selected
+    if (!isSelected(index)) {
+      handleSelectionClick(index);
+    }
     renamedItemId.value = item.id;
   }
 };
@@ -370,14 +392,16 @@ const onContextMenuItemClick = (
 
   if (isDelete) {
     deleteSelectedItems();
+    closeContextMenu(false);
+    return;
   }
 
   if (isRename) {
-    renameItem(anchorItem);
+    renamedItemId.value = anchorItem.id;
+    // rename will bring back focus from the input element to the outer tr (the item)
   }
 
-  resetSelection();
-  closeContextMenu();
+  closeContextMenu(false);
 };
 
 const onItemClick = (
@@ -389,7 +413,7 @@ const onItemClick = (
     handleSelectionClick(index, event);
   }
 
-  closeContextMenu();
+  closeContextMenu(false);
 };
 
 const openFileOrEnterFolder = (item: FileExplorerItemType) => {
@@ -413,7 +437,7 @@ const handleEnterKey = (event: KeyboardEvent, item: FileExplorerItemType) => {
 
 useClickOutside({
   targets: [table, toRef(props, "clickOutsideException")],
-  callback: resetSelection,
+  callback: () => resetSelection(focusedIndex.value),
 });
 </script>
 
@@ -477,7 +501,7 @@ useClickOutside({
         @drop="forwardEmit('moveItems', onDrop($event, index))"
         @dblclick="openFileOrEnterFolder(item)"
         @keydown.delete.stop.prevent="deleteSelectedItems"
-        @keydown.f2.stop.prevent="renameItem(item)"
+        @keydown.f2.stop.prevent="renameItem(item, index)"
         @keydown.enter.prevent="handleEnterKey($event, item)"
         @rename:submit="emit('renameFile', $event)"
         @rename:clear="renamedItemId = null"

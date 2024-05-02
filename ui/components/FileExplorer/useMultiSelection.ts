@@ -2,6 +2,7 @@ import { computed, ref, type ComputedRef, type Ref } from "vue";
 import * as multiSelectionService from "./multiSelectionStateService";
 import { getMetaOrCtrlKey } from "../../../util/navigator";
 
+const PAGE_SIZE = 15;
 const INVALID_INDEX = -100;
 
 type UseMultiSelectionOptions = {
@@ -15,7 +16,7 @@ export type UseMultiSelectionReturn = {
   isSelected: (index: number) => boolean;
   selectedIndexes: ComputedRef<Array<number>>;
   isMultipleSelectionActive: (index: number) => boolean;
-  resetSelection: () => void;
+  resetSelection: (focusIndex?: number) => void;
   handleSelectionClick: (index: number, event?: MouseEvent | null) => void;
   handleKeyboardNavigation: (event: KeyboardEvent | null) => void;
   ctrlClickItem: (index: number) => void;
@@ -45,7 +46,12 @@ export const useMultiSelection = (
     );
 
   const resetSelection = (focusIndex = 0) => {
-    focusedIndex.value = focusIndex;
+    // limit values with start and count-1
+    const lastIndex = options.numberOfItems.value - 1;
+    focusedIndex.value = Math.min(
+      Math.max(focusIndex, options.startIndex.value),
+      lastIndex,
+    );
     multiSelectionState.value = multiSelectionService.getInitialState();
   };
 
@@ -123,6 +129,10 @@ export const useMultiSelection = (
       " " /* Space */,
       "ArrowUp",
       "ArrowDown",
+      "PageUp",
+      "PageDown",
+      "End",
+      "Home",
     ].includes(event.key);
 
     if (isHandledKey) {
@@ -133,10 +143,27 @@ export const useMultiSelection = (
     }
 
     const index = Math.max(focusedIndex.value, options.startIndex.value);
+    const lastIndex = options.numberOfItems.value - 1;
 
     switch (event.key) {
       case "ArrowUp":
         handleSelectionClick(index - 1, event, false);
+        break;
+      case "PageUp":
+        handleSelectionClick(Math.max(index - PAGE_SIZE, 0), event, false);
+        break;
+      case "PageDown":
+        handleSelectionClick(
+          Math.min(index + PAGE_SIZE, lastIndex),
+          event,
+          false,
+        );
+        break;
+      case "End":
+        handleSelectionClick(lastIndex, event, false);
+        break;
+      case "Home":
+        handleSelectionClick(0, event, false);
         break;
       case "ArrowDown":
         handleSelectionClick(index + 1, event, false);
