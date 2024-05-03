@@ -12,7 +12,8 @@ import { createDefaultFilterConfig, arrayEquals } from "@/tableView/utils";
 import TableViewViewSettings, {
   AutoSizeColumnsToContent,
   PossiblyNonInitializedSettings,
-  isInitialized,
+  StatisticsDialogViewSettings,
+  parseOnViewSettingsChangeSettings,
 } from "./types/ViewSettings";
 import InitialData from "./types/InitialData";
 import type Table from "./types/Table";
@@ -827,10 +828,14 @@ export default {
     onViewSettingsChange({
       data: { view: newSettings },
     }: {
-      data: { view: PossiblyNonInitializedSettings };
+      data: {
+        view: PossiblyNonInitializedSettings | StatisticsDialogViewSettings;
+      };
     }) {
-      if (isInitialized(newSettings)) {
-        this.handleNewSettings(newSettings);
+      const tableViewViewSettings =
+        parseOnViewSettingsChangeSettings(newSettings);
+      if (tableViewViewSettings) {
+        this.handleNewSettings(tableViewViewSettings);
       }
     },
     async handleNewSettings(newSettings: TableViewViewSettings) {

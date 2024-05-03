@@ -45,10 +45,67 @@ export type PossiblyNonInitializedSettings = GenericTableViewViewSettings<
   string[] | undefined
 >;
 
-export const isInitialized = (
+const isInitialized = (
   newSettings: PossiblyNonInitializedSettings,
 ): newSettings is TableViewViewSettings => {
   return typeof newSettings.displayedColumns.selected !== "undefined";
 };
 
 export default TableViewViewSettings;
+
+/**
+ * TODO: Remove statistics logic from knime-core-ui. This could be achieved with UIEXT-1882.
+ */
+export type StatisticsDialogViewSettings = Pick<
+  TableViewViewSettings,
+  | "title"
+  | "showTableSize"
+  | "enablePagination"
+  | "pageSize"
+  | "autoSizeColumnsToContent"
+  | "enableGlobalSearch"
+  | "enableColumnSearch"
+  | "enableSortingByHeader"
+  | "enableCellCopying"
+> & {
+  displayedColumns: string[];
+};
+
+const isStatisticsSettings = (
+  data: StatisticsDialogViewSettings | PossiblyNonInitializedSettings,
+): data is StatisticsDialogViewSettings =>
+  !data.hasOwnProperty("selectionMode");
+
+const toTableViewSettings = (
+  statisticsDialogSettings: StatisticsDialogViewSettings,
+): TableViewViewSettings => ({
+  ...statisticsDialogSettings,
+  displayedColumns: { selected: statisticsDialogSettings.displayedColumns },
+  showColumnDataType: false,
+  showRowIndices: false,
+  showRowKeys: false,
+  title: "Statistics",
+  enablePagination: false,
+  pageSize: 10,
+  enableGlobalSearch: true,
+  enableColumnSearch: true,
+  enableSortingByHeader: true,
+  selectionMode: SelectionMode.OFF,
+  rowHeightMode: RowHeightMode.DEFAULT,
+  customRowHeight: 80,
+  enableRendererSelection: false,
+  showOnlySelectedRows: false,
+  showOnlySelectedRowsConfigurable: false,
+  skipRemainingColumns: false,
+});
+
+export const parseOnViewSettingsChangeSettings = (
+  settings: StatisticsDialogViewSettings | PossiblyNonInitializedSettings,
+) => {
+  if (isStatisticsSettings(settings)) {
+    return toTableViewSettings(settings);
+  } else if (isInitialized(settings)) {
+    return settings;
+  }
+  return null;
+};
