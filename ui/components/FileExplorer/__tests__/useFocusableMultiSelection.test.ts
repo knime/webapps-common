@@ -2,22 +2,22 @@
 import { describe, expect, it } from "vitest";
 import { ref } from "vue";
 
-import { useMultiSelection } from "../useMultiSelection";
+import { useFocusableMultiSelection } from "../useFocusableMultiSelection";
 
-describe("useMultiSelection", () => {
+describe("useFocusableMultiSelection", () => {
   it("should focus and select items on keyboard navigation", () => {
     const singleSelectionOnly = ref(false);
     const numberOfItems = ref(10);
     const startIndex = ref(-1);
 
     const { handleKeyboardNavigation, focusedIndex, selectedIndexes } =
-      useMultiSelection({
+      useFocusableMultiSelection({
         singleSelectionOnly,
         numberOfItems,
         startIndex,
       });
 
-    expect(focusedIndex.value).toBe(-100);
+    expect(focusedIndex.value).toBe(-Infinity);
 
     handleKeyboardNavigation(
       new KeyboardEvent("keydown", { key: "ArrowDown" }),
@@ -44,13 +44,13 @@ describe("useMultiSelection", () => {
     const startIndex = ref(-1);
 
     const { handleKeyboardNavigation, focusedIndex, selectedIndexes } =
-      useMultiSelection({
+      useFocusableMultiSelection({
         singleSelectionOnly,
         numberOfItems,
         startIndex,
       });
 
-    expect(focusedIndex.value).toBe(-100);
+    expect(focusedIndex.value).toBe(-Infinity);
 
     handleKeyboardNavigation(
       new KeyboardEvent("keydown", { key: "ArrowDown" }),
@@ -85,13 +85,13 @@ describe("useMultiSelection", () => {
     const startIndex = ref(-1);
 
     const { handleKeyboardNavigation, focusedIndex, selectedIndexes } =
-      useMultiSelection({
+      useFocusableMultiSelection({
         singleSelectionOnly,
         numberOfItems,
         startIndex,
       });
 
-    expect(focusedIndex.value).toBe(-100);
+    expect(focusedIndex.value).toBe(-Infinity);
 
     handleKeyboardNavigation(
       new KeyboardEvent("keydown", { key: "ArrowDown" }),
@@ -135,13 +135,13 @@ describe("useMultiSelection", () => {
     const startIndex = ref(-1);
 
     const { handleKeyboardNavigation, focusedIndex, selectedIndexes } =
-      useMultiSelection({
+      useFocusableMultiSelection({
         singleSelectionOnly,
         numberOfItems,
         startIndex,
       });
 
-    expect(focusedIndex.value).toBe(-100);
+    expect(focusedIndex.value).toBe(-Infinity);
 
     handleKeyboardNavigation(
       new KeyboardEvent("keydown", { key: "ArrowDown" }),
@@ -162,13 +162,13 @@ describe("useMultiSelection", () => {
     const startIndex = ref(-1);
 
     const { handleKeyboardNavigation, focusedIndex, selectedIndexes } =
-      useMultiSelection({
+      useFocusableMultiSelection({
         singleSelectionOnly,
         numberOfItems,
         startIndex,
       });
 
-    expect(focusedIndex.value).toBe(-100);
+    expect(focusedIndex.value).toBe(-Infinity);
 
     handleKeyboardNavigation(
       new KeyboardEvent("keydown", { key: "ArrowDown" }),

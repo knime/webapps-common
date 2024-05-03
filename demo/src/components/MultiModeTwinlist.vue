@@ -170,7 +170,7 @@ export default {
             right-label="The selected stuff"
             mode-label="Selection mode"
             @update:selected="
-              (newSelected) => {
+              (newSelected: any) => {
                 selected = newSelected;
               }
             "

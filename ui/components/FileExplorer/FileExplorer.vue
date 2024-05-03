@@ -2,7 +2,7 @@
 import { ref, toRefs, toRef, computed, watch, nextTick } from "vue";
 
 import { useItemDragging } from "./useItemDragging";
-import { useMultiSelection } from "./useMultiSelection";
+import { useFocusableMultiSelection } from "./useFocusableMultiSelection";
 import FileExplorerContextMenu from "./FileExplorerContextMenu.vue";
 import FileExplorerItem from "./FileExplorerItem.vue";
 import FileExplorerItemBack from "./FileExplorerItemBack.vue";
@@ -137,7 +137,7 @@ const itemBack = ref<{ $el: HTMLElement } | null>(null);
 const table = ref<null | HTMLElement>(null);
 
 /** MULTISELECTION */
-const multiSelection = useMultiSelection({
+const multiSelection = useFocusableMultiSelection({
   singleSelectionOnly: toRef(props, "disableMultiSelect"),
   numberOfItems: computed(() => props.items.length),
   startIndex: computed(() => (itemBack.value ? -1 : 0)),
@@ -530,7 +530,7 @@ useClickOutside({
       :anchor="contextMenuAnchor"
       :selected-items="selectedItems"
       @item-click="onContextMenuItemClick"
-      @close="closeContextMenu"
+      @close="() => closeContextMenu()"
     >
       <template #default="slotProps">
         <slot
@@ -538,7 +538,7 @@ useClickOutside({
           :is-context-menu-visible="isContextMenuVisible"
           :position="contextMenuPos"
           :anchor="contextMenuAnchor"
-          :close-context-menu="closeContextMenu"
+          :close-context-menu="() => closeContextMenu()"
           :is-multiple-selection-active="
             isMultipleSelectionActive(contextMenuAnchor.index)
           "
