@@ -1601,6 +1601,12 @@ describe("TableViewInteractive.vue", () => {
       });
     });
 
+    it("does not set selected columns to undefined on incoming undefined selected", async () => {
+      changeViewSetting(wrapper, "displayedColumns", { selected: undefined });
+      await flushPromises();
+      expect(wrapper.vm.settings.displayedColumns.selected).toBeDefined();
+    });
+
     describe("sort parameter update", () => {
       let sortColumn;
 

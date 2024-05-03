@@ -11,8 +11,8 @@ import TableViewDisplay from "./TableViewDisplay.vue";
 import { createDefaultFilterConfig, arrayEquals } from "@/tableView/utils";
 import TableViewViewSettings, {
   AutoSizeColumnsToContent,
-  PossiblyNonInitializedSettings,
-  StatisticsDialogViewSettings,
+  TableViewDialogSettings,
+  StatisticsViewDialogSettings,
   parseOnViewSettingsChangeSettings,
 } from "./types/ViewSettings";
 import InitialData from "./types/InitialData";
@@ -829,14 +829,14 @@ export default {
       data: { view: newSettings },
     }: {
       data: {
-        view: PossiblyNonInitializedSettings | StatisticsDialogViewSettings;
+        view: TableViewDialogSettings | StatisticsViewDialogSettings;
       };
     }) {
-      const tableViewViewSettings =
-        parseOnViewSettingsChangeSettings(newSettings);
-      if (tableViewViewSettings) {
-        this.handleNewSettings(tableViewViewSettings);
-      }
+      const tableViewViewSettings = parseOnViewSettingsChangeSettings(
+        newSettings,
+        this.settings.displayedColumns.selected,
+      );
+      this.handleNewSettings(tableViewViewSettings);
     },
     async handleNewSettings(newSettings: TableViewViewSettings) {
       const enablePaginationChanged = this.settingsChanged(

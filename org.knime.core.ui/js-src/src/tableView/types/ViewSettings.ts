@@ -41,22 +41,16 @@ type GenericTableViewViewSettings<T extends string[] | undefined> = {
 
 type TableViewViewSettings = GenericTableViewViewSettings<string[]>;
 
-export type PossiblyNonInitializedSettings = GenericTableViewViewSettings<
+export type TableViewDialogSettings = GenericTableViewViewSettings<
   string[] | undefined
 >;
-
-const isInitialized = (
-  newSettings: PossiblyNonInitializedSettings,
-): newSettings is TableViewViewSettings => {
-  return typeof newSettings.displayedColumns.selected !== "undefined";
-};
 
 export default TableViewViewSettings;
 
 /**
  * TODO: Remove statistics logic from knime-core-ui. This could be achieved with UIEXT-1882.
  */
-export type StatisticsDialogViewSettings = Omit<
+export type StatisticsViewDialogSettings = Omit<
   TableViewViewSettings,
   "displayedColumns"
 > & {
@@ -64,23 +58,26 @@ export type StatisticsDialogViewSettings = Omit<
 };
 
 const isStatisticsSettings = (
-  data: StatisticsDialogViewSettings | PossiblyNonInitializedSettings,
-): data is StatisticsDialogViewSettings => Array.isArray(data.displayedColumns);
+  data: StatisticsViewDialogSettings | TableViewDialogSettings,
+): data is StatisticsViewDialogSettings => Array.isArray(data.displayedColumns);
 
 const toTableViewSettings = (
-  statisticsDialogSettings: StatisticsDialogViewSettings,
+  statisticsDialogSettings: StatisticsViewDialogSettings,
 ): TableViewViewSettings => ({
   ...statisticsDialogSettings,
   displayedColumns: { selected: statisticsDialogSettings.displayedColumns },
 });
 
 export const parseOnViewSettingsChangeSettings = (
-  settings: StatisticsDialogViewSettings | PossiblyNonInitializedSettings,
-) => {
-  if (isStatisticsSettings(settings)) {
-    return toTableViewSettings(settings);
-  } else if (isInitialized(settings)) {
-    return settings;
+  dialogSettings: StatisticsViewDialogSettings | TableViewDialogSettings,
+  currentSelected: string[],
+): TableViewViewSettings => {
+  if (isStatisticsSettings(dialogSettings)) {
+    return toTableViewSettings(dialogSettings);
   }
-  return null;
+  const newSelected = dialogSettings.displayedColumns.selected;
+  return {
+    ...dialogSettings,
+    displayedColumns: { selected: newSelected ?? currentSelected },
+  };
 };
