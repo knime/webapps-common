@@ -63,6 +63,7 @@ export default {
       getFlowVariablesMap: () => this.schema.flowVariablesMap,
       setSubPanelExpanded: this.setSubPanelExpanded,
       getPanelsContainer: () => this.subPanels,
+      getDialogPopoverTeleportDest: () => this.dialogPopoverTeleportDest,
     } satisfies ProvidedMethods & ProvidedForFlowVariables;
   },
   setup() {
@@ -83,6 +84,7 @@ export default {
     });
     const { setRegisterSettingsMethod } = provideAndGetSetupMethod();
     const subPanels = ref<null | HTMLElement>(null);
+    const dialogPopoverTeleportDest = ref<null | HTMLElement>(null);
     return {
       getKnimeService,
       sendAlert,
@@ -96,6 +98,7 @@ export default {
       registeredWatchers,
       setRegisterSettingsMethod,
       subPanels,
+      dialogPopoverTeleportDest,
     };
   },
   data() {
@@ -326,6 +329,7 @@ export default {
   <div class="dialog">
     <div ref="subPanels" />
     <Form>
+      <div ref="dialogPopoverTeleportDest" class="popover-container" />
       <JsonForms
         v-if="ready"
         ref="jsonforms"
@@ -359,6 +363,11 @@ export default {
   */
   overflow-x: hidden;
   position: relative;
+
+  & .popover-container {
+    position: relative;
+    width: 100%;
+  }
 
   & .advanced-options {
     display: flex;

@@ -36,6 +36,9 @@ describe("FlowVariableButton.vue", () => {
           FlowVariablePopover: true,
           FlowVariableIcon: true,
         },
+        provide: {
+          getDialogPopoverTeleportDest: () => null,
+        },
       },
     });
   };
@@ -52,6 +55,7 @@ describe("FlowVariableButton.vue", () => {
     expect(wrapper.findComponent(DialogPopover).props()).toStrictEqual({
       ignoredClickOutsideTarget: null,
       tooltip: "Click to overwrite with or output as flow variable.",
+      popoverWidth: "380px",
     });
     expect(wrapper.findComponent(FlowVariableIcon).props()).toStrictEqual({
       show: false,

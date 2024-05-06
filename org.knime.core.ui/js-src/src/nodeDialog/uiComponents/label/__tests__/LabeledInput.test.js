@@ -34,7 +34,10 @@ describe("LabeledInput.vue", () => {
     mount(LabeledInput, {
       props,
       global: {
-        provide: { [providedByComponentKey]: { flowSettings } },
+        provide: {
+          [providedByComponentKey]: { flowSettings },
+          getDialogPopoverTeleportDest: () => null,
+        },
       },
     });
 

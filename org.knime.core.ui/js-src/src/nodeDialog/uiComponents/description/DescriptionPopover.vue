@@ -13,6 +13,7 @@ withDefaults(defineProps<DescriptionPopoverProps>(), {
 <template>
   <DialogPopover
     tooltip="Click for more information"
+    popover-width="max-content"
     :ignored-click-outside-target="ignoredClickOutsideTarget"
   >
     <template #icon="{ expanded, focused }">

@@ -15,6 +15,7 @@ import type DialogPopoverProps from "./types/DialogPopoverProps";
 import { FocusTrap } from "focus-trap-vue";
 import { tabbable } from "tabbable";
 import getDeepActiveElement from "@/utils/getDeepActiveElement";
+import inject from "../utils/inject";
 
 const props = withDefaults(defineProps<DialogPopoverProps>(), {
   ignoredClickOutsideTarget: null,
@@ -130,6 +131,8 @@ const onEscapeOnButton = (event: KeyboardEvent) => {
     focusButton();
   }
 };
+
+const teleportDest = inject("getDialogPopoverTeleportDest")();
 </script>
 
 <template>
@@ -149,27 +152,29 @@ const onEscapeOnButton = (event: KeyboardEvent) => {
       <slot name="icon" :expanded="expanded" :focused="buttonFocused" />
     </FunctionButton>
   </div>
-  <div
-    v-if="expanded"
-    ref="floating"
-    class="floating"
-    :style="{ left: `${x}px`, top: `${y}px` }"
-    @keydown.esc.stop="() => [close(), focusButton()]"
-  >
+  <Teleport :disabled="!teleportDest" :to="teleportDest">
     <div
-      ref="floatingArrow"
-      class="arrow"
-      :style="{
-        left: `${middlewareData.arrow?.x}px`,
-        [arrowSide]: '-4px',
-      }"
-    />
-    <FocusTrap ref="focusTrap" :fallback-focus="() => body" :active="false">
-      <div class="box">
-        <slot name="popover" :expanded="expanded" />
-      </div>
-    </FocusTrap>
-  </div>
+      v-if="expanded"
+      ref="floating"
+      class="floating"
+      :style="{ left: `${x}px`, top: `${y}px`, width: popoverWidth }"
+      @keydown.esc.stop="() => [close(), focusButton()]"
+    >
+      <div
+        ref="floatingArrow"
+        class="arrow"
+        :style="{
+          left: `${middlewareData.arrow?.x}px`,
+          [arrowSide]: '-4px',
+        }"
+      />
+      <FocusTrap ref="focusTrap" :fallback-focus="() => body" :active="false">
+        <div class="box">
+          <slot name="popover" :expanded="expanded" />
+        </div>
+      </FocusTrap>
+    </div>
+  </Teleport>
 </template>
 
 <style lang="postcss" scoped>
@@ -195,8 +200,8 @@ const onEscapeOnButton = (event: KeyboardEvent) => {
 
   position: absolute;
   z-index: 3;
-  background: "white";
-  width: calc(100% + 2 * var(--popover-oversize));
+  background: var(--knime-white);
+  max-width: calc(100% + 2 * var(--popover-oversize));
 
   & .arrow {
     --popover-arrow-size: 15px;

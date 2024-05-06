@@ -40,6 +40,7 @@ export const mountJsonFormsComponent = (
     settingStateControllingGetMock,
     settingStateExposedGetMock,
     getPanelsContainerMock,
+    getDialogPopoverTeleportDestMock,
   } = provide;
   const updateData =
     updateDataMock ||
@@ -53,6 +54,8 @@ export const mountJsonFormsComponent = (
     getFlowVariableOverrideValue: vi.fn(),
   };
   const getPanelsContainer = getPanelsContainerMock ?? vi.fn(() => "body");
+  const getDialogPopoverTeleportDest =
+    getDialogPopoverTeleportDestMock ?? vi.fn(() => "body");
   const flowVariablesMap = reactive(
     withControllingFlowVariable
       ? {
@@ -123,6 +126,7 @@ export const mountJsonFormsComponent = (
         flowVariablesApi,
         getFlowVariablesMap: () => flowVariablesMap,
         getPanelsContainer,
+        getDialogPopoverTeleportDest,
         setSubPanelExpanded: vi.fn(),
       },
       stubs: {

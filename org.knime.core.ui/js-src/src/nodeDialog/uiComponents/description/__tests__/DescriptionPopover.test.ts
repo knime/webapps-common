@@ -29,6 +29,11 @@ describe("DescriptionPopover.vue", () => {
   }) => {
     return mount(DescriptionPopover as any, {
       props,
+      global: {
+        provide: {
+          getDialogPopoverTeleportDest: () => null,
+        },
+      },
     });
   };
 
@@ -45,6 +50,7 @@ describe("DescriptionPopover.vue", () => {
     expect(wrapper.findComponent(DialogPopover).props()).toStrictEqual({
       ignoredClickOutsideTarget: null,
       tooltip: "Click for more information",
+      popoverWidth: "max-content",
     });
   });
 

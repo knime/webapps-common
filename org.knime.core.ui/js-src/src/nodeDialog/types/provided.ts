@@ -37,6 +37,7 @@ interface Provided {
   getData: getData;
   setSubPanelExpanded: (param: { isExpanded: boolean }) => void;
   getPanelsContainer: () => null | HTMLElement;
+  getDialogPopoverTeleportDest: () => null | HTMLElement;
 }
 
 type ProvidedFlowVariablesApi = {

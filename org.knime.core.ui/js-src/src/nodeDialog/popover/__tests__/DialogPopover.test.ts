@@ -32,6 +32,7 @@ describe("DescriptionPopover.vue", () => {
   beforeEach(() => {
     props = {
       tooltip: "tooltip",
+      popoverWidth: "max-content",
     };
   });
 
@@ -44,9 +45,11 @@ describe("DescriptionPopover.vue", () => {
   const mountDescriptionPopover = ({
     props,
     popoverElement,
+    dialogPopoverTeleportDest,
   }: {
     props: DialogPopoverProps;
     popoverElement?: string;
+    dialogPopoverTeleportDest?: HTMLElement;
   }): VueWrapper<any> => {
     return mount(DialogPopover as any, {
       props,
@@ -55,6 +58,11 @@ describe("DescriptionPopover.vue", () => {
         popover: popoverElement ?? `<div>${popoverContent}</div>`,
       },
       attachTo: document.body,
+      global: {
+        provide: {
+          getDialogPopoverTeleportDest: () => dialogPopoverTeleportDest,
+        },
+      },
     });
   };
 
@@ -323,6 +331,27 @@ describe("DescriptionPopover.vue", () => {
         expect(activateSpy).toHaveBeenCalled();
         expect(document.activeElement?.innerHTML).toBe("focus me");
       });
+    });
+  });
+
+  describe("teleportation of popover", () => {
+    it("does not teleport the popover in case the inject of dialogPopoverTeleportDest is undefined", async () => {
+      const wrapper = mountDescriptionPopover({ props });
+      await wrapper.find(".function-button").trigger("mouseup");
+      expect(wrapper.find(".floating").exists()).toBeTruthy();
+    });
+
+    it("does teleport the popover to the injected element", async () => {
+      const dialogPopoverTeleportDest = document.createElement("div");
+      const wrapper = mountDescriptionPopover({
+        props,
+        dialogPopoverTeleportDest,
+      });
+      await wrapper.find(".function-button").trigger("mouseup");
+      expect(wrapper.find(".floating").exists()).toBeFalsy();
+      expect(
+        (dialogPopoverTeleportDest.firstChild as HTMLElement).className,
+      ).toBe("floating");
     });
   });
 

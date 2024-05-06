@@ -25,7 +25,7 @@ const tooltip = computed(() => {
 </script>
 
 <template>
-  <DialogPopover :tooltip="tooltip">
+  <DialogPopover popover-width="380px" :tooltip="tooltip">
     <template #icon="{ expanded, focused }">
       <FlowVariableIcon
         :show="hover || expanded || focused"
