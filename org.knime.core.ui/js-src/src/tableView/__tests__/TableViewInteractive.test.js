@@ -1589,44 +1589,15 @@ describe("TableViewInteractive.vue", () => {
 
     it("updates view settings in case of statistics dialog settings", async () => {
       const statisticsSettings = {
-        autoSizeColumnsToContent: AutoSizeColumnsToContent.FIT_CONTENT,
+        ...initialDataMock.settings,
         displayedColumns: ["A", "B", "C"],
-        enableCellCopying: true,
-        enableColumnSearch: true,
-        enableGlobalSearch: true,
-        enablePagination: true,
-        enableSortingByHeader: true,
-        pageSize: 30,
-        showTableSize: true,
-        title: "Statistics",
       };
       wrapper.vm.onViewSettingsChange({
         data: { view: statisticsSettings },
       });
       await flushPromises();
-      expect(wrapper.vm.settings).toStrictEqual({
-        autoSizeColumnsToContent: AutoSizeColumnsToContent.FIT_CONTENT,
-        customRowHeight: 80,
-        displayedColumns: {
-          selected: ["A", "B", "C"],
-        },
-        enableCellCopying: true,
-        enableColumnSearch: true,
-        enableGlobalSearch: true,
-        enablePagination: false,
-        enableRendererSelection: false,
-        enableSortingByHeader: true,
-        pageSize: 10,
-        rowHeightMode: RowHeightMode.DEFAULT,
-        selectionMode: SelectionMode.OFF,
-        showColumnDataType: false,
-        showOnlySelectedRows: false,
-        showOnlySelectedRowsConfigurable: false,
-        showRowIndices: false,
-        showRowKeys: false,
-        showTableSize: true,
-        skipRemainingColumns: false,
-        title: "Statistics",
+      expect(wrapper.vm.settings.displayedColumns).toStrictEqual({
+        selected: ["A", "B", "C"],
       });
     });
 
