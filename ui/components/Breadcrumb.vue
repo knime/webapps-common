@@ -71,6 +71,10 @@ export default {
           :class="{ clickable: breadcrumbItem.clickable }"
           :role="breadcrumbItem.clickable ? 'button' : null"
           :title="breadcrumbItem.title"
+          :tabindex="breadcrumbItem.clickable ? 0 : null"
+          @keydown.enter.stop.prevent="
+            breadcrumbItem.clickable && $emit('click-item', breadcrumbItem)
+          "
           @click="
             breadcrumbItem.clickable && $emit('click-item', breadcrumbItem)
           "
@@ -89,6 +93,8 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
+@import url("../css/mixins.css");
+
 .breadcrumb {
   color: var(--knime-dove-gray);
   font-family: var(--theme-text-bold-font-family);
@@ -154,6 +160,14 @@ export default {
   /* Unlinked breadcrumb item */
   & span {
     color: var(--theme-text-bold-color);
+
+    &:focus {
+      outline: none;
+    }
+
+    &:focus-visible {
+      @mixin focus-outline;
+    }
 
     & svg {
       stroke: var(--theme-text-bold-color);

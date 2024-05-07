@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, toRefs, toRef, computed, watch } from "vue";
+import { ref, toRefs, toRef, computed, watch, nextTick } from "vue";
 
 import { useItemDragging } from "./useItemDragging";
-import { useMultiSelection } from "./useMultiSelection";
+import { useFocusableMultiSelection } from "./useFocusableMultiSelection";
 import FileExplorerContextMenu from "./FileExplorerContextMenu.vue";
 import FileExplorerItem from "./FileExplorerItem.vue";
 import FileExplorerItemBack from "./FileExplorerItemBack.vue";
@@ -12,6 +12,8 @@ import type {
   ItemIconRenderer,
 } from "./types";
 import useClickOutside from "../../composables/useClickOutside";
+import useKeyPressedUntilMouseClick from "../../composables/useKeyPressedUntilMouseClick";
+import { getMetaOrCtrlKey } from "../../../util/navigator";
 
 /**
  * Component that handles FileExplorer interactions.
@@ -125,19 +127,27 @@ const isDirectory = (item: FileExplorerItemType) => item.isDirectory;
 
 const canOpenFile = (item: FileExplorerItemType) => item.isOpenableFile;
 
-const changeDirectory = (pathId: string) => emit("changeDirectory", pathId);
+const changeDirectory = (pathId: string) => {
+  emit("changeDirectory", pathId);
+};
 
 /** Refs */
 const itemRefs = ref<{ $el: HTMLElement }[]>([]);
+const itemBack = ref<{ $el: HTMLElement } | null>(null);
+const table = ref<null | HTMLElement>(null);
 
 /** MULTISELECTION */
-const multiSelection = useMultiSelection({
+const multiSelection = useFocusableMultiSelection({
   singleSelectionOnly: toRef(props, "disableMultiSelect"),
+  numberOfItems: computed(() => props.items.length),
+  startIndex: computed(() => (itemBack.value ? -1 : 0)),
 });
 const {
   multiSelectionState,
   handleSelectionClick,
+  handleKeyboardNavigation,
   isSelected,
+  focusedIndex,
   selectedIndexes,
   isMultipleSelectionActive,
   resetSelection,
@@ -147,6 +157,10 @@ const {
 const selectedItems = computed(() =>
   selectedIndexes.value.map((index) => props.items[index]),
 );
+
+const getItemElement = (index: number) => {
+  return itemRefs.value[index]?.$el;
+};
 
 // handle selection of items via prop change
 watch(toRef(props, "selectedItemIds"), (itemIds) => {
@@ -175,6 +189,14 @@ watch(multiSelectionState, () => {
   emit("changeSelection", itemIds);
   emit("update:selectedItemIds", itemIds);
 });
+
+watch(toRef(props, "items"), (itemIds) => {
+  // reset selection and focus value if current focus is not possible anymore
+  if (focusedIndex.value >= itemIds.length) {
+    resetSelection(focusedIndex.value);
+  }
+});
+
 /** MULTISELECTION */
 
 /** RENAME */
@@ -191,7 +213,6 @@ watch(activeRenamedItemId, () => {
 /** RENAME */
 
 /** DRAGGING */
-const itemBack = ref<{ $el: HTMLElement } | null>(null);
 const customPreviewContainer = ref<HTMLElement | null>(null);
 const customDragPreviewPlaceholder = ref<HTMLElement | null>(null);
 
@@ -241,31 +262,97 @@ const forwardEmit = (
 };
 /** DRAGGING */
 
+/** KEYBOARD NAV */
+const keyPressedUntilMouseClick = useKeyPressedUntilMouseClick([
+  "Tab",
+  " ",
+  "ArrowUp",
+  "ArrowDown",
+  "PageUp",
+  "PageDown",
+  "End",
+  "Home",
+]);
+
+const focusIndex = (index: number, updateState = true) => {
+  // focus item back
+  if (index === -1) {
+    itemBack.value?.$el.focus();
+    return;
+  }
+
+  // focus item back if its the only thing we have
+  if (props.items.length === 0 && itemBack.value) {
+    itemBack.value.$el.focus();
+    return;
+  }
+
+  getItemElement(index)?.focus();
+  if (updateState) {
+    focusedIndex.value = index;
+  }
+};
+
+const handleFocusOnTable = (event: FocusEvent) => {
+  if (table.value?.contains(event.relatedTarget as Node)) {
+    return;
+  }
+  focusIndex(focusedIndex.value, false);
+};
+
+watch(focusedIndex, async (index, oldIndex) => {
+  // block key navigation if rename is active
+  if (renamedItemId.value) {
+    focusedIndex.value = oldIndex;
+    return;
+  }
+  await nextTick();
+  focusIndex(index, false);
+});
+
+/** KEYBOARD NAV */
+
 const isContextMenuVisible = ref(false);
 const contextMenuPos = ref({ x: 0, y: 0 });
 const contextMenuAnchor = ref<FileExplorerContextMenuNamespace.Anchor | null>(
   null,
 );
 
-const closeContextMenu = () => {
+const closeContextMenu = (focusLastItem = true) => {
   isContextMenuVisible.value = false;
   contextMenuAnchor.value = null;
+  // focus element again where we left of
+  if (focusLastItem) {
+    focusIndex(focusedIndex.value, false);
+  }
 };
 
 const { fullPath } = toRefs(props);
-watch(fullPath, () => {
+watch(fullPath, async () => {
   resetSelection();
   closeContextMenu();
+  // path change is equal to a directory change, focus the first element
+  await nextTick();
+  focusIndex(0);
 });
 
 const openContextMenu = (
-  event: MouseEvent,
+  event: MouseEvent | KeyboardEvent,
   clickedItem: FileExplorerItemType,
   index: number,
 ) => {
-  const element = itemRefs.value[index].$el;
-  contextMenuPos.value.x = event.clientX;
-  contextMenuPos.value.y = event.clientY;
+  const element = getItemElement(index);
+
+  if (event instanceof MouseEvent) {
+    contextMenuPos.value.x = event.clientX;
+    contextMenuPos.value.y = event.clientY;
+  } else {
+    const rect = element.getBoundingClientRect();
+    // eslint-disable-next-line no-magic-numbers
+    contextMenuPos.value.x = rect.x + rect.width * 0.8;
+    contextMenuPos.value.y = rect.y + rect.height / 2;
+  }
+
   contextMenuAnchor.value = { item: clickedItem, index, element };
 
   if (!isSelected(index)) {
@@ -275,21 +362,46 @@ const openContextMenu = (
   isContextMenuVisible.value = true;
 };
 
+const deleteSelectedItems = () => {
+  const hasNoSelectedItems = selectedItems.value.length === 0;
+  const hasNonDeletableItem = selectedItems.value.some(
+    (item) => !item.canBeDeleted,
+  );
+  if (hasNonDeletableItem || hasNoSelectedItems) {
+    return;
+  }
+  emit("deleteItems", { items: selectedItems.value });
+  resetSelection(focusedIndex.value);
+  focusIndex(focusedIndex.value, false);
+};
+
+const renameItem = (item: FileExplorerItemType, index: number) => {
+  if (item.canBeRenamed) {
+    // select item if its not selected
+    if (!isSelected(index)) {
+      handleSelectionClick(index);
+    }
+    renamedItemId.value = item.id;
+  }
+};
+
 const onContextMenuItemClick = (
   payload: FileExplorerContextMenuNamespace.ItemClickPayload,
 ) => {
   const { isDelete, isRename, anchorItem } = payload;
 
   if (isDelete) {
-    emit("deleteItems", { items: selectedItems.value });
+    deleteSelectedItems();
+    closeContextMenu(false);
+    return;
   }
 
   if (isRename) {
     renamedItemId.value = anchorItem.id;
+    // rename will bring back focus from the input element to the outer tr (the item)
   }
 
-  resetSelection();
-  closeContextMenu();
+  closeContextMenu(false);
 };
 
 const onItemClick = (
@@ -301,10 +413,10 @@ const onItemClick = (
     handleSelectionClick(index, event);
   }
 
-  closeContextMenu();
+  closeContextMenu(false);
 };
 
-const onItemDoubleClick = (item: FileExplorerItemType) => {
+const openFileOrEnterFolder = (item: FileExplorerItemType) => {
   if (isDirectory(item)) {
     changeDirectory(item.id);
     return;
@@ -315,15 +427,29 @@ const onItemDoubleClick = (item: FileExplorerItemType) => {
   }
 };
 
-const table = ref<null | HTMLElement>(null);
+const handleEnterKey = (event: KeyboardEvent, item: FileExplorerItemType) => {
+  const ctrlOrMeta = getMetaOrCtrlKey();
+  if (event[ctrlOrMeta]) {
+    return;
+  }
+  openFileOrEnterFolder(item);
+};
+
 useClickOutside({
   targets: [table, toRef(props, "clickOutsideException")],
-  callback: resetSelection,
+  callback: () => resetSelection(focusedIndex.value),
 });
 </script>
 
 <template>
-  <table ref="table" aria-label="Current workflow group in Space Explorer">
+  <table
+    ref="table"
+    tabindex="0"
+    :class="{ 'keyboard-focus': keyPressedUntilMouseClick }"
+    aria-label="list of files in the current folder"
+    @focus="handleFocusOnTable"
+    @keydown="handleKeyboardNavigation"
+  >
     <thead>
       <tr>
         <th scope="col">Type</th>
@@ -334,11 +460,16 @@ useClickOutside({
       <FileExplorerItemBack
         v-if="!isRootFolder"
         ref="itemBack"
+        tabindex="-1"
+        :class="{
+          'keyboard-focus': keyPressedUntilMouseClick,
+        }"
         :is-dragging="isDragging"
         @dragenter="onDragEnter($event, -1, true)"
         @dragleave="onDragLeave($event, -1, true)"
         @dragover="onDragOver"
         @drop.prevent="forwardEmit('moveItems', onDrop($event, -1, true))"
+        @keydown.enter.stop.prevent="changeDirectory('..')"
         @click="changeDirectory('..')"
       />
 
@@ -346,6 +477,10 @@ useClickOutside({
         v-for="(item, index) in items"
         :key="index"
         ref="itemRefs"
+        tabindex="-1"
+        :class="{
+          'keyboard-focus': keyPressedUntilMouseClick,
+        }"
         :item="item"
         :title="item.name"
         :is-dragging="isDragging"
@@ -362,8 +497,12 @@ useClickOutside({
         @drag="forwardEmit('drag', onDrag($event, item))"
         @click="onItemClick(item, $event, index)"
         @contextmenu="openContextMenu($event, item, index)"
+        @keydown.shift.f10="openContextMenu($event, item, index)"
         @drop="forwardEmit('moveItems', onDrop($event, index))"
-        @dblclick="onItemDoubleClick(item)"
+        @dblclick="openFileOrEnterFolder(item)"
+        @keydown.delete.stop.prevent="deleteSelectedItems"
+        @keydown.f2.stop.prevent="renameItem(item, index)"
+        @keydown.enter.prevent="handleEnterKey($event, item)"
         @rename:submit="emit('renameFile', $event)"
         @rename:clear="renamedItemId = null"
       />
@@ -391,7 +530,7 @@ useClickOutside({
       :anchor="contextMenuAnchor"
       :selected-items="selectedItems"
       @item-click="onContextMenuItemClick"
-      @close="closeContextMenu"
+      @close="() => closeContextMenu()"
     >
       <template #default="slotProps">
         <slot
@@ -399,7 +538,7 @@ useClickOutside({
           :is-context-menu-visible="isContextMenuVisible"
           :position="contextMenuPos"
           :anchor="contextMenuAnchor"
-          :close-context-menu="closeContextMenu"
+          :close-context-menu="() => closeContextMenu()"
           :is-multiple-selection-active="
             isMultipleSelectionActive(contextMenuAnchor.index)
           "
@@ -411,6 +550,8 @@ useClickOutside({
 </template>
 
 <style lang="postcss" scoped>
+@import url("../../css/mixins.css");
+
 thead {
   /* Hide table head for better readability but keeping it for a11y reasons */
   position: absolute;
@@ -426,6 +567,14 @@ tbody {
   display: block;
   width: 100%;
   border-spacing: 0;
+}
+
+table:focus {
+  outline: none;
+
+  &.keyboard-focus {
+    @mixin focus-outline;
+  }
 }
 
 .empty {

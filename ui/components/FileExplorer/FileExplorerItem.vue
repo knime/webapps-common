@@ -73,9 +73,16 @@ watch(isRenameActive, async (isActive) => {
   }
 });
 
+const baseItem = ref<InstanceType<typeof FileExplorerItemBase>>();
+const focusItem = async () => {
+  await nextTick();
+  // give back focus
+  baseItem.value?.$el.focus();
+};
 const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
   if (keyupEvent.key === "Escape") {
     emit("rename:clear");
+    focusItem();
   }
 
   if ((keyupEvent.key === "Enter" || isClickAway) && isValid.value) {
@@ -84,6 +91,7 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
 
     if (newName === "" || isSameName) {
       emit("rename:clear");
+      focusItem();
       return;
     }
 
@@ -92,12 +100,14 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
       newName,
     });
     emit("rename:clear");
+    focusItem();
   }
 };
 </script>
 
 <template>
   <FileExplorerItemBase
+    ref="baseItem"
     class="file-explorer-item"
     :is-dragging="isDragging"
     :is-selected="isSelected"
@@ -139,7 +149,7 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
               type="text"
               title="rename"
               :is-valid="isValid"
-              @keyup="onRenameSubmit($event)"
+              @keydown.stop="onRenameSubmit($event)"
             />
             <div v-if="!isValid" class="item-error">
               <span>{{ errorMessage }}</span>
@@ -163,6 +173,14 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+  }
+
+  &:focus {
+    outline: none;
+
+    &.keyboard-focus {
+      @mixin focus-outline;
+    }
   }
 
   & .item-error {

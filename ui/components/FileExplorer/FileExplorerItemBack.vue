@@ -35,12 +35,22 @@ export default defineComponent({
 </template>
 
 <style lang="postcss" scoped>
+@import url("../../css/mixins.css");
+
 .hidden {
   display: none;
 }
 
 .file-explorer-item-back {
   cursor: pointer;
+
+  &:focus {
+    outline: none;
+
+    &.keyboard-focus {
+      @mixin focus-outline;
+    }
+  }
 
   & .arrow-icon {
     stroke: var(--knime-dove-gray);

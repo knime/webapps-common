@@ -50,7 +50,7 @@ const items = [
   },
   {
     id: "3",
-    name: "File 2",
+    name: "File 2 (openable)",
     meta: {
       type: "Workflow",
     },
@@ -189,6 +189,9 @@ const onRename = (item: object) => {
 const onDelete = (item: object) => {
   window.alert(`You deleted: >> ${JSON.stringify(item)}`);
 };
+const onOpenFile = (item: object) => {
+  window.alert(`You opened: >> ${JSON.stringify(item)}`);
+};
 </script>
 
 <template>
@@ -309,6 +312,7 @@ const onDelete = (item: object) => {
           :dragging-animation-mode="draggingAnimationMode"
           :is-root-folder="false"
           :active-renamed-item-id="activeRenamedItemId"
+          @open-file="onOpenFile"
           @drag="onDrag"
           @rename-file="onRename"
           @delete-items="onDelete"

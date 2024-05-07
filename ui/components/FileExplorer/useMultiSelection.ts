@@ -1,11 +1,8 @@
 import { computed, ref, type ComputedRef, type Ref } from "vue";
 import * as multiSelectionService from "./multiSelectionStateService";
+import { getMetaOrCtrlKey } from "../../../util/navigator";
 
-const isMac = () => navigator?.userAgent?.toLowerCase()?.includes("mac");
-
-export const getMetaOrCtrlKey = () => (isMac() ? "metaKey" : "ctrlKey");
-
-type UseMultiSelectionOptions = {
+export type UseMultiSelectionOptions = {
   singleSelectionOnly: Ref<boolean>;
 };
 
