@@ -2,7 +2,7 @@
 import CodeExample from "./demo/CodeExample.vue";
 import MultiModeTwinlist from "webapps-common/ui/components/forms/MultiModeTwinlist.vue";
 import code from "webapps-common/ui/components/forms/MultiModeTwinlist.vue?raw";
-import type { PossibleValue } from "../../../ui/composables/types";
+
 const codeExample = `<MultiModeTwinlist
   :size="7"
   show-mode
@@ -59,17 +59,26 @@ export default {
   data() {
     return {
       codeExample,
-      selected: [] as PossibleValue[],
+      selected: [],
+      withMissing: ["missing"],
       manualSelection: {
-        includedValues: ["missing", "spec1", "spec2"],
+        includedValues: ["missing"],
         excludedValues: [
-          "also missing",
           "foo",
           "Channel Name",
           "Reservation AOV",
+          "baz0",
+          "baz1",
+          "baz2",
+          "baz3",
+          "baz4",
+          "baz5",
+          "spec1",
+          "spec2",
         ],
-        includeUnknownValues: true,
+        includeUnknownValues: false,
       },
+      manualSelection2: [],
       isCaseSensitivePattern: true,
       isInverted: false,
       mode: "regex",
@@ -170,19 +179,18 @@ export default {
             right-label="The selected stuff"
             mode-label="Selection mode"
             @update:selected="
-              (newSelected: PossibleValue[]) => {
+              (newSelected: any) => {
                 selected = newSelected;
               }
             "
           />
         </div>
         <div class="grid-item-6">
-          selected ids: {{ selected }}
           <template v-if="mode === 'manual'">
             <br />
-            <span> left: {{ manualSelection.excludedValues }} </span>
+            <span> selected ids: {{ manualSelection.includedValues }} </span>
             <br />
-            <span> right: {{ manualSelection.includedValues }} </span>
+            <span> deselected ids: {{ manualSelection.excludedValues }} </span>
           </template>
         </div>
       </div>
@@ -219,6 +227,7 @@ export default {
         <div class="grid-item-6">
           <MultiModeTwinlist
             :key="key"
+            v-model:manualSelection="manualSelection2"
             :size="7"
             show-mode
             :with-mode-label="true"

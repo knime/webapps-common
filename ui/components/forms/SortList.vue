@@ -6,8 +6,7 @@ import ArrowDownIcon from "../../assets/img/icons/arrow-down.svg";
 import ArrowUpIcon from "../../assets/img/icons/arrow-up.svg";
 import ArrowDownloadIcon from "../../assets/img/icons/arrow-download.svg";
 import FunctionButton from "../FunctionButton.vue";
-import createMissingItem from "./possibleValues/createMissingItem";
-import type { PossibleValue } from "./possibleValues/PossibleValue";
+import { createMissingItem, type PossibleValue } from "./possibleValues";
 import { formatHotkeys } from "../../../util/formatHotkeys";
 import type { Hotkey } from "../../../util/formatHotkeys";
 

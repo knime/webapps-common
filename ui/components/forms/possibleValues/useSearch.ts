@@ -1,12 +1,12 @@
 import { computed, type Ref } from "vue";
-import { filters } from "../../util/filters";
-import type { PossibleValue } from "./types";
+import { filters } from "../../../../util/filters";
+import { type PossibleValue } from "./types";
 
-export default function useSearch(
-  searchTerm: Ref<string>,
+export const useSearch = (
+  searchTerm: Ref<string | null>,
   caseSensitiveSearch: Ref<boolean>,
-  allValues: Ref<PossibleValue[]>,
-) {
+  allValues: Ref<PossibleValue[] | null>,
+): PossibleValue[] => {
   const normalizedSearchTerm = computed(() => {
     if (!searchTerm.value) {
       return "";
@@ -16,6 +16,7 @@ export default function useSearch(
       caseSensitiveSearch.value,
     );
   });
+
   const itemMatchesSearch = (item: PossibleValue) => {
     return filters.search.test(
       item.text,
@@ -25,12 +26,8 @@ export default function useSearch(
     );
   };
 
-  const filteredValues = computed((): PossibleValue[] => {
-    if (allValues.value === null) {
-      return [];
-    }
-    return allValues.value.filter((value) => itemMatchesSearch(value));
-  });
-
-  return { filteredValues };
-}
+  // filtered values
+  return allValues.value
+    ? allValues.value.filter((value) => itemMatchesSearch(value))
+    : [];
+};

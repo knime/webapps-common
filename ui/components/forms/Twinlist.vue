@@ -7,18 +7,14 @@ import ArrowNextIcon from "../../assets/img/icons/arrow-next.svg";
 import ArrowNextDoubleIcon from "../../assets/img/icons/arrow-next-double.svg";
 import ArrowPrevIcon from "../../assets/img/icons/arrow-prev.svg";
 import ArrowPrevDoubleIcon from "../../assets/img/icons/arrow-prev-double.svg";
+import { computed, ref, toRef, type PropType, type Ref } from "vue";
 import {
-  computed,
-  ref,
-  toRef,
-  type PropType,
-  type Ref,
-  type ComputedRef,
-} from "vue";
-import type { Id, PossibleValue } from "./possibleValues/PossibleValue";
-import createMissingItem from "./possibleValues/createMissingItem";
-import useSearch from "../../composables/useSearch";
-import useLabelInfoForSearchableWidgets from "../../composables/useLabelInfoForSearchableWidgets";
+  useSearch,
+  useLabelInfo,
+  createMissingItem,
+  type Id,
+  type PossibleValue,
+} from "./possibleValues";
 
 const KEY_ENTER = "Enter";
 const MIN_LIST_SIZE = 5;
@@ -89,10 +85,10 @@ const useTwinlistModelValue = (modelValue: Ref<TwinlistModelValue>) => {
   const includeUnknownValues = computed(
     () => splitModelValue.value.withUnknownValues?.includeUnknownValues ?? null,
   );
-  const showUnknownValuesLeft = computed(
+  const showUnknownExcludedValues = computed(
     () => includeUnknownValues.value === false,
   );
-  const showUnknownValuesRight = computed(
+  const showUnknownIncludedValues = computed(
     () => includeUnknownValues.value === true,
   );
 
@@ -118,8 +114,8 @@ const useTwinlistModelValue = (modelValue: Ref<TwinlistModelValue>) => {
   return {
     includedValues,
     excludedValues,
-    showUnknownValuesLeft,
-    showUnknownValuesRight,
+    showUnknownExcludedValues,
+    showUnknownIncludedValues,
     getEmitValue,
   };
 };
@@ -266,8 +262,8 @@ export default {
     const {
       includedValues,
       excludedValues,
-      showUnknownValuesLeft,
-      showUnknownValuesRight,
+      showUnknownExcludedValues,
+      showUnknownIncludedValues,
       getEmitValue,
     } = useTwinlistModelValue(toRef(props, "modelValue"));
 
@@ -283,11 +279,11 @@ export default {
       return new Set(possibleValueIds.value);
     });
 
-    const knownChosenValues = computed(() => {
+    const knownIncludedValues = computed(() => {
       if (!includedValues.value) {
         return null;
       }
-      if (showUnknownValuesRight.value) {
+      if (showUnknownIncludedValues.value) {
         return includedValues.value.filter((id) =>
           possibleValueIdsSet.value.has(id),
         );
@@ -301,37 +297,35 @@ export default {
         ...possibleValues.value.map((obj: PossibleValue, index) => ({
           [obj.id]: { item: obj, index },
         })),
-      );
+      ) as Record<Id, { item: PossibleValue; index: number }>;
     });
 
-    const rightItems = computed(() => {
-      if (knownChosenValues.value === null) {
+    const allIncludedItems = computed(() => {
+      if (knownIncludedValues.value === null) {
         return [];
       }
-      return knownChosenValues.value.map(
+      return knownIncludedValues.value.map(
         (value) =>
-          possibleValueMap.value[value]?.item || createMissingItem(value),
+          (possibleValueMap.value[value]?.item as PossibleValue) ||
+          createMissingItem(value),
       );
     });
 
-    const right: ComputedRef<PossibleValue[]> = computed(() => {
+    const filteredIncludedItems = computed(() => {
       if (!props.showSearch) {
-        return rightItems.value;
+        return allIncludedItems.value;
       }
-      const { filteredValues: filteredRightItems } = useSearch(
-        searchTerm,
-        caseSensitiveSearch,
-        rightItems,
-      );
-      return filteredRightItems.value;
+      return useSearch(searchTerm, caseSensitiveSearch, allIncludedItems);
     });
 
     const knownExcludedValues = computed(() => {
       if (!excludedValues.value) {
-        const chosenValuesSet = new Set(includedValues.value);
-        return possibleValueIds.value.filter((id) => !chosenValuesSet.has(id));
+        const includedValuesSet = new Set(includedValues.value);
+        return possibleValueIds.value.filter(
+          (id) => !includedValuesSet.has(id),
+        );
       }
-      if (showUnknownValuesLeft.value) {
+      if (showUnknownExcludedValues.value) {
         return excludedValues.value.filter((id) =>
           possibleValueIdsSet.value.has(id),
         );
@@ -339,26 +333,23 @@ export default {
       return excludedValues.value;
     });
 
-    const leftItems = computed(() => {
-      if (knownChosenValues.value === null) {
+    const allExcludedItems = computed(() => {
+      if (knownIncludedValues.value === null) {
         return [];
       }
       return knownExcludedValues.value.map(
         (value) =>
-          possibleValueMap.value[value]?.item || createMissingItem(value),
+          (possibleValueMap.value[value]?.item as PossibleValue) ||
+          createMissingItem(value),
       );
     });
 
-    const left: ComputedRef<PossibleValue[]> = computed(() => {
+    const filteredExcludedItems = computed(() => {
       if (!props.showSearch) {
-        return leftItems.value;
+        return allExcludedItems.value;
       }
-      const { filteredValues: filteredLeftItems } = useSearch(
-        searchTerm,
-        caseSensitiveSearch,
-        leftItems,
-      );
-      return filteredLeftItems.value;
+
+      return useSearch(searchTerm, caseSensitiveSearch, allExcludedItems);
     });
 
     const hasActiveSearch = computed(() => {
@@ -370,7 +361,7 @@ export default {
         return null;
       }
       return hasActiveSearch.value
-        ? useLabelInfoForSearchableWidgets(left, knownExcludedValues).value
+        ? useLabelInfo(filteredExcludedItems, knownExcludedValues.value.length)
         : null;
     });
 
@@ -379,26 +370,31 @@ export default {
         return null;
       }
       return hasActiveSearch.value
-        ? useLabelInfoForSearchableWidgets(right, knownChosenValues).value
+        ? useLabelInfo(
+            filteredIncludedItems,
+            knownIncludedValues.value?.length as number,
+          )
         : null;
     });
 
     return {
       includedValues,
       excludedValues,
-      showUnknownValuesLeft,
-      showUnknownValuesRight,
+      showUnknownExcludedValues,
+      showUnknownIncludedValues,
       getEmitValue,
       searchTerm,
-      left,
-      right,
+      filteredExcludedItems,
+      filteredIncludedItems,
       knownExcludedValues,
-      knownChosenValues,
+      knownIncludedValues,
       possibleValueIds,
       possibleValueIdsSet,
       excludedLabels,
       includedLabels,
       caseSensitiveSearch,
+      allIncludedItems,
+      possibleValueMap,
     };
   },
   data() {
@@ -410,14 +406,6 @@ export default {
     };
   },
   computed: {
-    possibleValueMap() {
-      return Object.assign(
-        {},
-        ...this.possibleValues.map((obj: PossibleValue, index) => ({
-          [obj.id]: { item: obj, index },
-        })),
-      ) as Record<Id, { item: PossibleValue; index: number }>;
-    },
     listSize() {
       // fixed size even when showing all to prevent height jumping when moving items between lists
       const size = this.size === 0 ? this.possibleValues.length : this.size;
@@ -425,13 +413,19 @@ export default {
       return size > MIN_LIST_SIZE ? size : MIN_LIST_SIZE;
     },
     moveAllRightButtonDisabled() {
-      return this.left.length === 0 && !this.showUnknownValuesLeft;
+      return (
+        this.filteredExcludedItems.length === 0 &&
+        !this.showUnknownExcludedValues
+      );
     },
     moveRightButtonDisabled() {
       return this.leftSelected.length === 0;
     },
     moveAllLeftButtonDisabled() {
-      return this.right.length === 0 && !this.showUnknownValuesRight;
+      return (
+        this.filteredIncludedItems.length === 0 &&
+        !this.showUnknownIncludedValues
+      );
     },
     moveLeftButtonDisabled() {
       return this.rightSelected.length === 0;
@@ -552,10 +546,10 @@ export default {
       this.moveRight();
     },
     onMoveAllRightButtonClick() {
-      const leftItemsIds = this.left.map((x) => x.id);
+      const excludedItemIds = this.filteredExcludedItems.map((x) => x.id);
       this.moveRight(
-        leftItemsIds.concat(
-          this.showUnknownValuesLeft ? [this.unknownValuesId] : [],
+        excludedItemIds.concat(
+          this.showUnknownExcludedValues ? [this.unknownValuesId] : [],
         ),
       );
     },
@@ -575,10 +569,10 @@ export default {
       this.moveLeft();
     },
     onMoveAllLeftButtonClick() {
-      const rightItemIds = this.right.map((x) => x.id);
+      const includedItemIds = this.filteredIncludedItems.map((x) => x.id);
       this.moveLeft(
-        rightItemIds.concat(
-          this.showUnknownValuesRight ? [this.unknownValuesId] : [],
+        includedItemIds.concat(
+          this.showUnknownIncludedValues ? [this.unknownValuesId] : [],
         ),
       );
     },
@@ -630,8 +624,9 @@ export default {
     },
     validate() {
       let isValid =
-        !this.right.some((x) => x.invalid) &&
-        (!this.excludedValues || !this.left.some((x) => x.invalid));
+        !this.filteredIncludedItems.some((x) => x.invalid) &&
+        (!this.excludedValues ||
+          !this.filteredExcludedItems.some((x) => x.invalid));
       return {
         isValid,
         errorMessage: isValid
@@ -697,10 +692,10 @@ export default {
         :size="listSize"
         class="list-box"
         :model-value="leftSelected"
-        :with-bottom-value="showUnknownValuesLeft"
+        :with-bottom-value="showUnknownExcludedValues"
         :bottom-value="{ id: unknownValuesId, text: unknownValuesText }"
         :is-valid="isValid"
-        :possible-values="left"
+        :possible-values="filteredExcludedItems"
         :ariaLabel="leftLabel"
         :disabled="disabled"
         @double-click-on-item="onLeftListBoxDoubleClick"
@@ -757,12 +752,12 @@ export default {
         class="list-box"
         :class="{ 'with-empty-state-icon': emptyStateComponent }"
         :model-value="rightSelected"
-        :with-bottom-value="showUnknownValuesRight"
+        :with-bottom-value="showUnknownIncludedValues"
         :bottom-value="{ id: unknownValuesId, text: unknownValuesText }"
         :with-is-empty-state="showEmptyState"
         :empty-state-label="emptyStateLabel"
         :empty-state-component="emptyStateComponent"
-        :possible-values="right"
+        :possible-values="filteredIncludedItems"
         :size="listSize"
         :ariaLabel="rightLabel"
         :disabled="disabled"
@@ -919,4 +914,3 @@ export default {
   }
 }
 </style>
-../../composables/useLabelInfoForSearchableWidgets

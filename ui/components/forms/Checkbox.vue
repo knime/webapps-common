@@ -17,6 +17,10 @@ export default {
       default: false,
       type: Boolean,
     },
+    invalid: {
+      type: Boolean,
+      default: false,
+    },
     /**
      * Controls the size of the label
      * supported values:
@@ -55,7 +59,7 @@ export default {
 </script>
 
 <template>
-  <label :class="classes">
+  <label :class="[classes, { invalid }]">
     <input
       :id="id"
       ref="input"
@@ -81,6 +85,11 @@ export default {
   padding: 3px 0 3px 24px;
   max-width: 100%;
   cursor: pointer;
+
+  /* invalid value */
+  &.invalid {
+    color: var(--theme-color-error);
+  }
 
   &.disabled {
     cursor: initial;

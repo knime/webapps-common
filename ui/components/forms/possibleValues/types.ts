@@ -4,7 +4,7 @@ export interface PossibleValue {
   id: Id;
   text: string;
   invalid?: boolean;
-  special?: boolean;
+  special?: true;
 }
 
 export type BottomValue = {

@@ -88,6 +88,7 @@ export default {
       disabledSelected: [],
       selected2: [],
       disabledSelected2: [],
+      withMissing: ["foo", "I am missing", "bar"],
       bottomValueSymbol: Symbol("bottom value"),
     };
   },
@@ -124,8 +125,6 @@ export default {
             :size="4"
             aria-label="Select stuff here!"
             :show-search="true"
-            left-label="Select from the visible items"
-            right-label="The selected stuff"
             search-label="Search items"
             search-placeholder="Placeholder"
             :with-search-label="true"
@@ -169,7 +168,7 @@ export default {
             v-model="selected2"
             :size="4"
             aria-label="Select stuff here!"
-            with-bottom-value="true"
+            :with-bottom-value="true"
             :show-search="true"
             :bottom-value="{
               id: bottomValueSymbol,
@@ -263,9 +262,53 @@ export default {
             disabled
           />
         </div>
-        <div class="grid-item-6">selected ids: {{ disabledSelected2 }}</div>
       </div>
       <br />
+      <div class="grid-container">
+        <div class="grid-item-6">
+          <SearchableList
+            v-model="withMissing"
+            :size="4"
+            aria-label="Disabled..."
+            :show-search="true"
+            :possible-values="[
+              {
+                id: 'foo',
+                text: 'Foo',
+              },
+              {
+                id: 'bar',
+                text: 'Bar',
+              },
+              {
+                id: 'baz',
+                text: 'Baz',
+              },
+              {
+                id: 'baz2',
+                text: 'Baz 2',
+              },
+              {
+                id: 'baz3',
+                text: 'Baz 3',
+              },
+              {
+                id: 'baz4',
+                text: 'Baz 4',
+              },
+              {
+                id: 'baz5',
+                text: 'Baz 5',
+              },
+              {
+                id: 'baz6',
+                text: 'Baz 6',
+              },
+            ]"
+          />
+        </div>
+        <div class="grid-item-6">selected ids: {{ withMissing }}</div>
+      </div>
     </section>
     <section>
       <div class="grid-container">

@@ -26,6 +26,7 @@ export default {
     return {
       codeExample,
       selected: ["bar", "baz"],
+      withMissing: ["bar", "missing"],
     };
   },
   computed: {

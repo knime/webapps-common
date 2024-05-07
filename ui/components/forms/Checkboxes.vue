@@ -1,6 +1,5 @@
 <script>
 import Checkbox from "../forms/Checkbox.vue";
-
 export default {
   components: {
     Checkbox,
@@ -43,6 +42,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    isValid: {
+      default: true,
+      type: Boolean,
+    },
     /**
      * selected value (which is a list of ids of entries)
      */
@@ -53,6 +56,15 @@ export default {
   },
   emits: ["update:modelValue"],
   methods: {
+    validate() {
+      let isValid = !this.possibleValues.some((x) => x.invalid);
+      return {
+        isValid,
+        errorMessage: isValid
+          ? null
+          : "One or more of the selected items is invalid.",
+      };
+    },
     onUpdateModelValue(value, toggled) {
       let checkedValue = Array.from(this.modelValue);
       if (toggled) {
@@ -91,6 +103,7 @@ export default {
       :key="`checkboxes-${item.id}`"
       :model-value="modelValue.indexOf(item.id) > -1"
       :title="item.text"
+      :invalid="item.invalid"
       :disabled="disabled"
       class="box"
       @update:model-value="onUpdateModelValue(item.id, $event)"

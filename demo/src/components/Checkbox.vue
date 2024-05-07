@@ -19,6 +19,7 @@ export default {
     return {
       codeExample,
       selected: false,
+      selectedMissing: true,
       selectedLarge: false,
     };
   },
@@ -54,10 +55,15 @@ export default {
           <Checkbox v-model="selected" disabled>
             This checkbox is disabled!
           </Checkbox>
+          <br />
+          <Checkbox v-model="selectedMissing" invalid disabled>
+            This checkbox is invalid!
+          </Checkbox>
         </div>
         <div class="grid-item-6">
           value: {{ selected }}<br />
-          value: {{ selectedLarge }}
+          value: {{ selectedLarge }} <br /><br /><br />
+          value: {{ selectedMissing }}
         </div>
       </div>
     </section>

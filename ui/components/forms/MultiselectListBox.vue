@@ -4,9 +4,8 @@ import debounce from "../../../util/debounce";
 import StyledListItem from "../StyledListItem.vue";
 import { useVirtualList } from "@vueuse/core";
 import { toRef, watch } from "vue";
-import type { Id, PossibleValue, BottomValue } from "../../composables/types";
-
-import type { PropType, HTMLAttributes } from "vue";
+import type { Id, PossibleValue, BottomValue } from "./possibleValues";
+import type { PropType } from "vue";
 
 let count = 0;
 const CLICK_META_KEY_TIMEOUT = 250; // ms
@@ -168,9 +167,6 @@ export default {
     };
   },
   computed: {
-    getContainerProps() {
-      return this.containerProps as HTMLAttributes;
-    },
     cssStyleSize() {
       // add two pixel to prevent scrollbar bugs
       const pxSize = `${this.size * this.optionLineHeight + 2}px`;
@@ -402,23 +398,29 @@ export default {
       if (this.currentKeyNavIndex === this.bottomIndex) {
         return;
       }
-      this.scrollIntoView();
+      this.scrollIntoView(this.currentKeyNavIndex);
     },
-    scrollIntoView() {
+    scrollIntoView(index: number, mode = "auto") {
       if (!this.containerProps.ref.value) {
         return;
       }
       const listBoxNode = this.containerProps.ref.value;
-      if (listBoxNode) {
-        if (listBoxNode.scrollHeight > listBoxNode.clientHeight) {
-          const scrollBottom = listBoxNode.clientHeight + listBoxNode.scrollTop;
-          const elementTop = this.currentKeyNavIndex * this.optionLineHeight;
-          const elementBottom = elementTop + this.optionLineHeight;
-          if (elementBottom > scrollBottom) {
-            listBoxNode.scrollTop = elementBottom - listBoxNode.clientHeight;
-          } else if (elementTop < listBoxNode.scrollTop) {
-            listBoxNode.scrollTop = elementTop;
-          }
+      if (listBoxNode.scrollHeight > listBoxNode.clientHeight) {
+        const scrollBottom = listBoxNode.clientHeight + listBoxNode.scrollTop;
+        const elementTop = index * this.optionLineHeight;
+        const elementBottom = elementTop + this.optionLineHeight;
+        const elementIsAboveScreen = elementTop < listBoxNode.scrollTop;
+        const elementIsBelowScreen = elementBottom > scrollBottom;
+        if (!(elementIsBelowScreen || elementIsAboveScreen)) {
+          return;
+        }
+        const scrollToTopEdge =
+          mode === "up" || (mode === "auto" && elementIsAboveScreen);
+
+        if (scrollToTopEdge) {
+          listBoxNode.scrollTop = elementTop;
+        } else {
+          listBoxNode.scrollTop = elementBottom - listBoxNode.clientHeight;
         }
       }
     },
@@ -572,7 +574,7 @@ export default {
   >
     <div class="box">
       <ul
-        v-bind="getContainerProps"
+        v-bind="containerProps"
         :id="id"
         role="listbox"
         tabindex="0"

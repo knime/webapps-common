@@ -3,13 +3,17 @@ import Label from "./Label.vue";
 import SearchInput from "../forms/SearchInput.vue";
 import Checkboxes from "../forms/Checkboxes.vue";
 import { ref, computed } from "vue";
-import type { ComputedRef, PropType } from "vue";
-import type { Id, PossibleValue } from "../../composables/types";
-import useSearch from "../../composables/useSearch";
-import useLabelInfoForSearchableWidgets from "../../composables/useLabelInfoForSearchableWidgets";
+import type { PropType, Ref } from "vue";
+import {
+  useSearch,
+  useLabelInfo,
+  type Id,
+  type PossibleValue,
+  createMissingItem,
+} from "./possibleValues";
 
 const MIN_LIST_SIZE = 5;
-const DEF_PIX_SIZE = 22;
+const DEF_PIX_SIZE = 28;
 
 export default {
   components: { Label, SearchInput, Checkboxes },
@@ -65,7 +69,7 @@ export default {
 
     size: {
       type: Number,
-      default: 3,
+      default: 5,
       validator(value: number) {
         return value >= 0;
       },
@@ -134,7 +138,7 @@ export default {
   emits: ["update:modelValue"],
   setup(props) {
     const possibleValues = ref(props.possibleValues);
-    const chosenValues = ref(props.modelValue);
+    const selectedValues = ref(props.modelValue);
     const searchTerm = ref(props.initialSearchTerm);
     const caseSensitiveSearch = ref(props.initialCaseSensitiveSearch);
 
@@ -144,40 +148,49 @@ export default {
         ...possibleValues.value.map((obj: PossibleValue, index) => ({
           [obj.id]: { item: obj, index },
         })),
+      ) as Record<Id, { item: PossibleValue; index: number }>;
+    });
+
+    const matchingValidIds = computed(() => {
+      return possibleValues.value.map(
+        (possibleValue) =>
+          possibleValueMap.value[possibleValue.id]?.item as PossibleValue,
       );
     });
 
-    const matchingValidIds: ComputedRef<PossibleValue[]> = computed(() => {
-      return possibleValues.value?.map(
-        (possibleValue: PossibleValue) =>
-          possibleValueMap.value[possibleValue.id]?.item,
+    const invalidValueIds = computed(() => {
+      if (!selectedValues.value) {
+        return [];
+      }
+      return selectedValues.value?.filter(
+        (x: Id) => !possibleValueMap.value[x],
       );
     });
+
+    const matchingInvalidValueIds = computed(() => {
+      return invalidValueIds.value?.map((item: Id) => createMissingItem(item));
+    });
+
+    const visibleValues = computed(() => {
+      if (selectedValues.value === null) {
+        return [];
+      }
+      return [...matchingInvalidValueIds.value, ...matchingValidIds.value];
+    });
+
     const allItems = computed(() => {
       if (!props.showSearch) {
-        return matchingValidIds.value;
+        return visibleValues.value;
       }
-
-      const { filteredValues: firstArr } = useSearch(
-        searchTerm,
-        caseSensitiveSearch,
-        matchingValidIds,
-      );
-      return firstArr.value;
-    });
-    const visibleValueIds = computed(() => {
-      if (chosenValues.value === null) {
-        return new Set();
-      }
-      return new Set([...allItems.value]);
+      return useSearch(searchTerm, caseSensitiveSearch, visibleValues);
     });
 
     const concatenatedItems = computed(() => {
-      if (visibleValueIds.value.size === 0) {
+      if (allItems.value.length === 0) {
         return [];
       }
-      return possibleValues.value.filter((value: PossibleValue) =>
-        visibleValueIds.value.has(value),
+      return allItems.value.filter((value: PossibleValue) =>
+        visibleValues.value.includes(value),
       );
     });
 
@@ -185,37 +198,35 @@ export default {
       return props.showSearch && searchTerm.value !== "";
     });
 
-    const numAllLists = computed(() => {
-      return possibleValues.value?.length;
-    });
-
     const numMatchedSearchedItems = computed(() => {
       const filteredList = concatenatedItems.value.filter(
         (item: { text: string }) =>
-          item.text.toLowerCase().includes(searchTerm.value),
+          item.text.toLowerCase().includes(searchTerm.value.toLowerCase()),
       );
       return filteredList;
     });
 
     const numLabelInfos = computed(() => {
       if (!props.showSearch) {
-        return `[ ${chosenValues.value?.length} selected ]`;
+        return `[ ${selectedValues.value?.length} selected ]`;
       }
       return hasActiveSearch.value
-        ? useLabelInfoForSearchableWidgets(
+        ? useLabelInfo(
             numMatchedSearchedItems,
-            chosenValues,
-            numAllLists.value,
-          ).value
-        : `[ ${chosenValues.value?.length} selected ]`;
+            matchingValidIds.value.length,
+            selectedValues as Ref<Id[]>,
+          )
+        : `[ ${selectedValues.value?.length} selected ]`;
     });
-
     return {
-      chosenValues,
+      selectedValues,
       searchTerm,
+      visibleValues,
       concatenatedItems,
       caseSensitiveSearch,
       numLabelInfos,
+      matchingInvalidValueIds,
+      allItems,
     };
   },
 
@@ -224,13 +235,14 @@ export default {
       return this.concatenatedItems.length === 0;
     },
     listSize() {
-      const size = this.size === 0 ? this.possibleValues.length : this.size;
-
-      return size > MIN_LIST_SIZE ? size : MIN_LIST_SIZE;
+      if (this.possibleValues.length >= MIN_LIST_SIZE) {
+        const size = this.size === 0 ? this.possibleValues.length : this.size;
+        return size > MIN_LIST_SIZE ? size : MIN_LIST_SIZE;
+      }
+      return this.size;
     },
     cssStyleSize() {
       const pixSize = `${this.listSize * DEF_PIX_SIZE + 2}px`;
-
       return this.listSize > 0 ? { height: pixSize } : {};
     },
     returnContainerRef() {
@@ -245,48 +257,36 @@ export default {
       return { height: "auto" };
     },
   },
-  watch: {
-    possibleValues(newPossibleValues: PossibleValue[]) {
-      if (this.filterChosenValuesOnPossibleValuesChange) {
-        // Required to prevent invalid values from appearing (e.g. missing b/c of upstream filtering)
-        const allValues = newPossibleValues.reduce((arr, valObj) => {
-          arr.push(...Object.values(valObj));
-          return arr;
-        }, [] as Id[]);
-        // Reset chosenValues as subset of original to prevent re-execution from resetting value
-        this.chosenValues = (this.chosenValues ?? []).filter((item) =>
-          allValues.includes(item),
-        );
-      }
-    },
-    chosenValues(newVal: Id[], oldVal: Id[] | null) {
-      if (
-        oldVal === null ||
-        newVal.length !== oldVal.length ||
-        oldVal.some((item, i) => item !== newVal[i])
-      ) {
-        // emit modelValue after changes in possibleValues
-        this.$emit("update:modelValue", this.chosenValues);
-      }
-    },
-  },
   methods: {
     onSearchInput(value: string) {
       this.searchTerm = value;
     },
     onChange(newVal: Id[]) {
       this.$emit("update:modelValue", newVal);
-      this.chosenValues = newVal;
+      this.selectedValues = newVal;
     },
     hasSelection() {
-      return (this.chosenValues?.length ?? 0) > 0;
+      return (this.selectedValues?.length ?? 0) > 0;
     },
 
     handleMouseIn() {
-      this.returnContainerRef.style.overflow = "auto";
+      if (!this.disabled && this.size >= MIN_LIST_SIZE) {
+        this.returnContainerRef.style.overflow = "auto";
+      }
     },
     handleMouseLeave() {
       this.returnContainerRef.style.overflow = "hidden";
+    },
+    validate() {
+      let isValid = !this.concatenatedItems.some(
+        (x: PossibleValue) => x.invalid,
+      );
+      return {
+        isValid,
+        errorMessage: isValid
+          ? null
+          : "One or more of the selected items is invalid.",
+      };
     },
   },
 };
@@ -325,7 +325,7 @@ export default {
     ref="div"
     class="container"
     :class="{ disabled, 'empty-box': withIsEmptyState }"
-    :style="allignmentCheck"
+    :style="[allignmentCheck, cssStyleSize]"
     @mouseenter="handleMouseIn"
     @mouseleave="handleMouseLeave"
   >
@@ -339,7 +339,6 @@ export default {
       :possible-values="concatenatedItems"
       :is-valid="isValid"
       :disabled="disabled"
-      :show-search="true"
       @update:model-value="onChange"
     />
     <div
@@ -409,4 +408,3 @@ export default {
   }
 }
 </style>
-../../composables/useLabelInfoForSearchableWidgets

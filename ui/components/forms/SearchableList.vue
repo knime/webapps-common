@@ -3,11 +3,15 @@ import MultiselectListBox from "../forms/MultiselectListBox.vue";
 import Label from "./Label.vue";
 import SearchInput from "../forms/SearchInput.vue";
 import { ref, computed } from "vue";
-import useSearch from "../../composables/useSearch";
-import type { ComputedRef, PropType } from "vue";
-import type { Id, PossibleValue, BottomValue } from "../../composables/types";
-import createMissingItem from "./possibleValues/createMissingItem";
-import useLabelInfoForSearchableWidgets from "../../composables/useLabelInfoForSearchableWidgets";
+import type { PropType, Ref } from "vue";
+import {
+  useSearch,
+  useLabelInfo,
+  createMissingItem,
+  type Id,
+  type PossibleValue,
+  type BottomValue,
+} from "./possibleValues";
 
 const MIN_LIST_SIZE = 5;
 
@@ -126,11 +130,17 @@ export default {
       default: true,
       required: false,
     },
+
+    unknownValuesText: {
+      type: String,
+      required: false,
+      default: "Unknown values",
+    },
   },
   emits: ["update:modelValue"],
   setup(props) {
     const possibleValues = ref(props.possibleValues);
-    const chosenValues = ref(props.modelValue);
+    const selectedValues = ref(props.modelValue);
     const searchTerm = ref(props.initialSearchTerm);
     const caseSensitiveSearch = ref(props.initialCaseSensitiveSearch);
 
@@ -140,50 +150,48 @@ export default {
         ...possibleValues.value.map((obj: PossibleValue, index) => ({
           [obj.id]: { item: obj, index },
         })),
-      );
+      ) as Record<Id, { item: PossibleValue; index: number }>;
     });
 
-    const matchingValidIds: ComputedRef<PossibleValue[]> = computed(() => {
+    const matchingValidIds = computed(() => {
       return possibleValues.value.map(
-        (possibleValue: PossibleValue) =>
-          possibleValueMap.value[possibleValue.id]?.item ||
-          createMissingItem(possibleValue.id),
+        (possibleValue) =>
+          possibleValueMap.value[possibleValue.id]?.item as PossibleValue,
       );
     });
-
     const invalidValueIds = computed(() => {
-      if (chosenValues.value === null) {
+      if (!selectedValues.value) {
         return [];
       }
-      return chosenValues.value.filter((x: Id) => !possibleValueMap.value[x]);
+      return selectedValues.value?.filter(
+        (x: Id) => !possibleValueMap.value[x],
+      );
+    });
+
+    const matchingInvalidValueIds = computed(() => {
+      return invalidValueIds.value?.map((item: Id) => createMissingItem(item));
+    });
+
+    const visibleValues = computed(() => {
+      if (selectedValues.value === null) {
+        return [];
+      }
+      return [...matchingInvalidValueIds.value, ...matchingValidIds.value];
     });
 
     const allItems = computed(() => {
       if (!props.showSearch) {
-        return matchingValidIds.value;
+        return visibleValues.value;
       }
-
-      const { filteredValues: firstArr } = useSearch(
-        searchTerm,
-        caseSensitiveSearch,
-        matchingValidIds,
-      );
-      return firstArr.value;
-    });
-
-    const visibleValueIds = computed(() => {
-      if (chosenValues.value === null) {
-        return new Set();
-      }
-      return new Set([...allItems.value]);
+      return useSearch(searchTerm, caseSensitiveSearch, visibleValues);
     });
 
     const concatenatedItems = computed(() => {
-      if (visibleValueIds.value.size === 0) {
+      if (allItems.value.length === 0) {
         return [];
       }
-      return possibleValues.value.filter((value: PossibleValue) =>
-        visibleValueIds.value.has(value),
+      return allItems.value.filter((value: PossibleValue) =>
+        visibleValues.value.includes(value),
       );
     });
 
@@ -191,40 +199,39 @@ export default {
       return props.showSearch && searchTerm.value !== "";
     });
 
-    const numAllLists = computed(() => {
-      return possibleValues.value.length;
-    });
-
     const numMatchedSearchedItems = computed(() => {
       const filteredList = concatenatedItems.value.filter(
         (item: { text: string }) =>
-          item.text.toLowerCase().includes(searchTerm.value),
+          item.text.toLowerCase().includes(searchTerm.value.toLowerCase()),
       );
       return filteredList;
     });
 
     const numLabelInfos = computed(() => {
       if (!props.showSearch) {
-        return `[ ${chosenValues.value?.length} selected ]`;
+        return `[ ${selectedValues.value?.length} selected ]`;
       }
       return hasActiveSearch.value
-        ? useLabelInfoForSearchableWidgets(
+        ? useLabelInfo(
             numMatchedSearchedItems,
-            chosenValues,
-            numAllLists.value,
-          ).value
-        : `[ ${chosenValues.value?.length} selected ]`;
+            matchingValidIds.value.length,
+            selectedValues as Ref<Id[]>,
+          )
+        : `[ ${selectedValues.value?.length} selected ]`;
     });
 
     return {
       concatenatedItems,
-      visibleValueIds,
-      chosenValues,
+      visibleValues,
+      selectedValues,
       searchTerm,
       matchingValidIds,
       caseSensitiveSearch,
       invalidValueIds,
+      matchingInvalidValueIds,
       numLabelInfos,
+      numMatchedSearchedItems,
+      possibleValueMap,
     };
   },
   computed: {
@@ -243,30 +250,29 @@ export default {
           arr.push(...Object.values(valObj));
           return arr;
         }, [] as Id[]);
-        // Reset chosenValues as subset of original to prevent re-execution from resetting value
-        this.chosenValues = (this.chosenValues ?? []).filter((item) =>
+
+        // Reset selectedValues as subset of original to prevent re-execution from resetting value
+        this.selectedValues = (this.selectedValues ?? []).filter((item) =>
           allValues.includes(item),
         );
       }
     },
-    chosenValues(newVal: Id[], oldVal: Id[] | null) {
+    selectedValues(newVal: Id[], oldVal: Id[] | null) {
       if (
         oldVal === null ||
-        newVal.length !== oldVal.length ||
+        newVal?.length !== oldVal.length ||
         oldVal.some((item, i) => item !== newVal[i])
       ) {
-        // emit modelValue after changes in possibleValues
-        this.$emit("update:modelValue", this.chosenValues);
+        this.$emit("update:modelValue", this.selectedValues);
       }
     },
   },
   methods: {
     hasSelection() {
-      return (this.chosenValues?.length ?? 0) > 0;
+      return (this.selectedValues?.length ?? 0) > 0;
     },
     onChange(newVal: Id[]) {
-      this.$emit("update:modelValue", newVal);
-      this.chosenValues = newVal;
+      this.selectedValues = newVal;
     },
     onSearchInput(value: string) {
       this.searchTerm = value;

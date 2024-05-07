@@ -1,7 +1,7 @@
 // Use this method to reduce many method calls to a few.
 // It's an 'immediate' implementation, so it will call the callback once immediately an then again after the given wait.
 
-import type { Id } from "../ui/composables/types";
+import type { Id } from "../ui//components/forms/possibleValues";
 
 type CallbackFunc = (value: Id, index: number) => void;
 

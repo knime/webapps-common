@@ -91,6 +91,7 @@ export default {
       },
       selectedUnknown: [],
       selectedSearchLabel: [],
+      selected2: [],
       loadingIconRef: markRaw(LoadingIcon),
     };
   },
@@ -239,7 +240,7 @@ export default {
         <div class="grid-item-6">
           <Twinlist
             v-model="withMissing"
-            show-unknown-values
+            :show-unknown-values="true"
             :size="7"
             show-search
             left-label="Select from the visible items"
@@ -264,7 +265,7 @@ export default {
             v-model="withUnknownValues"
             :size="7"
             show-search
-            show-unknown-values
+            :show-unknown-values="true"
             unknown-values-text="My unknowns"
             left-label="Select from the visible items"
             right-label="The selected stuff"
@@ -303,11 +304,11 @@ export default {
       <div class="grid-container">
         <div class="grid-item-6">
           <Twinlist
-            :model-value="[]"
+            v-model="selected2"
             :size="7"
-            :possible-values="demoValues"
             left-label="Select from the visible items"
             right-label="The selected stuff"
+            :possible-values="demoValues"
             :empty-state-component="loadingIconRef"
           />
         </div>

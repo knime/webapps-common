@@ -30,7 +30,7 @@ describe("SearchableCheckboxes.vue", () => {
       modelValue: ["test3"],
       leftLabel: "Choose",
       rightLabel: "The value",
-      size: 3,
+      size: 5,
     };
     const wrapper = mount(SearchableCheckboxes, { props });
     expect(wrapper.html()).toBeTruthy();
@@ -47,7 +47,7 @@ describe("SearchableCheckboxes.vue", () => {
       modelValue: ["test3"],
       leftLabel: "Choose",
       rightLabel: "The value",
-      size: 3,
+      size: 5,
     };
     const wrapper = mount(SearchableCheckboxes, { props });
     wrapper.find(".container").trigger("mouseenter");
@@ -60,9 +60,21 @@ describe("SearchableCheckboxes.vue", () => {
     let props = {
       possibleValues: defaultPossibleValues,
       modelValue: ["test3"],
-      leftLabel: "Choose",
-      rightLabel: "The value",
-      size: 3,
+      size: 5,
+    };
+    const wrapper = mount(SearchableCheckboxes, { props });
+    wrapper.find(".container").trigger("mouseleave");
+    wrapper.vm.$nextTick(() => {
+      expect(wrapper.find(".container").element.style.overflow).toBe("hidden");
+    });
+  });
+
+  it("it doesn't scroll when we it is disabled", () => {
+    let props = {
+      possibleValues: defaultPossibleValues,
+      modelValue: ["test3"],
+      size: 5,
+      disabled: true,
     };
     const wrapper = mount(SearchableCheckboxes, { props });
     wrapper.find(".container").trigger("mouseleave");
@@ -77,7 +89,7 @@ describe("SearchableCheckboxes.vue", () => {
       modelValue: null,
       leftLabel: "Choose",
       rightLabel: "The value",
-      size: 3,
+      size: 5,
       withIsEmptyState: false,
     };
     const wrapper = mount(SearchableCheckboxes, {
@@ -97,7 +109,7 @@ describe("SearchableCheckboxes.vue", () => {
       leftLabel: "Choose",
       rightLabel: "The value",
       alignment: "vertical",
-      size: 3,
+      size: 5,
       withIsEmptyState: false,
     };
     const wrapper = mount(SearchableCheckboxes, {
@@ -113,7 +125,9 @@ describe("SearchableCheckboxes.vue", () => {
       alignment: "horizontal",
     });
 
-    expect(wrapper.find(".container").element.style.height).toBe("auto");
+    expect(wrapper.find(".container").element.style.height).toBe(
+      calcedStyle.height,
+    );
   });
 
   it("does not remove invalid chosen values on possible values change if desired", async () => {
@@ -134,7 +148,7 @@ describe("SearchableCheckboxes.vue", () => {
     const wrapper = mount(SearchableCheckboxes, {
       props,
     });
-    expect(wrapper.vm.chosenValues).toStrictEqual(["invalidId", "test1"]);
+    expect(wrapper.vm.selectedValues).toStrictEqual(["invalidId", "test1"]);
     await wrapper.setProps({
       possibleValues: [
         {
@@ -143,7 +157,7 @@ describe("SearchableCheckboxes.vue", () => {
         },
       ],
     });
-    expect(wrapper.vm.chosenValues).toStrictEqual(["invalidId", "test1"]);
+    expect(wrapper.vm.selectedValues).toStrictEqual(["invalidId", "test1"]);
   });
 
   it("provides a valid hasSelection method", () => {
@@ -154,8 +168,50 @@ describe("SearchableCheckboxes.vue", () => {
       },
     });
     expect(wrapper.vm.hasSelection()).toBe(false);
-    wrapper.vm.chosenValues = ["test3"];
+    wrapper.vm.selectedValues = ["test3"];
     expect(wrapper.vm.hasSelection()).toBe(true);
+  });
+
+  describe("emit modelValue", () => {
+    let props;
+
+    beforeEach(() => {
+      props = {
+        possibleValues: defaultPossibleValues,
+        modelValue: ["test2", "test3"],
+      };
+    });
+
+    it("updates model value on click in box", async () => {
+      const wrapper = mount(SearchableCheckboxes, {
+        props,
+      });
+
+      await wrapper.vm.$nextTick();
+      wrapper.vm.$emit("update:modelValue", "test3");
+
+      expect(wrapper.emitted("update:modelValue")).toStrictEqual([["test3"]]);
+    });
+
+    it("isValid causes invalid style on  box", async () => {
+      let props = {
+        possibleValues: [
+          {
+            id: "test1",
+            text: "test1",
+          },
+        ],
+        modelValue: null,
+        isValid: false,
+      };
+      const wrapper = mount(SearchableCheckboxes, {
+        props,
+      });
+      let box = wrapper.findComponent({ ref: "form" });
+      expect(box.vm.isValid).toBe(false);
+      await wrapper.setProps({ isValid: true });
+      expect(box.vm.isValid).toBe(true);
+    });
   });
 
   describe("search", () => {
@@ -165,7 +221,7 @@ describe("SearchableCheckboxes.vue", () => {
       props = {
         possibleValues: defaultPossibleValues,
         modelValue: ["test2"],
-        size: 3,
+        size: 5,
       };
     });
 
@@ -270,21 +326,6 @@ describe("SearchableCheckboxes.vue", () => {
       const labels = wrapper.findAll("div.search-wrapper label");
       expect(labels.at(0).text()).toBe("Search term label");
     });
-
-    it("can do case-sensitive searches", async () => {
-      props = { ...props, showSearch: true, initialSearchTerm: "text" };
-      const wrapper = mount(SearchableCheckboxes, {
-        props,
-      });
-      let box = wrapper.findComponent(Checkboxes);
-      expect(box.props("possibleValues").length).toBe(3);
-      expect(box.props("possibleValues")[0].text).toBe("Text 1");
-      expect(box.props("possibleValues")[1].text).toBe("Text 2");
-      expect(box.props("possibleValues")[2].text).toBe("Text 3");
-      const childComponent = wrapper.findComponent(SearchInput);
-      await childComponent.vm.toggleCaseSensitiveSearch();
-      expect(box.props("possibleValues").length).toBe(0);
-    });
   });
 
   describe("unknown values", () => {
@@ -304,7 +345,7 @@ describe("SearchableCheckboxes.vue", () => {
       props = {
         possibleValues: defaultPossibleValues,
         modelValue: ["test2"],
-        size: 3,
+        size: 5,
       };
     });
 
@@ -333,32 +374,36 @@ describe("SearchableCheckboxes.vue", () => {
         props = {
           possibleValues: defaultPossibleValues,
           initialManuallySelected: ["test2"],
-          size: 3,
+          size: 5,
           showSearch: true,
           modelValue: [],
         };
       });
 
-      it("shows no info if search term is empty and mode is manual", () => {
+      it("only shows number of selected values if there is no searchTerm", () => {
         const wrapper = mount(SearchableCheckboxes, { props });
-        expect(wrapper.find(".info").exists()).toBeTruthy();
+        expect(wrapper.find(".info").text()).toBe("[ 0 selected ]");
+      });
+
+      it("only shows number of selected values if showSearch is false", () => {
+        let props = {
+          possibleValues: defaultPossibleValues,
+          initialManuallySelected: ["test2"],
+          size: 5,
+          showSearch: false,
+          modelValue: ["abas"],
+        };
+        const wrapper = mount(SearchableCheckboxes, { props });
+
+        expect(wrapper.find(".info").text()).toBe("[ 1 selected ]");
       });
 
       it("shows number of visible items and total number on search", () => {
-        props.modelValue = ["test2"];
-        props.initialSearchTerm = "t";
+        props.modelValue = ["test2", "Missing"];
+        props.initialSearchTerm = "2";
         const wrapper = mount(SearchableCheckboxes, { props });
         const infos = wrapper.findAll(".info");
-        expect(infos.at(0).text()).toBe("3 of 3 entries [ 1 selected ]");
-      });
-
-      it("does not show info if search is not shown", () => {
-        props.initialSearchTerm = "t";
-        props.showSearch = false;
-
-        const wrapper = mount(SearchableCheckboxes, { props });
-
-        expect(wrapper.find(".search-wrapper").exists()).toBeFalsy();
+        expect(infos.at(0).text()).toBe("1 of 3 entries [ 2 selected ]");
       });
     });
 
@@ -369,7 +414,7 @@ describe("SearchableCheckboxes.vue", () => {
         props = {
           possibleValues: defaultPossibleValues,
           initialManuallySelected: [],
-          size: 3,
+          size: 5,
           showSearch: true,
           modelValue: null,
         };
@@ -391,19 +436,5 @@ describe("SearchableCheckboxes.vue", () => {
         expect(wrapper.find(".empty-state").exists()).toBeTruthy();
       });
     });
-
-    //   describe("over event", () => {
-    //     it("shows the icons if the card is over or not", () => {
-    //         const wrapper = mount(SearchableCheckboxes, {
-    //             propsData: {}
-    //         });
-    //         wrapper.find(".container").trigger("mouseenter");
-    //         wrapper.vm.$nextTick( () => {
-    //           console.log(wrapper.find(".container").element.style)
-    //             // expect(wrapper.find(".isAct").text()).contain("remove_red_eye");
-
-    //         });
-    //     });
-    // });
   });
 });

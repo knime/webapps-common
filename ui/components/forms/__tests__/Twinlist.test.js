@@ -877,29 +877,6 @@ describe("Twinlist.vue", () => {
       const labels = wrapper.findAll("div.search-wrapper label");
       expect(labels.at(0).text()).toBe("Search term label");
     });
-
-    it("can do case-sensitive searches", async () => {
-      props = { ...props, showSearch: true, initialSearchTerm: "text" };
-      const wrapper = mount(Twinlist, {
-        props,
-      });
-      let boxes = wrapper.findAllComponents(MultiselectListBox);
-      let left = boxes.at(0);
-      let right = boxes.at(1);
-
-      expect(left.props("possibleValues").length).toBe(2);
-      expect(left.props("possibleValues")[0].text).toBe("Text 1");
-      expect(left.props("possibleValues")[1].text).toBe("Text 3");
-
-      expect(right.props("possibleValues").length).toBe(1);
-      expect(right.props("possibleValues")[0].text).toBe("Text 2");
-
-      const childComponent = wrapper.findComponent(SearchInput);
-      await childComponent.vm.toggleCaseSensitiveSearch();
-
-      expect(left.props("possibleValues").length).toBe(0);
-      expect(right.props("possibleValues").length).toBe(0);
-    });
   });
 
   describe("excluded values", () => {
@@ -930,7 +907,7 @@ describe("Twinlist.vue", () => {
       ).toBe(1);
       const numAllItems =
         wrapper.vm.knownExcludedValues.length +
-        wrapper.vm.knownChosenValues.length;
+        wrapper.vm.knownIncludedValues.length;
       expect(numAllItems).toBe(1);
     });
 

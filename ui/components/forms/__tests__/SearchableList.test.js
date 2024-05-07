@@ -115,7 +115,7 @@ describe("SearchableList.vue", () => {
     });
     expect(wrapper.vm.invalidValueIds).toStrictEqual(["invalidId"]);
     // make it valid again
-    wrapper.vm.chosenValues = ["test1"];
+    wrapper.vm.selectedValues = ["test1"];
     expect(wrapper.vm.validate().isValid).toBe(true);
   });
 
@@ -136,7 +136,7 @@ describe("SearchableList.vue", () => {
     const wrapper = mount(SearchableList, {
       props,
     });
-    expect(wrapper.vm.chosenValues).toStrictEqual(["invalidId", "test1"]);
+    expect(wrapper.vm.selectedValues).toStrictEqual(["invalidId", "test1"]);
     await wrapper.setProps({
       possibleValues: [
         {
@@ -145,7 +145,7 @@ describe("SearchableList.vue", () => {
         },
       ],
     });
-    expect(wrapper.vm.chosenValues).toStrictEqual(["test1"]);
+    expect(wrapper.vm.selectedValues).toStrictEqual(["test1"]);
   });
 
   it("does not remove invalid chosen values on possible values change if desired", async () => {
@@ -166,7 +166,7 @@ describe("SearchableList.vue", () => {
     const wrapper = mount(SearchableList, {
       props,
     });
-    expect(wrapper.vm.chosenValues).toStrictEqual(["invalidId", "test1"]);
+    expect(wrapper.vm.selectedValues).toStrictEqual(["invalidId", "test1"]);
     await wrapper.setProps({
       possibleValues: [
         {
@@ -175,7 +175,7 @@ describe("SearchableList.vue", () => {
         },
       ],
     });
-    expect(wrapper.vm.chosenValues).toStrictEqual(["invalidId", "test1"]);
+    expect(wrapper.vm.selectedValues).toStrictEqual(["invalidId", "test1"]);
   });
 
   it("provides a valid hasSelection method", () => {
@@ -186,8 +186,83 @@ describe("SearchableList.vue", () => {
       },
     });
     expect(wrapper.vm.hasSelection()).toBe(false);
-    wrapper.vm.chosenValues = ["test3"];
+    wrapper.vm.selectedValues = ["test3"];
     expect(wrapper.vm.hasSelection()).toBe(true);
+  });
+
+  describe("emit modelValue", () => {
+    let props;
+
+    beforeEach(() => {
+      props = {
+        possibleValues: defaultPossibleValues,
+        modelValue: ["test2", "test3"],
+      };
+    });
+
+    it("updates model value on click in box", async () => {
+      const wrapper = mount(SearchableList, {
+        props,
+      });
+
+      await wrapper.vm.$nextTick();
+      wrapper.vm.$emit("update:modelValue", "test3");
+
+      expect(wrapper.emitted("update:modelValue")).toStrictEqual([["test3"]]);
+    });
+
+    it("isValid causes invalid style on  box", async () => {
+      let props = {
+        possibleValues: [
+          {
+            id: "test1",
+            text: "test1",
+          },
+        ],
+        modelValue: null,
+        isValid: false,
+      };
+      const wrapper = mount(SearchableList, {
+        props,
+      });
+      let box = wrapper.findComponent({ ref: "form" });
+      expect(box.vm.isValid).toBe(false);
+      await wrapper.setProps({ isValid: true });
+      expect(box.vm.isValid).toBe(true);
+    });
+
+    it("keeps valid state but removes invalid chosen values on possible values change", async () => {
+      let props = {
+        possibleValues: [
+          {
+            id: "test1",
+            text: "Text",
+          },
+          {
+            id: "test2",
+            text: "Some Text",
+          },
+        ],
+        modelValue: ["invalidId", "test1"],
+      };
+      const wrapper = mount(SearchableList, {
+        props,
+      });
+      expect(wrapper.vm.invalidValueIds).toBeTruthy();
+
+      await wrapper.setProps({
+        possibleValues: [
+          {
+            id: "test1",
+            text: "validValue",
+          },
+        ],
+      });
+      expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
+        "test1",
+      ]);
+      expect(wrapper.vm.invalidValueIds).toStrictEqual([]);
+    });
   });
 
   describe("search", () => {
@@ -372,31 +447,36 @@ describe("SearchableList.vue", () => {
       beforeEach(() => {
         props = {
           possibleValues: defaultPossibleValues,
-          initialManuallySelected: ["test2"],
           size: 3,
           showSearch: true,
           modelValue: [],
         };
       });
 
-      it("shows no info if search term is empty and mode is manual", () => {
+      it("only shows number of selected values if there is no searchTerm", () => {
         const wrapper = mount(SearchableList, { props });
-        expect(wrapper.find("info").exists()).toBeFalsy();
+        expect(wrapper.find(".info").text()).toBe("[ 0 selected ]");
+      });
+
+      it("only shows number of selected values if showSearch is false", () => {
+        let props = {
+          possibleValues: defaultPossibleValues,
+          initialManuallySelected: ["test2"],
+          size: 3,
+          showSearch: false,
+          modelValue: ["abas"],
+        };
+        const wrapper = mount(SearchableList, { props });
+
+        expect(wrapper.find(".info").text()).toBe("[ 1 selected ]");
       });
 
       it("shows number of visible items and total number on search", () => {
         props.modelValue = ["test2", "Missing"];
-        props.initialSearchTerm = "t";
+        props.initialSearchTerm = "2";
         const wrapper = mount(SearchableList, { props });
         const infos = wrapper.findAll(".info");
-        expect(infos.at(0).text()).toBe("3 of 3 entries [ 2 selected ]");
-      });
-
-      it("does not show info if search is not shown", () => {
-        props.initialSearchTerm = "t";
-        props.showSearch = false;
-        const wrapper = mount(SearchableList, { props });
-        expect(wrapper.find(".search-wrapper").exists()).toBeFalsy();
+        expect(infos.at(0).text()).toBe("1 of 3 entries [ 2 selected ]");
       });
     });
 

@@ -10,7 +10,7 @@ import Twinlist, {
 import {
   type PossibleValue as TwinlistPossibleValue,
   type Id,
-} from "./possibleValues/PossibleValue";
+} from "./possibleValues";
 import FilterIcon from "../../assets/img/icons/filter.svg";
 import { filters } from "../../../util/filters";
 import { toRef, type PropType } from "vue";
