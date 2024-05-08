@@ -121,10 +121,14 @@ public final class TableViewInitialDataImpl implements TableViewInitialData {
         for (DataColumnSpec colSpec : m_table.get().getDataTableSpec()) {
             var coreDataType = colSpec.getType();
             var dataType = coreDataTypeToDataTypeMap.computeIfAbsent(coreDataType, DataType::create);
-            var dataTypeId = String.valueOf(coreDataType.hashCode());
+            var dataTypeId = getDataTypeId(coreDataType);
             res.putIfAbsent(dataTypeId, dataType);
         }
         return res;
+    }
+
+    static String getDataTypeId(final org.knime.core.data.DataType dataType) {
+        return String.valueOf(System.identityHashCode(dataType));
     }
 
     @Override

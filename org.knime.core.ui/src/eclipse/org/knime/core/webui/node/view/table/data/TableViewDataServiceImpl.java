@@ -236,7 +236,8 @@ public class TableViewDataServiceImpl implements TableViewDataService {
             @Override
             public String[] getColumnDataTypeIds() {
                 return Arrays.stream(displayedColumns)
-                    .map(c -> String.valueOf(spec.getColumnSpec(c).getType().hashCode())).toArray(String[]::new);
+                    .map(c -> TableViewInitialDataImpl.getDataTypeId(spec.getColumnSpec(c).getType()))
+                    .toArray(String[]::new);
             }
 
             @Override

@@ -166,21 +166,21 @@ class TableViewInitialDataTest {
             selectionSupplier, nodeId);
         var dataTypes = initData.getDataTypes();
 
-        var stringType = dataTypes.get(String.valueOf(StringCell.TYPE.hashCode()));
+        var stringType = dataTypes.get(String.valueOf(System.identityHashCode(StringCell.TYPE)));
         assertThat(stringType.getName()).isEqualTo("String");
         assertRendererNames(stringType.getRenderers(), "Multi-line String", "String");
 
-        var doubleType = dataTypes.get(String.valueOf(DoubleCell.TYPE.hashCode()));
+        var doubleType = dataTypes.get(String.valueOf(System.identityHashCode(DoubleCell.TYPE)));
         assertThat(doubleType.getName()).isEqualTo("Number (double)");
         assertRendererNames(doubleType.getRenderers(), "Standard Double", "Percentage", "Full Precision", "Gray Scale",
             "Bars", "Default");
 
-        var booleanType = dataTypes.get(String.valueOf(BooleanCell.TYPE.hashCode()));
+        var booleanType = dataTypes.get(String.valueOf(System.identityHashCode(BooleanCell.TYPE)));
         assertThat(booleanType.getName()).isEqualTo("Boolean value");
         assertRendererNames(booleanType.getRenderers(), "Boolean", "Integer", "Standard Double", "Percentage",
             "Full Precision", "Gray Scale", "Bars", "Default");
 
-        var imageType = dataTypes.get(String.valueOf(new PNGImageCellFactory().getDataType().hashCode()));
+        var imageType = dataTypes.get(String.valueOf(System.identityHashCode(new PNGImageCellFactory().getDataType())));
         assertThat(imageType.getName()).isEqualTo("PNG Image");
         assertRendererNames(imageType.getRenderers(), "PNG Image", "Image");
     }
