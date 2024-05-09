@@ -55,8 +55,10 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.knime.core.node.InvalidSettingsException;
@@ -65,8 +67,11 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.config.base.ConfigBaseRO;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorFactory;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
+import org.knime.core.webui.node.dialog.modification.Modification;
+import org.knime.core.webui.node.dialog.modification.traversal.Tree;
 import org.knime.filehandling.core.connections.FSLocation;
 
 /**
@@ -128,6 +133,14 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
             m_persistor.save(obj, settings.addNodeSettings(m_configKey));
         }
 
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Tree<Modification> getModifications(final S obj) {
+            return Tree.of(m_configKey, List.of(m_persistor.getModifications(obj)));
+        }
+
     }
 
     static final class ArrayFieldPersistor<S extends PersistableSettings> implements NodeSettingsPersistor<S[]> {
@@ -173,6 +186,14 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
             }
         }
 
+        @Override
+        public Tree<Modification> getModifications(final S[] array) {
+            m_persistors.get(0).getModifications(array[0]);
+            ensureEnoughPersistors(array.length);
+            return Tree.of(m_configKey, IntStream.range(0, array.length)
+                .mapToObj(i -> m_persistors.get(i).getModifications(array[i])).toList());
+        }
+
     }
 
     private static final Map<Class<?>, FieldPersistor<?>> IMPL_MAP = Stream.of(PersistorImpl.values())//
@@ -187,25 +208,25 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
      * @return a new persistor
      * @throws IllegalArgumentException if there is no persistor available for the provided fieldType
      */
-    private static <T> NodeSettingsPersistor<T> createPersistor(final Class<T> fieldType, final String configKey) {
+    private static <T> FieldNodeSettingsPersistor<T> createPersistor(final Class<T> fieldType, final String configKey) {
         @SuppressWarnings("unchecked") // Type-save since IMPL_MAP maps Class<T> to FieldPersistor<T>
         var impl = (FieldPersistor<T>)IMPL_MAP.get(fieldType);
         return createPersistorFromImpl(fieldType, configKey, impl);
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> NodeSettingsPersistor<T> createPersistorFromImpl(final Class<T> fieldType,
+    private static <T> FieldNodeSettingsPersistor<T> createPersistorFromImpl(final Class<T> fieldType,
         final String configKey, final FieldPersistor<T> impl) {
         if (impl != null) {
             return new DefaultFieldNodeSettingsPersistor<>(configKey, impl);
         } else if (fieldType.isEnum()) {
             return createEnumPersistor(configKey, fieldType);
         } else if (fieldType.equals(LocalDate.class)) {
-            return (NodeSettingsPersistor<T>)createLocalDatePersistor(configKey);
+            return (FieldNodeSettingsPersistor<T>)createLocalDatePersistor(configKey);
         } else if (fieldType.equals(Credentials.class)) {
-            return (NodeSettingsPersistor<T>)createCredentialsPersistor(configKey);
+            return (FieldNodeSettingsPersistor<T>)createCredentialsPersistor(configKey);
         } else if (fieldType.equals(FSLocation.class)) {
-            return (NodeSettingsPersistor<T>)createFSLocationPersistor(configKey);
+            return (FieldNodeSettingsPersistor<T>)createFSLocationPersistor(configKey);
         } else {
             throw new IllegalArgumentException(
                 String.format("No default persistor available for type '%s'.", fieldType));
@@ -258,27 +279,22 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static <T> NodeSettingsPersistor<T> createEnumPersistor(final String configKey, final Class<T> fieldType) {
+    private static <T> FieldNodeSettingsPersistor<T> createEnumPersistor(final String configKey,
+        final Class<T> fieldType) {
         return new EnumFieldPersistor<>(configKey, (Class)fieldType);
     }
 
-    private static NodeSettingsPersistor<LocalDate> createLocalDatePersistor(final String configKey) {
-        return new LocalDatePersistor(configKey);
+    private static FieldNodeSettingsPersistor<LocalDate> createLocalDatePersistor(final String configKey) {
+        return FieldNodeSettingsPersistor.createInstance(LocalDatePersistor.class, LocalDate.class, configKey);
     }
 
-    static final class LocalDatePersistor implements NodeSettingsPersistor<LocalDate> {
+    static final class LocalDatePersistor extends NodeSettingsPersistorWithConfigKey<LocalDate> {
 
         static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ISO_LOCAL_DATE;
 
-        private final String m_configKey;
-
-        LocalDatePersistor(final String configKey) {
-            m_configKey = configKey;
-        }
-
         @Override
         public LocalDate load(final NodeSettingsRO settings) throws InvalidSettingsException {
-            final var value = settings.getString(m_configKey);
+            final var value = settings.getString(getConfigKey());
             if (value == null) {
                 return null;
             }
@@ -291,16 +307,16 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
 
         @Override
         public void save(final LocalDate date, final NodeSettingsWO settings) {
-            settings.addString(m_configKey, date == null ? null : date.format(DATE_FMT));
+            settings.addString(getConfigKey(), date == null ? null : date.format(DATE_FMT));
         }
 
     }
 
-    private static NodeSettingsPersistor<Credentials> createCredentialsPersistor(final String configKey) {
+    private static FieldNodeSettingsPersistor<Credentials> createCredentialsPersistor(final String configKey) {
         return new Credentials.CredentialsPersistor(configKey);
     }
 
-    private static NodeSettingsPersistor<FSLocation> createFSLocationPersistor(final String configKey) {
+    private static FieldNodeSettingsPersistor<FSLocation> createFSLocationPersistor(final String configKey) {
         final var persistor = new FSLocationPersistor();
         persistor.setConfigKey(configKey);
         return persistor;

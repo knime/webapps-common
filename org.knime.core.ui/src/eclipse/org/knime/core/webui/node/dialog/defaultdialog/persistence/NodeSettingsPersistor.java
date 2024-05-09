@@ -51,6 +51,8 @@ package org.knime.core.webui.node.dialog.defaultdialog.persistence;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.webui.node.dialog.modification.Modification;
+import org.knime.core.webui.node.dialog.modification.traversal.Tree;
 
 /**
  * Implementing classes save objects to and load objects from NodeSettings.</br>
@@ -78,6 +80,17 @@ public interface NodeSettingsPersistor<T> {
      * @param settings to save into
      */
     void save(T obj, NodeSettingsWO settings);
+
+    /**
+     * @param obj to save, necessary in some persistors, because the used config keys depend on the object (e.g. in
+     *            dynamic arrays)
+     * @return a tree of modifications that is to be traversed after {@link #save}. It is used to bring settings and
+     *         flow variables back in sync when the tree structure differs after saving (e.g. because of set deprecated
+     *         flow variables) and to revert applied settings to previous settings when overwritten by a flow variable.
+     */
+    default Tree<Modification> getModifications(final T obj) {
+        return Tree.empty();
+    }
 
     /**
      * Creates a new instance from the provided NodeSettingsPersistor class by calling its empty constructor.

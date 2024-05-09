@@ -44,60 +44,29 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Oct 9, 2023 (Paul Bärnreuther): created
+ *   May 29, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
+package org.knime.core.webui.node.dialog.modification.traversal;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.NodeSettings;
 
 /**
- * This field persistor transforms {@link String} node settings to enum values and vice versa by matching the enum
- * constant.
+ * {@link NodeSettings} are traversable by {@link NodeSettings#getNodeSettings}.
  *
  * @author Paul Bärnreuther
- * @param <E> The enum that should be persisted
  */
-public final class EnumFieldPersistor<E extends Enum<E>> implements FieldNodeSettingsPersistor<E> {
-
-    private final String m_configKey;
-
-    private final Class<E> m_enumClass;
+public class NodeSettingsTraversable extends FallibleTraversable<NodeSettings> {
 
     /**
-     * @param configKey under which the string is to be stored
-     * @param enumClass the class of the to be persisted enum
+     * @param nodeSettings
      */
-    public EnumFieldPersistor(final String configKey, final Class<E> enumClass) {
-        m_enumClass = enumClass;
-        m_configKey = configKey;
+    public NodeSettingsTraversable(final NodeSettings nodeSettings) {
+        super(nodeSettings);
     }
 
     @Override
-    public E load(final NodeSettingsRO settings) throws InvalidSettingsException {
-        var name = settings.getString(m_configKey);
-        try {
-            return name == null ? null : Enum.valueOf(m_enumClass, name);
-        } catch (IllegalArgumentException ex) {
-            var values =
-                Arrays.stream(m_enumClass.getEnumConstants()).map(Enum::name).collect(Collectors.joining(", "));
-            throw new InvalidSettingsException(String.format("Invalid value '%s'. Possible values: %s", name, values),
-                ex);
-        }
-    }
-
-    @Override
-    public void save(final E obj, final NodeSettingsWO settings) {
-        settings.addString(m_configKey, obj == null ? null : obj.name());
-    }
-
-    @Override
-    public String[] getConfigKeys() {
-        return new String[]{m_configKey};
+    protected NodeSettings getChildOrThrow(final NodeSettings nodeSettings, final String key) throws Exception {
+        return nodeSettings.getNodeSettings(key);
     }
 
 }

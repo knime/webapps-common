@@ -44,61 +44,25 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Aug 30, 2023 (Paul Bärnreuther): created
+ *   May 29, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.settingsconversion;
+package org.knime.core.webui.node.dialog.modification;
 
-import java.util.Map;
+import java.util.function.Function;
 
-import org.knime.core.node.NodeLogger;
-import org.knime.core.node.NodeSettings;
-import org.knime.core.webui.node.dialog.SettingsType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DeprecatedConfigs;
 
 /**
- * Used to de-serialize JSON data to {@link DefaultNodeSettings} to be further transformed to {@link NodeSettings}. The
- * JSON data input to all of the methods needs to be of the form
- *
- * <pre>
- * {
- *      "model": ...,
- *      "view":...
- * }
- * </pre>
  *
  * @author Paul Bärnreuther
+ * @param deprecatedConfigs the configs that possibly need to be corrected because of mismatches between settings and
+ *            flow variables because of deprecation of config keys
+ * @param oldSettingsToNewSettings a method that is able to transform the previous node settings to new node settings.
+ *            It is used only when the previous value should be used but overwritten by a new flow variable, i.e. when
+ *            the user de-selected a deprecated flow variable and selects a new one before applying.
+ * @see NodeSettingsCorrectionUtil
  */
-public final class JsonDataToNodeSettings extends ToNodeSettings<JsonNode> {
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(JsonDataToNodeSettings.class);
-
-    /**
-     * @param settingsClasses a map associating settings types with {@link DefaultNodeSettings}
-     */
-    public JsonDataToNodeSettings(final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses) {
-        super(settingsClasses);
-    }
-
-    @Override
-    protected JsonNode getInputForType(final JsonNode data, final SettingsType type) {
-        return data.get(type.getConfigKey());
-    }
-
-    @Override
-    protected DefaultNodeSettings constructDefaultNodeSettings(final JsonNode node,
-        final Class<? extends DefaultNodeSettings> settingsClass) {
-        try {
-            return JsonFormsDataUtil.toDefaultNodeSettings(node, settingsClass);
-        } catch (JsonProcessingException e) {
-            LOGGER.error(String.format("Error when creating class %s from settings. Error message is: %s.",
-                settingsClass.getName(), e.getMessage()), e);
-            return null;
-
-        }
-
-    }
-
+public record Modification(DeprecatedConfigs[] deprecatedConfigs,
+    Function<NodeSettingsRO, NodeSettingsRO> oldSettingsToNewSettings) {
 }

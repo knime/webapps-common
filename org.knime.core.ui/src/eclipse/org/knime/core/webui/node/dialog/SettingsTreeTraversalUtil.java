@@ -119,11 +119,7 @@ class SettingsTreeTraversalUtil {
             if (setting == null) {
                 return Optional.empty(); // unexpected (yet not unrecoverable) state: setting should be present
             }
-            var previousSetting = getSettingsChildByKey(previousSettings(), key);
-            if (previousSetting == null) {
-                return Optional.empty(); // unexpected (yet not unrecoverable) state: setting should be present
-            }
-
+            var previousSetting = previousSettings() == null ? null : getSettingsChildByKey(previousSettings(), key);
             var previousVariable = previousVariables() == null ? null : getSettingsChildByKey(previousVariables(), key);
 
             final var subTree = new VariableSettingsTreeNode((NodeSettingsRO)variable, setting, previousSetting,
@@ -155,7 +151,7 @@ class SettingsTreeTraversalUtil {
 
         Optional<VariableSettingsTree> getNestedTree() {
             if (!isLeafVariableNodeSettings(variables) && settings instanceof NodeSettingsRO
-                && previousSettings instanceof NodeSettingsRO) {
+                && (previousSettings == null || previousSettings instanceof NodeSettingsRO)) {
                 return Optional.of(new VariableSettingsTree(variables, (NodeSettingsRO)settings,
                     (NodeSettingsRO)previousSettings, previousVariables));
             }

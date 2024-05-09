@@ -44,60 +44,59 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Oct 9, 2023 (Paul Bärnreuther): created
+ *   May 31, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
+package org.knime.core.webui.node.dialog.modification.traversal;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.webui.node.dialog.modification.traversal.TreeTraversalUtil.Traversable;
 
 /**
- * This field persistor transforms {@link String} node settings to enum values and vice versa by matching the enum
- * constant.
+ * A traversable structure which allows accessing children which are not present returning an empty tree with empty
+ * value if so.
  *
  * @author Paul Bärnreuther
- * @param <E> The enum that should be persisted
  */
-public final class EnumFieldPersistor<E extends Enum<E>> implements FieldNodeSettingsPersistor<E> {
+abstract class FallibleTraversable<T> implements Traversable<Optional<T>> {
 
-    private final String m_configKey;
+    Optional<T> m_value;
 
-    private final Class<E> m_enumClass;
+    @Override
+    public Optional<T> get() {
+        return m_value;
+    }
 
-    /**
-     * @param configKey under which the string is to be stored
-     * @param enumClass the class of the to be persisted enum
-     */
-    public EnumFieldPersistor(final String configKey, final Class<E> enumClass) {
-        m_enumClass = enumClass;
-        m_configKey = configKey;
+    FallibleTraversable(final T value) {
+        m_value = Optional.ofNullable(value);
     }
 
     @Override
-    public E load(final NodeSettingsRO settings) throws InvalidSettingsException {
-        var name = settings.getString(m_configKey);
+    public Traversable<Optional<T>> getChild(final String key) {
+        if (m_value.isEmpty()) {
+            return this;
+        }
         try {
-            return name == null ? null : Enum.valueOf(m_enumClass, name);
-        } catch (IllegalArgumentException ex) {
-            var values =
-                Arrays.stream(m_enumClass.getEnumConstants()).map(Enum::name).collect(Collectors.joining(", "));
-            throw new InvalidSettingsException(String.format("Invalid value '%s'. Possible values: %s", name, values),
-                ex);
+            return new FallibleTraversable<T>(getChildOrThrow(m_value.get(), key)) {
+
+                @Override
+                protected T getChildOrThrow(final T value, final String key2) throws Exception {
+                    return FallibleTraversable.this.getChildOrThrow(value, key2);
+                }
+
+            };
+        } catch (Exception e) { // NOSONAR
+            return new FallibleTraversable<T>(null) {
+
+                @Override
+                protected T getChildOrThrow(final T value, final String key2) throws Exception {
+                    throw new IllegalAccessError("Should not be called for an empty tree");
+                }
+
+            };
         }
     }
 
-    @Override
-    public void save(final E obj, final NodeSettingsWO settings) {
-        settings.addString(m_configKey, obj == null ? null : obj.name());
-    }
-
-    @Override
-    public String[] getConfigKeys() {
-        return new String[]{m_configKey};
-    }
+    protected abstract T getChildOrThrow(T value, final String key) throws Exception;
 
 }

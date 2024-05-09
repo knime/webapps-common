@@ -62,9 +62,11 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.Defaul
  *
  * @author Paul Bärnreuther
  */
-public final class DefaultNodeSettingsClassToNodeSettings extends ToNodeSettings<Void> {
+public final class DefaultNodeSettingsClassToNodeSettings {
 
     private final DefaultNodeSettingsContext m_context;
+
+    private final Map<SettingsType, Class<? extends DefaultNodeSettings>> m_settingsClasses;
 
     /**
      * @param context
@@ -72,14 +74,8 @@ public final class DefaultNodeSettingsClassToNodeSettings extends ToNodeSettings
      */
     public DefaultNodeSettingsClassToNodeSettings(final DefaultNodeSettingsContext context,
         final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses) {
-        super(settingsClasses);
+        m_settingsClasses = settingsClasses;
         m_context = context;
-    }
-
-    @Override
-    protected DefaultNodeSettings constructDefaultNodeSettings(final Void _input,
-        final Class<? extends DefaultNodeSettings> settingsClass) {
-        return DefaultNodeSettings.createSettings(settingsClass, m_context);
     }
 
     /**
@@ -88,7 +84,11 @@ public final class DefaultNodeSettingsClassToNodeSettings extends ToNodeSettings
      * @param nodeSettings
      */
     public void saveDefaultNodeSetting(final Map<SettingsType, NodeSettingsWO> nodeSettings) {
-        toNodeSettings(null, nodeSettings);
+        ToNodeSettingsUtil.constructNodeSettings(nodeSettings, this::constructDefaultNodeSettings);
+    }
+
+    private DefaultNodeSettings constructDefaultNodeSettings(final SettingsType type) {
+        return DefaultNodeSettings.createSettings(m_settingsClasses.get(type), m_context);
     }
 
 }

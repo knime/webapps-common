@@ -48,70 +48,70 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.settingsconversion;
 
+import static org.knime.core.webui.node.dialog.defaultdialog.util.MapValuesUtil.mapValuesWithKeys;
+
 import java.util.Map;
 
-import org.knime.core.node.NodeSettings;
-import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
- * Each implementation of this class provides a way to construct {@link DefaultNodeSettings} for each type of settings.
- * These can be transformed to node settings using one of the {@link ToNodeSettings#toNodeSettings} methods.
+ * Used to de-serialize JSON data to {@link DefaultNodeSettings}.
  *
  * @author Paul Bärnreuther
- * @param <T> the input from which node settings should be generated. If no input is required, {@link Void} can be used
- *            here.
  */
-abstract class ToNodeSettings<T> {
+public final class JsonDataToDefaultNodeSettingsUtil {
 
-    private final Map<SettingsType, Class<? extends DefaultNodeSettings>> m_settingsClasses;
-
-    ToNodeSettings(final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses) {
-        m_settingsClasses = settingsClasses;
+    private JsonDataToDefaultNodeSettingsUtil() {
+        // Utility
     }
 
-    abstract protected DefaultNodeSettings constructDefaultNodeSettings(final T input,
-        Class<? extends DefaultNodeSettings> settingsClass);
-
-    @SuppressWarnings("unused")
-    protected T getInputForType(final T input, final SettingsType type) {
-        return null;
-    }
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(JsonDataToDefaultNodeSettingsUtil.class);
 
     /**
+     * @param settingsClasses a map associating settings types with {@link DefaultNodeSettings}
+     * @param data containing keys "model" and/or "view" which are the keys of the map of settingsClasses
      *
-     * @param input from which the {@link DefaultNodeSettings} are constructed
-     * @param nodeSettings the output to which the extracted {@link NodeSettings} are written
-     * @param type of the settings
+     * @return a map of the extracted default node settings. The keys are the same as the ones in the given map of
+     *         classes.
      */
-    final void toNodeSettings(final T input, final NodeSettingsWO nodeSettings, final SettingsType type) {
-        var settingsClass = m_settingsClasses.get(type);
-        var settingsObj = constructDefaultNodeSettings(input, settingsClass);
-        DefaultNodeSettings.saveSettings(settingsClass, settingsObj, nodeSettings);
+    public static Map<SettingsType, DefaultNodeSettings> toDefaultNodeSettings(
+        final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses, final JsonNode data) {
+        return mapValuesWithKeys(settingsClasses,
+            (type, settingsClass) -> toDefaultNodeSettings(settingsClass, data, type));
     }
 
     /**
-     * @param input from which the {@link DefaultNodeSettings} are constructed
-     * @param nodeSettings the output to which the extracted {@link NodeSettings} are written per type. Note that the
-     *            keys of this map define, which settings are extracted.
+     * @param settingsClass
+     * @param type "model" or "view"
+     * @param data containing the given type as key
+     * @return the extracted DefaultNodeSettings
      */
-    public final void toNodeSettings(final T input, final Map<SettingsType, NodeSettingsWO> nodeSettings) {
-        for (var settingsType : nodeSettings.keySet()) {
-            toNodeSettings(getInputForType(input, settingsType), nodeSettings.get(settingsType), settingsType);
+    public static DefaultNodeSettings toDefaultNodeSettings(final Class<? extends DefaultNodeSettings> settingsClass,
+        final JsonNode data, final SettingsType type) {
+        return toDefaultNodeSettings(getJsonNodeForType(data, type), settingsClass);
+    }
+
+    private static JsonNode getJsonNodeForType(final JsonNode data, final SettingsType type) {
+        return data.get(type.getConfigKey());
+    }
+
+    private static DefaultNodeSettings toDefaultNodeSettings(final JsonNode node,
+        final Class<? extends DefaultNodeSettings> settingsClass) {
+        try {
+            return JsonFormsDataUtil.toDefaultNodeSettings(node, settingsClass);
+        } catch (JsonProcessingException e) {
+            LOGGER.error(String.format("Error when creating class %s from settings. Error message is: %s.",
+                settingsClass.getName(), e.getMessage()), e);
+            return null;
+
         }
-    }
 
-    /**
-     *
-     * @param input from which the {@link DefaultNodeSettings} are constructed
-     * @param type of the settings
-     * @return the constructed {@link NodeSettings}
-     */
-    public final NodeSettings toNodeSettings(final T input, final SettingsType type) {
-        var res = new NodeSettings(type.getConfigKey());
-        toNodeSettings(input, Map.of(type, res));
-        return res;
     }
 
 }

@@ -62,6 +62,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistor;
 
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -151,7 +152,7 @@ public final class Credentials {
         }
         if (obj instanceof Credentials other) {
             return Objects.equals(m_username, other.m_username) && Objects.equals(m_password, other.m_password)
-                    && Objects.equals(m_secondFactor, other.m_secondFactor);
+                && Objects.equals(m_secondFactor, other.m_secondFactor);
         }
         return false;
     }
@@ -257,11 +258,14 @@ public final class Credentials {
      *
      * @author Marc Bux, KNIME GmbH, Berlin, Germany
      */
-    public static final class CredentialsPersistor implements NodeSettingsPersistor<Credentials> {
+    public static final class CredentialsPersistor implements FieldNodeSettingsPersistor<Credentials> {
 
         private static final String CFG_PASSWORD = "weaklyEncryptedPassword";
+
         private static final String CFG_SECOND_FACTOR = "weaklyEncryptedSecondFactor";
+
         private static final String PASSWORD_SECRET = "XKdPobvbDEBZEJmBsbMq"; // NOSONAR (weak symmetric encryption)
+
         private static final String SECOND_FACTOR_SECRET = "lLNIScQYgDJJXUrUdhSG";
 
         private final String m_configKey;
@@ -314,6 +318,11 @@ public final class Credentials {
             if (secondFactor != null && !secondFactor.isEmpty()) {
                 credentialsConfig.addPassword(CFG_SECOND_FACTOR, SECOND_FACTOR_SECRET, secondFactor);
             }
+        }
+
+        @Override
+        public String[] getConfigKeys() {
+            return new String[]{m_configKey};
         }
     }
 

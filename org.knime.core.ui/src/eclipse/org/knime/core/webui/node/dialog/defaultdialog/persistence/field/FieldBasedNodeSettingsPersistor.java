@@ -49,6 +49,8 @@
 package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.knime.core.node.InvalidSettingsException;
@@ -57,6 +59,8 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.ReflectionUtil;
+import org.knime.core.webui.node.dialog.modification.Modification;
+import org.knime.core.webui.node.dialog.modification.traversal.Tree;
 
 /**
  * Performs persistence of DefaultNodeSettings on a per-field basis. The persistence of individual fields can be
@@ -93,10 +97,30 @@ public class FieldBasedNodeSettingsPersistor<S extends PersistableSettings> impl
         }
     }
 
+    @Override
+    public Tree<Modification> getModifications(final S obj) {
+        List<Tree<Modification>> modifications = new ArrayList<>(m_persistors.size());
+        try {
+            useBlackMagicToAccessFields(
+                (persistor, field) -> modifications.add(uncheckedGetModifications(persistor, field.get(obj))));
+        } catch (InvalidSettingsException ex) {//NOSONAR
+            // because the origin of the InvalidSettingsException would be our PersistorConsumer which does not
+            // throw such an exception
+            throw new IllegalStateException("This catch block is not supposed to be reachable.");
+        }
+        return Tree.of(modifications);
+    }
+
     @SuppressWarnings("unchecked")
     private static <T> void uncheckedSave(final NodeSettingsPersistor<T> persistor, final Object value,
         final NodeSettingsWO nodeSettings) {
         persistor.save((T)value, nodeSettings);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> Tree<Modification> uncheckedGetModifications(final NodeSettingsPersistor<T> persistor,
+        final Object value) {
+        return persistor.getModifications((T)value);
     }
 
     @FunctionalInterface

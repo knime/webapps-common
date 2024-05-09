@@ -68,6 +68,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPe
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.ReflectionUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LatentWidget;
+import org.knime.core.webui.node.dialog.modification.Modification;
+import org.knime.core.webui.node.dialog.modification.traversal.Tree;
 
 /**
  * Creates persistors for fields of a {@link PersistableSettings} class.
@@ -221,6 +223,11 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
         @Override
         public void save(final S obj, final NodeSettingsWO settings) {
             m_delegate.save(obj, settings);
+        }
+
+        @Override
+        public Tree<Modification> getModifications(final S obj) {
+            return m_delegate.getModifications(obj);
         }
     }
 }

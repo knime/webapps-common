@@ -44,60 +44,53 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Oct 9, 2023 (Paul Bärnreuther): created
+ *   May 29, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
+package org.knime.core.webui.node.dialog.modification;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
-import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.webui.node.dialog.VariableSettingsRO;
+import org.knime.core.webui.node.dialog.modification.traversal.Tree;
+import org.knime.core.webui.node.dialog.modification.traversal.TreeTraversalUtil;
 
 /**
- * This field persistor transforms {@link String} node settings to enum values and vice versa by matching the enum
- * constant.
+ * A utility class used to correct provosionally applied settings (i.e. node settings that were saved without respecting
+ * flow variables) given a tree of {@link Modification}s by resetting parts of the settings to given previous settings
+ * wherever certain set flow variables require this.
  *
  * @author Paul Bärnreuther
- * @param <E> The enum that should be persisted
  */
-public final class EnumFieldPersistor<E extends Enum<E>> implements FieldNodeSettingsPersistor<E> {
+public final class NodeSettingsCorrectionUtil {
 
-    private final String m_configKey;
-
-    private final Class<E> m_enumClass;
+    private NodeSettingsCorrectionUtil() {
+        // Utility
+    }
 
     /**
-     * @param configKey under which the string is to be stored
-     * @param enumClass the class of the to be persisted enum
+     * Use this method to align settings which were extracted without paying attention to flow variables. The following
+     * transformations can be necessary:
+     * <ul>
+     * <li>There exist controlling flow variables for saved configs: In this case we want to revert the settings at
+     * these configs to the previous settings. If no such previous settings are present, the given {@link Modification}
+     * has to provide a way to get suitable configs from the previous settings.</li>
+     * <li>There exist flow variables for a deprecated config, i.e. a config which can never be saved to. In this case
+     * the given {@link Modification} needs to provide additional information on which configs were deprecated to which.
+     * This way we can revert the settings to previous settings for all related configs.</li>
+     * </ul>
+     *
+     * @param modificationsTree defining the to be traversed structure as well as possibly additional information at
+     *            leaves
+     * @param provisionalSettings the settings that are to be corrected
+     * @param previousSettings
+     * @param variableSettings
      */
-    public EnumFieldPersistor(final String configKey, final Class<E> enumClass) {
-        m_enumClass = enumClass;
-        m_configKey = configKey;
+    public static void correctNodeSettingsRespectingFlowVariables(final Tree<Modification> modificationsTree,
+        final NodeSettings provisionalSettings, final NodeSettingsRO previousSettings,
+        final VariableSettingsRO variableSettings) {
+        TreeTraversalUtil.traverse(modificationsTree,
+            new ToBeModifiedSettingsTraversable(
+                ToBeModifiedSettings.of(provisionalSettings, previousSettings, variableSettings)),
+            ApplyModification::applyModification);
     }
-
-    @Override
-    public E load(final NodeSettingsRO settings) throws InvalidSettingsException {
-        var name = settings.getString(m_configKey);
-        try {
-            return name == null ? null : Enum.valueOf(m_enumClass, name);
-        } catch (IllegalArgumentException ex) {
-            var values =
-                Arrays.stream(m_enumClass.getEnumConstants()).map(Enum::name).collect(Collectors.joining(", "));
-            throw new InvalidSettingsException(String.format("Invalid value '%s'. Possible values: %s", name, values),
-                ex);
-        }
-    }
-
-    @Override
-    public void save(final E obj, final NodeSettingsWO settings) {
-        settings.addString(m_configKey, obj == null ? null : obj.name());
-    }
-
-    @Override
-    public String[] getConfigKeys() {
-        return new String[]{m_configKey};
-    }
-
 }

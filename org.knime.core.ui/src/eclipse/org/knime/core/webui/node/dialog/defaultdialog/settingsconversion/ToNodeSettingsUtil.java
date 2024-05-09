@@ -44,60 +44,68 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Oct 9, 2023 (Paul Bärnreuther): created
+ *   Aug 30, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
+package org.knime.core.webui.node.dialog.defaultdialog.settingsconversion;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.function.Function;
 
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.util.MapValuesUtil;
 
 /**
- * This field persistor transforms {@link String} node settings to enum values and vice versa by matching the enum
- * constant.
+ * Each implementation of this class provides a way to construct {@link DefaultNodeSettings} for each type of settings.
+ * These can be transformed to node settings using one of the {@link ToNodeSettings#toNodeSettings} methods.
  *
  * @author Paul Bärnreuther
- * @param <E> The enum that should be persisted
  */
-public final class EnumFieldPersistor<E extends Enum<E>> implements FieldNodeSettingsPersistor<E> {
+public final class ToNodeSettingsUtil {
 
-    private final String m_configKey;
-
-    private final Class<E> m_enumClass;
+    private ToNodeSettingsUtil() {
+        // Utility
+    }
 
     /**
-     * @param configKey under which the string is to be stored
-     * @param enumClass the class of the to be persisted enum
+     * @param type of the settings to extract the root config key from
+     * @param defaultNodeSettings the to be converted defaultNodeSettings
+     * @return the constructed {@link NodeSettings}
      */
-    public EnumFieldPersistor(final String configKey, final Class<E> enumClass) {
-        m_enumClass = enumClass;
-        m_configKey = configKey;
+    public static NodeSettings toNodeSettings(final SettingsType type, final DefaultNodeSettings defaultNodeSettings) {
+        var res = new NodeSettings(type.getConfigKey());
+        toNodeSettings(res, type, defaultNodeSettings);
+        return res;
     }
 
-    @Override
-    public E load(final NodeSettingsRO settings) throws InvalidSettingsException {
-        var name = settings.getString(m_configKey);
-        try {
-            return name == null ? null : Enum.valueOf(m_enumClass, name);
-        } catch (IllegalArgumentException ex) {
-            var values =
-                Arrays.stream(m_enumClass.getEnumConstants()).map(Enum::name).collect(Collectors.joining(", "));
-            throw new InvalidSettingsException(String.format("Invalid value '%s'. Possible values: %s", name, values),
-                ex);
-        }
+    /**
+     * @param defaultNodeSettings
+     * @return the extracted node settings
+     */
+    public static Map<SettingsType, NodeSettings>
+        toNodeSettings(final Map<SettingsType, DefaultNodeSettings> defaultNodeSettings) {
+        return MapValuesUtil.mapValuesWithKeys(defaultNodeSettings, (k, v) -> toNodeSettings(k, v));
     }
 
-    @Override
-    public void save(final E obj, final NodeSettingsWO settings) {
-        settings.addString(m_configKey, obj == null ? null : obj.name());
+    /**
+     * @param nodeSettings to be written to
+     * @param constructDefaultNodeSettings called for every key of the provided map
+     */
+    public static void constructNodeSettings(final Map<SettingsType, NodeSettingsWO> nodeSettings,
+        final Function<SettingsType, DefaultNodeSettings> constructDefaultNodeSettings) {
+        nodeSettings.entrySet().forEach(entry -> toNodeSettings(entry.getValue(), entry.getKey(),
+            constructDefaultNodeSettings.apply(entry.getKey())));
     }
 
-    @Override
-    public String[] getConfigKeys() {
-        return new String[]{m_configKey};
+    /**
+     * @param nodeSettings the output to which the extracted {@link NodeSettings} are written
+     * @param type of the settings
+     */
+    private static void toNodeSettings(final NodeSettingsWO nodeSettings, final SettingsType type,
+        final DefaultNodeSettings defaultNodeSettings) {
+        DefaultNodeSettings.saveSettings(defaultNodeSettings.getClass(), defaultNodeSettings, nodeSettings);
     }
 
 }

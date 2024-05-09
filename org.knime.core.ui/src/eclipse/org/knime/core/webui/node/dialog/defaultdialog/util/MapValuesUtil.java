@@ -80,6 +80,19 @@ public final class MapValuesUtil {
     }
 
     /**
+     * Utility method for restricting the type of values of a {@link Map}.
+     *
+     * @param <K> keys
+     * @param <V1> values before restriction
+     * @param <V2> values after restriction
+     * @param map the map the mapping should be applied to
+     * @return a new map with the same keys and values of the required extending type
+     */
+    public static <K, V1 extends V2, V2> Map<K, V2> restrictValues(final Map<K, V1> map) {
+        return mapValues(map, v -> v);
+    }
+
+    /**
      * Utility method for mapping the values of a {@link Map}.
      *
      * @param <K> keys

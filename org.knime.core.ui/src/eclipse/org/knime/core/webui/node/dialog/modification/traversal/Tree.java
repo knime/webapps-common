@@ -44,60 +44,100 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Oct 9, 2023 (Paul Bärnreuther): created
+ *   May 29, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
+package org.knime.core.webui.node.dialog.modification.traversal;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 /**
- * This field persistor transforms {@link String} node settings to enum values and vice versa by matching the enum
- * constant.
  *
  * @author Paul Bärnreuther
- * @param <E> The enum that should be persisted
+ * @param <L> the leaf type
  */
-public final class EnumFieldPersistor<E extends Enum<E>> implements FieldNodeSettingsPersistor<E> {
-
-    private final String m_configKey;
-
-    private final Class<E> m_enumClass;
+public interface Tree<L> {
 
     /**
-     * @param configKey under which the string is to be stored
-     * @param enumClass the class of the to be persisted enum
+     * @return a leaf if the given tree node is a leaf
      */
-    public EnumFieldPersistor(final String configKey, final Class<E> enumClass) {
-        m_enumClass = enumClass;
-        m_configKey = configKey;
+    default Optional<L> getLeaf() {
+        return Optional.empty();
     }
 
-    @Override
-    public E load(final NodeSettingsRO settings) throws InvalidSettingsException {
-        var name = settings.getString(m_configKey);
-        try {
-            return name == null ? null : Enum.valueOf(m_enumClass, name);
-        } catch (IllegalArgumentException ex) {
-            var values =
-                Arrays.stream(m_enumClass.getEnumConstants()).map(Enum::name).collect(Collectors.joining(", "));
-            throw new InvalidSettingsException(String.format("Invalid value '%s'. Possible values: %s", name, values),
-                ex);
-        }
+    /**
+     * @return an optional string key for traversal information alongside other trees
+     */
+    default Optional<String> getKey() {
+        return Optional.empty();
     }
 
-    @Override
-    public void save(final E obj, final NodeSettingsWO settings) {
-        settings.addString(m_configKey, obj == null ? null : obj.name());
+    /**
+     * @return the children of the given leaf node
+     */
+    default Collection<Tree<L>> getChildren() {
+        return null;
     }
 
-    @Override
-    public String[] getConfigKeys() {
-        return new String[]{m_configKey};
+    /**
+     * @param <L>
+     * @param leaf
+     * @return a single-node tree with one leaf
+     */
+    static <L> Tree<L> leaf(final L leaf) {
+        return new Tree<L>() {
+
+            @Override
+            public Optional<L> getLeaf() {
+                return Optional.of(leaf);
+            }
+        };
+    }
+
+    /**
+     * @param <L>
+     * @param key by which the tree structure traverses further
+     * @param children
+     * @return a parent node for the given children
+     */
+    static <L> Tree<L> of(final String key, final Collection<Tree<L>> children) {
+        return new Tree<L>() {
+
+            @Override
+            public Collection<Tree<L>> getChildren() {
+                return children;
+            }
+
+            @Override
+            public Optional<String> getKey() {
+                return Optional.of(key);
+            }
+
+        };
+    }
+
+    /**
+     * @param <L>
+     * @param children
+     * @return a parent node for the given children
+     */
+    static <L> Tree<L> of(final Collection<Tree<L>> children) {
+        return new Tree<L>() {
+
+            @Override
+            public Collection<Tree<L>> getChildren() {
+                return children;
+            }
+        };
+    }
+
+    /**
+     * @param <L>
+     * @return an empty tree, i.e. not a leaf and without key or children
+     */
+    static <L> Tree<L> empty() {
+        return of(List.of());
     }
 
 }

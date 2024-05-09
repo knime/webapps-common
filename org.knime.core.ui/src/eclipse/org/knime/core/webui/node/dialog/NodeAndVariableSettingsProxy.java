@@ -54,6 +54,7 @@ import java.lang.reflect.Proxy;
 import java.util.function.Supplier;
 
 import org.knime.core.node.NodeSettings;
+import org.knime.core.node.config.base.ConfigBase.CopyFromConfigBase;
 import org.knime.core.webui.node.dialog.internal.VariableSettings;
 
 /**
@@ -87,8 +88,10 @@ final class NodeAndVariableSettingsProxy {
     private static Object createProxy(final NodeSettings nodeSettingsDelegate,
         final VariableSettings variableSettingsDelegate) {
         Supplier<NodeSettings> nodeSettingsWrapper = () -> nodeSettingsDelegate;
+        CopyFromConfigBase copyFromConfigBase = configBase -> configBase.copyTo(nodeSettingsDelegate);
         InvocationHandler invocationHandler = (proxy, method, args) -> { // NOSONAR
-            for (Object delegate : new Object[]{nodeSettingsDelegate, variableSettingsDelegate, nodeSettingsWrapper}) {
+            for (Object delegate : new Object[]{copyFromConfigBase, nodeSettingsDelegate, variableSettingsDelegate,
+                nodeSettingsWrapper}) {
                 try {
                     if (delegate != null) {
                         return method.invoke(delegate, args);
@@ -102,7 +105,7 @@ final class NodeAndVariableSettingsProxy {
             throw new IllegalStateException("Implementation problem - should never end up here");
         };
         return Proxy.newProxyInstance(NodeAndVariableSettingsProxy.class.getClassLoader(),
-            new Class[]{NodeAndVariableSettingsWO.class, NodeAndVariableSettingsRO.class, //
+            new Class[]{NodeAndVariableSettingsWO.class, NodeAndVariableSettingsRO.class, CopyFromConfigBase.class, //
                 /*
                  * For testing purposes only. In order to be able to extract the underlying {@link NodeSettings}-class to be able to
                  * read it from json using

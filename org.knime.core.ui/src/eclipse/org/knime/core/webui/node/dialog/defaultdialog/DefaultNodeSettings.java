@@ -48,6 +48,8 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog;
 
+import static org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorFactory.getPersistor;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
@@ -103,6 +105,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.CredentialsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.PasswordWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.UsernameWidget;
+import org.knime.core.webui.node.dialog.modification.Modification;
+import org.knime.core.webui.node.dialog.modification.NodeSettingsCorrectionUtil;
+import org.knime.core.webui.node.dialog.modification.traversal.Tree;
 
 /**
  * Marker interface for implementations that define a {@link DefaultNodeDialog}. The implementations allow one to
@@ -444,13 +449,6 @@ public interface DefaultNodeSettings extends PersistableSettings, WidgetGroup {
         return InstantiationUtil.createInstance(clazz);
     }
 
-    /**
-     * Helper to serialize a {@link DefaultNodeSettings}-instance into a {@link NodeSettingsWO}-object.
-     *
-     * @param settingsClass the setting object's class
-     * @param settingsObject the default node settings object to serialize
-     * @param settings the settings to write to
-     */
     static void saveSettings(final Class<? extends DefaultNodeSettings> settingsClass,
         final DefaultNodeSettings settingsObject, final NodeSettingsWO settings) {
         castAndSaveSettings(settingsClass, settingsObject, settings);
@@ -461,7 +459,22 @@ public interface DefaultNodeSettings extends PersistableSettings, WidgetGroup {
         final DefaultNodeSettings settingsObject, final NodeSettingsWO settings) {
         CheckUtils.checkArgument(settingsClass.isInstance(settingsObject),
             "The provided settingsObject is not an instance of the provided settingsClass.");
-        NodeSettingsPersistorFactory.getPersistor(settingsClass).save((S)settingsObject, settings);
+        getPersistor(settingsClass).save((S)settingsObject, settings);
+
+    }
+
+    /**
+     * @param <S> the type of DefaultNodeSettings
+     * @param settingsClass
+     * @param settingsObject
+     * @return the tree of modifications that needs to be traversed after saving to node settings in order to align
+     *         settings and flow variables.
+     * @see NodeSettingsCorrectionUtil
+     */
+    @SuppressWarnings("unchecked")
+    static <S extends DefaultNodeSettings> Tree<Modification> getModificationsTree(final Class<S> settingsClass,
+        final DefaultNodeSettings settingsObject) {
+        return getPersistor(settingsClass).getModifications((S)settingsObject);
     }
 
     /**

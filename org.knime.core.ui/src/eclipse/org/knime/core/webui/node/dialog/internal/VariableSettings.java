@@ -172,8 +172,12 @@ public final class VariableSettings implements VariableSettingsWO, VariableSetti
             return false;
         }
 
+        return isVariableSettings(ns, key);
+    }
+
+    static boolean isVariableSettings(final NodeSettings s, final String key) {
         try {
-            ns = ns.getNodeSettings(key);
+            final var ns = s.getNodeSettings(key);
             ns.getString(USED_VARIABLE_CFG_KEY);
             ns.getString(EXPOSED_VARIABLE_CFG_KEY);
             return true;
@@ -197,7 +201,11 @@ public final class VariableSettings implements VariableSettingsWO, VariableSetti
 
     @Override
     public String getUsedVariable(final String key) throws InvalidSettingsException {
-        return getVariableSettingsOrThrow().getNodeSettings(key).getString(USED_VARIABLE_CFG_KEY);
+        return getUsedVariableFrom(key, getVariableSettingsOrThrow());
+    }
+
+    static String getUsedVariableFrom(final String key, final NodeSettings s) throws InvalidSettingsException {
+        return s.getNodeSettings(key).getString(USED_VARIABLE_CFG_KEY);
     }
 
     @Override
@@ -209,6 +217,11 @@ public final class VariableSettings implements VariableSettingsWO, VariableSetti
         }
 
         final var s = getOrCreateSubSettings(getOrCreateVariableSettings(), settingsKey);
+        addUsedVariableTo(usedVariable, isControllingFlowVariableFlawed, s);
+    }
+
+    static void addUsedVariableTo(final String usedVariable, final boolean isControllingFlowVariableFlawed,
+        final NodeSettings s) {
         s.addString(USED_VARIABLE_CFG_KEY, usedVariable);
         s.addBoolean(USED_VARIABLE_FLAWED_CFG_KEY, isControllingFlowVariableFlawed);
         addStringIfNotPresent(s, EXPOSED_VARIABLE_CFG_KEY, null);
@@ -216,7 +229,11 @@ public final class VariableSettings implements VariableSettingsWO, VariableSetti
 
     @Override
     public String getExposedVariable(final String key) throws InvalidSettingsException {
-        return getVariableSettingsOrThrow().getNodeSettings(key).getString(EXPOSED_VARIABLE_CFG_KEY);
+        return getExposedVariableFrom(getVariableSettingsOrThrow(), key);
+    }
+
+    static String getExposedVariableFrom(final NodeSettings s, final String key) throws InvalidSettingsException {
+        return s.getNodeSettings(key).getString(EXPOSED_VARIABLE_CFG_KEY);
     }
 
     @Override
@@ -228,11 +245,15 @@ public final class VariableSettings implements VariableSettingsWO, VariableSetti
         }
 
         final var s = getOrCreateSubSettings(getOrCreateVariableSettings(), settingsKey);
+        addExposedVariableTo(exposedVariable, s);
+    }
+
+    static void addExposedVariableTo(final String exposedVariable, final NodeSettings s) {
         s.addString(EXPOSED_VARIABLE_CFG_KEY, exposedVariable);
         addStringIfNotPresent(s, USED_VARIABLE_CFG_KEY, null);
     }
 
-    private static NodeSettings getOrCreateSubSettings(final NodeSettings settings, final String key) {
+    static NodeSettings getOrCreateSubSettings(final NodeSettings settings, final String key) {
         NodeSettings subSettings;
         if (settings.containsKey(key)) {
             try {

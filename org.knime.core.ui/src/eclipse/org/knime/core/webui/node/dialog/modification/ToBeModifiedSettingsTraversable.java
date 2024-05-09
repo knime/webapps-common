@@ -44,60 +44,58 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Oct 9, 2023 (Paul Bärnreuther): created
+ *   May 29, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
+package org.knime.core.webui.node.dialog.modification;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
-import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.webui.node.dialog.VariableSettingsRO;
+import org.knime.core.webui.node.dialog.modification.traversal.NodeSettingsROTraversable;
+import org.knime.core.webui.node.dialog.modification.traversal.NodeSettingsTraversable;
+import org.knime.core.webui.node.dialog.modification.traversal.TreeTraversalUtil.Traversable;
+import org.knime.core.webui.node.dialog.modification.traversal.VariableSettingsTraversable;
 
 /**
- * This field persistor transforms {@link String} node settings to enum values and vice versa by matching the enum
- * constant.
+ * A field-wise tree-structure on {@link ToBeModifiedSettings}, i.e. the canonical structure that can be constructed on
+ * a record when all of its fields have a tree structure.
  *
  * @author Paul Bärnreuther
- * @param <E> The enum that should be persisted
  */
-public final class EnumFieldPersistor<E extends Enum<E>> implements FieldNodeSettingsPersistor<E> {
+final class ToBeModifiedSettingsTraversable implements Traversable<ToBeModifiedSettings> {
 
-    private final String m_configKey;
+    private org.knime.core.webui.node.dialog.modification.traversal.TreeTraversalUtil.Traversable<Optional<NodeSettings>> m_provisionalSettingsTree;
 
-    private final Class<E> m_enumClass;
+    private Traversable<Optional<NodeSettingsRO>> m_previousSettingsTree;
 
-    /**
-     * @param configKey under which the string is to be stored
-     * @param enumClass the class of the to be persisted enum
-     */
-    public EnumFieldPersistor(final String configKey, final Class<E> enumClass) {
-        m_enumClass = enumClass;
-        m_configKey = configKey;
+    private Traversable<Optional<VariableSettingsRO>> m_appliedVariableSettingsTree;
+
+    ToBeModifiedSettingsTraversable(final ToBeModifiedSettings toBeModifiedSettings) {
+        this(new NodeSettingsTraversable(toBeModifiedSettings.provisionalSettings().orElse(null)),
+            new NodeSettingsROTraversable(toBeModifiedSettings.previousSettings().orElse(null)),
+            new VariableSettingsTraversable(toBeModifiedSettings.appliedVariableSettings().orElse(null)));
+    }
+
+    private ToBeModifiedSettingsTraversable(final Traversable<Optional<NodeSettings>> appliedSettingsTree,
+        final Traversable<Optional<NodeSettingsRO>> previousSettingsTree,
+        final Traversable<Optional<VariableSettingsRO>> appliedVariablesSettingsTree) {
+        m_provisionalSettingsTree = appliedSettingsTree;
+        m_previousSettingsTree = previousSettingsTree;
+        m_appliedVariableSettingsTree = appliedVariablesSettingsTree;
     }
 
     @Override
-    public E load(final NodeSettingsRO settings) throws InvalidSettingsException {
-        var name = settings.getString(m_configKey);
-        try {
-            return name == null ? null : Enum.valueOf(m_enumClass, name);
-        } catch (IllegalArgumentException ex) {
-            var values =
-                Arrays.stream(m_enumClass.getEnumConstants()).map(Enum::name).collect(Collectors.joining(", "));
-            throw new InvalidSettingsException(String.format("Invalid value '%s'. Possible values: %s", name, values),
-                ex);
-        }
+    public ToBeModifiedSettings get() {
+        return new ToBeModifiedSettings(m_provisionalSettingsTree.get(), m_previousSettingsTree.get(),
+            m_appliedVariableSettingsTree.get());
     }
 
     @Override
-    public void save(final E obj, final NodeSettingsWO settings) {
-        settings.addString(m_configKey, obj == null ? null : obj.name());
-    }
-
-    @Override
-    public String[] getConfigKeys() {
-        return new String[]{m_configKey};
+    public Traversable<ToBeModifiedSettings> getChild(final String key) {
+        return new ToBeModifiedSettingsTraversable(m_provisionalSettingsTree.getChild(key),
+            m_previousSettingsTree.getChild(key), m_appliedVariableSettingsTree.getChild(key));
     }
 
 }

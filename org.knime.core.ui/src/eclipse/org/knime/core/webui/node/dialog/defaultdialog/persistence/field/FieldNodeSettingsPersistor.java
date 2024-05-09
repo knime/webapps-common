@@ -48,8 +48,13 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeLogger;
+import org.knime.core.node.NodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
+import org.knime.core.webui.node.dialog.modification.Modification;
+import org.knime.core.webui.node.dialog.modification.traversal.Tree;
 
 /**
  * A {@link NodeSettingsPersistor} that persists a single field of a settings object. Implementing classes must provide
@@ -59,6 +64,26 @@ import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPe
  * @param <T> type of object loaded by the persistor
  */
 public interface FieldNodeSettingsPersistor<T> extends NodeSettingsPersistor<T> {
+    @SuppressWarnings("javadoc")
+    static final NodeLogger LOGGER = NodeLogger.getLogger(FieldNodeSettingsPersistor.class);
+
+    @Override
+    default Tree<Modification> getModifications(final T obj) {
+        return Tree.leaf(new Modification(getDeprecatedConfigs(), settings -> {
+            T fromPrevious;
+            try {
+                fromPrevious = load(settings);
+            } catch (InvalidSettingsException ex) {
+                LOGGER.warn(
+                    String.format("Error when trying to load from previous settings when modifying settings on save. "
+                        + "Using the saved settings instead. Exception: %s", ex));
+                fromPrevious = obj;
+            }
+            final var newSettings = new NodeSettings("newSettings");
+            save(fromPrevious, newSettings);
+            return newSettings;
+        }));
+    }
 
     /**
      * @return an array of all config keys that are used to save the setting to the node settings

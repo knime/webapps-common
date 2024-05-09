@@ -44,60 +44,62 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Oct 9, 2023 (Paul Bärnreuther): created
+ *   May 29, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
+package org.knime.core.webui.node.dialog.modification.traversal;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
+import java.util.function.BiConsumer;
 
 /**
- * This field persistor transforms {@link String} node settings to enum values and vice versa by matching the enum
- * constant.
+ * Utility class used to traverse multiple trees simultaneously to apply modifications when saving settings from the
+ * dialog.
  *
  * @author Paul Bärnreuther
- * @param <E> The enum that should be persisted
  */
-public final class EnumFieldPersistor<E extends Enum<E>> implements FieldNodeSettingsPersistor<E> {
-
-    private final String m_configKey;
-
-    private final Class<E> m_enumClass;
+public class TreeTraversalUtil {
 
     /**
-     * @param configKey under which the string is to be stored
-     * @param enumClass the class of the to be persisted enum
+     * @param <L>
+     * @param <T>
+     * @param tree with leaves <L>
+     * @param treeStructure of type <T> - this has to satisfy the same structure as the tree
+     * @param applyOnLeaf a consumer that is applied for each leaf in a depth first approach. It consumes a leaf and the
+     *            corresponding tree structure obtained by following the same keys in the tree structure.
      */
-    public EnumFieldPersistor(final String configKey, final Class<E> enumClass) {
-        m_enumClass = enumClass;
-        m_configKey = configKey;
-    }
-
-    @Override
-    public E load(final NodeSettingsRO settings) throws InvalidSettingsException {
-        var name = settings.getString(m_configKey);
-        try {
-            return name == null ? null : Enum.valueOf(m_enumClass, name);
-        } catch (IllegalArgumentException ex) {
-            var values =
-                Arrays.stream(m_enumClass.getEnumConstants()).map(Enum::name).collect(Collectors.joining(", "));
-            throw new InvalidSettingsException(String.format("Invalid value '%s'. Possible values: %s", name, values),
-                ex);
+    public static <L, T> void traverse(final Tree<L> tree, final Traversable<T> treeStructure,
+        final BiConsumer<L, T> applyOnLeaf) {
+        final var leaf = tree.getLeaf();
+        if (leaf.isPresent()) {
+            applyOnLeaf.accept(leaf.get(), treeStructure.get());
+        } else {
+            final var next = tree.getChildren();
+            next.forEach(child -> traverse(child, applyKeyIfPresent(treeStructure, child), applyOnLeaf));
         }
     }
 
-    @Override
-    public void save(final E obj, final NodeSettingsWO settings) {
-        settings.addString(m_configKey, obj == null ? null : obj.name());
+    private static <T, L> Traversable<T> applyKeyIfPresent(final Traversable<T> treeStructure, final Tree<L> child) {
+        return child.getKey().map(key -> treeStructure.getChild(key)).orElse(treeStructure);
     }
 
-    @Override
-    public String[] getConfigKeys() {
-        return new String[]{m_configKey};
+    /**
+     * An object is traversable if it can be traversed alongside a {@link Tree}. An implementation of this interface
+     * serves as a wrapper around data structures which allow this.
+     *
+     * @param <T> the type data on which this structure is defined
+     * @author Paul Bärnreuther
+     */
+    public interface Traversable<T> {
+
+        /**
+         * @return the underlying data
+         */
+        T get();
+
+        /**
+         * @param key
+         * @return the child at the key
+         */
+        Traversable<T> getChild(String key);
     }
 
 }

@@ -145,7 +145,7 @@ final class ApplyData {
     private NodeSettings getToBeAppliedNodeSettings(final String data, final NodeSettings previousNodeSettings)
         throws InvalidSettingsException {
         var nodeSettings = cloneSettings(previousNodeSettings, "to_be_applied_settings");
-        populateNewSettings(data, nodeSettings);
+        populateNewSettings(data, nodeSettings, previousNodeSettings);
         return nodeSettings;
     }
 
@@ -157,10 +157,13 @@ final class ApplyData {
 
     /**
      * Transfer data into settings, i.e., apply the data to the settings
+     *
+     * @param previousNodeSettings
      */
-    private void populateNewSettings(final String data, final NodeSettings nodeSettings)
-        throws InvalidSettingsException {
+    private void populateNewSettings(final String data, final NodeSettings nodeSettings,
+        final NodeSettings previousNodeSettings) throws InvalidSettingsException {
         var settingsMap = new EnumMap<SettingsType, NodeAndVariableSettingsWO>(SettingsType.class);
+        var previousSettingsMap = new EnumMap<SettingsType, NodeSettingsRO>(SettingsType.class);
         for (var settingsType : m_settingsTypes) {
             nodeSettings.addNodeSettings(new NodeSettings(settingsType.getConfigKey()));
             nodeSettings.addNodeSettings(new NodeSettings(settingsType.getVariablesConfigKey()));
@@ -168,8 +171,9 @@ final class ApplyData {
                 getOrCreateSubSettings(nodeSettings, settingsType), //
                 new VariableSettings(nodeSettings, settingsType)//
             ));
+            previousSettingsMap.put(settingsType, getOrCreateSubSettings(previousNodeSettings, settingsType));
         }
-        m_nodeSettingsService.toNodeSettings(data, settingsMap);
+        m_nodeSettingsService.toNodeSettings(data, previousSettingsMap, settingsMap);
     }
 
     private Optional<ApplyDataSettings> getApplyDataSettings(final NodeSettings nodeSettings,
@@ -181,8 +185,6 @@ final class ApplyData {
     private void applyChange(final WorkflowManager wfm, final NodeID nodeID, final NodeSettings nodeSettings,
         final Optional<ApplyDataSettings> changedModelSettings, final Optional<ApplyDataSettings> changedViewSettings)
         throws InvalidSettingsException {
-        changedViewSettings.ifPresent(ApplyDataSettings::revertSettingsOverwrittenByVariables);
-        changedModelSettings.ifPresent(ApplyDataSettings::revertSettingsOverwrittenByVariables);
 
         if (changedViewSettings.isPresent()) {
             validateViewSettings(changedViewSettings.get());

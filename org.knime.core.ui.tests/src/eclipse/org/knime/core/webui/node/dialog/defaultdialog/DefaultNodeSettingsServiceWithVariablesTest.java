@@ -55,6 +55,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
+import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.webui.node.dialog.NodeAndVariableSettingsRO;
@@ -83,7 +84,7 @@ class DefaultNodeSettingsServiceWithVariablesTest {
         }
 
         @Override
-        public void toNodeSettings(final String textSettings,
+        public void toNodeSettings(final String textSettings, final Map<SettingsType, NodeSettingsRO> previousSettings,
             final Map<SettingsType, NodeAndVariableSettingsWO> settings) {
             setAddedNodeAndVariableSettingsValue(textSettings, settings);
         }
@@ -131,6 +132,10 @@ class DefaultNodeSettingsServiceWithVariablesTest {
         return Map.of(SettingsType.MODEL, NodeDialogTest.createNodeAndVariableSettingsWO(settings, variableSettings));
     }
 
+    private static final Map<SettingsType, NodeSettingsRO> createEmptyPreviousSettings() {
+        return Map.of(SettingsType.MODEL, new NodeSettings("previouseSettings"));
+    }
+
     @Test
     void testDelegateToNodeSettings() {
         final var service = getDefaultNodeSettingsServiceWithVariables();
@@ -138,7 +143,7 @@ class DefaultNodeSettingsServiceWithVariablesTest {
                 {"data": "dummyData"}
                 """;
         final var settings = new NodeSettings("model");
-        service.toNodeSettings(textSettings, createWOSettings(settings));
+        service.toNodeSettings(textSettings, createEmptyPreviousSettings(), createWOSettings(settings));
         assertThat(TestNodeSettingsService.getAddedNodeSettingsValue(createROSettings(settings)))
             .isEqualTo(textSettings);
     }
@@ -170,7 +175,8 @@ class DefaultNodeSettingsServiceWithVariablesTest {
         final var settings = new NodeSettings("model");
         settings.addString("model setting", "dummyData");
         final var variableSettings = new VariableSettings(new NodeSettings("variables"), settings);
-        service.toNodeSettings(textSettings, createWOSettings(settings, variableSettings));
+        service.toNodeSettings(textSettings, createEmptyPreviousSettings(),
+            createWOSettings(settings, variableSettings));
         assertThat(variableSettings.getUsedVariable("model setting")).isEqualTo("flowVar1");
     }
 

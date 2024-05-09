@@ -44,60 +44,43 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Oct 9, 2023 (Paul Bärnreuther): created
+ *   May 29, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
+package org.knime.core.webui.node.dialog.modification;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
-import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.webui.node.dialog.VariableSettingsRO;
 
 /**
- * This field persistor transforms {@link String} node settings to enum values and vice versa by matching the enum
- * constant.
+ * This record entails provisionally yet to be corrected node settings as well as previous settings from which parts can
+ * be used to correct the provisional settings and variable settings telling which parts need to be adapted (in addition
+ * to the information given by a {@link Modification}.
  *
+ * All of the fields might be empty since we traverse to each config of the provisional settings and there might not be
+ * any variable settings set of previous settings present (e.g. in an array layout when a new element has been added)
+ *
+ * @param provisionalSettings the settings that have been applied by the dialog and that need to be adjusted if they
+ *            differ from the applied variable settings
+ * @param previousSettings the settings as they were persisted before the dialog was opened.
+ * @param appliedVariableSettings the applied variable settings which could possibly not yet be in sync with the
+ *            settings.
  * @author Paul Bärnreuther
- * @param <E> The enum that should be persisted
  */
-public final class EnumFieldPersistor<E extends Enum<E>> implements FieldNodeSettingsPersistor<E> {
-
-    private final String m_configKey;
-
-    private final Class<E> m_enumClass;
+record ToBeModifiedSettings(Optional<NodeSettings> provisionalSettings, Optional<NodeSettingsRO> previousSettings,
+    Optional<VariableSettingsRO> appliedVariableSettings) {
 
     /**
-     * @param configKey under which the string is to be stored
-     * @param enumClass the class of the to be persisted enum
+     * @param appliedSettings
+     * @param previousSettings
+     * @param appliedVariableSettings
+     * @return to be modified settings
      */
-    public EnumFieldPersistor(final String configKey, final Class<E> enumClass) {
-        m_enumClass = enumClass;
-        m_configKey = configKey;
+    public static ToBeModifiedSettings of(final NodeSettings appliedSettings, final NodeSettingsRO previousSettings,
+        final VariableSettingsRO appliedVariableSettings) {
+        return new ToBeModifiedSettings(Optional.of(appliedSettings), Optional.of(previousSettings),
+            Optional.of(appliedVariableSettings));
     }
-
-    @Override
-    public E load(final NodeSettingsRO settings) throws InvalidSettingsException {
-        var name = settings.getString(m_configKey);
-        try {
-            return name == null ? null : Enum.valueOf(m_enumClass, name);
-        } catch (IllegalArgumentException ex) {
-            var values =
-                Arrays.stream(m_enumClass.getEnumConstants()).map(Enum::name).collect(Collectors.joining(", "));
-            throw new InvalidSettingsException(String.format("Invalid value '%s'. Possible values: %s", name, values),
-                ex);
-        }
-    }
-
-    @Override
-    public void save(final E obj, final NodeSettingsWO settings) {
-        settings.addString(m_configKey, obj == null ? null : obj.name());
-    }
-
-    @Override
-    public String[] getConfigKeys() {
-        return new String[]{m_configKey};
-    }
-
 }

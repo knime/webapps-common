@@ -53,9 +53,6 @@ import java.util.Optional;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.webui.node.dialog.SettingsTreeTraversalUtil.VariableSettingsTree;
-import org.knime.core.webui.node.dialog.internal.VariableSettings;
 
 /**
  * For either model or view settings, this class is used in ApplyData to compare against the previous settings and
@@ -114,26 +111,6 @@ final class ApplyDataSettings {
             return !Objects.equals(settings, previousSettings);
         }
         return false;
-    }
-
-    void revertSettingsOverwrittenByVariables() {
-        if (getVariables().isPresent()) {
-            SettingsTreeTraversalUtil.traverseSettingsTrees(
-                new VariableSettingsTree(this),
-                leaf -> {
-                    if (isVariableControllingSetting(leaf.variables())) {
-                        // replace the value of setting with the value of previousSetting
-                        var parent = (NodeSettings)leaf.settings().getParent();
-                        parent.addEntry(leaf.previousSettings());
-                    }
-                    return false;
-                });
-        }
-
-    }
-
-    private static boolean isVariableControllingSetting(final NodeSettingsRO variable) {
-        return variable.getString(VariableSettings.USED_VARIABLE_CFG_KEY, null) != null;
     }
 
     /**

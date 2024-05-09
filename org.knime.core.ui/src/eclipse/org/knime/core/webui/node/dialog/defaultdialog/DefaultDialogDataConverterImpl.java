@@ -57,8 +57,9 @@ import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DefaultDialogDataConverter;
 import org.knime.core.webui.node.dialog.defaultdialog.dataservice.FlowVariableDataServiceImpl;
-import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.JsonDataToNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.JsonDataToDefaultNodeSettingsUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.NodeSettingsToJsonFormsSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.ToNodeSettingsUtil;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -94,17 +95,13 @@ public final class DefaultDialogDataConverterImpl implements DefaultDialogDataCo
         this(Map.of(type, settingsClass));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public NodeSettings dataJsonToNodeSettings(final JsonNode root, final SettingsType type) {
-        return new JsonDataToNodeSettings(m_settingsClasses).toNodeSettings(root, type);
+        final var defaultNodeSettings =
+            JsonDataToDefaultNodeSettingsUtil.toDefaultNodeSettings(m_settingsClasses.get(type), root, type);
+        return ToNodeSettingsUtil.toNodeSettings(type, defaultNodeSettings);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public JsonNode nodeSettingsToDataJson(final SettingsType type, final NodeSettingsRO nodeSettings,
         final DefaultNodeSettingsContext context) throws InvalidSettingsException {

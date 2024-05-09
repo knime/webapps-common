@@ -175,7 +175,8 @@ public class NodeDialogTest {
         nodeSettings.addNodeSettings(viewSettings);
         var variableViewSettings = new VariableSettings(nodeSettings, SettingsType.VIEW);
         variableViewSettings.addExposedVariable("view_key2", "foo");
-        dataServiceManager.callApplyDataService(nncWrapper, settingsToString(modelSettings, viewSettings, null, variableViewSettings));
+        dataServiceManager.callApplyDataService(nncWrapper,
+            settingsToString(modelSettings, viewSettings, null, variableViewSettings));
         assertThat(nnc.getNodeContainerState().isExecuted()).isFalse();
         wfm.saveNodeSettings(nnc.getID(), newSettings);
         assertThat(newSettings.getNodeSettings(SettingsType.VIEW.getConfigKey())).isEqualTo(viewSettings);
@@ -231,7 +232,6 @@ public class NodeDialogTest {
      */
     @Test
     void testOnApplyNodeModifierForEmbeddedDialogs() throws Exception {
-
         var onApplyModifier = new TestOnApplyNodeModifer();
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var nnc = WorkflowManagerUtil.createAndAddNode(wfm,
@@ -259,31 +259,6 @@ public class NodeDialogTest {
             updatedViewSettings);
         dataServiceManager.callApplyDataService(nncWrapper,
             settingsToString(updatedModelSettings, updatedViewSettings));
-        assertThat(onApplyModifier.m_onApplyCalled).isTrue();
-
-        // Test that when settings are overridden by flow variables, these settings are always passed unchanged to the
-        // on apply modifier, i.e., their value is changed neither to the value of the overriding flow variable nor to
-        // any updated value provided via callApplyDataService.
-        var nodeSettings = new NodeSettings("node_settings");
-        wfm.saveNodeSettings(nnc.getID(), nodeSettings);
-        var viewVariables = (NodeSettings) nodeSettings.addNodeSettings("view_variables");
-        viewVariables.addString("version", "V_2019_09_13");
-        var viewVariable = viewVariables.addNodeSettings("tree").addNodeSettings("key");
-        viewVariable.addString("used_variable", "view_variable");
-        viewVariable.addString("exposed_variable", null);
-        var modelVariables = (NodeSettings) nodeSettings.addNodeSettings("variables");
-        modelVariables.addString("version", "V_2019_09_13");
-        var modelVariable = modelVariables.addNodeSettings("tree").addNodeSettings("key");
-        modelVariable.addString("used_variable", "model_variable");
-        modelVariable.addString("exposed_variable", null);
-        nnc.getFlowObjectStack().push(new FlowVariable("view_variable", "view_variable_value"));
-        nnc.getFlowObjectStack().push(new FlowVariable("model_variable", "model_variable_value"));
-        onApplyModifier.setExpected(nnc, updatedModelSettings, updatedModelSettings, updatedViewSettings,
-            updatedViewSettings);
-        dataServiceManager.callApplyDataService(nncWrapper,
-            settingsToString(initialModelSettings, initialViewSettings,
-                new VariableSettings(nodeSettings, SettingsType.MODEL),
-                new VariableSettings(nodeSettings, SettingsType.VIEW)));
         assertThat(onApplyModifier.m_onApplyCalled).isTrue();
     }
 
@@ -335,45 +310,18 @@ public class NodeDialogTest {
         dataServiceManager.deactivateDataServices(nncWrapper); // clean up data services (simulate closing of the dialog)
         assertThat(onApplyModifier.m_onApplyCalled).isTrue();
 
-        // Test that when settings are overridden by flow variables, these settings are always passed unchanged to the
-        // on apply modifier, i.e., their value is changed neither to the value of the overriding flow variable nor to
-        // any updated value provided via callApplyDataService.
-        var nodeSettings = new NodeSettings("node_settings");
-        wfm.saveNodeSettings(nnc.getID(), nodeSettings);
-        var viewVariables = (NodeSettings) nodeSettings.addNodeSettings("view_variables");
-        viewVariables.addString("version", "V_2019_09_13");
-        var viewVariable = viewVariables.addNodeSettings("tree").addNodeSettings("key");
-        viewVariable.addString("used_variable", "view_variable");
-        viewVariable.addString("exposed_variable", null);
-        var modelVariables = (NodeSettings) nodeSettings.addNodeSettings("variables");
-        modelVariables.addString("version", "V_2019_09_13");
-        var modelVariable = modelVariables.addNodeSettings("tree").addNodeSettings("key");
-        modelVariable.addString("used_variable", "model_variable");
-        modelVariable.addString("exposed_variable", null);
-        nnc.getFlowObjectStack().push(new FlowVariable("view_variable", "view_variable_value"));
-        nnc.getFlowObjectStack().push(new FlowVariable("model_variable", "model_variable_value"));
-        dataServiceManager.callApplyDataService(nncWrapper,
-            settingsToString(initialModelSettings, initialViewSettings,
-                new VariableSettings(nodeSettings, SettingsType.MODEL),
-                new VariableSettings(nodeSettings, SettingsType.VIEW)));
-        onApplyModifier.setExpected(nnc, updatedModelSettings, updatedModelSettings, updatedViewSettings,
-            updatedViewSettings);
-        dataServiceManager.deactivateDataServices(nncWrapper); // clean up data services (simulate closing of the dialog)
-        assertThat(onApplyModifier.m_onApplyCalled).isTrue();
-
         ApplyData.calledForEmbeddedDialogsPredicate = originalPredicate;
     }
 
     /**
      * Tests that settings that are controlled by flow variables are properly returned in the node dialog's initial data
-     * (i.e. with the flow variable value) and properly applied (i.e. ignored when being written into the node
-     * settings).
+     * (i.e. with the flow variable value).
      *
      * @throws IOException
      * @throws InvalidSettingsException
      */
     @Test
-    void testGetAndApplySettingsControlledByFlowVariables() throws IOException, InvalidSettingsException {
+    void testGetInitialSettingsControlledByFlowVariables() throws IOException, InvalidSettingsException {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var nnc = WorkflowManagerUtil.createAndAddNode(wfm,
             new NodeDialogNodeFactory(() -> createNodeDialog(Page.builder(() -> "test", "test.html").build(),
@@ -416,18 +364,6 @@ public class NodeDialogTest {
             .contains("\"model_key1\":{\"type\":\"string\",\"value\":\"model_variable_value\"}")
             .contains("\"modelVariables\":{\"model_key1\":{\"used\":\"model_variable\"}}")
             .contains("\"viewVariables\":{\"view_key1\":{\"used\":\"view_variable\"}}");
-
-        // make sure that any applied settings that are controlled by a flow variable, are ignored
-        // (i.e. aren't 'persisted' with the node settings)
-        viewSettings.addString("view_key1", "new_value_to_be_ignored_on_apply");
-        modelSettings.addString("model_key1", "new_value_to_be_ignored_on_apply");
-        dataServiceManager.callApplyDataService(nncWrapper,
-            settingsToString(modelSettings, viewSettings, new VariableSettings(nodeSettings, SettingsType.MODEL),
-                new VariableSettings(nodeSettings, SettingsType.VIEW)));
-        wfm.saveNodeSettings(nnc.getID(), nodeSettings);
-        assertThat(nodeSettings.getNodeSettings("view").getString("view_key1")).isEqualTo("view_setting_value");
-        assertThat(nodeSettings.getNodeSettings("model").getString("model_key1")).isEqualTo("model_setting_value");
-
         WorkflowManagerUtil.disposeWorkflow(wfm);
     }
 
