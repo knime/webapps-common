@@ -57,6 +57,10 @@ import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
+ *
+ * You probably don't need this! Only required if there is a {@link IsColumnOfTypeCondition} defined for the column
+ * selection; otherwise just use String. Will be removed with UIEXT-1717.
+ *
  * A class used to store a selected column together with additional information (e.g. type).
  *
  * @author Paul Bärnreuther
