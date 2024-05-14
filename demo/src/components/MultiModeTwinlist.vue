@@ -2,7 +2,7 @@
 import CodeExample from "./demo/CodeExample.vue";
 import MultiModeTwinlist from "webapps-common/ui/components/forms/MultiModeTwinlist.vue";
 import code from "webapps-common/ui/components/forms/MultiModeTwinlist.vue?raw";
-
+import type { PossibleValue } from "../../../ui/composables/types";
 const codeExample = `<MultiModeTwinlist
   :size="7"
   show-mode
@@ -59,7 +59,7 @@ export default {
   data() {
     return {
       codeExample,
-      selected: [],
+      selected: [] as PossibleValue[],
       manualSelection: {
         includedValues: ["missing", "spec1", "spec2"],
         excludedValues: [
@@ -170,7 +170,7 @@ export default {
             right-label="The selected stuff"
             mode-label="Selection mode"
             @update:selected="
-              (newSelected: any) => {
+              (newSelected: PossibleValue[]) => {
                 selected = newSelected;
               }
             "

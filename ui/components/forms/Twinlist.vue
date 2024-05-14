@@ -7,10 +7,18 @@ import ArrowNextIcon from "../../assets/img/icons/arrow-next.svg";
 import ArrowNextDoubleIcon from "../../assets/img/icons/arrow-next-double.svg";
 import ArrowPrevIcon from "../../assets/img/icons/arrow-prev.svg";
 import ArrowPrevDoubleIcon from "../../assets/img/icons/arrow-prev-double.svg";
-import { filters } from "../../../util/filters";
-import { computed, toRef, type PropType, type Ref } from "vue";
+import {
+  computed,
+  ref,
+  toRef,
+  type PropType,
+  type Ref,
+  type ComputedRef,
+} from "vue";
 import type { Id, PossibleValue } from "./possibleValues/PossibleValue";
 import createMissingItem from "./possibleValues/createMissingItem";
+import useSearch from "../../composables/useSearch";
+import useLabelInfoForSearchableWidgets from "../../composables/useLabelInfoForSearchableWidgets";
 
 const KEY_ENTER = "Enter";
 const MIN_LIST_SIZE = 5;
@@ -87,6 +95,7 @@ const useTwinlistModelValue = (modelValue: Ref<TwinlistModelValue>) => {
   const showUnknownValuesRight = computed(
     () => includeUnknownValues.value === true,
   );
+
   const getEmitValue = (
     newIncludedValues: Id[] | null,
     toNewExcluded: (oldVal: Id[] | null) => Id[] | null = (oldVal) => oldVal,
@@ -261,12 +270,135 @@ export default {
       showUnknownValuesRight,
       getEmitValue,
     } = useTwinlistModelValue(toRef(props, "modelValue"));
+
+    const searchTerm = ref<string>(props.initialSearchTerm);
+    const caseSensitiveSearch = ref<boolean>(props.initialCaseSensitiveSearch);
+    const possibleValues = ref<PossibleValue[]>(props.possibleValues);
+
+    const possibleValueIds = computed(() => {
+      return possibleValues.value.map((x) => x.id);
+    });
+
+    const possibleValueIdsSet = computed(() => {
+      return new Set(possibleValueIds.value);
+    });
+
+    const knownChosenValues = computed(() => {
+      if (!includedValues.value) {
+        return null;
+      }
+      if (showUnknownValuesRight.value) {
+        return includedValues.value.filter((id) =>
+          possibleValueIdsSet.value.has(id),
+        );
+      }
+      return includedValues.value;
+    });
+
+    const possibleValueMap = computed(() => {
+      return Object.assign(
+        {},
+        ...possibleValues.value.map((obj: PossibleValue, index) => ({
+          [obj.id]: { item: obj, index },
+        })),
+      );
+    });
+
+    const rightItems = computed(() => {
+      if (knownChosenValues.value === null) {
+        return [];
+      }
+      return knownChosenValues.value.map(
+        (value) =>
+          possibleValueMap.value[value]?.item || createMissingItem(value),
+      );
+    });
+
+    const right: ComputedRef<PossibleValue[]> = computed(() => {
+      if (!props.showSearch) {
+        return rightItems.value;
+      }
+      const { filteredValues: filteredRightItems } = useSearch(
+        searchTerm,
+        caseSensitiveSearch,
+        rightItems,
+      );
+      return filteredRightItems.value;
+    });
+
+    const knownExcludedValues = computed(() => {
+      if (!excludedValues.value) {
+        const chosenValuesSet = new Set(includedValues.value);
+        return possibleValueIds.value.filter((id) => !chosenValuesSet.has(id));
+      }
+      if (showUnknownValuesLeft.value) {
+        return excludedValues.value.filter((id) =>
+          possibleValueIdsSet.value.has(id),
+        );
+      }
+      return excludedValues.value;
+    });
+
+    const leftItems = computed(() => {
+      if (knownChosenValues.value === null) {
+        return [];
+      }
+      return knownExcludedValues.value.map(
+        (value) =>
+          possibleValueMap.value[value]?.item || createMissingItem(value),
+      );
+    });
+
+    const left: ComputedRef<PossibleValue[]> = computed(() => {
+      if (!props.showSearch) {
+        return leftItems.value;
+      }
+      const { filteredValues: filteredLeftItems } = useSearch(
+        searchTerm,
+        caseSensitiveSearch,
+        leftItems,
+      );
+      return filteredLeftItems.value;
+    });
+
+    const hasActiveSearch = computed(() => {
+      return props.showSearch && searchTerm.value !== "";
+    });
+
+    const excludedLabels = computed(() => {
+      if (!props.showSearch) {
+        return null;
+      }
+      return hasActiveSearch.value
+        ? useLabelInfoForSearchableWidgets(left, knownExcludedValues).value
+        : null;
+    });
+
+    const includedLabels = computed(() => {
+      if (!props.showSearch) {
+        return null;
+      }
+      return hasActiveSearch.value
+        ? useLabelInfoForSearchableWidgets(right, knownChosenValues).value
+        : null;
+    });
+
     return {
       includedValues,
       excludedValues,
       showUnknownValuesLeft,
       showUnknownValuesRight,
       getEmitValue,
+      searchTerm,
+      left,
+      right,
+      knownExcludedValues,
+      knownChosenValues,
+      possibleValueIds,
+      possibleValueIdsSet,
+      excludedLabels,
+      includedLabels,
+      caseSensitiveSearch,
     };
   },
   data() {
@@ -274,8 +406,6 @@ export default {
       invalidPossibleValueIds: new Set(),
       rightSelected: [] as Id[],
       leftSelected: [] as Id[],
-      searchTerm: this.initialSearchTerm,
-      caseSensitiveSearch: this.initialCaseSensitiveSearch,
       unknownValuesId: Symbol("Unknown values"),
     };
   },
@@ -288,57 +418,6 @@ export default {
         })),
       ) as Record<Id, { item: PossibleValue; index: number }>;
     },
-    possibleValueIds() {
-      return this.possibleValues.map((x) => x.id);
-    },
-    possibleValueIdsSet() {
-      return new Set(this.possibleValueIds);
-    },
-    knownExcludedValues() {
-      if (!this.excludedValues) {
-        const chosenValuesSet = new Set(this.includedValues);
-        return this.possibleValueIds.filter((id) => !chosenValuesSet.has(id));
-      }
-      if (this.showUnknownValuesLeft) {
-        return this.excludedValues.filter((id) =>
-          this.possibleValueIdsSet.has(id),
-        );
-      }
-      return this.excludedValues;
-    },
-    knownChosenValues() {
-      if (!this.includedValues) {
-        return null;
-      }
-      if (this.showUnknownValuesRight) {
-        return this.includedValues.filter((id) =>
-          this.possibleValueIdsSet.has(id),
-        );
-      }
-      return this.includedValues;
-    },
-    leftItems() {
-      if (this.knownChosenValues === null) {
-        return [];
-      }
-      return this.knownExcludedValues
-        .map(
-          (value) =>
-            this.possibleValueMap[value]?.item || createMissingItem(value),
-        )
-        .filter((value) => this.itemMatchesSearch(value));
-    },
-    rightItems() {
-      if (this.knownChosenValues === null) {
-        return [];
-      }
-      return this.knownChosenValues
-        .map(
-          (value) =>
-            this.possibleValueMap[value]?.item || createMissingItem(value),
-        )
-        .filter((value) => this.itemMatchesSearch(value));
-    },
     listSize() {
       // fixed size even when showing all to prevent height jumping when moving items between lists
       const size = this.size === 0 ? this.possibleValues.length : this.size;
@@ -346,52 +425,16 @@ export default {
       return size > MIN_LIST_SIZE ? size : MIN_LIST_SIZE;
     },
     moveAllRightButtonDisabled() {
-      return this.leftItems.length === 0 && !this.showUnknownValuesLeft;
+      return this.left.length === 0 && !this.showUnknownValuesLeft;
     },
     moveRightButtonDisabled() {
       return this.leftSelected.length === 0;
     },
     moveAllLeftButtonDisabled() {
-      return this.rightItems.length === 0 && !this.showUnknownValuesRight;
+      return this.right.length === 0 && !this.showUnknownValuesRight;
     },
     moveLeftButtonDisabled() {
       return this.rightSelected.length === 0;
-    },
-    normalizedSearchTerm() {
-      if (!this.showSearch) {
-        return "";
-      }
-      return filters.search.normalize(
-        this.searchTerm,
-        this.caseSensitiveSearch,
-      );
-    },
-    numAllItems() {
-      return this.numAllLeftItems + this.numAllRightItems;
-    },
-    numAllRightItems() {
-      if (this.knownChosenValues === null) {
-        return 0;
-      }
-      return this.knownChosenValues.length;
-    },
-    numAllLeftItems() {
-      return this.knownExcludedValues.length;
-    },
-    numShownRightItems() {
-      return this.rightItems.length;
-    },
-    numShownLeftItems() {
-      return this.leftItems.length;
-    },
-    hasActiveSearch() {
-      return this.showSearch && this.searchTerm !== "";
-    },
-    leftInfo() {
-      return this.getInfoText(this.numShownLeftItems, this.numAllLeftItems);
-    },
-    rightInfo() {
-      return this.getInfoText(this.numShownRightItems, this.numAllRightItems);
     },
   },
   watch: {
@@ -509,7 +552,7 @@ export default {
       this.moveRight();
     },
     onMoveAllRightButtonClick() {
-      const leftItemsIds = this.leftItems.map((x) => x.id);
+      const leftItemsIds = this.left.map((x) => x.id);
       this.moveRight(
         leftItemsIds.concat(
           this.showUnknownValuesLeft ? [this.unknownValuesId] : [],
@@ -532,7 +575,7 @@ export default {
       this.moveLeft();
     },
     onMoveAllLeftButtonClick() {
-      const rightItemIds = this.rightItems.map((x) => x.id);
+      const rightItemIds = this.right.map((x) => x.id);
       this.moveLeft(
         rightItemIds.concat(
           this.showUnknownValuesRight ? [this.unknownValuesId] : [],
@@ -587,27 +630,14 @@ export default {
     },
     validate() {
       let isValid =
-        !this.rightItems.some((x) => x.invalid) &&
-        (!this.excludedValues || !this.leftItems.some((x) => x.invalid));
+        !this.right.some((x) => x.invalid) &&
+        (!this.excludedValues || !this.left.some((x) => x.invalid));
       return {
         isValid,
         errorMessage: isValid
           ? null
           : "One or more of the selected items is invalid.",
       };
-    },
-    itemMatchesSearch(item: PossibleValue) {
-      return filters.search.test(
-        item.text,
-        this.normalizedSearchTerm,
-        this.caseSensitiveSearch,
-        false,
-      );
-    },
-    getInfoText(numShownItems: number, numAllItems: number) {
-      return this.hasActiveSearch
-        ? `${numShownItems} of ${numAllItems} entries`
-        : null;
     },
   },
 };
@@ -643,8 +673,8 @@ export default {
         <div class="label" :title="leftLabel">
           {{ leftLabel }}
         </div>
-        <div v-if="leftInfo" :title="leftInfo" class="info">
-          {{ leftInfo }}
+        <div v-if="excludedLabels" :title="excludedLabels" class="info">
+          {{ excludedLabels }}
         </div>
       </div>
       <div class="space" />
@@ -652,8 +682,8 @@ export default {
         <div class="label" :title="rightLabel">
           {{ rightLabel }}
         </div>
-        <div v-if="rightInfo" :title="rightInfo" class="info">
-          {{ rightInfo }}
+        <div v-if="includedLabels" :title="includedLabels" class="info">
+          {{ includedLabels }}
         </div>
       </div>
     </div>
@@ -670,7 +700,7 @@ export default {
         :with-bottom-value="showUnknownValuesLeft"
         :bottom-value="{ id: unknownValuesId, text: unknownValuesText }"
         :is-valid="isValid"
-        :possible-values="leftItems"
+        :possible-values="left"
         :ariaLabel="leftLabel"
         :disabled="disabled"
         @double-click-on-item="onLeftListBoxDoubleClick"
@@ -732,7 +762,7 @@ export default {
         :with-is-empty-state="showEmptyState"
         :empty-state-label="emptyStateLabel"
         :empty-state-component="emptyStateComponent"
-        :possible-values="rightItems"
+        :possible-values="right"
         :size="listSize"
         :ariaLabel="rightLabel"
         :disabled="disabled"
@@ -889,3 +919,4 @@ export default {
   }
 }
 </style>
+../../composables/useLabelInfoForSearchableWidgets

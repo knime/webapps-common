@@ -107,6 +107,9 @@ const demoComponents = {
     Checkboxes: defineAsyncComponent(
       () => import("./components/Checkboxes.vue"),
     ),
+    SearchableCheckboxes: defineAsyncComponent(
+      () => import("./components/SearchableCheckboxes.vue"),
+    ),
     ComboBox: defineAsyncComponent(() => import("./components/ComboBox.vue")),
     RadioButtons: defineAsyncComponent(
       () => import("./components/RadioButtons.vue"),
@@ -127,6 +130,9 @@ const demoComponents = {
     ),
     MultiselectListBox: defineAsyncComponent(
       () => import("./components/MultiselectListBox.vue"),
+    ),
+    SearchableList: defineAsyncComponent(
+      () => import("./components/SearchableList.vue"),
     ),
     StyledListItem: defineAsyncComponent(
       () => import("./components/StyledListItem.vue"),

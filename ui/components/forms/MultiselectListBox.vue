@@ -1,8 +1,12 @@
-<script>
+<!-- eslint-disable max-lines -->
+<script lang="ts">
 import debounce from "../../../util/debounce";
 import StyledListItem from "../StyledListItem.vue";
 import { useVirtualList } from "@vueuse/core";
 import { toRef, watch } from "vue";
+import type { Id, PossibleValue, BottomValue } from "../../composables/types";
+
+import type { PropType, HTMLAttributes } from "vue";
 
 let count = 0;
 const CLICK_META_KEY_TIMEOUT = 250; // ms
@@ -17,7 +21,7 @@ export default {
       },
     },
     modelValue: {
-      type: Array,
+      type: Array as PropType<Id[] | null>,
       default: () => [],
     },
     disabled: {
@@ -58,9 +62,9 @@ export default {
       default: false,
     },
     bottomValue: {
-      type: Object,
+      type: Object as PropType<BottomValue>,
       default: () => ({ id: "bottom", text: "Other" }),
-      validator(value) {
+      validator(value: BottomValue) {
         return value.hasOwnProperty("id") && value.hasOwnProperty("text");
       },
     },
@@ -71,7 +75,7 @@ export default {
     size: {
       type: Number,
       default: 0,
-      validator(value) {
+      validator(value: number) {
         return value >= 0;
       },
     },
@@ -95,7 +99,7 @@ export default {
      * }]
      */
     possibleValues: {
-      type: Array,
+      type: Array as PropType<PossibleValue[]>,
       default: () => [],
       validator(values) {
         if (!Array.isArray(values)) {
@@ -133,11 +137,11 @@ export default {
         if (!containerProps.ref.value) {
           return;
         }
-
+        const scrollTop = containerProps.ref.value?.scrollTop ?? 0;
         scrollTo(
           Math.max(
             Math.min(
-              Math.floor(containerProps.ref.value.scrollTop / optionLineHeight),
+              Math.floor(scrollTop / optionLineHeight),
               props.possibleValues.length - 1,
             ),
             0,
@@ -164,6 +168,9 @@ export default {
     };
   },
   computed: {
+    getContainerProps() {
+      return this.containerProps as HTMLAttributes;
+    },
     cssStyleSize() {
       // add two pixel to prevent scrollbar bugs
       const pxSize = `${this.size * this.optionLineHeight + 2}px`;
@@ -193,12 +200,11 @@ export default {
   mounted() {
     window.addEventListener("mouseup", this.onStopDrag);
     // set key nav index to last value
-    if (this.modelValue.length > 0) {
-      const lastItem = this.modelValue[this.modelValue.length - 1];
-      this.currentKeyNavIndex = this.possibleValues
-        .map((x) => x.id)
-        .indexOf(lastItem);
-    }
+
+    const lastItem = this.modelValue?.[this.modelValue?.length - 1];
+    this.currentKeyNavIndex = this.possibleValues
+      .map((x) => x.id)
+      .indexOf(lastItem as Id);
   },
   beforeUnmount() {
     window.removeEventListener("mouseup", this.onStopDrag);
@@ -206,20 +212,33 @@ export default {
   created() {
     // the mac emits the click event  multiple times when the metaKey (cmd/command) is hold
     // this does not work well with the toggling of selected items, therefore we debounce it
-    this.debouncedHandleCtrlClick = debounce(
-      this.handleCtrlClick,
-      CLICK_META_KEY_TIMEOUT,
-    );
+    this.createDebouncedHandleCtrlClick();
   },
   methods: {
-    isCurrentValue(candidate) {
-      return this.selectedValues.includes(candidate);
+    createDebouncedHandleCtrlClick() {
+      // Create a debounced version of handleCtrlClick using the debounce function
+      this.debouncedHandleCtrlClick = debounce((value: Id, index: number) => {
+        this.handleCtrlClick(value, index);
+      }, CLICK_META_KEY_TIMEOUT);
     },
-    handleCtrlClick(value, index) {
+    // Define debouncedHandleCtrlClick as a method
+    debouncedHandleCtrlClick(value: Id, index: number) {
+      if (!this.debouncedHandleCtrlClick) {
+        // If debouncedHandleCtrlClick is not initialized yet, call createDebouncedHandleCtrlClick
+        this.createDebouncedHandleCtrlClick();
+      }
+      // Call the debounced function
+      this.debouncedHandleCtrlClick(value, index);
+    },
+
+    isCurrentValue(candidate: Id) {
+      return this.selectedValues?.includes(candidate);
+    },
+    handleCtrlClick(value: Id, index: number) {
       this.currentKeyNavIndex = index;
       this.toggleSelection(value);
     },
-    handleShiftClick(value, clickedIndex) {
+    handleShiftClick(value: Id, clickedIndex: number) {
       this.setSelected(
         this.getPossibleValuesInSection(this.currentKeyNavIndex, clickedIndex),
       );
@@ -230,14 +249,14 @@ export default {
      * @param {Number} secondIndex - index b
      * @returns {String[]}
      */
-    getPossibleValuesInSection(firstIndex, secondIndex) {
+    getPossibleValuesInSection(firstIndex: number, secondIndex: number) {
       const start = firstIndex > secondIndex ? secondIndex : firstIndex;
       const end = firstIndex > secondIndex ? firstIndex : secondIndex;
       return this.possibleValuesWithBottom
         .slice(start, end + 1)
         .map((x) => x.id);
     },
-    onStartDrag(e, isBottom = false) {
+    onStartDrag(e: MouseEvent, isBottom = false) {
       if (this.disabled) {
         return;
       }
@@ -249,16 +268,20 @@ export default {
       if (e.ctrlKey || e.metaKey) {
         this.draggingInverseMode = true;
       }
+
+      const target = e.target as HTMLElement;
       const index = isBottom
         ? this.bottomIndex
-        : e.target.getAttribute("data-option-index");
+        : target.getAttribute("data-option-index");
       if (index) {
         this.draggingStartIndex = Number(index);
       }
     },
-    onDrag(e) {
+    onDrag(e: MouseEvent) {
       if (this.draggingStartIndex !== -1) {
-        const dataIndex = e.target.getAttribute("data-option-index");
+        // With out HTMLElement type typescript couldn't find getAttribute
+        const target = e.target as HTMLElement;
+        const dataIndex = target.getAttribute("data-option-index");
         if (!dataIndex) {
           return;
         }
@@ -269,18 +292,18 @@ export default {
         );
         // inverse mode means we remove all selected values from the current selection
         if (this.draggingInverseMode) {
-          sectionValues = this.selectedValues.filter(
+          sectionValues = (this.selectedValues as Id[]).filter(
             (x) => !sectionValues.includes(x),
           );
         }
         this.setSelected(sectionValues);
       }
     },
-    onBottomStartDrag(e) {
+    onBottomStartDrag(e: MouseEvent) {
       this.focus();
       this.onStartDrag(e);
     },
-    onBottomDrag(e) {
+    onBottomDrag(e: MouseEvent) {
       this.focus();
       this.onDrag(e);
     },
@@ -288,7 +311,7 @@ export default {
       this.draggingStartIndex = -1;
       this.draggingInverseMode = false;
     },
-    handleClick($event, value, index) {
+    handleClick($event: MouseEvent, value: Id, index: number) {
       if (this.disabled) {
         return;
       }
@@ -313,13 +336,13 @@ export default {
       this.currentKeyNavIndex = index;
       this.toggleSelection(value);
     },
-    handleDblClick(id, index) {
+    handleDblClick(id: Id, index: number) {
       if (this.disabled) {
         return;
       }
       this.$emit("doubleClickOnItem", id, index);
     },
-    handleBottomClick($event) {
+    handleBottomClick($event: MouseEvent) {
       this.handleClick($event, this.bottomValue.id, this.bottomIndex);
       this.focus();
     },
@@ -332,44 +355,44 @@ export default {
       }
       this.$emit("doubleClickShift", this.selectedValues);
     },
-    addToSelection(value) {
+    addToSelection(value: Id) {
       let added = false;
       const selectedValues = this.selectedValues;
-      if (!selectedValues.includes(value)) {
-        selectedValues.push(value);
+      if (!selectedValues?.includes(value)) {
+        selectedValues?.push(value);
         added = true;
       }
-      this.setSelected(selectedValues);
+      this.setSelected(selectedValues as Id[]);
       return added;
     },
-    removeFromSelection(value) {
+    removeFromSelection(value: Id) {
       let removed = false;
       const selectedValues = this.selectedValues;
-      if (selectedValues.includes(value)) {
+      if (selectedValues?.includes(value)) {
         selectedValues.splice(selectedValues.indexOf(value), 1);
         removed = true;
       }
-      this.setSelected(selectedValues);
+      this.setSelected(selectedValues as Id[]);
       return removed;
     },
-    toggleSelection(value) {
-      if (this.selectedValues.includes(value)) {
+    toggleSelection(value: Id) {
+      if (this.selectedValues?.includes(value)) {
         this.removeFromSelection(value);
       } else {
         this.addToSelection(value);
       }
     },
-    setSelectedNoShiftReset(values) {
+    setSelectedNoShiftReset(values: Id[]) {
       consola.trace("MultiselectListBox setSelected on", values);
       this.selectedValues = values;
       this.$emit("update:modelValue", values);
     },
-    setSelected(values) {
+    setSelected(values: Id[]) {
       // reset shift start index on every change to selected values but shift operations itself
       this.shiftStartIndex = -1;
       this.setSelectedNoShiftReset(values);
     },
-    setSelectedToIndex(index) {
+    setSelectedToIndex(index: number) {
       const item = this.possibleValuesWithBottom[index];
       if (item && item.id) {
         this.setSelected([item.id]);
@@ -379,42 +402,27 @@ export default {
       if (this.currentKeyNavIndex === this.bottomIndex) {
         return;
       }
-      this.scrollIntoView(this.currentKeyNavIndex);
+      this.scrollIntoView();
     },
-    scrollIntoView(index, mode = "auto") {
+    scrollIntoView() {
       if (!this.containerProps.ref.value) {
         return;
       }
       const listBoxNode = this.containerProps.ref.value;
-      if (listBoxNode.scrollHeight > listBoxNode.clientHeight) {
-        const scrollBottom = listBoxNode.clientHeight + listBoxNode.scrollTop;
-        const elementTop = index * this.optionLineHeight;
-        const elementBottom = elementTop + this.optionLineHeight;
-        const elementIsAboveScreen = elementTop < listBoxNode.scrollTop;
-        const elementIsBelowScreen = elementBottom > scrollBottom;
-        if (!(elementIsBelowScreen || elementIsAboveScreen)) {
-          return;
-        }
-        const scrollToTopEdge =
-          mode === "up" || (mode === "auto" && elementIsAboveScreen);
-
-        if (scrollToTopEdge) {
-          listBoxNode.scrollTop = elementTop;
-        } else {
-          listBoxNode.scrollTop = elementBottom - listBoxNode.clientHeight;
+      if (listBoxNode) {
+        if (listBoxNode.scrollHeight > listBoxNode.clientHeight) {
+          const scrollBottom = listBoxNode.clientHeight + listBoxNode.scrollTop;
+          const elementTop = this.currentKeyNavIndex * this.optionLineHeight;
+          const elementBottom = elementTop + this.optionLineHeight;
+          if (elementBottom > scrollBottom) {
+            listBoxNode.scrollTop = elementBottom - listBoxNode.clientHeight;
+          } else if (elementTop < listBoxNode.scrollTop) {
+            listBoxNode.scrollTop = elementTop;
+          }
         }
       }
     },
-    scrollUpIntoView(index) {
-      this.scrollIntoView(index, "up");
-    },
-    scrollDownIntoView(index) {
-      this.scrollIntoView(index, "down");
-    },
-    setCurrentKeyNavIndex(index) {
-      this.currentKeyNavIndex = index;
-    },
-    isOutOfRange(index) {
+    isOutOfRange(index: number) {
       if (index < 0) {
         return true;
       }
@@ -488,14 +496,18 @@ export default {
       const next = this.possibleValues.length - 1;
       this.setSelectedToIndex(next);
       this.currentKeyNavIndex = next;
-      this.containerProps.ref.value.scrollTop =
-        this.containerProps.ref.value.scrollHeight;
+      if (this.containerProps.ref.value) {
+        this.containerProps.ref.value.scrollTop =
+          this.containerProps.ref.value.scrollHeight;
+      }
     },
     onHomeKey() {
       const next = 0;
       this.setSelectedToIndex(next);
       this.currentKeyNavIndex = next;
-      this.containerProps.ref.value.scrollTop = 0;
+      if (this.containerProps.ref.value) {
+        this.containerProps.ref.value.scrollTop = 0;
+      }
     },
     onArrowLeft() {
       if (this.disabled) {
@@ -517,7 +529,7 @@ export default {
       this.setSelected(this.possibleValuesWithBottom.map((x) => x.id));
     },
     hasSelection() {
-      return this.selectedValues.length > 0;
+      return (this.selectedValues as Id[]).length > 0;
     },
     getCurrentKeyNavItem() {
       try {
@@ -529,19 +541,19 @@ export default {
         };
       }
     },
-    generateOptionId(item) {
+    generateOptionId(item: PossibleValue) {
       if (!item) {
         return "";
       }
       const id = typeof item.id === "symbol" ? item.id.description : item.id;
-      const cleanId = id.replace(/[^\w]/gi, "");
+      const cleanId = id && (id as string).replace(/[^\w]/gi, "");
       return `option-${this.id}-${cleanId}`;
     },
     focus() {
       if (this.disabled) {
         return;
       }
-      this.containerProps.ref.value.focus();
+      this.containerProps.ref.value?.focus();
     },
     clearSelection() {
       if (this.disabled) {
@@ -560,7 +572,7 @@ export default {
   >
     <div class="box">
       <ul
-        v-bind="containerProps"
+        v-bind="getContainerProps"
         :id="id"
         role="listbox"
         tabindex="0"
@@ -583,7 +595,7 @@ export default {
           <StyledListItem
             v-for="{ data: item, index } of list"
             :id="generateOptionId(item)"
-            :key="`listbox-${item.id}`"
+            :key="`listbox-${item.id as string}`"
             :text="item.text"
             :data-option-index="index"
             :line-height="optionLineHeight"

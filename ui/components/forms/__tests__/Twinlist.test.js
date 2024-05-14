@@ -760,6 +760,7 @@ describe("Twinlist.vue", () => {
       props = { ...props, showSearch: false, initialSearchTerm: "3" };
       const wrapper = mount(Twinlist, { props });
       let boxes = wrapper.findAllComponents(MultiselectListBox);
+
       let left = boxes.at(0);
       let right = boxes.at(1);
 
@@ -893,7 +894,8 @@ describe("Twinlist.vue", () => {
       expect(right.props("possibleValues").length).toBe(1);
       expect(right.props("possibleValues")[0].text).toBe("Text 2");
 
-      await wrapper.setData({ caseSensitiveSearch: true });
+      const childComponent = wrapper.findComponent(SearchInput);
+      await childComponent.vm.toggleCaseSensitiveSearch();
 
       expect(left.props("possibleValues").length).toBe(0);
       expect(right.props("possibleValues").length).toBe(0);
@@ -926,7 +928,10 @@ describe("Twinlist.vue", () => {
         wrapper.findAllComponents(MultiselectListBox).at(0).props()
           .possibleValues.length,
       ).toBe(1);
-      expect(wrapper.vm.numAllItems).toBe(1);
+      const numAllItems =
+        wrapper.vm.knownExcludedValues.length +
+        wrapper.vm.knownChosenValues.length;
+      expect(numAllItems).toBe(1);
     });
 
     it("shows missing excluded values", () => {
