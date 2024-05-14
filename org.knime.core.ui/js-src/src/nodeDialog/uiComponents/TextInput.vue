@@ -1,20 +1,23 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { ref } from "vue";
 import InputField from "webapps-common/ui/components/forms/InputField.vue";
 import LabeledInput from "./label/LabeledInput.vue";
 import useDialogControl from "../composables/components/useDialogControl";
 import { rendererProps } from "@jsonforms/vue";
 import useHideOnNull from "./composables/useHideOnNull";
 import Checkbox from "webapps-common/ui/components/forms/Checkbox.vue";
+import useProvidedState from "../composables/components/useProvidedState";
 
 const props = defineProps(rendererProps());
 const { onChange, control, disabled } = useDialogControl<
   string | null | undefined
 >({ props });
 
-const placeholder = computed(
-  () => control.value.uischema.options?.placeholder ?? "",
+const placeholder = useProvidedState(
+  control.value.uischema.options?.placeholderProvider,
+  control.value.uischema.options?.placeholder ?? "",
 );
+
 const controlElement = ref(null);
 const { showCheckbox, showControl, checkboxProps } = useHideOnNull(
   {

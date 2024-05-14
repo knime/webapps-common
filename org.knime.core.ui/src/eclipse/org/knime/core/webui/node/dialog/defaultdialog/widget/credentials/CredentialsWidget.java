@@ -55,6 +55,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.NoopBooleanProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 
 /**

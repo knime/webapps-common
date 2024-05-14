@@ -82,7 +82,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Creden
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.FileExtensionProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
@@ -202,7 +201,7 @@ class DefaultNodeDialogDataServiceImplTest {
                 @ValueReference(MyValueRef.class)
                 String m_dependency;
 
-                static final class MyFileExtensionProvider implements FileExtensionProvider {
+                static final class MyFileExtensionProvider implements StateProvider<String> {
 
                     private Supplier<String> m_valueSupplier;
 

@@ -44,30 +44,29 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Feb 13, 2024 (Paul Bärnreuther): created
+ *   Feb 27, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget;
+package org.knime.core.webui.node.dialog.defaultdialog.widget.updates;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 
 /**
+ * Marker class used as ignored default only.
  *
- * Marker class that is only meant to serve as a default in {@link FileWriterWidget#fileExtensionProvider()} and
- * {@link LocalFileWriterWidget#fileExtensionProvider()}.
- *
- * @noreference
  * @author Paul Bärnreuther
  */
-public final class AllFileExtensionsAllowedProvider implements FileExtensionProvider {
+public final class NoopBooleanProvider implements StateProvider<Boolean> {
 
     @Override
     public void init(final StateProviderInitializer initializer) {
         throw new IllegalStateException("This method should never be called");
+
     }
 
     @Override
-    public String computeState(final DefaultNodeSettingsContext context) {
+    public Boolean computeState(final DefaultNodeSettingsContext context) {
         throw new IllegalStateException("This method should never be called");
+
     }
 
 }

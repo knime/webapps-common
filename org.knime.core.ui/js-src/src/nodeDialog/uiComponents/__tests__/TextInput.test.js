@@ -8,6 +8,7 @@ import TextInput from "../TextInput.vue";
 import LabeledInput from "../label/LabeledInput.vue";
 import DialogLabel from "../label/DialogLabel.vue";
 import InputField from "webapps-common/ui/components/forms/InputField.vue";
+import flushPromises from "flush-promises";
 
 describe("TextInput.vue", () => {
   let defaultProps, wrapper, component;
@@ -91,6 +92,32 @@ describe("TextInput.vue", () => {
 
   it("sets correct label", () => {
     expect(wrapper.find("label").text()).toBe(defaultProps.control.label);
+  });
+
+  it("sets correct placeholder text", () => {
+    defaultProps.control.uischema.options.placeholder = "Bond";
+    const { wrapper } = mountJsonFormsComponent(TextInput, {
+      props: defaultProps,
+    });
+    expect(wrapper.findComponent(InputField).props("placeholder")).toBe("Bond");
+  });
+
+  it("sets correct placeholder from provider", async () => {
+    defaultProps.control.uischema.options.placeholderProvider =
+      "somePlaceholderID";
+
+    let providePlaceholder;
+    const addStateProviderListenerMock = vi.fn((_id, callback) => {
+      providePlaceholder = callback;
+    });
+
+    const { wrapper } = mountJsonFormsComponent(TextInput, {
+      props: defaultProps,
+      provide: { addStateProviderListenerMock },
+    });
+    providePlaceholder("Bond");
+    await flushPromises();
+    expect(wrapper.findComponent(InputField).props("placeholder")).toBe("Bond");
   });
 
   it("disables input when controlled by a flow variable", () => {

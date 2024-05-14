@@ -76,7 +76,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ComboBoxWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.FileExtensionProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileReaderWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
@@ -956,7 +955,7 @@ class UiSchemaOptionsTest {
     static final class MyValueRef implements Reference<String> {
     }
 
-    static final class MyFileExtensionProvider implements FileExtensionProvider {
+    static final class MyFileExtensionProvider implements StateProvider<String> {
 
         @Override
         public void init(final StateProviderInitializer initializer) {
@@ -1056,6 +1055,49 @@ class UiSchemaOptionsTest {
         var response = buildTestUiSchema(FileWriterWidgetTestSettings.class);
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("fileReader");
         assertThatJson(response).inPath("$.elements[0].options.fileExtensions").isArray().containsExactly("txt", "csv");
+    }
+
+    @Test
+    void testTextInputWidget() {
+        class TextInputWidgetTestSettings implements DefaultNodeSettings {
+
+            static final class PlaceholderProvider implements StateProvider<String> {
+
+                @Override
+                public void init(final StateProviderInitializer initializer) {
+                    throw new IllegalStateException("This method should never be called");
+                }
+
+                @Override
+                public String computeState(final DefaultNodeSettingsContext context) {
+                    throw new IllegalStateException("This method should never be called");
+                }
+
+            }
+
+            @Widget(title = "", description = "")
+            @TextInputWidget(placeholder = "Bond")
+            String m_textInputPlaceholder;
+
+            @Widget(title = "", description = "")
+            @TextInputWidget(placeholderProvider = PlaceholderProvider.class)
+            String m_textInputPlaceholderProvider;
+
+            @Widget(title = "", description = "")
+            @TextInputWidget(optional = true)
+            String m_textInputOptional;
+        }
+
+        var response = buildTestUiSchema(TextInputWidgetTestSettings.class);
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("textInputPlaceholder");
+        assertThatJson(response).inPath("$.elements[0].options.placeholder").isString().isEqualTo("Bond");
+
+        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("textInputPlaceholderProvider");
+        assertThatJson(response).inPath("$.elements[1].options.placeholderProvider").isString()
+            .isEqualTo(TextInputWidgetTestSettings.PlaceholderProvider.class.getName());
+
+        assertThatJson(response).inPath("$.elements[2].scope").isString().contains("textInputOptional");
+        assertThatJson(response).inPath("$.elements[2].options.hideOnNull").isBoolean().isTrue();
     }
 
 }

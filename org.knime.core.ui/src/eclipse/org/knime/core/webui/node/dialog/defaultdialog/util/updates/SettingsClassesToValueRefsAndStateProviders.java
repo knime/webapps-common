@@ -65,13 +65,14 @@ import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFi
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.Configuration;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.AllFileExtensionsAllowedProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesStateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.CredentialsWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.NoopBooleanProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.NoopBooleanProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.NoopStringProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueProvider;
@@ -142,27 +143,32 @@ final class SettingsClassesToValueRefsAndStateProviders {
             new UiStateProviderSpec<>(//
                 FileWriterWidget.class, //
                 FileWriterWidget::fileExtensionProvider, //
-                AllFileExtensionsAllowedProvider.class //
+                NoopStringProvider.class //
             ), //
-            new UiStateProviderSpec<>(//
+            new UiStateProviderSpec<>( //
                 LocalFileWriterWidget.class, //
                 LocalFileWriterWidget::fileExtensionProvider, //
-                AllFileExtensionsAllowedProvider.class//
+                NoopStringProvider.class //
             ), //
-            new UiStateProviderSpec<>(//
+            new UiStateProviderSpec<>( //
                 CredentialsWidget.class, //
                 CredentialsWidget::hasPasswordProvider, //
-                NoopBooleanProvider.class//
+                NoopBooleanProvider.class //
             ), //
-            new UiStateProviderSpec<>(//
+            new UiStateProviderSpec<>( //
                 CredentialsWidget.class, //
                 CredentialsWidget::hasUsernameProvider, //
-                NoopBooleanProvider.class//
+                NoopBooleanProvider.class //
             ), //
-            new UiStateProviderSpec<>(//
+            new UiStateProviderSpec<>( //
                 ChoicesWidget.class, //
                 ChoicesWidget::choicesProvider, //
-                ChoicesStateProvider.class//
+                ChoicesStateProvider.class //
+            ), //
+            new UiStateProviderSpec<>( //
+                TextInputWidget.class, //
+                TextInputWidget::placeholderProvider, //
+                NoopStringProvider.class //
             ));
 
     private void addUiStateProviderForField(final TraversedField field) {

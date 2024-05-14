@@ -46,15 +46,31 @@
  * History
  *   Feb 14, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget;
+package org.knime.core.webui.node.dialog.defaultdialog.widget.updates;
 
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 
 /**
- * Used for dynamically providing file extensions to writer widgets.
+ * Marker class used as ignored default only.
  *
  * @author Paul Bärnreuther
  */
-public interface FileExtensionProvider extends StateProvider<String> {
+public final class NoopStringProvider implements StateProvider<String> {
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void init(final StateProviderInitializer initializer) {
+        throw new IllegalStateException("This method should never be called");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String computeState(final DefaultNodeSettingsContext context) {
+        throw new IllegalStateException("This method should never be called");
+    }
 
 }

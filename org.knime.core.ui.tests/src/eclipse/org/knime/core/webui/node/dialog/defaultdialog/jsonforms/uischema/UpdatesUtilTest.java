@@ -74,10 +74,10 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.Co
 import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FileChooser;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesStateProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.FileExtensionProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.StringChoicesStateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SimpleButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonReference;
@@ -402,7 +402,7 @@ class UpdatesUtilTest {
 
             }
 
-            static final class MyInitialFileExtensionProvider implements FileExtensionProvider {
+            static final class MyInitialFileExtensionProvider implements StateProvider<String> {
 
                 @Override
                 public void init(final StateProviderInitializer initializer) {
@@ -521,7 +521,7 @@ class UpdatesUtilTest {
             TestSettings() {
             }
 
-            static final class MyInitialFileExtensionProvider implements FileExtensionProvider {
+            static final class MyInitialFileExtensionProvider implements StateProvider<String> {
 
                 @Override
                 public void init(final StateProviderInitializer initializer) {
@@ -578,7 +578,7 @@ class UpdatesUtilTest {
     @Nested
     class UIStateUpdateTest {
 
-        static final class MyExtensionProvider implements FileExtensionProvider {
+        static final class MyStringProvider implements StateProvider<String> {
 
             @Override
             public void init(final StateProviderInitializer initializer) {
@@ -597,7 +597,7 @@ class UpdatesUtilTest {
 
             class TestSettings implements DefaultNodeSettings {
 
-                @FileWriterWidget(fileExtensionProvider = MyExtensionProvider.class)
+                @FileWriterWidget(fileExtensionProvider = MyStringProvider.class)
                 FileChooser m_fileChooser;
 
             }
@@ -615,8 +615,26 @@ class UpdatesUtilTest {
 
             class TestSettings implements DefaultNodeSettings {
 
-                @LocalFileWriterWidget(fileExtensionProvider = MyExtensionProvider.class)
+                @LocalFileWriterWidget(fileExtensionProvider = MyStringProvider.class)
                 String m_fileChooser;
+
+            }
+
+            final Map<String, WidgetGroup> settings = Map.of("test", new TestSettings());
+
+            final var response = buildUpdates(settings);
+
+            assertThatJson(response).inPath("$.globalUpdates").isArray().hasSize(1);
+
+        }
+        
+        @Test
+        void testTextInputWidgetPlaceholderProvider() {
+
+            class TestSettings implements DefaultNodeSettings {
+
+                @TextInputWidget(placeholderProvider = MyStringProvider.class)
+                String m_textInput;
 
             }
 

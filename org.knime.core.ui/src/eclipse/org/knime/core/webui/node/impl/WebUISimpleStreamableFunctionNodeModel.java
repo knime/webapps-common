@@ -143,9 +143,9 @@ public abstract class WebUISimpleStreamableFunctionNodeModel<S extends DefaultNo
 
     @Override
     protected final void saveSettingsTo(final NodeSettingsWO settings) {
-        if (m_modelSettings != null) {
-            DefaultNodeSettings.saveSettings(m_modelSettingsClass, m_modelSettings, settings);
-        }
+        final var modelSettings =
+                m_modelSettings == null ? DefaultNodeSettings.createSettings(m_modelSettingsClass) : m_modelSettings;
+        DefaultNodeSettings.saveSettings(m_modelSettingsClass, modelSettings, settings);
     }
 
     @Override

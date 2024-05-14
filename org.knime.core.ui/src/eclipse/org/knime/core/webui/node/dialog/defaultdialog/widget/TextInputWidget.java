@@ -54,6 +54,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.NoopStringProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
+
 /**
  * Annotate a {@link String} setting with this in order to provide validation instructions.
  *
@@ -83,4 +86,8 @@ public @interface TextInputWidget {
      * @return whether the input should be hidden in case the value is null.
      */
     boolean optional() default false;
+
+    String placeholder() default "";
+
+    Class<? extends StateProvider<String>> placeholderProvider() default NoopStringProvider.class;
 }

@@ -54,6 +54,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.NoopStringProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 
 /**
@@ -90,6 +91,6 @@ public @interface LocalFileWriterWidget {
      *
      * @return a file extension provider
      */
-    Class<? extends FileExtensionProvider> fileExtensionProvider() default AllFileExtensionsAllowedProvider.class;
+    Class<? extends StateProvider<String>> fileExtensionProvider() default NoopStringProvider.class;
 
 }

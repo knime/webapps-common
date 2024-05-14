@@ -90,7 +90,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.NameF
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.util.ArrayLayoutUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.AllFileExtensionsAllowedProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.AsyncChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
@@ -99,7 +98,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ComboBoxWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.FileExtensionProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileReaderWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
@@ -121,10 +119,12 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncC
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.NoopChoicesUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.PersistentAsyncChoicesAdder;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.CredentialsWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.NoopBooleanProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.PasswordWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.UsernameWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.NoopBooleanProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.NoopStringProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.WidgetAnnotation;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -460,6 +460,12 @@ final class UiSchemaOptionsGenerator {
         if (annotatedWidgets.contains(TextInputWidget.class)) {
             final var textInputWidget = m_field.getAnnotation(TextInputWidget.class);
             options.put("hideOnNull", textInputWidget.optional());
+            if (!textInputWidget.placeholder().equals("")) {
+                options.put("placeholder", textInputWidget.placeholder());
+            }
+            if (textInputWidget.placeholderProvider() != NoopStringProvider.class) {
+                options.put("placeholderProvider", textInputWidget.placeholderProvider().getName());
+            }
         }
 
         if (isArrayLayoutField) {
@@ -505,11 +511,11 @@ final class UiSchemaOptionsGenerator {
     }
 
     private static void resolveFileExtension(final ObjectNode options, final String fileExtension,
-        final Class<? extends FileExtensionProvider> fileExtensionProvider) {
+        final Class<? extends StateProvider<String>> fileExtensionProvider) {
         if (!fileExtension.isEmpty()) {
             options.put(TAG_FILE_EXTENSION, fileExtension);
         }
-        if (!fileExtensionProvider.equals(AllFileExtensionsAllowedProvider.class)) {
+        if (!fileExtensionProvider.equals(NoopStringProvider.class)) {
             CheckUtils.check(fileExtension.isEmpty(), UiSchemaGenerationException::new,
                 () -> "The parameter \"fileExtension\" and \"fileExtensionProvider\" "
                     + "cannot be used in combination.");
