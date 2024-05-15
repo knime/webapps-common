@@ -228,6 +228,8 @@ final class UiSchemaOptionsGenerator {
                     options.put(TAG_FORMAT, Format.FILE_CHOOSER);
                     addLocationInfo(options);
                     break;
+                case DYNAMIC_VALUE:
+                    options.put(TAG_FORMAT, Format.DYNAMIC_VALUE);
             }
         }
 

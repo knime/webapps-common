@@ -26,6 +26,7 @@ import { localFileChooserRenderer } from "./localFileChooserRenderer";
 import { fileChooserRenderer } from "./fileChooserRenderer";
 import { legacyCredentialsRenderer } from "./legacyCredentialsRenderer";
 import { vennDiagramLayoutRenderer } from "./vennDiagramRenderer";
+import { dynamicValueRenderer } from "./dynamicValueRenderer";
 
 export const defaultRenderers = [
   /* layout renderers */
@@ -59,4 +60,5 @@ export const defaultRenderers = [
   legacyCredentialsRenderer,
   localFileChooserRenderer,
   fileChooserRenderer,
+  dynamicValueRenderer
 ];

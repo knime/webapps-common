@@ -246,6 +246,8 @@ public final class JsonFormsConsts {
             public static final String CREDENTIALS = "credentials";
 
             public static final String LEGACY_CREDENTIALS = "legacyCredentials";
+
+            public static final String DYNAMIC_VALUE = "dynamicValue";
         }
 
         /**

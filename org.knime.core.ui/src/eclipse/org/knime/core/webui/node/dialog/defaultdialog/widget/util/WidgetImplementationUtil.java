@@ -82,6 +82,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SimpleButton
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.CredentialsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.PasswordWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.UsernameWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.dynamic.DynamicValuesInput;
 
 /**
  * This utility class defines defaults and registers additional annotations used to define the format of an ui element.
@@ -120,7 +121,7 @@ public final class WidgetImplementationUtil {
     @SuppressWarnings("javadoc")
     public enum DefaultWidgetType {
             CHECKBOX, COLUMN_FILTER, NAME_FILTER, COLUMN_SELECTION, LOCAL_DATE, STRING_ARRAY, CREDENTIALS,
-            LEGACY_CREDENTIALS, FILE_CHOOSER
+            LEGACY_CREDENTIALS, FILE_CHOOSER, DYNAMIC_VALUE
     }
 
     /**
@@ -172,6 +173,7 @@ public final class WidgetImplementationUtil {
         new DefaultWidget(List.of(Credentials.class), DefaultWidgetType.CREDENTIALS), //
         new DefaultWidget(List.of(LegacyCredentials.class), DefaultWidgetType.LEGACY_CREDENTIALS), //
         new DefaultWidget(List.of(FileChooser.class), DefaultWidgetType.FILE_CHOOSER), //
+        new DefaultWidget(List.of(DynamicValuesInput.class), DefaultWidgetType.DYNAMIC_VALUE)//
     };
 
     /**

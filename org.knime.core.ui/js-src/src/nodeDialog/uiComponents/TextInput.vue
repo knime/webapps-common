@@ -30,6 +30,7 @@ const { showCheckbox, showControl, checkboxProps } = useHideOnNull(
     setNull: () => onChange(null),
   },
 );
+debugger;
 </script>
 
 <template>

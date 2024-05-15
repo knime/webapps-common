@@ -74,6 +74,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.dynamic.DynamicValuesInput;
 import org.knime.core.webui.node.view.table.TableViewLayout.DataSection;
 import org.knime.core.webui.node.view.table.TableViewLayout.InteractivitySection;
 import org.knime.core.webui.node.view.table.TableViewLayout.ViewSection;
@@ -86,6 +87,9 @@ import org.knime.core.webui.node.view.table.TableViewViewSettings.RowHeightMode.
  */
 @SuppressWarnings("java:S103") // we accept too long lines
 public class TableViewViewSettings implements DefaultNodeSettings {
+
+    @Widget(title = "Dynamic Widget", description = "My Description")
+    DynamicValuesInput m_dynamicInput = new DynamicValuesInput();
 
     private static final class AllColumns implements ColumnChoicesProvider {
 

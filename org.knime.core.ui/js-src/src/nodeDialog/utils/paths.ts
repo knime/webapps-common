@@ -51,6 +51,7 @@ export const getConfigPaths = (params: {
   path: string;
   subConfigKeys: string[] | undefined;
 }): { configPath: string; deprecatedConfigPaths: string[] }[] => {
+  console.log(params.path, params)
   const { path, control, subConfigKeys } = params;
   const segments = path.split(".");
   let configPaths = [""];

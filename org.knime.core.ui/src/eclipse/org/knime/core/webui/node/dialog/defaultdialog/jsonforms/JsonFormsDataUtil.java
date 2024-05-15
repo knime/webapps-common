@@ -58,6 +58,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FSLocationJsonSerializationUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.dynamic.DynamicValuesInput;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -143,6 +144,7 @@ public final class JsonFormsDataUtil {
         module.addSerializer(BigDecimal.class, new BigDecimalSerializer());
         Credentials.addSerializerAndDeserializer(module);
         FSLocationJsonSerializationUtil.addSerializerAndDeserializer(module);
+        DynamicValuesInput.DynamicValue.addSerializerAndDeserializer(module);
         return module;
     }
 
