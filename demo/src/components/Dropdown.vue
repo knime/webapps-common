@@ -101,6 +101,7 @@ export default {
       disabledSelected: "",
       withSlotsSelected: "",
       slottedSelected: "1",
+      dropupSelected: "bar",
     };
   },
   computed: {
@@ -393,6 +394,38 @@ export default {
           </Dropdown>
         </div>
         <div class="grid-item-2">selected id: {{ withSlotsSelected }}</div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-12">
+          <p>
+            The optional <code>direction</code> property can be used to display
+            the dropdown above the input field.
+          </p>
+        </div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-5">
+          <Dropdown
+            v-model="dropupSelected"
+            aria-label="A Dropup"
+            :possible-values="[
+              {
+                id: 'foo',
+                text: 'Foo',
+              },
+              {
+                id: 'bar',
+                text: 'Bar',
+              },
+              {
+                id: 'baz',
+                text: 'Baz',
+              },
+            ]"
+            direction="up"
+          />
+        </div>
+        <div class="grid-item-2">selected id: {{ dropupSelected }}</div>
       </div>
       <div class="grid-container">
         <div class="grid-item-12">
