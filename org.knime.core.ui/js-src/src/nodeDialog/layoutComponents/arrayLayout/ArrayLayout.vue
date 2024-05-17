@@ -1,11 +1,11 @@
 <script>
-import { computed, defineComponent, ref } from "vue";
+import { computed, defineComponent, ref, watch } from "vue";
 import {
   rendererProps,
   DispatchRenderer,
   useJsonFormsArrayControl,
 } from "@jsonforms/vue";
-import { composePaths } from "@jsonforms/core";
+import { composePaths, toDataPath } from "@jsonforms/core";
 import { useJsonFormsControlWithUpdate } from "@/nodeDialog/composables/components/useJsonFormsControlWithUpdate";
 import Button from "webapps-common/ui/components/Button.vue";
 import PlusIcon from "webapps-common/ui/assets/img/icons/plus.svg";
@@ -13,6 +13,12 @@ import DialogComponentWrapper from "@/nodeDialog/uiComponents/DialogComponentWra
 import ArrayLayoutItemControls from "./ArrayLayoutItemControls.vue";
 import ArrayLayoutItem from "./ArrayLayoutItem.vue";
 import { useDirtySetting } from "@/nodeDialog/composables/components/useDirtySetting";
+import { v4 as uuidv4 } from "uuid";
+import {
+  setIndex,
+  deleteId,
+} from "@/nodeDialog/composables/nodeDialog/useArrayIds";
+import inject from "@/nodeDialog/utils/inject";
 
 const ArrayLayout = defineComponent({
   name: "ArrayLayout",
@@ -41,14 +47,52 @@ const ArrayLayout = defineComponent({
         isModified: (length) => cleanArrayLength.value !== length,
       },
     });
-    const triggerUpdates = () => {
-      handleChange(control.value.path, control.value.data);
-    };
+
+    /**
+     * We need to ids in the data for setting correct keys in the template and for handling updates correctly.
+     */
+    const dataWithId = computed(() =>
+      control.value.data.map((item) =>
+        item._id
+          ? item
+          : {
+              ...item,
+              _id: uuidv4(),
+            },
+      ),
+    );
+    const idsRecord = inject("createArrayAtPath")(
+      toDataPath(control.value.uischema.scope),
+    );
+    const ids = computed(() => dataWithId.value.map(({ _id }) => _id));
+    const hash = (ids) => ids.reduce((x, y) => x + y, "");
+
+    watch(
+      () => ids.value,
+      (newIds, oldIds) => {
+        if (oldIds && hash(newIds) === hash(oldIds)) {
+          return;
+        }
+        newIds.forEach((id, index) => setIndex(id, index));
+        oldIds
+          ?.filter((id) => !newIds.includes(id))
+          .forEach((id) => deleteId(id));
+      },
+      { immediate: true },
+    );
+
+    watch(
+      () => hash(ids.value),
+      () => handleChange(control.value.path, dataWithId.value),
+      { immediate: true },
+    );
 
     return {
       ...useJsonFormsArrayControl(props),
       cleanArrayLength,
-      triggerUpdates,
+      handleChange,
+      signedData: dataWithId,
+      idsRecord,
     };
   },
   data() {
@@ -91,22 +135,15 @@ const ArrayLayout = defineComponent({
         this.control.path,
         this.createDefaultValue(this.control.schema),
       )();
-      this.triggerUpdates();
     },
     moveItemUp(index) {
       this.moveUp(this.control.path, index)();
-      this.triggerUpdates();
     },
     moveItemDown(index) {
       this.moveDown(this.control.path, index)();
-      this.triggerUpdates();
-    },
-    createIndexedPath(index) {
-      return composePaths(this.control.path, `${index}`);
     },
     deleteItem(index) {
       this.removeItems(composePaths(this.control.path, ""), [index])();
-      this.triggerUpdates();
     },
   },
 });
@@ -117,22 +154,24 @@ export default ArrayLayout;
   <DialogComponentWrapper :control="control">
     <div class="array">
       <div
-        v-for="(obj, objIndex) in control.data"
-        :key="`${control.path}-${objIndex}`"
+        v-for="(obj, objIndex) in signedData"
+        :key="`${control.path}-${obj._id}`"
         :class="['item', { card: useCardLayout }]"
       >
         <ArrayLayoutItem
+          :id="obj._id"
+          :ids-record="idsRecord"
           :elements="elements"
           :array-element-title="arrayElementTitle"
-          :index="objIndex"
           :path="control.path"
+          :index="objIndex"
           :has-been-added="objIndex >= cleanArrayLength"
         >
-          <template #renderer="{ element }">
+          <template #renderer="{ element, path }">
             <DispatchRenderer
               :schema="control.schema"
               :uischema="element"
-              :path="createIndexedPath(objIndex)"
+              :path="path"
               :enabled="control.enabled"
               :renderers="control.renderers"
               :cells="control.cells"

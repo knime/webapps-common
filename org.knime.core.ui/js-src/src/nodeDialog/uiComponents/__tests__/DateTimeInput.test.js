@@ -65,9 +65,9 @@ describe("DateTimeInput.vue", () => {
     initializesJsonFormsControl(component);
   });
 
-  it("calls updateData when text input is changed", () => {
+  it("calls handleChange when text input is changed", () => {
     const setDirtyModelSettingsMock = vi.fn();
-    const { wrapper, updateData } = mountJsonFormsComponent(DateTimeInput, {
+    const { wrapper, handleChange } = mountJsonFormsComponent(DateTimeInput, {
       props: defaultProps,
       provide: { setDirtyModelSettingsMock },
     });
@@ -75,8 +75,7 @@ describe("DateTimeInput.vue", () => {
     wrapper
       .findComponent(DateTimeInputBase)
       .vm.$emit("update:modelValue", changedDateTimeInput);
-    expect(updateData).toHaveBeenCalledWith(
-      expect.anything(),
+    expect(handleChange).toHaveBeenCalledWith(
       defaultProps.control.path,
       changedDateTimeInput,
     );

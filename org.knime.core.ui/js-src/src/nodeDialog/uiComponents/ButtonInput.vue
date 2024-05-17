@@ -119,10 +119,10 @@ const initialize = async (newSettings: SettingsData) => {
   });
 };
 
-const onUpdate = (newSettings: SettingsData) => {
+const onUpdate = (dependencySettings: SettingsData) => {
   performRequest({
     method: "settings.update",
-    options: [getFlattenedSettings(newSettings)],
+    options: [getFlattenedSettings(dependencySettings)],
     handler: control.value.uischema.options!.updateOptions.updateHandler,
   });
 };

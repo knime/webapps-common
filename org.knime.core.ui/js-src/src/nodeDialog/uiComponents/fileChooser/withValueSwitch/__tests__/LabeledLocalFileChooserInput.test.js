@@ -70,9 +70,9 @@ describe("LabeledLocalFileChooserInput.vue", () => {
     initializesJsonFormsControl(component);
   });
 
-  it("calls updateData when text input is changed", () => {
+  it("calls handleChange when text input is changed", () => {
     const setDirtyModeSettingsMock = vi.fn();
-    const { wrapper, updateData } = mountJsonFormsComponent(
+    const { wrapper, handleChange } = mountJsonFormsComponent(
       LabeledLocalFileChooserInput,
       {
         props,
@@ -83,8 +83,7 @@ describe("LabeledLocalFileChooserInput.vue", () => {
     wrapper
       .findComponent(StringFileChooserInputWithExplorer)
       .vm.$emit("update:modelValue", changedTextInput);
-    expect(updateData).toHaveBeenCalledWith(
-      expect.anything(),
+    expect(handleChange).toHaveBeenCalledWith(
       props.control.path,
       changedTextInput,
     );

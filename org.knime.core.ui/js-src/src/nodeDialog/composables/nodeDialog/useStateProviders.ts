@@ -1,17 +1,17 @@
 interface Key {
   id: string;
-  indices: number[];
+  indexIds: string[];
 }
 
 const isInvokedBy = (invocationKey: Key) => (otherKey: Key) => {
   if (invocationKey.id !== otherKey.id) {
     return false;
   }
-  if (invocationKey.indices.length > otherKey.indices.length) {
+  if (invocationKey.indexIds.length > otherKey.indexIds.length) {
     return false;
   }
-  return invocationKey.indices.every(
-    (value, index) => otherKey.indices[index] === value,
+  return invocationKey.indexIds.every(
+    (value, index) => otherKey.indexIds[index] === value,
   );
 };
 
@@ -25,9 +25,9 @@ const getValuesFromPredicate =
       .filter(([key]) => predicate(key))
       .map(([, value]) => value);
 
-const toMapKey = ({ id, indices }: { id: string; indices?: number[] }) => ({
+const toMapKey = ({ id, indexIds }: { id: string; indexIds?: string[] }) => ({
   id,
-  indices: indices ?? [],
+  indexIds: indexIds ?? [],
 });
 
 export default () => {
@@ -45,7 +45,7 @@ export default () => {
     getValuesFromPredicate(states)(invokes(key));
 
   const addStateProviderListener = (
-    location: { id: string; indices?: number[] },
+    location: { id: string; indexIds?: string[] },
     callback: (value: any) => void,
   ) => {
     const key = toMapKey(location);
@@ -58,7 +58,7 @@ export default () => {
   };
 
   const callStateProviderListener = (
-    location: { id: string; indices?: number[] },
+    location: { id: string; indexIds?: string[] },
     value: unknown,
   ) => {
     const key = toMapKey(location);

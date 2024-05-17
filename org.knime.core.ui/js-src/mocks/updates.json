@@ -66,32 +66,32 @@
       "globalUpdates": [
         {
           "trigger": {
-            "scope": "#/properties/view/properties/a",
+            "scopes": ["#/properties/view/properties/a"],
             "id": "Trigger_A"
           },
           "dependencies": [
             {
-              "scope": "#/properties/view/properties/a",
+              "scopes": ["#/properties/view/properties/a"],
               "id": "A"
             },
             {
-              "scope": "#/properties/view/properties/b",
+              "scopes": ["#/properties/view/properties/b"],
               "id": "B"
             }
           ]
         },
         {
           "trigger": {
-            "scope": "#/properties/view/properties/b",
+            "scopes": ["#/properties/view/properties/b"],
             "id": "Trigger_B"
           },
           "dependencies": [
             {
-              "scope": "#/properties/view/properties/a",
+              "scopes": ["#/properties/view/properties/a"],
               "id": "A"
             },
             {
-              "scope": "#/properties/view/properties/b",
+              "scopes": ["#/properties/view/properties/b"],
               "id": "B"
             }
           ]

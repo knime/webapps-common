@@ -198,7 +198,7 @@ describe("ArrayLayout.vue", () => {
     });
     expect(useJsonFormsControlMock.handleChange).toHaveBeenCalledWith(
       control.path,
-      control.data,
+      control.data.map(expect.objectContaining),
     );
   });
 
@@ -213,7 +213,7 @@ describe("ArrayLayout.vue", () => {
     ]);
     expect(useJsonFormsControlMock.handleChange).toHaveBeenCalledWith(
       control.path,
-      control.data,
+      control.data.map(expect.objectContaining),
     );
   });
 
@@ -229,7 +229,7 @@ describe("ArrayLayout.vue", () => {
     expect(wrapper.vm.moveUp).toHaveBeenCalledWith(control.path, index);
     expect(useJsonFormsControlMock.handleChange).toHaveBeenCalledWith(
       control.path,
-      control.data,
+      control.data.map(expect.objectContaining),
     );
   });
 
@@ -245,7 +245,7 @@ describe("ArrayLayout.vue", () => {
     expect(wrapper.vm.moveDown).toHaveBeenCalledWith(control.path, index);
     expect(useJsonFormsControlMock.handleChange).toHaveBeenCalledWith(
       control.path,
-      control.data,
+      control.data.map(expect.objectContaining),
     );
   });
 

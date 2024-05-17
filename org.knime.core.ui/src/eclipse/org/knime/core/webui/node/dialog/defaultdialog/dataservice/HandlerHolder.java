@@ -57,9 +57,9 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
-import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.Configuration;
-import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
+import org.knime.core.webui.node.dialog.defaultdialog.util.WidgetGroupTraverser;
+import org.knime.core.webui.node.dialog.defaultdialog.util.WidgetGroupTraverser.Configuration;
+import org.knime.core.webui.node.dialog.defaultdialog.util.WidgetGroupTraverser.TraversedField;
 
 /**
  * Takes care of accessing the fields in a given collection of {@link WidgetGroup}s. The implementer has to convert a
@@ -80,7 +80,7 @@ public abstract class HandlerHolder<H> {
 
     private static Stream<FieldWithDefaultNodeSettingsKey>
         getTraversedFields(final Class<? extends WidgetGroup> settingsClass, final String settingsKey) {
-        return new DefaultNodeSettingsFieldTraverser(settingsClass,
+        return new WidgetGroupTraverser(settingsClass,
             new Configuration.Builder().includeFieldsNestedInArrayLayout().build()).getAllFields().stream()
                 .map(field -> new FieldWithDefaultNodeSettingsKey(field, settingsKey));
     }

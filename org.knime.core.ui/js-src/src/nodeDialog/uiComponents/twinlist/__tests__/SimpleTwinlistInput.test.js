@@ -161,7 +161,7 @@ describe("SimpleTwinlistInput.vue", () => {
   it("moves missing values correctly", async () => {
     const setDirtyModelSettingsMock = vi.fn();
     props.control.data = ["missing"];
-    const { wrapper, updateData } = await mountJsonFormsComponent(
+    const { wrapper, handleChange } = await mountJsonFormsComponent(
       SimpleTwinlistInput,
       {
         props,
@@ -174,11 +174,7 @@ describe("SimpleTwinlistInput.vue", () => {
       .find({ ref: "moveAllLeft" })
       .trigger("click");
     await wrapper.vm.$nextTick();
-    expect(updateData).toBeCalledWith(
-      expect.anything(),
-      props.control.path,
-      [],
-    );
+    expect(handleChange).toBeCalledWith(props.control.path, []);
   });
 
   it("does not render content of SimpleTwinlistInput when visible is false", async () => {

@@ -66,9 +66,9 @@ describe("TextInput.vue", () => {
     initializesJsonFormsControl(component);
   });
 
-  it("calls updateData when text input is changed", () => {
+  it("calls handleChange when text input is changed", () => {
     const setDirtyModelSettingsMock = vi.fn();
-    const { wrapper, updateData } = mountJsonFormsComponent(TextInput, {
+    const { wrapper, handleChange } = mountJsonFormsComponent(TextInput, {
       props: defaultProps,
       provide: { setDirtyModelSettingsMock },
     });
@@ -76,8 +76,7 @@ describe("TextInput.vue", () => {
     wrapper
       .findComponent(InputField)
       .vm.$emit("update:modelValue", changedTextInput);
-    expect(updateData).toHaveBeenCalledWith(
-      expect.anything(),
+    expect(handleChange).toHaveBeenCalledWith(
       defaultProps.control.path,
       changedTextInput,
     );

@@ -119,18 +119,16 @@ describe("FileChooserInput.vue", () => {
     initializesJsonFormsControl(component);
   });
 
-  it("calls updateData when applying changes from the side panel", async () => {
+  it("calls handleChange when applying changes from the side panel", async () => {
     const changedValue = { ...props.control.data.path, path: "new path" };
     const sideDrawer = await expandSideDrawer(wrapper);
     sideDrawer
       .findComponent(SideDrawerContentBase)
       .vm.$emit("update:modelValue", changedValue);
     await wrapper.findComponent(SettingsSubPanel).vm.$emit("apply");
-    expect(component.updateData).toHaveBeenCalledWith(
-      expect.anything(),
-      props.control.path,
-      { path: changedValue },
-    );
+    expect(component.handleChange).toHaveBeenCalledWith(props.control.path, {
+      path: changedValue,
+    });
   });
 
   it("disables input when controlled by a flow variable", () => {
@@ -145,7 +143,7 @@ describe("FileChooserInput.vue", () => {
     const stringRepresentation = "myStringRepresentation";
     props.control.data.path.fsCategory = "RELATIVE";
     props.control.data.path.context = { fsToString: stringRepresentation };
-    const { flowVariablesMap, wrapper, updateData } =
+    const { flowVariablesMap, wrapper, handleChange } =
       await mountJsonFormsComponent(FileChooserInput, {
         props,
         withControllingFlowVariable: `${props.control.path}.path` as any,
@@ -156,16 +154,12 @@ describe("FileChooserInput.vue", () => {
     // @ts-ignore
     wrapper.vm.control = { ...wrapper.vm.control };
     await flushPromises();
-    expect(updateData).toHaveBeenCalledWith(
-      expect.anything(),
-      props.control.path,
-      {
-        path: {
-          path: "",
-          fsCategory: "relative-to-current-hubspace",
-          timeout: 10000,
-        },
+    expect(handleChange).toHaveBeenCalledWith(props.control.path, {
+      path: {
+        path: "",
+        fsCategory: "relative-to-current-hubspace",
+        timeout: 10000,
       },
-    );
+    });
   });
 });

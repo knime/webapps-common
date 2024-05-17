@@ -1,3 +1,6 @@
+import Result from "../api/types/Result";
+import { UpdateResult } from "../types/Update";
+
 const errorFolder = "Open me to see an error message!";
 
 export default (rpcRequest: { method: string; params: any[] }) => {
@@ -36,21 +39,123 @@ export default (rpcRequest: { method: string; params: any[] }) => {
         return { result: [] };
       }
       const dependencies = rpcRequest.params[2];
-      /**
-       * See update.json
-       */
-      return {
-        result: [
-          {
-            path: "#/properties/view/properties/sum",
-            value: dependencies.A + dependencies.B,
-          },
-          {
-            path: "#/properties/view/properties/product",
-            value: dependencies.A * dependencies.B,
-          },
-        ],
-      };
+      if (Object.keys(dependencies).includes("A")) {
+        /**
+         * See update.json
+         */
+        return {
+          state: "SUCCESS",
+          result: [
+            {
+              scopes: ["#/properties/view/properties/sum"],
+              id: null,
+              value: dependencies.A + dependencies.B,
+            },
+            {
+              scopes: ["#/properties/view/properties/product"],
+              id: null,
+              value: dependencies.A * dependencies.B,
+            },
+          ],
+        } satisfies Result<UpdateResult[]>;
+      } else if (Object.keys(dependencies).includes("A_nested")) {
+        /**
+         * See updatesInArray.json
+         */
+        return {
+          state: "SUCCESS",
+          result: [
+            {
+              scopes: [
+                "#/properties/view/properties/myArray",
+                "#/properties/sum",
+              ],
+              id: null,
+              value: dependencies.A_nested + dependencies.B_nested,
+            },
+            {
+              scopes: [
+                "#/properties/view/properties/myArray",
+                "#/properties/product",
+              ],
+              id: null,
+              value: `A * B ${dependencies.A_nested * dependencies.B_nested}`,
+            },
+            {
+              id: "myChoicesProvider",
+              scopes: null,
+              value: [
+                {
+                  id: `A ${dependencies.A_nested}`,
+                  text: `A (${dependencies.A_nested})`,
+                },
+                {
+                  id: `B ${dependencies.B_nested}`,
+                  text: `B (${dependencies.B_nested})`,
+                },
+                {
+                  id: `A * B ${dependencies.A_nested * dependencies.B_nested}`,
+                  text: `A * B (${
+                    dependencies.A_nested * dependencies.B_nested
+                  })`,
+                },
+              ],
+            },
+          ],
+        } satisfies Result<UpdateResult[]>;
+      } else {
+        /**
+         * See updatesInArray.json
+         */
+        return {
+          state: "SUCCESS",
+          result: [
+            {
+              scopes: [
+                "#/properties/view/properties/myArray",
+                "#/properties/nestedArray",
+                "#/properties/sum",
+              ],
+              id: null,
+              value:
+                dependencies.A_nested_nested + dependencies.B_nested_nested,
+            },
+            {
+              scopes: [
+                "#/properties/view/properties/myArray",
+                "#/properties/nestedArray",
+                "#/properties/product",
+              ],
+              id: null,
+              value: `A * B ${
+                dependencies.A_nested_nested * dependencies.B_nested_nested
+              }`,
+            },
+            {
+              id: "myNestedChoicesProvider",
+              scopes: null,
+              value: [
+                {
+                  id: `A ${dependencies.A_nested_nested}`,
+                  text: `A (${dependencies.A_nested_nested})`,
+                },
+                {
+                  id: `B ${dependencies.B_nested_nested}`,
+                  text: `B (${dependencies.B_nested_nested})`,
+                },
+                {
+                  id: `A * B ${
+                    dependencies.A_nested_nested * dependencies.B_nested_nested
+                  }`,
+                  text: `A * B (${
+                    dependencies.A_nested_nested * dependencies.B_nested_nested
+                  })`,
+                },
+              ],
+            },
+          ],
+        } satisfies Result<UpdateResult[]>;
+      }
     }
     case "flowVariables.getFlowVariableOverrideValue":
       switch (

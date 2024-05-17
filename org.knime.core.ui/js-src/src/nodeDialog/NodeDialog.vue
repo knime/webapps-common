@@ -33,6 +33,10 @@ import useUpdates from "./composables/nodeDialog/useUpdates";
 import useTriggers from "./composables/nodeDialog/useTriggers";
 import useGlobalWatchers from "./composables/nodeDialog/useGlobalWatchers";
 import { provideAndGetSetupMethod } from "./composables/nodeDialog/useDirtySettings";
+import {
+  createArrayAtPath,
+  getArrayIdsRecord,
+} from "./composables/nodeDialog/useArrayIds";
 
 const renderers = [
   ...vanillaRenderers,
@@ -60,6 +64,8 @@ export default {
         getFlowVariableOverrideValue: this.getFlowVariableOverrideValue,
         clearControllingFlowVariable: this.clearControllingFlowVariable,
       },
+      createArrayAtPath: (path: string) =>
+        createArrayAtPath(getArrayIdsRecord(), path),
       getFlowVariablesMap: () => this.schema.flowVariablesMap,
       setSubPanelExpanded: this.setSubPanelExpanded,
       getPanelsContainer: () => this.subPanels,
@@ -154,7 +160,7 @@ export default {
         shouldBeVisible: !isExpanded,
       });
     },
-    async trigger(params: { id: string; indices?: number[] }) {
+    async trigger(params: { id: string; indexIds?: string[] }) {
       this.currentData = await this.getTriggerCallback(params)(
         this.currentData,
       );
@@ -198,22 +204,11 @@ export default {
       );
     },
     /**
-     * @param {Function} handleChange The handler function that is used to handle the change of a dialog setting
      * @param {string} path The path of the setting that is changed
-     * @param {any} data The new data that should be stored at the path
      * @returns {void}
      */
-    updateData(
-      handleChange: (path: string, value: any) => any,
-      path: string,
-      data: any,
-    ) {
-      return this.updateDataInternal(
-        handleChange,
-        path,
-        data,
-        this.currentData,
-      );
+    updateData(path: string) {
+      return this.updateDataInternal(path, this.currentData);
     },
     async registerWatcher({
       transformSettings,
@@ -221,9 +216,12 @@ export default {
       dependencies,
     }: Parameters<ProvidedMethods["registerWatcher"]>[0]) {
       const removeWatcher = this.registerWatcherInternal({
-        transformSettings: () => async (newSettings) => {
-          await transformSettings(newSettings);
-          return newSettings;
+        transformSettings: () => async (dependencyData) => {
+          const settingsConsumer = await transformSettings(dependencyData);
+          return (newSettings) => {
+            settingsConsumer?.(newSettings);
+            return newSettings;
+          };
         },
         dependencies: dependencies.map((dep) => [dep]),
       });

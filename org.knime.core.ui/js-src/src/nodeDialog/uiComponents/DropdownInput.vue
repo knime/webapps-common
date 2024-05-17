@@ -71,8 +71,8 @@ const choicesUpdateHandler = computed(
   () => control.value.uischema.options?.choicesUpdateHandler,
 );
 const widgetId = uuidv4();
-const updateOptions = async (
-  newSettings: SettingsData,
+const getUpdateOptionsMethod = async (
+  dependencySettings: SettingsData,
   setNewValue: boolean,
 ) => {
   const { result, state, message } = await getData({
@@ -80,37 +80,39 @@ const updateOptions = async (
     options: [
       widgetId,
       choicesUpdateHandler.value,
-      getFlattenedSettings(newSettings),
+      getFlattenedSettings(dependencySettings),
     ],
   });
 
-  const handleResult = (result: IdAndText[]) => {
-    options.value = result;
-    if (setNewValue || !dropdownValue.value) {
-      set(
-        newSettings,
-        control.value.path,
-        getFirstValueFromDropdownOrNull(result),
-      );
+  return (newSettings: SettingsData) => {
+    const handleResult = (result: IdAndText[]) => {
+      options.value = result;
+      if (setNewValue || !dropdownValue.value) {
+        set(
+          newSettings,
+          control.value.path,
+          getFirstValueFromDropdownOrNull(result),
+        );
+      }
+    };
+
+    if (result) {
+      handleResult(result);
+    }
+    if (state === "FAIL") {
+      sendAlert({
+        type: AlertType.ERROR,
+        message,
+      });
+      handleResult([]);
     }
   };
-
-  if (result) {
-    handleResult(result);
-  }
-  if (state === "FAIL") {
-    sendAlert({
-      type: AlertType.ERROR,
-      message,
-    });
-    handleResult([]);
-  }
 };
 
 const fetchInitialOptions = async (newSettings: SettingsData) => {
   // initially only fetch possible values, but do not set a value
   // instead, use value from initial data
-  await updateOptions(newSettings, false);
+  (await getUpdateOptionsMethod(newSettings, false))(newSettings);
 };
 
 const setInitialOptions = async () => {
@@ -132,8 +134,8 @@ onMounted(async () => {
       control.value.uischema.options?.setFirstValueOnUpdate,
     );
     unregisterWatcher = await registerWatcher({
-      transformSettings: (newSettings) =>
-        updateOptions(newSettings, setFirstValueOnUpdate),
+      transformSettings: (dependencySettings) =>
+        getUpdateOptionsMethod(dependencySettings, setFirstValueOnUpdate),
       init: fetchInitialOptions,
       dependencies,
     });

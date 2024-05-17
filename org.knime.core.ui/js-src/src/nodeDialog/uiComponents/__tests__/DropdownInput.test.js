@@ -93,8 +93,8 @@ describe("DropdownInput.vue", () => {
       vi.clearAllMocks();
     });
 
-    it("calls updateData when input is changed", async () => {
-      const { wrapper, updateData } = await mountJsonFormsComponent(
+    it("calls handleChange when input is changed", async () => {
+      const { wrapper, handleChange } = await mountJsonFormsComponent(
         DropdownInput,
         { props, provide: { setDirtyModelSettingsMock } },
       );
@@ -102,8 +102,7 @@ describe("DropdownInput.vue", () => {
       wrapper
         .findComponent(Dropdown)
         .vm.$emit("update:modelValue", changedDropdownInput);
-      expect(updateData).toHaveBeenCalledWith(
-        expect.anything(),
+      expect(handleChange).toHaveBeenCalledWith(
         props.control.path,
         changedDropdownInput,
       );
@@ -247,8 +246,7 @@ describe("DropdownInput.vue", () => {
     });
 
     it("sets new options and selected the first option", async () => {
-      await settingsChangeCallback(newSettings);
-      await flushPromises();
+      (await settingsChangeCallback(newSettings))(newSettings);
       expect(wrapper.vm.options).toStrictEqual(result);
       expect(newSettings[path]).toBe(result[0].id);
     });
@@ -266,8 +264,7 @@ describe("DropdownInput.vue", () => {
         state: "SUCCESS",
         message: null,
       }));
-      settingsChangeCallback(newSettings);
-      await flushPromises();
+      (await settingsChangeCallback(newSettings))(newSettings);
       expect(wrapper.vm.options).toStrictEqual([]);
       expect(newSettings[path]).toBeNull();
     });
@@ -298,8 +295,7 @@ describe("DropdownInput.vue", () => {
       const firstWatcherCall = callbacks[0];
       const settingsChangeCallback = firstWatcherCall.transformSettings;
 
-      settingsChangeCallback(newSettings);
-      await flushPromises();
+      (await settingsChangeCallback(newSettings))(newSettings);
       expect(newSettings[path]).toBe(result[0].id);
     });
 
@@ -310,12 +306,11 @@ describe("DropdownInput.vue", () => {
         state: "FAIL",
         message,
       }));
-      settingsChangeCallback(newSettings);
-      await flushPromises();
+      (await settingsChangeCallback(newSettings))(newSettings);
       expect(wrapper.vm.options).toStrictEqual([]);
       expect(newSettings[path]).toBeNull();
       expect(sendAlert).toHaveBeenCalledWith({
-        message: "Error message",
+        message,
         type: "error",
       });
     });

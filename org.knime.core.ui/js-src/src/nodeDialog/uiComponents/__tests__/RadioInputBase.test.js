@@ -121,9 +121,9 @@ describe("RadioInputBase.vue", () => {
     expect(wrapper.vm.marginBottom).toBe(marginBottom);
   });
 
-  it("calls updateData when radio button is changed", async () => {
+  it("calls handleChange when radio button is changed", async () => {
     const setDirtyModelSettingsMock = vi.fn();
-    const { wrapper, updateData } = await mountJsonFormsComponent(
+    const { wrapper, handleChange } = await mountJsonFormsComponent(
       RadioInputBase,
       {
         props,
@@ -134,8 +134,7 @@ describe("RadioInputBase.vue", () => {
     wrapper
       .findComponent(RadioButtons)
       .vm.$emit("update:modelValue", changedRadioInputBase);
-    expect(updateData).toHaveBeenCalledWith(
-      expect.anything(),
+    expect(handleChange).toHaveBeenCalledWith(
       props.control.path,
       changedRadioInputBase,
     );

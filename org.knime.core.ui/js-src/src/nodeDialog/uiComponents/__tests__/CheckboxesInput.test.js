@@ -11,7 +11,7 @@ import ReexecutionIcon from "webapps-common/ui/assets/img/icons/reexecution.svg"
 import Checkboxes from "webapps-common/ui/components/forms/Checkboxes.vue";
 
 describe("CheckboxesInput.vue", () => {
-  let wrapper, defaultProps, component, updateData;
+  let wrapper, defaultProps, component, handleChange;
 
   beforeEach(async () => {
     defaultProps = {
@@ -49,7 +49,7 @@ describe("CheckboxesInput.vue", () => {
       props: defaultProps,
     });
     wrapper = component.wrapper;
-    updateData = component.updateData;
+    handleChange = component.handleChange;
   });
 
   afterEach(() => {
@@ -74,15 +74,14 @@ describe("CheckboxesInput.vue", () => {
     initializesJsonFormsControl(component);
   });
 
-  it("calls updateData when checkbox is changed", async () => {
+  it("calls handleChange when checkbox is changed", async () => {
     await wrapper
       .findComponent(Checkboxes)
       .vm.$emit("update:modelValue", ["ADDED", "MODIFIED"]);
-    expect(updateData).toHaveBeenCalledWith(
-      expect.anything(),
-      defaultProps.control.path,
-      ["ADDED", "MODIFIED"],
-    );
+    expect(handleChange).toHaveBeenCalledWith(defaultProps.control.path, [
+      "ADDED",
+      "MODIFIED",
+    ]);
   });
 
   it("checks that re-execution icon is present if it is a model setting", () => {

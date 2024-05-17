@@ -192,7 +192,7 @@ describe("ButtonInput", () => {
       expect(wrapper.vm.currentState).toStrictEqual(stateAfterClick);
     });
 
-    it("calls updateData if the result should be applied", async () => {
+    it("calls handleChange if the result should be applied", async () => {
       getData.mockImplementation(() => ({
         state: "SUCCESS",
         result: {
@@ -206,11 +206,7 @@ describe("ButtonInput", () => {
         .find("button")
         .trigger("click");
       vi.runAllTimers();
-      expect(component.updateData).toHaveBeenCalledWith(
-        expect.anything(),
-        "test",
-        "token",
-      );
+      expect(component.handleChange).toHaveBeenCalledWith("test", "token");
     });
 
     it("does not call handleChange if the result should not be applied", async () => {
@@ -320,7 +316,7 @@ describe("ButtonInput", () => {
   });
 
   describe("updates triggered by other settings", () => {
-    let settingsChangeCallback, wrapper, dependencies, callbacks, updateData;
+    let settingsChangeCallback, wrapper, dependencies, callbacks, handleChange;
 
     const dependenciesUpdateHandler = ["foo", "bar"];
     const updateHandler = "updateHandler";
@@ -335,7 +331,7 @@ describe("ButtonInput", () => {
       const comp = mountButtonInput({ props, getDataMock: getData });
       wrapper = comp.wrapper;
       callbacks = comp.callbacks;
-      updateData = comp.updateData;
+      handleChange = comp.handleChange;
       settingsChangeCallback = callbacks[1].transformSettings;
       dependencies = callbacks[1].dependencies;
       wrapper.vm.cancel = vi.fn();
@@ -370,11 +366,7 @@ describe("ButtonInput", () => {
       vi.runAllTimers();
       await flushPromises();
       expect(wrapper.text()).toContain(nextState.text);
-      expect(updateData).toHaveBeenCalledWith(
-        expect.anything(),
-        path,
-        settingValue,
-      );
+      expect(handleChange).toHaveBeenCalledWith(path, settingValue);
     });
   });
 

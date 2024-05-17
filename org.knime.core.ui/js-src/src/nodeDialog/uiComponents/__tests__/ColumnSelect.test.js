@@ -12,7 +12,7 @@ import DialogLabel from "../label/DialogLabel.vue";
 import { inject } from "vue";
 
 describe("ColumnSelect.vue", () => {
-  let wrapper, props, path, component, updateData;
+  let wrapper, props, path, component, handleChange;
 
   beforeEach(() => {
     path = "control path mock";
@@ -66,7 +66,7 @@ describe("ColumnSelect.vue", () => {
     };
     component = mountJsonFormsComponent(ColumnSelect, { props });
     wrapper = component.wrapper;
-    updateData = component.updateData;
+    handleChange = component.handleChange;
   });
 
   afterEach(() => {
@@ -92,7 +92,7 @@ describe("ColumnSelect.vue", () => {
 
   describe("compatible types", () => {
     it("updates compatible types when mounted", () => {
-      expect(updateData).toHaveBeenCalledWith(expect.anything(), path, {
+      expect(handleChange).toHaveBeenCalledWith(path, {
         selected: "Universe_0_0",
         compatibleTypes: ["Type_0_0", "OtherType_0_0"],
       });
@@ -102,7 +102,7 @@ describe("ColumnSelect.vue", () => {
       const dropdownInput = wrapper.findComponent(DropdownInput);
       const dropdown = dropdownInput.findComponent(Dropdown);
       dropdown.vm.$emit("update:modelValue", "Universe_1_1");
-      expect(updateData).toHaveBeenNthCalledWith(2, expect.anything(), path, {
+      expect(handleChange).toHaveBeenNthCalledWith(2, path, {
         selected: "Universe_1_1",
         compatibleTypes: ["Type_1_1", "OtherType_1_1"],
       });
@@ -112,7 +112,7 @@ describe("ColumnSelect.vue", () => {
       const dropdownInput = wrapper.findComponent(DropdownInput);
       const dropdown = dropdownInput.findComponent(Dropdown);
       dropdown.vm.$emit("update:modelValue", "I am Missing");
-      expect(updateData).toHaveBeenNthCalledWith(2, expect.anything(), path, {
+      expect(handleChange).toHaveBeenNthCalledWith(2, path, {
         selected: "I am Missing",
         compatibleTypes: [],
       });

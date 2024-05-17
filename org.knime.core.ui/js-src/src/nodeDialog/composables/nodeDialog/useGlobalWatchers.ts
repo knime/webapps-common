@@ -1,14 +1,22 @@
 import SettingsData from "../../types/SettingsData";
-import { cloneDeep, set } from "lodash-es";
 import { v4 as uuidv4 } from "uuid";
 import { toDataPath } from "@jsonforms/core";
-import { TransformSettingsMethod } from "./useUpdates";
 import { ref } from "vue";
+import { DialogSettings } from "@knime/ui-extension-service";
+import { toIndexIds } from "./useArrayIds";
+export type TransformSettings = (
+  newSettings: DialogSettings & object,
+) => DialogSettings & object;
 
+export type RegisterWatcherTransformSettings = (
+  indexIds: string[],
+) => (
+  settingsForDependencies: DialogSettings & object,
+) => Promise<TransformSettings>;
 type RegisteredWatcher = {
   id: string;
   dataPaths: string[][];
-  transformSettings: (indices: number[]) => TransformSettingsMethod;
+  transformSettings: RegisterWatcherTransformSettings;
 };
 
 /**
@@ -36,7 +44,7 @@ const testMatchesAndGetIndices = (
   dataPathSegments: string[][],
 ): null | number[] => {
   if (segments.length === 0) {
-    return [];
+    return dataPathSegments.length > 1 ? null : [];
   }
   const segmentsWithoutFirstDataPath = removeFromStart(
     segments,
@@ -74,25 +82,47 @@ export const getIndicesFromDataPaths = (
   dataPaths: RegisteredWatcher["dataPaths"],
   pathSegments: string[],
 ) => {
-  let indicesFromDataPaths: null | number[] = null;
-  const isMoreSpecificMatch = (newIndices: number[] | null) => {
-    return (
-      newIndices !== null &&
-      (indicesFromDataPaths === null ||
-        newIndices.length > indicesFromDataPaths.length)
-    );
+  let result: null | { dataPath: string[]; indices: number[] } = null;
+  const isMoreSpecificMatch = (newIndices: number[]) => {
+    return result === null || newIndices.length > result.indices.length;
   };
   for (const dependency of dataPaths) {
     const indices = testMatchesAndGetIndices(
       pathSegments,
       dependency.map(splitBy(".")),
     );
-    if (isMoreSpecificMatch(indices)) {
-      indicesFromDataPaths = indices;
+    if (indices && isMoreSpecificMatch(indices)) {
+      result = { indices, dataPath: dependency };
     }
   }
-  return indicesFromDataPaths;
+  return result;
 };
+
+const ongoingUpdateIds = new Map<string, string>();
+
+/**
+ * @param key a unique id for an update call where subsequent updates with the same id should abort the first one
+ * @returns a callback that can be used to checked after the asynchronous call whether the result is to be applied
+ */
+const getIsToBeAppliedCallback = (key: string) => {
+  const newId = uuidv4();
+  ongoingUpdateIds.set(key, newId);
+  return () => {
+    return ongoingUpdateIds.get(key) === newId;
+  };
+};
+
+/**
+ * The key used in getIsToBeAppliedCallback
+ */
+const getKey = (item: {
+  registeredWatcher: RegisteredWatcher;
+  indexIds: string[];
+}) =>
+  JSON.stringify({
+    watcherId: item.registeredWatcher.id,
+    indexIds: item.indexIds,
+  });
 
 export default () => {
   const registeredWatchers = ref<RegisteredWatcher[]>([]);
@@ -103,51 +133,54 @@ export default () => {
    */
   const updateData = async (
     /**
-     * The handler function that is used to handle the change of a dialog setting
-     */
-    handleChange: (path: string, value: any) => any,
-    /**
      * The path of the setting that is changed
      */
     path: string,
-    /**
-     * The new data that should be stored at the path
-     */
-    data: any,
     currentData: SettingsData,
   ) => {
     const triggeredWatchers: {
       registeredWatcher: RegisteredWatcher;
-      triggeredWithIndices: number[];
+      indexIds: string[];
     }[] = [];
 
     const pathSegments = path.split(".");
     for (const registeredWatcher of registeredWatchers.value) {
-      const indicesFromDataPaths = getIndicesFromDataPaths(
+      const indicesFromDataPath = getIndicesFromDataPaths(
         registeredWatcher.dataPaths,
         pathSegments,
       );
-      if (indicesFromDataPaths !== null) {
+      if (indicesFromDataPath !== null) {
+        const indexIds = toIndexIds(
+          indicesFromDataPath.indices,
+          indicesFromDataPath.dataPath,
+        );
         triggeredWatchers.push({
           registeredWatcher,
-          triggeredWithIndices: indicesFromDataPaths,
+          indexIds,
         });
       }
     }
-    if (triggeredWatchers.length === 0) {
-      handleChange(path, data);
-      return;
-    }
-    const newData = cloneDeep(currentData);
-    set(newData, path, data);
 
+    const transformations = [];
+    const withIsToBeAppliedTester = triggeredWatchers.map((item) => ({
+      ...item,
+      isToBeApplied: getIsToBeAppliedCallback(getKey(item)),
+    }));
     for (const {
       registeredWatcher,
-      triggeredWithIndices,
-    } of triggeredWatchers) {
-      await registeredWatcher.transformSettings(triggeredWithIndices)(newData);
+      indexIds,
+      isToBeApplied,
+    } of withIsToBeAppliedTester) {
+      const transformation = await registeredWatcher.transformSettings(
+        indexIds,
+      )(currentData);
+      if (isToBeApplied()) {
+        transformations.push(transformation);
+      }
     }
-    handleChange("", newData);
+    transformations.forEach((transformation) => {
+      currentData = transformation(currentData);
+    });
   };
   /**
    * With this method a watcher for data changes that can be triggered within the updateData method can be registered.
@@ -158,11 +191,15 @@ export default () => {
   }: {
     /**
      *
-     * @param indices The indices of the trigger of the transformation
+     * @param indexIds The ids of indices of the trigger of the transformation
      *    (e.g. a value change within the third element of an array layout induces indices `[3]`)
      * @returns a transformation of the current settings of the dialog.
      */
-    transformSettings: (indices: number[]) => TransformSettingsMethod;
+    transformSettings: (
+      indexIds: string[],
+    ) => (
+      settingsForDependencies: DialogSettings & object,
+    ) => Promise<TransformSettings>;
     /**
      * 2d-array: Outer dimension, because there can be multiple dependencies. Inner dimension,
      * because a dependency consists of multiple scopes when nested within an array layout.

@@ -18,6 +18,7 @@ import {
 } from "@/nodeDialog/types/Update";
 import TextInput from "@/nodeDialog/uiComponents/TextInput.vue";
 import Checkbox from "webapps-common/ui/components/forms/Checkbox.vue";
+import { ref } from "vue";
 
 describe("updates in array layouts", () => {
   type Wrapper = VueWrapper<any> & {
@@ -117,11 +118,13 @@ describe("updates in array layouts", () => {
     return wrapper;
   };
 
-  const mockRPCResult = (result: UpdateResult[]) =>
-    vi.spyOn(JsonDataService.prototype, "data").mockResolvedValue({
-      state: "SUCCESS",
-      result,
-    });
+  const mockRPCResult = (getResult: () => UpdateResult[]) =>
+    vi.spyOn(JsonDataService.prototype, "data").mockImplementation(() =>
+      Promise.resolve({
+        state: "SUCCESS",
+        result: getResult(),
+      }),
+    );
 
   // Buttons
 
@@ -252,14 +255,14 @@ describe("updates in array layouts", () => {
   const mockRPCResultToUpdateElementDropdownChoices = (
     choicesProviderId: string,
   ) => {
-    const possibleValues = [
+    const possibleValues = ref([
       { id: "foo", text: "Foo" },
       { id: "bar", text: "Bar" },
-    ];
-    mockRPCResult([
+    ]);
+    mockRPCResult(() => [
       {
         id: choicesProviderId,
-        value: possibleValues,
+        value: possibleValues.value,
         scopes: null,
       },
     ]);
@@ -278,7 +281,7 @@ describe("updates in array layouts", () => {
 
   const mockRPCResultToUpdateElementTextValue = () => {
     const newValue = "new value";
-    mockRPCResult([
+    mockRPCResult(() => [
       {
         id: null,
         value: newValue,
@@ -331,7 +334,7 @@ describe("updates in array layouts", () => {
         await triggerNthButton(wrapper, index);
 
         expect(getNthDropdownChoices(wrapper, index)).toStrictEqual(
-          possibleValues,
+          possibleValues.value,
         );
         otherIndices.forEach((otherIndex) =>
           expect(getNthDropdownChoices(wrapper, otherIndex)).toStrictEqual([]),
@@ -355,7 +358,9 @@ describe("updates in array layouts", () => {
       await triggerButton(wrapper);
 
       arrayIndices.forEach((i) =>
-        expect(getNthDropdownChoices(wrapper, i)).toStrictEqual(possibleValues),
+        expect(getNthDropdownChoices(wrapper, i)).toStrictEqual(
+          possibleValues.value,
+        ),
       );
     });
   });
@@ -421,6 +426,16 @@ describe("updates in array layouts", () => {
       };
     };
 
+    it("triggers value updates within arrays initially", async () => {
+      const { getNthDropdownChoices, possibleValues, wrapper } =
+        await prepareDropdownUpdatedByCheckboxToggle();
+      arrayIndices.forEach((index) =>
+        expect(getNthDropdownChoices(wrapper, index)).toStrictEqual(
+          possibleValues.value,
+        ),
+      );
+    });
+
     it.each(arrayIndexWithOtherIndicesList)(
       "triggers update from value change within array element %s",
       async (index, otherIndices) => {
@@ -431,13 +446,24 @@ describe("updates in array layouts", () => {
           wrapper,
         } = await prepareDropdownUpdatedByCheckboxToggle();
 
+        const initialPossibleValues = possibleValues.value;
+        const updatedPossibleValues = [
+          {
+            id: "James",
+            text: "Bond",
+          },
+        ];
+        possibleValues.value = updatedPossibleValues;
+
         await toggleNthCheckbox(wrapper, index);
 
         expect(getNthDropdownChoices(wrapper, index)).toStrictEqual(
-          possibleValues,
+          updatedPossibleValues,
         );
         otherIndices.forEach((otherIndex) =>
-          expect(getNthDropdownChoices(wrapper, otherIndex)).toStrictEqual([]),
+          expect(getNthDropdownChoices(wrapper, otherIndex)).toStrictEqual(
+            initialPossibleValues,
+          ),
         );
       },
     );
@@ -453,7 +479,7 @@ describe("updates in array layouts", () => {
       const { triggerNthButton, addDependency } = addButtonToElements();
       const dependencyId = "myDependencyId";
       addDependency(createTextDependency(dependencyId));
-      const rpcDataSpy = mockRPCResult([]);
+      const rpcDataSpy = mockRPCResult(() => []);
 
       const wrapper = await mountNodeDialog();
       return { wrapper, rpcDataSpy, dependencyId, triggerNthButton };
@@ -484,7 +510,7 @@ describe("updates in array layouts", () => {
       const { triggerButton, addDependency } = addButtonAfterArray();
       const dependencyId = "myDependencyId";
       addDependency(createTextDependency(dependencyId));
-      const rpcDataSpy = mockRPCResult([]);
+      const rpcDataSpy = mockRPCResult(() => []);
 
       const wrapper = await mountNodeDialog();
       return { wrapper, rpcDataSpy, dependencyId, triggerButton };

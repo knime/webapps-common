@@ -94,7 +94,7 @@ export default {
           console.log("callNodeDataService called");
           const rpcRequest = JSON.parse(params.dataServiceRequest);
           const result = dataServiceMock(rpcRequest);
-          const delay = 2000;
+          const delay = 200;
           return new Promise((resolve) =>
             setTimeout(() => resolve({ result: { result } }), delay),
           );

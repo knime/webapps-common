@@ -6,19 +6,22 @@ import type { FlowSettings, PossibleFlowVariable } from "../api/types";
 import type { getPossibleValuesFromUiSchema } from "../utils";
 import type Control from "./Control";
 import type SettingsData from "./SettingsData";
+import { IdsRecord } from "../composables/nodeDialog/useArrayIds";
 
 type getPossibleValuesFromUiSchema = (
   control: Control,
 ) => ReturnType<typeof getPossibleValuesFromUiSchema>;
 
 type registerWatcher = (params: {
-  transformSettings: (newData: SettingsData) => Promise<void> | void;
+  transformSettings: (
+    dependencyData: SettingsData,
+  ) => Promise<(newData: SettingsData) => void> | void;
   init?: (newData: SettingsData) => Promise<void>;
   dependencies: string[];
 }) => Promise<() => void>;
 
 type addStateProviderListener<T> = (
-  identity: { id: string; indices?: number[] },
+  identity: { id: string; indexIds?: string[] },
   callback: (data: T) => void,
 ) => void;
 
@@ -31,12 +34,13 @@ interface Provided {
   getPossibleValuesFromUiSchema: getPossibleValuesFromUiSchema;
   addStateProviderListener: addStateProviderListener<any>;
   registerWatcher: registerWatcher;
-  trigger: (triggerId: { id: string; indices?: number[] }) => void;
-  updateData: any;
+  trigger: (triggerId: { id: string; indexIds?: string[] }) => void;
+  updateData: (path: string) => void;
   sendAlert: sendAlert;
   getData: getData;
   setSubPanelExpanded: (param: { isExpanded: boolean }) => void;
   getPanelsContainer: () => null | HTMLElement;
+  createArrayAtPath: (path: string) => IdsRecord;
   getDialogPopoverTeleportDest: () => null | HTMLElement;
 }
 

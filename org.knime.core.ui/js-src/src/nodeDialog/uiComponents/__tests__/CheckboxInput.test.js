@@ -64,18 +64,14 @@ describe("CheckboxInput.vue", () => {
     initializesJsonFormsControl(component);
   });
 
-  it("calls updateData when checkbox is changed", async () => {
+  it("calls handleChange when checkbox is changed", async () => {
     const setDirtyModelSettingsMock = vi.fn();
-    const { wrapper, updateData } = mountJsonFormsComponent(CheckboxInput, {
+    const { wrapper, handleChange } = mountJsonFormsComponent(CheckboxInput, {
       props: defaultProps,
       provide: { setDirtyModelSettingsMock },
     });
     await wrapper.findComponent(Checkbox).vm.$emit("update:modelValue", true);
-    expect(updateData).toHaveBeenCalledWith(
-      expect.anything(),
-      defaultProps.control.path,
-      true,
-    );
+    expect(handleChange).toHaveBeenCalledWith(defaultProps.control.path, true);
     expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
   });
 

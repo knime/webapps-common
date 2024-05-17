@@ -392,7 +392,7 @@ describe("NodeDialog.vue", () => {
   });
 
   describe("updateData (old mechanism: registerWatchers)", () => {
-    let wrapper, handleChange, registeredWatchers;
+    let wrapper, registeredWatchers, transformSettingsSpy;
 
     const settingsData = {
       currentData: {
@@ -408,21 +408,22 @@ describe("NodeDialog.vue", () => {
       await flushPromises();
 
       wrapper.setData(settingsData);
-
+      transformSettingsSpy = vi.fn();
       registeredWatchers = [
         {
-          transformSettings: vi.fn((data) => {
-            data.test4 = "transformed";
-          }),
+          transformSettings: vi.fn(() =>
+            Promise.resolve((data) => {
+              transformSettingsSpy(data);
+              data.test4 = "transformed";
+            }),
+          ),
           dependencies: ["#/properties/test1", "#/properties/test2"],
         },
         {
-          transformSettings: vi.fn(),
+          transformSettings: vi.fn(() => Promise.resolve(transformSettingsSpy)),
           dependencies: ["#/properties/test2", "#/properties/test3"],
         },
       ];
-
-      handleChange = vi.fn(() => {});
       registeredWatchers.forEach(async (watcher) => {
         await wrapper.vm.registerWatcher(watcher);
       });
@@ -430,26 +431,30 @@ describe("NodeDialog.vue", () => {
 
     it("updates data normally if no watchers are triggered", async () => {
       const path = "test4";
-      const data = "some data";
-      await wrapper.vm.updateData(handleChange, path, data);
+      await wrapper.vm.updateData(path);
       registeredWatchers.forEach(({ transformSettings }) => {
         expect(transformSettings).not.toHaveBeenCalled();
       });
-      expect(handleChange).toHaveBeenCalledWith(path, data);
     });
 
     it("transforms settings for triggered watchers and updates data", async () => {
       const path = "test2";
-      const data = "some data";
-      await wrapper.vm.updateData(handleChange, path, data);
+      await wrapper.vm.updateData(path);
       registeredWatchers.forEach(({ transformSettings }) => {
         expect(transformSettings).toHaveBeenCalled();
       });
-      expect(handleChange).toHaveBeenCalledWith("", {
-        ...wrapper.vm.getData().data,
-        test2: data,
+      expect(wrapper.vm.getData().data).toMatchObject({
         test4: "transformed",
       });
+    });
+
+    it("aborts first update when second update is triggered in the meantime", async () => {
+      const path = "test1";
+      const firstUpdate = wrapper.vm.updateData(path);
+      const secondUpdate = wrapper.vm.updateData(path);
+      await firstUpdate;
+      await secondUpdate;
+      expect(transformSettingsSpy).toHaveBeenCalledOnce();
     });
 
     it("reacts to path updates nested inside array layouts", async () => {
@@ -460,21 +465,15 @@ describe("NodeDialog.vue", () => {
       });
 
       const arrayLayoutWatcher = {
-        transformSettings: vi.fn(),
+        transformSettings: vi.fn(() => Promise.resolve(() => {})),
         dependencies: ["#/properties/arrayLayoutSetting"],
       };
 
       await wrapper.vm.registerWatcher(arrayLayoutWatcher);
       const path = "arrayLayoutSetting.0.value";
-      const data = "some data";
-      await wrapper.vm.updateData(handleChange, path, data);
+      await wrapper.vm.updateData(path);
 
       expect(arrayLayoutWatcher.transformSettings).toHaveBeenCalled();
-
-      expect(handleChange).toHaveBeenCalledWith("", {
-        ...wrapper.vm.getData().data,
-        arrayLayoutSetting: [{ value: "some data" }, { value: "second" }],
-      });
     });
   });
 
@@ -536,9 +535,6 @@ describe("NodeDialog.vue", () => {
 
       const { wrapper, dataServiceSpy } = await getWrapperWithDataServiceSpy();
 
-      const triggeringValue = "some data";
-      const handleChange = vi.fn(() => {});
-
       const updatedValue = "updated";
       dataServiceSpy.mockResolvedValue({
         state: "SUCCESS",
@@ -551,22 +547,13 @@ describe("NodeDialog.vue", () => {
         message: ["Success message."],
       });
 
-      await wrapper.vm.updateData(
-        handleChange,
-        "view.firstSetting",
-        triggeringValue,
-      );
+      await wrapper.vm.updateData("view.firstSetting");
       expect(dataServiceSpy).toHaveBeenCalledWith({
         method: "settings.update2",
         options: [null, triggerId, { [dependencyId]: "secondSetting" }],
       });
-      expect(handleChange).toHaveBeenCalledWith("", {
-        view: {
-          firstSetting: triggeringValue,
-        },
-        model: {
-          secondSetting: updatedValue,
-        },
+      expect(wrapper.vm.getData().data.model).toStrictEqual({
+        secondSetting: updatedValue,
       });
     });
 

@@ -76,12 +76,12 @@ describe("NumberInput.vue", () => {
 
   it("calls onChange of NumberInputBase when number input is changed", () => {
     const setDirtyModelSettingsMock = vi.fn();
-    const { wrapper, updateData } = mountJsonFormsComponent(NumberInput, {
+    const { wrapper, handleChange } = mountJsonFormsComponent(NumberInput, {
       props,
       provide: { setDirtyModelSettingsMock },
     });
     wrapper.findComponent(NumberInputBase).find("input").trigger("input");
-    expect(updateData).toBeCalled();
+    expect(handleChange).toBeCalled();
     expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
   });
 
@@ -104,8 +104,7 @@ describe("NumberInput.vue", () => {
     const component = mountJsonFormsComponent(NumberInput, { props });
     const wrapper = component.wrapper;
     wrapper.findComponent(NumberInputComponent).vm.$emit("focusout");
-    expect(component.updateData).toHaveBeenCalledWith(
-      expect.anything(),
+    expect(component.handleChange).toHaveBeenCalledWith(
       props.control.path,
       minimum,
     );
@@ -118,8 +117,7 @@ describe("NumberInput.vue", () => {
     const component = mountJsonFormsComponent(NumberInput, { props });
     const wrapper = component.wrapper;
     wrapper.findComponent(NumberInputComponent).vm.$emit("focusout");
-    expect(component.updateData).toHaveBeenCalledWith(
-      expect.anything(),
+    expect(component.handleChange).toHaveBeenCalledWith(
       props.control.path,
       maximum,
     );

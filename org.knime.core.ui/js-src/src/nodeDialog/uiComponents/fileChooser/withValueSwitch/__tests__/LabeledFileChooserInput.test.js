@@ -104,7 +104,7 @@ describe("LabeledFileChooserInput.vue", () => {
     initializesJsonFormsControl(component);
   });
 
-  it("calls updateData when local file text input is changed", () => {
+  it("calls handleChange when local file text input is changed", () => {
     const changedTextInput = "Shaken not stirred";
     wrapper
       .findComponent(StringFileChooserInputWithExplorer)
@@ -116,8 +116,7 @@ describe("LabeledFileChooserInput.vue", () => {
         timeout: 1000,
       },
     };
-    expect(component.updateData).toHaveBeenCalledWith(
-      expect.anything(),
+    expect(component.handleChange).toHaveBeenCalledWith(
       props.control.path,
       onChangePayload,
     );
@@ -165,31 +164,23 @@ describe("LabeledFileChooserInput.vue", () => {
 
     const newTimeout = 1001;
     timeout.vm.$emit("update:modelValue", newTimeout);
-    expect(component.updateData).toHaveBeenCalledWith(
-      expect.anything(),
-      "test",
-      {
-        path: {
-          fsCategory: "CUSTOM_URL",
-          path: "myPath",
-          timeout: newTimeout,
-        },
+    expect(component.handleChange).toHaveBeenCalledWith("test", {
+      path: {
+        fsCategory: "CUSTOM_URL",
+        path: "myPath",
+        timeout: newTimeout,
       },
-    );
+    });
 
     const newUrl = 1001;
     url.vm.$emit("update:modelValue", newUrl);
-    expect(component.updateData).toHaveBeenCalledWith(
-      expect.anything(),
-      "test",
-      {
-        path: {
-          fsCategory: "CUSTOM_URL",
-          path: newUrl,
-          timeout: 1000,
-        },
+    expect(component.handleChange).toHaveBeenCalledWith("test", {
+      path: {
+        fsCategory: "CUSTOM_URL",
+        path: newUrl,
+        timeout: 1000,
       },
-    );
+    });
   });
 
   it("renders with non-supported fsCategory", async () => {
@@ -225,7 +216,7 @@ describe("LabeledFileChooserInput.vue", () => {
     const stringRepresentation = "myStringRepresentation";
     props.control.data.path.fsCategory = "RELATIVE";
     props.control.data.path.context = { fsToString: stringRepresentation };
-    const { flowVariablesMap, wrapper, updateData } =
+    const { flowVariablesMap, wrapper, handleChange } =
       await mountJsonFormsComponent(LabeledFileChooserInput, {
         props,
         withControllingFlowVariable: `${props.control.path}.path`,
@@ -235,16 +226,12 @@ describe("LabeledFileChooserInput.vue", () => {
       null;
     wrapper.vm.control = { ...wrapper.vm.control };
     await flushPromises();
-    expect(updateData).toHaveBeenCalledWith(
-      expect.anything(),
-      props.control.path,
-      {
-        path: {
-          path: "",
-          fsCategory: "LOCAL",
-          timeout: 10000,
-        },
+    expect(handleChange).toHaveBeenCalledWith(props.control.path, {
+      path: {
+        path: "",
+        fsCategory: "LOCAL",
+        timeout: 10000,
       },
-    );
+    });
   });
 });

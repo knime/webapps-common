@@ -85,8 +85,7 @@ describe("SortListInput.vue", () => {
     await wrapper
       .findComponent(SortList)
       .vm.$emit("update:modelValue", newSelected);
-    expect(component.updateData).toBeCalledWith(
-      expect.anything(),
+    expect(component.handleChange).toBeCalledWith(
       props.control.path,
       newSelected,
     );
@@ -107,21 +106,25 @@ describe("SortListInput.vue", () => {
 
   it("sets data if none are present", async () => {
     props.control.data = [];
-    const { updateData } = mountJsonFormsComponent(SortListInput, { props });
+    const { handleChange } = mountJsonFormsComponent(SortListInput, { props });
     await flushPromises();
-    expect(updateData).toHaveBeenCalledWith(
-      expect.anything(),
-      props.control.path,
-      ["test_1", "test_2", "test_3", "unknown", DEFAULT_ANY_UNKNOWN_VALUES_ID],
-    );
+    expect(handleChange).toHaveBeenCalledWith(props.control.path, [
+      "test_1",
+      "test_2",
+      "test_3",
+      "unknown",
+      DEFAULT_ANY_UNKNOWN_VALUES_ID,
+    ]);
   });
 
   it("sets unknown values", () => {
-    expect(component.updateData).toHaveBeenCalledWith(
-      expect.anything(),
-      props.control.path,
-      ["test_1", "test_3", DEFAULT_ANY_UNKNOWN_VALUES_ID, "unknown", "test_2"],
-    );
+    expect(component.handleChange).toHaveBeenCalledWith(props.control.path, [
+      "test_1",
+      "test_3",
+      DEFAULT_ANY_UNKNOWN_VALUES_ID,
+      "unknown",
+      "test_2",
+    ]);
   });
 
   it("uses choicesProvider if present", async () => {
@@ -132,7 +135,7 @@ describe("SortListInput.vue", () => {
     const addStateProviderListenerMock = vi.fn((_id, callback) => {
       provideChoices = callback;
     });
-    const { wrapper, updateData } = mountJsonFormsComponent(SortListInput, {
+    const { wrapper, handleChange } = mountJsonFormsComponent(SortListInput, {
       props,
       provide: { addStateProviderListenerMock },
     });
@@ -157,17 +160,13 @@ describe("SortListInput.vue", () => {
         special: true,
       },
     ]);
-    expect(updateData).toHaveBeenCalledWith(
-      expect.anything(),
-      props.control.path,
-      [
-        "test_1",
-        "test_3",
-        DEFAULT_ANY_UNKNOWN_VALUES_ID,
-        providedChoices[0].id,
-        "test_2",
-      ],
-    );
+    expect(handleChange).toHaveBeenCalledWith(props.control.path, [
+      "test_1",
+      "test_3",
+      DEFAULT_ANY_UNKNOWN_VALUES_ID,
+      providedChoices[0].id,
+      "test_2",
+    ]);
   });
 
   it("sets correct label", () => {
@@ -197,35 +196,33 @@ describe("SortListInput.vue", () => {
 
     it("sorts from A to Z", async () => {
       await clickButtonWithText("A - Z");
-      expect(component.updateData).toHaveBeenCalledWith(
-        expect.anything(),
-        props.control.path,
-        [DEFAULT_ANY_UNKNOWN_VALUES_ID, "test_1", "test_2", "test_3"],
-      );
+      expect(component.handleChange).toHaveBeenCalledWith(props.control.path, [
+        DEFAULT_ANY_UNKNOWN_VALUES_ID,
+        "test_1",
+        "test_2",
+        "test_3",
+      ]);
     });
 
     it("sorts from Z to A", async () => {
       await clickButtonWithText("Z - A");
-      expect(component.updateData).toHaveBeenCalledWith(
-        expect.anything(),
-        props.control.path,
-        ["test_3", "test_2", "test_1", DEFAULT_ANY_UNKNOWN_VALUES_ID],
-      );
+      expect(component.handleChange).toHaveBeenCalledWith(props.control.path, [
+        "test_3",
+        "test_2",
+        "test_1",
+        DEFAULT_ANY_UNKNOWN_VALUES_ID,
+      ]);
     });
 
     it("resets to the given possible values", async () => {
       await clickButtonWithText("Reset all");
-      expect(component.updateData).toHaveBeenCalledWith(
-        expect.anything(),
-        props.control.path,
-        [
-          "test_1",
-          "test_2",
-          "test_3",
-          "unknown",
-          DEFAULT_ANY_UNKNOWN_VALUES_ID,
-        ],
-      );
+      expect(component.handleChange).toHaveBeenCalledWith(props.control.path, [
+        "test_1",
+        "test_2",
+        "test_3",
+        "unknown",
+        DEFAULT_ANY_UNKNOWN_VALUES_ID,
+      ]);
     });
   });
 });

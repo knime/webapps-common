@@ -54,8 +54,8 @@ import java.util.function.Consumer;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsScopeUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
-import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
+import org.knime.core.webui.node.dialog.defaultdialog.util.WidgetGroupTraverser;
+import org.knime.core.webui.node.dialog.defaultdialog.util.WidgetGroupTraverser.TraversedField;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DeclaringDefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
@@ -83,7 +83,7 @@ final class DependencyResolver {
         final Consumer<String> addDependency) {
         final var dependencyClass =
             GenericTypeFinderUtil.getFirstGenericType(dependencyHandlerClass, DependencyHandler.class);
-        final var traverser = new DefaultNodeSettingsFieldTraverser(dependencyClass);
+        final var traverser = new WidgetGroupTraverser(dependencyClass);
         final Consumer<TraversedField> addNewDependency = getAddNewDependencyCallback(addDependency);
         traverser.traverse(addNewDependency, List.of(DeclaringDefaultNodeSettings.class));
     }

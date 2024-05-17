@@ -9,6 +9,11 @@ import {
   UIExtensionService,
 } from "@knime/ui-extension-service";
 import Result from "@/nodeDialog/api/types/Result";
+import { RegisterWatcherTransformSettings } from "./useGlobalWatchers";
+import { getIndex } from "./useArrayIds";
+
+const resolveToIndices = (ids: string[] | undefined) =>
+  (ids ?? []).map((id) => getIndex(id));
 
 type DialogSettingsObject = DialogSettings & object;
 
@@ -40,16 +45,16 @@ export default ({
   sendAlert,
 }: {
   callStateProviderListener: (
-    location: { id: string; indices?: number[] },
+    location: { id: string; indexIds?: string[] },
     value: unknown,
   ) => void;
   registerWatcher: (params: {
     dependencies: string[][];
-    transformSettings: (indices: number[]) => TransformSettingsMethod;
+    transformSettings: RegisterWatcherTransformSettings;
   }) => void;
   registerTrigger: (
     id: string,
-    callback: (indices: number[]) => TransformSettingsMethod,
+    callback: (indexIds: string[]) => TransformSettingsMethod,
   ) => void;
   sendAlert: (params: CreateAlertParams) => void;
 }) => {
@@ -73,10 +78,13 @@ export default ({
     return combined[0];
   };
 
+  const indicesAreDefined = (indices: (number | null)[]): indices is number[] =>
+    !indices.includes(null);
+
   const getToBeAdjustedSegments = (
     scopes: string[],
     indices: number[] | undefined,
-    newSettings: { view?: any; model?: any } & object,
+    newSettings: DialogSettingsObject,
   ) => {
     const pathSegments = combineScopesWithIndices(scopes, indices ?? []);
     const toBeAdjustedByLastPathSegment = pathSegments
@@ -90,16 +98,19 @@ export default ({
   };
 
   const resolveUpdateResult =
-    ({ scopes, value, id }: UpdateResult, indices?: number[]) =>
+    ({ scopes, value, id }: UpdateResult, indexIds?: string[]) =>
     (newSettings: DialogSettingsObject) => {
       if (scopes) {
-        const { toBeAdjustedByLastPathSegment, pathSegments } =
-          getToBeAdjustedSegments(scopes, indices, newSettings);
-        toBeAdjustedByLastPathSegment.forEach((settings) =>
-          set(settings, pathSegments[pathSegments.length - 1], value),
-        );
+        const currentIndices = resolveToIndices(indexIds);
+        if (indicesAreDefined(currentIndices)) {
+          const { toBeAdjustedByLastPathSegment, pathSegments } =
+            getToBeAdjustedSegments(scopes, currentIndices, newSettings);
+          toBeAdjustedByLastPathSegment.forEach((settings) => {
+            set(settings, pathSegments[pathSegments.length - 1], value);
+          });
+        }
       } else if (id) {
-        callStateProviderListener({ id, indices }, value);
+        callStateProviderListener({ id, indexIds }, value);
       }
       return newSettings;
     };
@@ -131,7 +142,7 @@ export default ({
 
   const setValueTrigger = (
     scope: string[],
-    callback: (indices: number[]) => TransformSettingsMethod,
+    callback: RegisterWatcherTransformSettings,
   ) => {
     registerWatcher({
       dependencies: [scope],
@@ -141,16 +152,21 @@ export default ({
 
   const setTrigger = (
     trigger: Update["trigger"],
-    triggerCallback: (indices: number[]) => TransformSettingsMethod,
+    triggerCallback: RegisterWatcherTransformSettings,
   ): null | TransformSettingsMethod => {
     if (trigger.scopes) {
       setValueTrigger(trigger.scopes, triggerCallback);
       return null;
     }
     const transformSettings =
-      (indices: number[]): TransformSettingsMethod =>
+      (indexIds: string[]): TransformSettingsMethod =>
       (settings) =>
-        copyAndTransform(settings, triggerCallback(indices));
+        copyAndTransform(settings, async (settings) => {
+          const inducedTransformation = await triggerCallback(indexIds)(
+            settings,
+          );
+          return inducedTransformation(settings);
+        });
 
     if (trigger.triggerInitially) {
       return transformSettings([]);
@@ -191,29 +207,39 @@ export default ({
       }),
     );
   };
-
   const getTriggerCallback =
     ({ dependencies, trigger }: Update) =>
-    (indices: number[]): TransformSettingsMethod =>
-    async (newSettings) => {
+    (indexIds: string[]) =>
+    async (
+      dependencySettings: DialogSettingsObject,
+    ): Promise<(newSettings: DialogSettingsObject) => DialogSettingsObject> => {
+      const indicesBeforeUpdate = resolveToIndices(indexIds);
+      if (!indicesAreDefined(indicesBeforeUpdate)) {
+        throw Error("Trigger called with wrong ids: No indices found.");
+      }
       const currentDependencies = extractCurrentDependencies(
         dependencies,
-        newSettings,
-        indices,
+        dependencySettings,
+        indicesBeforeUpdate,
       );
       const response = await callDataServiceUpdate2({
         triggerId: trigger.id,
         currentDependencies,
       });
-      if (response.state === "FAIL" || response.state === "SUCCESS") {
-        sendAlerts(response.message);
-      }
-      if (response.state === "SUCCESS") {
-        (response.result ?? []).forEach((updateResult: UpdateResult) => {
-          newSettings = resolveUpdateResult(updateResult, indices)(newSettings);
-        });
-      }
-      return newSettings;
+      return (newSettings) => {
+        if (response.state === "FAIL" || response.state === "SUCCESS") {
+          sendAlerts(response.message);
+        }
+        if (response.state === "SUCCESS") {
+          (response.result ?? []).forEach((updateResult: UpdateResult) => {
+            newSettings = resolveUpdateResult(
+              updateResult,
+              indexIds,
+            )(newSettings);
+          });
+        }
+        return newSettings;
+      };
     };
 
   /**

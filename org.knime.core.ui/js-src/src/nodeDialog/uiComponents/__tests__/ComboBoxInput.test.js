@@ -44,12 +44,12 @@ describe("ComboBoxInput.vue", () => {
     };
   });
 
-  let wrapper, component, updateData;
+  let wrapper, component, handleChange;
 
   beforeEach(() => {
     component = mountJsonFormsComponent(ComboBoxInput, { props });
     wrapper = component.wrapper;
-    updateData = component.updateData;
+    handleChange = component.handleChange;
   });
 
   afterEach(() => {
@@ -90,11 +90,10 @@ describe("ComboBoxInput.vue", () => {
   it("calls handleChange when ComboBox's value changes", () => {
     const comboBox = wrapper.findComponent(ComboBox);
     comboBox.vm.$emit("update:modelValue", ["id_1", "id_2"]);
-    expect(updateData).toHaveBeenCalledWith(
-      expect.anything(),
-      props.control.path,
-      ["id_1", "id_2"],
-    );
+    expect(handleChange).toHaveBeenCalledWith(props.control.path, [
+      "id_1",
+      "id_2",
+    ]);
   });
 
   it("sets correct label", () => {

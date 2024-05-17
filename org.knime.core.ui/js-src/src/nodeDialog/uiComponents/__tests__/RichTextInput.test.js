@@ -62,9 +62,9 @@ describe("RichTextInput.vue", () => {
     initializesJsonFormsControl(component);
   });
 
-  it("calls updateData when html content is changed", async () => {
+  it("calls handleChange when html content is changed", async () => {
     const setDirtyModelSettingsMock = vi.fn();
-    const { wrapper, updateData } = await mountJsonFormsComponent(
+    const { wrapper, handleChange } = await mountJsonFormsComponent(
       RichTextInput,
       {
         props,
@@ -78,8 +78,7 @@ describe("RichTextInput.vue", () => {
     wrapper
       .findComponent(RichTextEditor)
       .vm.$emit("update:modelValue", changedRichTextInput);
-    expect(updateData).toHaveBeenCalledWith(
-      expect.anything(),
+    expect(handleChange).toHaveBeenCalledWith(
       props.control.path,
       changedRichTextInput,
     );

@@ -80,7 +80,7 @@ describe("LegacyCredentialsInput.vue", () => {
       set: setFlowVarState,
     });
     props.control.data.flowVarName = flowVarName;
-    const { flowVariablesMap, updateData } = mountJsonFormsComponent(
+    const { flowVariablesMap, handleChange } = mountJsonFormsComponent(
       LegacyCredentialsInput,
       {
         props,
@@ -95,11 +95,10 @@ describe("LegacyCredentialsInput.vue", () => {
     );
     expect(setFlowVarState).toHaveBeenCalledWith(flowVarName);
     await flushPromises();
-    expect(updateData).toHaveBeenCalledWith(
-      expect.anything(),
-      props.control.path,
-      { credentials: flowVarValue, flowVarName: null },
-    );
+    expect(handleChange).toHaveBeenCalledWith(props.control.path, {
+      credentials: flowVarValue,
+      flowVarName: null,
+    });
   });
 
   it("sets legacy flow variable on mounted which is not available", async () => {
@@ -112,7 +111,7 @@ describe("LegacyCredentialsInput.vue", () => {
       set: setFlowVarState,
     });
     props.control.data.flowVarName = flowVarName;
-    const { flowVariablesMap, updateData } = mountJsonFormsComponent(
+    const { flowVariablesMap, handleChange } = mountJsonFormsComponent(
       LegacyCredentialsInput,
       {
         props,
@@ -127,11 +126,10 @@ describe("LegacyCredentialsInput.vue", () => {
     );
     expect(setFlowVarState).toHaveBeenNthCalledWith(1, flowVarName);
     await flushPromises();
-    expect(updateData).toHaveBeenCalledWith(
-      expect.anything(),
-      props.control.path,
-      { credentials: props.control.data.credentials, flowVarName: null },
-    );
+    expect(handleChange).toHaveBeenCalledWith(props.control.path, {
+      credentials: props.control.data.credentials,
+      flowVarName: null,
+    });
     expect(setFlowVarState).toHaveBeenNthCalledWith(2, flowVarName, {
       isFlawed: true,
     });

@@ -134,46 +134,44 @@ describe("CredentialsInput.vue", () => {
 
   it("updates data when username input is changed", () => {
     const setDirtyModelSettingsMock = vi.fn();
-    const { wrapper, updateData } = mountJsonFormsComponent(CredentialsInput, {
-      props,
-      provide: { setDirtyModelSettingsMock },
-    });
+    const { wrapper, handleChange } = mountJsonFormsComponent(
+      CredentialsInput,
+      {
+        props,
+        provide: { setDirtyModelSettingsMock },
+      },
+    );
     const username = "new user";
     wrapper
       .findAllComponents(InputField)[0]
       .vm.$emit("update:modelValue", username);
-    expect(updateData).toHaveBeenCalledWith(
-      expect.anything(),
-      props.control.path,
-      {
-        username,
-        password: props.control.data.password,
-        secondFactor: props.control.data.secondFactor,
-      },
-    );
+    expect(handleChange).toHaveBeenCalledWith(props.control.path, {
+      username,
+      password: props.control.data.password,
+      secondFactor: props.control.data.secondFactor,
+    });
     expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
   });
 
   it("updates data when password input is changed", () => {
     const setDirtyModelSettingsMock = vi.fn();
-    const { wrapper, updateData } = mountJsonFormsComponent(CredentialsInput, {
-      props,
-      provide: { setDirtyModelSettingsMock },
-    });
+    const { wrapper, handleChange } = mountJsonFormsComponent(
+      CredentialsInput,
+      {
+        props,
+        provide: { setDirtyModelSettingsMock },
+      },
+    );
     const password = "new password";
     wrapper
       .findAllComponents(InputField)[1]
       .vm.$emit("update:modelValue", password);
-    expect(updateData).toHaveBeenCalledWith(
-      expect.anything(),
-      props.control.path,
-      {
-        username: props.control.data.username,
-        password,
-        secondFactor: props.control.data.secondFactor,
-        isHiddenPassword: false,
-      },
-    );
+    expect(handleChange).toHaveBeenCalledWith(props.control.path, {
+      username: props.control.data.username,
+      password,
+      secondFactor: props.control.data.secondFactor,
+      isHiddenPassword: false,
+    });
     expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
   });
 
@@ -184,20 +182,16 @@ describe("CredentialsInput.vue", () => {
         username: "flowVarUsername",
         isHiddenPassword: true,
       });
-    expect(component.updateData).toHaveBeenCalledWith(
-      expect.anything(),
-      "credentials",
-      {
-        isHiddenPassword: true,
-        password: props.control.data.password,
-        secondFactor: props.control.data.secondFactor,
-        username: "flowVarUsername",
-      },
-    );
+    expect(component.handleChange).toHaveBeenCalledWith("credentials", {
+      isHiddenPassword: true,
+      password: props.control.data.password,
+      secondFactor: props.control.data.secondFactor,
+      username: "flowVarUsername",
+    });
   });
 
   it("sets flow variable name in data if controlling flow variable is set", async () => {
-    const { wrapper, updateData, flowVariablesMap } = mountJsonFormsComponent(
+    const { wrapper, handleChange, flowVariablesMap } = mountJsonFormsComponent(
       CredentialsInput,
       {
         props,
@@ -209,7 +203,7 @@ describe("CredentialsInput.vue", () => {
     };
     wrapper.vm.control = { ...wrapper.vm.control };
     await flushPromises();
-    expect(updateData).toHaveBeenCalledWith(expect.anything(), "credentials", {
+    expect(handleChange).toHaveBeenCalledWith("credentials", {
       flowVariableName: flowVarName,
       password: "password",
       username: "username",
@@ -218,7 +212,7 @@ describe("CredentialsInput.vue", () => {
   });
 
   it("clears data if controlling flow variable is unset", async () => {
-    const { wrapper, updateData, flowVariablesMap } = mountJsonFormsComponent(
+    const { wrapper, handleChange, flowVariablesMap } = mountJsonFormsComponent(
       CredentialsInput,
       {
         props,
@@ -228,7 +222,7 @@ describe("CredentialsInput.vue", () => {
     flowVariablesMap.credentials.controllingFlowVariableName = null;
     wrapper.vm.control = { ...wrapper.vm.control };
     await flushPromises();
-    expect(updateData).toHaveBeenCalledWith(expect.anything(), "credentials", {
+    expect(handleChange).toHaveBeenCalledWith("credentials", {
       password: "",
       username: "",
       secondFactor: "",
@@ -329,24 +323,23 @@ describe("CredentialsInput.vue", () => {
   it("updates data when second factor input is changed", () => {
     props.control.uischema.options.showSecondFactor = true;
     const setDirtyModelSettingsMock = vi.fn();
-    const { wrapper, updateData } = mountJsonFormsComponent(CredentialsInput, {
-      props,
-      provide: { setDirtyModelSettingsMock },
-    });
+    const { wrapper, handleChange } = mountJsonFormsComponent(
+      CredentialsInput,
+      {
+        props,
+        provide: { setDirtyModelSettingsMock },
+      },
+    );
     const secondFactor = "new second factor";
     wrapper
       .findAllComponents(InputField)[2]
       .vm.$emit("update:modelValue", secondFactor);
-    expect(updateData).toHaveBeenCalledWith(
-      expect.anything(),
-      props.control.path,
-      {
-        username: props.control.data.username,
-        password: props.control.data.password,
-        secondFactor,
-        isHiddenSecondFactor: false,
-      },
-    );
+    expect(handleChange).toHaveBeenCalledWith(props.control.path, {
+      username: props.control.data.username,
+      password: props.control.data.password,
+      secondFactor,
+      isHiddenSecondFactor: false,
+    });
     expect(setDirtyModelSettingsMock).not.toHaveBeenCalled();
   });
 

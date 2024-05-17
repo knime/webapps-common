@@ -31,7 +31,6 @@ export const mountJsonFormsComponent = (
   const callbacks = [];
   const {
     getDataMock,
-    updateDataMock,
     sendAlertMock,
     triggerMock,
     asyncChoicesProviderMock,
@@ -41,15 +40,15 @@ export const mountJsonFormsComponent = (
     settingStateExposedGetMock,
     getPanelsContainerMock,
     getDialogPopoverTeleportDestMock,
+    createArrayAtPathMock,
   } = provide;
-  const updateData =
-    updateDataMock ||
-    vi.fn((handleChange, path, value) => handleChange(path, value));
+  const updateData = vi.fn();
   const getData = getDataMock ?? vi.fn();
   const sendAlert = sendAlertMock ?? vi.fn();
   const trigger = triggerMock ?? vi.fn();
   const asyncChoicesProvider = asyncChoicesProviderMock ?? vi.fn();
   const addStateProviderListener = addStateProviderListenerMock ?? vi.fn();
+  const createArrayAtPath = createArrayAtPathMock ?? vi.fn(() => ({}));
   const flowVariablesApi = flowVariablesApiMock ?? {
     getFlowVariableOverrideValue: vi.fn(),
   };
@@ -68,9 +67,10 @@ export const mountJsonFormsComponent = (
         }
       : {},
   );
+  let handleChange = vi.fn();
   if (props.control) {
     vi.spyOn(jsonformsVueModule, "useJsonFormsControl").mockReturnValue({
-      handleChange: vi.fn(),
+      handleChange,
       control: ref(props.control),
     });
   }
@@ -126,6 +126,7 @@ export const mountJsonFormsComponent = (
         flowVariablesApi,
         getFlowVariablesMap: () => flowVariablesMap,
         getPanelsContainer,
+        createArrayAtPath,
         getDialogPopoverTeleportDest,
         setSubPanelExpanded: vi.fn(),
       },
@@ -148,11 +149,12 @@ export const mountJsonFormsComponent = (
     wrapper,
     callbacks,
     unregisterWatcher,
-    updateData,
     useJsonFormsControlSpy,
     sendAlert,
     getData,
     flowVariablesMap,
+    handleChange,
+    updateData,
   };
 };
 

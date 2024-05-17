@@ -161,12 +161,12 @@ describe("TwinlistInput.vue", () => {
     };
   });
 
-  let wrapper, component, updateData;
+  let wrapper, component, handleChange;
 
   beforeEach(() => {
     component = mountJsonFormsComponent(TwinlistInput, { props });
     wrapper = component.wrapper;
-    updateData = component.updateData;
+    handleChange = component.handleChange;
   });
 
   afterEach(() => {
@@ -226,12 +226,12 @@ describe("TwinlistInput.vue", () => {
     ).toBeTruthy();
   });
 
-  it("calls updateData when twinlist input is changed", async () => {
+  it("calls handleChange when twinlist input is changed", async () => {
     await wrapper
       .findComponent(Twinlist)
       .find({ ref: "moveAllRight" })
       .trigger("click");
-    expect(updateData).toHaveBeenCalled();
+    expect(handleChange).toHaveBeenCalled();
   });
 
   describe("handles changes", () => {
@@ -240,8 +240,7 @@ describe("TwinlistInput.vue", () => {
       await wrapper
         .findComponent(MultiModeTwinlist)
         .vm.$emit("update:selected", selected);
-      expect(updateData).toHaveBeenCalledWith(
-        expect.anything(),
+      expect(handleChange).toHaveBeenCalledWith(
         props.control.path,
         expect.objectContaining({ selected }),
       );
@@ -252,8 +251,7 @@ describe("TwinlistInput.vue", () => {
       wrapper
         .findComponent(MultiModeTwinlist)
         .vm.$emit("update:manualSelection", selected);
-      expect(updateData).toHaveBeenCalledWith(
-        expect.anything(),
+      expect(handleChange).toHaveBeenCalledWith(
         props.control.path,
         expect.objectContaining({
           manualFilter: expect.objectContaining({
@@ -274,8 +272,7 @@ describe("TwinlistInput.vue", () => {
           excludedValues: deselected,
           includeUnknownValues,
         });
-      expect(updateData).toHaveBeenCalledWith(
-        expect.anything(),
+      expect(handleChange).toHaveBeenCalledWith(
         props.control.path,
         expect.objectContaining({
           manualFilter: {
@@ -292,9 +289,8 @@ describe("TwinlistInput.vue", () => {
       wrapper
         .findComponent(MultiModeTwinlist)
         .vm.$emit("update:pattern", pattern);
-      expect(updateData).toHaveBeenNthCalledWith(
+      expect(handleChange).toHaveBeenNthCalledWith(
         1,
-        expect.anything(),
         props.control.path,
         expect.objectContaining({
           patternFilter: expect.objectContaining({ pattern }),
@@ -307,9 +303,8 @@ describe("TwinlistInput.vue", () => {
       wrapper
         .findComponent(MultiModeTwinlist)
         .vm.$emit("update:inversePattern", isInverted);
-      expect(updateData).toHaveBeenNthCalledWith(
+      expect(handleChange).toHaveBeenNthCalledWith(
         1,
-        expect.anything(),
         props.control.path,
         expect.objectContaining({
           patternFilter: expect.objectContaining({ isInverted }),
@@ -322,9 +317,8 @@ describe("TwinlistInput.vue", () => {
       wrapper
         .findComponent(MultiModeTwinlist)
         .vm.$emit("update:caseSensitivePattern", isCaseSensitive);
-      expect(updateData).toHaveBeenNthCalledWith(
+      expect(handleChange).toHaveBeenNthCalledWith(
         1,
-        expect.anything(),
         props.control.path,
         expect.objectContaining({
           patternFilter: expect.objectContaining({ isCaseSensitive }),
@@ -342,9 +336,8 @@ describe("TwinlistInput.vue", () => {
       wrapper
         .findComponent(MultiModeTwinlist)
         .vm.$emit("update:selected-types", selectedTypes, typeDisplays);
-      expect(updateData).toHaveBeenNthCalledWith(
+      expect(handleChange).toHaveBeenNthCalledWith(
         1,
-        expect.anything(),
         props.control.path,
         expect.objectContaining({
           typeFilter: expect.objectContaining({ selectedTypes, typeDisplays }),
@@ -423,12 +416,12 @@ describe("TwinlistInput.vue", () => {
         },
       });
 
-      const { wrapper, updateData } = mountJsonFormsComponent(TwinlistInput, {
+      const { wrapper, handleChange } = mountJsonFormsComponent(TwinlistInput, {
         props: localProps,
       });
       await flushPromises();
       const manuallySelected = ["A", "B"];
-      expect(updateData).not.toHaveBeenCalled();
+      expect(handleChange).not.toHaveBeenCalled();
       expect(
         wrapper.findComponent(MultiModeTwinlist).props().manualSelection,
       ).toStrictEqual({
@@ -459,12 +452,12 @@ describe("TwinlistInput.vue", () => {
           },
         },
       });
-      const { wrapper, updateData } = mountJsonFormsComponent(TwinlistInput, {
+      const { wrapper, handleChange } = mountJsonFormsComponent(TwinlistInput, {
         props: localProps,
       });
       await flushPromises();
       const manuallySelected = ["A", "B", "E"];
-      expect(updateData).not.toHaveBeenCalled();
+      expect(handleChange).not.toHaveBeenCalled();
       expect(
         wrapper.findComponent(MultiModeTwinlist).props().manualSelection,
       ).toStrictEqual(manuallySelected);
@@ -507,7 +500,7 @@ describe("TwinlistInput.vue", () => {
       manuallyDeselected: ["test_1", "test_2", "test_3"],
       includeUnknownColumns: false,
     };
-    const { wrapper, updateData } = mountJsonFormsComponent(TwinlistInput, {
+    const { wrapper, handleChange } = mountJsonFormsComponent(TwinlistInput, {
       props,
     });
     await flushPromises();
@@ -518,8 +511,7 @@ describe("TwinlistInput.vue", () => {
       .findComponent(Twinlist)
       .find({ ref: "moveAllLeft" })
       .trigger("click");
-    expect(updateData).toBeCalledWith(
-      expect.anything(),
+    expect(handleChange).toBeCalledWith(
       props.control.path,
       expect.objectContaining({
         manualFilter: {

@@ -63,8 +63,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.ScopedExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Signals;
-import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
-import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
+import org.knime.core.webui.node.dialog.defaultdialog.util.WidgetGroupTraverser;
+import org.knime.core.webui.node.dialog.defaultdialog.util.WidgetGroupTraverser.TraversedField;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LatentWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
@@ -117,7 +117,7 @@ class UiSchemaDefaultNodeSettingsTraverser {
 
     private static void traverseSettingsClass(final Consumer<TraversalConsumerPayload> addField,
         final Consumer<TraversalConsumerPayload> addSignal, final String settingsKey, final Class<?> setting) {
-        final var traverser = new DefaultNodeSettingsFieldTraverser(setting);
+        final var traverser = new WidgetGroupTraverser(setting);
         traverser.traverse(field -> {
             final var scope = JsonFormsScopeUtil.toScope(field.path(), settingsKey);
             final var payload = new TraversalConsumerPayload(scope, field, setting);

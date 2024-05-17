@@ -2,18 +2,18 @@ import Provided from "@/nodeDialog/types/provided";
 import inject from "@/nodeDialog/utils/inject";
 import { provide } from "vue";
 
-export const addIndexToStateProviders = (index: number) => {
+export const addIndexToStateProviders = (indexId: string) => {
   const injectionKey = "addStateProviderListener";
   const addStateProviderListener = inject(injectionKey);
 
   const wrapperWithIndex: Provided[typeof injectionKey] = (
-    { id, indices = [] },
+    { id, indexIds = [] },
     callback,
   ) =>
     addStateProviderListener(
       {
         id,
-        indices: [...indices, index],
+        indexIds: [indexId, ...indexIds],
       },
       callback,
     );
@@ -21,17 +21,17 @@ export const addIndexToStateProviders = (index: number) => {
   provide(injectionKey, wrapperWithIndex);
 };
 
-export const addIndexToTriggers = (index: number) => {
+export const addIndexToTriggers = (indexId: string) => {
   const injectionKey = "trigger";
-  const addStateProviderListener = inject(injectionKey);
+  const trigger = inject(injectionKey);
 
   const wrapperWithIndex: Provided[typeof injectionKey] = ({
     id,
-    indices = [],
+    indexIds = [],
   }) =>
-    addStateProviderListener({
+    trigger({
       id,
-      indices: [...indices, index],
+      indexIds: [indexId, ...indexIds],
     });
 
   provide(injectionKey, wrapperWithIndex);

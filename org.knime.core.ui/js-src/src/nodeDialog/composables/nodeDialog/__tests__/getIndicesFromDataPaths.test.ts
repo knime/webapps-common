@@ -5,7 +5,7 @@ describe("getIndicesFromDataPaths", () => {
   const splitPathAndGetIndicesFromDataPaths = (
     dataPaths: string[][],
     path: string,
-  ) => getIndicesFromDataPaths(dataPaths, path.split("."));
+  ) => getIndicesFromDataPaths(dataPaths, path.split("."))?.indices ?? null;
 
   it("matches indices from data paths", () => {
     expect(
@@ -73,6 +73,12 @@ describe("getIndicesFromDataPaths", () => {
     ).toBeNull();
     expect(
       splitPathAndGetIndicesFromDataPaths([["loremipsum"]], "lorem"),
+    ).toBeNull();
+    expect(
+      splitPathAndGetIndicesFromDataPaths(
+        [["lorem", "ipsum", "dolor"]],
+        "lorem.123",
+      ),
     ).toBeNull();
   });
 
