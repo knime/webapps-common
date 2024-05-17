@@ -64,7 +64,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ser.PropertyWriter;
 
 /**
@@ -72,14 +71,14 @@ import com.fasterxml.jackson.databind.ser.PropertyWriter;
  * @author Paul Bärnreuther
  */
 @SuppressWarnings({"unused", "java:S2698"}) // We allow unused settings in the dummy settings. we accept assertions without messages
-class DefaultNodeSettingsFieldTraverserTest {
+class WidgetGroupTraverserTest {
 
-    static DefaultNodeSettingsFieldTraverser getTraverser(final Class<?> settingsClass) {
-        return new DefaultNodeSettingsFieldTraverser(settingsClass);
+    static WidgetGroupTraverser getTraverser(final Class<?> settingsClass) {
+        return new WidgetGroupTraverser(settingsClass);
     }
 
     @Test
-    void testTraversal() throws JsonProcessingException {
+    void testTraversal() {
 
         class ClusterOfSettings implements WidgetGroup {
             @Widget(title = "", description = "")
@@ -228,7 +227,7 @@ class DefaultNodeSettingsFieldTraverserTest {
         }
 
         @Test
-        void testNoAnnotation() throws JsonProcessingException {
+        void testNoAnnotation() {
 
             class TestNoAnnotationSettings implements DefaultNodeSettings {
 
@@ -250,7 +249,7 @@ class DefaultNodeSettingsFieldTraverserTest {
         }
 
         @Test
-        void testThrowsIfAnnotationBothForClassAndEnclosingField() throws JsonProcessingException {
+        void testThrowsIfAnnotationBothForClassAndEnclosingField() {
 
             @TestId
             class ClusterOfSettings implements WidgetGroup {

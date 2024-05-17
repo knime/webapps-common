@@ -61,9 +61,9 @@ import org.apache.commons.lang3.ClassUtils;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaGenerationException;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser;
-import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.Configuration;
-import org.knime.core.webui.node.dialog.defaultdialog.util.DefaultNodeSettingsFieldTraverser.TraversedField;
+import org.knime.core.webui.node.dialog.defaultdialog.util.WidgetGroupTraverser;
+import org.knime.core.webui.node.dialog.defaultdialog.util.WidgetGroupTraverser.Configuration;
+import org.knime.core.webui.node.dialog.defaultdialog.util.WidgetGroupTraverser.TraversedField;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesStateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
@@ -108,7 +108,7 @@ final class SettingsClassesToValueRefsAndStateProviders {
         settingsClassesToValueRefsAndStateProviders(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
 
         settingsClasses.entrySet().forEach(entry -> {
-            final var traverser = new DefaultNodeSettingsFieldTraverser(entry.getValue(), TRAVERSAL_CONFIG);
+            final var traverser = new WidgetGroupTraverser(entry.getValue(), TRAVERSAL_CONFIG);
             final var allFields = traverser.getAllFields();
             allFields.forEach(field -> addField(field, List.of(), entry.getKey()));
         });

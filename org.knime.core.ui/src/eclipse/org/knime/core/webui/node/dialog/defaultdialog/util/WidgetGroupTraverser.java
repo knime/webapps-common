@@ -58,7 +58,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaGenerationException;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 
@@ -75,9 +74,9 @@ import com.fasterxml.jackson.databind.ser.PropertyWriter;
 
 /**
  *
- * This class is used to traverse the settings within {@link DefaultNodeSettings}. It is a depth-first (for nested
- * settings implementing {@link WidgetGroup}) traversal and it calls a given callback on every traversed leaf field
- * (every field which is not of type {@link WidgetGroup}).
+ * This class is used to traverse the settings within a {@link WidgetGroup}. It is a depth-first (for nested settings
+ * implementing {@link WidgetGroup}) traversal and it calls a given callback on every traversed leaf field (every field
+ * which is not of type {@link WidgetGroup}) and optionally also within array layouts and non-leaf fields.
  *
  * Additionally, optionally, one can specify a list of classes of annotations, which should be tracked during the
  * traversal. Each such annotation is checked for at every point of the traversal starting with the annotation on the
@@ -87,7 +86,7 @@ import com.fasterxml.jackson.databind.ser.PropertyWriter;
  *
  * @author Paul Bärnreuther
  */
-public class DefaultNodeSettingsFieldTraverser {
+public class WidgetGroupTraverser {
 
     private static ObjectMapper mapper;
 
@@ -123,9 +122,8 @@ public class DefaultNodeSettingsFieldTraverser {
     private final Configuration m_config;
 
     /**
-     * Per default, only leaf nested fields inside {@link DefaultNodeSettings} are listed by a traversal. Use this
-     * Configuration as argument to the {@link DefaultNodeSettingsFieldTraverser} constructor to add more fields to the
-     * output of the traversal.
+     * Per default, only leaf nested fields inside {@link WidgetGroup} are listed by a traversal. Use this Configuration
+     * as argument to the {@link WidgetGroupTraverser} constructor to add more fields to the output of the traversal.
      */
     public static final class Configuration {
 
@@ -139,8 +137,8 @@ public class DefaultNodeSettingsFieldTraverser {
         }
 
         /**
-         * Per default, only leaf nested fields inside {@link DefaultNodeSettings} are listed. Use this Builder to add
-         * more fields to the output of the traversal.
+         * Per default, only leaf nested fields inside {@link WidgetGroup} are listed. Use this Builder to add more
+         * fields to the output of the traversal.
          */
         public static class Builder {
 
@@ -184,7 +182,7 @@ public class DefaultNodeSettingsFieldTraverser {
     /**
      * @param settingsClass the class to be traversed.
      */
-    public DefaultNodeSettingsFieldTraverser(final Class<?> settingsClass) {
+    public WidgetGroupTraverser(final Class<?> settingsClass) {
         this(settingsClass, new Configuration.Builder().build());
     }
 
@@ -192,11 +190,11 @@ public class DefaultNodeSettingsFieldTraverser {
      * @param settingsClass the class to be traversed.
      * @param config defining which fields are part of the output or given to the provided callback
      */
-    public DefaultNodeSettingsFieldTraverser(final Class<?> settingsClass, final Configuration config) {
+    public WidgetGroupTraverser(final Class<?> settingsClass, final Configuration config) {
         this(getMapper().getSerializerProviderInstance(), settingsClass, config);
     }
 
-    private DefaultNodeSettingsFieldTraverser(final SerializerProvider serializerProvider, final Class<?> settingsClass,
+    private WidgetGroupTraverser(final SerializerProvider serializerProvider, final Class<?> settingsClass,
         final Configuration config) {
         m_serializerProvider = serializerProvider;
         m_settingsClass = settingsClass;
@@ -223,16 +221,14 @@ public class DefaultNodeSettingsFieldTraverser {
          * treat fields nested inside array layouts differently than other fields.
          *
          * @param config the configuration of the new traverser
-         * @return a new traverser for the elements DefaultNodeSettings or empty when the field is not an array layout
+         * @return a new traverser for the elements WidgetGroupTraverser or empty when the field is not an array layout
          *         field.
          */
-        public Optional<DefaultNodeSettingsFieldTraverser> getElementTraverser(final Configuration config) {
+        public Optional<WidgetGroupTraverser> getElementTraverser(final Configuration config) {
             final var javaType = propertyWriter.getType();
             if (ArrayLayoutUtil.isArrayLayoutField(javaType)) {
                 final var elementClass = javaType.getContentType().getRawClass();
-                if (DefaultNodeSettings.class.isAssignableFrom(elementClass)) {
-                    return Optional.of(new DefaultNodeSettingsFieldTraverser(elementClass, config));
-                }
+                return Optional.of(new WidgetGroupTraverser(elementClass, config));
             }
             return Optional.empty();
 
