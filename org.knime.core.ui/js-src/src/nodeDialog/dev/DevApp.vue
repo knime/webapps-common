@@ -26,6 +26,7 @@ export default {
   data() {
     return {
       currentDialogIndex: 0,
+      delay: 500,
       currentKS: null as null | UIExtensionService,
     };
   },
@@ -94,9 +95,8 @@ export default {
           console.log("callNodeDataService called");
           const rpcRequest = JSON.parse(params.dataServiceRequest);
           const result = dataServiceMock(rpcRequest);
-          const delay = 200;
           return new Promise((resolve) =>
-            setTimeout(() => resolve({ result: { result } }), delay),
+            setTimeout(() => resolve({ result: { result } }), this.delay),
           );
         },
         addPushEventListener: (name: UIExtensionPushEvents.EventType) => {
@@ -179,6 +179,9 @@ export default {
         :key="currentDialog.result.name"
       />
     </div>
+    <span
+      >Delay of backend calls: <input v-model="delay" type="number" /> ms</span
+    >
     <button @click="applySettings">Simulate Apply (prints to console)</button>
   </div>
 </template>
