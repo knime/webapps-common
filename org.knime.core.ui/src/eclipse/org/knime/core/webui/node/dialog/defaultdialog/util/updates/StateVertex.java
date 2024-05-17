@@ -58,8 +58,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvid
  */
 final class StateVertex extends Vertex {
 
-    private final StateProvider m_stateProvider; //NOSONAR, generic type is unknown here
-
     private final Class<? extends StateProvider> m_stateProviderClass; //NOSONAR, generic type is unknown here
 
     /**
@@ -67,7 +65,6 @@ final class StateVertex extends Vertex {
      */
     public StateVertex(final Class<? extends StateProvider> stateProviderClass) {
         m_stateProviderClass = stateProviderClass;
-        m_stateProvider = createInstance(stateProviderClass);
     }
 
     @Override
@@ -75,8 +72,8 @@ final class StateVertex extends Vertex {
         return visitor.accept(this);
     }
 
-    public StateProvider getStateProvider() { //NOSONAR, generic type is unknown here
-        return m_stateProvider;
+    public StateProvider createStateProvider() { //NOSONAR, generic type is unknown here
+        return createInstance(m_stateProviderClass);
     }
 
     public Class<? extends StateProvider> getStateProviderClass() {

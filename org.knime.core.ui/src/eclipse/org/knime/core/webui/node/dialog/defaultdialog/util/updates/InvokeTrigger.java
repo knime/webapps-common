@@ -222,7 +222,7 @@ final class InvokeTrigger {
 
         private Object computeState(final StateVertex stateVertex) {
             final var initializer = new StateProviderInvocationInitializer(stateVertex);
-            final var stateProvider = stateVertex.getStateProvider();
+            final var stateProvider = stateVertex.createStateProvider();
             stateProvider.init(initializer);
             return stateProvider.computeState(m_context);
         }

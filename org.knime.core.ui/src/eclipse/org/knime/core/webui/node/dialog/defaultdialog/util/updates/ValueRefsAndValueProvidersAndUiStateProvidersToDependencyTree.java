@@ -193,7 +193,7 @@ final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
              */
             @Override
             public Collection<Vertex> accept(final StateVertex stateVertex) {
-                final var stateProvider = stateVertex.getStateProvider();
+                final var stateProvider = stateVertex.createStateProvider();
                 CheckUtils.checkNotNull(stateProvider, "Failed to instantiate state provider class %s.",
                     stateVertex.getStateProviderClass());
                 final var stateProviderDependencyReceiver = new StateProviderDependencyReceiver();
