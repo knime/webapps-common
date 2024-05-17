@@ -69,7 +69,7 @@ describe("generatePossibleValues", () => {
       expect.arrayContaining([
         {
           id: "<row-keys>",
-          text: "RowIDs",
+          text: "RowID",
           compatibleTypes: ["org.knime.core.data.StringValue"],
         },
       ]),
@@ -91,7 +91,7 @@ describe("generatePossibleValues", () => {
       expect.arrayContaining([
         {
           id: "<row-numbers>",
-          text: "Row numbers",
+          text: "Row number",
           compatibleTypes: [
             "org.knime.core.data.LongValue",
             "org.knime.core.data.DoubleValue",
@@ -131,7 +131,7 @@ describe("generatePossibleValues", () => {
       ).toEqual([
         {
           id: "<row-keys>",
-          text: "RowIDs",
+          text: "RowID",
           compatibleTypes: ["org.knime.core.data.StringValue"],
         },
         ...successResultChoices,

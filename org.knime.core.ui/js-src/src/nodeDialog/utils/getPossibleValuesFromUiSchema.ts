@@ -60,7 +60,7 @@ const addSpecialColumns = (
       ? [
           {
             id: "<row-keys>",
-            text: "RowIDs",
+            text: "RowID",
             compatibleTypes: ["org.knime.core.data.StringValue"],
           },
         ]
@@ -69,7 +69,7 @@ const addSpecialColumns = (
       ? [
           {
             id: "<row-numbers>",
-            text: "Row numbers",
+            text: "Row number",
             compatibleTypes: [
               "org.knime.core.data.LongValue",
               "org.knime.core.data.DoubleValue",

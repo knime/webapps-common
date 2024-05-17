@@ -161,11 +161,11 @@ describe("ColumnSelect.vue", () => {
         }),
         expect.objectContaining({
           id: "<row-keys>",
-          text: "RowIDs",
+          text: "RowID",
         }),
         expect.objectContaining({
           id: "<row-numbers>",
-          text: "Row numbers",
+          text: "Row number",
         }),
         expect.objectContaining({
           id: "Universe_0_0",
