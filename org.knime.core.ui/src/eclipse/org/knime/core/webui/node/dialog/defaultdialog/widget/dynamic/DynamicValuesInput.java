@@ -117,7 +117,7 @@ public class DynamicValuesInput implements PersistableSettings {
     @Persistor(DynamicValue.Persistor.class)
     public static class DynamicValue implements PersistableSettings {
 
-        Optional<DataCell> m_cell = Optional.empty();
+        Optional<DataCell> m_value = Optional.empty();
 
         DataType m_type;
 
@@ -133,7 +133,7 @@ public class DynamicValuesInput implements PersistableSettings {
          * @param dataCell cell specifying the content (and type)
          */
         private DynamicValue(final DataCell dataCell, final DefaultNodeSettings modifiers) {
-            m_cell = Optional.of(dataCell);
+            m_value = Optional.of(dataCell);
             m_type = dataCell.getType();
             m_modifiers = Optional.ofNullable(modifiers);
         }
@@ -226,14 +226,16 @@ public class DynamicValuesInput implements PersistableSettings {
                 final var cellClassName = value.m_type.getCellClass().getName();
                 knownDataTypes.put(cellClassName, value.m_type);
                 gen.writeStartObject();
-                if (value.m_cell.isPresent()) {
-                    gen.writeFieldName("value");
+                gen.writeFieldName("value");
+                if (value.m_value.isPresent()) {
                     try {
-                        DynamicValue.<IOException> writeDataCell(value.m_cell.get(), gen::writeNumber,
+                        DynamicValue.<IOException> writeDataCell(value.m_value.get(), gen::writeNumber,
                             gen::writeString);
                     } catch (Exception ex) {
                         throw new IOException("Could not serialize data cell.", ex);
                     }
+                } else {
+                    gen.writeNull();
                 }
                 gen.writeObjectField("cellClassName", cellClassName);
                 if (value.m_modifiers.isPresent()) {
@@ -312,9 +314,9 @@ public class DynamicValuesInput implements PersistableSettings {
                         .createDefaultPersistor((Class<DefaultNodeSettings>)modifiers.getClass(), "modifiers")
                         .save(modifiers, settings);
                 }
-                if (obj.m_cell.isPresent()) {
+                if (obj.m_value.isPresent()) {
                     try {
-                        DynamicValue.writeDataCell(obj.m_cell.get(), //
+                        DynamicValue.writeDataCell(obj.m_value.get(), //
                             d -> settings.addDouble("value", d), //
                             s -> settings.addString("value", s));
                     } catch (Exception ex) {
@@ -327,6 +329,6 @@ public class DynamicValuesInput implements PersistableSettings {
     }
 
     public Optional<DataCell> getCellAt(final int index) {
-        return m_values[index].m_cell;
+        return m_values[index].m_value;
     }
 }

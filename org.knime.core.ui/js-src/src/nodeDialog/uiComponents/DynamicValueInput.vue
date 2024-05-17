@@ -14,7 +14,11 @@ interface DoubleValue {
   cellClassName: "org.knime.core.data.def.DoubleCell";
 }
 
-export type DynamicValue = StringValue | IntValue | DoubleValue;
+export type DynamicValue =
+  | StringValue
+  | IntValue
+  | DoubleValue
+  | { value: unknown; cellClassName: string };
 </script>
 
 <script setup lang="ts">
@@ -25,7 +29,6 @@ defineProps<{ value: DynamicValue; parentScope: string }>();
   <div v-if="value.cellClassName === 'org.knime.core.data.def.StringCell'">
     I am a string
     <slot
-      v-if="false"
       :schema="{
         type: 'object',
         properties: {
@@ -43,7 +46,6 @@ defineProps<{ value: DynamicValue; parentScope: string }>();
   <div v-else-if="value.cellClassName === 'org.knime.core.data.def.DoubleCell'">
     I am a double
     <slot
-      v-if="false"
       :schema="{
         type: 'object',
         properties: {
@@ -62,4 +64,5 @@ defineProps<{ value: DynamicValue; parentScope: string }>();
   <div v-else-if="value.cellClassName === 'org.knime.core.data.def.IntCell'">
     I am a int input
   </div>
+  <div v-else>cell class: {{ value.cellClassName }}</div>
 </template>
