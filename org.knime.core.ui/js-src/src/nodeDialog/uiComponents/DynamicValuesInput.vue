@@ -2,37 +2,40 @@
 import useDialogControl from "../composables/components/useDialogControl";
 import { DispatchRenderer, rendererProps } from "@jsonforms/vue";
 
-import DynamicValueInput, {type DynamicValue } from "./DynamicValueInput.vue"
-
-
+import DynamicValueInput, { type DynamicValue } from "./DynamicValueInput.vue";
 
 enum InputKind {
   SINGLE = "SINGLE",
   DOUBLE = "DOUBLE",
-  COLLECTION = "COLLECTION"
+  COLLECTION = "COLLECTION",
 }
 
 interface DynamicValueInputType {
-  values: DynamicValue[],
-  inputKind: InputKind,
+  values: DynamicValue[];
+  inputKind: InputKind;
 }
 
 const props = defineProps(rendererProps());
-const { onChange, control, disabled } = useDialogControl<DynamicValueInputType>({ props });
-debugger;
+const { control, disabled } = useDialogControl<DynamicValueInputType>({
+  props,
+});
 </script>
 
 <template>
-  {{control.data}}
-  <DynamicValueInput v-for="(value, index) in control.data.values" :value="value" #default="{uischema, schema}">
+  {{ control.data }}
+  <DynamicValueInput
+    v-for="(value, index) in control.data.values"
+    #default="{ uischema, schema }"
+    :key="index"
+    :value="value"
+  >
     <DispatchRenderer
-              :schema="schema"
-              :uischema="uischema"
-              :path="`${control.path}.values.${index}`"
-              :enabled="control.enabled"
-              :renderers="control.renderers"
-              :cells="control.cells"
-            />
+      :schema="schema"
+      :uischema="uischema"
+      :path="`${control.path}.values.${index}`"
+      :enabled="control.enabled && !disabled"
+      :renderers="control.renderers"
+      :cells="control.cells"
+    />
   </DynamicValueInput>
-
 </template>

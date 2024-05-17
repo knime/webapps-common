@@ -58,7 +58,12 @@ import org.knime.core.data.DataType;
 import org.knime.core.data.DataTypeRegistry;
 import org.knime.core.data.convert.datacell.JavaToDataCellConverterRegistry;
 import org.knime.core.data.convert.java.DataCellToJavaConverterRegistry;
+import org.knime.core.data.def.BooleanCell;
+import org.knime.core.data.def.BooleanCell.BooleanCellFactory;
 import org.knime.core.data.def.DoubleCell;
+import org.knime.core.data.def.DoubleCell.DoubleCellFactory;
+import org.knime.core.data.def.IntCell;
+import org.knime.core.data.def.IntCell.IntCellFactory;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
@@ -88,8 +93,13 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 public class DynamicValuesInput implements PersistableSettings {
 
     public DynamicValuesInput() {
-        m_values = new DynamicValue[]{new DynamicValue(new StringCell("").getType()),
-            new DynamicValue(new DoubleCell(12.5).getType())};
+        m_values = new DynamicValue[]{//
+            new DynamicValue(StringCell.TYPE), //
+            new DynamicValue(DoubleCell.TYPE), //
+            new DynamicValue(IntCell.TYPE), //
+            new DynamicValue(BooleanCell.TYPE),//
+                //new DynamicValue(IntervalCell.TYPE)// currently breaks things, since we have no validation on dialog close
+        };
         m_inputKind = InputKind.Single;
     }
 
@@ -180,40 +190,62 @@ public class DynamicValuesInput implements PersistableSettings {
         }
 
         private static <E extends Exception> void writeDataCell(final DataCell dataCell,
-            final ConsumerWithException<Double, E> writeDouble, final ConsumerWithException<String, E> writeString)
-            throws Exception {
+            final ConsumerWithException<Double, E> writeDouble, //
+            final ConsumerWithException<Integer, E> writeInteger, //
+            final ConsumerWithException<Boolean, E> writeBoolean, //
+            final ConsumerWithException<String, E> writeString //
+        ) throws E, ConverterException {
             if (dataCell instanceof DoubleCell doubleCell) {
                 writeDouble.accept(doubleCell.getDoubleValue());
+            } else if (dataCell instanceof IntCell intCell) {
+                writeInteger.accept(intCell.getIntValue());
+            } else if (dataCell instanceof BooleanCell booleanCell) {
+                writeBoolean.accept(booleanCell.getBooleanValue());
             } else {
                 writeString.accept(getStringFromDataCell(dataCell));
             }
 
         }
 
-        private static String getStringFromDataCell(final DataCell dataCell) throws Exception {
+        private static String getStringFromDataCell(final DataCell dataCell) throws ConverterException {
             final var registry = DataCellToJavaConverterRegistry.getInstance();
             final var converter = registry.getConverterFactories(dataCell.getType(), String.class).stream().findFirst()
                 .orElseThrow().create();
-            return converter.convertUnsafe(dataCell);
+            try {
+                return converter.convertUnsafe(dataCell);
+            } catch (Exception e) {
+                throw new ConverterException(e);
+            }
 
         }
 
         private static <E extends Exception> DataCell readDataCell(final DataType dataType,
-            final SupplierWithException<Double, E> readDouble, final SupplierWithException<String, E> readString)
-            throws Exception {
+            final SupplierWithException<Double, E> readDouble, //
+            final SupplierWithException<Integer, E> readInteger, //
+            final SupplierWithException<Boolean, E> readBoolean, //
+            final SupplierWithException<String, E> readString) throws ConverterException, E {
             if (dataType.equals(DoubleCell.TYPE)) {
-                return new DoubleCell(readDouble.get());
+                return DoubleCellFactory.create(readDouble.get());
+            } else if (dataType.equals(IntCell.TYPE)) {
+                return IntCellFactory.create(readInteger.get());
+            } else if (dataType.equals(BooleanCell.TYPE)) {
+                return BooleanCellFactory.create(readBoolean.get());
             } else {
                 return readDataCellFromString(dataType, readString.get());
             }
 
         }
 
-        private static DataCell readDataCellFromString(final DataType dataType, final String value) throws Exception {
+        private static DataCell readDataCellFromString(final DataType dataType, final String value)
+            throws ConverterException {
             final var registry = JavaToDataCellConverterRegistry.getInstance();
             final var converter = registry.getConverterFactories(String.class, dataType).stream().findFirst()
                 .orElseThrow().create((ExecutionContext)null);
-            return converter.convert(value);
+            try {
+                return converter.convert(value);
+            } catch (Exception e) {
+                throw new ConverterException(e);
+            }
 
         }
 
@@ -229,10 +261,13 @@ public class DynamicValuesInput implements PersistableSettings {
                 gen.writeFieldName("value");
                 if (value.m_value.isPresent()) {
                     try {
-                        DynamicValue.<IOException> writeDataCell(value.m_value.get(), gen::writeNumber,
+                        DynamicValue.<IOException> writeDataCell(value.m_value.get(), //
+                            gen::writeNumber, //
+                            gen::writeNumber, //
+                            gen::writeBoolean, //
                             gen::writeString);
-                    } catch (Exception ex) {
-                        throw new IOException("Could not serialize data cell.", ex);
+                    } catch (ConverterException ex) {
+                        throw new IOException("Could not serialize data cell.", ex.get());
                     }
                 } else {
                     gen.writeNull();
@@ -269,10 +304,14 @@ public class DynamicValuesInput implements PersistableSettings {
 
                 DataCell dataCell;
                 try {
-                    dataCell = DynamicValue.readDataCell(dataType, () -> node.get("value").asDouble(),
-                        () -> node.get("value").asText());
-                } catch (Exception ex) {
-                    throw new IOException("Could not deserialize data cell.", ex);
+                    final var valueNode = node.get("value");
+                    dataCell = DynamicValue.readDataCell(dataType, //
+                        () -> valueNode.asDouble(), //
+                        () -> valueNode.asInt(), //
+                        () -> valueNode.asBoolean(), //
+                        () -> valueNode.asText());
+                } catch (ConverterException ex) {
+                    throw new IOException("Could not deserialize data cell.", ex.get());
                 }
                 return new DynamicValue(dataCell, modifiers);
             }
@@ -293,12 +332,13 @@ public class DynamicValuesInput implements PersistableSettings {
 
                 if (settings.containsKey("value")) {
                     try {
-                        return new DynamicValue(DynamicValue.readDataCell(dataType, () -> settings.getDouble("value"),
+                        return new DynamicValue(DynamicValue.<InvalidSettingsException> readDataCell(dataType, //
+                            () -> settings.getDouble("value"), //
+                            () -> settings.getInt("value"), //
+                            () -> settings.getBoolean("value"), //
                             () -> settings.getString("value")), modifiers);
-                    } catch (InvalidSettingsException e) {
-                        throw e;
-                    } catch (Exception ex) {
-                        throw new InvalidSettingsException("Could not load persisted data cell value", ex);
+                    } catch (ConverterException ex) {
+                        throw new InvalidSettingsException("Could not load persisted data cell value", ex.get());
                     }
                 }
                 return new DynamicValue(dataType, modifiers);
@@ -318,9 +358,11 @@ public class DynamicValuesInput implements PersistableSettings {
                     try {
                         DynamicValue.writeDataCell(obj.m_value.get(), //
                             d -> settings.addDouble("value", d), //
+                            i -> settings.addInt("value", i), //
+                            b -> settings.addBoolean("value", b), //
                             s -> settings.addString("value", s));
-                    } catch (Exception ex) {
-                        throw new RuntimeException("Could not persist data cell value.", ex); // TODO
+                    } catch (ConverterException ex) {
+                        throw new RuntimeException("Could not persist data cell value.", ex.get()); // TODO (RuntimeException ?) Maybe we should save nothing in this case and let the settings validation deal with it
                     }
                 }
             }
@@ -330,5 +372,19 @@ public class DynamicValuesInput implements PersistableSettings {
 
     public Optional<DataCell> getCellAt(final int index) {
         return m_values[index].m_value;
+    }
+
+    static final class ConverterException extends Exception {
+        private static final long serialVersionUID = 1L;
+
+        private Exception m_exception;
+
+        ConverterException(final Exception cause) {
+            m_exception = cause;
+        }
+
+        Exception get() {
+            return m_exception;
+        }
     }
 }
