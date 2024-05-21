@@ -1,6 +1,6 @@
 import { createSetting } from "./setting";
 import { SettingComparator } from "./SettingComparator";
-import { APILayerDirtyState, ApplyState, ViewState } from "src/types";
+import { APILayerDirtyState, ApplyState, ViewState } from "@/types";
 import { SettingState } from "./types";
 
 type Construct<T extends object> = {

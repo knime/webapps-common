@@ -1,19 +1,20 @@
 /* eslint-disable no-magic-numbers */
-import { UIExtensionService } from "src";
-import { setUpCustomEmbedderService } from "src/embedder";
+import { describe, expect, it, beforeEach, vi } from "vitest";
+import { UIExtensionService } from "@/index";
+import { setUpCustomEmbedderService } from "@/embedder";
 import {
   ColorService,
   NominalColorHandler,
   NumericColorHandler,
-} from "src/services/ColorService";
-import { ColorServiceAPILayer } from "src/services/types/serviceApiLayers";
-import { ColorModelType } from "src/types/ColorModel";
-import { extensionConfig } from "test/mocks";
+} from "../ColorService";
+import { ColorServiceAPILayer } from "../types/serviceApiLayers";
+import { ColorModelType } from "@/types/ColorModel";
+import { extensionConfig } from "./mocks";
 
 const createServices = ({ colorModels = {}, columnNamesColorModel = null }) => {
   const config = { ...extensionConfig, colorModels, columnNamesColorModel };
   const knimeService = setUpCustomEmbedderService({
-    sendAlert: jest.fn(),
+    sendAlert: vi.fn(),
     getConfig: () => config,
   }).service;
   const colorService = new ColorService(knimeService);

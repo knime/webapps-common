@@ -1,6 +1,6 @@
-import { ExtensionTypes } from "src/types/ExtensionTypes";
-import { DataServiceType } from "src/types/DataServiceType";
-import { Alert, AlertConfig } from "src/types/alert";
+import { ExtensionTypes } from "@/types/ExtensionTypes";
+import { DataServiceType } from "@/types/DataServiceType";
+import { Alert, AlertConfig } from "@/types/alert";
 import { ColorModel } from "./ColorModel";
 import { UIExtensionPushEvents } from "./pushEvents";
 

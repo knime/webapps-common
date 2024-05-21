@@ -1,4 +1,4 @@
-import { UIExtensionPushEvents } from "src/types";
+import { UIExtensionPushEvents } from "@/types";
 import { AbstractService } from "./AbstractService";
 import { SharedDataServiceAPILayer } from "./types/serviceApiLayers";
 

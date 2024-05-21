@@ -1,16 +1,17 @@
 /* eslint-disable class-methods-use-this */
-import { ApplyState, UIExtensionPushEvents, ViewState } from "src";
-import { setUpCustomEmbedderService } from "src/embedder";
-import { DialogService } from "src/services/DialogService";
-import { extensionConfig } from "test/mocks";
+import { describe, expect, it, vi } from "vitest";
+import { ApplyState, UIExtensionPushEvents, ViewState } from "@/index";
+import { setUpCustomEmbedderService } from "@/embedder";
+import { DialogService } from "../DialogService";
+import { extensionConfig } from "./mocks";
 import flushPromises from "flush-promises";
 
 describe("DialogService", () => {
   const constructDialogService = () => {
     const apiLayer = {
-      onApplied: jest.fn(),
-      onDirtyStateChange: jest.fn(),
-      setControlsVisibility: jest.fn(),
+      onApplied: vi.fn(),
+      onDirtyStateChange: vi.fn(),
+      setControlsVisibility: vi.fn(),
       getConfig: () => extensionConfig,
     };
     const embedder = setUpCustomEmbedderService(apiLayer);
@@ -71,7 +72,7 @@ describe("DialogService", () => {
     });
     aModelSetting.setValue("dirty");
 
-    const applySettingsMock = jest
+    const applySettingsMock = vi
       .fn()
       .mockImplementation(() => Promise.resolve({ isApplied }));
     dialogService.setApplyListener(applySettingsMock);

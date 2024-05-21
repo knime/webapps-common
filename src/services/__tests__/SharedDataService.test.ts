@@ -1,16 +1,17 @@
-import { UIExtensionPushEvents } from "src";
-import { setUpCustomEmbedderService } from "src/embedder";
-import { SharedDataService } from "src/services/SharedDataService";
-import { SharedDataServiceAPILayer } from "src/services/types/serviceApiLayers";
+import { describe, expect, it, vi } from "vitest";
+import { UIExtensionPushEvents } from "@/index";
+import { setUpCustomEmbedderService } from "@/embedder";
+import { SharedDataService } from "../SharedDataService";
+import { SharedDataServiceAPILayer } from "../types/serviceApiLayers";
 
 describe("SharedDataService", () => {
   const constructSharedDataService = (
     extensionConfig: ReturnType<SharedDataServiceAPILayer["getConfig"]> = {},
   ) => {
     const apiLayer = {
-      onApplied: jest.fn(),
-      publishData: jest.fn(),
-      onDirtyStateChange: jest.fn(),
+      onApplied: vi.fn(),
+      publishData: vi.fn(),
+      onDirtyStateChange: vi.fn(),
       getConfig: () => extensionConfig,
     };
     const embedder = setUpCustomEmbedderService(apiLayer);
@@ -33,7 +34,7 @@ describe("SharedDataService", () => {
     const { sharedDataService, dispatchPushEvent } =
       constructSharedDataService();
 
-    const mockDataChangeCallback = jest.fn();
+    const mockDataChangeCallback = vi.fn();
 
     sharedDataService.addSharedDataListener(mockDataChangeCallback);
 

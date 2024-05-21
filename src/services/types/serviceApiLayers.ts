@@ -3,8 +3,8 @@ import {
   ExtensionTypes,
   Identifiers,
   UIExtensionServiceAPILayer,
-} from "src/types";
-import { ColorModel } from "src/types/ColorModel";
+} from "@/types";
+import { ColorModel } from "@/types/ColorModel";
 
 export type AlertingServiceAPILayer = Pick<
   UIExtensionServiceAPILayer,

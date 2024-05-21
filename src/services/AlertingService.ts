@@ -1,5 +1,5 @@
 import { createAlert } from "./utils";
-import { CreateAlertParams } from "src/types/alert";
+import { CreateAlertParams } from "@/types/alert";
 import { AbstractService } from "./AbstractService";
 import { AlertingServiceAPILayer } from "./types/serviceApiLayers";
 

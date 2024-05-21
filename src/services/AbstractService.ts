@@ -1,5 +1,5 @@
-import { createProxy } from "src/iframe/serviceProxy";
-import { UIExtensionService } from "src/types/uiExtensionService";
+import { createProxy } from "@/iframe/serviceProxy";
+import { UIExtensionService } from "@/types/uiExtensionService";
 
 /**
  * exported for test purposes

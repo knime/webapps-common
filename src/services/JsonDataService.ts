@@ -1,9 +1,9 @@
-import { createJsonRpcRequest } from "src/utils";
+import { createJsonRpcRequest } from "@/utils";
 
 import { createAlert } from "./utils";
-import { AlertType } from "src/types/alert";
+import { AlertType } from "@/types/alert";
 import { AbstractService } from "./AbstractService";
-import { DataServiceType } from "src/types/DataServiceType";
+import { DataServiceType } from "@/types/DataServiceType";
 import { JsonDataServiceAPILayer } from "./types/serviceApiLayers";
 
 const MAX_MESSAGE_LEN = 160;

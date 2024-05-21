@@ -1,6 +1,6 @@
 /* eslint-disable no-magic-numbers */
-import { UIExtensionServiceConfig } from "src/types/uiExtensionService";
-import { ExtensionTypes } from "src/types/ExtensionTypes";
+import { UIExtensionServiceConfig } from "@/types/uiExtensionService";
+import { ExtensionTypes } from "@/types/ExtensionTypes";
 
 export const extensionConfig: UIExtensionServiceConfig = {
   initialData: {

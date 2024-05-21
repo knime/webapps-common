@@ -1,8 +1,17 @@
-import { JsonDataService } from "src/services/JsonDataService";
-import { extensionConfig, longMessage } from "test/mocks";
-import { DataServiceType } from "src/types/DataServiceType";
-import { Alert, AlertType } from "src/types/alert";
-import { setUpCustomEmbedderService } from "src/embedder";
+import {
+  describe,
+  expect,
+  it,
+  beforeEach,
+  afterEach,
+  vi,
+  type Mock,
+} from "vitest";
+import { JsonDataService } from "../JsonDataService";
+import { extensionConfig, longMessage } from "./mocks";
+import { DataServiceType } from "@/types/DataServiceType";
+import { Alert, AlertType } from "@/types/alert";
+import { setUpCustomEmbedderService } from "@/embedder";
 
 describe("JsonDataService", () => {
   const defaultExtensionConfig = extensionConfig;
@@ -11,9 +20,9 @@ describe("JsonDataService", () => {
     extensionConfig = defaultExtensionConfig,
   ) => {
     const apiLayer = {
-      callNodeDataService: jest.fn().mockResolvedValue({}),
-      publishData: jest.fn(),
-      sendAlert: jest.fn(),
+      callNodeDataService: vi.fn().mockResolvedValue({}),
+      publishData: vi.fn(),
+      sendAlert: vi.fn(),
       getConfig: () => extensionConfig,
     };
     const embedder = setUpCustomEmbedderService(apiLayer);
@@ -59,7 +68,7 @@ describe("JsonDataService", () => {
     });
   });
 
-  const getFirstCallParameter = (callNodeDataService: jest.Mock) => {
+  const getFirstCallParameter = (callNodeDataService: Mock) => {
     return callNodeDataService.mock.calls[0][0];
   };
 
@@ -117,7 +126,7 @@ describe("JsonDataService", () => {
     });
 
     afterEach(() => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
     });
 
     it('calls the apply data service when "applyData" is called', async () => {
@@ -144,7 +153,7 @@ describe("JsonDataService", () => {
       const response = await jsonDataService.initialData();
       expect(response).toBeFalsy();
       expect(sendAlert).toBeCalledWith({
-        code: undefined,
+        code: undefined, // eslint-disable-line no-undefined
         message: "More information",
         nodeId: extensionConfig.nodeId,
         nodeInfo: extensionConfig.nodeInfo,
@@ -166,7 +175,7 @@ describe("JsonDataService", () => {
       const response = await jsonDataService.initialData();
       expect(response).toBeFalsy();
       expect(sendAlert).toBeCalledWith({
-        code: undefined,
+        code: undefined, // eslint-disable-line no-undefined
         message: expect.stringContaining(expectedError.stackTrace.join("\n\t")),
         nodeId: extensionConfig.nodeId,
         nodeInfo: extensionConfig.nodeInfo,
@@ -187,7 +196,7 @@ describe("JsonDataService", () => {
       const response = await jsonDataService.initialData();
       expect(response).toStrictEqual(initialData.result);
       expect(sendAlert).toBeCalledWith({
-        code: undefined,
+        code: undefined, // eslint-disable-line no-undefined
         message: initialData.warningMessages.join("\n\n"),
         nodeId: extensionConfig.nodeId,
         nodeInfo: extensionConfig.nodeInfo,
@@ -232,7 +241,7 @@ describe("JsonDataService", () => {
       const response = await jsonDataService.data();
       expect(response).toStrictEqual(data.result);
       expect(sendAlert).toBeCalledWith({
-        code: undefined,
+        code: undefined, // eslint-disable-line no-undefined
         message: data.warningMessages.join("\n\n"),
         nodeId: extensionConfig.nodeId,
         nodeInfo: extensionConfig.nodeInfo,

@@ -1,11 +1,12 @@
+import { describe, expect, it, vi } from "vitest";
 import {
   DialogService,
   JsonDataService,
   ReportingService,
   ResourceService,
   SelectionService,
-} from "src";
-import { setUpCustomEmbedderService, setUpEmbedderService } from "src/embedder";
+} from "@/index";
+import { setUpCustomEmbedderService, setUpEmbedderService } from "@/embedder";
 
 describe("setUpEmbedderService", () => {
   it("can be used to create services", () => {
@@ -19,7 +20,7 @@ describe("setUpEmbedderService", () => {
   });
 
   it("passes method calls to the apiLayer", () => {
-    const apiLayer = { someMethod: jest.fn() };
+    const apiLayer = { someMethod: vi.fn() };
     const defaultEmbedder = setUpCustomEmbedderService(apiLayer);
 
     const param = "foo";
@@ -39,7 +40,7 @@ describe("setUpEmbedderService", () => {
 
   it("enables adding pushEvent listeners and dispatching events", () => {
     const defaultEmbedder = setUpCustomEmbedderService({});
-    const listener = jest.fn();
+    const listener = vi.fn();
     const pushEventType = "my-push-event";
     defaultEmbedder.service.addPushEventListener(pushEventType, listener);
 

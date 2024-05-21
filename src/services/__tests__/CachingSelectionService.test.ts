@@ -1,13 +1,14 @@
+import { describe, expect, it, beforeEach, vi } from "vitest";
 import {
   CachingSelectionService,
   SelectionService,
   UIExtensionPushEvents,
   UIExtensionService,
-} from "src";
-import { setUpCustomEmbedderService } from "src/embedder";
-import { SelectionModes } from "src/services/SelectionService";
-import { SelectionServiceAPILayer } from "src/services/types/serviceApiLayers";
-import { extensionConfig } from "test/mocks";
+} from "@/index";
+import { setUpCustomEmbedderService } from "@/embedder";
+import { SelectionModes } from "../SelectionService";
+import { SelectionServiceAPILayer } from "../types/serviceApiLayers";
+import { extensionConfig } from "./mocks";
 
 describe("CachingSelectionService", () => {
   let cachingSelectionService: CachingSelectionService,
@@ -15,15 +16,15 @@ describe("CachingSelectionService", () => {
     dispatchPushEvent: (event: UIExtensionPushEvents.PushEvent<any>) => void;
 
   const setInitialSelection = (initialSelection: string[]) => {
-    jest
-      .spyOn(SelectionService.prototype, "initialSelection")
-      .mockResolvedValue(initialSelection);
+    vi.spyOn(SelectionService.prototype, "initialSelection").mockResolvedValue(
+      initialSelection,
+    );
     return cachingSelectionService.initialSelection();
   };
 
   beforeEach(() => {
     const embedderService = setUpCustomEmbedderService({
-      updateDataPointSelection: jest
+      updateDataPointSelection: vi
         .fn()
         .mockResolvedValue('{"result": "backend-result"}'),
       getConfig: () => extensionConfig,
@@ -70,7 +71,7 @@ describe("CachingSelectionService", () => {
     const currentSelectedKeys = ["1", "3", "5"];
     await setInitialSelection(currentSelectedKeys);
     const newSelection = ["2", "4", "6"];
-    const parentAddSpy = jest.spyOn(SelectionService.prototype, "add");
+    const parentAddSpy = vi.spyOn(SelectionService.prototype, "add");
 
     cachingSelectionService.add(newSelection);
 
@@ -83,7 +84,7 @@ describe("CachingSelectionService", () => {
   it("removes the selection from the selected keys and calls the parent method with equal name on remove", async () => {
     await setInitialSelection(["1", "3", "5"]);
     const newSelection = ["1", "5"];
-    const parentRemoveSpy = jest.spyOn(SelectionService.prototype, "remove");
+    const parentRemoveSpy = vi.spyOn(SelectionService.prototype, "remove");
 
     cachingSelectionService.remove(newSelection);
 
@@ -97,7 +98,7 @@ describe("CachingSelectionService", () => {
     await setInitialSelection(["1", "3", "5"]);
 
     const newSelection = ["2", "4", "6"];
-    const parentReplaceSpy = jest.spyOn(SelectionService.prototype, "replace");
+    const parentReplaceSpy = vi.spyOn(SelectionService.prototype, "replace");
 
     cachingSelectionService.replace(newSelection);
 

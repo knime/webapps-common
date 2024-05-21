@@ -3,10 +3,10 @@ import {
   ColorModelType,
   NumericColorModel,
 } from "../types/ColorModel";
-import convert from "color-convert";
-import { AlertType } from "src/types/alert";
+import * as convert from "color-convert";
+import { AlertType } from "@/types/alert";
 import { createAlert } from "./utils";
-import { UIExtensionService } from "src/types/uiExtensionService";
+import { UIExtensionService } from "@/types/uiExtensionService";
 import { AbstractService } from "./AbstractService";
 import { ColorServiceAPILayer } from "./types/serviceApiLayers";
 

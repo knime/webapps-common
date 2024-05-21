@@ -1,7 +1,12 @@
 /* eslint-disable class-methods-use-this */
-import { APILayerDirtyState, ApplyState, ViewState } from "src";
-import { DefaultSettingComparator } from "src/";
-import { createDialogDirtyStateHandler } from "src/services/dialogDirtyState";
+import { describe, expect, it, beforeEach, vi, type Mock } from "vitest";
+import {
+  APILayerDirtyState,
+  ApplyState,
+  ViewState,
+  DefaultSettingComparator,
+} from "@/index";
+import { createDialogDirtyStateHandler } from "@/services/dialogDirtyState";
 
 describe("dialogDirtyState", () => {
   type AddSetting = ReturnType<
@@ -12,14 +17,14 @@ describe("dialogDirtyState", () => {
   let addSetting: AddSetting,
     onApply: OnApply,
     dirtyState: APILayerDirtyState | undefined,
-    onDirtyStateChange: jest.Mock;
+    onDirtyStateChange: Mock;
 
   beforeEach(() => {
     dirtyState = {
       apply: ApplyState.CLEAN,
       view: ViewState.CLEAN,
     };
-    onDirtyStateChange = jest.fn((newDirtyState: APILayerDirtyState) => {
+    onDirtyStateChange = vi.fn((newDirtyState: APILayerDirtyState) => {
       dirtyState = newDirtyState;
     });
     const handler = createDialogDirtyStateHandler(onDirtyStateChange);
@@ -65,7 +70,7 @@ describe("dialogDirtyState", () => {
       .unset();
     addSetting("view")({ initialValue: "foo" }).setValue("bar");
 
-    jest.resetAllMocks();
+    vi.resetAllMocks();
 
     onApply();
 

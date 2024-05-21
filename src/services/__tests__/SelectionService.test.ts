@@ -1,18 +1,19 @@
-import { UIExtensionServiceConfig } from "src";
-import { setUpCustomEmbedderService } from "src/embedder";
-import { SelectionService } from "src/services";
+import { describe, expect, it, vi } from "vitest";
+import { UIExtensionServiceConfig } from "@/index";
+import { setUpCustomEmbedderService } from "@/embedder";
+import { SelectionService } from "../SelectionService";
 import {
   SelectionEventCallbackParams,
   SelectionModes,
-} from "src/services/SelectionService";
-import { extensionConfig } from "test/mocks";
+} from "@/services/SelectionService";
+import { extensionConfig } from "./mocks";
 
 describe("SelectionService", () => {
   const constructSelectionService = (
     extensionConfig: UIExtensionServiceConfig,
   ) => {
     const apiLayer = {
-      updateDataPointSelection: jest.fn(),
+      updateDataPointSelection: vi.fn(),
       getConfig: () => extensionConfig,
     };
     const embedder = setUpCustomEmbedderService(apiLayer);
@@ -85,7 +86,7 @@ describe("SelectionService", () => {
       const { selectionService, dispatchPushEvent } =
         constructSelectionService(extensionConfig);
 
-      const callback = jest.fn();
+      const callback = vi.fn();
 
       selectionService.addOnSelectionChangeCallback(callback);
 
@@ -101,7 +102,7 @@ describe("SelectionService", () => {
       const { selectionService, dispatchPushEvent } =
         constructSelectionService(extensionConfig);
 
-      const callback = jest.fn();
+      const callback = vi.fn();
 
       selectionService.addOnSelectionChangeCallback(callback);
 

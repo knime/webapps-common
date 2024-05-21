@@ -1,9 +1,10 @@
+import { describe, expect, it, afterEach, vi } from "vitest";
 import {
   UIExtensionService,
   UIExtensionPushEvents,
   setUpIframeEmbedderService,
-} from "src";
-import { getInitializedBaseServiceProxy } from "src/services/AbstractService";
+} from "@/index";
+import { getInitializedBaseServiceProxy } from "@/services/AbstractService";
 
 class Embedder<APILayer extends { getConfig: () => {} }> {
   iframe: HTMLIFrameElement;
@@ -14,13 +15,17 @@ class Embedder<APILayer extends { getConfig: () => {} }> {
     window.getInitializedBaseService = getInitializedBaseServiceProxy;
     const iframe = document.createElement("iframe");
     document.body.appendChild(iframe);
+
+    // the parent window of the HTMLIFrameElement is not properly loaded/attached so we explicitly need to set it
+    // @ts-expect-error
+    iframe.contentWindow.parent = window;
     const { dispatchPushEvent } = setUpIframeEmbedderService(
       apiLayer as any,
       iframe.contentWindow,
     );
     this.dispatchPushEvent = dispatchPushEvent;
     this.iframe = iframe;
-    // Tests fail without this wrapper, since since event.source is null in this constructed test setup.
+    // Tests fail without this wrapper, since event.source is null in this constructed test setup.
     window.postMessage = (message: any, targetOrigin: string) => {
       expect(targetOrigin).toBe("*");
       const event = new MessageEvent("message", {
@@ -47,19 +52,19 @@ class Embedder<APILayer extends { getConfig: () => {} }> {
     this.iframe.contentDocument.write(`<!doctype html>
       <html lang="en">
       <head>
-      <meta charset="UTF-8" />
-      <title>IFrame test content</title>
-        </head>
-        <body>
+        <meta charset="UTF-8" />
+        <title>IFrame test content</title>
+      </head>
+      <body>
         <div id="iframe-content"></div>
         <script>
-        window.parent.getInitializedBaseService(window).then(({serviceProxy: service}) => {
-          ${injectedScriptBodyText}
-        });
+          window.parent.getInitializedBaseService(window).then(({serviceProxy: service}) => {
+            ${injectedScriptBodyText}
+          });
         </script>
-        </body>
-        </html>
-        `);
+      </body>
+    </html>
+    `);
     this.iframe.contentDocument.close();
   }
 
@@ -77,7 +82,7 @@ describe("iframe UIExtension embedding", () => {
 
   it("enables proxying method calls to parent window and back", () => {
     const expectedResult = "myResult";
-    const myMethod: (param: string) => Promise<string> = jest.fn(() =>
+    const myMethod: (param: string) => Promise<string> = vi.fn(() =>
       Promise.resolve(expectedResult),
     );
     const embedder = new Embedder({ myMethod, getConfig: () => ({}) });

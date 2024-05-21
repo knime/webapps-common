@@ -1,5 +1,5 @@
 /* eslint-disable class-methods-use-this */
-import { ApplyState, ViewState } from "src/types";
+import { ApplyState, ViewState } from "@/types";
 import { useDirtyStates } from ".";
 import {
   DefaultSettingComparator,

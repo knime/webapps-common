@@ -1,4 +1,4 @@
-import { UIExtensionService } from "src/types";
+import { UIExtensionService } from "@/types";
 import {
   SelectionEventCallbackParams,
   SelectionService,

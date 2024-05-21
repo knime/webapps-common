@@ -1,6 +1,6 @@
-import { UIExtensionService } from "src/types/uiExtensionService";
+import { UIExtensionService } from "@/types/uiExtensionService";
 import { AbstractService } from "./AbstractService";
-import { UIExtensionPushEvents } from "src/types/pushEvents";
+import { UIExtensionPushEvents } from "@/types/pushEvents";
 import { SelectionServiceAPILayer } from "./types/serviceApiLayers";
 
 /**

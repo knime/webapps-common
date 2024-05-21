@@ -1,4 +1,4 @@
-import { SelectionEventPayload } from "src/services/SelectionService";
+import { SelectionEventPayload } from "@/services/SelectionService";
 
 export type Foo = "";
 

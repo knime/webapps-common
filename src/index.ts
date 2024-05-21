@@ -9,13 +9,13 @@ export {
   ColorService,
   NumericColorHandler,
   NominalColorHandler,
-  ColorHandler,
+  type ColorHandler,
   AlertingService,
   ResourceService,
   ImageGenerationService,
-  SettingComparator,
+  type SettingComparator,
   DefaultSettingComparator,
-  SettingState,
+  type SettingState,
 } from "./services";
 
 export * from "./types";

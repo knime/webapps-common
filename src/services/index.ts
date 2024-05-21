@@ -11,11 +11,11 @@ export {
   ColorService,
   NumericColorHandler,
   NominalColorHandler,
-  ColorHandler,
+  type ColorHandler,
 } from "./ColorService";
 
 export {
-  SettingComparator,
+  type SettingComparator,
   DefaultSettingComparator,
 } from "./dialogDirtyState/SettingComparator";
-export { SettingState } from "./dialogDirtyState/types";
+export { type SettingState } from "./dialogDirtyState/types";

@@ -1,15 +1,16 @@
-import { UIExtensionServiceConfig } from "src";
-import { setUpCustomEmbedderService } from "src/embedder";
-import { ImageGenerationService } from "src/services/ImageGenerationService";
+import { describe, expect, it, vi } from "vitest";
+import { UIExtensionServiceConfig } from "@/index";
+import { setUpCustomEmbedderService } from "@/embedder";
+import { ImageGenerationService } from "../ImageGenerationService";
 
-import { extensionConfig } from "test/mocks";
+import { extensionConfig } from "./mocks";
 
 describe("ImageGenerationService", () => {
   const constructReportingService = (
     extensionConfig: UIExtensionServiceConfig,
   ) => {
     const apiLayer = {
-      imageGenerated: jest.fn(),
+      imageGenerated: vi.fn(),
       getConfig: () => extensionConfig,
     };
     const baseService = setUpCustomEmbedderService(apiLayer);
