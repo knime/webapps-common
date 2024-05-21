@@ -73,7 +73,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.RowKey;
+import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
@@ -92,6 +94,7 @@ import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.PageResourceManager;
 import org.knime.core.webui.node.view.table.selection.SelectionTranslationService;
 import org.knime.core.webui.page.Page;
+import org.knime.testing.node.SourceNodeTestFactory;
 import org.knime.testing.node.view.NodeViewNodeFactory;
 import org.knime.testing.node.view.NodeViewNodeModel;
 import org.knime.testing.node.view.NodeViewTestUtil;
@@ -473,6 +476,28 @@ public class NodeViewManagerTest {
         m_wfm.resetAndConfigureAll();
         m_wfm.executeAllAndWaitUntilDone();
         assertThat(NodeViewManager.getIdForNodeExecutionCycle(nnc)).isNotEqualTo(idForNodeExecutionCycle);
+    }
+
+    /**
+     * Tests {@link NodeViewManager#getInputDataTableSpecIfTableView(NodeContainer)}.
+     */
+    @Test
+    void testGetInputDataTableSpecIfTableView() {
+        var sourceNode = WorkflowManagerUtil.createAndAddNode(m_wfm, new SourceNodeTestFactory());
+        var metanode =
+            m_wfm.createAndAddSubWorkflow(new PortType[]{BufferedDataTable.TYPE}, new PortType[]{}, "metanode");
+        var viewNode = WorkflowManagerUtil.createAndAddNode(metanode, new NodeViewNodeFactory(1, 1));
+        var viewNode2 = WorkflowManagerUtil.createAndAddNode(metanode, new NodeViewNodeFactory(1, 0));
+        m_wfm.addConnection(sourceNode.getID(), 1, metanode.getID(), 0);
+        metanode.addConnection(metanode.getID(), 0, viewNode.getID(), 1);
+        metanode.addConnection(viewNode.getID(), 1, viewNode2.getID(), 1);
+
+        // view node directly connected to inner metanode input port
+        assertThat(NodeViewManager.getInstance().getInputDataTableSpecIfTableView(viewNode))
+            .contains((DataTableSpec)sourceNode.getOutPort(1).getPortObjectSpec());
+
+        assertThat(NodeViewManager.getInstance().getInputDataTableSpecIfTableView(viewNode2))
+            .contains((DataTableSpec)viewNode.getOutPort(1).getPortObjectSpec());
     }
 
     /**

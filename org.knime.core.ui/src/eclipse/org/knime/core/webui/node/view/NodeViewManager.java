@@ -56,9 +56,11 @@ import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettings;
+import org.knime.core.node.workflow.ConnectionContainer.ConnectionType;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContext;
+import org.knime.core.node.workflow.NodeOutPort;
 import org.knime.core.webui.node.DataServiceManager;
 import org.knime.core.webui.node.NodeWrapper;
 import org.knime.core.webui.node.PagePathSegments;
@@ -293,8 +295,13 @@ public final class NodeViewManager {
             var inPortIndex = tnv.getPortIndex();
             // plus 1 because the inPortIdx excludes the flow variable port
             var conn = wfm.getIncomingConnectionFor(nc.getID(), inPortIndex + 1);
-            return Optional.of((DataTableSpec)wfm.getNodeContainer(conn.getSource()).getOutPort(conn.getSourcePort())
-                .getPortObjectSpec());
+            NodeOutPort outPort;
+            if (conn.getType() == ConnectionType.WFMIN) {
+                outPort = wfm.getWorkflowIncomingPort(conn.getSourcePort());
+            } else {
+                outPort = wfm.getNodeContainer(conn.getSource()).getOutPort(conn.getSourcePort());
+            }
+            return Optional.of((DataTableSpec)outPort.getPortObjectSpec());
         } else {
             return Optional.empty();
         }
