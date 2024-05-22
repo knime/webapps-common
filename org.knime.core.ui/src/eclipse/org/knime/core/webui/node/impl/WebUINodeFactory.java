@@ -58,7 +58,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.xmlbeans.XmlException;
 import org.knime.core.node.NodeDescription;
-import org.knime.core.node.NodeDescription41Proxy;
+import org.knime.core.node.NodeDescription53Proxy;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeModel;
@@ -263,7 +263,7 @@ public abstract class WebUINodeFactory<M extends NodeModel> extends NodeFactory<
 
         doc.appendChild(node);
         try {
-            return new NodeDescription41Proxy(doc, sinceVersion);
+            return new NodeDescription53Proxy(doc, sinceVersion);
         } catch (XmlException e) {
             // should never happen
             throw new IllegalStateException("Problem creating node description", e);
