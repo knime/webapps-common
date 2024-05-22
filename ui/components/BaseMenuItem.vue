@@ -46,8 +46,8 @@ const dynamicAttributes = (item: MenuItem) => {
         focused: hasFocus,
       },
     ]"
-    :to="item.to || null"
-    :href="item.href || null"
+    :to="item.to || undefined"
+    :href="item.href || undefined"
     v-bind="dynamicAttributes(item)"
   >
     <Component :is="item.icon" v-if="item.icon" class="item-icon" />
