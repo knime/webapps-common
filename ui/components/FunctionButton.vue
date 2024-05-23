@@ -34,7 +34,10 @@ export default {
   },
   computed: {
     single() {
-      return this.$slots.default().length === 1;
+      if (this.$slots.default().length !== 1) {
+        return false;
+      }
+      return this.hasSingleChildren(this.$slots.default()[0]);
     },
   },
   methods: {
@@ -49,6 +52,16 @@ export default {
      */
     getComponent() {
       return this.$refs.baseButton.getComponent();
+    },
+    hasSingleChildren(slotElement) {
+      if (!slotElement.children) {
+        return true;
+      }
+      if (slotElement.children.length === 1) {
+        return this.hasSingleChildren(slotElement.children[0]);
+      } else {
+        return false;
+      }
     },
   },
 };
