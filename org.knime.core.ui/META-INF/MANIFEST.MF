@@ -76,7 +76,8 @@ Require-Bundle: org.knime.shared.workflow.def;bundle-version="[5.3.0,6.0.0)",
  com.fasterxml.jackson.core.jackson-annotations;bundle-version="[2.13.2,3.0.0)",
  com.github.briandilley.jsonrpc4j;bundle-version="[1.5.2,2.0.0)",
  org.apache.commons.csv;bundle-version="[1.4.0,2.0.0)",
- org.knime.filehandling.core;bundle-version="[5.3.0,6.0.0)"
+ org.knime.filehandling.core;bundle-version="[5.3.0,6.0.0)",
+ org.slf4j.api;bundle-version="[1.7.30,2.0.0)"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Automatic-Module-Name: org.knime.core.ui

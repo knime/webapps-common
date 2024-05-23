@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.knime</groupId>
@@ -15,7 +15,7 @@ xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/
     </description>
 
     <properties>
-        <revision>4.7.0</revision>
+        <revision>5.3.0</revision>
         <changelist>-SNAPSHOT</changelist>
     </properties>
 
@@ -48,11 +48,11 @@ xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/
             <artifactId>jsonschema-generator</artifactId>
             <version>4.20.0</version>
         </dependency>
-		<dependency>
-		    <groupId>com.j2html</groupId>
-		    <artifactId>j2html</artifactId>
-		    <version>1.6.0</version>
-		</dependency>
+        <dependency>
+            <groupId>com.j2html</groupId>
+            <artifactId>j2html</artifactId>
+            <version>1.6.0</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -68,6 +68,9 @@ xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/
                             <classifier>sources</classifier>
                             <includeScope>runtime</includeScope>
                             <outputDirectory>../</outputDirectory>
+                            <excludeArtifactIds>
+                                slf4j-api,jackson-core,jackson-annotations,jackson-databind
+                            </excludeArtifactIds>
                         </configuration>
                         <phase>package</phase>
                         <goals>
@@ -79,6 +82,9 @@ xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/
                         <configuration>
                             <includeScope>runtime</includeScope>
                             <outputDirectory>../</outputDirectory>
+                            <excludeArtifactIds>
+                                slf4j-api,jackson-core,jackson-annotations,jackson-databind
+                            </excludeArtifactIds>
                         </configuration>
                         <phase>package</phase>
                         <goals>
