@@ -26,6 +26,9 @@ vi.mock("webapps-common/ui/composables/useClickOutside", () => ({
   default: vi.fn(),
 }));
 
+const observe = vi.fn();
+const unobserve = vi.fn();
+
 describe("DescriptionPopover.vue", () => {
   let props: DialogPopoverProps;
 
@@ -35,6 +38,12 @@ describe("DescriptionPopover.vue", () => {
       popoverWidth: "max-content",
     };
   });
+
+  window.ResizeObserver = vi.fn(() => ({
+    observe,
+    unobserve,
+    disconnect: vi.fn(),
+  }));
 
   afterEach(() => {
     vi.clearAllMocks();
@@ -281,6 +290,20 @@ describe("DescriptionPopover.vue", () => {
         await togglePopoverExpanded(wrapper);
         expect(unref(active)).toBeTruthy();
       });
+    });
+
+    it("observes and unobserves resize events on the parentEl when toggling expanded", async () => {
+      const dialogPopoverTeleportDest = document.createElement("div");
+      dialogPopoverTeleportDest.id = "dialogTeleportTestID";
+      const wrapper = mountDescriptionPopover({
+        props,
+        dialogPopoverTeleportDest,
+      });
+      await wrapper.find(".function-button").trigger("keydown.space");
+      expect(observe).toHaveBeenLastCalledWith(dialogPopoverTeleportDest);
+
+      await wrapper.find(".function-button").trigger("keydown.space");
+      expect(unobserve).toHaveBeenCalledWith(dialogPopoverTeleportDest);
     });
   });
 

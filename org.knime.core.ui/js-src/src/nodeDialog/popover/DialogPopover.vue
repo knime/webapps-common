@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
-import { computed, ref, toRef, watch, type Ref } from "vue";
+import { computed, nextTick, ref, toRef, watch, type Ref } from "vue";
 import {
   useFloating,
   shift,
   arrow,
   offset,
   flip,
+  limitShift,
   autoUpdate,
 } from "@floating-ui/vue";
 import type { Side, Placement } from "@floating-ui/vue";
@@ -37,52 +38,38 @@ watch(
 const floating: Ref<null | HTMLElement> = ref(null);
 const floatingArrow: Ref<null | HTMLElement> = ref(null);
 
-// expanding and closing
-const expanded = ref(false);
-
-const toggleExpanded = () => {
-  expanded.value = !expanded.value;
-};
-
-const close = () => {
-  expanded.value = false;
-};
-
-const closeUnlessButtonFocused = () => {
-  if (getDeepActiveElement() !== referenceEl.value) {
-    close();
-  }
-};
-
-const otherElement = toRef(props, "ignoredClickOutsideTarget");
-
-// close the dialog when clicking outside the button, the popover and any other targets defined by the props
-useClickOutside(
-  { targets: [floating, otherElement], callback: closeUnlessButtonFocused },
-  expanded,
-);
-
 // configuration using floating-ui
-const { x, y, middlewareData, placement } = useFloating(referenceEl, floating, {
-  placement: "top",
-  whileElementsMounted: autoUpdate,
-  middleware: [
-    /**
-     * Clip the floating popover to the dialog (i.e. it reaches from its left to its right side no matter where the referenceEl lies)
-     */
-    shift({ padding: 10 }),
-    /**
-     * Enable positioning an arrow pointing to the referenceEl
-     */
-    arrow({ element: floatingArrow }),
-    /**
-     * Move the popover away from the referenceEl
-     */
-    // eslint-disable-next-line no-magic-numbers
-    offset(10),
-    flip(),
-  ],
-});
+const shiftPadding = 10;
+const { x, y, middlewareData, placement, update } = useFloating(
+  referenceEl,
+  floating,
+  {
+    placement: "top",
+    whileElementsMounted: autoUpdate,
+    middleware: [
+      /**
+       * Clip the floating popover to its referenceEl
+       */
+      shift({
+        padding: shiftPadding,
+        limiter: limitShift({
+          crossAxis: false,
+          offset: ({ rects }) => rects.reference.width + shiftPadding,
+        }),
+      }),
+      /**
+       * Enable positioning an arrow pointing to the referenceEl
+       */
+      arrow({ element: floatingArrow }),
+      /**
+       * Move the popover away from the referenceEl
+       */
+      // eslint-disable-next-line no-magic-numbers
+      offset(10),
+      flip(),
+    ],
+  },
+);
 
 // compute the side on which the arrow should be positioned
 const placementToSide = (floatingPlacement: Placement): Side => {
@@ -122,6 +109,53 @@ const body = document.body;
 const focusButton = () => {
   reference.value?.focus();
 };
+
+const resizeObserver = ref<ResizeObserver | null>(null);
+
+// expanding and closing
+const expanded = ref(false);
+
+const toggleObservance = () => {
+  const floatingContainer = floating.value?.parentElement;
+  if (floatingContainer) {
+    resizeObserver.value?.[expanded.value ? "observe" : "unobserve"](
+      floatingContainer,
+    );
+  }
+};
+
+const toggleResizeObserver = async () => {
+  if (expanded.value) {
+    await nextTick();
+    // this resize observer is necessary to update the position of the popover when the dialog is resized without using
+    // the native resize event which is used by "autoUpdate"
+    resizeObserver.value = new ResizeObserver(update);
+  }
+  toggleObservance();
+};
+
+const toggleExpanded = () => {
+  expanded.value = !expanded.value;
+  toggleResizeObserver();
+};
+
+const close = () => {
+  expanded.value = false;
+};
+
+const closeUnlessButtonFocused = () => {
+  if (getDeepActiveElement() !== referenceEl.value) {
+    close();
+  }
+};
+
+const otherElement = toRef(props, "ignoredClickOutsideTarget");
+
+// close the dialog when clicking outside the button, the popover and any other targets defined by the props
+useClickOutside(
+  { targets: [floating, otherElement], callback: closeUnlessButtonFocused },
+  expanded,
+);
 
 const onEscapeOnButton = (event: KeyboardEvent) => {
   if (expanded.value) {
