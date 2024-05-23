@@ -50,6 +50,15 @@ describe("FunctionButton.vue", () => {
     expect(wrapper.classes()).toContain("single");
   });
 
+  it("does not render single class if it has multiple direct slot children", () => {
+    const wrapper = shallowMount(FunctionButton, {
+      slots: {
+        default: ["<svg/>", "<div/>"],
+      },
+    });
+    expect(wrapper.classes()).not.toContain("single");
+  });
+
   it("passes-through event listeners to BaseButton", () => {
     const wrapper = shallowMount(FunctionButton, {
       slots: {
