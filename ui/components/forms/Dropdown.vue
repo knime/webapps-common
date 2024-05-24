@@ -63,6 +63,14 @@ export default {
       type: Boolean,
     },
     /**
+     * The direction of the dropdown menu. When set to 'up', the menu will appear above the input field.
+     * Defaults to 'down'.
+     */
+    direction: {
+      default: "down",
+      type: String as PropType<"up" | "down">,
+    },
+    /**
      * List of possible values. Each item must have an `id` and a `text` property. To use slots an additional
      * slotData object must be passed which contains the data to be displayed.
      *
@@ -343,6 +351,7 @@ export default {
         :aria-activedescendant="
           isExpanded ? generateId('option', getCurrentSelectedId()) : undefined
         "
+        :class="{ 'drops-upwards': direction === 'up' }"
         @keydown="handleKeyDownList"
       >
         <li
@@ -494,6 +503,10 @@ export default {
     box-shadow: var(--shadow-elevation-1);
     cursor: pointer;
     outline: none;
+
+    &.drops-upwards {
+      bottom: 100%;
+    }
   }
 
   & [role="option"] {
