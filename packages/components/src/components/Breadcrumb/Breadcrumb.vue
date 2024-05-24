@@ -44,6 +44,9 @@ export default {
     linkComponent() {
       return resolveNuxtLinkComponent();
     },
+    reversedItems() {
+      return this.items.slice().reverse();
+    },
   },
 };
 </script>
@@ -54,7 +57,7 @@ export default {
     :class="['breadcrumb', { 'grey-style': greyStyle }]"
   >
     <ul>
-      <li v-for="(breadcrumbItem, i) in items" :key="i">
+      <li v-for="(breadcrumbItem, i) in reversedItems" :key="i">
         <Component
           :is="linkComponent"
           v-if="breadcrumbItem.href"
@@ -87,7 +90,7 @@ export default {
           />
           {{ breadcrumbItem.text }} </span
         ><!-- no whitespace
-        --><ArrowNext v-if="i !== items.length - 1" class="arrow" />
+        --><ArrowNext v-if="i !== 0" class="arrow" />
       </li>
     </ul>
   </nav>
@@ -104,22 +107,58 @@ export default {
   font-weight: 500;
   margin: 0;
   list-style-type: none;
+  justify-content: center;
+  display: flex;
+
+  /* needed to correctly size the toolbar */
+
+  /* width: 100%; */
 
   & ul,
   & li {
-    display: inline-block;
+    display: inline-flex;
     margin: 0;
   }
 
   & ul {
     padding: 0;
     width: 100%;
+    max-width: fit-content;
+    flex-direction: row-reverse;
+
+    /* flex-basis: content; */
+    white-space: nowrap;
+    overflow-x: auto; /* Scroll with hidden scrollbar in ... */
+    -ms-overflow-style: none; /* ... Edge */
+    scrollbar-width: none; /* ... Firefox */
+    &::-webkit-scrollbar {
+      display: none; /* ... Chrome, Safari and Opera */
+    }
+  }
+
+  & ul > :nth-child(1),
+  & ul > :nth-child(2),
+  & ul > :nth-last-child(1) {
+    flex-shrink: 0;
   }
 
   & li {
     position: relative;
     margin: 0;
-    max-width: 100%;
+    max-width: min(400px, 30%);
+
+    /* > :first-child {
+      min-width: 30px;
+    } */
+    min-width: 0;
+    align-items: center;
+    flex-shrink: 1;
+    transition: flex-shrink 0.1s;
+
+    &:hover {
+      max-width: 100%;
+      flex-shrink: 0;
+    }
   }
 
   & span,
@@ -152,6 +191,7 @@ export default {
   & .arrow {
     width: 10px;
     height: 10px;
+    flex-shrink: 0;
     margin: 0 5px;
     stroke-width: calc(32px / 10);
     vertical-align: middle;
