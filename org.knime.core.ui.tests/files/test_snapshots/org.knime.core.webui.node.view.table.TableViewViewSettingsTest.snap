@@ -247,7 +247,7 @@
             "title" : "Page size",
             "description" : "Select the amount of rows shown per page",
             "default" : 10,
-            "minimum" : 1,
+            "minimum" : 1.0,
             "configKeys" : [ "pageSize" ]
           },
           "rowHeightMode" : {
