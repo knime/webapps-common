@@ -736,9 +736,11 @@ describe("MultiselectListBox.vue", () => {
 
     it("does not render bottom value by default", () => {
       const wrapper = mount(MultiselectListBox, {
-        possibleValues,
-        value: [],
-        ariaLabel: "A Label",
+        props: {
+          possibleValues,
+          value: [],
+          ariaLabel: "A Label",
+        },
       });
       expect(wrapper.find('[role="bottom-box"]').exists()).toBeFalsy();
     });

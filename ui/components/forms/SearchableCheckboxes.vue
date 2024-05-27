@@ -103,7 +103,7 @@ export default {
 
     emptyStateLabel: {
       type: String,
-      default: "No entires in this list",
+      default: "No entries in this list",
     },
     filterChosenValuesOnPossibleValuesChange: {
       type: Boolean,

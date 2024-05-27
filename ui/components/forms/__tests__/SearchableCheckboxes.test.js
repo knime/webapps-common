@@ -28,8 +28,6 @@ describe("SearchableCheckboxes.vue", () => {
     let props = {
       possibleValues: defaultPossibleValues,
       modelValue: ["test3"],
-      leftLabel: "Choose",
-      rightLabel: "The value",
       size: 5,
     };
     const wrapper = mount(SearchableCheckboxes, { props });
@@ -45,8 +43,6 @@ describe("SearchableCheckboxes.vue", () => {
     let props = {
       possibleValues: defaultPossibleValues,
       modelValue: ["test3"],
-      leftLabel: "Choose",
-      rightLabel: "The value",
       size: 5,
     };
     const wrapper = mount(SearchableCheckboxes, { props });
@@ -87,10 +83,7 @@ describe("SearchableCheckboxes.vue", () => {
     let props = {
       possibleValues: defaultPossibleValues,
       modelValue: null,
-      leftLabel: "Choose",
-      rightLabel: "The value",
       size: 5,
-      withIsEmptyState: false,
     };
     const wrapper = mount(SearchableCheckboxes, {
       props,
@@ -106,11 +99,8 @@ describe("SearchableCheckboxes.vue", () => {
     let props = {
       possibleValues: defaultPossibleValues,
       modelValue: null,
-      leftLabel: "Choose",
-      rightLabel: "The value",
       alignment: "vertical",
       size: 5,
-      withIsEmptyState: false,
     };
     const wrapper = mount(SearchableCheckboxes, {
       props,
@@ -328,113 +318,70 @@ describe("SearchableCheckboxes.vue", () => {
     });
   });
 
-  describe("unknown values", () => {
+  describe("search info", () => {
     let props;
-    const expectUnknownValuesAreIncluded = (wrapper) => {
-      expect(
-        wrapper.findComponent(Checkboxes).find('[role="bottom-box"]').exists(),
-      ).toBeFalsy();
-    };
-    const expectUnknownValuesAreExcluded = (wrapper) => {
-      expect(
-        wrapper.findComponent(Checkboxes).find('[role="bottom-box"]').exists(),
-      ).toBeFalsy();
-    };
 
     beforeEach(() => {
       props = {
         possibleValues: defaultPossibleValues,
-        modelValue: ["test2"],
         size: 5,
+        showSearch: true,
+        modelValue: [],
       };
     });
 
-    it("does not render unknown values per default", () => {
+    it("only shows number of selected values if there is no searchTerm", () => {
       const wrapper = mount(SearchableCheckboxes, { props });
-      expect(wrapper.find('[role="bottom-box"]').exists()).toBeFalsy();
+      expect(wrapper.find(".info").text()).toBe("[ 0 selected ]");
     });
 
-    it("renders unknown values if wanted excluded per default", () => {
-      props.showUnknownValues = true;
+    it("only shows number of selected values if showSearch is false", () => {
+      let props = {
+        possibleValues: defaultPossibleValues,
+        size: 5,
+        showSearch: false,
+        modelValue: ["test2"],
+      };
       const wrapper = mount(SearchableCheckboxes, { props });
-      expectUnknownValuesAreExcluded(wrapper);
+
+      expect(wrapper.find(".info").text()).toBe("[ 1 selected ]");
     });
 
-    it("includes unknown values if wanted", () => {
-      props.showUnknownValues = true;
-      props.initialIncludeUnknownValues = true;
+    it("shows number of visible items and total number on search", () => {
+      props.modelValue = ["test2", "Missing"];
+      props.initialSearchTerm = "2";
       const wrapper = mount(SearchableCheckboxes, { props });
-      expectUnknownValuesAreIncluded(wrapper);
+      const infos = wrapper.findAll(".info");
+      expect(infos.at(0).text()).toBe("1 of 3 entries [ 2 selected ]");
+    });
+  });
+
+  describe("empty box", () => {
+    let props;
+
+    beforeEach(() => {
+      props = {
+        possibleValues: defaultPossibleValues,
+        size: 5,
+        showSearch: true,
+        modelValue: null,
+      };
     });
 
-    describe("search info", () => {
-      let props;
-
-      beforeEach(() => {
-        props = {
-          possibleValues: defaultPossibleValues,
-          initialManuallySelected: ["test2"],
-          size: 5,
-          showSearch: true,
-          modelValue: [],
-        };
-      });
-
-      it("only shows number of selected values if there is no searchTerm", () => {
-        const wrapper = mount(SearchableCheckboxes, { props });
-        expect(wrapper.find(".info").text()).toBe("[ 0 selected ]");
-      });
-
-      it("only shows number of selected values if showSearch is false", () => {
-        let props = {
-          possibleValues: defaultPossibleValues,
-          initialManuallySelected: ["test2"],
-          size: 5,
-          showSearch: false,
-          modelValue: ["abas"],
-        };
-        const wrapper = mount(SearchableCheckboxes, { props });
-
-        expect(wrapper.find(".info").text()).toBe("[ 1 selected ]");
-      });
-
-      it("shows number of visible items and total number on search", () => {
-        props.modelValue = ["test2", "Missing"];
-        props.initialSearchTerm = "2";
-        const wrapper = mount(SearchableCheckboxes, { props });
-        const infos = wrapper.findAll(".info");
-        expect(infos.at(0).text()).toBe("1 of 3 entries [ 2 selected ]");
-      });
+    it("displays empty state box if it does not contain any element", async () => {
+      const wrapper = mount(SearchableCheckboxes, { props });
+      expect(wrapper.find(".empty-state").text()).toBe(
+        "No entries in this list",
+      );
+      const emptyStateLabel = "Custom label";
+      await wrapper.setProps({ emptyStateLabel });
+      expect(wrapper.find(".empty-state").text()).toBe(emptyStateLabel);
     });
 
-    describe("empty box", () => {
-      let props;
-
-      beforeEach(() => {
-        props = {
-          possibleValues: defaultPossibleValues,
-          initialManuallySelected: [],
-          size: 5,
-          showSearch: true,
-          modelValue: null,
-        };
-      });
-
-      it("displays empty state box if it does not contain any element", async () => {
-        const wrapper = mount(SearchableCheckboxes, { props });
-        expect(wrapper.find(".empty-state").text()).toBe(
-          "No entires in this list",
-        );
-        const emptyStateLabel = "Custom label";
-        await wrapper.setProps({ emptyStateLabel });
-        expect(wrapper.find(".empty-state").text()).toBe(emptyStateLabel);
-      });
-
-      it("does not display empty state box if wanted", () => {
-        props.showEmptyState = false;
-        const wrapper = mount(SearchableCheckboxes, { props });
-        expect(wrapper.find(".empty-state").exists()).toBeTruthy();
-      });
+    it("does not display empty state box if wanted", () => {
+      props.showEmptyState = false;
+      const wrapper = mount(SearchableCheckboxes, { props });
+      expect(wrapper.find(".empty-state").exists()).toBeTruthy();
     });
   });
 });

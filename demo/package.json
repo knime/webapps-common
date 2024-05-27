@@ -7,10 +7,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "run-p type-check build-only",
+    "build": "vite build",
     "preview": "vite preview --port 4173",
-    "build-only": "vite build",
-    "type-check": "vue-tsc --noEmit",
     "lint": "run-p 'lint:* -- --fix --cache'",
     "lint:js": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts",
     "lint:css": "stylelint '**/*.{css,vue}'",
@@ -26,19 +24,14 @@
   },
   "devDependencies": {
     "@knime/eslint-config": "file:../lint",
-    "@tsconfig/node20": "20.1.2",
-    "@types/node": "20.11.6",
     "@vitejs/plugin-vue": "5.0.3",
-    "@vue/tsconfig": "0.5.1",
     "eslint": "8.56.0",
     "gh-pages": "5.0.0",
     "npm-run-all": "4.1.5",
     "prettier": "3.1.1",
     "stylelint": "16.1.0",
-    "typescript": "5.3.3",
     "vite": "5.0.12",
-    "vite-svg-loader": "5.1.0",
-    "vue-tsc": "1.8.27"
+    "vite-svg-loader": "5.1.0"
   },
   "engines": {
     "node": "20.x"
