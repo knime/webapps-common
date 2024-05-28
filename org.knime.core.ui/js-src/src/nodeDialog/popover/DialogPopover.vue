@@ -115,23 +115,22 @@ const resizeObserver = ref<ResizeObserver | null>(null);
 // expanding and closing
 const expanded = ref(false);
 
-const toggleObservance = () => {
-  const floatingContainer = floating.value?.parentElement;
-  if (floatingContainer) {
-    resizeObserver.value?.[expanded.value ? "observe" : "unobserve"](
-      floatingContainer,
-    );
-  }
-};
-
 const toggleResizeObserver = async () => {
+  let observance: keyof ResizeObserver = "unobserve";
   if (expanded.value) {
+    observance = "observe";
     await nextTick();
     // this resize observer is necessary to update the position of the popover when the dialog is resized without using
     // the native resize event which is used by "autoUpdate"
     resizeObserver.value = new ResizeObserver(update);
   }
-  toggleObservance();
+  const floatingContainer = floating.value?.parentElement;
+  if (floatingContainer) {
+    resizeObserver.value?.[observance](floatingContainer);
+  }
+  if (!expanded.value) {
+    resizeObserver.value = null;
+  }
 };
 
 const toggleExpanded = () => {
