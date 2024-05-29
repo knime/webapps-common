@@ -43,7 +43,7 @@ export const useDialogControl = <ValueType extends Stringifyable = any>({
     valueComparator,
   });
 
-  const { flowSettings } = useFlowSettings({
+  const { flowSettings, disabledByFlowVariables } = useFlowSettings({
     control,
     subConfigKeys: unref(subConfigKeys),
     settingState,
@@ -54,10 +54,7 @@ export const useDialogControl = <ValueType extends Stringifyable = any>({
   };
 
   const disabled = computed(() => {
-    return (
-      !control.value.enabled ||
-      Boolean(flowSettings.value?.controllingFlowVariableName)
-    );
+    return !control.value.enabled || disabledByFlowVariables.value;
   });
 
   return {

@@ -62,7 +62,7 @@ describe("flow variables", () => {
   const mountNodeDialog = async () => {
     wrapper = mount(NodeDialog as any, getOptions()) as Wrapper;
     await flushPromises();
-    flowVariablesMap = wrapper.vm.schema.flowVariablesMap;
+    flowVariablesMap = wrapper.vm.providedFlowVariablesMap;
   };
 
   const expandFlowVariablesPopover = async () => {

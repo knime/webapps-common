@@ -37,6 +37,7 @@ import {
   createArrayAtPath,
   getArrayIdsRecord,
 } from "./composables/nodeDialog/useArrayIds";
+import useProvidedFlowVariablesMap from "./composables/components/useProvidedFlowVariablesMap";
 
 const renderers = [
   ...vanillaRenderers,
@@ -66,7 +67,6 @@ export default {
       },
       createArrayAtPath: (path: string) =>
         createArrayAtPath(getArrayIdsRecord(), path),
-      getFlowVariablesMap: () => this.schema.flowVariablesMap,
       setSubPanelExpanded: this.setSubPanelExpanded,
       getPanelsContainer: () => this.subPanels,
       getDialogPopoverTeleportDest: () => this.dialogPopoverTeleportDest,
@@ -89,6 +89,8 @@ export default {
       updateData,
       sendAlert,
     });
+    const { providedFlowVariablesMap, setInitialFlowVariablesMap } =
+      useProvidedFlowVariablesMap();
     const { setRegisterSettingsMethod } = provideAndGetSetupMethod();
     const subPanels = ref<null | HTMLElement>(null);
     const dialogPopoverTeleportDest = ref<null | HTMLElement>(null);
@@ -105,6 +107,8 @@ export default {
       registeredWatchers,
       setRegisterSettingsMethod,
       subPanels,
+      providedFlowVariablesMap,
+      setInitialFlowVariablesMap,
       dialogPopoverTeleportDest,
     };
   },
@@ -142,6 +146,7 @@ export default {
     const initialSettings = await this.jsonDataService.initialData();
     const { schema } = initialSettings;
     schema.flowVariablesMap = this.initializeFlowVariablesMap(initialSettings);
+    this.setInitialFlowVariablesMap(schema.flowVariablesMap);
     schema.hasNodeView = this.dialogService.hasNodeView();
     schema.showAdvancedSettings = false;
     this.schema = schema;
@@ -181,7 +186,7 @@ export default {
     getData() {
       return {
         data: this.currentData,
-        flowVariableSettings: this.schema.flowVariablesMap,
+        flowVariableSettings: this.providedFlowVariablesMap,
       };
     },
     publishSettings() {
@@ -271,7 +276,7 @@ export default {
         { data, flowVariableSettings },
       );
       const valid = typeof overrideValue !== "undefined";
-      const flowSettings = this.schema.flowVariablesMap[persistPath];
+      const flowSettings = this.providedFlowVariablesMap[persistPath];
       if (flowSettings) {
         if (valid) {
           delete flowSettings.controllingFlowVariableFlawed;

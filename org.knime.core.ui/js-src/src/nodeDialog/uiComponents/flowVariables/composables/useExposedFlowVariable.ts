@@ -1,8 +1,6 @@
 import { computed } from "vue";
-import {
-  getFlowVariablesMap,
-  getFlowVariableSettingsProvidedByControl,
-} from "../../../composables/components/useFlowVariables";
+import { getFlowVariableSettingsProvidedByControl } from "../../../composables/components/useFlowVariables";
+import { getFlowVariablesMap } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
 
 export default () => {
   const flowVariablesMap = getFlowVariablesMap();

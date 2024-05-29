@@ -6,6 +6,7 @@ import { getFlowVariableSettingsProvidedByControl } from "../useFlowVariables";
 import Control from "@/nodeDialog/types/Control";
 import { Ref, defineComponent, ref } from "vue";
 import { SettingStateWrapper } from "../../nodeDialog/useDirtySettings";
+import { injectionKey as flowVarMapKey } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
 
 let flowVariablesMap: Record<string, FlowSettings>;
 
@@ -86,7 +87,7 @@ describe("useFlowVariables", () => {
       },
       global: {
         provide: {
-          getFlowVariablesMap: () => flowVariablesMap,
+          [flowVarMapKey as symbol]: flowVariablesMap,
         },
       },
     });

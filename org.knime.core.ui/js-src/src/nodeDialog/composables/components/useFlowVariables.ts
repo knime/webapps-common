@@ -1,9 +1,9 @@
 import { InjectionKey, Ref, computed, inject, provide } from "vue";
 import { getConfigPaths, getDataPaths } from "@/nodeDialog/utils/paths";
 import { FlowSettings } from "@/nodeDialog/api/types";
-import { injectForFlowVariables } from "@/nodeDialog/utils/inject";
 import Control from "@/nodeDialog/types/Control";
 import { SettingStateWrapper } from "../nodeDialog/useDirtySettings";
+import { getFlowVariablesMap } from "./useProvidedFlowVariablesMap";
 
 export interface FlowVariableSettingsProvidedByControl {
   flowSettings: Ref<FlowSettings | null>;
@@ -22,9 +22,6 @@ export const injectionKey: InjectionKey<FlowVariableSettingsProvidedByControl> =
   Symbol("flowVariableSettingsProvidedByControl");
 export const getFlowVariableSettingsProvidedByControl = () =>
   inject(injectionKey)!;
-
-export const getFlowVariablesMap = () =>
-  injectForFlowVariables("getFlowVariablesMap")();
 
 const getFlowSettingsFromMap =
   (flowVariablesMap: Record<string, FlowSettings>) =>
@@ -102,6 +99,7 @@ export const useFlowSettings = (
   params: UseFlowSettingsProps,
 ): {
   flowSettings: Ref<FlowSettings | null>;
+  disabledByFlowVariables: Ref<boolean>;
 } => {
   const { control, subConfigKeys, settingState } = params;
   const flowVariablesMap = getFlowVariablesMap();
@@ -132,5 +130,21 @@ export const useFlowSettings = (
       flowVariablesMap,
     ),
   });
-  return { flowSettings };
+
+  const hasDeprecatedVariables = computed(
+    () =>
+      configPaths.value
+        .flatMap(({ deprecatedConfigPaths }) => deprecatedConfigPaths)
+        .filter(
+          (deprecatedConfigPath) => flowVariablesMap[deprecatedConfigPath],
+        ).length > 0,
+  );
+
+  const disabledByFlowVariables = computed(
+    () =>
+      Boolean(flowSettings.value?.controllingFlowVariableName) ||
+      hasDeprecatedVariables.value,
+  );
+
+  return { flowSettings, disabledByFlowVariables };
 };

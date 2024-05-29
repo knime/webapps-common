@@ -5,6 +5,7 @@ import { type Ref, ref } from "vue";
 import { FlowSettings } from "@/nodeDialog/api/types";
 import DeprecatedFlowVariables from "../DeprecatedFlowVariables.vue";
 import Button from "@@/webapps-common/ui/components/Button.vue";
+import { injectionKey as flowVarMapKey } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
 
 describe("FlowVariablePopover", () => {
   let configPaths: Ref<
@@ -28,7 +29,7 @@ describe("FlowVariablePopover", () => {
             dataPaths,
             configPaths,
           },
-          getFlowVariablesMap: () => flowVariablesMap,
+          [flowVarMapKey as symbol]: flowVariablesMap,
         },
       },
     });

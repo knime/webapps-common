@@ -17,6 +17,7 @@ import type FlowVariableSelectorProps from "../../types/FlowVariableSelectorProp
 import { ProvidedForFlowVariables } from "@/nodeDialog/types/provided";
 import { FlowSettings } from "@/nodeDialog/api/types";
 import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
+import { injectionKey as flowVarMapKey } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
 
 type MockedMethods<T extends Record<string, (...args: any[]) => any>> = {
   [K in keyof T]?: Mock<Parameters<T[K]>, ReturnType<T[K]>>;
@@ -67,7 +68,7 @@ describe("FlowVariableSelector.vue", () => {
               },
             },
           },
-          getFlowVariablesMap: () => flowVariablesMap,
+          [flowVarMapKey as symbol]: flowVariablesMap,
           flowVariablesApi: {
             getAvailableFlowVariables:
               getAvailableFlowVariables ||

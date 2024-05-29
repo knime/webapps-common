@@ -9,6 +9,7 @@ import { useJsonFormsLayout, useJsonFormsArrayControl } from "@jsonforms/vue";
 
 import * as useJsonFormsControlWithUpdateModule from "@/nodeDialog/composables/components/useJsonFormsControlWithUpdate";
 import { injectionKey as dirtySettingsInjectionKey } from "@/nodeDialog/composables/nodeDialog/useDirtySettings";
+import { injectionKey as flowVarMapKey } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
 import * as jsonformsVueModule from "@jsonforms/vue";
 
 import { getPossibleValuesFromUiSchema } from "@/nodeDialog/utils";
@@ -124,7 +125,7 @@ export const mountJsonFormsComponent = (
         addStateProviderListener,
         trigger,
         flowVariablesApi,
-        getFlowVariablesMap: () => flowVariablesMap,
+        [flowVarMapKey]: flowVariablesMap,
         getPanelsContainer,
         createArrayAtPath,
         getDialogPopoverTeleportDest,

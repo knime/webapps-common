@@ -222,7 +222,7 @@ describe("NodeDialog.vue", () => {
       },
     };
     wrapper.vm.currentData = currentData;
-    wrapper.vm.schema = { flowVariablesMap };
+    wrapper.vm.providedFlowVariablesMap = flowVariablesMap;
     const result = await wrapper.vm.getFlowVariableOverrideValue(
       "_persistPath",
       path,
@@ -752,7 +752,7 @@ describe("NodeDialog.vue", () => {
       const persistPath = "my.path";
       const flowSettings = {};
       await flushPromises();
-      wrapper.vm.schema.flowVariablesMap[persistPath] = flowSettings;
+      wrapper.vm.providedFlowVariablesMap[persistPath] = flowSettings;
 
       await wrapper.vm.getFlowVariableOverrideValue(persistPath, "_dataPath");
 
@@ -770,7 +770,7 @@ describe("NodeDialog.vue", () => {
       const persistPathFlawedSetting = "flawed";
       const persistPathOtherSetting = "other";
       await flushPromises();
-      wrapper.vm.schema.flowVariablesMap = {
+      wrapper.vm.providedFlowVariablesMap = {
         [persistPathFlawedSetting]: {
           controllingFlowVariableName: "flawedSettingVariable",
           controllingFlowVariableFlawed: true,
@@ -816,7 +816,7 @@ describe("NodeDialog.vue", () => {
       };
       const variableSettingsMapBeforeRequest =
         JSON.stringify(variableSettingsMap);
-      wrapper.vm.schema.flowVariablesMap = variableSettingsMap;
+      wrapper.vm.providedFlowVariablesMap = variableSettingsMap;
       wrapper.vm.flawedControllingVariablePaths.add(persistPathFlawedSetting);
 
       wrapper.vm.currentData = {};
@@ -904,7 +904,7 @@ describe("NodeDialog.vue", () => {
       const persistPath = "my.path";
       const flowSettings = { controllingFlowVariableFlawed: true };
       await flushPromises();
-      wrapper.vm.schema.flowVariablesMap[persistPath] = flowSettings;
+      wrapper.vm.providedFlowVariablesMap[persistPath] = flowSettings;
       wrapper.vm.flawedControllingVariablePaths.add(persistPath);
 
       await wrapper.vm.getFlowVariableOverrideValue(persistPath, "_dataPath");

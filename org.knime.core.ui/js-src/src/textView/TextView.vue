@@ -17,12 +17,6 @@ export default {
     knimeService() {
       return this.getKnimeService();
     },
-    disabled() {
-      return Boolean(this.flowSettings?.controllingFlowVariableName);
-    },
-    flowSettings() {
-      return getFlowVariablesMap(this.control);
-    },
   },
   async mounted() {
     const jsonDataService = new JsonDataService(this.knimeService);

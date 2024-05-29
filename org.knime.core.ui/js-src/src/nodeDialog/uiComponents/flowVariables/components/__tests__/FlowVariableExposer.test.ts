@@ -10,6 +10,7 @@ import ErrorMessage from "../../../ErrorMessage.vue";
 import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
 import { FlowSettings } from "@/nodeDialog/api/types";
 import { ref, type Ref } from "vue";
+import { injectionKey as flowVarMapKey } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
 
 describe("FlowVariableExposer", () => {
   let props: FlowVariableExposerProps,
@@ -52,7 +53,7 @@ describe("FlowVariableExposer", () => {
               },
             },
           },
-          getFlowVariablesMap: () => flowVariablesMap,
+          [flowVarMapKey as symbol]: flowVariablesMap,
         },
       },
     });

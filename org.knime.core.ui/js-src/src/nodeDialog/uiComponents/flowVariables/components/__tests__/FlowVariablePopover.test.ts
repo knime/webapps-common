@@ -10,6 +10,7 @@ import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables
 import { type Ref, ref } from "vue";
 import { FlowSettings } from "@/nodeDialog/api/types";
 import DeprecatedFlowVariables from "../DeprecatedFlowVariables.vue";
+import { injectionKey as flowVarMapKey } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
 
 describe("FlowVariablePopover", () => {
   let configPaths: Ref<
@@ -34,7 +35,7 @@ describe("FlowVariablePopover", () => {
             dataPaths,
             configPaths,
           },
-          getFlowVariablesMap: () => flowVariablesMap,
+          [flowVarMapKey as symbol]: flowVariablesMap,
         },
         stubs: { MultipleConfigKeysNotYetSupported, Label, Fieldset },
       },

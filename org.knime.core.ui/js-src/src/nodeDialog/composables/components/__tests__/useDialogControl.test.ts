@@ -7,7 +7,7 @@ import {
   type Mock,
   MockInstance,
 } from "vitest";
-import * as UseJsonFromsControlWithUpdateModule from "../useJsonFormsControlWithUpdate";
+import * as UseJsonFormsControlWithUpdateModule from "../useJsonFormsControlWithUpdate";
 import * as UseFlowVariablesModule from "../useFlowVariables";
 import { type Ref, ref } from "vue";
 import { FlowSettings } from "@/nodeDialog/api/types/index";
@@ -17,11 +17,13 @@ import { mount } from "@vue/test-utils";
 import { injectionKey as injectionKeyFromUseDirtySettings } from "@/nodeDialog/composables/nodeDialog/useDirtySettings";
 import { injectionKey as injectionKeyAddedArrayLayoutElements } from "../useAddedArrayLayoutItem";
 import flushPromises from "flush-promises";
+import { injectionKey as flowVarMapKey } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
 
 describe("useDialogControl", () => {
   const props: any = "foo";
 
   let flowSettings: Ref<FlowSettings | null>,
+    disabledByFlowVariables: Ref<boolean>,
     useFlowSettingsSpy: MockInstance,
     useJsonFormsControlWithUpdateSpy: MockInstance,
     control: Ref<Control>,
@@ -39,6 +41,7 @@ describe("useDialogControl", () => {
 
   beforeEach(() => {
     flowSettings = ref(null);
+    disabledByFlowVariables = ref(false);
     control = ref({
       path,
       enabled: true,
@@ -68,16 +71,11 @@ describe("useDialogControl", () => {
       .spyOn(UseFlowVariablesModule, "useFlowSettings")
       .mockImplementation(() => ({
         flowSettings,
-        configPaths: ref(
-          configPaths.map((configPath) => ({
-            configPath,
-            deprecatedConfigPaths: [],
-          })),
-        ),
+        disabledByFlowVariables,
       }));
     useJsonFormsControlWithUpdateSpy = vi
       .spyOn(
-        UseJsonFromsControlWithUpdateModule,
+        UseJsonFormsControlWithUpdateModule,
         "useJsonFormsControlWithUpdate",
       )
       .mockImplementation(() => ({ control, handleChange }));
@@ -102,12 +100,12 @@ describe("useDialogControl", () => {
             constructSettingState,
             getSettingState,
           },
-          getFlowVariablesMap: () => ({
+          [flowVarMapKey as symbol]: {
             [configPaths[0]]: {
               controllingFlowVariableName: "first",
               exposedFlowVariableName: "second",
             },
-          }),
+          },
           ...(asChildOfAddedArrayLayoutElement
             ? { [injectionKeyAddedArrayLayoutElements as symbol]: true }
             : {}),
@@ -188,12 +186,8 @@ describe("useDialogControl", () => {
       expect(mountTestComponent().vm.disabled).toBe(true);
     });
 
-    it("is disabled if a controlling flow variable is set", () => {
-      flowSettings.value = {
-        controllingFlowVariableAvailable: true,
-        controllingFlowVariableName: "myVar",
-        exposedFlowVariableName: null,
-      };
+    it("is disabled by flow variables", () => {
+      disabledByFlowVariables.value = true;
       expect(mountTestComponent().vm.disabled).toBe(true);
     });
   });

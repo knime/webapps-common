@@ -2,7 +2,7 @@ import type {
   JsonDataService,
   CreateAlertParams,
 } from "@knime/ui-extension-service";
-import type { FlowSettings, PossibleFlowVariable } from "../api/types";
+import type { PossibleFlowVariable } from "../api/types";
 import type { getPossibleValuesFromUiSchema } from "../utils";
 import type Control from "./Control";
 import type SettingsData from "./SettingsData";
@@ -58,7 +58,6 @@ type ProvidedFlowVariablesApi = {
 export default Provided;
 
 interface ProvidedForFlowVariables {
-  getFlowVariablesMap: () => Record<string, FlowSettings>;
   flowVariablesApi: ProvidedFlowVariablesApi;
 }
 
