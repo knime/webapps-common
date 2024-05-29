@@ -16,7 +16,7 @@ const codeExample = `<ValueSwitch
 />
 <ValueSwitch
   v-model="selected"
-  variant="compact"
+  compact
   :possible-values="[
     { id: 'eur', text: 'EUR' },
     { id: 'usd', text: 'USD' },
