@@ -212,49 +212,58 @@ describe("FileExplorer.vue", () => {
   });
 
   describe("selection", () => {
-    it.each(["update:selectedItemIds", "changeSelection"])(
-      "should select items and emit '%s' for selected ones",
-      async (eventName) => {
-        const { wrapper } = doMount();
-        await getRenderedItems(wrapper).at(1)?.trigger("click");
-        await getRenderedItems(wrapper)
-          .at(3)
-          ?.trigger("click", { shiftKey: true });
-        await getRenderedItems(wrapper)
-          .at(5)
-          ?.trigger("click", { ctrlKey: true });
+    it("should select items and emit 'update:selectedItemIds' for selected ones", async () => {
+      const { wrapper } = doMount();
+      await getRenderedItems(wrapper).at(1)?.trigger("click");
+      await getRenderedItems(wrapper)
+        .at(3)
+        ?.trigger("click", { shiftKey: true });
+      await getRenderedItems(wrapper)
+        .at(5)
+        ?.trigger("click", { ctrlKey: true });
 
-        expect(getRenderedItems(wrapper).at(1)?.classes()).toContain(
-          "selected",
-        );
-        expect(getRenderedItems(wrapper).at(2)?.classes()).toContain(
-          "selected",
-        );
-        expect(getRenderedItems(wrapper).at(3)?.classes()).toContain(
-          "selected",
-        );
-        expect(getRenderedItems(wrapper).at(5)?.classes()).toContain(
-          "selected",
-        );
+      expect(getRenderedItems(wrapper).at(1)?.classes()).toContain("selected");
+      expect(getRenderedItems(wrapper).at(2)?.classes()).toContain("selected");
+      expect(getRenderedItems(wrapper).at(3)?.classes()).toContain("selected");
+      expect(getRenderedItems(wrapper).at(5)?.classes()).toContain("selected");
 
-        expect(wrapper.emitted(eventName)?.[0][0]).toEqual(["1"]);
-        expect(wrapper.emitted(eventName)?.[1][0]).toEqual(["1", "2", "3"]);
-        expect(wrapper.emitted(eventName)?.[2][0]).toEqual([
-          "1",
-          "2",
-          "3",
-          "5",
-        ]);
-      },
-    );
+      expect(wrapper.emitted("update:selectedItemIds")?.[0][0]).toEqual(["1"]);
+      expect(wrapper.emitted("update:selectedItemIds")?.[1][0]).toEqual([
+        "1",
+        "2",
+        "3",
+      ]);
+      expect(wrapper.emitted("update:selectedItemIds")?.[2][0]).toEqual([
+        "1",
+        "2",
+        "3",
+        "5",
+      ]);
+    });
 
-    it("should select items on prop change", async () => {
+    it("should select items on change of selectedItems prop", async () => {
       const { wrapper } = doMount({ props: { mode: "mini" } });
 
       await wrapper.setProps({ selectedItemIds: ["2", "3"] });
 
       expect(getRenderedItems(wrapper).at(2)?.classes()).toContain("selected");
       expect(getRenderedItems(wrapper).at(3)?.classes()).toContain("selected");
+      expect(scrollIntoView).toHaveBeenCalled();
+    });
+
+    it("should select items on change of items prop", async () => {
+      const { wrapper } = doMount({
+        props: { mode: "mini", selectedItemIds: ["6"] },
+      });
+
+      await wrapper.setProps({
+        items: [
+          ...MOCK_DATA,
+          { ...MOCK_DATA[0], id: "6", name: "Some new Folder" },
+        ],
+      });
+
+      expect(getRenderedItems(wrapper).at(6)?.classes()).toContain("selected");
       expect(scrollIntoView).toHaveBeenCalled();
     });
 

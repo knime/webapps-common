@@ -97,8 +97,6 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const emit = defineEmits<{
-  /** @deprecated please use update:selectedItemIds */
-  (e: "changeSelection", selectedItemIds: Array<string>): void;
   (e: "update:selectedItemIds", selectedItemIds: Array<string>): void;
   (e: "changeDirectory", pathId: string): void;
   (e: "openFile", item: FileExplorerItemType): void;
@@ -162,8 +160,7 @@ const getItemElement = (index: number) => {
   return itemRefs.value[index]?.$el;
 };
 
-// handle selection of items via prop change
-watch(toRef(props, "selectedItemIds"), (itemIds) => {
+const selectItems = (itemIds: string[]) => {
   // look up item indices
   const itemIndices = itemIds
     .map((id) => props.items.findIndex((item) => item.id === id))
@@ -182,20 +179,27 @@ watch(toRef(props, "selectedItemIds"), (itemIds) => {
   const firstIndex = itemIndices.slice().sort().at(0) ?? -1; // NOSONAR
   const element = itemRefs.value[firstIndex]?.$el;
   element?.scrollIntoView({ behavior: "smooth", block: "center" });
-});
+};
+
+// handle selection of items via prop change
+watch(toRef(props, "selectedItemIds"), selectItems);
 
 watch(multiSelectionState, () => {
   const itemIds = selectedItems.value.map((item) => item.id);
-  emit("changeSelection", itemIds);
   emit("update:selectedItemIds", itemIds);
 });
 
-watch(toRef(props, "items"), (itemIds) => {
-  // reset selection and focus value if current focus is not possible anymore
-  if (focusedIndex.value >= itemIds.length) {
-    resetSelection(focusedIndex.value);
-  }
-});
+watch(
+  toRef(props, "items"),
+  (items) => {
+    // reset selection and focus value if current focus is not possible anymore
+    if (focusedIndex.value >= items.length) {
+      resetSelection(focusedIndex.value);
+    }
+    selectItems(props.selectedItemIds);
+  },
+  { immediate: true },
+);
 
 /** MULTISELECTION */
 
