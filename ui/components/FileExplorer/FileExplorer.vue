@@ -9,7 +9,6 @@ import FileExplorerItemBack from "./FileExplorerItemBack.vue";
 import type {
   FileExplorerItem as FileExplorerItemType,
   FileExplorerContextMenu as FileExplorerContextMenuNamespace,
-  ItemIconRenderer,
 } from "./types";
 import useClickOutside from "../../composables/useClickOutside";
 import useKeyPressedUntilMouseClick from "../../composables/useKeyPressedUntilMouseClick";
@@ -36,11 +35,6 @@ interface Props {
    * Determines whether the "back" item should be rendered or not
    */
   isRootFolder?: boolean;
-  /**
-   * This function can let you customize the icons that get rendered for each item
-   * displayed in the directory
-   */
-  itemIconRenderer?: ItemIconRenderer | null;
   /**
    * Used to externally bind which item should be in the "rename" state.
    * This prop is not required but it's useful
@@ -87,7 +81,6 @@ const props = withDefaults(defineProps<Props>(), {
   mode: "normal",
   fullPath: "",
   isRootFolder: true,
-  itemIconRenderer: null,
   activeRenamedItemId: null,
   disableContextMenu: false,
   disableMultiSelect: false,
@@ -492,7 +485,6 @@ useClickOutside({
         :is-selected="isSelected(index)"
         :is-rename-active="item.id === renamedItemId"
         :blacklisted-names="blacklistedNames"
-        :item-icon-renderer="itemIconRenderer"
         :is-dragging-enabled="!disableDragging"
         @dragstart="onDragStart($event, index)"
         @dragenter="onDragEnter($event, index)"

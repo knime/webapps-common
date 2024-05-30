@@ -18,13 +18,11 @@ interface Props {
   isSelected: boolean;
   isDragging: boolean;
   isRenameActive: boolean;
-  itemIconRenderer?: ItemIconRenderer | null;
   isDraggingEnabled?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  itemIconRenderer: null,
-  isDraggingDisabled: true,
+  isDraggingEnabled: true,
 });
 
 const defaultIconRenderer: ItemIconRenderer = (item) => {
@@ -126,7 +124,7 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
     <template #icon>
       <span v-if="item.isOpen" class="open-indicator" />
       <slot name="icon">
-        <Component :is="(itemIconRenderer || defaultIconRenderer)(item)" />
+        <Component :is="defaultIconRenderer(item)" />
       </slot>
     </template>
 
