@@ -20,7 +20,7 @@ import { getMetaOrCtrlKey } from "../../../util/navigator";
  *
  * NOTE: Do not add store bindings to component to keep it as reusable as possible
  */
-export interface Props {
+interface Props {
   mode?: "normal" | "mini";
   /**
    * full path of the currently displayed directory. This is used to
@@ -29,13 +29,13 @@ export interface Props {
    */
   fullPath?: string;
   /**
-   * Determines whether the "back" item should be rendered or not
-   */
-  isRootFolder: boolean;
-  /**
    * List of items to be rendered for the displayed directory
    */
   items: Array<FileExplorerItemType>;
+  /**
+   * Determines whether the "back" item should be rendered or not
+   */
+  isRootFolder?: boolean;
   /**
    * This function can let you customize the icons that get rendered for each item
    * displayed in the directory
@@ -86,6 +86,7 @@ export interface Props {
 const props = withDefaults(defineProps<Props>(), {
   mode: "normal",
   fullPath: "",
+  isRootFolder: true,
   itemIconRenderer: null,
   activeRenamedItemId: null,
   disableContextMenu: false,
@@ -509,10 +510,25 @@ useClickOutside({
         @keydown.enter.prevent="handleEnterKey($event, item)"
         @rename:submit="emit('renameFile', $event)"
         @rename:clear="renamedItemId = null"
-      />
+      >
+        <template v-if="$slots.itemIcon" #icon>
+          <slot name="itemIcon" :item="item" />
+        </template>
+
+        <template v-if="$slots.itemContent" #default="slotProps">
+          <slot
+            name="itemContent"
+            :item="item"
+            :is-rename-active="slotProps.isRenameActive"
+            :is-selected="slotProps.isSelected"
+          />
+        </template>
+      </FileExplorerItem>
 
       <tr v-if="items.length === 0" class="empty">
-        <td>Folder is empty</td>
+        <td>
+          <slot name="emptyFolder">Folder is empty</slot>
+        </td>
       </tr>
     </tbody>
 
