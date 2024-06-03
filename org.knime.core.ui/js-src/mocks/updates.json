@@ -32,6 +32,14 @@
               "format": "int32",
               "title": "A * B",
               "type": "integer"
+            },
+            "updatedByA": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "updatedByUpdatedByA": {
+              "format": "int32",
+              "type": "integer"
             }
           }
         }
@@ -59,6 +67,14 @@
             {
               "type": "Control",
               "scope": "#/properties/view/properties/product"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/updatedByA"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/updatedByUpdatedByA"
             }
           ]
         }
@@ -93,6 +109,18 @@
             {
               "scopes": ["#/properties/view/properties/b"],
               "id": "B"
+            }
+          ]
+        },
+        {
+          "trigger": {
+            "scopes": ["#/properties/view/properties/updatedByA"],
+            "id": "Trigger_Updated_By_A"
+          },
+          "dependencies": [
+            {
+              "scopes": ["#/properties/view/properties/updatedByA"],
+              "id": "UpdatedByA"
             }
           ]
         }

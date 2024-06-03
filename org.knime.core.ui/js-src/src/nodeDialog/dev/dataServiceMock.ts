@@ -39,10 +39,22 @@ export default (rpcRequest: { method: string; params: any[] }) => {
         return { result: [] };
       }
       const dependencies = rpcRequest.params[2];
+      /**
+       * See update.json
+       */
+      if (Object.keys(dependencies).includes("UpdatedByA")) {
+        return {
+          state: "SUCCESS",
+          result: [
+            {
+              scopes: ["#/properties/view/properties/updatedByUpdatedByA"],
+              id: null,
+              value: dependencies.UpdatedByA,
+            },
+          ],
+        } satisfies Result<UpdateResult[]>;
+      }
       if (Object.keys(dependencies).includes("A")) {
-        /**
-         * See update.json
-         */
         return {
           state: "SUCCESS",
           result: [
@@ -55,6 +67,11 @@ export default (rpcRequest: { method: string; params: any[] }) => {
               scopes: ["#/properties/view/properties/product"],
               id: null,
               value: dependencies.A * dependencies.B,
+            },
+            {
+              scopes: ["#/properties/view/properties/updatedByA"],
+              id: null,
+              value: dependencies.A,
             },
           ],
         } satisfies Result<UpdateResult[]>;

@@ -86,6 +86,7 @@ export default {
       callStateProviderListener,
       registerTrigger,
       registerWatcher,
+      updateData,
       sendAlert,
     });
     const { setRegisterSettingsMethod } = provideAndGetSetupMethod();

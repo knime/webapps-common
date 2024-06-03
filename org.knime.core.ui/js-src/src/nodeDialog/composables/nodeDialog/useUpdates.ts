@@ -1,6 +1,6 @@
 import { Update, UpdateResult, ValueReference } from "../../types/Update";
 import { cloneDeep, set, get } from "lodash-es";
-import { toDataPath } from "@jsonforms/core";
+import { composePaths, toDataPath } from "@jsonforms/core";
 import { inject } from "vue";
 import {
   CreateAlertParams,
@@ -38,10 +38,59 @@ const combineScopesWithIndices = (scopes: string[], indices: number[]) => {
   }, [] as string[]);
 };
 
+const indicesAreDefined = (indices: (number | null)[]): indices is number[] =>
+  !indices.includes(null);
+
+const getToBeAdjustedSegments = (
+  scopes: string[],
+  indices: number[] | undefined,
+  newSettings: DialogSettingsObject,
+) => {
+  const pathSegments = combineScopesWithIndices(scopes, indices ?? []);
+
+  type SettingsWithPathGetter = {
+    settings: object;
+    /**
+     * @param subPath a sub path within the settings object
+     * @returns the total absolute path
+     */
+    path: string;
+  };
+
+  const toBeAdjustedByLastPathSegment = pathSegments
+    .slice(0, pathSegments.length - 1)
+    .reduce(
+      (arrayOfSettings, dataPath) =>
+        arrayOfSettings.flatMap(({ settings, path }) =>
+          // accessing the settings at the current non-leaf dataPath, i.e. this has to be an array
+          (get(settings, dataPath) as object[]).map(
+            (subSettings, index): SettingsWithPathGetter => ({
+              settings: subSettings,
+              path: composePaths(composePaths(path, dataPath), `${index}`),
+            }),
+          ),
+        ),
+      [{ settings: newSettings, path: "" }] as SettingsWithPathGetter[],
+    );
+  return {
+    toBeAdjustedByLastPathSegment,
+    lastPathSegment: pathSegments[pathSegments.length - 1],
+  };
+};
+
+const copyAndTransform = <T>(
+  settings: DialogSettingsObject,
+  updateSettings: (newSettings: DialogSettingsObject) => T,
+): T => {
+  const newSettings = cloneDeep(settings);
+  return updateSettings(newSettings);
+};
+
 export default ({
   callStateProviderListener,
   registerWatcher,
   registerTrigger,
+  updateData,
   sendAlert,
 }: {
   callStateProviderListener: (
@@ -52,6 +101,10 @@ export default ({
     dependencies: string[][];
     transformSettings: RegisterWatcherTransformSettings;
   }) => void;
+  /**
+   * Used to trigger a new update depending on value update results (i.e. transitive updates)
+   */
+  updateData: (path: string, currentSettings: DialogSettingsObject) => void;
   registerTrigger: (
     id: string,
     callback: (indexIds: string[]) => TransformSettingsMethod,
@@ -78,35 +131,17 @@ export default ({
     return combined[0];
   };
 
-  const indicesAreDefined = (indices: (number | null)[]): indices is number[] =>
-    !indices.includes(null);
-
-  const getToBeAdjustedSegments = (
-    scopes: string[],
-    indices: number[] | undefined,
-    newSettings: DialogSettingsObject,
-  ) => {
-    const pathSegments = combineScopesWithIndices(scopes, indices ?? []);
-    const toBeAdjustedByLastPathSegment = pathSegments
-      .slice(0, pathSegments.length - 1)
-      .reduce(
-        (arrayOfSettings, dataPath) =>
-          arrayOfSettings.flatMap((settings) => get(settings, dataPath)),
-        [newSettings] as object[],
-      );
-    return { toBeAdjustedByLastPathSegment, pathSegments };
-  };
-
   const resolveUpdateResult =
     ({ scopes, value, id }: UpdateResult, indexIds?: string[]) =>
     (newSettings: DialogSettingsObject) => {
       if (scopes) {
         const currentIndices = resolveToIndices(indexIds);
         if (indicesAreDefined(currentIndices)) {
-          const { toBeAdjustedByLastPathSegment, pathSegments } =
+          const { toBeAdjustedByLastPathSegment, lastPathSegment } =
             getToBeAdjustedSegments(scopes, currentIndices, newSettings);
-          toBeAdjustedByLastPathSegment.forEach((settings) => {
-            set(settings, pathSegments[pathSegments.length - 1], value);
+          toBeAdjustedByLastPathSegment.forEach(({ settings, path }) => {
+            set(settings, lastPathSegment, value);
+            updateData(composePaths(path, lastPathSegment), newSettings);
           });
         }
       } else if (id) {
@@ -114,14 +149,6 @@ export default ({
       }
       return newSettings;
     };
-
-  const copyAndTransform = <T>(
-    settings: DialogSettingsObject,
-    updateSettings: (newSettings: DialogSettingsObject) => T,
-  ): T => {
-    const newSettings = cloneDeep(settings);
-    return updateSettings(newSettings);
-  };
 
   const resolveUpdateResults = (
     initialUpdates: UpdateResult[],
