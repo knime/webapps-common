@@ -73,7 +73,7 @@ export default defineComponent({
   border: 1px solid var(--theme-value-switch-border-color);
   border-radius: var(--border-radius);
   width: max-content;
-  height: calc(var(--wrapper-height) * 1px);
+  height: var(--wrapper-height);
 
   & :deep(span) {
     display: flex;
@@ -86,7 +86,7 @@ export default defineComponent({
     font-weight: 300;
     font-size: 13px;
     line-height: 20px;
-    height: calc(var(--wrapper-height) * 1px);
+    height: var(--wrapper-height);
   }
 
   &.disabled {
@@ -102,7 +102,7 @@ export default defineComponent({
   }
 
   &.compact {
-    --wrapper-height: 20;
+    --wrapper-height: var(--space-24);
   }
 
   & :deep(input[disabled]) + span {
