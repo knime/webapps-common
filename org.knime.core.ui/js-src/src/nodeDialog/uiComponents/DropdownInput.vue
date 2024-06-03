@@ -93,6 +93,7 @@ const getUpdateOptionsMethod = async (
           control.value.path,
           getFirstValueFromDropdownOrNull(result),
         );
+        onChangeControl(getFirstValueFromDropdownOrNull(result));
       }
     };
 
