@@ -2,17 +2,29 @@
 import CodeExample from "./demo/CodeExample.vue";
 import Description from "webapps-common/ui/components/Description.vue";
 import code from "webapps-common/ui/components/Description.vue?raw";
+import Checkbox from "webapps-common/ui/components/forms/Checkbox.vue";
 
 export default {
   components: {
     Description,
     CodeExample,
+    Checkbox,
   },
   data() {
     return {
       codeExample: `<Description>Text with <b>HTML code</b> via slot.</Description>
 
 <Description :text="htmlString" renderAsHtml />`,
+      descriptionWithHtmlText: `<h4>This is a description without a slot, rendering an html string</h4>
+      <p>It can be configured to use the same styles as the RichTextEditor component using the checkbox below<br>
+        <hr>
+        <strong>strong</strong> <br>
+        <i>italics</i> <br>
+        <ul><li>one</li><li>two</li></ul>
+        <pre><code>this is a code block</code></pre>
+        <a href="www.knime.com">This is a link</a>
+      </p><br>`,
+      useRichTextEditorStyles: false,
     };
   },
   computed: {
@@ -120,6 +132,19 @@ return (new XMLSerializer()).serializeToString(svgElement);</pre
             <dd>Explains what is displayed in the view.</dd>
           </dl>
         </Description>
+      </div>
+      <div class="grid-container">
+        <Description
+          class="grid-item-12"
+          :text="descriptionWithHtmlText"
+          :render-as-html="true"
+          :use-rich-text-editor-styles="useRichTextEditorStyles"
+        />
+      </div>
+      <div class="grid-container">
+        <Checkbox v-model="useRichTextEditorStyles" class="grid-item-12"
+          >Use RichTextEditor styles</Checkbox
+        >
       </div>
     </section>
     <section>
