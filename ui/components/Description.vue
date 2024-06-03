@@ -15,6 +15,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    useRichTextEditorStyles: {
+      type: Boolean,
+      default: false,
+    },
   },
 };
 </script>
@@ -27,13 +31,19 @@ export default {
   <!-- eslint-disable vue/no-v-html -->
   <div
     v-else-if="!$slots.default && renderAsHtml"
-    class="description"
+    v-bind="{ ...$attrs }"
+    :class="{
+      'html-description': useRichTextEditorStyles,
+      description: !useRichTextEditorStyles,
+    }"
     v-html="text"
   />
   <div v-else class="description plain" v-text="text" />
 </template>
 
 <style lang="postcss" scoped>
+@import url("./forms/RichTextEditor/styles.css");
+
 .description {
   font-size: 18px;
   line-height: 26px;
@@ -169,5 +179,24 @@ export default {
 
 .plain {
   white-space: pre-line;
+}
+
+/* use rich text editor styles for rendering html descriptions */
+.html-description {
+  line-height: 26px;
+  overflow-wrap: anywhere;
+  word-break: break-word; /* Safari needs this */
+
+  &:deep() {
+    @mixin rich-text-editor-base;
+    @mixin rich-text-editor-hr;
+    @mixin rich-text-editor-p;
+    @mixin rich-text-editor-blockquote;
+    @mixin rich-text-editor-code;
+    @mixin rich-text-editor-lists;
+    @mixin rich-text-editor-links;
+
+    font-size: var(--description-font-size, 18px);
+  }
 }
 </style>
