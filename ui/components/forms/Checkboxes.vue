@@ -121,6 +121,7 @@ export default {
   &.horizontal {
     display: flex;
     flex-flow: row wrap;
+    gap: var(--spacing-12) 0;
 
     & :deep(label) {
       text-overflow: ellipsis;

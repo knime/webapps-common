@@ -364,6 +364,7 @@ export default {
     &:focus-within {
       background-color: var(--theme-dropdown-background-color-hover);
       color: var(--theme-dropdown-foreground-color-hover);
+      box-shadow: none;
     }
 
     &:hover {
@@ -406,6 +407,11 @@ export default {
     }
   }
 
+  &:focus-within [role="button"] {
+    box-shadow: var(--theme-inset-focus-state);
+    border-color: var(--knime-cornflower);
+  }
+
   &:not(.collapsed) [role="button"] {
     border-color: var(--knime-masala);
   }
@@ -437,13 +443,12 @@ export default {
     z-index: var(--z-index-common-multiselect-expanded, 2);
     width: 100%;
     padding: 5px 0;
-    margin-top: -1px;
     background: var(--theme-multiselect-background-color);
     box-shadow: var(--shadow-elevation-1);
     overflow-y: auto;
 
     & :deep(span) {
-      padding-left: 5px;
+      padding-left: 28px;
 
       &::before {
         left: 10px;
