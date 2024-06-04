@@ -1,18 +1,43 @@
 {
   "name": "@knime/base-components",
-  "version": "1.0.0",
+  "version": "0.1.2",
   "description": "tbd.",
   "homepage": "https://knime.github.io/webapps-common/",
   "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE LICENSE IN license.txt)",
   "author": "KNIME AG, Zurich, Switzerland",
   "type": "module",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "module": "dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts"
+    },
+    "./js": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "scripts": {
-    "test-run": "node index.js"
+    "build": "vite build"
   },
   "dependencies": {
     "@knime/styles": "workspace:*"
   },
+  "peerDependencies": {
+    "vue": "3.x"
+  },
   "devDependencies": {
-    "@knime/eslint-config": "workspace:*"
+    "@knime/eslint-config": "workspace:*",
+    "@knime/styles": "workspace:*",
+    "@vitejs/plugin-vue": "^5.0.5",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.12",
+    "vite-plugin-css-injected-by-js": "^3.5.1",
+    "vite-plugin-dts": "^3.9.1",
+    "vue-tsc": "^2.0.19",
+    "@vueuse/core": "10.4.1"
   }
 }
