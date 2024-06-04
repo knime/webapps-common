@@ -248,5 +248,5 @@
 
   /* Focus State */
   --theme-default-focus-state: 0 0 0 2px var(--knime-cornflower);
-  --theme-thin-focus-state: 0 0 0 1px var(--knime-cornflower);
+  --theme-inset-focus-state: inset 0 0 0 1px var(--knime-cornflower);
 }

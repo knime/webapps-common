@@ -71,7 +71,7 @@ export default {
   display: inline-block;
   position: relative;
   isolation: isolate;
-  padding: 1px 3px 1px 5px;
+  padding: 1px 2px;
   max-width: 100%;
   cursor: pointer;
   font-size: 13px;

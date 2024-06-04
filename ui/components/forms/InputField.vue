@@ -155,7 +155,7 @@ export default {
   padding: 0 5px;
 
   &:focus-within {
-    box-shadow: var(--theme-thin-focus-state);
+    box-shadow: var(--theme-inset-focus-state);
     border-color: var(--knime-cornflower);
   }
 

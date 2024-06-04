@@ -319,14 +319,19 @@ export default {
   width: 100%;
   height: var(--single-line-form-height);
   border: var(--form-border-width) solid var(--knime-stone-gray);
+  background-color: var(--theme-input-number-background-color);
 
   &.disabled {
     opacity: 0.5;
   }
 
   &:focus-within {
-    box-shadow: var(--theme-thin-focus-state);
+    box-shadow: var(--theme-inset-focus-state);
     border-color: var(--knime-cornflower);
+  }
+
+  &:hover:not(:focus-within, :disabled) {
+    background-color: var(--theme-input-number-background-color-hover);
   }
 
   & input[type="number"] {
@@ -341,7 +346,7 @@ export default {
     border-radius: 0;
     width: calc(100% - 32px);
     outline: none;
-    background-color: var(--theme-input-number-background-color);
+    background-color: transparent;
 
     /* remove browser spinners FF */
     appearance: textfield;
@@ -356,11 +361,6 @@ export default {
     /* css3 invalid state */
     &:invalid {
       box-shadow: none; /* override default browser styling */
-    }
-
-    &:hover:not(:focus, :disabled) {
-      /* not native :hover because of WEBP-297 */
-      background-color: var(--theme-input-number-background-color-hover);
     }
   }
 
