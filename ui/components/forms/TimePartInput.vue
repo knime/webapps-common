@@ -344,13 +344,10 @@ export default {
   isolation: isolate;
   width: 100%;
   border: var(--form-border-width) solid var(--knime-stone-gray);
+  background-color: var(--theme-time-part-input-background-color);
 
   &.disabled {
     opacity: 0.5;
-  }
-
-  &:focus-within {
-    border-color: var(--knime-masala);
   }
 
   & input[type="number"] {
@@ -365,7 +362,7 @@ export default {
     border-radius: 0;
     width: calc(100% - 32px);
     outline: none;
-    background-color: var(--theme-time-part-input-background-color);
+    background-color: transparent;
 
     /* remove browser spinners FF */
     appearance: textfield;
@@ -405,6 +402,7 @@ export default {
 
   & .increase {
     transform: scaleY(-1);
+    top: 0;
   }
 
   & .decrease {
@@ -414,22 +412,45 @@ export default {
   & .increase,
   & .decrease {
     position: absolute;
-    width: 32px;
-    height: 20px;
+    width: 30px;
+    height: 19px;
     padding-left: 10px;
     padding-right: 9px;
+    right: 0;
     background-color: var(--theme-time-part-input-background-color);
 
-    &:not(.disabled):hover {
-      background-color: var(--theme-time-part-input-background-color-hover);
-      cursor: pointer;
-    }
-
     & svg {
-      width: 100%;
-      height: 100%;
+      width: 11px;
+      height: 19px;
       stroke-width: 1.5px;
     }
+  }
+
+  &:focus-within {
+    box-shadow: var(--theme-inset-focus-state);
+    border-color: var(--knime-cornflower);
+
+    & .increase {
+      border-bottom: 1px solid var(--knime-cornflower);
+      border-right: 1px solid var(--knime-cornflower);
+    }
+
+    & .decrease {
+      border-bottom: 1px solid var(--knime-cornflower);
+      border-right: 1px solid var(--knime-cornflower);
+    }
+
+    & .invalid-marker {
+      left: 1px;
+      top: 1px;
+      bottom: 1px;
+    }
+  }
+
+  & .increase:not(.disabled):hover,
+  & .decrease:not(.disabled):hover {
+    background-color: var(--theme-time-part-input-background-color-hover);
+    cursor: pointer;
   }
 
   &:not(.disabled) {

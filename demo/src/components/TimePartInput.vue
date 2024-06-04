@@ -118,6 +118,14 @@ export default {
               :min-digits="3"
             />
           </Label>
+          <Label text="Invalid">
+            <TimePartInput
+              v-model="milliseconds"
+              :is-valid="false"
+              type="integer"
+              :min-digits="3"
+            />
+          </Label>
         </div>
         <div class="grid-item-4">
           Time: {{ hours }}h : {{ minutes }}m : {{ seconds }}s :
