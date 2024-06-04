@@ -299,6 +299,33 @@ describe("FileExplorer.vue", () => {
       );
       expect(getRenderedItems(wrapper).at(5)?.classes()).toContain("selected");
     });
+
+    it("should disable selection completely configuration", async () => {
+      const { wrapper } = doMount({
+        props: { disableSelection: true },
+      });
+
+      await getRenderedItems(wrapper).at(1)?.trigger("click");
+      await getRenderedItems(wrapper)
+        .at(3)
+        ?.trigger("click", { shiftKey: true });
+      await getRenderedItems(wrapper)
+        .at(5)
+        ?.trigger("click", { ctrlKey: true });
+
+      expect(getRenderedItems(wrapper).at(1)?.classes()).not.toContain(
+        "selected",
+      );
+      expect(getRenderedItems(wrapper).at(2)?.classes()).not.toContain(
+        "selected",
+      );
+      expect(getRenderedItems(wrapper).at(3)?.classes()).not.toContain(
+        "selected",
+      );
+      expect(getRenderedItems(wrapper).at(5)?.classes()).not.toContain(
+        "selected",
+      );
+    });
   });
 
   describe("keyboard navigation", () => {

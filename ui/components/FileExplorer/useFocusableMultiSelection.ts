@@ -12,6 +12,7 @@ const INVALID_INDEX = -Infinity;
 type UseFocusableMultiSelectionOptions = UseMultiSelectionOptions & {
   numberOfItems: Ref<number>;
   startIndex: Ref<number>;
+  disabled?: boolean;
 };
 
 export type UseFocusableMultiSelectionReturn = {
@@ -78,6 +79,10 @@ export const useFocusableMultiSelection = (
     event: MouseEvent | KeyboardEvent | null = null,
     handleCtrl = true,
   ) => {
+    if (options.disabled) {
+      return;
+    }
+
     // check bounds (for keyboard nav)
     if (
       index < options.startIndex.value ||
