@@ -1,17 +1,24 @@
 {
   "name": "@knime/base-components",
-  "version": "1.0.0",
+  "version": "0.1.2",
   "description": "tbd.",
   "homepage": "https://knime.github.io/webapps-common/",
   "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE LICENSE IN license.txt)",
   "author": "KNIME AG, Zurich, Switzerland",
   "type": "module",
   "files": [
-    "dist"
+    "dist",
+    "src"
   ],
   "module": "dist/index.js",
   "exports": {
-    ".": "./dist/index.js"
+    ".": {
+      "import": "./src/index.ts"
+    },
+    "./js": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
   },
   "scripts": {
     "build": "vite build"
