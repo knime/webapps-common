@@ -437,16 +437,13 @@ export default {
     }
   }
 
-  &:not(.collapsed) [role="button"] {
-    border-color: var(--knime-masala);
+  &:focus-within [role="button"] {
+    box-shadow: var(--theme-inset-focus-state);
+    border-color: var(--knime-cornflower);
   }
 
   &:not(.disabled) [role="button"] {
     cursor: pointer;
-
-    &:focus {
-      border-color: var(--knime-masala);
-    }
   }
 
   & .icon {
@@ -498,7 +495,7 @@ export default {
     min-height: 22px;
     width: 100%;
     padding: 0;
-    margin: -1px 0 1px;
+    margin: 0 0 1px;
     background: var(--theme-dropdown-background-color);
     box-shadow: var(--shadow-elevation-1);
     cursor: pointer;
