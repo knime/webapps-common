@@ -163,7 +163,8 @@ public final class WidgetTree extends WidgetTreeNode {
     }
 
     /**
-     * Flatten the tree without traversing into element trees of {@link ArrayWidgetNode ArrayWidgetNodes}.
+     * Flatten the tree without traversing into element trees of {@link ArrayWidgetNode ArrayWidgetNodes}. Hereby
+     * intermediate {@link WidgetTree} nodes are not included in the output.
      *
      * @return the union of all {@link WidgetNode WidgetTreeLeafNodes} and {@link ArrayWidgetNode ArrayWidgetNodes} that
      *         are reached by traversing the tree from the root without traversing into the element trees of
@@ -176,6 +177,24 @@ public final class WidgetTree extends WidgetTreeNode {
     private static Stream<WidgetTreeNode> getWidgetNodes(final WidgetTreeNode node) {
         if (node instanceof WidgetTree widgetGroupNode) {
             return widgetGroupNode.getWidgetNodes();
+        }
+        return Stream.of(node);
+    }
+
+    /**
+     * Flatten the tree without traversing into element trees of {@link ArrayWidgetNode ArrayWidgetNodes}. Also
+     * intermediate {@link WidgetTree} nodes are included in the output.
+     *
+     * @return the union of all {@link WidgetTreeNode}s that are reached by traversing the tree from the root without
+     *         traversing into the element trees of {@link ArrayWidgetNode ArrayWidgetNodes}
+     */
+    public Stream<WidgetTreeNode> getWidgetAndWidgetTreeNodes() {
+        return getChildren().stream().flatMap(WidgetTree::getWidgetAndWidgetTreeNodes);
+    }
+
+    private static Stream<WidgetTreeNode> getWidgetAndWidgetTreeNodes(final WidgetTreeNode node) {
+        if (node instanceof WidgetTree widgetGroupNode) {
+            return Stream.concat(Stream.of(node), widgetGroupNode.getWidgetAndWidgetTreeNodes());
         }
         return Stream.of(node);
     }

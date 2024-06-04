@@ -44,23 +44,23 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   12 Jun 2023 (Rupert Ettrich): created
+ *   1 Jun 2023 (Rupert Ettrich): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection;
-
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.IsNoneColumnStringCondition;
+package org.knime.core.webui.node.dialog.defaultdialog.rule.impl;
 
 /**
- * Condition that triggers when "None" column is selected. Should be used only with {@link ColumnSelection} fields. For
- * column selections using a String representation refer to {@link IsNoneColumnStringCondition}.
+ * Fulfilled if an array has at least 2 elements.
  *
  * @author Rupert Ettrich
  */
-public class IsNoneColumnCondition extends IsSpecificColumnCondition {
+public final class HasMultipleItemsCondition implements Condition {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public String getColumnName() {
-        return "<none>";
+    public <T> T accept(final ConditionVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 
 }

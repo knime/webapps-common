@@ -46,34 +46,19 @@
  * History
  *   Apr 6, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.rule;
+package org.knime.core.webui.node.dialog.defaultdialog.rule.impl;
 
 /**
- * A logical AND {@link Operator} that combines multiple child {@link Expression Expressions}.
- *
- * @param <E> the type of atomic expressions used for this implementation
  *
  * @author Paul Bärnreuther
+ * @param <E> the type of atomic expressions used within the current implementation
+ * @param expression
  */
-public non-sealed class And<E extends AtomicExpression<E>> implements Operator<E> {
-
-    private final Expression<E>[] m_children;
+public record IdentityOperation<E extends AtomicExpression<E>>(Expression<E> expression) implements Operator<E> {
 
     /**
-     * @param children the expressions that are combined using this AND operator
+     * {@inheritDoc}
      */
-    @SafeVarargs
-    public And(final Expression<E>... children) {
-        m_children = children;
-    }
-
-    /**
-     * @return the expressions that are combined using an operation
-     */
-    public Expression<E>[] getChildren() {
-        return m_children;
-    }
-
     @Override
     public <T> T accept(final ExpressionVisitor<T, E> visitor) {
         return visitor.visit(this);

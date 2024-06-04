@@ -56,18 +56,22 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_CONTAINS;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil.getMapper;
 
-import org.knime.core.webui.node.dialog.defaultdialog.rule.ArrayContainsCondition;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.ConditionVisitor;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.FalseCondition;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.HasMultipleItemsCondition;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.IsSpecificStringCondition;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.OneOfEnumCondition;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.PatternCondition;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.TrueCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.ArrayContainsCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.ArrayContainsCondition2;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.ConditionVisitor;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.FalseCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.HasMultipleItemsCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.IsSpecificStringCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.OneOfEnumCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.PatternCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.TrueCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.IsColumnOfTypeCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.IsSpecificColumnCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.ArrayWidgetNode;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -76,6 +80,15 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * @author Paul Bärnreuther
  */
 class JsonFormsConditionResolver implements ConditionVisitor<ObjectNode> {
+
+    private final WidgetTreeNode m_widgetTreeNode;
+
+    private final DefaultNodeSettingsContext m_context;
+
+    JsonFormsConditionResolver(final WidgetTreeNode node, final DefaultNodeSettingsContext context) {
+        m_widgetTreeNode = node;
+        m_context = context;
+    }
 
     @Override
     public <E extends Enum<E>> ObjectNode visit(final OneOfEnumCondition<E> oneOfEnumCondition) {
@@ -89,6 +102,10 @@ class JsonFormsConditionResolver implements ConditionVisitor<ObjectNode> {
 
     @Override
     public ObjectNode visit(final TrueCondition trueCondition) {
+        return createConstTrueCondition();
+    }
+
+    static ObjectNode createConstTrueCondition() {
         return getMapper().createObjectNode().put(TAG_CONST, true);
     }
 
@@ -144,6 +161,21 @@ class JsonFormsConditionResolver implements ConditionVisitor<ObjectNode> {
         }
         currentObjectNode.setAll(itemCondition.accept(this));
         return conditionObjectNode;
+    }
+
+    @Override
+    public ObjectNode visit(final ArrayContainsCondition2 arrayContainsCondition) {
+        if (m_widgetTreeNode instanceof ArrayWidgetNode arrayWidgetNode) {
+            final var elementExpression = new ExpressionExtractor(arrayWidgetNode.getElementWidgetTree(), m_context)
+                .createExpression(arrayContainsCondition.getElementPredicate());
+            final var containsCondition = elementExpression.accept(new SchemaInternalExpressionVisitor(m_context));
+
+            final var conditionObjectNode = getMapper().createObjectNode();
+            conditionObjectNode.putObject(TAG_CONTAINS).setAll(containsCondition);
+            return conditionObjectNode;
+        }
+        throw new UiSchemaGenerationException(
+            "Invalid reference used for an \"array contains\" condition. It has to be an array of widget groups.");
     }
 
 }

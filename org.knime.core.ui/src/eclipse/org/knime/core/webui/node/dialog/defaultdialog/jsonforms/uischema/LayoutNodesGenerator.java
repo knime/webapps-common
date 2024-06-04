@@ -54,19 +54,12 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TYPE_CONTROL;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsScopeUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil.LayoutSkeleton;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.ScopedExpression;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Signals;
-import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesAdder;
 import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
 import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
@@ -82,13 +75,13 @@ final class LayoutNodesGenerator {
 
     private final LayoutTreeNode m_rootLayoutTree;
 
-    private Map<Class<?>, ScopedExpression> m_signals;
-
     private final DefaultNodeSettingsContext m_defaultNodeSettingsContext;
 
     private final AsyncChoicesAdder m_asyncChoicesAdder;
 
-    private final Collection<WidgetTree> m_widgetTrees;
+    private final Collection<WidgetTree> m_allWidgetTrees;
+
+    private final UiSchemaRulesGenerator m_rulesGenerator;
 
     /**
      * @param layout a record containing controls (as a mapping between layout parts and their contained settings
@@ -98,50 +91,15 @@ final class LayoutNodesGenerator {
      */
     LayoutNodesGenerator(final LayoutSkeleton layout, final DefaultNodeSettingsContext context,
         final AsyncChoicesAdder asyncChoicesAdder) {
-        m_widgetTrees = Stream.concat(layout.widgetTrees().stream(), layout.parentWidgetTrees().stream()).toList();
-        m_signals = getSignals(layout.widgetTrees());
+        m_rulesGenerator = new UiSchemaRulesGenerator(layout.widgetTrees(), context);
+        m_allWidgetTrees = Stream.concat(layout.widgetTrees().stream(), layout.parentWidgetTrees().stream()).toList();
         m_rootLayoutTree = layout.layoutTreeRoot();
         m_defaultNodeSettingsContext = context;
         m_asyncChoicesAdder = asyncChoicesAdder;
     }
 
-    private static Map<Class<?>, ScopedExpression> getSignals(final Collection<WidgetTree> widgetTrees) {
-        final Map<Class<?>, ScopedExpression> signals = new HashMap<>();
-        widgetTrees.stream().flatMap(WidgetTree::getWidgetNodes).forEach(node -> addSignals(signals, node));
-        return signals;
-    }
-
-    private static void addSignals(final Map<Class<?>, ScopedExpression> signals, final WidgetTreeNode node) {
-        getSignalList(node).forEach(signal -> {
-            final var conditionClass = signal.condition();
-            final var condition = InstantiationUtil.createInstance(conditionClass);
-            final var scope = getScope(node);
-            final var scopedSignal = new ScopedExpression(scope, condition);
-            final var signalId = signal.id();
-            signals.put(signalId.equals(Class.class) ? conditionClass : signalId, scopedSignal);
-        });
-    }
-
     private static String getScope(final WidgetTreeNode node) {
         return JsonFormsScopeUtil.toScope(node);
-    }
-
-    /**
-     * If a single signal is added, the annotation can only be retrieved by Signal.class If multiple signals are added,
-     * the annotations can only be retrieved by Signals.class
-     */
-    private static List<Signal> getSignalList(final WidgetTreeNode node) {
-        var singleSignal = node.getAnnotation(Signal.class);
-        if (singleSignal.isPresent()) {
-            return List.of(singleSignal.get());
-        }
-
-        var multipleSignals = node.getAnnotation(Signals.class);
-        if (multipleSignals.isPresent()) {
-            return List.of(multipleSignals.get().value());
-        }
-
-        return List.of();
     }
 
     ObjectNode build() {
@@ -152,8 +110,7 @@ final class LayoutNodesGenerator {
 
     private void buildLayout(final LayoutTreeNode rootNode, final ArrayNode parentNode) {
         final var layoutPart = LayoutPart.determineFromClassAnnotation(rootNode.getValue());
-        final var layoutNode =
-            layoutPart.create(m_defaultNodeSettingsContext, parentNode, rootNode.getValue(), m_signals);
+        final var layoutNode = layoutPart.create(parentNode, rootNode.getValue(), m_rulesGenerator);
         rootNode.getControls().forEach(control -> addControlElement(layoutNode, control));
         rootNode.getChildren().forEach(childLayoutNode -> buildLayout(childLayoutNode, layoutNode));
     }
@@ -174,8 +131,8 @@ final class LayoutNodesGenerator {
     private void addOptions(final WidgetTreeNode node, final ObjectNode control) {
         final var scope = getScope(node);
         try {
-            new UiSchemaOptionsGenerator(node, m_defaultNodeSettingsContext, scope, m_asyncChoicesAdder, m_widgetTrees)
-                .addOptionsTo(control);
+            new UiSchemaOptionsGenerator(node, m_defaultNodeSettingsContext, scope, m_asyncChoicesAdder,
+                m_allWidgetTrees).addOptionsTo(control);
         } catch (UiSchemaGenerationException ex) {
             throw new UiSchemaGenerationException(
                 String.format("Error when generating the options of %s.: %s", scope, ex.getMessage()), ex);
@@ -186,8 +143,7 @@ final class LayoutNodesGenerator {
         try {
             final var effectAnnotation = node.getAnnotation(Effect.class);
             if (effectAnnotation.isPresent()) {
-                new UiSchemaRulesGenerator(effectAnnotation.get(), m_signals, m_defaultNodeSettingsContext)
-                    .applyRulesTo(control);
+                m_rulesGenerator.applyEffectTo(effectAnnotation.get(), control);
             }
         } catch (UiSchemaGenerationException ex) {
             throw new UiSchemaGenerationException(

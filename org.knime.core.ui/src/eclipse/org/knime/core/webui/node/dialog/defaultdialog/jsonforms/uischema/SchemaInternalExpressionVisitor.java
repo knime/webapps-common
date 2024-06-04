@@ -44,33 +44,63 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jan 23, 2024 (wiswedel): created
+ *   Aug 13, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.rule;
+package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
+
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.Schema.TAG_ALLOF;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.Schema.TAG_ANYOF;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_NOT;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil.getMapper;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.And;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.ExpressionVisitor;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.JsonFormsExpression;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.JsonFormsExpressionVisitor;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.Not;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.Or;
 
-/**
- * An indication provided to an {@link Effect} annotation that allows that effect to be active or not depending
- * on the node's context. Implementations can determine their value from, e.g. the presence of certain columns
- * (or column types) or if dynamic ports are enabled/shown or not.
- *
- * <p>
- * An <code>ConstantSignal</code> serves a similar role as a {@link Signal} annotation, except that it's not initiating
- * an effect depending on a change of a setting but the context of the node.
- *
- * @author Bernd Wiswedel
- * @author Paul Bärnreuther
- * @since 5.3
- */
-public interface ConstantSignal {
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
-    /**
-     * Determines the value of the single given the node's context.
-     *
-     * @param context Non-null context.
-     * @return If the signal applies.
-     */
-    boolean applies(DefaultNodeSettingsContext context);
+final class SchemaInternalExpressionVisitor implements ExpressionVisitor<ObjectNode, JsonFormsExpression> {
+
+    private JsonFormsExpressionVisitor m_atomicExpressionVisitor;
+
+    SchemaInternalExpressionVisitor(final DefaultNodeSettingsContext context) {
+        m_atomicExpressionVisitor = new SchemaInternalJsonFormsExpressionVisitor(context);
+    }
+
+    @Override
+    public ObjectNode visit(final And<JsonFormsExpression> and) {
+        final var conditionNode = getMapper().createObjectNode();
+        final var arrayNode = conditionNode.putArray(TAG_ALLOF);
+        for (var expression : and.getChildren()) {
+            arrayNode.add(expression.accept(this));
+        }
+        return conditionNode;
+    }
+
+    @Override
+    public ObjectNode visit(final Or<JsonFormsExpression> or) {
+        final var conditionNode = getMapper().createObjectNode();
+        final var arrayNode = conditionNode.putArray(TAG_ANYOF);
+        for (var expression : or.getChildren()) {
+            arrayNode.add(expression.accept(this));
+        }
+        return conditionNode;
+    }
+
+    @Override
+    public ObjectNode visit(final Not<JsonFormsExpression> not) {
+        final var conditionNode = getMapper().createObjectNode();
+        conditionNode.set(TAG_NOT, not.getChildOperation().accept(this));
+        return conditionNode;
+    }
+
+    @Override
+    public ObjectNode visit(final JsonFormsExpression expression) {
+        return expression.accept(m_atomicExpressionVisitor);
+    }
 
 }

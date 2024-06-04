@@ -49,8 +49,8 @@
 package org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection;
 
 import org.knime.core.data.DataValue;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Condition;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.ConditionVisitor;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.Condition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.ConditionVisitor;
 
 /**
  *

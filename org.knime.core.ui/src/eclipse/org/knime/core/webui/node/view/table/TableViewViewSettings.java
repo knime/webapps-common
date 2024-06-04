@@ -65,9 +65,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.EnumFiel
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect.EffectType;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.OneOfEnumCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.OneOfEnumCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.TrueCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.TrueCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.StringArrayToColumnFilterPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.selection.SelectionCheckboxesToSelectionModePersistor;

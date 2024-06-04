@@ -44,70 +44,25 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 4, 2023 (Paul Bärnreuther): created
+ *   Jan 23, 2024 (wiswedel): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
-
-import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.FIELD_NAME_SCHEMA;
-import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_NOT;
-
-import java.util.List;
-
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.And;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.Expression;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.ExpressionVisitor;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.JsonFormsExpression;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.Not;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.Or;
+package org.knime.core.webui.node.dialog.defaultdialog.rule.impl;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * A visitor used to resolve the "not" operation in the {@link JsonFormsExpressionResolver}
+ * The atomic expression that is used for json forms implementation supporting constant
+ * expressions (e.g. dynamic input port connected at time of dialog configuration).
  *
  * @author Paul Bärnreuther
+ * @author Bernd Wiswedel
+ *
+ * @param value the constant value derived from a {@link ConstantSignal}.
  */
-final class JsonFormsExpressionNegator implements ExpressionVisitor<ObjectNode, JsonFormsExpression> {
-
-    private final JsonFormsExpressionResolver m_operationVisitor;
-
-    /**
-     * @param expressionVisitor
-     */
-    public JsonFormsExpressionNegator(final JsonFormsExpressionResolver expressionVisitor) {
-        m_operationVisitor = expressionVisitor;
-    }
+public record ConstantExpression(boolean value) implements JsonFormsExpression {
 
     @Override
-    public ObjectNode visit(final And<JsonFormsExpression> and) {
-        final var resolvedOperation = new Or<JsonFormsExpression>(reverseAll(and.getChildren()));
-        return resolvedOperation.accept(m_operationVisitor);
+    public ObjectNode accept(final JsonFormsExpressionVisitor visitor) {
+        return visitor.visit(this);
     }
-
-    @Override
-    public ObjectNode visit(final Or<JsonFormsExpression> or) {
-        final var resolvedOperation = new And<JsonFormsExpression>(reverseAll(or.getChildren()));
-        return resolvedOperation.accept(m_operationVisitor);
-    }
-
-    @SuppressWarnings("unchecked")
-    private static Expression<JsonFormsExpression>[]
-        reverseAll(final List<Expression<JsonFormsExpression>> expressions) {
-        return expressions.stream().map(Not<JsonFormsExpression>::new).toArray(Expression[]::new);
-    }
-
-    @Override
-    public ObjectNode visit(final Not<JsonFormsExpression> not) {
-        return not.getChildOperation().accept(m_operationVisitor);
-    }
-
-    @Override
-    public ObjectNode visit(final JsonFormsExpression expression) {
-        final var node = expression.accept(m_operationVisitor);
-        final var positiveSchema = node.get(FIELD_NAME_SCHEMA);
-        node.replace(FIELD_NAME_SCHEMA,
-            JsonFormsUiSchemaUtil.getMapper().createObjectNode().set(TAG_NOT, positiveSchema));
-        return node;
-    }
-
 }

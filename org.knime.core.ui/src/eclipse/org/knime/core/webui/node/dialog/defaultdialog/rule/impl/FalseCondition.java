@@ -44,25 +44,23 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jan 23, 2024 (wiswedel): created
+ *   Apr 4, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.rule;
-
-import com.fasterxml.jackson.databind.node.ObjectNode;
+package org.knime.core.webui.node.dialog.defaultdialog.rule.impl;
 
 /**
- * The atomic expression that is used for json forms implementation supporting constant
- * expressions (e.g. dynamic input port connected at time of dialog configuration).
+ * Fulfilled a boolean is false.
  *
  * @author Paul Bärnreuther
- * @author Bernd Wiswedel
- *
- * @param value the constant value derived from a {@link ConstantSignal}.
  */
-public record ConstantExpression(boolean value) implements JsonFormsExpression {
+public final class FalseCondition implements Condition {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public ObjectNode accept(final JsonFormsExpressionVisitor visitor) {
+    public <T> T accept(final ConditionVisitor<T> visitor) {
         return visitor.visit(this);
     }
+
 }

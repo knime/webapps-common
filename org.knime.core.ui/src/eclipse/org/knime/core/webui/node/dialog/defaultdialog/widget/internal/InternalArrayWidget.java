@@ -55,6 +55,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.PredicateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.FrameworkPredicateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonReference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.NoopStringProvider;
@@ -75,8 +77,8 @@ public @interface InternalArrayWidget {
      * elemnents controls.
      *
      * <ul>
-     * <li><b>Edit:</b> For showing widgets only when the edit button was clicked, use the {@link ElementIsEditedSignal}
-     * like you would use any other signal in an {@link Effect} annotation.</li>
+     * <li><b>Edit:</b> For showing widgets only when the edit button was clicked, use the {@link ElementIsEdited}
+     * predicate like you would use any other {@link PredicateProvider} class in an {@link Effect} annotation.</li>
      * <li><b>Reset:</b> The {@link ElementResetButton} has to be referenced in one ore multiple state providers used
      * within {@link ValueProvider} annotations on fields inside the element settings.</li>
      * </ul>
@@ -103,7 +105,7 @@ public @interface InternalArrayWidget {
      *
      * @author Paul Bärnreuther
      */
-    interface ElementIsEditedSignal {
+    interface ElementIsEdited extends FrameworkPredicateProvider {
     }
 
     /**
@@ -131,11 +133,9 @@ public @interface InternalArrayWidget {
      */
     Class<? extends StateProvider<String>> titleProvider() default NoopStringProvider.class;
 
-
     /**
      * @return the provider for an optional subtitle of the array layout elements
      */
     Class<? extends StateProvider<String>> subTitleProvider() default NoopStringProvider.class;
-
 
 }

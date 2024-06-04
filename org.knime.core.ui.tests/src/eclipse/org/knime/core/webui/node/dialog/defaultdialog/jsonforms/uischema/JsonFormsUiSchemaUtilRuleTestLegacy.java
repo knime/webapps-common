@@ -54,6 +54,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtilTest.buildTestUiSchema;
 
 import org.junit.jupiter.api.Test;
+import org.knime.core.data.DataValue;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.HorizontalLayout;
@@ -61,43 +62,52 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect.EffectType;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.PredicateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.And;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.ArrayContainsCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.Condition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.ConstantSignal;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.Expression;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.FalseCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.HasMultipleItemsCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.IsNoneColumnStringCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.IsSpecificStringCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.Not;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.OneOfEnumCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.Or;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.PatternCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.TrueCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.IsColumnOfTypeCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.IsNoneColumnCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.IsSpecificColumnCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.LatentWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueProvider;
 
 /**
  *
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
 @SuppressWarnings("java:S2698") // we accept assertions without messages
-class JsonFormsUiSchemaUtilRuleTest {
+class JsonFormsUiSchemaUtilRuleTestLegacy {
 
     @Test
     void testSimpleRule() {
 
         final class SimpleRuleSettings implements DefaultNodeSettings {
 
-            static final class SomeBoolean implements Reference<Boolean> {
+            interface SomeBooleanIsTrue {
             }
 
             @Widget(title = "", description = "")
-            @ValueReference(SomeBoolean.class)
+            @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
             boolean m_someBoolean;
 
-            static final class SomeBooleanIsTrue implements PredicateProvider {
-
-                @Override
-                public Predicate init(final PredicateInitializer i) {
-                    return i.getBoolean(SomeBoolean.class).isTrue();
-                }
-
-            }
-
             @Widget(title = "", description = "")
-            @Effect(condition = SomeBooleanIsTrue.class, type = EffectType.DISABLE)
+            @Effect(signals = SomeBooleanIsTrue.class, type = EffectType.DISABLE)
             boolean m_tagetSetting;
 
         }
@@ -113,119 +123,108 @@ class JsonFormsUiSchemaUtilRuleTest {
     }
 
     @Test
-    void testEffect() {
+    void testIdentifyByCondition() {
 
-        final class EffectSettings implements DefaultNodeSettings {
+        final class IdentifyByRuleTest implements DefaultNodeSettings {
 
-            static final class DummyCondition implements PredicateProvider {
+            enum OneTwoOrThree {
+                    ONE, TWO, THREE
+            }
+
+            static class OneOrTwo extends OneOfEnumCondition<OneTwoOrThree> {
 
                 @Override
-                public Predicate init(final PredicateInitializer i) {
-                    return i.getConstant(context -> true);
+                public OneTwoOrThree[] oneOf() {
+                    return new OneTwoOrThree[]{OneTwoOrThree.ONE, OneTwoOrThree.TWO};
                 }
 
             }
 
             @Widget(title = "", description = "")
-            @Effect(condition = DummyCondition.class, type = EffectType.DISABLE)
+            @Signal(condition = OneOrTwo.class)
+            OneTwoOrThree m_someBoolean;
+
+            @Widget(title = "", description = "")
+            @Effect(signals = OneOrTwo.class, type = EffectType.DISABLE)
+            boolean m_tagetSetting;
+
+        }
+
+        final var response = buildTestUiSchema(IdentifyByRuleTest.class);
+        assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
+        assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Control");
+        assertThatJson(response).inPath("$.elements[1].type").isString().isEqualTo("Control");
+        assertThatJson(response).inPath("$.elements[1].rule.effect").isString().isEqualTo("DISABLE");
+        assertThatJson(response).inPath("$.elements[1].rule.condition.scope").isString()
+            .isEqualTo(response.get("elements").get(0).get("scope").asText());
+        assertThatJson(response).inPath("$.elements[1].rule.condition.schema.oneOf").isArray().hasSize(2);
+        assertThatJson(response).inPath("$.elements[1].rule.condition.schema.oneOf[0].const").isString()
+            .isEqualTo("ONE");
+        assertThatJson(response).inPath("$.elements[1].rule.condition.schema.oneOf[1].const").isString()
+            .isEqualTo("TWO");
+    }
+
+    @Test
+    void testEffect() {
+
+        final class EffectSettings implements DefaultNodeSettings {
+
+            interface SomeBooleanIsTrue {
+            }
+
+            @Widget(title = "", description = "")
+            @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
+            boolean m_someBoolean;
+
+            @Widget(title = "", description = "")
+            @Effect(signals = SomeBooleanIsTrue.class, type = EffectType.DISABLE)
             boolean m_disable;
 
             @Widget(title = "", description = "")
-            @Effect(condition = DummyCondition.class, type = EffectType.ENABLE)
+            @Effect(signals = SomeBooleanIsTrue.class, type = EffectType.ENABLE)
             boolean m_enable;
 
             @Widget(title = "", description = "")
-            @Effect(condition = DummyCondition.class, type = EffectType.HIDE)
+            @Effect(signals = SomeBooleanIsTrue.class, type = EffectType.HIDE)
             boolean m_hide;
 
             @Widget(title = "", description = "")
-            @Effect(condition = DummyCondition.class, type = EffectType.SHOW)
+            @Effect(signals = SomeBooleanIsTrue.class, type = EffectType.SHOW)
             boolean m_show;
 
         }
 
         final var response = buildTestUiSchema(EffectSettings.class);
-        assertThatJson(response).inPath("$.elements[0].rule.effect").isString().isEqualTo("DISABLE");
-        assertThatJson(response).inPath("$.elements[1].rule.effect").isString().isEqualTo("ENABLE");
-        assertThatJson(response).inPath("$.elements[2].rule.effect").isString().isEqualTo("HIDE");
-        assertThatJson(response).inPath("$.elements[3].rule.effect").isString().isEqualTo("SHOW");
-    }
-
-    @Test
-    void testConstantEffect() {
-        final class ConstantEffectSettings implements DefaultNodeSettings {
-
-            static final class AlwaysTruePredicate implements PredicateProvider {
-
-                @Override
-                public Predicate init(final PredicateInitializer i) {
-                    return i.getConstant(context -> true);
-                }
-
-            }
-
-            static final class AlwaysFalsePredicate implements PredicateProvider {
-
-                @Override
-                public Predicate init(final PredicateInitializer i) {
-                    return i.getConstant(context -> false);
-                }
-
-            }
-
-            @Widget(title = "", description = "")
-            @Effect(condition = AlwaysTruePredicate.class, type = EffectType.DISABLE)
-            boolean m_constantlyDisabled;
-
-            @Widget(title = "", description = "")
-            @Effect(condition = AlwaysFalsePredicate.class, type = EffectType.DISABLE)
-            boolean m_constantlyEnabled;
-        }
-
-        final var response = buildTestUiSchema(ConstantEffectSettings.class);
-        assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
-        assertThatJson(response).inPath("$.elements[0].rule.effect").isString().isEqualTo("DISABLE");
-        assertThatJson(response).inPath("$.elements[0].rule.condition").isObject().doesNotContainKey("scope");
-        assertThatJson(response).inPath("$.elements[0].rule.condition.schema").isObject().isEmpty();
+        assertThatJson(response).inPath("$.elements").isArray().hasSize(5);
         assertThatJson(response).inPath("$.elements[1].rule.effect").isString().isEqualTo("DISABLE");
-        assertThatJson(response).inPath("$.elements[1].rule.condition").isObject().doesNotContainKey("scope");
-        assertThatJson(response).inPath("$.elements[1].rule.condition.schema.not").isObject().isEmpty();
+        assertThatJson(response).inPath("$.elements[2].rule.effect").isString().isEqualTo("ENABLE");
+        assertThatJson(response).inPath("$.elements[3].rule.effect").isString().isEqualTo("HIDE");
+        assertThatJson(response).inPath("$.elements[4].rule.effect").isString().isEqualTo("SHOW");
     }
 
     @Test
     void testAnd() {
-        final class OrSettings implements DefaultNodeSettings {
-            static final class SomeBoolean implements Reference<Boolean> {
+        final class AndSettings implements DefaultNodeSettings {
+            interface SomeBooleanIsTrue {
             }
 
             @Widget(title = "", description = "")
-            @ValueReference(SomeBoolean.class)
+            @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
             boolean m_someBoolean;
 
-            static final class AnotherBoolean implements Reference<Boolean> {
+            interface AnotherBooleanIsFalse {
             }
 
             @Widget(title = "", description = "")
-            @ValueReference(AnotherBoolean.class)
+            @Signal(id = AnotherBooleanIsFalse.class, condition = FalseCondition.class)
             boolean m_anotherBoolean;
 
-            static final class SomeBooleanAndNotAnotherBoolean implements PredicateProvider {
-
-                @Override
-                public Predicate init(final PredicateInitializer i) {
-                    return and(//
-                        i.getBoolean(SomeBoolean.class).isTrue(), //
-                        i.getBoolean(AnotherBoolean.class).isFalse()//
-                    );
-                }
-
-            }
-
             @Widget(title = "", description = "")
-            @Effect(condition = SomeBooleanAndNotAnotherBoolean.class, type = EffectType.ENABLE)
+            @Effect(signals = {SomeBooleanIsTrue.class, AnotherBooleanIsFalse.class}, type = EffectType.ENABLE,
+                operation = And.class)
             boolean m_effect;
         }
-        final var response = buildTestUiSchema(OrSettings.class);
+        final var response = buildTestUiSchema(AndSettings.class);
         assertThatJson(response).inPath("$.elements").isArray().hasSize(3);
         assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Control");
         assertThatJson(response).inPath("$.elements[1].type").isString().isEqualTo("Control");
@@ -244,39 +243,89 @@ class JsonFormsUiSchemaUtilRuleTest {
     }
 
     @Test
-    void testOr() {
-        final class AndSettings implements DefaultNodeSettings {
-            static final class SomeBoolean implements Reference<Boolean> {
-            }
-
-            @Widget(title = "", description = "")
-            @ValueReference(SomeBoolean.class)
-            boolean m_someBoolean;
-
-            static final class AnotherBoolean implements Reference<Boolean> {
-            }
-
-            @Widget(title = "", description = "")
-            @ValueReference(AnotherBoolean.class)
-            boolean m_anotherBoolean;
-
-            static final class SomeBooleanAndNotAnotherBoolean implements PredicateProvider {
+    void testConstantEffect() {
+        final class ConstantEffectSettings implements DefaultNodeSettings {
+            static final class AlwaysTrueSignal implements ConstantSignal {
 
                 @Override
-                public Predicate init(final PredicateInitializer i) {
-                    return or(//
-                        i.getBoolean(SomeBoolean.class).isTrue(), //
-                        i.getBoolean(AnotherBoolean.class).isFalse()//
-                    );
+                public boolean applies(final DefaultNodeSettingsContext context) {
+                    return true;
                 }
+            }
 
+            static final class AlwaysFalseSignal implements ConstantSignal {
+
+                @Override
+                public boolean applies(final DefaultNodeSettingsContext context) {
+                    return false;
+                }
             }
 
             @Widget(title = "", description = "")
-            @Effect(condition = SomeBooleanAndNotAnotherBoolean.class, type = EffectType.ENABLE)
+            @Effect(signals = AlwaysTrueSignal.class, type = EffectType.DISABLE)
+            boolean m_constantlyDisabled;
+
+            @Widget(title = "", description = "")
+            @Effect(signals = AlwaysFalseSignal.class, type = EffectType.DISABLE)
+            boolean m_constantlyEnabled;
+        }
+
+        final var response = buildTestUiSchema(ConstantEffectSettings.class);
+        assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
+        assertThatJson(response).inPath("$.elements[0].rule.effect").isString().isEqualTo("DISABLE");
+        assertThatJson(response).inPath("$.elements[0].rule.condition").isObject().doesNotContainKeys("schema",
+            "scope");
+        assertThatJson(response).inPath("$.elements[1].rule.effect").isString().isEqualTo("DISABLE");
+        assertThatJson(response).inPath("$.elements[1].rule.condition").isObject().doesNotContainKey("scope");
+        assertThatJson(response).inPath("$.elements[1].rule.condition.schema.const").isBoolean().isTrue();
+    }
+
+    @Test
+    void testThrowsIfConstantIsUsedAsSignalIdentifier() {
+        final class MisusedEffectSettings implements DefaultNodeSettings {
+            static final class InvalidSignal implements ConstantSignal {
+
+                @Override
+                public boolean applies(final DefaultNodeSettingsContext context) {
+                    return true;
+                }
+            }
+
+            @Widget(title = "", description = "")
+            @Effect(signals = InvalidSignal.class, type = EffectType.DISABLE)
+            boolean m_fieldWithInvalidSignal;
+
+            @Widget(title = "", description = "")
+            @Signal(id = InvalidSignal.class, condition = TrueCondition.class)
+            boolean m_signalBoolean;
+        }
+
+        assertThrows(UiSchemaGenerationException.class, () -> buildTestUiSchema(MisusedEffectSettings.class));
+    }
+
+    @Test
+    void testOr() {
+        final class OrSettings implements DefaultNodeSettings {
+            interface SomeBooleanIsTrue {
+            }
+
+            @Widget(title = "", description = "")
+            @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
+            boolean m_someBoolean;
+
+            interface AnotherBooleanIsFalse {
+            }
+
+            @Widget(title = "", description = "")
+            @Signal(id = AnotherBooleanIsFalse.class, condition = FalseCondition.class)
+            boolean m_anotherBoolean;
+
+            @Widget(title = "", description = "")
+            @Effect(signals = {SomeBooleanIsTrue.class, AnotherBooleanIsFalse.class}, type = EffectType.ENABLE,
+                operation = Or.class)
             boolean m_effect;
         }
-        final var response = buildTestUiSchema(AndSettings.class);
+        final var response = buildTestUiSchema(OrSettings.class);
         assertThatJson(response).inPath("$.elements").isArray().hasSize(3);
         assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Control");
         assertThatJson(response).inPath("$.elements[1].type").isString().isEqualTo("Control");
@@ -298,24 +347,15 @@ class JsonFormsUiSchemaUtilRuleTest {
     void testNot() {
 
         final class NotSettings implements DefaultNodeSettings {
-            static final class SomeBoolean implements Reference<Boolean> {
+            interface SomeBooleanIsTrue {
             }
 
             @Widget(title = "", description = "")
-            @ValueReference(SomeBoolean.class)
+            @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
             boolean m_someBoolean;
 
-            static final class MyCondition implements PredicateProvider {
-
-                @Override
-                public Predicate init(final PredicateInitializer i) {
-                    return not(i.getBoolean(SomeBoolean.class).isTrue());
-                }
-
-            }
-
             @Widget(title = "", description = "")
-            @Effect(condition = MyCondition.class, type = EffectType.ENABLE)
+            @Effect(signals = SomeBooleanIsTrue.class, type = EffectType.ENABLE, operation = Not.class)
             boolean m_effect;
         }
         final var response = buildTestUiSchema(NotSettings.class);
@@ -328,38 +368,35 @@ class JsonFormsUiSchemaUtilRuleTest {
         assertThatJson(response).inPath("$.elements[1].rule.condition.schema.not.const").isBoolean().isTrue();
     }
 
+    static final class NotAnd extends Not {
+
+        public NotAnd(final Expression first, final Expression second) {
+            super(new And(first, second));
+        }
+
+    }
+
     @Test
     void testNotAnd() {
 
         final class NotAndSettings implements DefaultNodeSettings {
-            static final class SomeBoolean implements Reference<Boolean> {
+            interface SomeBooleanIsTrue {
             }
 
             @Widget(title = "", description = "")
-            @ValueReference(SomeBoolean.class)
+            @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
             boolean m_someBoolean;
 
-            static final class AnotherBoolean implements Reference<Boolean> {
+            interface AnotherBooleanIsFalse {
             }
 
             @Widget(title = "", description = "")
-            @ValueReference(AnotherBoolean.class)
+            @Signal(id = AnotherBooleanIsFalse.class, condition = FalseCondition.class)
             boolean m_anotherBoolean;
 
-            static final class MyCondition implements PredicateProvider {
-
-                @Override
-                public Predicate init(final PredicateInitializer i) {
-                    return not(and(//
-                        i.getBoolean(SomeBoolean.class).isTrue(), //
-                        i.getBoolean(AnotherBoolean.class).isFalse()//
-                    ));
-                }
-
-            }
-
             @Widget(title = "", description = "")
-            @Effect(condition = MyCondition.class, type = EffectType.ENABLE)
+            @Effect(signals = {SomeBooleanIsTrue.class, AnotherBooleanIsFalse.class}, type = EffectType.ENABLE,
+                operation = NotAnd.class)
             boolean m_effect;
         }
         final var response = buildTestUiSchema(NotAndSettings.class);
@@ -381,38 +418,35 @@ class JsonFormsUiSchemaUtilRuleTest {
             .isFalse();
     }
 
+    static final class NotOr extends Not {
+
+        public NotOr(final Expression first, final Expression second) {
+            super(new Or(first, second));
+        }
+
+    }
+
     @Test
     void testNotOr() {
 
         final class NotOrSettings implements DefaultNodeSettings {
-            static final class SomeBoolean implements Reference<Boolean> {
+            interface SomeBooleanIsTrue {
             }
 
             @Widget(title = "", description = "")
-            @ValueReference(SomeBoolean.class)
+            @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
             boolean m_someBoolean;
 
-            static final class AnotherBoolean implements Reference<Boolean> {
+            interface AnotherBooleanIsFalse {
             }
 
             @Widget(title = "", description = "")
-            @ValueReference(AnotherBoolean.class)
+            @Signal(id = AnotherBooleanIsFalse.class, condition = FalseCondition.class)
             boolean m_anotherBoolean;
 
-            static final class MyCondition implements PredicateProvider {
-
-                @Override
-                public Predicate init(final PredicateInitializer i) {
-                    return not(or(//
-                        i.getBoolean(SomeBoolean.class).isTrue(), //
-                        i.getBoolean(AnotherBoolean.class).isFalse()//
-                    ));
-                }
-
-            }
-
             @Widget(title = "", description = "")
-            @Effect(condition = MyCondition.class, type = EffectType.ENABLE)
+            @Effect(signals = {SomeBooleanIsTrue.class, AnotherBooleanIsFalse.class}, type = EffectType.ENABLE,
+                operation = NotOr.class)
             boolean m_effect;
         }
         final var response = buildTestUiSchema(NotOrSettings.class);
@@ -434,28 +468,27 @@ class JsonFormsUiSchemaUtilRuleTest {
             .isFalse();
     }
 
+    static final class DoubleNegation extends Not {
+
+        public DoubleNegation(final Expression operation) {
+            super(new Not(operation));
+        }
+
+    }
+
     @Test
     void testDoubleNegation() {
 
         final class DoubleNegationSettings implements DefaultNodeSettings {
-            static final class SomeBoolean implements Reference<Boolean> {
+            interface SomeBooleanIsTrue {
             }
 
             @Widget(title = "", description = "")
-            @ValueReference(SomeBoolean.class)
+            @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
             boolean m_someBoolean;
 
-            static final class MyCondition implements PredicateProvider {
-
-                @Override
-                public Predicate init(final PredicateInitializer i) {
-                    return not(not(i.getBoolean(SomeBoolean.class).isTrue()));
-                }
-
-            }
-
             @Widget(title = "", description = "")
-            @Effect(condition = MyCondition.class, type = EffectType.ENABLE)
+            @Effect(signals = SomeBooleanIsTrue.class, type = EffectType.ENABLE, operation = DoubleNegation.class)
             boolean m_effect;
         }
         final var response = buildTestUiSchema(DoubleNegationSettings.class);
@@ -468,19 +501,93 @@ class JsonFormsUiSchemaUtilRuleTest {
         assertThatJson(response).inPath("$.elements[1].rule.condition.schema.const").isBoolean().isTrue();
     }
 
-    final class LayoutWithEffect {
+    static final class OperationTakingOneCondition extends And {
 
-        static final class MyCondition implements PredicateProvider {
-
-            @Override
-            public Predicate init(final PredicateInitializer i) {
-                return i.getBoolean(EffectOnLayoutPartSettings.SomeBoolean.class).isTrue();
-            }
-
+        @SuppressWarnings("unused")
+        public OperationTakingOneCondition(final Expression operation) {
+            super();
         }
 
+    }
+
+    static final class OperationTakingTwoCondition extends And {
+
+        @SuppressWarnings("unused")
+        public OperationTakingTwoCondition(final Expression operation1, final Expression operation2) {
+            super();
+        }
+
+    }
+
+    @Test
+    void testThrowsIfAnInvalidNumberOfConditionsIsProvided() {
+
+        final class OperationWithOneConditionSettings implements DefaultNodeSettings {
+            interface SomeBooleanIsTrue {
+            }
+
+            @Widget(title = "", description = "")
+            @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
+            boolean m_someBoolean;
+
+            @Widget(title = "", description = "")
+            @Effect(signals = {SomeBooleanIsTrue.class, SomeBooleanIsTrue.class}, type = EffectType.ENABLE,
+                operation = OperationTakingOneCondition.class)
+            boolean m_effect;
+        }
+
+        final class OperationWithTwoConditionSettings implements DefaultNodeSettings {
+            interface SomeBooleanIsTrue {
+            }
+
+            @Widget(title = "", description = "")
+            @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
+            boolean m_someBoolean;
+
+            @Widget(title = "", description = "")
+            @Effect(signals = SomeBooleanIsTrue.class, type = EffectType.ENABLE,
+                operation = OperationTakingTwoCondition.class)
+            boolean m_effect;
+        }
+
+        final class MultipleConditionsWithoutOperationSettings implements DefaultNodeSettings {
+            interface SomeBooleanIsTrue {
+            }
+
+            @Widget(title = "", description = "")
+            @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
+            boolean m_someBoolean;
+
+            @Widget(title = "", description = "")
+            @Effect(signals = {SomeBooleanIsTrue.class, SomeBooleanIsTrue.class}, type = EffectType.ENABLE)
+            boolean m_effect;
+        }
+
+        final class NoConditionsSettings implements DefaultNodeSettings {
+            interface SomeBooleanIsTrue {
+            }
+
+            @Widget(title = "", description = "")
+            @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
+            boolean m_someBoolean;
+
+            @Widget(title = "", description = "")
+            @Effect(signals = {}, type = EffectType.ENABLE)
+            boolean m_effect;
+        }
+
+        assertThrows(UiSchemaGenerationException.class,
+            () -> buildTestUiSchema(OperationWithOneConditionSettings.class));
+        assertThrows(UiSchemaGenerationException.class,
+            () -> buildTestUiSchema(OperationWithTwoConditionSettings.class));
+        assertThrows(UiSchemaGenerationException.class,
+            () -> buildTestUiSchema(MultipleConditionsWithoutOperationSettings.class));
+        assertThrows(UiSchemaGenerationException.class, () -> buildTestUiSchema(NoConditionsSettings.class));
+    }
+
+    final class LayoutWithEffect {
         @HorizontalLayout()
-        @Effect(condition = MyCondition.class, type = EffectType.DISABLE)
+        @Effect(signals = EffectOnLayoutPartSettings.SomeBooleanIsTrue.class, type = EffectType.DISABLE)
         interface OptionalHorizontalLayout {
         }
 
@@ -488,11 +595,12 @@ class JsonFormsUiSchemaUtilRuleTest {
 
     final class EffectOnLayoutPartSettings implements DefaultNodeSettings {
 
-        static final class SomeBoolean implements Reference<Boolean> {
+        interface SomeBooleanIsTrue {
         }
 
         @Widget(title = "", description = "")
-        @ValueReference(SomeBoolean.class)
+        @Signal(id = SomeBooleanIsTrue.class, condition = TrueCondition.class)
+        @Layout(LayoutWithEffect.class)
         boolean m_someBoolean;
 
         @Widget(title = "", description = "")
@@ -518,24 +626,15 @@ class JsonFormsUiSchemaUtilRuleTest {
 
         final class HasMultipleItemsConditionSettings implements DefaultNodeSettings {
 
-            static final class ArrayElements implements Reference<ArraySettings[]> {
+            interface HasMultipleItemsTest {
             }
 
             @Widget(title = "", description = "")
-            @ValueReference(ArrayElements.class)
+            @Signal(id = HasMultipleItemsTest.class, condition = HasMultipleItemsCondition.class)
             ArraySettings[] m_arrayElements;
 
-            static final class ArrayElementsHasMultipleItems implements PredicateProvider {
-
-                @Override
-                public Predicate init(final PredicateInitializer i) {
-                    return i.getArray(ArrayElements.class).hasMultipleItems();
-                }
-
-            }
-
             @Widget(title = "", description = "")
-            @Effect(condition = ArrayElementsHasMultipleItems.class, type = EffectType.SHOW)
+            @Effect(signals = HasMultipleItemsTest.class, type = EffectType.SHOW)
             boolean m_targetSetting;
 
             class ArraySettings {
@@ -559,152 +658,157 @@ class JsonFormsUiSchemaUtilRuleTest {
     }
 
     @Test
-    void testReferencesIsMissing() {
-        final class EffectWithoutReferenceSettings implements DefaultNodeSettings {
+    void testRuleWithRepeatedSignals() {
+        final class RepeatedSignalsTestSettings implements DefaultNodeSettings {
 
-            static final class UnmetReference implements Reference<Boolean> {
-            }
+            enum MyEnum {
+                    A, B, C;
 
-            static final class MetReference implements Reference<Boolean> {
-            }
+                static class IsA extends OneOfEnumCondition<MyEnum> {
 
-            static final class UnmetReferenceIsPresent implements PredicateProvider {
-
-                @Override
-                public Predicate init(final PredicateInitializer i) {
-                    if (i.isMissing(UnmetReference.class)) {
-                        return i.never();
+                    @Override
+                    public MyEnum[] oneOf() {
+                        return new MyEnum[]{A};
                     }
-                    return i.always();
+
                 }
 
-            }
+                static class IsAorB extends OneOfEnumCondition<MyEnum> {
 
-            static final class MetReferenceIsPresent implements PredicateProvider {
-
-                @Override
-                public Predicate init(final PredicateInitializer i) {
-                    if (i.isMissing(MetReference.class)) {
-                        return i.never();
+                    @Override
+                    public MyEnum[] oneOf() {
+                        return new MyEnum[]{A, B};
                     }
-                    return i.always();
-                }
 
+                }
             }
 
-            @ValueReference(MetReference.class)
-            boolean m_referenced;
+            @Widget(title = "", description = "")
+            @Signal(condition = MyEnum.IsA.class)
+            @Signal(condition = MyEnum.IsAorB.class)
+            MyEnum m_foo;
 
             @Widget(title = "", description = "")
-            @Effect(condition = UnmetReferenceIsPresent.class, type = EffectType.HIDE)
-            boolean m_effectSetting1;
+            @Effect(signals = MyEnum.IsA.class, type = EffectType.SHOW)
+            boolean m_showIfA;
 
             @Widget(title = "", description = "")
-            @Effect(condition = MetReferenceIsPresent.class, type = EffectType.HIDE)
-            boolean m_effectSetting2;
-
+            @Effect(signals = MyEnum.IsAorB.class, type = EffectType.SHOW)
+            boolean m_showIfB;
         }
 
-        final var response = buildTestUiSchema(EffectWithoutReferenceSettings.class);
-        assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
-        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("effectSetting1");
-        assertThatJson(response).inPath("$.elements[0].rule.condition.schema.not").isObject().isEmpty();
-        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("effectSetting2");
-        assertThatJson(response).inPath("$.elements[1].rule.condition.schema").isObject().isEmpty();
-
+        final var response = buildTestUiSchema(RepeatedSignalsTestSettings.class);
+        assertThatJson(response).inPath("$.elements").isArray().hasSize(3);
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("foo");
+        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("showIfA");
+        assertThatJson(response).inPath("$.elements[1]").isObject().containsKey("rule");
+        assertThatJson(response).inPath("$.elements[1].rule.effect").isString().isEqualTo("SHOW");
+        assertThatJson(response).inPath("$.elements[1].rule.condition").isObject().containsKey("scope");
+        assertThatJson(response).inPath("$.elements[1].rule.condition.scope").isString().contains("foo");
+        assertThatJson(response).inPath("$.elements[1].rule.condition.schema.oneOf").isArray().hasSize(1);
+        assertThatJson(response).inPath("$.elements[1].rule.condition.schema.oneOf[0].const").isString().isEqualTo("A");
+        assertThatJson(response).inPath("$.elements[2].scope").isString().contains("showIfB");
+        assertThatJson(response).inPath("$.elements[2]").isObject().containsKey("rule");
+        assertThatJson(response).inPath("$.elements[2].rule.effect").isString().isEqualTo("SHOW");
+        assertThatJson(response).inPath("$.elements[2].rule.condition").isObject().containsKey("scope");
+        assertThatJson(response).inPath("$.elements[2].rule.condition.scope").isString().contains("foo");
+        assertThatJson(response).inPath("$.elements[2].rule.condition.schema.oneOf").isArray().hasSize(2);
+        assertThatJson(response).inPath("$.elements[2].rule.condition.schema.oneOf[0].const").isString().isEqualTo("A");
+        assertThatJson(response).inPath("$.elements[2].rule.condition.schema.oneOf[1].const").isString().isEqualTo("B");
     }
 
     @Test
-    void testThrowsOnMissingReferences() {
-        final class EffectWithoutReferenceSettings implements DefaultNodeSettings {
+    void testIgnoreOnMissingSignals() {
+        final class EffectWithoutSignalsSettings implements DefaultNodeSettings {
 
-            static final class UnmetReference implements Reference<Boolean> {
-            }
-
-            static final class MyCondition implements PredicateProvider {
-
-                @Override
-                public Predicate init(final PredicateInitializer i) {
-                    return i.getBoolean(UnmetReference.class).isTrue();
-                }
-
+            interface UnmetCondition {
             }
 
             @Widget(title = "", description = "")
-            @Effect(condition = MyCondition.class, type = EffectType.HIDE)
+            @Effect(signals = UnmetCondition.class, type = EffectType.HIDE, ignoreOnMissingSignals = true)
             boolean m_setting;
 
         }
 
-        assertThat(assertThrows(UiSchemaGenerationException.class,
-            () -> buildTestUiSchema(EffectWithoutReferenceSettings.class)).getMessage())
-                .isEqualTo(String.format(
-                    "Error when resolving @Effect annotation for #/properties/model/properties/setting.: "
-                        + "Missing reference annotation: %s. If this is correct and desired, "
-                        + "check for that in advance using PredicateInitializer#isMissing.",
-                    EffectWithoutReferenceSettings.UnmetReference.class.getName()));
+        final var response = buildTestUiSchema(EffectWithoutSignalsSettings.class);
+        assertThatJson(response).inPath("$.elements").isArray().hasSize(1);
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("setting");
+        assertThatJson(response).inPath("$.elements[0]").isObject().doesNotContainKey("rule");
 
     }
 
-    static final class SubSubSettings implements WidgetGroup {
-        @Widget(title = "", description = "")
-        String m_subSubEffectSetting;
-    }
+    @Test
+    void testThrowsIfMissingSignalsAreNotIgnored() {
+        final class EffectWithoutSignalsSettings implements DefaultNodeSettings {
 
-    @Effect(condition = EffectOnClassSettings.SomeBooleanIsTrue.class, type = EffectType.HIDE)
-    static class SubSettings implements WidgetGroup {
-
-        @Widget(title = "", description = "")
-        String m_subEffectSetting;
-
-        @Widget(title = "", description = "")
-        SubSubSettings m_subSubSettings;
-    }
-
-    static final class ExtendingSubSettings extends SubSettings {
-        @Widget(title = "", description = "")
-        String m_extendingSetting;
-    }
-
-    @Effect(condition = EffectOnClassSettings.SomeBooleanIsTrue.class, type = EffectType.HIDE)
-    static final class ExtendingSubSettingsWithExtraAnnotation extends SubSettings {
-        @Widget(title = "", description = "")
-        String m_extendingWithExtraEffectSetting;
-    }
-
-    static final class EffectOnClassSettings implements DefaultNodeSettings {
-
-        static final class SomeBoolean implements Reference<Boolean> {
-
-        }
-
-        static final class SomeBooleanIsTrue implements PredicateProvider {
-
-            @Override
-            public Predicate init(final PredicateInitializer i) {
-                return i.getBoolean(SomeBoolean.class).isTrue();
+            interface UnmetCondition {
             }
 
+            @Widget(title = "", description = "")
+            @Effect(signals = UnmetCondition.class, type = EffectType.HIDE)
+            boolean m_setting;
+
         }
 
-        @Widget(title = "", description = "")
-        @ValueReference(SomeBoolean.class)
-        boolean m_someBoolean;
-
-        SubSettings m_subSettings;
-
-        ExtendingSubSettings m_extendingSubSettings;
-
-        ExtendingSubSettingsWithExtraAnnotation m_extendingSubSettingsWithExtraAnnotation;
+        assertThat(
+            assertThrows(UiSchemaGenerationException.class, () -> buildTestUiSchema(EffectWithoutSignalsSettings.class))
+                .getMessage())
+                    .isEqualTo(String.format(
+                        "Error when resolving @Effect annotation for #/properties/model/properties/setting.:"
+                            + " Missing source annotation: %s. "
+                            + "If this is wanted and the rule should be ignored instead of throwing this error,"
+                            + " use the respective flag in the @Effect annotation.",
+                        EffectWithoutSignalsSettings.UnmetCondition.class.getName()));
 
     }
 
     @Test
     @SuppressWarnings("unused")
     void testEffectAnnotationOnClass() {
+
+        final class SubSubSettings implements WidgetGroup {
+            @Widget(title = "", description = "")
+            String m_subSubEffectSetting;
+        }
+
+        @Effect(signals = TrueCondition.class, type = EffectType.HIDE)
+        class SubSettings implements WidgetGroup {
+
+            @Widget(title = "", description = "")
+            String m_subEffectSetting;
+
+            @Widget(title = "", description = "")
+            SubSubSettings m_subSubSettings;
+        }
+
+        final class ExtendingSubSettings extends SubSettings {
+            @Widget(title = "", description = "")
+            String m_extendingSetting;
+        }
+
+        @Effect(signals = TrueCondition.class, type = EffectType.HIDE)
+        final class ExtendingSubSettingsWithExtraAnnotation extends SubSettings {
+            @Widget(title = "", description = "")
+            String m_extendingWithExtraEffectSetting;
+        }
+
+        final class EffectOnClassSettings implements DefaultNodeSettings {
+
+            @Widget(title = "", description = "")
+            @Signal(condition = TrueCondition.class)
+            boolean m_signalSetting;
+
+            SubSettings m_subSettings;
+
+            ExtendingSubSettings m_extendingSubSettings;
+
+            ExtendingSubSettingsWithExtraAnnotation m_extendingSubSettingsWithExtraAnnotation;
+
+        }
+
         final var response = buildTestUiSchema(EffectOnClassSettings.class);
         assertThatJson(response).inPath("$.elements").isArray().hasSize(9);
-        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("someBoolean");
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("signalSetting");
         assertThatJson(response).inPath("$.elements[1].scope").isString().contains("subEffectSetting");
         assertThatJson(response).inPath("$.elements[1].rule").isObject();
         assertThatJson(response).inPath("$.elements[2].scope").isString().contains("subSubEffectSetting");
@@ -715,29 +819,28 @@ class JsonFormsUiSchemaUtilRuleTest {
         assertThatJson(response).inPath("$.elements[8].rule").isObject();
     }
 
+    static class IsTestColumnCondition extends IsSpecificColumnCondition {
+        @Override
+        public String getColumnName() {
+            return "foo";
+        }
+    }
+
     @Test
     void testIsSpecificColumnCondition() {
 
         final class ChoicesWithSpecificColumnCondition implements DefaultNodeSettings {
 
-            static final class ColumnSelectionReference implements Reference<ColumnSelection> {
+            interface TestColumnCondition {
             }
 
             @Widget(title = "Foo", description = "")
             @ChoicesWidget(choices = TestChoicesProvider.class)
-            @ValueReference(ColumnSelectionReference.class)
+            @Signal(id = TestColumnCondition.class, condition = IsTestColumnCondition.class)
             ColumnSelection columnSelection = new ColumnSelection();
 
-            static final class MyCondition implements PredicateProvider {
-
-                @Override
-                public Predicate init(final PredicateInitializer i) {
-                    return i.getColumnSelection(ColumnSelectionReference.class).hasColumnName("foo");
-                }
-            }
-
             @Widget(title = "", description = "")
-            @Effect(condition = MyCondition.class, type = EffectType.SHOW)
+            @Effect(signals = TestColumnCondition.class, type = EffectType.SHOW)
             boolean someConditionalSetting = true;
 
         }
@@ -753,29 +856,32 @@ class JsonFormsUiSchemaUtilRuleTest {
             .isEqualTo("foo");
     }
 
+    static class IsStringColumnCondition extends IsColumnOfTypeCondition {
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Class<? extends DataValue> getDataValueClass() {
+            return StringCell.class;
+        }
+    }
+
     @Test
     void testIsColumnOfTypeCondition() {
 
         final class ChoicesWithColumnTypeCondition implements DefaultNodeSettings {
 
-            static final class ColumnSelectionReference implements Reference<ColumnSelection> {
+            interface TestColumnCondition {
             }
 
             @Widget(title = "Foo", description = "")
             @ChoicesWidget(choices = TestChoicesProvider.class)
-            @ValueReference(ColumnSelectionReference.class)
+            @Signal(id = TestColumnCondition.class, condition = IsStringColumnCondition.class)
             ColumnSelection columnSelection = new ColumnSelection();
 
-            static final class MyCondition implements PredicateProvider {
-
-                @Override
-                public Predicate init(final PredicateInitializer i) {
-                    return i.getColumnSelection(ColumnSelectionReference.class).hasColumnType(StringCell.class);
-                }
-            }
-
+            @Effect(signals = TestColumnCondition.class, type = EffectType.SHOW)
             @Widget(title = "", description = "")
-            @Effect(condition = MyCondition.class, type = EffectType.SHOW)
             boolean someConditionalSetting = true;
 
         }
@@ -794,28 +900,16 @@ class JsonFormsUiSchemaUtilRuleTest {
     @Test
     void testIsNoneColumnCondition() {
         final class ChoicesWithNoneColumnCondition implements DefaultNodeSettings {
-
-            static final class ColumnSelectionReference implements Reference<ColumnSelection> {
-            }
-
             @Widget(title = "Foo", description = "")
             @ChoicesWidget(choices = TestChoicesProvider.class)
-            @ValueReference(ColumnSelectionReference.class)
+            @Signal(condition = IsNoneColumnCondition.class)
             ColumnSelection columnSelection = new ColumnSelection();
 
-            static final class MyCondition implements PredicateProvider {
-
-                @Override
-                public Predicate init(final PredicateInitializer i) {
-                    return i.getColumnSelection(ColumnSelectionReference.class).isNoneColumn();
-                }
-            }
-
             @Widget(title = "", description = "")
-            @Effect(condition = MyCondition.class, type = EffectType.SHOW)
+            @Effect(signals = IsNoneColumnCondition.class, type = EffectType.SHOW)
             boolean someConditionalSetting = true;
-
         }
+
         final var response = buildTestUiSchema(ChoicesWithNoneColumnCondition.class);
         assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
         assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Control");
@@ -830,25 +924,13 @@ class JsonFormsUiSchemaUtilRuleTest {
     @Test
     void testIsNoneStringCondition() {
         final class ChoicesWithNoneColumnCondition implements DefaultNodeSettings {
-
-            static final class ColumnSelectionReference implements Reference<String> {
-            }
-
             @Widget(title = "Foo", description = "")
             @ChoicesWidget(choices = TestChoicesProvider.class)
-            @ValueReference(ColumnSelectionReference.class)
+            @Signal(condition = IsNoneColumnStringCondition.class)
             String columnSelection;
 
-            static final class MyCondition implements PredicateProvider {
-
-                @Override
-                public Predicate init(final PredicateInitializer i) {
-                    return i.getString(ColumnSelectionReference.class).isNoneString();
-                }
-            }
-
             @Widget(title = "", description = "")
-            @Effect(condition = MyCondition.class, type = EffectType.SHOW)
+            @Effect(signals = IsNoneColumnStringCondition.class, type = EffectType.SHOW)
             boolean someConditionalSetting = true;
         }
         final var response = buildTestUiSchema(ChoicesWithNoneColumnCondition.class);
@@ -861,29 +943,26 @@ class JsonFormsUiSchemaUtilRuleTest {
         assertThatJson(response).inPath("$.elements[1].rule.condition.schema.const").isString().isEqualTo("<none>");
     }
 
+    final static class TestPatternCondition extends PatternCondition {
+        static String PATTERN = "myPattern$";
+
+        @Override
+        public String getPattern() {
+            return PATTERN;
+        }
+    }
+
     @Test
     void testPatternCondition() {
 
         final class PatternConditionTestSettings implements DefaultNodeSettings {
-            static final class PatternSetting implements Reference<String> {
-            }
 
             @Widget(title = "", description = "")
-            @ValueReference(PatternSetting.class)
+            @Signal(condition = TestPatternCondition.class)
             String patternSetting;
 
-            static final class PatternSettingMatchesMyPattern implements PredicateProvider {
-
-                static String PATTERN = "myPattern$";
-
-                @Override
-                public Predicate init(final PredicateInitializer i) {
-                    return i.getString(PatternSetting.class).matchesPattern(PATTERN);
-                }
-            }
-
             @Widget(title = "", description = "")
-            @Effect(condition = PatternSettingMatchesMyPattern.class, type = EffectType.SHOW)
+            @Effect(signals = TestPatternCondition.class, type = EffectType.SHOW)
             boolean effectSetting;
         }
         final var response = buildTestUiSchema(PatternConditionTestSettings.class);
@@ -894,7 +973,7 @@ class JsonFormsUiSchemaUtilRuleTest {
         assertThatJson(response).inPath("$.elements[1].rule.condition.scope").isString()
             .isEqualTo(response.get("elements").get(0).get("scope").asText());
         assertThatJson(response).inPath("$.elements[1].rule.condition.schema.pattern").isString()
-            .isEqualTo(PatternConditionTestSettings.PatternSettingMatchesMyPattern.PATTERN);
+            .isEqualTo(TestPatternCondition.PATTERN);
     }
 
     @Test
@@ -902,36 +981,43 @@ class JsonFormsUiSchemaUtilRuleTest {
 
         final class ArrayContainsConditionTestSettings implements DefaultNodeSettings {
 
-            static class Element implements WidgetGroup {
-                static final class ElementValueReference implements Reference<String> {
-                }
+            static class Element {
 
-                @ValueReference(ElementValueReference.class)
+                @SuppressWarnings("unused")
                 String m_value = "myValue";
-
             }
 
-            static final class ArrayReference implements Reference<Element[]> {
-            }
-
-            @Widget(title = "", description = "")
-            @ValueReference(ArrayReference.class)
-            Element[] m_array;
-
-            static final class ContainsProvider implements PredicateProvider {
+            static class IsFooCondition extends IsSpecificStringCondition {
 
                 static final String FOO = "Foo";
 
                 @Override
-                public Predicate init(final PredicateInitializer i) {
-                    return i.getArray(ArrayReference.class).containsElementSatisfying(
-                        element -> element.getString(Element.ElementValueReference.class).isEqualTo(FOO));
+                public String getValue() {
+                    return FOO;
+                }
+
+            }
+
+            static class ArrayContainsFooValueCondition extends ArrayContainsCondition {
+
+                @Override
+                public Class<? extends Condition> getItemCondition() {
+                    return IsFooCondition.class;
+                }
+
+                @Override
+                public String[] getItemFieldPath() {
+                    return new String[]{"value"};
                 }
 
             }
 
             @Widget(title = "", description = "")
-            @Effect(condition = ContainsProvider.class, type = EffectType.SHOW)
+            @Signal(condition = ArrayContainsFooValueCondition.class)
+            Element[] m_array;
+
+            @Widget(title = "", description = "")
+            @Effect(signals = ArrayContainsFooValueCondition.class, type = EffectType.SHOW)
             boolean effectSetting;
         }
         final var response = buildTestUiSchema(ArrayContainsConditionTestSettings.class);
@@ -942,98 +1028,41 @@ class JsonFormsUiSchemaUtilRuleTest {
         assertThatJson(response).inPath("$.elements[1].rule.condition.scope").isString()
             .isEqualTo(response.get("elements").get(0).get("scope").asText());
         assertThatJson(response).inPath("$.elements[1].rule.condition.schema.contains.properties.value.const")
-            .isString().isEqualTo(ArrayContainsConditionTestSettings.ContainsProvider.FOO);
+            .isString().isEqualTo(ArrayContainsConditionTestSettings.IsFooCondition.FOO);
     }
 
     @Test
-    void testComplexArrayContainsCondition() {
+    void testLatentWidgetSignals() {
+        final class SettingsWithLatentWidgetSignal implements DefaultNodeSettings {
 
-        final class ArrayContainsConditionTestSettings implements DefaultNodeSettings {
-
-            static class Element implements WidgetGroup {
-                static final class StringField implements Reference<String> {
-                }
-
-                @ValueReference(StringField.class)
-                String m_value1 = "myValue";
-
-                static final class BooleanField implements Reference<Boolean> {
-                }
-
-                @ValueReference(BooleanField.class)
-                Boolean m_value2 = true;
-
-            }
-
-            static final class ArrayReference implements Reference<Element[]> {
-            }
-
-            @Widget(title = "", description = "")
-            @ValueReference(ArrayReference.class)
-            Element[] m_array;
-
-            static final class ContainsProvider implements PredicateProvider {
-
-                static final String FOO = "Foo";
+            static final class MyValueProvider implements StateProvider<Boolean> {
 
                 @Override
-                public Predicate init(final PredicateInitializer i) {
-                    return i.getArray(ArrayReference.class)
-                        .containsElementSatisfying(element -> element.getString(Element.StringField.class)
-                            .isEqualTo(FOO).and(element.getBoolean(Element.BooleanField.class).isTrue())
-                            .or(element.getConstant(context -> true)).negate());
+                public void init(final StateProviderInitializer initializer) {
+                    // fill with dependencies
                 }
-
-            }
-
-            @Widget(title = "", description = "")
-            @Effect(condition = ContainsProvider.class, type = EffectType.SHOW)
-            boolean effectSetting;
-        }
-        final var response = buildTestUiSchema(ArrayContainsConditionTestSettings.class);
-        assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
-        assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Control");
-        assertThatJson(response).inPath("$.elements[1].type").isString().isEqualTo("Control");
-        assertThatJson(response).inPath("$.elements[1].rule.effect").isString().isEqualTo("SHOW");
-        assertThatJson(response).inPath("$.elements[1].rule.condition.scope").isString()
-            .isEqualTo(response.get("elements").get(0).get("scope").asText());
-        assertThatJson(response)
-            .inPath("$.elements[1].rule.condition.schema.contains.not.anyOf[0].allOf[0].properties.value1.const")
-            .isString().isEqualTo(ArrayContainsConditionTestSettings.ContainsProvider.FOO);
-        assertThatJson(response)
-            .inPath("$.elements[1].rule.condition.schema.contains.not.anyOf[0].allOf[1].properties.value2.const")
-            .isBoolean().isEqualTo(true);
-        assertThatJson(response).inPath("$.elements[1].rule.condition.schema.contains.not.anyOf[1]").isObject()
-            .isEmpty();
-    }
-
-    @Test
-    void testConditionOnNonWidget() {
-        final class SettingsWithNonWidgetReference implements DefaultNodeSettings {
-
-            static final class SomeBoolean implements Reference<Boolean> {
-
-            }
-
-            @ValueReference(SomeBoolean.class)
-            Boolean m_someBoolean;
-
-            static final class SomeBooleanIsTrue implements PredicateProvider {
 
                 @Override
-                public Predicate init(final PredicateInitializer i) {
-                    return i.getBoolean(SomeBoolean.class).isTrue();
+                public Boolean computeState(final DefaultNodeSettingsContext context) {
+                    // whenever the condition is fulfilled
+                    return true;
                 }
 
             }
 
+            @LatentWidget
             @Widget(title = "", description = "")
-            @Effect(condition = SomeBooleanIsTrue.class, type = EffectType.HIDE)
+            @ValueProvider(MyValueProvider.class)
+            @Signal(condition = TrueCondition.class)
+            Boolean m_bool;
+
+            @Widget(title = "", description = "")
+            @Effect(signals = TrueCondition.class, type = EffectType.HIDE)
             String m_effected;
 
         }
 
-        final var response = buildTestUiSchema(SettingsWithNonWidgetReference.class);
+        final var response = buildTestUiSchema(SettingsWithLatentWidgetSignal.class);
 
         assertThatJson(response).inPath("$.elements").isArray().hasSize(1);
         assertThatJson(response).inPath("$.elements[0].rule.effect").isString().isEqualTo("HIDE");

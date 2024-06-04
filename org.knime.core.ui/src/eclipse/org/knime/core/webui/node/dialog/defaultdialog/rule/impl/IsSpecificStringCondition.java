@@ -44,34 +44,25 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Nov 27, 2023 (Paul Bärnreuther): created
+ *   Jun 12, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.rule;
+package org.knime.core.webui.node.dialog.defaultdialog.rule.impl;
 
 /**
- * Apply this condition in a signal at an array layout field (NOT to a field in the Element POJO). The signal will be
- * triggered if one of the elements of the array satisfies the specified condition with the specified field.
- *
- * TODO: UIEXT-1475 make it possible to not specify the field by string reference but by another annotation on the
- * element field.
+ * Is fulfilled when a string equals the given one.
  *
  * @author Paul Bärnreuther
  */
-public abstract class ArrayContainsCondition implements Condition {
-
-    /**
-     * @return the class of the condition that should be applied to one of the fields
-     */
-    public abstract Class<? extends Condition> getItemCondition();
-
-    /**
-     * @return the path of the field in the element POJO, the given condition should be applied to
-     */
-    public abstract String[] getItemFieldPath();
+public abstract class IsSpecificStringCondition implements Condition {
 
     @Override
     public <T> T accept(final ConditionVisitor<T> visitor) {
         return visitor.visit(this);
     }
+
+    /**
+     * @return the string subject to the condition.
+     */
+    public abstract String getValue();
 
 }

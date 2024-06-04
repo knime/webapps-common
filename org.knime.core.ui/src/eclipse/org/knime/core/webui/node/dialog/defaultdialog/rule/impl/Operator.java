@@ -44,23 +44,15 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 4, 2023 (Paul Bärnreuther): created
+ *   Apr 6, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.rule;
+package org.knime.core.webui.node.dialog.defaultdialog.rule.impl;
 
 /**
- * Triggers when a boolean is false.
+ * An expression defining how to logically combine other expressions.
  *
  * @author Paul Bärnreuther
  */
-public final class FalseCondition implements Condition {
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public <T> T accept(final ConditionVisitor<T> visitor) {
-        return visitor.visit(this);
-    }
-
+public sealed interface Operator<E extends AtomicExpression<E>> extends Expression<E>
+    permits And, Or, Not, IdentityOperation {
 }

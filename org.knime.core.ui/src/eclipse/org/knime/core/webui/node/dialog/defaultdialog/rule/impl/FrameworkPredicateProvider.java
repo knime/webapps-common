@@ -44,30 +44,24 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   22 Mar 2023 (Marc Bux, KNIME GmbH, Berlin, Germany): created
+ *   Aug 14, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.rule;
+package org.knime.core.webui.node.dialog.defaultdialog.rule.impl;
+
+import org.knime.core.webui.node.dialog.defaultdialog.rule.PredicateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.PredicateProvider.Predicate;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.PredicateProvider.PredicateInitializer;
 
 /**
- * An expression in terms of propositional logic. An expression can either be an {@link AtomicExpression} or one of the
- * three {@link Operator}s ({@link And}, {@link Or} or {@link Not}) defining how to combine multiple
- * {@link AtomicExpression}s.
+ * Marker interface for predicates provided by the framework
  *
- * Each implementation offers has its own {@link AtomicExpression}.
- *
- * Expressions are resolved via {@link ExpressionVisitor}s.
- *
- * @param <E> the type of atomic expressions used for this implementation
- *
- * @author Marc Bux, KNIME GmbH, Berlin, Germany
+ * @author Paul Bärnreuther
  */
-public sealed interface Expression<E extends AtomicExpression<E>> permits Operator, AtomicExpression {
+public interface FrameworkPredicateProvider extends PredicateProvider {
 
-    /**
-     * @param <T> the type of the resolved value
-     * @param visitor an implementation dependent expression resolver
-     * @return a resolved value of the expression depending on the implementation.
-     */
-    <T> T accept(ExpressionVisitor<T, E> visitor);
+    @Override
+    default Predicate init(final PredicateInitializer i) {
+        throw new IllegalAccessError("Framework predicates should be handled by the framework.");
+    }
 
 }

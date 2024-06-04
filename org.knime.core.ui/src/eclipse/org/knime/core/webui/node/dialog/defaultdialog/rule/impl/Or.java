@@ -44,22 +44,43 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 4, 2023 (Paul Bärnreuther): created
+ *   Apr 6, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.rule;
+package org.knime.core.webui.node.dialog.defaultdialog.rule.impl;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.knime.core.webui.node.dialog.defaultdialog.rule.PredicateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.PredicateProvider.Predicate;
 
 /**
- * A condition which can be invoked on a setting using the {@link Signal} annotation.
  *
  * @author Paul Bärnreuther
+ * @param <E> the type of the {@link AtomicExpression} depending on the implementation
  */
-public interface Condition {
+public non-sealed class Or<E extends AtomicExpression<E>> implements Operator<E> {
+
+    private final Predicate[] m_children;
 
     /**
-     * @param <T> the returned type
-     * @param visitor
-     * @return a implementation dependent translation of the condition
+     * @param children the expressions which are combined using an or operation
      */
-    <T> T accept(final ConditionVisitor<T> visitor);
+    @SuppressWarnings("unchecked")
+    public Or(final Predicate... children) {
+        m_children = children;
+    }
+
+    /**
+     * @return the expressions which are combined using an or operation
+     */
+    public List<Expression<E>> getChildren() {
+        return Arrays.stream(m_children).map(child -> (Expression<E>)child).toList();
+    }
+
+    @Override
+    public <T> T accept(final ExpressionVisitor<T, E> visitor) {
+        return visitor.visit(this);
+    }
 
 }

@@ -44,23 +44,34 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   12 Jun 2023 (Rupert Ettrich): created
+ *   Nov 27, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection;
-
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.IsNoneColumnStringCondition;
+package org.knime.core.webui.node.dialog.defaultdialog.rule.impl;
 
 /**
- * Condition that triggers when "None" column is selected. Should be used only with {@link ColumnSelection} fields. For
- * column selections using a String representation refer to {@link IsNoneColumnStringCondition}.
+ * Apply this condition in a signal at an array layout field (NOT to a field in the Element POJO). The signal will be
+ * triggered if one of the elements of the array satisfies the specified condition with the specified field.
  *
- * @author Rupert Ettrich
+ * TODO: UIEXT-1475 make it possible to not specify the field by string reference but by another annotation on the
+ * element field.
+ *
+ * @author Paul Bärnreuther
  */
-public class IsNoneColumnCondition extends IsSpecificColumnCondition {
+public abstract class ArrayContainsCondition implements Condition {
+
+    /**
+     * @return the class of the condition that should be applied to one of the fields
+     */
+    public abstract Class<? extends Condition> getItemCondition();
+
+    /**
+     * @return the path of the field in the element POJO, the given condition should be applied to
+     */
+    public abstract String[] getItemFieldPath();
 
     @Override
-    public String getColumnName() {
-        return "<none>";
+    public <T> T accept(final ConditionVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 
 }

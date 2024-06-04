@@ -44,24 +44,31 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Oct 20, 2023 (Paul Bärnreuther): created
+ *   Apr 6, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.rule;
+package org.knime.core.webui.node.dialog.defaultdialog.rule.impl;
+
+import org.knime.core.webui.node.dialog.defaultdialog.rule.PredicateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.PredicateProvider.Predicate;
 
 /**
- * Use this annotation for text inputs in order to trigger an effect when the supplied pattern is met.
  *
  * @author Paul Bärnreuther
  */
-public abstract class PatternCondition implements Condition {
+public non-sealed class Not<E extends AtomicExpression<E>> implements Operator<E> {
 
-    /**
-     * @return a regular expression which triggers the condition.
-     */
-    public abstract String getPattern();
+    private final Expression<E> m_childOperation;
+
+    public Not(final Predicate childOperation) {
+        m_childOperation = (Expression<E>)childOperation;
+    }
+
+    public Expression<E> getChildOperation() {
+        return m_childOperation;
+    }
 
     @Override
-    public <T> T accept(final ConditionVisitor<T> visitor) {
+    public <T> T accept(final ExpressionVisitor<T, E> visitor) {
         return visitor.visit(this);
     }
 

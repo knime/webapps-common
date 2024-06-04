@@ -44,26 +44,30 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 12, 2023 (Paul Bärnreuther): created
+ *   Apr 4, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.rule;
+package org.knime.core.webui.node.dialog.defaultdialog.rule.impl;
 
 /**
- * Condition to be used when an field serialized to a string should trigger a {@link Signal} when it matches a specific
- * string.
+ * A visitor visiting all permitted implementations of {@link Expression} which is used to translate the expression to a
+ * implementation dependent format.
  *
  * @author Paul Bärnreuther
+ * @param <T> the type of the returned value on visiting a {@link Expression}
  */
-public abstract class IsSpecificStringCondition implements Condition {
+@SuppressWarnings("javadoc")
+public interface ExpressionVisitor<T, E extends AtomicExpression<E>> {
 
-    @Override
-    public <T> T accept(final ConditionVisitor<T> visitor) {
-        return visitor.visit(this);
+    T visit(And<E> and);
+
+    T visit(Or<E> or);
+
+    T visit(Not<E> not);
+
+    T visit(E condition);
+
+    default T visit(final IdentityOperation<E> id) {
+        return id.expression().accept(this);
     }
-
-    /**
-     * @return the string subject to the condition.
-     */
-    public abstract String getValue();
 
 }

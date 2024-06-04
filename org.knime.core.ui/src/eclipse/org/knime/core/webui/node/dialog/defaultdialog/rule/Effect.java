@@ -54,6 +54,10 @@ import java.lang.annotation.RetentionPolicy;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.HorizontalLayout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.Condition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.ConstantSignal;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.IdentityOperation;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.Operator;
 
 /**
  * With this annotation a field, all fields in a class, or a whole layout part (i.e. {@link Section} or
@@ -88,6 +92,16 @@ public @interface Effect {
     }
 
     /**
+     * TODO Remove default once signals + operation is removed
+     *
+     * @return
+     */
+    Class<? extends PredicateProvider> condition() default PredicateProvider.class;
+
+    /**
+     *
+     * TODO: Remove
+     *
      * An array of signal IDs that, combined via an {@link #operation() operation}, defines if the effect applies. In
      * most cases it's a single signal. Generally there are two types of signals:
      * <ol>
@@ -102,7 +116,7 @@ public @interface Effect {
      *
      * @return Such an array.
      */
-    Class<?>[] signals();
+    Class<?>[] signals() default {};
 
     /**
      * When set to false, the code will fail on runtime when there is a signal with no corresponding {@link Signal}
@@ -121,6 +135,9 @@ public @interface Effect {
     EffectType type();
 
     /**
+     *
+     * TODO: Remove
+     *
      * Multiple rule sources can be combined using logical operations.
      *
      * @return the logical operation that should be applied to the sources. This class has to have a suitable

@@ -44,23 +44,40 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   12 Jun 2023 (Rupert Ettrich): created
+ *   Aug 13, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.rule;
+package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
-import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_NOT;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil.getMapper;
+
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.ConstantExpression;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.ScopedExpression;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * Condition that triggers when "None" column is selected. Should be used with older nodes that use a {@link String}
- * field instead of {@link ColumnSelection}.
  *
- * @author Rupert Ettrich
+ * @author Paul Bärnreuther
  */
-public class IsNoneColumnStringCondition extends IsSpecificStringCondition {
+final class JsonFormsSchemaConditionUtil {
 
-    @Override
-    public String getValue() {
-        return "<none>";
+    private JsonFormsSchemaConditionUtil() {
+        // Utility
+    }
+
+    static ObjectNode createCondition(final ScopedExpression scopedExpression,
+        final DefaultNodeSettingsContext context) {
+        return scopedExpression.condition().accept(new JsonFormsConditionResolver(scopedExpression.node(), context));
+    }
+
+    static ObjectNode createCondition(final ConstantExpression constantExpression) {
+        final var schemaNode = getMapper().createObjectNode();
+        if (!constantExpression.value()) {
+            schemaNode.putObject(TAG_NOT);
+        }
+        return schemaNode;
     }
 
 }

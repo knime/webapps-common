@@ -46,19 +46,21 @@
  * History
  *   Apr 4, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.rule;
-
-import com.fasterxml.jackson.databind.node.ObjectNode;
+package org.knime.core.webui.node.dialog.defaultdialog.rule.impl;
 
 /**
- * The atomic expression that is used for json forms implementation
+ * Fulfilled when a boolean is true.
  *
  * @author Paul Bärnreuther
  */
-public record ScopedExpression(String scope, Condition condition) implements JsonFormsExpression {
+public final class TrueCondition implements Condition {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public ObjectNode accept(final JsonFormsExpressionVisitor visitor) {
+    public <T> T accept(final ConditionVisitor<T> visitor) {
         return visitor.visit(this);
     }
+
 }

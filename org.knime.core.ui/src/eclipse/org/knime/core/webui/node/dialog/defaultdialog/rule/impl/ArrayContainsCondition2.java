@@ -44,20 +44,25 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 4, 2023 (Paul Bärnreuther): created
+ *   Nov 27, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.rule;
+package org.knime.core.webui.node.dialog.defaultdialog.rule.impl;
+
+import org.knime.core.webui.node.dialog.defaultdialog.rule.PredicateProvider;
 
 /**
- * Triggers when a boolean is true.
+ * Condition applied to an array layout field (NOT to a field in the Element POJO). The condition is fulfilled if one of
+ * the elements of the array satisfies the specified condition with the specified field.
  *
  * @author Paul Bärnreuther
  */
-public final class TrueCondition implements Condition {
+public abstract class ArrayContainsCondition2 implements Condition {
 
     /**
-     * {@inheritDoc}
+     * @return the condition that should be applied to one of the fields
      */
+    public abstract PredicateProvider getElementPredicate();
+
     @Override
     public <T> T accept(final ConditionVisitor<T> visitor) {
         return visitor.visit(this);

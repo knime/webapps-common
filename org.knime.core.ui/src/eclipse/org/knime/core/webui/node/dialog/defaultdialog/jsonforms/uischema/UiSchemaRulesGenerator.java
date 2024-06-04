@@ -52,29 +52,19 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_EFFECT;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_RULE;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.Collection;
 import java.util.Optional;
 
-import org.knime.core.node.util.CheckUtils;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsScopeUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.ConstantExpression;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.ConstantSignal;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Expression;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.JsonFormsExpression;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Operator;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.ScopedExpression;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.TrueCondition;
-import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.internal.InternalArrayWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect.EffectType;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.PredicateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.PredicateProvider.PredicateInitializer;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.Expression;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.JsonFormsExpression;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
@@ -83,26 +73,17 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 final class UiSchemaRulesGenerator {
 
-    private final Map<Class<?>, ScopedExpression> m_signalsMap;
-
-    private final Effect m_effect;
-
-    private final DefaultNodeSettingsContext m_nodeSettingsContext;
+    private final ExpressionExtractor m_expressionExtractor;
 
     private JsonFormsExpressionResolver m_visitor;
 
     /**
-     * @param field a field for which the effect of a rule is to be determined
-     * @param signalsMap the map of all signals in the settings context at hand. It maps the ids of {@link Signal}
-     *            annotations to a construct holding the respective condition and the scope of the associated field.
-     * @param nodeSettingsContext the node's context (inputs, flow vars)
+     * @param widgetTrees containing the nodes that the to be generated rules can depend on
+     * @param context the node's context (inputs, flow vars)
      */
-    UiSchemaRulesGenerator(final Effect effect, final Map<Class<?>, ScopedExpression> signalsMap,
-        final DefaultNodeSettingsContext nodeSettingsContext) {
-        m_effect = effect;
-        m_signalsMap = signalsMap;
-        m_nodeSettingsContext = nodeSettingsContext;
-        m_visitor = new JsonFormsExpressionResolver();
+    UiSchemaRulesGenerator(final Collection<WidgetTree> widgetTrees, final DefaultNodeSettingsContext context) {
+        m_expressionExtractor = new ExpressionExtractor(widgetTrees, context);
+        m_visitor = new JsonFormsExpressionResolver(context);
     }
 
     /**
@@ -110,136 +91,52 @@ final class UiSchemaRulesGenerator {
      * fetched and combined using the provided operator, with nested operations being resolved recursively. For more
      * information on the resolution of different operations, see {@link JsonFormsUiSchemaUtil}.
      *
+     * @param effect
      * @param control the object node to which the rule should be applied
      */
-    public void applyRulesTo(final ObjectNode control) {
-        if (m_effect == null) {
-            return;
-        }
-        final var signalClasses = m_effect.signals();
-        final var expressionList = new ArrayList<JsonFormsExpression>();
-        for (var i = 0; i < signalClasses.length; i++) {
-            final var signalClass = signalClasses[i];
-            final var expressionOptional = createExpressionFromSignal(signalClass);
-            if (expressionOptional.isEmpty()) {
-                return; // "ignoreOnMissingSignals"
-            }
-            expressionList.add(expressionOptional.get());
-        }
-        final var rule = control.putObject(TAG_RULE).put(TAG_EFFECT, String.valueOf(m_effect.type()));
-
-        final var operationClass = m_effect.operation();
-        rule.set(TAG_CONDITION,
-            instantiateOperation(operationClass, expressionList.toArray(JsonFormsExpression[]::new)).accept(m_visitor));
+    public void applyEffectTo(final Effect effect, final ObjectNode control) {
+        extractExpressionFromAnnotation(effect)
+            .ifPresent(expression -> writeExpressionAsRule(effect.type(), expression, control));
     }
 
-    /**
-     * Extracts the expression from a signal added to an effect.
-     *
-     * @param signalClass The signal class as defined in the @Effect annotation.
-     * @return Either an expression or an empty optional if the effect has the {@link Effect#ignoreOnMissingSignals()}
-     *         set.
-     */
-    private Optional<JsonFormsExpression> createExpressionFromSignal(final Class<?> signalClass) {
-        JsonFormsExpression expression = m_signalsMap.get(signalClass);
-        if (expression == null) {
-            if (ConstantSignal.class.isAssignableFrom(signalClass)) {
-                try {
-                    expression = new ConstantExpression(signalClass.asSubclass(ConstantSignal.class)
-                        .getDeclaredConstructor().newInstance().applies(m_nodeSettingsContext));
-                } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-                        | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
-                    throw new UiSchemaGenerationException("Unable to instantiate instance of " + signalClass.getName(),
-                        ex);
-                }
-            } else if (InternalArrayWidget.ElementIsEditedSignal.class.equals(signalClass)) {
-                expression =
-                    new ScopedExpression(JsonFormsScopeUtil.toScope(List.of("_edit"), null), new TrueCondition());
-            } else if (m_effect.ignoreOnMissingSignals()) {
-                return Optional.empty();
-            } else {
-                throw new UiSchemaGenerationException(String.format("Missing source annotation: %s. "
-                    + "If this is wanted and the rule should be ignored instead of throwing this error, "
-                    + "use the respective flag in the @Effect annotation.", signalClass.getName()));
-            }
-        } else {
-            // (artificial design limitation:) input signals not to be used as identifiers in @Signal annotation
-            CheckUtils.check(!ConstantSignal.class.isAssignableFrom(signalClass), UiSchemaGenerationException::new,
-                () -> String.format(
-                    "Invalid source annotation: %s - it denotes a %s, "
-                        + "which can not be referenced by a @Signal annotation.", //
-                    signalClass, ConstantSignal.class.getSimpleName()));
-        }
-        return Optional.of(expression);
-    }
-
-    private static Expression<JsonFormsExpression> instantiateOperation(
-        @SuppressWarnings("rawtypes") final Class<? extends Operator> operationClass,
-        final JsonFormsExpression[] expressions) {
-        try {
-            return instantiateWithSuitableConstructor(operationClass, expressions);
-        } catch (IllegalArgumentException ex) {
-            throw new UiSchemaGenerationException(
-                String.format("Failed to instantiate operation %s", operationClass.getSimpleName()), ex);
-        }
+    private JsonNode writeExpressionAsRule(final EffectType type, final Expression<JsonFormsExpression> expression,
+        final ObjectNode control) {
+        return control.putObject(TAG_RULE)//
+            .put(TAG_EFFECT, String.valueOf(type)) //
+            .set(TAG_CONDITION, expression.accept(m_visitor));
     }
 
     @SuppressWarnings("unchecked")
-    private static Operator<JsonFormsExpression> instantiateWithSuitableConstructor(
-        @SuppressWarnings("rawtypes") final Class<? extends Operator> operationClass,
-        final JsonFormsExpression[] expressions) {
-        final var constructors = operationClass.getDeclaredConstructors();
-        final var multiParameterConstructor = getMultiParameterConstructor(constructors, expressions.length);
-        if (multiParameterConstructor != null) {
-            return (Operator<JsonFormsExpression>)InstantiationUtil.createInstance(multiParameterConstructor,
-                (Object[])expressions);
+    private Optional<Expression<JsonFormsExpression>> extractExpressionFromAnnotation(final Effect effect) {
+        if (effect == null) {
+            return Optional.empty();
         }
-        final var arrayConstructor = getArrayConstructor(constructors);
-        if (arrayConstructor != null) {
-            final var parameters = new Object[]{expressions};
-            return (Operator<JsonFormsExpression>)InstantiationUtil.createInstance(arrayConstructor, parameters);
+        final var expressionCreatorClass = effect.condition();
+        if (expressionCreatorClass != PredicateProvider.class) {
+            try {
+                return Optional.of(m_expressionExtractor.createExpression(expressionCreatorClass));
+            } catch (InvalidReferenceException e) {
+                if (effect.ignoreOnMissingSignals()) {
+                    return Optional.empty();
+                }
+                throw new UiSchemaGenerationException(String.format(
+                    "Missing reference annotation: %s. "
+                        + "If this is correct and desired, check for that in advance using %s.",
+                    e.getReference().getName(), getIsMissingMethodName()), e);
+            }
+        } else { // TODO Remove this
+            final var signalClasses = effect.signals();
+            final var operationClass = effect.operation();
+            return m_expressionExtractor.createExpressionLegacy(signalClasses, operationClass,
+                effect.ignoreOnMissingSignals());
         }
-        throw new UiSchemaGenerationException(
-            String.format("No valid constructor found for operation %s with %s expressions",
-                operationClass.getSimpleName(), expressions.length));
     }
 
     /**
-     * Finds a suitable constructor from the given array of constructors. A suitable constructor is defined as one that
-     * accepts a specified number of parameters, each of type {@link Expression}.
-     *
-     * @param constructors an array of constructors to search through
-     * @param numParams the number of parameters the suitable constructor should accept
-     * @return the suitable constructor, or null if none is found
-     *
-     * @example public MyClass(Expression expression1, Expression expression2, Expression expression3) {}
+     * {@link PredicateInitializer#isMissing}
      */
-    private static Constructor<?> getMultiParameterConstructor(final Constructor<?>[] constructors,
-        final int numParams) {
-        return Arrays.asList(constructors).stream().filter(constructor -> {
-            final var parameters = constructor.getParameterTypes();
-            return parameters.length == numParams && Arrays.asList(parameters).stream()
-                .allMatch(paramType -> paramType.isAssignableFrom(Expression.class));
-        }).findAny().orElse(null);
-    }
-
-    /**
-     * Finds a suitable constructor from the given array of constructors. A suitable constructor is defined as one that
-     * accepts an array of {@link Expression}s as its sole parameter.
-     *
-     * @param constructors an array of constructors to search through
-     * @return the suitable constructor, or null if none is found
-     *
-     * @example public MyClass(Expression[] expressions) {}
-     * @example public MyClass(Expression... expressions) {}
-     *
-     */
-    private static Constructor<?> getArrayConstructor(final Constructor<?>[] constructors) {
-        return Arrays.asList(constructors).stream().filter(constructor -> {
-            final var parameters = constructor.getParameterTypes();
-            return parameters.length == 1 && parameters[0].isArray()
-                && parameters[0].componentType().isAssignableFrom(Expression.class);
-        }).findAny().orElse(null);
+    private static String getIsMissingMethodName() {
+        return String.format("%s#isMissing", PredicateInitializer.class.getSimpleName());
     }
 
 }

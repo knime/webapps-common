@@ -44,22 +44,22 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   1 Jun 2023 (Rupert Ettrich): created
+ *   12 Jun 2023 (Rupert Ettrich): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.rule;
+package org.knime.core.webui.node.dialog.defaultdialog.rule.impl;
+
+import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.SpecialColumns;
 
 /**
- * Triggers if the respective field has at least 2 elements. Can be used on {@link Array} types.
+ * Is fulfilled when a string equals the id of {@link SpecialColumns#NONE}
+ *
  * @author Rupert Ettrich
  */
-public final class HasMultipleItemsCondition implements Condition {
+public class IsNoneColumnStringCondition extends IsSpecificStringCondition {
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public <T> T accept(final ConditionVisitor<T> visitor) {
-        return visitor.visit(this);
+    public String getValue() {
+        return SpecialColumns.NONE.getId();
     }
 
 }

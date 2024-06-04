@@ -44,27 +44,44 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 4, 2023 (Paul Bärnreuther): created
+ *   Apr 6, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.rule;
+package org.knime.core.webui.node.dialog.defaultdialog.rule.impl;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.knime.core.webui.node.dialog.defaultdialog.rule.PredicateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.PredicateProvider.Predicate;
 
 /**
- * Triggers if an enum has one of a specified subset of values.
+ * A logical AND {@link Operator} that combines multiple child {@link Expression Expressions}.
+ *
+ * @param <E> the type of atomic expressions used for this implementation
  *
  * @author Paul Bärnreuther
  */
-public abstract class OneOfEnumCondition<E extends Enum<E>> implements Condition {
+public non-sealed class And<E extends AtomicExpression<E>> implements Operator<E> {
+
+    private final Predicate[] m_children;
 
     /**
-     * @return the values of the enum for which the condition should apply
+     * @param children the expressions that are combined using this AND operator
      */
-    public abstract E[] oneOf();
+    @SafeVarargs
+    public And(final Predicate... children) {
+        m_children = children;
+    }
 
     /**
-     * {@inheritDoc}
+     * @return the expressions that are combined using an operation
      */
+    public List<Expression<E>> getChildren() {
+        return Arrays.stream(m_children).map(child -> (Expression<E>)child).toList();
+    }
+
     @Override
-    public <T> T accept(final ConditionVisitor<T> visitor) {
+    public <T> T accept(final ExpressionVisitor<T, E> visitor) {
         return visitor.visit(this);
     }
 

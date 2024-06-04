@@ -54,6 +54,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.Condition;
+
 /**
  * This annotation is necessary to set up the conditions of a rule with a target specified by the {@link Effect}. It
  * binds a condition to the annotated field and supplies an identifier which can be referenced by other annotations.

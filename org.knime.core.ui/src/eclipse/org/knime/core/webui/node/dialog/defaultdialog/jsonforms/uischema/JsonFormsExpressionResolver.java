@@ -48,22 +48,20 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
-import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.FIELD_NAME_SCHEMA;
-import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.Schema.TAG_CONST;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_CONDITIONS;
-import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_SCOPE;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_TYPE;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil.getMapper;
 
-import org.knime.core.webui.node.dialog.defaultdialog.rule.And;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.ConstantExpression;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Expression;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.ExpressionVisitor;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.JsonFormsExpression;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.JsonFormsExpressionVisitor;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Not;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Or;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.ScopedExpression;
+import java.util.List;
+
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.And;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.Expression;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.ExpressionVisitor;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.JsonFormsExpression;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.JsonFormsExpressionVisitor;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.Not;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.Or;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -74,16 +72,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 class JsonFormsExpressionResolver implements ExpressionVisitor<ObjectNode, JsonFormsExpression> {
 
-    private final JsonFormsConditionResolver m_conditionVisitor;
-
     private final JsonFormsExpressionNegator m_negator;
 
-    /**
-     * @param mapper
-     */
-    public JsonFormsExpressionResolver() {
-        m_conditionVisitor = new JsonFormsConditionResolver();
+    private final JsonFormsExpressionVisitor m_atomicExpressionVisitor;
+
+    JsonFormsExpressionResolver(final DefaultNodeSettingsContext context) {
         m_negator = new JsonFormsExpressionNegator(this);
+        m_atomicExpressionVisitor = new DefaultJsonFormsExpressionVisitor(context);
     }
 
     /**
@@ -109,7 +104,7 @@ class JsonFormsExpressionResolver implements ExpressionVisitor<ObjectNode, JsonF
     }
 
     private void addAllConditions(final ObjectNode expressionNode,
-        final Expression<JsonFormsExpression>[] expressions) {
+        final List<Expression<JsonFormsExpression>> expressions) {
         final var node = expressionNode.putArray(TAG_CONDITIONS);
         for (var expression : expressions) {
             node.add(expression.accept(this));
@@ -124,29 +119,8 @@ class JsonFormsExpressionResolver implements ExpressionVisitor<ObjectNode, JsonF
         return not.getChildOperation().accept(m_negator);
     }
 
-    /**
-     * @example { "scope": "path/to/rule/source/setting", "schema": { "const": true} }
-     */
     @Override
     public ObjectNode visit(final JsonFormsExpression expression) {
-        return expression.accept(new JsonFormsExpressionVisitor() {
-
-            @Override
-            public ObjectNode visit(final ConstantExpression constantExpression) {
-                final var conditionNode = getMapper().createObjectNode();
-                if (!constantExpression.value()) {
-                    conditionNode.putObject(FIELD_NAME_SCHEMA).put(TAG_CONST, true);
-                }
-                return conditionNode;
-            }
-
-            @Override
-            public ObjectNode visit(final ScopedExpression scopedExpression) {
-                final var conditionNode = getMapper().createObjectNode();
-                conditionNode.put(TAG_SCOPE, scopedExpression.scope());
-                conditionNode.set(FIELD_NAME_SCHEMA, scopedExpression.condition().accept(m_conditionVisitor));
-                return conditionNode;
-            }
-        });
+        return expression.accept(m_atomicExpressionVisitor);
     }
 }

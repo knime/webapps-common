@@ -29,7 +29,7 @@
               "rule": {
                 "effect": "ENABLE",
                 "condition": {
-                  "schema": { "const": true }
+                  "schema": { "not": {} }
                 }
               }
             },
@@ -38,7 +38,9 @@
               "scope": "#/properties/enabledTrue",
               "rule": {
                 "effect": "ENABLE",
-                "condition": {}
+                "condition": {
+                  "schema": {}
+                }
               }
             }
           ]

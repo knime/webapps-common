@@ -46,7 +46,7 @@
  * History
  *   Apr 6, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.rule;
+package org.knime.core.webui.node.dialog.defaultdialog.rule.impl;
 
 /**
  * An expression which can not be separated into smaller expressions using logical operations.
@@ -55,5 +55,5 @@ package org.knime.core.webui.node.dialog.defaultdialog.rule;
  *
  * @author Paul Bärnreuther
  */
-non-sealed interface AtomicExpression<E extends AtomicExpression<E>> extends Expression<E> {
+public non-sealed interface AtomicExpression<E extends AtomicExpression<E>> extends Expression<E> {
 }

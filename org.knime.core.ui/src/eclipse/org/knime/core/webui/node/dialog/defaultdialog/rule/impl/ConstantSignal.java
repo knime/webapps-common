@@ -44,30 +44,35 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 4, 2023 (Paul Bärnreuther): created
+ *   Jan 23, 2024 (wiswedel): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.rule;
+package org.knime.core.webui.node.dialog.defaultdialog.rule.impl;
+
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
 
 /**
- * A visitor visiting all permitted implementations of {@link Expression} which is used to translate the expression to a
- * implementation dependent format.
+ * An indication provided to an {@link Effect} annotation that allows that effect to be active or not depending
+ * on the node's context. Implementations can determine their value from, e.g. the presence of certain columns
+ * (or column types) or if dynamic ports are enabled/shown or not.
  *
+ * <p>
+ * An <code>ConstantSignal</code> serves a similar role as a {@link Signal} annotation, except that it's not initiating
+ * an effect depending on a change of a setting but the context of the node.
+ *
+ * @author Bernd Wiswedel
  * @author Paul Bärnreuther
- * @param <T> the type of the returned value on visiting a {@link Expression}
+ * @since 5.3
  */
-@SuppressWarnings("javadoc")
-public interface ExpressionVisitor<T, E extends AtomicExpression<E>> {
+public interface ConstantSignal {
 
-    T visit(And<E> and);
-
-    T visit(Or<E> or);
-
-    T visit(Not<E> not);
-
-    T visit(E condition);
-
-    default T visit(final IdentityOperation<E> id) {
-        return id.expression().accept(this);
-    }
+    /**
+     * Determines the value of the single given the node's context.
+     *
+     * @param context Non-null context.
+     * @return If the signal applies.
+     */
+    boolean applies(DefaultNodeSettingsContext context);
 
 }

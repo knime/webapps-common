@@ -44,15 +44,28 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 6, 2023 (Paul Bärnreuther): created
+ *   Apr 4, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.rule;
+package org.knime.core.webui.node.dialog.defaultdialog.rule.impl;
 
 /**
- * An expression defining how to logically combine other expressions.
+ * Triggers if an enum has one of a specified subset of values.
  *
  * @author Paul Bärnreuther
  */
-public sealed interface Operator<E extends AtomicExpression<E>> extends Expression<E>
-    permits And, Or, Not, IdentityOperation {
+public abstract class OneOfEnumCondition<E extends Enum<E>> implements Condition {
+
+    /**
+     * @return the values of the enum for which the condition should apply
+     */
+    public abstract E[] oneOf();
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T> T accept(final ConditionVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
+
 }

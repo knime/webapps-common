@@ -44,36 +44,24 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 6, 2023 (Paul Bärnreuther): created
+ *   Oct 20, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.rule;
+package org.knime.core.webui.node.dialog.defaultdialog.rule.impl;
 
 /**
+ * Is fulfilled when the supplied pattern is met by a string.
  *
  * @author Paul Bärnreuther
- * @param <E> the type of the {@link AtomicExpression} depending on the implementation
  */
-public non-sealed class Or<E extends AtomicExpression<E>> implements Operator<E> {
-
-    private final Expression<E>[] m_children;
+public abstract class PatternCondition implements Condition {
 
     /**
-     * @param children the expressions which are combined using an or operation
+     * @return a regular expression which triggers the condition.
      */
-    @SuppressWarnings("unchecked")
-    public Or(final Expression<E>... children) {
-        m_children = children;
-    }
-
-    /**
-     * @return the expressions which are combined using an or operation
-     */
-    public Expression<E>[] getChildren() {
-        return m_children;
-    }
+    public abstract String getPattern();
 
     @Override
-    public <T> T accept(final ExpressionVisitor<T, E> visitor) {
+    public <T> T accept(final ConditionVisitor<T> visitor) {
         return visitor.visit(this);
     }
 

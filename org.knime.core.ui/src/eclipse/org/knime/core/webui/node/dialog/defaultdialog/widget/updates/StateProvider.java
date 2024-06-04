@@ -85,7 +85,7 @@ public interface StateProvider<S> {
          * while also depending on the new value.
          *
          * @param <T> the type of the dependency
-         * @param ref used for {@link Widget#ref} of a field
+         * @param ref used for {@link ValueReference} of a field
          * @return a supplier to be used during {@link #computeState}. If the returned supplier is not needed, use
          *         {@link #computeOnValueChange} instead.
          */
@@ -98,7 +98,7 @@ public interface StateProvider<S> {
          * change of it.
          *
          * @param <T> the type of the dependency
-         * @param ref used for {@link Widget#ref} of a field
+         * @param ref used for {@link ValueReference} of a field
          * @return a supplier to be used during {@link #computeState}.
          */
         <T> Supplier<T> getValueSupplier(Class<? extends Reference<T>> ref);
@@ -110,7 +110,7 @@ public interface StateProvider<S> {
          * If the state should also depend on the value of the triggering settings, use
          * {@link #computeFromValueSupplier} instead.
          *
-         * @param id used for {@link Widget#ref} of a field
+         * @param id used for {@link ValueReference} of a field
          * @param <T> the type of the dependency
          */
         <T> void computeOnValueChange(Class<? extends Reference<T>> id);
@@ -140,7 +140,7 @@ public interface StateProvider<S> {
 
         /**
          * Call this method to compute the state immediately after the dialog is opened, i.e. in an asynchronous way.
-         * For a synchronous initial computation, use {@link #computeBeforeOpenDiaog} instead.
+         * For a synchronous initial computation, use {@link #computeBeforeOpenDialog} instead.
          */
         void computeAfterOpenDialog();
 

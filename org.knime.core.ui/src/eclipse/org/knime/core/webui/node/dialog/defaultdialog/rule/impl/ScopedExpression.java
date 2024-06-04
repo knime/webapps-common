@@ -44,29 +44,25 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jan 23, 2024 (wiswedel): created
+ *   Apr 4, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.rule;
+package org.knime.core.webui.node.dialog.defaultdialog.rule.impl;
+
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * An atomic expression driven by json forms.
+ * The atomic expression that is used for json forms implementation
  *
- * @author Bernd Wiswedel
+ * @author Paul Bärnreuther
+ * @param node of the widget tree that this expcession is scoped to
+ * @param condition
  */
-public sealed interface JsonFormsExpression extends AtomicExpression<JsonFormsExpression>
-    permits ScopedExpression, ConstantExpression {
+public record ScopedExpression(WidgetTreeNode node, Condition condition) implements JsonFormsExpression {
 
     @Override
-    default <T> T accept(final ExpressionVisitor<T, JsonFormsExpression> visitor) {
+    public ObjectNode accept(final JsonFormsExpressionVisitor visitor) {
         return visitor.visit(this);
     }
-
-    /**
-     * @param visitor an implementation dependent expression resolver
-     * @return a resolved value of the expression depending on the implementation.
-     */
-    ObjectNode accept(JsonFormsExpressionVisitor visitor);
-
 }

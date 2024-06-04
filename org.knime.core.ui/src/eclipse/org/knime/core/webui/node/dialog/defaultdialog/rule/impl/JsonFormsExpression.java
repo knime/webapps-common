@@ -44,25 +44,29 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 4, 2023 (Paul Bärnreuther): created
+ *   Jan 23, 2024 (wiswedel): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.rule;
+package org.knime.core.webui.node.dialog.defaultdialog.rule.impl;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * The excluding or operation.
+ * An atomic expression driven by json forms.
  *
- * Similar to this, any kind of logical operation can be build up from {@link Operator}s.
- *
- * @author Paul Bärnreuther
+ * @author Bernd Wiswedel
  */
-public class Xor<E extends AtomicExpression<E>> extends Or<E> {
+public sealed interface JsonFormsExpression extends AtomicExpression<JsonFormsExpression>
+    permits ScopedExpression, ConstantExpression, FrameworkExpression {
+
+    @Override
+    default <T> T accept(final ExpressionVisitor<T, JsonFormsExpression> visitor) {
+        return visitor.visit(this);
+    }
 
     /**
-     * @param first
-     * @param second
+     * @param visitor an implementation dependent expression resolver
+     * @return a resolved value of the expression depending on the implementation.
      */
-    @SuppressWarnings("unchecked")
-    public Xor(final Expression<E> first, final Expression<E> second) {
-        super(new And<E>(first, new Not<E>(second)), new And<E>(new Not<E>(first), second));
-    }
+    ObjectNode accept(JsonFormsExpressionVisitor visitor);
+
 }

@@ -44,29 +44,22 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 6, 2023 (Paul Bärnreuther): created
+ *   Jun 5, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.rule;
+package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
-/**
- *
- * @author Paul Bärnreuther
- */
-public non-sealed class Not<E extends AtomicExpression<E>> implements Operator<E> {
+class InvalidReferenceException extends RuntimeException {
 
-    private final Expression<E> m_childOperation;
+    private static final long serialVersionUID = 1L;
 
-    public Not(final Expression<E> childOperation) {
-        m_childOperation = childOperation;
+    private final Class<?> m_referenceClass;
+
+    InvalidReferenceException(final Class<?> referenceClass) {
+        m_referenceClass = referenceClass;
     }
 
-    public Expression<E> getChildOperation() {
-        return m_childOperation;
-    }
-
-    @Override
-    public <T> T accept(final ExpressionVisitor<T, E> visitor) {
-        return visitor.visit(this);
+    Class<?> getReference() {
+        return m_referenceClass;
     }
 
 }

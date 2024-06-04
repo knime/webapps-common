@@ -44,70 +44,67 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 4, 2023 (Paul Bärnreuther): created
+ *   Aug 13, 2024 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.FIELD_NAME_SCHEMA;
-import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_NOT;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_SCOPE;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsSchemaConditionUtil.createCondition;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil.getMapper;
 
 import java.util.List;
 
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.And;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.Expression;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.ExpressionVisitor;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.JsonFormsExpression;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.Not;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.Or;
+import org.apache.commons.lang3.NotImplementedException;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsScopeUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.ConstantExpression;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.FrameworkExpression;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.JsonFormsExpressionVisitor;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.ScopedExpression;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.internal.InternalArrayWidget;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * A visitor used to resolve the "not" operation in the {@link JsonFormsExpressionResolver}
+ * @example { "scope": "path/to/rule/source/setting", "schema": { "const": true} }
  *
  * @author Paul Bärnreuther
  */
-final class JsonFormsExpressionNegator implements ExpressionVisitor<ObjectNode, JsonFormsExpression> {
+public class DefaultJsonFormsExpressionVisitor implements JsonFormsExpressionVisitor {
 
-    private final JsonFormsExpressionResolver m_operationVisitor;
+    private DefaultNodeSettingsContext m_context;
 
-    /**
-     * @param expressionVisitor
-     */
-    public JsonFormsExpressionNegator(final JsonFormsExpressionResolver expressionVisitor) {
-        m_operationVisitor = expressionVisitor;
+    DefaultJsonFormsExpressionVisitor(final DefaultNodeSettingsContext context) {
+        m_context = context;
+
     }
 
     @Override
-    public ObjectNode visit(final And<JsonFormsExpression> and) {
-        final var resolvedOperation = new Or<JsonFormsExpression>(reverseAll(and.getChildren()));
-        return resolvedOperation.accept(m_operationVisitor);
+    public ObjectNode visit(final ConstantExpression constantExpression) {
+        final var conditionNode = getMapper().createObjectNode();
+        conditionNode.set(FIELD_NAME_SCHEMA, createCondition(constantExpression));
+        return conditionNode;
     }
 
     @Override
-    public ObjectNode visit(final Or<JsonFormsExpression> or) {
-        final var resolvedOperation = new And<JsonFormsExpression>(reverseAll(or.getChildren()));
-        return resolvedOperation.accept(m_operationVisitor);
-    }
-
-    @SuppressWarnings("unchecked")
-    private static Expression<JsonFormsExpression>[]
-        reverseAll(final List<Expression<JsonFormsExpression>> expressions) {
-        return expressions.stream().map(Not<JsonFormsExpression>::new).toArray(Expression[]::new);
+    public ObjectNode visit(final ScopedExpression scopedExpression) {
+        final var conditionNode = getMapper().createObjectNode();
+        conditionNode.put(TAG_SCOPE, JsonFormsScopeUtil.toScope(scopedExpression.node()));
+        conditionNode.set(FIELD_NAME_SCHEMA, createCondition(scopedExpression, m_context));
+        return conditionNode;
     }
 
     @Override
-    public ObjectNode visit(final Not<JsonFormsExpression> not) {
-        return not.getChildOperation().accept(m_operationVisitor);
+    public ObjectNode visit(final FrameworkExpression frameworkExpression) {
+        final var frameworkPredicateProviderClass = frameworkExpression.providerClass();
+        if (InternalArrayWidget.ElementIsEdited.class.equals(frameworkPredicateProviderClass)) {
+            final var conditionNode = getMapper().createObjectNode();
+            conditionNode.put(TAG_SCOPE, JsonFormsScopeUtil.toScope(List.of("_edit"), null));
+            conditionNode.set(FIELD_NAME_SCHEMA, JsonFormsConditionResolver.createConstTrueCondition());
+            return conditionNode;
+        }
+        throw new NotImplementedException(
+            String.format("Framework provider %s is not supported.", frameworkPredicateProviderClass.getName()));
     }
-
-    @Override
-    public ObjectNode visit(final JsonFormsExpression expression) {
-        final var node = expression.accept(m_operationVisitor);
-        final var positiveSchema = node.get(FIELD_NAME_SCHEMA);
-        node.replace(FIELD_NAME_SCHEMA,
-            JsonFormsUiSchemaUtil.getMapper().createObjectNode().set(TAG_NOT, positiveSchema));
-        return node;
-    }
-
 }

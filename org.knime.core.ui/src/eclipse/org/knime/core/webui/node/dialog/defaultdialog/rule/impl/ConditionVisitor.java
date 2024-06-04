@@ -44,23 +44,41 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jan 23, 2024 (wiswedel): created
+ *   Apr 6, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.rule;
+package org.knime.core.webui.node.dialog.defaultdialog.rule.impl;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.IsColumnOfTypeCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.IsSpecificColumnCondition;
 
 /**
- * A visitor allowing jsonforms based implementation to determine their value.
+ * A visitor visiting all permitted implementations of {@link Condition} which is used to translate the condition to a
+ * implementation dependent format.
  *
- * @author Bernd Wiswedel
- * @param <T> the type of the returned value on visiting a {@link Expression}
+ * @author Paul Bärnreuther
+ * @param <T> the type of the returned value on visiting a {@link Condition}
  */
 @SuppressWarnings("javadoc")
-public interface JsonFormsExpressionVisitor {
+public interface ConditionVisitor<T> {
 
-    ObjectNode visit(ScopedExpression scopedExpression);
+    <E extends Enum<E>> T visit(OneOfEnumCondition<E> oneOfEnumCondition);
 
-    ObjectNode visit(ConstantExpression constantExpression);
+    T visit(TrueCondition trueCondition);
+
+    T visit(FalseCondition falseCondition);
+
+    T visit(HasMultipleItemsCondition hasMultipleItemsCondition);
+
+    T visit(IsSpecificColumnCondition isSpecificColumnCondition);
+
+    T visit(IsSpecificStringCondition isSpecificStringCondition);
+
+    T visit(PatternCondition patternCondition);
+
+    T visit(ArrayContainsCondition arrayContainsCondition);
+
+    T visit(ArrayContainsCondition2 arrayContainsCondition);
+
+    T visit(IsColumnOfTypeCondition isColumnOfTypeCondition);
 
 }

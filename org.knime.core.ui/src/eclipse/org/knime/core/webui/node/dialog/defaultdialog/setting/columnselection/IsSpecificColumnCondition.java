@@ -48,8 +48,8 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection;
 
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Condition;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.ConditionVisitor;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.Condition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.ConditionVisitor;
 
 /**
  * Condition to be used for {@link ColumnSelection} fields. It is triggered whenever the name of the selected column is

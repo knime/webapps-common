@@ -1128,7 +1128,7 @@ class UiSchemaOptionsTest {
             static final class ElementSettings implements DefaultNodeSettings {
 
                 @Widget(title = "Element value", description = "")
-                @Effect(signals = InternalArrayWidget.ElementIsEditedSignal.class, type = EffectType.SHOW)
+                @Effect(condition = InternalArrayWidget.ElementIsEdited.class, type = EffectType.SHOW)
                 String m_elementValue;
             }
 

@@ -57,15 +57,12 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TYPE_HORIZONTAL_LAYOUT;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TYPE_SECTION;
 
-import java.util.Map;
 import java.util.function.Function;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.CheckboxesWithVennDiagram;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.HorizontalLayout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.ScopedExpression;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -102,9 +99,8 @@ enum LayoutPart {
         return VIRTUAL_SECTION;
     }
 
-    ArrayNode create(final DefaultNodeSettingsContext context, final ArrayNode parent, final Class<?> layoutClass,
-        final Map<Class<?>, ScopedExpression> signals) {
-        return m_create.apply(new LayoutNodeCreationContext(parent, layoutClass, signals, context));
+    ArrayNode create(final ArrayNode parent, final Class<?> layoutClass, final UiSchemaRulesGenerator rulesGenerator) {
+        return m_create.apply(new LayoutNodeCreationContext(parent, layoutClass, rulesGenerator));
     }
 
     private static ArrayNode getSection(final LayoutNodeCreationContext creationContext) {
@@ -140,11 +136,10 @@ enum LayoutPart {
     }
 
     private static void applyRules(final ObjectNode node, final LayoutNodeCreationContext creationContext) {
-        new UiSchemaRulesGenerator(creationContext.layoutClass.getAnnotation(Effect.class), creationContext.signals(),
-            creationContext.context()).applyRulesTo(node);
+        creationContext.rulesGenerator().applyEffectTo(creationContext.layoutClass.getAnnotation(Effect.class), node);
     }
 
     private record LayoutNodeCreationContext(ArrayNode parent, Class<?> layoutClass,
-        Map<Class<?>, ScopedExpression> signals, DefaultNodeSettingsContext context) {
+        UiSchemaRulesGenerator rulesGenerator) {
     }
 }

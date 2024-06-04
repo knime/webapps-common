@@ -44,39 +44,33 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 6, 2023 (Paul Bärnreuther): created
+ *   22 Mar 2023 (Marc Bux, KNIME GmbH, Berlin, Germany): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.rule;
+package org.knime.core.webui.node.dialog.defaultdialog.rule.impl;
 
-import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.IsColumnOfTypeCondition;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.IsSpecificColumnCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.PredicateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.PredicateProvider.Predicate;
 
 /**
- * A visitor visiting all permitted implementations of {@link Condition} which is used to translate the condition to a
- * implementation dependent format.
+ * An expression in terms of propositional logic. An expression can either be an {@link AtomicExpression} or one of the
+ * three {@link Operator}s ({@link And}, {@link Or} or {@link Not}) defining how to combine multiple
+ * {@link AtomicExpression}s.
  *
- * @author Paul Bärnreuther
- * @param <T> the type of the returned value on visiting a {@link Condition}
+ * Each implementation offers its own {@link AtomicExpression}.
+ *
+ * Expressions are resolved via {@link ExpressionVisitor}s.
+ *
+ * @param <E> the type of atomic expressions used for this implementation
+ *
+ * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
-@SuppressWarnings("javadoc")
-public interface ConditionVisitor<T> {
+public sealed interface Expression<E extends AtomicExpression<E>> extends Predicate permits Operator, AtomicExpression  {
 
-    <E extends Enum<E>> T visit(OneOfEnumCondition<E> oneOfEnumCondition);
-
-    T visit(TrueCondition trueCondition);
-
-    T visit(FalseCondition falseCondition);
-
-    T visit(HasMultipleItemsCondition hasMultipleItemsCondition);
-
-    T visit(IsSpecificColumnCondition isSpecificColumnCondition);
-
-    T visit(IsSpecificStringCondition isSpecificStringCondition);
-
-    T visit(PatternCondition patternCondition);
-
-    T visit(ArrayContainsCondition arrayContainsCondition);
-
-    T visit(IsColumnOfTypeCondition isColumnOfTypeCondition);
+    /**
+     * @param <T> the type of the resolved value
+     * @param visitor an implementation dependent expression resolver
+     * @return a resolved value of the expression depending on the implementation.
+     */
+    <T> T accept(ExpressionVisitor<T, E> visitor);
 
 }
