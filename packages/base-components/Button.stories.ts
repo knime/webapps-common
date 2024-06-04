@@ -19,8 +19,7 @@ const meta = {
   parameters: {
     docs: {
       /* description: { component: "Hello Helian" } */ extractComponentDescription:
-        (component) => {
-          consola.warn(component);
+        () => {
           return "some string";
         },
     },
