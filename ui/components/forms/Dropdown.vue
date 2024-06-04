@@ -414,6 +414,12 @@ export default {
     background-color: var(--theme-color-error);
   }
 
+  &:focus-within.invalid::after {
+    left: 2px;
+    top: 2px;
+    bottom: 2px;
+  }
+
   & .placeholder {
     color: var(--knime-stone-gray);
     user-select: none;
