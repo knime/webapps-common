@@ -20,6 +20,13 @@
     "@tsconfig/node20": "^20.1.4",
     "@vue/tsconfig": "^0.5.1"
   },
+  "pnpm": {
+    "peerDependencyRules": {
+      "ignoreMissing": [
+        "postcss"
+      ]
+    }
+  },
   "volta": {
     "node": "20.11.0",
     "pnpm": "9.1.4"
