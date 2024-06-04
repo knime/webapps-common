@@ -325,9 +325,26 @@ export default {
     opacity: 0.5;
   }
 
+  & .invalid-marker {
+    position: absolute;
+    display: block;
+    width: 3px;
+    left: calc(-1 * var(--form-border-width));
+    top: calc(-1 * var(--form-border-width));
+    height: calc(100% + 2px);
+    background-color: var(--theme-color-error);
+    pointer-events: none; /* otherwise :hover of the field doesn't work when hovering the marker */
+  }
+
   &:focus-within {
     box-shadow: var(--theme-inset-focus-state);
     border-color: var(--knime-cornflower);
+  }
+
+  &:focus-within .invalid-marker {
+    left: calc(1 * var(--form-border-width));
+    top: calc(1 * var(--form-border-width));
+    height: calc(100% - 2 * var(--form-border-width));
   }
 
   &:hover:not(:focus-within, :disabled) {
@@ -362,17 +379,6 @@ export default {
     &:invalid {
       box-shadow: none; /* override default browser styling */
     }
-  }
-
-  & .invalid-marker {
-    position: absolute;
-    display: block;
-    width: 3px;
-    left: calc(-1 * var(--form-border-width));
-    top: calc(-1 * var(--form-border-width));
-    height: calc(100% + 2px);
-    background-color: var(--theme-color-error);
-    pointer-events: none; /* otherwise :hover of the field doesn't work when hovering the marker */
   }
 
   & .increase {

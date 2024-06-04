@@ -242,4 +242,10 @@ input {
 .input-wrapper:hover:not(:focus):has(input:not(:focus, :disabled)) {
   background-color: var(--theme-input-field-background-color-focus);
 }
+
+.input-wrapper:focus-within .invalid-marker {
+  left: calc(1 * var(--form-border-width));
+  top: calc(1 * var(--form-border-width));
+  height: calc(100% - 2 * var(--form-border-width));
+}
 </style>

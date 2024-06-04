@@ -87,6 +87,18 @@ div {
     opacity: 0.5;
   }
 
+  & .invalid-marker {
+    position: absolute;
+    display: block;
+    width: 3px;
+    left: 0;
+    margin: 0;
+    top: 0;
+    bottom: 0;
+    background-color: var(--theme-color-error);
+    pointer-events: none; /* otherwise :hover of the field doesn't work when hovering the marker */
+  }
+
   & textarea {
     font-size: 13px;
     font-weight: 300;
@@ -103,24 +115,19 @@ div {
     }
 
     &:focus {
-      border-color: var(--knime-masala);
+      box-shadow: var(--theme-inset-focus-state);
+      border-color: var(--knime-cornflower);
+    }
+
+    &:focus + .invalid-marker {
+      left: 2px;
+      top: 2px;
+      bottom: 2px;
     }
 
     &:hover:not(:focus, :disabled) {
       background-color: var(--theme-text-area-background-color-hover);
     }
-  }
-
-  & .invalid-marker {
-    position: absolute;
-    display: block;
-    width: 3px;
-    left: 0;
-    margin: 0;
-    top: 0;
-    bottom: 0;
-    background-color: var(--theme-color-error);
-    pointer-events: none; /* otherwise :hover of the field doesn't work when hovering the marker */
   }
 }
 </style>
