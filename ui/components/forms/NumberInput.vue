@@ -325,7 +325,8 @@ export default {
   }
 
   &:focus-within {
-    border-color: var(--knime-masala);
+    box-shadow: var(--theme-thin-focus-state);
+    border-color: var(--knime-cornflower);
   }
 
   & input[type="number"] {

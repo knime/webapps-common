@@ -154,8 +154,9 @@ export default {
   height: var(--single-line-form-height);
   padding: 0 5px;
 
-  &:focus {
-    border-color: var(--knime-masala);
+  &:focus-within {
+    box-shadow: var(--theme-thin-focus-state);
+    border-color: var(--knime-cornflower);
   }
 
   & .icon {
