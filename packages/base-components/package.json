@@ -6,13 +6,30 @@
   "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE LICENSE IN license.txt)",
   "author": "KNIME AG, Zurich, Switzerland",
   "type": "module",
+  "files": [
+    "dist"
+  ],
+  "module": "dist/index.js",
+  "exports": {
+    ".": "./dist/index.js"
+  },
   "scripts": {
-    "test-run": "node index.js"
+    "build": "vite build"
   },
   "dependencies": {
     "@knime/styles": "workspace:*"
   },
+  "peerDependencies": {
+    "vue": "3.x"
+  },
   "devDependencies": {
-    "@knime/eslint-config": "workspace:*"
+    "@knime/eslint-config": "workspace:*",
+    "@knime/styles": "workspace:*",
+    "@vitejs/plugin-vue": "^5.0.5",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.12",
+    "vite-plugin-css-injected-by-js": "^3.5.1",
+    "vite-plugin-dts": "^3.9.1",
+    "vue-tsc": "^2.0.19"
   }
 }
