@@ -174,6 +174,7 @@ export default defineConfig(({ mode }) => {
           "**/dev/**",
         ],
         reporter: ["html", "text", "lcov"],
+        reportsDirectory: `coverage/${testMode}`,
       },
       outputFile: {
         junit: "test-results/junit.xml", // needed for Bitbucket Pipeline, see https://support.atlassian.com/bitbucket-cloud/docs/test-reporting-in-pipelines/

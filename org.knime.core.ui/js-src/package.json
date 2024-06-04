@@ -33,7 +33,9 @@
     "audit": "check-audit --omit dev",
     "test:unit": "vitest",
     "test:integration": "vitest --mode integration",
-    "coverage": "vitest run --coverage",
+    "coverage": "run-p coverage:*",
+    "coverage:unit": "vitest run --coverage",
+    "coverage:integration": "vitest run --coverage --mode integration",
     "prepare": "cd ../.. && husky ./org.knime.core.ui/js-src/.husky",
     "sbom": "npx @cyclonedx/cyclonedx-npm --output-file bom.json --ignore-npm-errors --omit dev"
   },
