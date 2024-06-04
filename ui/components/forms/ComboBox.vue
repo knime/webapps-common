@@ -339,10 +339,6 @@ export default defineComponent({
     justify-content: space-between;
     max-width: 100%;
 
-    &:focus-within {
-      border-color: var(--knime-masala);
-    }
-
     &:focus {
       outline: none;
     }
@@ -420,6 +416,11 @@ export default defineComponent({
       align-items: center;
       justify-content: center;
     }
+  }
+
+  &:focus-within .summary-input-icon-wrapper {
+    box-shadow: var(--theme-inset-focus-state);
+    border-color: var(--knime-cornflower);
   }
 }
 </style>
