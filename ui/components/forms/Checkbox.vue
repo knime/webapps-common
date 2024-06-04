@@ -21,17 +21,6 @@ export default {
       type: Boolean,
       default: false,
     },
-    /**
-     * Controls the size of the label
-     * supported values:
-     * - regular
-     * - large
-     */
-    labelSize: {
-      type: String,
-      default: "regular",
-      validator: (value) => ["regular", "large"].includes(value),
-    },
   },
   emits: ["update:modelValue"],
   computed: {
@@ -82,9 +71,16 @@ export default {
   display: inline-block;
   position: relative;
   isolation: isolate;
-  padding: 3px 0 3px 24px;
+  padding: 1px 3px 1px 5px;
   max-width: 100%;
   cursor: pointer;
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 16px;
+
+  &:focus-within {
+    box-shadow: var(--theme-default-focus-state);
+  }
 
   /* invalid value */
   &.invalid {
@@ -105,12 +101,16 @@ export default {
     height: 0;
 
     & + span {
+      position: relative;
       display: inline-block;
       overflow: hidden;
       min-width: 1em;
       text-overflow: ellipsis;
       white-space: nowrap;
       max-width: 100%;
+      padding-left: 24px;
+      min-height: 16px;
+      vertical-align: bottom;
     }
 
     & + span::before {
@@ -128,8 +128,7 @@ export default {
       /* ✓ */
       position: absolute;
       left: 0;
-      top: 4px; /* based on regular line-height of 18px; container will be 24px(2x3px padding) 24-14=10/2 = 5-1 = 4
-      to let higher letters appear more centered */
+      top: 1px;
     }
 
     &:checked {
@@ -138,11 +137,6 @@ export default {
         /* default */
         border-color: var(--theme-checkbox-border-color-selected);
         background: var(--theme-checkbox-background-color-selected);
-      }
-
-      &:focus + span::before {
-        border-color: var(--theme-checkbox-border-color-selected-focus);
-        background: var(--theme-checkbox-background-color-selected-focus);
       }
 
       &:hover:enabled + span::before {
@@ -170,10 +164,6 @@ export default {
         border-color: var(--theme-checkbox-foreground-color-selected);
       }
 
-      &:focus + span::after {
-        border-color: var(--theme-checkbox-foreground-color-selected-focus);
-      }
-
       &:hover:enabled + span::after {
         border-color: var(--theme-checkbox-foreground-color-selected-hover);
       }
@@ -190,46 +180,7 @@ export default {
       &:hover:enabled + span::before {
         border-color: var(--theme-checkbox-border-color-hover);
       }
-
-      &:focus:not(:hover) + span::before {
-        border-color: var(--theme-checkbox-border-color-focus);
-      }
     }
-  }
-
-  /* label size */
-  &.regular {
-    --regular-height: 18px;
-
-    font-size: 13px;
-    font-weight: 300;
-    line-height: var(--regular-height);
-
-    & > span {
-      min-height: var(--regular-height);
-    }
-  }
-
-  &.large {
-    --large-height: 20px;
-
-    font-family: var(--theme-text-bold-font-family);
-    color: var(--theme-text-bold-color);
-    font-size: 16px;
-    font-weight: 700;
-    line-height: var(--large-height);
-
-    & > span {
-      min-height: var(--large-height);
-    }
-
-    /* stylelint-disable no-descending-specificity */
-    & input + span::before,
-    & input + span::after {
-      /* ✓ */
-      top: 5px; /* line height 20px; container 26px(2x3px padding) 26-14=12/2=6  -1=5 to center higher letters better */
-    }
-    /* stylelint-enable no-descending-specificity */
   }
 }
 </style>

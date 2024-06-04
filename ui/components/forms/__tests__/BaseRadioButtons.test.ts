@@ -137,7 +137,6 @@ describe("BaseRadioButtons.vue", () => {
     const labels = wrapper.findAll("label");
     expect(labels.length).toBe(5);
     labels.forEach((label, index) => {
-      expect(label.find("br").exists()).toBeTruthy();
       expect(label.text()).toContain(`Subtext ${index + 1}`);
     });
   });

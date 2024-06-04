@@ -74,12 +74,12 @@ export default {
     position: relative;
     display: block;
     font-weight: 300;
-    font-size: 13px;
-    line-height: 18px;
-    padding: 3px 3px 3px 23px;
+    padding: 1px 4px 1px 2px;
     max-width: 100%;
     width: max-content;
     cursor: pointer;
+    line-height: 1;
+    font-size: 13px;
 
     &.disabled {
       opacity: 0.5;
@@ -91,6 +91,7 @@ export default {
       position: absolute;
       width: 0;
       height: 0;
+      margin: 0;
 
       & + span {
         display: inline-block;
@@ -99,6 +100,9 @@ export default {
         color: var(--knime-masala);
         overflow: hidden;
         text-overflow: ellipsis;
+        height: 16px;
+        line-height: 16px;
+        vertical-align: middle;
       }
 
       /* ◯ */
@@ -110,11 +114,10 @@ export default {
         width: 14px;
         height: 14px;
         border-radius: 100%;
-        left: 0;
-        top: 5px;
-        position: absolute;
-        vertical-align: top;
         text-align: center;
+        margin-right: var(--spacing-8);
+        margin-top: 1px;
+        vertical-align: top;
       }
 
       &:enabled:hover + span::before {
@@ -148,11 +151,17 @@ export default {
         }
       }
     }
+
+    & span.subtext {
+      display: inline-block;
+      margin-top: var(--spacing-8);
+    }
   }
 }
 
-.radio-buttons:focus-within :deep(label input:not(:disabled) + span::before) {
-  border: 1px solid var(--theme-radio-border-color-focus);
+/* .radio-buttons:focus-within :deep(label input:not(:disabled) + span::before) { */
+.radio-buttons :deep(label:focus-within) {
+  box-shadow: var(--theme-default-focus-state);
 }
 
 .horizontal :deep() {
@@ -163,8 +172,14 @@ export default {
     min-width: 0; /* sizing and text overflow with flexbox - see https://stackoverflow.com/a/26535469 */
 
     &:not(:last-of-type) {
-      padding-right: 12px;
+      margin-right: var(--spacing-12);
     }
+  }
+}
+
+.vertical :deep() {
+  & label:not(:last-of-type) {
+    margin-bottom: var(--spacing-12);
   }
 }
 </style>

@@ -86,7 +86,7 @@ export default defineComponent({
       <span :title="item.text">{{ item.text }}</span>
       <slot :item="item" />
       <template v-if="item.subtext">
-        <br /><span> {{ item.subtext }}</span>
+        <span class="subtext"> {{ item.subtext }}</span>
       </template>
     </label>
   </div>

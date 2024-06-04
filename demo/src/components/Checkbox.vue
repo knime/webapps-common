@@ -5,9 +5,6 @@ import code from "webapps-common/ui/components/forms/Checkbox.vue?raw";
 
 const codeExample = `<Checkbox v-model="selected">
   I want cookies!
-</Checkbox>
-<Checkbox v-model="selectedLarge" label-size="large">
-  I want larger cookies!
 </Checkbox>`;
 
 export default {
@@ -48,10 +45,6 @@ export default {
         <div class="grid-item-6">
           <Checkbox v-model="selected"> I want cookies! </Checkbox>
           <br />
-          <Checkbox v-model="selectedLarge" label-size="large">
-            I want larger cookies!
-          </Checkbox>
-          <br />
           <Checkbox v-model="selected" disabled>
             This checkbox is disabled!
           </Checkbox>
@@ -62,7 +55,7 @@ export default {
         </div>
         <div class="grid-item-6">
           value: {{ selected }}<br />
-          value: {{ selectedLarge }} <br /><br /><br />
+          value: {{ selectedLarge }} <br />
           value: {{ selectedMissing }}
         </div>
       </div>

@@ -116,6 +116,7 @@ export default {
 <style scoped lang="postcss">
 .checkboxes {
   overflow: hidden;
+  padding: 2px;
 
   &.horizontal {
     display: flex;
@@ -125,8 +126,14 @@ export default {
       text-overflow: ellipsis;
 
       &:not(:last-of-type) {
-        padding-right: 12px;
+        margin-right: var(--spacing-12);
       }
+    }
+  }
+
+  &.vertical:deep(label) {
+    &:not(:last-of-type) {
+      margin-bottom: var(--spacing-12);
     }
   }
 
