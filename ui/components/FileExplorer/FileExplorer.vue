@@ -50,6 +50,10 @@ interface Props {
    */
   disableMultiSelect?: boolean;
   /**
+   * Disables selection completely. (Regardless of the value of the disableMultiSelect prop)
+   */
+  disableSelection?: boolean;
+  /**
    * Disable dragging completely
    */
   disableDragging?: boolean;
@@ -84,6 +88,7 @@ const props = withDefaults(defineProps<Props>(), {
   activeRenamedItemId: null,
   disableContextMenu: false,
   disableMultiSelect: false,
+  disableSelection: false,
   disableDragging: false,
   draggingAnimationMode: "auto",
   clickOutsideException: null,
@@ -133,6 +138,7 @@ const multiSelection = useFocusableMultiSelection({
   singleSelectionOnly: toRef(props, "disableMultiSelect"),
   numberOfItems: computed(() => props.items.length),
   startIndex: computed(() => (itemBack.value ? -1 : 0)),
+  disabled: props.disableSelection,
 });
 const {
   multiSelectionState,
