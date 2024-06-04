@@ -8,8 +8,9 @@ import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 // import { svgoConfig } from "webapps-common/config/svgo.config";
 
 // TODO svg loader
-// TODO css inject?
-// TODO dts
+
+
+// TODO maybe the build is not needed at all
 
 const relPath = (path: String) => fileURLToPath(new URL(path, import.meta.url));
 
@@ -25,7 +26,7 @@ export default defineConfig({
   ],
   build: {
     lib: {
-      entry: [relPath("lib/index.ts")],
+      entry: [relPath("src/index.ts")],
       formats: ["es"],
     },
     rollupOptions: {
