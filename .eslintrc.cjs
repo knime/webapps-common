@@ -14,5 +14,9 @@ module.exports = {
   globals: {
     consola: true,
   },
-  ignorePatterns: ["**/opensourcecredits/used-packages.json"],
+  ignorePatterns: [
+    "**/opensourcecredits/used-packages.json",
+    "demo/*",
+    "demo2/*",
+  ],
 };
