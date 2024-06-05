@@ -276,6 +276,12 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length);
   &.disabled {
     opacity: 0.5;
   }
+
+  &:focus-within:not(.disabled),
+  &:focus-within:not(.disabled).with-border {
+    box-shadow: 0 0 0 1px var(--theme-date-input-border-focus-color);
+    border-color: var(--theme-date-input-border-focus-color);
+  }
 }
 
 .embedded-toolbar {
