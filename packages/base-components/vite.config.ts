@@ -24,7 +24,7 @@ export default defineConfig({
     cssInjectedByJsPlugin({}), // not supported natively in Vite yet, see https://github.com/vitejs/vite/issues/1579]
   ],
   test: {
-    include: ["**/__tests__/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+    include: ["**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
     environment: "jsdom",
     reporters: ["default", "junit"],
     setupFiles: [fileURLToPath(new URL("vitest.setup.ts", import.meta.url))],
