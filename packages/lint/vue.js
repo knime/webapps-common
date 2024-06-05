@@ -30,7 +30,7 @@ module.exports = {
   },
   settings: {
     "import/resolver": {
-      alias: {
+      "eslint-import-resolver-custom-alias": {
         extensions: [".js", ".mjs", ".config.js", ".vue", ".json", ".svg"],
       },
     },
