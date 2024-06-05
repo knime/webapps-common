@@ -135,17 +135,19 @@ export default {
       }
     }
 
-    &:focus {
-      & + span::after {
-        background-color: var(--theme-toggle-switch-background-color-focus);
-      }
-    }
-
     &:active {
       & + span::after {
         width: 17px;
         background-color: var(--theme-toggle-switch-background-color-active);
       }
+    }
+  }
+
+  &:focus-within {
+    & input + span[data-v-5470b4a3]::before {
+      box-shadow:
+        0 0 0 3px var(--theme-toggle-switch-background-color),
+        0 0 0 5px var(--knime-cornflower);
     }
   }
 
