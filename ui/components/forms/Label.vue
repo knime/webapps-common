@@ -99,7 +99,7 @@ export default {
   font-size: 13px;
   font-family: var(--theme-text-medium-font-family);
   color: var(--theme-text-medium-color);
-  line-height: 18px;
+  line-height: 14px;
   display: block;
   width: max-content;
   text-overflow: ellipsis;

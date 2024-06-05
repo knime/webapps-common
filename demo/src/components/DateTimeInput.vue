@@ -61,10 +61,10 @@ export default {
       </div>
       <div class="grid-container">
         <div class="grid-item-6 inputs">
-          <Label text="Default" large>
+          <Label text="Default">
             <DateTimeInput v-model="dateDefault" />
           </Label>
-          <Label text="Show only Date" large>
+          <Label text="Show only Date">
             <DateTimeInput
               v-model="dateOnlyDate"
               :show-time="false"
@@ -72,14 +72,14 @@ export default {
               :show-milliseconds="false"
             />
           </Label>
-          <Label text="Show Milliseconds" large>
+          <Label text="Show Milliseconds">
             <DateTimeInput
               v-model="dateMilliseconds"
               :show-seconds="true"
               :show-milliseconds="true"
             />
           </Label>
-          <Label text="With bounds on date" large>
+          <Label text="With bounds on date">
             <DateTimeInput
               v-model="dateBounds"
               :show-seconds="false"
@@ -88,14 +88,14 @@ export default {
               :max="new Date()"
             />
           </Label>
-          <Label text="Two lines" large>
+          <Label text="Two lines">
             <DateTimeInput
               v-model="dateTwoLines"
               two-lines
               :show-seconds="true"
             />
           </Label>
-          <Label text="With disabled state" large>
+          <Label text="With disabled state">
             <DateTimeInput
               v-model="dateDefault"
               :show-seconds="true"

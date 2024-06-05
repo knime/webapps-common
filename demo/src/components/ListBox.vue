@@ -1,6 +1,7 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
 import ListBox from "webapps-common/ui/components/forms/ListBox.vue";
+import Label from "webapps-common/ui/components/forms/Label.vue";
 import code from "webapps-common/ui/components/forms/ListBox.vue?raw";
 
 const codeExample = `<ListBox
@@ -21,6 +22,7 @@ const codeExample = `<ListBox
 export default {
   components: {
     ListBox,
+    Label,
     CodeExample,
   },
   data() {
@@ -57,90 +59,96 @@ export default {
       </div>
       <div class="grid-container">
         <div class="grid-item-5">
-          <ListBox
-            v-model="selected"
-            aria-label="A List"
-            :possible-values="[
-              {
-                id: 'foo',
-                text: 'Foo',
-              },
-              {
-                id: 'bar',
-                text: 'Bar',
-              },
-              {
-                id: 'baz',
-                text: 'Baz',
-              },
-            ]"
-          />
+          <Label #default="{ labelForId }" text="Label for list box">
+            <ListBox
+              :id="labelForId"
+              v-model="selected"
+              aria-label="A List"
+              :possible-values="[
+                {
+                  id: 'foo',
+                  text: 'Foo',
+                },
+                {
+                  id: 'bar',
+                  text: 'Bar',
+                },
+                {
+                  id: 'baz',
+                  text: 'Baz',
+                },
+              ]"
+            />
+          </Label>
         </div>
         <div class="grid-item-5">
-          <ListBox
-            v-model="selected"
-            aria-label="A limited list"
-            :is-valid="false"
-            :size="3"
-            :possible-values="[
-              {
-                id: 'foo',
-                text: 'Foo',
-              },
-              {
-                id: 'bar',
-                text: 'Bar',
-              },
-              {
-                id: 'bar2',
-                text: 'Bar 2',
-              },
-              {
-                id: 'bar3',
-                text: 'Bar 3',
-              },
-              {
-                id: 'bar4',
-                text: 'Bar 4',
-              },
-              {
-                id: 'bar5',
-                text: 'Bar 5',
-              },
-              {
-                id: 'bar6',
-                text: 'Bar 6',
-              },
-              {
-                id: 'bar7',
-                text: 'Bar 7',
-              },
-              {
-                id: 'bar8',
-                text: 'Bar 8',
-              },
-              {
-                id: 'bar9',
-                text: 'Bar 9',
-              },
-              {
-                id: 'bar10',
-                text: 'Bar 10',
-              },
-              {
-                id: 'bar11',
-                text: 'Bar 11',
-              },
-              {
-                id: 'bar12',
-                text: 'Bar 12',
-              },
-              {
-                id: 'baz',
-                text: 'Baz',
-              },
-            ]"
-          />
+          <Label #default="{ labelForId }" text="Label for list box">
+            <ListBox
+              :id="labelForId"
+              v-model="selected"
+              aria-label="A limited list"
+              :is-valid="false"
+              :size="3"
+              :possible-values="[
+                {
+                  id: 'foo',
+                  text: 'Foo',
+                },
+                {
+                  id: 'bar',
+                  text: 'Bar',
+                },
+                {
+                  id: 'bar2',
+                  text: 'Bar 2',
+                },
+                {
+                  id: 'bar3',
+                  text: 'Bar 3',
+                },
+                {
+                  id: 'bar4',
+                  text: 'Bar 4',
+                },
+                {
+                  id: 'bar5',
+                  text: 'Bar 5',
+                },
+                {
+                  id: 'bar6',
+                  text: 'Bar 6',
+                },
+                {
+                  id: 'bar7',
+                  text: 'Bar 7',
+                },
+                {
+                  id: 'bar8',
+                  text: 'Bar 8',
+                },
+                {
+                  id: 'bar9',
+                  text: 'Bar 9',
+                },
+                {
+                  id: 'bar10',
+                  text: 'Bar 10',
+                },
+                {
+                  id: 'bar11',
+                  text: 'Bar 11',
+                },
+                {
+                  id: 'bar12',
+                  text: 'Bar 12',
+                },
+                {
+                  id: 'baz',
+                  text: 'Baz',
+                },
+              ]"
+            />
+          </Label>
         </div>
         <div class="grid-item-2">selected id: {{ selected }}</div>
       </div>

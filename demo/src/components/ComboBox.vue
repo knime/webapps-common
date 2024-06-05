@@ -1,6 +1,7 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
 import ComboBox from "webapps-common/ui/components/forms/ComboBox.vue";
+import Label from "webapps-common/ui/components/forms/Label.vue";
 import code from "webapps-common/ui/components/forms/ComboBox.vue?raw";
 
 const codeExample = `<ComboBox
@@ -23,6 +24,7 @@ const codeExample = `<ComboBox
 export default {
   components: {
     ComboBox,
+    Label,
     CodeExample,
   },
   data() {
@@ -62,7 +64,13 @@ export default {
       <div class="grid-container">
         <div class="grid-item-3">default</div>
         <div class="grid-item-6">
-          <ComboBox v-model="selected[0]" :possible-values="values" />
+          <Label #default="{ labelForId }" text="Label for combo box">
+            <ComboBox
+              :id="labelForId"
+              v-model="selected[0]"
+              :possible-values="values"
+            />
+          </Label>
         </div>
         <div class="grid-item-3">selected-ids: {{ selected[0] }}</div>
       </div>

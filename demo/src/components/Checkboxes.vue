@@ -1,6 +1,7 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
 import Checkboxes from "webapps-common/ui/components/forms/Checkboxes.vue";
+import Label from "webapps-common/ui/components/forms/Label.vue";
 import code from "webapps-common/ui/components/forms/Checkboxes.vue?raw";
 
 const codeExample = `<Checkboxes
@@ -20,6 +21,7 @@ const codeExample = `<Checkboxes
 export default {
   components: {
     Checkboxes,
+    Label,
     CodeExample,
   },
   data() {
@@ -50,68 +52,74 @@ export default {
       </div>
       <div class="grid-container">
         <div class="grid-item-5">
-          <span>Horizontal</span>
-          <Checkboxes
-            v-model="selected"
-            placeholder="Select stuff here!"
-            :possible-values="[
-              {
-                id: 'foo',
-                text: 'Foo',
-              },
-              {
-                id: 'bar',
-                text: 'Bar',
-              },
-              {
-                id: 'baz',
-                text: 'Baz',
-              },
-            ]"
-          />
+          <Label #default="{ labelForId }" text="Horizontal">
+            <Checkboxes
+              :id="labelForId"
+              v-model="selected"
+              placeholder="Select stuff here!"
+              :possible-values="[
+                {
+                  id: 'foo',
+                  text: 'Foo',
+                },
+                {
+                  id: 'bar',
+                  text: 'Bar',
+                },
+                {
+                  id: 'baz',
+                  text: 'Baz',
+                },
+              ]"
+            />
+          </Label>
         </div>
         <div class="grid-item-5">
-          <span>Vertical</span>
-          <Checkboxes
-            v-model="selected"
-            alignment="vertical"
-            placeholder="Select stuff here vertical!"
-            :possible-values="[
-              {
-                id: 'foo',
-                text: 'Foo',
-              },
-              {
-                id: 'bar',
-                text: 'Bar',
-              },
-              {
-                id: 'baz',
-                text: 'Baz',
-              },
-            ]"
-          />
+          <Label #default="{ labelForId }" text="Vertical">
+            <Checkboxes
+              :id="labelForId"
+              v-model="selected"
+              alignment="vertical"
+              placeholder="Select stuff here vertical!"
+              :possible-values="[
+                {
+                  id: 'foo',
+                  text: 'Foo',
+                },
+                {
+                  id: 'bar',
+                  text: 'Bar',
+                },
+                {
+                  id: 'baz',
+                  text: 'Baz',
+                },
+              ]"
+            />
+          </Label>
         </div>
         <div class="grid-item-5">
-          <span>Disabled</span>
-          <Checkboxes
-            v-model="selected"
-            disabled
-            :possible-values="[
-              {
-                id: 'foo',
-                text: 'Foo',
-              },
-              {
-                id: 'bar',
-                text: 'Bar',
-              },
-              {
-                id: 'baz',
-                text: 'Baz',
-              },
-            ]"
-          />
+          <Label #default="{ labelForId }" text="Disabled">
+            <Checkboxes
+              :id="labelForId"
+              v-model="selected"
+              disabled
+              :possible-values="[
+                {
+                  id: 'foo',
+                  text: 'Foo',
+                },
+                {
+                  id: 'bar',
+                  text: 'Bar',
+                },
+                {
+                  id: 'baz',
+                  text: 'Baz',
+                },
+              ]"
+            />
+          </Label>
         </div>
         <div class="grid-item-2">selected ids: {{ selected }}</div>
       </div>

@@ -1,6 +1,7 @@
 <script lang="ts">
 import CodeExample from "./demo/CodeExample.vue";
 import SortList from "webapps-common/ui/components/forms/SortList.vue";
+import Label from "webapps-common/ui/components/forms/Label.vue";
 import code from "webapps-common/ui/components/forms/SortList.vue?raw";
 
 const codeExample = `<SortList
@@ -25,6 +26,7 @@ const numElements = 20;
 export default {
   components: {
     SortList,
+    Label,
     CodeExample,
   },
   data() {
@@ -61,14 +63,17 @@ export default {
       <div class="grid-container">
         <div class="grid-item-6">
           <!--  eslint-disable vue/attribute-hyphenation ariaLabel needs to be given like this for typescript to not complain -->
-          <SortList
-            v-model="modelValue"
-            :size="7"
-            ariaLabel="myAriaLabel"
-            left-label="Select from the 7 visible items (size)"
-            right-label="The selected stuff"
-            :possible-values="demoValues"
-          />
+          <Label #default="{ labelForId }" text="Label for sort list">
+            <SortList
+              :id="labelForId"
+              v-model="modelValue"
+              :size="7"
+              ariaLabel="myAriaLabel"
+              left-label="Select from the 7 visible items (size)"
+              right-label="The selected stuff"
+              :possible-values="demoValues"
+            />
+          </Label>
         </div>
         <div class="grid-item-6">modelValue: {{ modelValue }}</div>
       </div>

@@ -1,6 +1,7 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
 import Checkbox from "webapps-common/ui/components/forms/Checkbox.vue";
+import Label from "webapps-common/ui/components/forms/Label.vue";
 import code from "webapps-common/ui/components/forms/Checkbox.vue?raw";
 
 const codeExample = `<Checkbox v-model="selected">
@@ -13,6 +14,7 @@ const codeExample = `<Checkbox v-model="selected">
 export default {
   components: {
     Checkbox,
+    Label,
     CodeExample,
   },
   data() {

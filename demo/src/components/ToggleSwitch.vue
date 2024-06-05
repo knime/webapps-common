@@ -1,6 +1,7 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
 import ToggleSwitch from "webapps-common/ui/components/forms/ToggleSwitch.vue";
+import Label from "webapps-common/ui/components/forms/Label.vue";
 import code from "webapps-common/ui/components/forms/ToggleSwitch.vue?raw";
 
 const codeExample = `<ToggleSwitch />
@@ -9,6 +10,7 @@ const codeExample = `<ToggleSwitch />
 export default {
   components: {
     ToggleSwitch,
+    Label,
     CodeExample,
   },
   data() {
@@ -40,8 +42,11 @@ export default {
       </div>
       <div class="grid-container">
         <div class="grid-item-6">
-          <ToggleSwitch v-model="selected"> I want cookies! </ToggleSwitch>
-          <br />
+          <Label #default="{ labelForId }" text="Label for toggle switch">
+            <ToggleSwitch :id="labelForId" v-model="selected">
+              I want cookies!
+            </ToggleSwitch>
+          </Label>
           <ToggleSwitch v-model="selectedLarge" label-size="large">
             I want larger cookies!
           </ToggleSwitch>

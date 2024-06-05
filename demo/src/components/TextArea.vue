@@ -1,6 +1,7 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
 import TextArea from "webapps-common/ui/components/forms/TextArea.vue";
+import Label from "webapps-common/ui/components/forms/Label.vue";
 import code from "webapps-common/ui/components/forms/TextArea.vue?raw";
 
 const codeExample = `<TextArea
@@ -25,6 +26,7 @@ const codeExample = `<TextArea
 export default {
   components: {
     TextArea,
+    Label,
     CodeExample,
   },
   data() {
@@ -59,7 +61,12 @@ export default {
       </div>
       <div class="grid-container">
         <div class="grid-item-6 inputs">
-          <TextArea v-model="inputValue" title="Insert text" />
+          <Label #default="{ labelForId }" text="Label for a text area"
+            ><TextArea
+              :id="labelForId"
+              v-model="inputValue"
+              title="Insert text"
+          /></Label>
           <TextArea v-model="inputValue2" placeholder="I'm a placeholder." />
           <TextArea v-model="inputValue3" :is-valid="false" />
           <br />

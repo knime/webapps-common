@@ -4,6 +4,7 @@ import CodeExample from "./demo/CodeExample.vue";
 import Checkbox from "webapps-common/ui/components/forms/Checkbox.vue";
 import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
 import RichTextEditor from "webapps-common/ui/components/forms/RichTextEditor/RichTextEditor.vue";
+import Label from "webapps-common/ui/components/forms/Label.vue";
 import code from "webapps-common/ui/components/forms/RichTextEditor/RichTextEditor.vue?raw";
 
 const codeExample = `
@@ -58,6 +59,7 @@ export default defineComponent({
     CodeExample,
     RichTextEditor,
     FunctionButton,
+    Label,
   },
   data() {
     return {
@@ -81,14 +83,17 @@ export default defineComponent({
         <div class="grid-item-6">
           <Checkbox v-model="editable"> Editable </Checkbox><br />
           <Checkbox v-model="disabled"> Disabled </Checkbox>
-          <RichTextEditor
-            v-model="value"
-            :base-extensions="{ all: true }"
-            :editable="editable"
-            :disabled="disabled"
-            :min-height="minHeight"
-            :max-height="maxHeight"
-          />
+          <Label #default="{ labelForId }" text="Label for rich text editor">
+            <RichTextEditor
+              :id="labelForId"
+              v-model="value"
+              :base-extensions="{ all: true }"
+              :editable="editable"
+              :disabled="disabled"
+              :min-height="minHeight"
+              :max-height="maxHeight"
+            />
+          </Label>
         </div>
         <div class="grid-item-6">
           <strong>Output:</strong><br />

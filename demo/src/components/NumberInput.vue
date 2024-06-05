@@ -105,11 +105,7 @@ export default {
         <div class="grid-item-8">
           <div class="grid-container">
             <div class="grid-item-6 inputs">
-              <Label
-                #default="{ labelForId }"
-                text="Integer (step-size = 1)"
-                large
-              >
+              <Label #default="{ labelForId }" text="Integer (step-size = 1)">
                 <NumberInput
                   :id="labelForId"
                   ref="input1"
@@ -127,11 +123,7 @@ export default {
           </div>
           <div class="grid-container">
             <div class="grid-item-6 inputs">
-              <Label
-                #default="{ labelForId }"
-                text="Double (step-size = .1)"
-                large
-              >
+              <Label #default="{ labelForId }" text="Double (step-size = .1)">
                 <NumberInput
                   :id="labelForId"
                   ref="input2"
@@ -149,7 +141,7 @@ export default {
           </div>
           <div class="grid-container">
             <div class="grid-item-6 inputs">
-              <Label #default="{ labelForId }" :text="input3Text" large>
+              <Label #default="{ labelForId }" :text="input3Text">
                 <NumberInput
                   :id="labelForId"
                   ref="input3"
@@ -167,7 +159,7 @@ export default {
           </div>
           <div class="grid-container">
             <div class="grid-item-6 inputs">
-              <Label #default="{ labelForId }" text="Disabled" large>
+              <Label #default="{ labelForId }" text="Disabled">
                 <NumberInput
                   :id="labelForId"
                   v-model="inputValue1"

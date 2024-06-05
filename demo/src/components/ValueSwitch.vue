@@ -2,6 +2,7 @@
 import { defineComponent } from "vue";
 
 import ValueSwitch from "webapps-common/ui/components/forms/ValueSwitch.vue";
+import Label from "webapps-common/ui/components/forms/Label.vue";
 import code from "webapps-common/ui/components/forms/ValueSwitch.vue?raw";
 
 import CodeExample from "./demo/CodeExample.vue";
@@ -45,6 +46,7 @@ const codeExample = `<ValueSwitch
 export default defineComponent({
   components: {
     ValueSwitch,
+    Label,
     CodeExample,
   },
   data() {
@@ -88,38 +90,46 @@ export default defineComponent({
 
       <div class="grid-container">
         <div class="grid-item-4">
-          Normal mode
-          <ValueSwitch
-            v-model="selectedCurrency"
-            :possible-values="currencies"
-          />
+          <Label #default="{ labelForId }" text="Normal mode">
+            <ValueSwitch
+              :id="labelForId"
+              v-model="selectedCurrency"
+              :possible-values="currencies"
+            />
+          </Label>
         </div>
         <div class="grid-item-4">
-          Compact mode
-          <ValueSwitch
-            v-model="selectedCurrency"
-            compact
-            :possible-values="currencies"
-          />
+          <Label #default="{ labelForId }" text="Compact mode">
+            <ValueSwitch
+              :id="labelForId"
+              v-model="selectedCurrency"
+              compact
+              :possible-values="currencies"
+            />
+          </Label>
         </div>
         <div class="grid-item-4">selected id: {{ selectedCurrency }}</div>
       </div>
 
       <div class="grid-container">
         <div class="grid-item-4">
-          Completely disabled
-          <ValueSwitch
-            v-model="selectedCurrency"
-            disabled
-            :possible-values="currencies"
-          />
+          <Label #default="{ labelForId }" text="Completely disabled">
+            <ValueSwitch
+              :id="labelForId"
+              v-model="selectedCurrency"
+              disabled
+              :possible-values="currencies"
+            />
+          </Label>
         </div>
         <div class="grid-item-4">
-          With single disabled option
-          <ValueSwitch
-            v-model="selectedCurrency"
-            :possible-values="withDisabledItem"
-          />
+          <Label #default="{ labelForId }" text="With single disabled option">
+            <ValueSwitch
+              :id="labelForId"
+              v-model="selectedCurrency"
+              :possible-values="withDisabledItem"
+            />
+          </Label>
         </div>
         <div class="grid-item-4" />
       </div>

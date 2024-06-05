@@ -2,6 +2,7 @@
 import CodeExample from "./demo/CodeExample.vue";
 import FilterIcon from "webapps-common/ui/assets/img/icons/filter.svg";
 import SearchInput from "webapps-common/ui/components/forms/SearchInput.vue";
+import Label from "webapps-common/ui/components/forms/Label.vue";
 import code from "webapps-common/ui/components/forms/SearchInput.vue?raw";
 
 const codeExample = `<SearchInput
@@ -44,6 +45,7 @@ export default {
   components: {
     SearchInput,
     FilterIcon,
+    Label,
     CodeExample,
   },
   data() {
@@ -94,61 +96,80 @@ export default {
             model-value="disabled: no search possible here"
             disabled
           />
-          The clear-all button emits a "clear" event that can be listend to:
-          <SearchInput
-            v-model="inputValue3"
-            placeholder="Placeholder"
-            @clear="alert('Search cleared')"
-          />
-          It's possible to use a different icon:
-          <SearchInput
-            v-model="inputValue4"
-            placeholder="A different icon"
-            @focus="onFocus"
+          <Label
+            #default="{ labelForId }"
+            text="The clear-all button emits a 'clear' event that can be listend to:"
           >
-            <template #icon>
-              <FilterIcon />
-            </template>
-          </SearchInput>
-          Buttons for the search options case-sensitivity and inverse-search can
-          be displayed.
-          <SearchInput
-            v-model="inputValue5"
-            :show-case-sensitive-search-button="true"
-            :show-inverse-search-button="true"
-            :initial-inverse-search="true"
-            placeholder="Search"
-            @focus="onFocus"
-          />
-          Custom title for the buttons
-          <SearchInput
-            v-model="inputValue5"
-            :show-case-sensitive-search-button="true"
-            :show-inverse-search-button="true"
-            :initial-inverse-search="true"
-            :tooltips="{
-              clear: 'Custom clear tooltip',
-              inverseSearch: 'Custom inverse tooltip',
-              caseSensitive: 'Custom case sensitive tooltip',
-            }"
-            placeholder="Search"
-            @focus="onFocus"
-          />
-          Compact mode
-          <SearchInput
-            v-model="inputValue5"
-            :show-case-sensitive-search-button="true"
-            :show-inverse-search-button="true"
-            :initial-inverse-search="true"
-            :tooltips="{
-              clear: 'Custom clear tooltip',
-              inverseSearch: 'Custom inverse tooltip',
-              caseSensitive: 'Custom case sensitive tooltip',
-            }"
-            placeholder="Search"
-            compact
-            @focus="onFocus"
-          />
+            <SearchInput
+              :id="labelForId"
+              v-model="inputValue3"
+              placeholder="Placeholder"
+              @clear="alert('Search cleared')"
+            />
+          </Label>
+          <Label
+            #default="{ labelForId }"
+            text="It's possible to use a different icon:"
+          >
+            <SearchInput
+              :id="labelForId"
+              v-model="inputValue4"
+              placeholder="A different icon"
+              @focus="onFocus"
+            >
+              <template #icon>
+                <FilterIcon />
+              </template>
+            </SearchInput>
+          </Label>
+          <Label
+            #default="{ labelForId }"
+            text="Buttons for the search options case-sensitivity and inverse-search can
+          be displayed."
+          >
+            <SearchInput
+              :id="labelForId"
+              v-model="inputValue5"
+              :show-case-sensitive-search-button="true"
+              :show-inverse-search-button="true"
+              :initial-inverse-search="true"
+              placeholder="Search"
+              @focus="onFocus"
+            />
+          </Label>
+          <Label #default="{ labelForId }" text="Custom title for the buttons">
+            <SearchInput
+              :id="labelForId"
+              v-model="inputValue5"
+              :show-case-sensitive-search-button="true"
+              :show-inverse-search-button="true"
+              :initial-inverse-search="true"
+              :tooltips="{
+                clear: 'Custom clear tooltip',
+                inverseSearch: 'Custom inverse tooltip',
+                caseSensitive: 'Custom case sensitive tooltip',
+              }"
+              placeholder="Search"
+              @focus="onFocus"
+            />
+          </Label>
+          <Label #default="{ labelForId }" text="Compact mode">
+            <SearchInput
+              :id="labelForId"
+              v-model="inputValue5"
+              :show-case-sensitive-search-button="true"
+              :show-inverse-search-button="true"
+              :initial-inverse-search="true"
+              :tooltips="{
+                clear: 'Custom clear tooltip',
+                inverseSearch: 'Custom inverse tooltip',
+                caseSensitive: 'Custom case sensitive tooltip',
+              }"
+              placeholder="Search"
+              compact
+              @focus="onFocus"
+            />
+          </Label>
         </div>
         <div class="grid-item-6">input value: {{ inputValue }}</div>
       </div>

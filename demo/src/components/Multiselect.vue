@@ -1,6 +1,7 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
 import Multiselect from "webapps-common/ui/components/forms/Multiselect.vue";
+import Label from "webapps-common/ui/components/forms/Label.vue";
 import code from "webapps-common/ui/components/forms/Multiselect.vue?raw";
 
 const codeExample = `<Multiselect
@@ -52,6 +53,7 @@ const POSSIBLE_VALUES_WITH_DISABLED = [
 export default {
   components: {
     Multiselect,
+    Label,
     CodeExample,
   },
   data() {
@@ -94,10 +96,13 @@ export default {
       <div class="grid-container">
         <div class="grid-item-3">default</div>
         <div class="grid-item-5">
-          <Multiselect
-            v-model="selected[0]"
-            :possible-values="possibleValues"
-          />
+          <Label #default="{ labelForId }" text="Label for multiselect">
+            <Multiselect
+              :id="labelForId"
+              v-model="selected[0]"
+              :possible-values="possibleValues"
+            />
+          </Label>
         </div>
         <div class="grid-item-3">selected ids: {{ selected[0] }}</div>
       </div>

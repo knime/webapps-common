@@ -1,6 +1,7 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
 import MultiselectListBox from "webapps-common/ui/components/forms/MultiselectListBox.vue";
+import Label from "webapps-common/ui/components/forms/Label.vue";
 import code from "webapps-common/ui/components/forms/MultiselectListBox.vue?raw";
 
 const codeExample = `<MultiselectListBox
@@ -22,6 +23,7 @@ const codeExample = `<MultiselectListBox
 export default {
   components: {
     MultiselectListBox,
+    Label,
     CodeExample,
   },
   data() {
@@ -62,29 +64,35 @@ export default {
       </div>
       <div class="grid-container">
         <div class="grid-item-6">
-          <MultiselectListBox
-            v-model="selected"
-            :size="4"
-            aria-label="Select stuff here!"
-            :possible-values="[
-              {
-                id: 'foo',
-                text: 'Foo',
-              },
-              {
-                id: 'bar',
-                text: 'Bar',
-              },
-              {
-                id: 'baz',
-                text: 'Baz',
-              },
-              ...Array.from({ length: 100 }, (_v, i) => ({
-                id: `baz${i}`,
-                text: `Baz ${i}`,
-              })),
-            ]"
-          />
+          <Label
+            #default="{ labelForId }"
+            text="Label for multiselect list box"
+          >
+            <MultiselectListBox
+              :id="labelForId"
+              v-model="selected"
+              :size="4"
+              aria-label="Select stuff here!"
+              :possible-values="[
+                {
+                  id: 'foo',
+                  text: 'Foo',
+                },
+                {
+                  id: 'bar',
+                  text: 'Bar',
+                },
+                {
+                  id: 'baz',
+                  text: 'Baz',
+                },
+                ...Array.from({ length: 100 }, (_v, i) => ({
+                  id: `baz${i}`,
+                  text: `Baz ${i}`,
+                })),
+              ]"
+            />
+          </Label>
         </div>
         <div class="grid-item-6">selected ids: {{ selected }}</div>
       </div>

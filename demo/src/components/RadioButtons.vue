@@ -1,6 +1,7 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
 import RadioButtons from "webapps-common/ui/components/forms/RadioButtons.vue";
+import Label from "webapps-common/ui/components/forms/Label.vue";
 import code from "webapps-common/ui/components/forms/RadioButtons.vue?raw";
 
 const codeExample = `<RadioButtons
@@ -35,6 +36,7 @@ const codeExample = `<RadioButtons
 export default {
   components: {
     RadioButtons,
+    Label,
     CodeExample,
   },
   data() {
@@ -65,23 +67,26 @@ export default {
       </div>
       <div class="grid-container">
         <div class="grid-item-5">
-          <RadioButtons
-            v-model="selected"
-            :possible-values="[
-              {
-                id: 'foo',
-                text: 'Foo',
-              },
-              {
-                id: 'bar',
-                text: 'Bar',
-              },
-              {
-                id: 'baz',
-                text: 'Baz',
-              },
-            ]"
-          />
+          <Label #default="{ labelForId }" text="Label for radio buttons">
+            <RadioButtons
+              :id="labelForId"
+              v-model="selected"
+              :possible-values="[
+                {
+                  id: 'foo',
+                  text: 'Foo',
+                },
+                {
+                  id: 'bar',
+                  text: 'Bar',
+                },
+                {
+                  id: 'baz',
+                  text: 'Baz',
+                },
+              ]"
+            />
+          </Label>
         </div>
         <div class="grid-item-5">
           <RadioButtons
