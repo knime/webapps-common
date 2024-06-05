@@ -1,5 +1,5 @@
 <script>
-import BaseButton from "./BaseButton.vue";
+import BaseButton from "../base/BaseButton.vue";
 
 /**
  * Works with an icon & text combination or a single icon.
