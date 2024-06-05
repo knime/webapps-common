@@ -1,0 +1,12 @@
+{
+  // TODO There is another tsconfig.app.json at the root but I think we need one here
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
+  "include": ["src/**/*", "src/**/*.vue"],
+  "exclude": ["**/__tests__/*"],
+  "compilerOptions": {
+    "composite": true,
+    "baseUrl": ".",
+    "allowJs": true,
+    "noEmit": true,
+  }
+}

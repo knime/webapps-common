@@ -1,0 +1,43 @@
+{
+  "name": "@knime/ui-extensions-renderer",
+  "version": "0.1.0",
+  "description": "tbd.",
+  "homepage": "https://knime.github.io/webapps-common/",
+  "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE LICENSE IN license.txt)",
+  "author": "KNIME AG, Zurich, Switzerland",
+  "type": "module",
+  "files": [
+    "src"
+  ],
+  "module": "src/index.ts",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
+    "test:unit": "TZ='Europe/Berlin' vitest",
+    "coverage": "TZ='Europe/Berlin' vitest run --coverage"
+  },
+  "dependencies": {
+    "@knime/base-components": "workspace:*",
+    "@knime/styles": "workspace:*",
+    "@knime/ui-extension-service": "^0.32.0",
+    "@vueuse/shared": "^10.10.0"
+  },
+  "peerDependencies": {
+    "vue": "3.x"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^21.1.7",
+    "@vitejs/plugin-vue": "^5.0.5",
+    "@vitest/coverage-v8": "1.2.1",
+    "@vue/test-utils": "2.4.4",
+    "consola": "2.15.3",
+    "jsdom": "^24.1.0",
+    "typescript": "^5.4.5",
+    "vitest": "1.2.1",
+    "vue-tsc": "^2.0.19"
+  }
+}
