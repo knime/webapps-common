@@ -7,6 +7,14 @@
   "author": "KNIME AG, Zurich, Switzerland",
   "type": "module",
   "scripts": {
+    "format": "prettier --cache --write .",
+    "format:check": "prettier --cache --check .",
+    "lint": "run-p 'lint:* -- --fix'",
+    "lint:js": "eslint . --cache --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts",
+    "lint:css": "stylelint --cache '**/*.{css,vue}'",
+    "ci:lint-format": "run-p ci:lint:* format:check -c",
+    "ci:lint:js": "npm run lint:js && npm run lint:js -- -f json -o test-results/eslint.json",
+    "ci:lint:css": "npm run lint:css -- -f json -o test-results/stylelint.json",
     "test:unit-components": "pnpm --filter @knime/base-components test:unit",
     "changeset": "npx changeset",
     "changeset:version": "npx changeset version",
@@ -16,9 +24,13 @@
     "node": "18.x - 20.x"
   },
   "devDependencies": {
+    "@knime/eslint-config": "workspace:*",
     "@changesets/cli": "^2.27.1",
     "@tsconfig/node20": "^20.1.4",
-    "@vue/tsconfig": "^0.5.1"
+    "@vue/tsconfig": "^0.5.1",
+    "eslint": "8.56.0",
+    "prettier": "3.3.1",
+    "stylelint": "16.6.1"
   },
   "pnpm": {
     "peerDependencyRules": {
