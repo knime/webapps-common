@@ -203,7 +203,7 @@
   /* DateInput */
   --theme-date-input-day-content-background: rgba(192, 196, 198, 0.5);
   --theme-date-input-border-color: var(--knime-stone-gray);
-  --theme-date-input-border-focus-color: var(--knime-masala);
+  --theme-date-input-border-focus-color: var(--knime-cornflower);
   --theme-date-input-input-background: var(--knime-white);
   --theme-date-input-input-hover-background: var(--knime-silver-sand-semi);
   --theme-date-input-button-active-color: var(--knime-masala);

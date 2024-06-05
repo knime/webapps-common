@@ -668,10 +668,6 @@ export default {
     min-height: 22px;
     border: 1px solid var(--knime-stone-gray);
 
-    &:has(:focus:not(.disabled)) {
-      border-color: var(--knime-masala);
-    }
-
     & [role="bottom-box"] {
       border-top: 1px solid var(--knime-silver-sand);
       background: var(--theme-multiselect-listbox-background-color);
@@ -714,6 +710,19 @@ export default {
 
   &.disabled {
     opacity: 0.5;
+  }
+
+  &:focus-within:not(.disabled) {
+    & .box {
+      box-shadow: var(--theme-thin-focus-state);
+      border-color: var(--knime-cornflower);
+    }
+
+    &.invalid::after {
+      left: 1px;
+      top: 1px;
+      bottom: 1px;
+    }
   }
 }
 </style>

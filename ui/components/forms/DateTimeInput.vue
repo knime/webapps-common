@@ -557,6 +557,7 @@ export default {
     border: var(--form-border-width) solid var(--theme-date-input-border-color);
 
     &:focus-within {
+      box-shadow: 0 0 0 1px var(--theme-date-input-border-focus-color);
       border-color: var(--theme-date-input-border-focus-color);
     }
 

@@ -244,6 +244,51 @@ export default {
         </div>
         <div class="grid-item-6">selected ids: {{ disabledSelected2 }}</div>
       </div>
+      <br />
+      <div class="grid-container">
+        <div class="grid-item-6">
+          <MultiselectListBox
+            v-model="selected"
+            :size="4"
+            :is-valid="false"
+            :possible-values="[
+              {
+                id: 'foo',
+                text: 'Foo',
+              },
+              {
+                id: 'bar',
+                text: 'Bar',
+              },
+              {
+                id: 'baz',
+                text: 'Baz',
+              },
+              {
+                id: 'baz2',
+                text: 'Baz 2',
+              },
+              {
+                id: 'baz3',
+                text: 'Baz 3',
+              },
+              {
+                id: 'baz4',
+                text: 'Baz 4',
+              },
+              {
+                id: 'baz5',
+                text: 'Baz 5',
+              },
+              {
+                id: 'baz6',
+                text: 'Baz 6',
+              },
+            ]"
+          />
+        </div>
+        <div class="grid-item-6">selected ids: {{ disabledSelected2 }}</div>
+      </div>
     </section>
     <section>
       <div class="grid-container">

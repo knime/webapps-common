@@ -427,18 +427,8 @@ export default {
   }
 
   &:focus-within {
-    box-shadow: var(--theme-inset-focus-state);
+    box-shadow: var(--theme-thin-focus-state);
     border-color: var(--knime-cornflower);
-
-    & .increase {
-      border-bottom: 1px solid var(--knime-cornflower);
-      border-right: 1px solid var(--knime-cornflower);
-    }
-
-    & .decrease {
-      border-bottom: 1px solid var(--knime-cornflower);
-      border-right: 1px solid var(--knime-cornflower);
-    }
 
     & .invalid-marker {
       left: 1px;
