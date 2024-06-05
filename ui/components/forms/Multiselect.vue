@@ -407,13 +407,13 @@ export default {
     }
   }
 
-  &:focus-within [role="button"] {
-    box-shadow: var(--theme-inset-focus-state);
-    border-color: var(--knime-cornflower);
-  }
-
   &:not(.collapsed) [role="button"] {
     border-color: var(--knime-masala);
+  }
+
+  &:focus-within [role="button"] {
+    box-shadow: var(--theme-thin-focus-state);
+    border-color: var(--knime-cornflower);
   }
 
   &.collapsed:hover:not(:focus-within) {
@@ -446,6 +446,7 @@ export default {
     background: var(--theme-multiselect-background-color);
     box-shadow: var(--shadow-elevation-1);
     overflow-y: auto;
+    margin-top: 1px;
 
     & :deep(span) {
       padding-left: 28px;

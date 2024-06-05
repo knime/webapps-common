@@ -329,9 +329,9 @@ export default {
     position: absolute;
     display: block;
     width: 3px;
-    left: calc(-1 * var(--form-border-width));
-    top: calc(-1 * var(--form-border-width));
-    height: calc(100% + 2px);
+    left: 0;
+    top: 0;
+    bottom: 0;
     background-color: var(--theme-color-error);
     pointer-events: none; /* otherwise :hover of the field doesn't work when hovering the marker */
   }
@@ -339,12 +339,6 @@ export default {
   &:focus-within {
     box-shadow: var(--theme-thin-focus-state);
     border-color: var(--knime-cornflower);
-  }
-
-  &:focus-within .invalid-marker {
-    left: calc(1 * var(--form-border-width));
-    top: calc(1 * var(--form-border-width));
-    height: calc(100% - 2 * var(--form-border-width));
   }
 
   &:hover:not(:focus-within, :disabled) {

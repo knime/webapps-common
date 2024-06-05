@@ -429,12 +429,6 @@ export default {
   &:focus-within {
     box-shadow: var(--theme-thin-focus-state);
     border-color: var(--knime-cornflower);
-
-    & .invalid-marker {
-      left: 1px;
-      top: 1px;
-      bottom: 1px;
-    }
   }
 
   & .increase:not(.disabled):hover,

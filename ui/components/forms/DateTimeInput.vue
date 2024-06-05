@@ -486,7 +486,7 @@ export default {
 
     /* no space between input and popover */
     & :deep(.vc-popover-content-wrapper) {
-      --popover-vertical-content-offset: 0;
+      --popover-vertical-content-offset: 2px;
       --popover-horizontal-content-offset: 0;
 
       /* default animation is too slow */
