@@ -36,6 +36,7 @@
   "devDependencies": {
     "@knime/eslint-config": "workspace:*",
     "@knime/styles": "workspace:*",
+    "@storybook/test": "8.1.5",
     "@vitejs/plugin-vue": "^5.0.5",
     "@vitest/coverage-v8": "1.2.1",
     "@vue/test-utils": "2.4.4",

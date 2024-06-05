@@ -11,8 +11,8 @@ function getAbsolutePath(value) {
 
 const config: StorybookConfig = {
   stories: [
-    "../../packages/**/*.stories.@(js|mjs|ts)",
-    "../../packages/**/*.mdx",
+    "../../packages/**/__stories__/*.stories.@(js|mjs|ts)",
+    "../../packages/**/__stories/*.mdx",
   ],
   addons: [
     getAbsolutePath("@storybook/addon-links"),
@@ -21,7 +21,7 @@ const config: StorybookConfig = {
     getAbsolutePath("@storybook/addon-interactions"),
   ],
   framework: {
-    name: getAbsolutePath("@storybook/vue3-vite"),
+    name: "@storybook/vue3-vite",
     options: {},
   },
 };

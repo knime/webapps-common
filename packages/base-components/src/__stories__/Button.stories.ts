@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/vue3";
+import { userEvent, waitFor, within, expect, fn } from "@storybook/test";
 
-import Button from "./../../ui/components/Button.vue";
-import LightningIcon from "./../../ui/assets/img/icons/lightning.svg";
+import Button from "../Button.vue";
+import LightningIcon from "../../../../ui/assets/img/icons/lightning.svg";
 
 // More on how to set up stories at: https://storybook.js.org/docs/vue/writing-stories/introduction
 const meta = {
@@ -40,8 +41,19 @@ export const Primary: Story = {
   args: {
     // @ts-expect-error
     default: "Click me!",
+    onClick: fn(),
   },
   parameters: { docs: { description: { story: "Story description" } } },
+  play: async ({ args, canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await step("Click button", async () => {
+      await userEvent.click(canvas.getByRole("button"));
+    });
+
+    // 👇 Now we can assert that the onSubmit arg was called
+    await waitFor(() => expect(args.onClick).toHaveBeenCalled());
+  },
 };
 
 export const WithIcon: Story = {

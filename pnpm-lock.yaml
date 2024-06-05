@@ -55,6 +55,9 @@ importers:
       '@knime/eslint-config':
         specifier: workspace:*
         version: link:../lint
+      '@storybook/test':
+        specifier: 8.1.5
+        version: 8.1.5(@jest/globals@29.7.0)(jest@29.7.0(@types/node@18.19.34))
       '@vitejs/plugin-vue':
         specifier: ^5.0.5
         version: 5.0.5(vite@5.2.12(sugarss@4.0.1))(vue@3.4.27(typescript@5.4.5))
@@ -193,7 +196,7 @@ importers:
         specifier: ^8.0.8
         version: 8.1.5(@types/react@18.3.3)(prettier@3.1.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@storybook/addon-interactions':
-        specifier: ^8.0.8
+        specifier: ^8.1.5
         version: 8.1.5(@jest/globals@29.7.0)(jest@29.7.0(@types/node@18.19.34))
       '@storybook/addon-links':
         specifier: ^8.0.8
