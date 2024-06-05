@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/vue3";
 import { userEvent, waitFor, within, expect, fn } from "@storybook/test";
 
 import Button from "../Button.vue";
-import LightningIcon from "../../../../ui/assets/img/icons/lightning.svg";
+import LightningIcon from "@knime/styles/img/icons/lightning.svg";
 
 // More on how to set up stories at: https://storybook.js.org/docs/vue/writing-stories/introduction
 const meta = {
