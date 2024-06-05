@@ -2,7 +2,8 @@
 import { computed } from "vue";
 import type { Alert } from "@knime/ui-extension-service";
 
-import CloseIcon from "../assets/img/icons/close.svg";
+
+import CloseIcon from "@knime/styles/img/icons/close.svg";
 import Popover from "./Popover.vue";
 
 /**
