@@ -13,7 +13,8 @@
   },
   "dependencies": {
     "@knime/styles": "workspace:*",
-    "vue": "^3.4.21"
+    "vue": "^3.4.21",
+    "consola": "3.2.3"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^1.5.0",
@@ -22,6 +23,7 @@
     "@storybook/addon-interactions": "^8.1.5",
     "@storybook/addon-links": "^8.0.8",
     "@storybook/blocks": "^8.0.8",
+    "@storybook/preview-api": "8.1.5",
     "@storybook/test": "^8.1.5",
     "@storybook/test-runner": "^0.17.0",
     "@storybook/testing-library": "^0.2.2",

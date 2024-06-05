@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      '@vueuse/core':
+        specifier: 10.10.0
+        version: 10.10.0(vue@3.4.27(typescript@5.4.5))
     devDependencies:
       '@changesets/cli':
         specifier: ^2.27.1
@@ -182,6 +186,9 @@ importers:
       '@knime/styles':
         specifier: workspace:*
         version: link:../packages/styles
+      consola:
+        specifier: 3.2.3
+        version: 3.2.3
       vue:
         specifier: ^3.4.21
         version: 3.4.27(typescript@5.4.5)
@@ -204,6 +211,9 @@ importers:
       '@storybook/blocks':
         specifier: ^8.0.8
         version: 8.1.5(@types/react@18.3.3)(prettier@3.1.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@storybook/preview-api':
+        specifier: 8.1.5
+        version: 8.1.5
       '@storybook/test':
         specifier: ^8.1.5
         version: 8.1.5(@jest/globals@29.7.0)(jest@29.7.0(@types/node@18.19.34))(vitest@1.2.1(@types/node@18.19.34)(sugarss@4.0.1))

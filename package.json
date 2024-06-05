@@ -19,6 +19,9 @@
     "@tsconfig/node20": "^20.1.4",
     "@vue/tsconfig": "^0.5.1"
   },
+  "dependencies": {
+    "@vueuse/core": "10.10.0"
+  },
   "pnpm": {
     "peerDependencyRules": {
       "ignoreMissing": [
