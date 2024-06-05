@@ -6,12 +6,12 @@
   "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE LICENSE IN license.txt)",
   "author": "KNIME AG, Zurich, Switzerland",
   "type": "module",
-  "workspaces": [
-    "lint",
-    "styles",
-    "base-components"
-  ],
-  "scripts": {},
+  "scripts": {
+    "test:unit-components": "pnpm --filter @knime/base-components test:unit",
+    "changeset": "npx changeset",
+    "changeset:version": "npx changeset version",
+    "changeset:publish": "npx changeset publish"
+  },
   "engines": {
     "node": "18.x - 20.x"
   },

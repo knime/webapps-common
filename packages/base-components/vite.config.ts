@@ -1,5 +1,5 @@
+// / <reference types="vitest" />
 import { fileURLToPath, URL } from "node:url";
-
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import dts from "vite-plugin-dts";
@@ -8,7 +8,6 @@ import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 // import { svgoConfig } from "webapps-common/config/svgo.config";
 
 // TODO svg loader
-
 
 // TODO maybe the build is not needed at all
 
@@ -24,6 +23,32 @@ export default defineConfig({
     }),
     cssInjectedByJsPlugin({}), // not supported natively in Vite yet, see https://github.com/vitejs/vite/issues/1579]
   ],
+  test: {
+    include: ["**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+    environment: "jsdom",
+    reporters: ["default", "junit"],
+    setupFiles: [fileURLToPath(new URL("vitest.setup.ts", import.meta.url))],
+    coverage: {
+      all: true,
+      exclude: [
+        "demo/",
+        "lint/",
+        "buildtools/",
+        "install-subDependencies.js",
+        "test-results/**",
+        "dist/**",
+        "**/*.d.ts",
+        "**/types.ts",
+        "**/__tests__/**",
+        "**/*.config.{js,cjs,mjs,ts}",
+        "**/.{eslint,prettier,stylelint}rc.{js,cjs,yml}",
+      ],
+      reporter: ["html", "text", "lcov"],
+    },
+    outputFile: {
+      junit: "test-results/junit.xml", // needed for Bitbucket Pipeline, see https://support.atlassian.com/bitbucket-cloud/docs/test-reporting-in-pipelines/
+    },
+  },
   build: {
     lib: {
       entry: [relPath("src/index.ts")],
