@@ -1,0 +1,31 @@
+import { expect, describe, beforeAll, afterAll, it, vi } from "vitest";
+import { flushPromises } from "@vue/test-utils";
+
+import sleep from "../sleep";
+
+describe("sleep", () => {
+  beforeAll(() => {
+    vi.useFakeTimers();
+  });
+
+  afterAll(() => {
+    vi.useRealTimers();
+  });
+
+  it("resolves after ms", async () => {
+    let sleepFinished = false;
+    sleep(2000).then(() => {
+      sleepFinished = true;
+    });
+
+    expect(sleepFinished).toBe(false);
+
+    vi.advanceTimersByTime(1000);
+    await flushPromises();
+    expect(sleepFinished).toBe(false);
+
+    vi.advanceTimersByTime(1000);
+    await flushPromises();
+    expect(sleepFinished).toBe(true);
+  });
+});

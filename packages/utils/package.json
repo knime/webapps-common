@@ -1,0 +1,25 @@
+{
+  "name": "@knime/utils",
+  "version": "1.0.0",
+  "description": "tbd.",
+  "homepage": "https://knime.github.io/webapps-common/",
+  "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE LICENSE IN license.txt)",
+  "author": "KNIME AG, Zurich, Switzerland",
+  "type": "module",
+  "scripts": {},
+  "dependencies": {},
+  "main": "src/index.js",
+  "module": "src/index.js",
+  "files": [
+    "src",
+    "test-utils"
+  ],
+  "exports": {
+    ".": {
+      "import": "./src/index.js"
+    },
+    "test-utils": {
+      "import": "./test-utils/index.ts"
+    }
+  }
+}
