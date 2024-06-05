@@ -28,18 +28,20 @@
   },
   "dependencies": {
     "@knime/styles": "workspace:*",
-    "@vueuse/shared": "^10.10.0"
+    "@knime/utils": "workspace:*",
+    "@vueuse/shared": "^10.10.0",
+    "lodash-es": "4.17.21"
   },
   "peerDependencies": {
     "vue": "3.x"
   },
   "devDependencies": {
     "@knime/eslint-config": "workspace:*",
-    "@knime/styles": "workspace:*",
     "@vitejs/plugin-vue": "^5.0.5",
     "@vitest/coverage-v8": "1.2.1",
     "@vue/test-utils": "2.4.4",
     "@vueuse/components": "^10.7.2",
+    "@vueuse/shared": "^10.10.0",
     "@vueuse/core": "10.4.1",
     "consola": "2.15.3",
     "typescript": "^5.4.5",
@@ -47,6 +49,7 @@
     "vite-plugin-css-injected-by-js": "^3.5.1",
     "vite-plugin-dts": "^3.9.1",
     "vitest": "1.2.1",
-    "vue-tsc": "^2.0.19"
+    "vue-tsc": "^2.0.19",
+    "@types/lodash-es": "4.17.12"
   }
 }
