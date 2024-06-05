@@ -13,19 +13,19 @@ export type DropdownNavigationElement = {
 
 export type DropdownNavigationOptions = {
   /**
-   * callback for retreiving the next clickable item and an index
+   * callback for retrieving the next clickable item and an index
    */
   getNextElement(
     current: number | null,
     direction: -1 | 1
   ): DropdownNavigationElement;
   /**
-   * callback for retreiving the first clickable item and an index.
+   * callback for retrieving the first clickable item and an index.
    * When provided, navigating to this item via the home key is possible
    */
   getFirstElement?(): DropdownNavigationElement;
   /**
-   * callback for retreiving the last clickable item and an index.
+   * callback for retrieving the last clickable item and an index.
    * When provided, navigating to this item via the end key is possible
    */
   getLastElement?(): DropdownNavigationElement;
@@ -103,10 +103,10 @@ export default ({
       case "Space": {
         const isEnter = event.code === "Enter";
         const isSpace = event.code === "Space";
-        const hasCurrenIndex = currentIndex.value !== null;
+        const hasCurrentIndex = currentIndex.value !== null;
         const canClick = isEnter || (isSpace && !disableSpaceToClick);
 
-        if (hasCurrenIndex && canClick) {
+        if (hasCurrentIndex && canClick) {
           preventEvent(event);
           currentElementClickHandler();
         }
