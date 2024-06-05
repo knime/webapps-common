@@ -266,11 +266,6 @@ export default {
     margin: 0;
     background: var(--theme-listbox-background-color);
     border: 1px solid var(--knime-stone-gray);
-
-    &:focus {
-      outline: none;
-      border-color: var(--knime-masala);
-    }
   }
 
   & [role="option"] {
@@ -308,6 +303,19 @@ export default {
         background: var(--theme-color-error);
         color: var(--theme-dropdown-foreground-color-selected);
       }
+    }
+  }
+
+  &:focus-within {
+    & [role="listbox"] {
+      box-shadow: var(--theme-thin-focus-state);
+      border-color: var(--knime-cornflower);
+    }
+
+    &.invalid::after {
+      left: 1px;
+      top: 1px;
+      bottom: 1px;
     }
   }
 
