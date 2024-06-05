@@ -17,7 +17,7 @@ export type DropdownNavigationOptions = {
    */
   getNextElement(
     current: number | null,
-    direction: -1 | 1
+    direction: -1 | 1,
   ): DropdownNavigationElement;
   /**
    * callback for retreiving the first clickable item and an index.
