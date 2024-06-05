@@ -85,6 +85,10 @@ export default {
   padding: 3px 0 3px 24px;
   max-width: 100%;
   cursor: pointer;
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 16px;
+  margin-top: 2px;
 
   /* invalid value */
   &.invalid {

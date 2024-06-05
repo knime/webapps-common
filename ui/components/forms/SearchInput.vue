@@ -209,6 +209,8 @@ export default {
 
 <style lang="postcss" scoped>
 .search-input {
+  margin-bottom: 2px;
+
   & .spacer {
     border: 0.4pt solid var(--knime-silver-sand);
     height: 20px;

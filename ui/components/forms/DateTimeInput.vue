@@ -451,6 +451,7 @@ export default {
   width: auto;
   flex-wrap: wrap;
   gap: 10px 20px;
+  margin-top: 6px;
 
   /* time */
   & .time {

@@ -799,6 +799,7 @@ export default {
       text-overflow: ellipsis;
       overflow: hidden;
       min-width: 50px;
+      margin-bottom: -4px;
     }
 
     & .info {
@@ -911,10 +912,6 @@ export default {
         color: var(--theme-select-control-foreground-color);
       }
     }
-  }
-
-  & .search-wrapper {
-    margin-bottom: 10px;
   }
 }
 </style>

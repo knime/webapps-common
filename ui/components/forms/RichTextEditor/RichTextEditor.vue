@@ -272,6 +272,8 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length);
     --theme-input-field-background-color
   );
 
+  margin-top: 6px;
+
   &.with-border {
     border: 1px solid var(--rich-text-editor-border-color);
     background-color: var(--rich-text-editor-background-color);

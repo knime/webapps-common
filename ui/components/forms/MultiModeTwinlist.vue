@@ -373,7 +373,7 @@ export default {
   }
 
   & .label {
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
 }
 </style>

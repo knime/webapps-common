@@ -340,6 +340,8 @@ export default defineComponent({
 
 <style lang="postcss" scoped>
 .multiselect {
+  margin-top: 6px;
+
   & .summary-input-icon-wrapper {
     border: var(--form-border-width) solid var(--knime-stone-gray);
     display: flex;
