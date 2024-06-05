@@ -41,6 +41,7 @@
     "@vitest/coverage-v8": "1.2.1",
     "@vue/test-utils": "2.4.4",
     "@vueuse/components": "^10.7.2",
+    "@vueuse/shared": "^10.10.0",
     "@vueuse/core": "10.4.1",
     "consola": "2.15.3",
     "typescript": "^5.4.5",
