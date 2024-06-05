@@ -54,8 +54,12 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import org.knime.core.webui.node.dialog.defaultdialog.examples.ArrayWidgetExample;
+
 /**
  * An annotation to set the button text and element title of array or collection settings.
+ *
+ * See {@link ArrayWidgetExample} for an example on how to use the annotation.
  *
  * @author Benjamin Wilhelm, KNIME GmbH, Berlin, Germany
  * @author Paul Bärnreuther

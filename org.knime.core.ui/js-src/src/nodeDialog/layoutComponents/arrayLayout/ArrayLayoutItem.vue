@@ -11,6 +11,7 @@ import {
   deleteArrayItem,
 } from "@/nodeDialog/composables/nodeDialog/useArrayIds";
 import inject from "@/nodeDialog/utils/inject";
+import { AlertType } from "@knime/ui-extension-service";
 
 const props = defineProps<{
   elements: [string, any][];
@@ -34,6 +35,7 @@ provide("createArrayAtPath", (path: string) =>
 );
 
 const showElementTitles = computed(() => props.arrayElementTitle !== false);
+
 const elementTitle = computed(
   () => `${props.arrayElementTitle} ${props.index + 1}`,
 );
@@ -41,7 +43,16 @@ const indexedPath = computed(() => composePaths(props.path, `${props.index}`));
 
 const updateData = inject("updateData");
 
+const sendAlert = inject("sendAlert");
 onMounted(() => {
+  if (!showElementTitles.value && props.elements.length > 1) {
+    sendAlert({
+      message:
+        "For displaying more than one row of widgets within an array layout element, " +
+        "the configuration must provide a title for an element.",
+      type: AlertType.ERROR,
+    });
+  }
   updateData(indexedPath.value);
 });
 

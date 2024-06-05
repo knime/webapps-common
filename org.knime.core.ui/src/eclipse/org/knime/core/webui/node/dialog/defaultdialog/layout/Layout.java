@@ -65,7 +65,7 @@ import java.lang.annotation.RetentionPolicy;
  * </ul>
  * <h2>Layout parts</h2>
  * <p>
- * The annotation may target any of the following cclasses representing layout parts:
+ * The annotation may target any of the following classes representing layout parts:
  * </p>
  *
  * <ul>
@@ -85,6 +85,14 @@ import java.lang.annotation.RetentionPolicy;
  * can use a common layout for multiple nodes and for one specific node insert a new section between two other
  * sections.</li>
  * </ul>
+ *
+ * <h2>Array Layout</h2>
+ * <p>
+ * The class of the elements of an arrays are treated as self-contained settings with their own layouting. In
+ * particular, the root layout interface should not be nested inside any layout interfaces from the outside layout. For
+ * example, if the array layout field is part of a section and fields inside its elements point to nested layout parts
+ * of that section, the section is displayed <u><b>inside each of the elements in addition to outside of it</b></u>.
+ * </p>
  *
  * @see Before
  * @see After
