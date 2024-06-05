@@ -355,7 +355,7 @@ export default {
 .multiselect {
   position: relative;
   background-color: var(--knime-white);
-  margin-top: 6px;
+  margin-top: var(--spacing-8);
 
   & label {
     &:focus-within {

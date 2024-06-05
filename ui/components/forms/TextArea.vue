@@ -82,7 +82,7 @@ div {
   isolation: isolate;
   display: block;
   max-width: max-content;
-  margin-top: 6px;
+  margin-top: var(--spacing-8);
 
   &.disabled {
     opacity: 0.5;

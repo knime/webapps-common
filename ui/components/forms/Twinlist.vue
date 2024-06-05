@@ -799,7 +799,7 @@ export default {
       text-overflow: ellipsis;
       overflow: hidden;
       min-width: 50px;
-      margin-bottom: -4px;
+      margin-bottom: calc(var(--spacing-6) * -1);
     }
 
     & .info {

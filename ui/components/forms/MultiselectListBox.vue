@@ -643,7 +643,7 @@ export default {
   display: flex;
   align-items: stretch;
   flex-direction: column;
-  margin-top: 6px;
+  margin-top: var(--spacing-8);
 
   &.invalid {
     &::after {

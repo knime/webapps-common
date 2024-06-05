@@ -157,7 +157,7 @@ export default {
   background-color: var(--theme-input-field-background-color);
   height: var(--single-line-form-height);
   padding: 0 5px;
-  margin-top: 6px;
+  margin-top: var(--spacing-8);
 
   &.compact {
     height: var(--single-line-form-height-compact);

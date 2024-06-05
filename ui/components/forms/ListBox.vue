@@ -247,7 +247,7 @@ export default {
 .list-box {
   position: relative;
   isolation: isolate;
-  margin-top: 6px;
+  margin-top: var(--spacing-8);
 
   &.invalid::after {
     content: "";

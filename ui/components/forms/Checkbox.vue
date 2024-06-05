@@ -88,7 +88,7 @@ export default {
   font-size: 13px;
   font-weight: 300;
   line-height: 16px;
-  margin-top: 2px;
+  margin-top: var(--spacing-base);
 
   /* invalid value */
   &.invalid {

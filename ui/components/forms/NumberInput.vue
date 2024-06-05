@@ -324,7 +324,7 @@ export default {
   height: var(--single-line-form-height);
   border: var(--form-border-width) solid var(--knime-stone-gray);
   background-color: var(--theme-input-number-background-color);
-  margin-top: 6px;
+  margin-top: var(--spacing-8);
 
   &.disabled {
     opacity: 0.5;

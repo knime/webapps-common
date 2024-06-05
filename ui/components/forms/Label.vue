@@ -102,7 +102,7 @@ export default {
   line-height: 18px;
   display: block;
   width: max-content;
-  margin-bottom: -2px;
+  margin-bottom: calc(var(--spacing-base) * -1);
   text-overflow: ellipsis;
   overflow: hidden;
   max-width: 100%;
