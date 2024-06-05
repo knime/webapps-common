@@ -119,11 +119,21 @@ public final class TableViewUtil {
      */
     public static RpcDataService createRpcDataService(final TableViewDataService tableViewDataService,
         final String tableId) {
-        Runnable clearCache = () -> {
-            tableViewDataService.clearCache();
-            TableViewUtil.RENDERER_REGISTRY.clearImageDataCache(tableId);
-        };
+
+        Runnable clearCache = () -> TableViewUtil.deactivateTableViewDataService(tableViewDataService, tableId);
         return RpcDataService.builder(tableViewDataService).onDeactivate(clearCache).onDispose(clearCache).build();
+    }
+
+    /**
+     * Deactivate the table view data service and clear the cache.
+     *
+     * @param tableViewDataService the table view data service to deactivate
+     * @param tableId the table id
+     */
+    public static void deactivateTableViewDataService(final TableViewDataService tableViewDataService,
+        final String tableId) {
+        tableViewDataService.clearCache();
+        TableViewUtil.RENDERER_REGISTRY.clearImageDataCache(tableId);
     }
 
     /**
