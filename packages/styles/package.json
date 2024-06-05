@@ -26,5 +26,8 @@
     "config/*",
     "css/**/*",
     "img/**/*"
-  ]
+  ],
+  "exports": {
+    "icons": "img/icons"
+  }
 }
