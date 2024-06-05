@@ -94,7 +94,9 @@ export default defineComponent({
   }
 
   &:focus-within {
-    border-color: var(--theme-value-switch-border-color-focus);
+    box-shadow:
+      0 0 0 1px var(--theme-value-switch-background-color),
+      0 0 0 3px var(--knime-cornflower);
   }
 
   &.normal {
