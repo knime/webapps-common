@@ -65,13 +65,12 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.config.base.ConfigBaseRO;
+import org.knime.core.webui.node.dialog.configmapping.ConfigMappings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorFactory;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
-import org.knime.core.webui.node.dialog.modification.Modification;
-import org.knime.core.webui.node.dialog.modification.traversal.Tree;
 import org.knime.filehandling.core.connections.FSLocation;
 
 /**
@@ -137,8 +136,8 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
          * {@inheritDoc}
          */
         @Override
-        public Tree<Modification> getModifications(final S obj) {
-            return Tree.of(m_configKey, List.of(m_persistor.getModifications(obj)));
+        public ConfigMappings getConfigMappings(final S obj) {
+            return new ConfigMappings(m_configKey, List.of(m_persistor.getConfigMappings(obj)));
         }
 
     }
@@ -187,11 +186,11 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
         }
 
         @Override
-        public Tree<Modification> getModifications(final S[] array) {
-            m_persistors.get(0).getModifications(array[0]);
+        public ConfigMappings getConfigMappings(final S[] array) {
+            m_persistors.get(0).getConfigMappings(array[0]);
             ensureEnoughPersistors(array.length);
-            return Tree.of(m_configKey, IntStream.range(0, array.length)
-                .mapToObj(i -> m_persistors.get(i).getModifications(array[i])).toList());
+            return new ConfigMappings(m_configKey, IntStream.range(0, array.length)
+                .mapToObj(i -> m_persistors.get(i).getConfigMappings(array[i])).toList());
         }
 
     }

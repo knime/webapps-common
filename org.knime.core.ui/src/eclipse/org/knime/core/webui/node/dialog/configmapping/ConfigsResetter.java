@@ -44,59 +44,25 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 31, 2024 (Paul Bärnreuther): created
+ *   Jun 6, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.modification.traversal;
+package org.knime.core.webui.node.dialog.configmapping;
 
-import java.util.Optional;
+import org.knime.core.webui.node.dialog.util.NodeSettingsAtPathUtil.ConfigPath;
 
-import org.knime.core.webui.node.dialog.modification.traversal.TreeTraversalUtil.Traversable;
+interface ConfigsResetter {
 
-/**
- * A traversable structure which allows accessing children which are not present returning an empty tree with empty
- * value if so.
- *
- * @author Paul Bärnreuther
- */
-abstract class FallibleTraversable<T> implements Traversable<Optional<T>> {
+    /**
+     * @param flowVariablePath
+     * @return true if the {@link #resetAtPath} method can be called with the given path
+     */
+    boolean isApplicable(ConfigPath flowVariablePath);
 
-    Optional<T> m_value;
-
-    @Override
-    public Optional<T> get() {
-        return m_value;
-    }
-
-    FallibleTraversable(final T value) {
-        m_value = Optional.ofNullable(value);
-    }
-
-    @Override
-    public Traversable<Optional<T>> getChild(final String key) {
-        if (m_value.isEmpty()) {
-            return this;
-        }
-        try {
-            return new FallibleTraversable<T>(getChildOrThrow(m_value.get(), key)) {
-
-                @Override
-                protected T getChildOrThrow(final T value, final String key2) throws Exception {
-                    return FallibleTraversable.this.getChildOrThrow(value, key2);
-                }
-
-            };
-        } catch (Exception e) { // NOSONAR
-            return new FallibleTraversable<T>(null) {
-
-                @Override
-                protected T getChildOrThrow(final T value, final String key2) throws Exception {
-                    throw new IllegalAccessError("Should not be called for an empty tree");
-                }
-
-            };
-        }
-    }
-
-    protected abstract T getChildOrThrow(T value, final String key) throws Exception;
+    /**
+     * Resets node settings at the given path
+     *
+     * @param flowVariablePath
+     */
+    void resetAtPath(ConfigPath flowVariablePath);
 
 }

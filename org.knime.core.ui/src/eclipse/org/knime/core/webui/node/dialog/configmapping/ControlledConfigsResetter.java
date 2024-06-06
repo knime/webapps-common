@@ -44,25 +44,43 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 29, 2024 (Paul Bärnreuther): created
+ *   Jun 6, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.modification;
+package org.knime.core.webui.node.dialog.configmapping;
 
-import java.util.function.Function;
+import static org.knime.core.webui.node.dialog.util.NodeSettingsAtPathUtil.hasPath;
+import static org.knime.core.webui.node.dialog.util.NodeSettingsAtPathUtil.replaceAtPathIfPresent;
 
+import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DeprecatedConfigs;
+import org.knime.core.webui.node.dialog.util.NodeSettingsAtPathUtil.ConfigPath;
 
 /**
+ * Resets the node settings to the previous settings at a config that is controlled by a flow variable.
  *
  * @author Paul Bärnreuther
- * @param deprecatedConfigs the configs that possibly need to be corrected because of mismatches between settings and
- *            flow variables because of deprecation of config keys
- * @param oldSettingsToNewSettings a method that is able to transform the previous node settings to new node settings.
- *            It is used only when the previous value should be used but overwritten by a new flow variable, i.e. when
- *            the user de-selected a deprecated flow variable and selects a new one before applying.
- * @see NodeSettingsCorrectionUtil
  */
-public record Modification(DeprecatedConfigs[] deprecatedConfigs,
-    Function<NodeSettingsRO, NodeSettingsRO> oldSettingsToNewSettings) {
+class ControlledConfigsResetter implements ConfigsResetter {
+
+    private final NodeSettingsRO m_previousNodeSettings;
+
+    private final NodeSettings m_nodeSettings;
+
+    ControlledConfigsResetter(final NodeSettingsRO previousNodeSettings, final NodeSettings nodeSettings) {
+        m_previousNodeSettings = previousNodeSettings;
+        m_nodeSettings = nodeSettings;
+
+    }
+
+    @Override
+    public boolean isApplicable(final ConfigPath path) {
+        return hasPath(m_nodeSettings, path) && hasPath(m_previousNodeSettings, path);
+    }
+
+    @Override
+    public void resetAtPath(final ConfigPath path) {
+        replaceAtPathIfPresent(m_nodeSettings, path, m_previousNodeSettings);
+
+    }
+
 }

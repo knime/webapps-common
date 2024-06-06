@@ -72,7 +72,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.JsonForms
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DeprecatedConfigs;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.ConfigsDeprecation;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
 
@@ -86,6 +86,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  *
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
+@SuppressWarnings("java:S2698") // we accept assertions without messages
 class DefaultNodeSettingsServiceTest {
 
     private static final ObjectMapper MAPPER = JsonFormsDataUtil.getMapper();
@@ -231,10 +232,9 @@ class DefaultNodeSettingsServiceTest {
             }
 
             @Override
-            public DeprecatedConfigs[] getDeprecatedConfigs() {
-                return new DeprecatedConfigs[]{
-                    new DeprecatedConfigs.DeprecatedConfigsBuilder().forDeprecatedConfigPath("valueLegacy1")
-                        .forDeprecatedConfigPath("valueLegacy2").forNewConfigPath(getConfigKey()).build()};
+            public ConfigsDeprecation[] getConfigsDeprecations() {
+                return new ConfigsDeprecation[]{new ConfigsDeprecation.Builder().forDeprecatedConfigPath("valueLegacy1")
+                    .forDeprecatedConfigPath("valueLegacy2").forNewConfigPath(getConfigKey()).build()};
             }
 
         }

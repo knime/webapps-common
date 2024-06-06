@@ -49,12 +49,15 @@
 package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.knime.core.node.util.CheckUtils;
+import org.knime.core.webui.node.dialog.util.NodeSettingsAtPathUtil.ConfigPath;
 
 /**
- * This class is used in {@link FieldNodeSettingsPersistor#getDeprecatedConfigs()}. It provides a connection from an
+ * This class is used in {@link FieldNodeSettingsPersistor#getConfigsDeprecations()}. It provides a connection from an
  * array of config paths relative to the base config of the field to another one.
  * <ul>
  * <li>Deprecated config paths: Configs which are respected during {@link FieldNodeSettingsPersistor#load load} but are
@@ -66,19 +69,20 @@ import org.knime.core.node.util.CheckUtils;
  *
  * @author Paul Bärnreuther
  */
-public final class DeprecatedConfigs {
+public final class ConfigsDeprecation {
 
-    private String[][] m_newConfigPaths;
+    private Collection<ConfigPath> m_newConfigPaths;
 
-    private String[][] m_deprecatedConfigPaths;
+    private Collection<ConfigPath> m_deprecatedConfigPaths;
 
     /**
-     * Private. Use the {@link DeprecatedConfigsBuilder} instead.
+     * Private. Use the {@link Builder} instead.
      *
      * @param newConfigPaths
      * @param deprecatedConfigPaths
      */
-    private DeprecatedConfigs(final String[][] newConfigPaths, final String[][] deprecatedConfigPaths) {
+    private ConfigsDeprecation(final Collection<ConfigPath> newConfigPaths,
+        final Collection<ConfigPath> deprecatedConfigPaths) {
         this.m_newConfigPaths = newConfigPaths;
         this.m_deprecatedConfigPaths = deprecatedConfigPaths;
     }
@@ -86,34 +90,34 @@ public final class DeprecatedConfigs {
     /**
      * @return the newConfigPaths relative to the base config path of the annotated setting
      */
-    public String[][] getNewConfigPaths() {
+    public Collection<ConfigPath> getNewConfigPaths() {
         return m_newConfigPaths;
     }
 
     /**
      * @return the deprecatedConfigPaths relative to the base config path of the annotated setting
      */
-    public String[][] getDeprecatedConfigPaths() {
+    public Collection<ConfigPath> getDeprecatedConfigPaths() {
         return m_deprecatedConfigPaths;
     }
 
     /**
-     * Builder for {@link DeprecatedConfigs}.
+     * Builder for {@link ConfigsDeprecation}.
      *
      * @author Paul Bärnreuther
      */
-    public static final class DeprecatedConfigsBuilder {
+    public static final class Builder {
 
-        private final List<String[]> m_newConfigPaths = new ArrayList<>(0);
+        private final List<ConfigPath> m_newConfigPaths = new ArrayList<>(0);
 
-        private final List<String[]> m_deprecatedConfigPaths = new ArrayList<>(0);
+        private final List<ConfigPath> m_deprecatedConfigPaths = new ArrayList<>(0);
 
         /**
-         * Builder for {@link DeprecatedConfigs}. Use {@link #forDeprecatedConfigPath(String...)} and
-         * {@link #forNewConfigPath(String...)} at least one time each before building. See {@link DeprecatedConfigs}
+         * Builder for {@link ConfigsDeprecation}. Use {@link #forDeprecatedConfigPath(String...)} and
+         * {@link #forNewConfigPath(String...)} at least one time each before building. See {@link ConfigsDeprecation}
          * for more information.
          */
-        public DeprecatedConfigsBuilder() {
+        public Builder() {
             // Builder
         }
 
@@ -125,8 +129,8 @@ public final class DeprecatedConfigs {
          *            to a desired subconfig.
          * @return the builder
          */
-        public DeprecatedConfigsBuilder forNewConfigPath(final String... configKeys) {
-            m_newConfigPaths.add(configKeys);
+        public Builder forNewConfigPath(final String... configKeys) {
+            m_newConfigPaths.add(new ConfigPath(Arrays.stream(configKeys).toList()));
             return this;
         }
 
@@ -139,25 +143,21 @@ public final class DeprecatedConfigs {
          *            to a desired subconfig.
          * @return the builder
          */
-        public DeprecatedConfigsBuilder forDeprecatedConfigPath(final String... configKeys) {
-            m_deprecatedConfigPaths.add(configKeys);
+        public Builder forDeprecatedConfigPath(final String... configKeys) {
+            m_deprecatedConfigPaths.add(new ConfigPath(Arrays.stream(configKeys).toList()));
             return this;
         }
 
         /**
-         * @return a new {@link DeprecatedConfigs} to be used in
-         *         {@link FieldNodeSettingsPersistor#getDeprecatedConfigs()}
+         * @return a new {@link ConfigsDeprecation} to be used in
+         *         {@link FieldNodeSettingsPersistor#getConfigsDeprecations()}
          */
-        public DeprecatedConfigs build() {
+        public ConfigsDeprecation build() {
             CheckUtils.check(!m_newConfigPaths.isEmpty(), RuntimeException::new,
                 () -> "No new config path was set. Use #withNewConfigPath.");
             CheckUtils.check(!m_deprecatedConfigPaths.isEmpty(), RuntimeException::new,
                 () -> "No deprecated config path was set. Use #forDeprecatedConfigPath.");
-            return new DeprecatedConfigs(to2DArray(m_newConfigPaths), to2DArray(m_deprecatedConfigPaths));
-        }
-
-        private static String[][] to2DArray(final List<String[]> listOfStringArrays) {
-            return listOfStringArrays.stream().toArray(String[][]::new);
+            return new ConfigsDeprecation(m_newConfigPaths, m_deprecatedConfigPaths);
         }
 
     }

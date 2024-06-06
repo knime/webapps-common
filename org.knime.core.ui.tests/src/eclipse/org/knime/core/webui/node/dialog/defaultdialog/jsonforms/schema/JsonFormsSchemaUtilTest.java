@@ -75,8 +75,8 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DeprecatedConfigs;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DeprecatedConfigs.DeprecatedConfigsBuilder;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.ConfigsDeprecation;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.ConfigsDeprecation.Builder;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
@@ -464,15 +464,15 @@ class JsonFormsSchemaUtilTest {
         }
 
         @Override
-        public DeprecatedConfigs[] getDeprecatedConfigs() {
-            return new DeprecatedConfigs[]{//
-                new DeprecatedConfigsBuilder()//
+        public ConfigsDeprecation[] getConfigsDeprecations() {
+            return new ConfigsDeprecation[]{//
+                new Builder()//
                     .forDeprecatedConfigPath("A", "B")//
                     .forDeprecatedConfigPath("C")//
                     .forNewConfigPath("D", "E")//
                     .forNewConfigPath("F")//
                     .build(), //
-                new DeprecatedConfigsBuilder()//
+                new Builder()//
                     .forNewConfigPath("I", "J")//
                     .forDeprecatedConfigPath("G", "H")//
                     .build()//

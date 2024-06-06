@@ -53,15 +53,17 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 
 import org.junit.jupiter.api.Test;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelAuthentication;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DeprecatedConfigs.DeprecatedConfigsBuilder;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.ConfigsDeprecation.Builder;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.AuthenticationSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.core.webui.node.dialog.util.NodeSettingsAtPathUtil.ConfigPath;
 
 /**
  * Contains unit tests for the {@link ConfigKeyUtil}.
@@ -88,8 +90,8 @@ class ConfigKeyUtilTest {
         }
 
         @Override
-        public DeprecatedConfigs[] getDeprecatedConfigs() {
-            return new DeprecatedConfigs[]{new DeprecatedConfigsBuilder().forNewConfigPath("custom_key0")
+        public ConfigsDeprecation[] getConfigsDeprecations() {
+            return new ConfigsDeprecation[]{new Builder().forNewConfigPath("custom_key0")
                 .forDeprecatedConfigPath("old_config_key").build()};
         }
 
@@ -181,8 +183,15 @@ class ConfigKeyUtilTest {
     @Test
     void testDeprecatedConfigKeysFromCustomPersistor() throws NoSuchFieldException {
         final var deprecatedConfigKeys = deprecatedConfigKeysFor("setting5");
-        assertArrayEquals(new String[] {"custom_key0"}, deprecatedConfigKeys[0].getNewConfigPaths()[0], "newConfigPaths of deprecatedConfigs should be set from custom persistor");
-        assertArrayEquals(new String[] {"old_config_key"}, deprecatedConfigKeys[0].getDeprecatedConfigPaths()[0], "deprecatedConfigPaths of deprecatedConfigs should be set from custom persistor");
+        assertArrayEquals(new String[]{"custom_key0"}, getFirstPathAsArray(deprecatedConfigKeys[0].getNewConfigPaths()),
+            "newConfigPaths of deprecatedConfigs should be set from custom persistor");
+        assertArrayEquals(new String[]{"old_config_key"},
+            getFirstPathAsArray(deprecatedConfigKeys[0].getDeprecatedConfigPaths()),
+            "deprecatedConfigPaths of deprecatedConfigs should be set from custom persistor");
+    }
+
+    private static String[] getFirstPathAsArray(final Collection<ConfigPath> configPaths) {
+        return configPaths.stream().findFirst().orElseThrow().path().toArray(String[]::new);
     }
 
     @Test
@@ -195,7 +204,7 @@ class ConfigKeyUtilTest {
         return ConfigKeyUtil.getConfigKeysUsedByField(getField(fieldName));
     }
 
-    private static DeprecatedConfigs[] deprecatedConfigKeysFor(final String fieldName) throws NoSuchFieldException {
+    private static ConfigsDeprecation[] deprecatedConfigKeysFor(final String fieldName) throws NoSuchFieldException {
         return ConfigKeyUtil.getDeprecatedConfigsUsedByField(getField(fieldName));
     }
 

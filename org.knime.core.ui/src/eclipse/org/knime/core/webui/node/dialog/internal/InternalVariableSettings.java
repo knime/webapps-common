@@ -80,7 +80,7 @@ public final class InternalVariableSettings implements VariableSettingsWO, Varia
 
     @Override
     public Iterable<String> getVariableSettingsIterable() {
-        return () -> m_variableSettings.iterator();
+        return m_variableSettings::iterator;
     }
 
     @Override

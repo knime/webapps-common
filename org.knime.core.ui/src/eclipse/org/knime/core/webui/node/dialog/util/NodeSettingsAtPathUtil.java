@@ -48,23 +48,118 @@
  */
 package org.knime.core.webui.node.dialog.util;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.config.base.AbstractConfigEntry;
 
 /**
- * A utility class for modifying node settings at paths, i.e. arrays of config keys)
+ * A utility class for modifying node settings at paths, (i.e. arrays of config keys)
  *
  * @author Paul Bärnreuther
  */
-public class NodeSettingsAtPathUtil {
+public final class NodeSettingsAtPathUtil {
 
     private NodeSettingsAtPathUtil() {
         // Utility
+    }
+
+    /**
+     * A list of strings used to index {@link NodeSettings}
+     *
+     * @author Paul Bärnreuther
+     */
+    public static final class ConfigPath {
+
+        private final List<String> m_path;
+
+        private int size() {
+            return m_path.size();
+        }
+
+        public List<String> path() {
+            return m_path;
+
+        }
+
+        /**
+         * @param path
+         */
+        public ConfigPath(final List<String> path) {
+            m_path = new ArrayList<>(path);
+        }
+
+        ConfigPath withoutFinalKey() {
+            return new ConfigPath(m_path.subList(0, size() - 1));
+        }
+
+        ConfigPath withoutFirstKey() {
+            return new ConfigPath(m_path.subList(1, size()));
+        }
+
+        /**
+         * @param basePath
+         * @return whether the path starts with the basePath
+         *
+         */
+        public boolean startsWith(final ConfigPath basePath) {
+            if (basePath.m_path.size() > m_path.size()) {
+                return false;
+            }
+            return IntStream.range(0, basePath.size()).allMatch(i -> basePath.m_path.get(i).equals(m_path.get(i)));
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            if (obj instanceof ConfigPath other) {
+                return m_path.equals(other.m_path);
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return m_path.hashCode();
+        }
+
+        /**
+         *
+         * @param basePath
+         * @return the NodeSettingsPath relative to the given basePath
+         *
+         * @throws IllegalArgumentException if the path does not start with the basePath.
+         */
+        public ConfigPath relativize(final ConfigPath basePath) {
+            if (basePath.size() == 0) {
+                return this;
+            }
+            if (!basePath.firstKey().equals(firstKey())) {
+                throw new IllegalArgumentException(
+                    String.format("Unable to relativice since \"%s\" is not \"%s\".", basePath.firstKey(), firstKey()));
+            }
+            return this.withoutFirstKey().relativize(basePath.withoutFirstKey());
+        }
+
+        String firstKey() {
+            return m_path.get(0);
+        }
+
+        String lastKey() {
+            return m_path.get(size() - 1);
+        }
+
+        /**
+         * @param key that should be appended
+         * @return a new configPath
+         */
+        public ConfigPath plus(final String key) {
+            return new ConfigPath(Stream.concat(m_path.stream(), Stream.of(key)).toList());
+        }
     }
 
     /**
@@ -73,9 +168,9 @@ public class NodeSettingsAtPathUtil {
      * @return true if the full path exists in the given settings. Hereby the last key does not have to give rise to
      *         {@link NodeSettings} but could index e.g. a string value instead.
      */
-    public static boolean hasPath(final NodeSettingsRO settings, final String[] path) {
-        return getNodeSettingsROAtPath(settings, withoutFinalKey(path))
-            .map(ns -> getSettingsChildByKey(ns, finalKey(path))).orElse(null) != null;
+    public static boolean hasPath(final NodeSettingsRO settings, final ConfigPath path) {
+        return getNodeSettingsROAtPath(settings, path.withoutFinalKey())
+            .map(ns -> getSettingsChildByKey(ns, path.lastKey())).orElse(null) != null;
     }
 
     /**
@@ -91,16 +186,16 @@ public class NodeSettingsAtPathUtil {
      *            </ul>
      *            </p>
      */
-    public static void replaceAtPathIfPresent(final NodeSettings settings, final String[] path,
+    public static void replaceAtPathIfPresent(final NodeSettings settings, final ConfigPath path,
         final NodeSettingsRO other) {
         var subSettings = settings;
         var subSettingsPrev = other;
-        for (var key : withoutFinalKey(path)) {
-            final var subSettingsCandidate = getNodeSettingsAtKey(subSettings, key);
+        for (var key : path.withoutFinalKey().path()) {
             final var subSettingsPrevCandidate = getNodeSettingsROAtKey(subSettingsPrev, key);
             if (subSettingsPrevCandidate.isEmpty()) {
                 return;
             }
+            final var subSettingsCandidate = getNodeSettingsAtKey(subSettings, key);
             if (subSettingsCandidate.isEmpty()) {
                 subSettings.addEntry((AbstractConfigEntry)subSettingsPrevCandidate.get());
                 return;
@@ -108,7 +203,7 @@ public class NodeSettingsAtPathUtil {
             subSettings = subSettingsCandidate.get();
             subSettingsPrev = subSettingsPrevCandidate.get();
         }
-        final var entry = getSettingsChildByKey(subSettingsPrev, finalKey(path));
+        final var entry = getSettingsChildByKey(subSettingsPrev, path.lastKey());
         if (entry != null) {
             subSettings.addEntry(entry);
         }
@@ -121,9 +216,9 @@ public class NodeSettingsAtPathUtil {
      * @param settings
      * @param path
      */
-    public static void deletePath(final NodeSettings settings, final String[] path) {
-        getNodeSettingsAtPath(settings, withoutFinalKey(path))
-            .ifPresent(atPath -> atPath.removeConfig(finalKey(path)));
+    public static void deletePath(final NodeSettings settings, final ConfigPath path) {
+        getNodeSettingsAtPath(settings, path.withoutFinalKey())
+            .ifPresent(atPath -> atPath.removeConfig(path.lastKey()));
     }
 
     private static Optional<NodeSettings> getNodeSettingsAtKey(final NodeSettings nodeSettings, final String key) {
@@ -133,10 +228,9 @@ public class NodeSettingsAtPathUtil {
         return Optional.empty();
     }
 
-    private static Optional<NodeSettings> getNodeSettingsAtPath(final NodeSettings nodeSettings,
-        final List<String> path) {
+    public static Optional<NodeSettings> getNodeSettingsAtPath(final NodeSettings nodeSettings, final ConfigPath path) {
         var result = Optional.of(nodeSettings);
-        for (var key : path) {
+        for (var key : path.path()) {
             result = result.flatMap(s -> getNodeSettingsAtKey(s, key));
         }
         return result;
@@ -150,21 +244,13 @@ public class NodeSettingsAtPathUtil {
         return Optional.empty();
     }
 
-    private static Optional<NodeSettingsRO> getNodeSettingsROAtPath(final NodeSettingsRO nodeSettings,
-        final List<String> path) {
+    public static Optional<NodeSettingsRO> getNodeSettingsROAtPath(final NodeSettingsRO nodeSettings,
+        final ConfigPath path) {
         var result = Optional.of(nodeSettings);
-        for (var key : path) {
+        for (var key : path.path()) {
             result = result.flatMap(s -> getNodeSettingsROAtKey(s, key));
         }
         return result;
-    }
-
-    private static List<String> withoutFinalKey(final String[] path) {
-        return IntStream.range(0, path.length - 1).mapToObj(i -> path[i]).toList();
-    }
-
-    private static String finalKey(final String[] path) {
-        return path[path.length - 1];
     }
 
     /**

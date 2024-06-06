@@ -93,19 +93,19 @@ public final class ConfigKeyUtil {
     }
 
     /**
-     * Get the collection of {@link DeprecatedConfigs} that are used by the given field if it is annotated with a
+     * Get the collection of {@link ConfigsDeprecation} that are used by the given field if it is annotated with a
      * {@link Persist} annotation.
      *
      * @param field
      * @return the deprecated configs defined by the {@link Persist#customPersistor} or an empty array none exists.
      */
-    public static DeprecatedConfigs[] getDeprecatedConfigsUsedByField(final Field field) {
+    public static ConfigsDeprecation[] getDeprecatedConfigsUsedByField(final Field field) {
         var persist = field.getAnnotation(Persist.class);
         if (persist == null) {
-            return new DeprecatedConfigs[]{};
+            return new ConfigsDeprecation[]{};
         }
         return extractCustomFieldNodeSettingsPersistor(field, persist)
-            .map(FieldNodeSettingsPersistor::getDeprecatedConfigs).orElse(new DeprecatedConfigs[]{});
+            .map(FieldNodeSettingsPersistor::getConfigsDeprecations).orElse(new ConfigsDeprecation[]{});
     }
 
     private static Optional<FieldNodeSettingsPersistor<?>> extractCustomFieldNodeSettingsPersistor(final Field field,

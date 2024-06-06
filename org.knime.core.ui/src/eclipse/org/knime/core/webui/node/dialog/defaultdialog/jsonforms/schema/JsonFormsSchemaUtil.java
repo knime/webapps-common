@@ -77,13 +77,14 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.ConfigKeyUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DeprecatedConfigs;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.ConfigsDeprecation;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DescriptionUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget.DoubleProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.core.webui.node.dialog.util.NodeSettingsAtPathUtil.ConfigPath;
 
 import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -287,17 +288,20 @@ public final class JsonFormsSchemaUtil {
     }
 
     private static void putDeprecatedConfig(final ArrayNode deprecatedConfigsNode,
-        final DeprecatedConfigs deprecatedConfigs) {
+        final ConfigsDeprecation configsDeprecation) {
         final var nextDeprecatedConfigs = deprecatedConfigsNode.addObject();
-        add2DStingArray(nextDeprecatedConfigs, "new", deprecatedConfigs.getNewConfigPaths());
-        add2DStingArray(nextDeprecatedConfigs, "deprecated", deprecatedConfigs.getDeprecatedConfigPaths());
+        add2DStingArray(nextDeprecatedConfigs, "new",
+            configsDeprecation.getNewConfigPaths().stream().map(ConfigPath::path).toList());
+        add2DStingArray(nextDeprecatedConfigs, "deprecated",
+            configsDeprecation.getDeprecatedConfigPaths().stream().map(ConfigPath::path).toList());
     }
 
-    private static void add2DStingArray(final ObjectNode node, final String key, final String[][] twoDimensionalArray) {
+    private static void add2DStingArray(final ObjectNode node, final String key,
+        final List<List<String>> twoDimensionalArray) {
         final var parentArrayNode = node.putArray(key);
-        Arrays.stream(twoDimensionalArray).forEach(oneDimensionalArray -> {
+        twoDimensionalArray.forEach(oneDimensionalArray -> {
             final var childArray = parentArrayNode.addArray();
-            Arrays.stream(oneDimensionalArray).forEach(childArray::add);
+            oneDimensionalArray.forEach(childArray::add);
         });
     }
 

@@ -84,7 +84,7 @@ final class DefaultFieldNodeSettingsPersistor<T> implements FieldNodeSettingsPer
     }
 
     @Override
-    public DeprecatedConfigs[] getDeprecatedConfigs() {
+    public ConfigsDeprecation[] getConfigsDeprecations() {
         return m_impl.getDeprecatedConfigs(m_configKey);
     }
 

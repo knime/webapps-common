@@ -73,6 +73,8 @@ import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.NodeInPort;
 import org.knime.core.node.workflow.VariableType;
+import org.knime.core.webui.node.dialog.configmapping.ConfigMappings;
+import org.knime.core.webui.node.dialog.configmapping.NodeSettingsCorrectionUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.examples.ArrayWidgetExample;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorFactory;
@@ -105,9 +107,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.CredentialsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.PasswordWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.UsernameWidget;
-import org.knime.core.webui.node.dialog.modification.Modification;
-import org.knime.core.webui.node.dialog.modification.NodeSettingsCorrectionUtil;
-import org.knime.core.webui.node.dialog.modification.traversal.Tree;
 
 /**
  * Marker interface for implementations that define a {@link DefaultNodeDialog}. The implementations allow one to
@@ -472,9 +471,9 @@ public interface DefaultNodeSettings extends PersistableSettings, WidgetGroup {
      * @see NodeSettingsCorrectionUtil
      */
     @SuppressWarnings("unchecked")
-    static <S extends DefaultNodeSettings> Tree<Modification> getModificationsTree(final Class<S> settingsClass,
+    static <S extends DefaultNodeSettings> ConfigMappings getConfigMappings(final Class<S> settingsClass,
         final DefaultNodeSettings settingsObject) {
-        return getPersistor(settingsClass).getModifications((S)settingsObject);
+        return getPersistor(settingsClass).getConfigMappings((S)settingsObject);
     }
 
     /**

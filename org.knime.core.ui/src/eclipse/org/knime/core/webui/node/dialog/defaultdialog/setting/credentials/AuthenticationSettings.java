@@ -61,8 +61,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DeprecatedConfigs;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DeprecatedConfigs.DeprecatedConfigsBuilder;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.ConfigsDeprecation;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.ConfigsDeprecation.Builder;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldBasedNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
@@ -287,15 +287,15 @@ public final class AuthenticationSettings implements WidgetGroup, PersistableSet
         }
 
         @Override
-        public DeprecatedConfigs[] getDeprecatedConfigs() {
-            return new DeprecatedConfigs[]{//
-                new DeprecatedConfigsBuilder()//
+        public ConfigsDeprecation[] getConfigsDeprecations() {
+            return new ConfigsDeprecation[]{//
+                new Builder()//
                     .forNewConfigPath(getConfigKey(), KEY_CREDENTIALS) //
                     .forDeprecatedConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_CREDENTIAL)//
                     .forDeprecatedConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_PASSWORD)//
                     .forDeprecatedConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_USERNAME)//
                     .build(), //
-                new DeprecatedConfigsBuilder()//
+                new Builder()//
                     .forNewConfigPath(getConfigKey(), KEY_TYPE) //
                     .forDeprecatedConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_TYPE)//
                     .build()};

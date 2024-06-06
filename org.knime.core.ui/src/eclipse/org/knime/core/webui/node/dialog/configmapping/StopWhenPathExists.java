@@ -44,100 +44,38 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 29, 2024 (Paul Bärnreuther): created
+ *   Jun 6, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.modification.traversal;
+package org.knime.core.webui.node.dialog.configmapping;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import static org.knime.core.webui.node.dialog.util.NodeSettingsAtPathUtil.hasPath;
+
+import org.knime.core.node.NodeSettings;
+import org.knime.core.webui.node.dialog.util.NodeSettingsAtPathUtil.ConfigPath;
 
 /**
+ * Does not reset anything but prevents further resetters to be regarded when the given path exists both in new and old
+ * settings already.
  *
  * @author Paul Bärnreuther
- * @param <L> the leaf type
  */
-public interface Tree<L> {
+class StopWhenPathExists implements ConfigsResetter {
 
-    /**
-     * @return a leaf if the given tree node is a leaf
-     */
-    default Optional<L> getLeaf() {
-        return Optional.empty();
+    private final NodeSettings m_nodeSettings;
+
+    StopWhenPathExists(final NodeSettings nodeSettings) {
+        m_nodeSettings = nodeSettings;
+
     }
 
-    /**
-     * @return an optional string key for traversal information alongside other trees
-     */
-    default Optional<String> getKey() {
-        return Optional.empty();
+    @Override
+    public boolean isApplicable(final ConfigPath path) {
+        return hasPath(m_nodeSettings, path);
     }
 
-    /**
-     * @return the children of the given leaf node
-     */
-    default Collection<Tree<L>> getChildren() {
-        return null;
-    }
-
-    /**
-     * @param <L>
-     * @param leaf
-     * @return a single-node tree with one leaf
-     */
-    static <L> Tree<L> leaf(final L leaf) {
-        return new Tree<L>() {
-
-            @Override
-            public Optional<L> getLeaf() {
-                return Optional.of(leaf);
-            }
-        };
-    }
-
-    /**
-     * @param <L>
-     * @param key by which the tree structure traverses further
-     * @param children
-     * @return a parent node for the given children
-     */
-    static <L> Tree<L> of(final String key, final Collection<Tree<L>> children) {
-        return new Tree<L>() {
-
-            @Override
-            public Collection<Tree<L>> getChildren() {
-                return children;
-            }
-
-            @Override
-            public Optional<String> getKey() {
-                return Optional.of(key);
-            }
-
-        };
-    }
-
-    /**
-     * @param <L>
-     * @param children
-     * @return a parent node for the given children
-     */
-    static <L> Tree<L> of(final Collection<Tree<L>> children) {
-        return new Tree<L>() {
-
-            @Override
-            public Collection<Tree<L>> getChildren() {
-                return children;
-            }
-        };
-    }
-
-    /**
-     * @param <L>
-     * @return an empty tree, i.e. not a leaf and without key or children
-     */
-    static <L> Tree<L> empty() {
-        return of(List.of());
+    @Override
+    public void resetAtPath(final ConfigPath path) {
+        // Do NOT replace anything in this case, since the config is not controlled but only exposed
     }
 
 }

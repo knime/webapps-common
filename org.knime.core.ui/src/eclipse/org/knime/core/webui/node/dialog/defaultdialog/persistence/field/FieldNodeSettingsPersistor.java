@@ -51,10 +51,10 @@ package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettings;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.webui.node.dialog.configmapping.ConfigMappings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
-import org.knime.core.webui.node.dialog.modification.Modification;
-import org.knime.core.webui.node.dialog.modification.traversal.Tree;
 
 /**
  * A {@link NodeSettingsPersistor} that persists a single field of a settings object. Implementing classes must provide
@@ -65,24 +65,27 @@ import org.knime.core.webui.node.dialog.modification.traversal.Tree;
  */
 public interface FieldNodeSettingsPersistor<T> extends NodeSettingsPersistor<T> {
     @SuppressWarnings("javadoc")
-    static final NodeLogger LOGGER = NodeLogger.getLogger(FieldNodeSettingsPersistor.class);
+    NodeLogger LOGGER = NodeLogger.getLogger(FieldNodeSettingsPersistor.class);
 
     @Override
-    default Tree<Modification> getModifications(final T obj) {
-        return Tree.leaf(new Modification(getDeprecatedConfigs(), settings -> {
-            T fromPrevious;
-            try {
-                fromPrevious = load(settings);
-            } catch (InvalidSettingsException ex) {
-                LOGGER.warn(
-                    String.format("Error when trying to load from previous settings when modifying settings on save. "
-                        + "Using the saved settings instead. Exception: %s", ex));
-                fromPrevious = obj;
-            }
+    default ConfigMappings getConfigMappings(final T obj) {
+        return new ConfigMappings(getConfigsDeprecations(), settings -> {
+            T fromPrevious = loadOrDefault(settings, obj);
             final var newSettings = new NodeSettings("newSettings");
             save(fromPrevious, newSettings);
             return newSettings;
-        }));
+        });
+    }
+
+    private T loadOrDefault(final NodeSettingsRO settings, final T obj) {
+        try {
+            return load(settings);
+        } catch (InvalidSettingsException ex) {
+            LOGGER
+                .warn(String.format("Error when trying to load from previous settings when modifying settings on save. "
+                    + "Using the saved settings instead. Exception: %s", ex));
+            return obj;
+        }
     }
 
     /**
@@ -92,10 +95,10 @@ public interface FieldNodeSettingsPersistor<T> extends NodeSettingsPersistor<T> 
 
     /**
      * @return an array of all pairs of collections of deprecated and accociated new configs (see
-     *         {@link DeprecatedConfigs})
+     *         {@link ConfigsDeprecation})
      */
-    default DeprecatedConfigs[] getDeprecatedConfigs() {
-        return new DeprecatedConfigs[0];
+    default ConfigsDeprecation[] getConfigsDeprecations() {
+        return new ConfigsDeprecation[0];
     }
 
     /**

@@ -270,8 +270,8 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
         }
 
         @Override
-        public DeprecatedConfigs[] getDeprecatedConfigs(final String configKey) {
-            return createPersistorInstance(configKey).getDeprecatedConfigs();
+        public ConfigsDeprecation[] getDeprecatedConfigs(final String configKey) {
+            return createPersistorInstance(configKey).getConfigsDeprecations();
         }
 
     }

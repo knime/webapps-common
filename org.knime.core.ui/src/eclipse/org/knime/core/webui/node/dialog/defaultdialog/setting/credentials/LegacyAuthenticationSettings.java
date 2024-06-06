@@ -60,8 +60,8 @@ import org.knime.core.node.defaultnodesettings.SettingsModelAuthentication;
 import org.knime.core.node.workflow.CredentialsProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DeprecatedConfigs;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DeprecatedConfigs.DeprecatedConfigsBuilder;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.ConfigsDeprecation;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.ConfigsDeprecation.Builder;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
@@ -199,15 +199,15 @@ public final class LegacyAuthenticationSettings implements WidgetGroup {
         }
 
         @Override
-        public DeprecatedConfigs[] getDeprecatedConfigs() {
-            return new DeprecatedConfigs[]{//
-                new DeprecatedConfigsBuilder()//
+        public ConfigsDeprecation[] getConfigsDeprecations() {
+            return new ConfigsDeprecation[]{//
+                new Builder()//
                     .forNewConfigPath(getConfigKey(), KEY_LEGACY_CREDENTIALS) //
                     .forDeprecatedConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_CREDENTIAL)//
                     .forDeprecatedConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_PASSWORD)//
                     .forDeprecatedConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_USERNAME)//
                     .build(), //
-                new DeprecatedConfigsBuilder()//
+                new Builder()//
                     .forNewConfigPath(getConfigKey(), KEY_TYPE) //
                     .forDeprecatedConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_TYPE)//
                     .build()};

@@ -212,7 +212,7 @@ class LegacyAuthenticationSettingsTest {
         void testDeprecatedConfigs(
             final Class<? extends FieldNodeSettingsPersistor<LegacyAuthenticationSettings>> persistorClass) {
             final var persistor = createPersistor(persistorClass);
-            assertThat(persistor.getDeprecatedConfigs()).hasSize(2);
+            assertThat(persistor.getConfigsDeprecations()).hasSize(2);
         }
 
         private static FieldNodeSettingsPersistor<LegacyAuthenticationSettings> createPersistor(

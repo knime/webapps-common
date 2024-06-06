@@ -76,7 +76,7 @@ public final class ToNodeSettingsUtil {
      */
     public static NodeSettings toNodeSettings(final SettingsType type, final DefaultNodeSettings defaultNodeSettings) {
         var res = new NodeSettings(type.getConfigKey());
-        toNodeSettings(res, type, defaultNodeSettings);
+        toNodeSettings(res, defaultNodeSettings);
         return res;
     }
 
@@ -95,7 +95,8 @@ public final class ToNodeSettingsUtil {
      */
     public static void constructNodeSettings(final Map<SettingsType, NodeSettingsWO> nodeSettings,
         final Function<SettingsType, DefaultNodeSettings> constructDefaultNodeSettings) {
-        nodeSettings.entrySet().forEach(entry -> toNodeSettings(entry.getValue(), entry.getKey(),
+        nodeSettings
+            .entrySet().forEach(entry -> toNodeSettings(entry.getValue(),
             constructDefaultNodeSettings.apply(entry.getKey())));
     }
 
@@ -103,7 +104,7 @@ public final class ToNodeSettingsUtil {
      * @param nodeSettings the output to which the extracted {@link NodeSettings} are written
      * @param type of the settings
      */
-    private static void toNodeSettings(final NodeSettingsWO nodeSettings, final SettingsType type,
+    private static void toNodeSettings(final NodeSettingsWO nodeSettings,
         final DefaultNodeSettings defaultNodeSettings) {
         DefaultNodeSettings.saveSettings(defaultNodeSettings.getClass(), defaultNodeSettings, nodeSettings);
     }

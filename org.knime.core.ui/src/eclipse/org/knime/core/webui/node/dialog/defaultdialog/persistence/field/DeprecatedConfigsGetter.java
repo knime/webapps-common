@@ -49,7 +49,7 @@
 package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 
 /**
- * Provides the capability to define deprecated config keys (see {@link DeprecatedConfigs}) for a field persistor.
+ * Provides the capability to define deprecated config keys (see {@link ConfigsDeprecation}) for a field persistor.
  *
  * @author Paul Bärnreuther
  */
@@ -57,10 +57,10 @@ interface DeprecatedConfigsGetter {
     /**
      * @param configKey the config key used during save and load
      * @return an array of all pairs of collections of deprecated and accociated new configs (see
-     *         {@link DeprecatedConfigs})
+     *         {@link ConfigsDeprecation})
      */
-    default DeprecatedConfigs[] getDeprecatedConfigs(final String configKey) {
-        return new DeprecatedConfigs[0];
+    default ConfigsDeprecation[] getDeprecatedConfigs(final String configKey) {
+        return new ConfigsDeprecation[0];
     }
 
 }

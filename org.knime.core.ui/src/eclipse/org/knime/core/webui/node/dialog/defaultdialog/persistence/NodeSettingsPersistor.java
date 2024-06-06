@@ -48,11 +48,12 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.persistence;
 
+import java.util.List;
+
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.webui.node.dialog.modification.Modification;
-import org.knime.core.webui.node.dialog.modification.traversal.Tree;
+import org.knime.core.webui.node.dialog.configmapping.ConfigMappings;
 
 /**
  * Implementing classes save objects to and load objects from NodeSettings.</br>
@@ -88,8 +89,8 @@ public interface NodeSettingsPersistor<T> {
      *         flow variables back in sync when the tree structure differs after saving (e.g. because of set deprecated
      *         flow variables) and to revert applied settings to previous settings when overwritten by a flow variable.
      */
-    default Tree<Modification> getModifications(final T obj) {
-        return Tree.empty();
+    default ConfigMappings getConfigMappings(final T obj) {
+        return new ConfigMappings(List.of());
     }
 
     /**

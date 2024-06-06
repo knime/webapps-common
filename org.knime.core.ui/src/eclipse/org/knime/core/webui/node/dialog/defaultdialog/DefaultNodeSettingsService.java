@@ -70,6 +70,7 @@ import org.knime.core.webui.node.dialog.NodeAndVariableSettingsWO;
 import org.knime.core.webui.node.dialog.NodeSettingsService;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.VariableSettingsRO;
+import org.knime.core.webui.node.dialog.configmapping.NodeSettingsCorrectionUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsSettings;
@@ -79,7 +80,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.NodeSet
 import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.ToNodeSettingsUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
 import org.knime.core.webui.node.dialog.internal.InternalVariableSettings;
-import org.knime.core.webui.node.dialog.modification.NodeSettingsCorrectionUtil;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -139,10 +139,10 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
         final Map<SettingsType, VariableSettingsRO> extractedVariableSettings, //
         final Map<SettingsType, DefaultNodeSettings> defaultNodeSettingsMap //
     ) {
-        for (var key : settings.keySet()) {
-            final var modificationTree =
-                DefaultNodeSettings.getModificationsTree(m_settingsClasses.get(key), defaultNodeSettingsMap.get(key));
-            NodeSettingsCorrectionUtil.correctNodeSettingsRespectingFlowVariables(modificationTree, settings.get(key),
+        for (var key : settings.entrySet()) {
+            final var configMappings =
+                DefaultNodeSettings.getConfigMappings(m_settingsClasses.get(key), defaultNodeSettingsMap.get(key));
+            NodeSettingsCorrectionUtil.correctNodeSettingsRespectingFlowVariables(configMappings, settings.get(key),
                 previousSettings.get(key), extractedVariableSettings.get(key));
         }
     }

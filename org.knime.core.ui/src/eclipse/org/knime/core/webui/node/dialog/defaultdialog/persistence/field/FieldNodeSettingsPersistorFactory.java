@@ -64,12 +64,11 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
+import org.knime.core.webui.node.dialog.configmapping.ConfigMappings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.ReflectionUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LatentWidget;
-import org.knime.core.webui.node.dialog.modification.Modification;
-import org.knime.core.webui.node.dialog.modification.traversal.Tree;
 
 /**
  * Creates persistors for fields of a {@link PersistableSettings} class.
@@ -226,8 +225,8 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
         }
 
         @Override
-        public Tree<Modification> getModifications(final S obj) {
-            return m_delegate.getModifications(obj);
+        public ConfigMappings getConfigMappings(final S obj) {
+            return m_delegate.getConfigMappings(obj);
         }
     }
 }
