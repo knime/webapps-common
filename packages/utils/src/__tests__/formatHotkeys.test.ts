@@ -27,13 +27,22 @@ describe("formatHotkey", () => {
 
     it("returns special symbols for specific keys on mac", () => {
       const hotkeys: Array<Hotkey> = [
+        // mac specific
         "Shift",
         "Delete",
+        "CtrlOrCmd",
         "Ctrl",
         "Alt",
         "Enter",
+
+        // general
+        "ArrowUp",
+        "ArrowDown",
+        "ArrowLeft",
+        "ArrowRight",
+        " ",
       ];
-      expect(formatHotkeys(hotkeys)).toBe("⇧ ⌫ ⌘ ⌥ ↩");
+      expect(formatHotkeys(hotkeys)).toBe("⇧ ⌫ ⌘ ⌃ ⌥ ↩ ↑ ↓ ← → Space");
     });
   });
 
@@ -44,13 +53,21 @@ describe("formatHotkey", () => {
 
     it("returns symbols for arrow keys and enter", () => {
       const hotkeys: Array<Hotkey> = [
+        "Shift",
+        "Delete",
+        "CtrlOrCmd",
+        "Ctrl",
+        "Alt",
         "ArrowUp",
         "ArrowDown",
         "ArrowLeft",
         "ArrowRight",
         "Enter",
+        " ",
       ];
-      expect(formatHotkeys(hotkeys)).toBe("↑ ↓ ← → ↵");
+      expect(formatHotkeys(hotkeys)).toBe(
+        "Shift Delete Ctrl Ctrl Alt ↑ ↓ ← → ↵ Space",
+      );
     });
   });
 });
