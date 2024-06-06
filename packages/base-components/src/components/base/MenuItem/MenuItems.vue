@@ -39,11 +39,11 @@ import {
 } from "vue";
 import type { Boundary } from "@floating-ui/vue";
 
-import useDropdownNavigation from "../composables/useDropdownNavigation";
-import getWrappedAroundIndex from "../util/getWrappedAroundIndex";
+import useDropdownNavigation from "../../../composables/useDropdownNavigation";
+import { getWrappedAroundIndex } from "@knime/utils";
 import BaseMenuItems from "./BaseMenuItems.vue";
 import BaseMenuItem from "./BaseMenuItem.vue";
-import ArrowNextIcon from "../assets/img/icons/arrow-next.svg";
+import ArrowNextIcon from "@knime/styles/img/icons/arrow-next.svg";
 
 export interface MenuItem<TMetadata = any, TChildrenMetadata = TMetadata> {
   text: string;

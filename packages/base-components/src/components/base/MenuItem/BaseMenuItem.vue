@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { MenuItem } from "./MenuItems.vue";
-import Checkbox from "./forms/Checkbox.vue";
+import Checkbox from "../../forms/Checkbox/Checkbox.vue";
 import BaseMenuItemText from "./BaseMenuItemText.vue";
 
 type Props = {
