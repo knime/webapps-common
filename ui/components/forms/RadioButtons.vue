@@ -74,7 +74,7 @@ export default {
     position: relative;
     display: block;
     font-weight: 300;
-    padding: 1px 4px 1px 2px;
+    padding: 0 4px 0 2px;
     max-width: 100%;
     width: max-content;
     cursor: pointer;
@@ -87,10 +87,12 @@ export default {
     }
 
     & input {
-      opacity: 0;
+      appearance: none;
+      pointer-events: none;
+      user-select: none;
       position: absolute;
-      width: 0;
-      height: 0;
+      width: 100%;
+      height: 100%;
       margin: 0;
 
       & + span {
@@ -117,6 +119,7 @@ export default {
         text-align: center;
         margin-right: var(--spacing-8);
         margin-top: 1px;
+        margin-left: 1px;
         vertical-align: top;
       }
 
@@ -160,7 +163,8 @@ export default {
 }
 
 /* .radio-buttons:focus-within :deep(label input:not(:disabled) + span::before) { */
-.radio-buttons :deep(label:focus-within) {
+.radio-buttons :deep(input:focus-visible) {
+  outline: none;
   box-shadow: var(--theme-default-focus-state);
 }
 

@@ -71,16 +71,12 @@ export default {
   display: inline-block;
   position: relative;
   isolation: isolate;
-  padding: 1px 2px;
+  padding: 0 2px;
   max-width: 100%;
   cursor: pointer;
   font-size: 13px;
   font-weight: 300;
   line-height: 16px;
-
-  &:focus-within {
-    box-shadow: var(--theme-default-focus-state);
-  }
 
   /* invalid value */
   &.invalid {
@@ -93,12 +89,13 @@ export default {
   }
 
   & input {
+    appearance: none;
+    pointer-events: none;
     user-select: none;
-    display: flex;
-    opacity: 0;
     position: absolute;
-    width: 0;
-    height: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
 
     & + span {
       position: relative;
@@ -127,7 +124,7 @@ export default {
     & + span::after {
       /* ✓ */
       position: absolute;
-      left: 0;
+      left: 1px;
       top: 1px;
     }
 
@@ -180,6 +177,11 @@ export default {
       &:hover:enabled + span::before {
         border-color: var(--theme-checkbox-border-color-hover);
       }
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: var(--theme-default-focus-state);
     }
   }
 }

@@ -43,7 +43,7 @@ export default {
       </div>
       <div class="grid-container">
         <div class="grid-item-6">
-          <Checkbox v-model="selected"> I want cookies! </Checkbox>
+          <Checkbox v-model="selected"> I want cookies!</Checkbox>
           <br />
           <Checkbox v-model="selected" disabled>
             This checkbox is disabled!
