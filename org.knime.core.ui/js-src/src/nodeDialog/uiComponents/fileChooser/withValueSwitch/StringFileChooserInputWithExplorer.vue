@@ -10,6 +10,7 @@ interface StringFileChooserInputWithExplorerProps {
     fileExtension?: string;
     fileExtensions?: string[];
     fileExtensionProvider?: string;
+    currentSpaceName?: string;
   };
   id: string | null;
   backendType: BackendType;

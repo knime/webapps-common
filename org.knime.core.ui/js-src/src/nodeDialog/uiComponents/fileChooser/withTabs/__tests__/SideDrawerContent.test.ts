@@ -10,6 +10,8 @@ import flushPromises from "flush-promises";
 describe("SideDrawerContent.vue", () => {
   let props: Props;
 
+  const testSpaceName = "testSpaceName";
+
   beforeEach(() => {
     props = {
       disabled: false,
@@ -18,6 +20,9 @@ describe("SideDrawerContent.vue", () => {
         fsCategory: "relative-to-current-hubspace",
         path: "myPath",
         timeout: 1000,
+      },
+      options: {
+        mountId: testSpaceName,
       },
     };
   });
@@ -43,7 +48,7 @@ describe("SideDrawerContent.vue", () => {
     expect(tabBar.props().possibleValues).toStrictEqual([
       {
         value: "relative-to-current-hubspace",
-        label: "Community Hub",
+        label: testSpaceName,
         icon: expect.anything(),
       },
       {

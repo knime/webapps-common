@@ -22,8 +22,14 @@ const { onFsCategoryUpdate, onPathUpdate, onTimeoutUpdate } =
       emit("update:modelValue", value);
     },
   );
-const { filteredExtensions, appendedExtension, isWriter, isLoaded } =
-  useFileChooserBrowseOptions(toRef(props, "options"));
+const {
+  filteredExtensions,
+  appendedExtension,
+  isWriter,
+  isLoaded,
+  spacePath,
+  mountId,
+} = useFileChooserBrowseOptions(toRef(props, "options"));
 
 const possibleCategories: {
   value: keyof typeof FSCategory;
@@ -32,7 +38,7 @@ const possibleCategories: {
 }[] = [
   {
     value: "relative-to-current-hubspace",
-    label: "Community Hub",
+    label: mountId.value,
     icon: KnimeIcon,
   },
   {
@@ -81,6 +87,7 @@ onMounted(() => {
         :is-writer="isWriter"
         backend-type="relativeToCurrentHubSpace"
         :initial-file-path="modelValue.path"
+        :space-path="spacePath"
         @choose-file="onPathUpdate"
       />
     </div>

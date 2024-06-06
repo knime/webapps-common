@@ -9,6 +9,9 @@ export const useFileChooserBrowseOptions = (
   const filteredExtensions = ref<string[]>([]);
   const appendedExtension = ref<string | null>(null);
   const isWriter = computed(() => options.value.isWriter);
+  const mountId = computed(() => options.value.mountId ?? "Current space");
+  const spacePath = computed(() => options.value.spacePath);
+  const isLocal = computed(() => options.value.isLocal);
   const isLoaded = ref(false);
 
   const setFileExtension = (fileExtension: string) => {
@@ -41,5 +44,8 @@ export const useFileChooserBrowseOptions = (
     appendedExtension,
     isWriter,
     isLoaded,
+    isLocal,
+    mountId,
+    spacePath,
   };
 };

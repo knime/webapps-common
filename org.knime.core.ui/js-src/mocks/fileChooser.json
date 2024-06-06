@@ -173,7 +173,20 @@
               "scope": "#/properties/view/properties/empty",
               "options": {
                 "format": "fileChooser",
-                "isLabs": true
+                "isLabs": true,
+                "spacePath": "Users/j_bond/Public",
+                "mountId": "My-KNIME-Hub ;)"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/local",
+              "options": {
+                "format": "fileChooser",
+                "isLocal": true,
+                "isLabs": true,
+                "spacePath": "Users/j_bond/Public",
+                "mountId": "My-KNIME-Hub ;)"
               }
             },
             {
@@ -182,7 +195,9 @@
               "options": {
                 "format": "fileChooser",
                 "isWriter": true,
-                "isLabs": true
+                "isLabs": true,
+                "spacePath": "Users/j_bond/Public",
+                "mountId": "My-KNIME-Hub ;)"
               }
             },
             {
@@ -190,7 +205,9 @@
               "scope": "#/properties/view/properties/disabledPath",
               "options": {
                 "format": "fileChooser",
-                "isLabs": true
+                "isLabs": true,
+                "spacePath": "Users/j_bond/Public",
+                "mountId": "My-KNIME-Hub ;)"
               }
             },
             {
@@ -198,7 +215,9 @@
               "scope": "#/properties/view/properties/overwrittenByNonSupported",
               "options": {
                 "format": "fileChooser",
-                "isLabs": true
+                "isLabs": true,
+                "spacePath": "Users/j_bond/Public",
+                "mountId": "My-KNIME-Hub ;)"
               }
             },
             {
@@ -206,7 +225,9 @@
               "scope": "#/properties/view/properties/pathCustom",
               "options": {
                 "format": "fileChooser",
-                "isLabs": true
+                "isLabs": true,
+                "spacePath": "Users/j_bond/Public",
+                "mountId": "My-KNIME-Hub ;)"
               }
             }
           ]

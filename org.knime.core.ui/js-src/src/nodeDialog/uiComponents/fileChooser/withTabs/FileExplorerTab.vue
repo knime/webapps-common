@@ -19,6 +19,7 @@ const props = withDefaults(defineProps<DialogFileExplorerProps>(), {
   isWriter: false,
   filteredExtensions: () => [],
   appendedExtension: null,
+  spacePath: "",
 });
 
 const emit = defineEmits<{

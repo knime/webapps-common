@@ -8,6 +8,7 @@ interface Props {
   backendType: BackendType;
   clickOutsideException?: null | HTMLElement;
   openFileByExplorer?: boolean;
+  spacePath?: string;
 }
 export { Props };
 </script>
@@ -24,9 +25,6 @@ import InputField from "webapps-common/ui/components/forms/InputField.vue";
 
 const currentPath = ref<string | null>(null);
 
-const currentPathDisplay = computed(() => {
-  return currentPath.value ?? "";
-});
 const items = ref<FileExplorerItem[]>([]);
 const props = withDefaults(defineProps<Props>(), {
   initialFilePath: "",
@@ -35,6 +33,17 @@ const props = withDefaults(defineProps<Props>(), {
   appendedExtension: null,
   clickOutsideException: null,
   openFileByExplorer: false,
+  rootPath: "",
+});
+
+const currentPathDisplay = computed(() => {
+  if (currentPath.value && props.rootPath) {
+    return `${props.rootPath}/${currentPath.value}`;
+  }
+  if (currentPath.value) {
+    return currentPath.value;
+  }
+  return props.rootPath ?? "";
 });
 
 const emit = defineEmits<{
