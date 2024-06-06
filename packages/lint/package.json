@@ -10,7 +10,7 @@
     "knime-eslint-config-prepare-commit-msg": "./scripts/prepare-commit-msg"
   },
   "main": "index.js",
-  "license": "See the file LICENSE",
+  "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE the file LICENSE)",
   "author": "KNIME AG, Zurich, Switzerland",
   "repository": {
     "type": "git",
