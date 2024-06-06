@@ -61,6 +61,7 @@ import java.util.stream.Stream;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
+import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
@@ -226,7 +227,16 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
 
         @Override
         public ConfigMappings getConfigMappings(final S obj) {
-            return m_delegate.getConfigMappings(obj);
+
+            final var delegateMappings = m_delegate.getConfigMappings(obj);
+            final var defaultMapping =
+                new ConfigMappings(new ConfigsDeprecation.Builder().forNewConfigPath(m_configKey).build(), prev -> {
+                    final var mapped = new NodeSettings("mappedSettings");
+                    save(m_default, mapped);
+                    return mapped;
+                });
+
+            return new ConfigMappings(List.of(delegateMappings, defaultMapping));
         }
     }
 }
