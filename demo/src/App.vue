@@ -103,6 +103,9 @@ const demoComponents = {
     NumberInput: defineAsyncComponent(
       () => import("./components/NumberInput.vue"),
     ),
+    QuantityInput: defineAsyncComponent(
+      () => import("./components/QuantityInput.vue"),
+    ),
     Checkbox: defineAsyncComponent(() => import("./components/Checkbox.vue")),
     Checkboxes: defineAsyncComponent(
       () => import("./components/Checkboxes.vue"),
