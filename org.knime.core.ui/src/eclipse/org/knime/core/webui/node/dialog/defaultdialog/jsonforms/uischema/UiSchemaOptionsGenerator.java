@@ -80,6 +80,9 @@ import java.util.stream.Stream;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.util.CheckUtils;
+import org.knime.core.node.workflow.contextv2.HubSpaceLocationInfo;
+import org.knime.core.node.workflow.contextv2.LocalLocationInfo;
+import org.knime.core.node.workflow.contextv2.ServerLocationInfo;
 import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
@@ -126,6 +129,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.NoopBoolean
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.NoopStringProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.WidgetAnnotation;
+import org.knime.filehandling.core.util.WorkflowContextUtil;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -221,8 +225,7 @@ final class UiSchemaOptionsGenerator {
                     break;
                 case FILE_CHOOSER:
                     options.put(TAG_FORMAT, Format.FILE_CHOOSER);
-                    options.put("currentSpaceName", "TODO (current space name)"); // TODO
-                    options.put("isLocal", true); // TODO
+                    addLocationInfo(options);
                     break;
             }
         }
@@ -478,6 +481,33 @@ final class UiSchemaOptionsGenerator {
         if (options.isEmpty()) {
             control.remove(TAG_OPTIONS);
         }
+    }
+
+    private static void addLocationInfo(final ObjectNode options) {
+        WorkflowContextUtil.getWorkflowContextV2Optional().ifPresent(context -> {
+            final var locationInfo = context.getLocationInfo();
+            if (locationInfo instanceof LocalLocationInfo) {
+                addLocalLocationInfo(options);
+            } else if (locationInfo instanceof HubSpaceLocationInfo hubSpace) {
+                addhubSpaceLocationInfo(options, hubSpace);
+            } else if (locationInfo instanceof ServerLocationInfo server) {
+                addServerLocationInfo(options, server);
+            }
+        });
+    }
+
+    private static void addLocalLocationInfo(final ObjectNode options) {
+        options.put("mountId", "Local space");
+        options.put("isLocal", true);
+    }
+
+    private static void addhubSpaceLocationInfo(final ObjectNode options, final HubSpaceLocationInfo hubSpace) {
+        options.put("mountId", hubSpace.getDefaultMountId());
+        options.put("spacePath", hubSpace.getSpacePath());
+    }
+
+    private static void addServerLocationInfo(final ObjectNode options, final ServerLocationInfo server) {
+        options.put("mountId", server.getDefaultMountId());
     }
 
     private <E extends Enum<E>> List<String> getDisabledEnumConstants() {
