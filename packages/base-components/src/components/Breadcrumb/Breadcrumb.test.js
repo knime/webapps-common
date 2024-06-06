@@ -2,8 +2,8 @@ import { describe, it, expect } from "vitest";
 import { shallowMount, mount } from "@vue/test-utils";
 import { markRaw } from "vue";
 
-import Breadcrumb from "../Breadcrumb.vue";
-import ArrowNext from "../../assets/img/icons/arrow-next.svg";
+import Breadcrumb from "./Breadcrumb.vue";
+import ArrowNext from "@knime/styles/img/icons/arrow-next.svg";
 
 describe("Breadcrumb.vue", () => {
   it("renders nothing by default", () => {
