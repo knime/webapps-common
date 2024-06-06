@@ -8,6 +8,7 @@ import {
   resolveClientOnlyComponent,
   resolveNuxtLinkComponent,
 } from "./nuxtComponentResolver";
+import sleep from "./sleep";
 export {
   capitalize,
   caseFormatter,
@@ -18,4 +19,5 @@ export {
   getWrappedAroundIndex,
   resolveClientOnlyComponent,
   resolveNuxtLinkComponent,
+  sleep,
 };
