@@ -144,7 +144,7 @@ export default {
   }
 
   &:focus-within {
-    & input + span[data-v-5470b4a3]::before {
+    & input + span::before {
       box-shadow:
         0 0 0 3px var(--theme-toggle-switch-background-color),
         0 0 0 5px var(--knime-cornflower);
