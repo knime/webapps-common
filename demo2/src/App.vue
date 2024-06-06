@@ -2,9 +2,18 @@
 // import HelloWorld from "./components/HelloWorld.vue";
 // import { Button } from "@knime/base-components";
 import Icon from "@knime/styles/img/icons/ai-brain.svg";
+import { MenuItems } from "@knime/base-components";
+
+const items = [
+  {
+    text: "sdfsdf",
+  },
+];
 </script>
 
 <template>
+  <MenuItems :items="items" :menu-aria-label="'sdsdfs'" />
+
   <!-- <Button primary>This is a KNIME Button</Button>
   <div>
     <a href="https://vitejs.dev" target="_blank">
