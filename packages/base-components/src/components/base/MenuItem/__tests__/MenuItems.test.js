@@ -11,10 +11,10 @@ const dropdownNavigation = {
   resetNavigation: vi.fn(),
   onKeydown: vi.fn(),
 };
-vi.mock("../../composables/useDropdownNavigation", () => ({
+vi.mock("../../../../composables/useDropdownNavigation", () => ({
   default: vi.fn(() => dropdownNavigation),
 }));
-import useDropdownNavigation from "../../composables/useDropdownNavigation";
+import useDropdownNavigation from "../../../../composables/useDropdownNavigation";
 
 describe("MenuItems.vue", () => {
   it("passes down all props", () => {

@@ -18,5 +18,6 @@ module.exports = {
     "**/opensourcecredits/used-packages.json",
     "demo/*",
     "demo2/*",
+    "packages/base-components/*",
   ],
 };

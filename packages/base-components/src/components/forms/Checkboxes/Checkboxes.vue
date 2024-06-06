@@ -1,5 +1,6 @@
 <script>
-import Checkbox from "../forms/Checkbox.vue";
+import Checkbox from "../Checkbox/Checkbox.vue";
+
 export default {
   components: {
     Checkbox,

@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { shallowMount, mount } from "@vue/test-utils";
 
 import FunctionButton from "./FunctionButton.vue";
-import BaseButton from "../base/BaseButton.vue";
+import BaseButton from "../base/Button/BaseButton.vue";
 
 describe("FunctionButton.vue", () => {
   it("renders a FunctionButton", () => {

@@ -1,13 +1,12 @@
-// / <reference types="vitest" />
+/// <reference types="vitest" />
 import { fileURLToPath, URL } from "node:url";
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import dts from "vite-plugin-dts";
 import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
-// import svgLoader from "vite-svg-loader";
-// import { svgoConfig } from "webapps-common/config/svgo.config";
-
-// TODO svg loader
+import svgLoader from "vite-svg-loader";
+// @ts-ignore
+import { svgoConfig } from "@knime/styles/config/svgo.config";
 
 // TODO maybe the build is not needed at all
 
@@ -22,9 +21,13 @@ export default defineConfig({
       tsconfigPath: relPath("./tsconfig.app.json"), // is this tsconfig at the right location?
     }),
     cssInjectedByJsPlugin({}), // not supported natively in Vite yet, see https://github.com/vitejs/vite/issues/1579]
+    svgLoader({ svgoConfig }),
   ],
   test: {
-    include: ["**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+    include: [
+      "**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
+      "**/__tests__/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
+    ],
     environment: "jsdom",
     reporters: ["default", "junit"],
     setupFiles: [fileURLToPath(new URL("vitest.setup.ts", import.meta.url))],
