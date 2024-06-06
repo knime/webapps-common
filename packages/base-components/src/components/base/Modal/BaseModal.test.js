@@ -3,7 +3,7 @@ import { shallowMount } from "@vue/test-utils";
 
 import { FocusTrap } from "focus-trap-vue";
 
-import BaseModal from "../BaseModal.vue";
+import BaseModal from "./BaseModal.vue";
 
 describe("BaseModal", () => {
   describe("rendering", () => {
