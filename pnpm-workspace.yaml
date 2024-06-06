@@ -5,4 +5,4 @@ packages:
   - "storybook"
 
   # demo app is not published but part of workspace, enable again when imports are resolved differently
-  - "demo"
+  - "!demo"
