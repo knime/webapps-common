@@ -117,7 +117,7 @@ defineExpose({
   openFile: () => onOpenFile(selectedFileName.value),
 });
 
-const onChangeSelection = (itemIds: string[]) => {
+const onChangeSelectedItemIds = (itemIds: string[]) => {
   if (itemIds.length === 0) {
     selectedDirectoryName.value = "";
     if (!props.isWriter) {
@@ -162,7 +162,7 @@ const onChangeSelection = (itemIds: string[]) => {
       :click-outside-exception="clickOutsideException"
       @change-directory="changeDirectory"
       @open-file="openFileByExplorer && onOpenFile($event.name).catch(() => {})"
-      @change-selection="onChangeSelection"
+      @update:selected-item-ids="onChangeSelectedItemIds"
     />
   </template>
 </template>

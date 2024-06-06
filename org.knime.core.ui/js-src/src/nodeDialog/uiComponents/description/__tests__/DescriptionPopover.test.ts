@@ -101,10 +101,12 @@ describe("DescriptionPopover.vue", () => {
     const box = wrapper.find(".box");
     const description = box.findComponent(Description);
     expect(description.exists()).toBeTruthy();
-    expect(description.props()).toStrictEqual({
-      renderAsHtml: true,
-      text: null,
-    });
+    expect(description.props()).toStrictEqual(
+      expect.objectContaining({
+        renderAsHtml: true,
+        text: null,
+      }),
+    );
   });
 
   it("sets html content for description", async () => {

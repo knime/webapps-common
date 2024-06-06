@@ -131,7 +131,7 @@ describe("DialogFileExplorer.vue", () => {
       await flushPromises();
       await wrapper
         .findComponent(FileExplorer)
-        .vm.$emit("changeSelection", [fileName]);
+        .vm.$emit("update:selectedItemIds", [fileName]);
 
       wrapper.vm.openFile();
 
@@ -148,10 +148,12 @@ describe("DialogFileExplorer.vue", () => {
       await flushPromises();
       await wrapper
         .findComponent(FileExplorer)
-        .vm.$emit("changeSelection", [fileName]);
+        .vm.$emit("update:selectedItemIds", [fileName]);
       await flushPromises();
       expect(wrapper.emitted("fileIsSelected")).toStrictEqual([[true]]);
-      await wrapper.findComponent(FileExplorer).vm.$emit("changeSelection", []);
+      await wrapper
+        .findComponent(FileExplorer)
+        .vm.$emit("update:selectedItemIds", []);
       expect(wrapper.emitted("fileIsSelected")).toStrictEqual([
         [true],
         [false],
@@ -294,7 +296,7 @@ describe("DialogFileExplorer.vue", () => {
 
       await wrapper
         .findComponent(FileExplorer)
-        .vm.$emit("changeSelection", [fileName]);
+        .vm.$emit("update:selectedItemIds", [fileName]);
 
       const inputField = wrapper.findComponent(InputField);
       expect(inputField.props().modelValue).toBe(fileName);
@@ -310,7 +312,7 @@ describe("DialogFileExplorer.vue", () => {
 
       await wrapper
         .findComponent(FileExplorer)
-        .vm.$emit("changeSelection", [directoryName]);
+        .vm.$emit("update:selectedItemIds", [directoryName]);
 
       expect(inputField.props().modelValue).toBe("");
     });

@@ -104,7 +104,7 @@ describe("FileChooserWithButtons.vue", () => {
     await flushPromises();
     await wrapper
       .findComponent(FileExplorer)
-      .vm.$emit("changeSelection", [fileName]);
+      .vm.$emit("update:selectedItemIds", [fileName]);
     const buttons = wrapper.findAllComponents(Button);
     expect(buttons.length).toBe(2);
     const chooseButton = buttons.at(1);
