@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { mount } from "@vue/test-utils";
 
-import BaseMessage from "../BaseMessage.vue";
+import BaseMessage from "./BaseMessage.vue";
 
 describe("BaseMessage.vue", () => {
   let wrapper;
