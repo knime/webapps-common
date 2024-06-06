@@ -24,7 +24,10 @@ export default defineConfig({
     svgLoader({ svgoConfig }),
   ],
   test: {
-    include: ["**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+    include: [
+      "**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
+      "**/__tests__/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
+    ],
     environment: "jsdom",
     reporters: ["default", "junit"],
     setupFiles: [fileURLToPath(new URL("vitest.setup.ts", import.meta.url))],
