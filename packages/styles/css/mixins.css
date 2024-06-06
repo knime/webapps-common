@@ -6,3 +6,10 @@
   stroke-width: calc(32px / $size);
   @mixin-content;
 }
+
+@define-mixin focus-outline $size: 2, $offset: -1 {
+  outline: calc($size * 1px) auto var(--theme-color-focus-ring);
+  outline-offset: calc($offset * 1px);
+
+  @mixin-content;
+}
