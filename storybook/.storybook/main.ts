@@ -14,15 +14,19 @@ const config: StorybookConfig = {
     "../../packages/**/__stories__/*.stories.@(js|mjs|ts)",
     "../../packages/**/__stories/*.mdx",
   ],
+
   addons: [
     getAbsolutePath("@storybook/addon-links"),
     getAbsolutePath("@storybook/addon-essentials"),
-    getAbsolutePath("@chromatic-com/storybook"),
+    getAbsolutePath("@storybook/addon-a11y"),
     getAbsolutePath("@storybook/addon-interactions"),
   ],
+
   framework: {
     name: "@storybook/vue3-vite",
     options: {},
   },
+
+  docs: {},
 };
 export default config;

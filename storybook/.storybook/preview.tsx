@@ -17,6 +17,7 @@ const preview: Preview = {
       },
     },
   },
+
   decorators: [
     //support for v-model
     (story, context) => {
@@ -30,6 +31,8 @@ const preview: Preview = {
       return story({ ...context, updateArgs });
     },
   ],
+
+  tags: ["autodocs"],
 };
 
 export default preview;
