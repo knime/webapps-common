@@ -10,6 +10,7 @@ import Checkboxes from "./forms/Checkboxes/Checkboxes.vue";
 import FunctionButton from "./FunctionButton/FunctionButton.vue";
 import Error from "./Error/Error.vue";
 
+export * from "./Toast/index";
 export {
   Button,
   BaseButton,
