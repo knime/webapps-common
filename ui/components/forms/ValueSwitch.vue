@@ -93,13 +93,6 @@ export default defineComponent({
     opacity: 0.5;
   }
 
-  /*
-  &:focus-within {
-    box-shadow:
-      0 0 0 1px var(--theme-value-switch-background-color),
-      0 0 0 3px var(--knime-cornflower);
-  } */
-
   &.normal {
     --wrapper-height: 30;
   }
