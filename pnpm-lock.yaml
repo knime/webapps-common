@@ -63,6 +63,9 @@ importers:
 
   packages/base-components:
     dependencies:
+      '@floating-ui/vue':
+        specifier: 1.0.2
+        version: 1.0.2(vue@3.4.27(typescript@5.4.5))
       '@knime/styles':
         specifier: workspace:*
         version: link:../styles
@@ -72,6 +75,9 @@ importers:
       '@vueuse/shared':
         specifier: ^10.10.0
         version: 10.10.0(vue@3.4.27(typescript@5.4.5))
+      filesize:
+        specifier: 10.0.6
+        version: 10.0.6
       focus-trap-vue:
         specifier: 4.0.2
         version: 4.0.2(focus-trap@7.5.4)(vue@3.4.27(typescript@5.4.5))
@@ -256,7 +262,11 @@ importers:
         specifier: ^2.0.19
         version: 2.0.19(typescript@5.4.5)
 
-  packages/utils: {}
+  packages/utils:
+    dependencies:
+      '@knime/styles':
+        specifier: workspace:*
+        version: link:../styles
 
 packages:
 
@@ -771,6 +781,18 @@ packages:
   '@eslint/js@8.56.0':
     resolution: {integrity: sha512-gMsVel9D7f2HLkBma9VbtzZRehRogVRfbr++f06nL2vnCGCNlzOD+/MUov/F4p8myyAHspEhVobgjpX64q5m6A==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+
+  '@floating-ui/core@1.6.2':
+    resolution: {integrity: sha512-+2XpQV9LLZeanU4ZevzRnGFg2neDeKHgFLjP6YLW+tly0IvrhqT4u8enLGjLH3qeh85g19xY5rsAusfwTdn5lg==}
+
+  '@floating-ui/dom@1.6.5':
+    resolution: {integrity: sha512-Nsdud2X65Dz+1RHjAIP0t8z5e2ff/IRbei6BqFrl1urT8sDVzM1HMQ+R0XcU5ceRfyO3I6ayeqIfh+6Wb8LGTw==}
+
+  '@floating-ui/utils@0.2.2':
+    resolution: {integrity: sha512-J4yDIIthosAsRZ5CPYP/jQvUAQtlZTTD/4suA08/FEnlxqW3sKS9iAhgsa9VYLZ6vDHn/ixJgIqRQPotoBjxIw==}
+
+  '@floating-ui/vue@1.0.2':
+    resolution: {integrity: sha512-sImlAl9mAoCKZLNlwWz2P2ZMJIDlOEDXrRD6aD2sIHAka1LPC+nWtB+D3lPe7IE7FGWSbwBPTnlSdlABa3Fr0A==}
 
   '@fontsource/roboto-mono@5.0.18':
     resolution: {integrity: sha512-hKuwk/cy3i6fWPzazT5xjgWq4YNqZWDHVbJh2Wwj3KYvWGi2v3ToBw/4LKQ+ggEkPLcIG6VU8GpCT3Xtf+mbbA==}
@@ -1982,6 +2004,10 @@ packages:
   file-entry-cache@9.0.0:
     resolution: {integrity: sha512-6MgEugi8p2tiUhqO7GnPsmbCCzj0YRCwwaTbpGRyKZesjRSzkqkAE9fPp7V2yMs5hwfgbQLgdvSSkGNg1s5Uvw==}
     engines: {node: '>=18'}
+
+  filesize@10.0.6:
+    resolution: {integrity: sha512-rzpOZ4C9vMFDqOa6dNpog92CoLYjD79dnjLk2TYDDtImRIyLTOzqojCb05Opd1WuiWjs+fshhCgTd8cl7y5t+g==}
+    engines: {node: '>= 10.4.0'}
 
   fill-range@7.0.1:
     resolution: {integrity: sha512-qOo9F+dMUmC2Lcb4BbVvnKJxTPjCm+RRpe4gDuGrzkL7mEVl/djYSu2OdQ2Pa302N4oqkSg9ir6jaLWJ2USVpQ==}
@@ -4435,6 +4461,25 @@ snapshots:
 
   '@eslint/js@8.56.0': {}
 
+  '@floating-ui/core@1.6.2':
+    dependencies:
+      '@floating-ui/utils': 0.2.2
+
+  '@floating-ui/dom@1.6.5':
+    dependencies:
+      '@floating-ui/core': 1.6.2
+      '@floating-ui/utils': 0.2.2
+
+  '@floating-ui/utils@0.2.2': {}
+
+  '@floating-ui/vue@1.0.2(vue@3.4.27(typescript@5.4.5))':
+    dependencies:
+      '@floating-ui/dom': 1.6.5
+      vue-demi: 0.14.8(vue@3.4.27(typescript@5.4.5))
+    transitivePeerDependencies:
+      - '@vue/composition-api'
+      - vue
+
   '@fontsource/roboto-mono@5.0.18': {}
 
   '@fontsource/roboto@5.0.13': {}
@@ -5892,6 +5937,8 @@ snapshots:
   file-entry-cache@9.0.0:
     dependencies:
       flat-cache: 5.0.0
+
+  filesize@10.0.6: {}
 
   fill-range@7.0.1:
     dependencies:

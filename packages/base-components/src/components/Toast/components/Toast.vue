@@ -2,7 +2,7 @@
 import { ref, computed, onMounted, watch, toRef } from "vue";
 import { useMouseInElement, useWindowFocus, useEventBus } from "@vueuse/core";
 
-import FunctionButton from "../../FunctionButton/FunctionButton.vue";
+import FunctionButton from "../../Buttons/FunctionButton.vue";
 
 import CloseIcon from "@knime/styles/img/icons/close.svg";
 import InfoIcon from "@knime/styles/img/icons/circle-info.svg";
