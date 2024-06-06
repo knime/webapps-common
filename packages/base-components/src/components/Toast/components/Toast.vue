@@ -2,16 +2,15 @@
 import { ref, computed, onMounted, watch, toRef } from "vue";
 import { useMouseInElement, useWindowFocus, useEventBus } from "@vueuse/core";
 
-import FunctionButton from "../../../components/FunctionButton.vue";
+import FunctionButton from "../../FunctionButton/FunctionButton.vue";
 
-import CloseIcon from "../../../assets/img/icons/close.svg";
-import InfoIcon from "../../../assets/img/icons/circle-info.svg";
-import ErrorIcon from "../../../assets/img/icons/circle-close.svg";
-import SuccessIcon from "../../../assets/img/icons/circle-check.svg";
-import WarnIcon from "../../../assets/img/icons/sign-warning.svg";
+import CloseIcon from "@knime/styles/img/icons/close.svg";
+import InfoIcon from "@knime/styles/img/icons/circle-info.svg";
+import ErrorIcon from "@knime/styles/img/icons/circle-close.svg";
+import SuccessIcon from "@knime/styles/img/icons/circle-check.svg";
+import WarnIcon from "@knime/styles/img/icons/sign-warning.svg";
 
-import truncateString from "../../../../util/truncateString";
-import { capitalize } from "../../../../util/capitalize";
+import { capitalize, truncateString } from "@knime/utils";
 
 import ToastButton from "./ToastButton.vue";
 import useAnimation from "../useAnimation";

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import BaseButton from "../../../components/BaseButton.vue";
-import LinkExternal from "../../../assets/img/icons/link-external.svg";
+import BaseButton from "../../base/Button/BaseButton.vue";
+import LinkExternal from "@knime/styles/img/icons/link-external.svg";
 
 import type { ToastButton } from "../types";
 
