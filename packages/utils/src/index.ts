@@ -4,7 +4,10 @@ import debounce from "./debounce";
 import { filters } from "./filters";
 import truncateString from "./truncateString";
 import getWrappedAroundIndex from "./getWrappedAroundIndex";
-
+import {
+  resolveClientOnlyComponent,
+  resolveNuxtLinkComponent,
+} from "./nuxtComponentResolver";
 export {
   capitalize,
   caseFormatter,
@@ -13,4 +16,6 @@ export {
   filters,
   truncateString,
   getWrappedAroundIndex,
+  resolveClientOnlyComponent,
+  resolveNuxtLinkComponent,
 };
