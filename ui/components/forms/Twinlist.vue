@@ -269,10 +269,9 @@ export default {
 
     const searchTerm = ref<string>(props.initialSearchTerm);
     const caseSensitiveSearch = ref<boolean>(props.initialCaseSensitiveSearch);
-    const possibleValues = ref<PossibleValue[]>(props.possibleValues);
 
     const possibleValueIds = computed(() => {
-      return possibleValues.value.map((x) => x.id);
+      return props.possibleValues.map((x) => x.id);
     });
 
     const possibleValueIdsSet = computed(() => {
@@ -294,7 +293,7 @@ export default {
     const possibleValueMap = computed(() => {
       return Object.assign(
         {},
-        ...possibleValues.value.map((obj: PossibleValue, index) => ({
+        ...props.possibleValues.map((obj: PossibleValue, index) => ({
           [obj.id]: { item: obj, index },
         })),
       ) as Record<Id, { item: PossibleValue; index: number }>;
