@@ -93,11 +93,12 @@ export default defineComponent({
     opacity: 0.5;
   }
 
+  /*
   &:focus-within {
     box-shadow:
       0 0 0 1px var(--theme-value-switch-background-color),
       0 0 0 3px var(--knime-cornflower);
-  }
+  } */
 
   &.normal {
     --wrapper-height: 30;
@@ -126,6 +127,20 @@ export default defineComponent({
       background-color: var(--theme-value-switch-background-color-checked);
       color: var(--theme-value-switch-background-color);
       pointer-events: none;
+    }
+  }
+
+  & :deep(label) {
+    &:focus-within {
+      outline: none;
+    }
+
+    & input:focus-visible + span {
+      border-radius: var(--border-radius);
+      outline: none;
+      box-shadow:
+        inset 0 0 0 2px var(--knime-cornflower),
+        inset 0 0 0 3px var(--theme-value-switch-background-color);
     }
   }
 }
