@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { shallowMount } from "@vue/test-utils";
 
 import Button from "./Button.vue";
-import BaseButton from "../base/BaseButton.vue";
+import BaseButton from "../base/Button/BaseButton.vue";
 
 describe("Button.vue", () => {
   it("renders a button", () => {
