@@ -1,5 +1,6 @@
 export interface FileChooserOptions {
   isWriter?: boolean;
+  isLocal?: boolean;
   fileExtension?: string;
   fileExtensions?: string[];
   fileExtensionProvider?: string;

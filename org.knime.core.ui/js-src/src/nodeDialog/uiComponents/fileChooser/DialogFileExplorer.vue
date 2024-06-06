@@ -14,7 +14,7 @@ export { Props };
 </script>
 
 <script setup lang="ts">
-import { onMounted, ref, computed, toRefs, watch } from "vue";
+import { ref, computed, toRefs, watch } from "vue";
 import FileExplorer from "webapps-common/ui/components/FileExplorer/FileExplorer.vue";
 import type { FileExplorerItem } from "webapps-common/ui/components/FileExplorer/types";
 import useFileChooserBackend from "./composables/useFileChooserBackend";
@@ -98,9 +98,11 @@ const { listItems, getFilePath } = useFileChooserBackend({
   backendType,
 });
 
-onMounted(() => {
-  listItems(null, props.initialFilePath).then(handleListItemsResult);
-});
+watch(
+  () => backendType.value,
+  () => listItems(null, props.initialFilePath).then(handleListItemsResult),
+  { immediate: true },
+);
 
 const selectedDirectoryName = ref("");
 

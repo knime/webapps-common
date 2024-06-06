@@ -73,6 +73,7 @@ const onApply = () => {
         class="flex-grow"
         :model-value="data"
         :disabled="disabled"
+        :is-local="browseOptions.isLocal"
         @update:model-value="onChange"
       />
       <SettingsSubPanel @apply="onApply">

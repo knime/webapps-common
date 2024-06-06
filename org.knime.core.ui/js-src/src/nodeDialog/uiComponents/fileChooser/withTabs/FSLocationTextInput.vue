@@ -1,17 +1,26 @@
 <script lang="ts">
-import { FileChooserValue } from "../types/FileChooserProps";
+import { FileChooserValue, FSCategory } from "../types/FileChooserProps";
 interface Props {
   modelValue: FileChooserValue;
   disabled: boolean;
+  isLocal: boolean;
 }
 export { Props };
+
+const currentSpacePrefix = "knime://knime.space/";
+const localPrefix = "file://";
+export const prefixes: [keyof typeof FSCategory, string][] = [
+  ["relative-to-current-hubspace", currentSpacePrefix],
+  ["LOCAL", localPrefix],
+];
 </script>
 
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, onMounted } from "vue";
 import getDeepActiveElement from "@/utils/getDeepActiveElement";
 import InputField from "webapps-common/ui/components/forms/InputField.vue";
 import { startsWithSchemeRegex } from "./urlUtil";
+import useFileChooserBackend from "../composables/useFileChooserBackend";
 
 const props = defineProps<Props>();
 
@@ -19,32 +28,42 @@ const emit = defineEmits<{
   "update:modelValue": [FileChooserValue];
 }>();
 
-const currentSpacePrefix = "knime://knime.space/";
+const { getFilePath } = useFileChooserBackend({
+  filteredExtensions: ref([]), // only relevant for browsing
+  appendedExtension: ref(null), // We do not wish to append anything here, since the user should be able to manually access any file
+  isWriter: ref(false), // only relevant for browsing
+  backendType: computed(() =>
+    props.isLocal ? "local" : "relativeToCurrentHubSpace",
+  ),
+});
 
-const fsLocationToText = (fsLocation: FileChooserValue) => {
+const fsLocationToText = async (fsLocation: FileChooserValue) => {
   if (fsLocation.fsCategory === "relative-to-current-hubspace") {
     return currentSpacePrefix + fsLocation.path;
   }
   if (fsLocation.fsCategory === "CUSTOM_URL") {
     return fsLocation.path;
   }
-  /**
-   * TODO: UIEXT-1734 change this to however local paths should be represented
-   */
   if (fsLocation.fsCategory === "LOCAL") {
-    return `(LOCAL, ${fsLocation.path})`;
+    const { path, errorMessage } = await getFilePath(null, fsLocation.path);
+    if (errorMessage) {
+      return fsLocation.path;
+    }
+    return localPrefix + path;
   } else {
-    return fsLocation.context?.fsToString;
+    return fsLocation.context!.fsToString;
   }
 };
 
 const inputField = ref<null | { $refs: { input: HTMLElement } }>(null);
 
-const currentValue = ref(fsLocationToText(props.modelValue));
+const currentValue = ref("");
+onMounted(() => {
+  updateCurrentValueFromModelValue();
+});
 
-const textValue = computed(() => fsLocationToText(props.modelValue));
-const updateCurrentValueFromTextValue = () => {
-  currentValue.value = textValue.value;
+const updateCurrentValueFromModelValue = async () => {
+  currentValue.value = await fsLocationToText(props.modelValue);
 };
 
 /**
@@ -52,26 +71,31 @@ const updateCurrentValueFromTextValue = () => {
  * The update on user input happens on focusout below.
  */
 watch(
-  () => textValue.value,
+  () => props.modelValue,
   () => {
     if (getDeepActiveElement() !== inputField.value?.$refs.input) {
-      updateCurrentValueFromTextValue();
+      updateCurrentValueFromModelValue();
     }
   },
 );
 
 const textToFsLocation = (text: string): FileChooserValue => {
-  if (text.startsWith(currentSpacePrefix)) {
-    return {
-      fsCategory: "relative-to-current-hubspace",
-      path: text.replace(currentSpacePrefix, ""),
-      timeout: props.modelValue.timeout,
-    };
+  for (const [fsCategory, prefix] of prefixes) {
+    if (text.startsWith(prefix)) {
+      return {
+        fsCategory,
+        path: text.replace(prefix, ""),
+        timeout: props.modelValue.timeout,
+      };
+    }
   }
+  const defaultCategory: keyof typeof FSCategory = props.isLocal
+    ? "LOCAL"
+    : "relative-to-current-hubspace";
   return {
     fsCategory: startsWithSchemeRegex.test(text)
       ? "CUSTOM_URL"
-      : "relative-to-current-hubspace",
+      : defaultCategory,
     path: text,
     timeout: props.modelValue.timeout,
   };
@@ -89,6 +113,6 @@ const onTextInput = (text: string) => {
     :model-value="currentValue"
     :disabled="disabled"
     @update:model-value="onTextInput"
-    @focusout="updateCurrentValueFromTextValue"
+    @focusout="updateCurrentValueFromModelValue"
   />
 </template>

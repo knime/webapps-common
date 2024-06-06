@@ -247,6 +247,10 @@ public final class FileChooserDataService {
         if (appendedExtension != null) {
             nextPath = appendExtensionIfNotPresent(nextPath, appendedExtension);
         }
+        if (fileChooserBackend.isAbsoluteFileSystem()) {
+            nextPath = nextPath.toAbsolutePath();
+
+        }
         return PathAndError.ofPath(nextPath.toString());
     }
 

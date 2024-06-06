@@ -19,6 +19,12 @@
             "path": "my/path/to/my/file.txt"
           }
         },
+        "local": {
+          "path": {
+            "fsCategory": "LOCAL",
+            "path": "my/path/to/my/file.txt"
+          }
+        },
         "overwrittenByNonSupported": {
           "path": {
             "fsCategory": "RELATIVE",
@@ -65,6 +71,10 @@
             },
             "writer": {
               "title": "Writer",
+              "properties": {}
+            },
+            "local": {
+              "title": "Local",
               "properties": {}
             },
             "disabledPath": {
@@ -187,6 +197,16 @@
                 "isLabs": true,
                 "spacePath": "Users/j_bond/Public",
                 "mountId": "My-KNIME-Hub ;)"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/local",
+              "options": {
+                "format": "fileChooser",
+                "isLocal": true,
+                "isLabs": true,
+                "currentSpaceName": "My Space XYZ"
               }
             },
             {

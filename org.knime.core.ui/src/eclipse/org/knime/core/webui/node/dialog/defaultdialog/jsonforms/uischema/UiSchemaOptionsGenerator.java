@@ -221,6 +221,8 @@ final class UiSchemaOptionsGenerator {
                     break;
                 case FILE_CHOOSER:
                     options.put(TAG_FORMAT, Format.FILE_CHOOSER);
+                    options.put("currentSpaceName", "TODO (current space name)"); // TODO
+                    options.put("isLocal", true); // TODO
                     break;
             }
         }

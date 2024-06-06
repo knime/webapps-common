@@ -114,6 +114,19 @@ describe("DialogFileExplorer.vue", () => {
     expect(wrapper.find("span").text()).toBe(folderFromBackend.path);
   });
 
+  it("reloads initial file path on backend change", async () => {
+    const wrapper = shallowMountFileChooser();
+    expect(dataServiceSpy).toHaveBeenCalledTimes(1);
+    const newBackendType = "notLocalAnymore";
+    await wrapper.setProps({
+      backendType: newBackendType,
+    });
+    expect(dataServiceSpy).toHaveBeenNthCalledWith(2, {
+      method: "fileChooser.listItems",
+      options: [newBackendType, null, "", { extensions: [], isWriter: false }],
+    });
+  });
+
   it("shows error message", async () => {
     const errorMessage = "myErrorMessage";
     const errorReturningDataService = vi

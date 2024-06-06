@@ -59,6 +59,23 @@ describe("SideDrawerContent.vue", () => {
     ]);
   });
 
+  it("renders local tab", async () => {
+    props.initialValue.fsCategory = "LOCAL";
+    props.options!.isLocal = true;
+    const wrapper = mountSideDrawerContent();
+    expect(wrapper.findComponent(TabBar).props().modelValue).toBe("LOCAL");
+    await flushPromises();
+    const fileExplorerTab = wrapper.findComponent(FileExplorerTab);
+    expect(fileExplorerTab.exists()).toBeTruthy();
+    expect(fileExplorerTab.props().backendType).toBe("local");
+    const updatedPath = "updatedPath";
+    await fileExplorerTab.vm.$emit("chooseFile", updatedPath);
+    expect(wrapper.vm.modelValue).toStrictEqual({
+      ...props.initialValue,
+      path: updatedPath,
+    });
+  });
+
   it("renders current hub space tab", async () => {
     const wrapper = mountSideDrawerContent();
     expect(wrapper.findComponent(TabBar).props().modelValue).toBe(
@@ -67,12 +84,9 @@ describe("SideDrawerContent.vue", () => {
     await flushPromises();
     const fileExplorerTab = wrapper.findComponent(FileExplorerTab);
     expect(fileExplorerTab.exists()).toBeTruthy();
-    const updatedPath = "updatedPath";
-    await fileExplorerTab.vm.$emit("chooseFile", updatedPath);
-    expect(wrapper.vm.modelValue).toStrictEqual({
-      ...props.initialValue,
-      path: updatedPath,
-    });
+    expect(fileExplorerTab.props().backendType).toBe(
+      "relativeToCurrentHubSpace",
+    );
   });
 
   it("renders URL tab", async () => {

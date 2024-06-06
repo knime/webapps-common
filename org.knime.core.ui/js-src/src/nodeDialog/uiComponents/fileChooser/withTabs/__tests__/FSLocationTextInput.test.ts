@@ -1,12 +1,15 @@
 import FSLocationTextInput, {
   type Props as FSLocationTextInputProps,
+  prefixes,
 } from "../FSLocationTextInput.vue";
 import { shallowMount } from "@vue/test-utils";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import flushPromises from "flush-promises";
 import InputField from "@@/webapps-common/ui/components/forms/InputField.vue";
 
 describe("FSLocationTextInput.vue", () => {
   const currentSpacePrefix = "knime://knime.space/";
+  const localPrefix = "file://";
   let props: FSLocationTextInputProps;
 
   beforeEach(() => {
@@ -17,19 +20,43 @@ describe("FSLocationTextInput.vue", () => {
         fsCategory: "relative-to-current-hubspace",
       },
       disabled: false,
+      isLocal: false,
     };
   });
 
-  const mountFsLocationTextInput = () => {
-    return shallowMount(FSLocationTextInput, { props });
+  const absolute = (path: string) => `absolute/path/to/${path}`;
+  const mountFsLocationTextInput = async () => {
+    const dataServiceSpy = vi.fn(
+      ({
+        options,
+      }: {
+        method?: string | undefined;
+        options: [null, string];
+      }) => {
+        return Promise.resolve({ path: absolute(options[2]) });
+      },
+    );
+    const wrapper = shallowMount(FSLocationTextInput, {
+      props,
+      global: {
+        provide: {
+          getData: dataServiceSpy,
+        },
+      },
+    });
+
+    await flushPromises();
+    return wrapper;
   };
 
-  it("renders", () => {
-    const inputField = mountFsLocationTextInput().findComponent(InputField);
+  it("renders", async () => {
+    const inputField = (await mountFsLocationTextInput()).findComponent(
+      InputField,
+    );
     expect(inputField.exists()).toBeTruthy();
   });
 
-  it("shows relative-to-current-hubspace path", () => {
+  it("shows relative-to-current-hubspace path", async () => {
     const path = "foo";
     props.modelValue = {
       path,
@@ -37,11 +64,12 @@ describe("FSLocationTextInput.vue", () => {
       fsCategory: "relative-to-current-hubspace",
     };
     expect(
-      mountFsLocationTextInput().findComponent(InputField).props().modelValue,
+      (await mountFsLocationTextInput()).findComponent(InputField).props()
+        .modelValue,
     ).toBe(currentSpacePrefix + path);
   });
 
-  it("shows CUSTOM_URL path", () => {
+  it("shows CUSTOM_URL path", async () => {
     const path = "foo://bar";
     props.modelValue = {
       path,
@@ -49,48 +77,55 @@ describe("FSLocationTextInput.vue", () => {
       fsCategory: "CUSTOM_URL",
     };
     expect(
-      mountFsLocationTextInput().findComponent(InputField).props().modelValue,
+      (await mountFsLocationTextInput()).findComponent(InputField).props()
+        .modelValue,
     ).toBe(path);
   });
 
-  it("shows local paths", () => {
+  it("shows local paths", async () => {
     props.modelValue.fsCategory = "LOCAL";
-    props.modelValue.path = "myLocalPath";
+    const path = "myLocalPath";
+    props.modelValue.path = path;
     expect(
-      mountFsLocationTextInput().findComponent(InputField).props().modelValue,
-    ).toBe("(LOCAL, myLocalPath)");
+      (await mountFsLocationTextInput()).findComponent(InputField).props()
+        .modelValue,
+    ).toBe(localPrefix + absolute(path));
   });
 
-  it("shows non-supported paths", () => {
+  it("shows non-supported paths", async () => {
     const fsToString = "myFsPathString";
     props.modelValue.fsCategory = "RELATIVE" as any;
     props.modelValue.context = {
       fsToString,
     };
     expect(
-      mountFsLocationTextInput().findComponent(InputField).props().modelValue,
+      (await mountFsLocationTextInput()).findComponent(InputField).props()
+        .modelValue,
     ).toBe(fsToString);
   });
 
-  it("emits relative-to-current-hubspace FS location on text input prefixed with knime://knime.space/", () => {
-    const wrapper = mountFsLocationTextInput();
-    const path = "foo";
-    wrapper
-      .findComponent(InputField)
-      .vm.$emit("update:model-value", currentSpacePrefix + path);
-    expect(wrapper.emitted("update:modelValue")).toStrictEqual([
-      [
-        {
-          fsCategory: "relative-to-current-hubspace",
-          path,
-          timeout: wrapper.props().modelValue.timeout,
-        },
-      ],
-    ]);
-  });
+  it.each(prefixes)(
+    "emits %s FS location on text input prefixed with %s",
+    async (fsCategory, prefix) => {
+      const wrapper = await mountFsLocationTextInput();
+      const path = "foo";
+      wrapper
+        .findComponent(InputField)
+        .vm.$emit("update:model-value", prefix + path);
+      expect(wrapper.emitted("update:modelValue")).toStrictEqual([
+        [
+          {
+            fsCategory,
+            path,
+            timeout: wrapper.props().modelValue.timeout,
+          },
+        ],
+      ]);
+    },
+  );
 
-  it("emits CUSTOM_URL FS location on text input prefixed with valid scheme", () => {
-    const wrapper = mountFsLocationTextInput();
+  it("emits CUSTOM_URL FS location on text input prefixed with valid scheme", async () => {
+    const wrapper = await mountFsLocationTextInput();
     const path = "foo://bar";
     wrapper.findComponent(InputField).vm.$emit("update:model-value", path);
     expect(wrapper.emitted("update:modelValue")).toStrictEqual([
@@ -104,14 +139,30 @@ describe("FSLocationTextInput.vue", () => {
     ]);
   });
 
-  it("emits relative-to-current-hubspace FS location on text input prefixed without valid scheme", () => {
-    const wrapper = mountFsLocationTextInput();
+  it("emits relative-to-current-hubspace FS location on text input prefixed without valid scheme", async () => {
+    const wrapper = await mountFsLocationTextInput();
     const path = "foo";
     wrapper.findComponent(InputField).vm.$emit("update:model-value", path);
     expect(wrapper.emitted("update:modelValue")).toStrictEqual([
       [
         {
           fsCategory: "relative-to-current-hubspace",
+          path,
+          timeout: wrapper.props().modelValue.timeout,
+        },
+      ],
+    ]);
+  });
+
+  it("emits local FS location on text input prefixed without valid scheme in case of isLocal", async () => {
+    props.isLocal = true;
+    const wrapper = await mountFsLocationTextInput();
+    const path = "foo";
+    wrapper.findComponent(InputField).vm.$emit("update:model-value", path);
+    expect(wrapper.emitted("update:modelValue")).toStrictEqual([
+      [
+        {
+          fsCategory: "LOCAL",
           path,
           timeout: wrapper.props().modelValue.timeout,
         },

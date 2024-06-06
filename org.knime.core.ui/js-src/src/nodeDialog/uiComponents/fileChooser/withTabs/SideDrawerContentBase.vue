@@ -5,6 +5,7 @@ import FileExplorerTab from "./FileExplorerTab.vue";
 import UrlTab from "./UrlTab.vue";
 import TabBar from "webapps-common/ui/components/TabBar.vue";
 import LinkIcon from "webapps-common/ui/assets/img/icons/link.svg";
+import ComputerDesktopIcon from "webapps-common/ui/assets/img/icons/computer-desktop.svg";
 import KnimeIcon from "./knime.svg";
 import { useFileChooserBrowseOptions } from "../composables/useFileChooserBrowseOptions";
 import { FunctionalComponent, onMounted, toRef } from "vue";
@@ -26,16 +27,30 @@ const {
   filteredExtensions,
   appendedExtension,
   isWriter,
+  isLocal,
   isLoaded,
   spacePath,
   mountId,
 } = useFileChooserBrowseOptions(toRef(props, "options"));
 
-const possibleCategories: {
+type TabSpec = {
   value: keyof typeof FSCategory;
   label: string;
   icon: FunctionalComponent;
-}[] = [
+};
+
+const localFileSystemTab: TabSpec[] = isLocal.value
+  ? [
+      {
+        value: "LOCAL",
+        label: "Local File System",
+        icon: ComputerDesktopIcon,
+      },
+    ]
+  : [];
+
+const possibleCategories: TabSpec[] = [
+  ...localFileSystemTab,
   {
     value: "relative-to-current-hubspace",
     label: mountId.value,
@@ -85,7 +100,11 @@ onMounted(() => {
         :filtered-extensions="filteredExtensions"
         :appended-extension="appendedExtension"
         :is-writer="isWriter"
-        backend-type="relativeToCurrentHubSpace"
+        :backend-type="
+          modelValue.fsCategory === 'LOCAL'
+            ? 'local'
+            : 'relativeToCurrentHubSpace'
+        "
         :initial-file-path="modelValue.path"
         :space-path="spacePath"
         @choose-file="onPathUpdate"
