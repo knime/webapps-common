@@ -361,15 +361,20 @@ export default {
   background-color: var(--knime-white);
 
   & label {
+    &:hover {
+      background-color: var(--theme-dropdown-background-color-hover);
+      color: var(--theme-dropdown-foreground-color-hover);
+    }
+
     &:focus-within {
       background-color: var(--theme-dropdown-background-color-hover);
       color: var(--theme-dropdown-foreground-color-hover);
       box-shadow: none;
-    }
 
-    &:hover {
-      background-color: var(--theme-dropdown-background-color-hover);
-      color: var(--theme-dropdown-foreground-color-hover);
+      &:deep(input) {
+        box-shadow: none;
+        border: none;
+      }
     }
   }
 
