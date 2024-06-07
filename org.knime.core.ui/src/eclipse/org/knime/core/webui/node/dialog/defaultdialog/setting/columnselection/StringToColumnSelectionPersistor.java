@@ -69,15 +69,6 @@ public final class StringToColumnSelectionPersistor extends NodeSettingsPersisto
 
     @Override
     public ColumnSelection load(final NodeSettingsRO settings) throws InvalidSettingsException {
-        /**
-         * This is necessary for now to avoid getting a InvalidSettingsException when trying to load nodes which did not
-         * have the setting annotated by this persistor previously. TODO: Remove this, once we have optional custom
-         * persistors (UIEXT-805)
-         */
-        if (!settings.containsKey(getConfigKey())) {
-            return new ColumnSelection();
-        }
-
         try {
             final var fieldSettingsString = settings.getString(getConfigKey());
             return new ColumnSelection(fieldSettingsString, null);

@@ -55,7 +55,6 @@ import org.knime.core.node.NodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldBasedNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 
 /**
  * Tests JsonBasedNodeSettingsFieldPersistor.
@@ -83,17 +82,6 @@ class StringToColumnSelectionPersistorTest {
 
         final var expected = new StringToColumnSelectionPersistorSettings();
         expected.m_foo = new ColumnSelection(savedString, null);
-        assertResults(expected, loaded);
-    }
-
-    @Test
-    void testLoadLegacyNull() throws InvalidSettingsException {
-        final var savedSettings = new NodeSettings(ROOT_KEY);
-        final var persistor = new FieldBasedNodeSettingsPersistor<>(StringToColumnSelectionPersistorSettings.class);
-        final var loaded = persistor.load(savedSettings);
-
-        final var expected = new StringToColumnSelectionPersistorSettings();
-        expected.m_foo = new ColumnSelection();
         assertResults(expected, loaded);
     }
 

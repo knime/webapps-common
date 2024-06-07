@@ -69,15 +69,6 @@ public final class StringArrayToColumnFilterPersistor extends NodeSettingsPersis
 
     @Override
     public ColumnFilter load(final NodeSettingsRO settings) throws InvalidSettingsException {
-        /**
-         * This is necessary for now to avoid getting a InvalidSettingsException when trying to load nodes which did not
-         * have the setting annotated by this persistor previously. TODO: Remove this, once we have optional custom
-         * persistors (UIEXT-805)
-         */
-        if (!settings.containsKey(getConfigKey())) {
-            return new ColumnFilter();
-        }
-
         final var fieldSettingsArray = settings.getStringArray(getConfigKey());
         if (fieldSettingsArray != null) {
             return new ColumnFilter(fieldSettingsArray);
