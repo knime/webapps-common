@@ -147,7 +147,7 @@ export default {
     & input + span::before {
       box-shadow:
         0 0 0 3px var(--theme-toggle-switch-background-color),
-        0 0 0 5px var(--knime-cornflower);
+        0 0 0 5px var(--theme-default-focus-color);
     }
   }
 

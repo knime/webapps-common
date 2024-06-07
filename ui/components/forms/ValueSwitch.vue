@@ -132,7 +132,7 @@ export default defineComponent({
       border-radius: var(--border-radius);
       outline: none;
       box-shadow:
-        inset 0 0 0 2px var(--knime-cornflower),
+        inset 0 0 0 2px var(--theme-default-focus-color),
         inset 0 0 0 3px var(--theme-value-switch-background-color);
     }
   }

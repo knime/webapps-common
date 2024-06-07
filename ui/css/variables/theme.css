@@ -247,7 +247,8 @@
   --theme-donut-chart-disabled-color: var(--knime-gray-dark);
 
   /* Focus State */
-  --theme-default-focus-state: 0 0 0 2px var(--knime-cornflower);
-  --theme-thin-focus-state: 0 0 0 1px var(--knime-cornflower);
-  --theme-inset-focus-state: inset 0 0 0 1px var(--knime-cornflower);
+  --theme-default-focus-color: var(--knime-cornflower);
+  --theme-default-focus-state: 0 0 0 2px var(--theme-default-focus-color);
+  --theme-thin-focus-state: 0 0 0 1px var(--theme-default-focus-color);
+  --theme-inset-focus-state: inset 0 0 0 1px var(--theme-default-focus-color);
 }

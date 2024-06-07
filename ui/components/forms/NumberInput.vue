@@ -338,7 +338,7 @@ export default {
 
   &:focus-within {
     box-shadow: var(--theme-thin-focus-state);
-    border-color: var(--knime-cornflower);
+    border-color: var(--theme-default-focus-color);
   }
 
   &:hover:not(:focus-within, :disabled) {

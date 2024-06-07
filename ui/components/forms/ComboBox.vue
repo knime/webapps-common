@@ -420,7 +420,12 @@ export default defineComponent({
 
   &:focus-within .summary-input-icon-wrapper {
     box-shadow: var(--theme-inset-focus-state);
-    border-color: var(--knime-cornflower);
+    border-color: var(--theme-default-focus-color);
+  }
+
+  & .checkbox input:focus-visible {
+    box-shadow: none;
+    border: none;
   }
 }
 </style>

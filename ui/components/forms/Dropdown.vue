@@ -445,7 +445,7 @@ export default {
 
   &:focus-within [role="button"] {
     box-shadow: var(--theme-inset-focus-state);
-    border-color: var(--knime-cornflower);
+    border-color: var(--theme-default-focus-color);
   }
 
   &:not(.disabled) [role="button"] {

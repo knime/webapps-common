@@ -403,7 +403,6 @@ export default {
 
     &:focus {
       outline: none;
-      border-color: var(--knime-masala);
     }
   }
 
@@ -413,7 +412,7 @@ export default {
 
   &:focus-within [role="button"] {
     box-shadow: var(--theme-thin-focus-state);
-    border-color: var(--knime-cornflower);
+    border-color: var(--theme-default-focus-color);
   }
 
   &.collapsed:hover:not(:focus-within) {

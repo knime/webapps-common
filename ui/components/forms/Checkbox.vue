@@ -153,7 +153,7 @@ export default {
         position: absolute;
         display: block;
         transform: translate(4px, 3.5px) rotate(-45deg);
-        left: -1px;
+        left: 0;
         width: 8px;
         height: 5px;
         border-style: solid;
@@ -171,8 +171,6 @@ export default {
     }
 
     &:not(:checked) {
-      background: var(--theme-checkbox-background-color);
-
       /* □ */
       &:hover:enabled + span::before {
         border-color: var(--theme-checkbox-border-color-hover);
