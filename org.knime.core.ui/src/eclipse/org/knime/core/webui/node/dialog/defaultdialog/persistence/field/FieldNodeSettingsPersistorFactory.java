@@ -119,28 +119,36 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
         if (isLatentWidget) {
             return new LatentWidgetPersistor<>();
         }
-        var persistence = field.getAnnotation(Persist.class);
-        if (persistence != null) {
-            return createPersistorFromPersistAnnotation(persistence, field);
+        var persist = field.getAnnotation(Persist.class);
+        if (persist != null) {
+            return createPersistorFromPersistAnnotation(persist, field);
         } else {
             return DefaultFieldNodeSettingsPersistorFactory.createDefaultPersistor(field.getType(),
                 ConfigKeyUtil.getConfigKey(field));
         }
     }
 
-    private NodeSettingsPersistor<?> createPersistorFromPersistAnnotation(final Persist persistence,
+    private NodeSettingsPersistor<?> createPersistorFromPersistAnnotation(final Persist persist,
         final Field field) {
-        var customPersistorClass = persistence.customPersistor();
+        var customPersistorClass = persist.customPersistor();
         var type = field.getType();
         var configKey = ConfigKeyUtil.getConfigKey(field);
+        var persistor = getCustomOrDefaultPersistor(persist, customPersistorClass, type, configKey);
+        if (isOptional(persist, field.getName())) {
+            persistor = createOptionalPersistor(field, configKey, persistor, persist);
+        }
+        return persistor;
+    }
+
+    @SuppressWarnings("rawtypes") // annotations and generics don't mix well
+    private static NodeSettingsPersistor<?> getCustomOrDefaultPersistor(final Persist persistence,
+        final Class<? extends FieldNodeSettingsPersistor> customPersistorClass, final Class<?> type,
+        final String configKey) {
         if (!customPersistorClass.equals(FieldNodeSettingsPersistor.class)) {
             return FieldNodeSettingsPersistor.createInstance(customPersistorClass, type, configKey);
         }
-        var persistor = createNonCustomPersistor(persistence, type, configKey);
-        if (isOptional(persistence, field.getName())) {
-            persistor = createOptionalPersistor(field, configKey, persistor, persistence);
-        }
-        return persistor;
+        return createNonCustomPersistor(persistence, type, configKey);
+
     }
 
     private boolean isOptional(final Persist persist, final String fieldName) {
