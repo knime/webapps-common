@@ -1,8 +1,8 @@
-<script setup lang="ts">
+<script setup>
 import PlusSmall from "../../assets/img/icons/plus-small.svg";
 import MinusSmall from "../../assets/img/icons/minus-small.svg";
 import FunctionButton from "../FunctionButton.vue";
-import { computed, defineEmits, ref } from "vue";
+import { computed, ref } from "vue";
 
 const props = defineProps({
   modelValue: {
