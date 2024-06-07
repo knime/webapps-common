@@ -20,7 +20,6 @@ export default {
       codeExample,
       selected: false,
       selectedMissing: true,
-      selectedLarge: false,
     };
   },
   computed: {
@@ -46,12 +45,11 @@ export default {
       </div>
       <div class="grid-container">
         <div class="grid-item-6">
-          <Checkbox v-model="selected"> I want cookies! </Checkbox>
-          <br />
-          <Checkbox v-model="selectedLarge" label-size="large">
-            I want larger cookies!
-          </Checkbox>
-          <br />
+          <Label #default="{ labelForId }" text="Label for checkbox">
+            <Checkbox :id="labelForId" v-model="selected">
+              I want cookies!
+            </Checkbox>
+          </Label>
           <Checkbox v-model="selected" disabled>
             This checkbox is disabled!
           </Checkbox>
@@ -62,7 +60,6 @@ export default {
         </div>
         <div class="grid-item-6">
           value: {{ selected }}<br />
-          value: {{ selectedLarge }} <br /><br /><br />
           value: {{ selectedMissing }}
         </div>
       </div>

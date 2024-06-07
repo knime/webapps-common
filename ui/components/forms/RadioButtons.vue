@@ -69,6 +69,7 @@ export default {
 <style lang="postcss" scoped>
 .radio-buttons :deep() {
   user-select: none;
+  margin-top: var(--spacing-6);
 
   & label {
     position: relative;
