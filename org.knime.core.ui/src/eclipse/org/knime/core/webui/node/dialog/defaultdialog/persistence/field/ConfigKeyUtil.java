@@ -52,6 +52,7 @@ import java.lang.reflect.Field;
 import java.util.Optional;
 
 import org.knime.core.node.defaultnodesettings.SettingsModel;
+import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
 
 /**
  * Utilities for getting the used config keys from a {@link Field} with a {@link Persist} annotation.

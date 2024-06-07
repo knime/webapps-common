@@ -48,8 +48,6 @@
  */
 package org.knime.core.webui.node.dialog.configmapping;
 
-import org.knime.core.webui.node.dialog.util.NodeSettingsAtPathUtil.ConfigPath;
-
 interface ConfigsResetter {
 
     /**

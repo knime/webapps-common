@@ -139,7 +139,7 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
         final Map<SettingsType, VariableSettingsRO> extractedVariableSettings, //
         final Map<SettingsType, DefaultNodeSettings> defaultNodeSettingsMap //
     ) {
-        for (var key : settings.entrySet()) {
+        for (var key : settings.keySet()) { // NOSONAR
             final var configMappings =
                 DefaultNodeSettings.getConfigMappings(m_settingsClasses.get(key), defaultNodeSettingsMap.get(key));
             NodeSettingsCorrectionUtil.correctNodeSettingsRespectingFlowVariables(configMappings, settings.get(key),

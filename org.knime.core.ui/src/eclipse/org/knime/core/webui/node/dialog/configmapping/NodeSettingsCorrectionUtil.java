@@ -59,7 +59,6 @@ import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.webui.node.dialog.VariableSettingsRO;
 import org.knime.core.webui.node.dialog.configmapping.ConfigMappingConfigsResetter.ConfigMapping;
-import org.knime.core.webui.node.dialog.util.NodeSettingsAtPathUtil.ConfigPath;
 
 /**
  * A utility class used to correct provosionally applied settings (i.e. node settings that were saved without respecting
@@ -137,9 +136,9 @@ public final class NodeSettingsCorrectionUtil {
         }
     }
 
-    private static void addFlowVariablePath(final VariableSettingsRO variableSettings,
-        String key, final Collection<ConfigPath> controlledPaths,
-        final Collection<ConfigPath> exposedAndNotControlledPaths, final ConfigPath nextPath) throws InvalidSettingsException {
+    private static void addFlowVariablePath(final VariableSettingsRO variableSettings, final String key,
+        final Collection<ConfigPath> controlledPaths, final Collection<ConfigPath> exposedAndNotControlledPaths,
+        final ConfigPath nextPath) throws InvalidSettingsException {
         if (variableSettings.getUsedVariable(key) != null) {
             controlledPaths.add(nextPath);
         } else if (variableSettings.getExposedVariable(key) != null) {

@@ -48,21 +48,23 @@
  */
 package org.knime.core.webui.node.dialog.configmapping;
 
-import static org.knime.core.webui.node.dialog.util.NodeSettingsAtPathUtil.deletePath;
-import static org.knime.core.webui.node.dialog.util.NodeSettingsAtPathUtil.getNodeSettingsAtPath;
-import static org.knime.core.webui.node.dialog.util.NodeSettingsAtPathUtil.getNodeSettingsROAtPath;
-import static org.knime.core.webui.node.dialog.util.NodeSettingsAtPathUtil.replaceAtPathIfPresent;
+import static org.knime.core.webui.node.dialog.configmapping.NodeSettingsAtPathUtil.deletePath;
+import static org.knime.core.webui.node.dialog.configmapping.NodeSettingsAtPathUtil.getNodeSettingsAtPath;
+import static org.knime.core.webui.node.dialog.configmapping.NodeSettingsAtPathUtil.getNodeSettingsROAtPath;
+import static org.knime.core.webui.node.dialog.configmapping.NodeSettingsAtPathUtil.replaceAtPathIfPresent;
 
-import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.ConfigsDeprecation;
-import org.knime.core.webui.node.dialog.util.NodeSettingsAtPathUtil.ConfigPath;
 
+/**
+ * Conditionally resets node settings to previous settings by taking {@link ConfigMappings} into account.
+ *
+ * @author Paul Bärnreuther
+ */
 class ConfigMappingConfigsResetter implements ConfigsResetter {
 
     private ConfigPath m_basePath;
@@ -109,7 +111,7 @@ class ConfigMappingConfigsResetter implements ConfigsResetter {
             return false;
         }
         // the relative path needs to be referenced in the ConfigsDeprecation
-        return getNewAndOldPaths().stream().anyMatch(path.relativize(m_basePath)::startsWith);
+        return getNewAndOldPaths().anyMatch(path.relativize(m_basePath)::startsWith);
     }
 
     @Override
@@ -129,9 +131,9 @@ class ConfigMappingConfigsResetter implements ConfigsResetter {
 
     }
 
-    private Collection<ConfigPath> getNewAndOldPaths() {
+    private Stream<ConfigPath> getNewAndOldPaths() {
         return Stream.concat(m_configsDeprecation.getDeprecatedConfigPaths().stream(),
-            m_configsDeprecation.getNewConfigPaths().stream()).toList();
+            m_configsDeprecation.getNewConfigPaths().stream());
     }
 
 }

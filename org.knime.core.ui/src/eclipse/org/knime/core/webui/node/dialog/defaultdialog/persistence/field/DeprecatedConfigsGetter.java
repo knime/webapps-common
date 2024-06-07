@@ -48,6 +48,8 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 
+import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
+
 /**
  * Provides the capability to define deprecated config keys (see {@link ConfigsDeprecation}) for a field persistor.
  *

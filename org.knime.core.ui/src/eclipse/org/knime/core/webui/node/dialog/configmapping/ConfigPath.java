@@ -44,37 +44,108 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jun 6, 2024 (Paul Bärnreuther): created
+ *   Jun 7, 2024 (hornm): created
  */
 package org.knime.core.webui.node.dialog.configmapping;
 
-import static org.knime.core.webui.node.dialog.configmapping.NodeSettingsAtPathUtil.hasPath;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.knime.core.node.NodeSettings;
 
 /**
- * Does not reset anything but prevents further resetters to be regarded when the given path exists both in new and old
- * settings already.
+ * A list of strings used to index {@link NodeSettings}
  *
  * @author Paul Bärnreuther
  */
-class StopWhenPathExists implements ConfigsResetter {
+public final class ConfigPath {
 
-    private final NodeSettings m_nodeSettings;
+    private final List<String> m_path;
 
-    StopWhenPathExists(final NodeSettings nodeSettings) {
-        m_nodeSettings = nodeSettings;
+    private int size() {
+        return m_path.size();
+    }
 
+    /**
+     * @return the underlying path as a list
+     */
+    public List<String> path() {
+        return m_path;
+    }
+
+    /**
+     * @param path
+     */
+    public ConfigPath(final List<String> path) {
+        m_path = new ArrayList<>(path);
+    }
+
+    ConfigPath withoutLastKey() {
+        return new ConfigPath(m_path.subList(0, size() - 1));
+    }
+
+    ConfigPath withoutFirstKey() {
+        return new ConfigPath(m_path.subList(1, size()));
+    }
+
+    /**
+     * @param basePath
+     * @return whether the path starts with the basePath
+     *
+     */
+    boolean startsWith(final ConfigPath basePath) {
+        if (basePath.m_path.size() > m_path.size()) {
+            return false;
+        }
+        return IntStream.range(0, basePath.size()).allMatch(i -> basePath.m_path.get(i).equals(m_path.get(i)));
     }
 
     @Override
-    public boolean isApplicable(final ConfigPath path) {
-        return hasPath(m_nodeSettings, path);
+    public boolean equals(final Object obj) {
+        if (obj instanceof ConfigPath other) {
+            return m_path.equals(other.m_path);
+        }
+        return false;
     }
 
     @Override
-    public void resetAtPath(final ConfigPath path) {
-        // Do NOT replace anything in this case, since the config is not controlled but only exposed
+    public int hashCode() {
+        return m_path.hashCode();
     }
 
+    /**
+     *
+     * @param basePath
+     * @return the NodeSettingsPath relative to the given basePath
+     *
+     * @throws IllegalArgumentException if the path does not start with the basePath.
+     */
+    ConfigPath relativize(final ConfigPath basePath) {
+        if (basePath.size() == 0) {
+            return this;
+        }
+        if (!basePath.firstKey().equals(firstKey())) {
+            throw new IllegalArgumentException(
+                String.format("Unable to relativice since \"%s\" is not \"%s\".", basePath.firstKey(), firstKey()));
+        }
+        return this.withoutFirstKey().relativize(basePath.withoutFirstKey());
+    }
+
+    String firstKey() {
+        return m_path.get(0);
+    }
+
+    String lastKey() {
+        return m_path.get(size() - 1);
+    }
+
+    /**
+     * @param key that should be appended
+     * @return a new configPath
+     */
+    ConfigPath plus(final String key) {
+        return new ConfigPath(Stream.concat(m_path.stream(), Stream.of(key)).toList());
+    }
 }

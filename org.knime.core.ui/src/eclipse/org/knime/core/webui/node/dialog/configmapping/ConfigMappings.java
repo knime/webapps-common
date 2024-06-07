@@ -55,17 +55,13 @@ import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.ConfigsDeprecation;
 
 /**
+ * Provides necessary information required to handle, e.g., config deprecations.
+ *
+ * @see NodeSettingsCorrectionUtil
  *
  * @author Paul Bärnreuther
- * @param deprecatedConfigs the configs that possibly need to be corrected because of mismatches between settings and
- *            flow variables because of deprecation of config keys
- * @param oldSettingsToNewSettings a method that is able to transform the previous node settings to new node settings.
- *            It is used only when the previous value should be used but overwritten by a new flow variable, i.e. when
- *            the user de-selected a deprecated flow variable and selects a new one before applying.
- * @see NodeSettingsCorrectionUtil
  */
 public final class ConfigMappings {
 
@@ -99,6 +95,8 @@ public final class ConfigMappings {
     }
 
     /**
+     * See {@link #ConfigMappings(ConfigsDeprecation[], UnaryOperator)}.
+     *
      * @param configsDeprecation defining which config paths map to which
      * @param oldSettingsToNewSettings the actual mapping method transforming setting with old config paths to new ones
      */
@@ -112,8 +110,12 @@ public final class ConfigMappings {
     }
 
     /**
-     * @param configsDeprecations an array of multiple deprecations that should use the same mapping of node settings
-     * @param oldSettingsToNewSettings
+     * @param configsDeprecations the configs that possibly need to be corrected because of mismatches between settings
+     *            and flow variables because of deprecation of config keys
+     * @param oldSettingsToNewSettings a method that is able to transform the previous node settings to new node
+     *            settings. It is used only when the previous value should be used but overwritten by a new flow
+     *            variable, i.e. when the user de-selected a deprecated flow variable and selects a new one before
+     *            applying.
      *            <p>
      *            Use {@link #ConfigMappings(ConfigsDeprecation, Function)} and {@link #ConfigMappings(Collection)}
      *            instead if multiple deprecations with different node settings methods are desired.

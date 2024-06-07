@@ -66,6 +66,7 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.webui.node.dialog.configmapping.ConfigMappings;
+import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.ReflectionUtil;
@@ -228,14 +229,13 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
         @Override
         public ConfigMappings getConfigMappings(final S obj) {
 
-            final var delegateMappings = m_delegate.getConfigMappings(obj);
             final var defaultMapping =
                 new ConfigMappings(new ConfigsDeprecation.Builder().forNewConfigPath(m_configKey).build(), prev -> {
                     final var mapped = new NodeSettings("mappedSettings");
                     save(m_default, mapped);
                     return mapped;
                 });
-
+            final var delegateMappings = m_delegate.getConfigMappings(obj);
             return new ConfigMappings(List.of(delegateMappings, defaultMapping));
         }
     }

@@ -48,12 +48,11 @@
  */
 package org.knime.core.webui.node.dialog.configmapping;
 
-import static org.knime.core.webui.node.dialog.util.NodeSettingsAtPathUtil.hasPath;
-import static org.knime.core.webui.node.dialog.util.NodeSettingsAtPathUtil.replaceAtPathIfPresent;
+import static org.knime.core.webui.node.dialog.configmapping.NodeSettingsAtPathUtil.hasPath;
+import static org.knime.core.webui.node.dialog.configmapping.NodeSettingsAtPathUtil.replaceAtPathIfPresent;
 
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.webui.node.dialog.util.NodeSettingsAtPathUtil.ConfigPath;
 
 /**
  * Resets the node settings to the previous settings at a config that is controlled by a flow variable.

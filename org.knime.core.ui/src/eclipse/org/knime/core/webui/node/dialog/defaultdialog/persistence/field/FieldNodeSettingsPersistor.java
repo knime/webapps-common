@@ -53,6 +53,7 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.webui.node.dialog.configmapping.ConfigMappings;
+import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
 
@@ -120,8 +121,8 @@ public interface FieldNodeSettingsPersistor<T> extends NodeSettingsPersistor<T> 
     static <S, P extends FieldNodeSettingsPersistor<S>> P createInstance(final Class<P> persistorClass,
         final Class<S> persistedObjectClass, final String configKey) {
         final var customPersistor = NodeSettingsPersistor.createInstance(persistorClass, persistedObjectClass);
-        if (customPersistor instanceof NodeSettingsPersistorWithConfigKey) {
-            ((NodeSettingsPersistorWithConfigKey)customPersistor).setConfigKey(configKey);
+        if (customPersistor instanceof NodeSettingsPersistorWithConfigKey persistorWithKey) {
+            persistorWithKey.setConfigKey(configKey);
         }
         return customPersistor;
     }

@@ -46,7 +46,7 @@
  * History
  *   Feb 16, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
+package org.knime.core.webui.node.dialog.configmapping;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,11 +54,12 @@ import java.util.Collection;
 import java.util.List;
 
 import org.knime.core.node.util.CheckUtils;
-import org.knime.core.webui.node.dialog.util.NodeSettingsAtPathUtil.ConfigPath;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 
 /**
- * This class is used in {@link FieldNodeSettingsPersistor#getConfigsDeprecations()}. It provides a connection from an
- * array of config paths relative to the base config of the field to another one.
+ * This class provides a connection from an array of config paths relative to the base config of the field to another
+ * one.
  * <ul>
  * <li>Deprecated config paths: Configs which are respected during {@link FieldNodeSettingsPersistor#load load} but are
  * not written to when saving the loaded data back during {@link FieldNodeSettingsPersistor#save save}.</li>

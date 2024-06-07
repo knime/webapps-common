@@ -83,11 +83,14 @@ public interface NodeSettingsPersistor<T> {
     void save(T obj, NodeSettingsWO settings);
 
     /**
+     * Allows one to optionally provide config mappings (e.g. old config key(s) to new config key(s)) in case configs
+     * are deprecated. It is required to be able to maintain backwards compatibility.
+     *
      * @param obj to save, necessary in some persistors, because the used config keys depend on the object (e.g. in
      *            dynamic arrays)
-     * @return a tree of modifications that is to be traversed after {@link #save}. It is used to bring settings and
-     *         flow variables back in sync when the tree structure differs after saving (e.g. because of set deprecated
-     *         flow variables) and to revert applied settings to previous settings when overwritten by a flow variable.
+     * @return a new {@link ConfigMappings}-instance. It is used to bring settings and flow variables back in sync when
+     *         the tree structure differs after saving (e.g. because of set deprecated flow variables) and to revert
+     *         applied settings to previous settings when overwritten by a flow variable.
      */
     default ConfigMappings getConfigMappings(final T obj) {
         return new ConfigMappings(List.of());
