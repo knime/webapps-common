@@ -74,7 +74,7 @@ export default defineComponent({
   border-radius: var(--border-radius);
   width: max-content;
   height: calc(var(--wrapper-height) * 1px);
-  margin-top: var(--spacing-8);
+  margin-top: var(--spacing-base);
 
   & :deep(span) {
     display: flex;

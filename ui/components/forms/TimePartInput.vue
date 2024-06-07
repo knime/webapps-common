@@ -349,7 +349,7 @@ export default {
   width: 100%;
   border: var(--form-border-width) solid var(--knime-stone-gray);
   background-color: var(--theme-time-part-input-background-color);
-  margin-top: var(--spacing-8);
+  margin-top: var(--spacing-base);
 
   &.disabled {
     opacity: 0.5;

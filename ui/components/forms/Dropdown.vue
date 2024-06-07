@@ -390,7 +390,7 @@ export default {
 <style lang="postcss" scoped>
 .dropdown {
   position: relative;
-  margin-top: var(--spacing-8);
+  margin-top: var(--spacing-base);
 
   &.collapsed {
     background: var(--theme-dropdown-background-color);
