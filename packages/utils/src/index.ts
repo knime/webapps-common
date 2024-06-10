@@ -9,6 +9,14 @@ import {
   resolveNuxtLinkComponent,
 } from "./nuxtComponentResolver";
 import sleep from "./sleep";
+import { icons, isIconExisting } from "./fileTypeIcons";
+import svgWithTitle from "./svgWithTitle";
+import {
+  formatDateString,
+  formatDateTimeString,
+  formatLocalDateTimeString,
+  formatTimeString,
+} from "./format";
 export {
   capitalize,
   caseFormatter,
@@ -20,4 +28,11 @@ export {
   resolveClientOnlyComponent,
   resolveNuxtLinkComponent,
   sleep,
+  icons,
+  isIconExisting,
+  svgWithTitle,
+  formatDateString,
+  formatDateTimeString,
+  formatLocalDateTimeString,
+  formatTimeString,
 };

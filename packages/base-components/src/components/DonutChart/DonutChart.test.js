@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { mount } from "@vue/test-utils";
 
-import DonutChart from "../DonutChart.vue";
+import DonutChart from "./DonutChart.vue";
 
 describe("DonutChart.vue", () => {
   const defaultValue = 3;

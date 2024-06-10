@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 
 import { mount, shallowMount } from "@vue/test-utils";
-import FileLink from "../FileLink.vue";
+import FileLink from "./FileLink.vue";
 
 describe("FileLink.vue", () => {
   // TODO .vue or not?
