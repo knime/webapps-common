@@ -4,7 +4,7 @@ import { shallowMount } from "@vue/test-utils";
 
 import PortGroup from "../PortGroup.vue";
 import PortIcon from "../PortIcon.vue";
-import Description from "../../Description.vue";
+import Description from "../../Description/Description.vue";
 
 describe("PortsListItem.vue", () => {
   let props, wrapper;
