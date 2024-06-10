@@ -1,8 +1,8 @@
 <script>
-import PortIcon from "../../assets/img/icons/plugin.svg";
-import ViewsIcon from "../../assets/img/icons/eye.svg";
-import OptionsIcon from "../../assets/img/icons/settings.svg";
-import TabBar from "../TabBar.vue";
+import PortIcon from "@knime/styles/img/icons/plugin.svg";
+import ViewsIcon from "@knime/styles/img/icons/eye.svg";
+import OptionsIcon from "@knime/styles/img/icons/settings.svg";
+import TabBar from "../TabBar/TabBar.vue";
 import PortsList from "./PortsList.vue";
 import ViewsList from "./ViewsList.vue";
 import DialogOptions from "./DialogOptions.vue";
