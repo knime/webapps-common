@@ -62,6 +62,7 @@ export const useDialogControl = <ValueType extends Stringifyable = any>({
 
   return {
     onChange,
+    handleChange,
     flowSettings,
     control,
     disabled,

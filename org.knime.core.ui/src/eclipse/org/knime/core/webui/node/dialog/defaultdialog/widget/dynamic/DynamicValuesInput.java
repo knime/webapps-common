@@ -49,6 +49,7 @@
 package org.knime.core.webui.node.dialog.defaultdialog.widget.dynamic;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -56,6 +57,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataType;
 import org.knime.core.data.DataTypeRegistry;
+import org.knime.core.data.MissingCell;
 import org.knime.core.data.convert.datacell.JavaToDataCellConverterRegistry;
 import org.knime.core.data.convert.java.DataCellToJavaConverterRegistry;
 import org.knime.core.data.def.BooleanCell;
@@ -75,6 +77,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPe
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.Persistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DefaultFieldNodeSettingsPersistorFactory;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -108,6 +111,18 @@ public class DynamicValuesInput implements PersistableSettings {
         m_inputKind = InputKind.Single;
     }
 
+    public DynamicValuesInput(final DataCell singleValue) {
+        m_values = new DynamicValue[]{new DynamicValue(singleValue, null)};
+        m_inputKind = InputKind.Single;
+    }
+
+    public static DynamicValuesInput emptySingle() {
+        final var result = new DynamicValuesInput();
+        result.m_values = new DynamicValue[]{};
+        result.m_inputKind = InputKind.Single;
+        return result;
+    }
+
     static Map<String, DataType> knownDataTypes = new ConcurrentHashMap<>();
 
     DynamicValue[] m_values;
@@ -121,7 +136,7 @@ public class DynamicValuesInput implements PersistableSettings {
     }
 
     static class ModifyersRegistry {
-        static Map<String, Class<? extends DefaultNodeSettings>> modifierClasses = Map.of();
+        static Map<String, Class<? extends DefaultNodeSettings>> modifierClasses = new HashMap<>();
     }
 
     @Persistor(DynamicValue.Persistor.class)
@@ -143,9 +158,30 @@ public class DynamicValuesInput implements PersistableSettings {
          * @param dataCell cell specifying the content (and type)
          */
         private DynamicValue(final DataCell dataCell, final DefaultNodeSettings modifiers) {
+            this(dataCell.getType());
             m_value = Optional.of(dataCell);
-            m_type = dataCell.getType();
             m_modifiers = Optional.ofNullable(modifiers);
+        }
+
+        public static final class StringValueModifiers implements DefaultNodeSettings {
+
+            public enum CaseMatching {
+                    /** Respect case when matching strings. */
+                    @Label("Case sensitive")
+                    CASESENSITIVE, //
+                    /** Disregard case when matching strings. */
+                    @Label("Case insensitive")
+                    CASEINSENSITIVE;
+
+                /** Recommended default setting. */
+                public static final CaseMatching DEFAULT = CASESENSITIVE;
+            }
+
+            CaseMatching m_caseMatching = CaseMatching.DEFAULT;
+
+            public boolean isCaseSensitive() {
+                return this.m_caseMatching == CaseMatching.CASESENSITIVE;
+            }
         }
 
         /**
@@ -155,6 +191,9 @@ public class DynamicValuesInput implements PersistableSettings {
          */
         public DynamicValue(final DataType type) {
             m_type = type;
+            if (type.equals(StringCell.TYPE)) {
+                m_modifiers = Optional.of(new StringValueModifiers());
+            }
         }
 
         /**
@@ -240,11 +279,17 @@ public class DynamicValuesInput implements PersistableSettings {
             throws ConverterException {
             final var registry = JavaToDataCellConverterRegistry.getInstance();
             final var converter = registry.getConverterFactories(String.class, dataType).stream().findFirst()
-                .orElseThrow().create((ExecutionContext)null);
+                .orElseThrow(/** TODO? This throws e.g. for Collection cells */
+                ).create((ExecutionContext)null);
             try {
                 return converter.convert(value);
             } catch (Exception e) {
-                throw new ConverterException(e);
+                var missingCellCause =
+                    String.format("Unable to convert string \"%s\" to type \"%s\"", value, dataType.getName());
+                if (e.getMessage() != null) {
+                    missingCellCause += ": " + e.getMessage();
+                }
+                return new MissingCell(missingCellCause);
             }
 
         }
@@ -276,8 +321,9 @@ public class DynamicValuesInput implements PersistableSettings {
                 if (value.m_modifiers.isPresent()) {
                     final var modifiers = value.m_modifiers.get();
                     final var modifiersData = JsonFormsDataUtil.toJsonData(modifiers);
-                    final var modifiersClass = value.m_modifiers.getClass();
+                    final var modifiersClass = modifiers.getClass();
                     final var modifiersClassName = modifiersClass.getName();
+                    ModifyersRegistry.modifierClasses.put(modifiersClassName, modifiersClass);
                     gen.writeObjectField("modifiersClassName", modifiersClassName);
                     gen.writeObjectField("modifiers", modifiersData);
                 }
@@ -305,6 +351,9 @@ public class DynamicValuesInput implements PersistableSettings {
                 DataCell dataCell;
                 try {
                     final var valueNode = node.get("value");
+                    if (valueNode == null || valueNode.isNull()) {
+                        return new DynamicValue(dataType);
+                    }
                     dataCell = DynamicValue.readDataCell(dataType, //
                         () -> valueNode.asDouble(), //
                         () -> valueNode.asInt(), //
@@ -330,6 +379,9 @@ public class DynamicValuesInput implements PersistableSettings {
                 final var modifiers = modifiersClass == null ? null : DefaultFieldNodeSettingsPersistorFactory
                     .createDefaultPersistor(modifiersClass, "modifiers").load(settings);
 
+                if (settings.containsKey("missingCellError")) {
+                    throw new InvalidSettingsException(settings.getString("missingCellError"));
+                }
                 if (settings.containsKey("value")) {
                     try {
                         return new DynamicValue(DynamicValue.<InvalidSettingsException> readDataCell(dataType, //
@@ -355,14 +407,27 @@ public class DynamicValuesInput implements PersistableSettings {
                         .save(modifiers, settings);
                 }
                 if (obj.m_value.isPresent()) {
-                    try {
-                        DynamicValue.writeDataCell(obj.m_value.get(), //
-                            d -> settings.addDouble("value", d), //
-                            i -> settings.addInt("value", i), //
-                            b -> settings.addBoolean("value", b), //
-                            s -> settings.addString("value", s));
-                    } catch (ConverterException ex) {
-                        throw new RuntimeException("Could not persist data cell value.", ex.get()); // TODO (RuntimeException ?) Maybe we should save nothing in this case and let the settings validation deal with it
+                    final var cell = obj.m_value.get();
+                    /**
+                     * the cell being missing means that the type mapping failed to construct a cell from the string
+                     * value in the frontend.
+                     */
+                    if (cell instanceof MissingCell missingCell) {
+                        // necessary to be able to still set flow variables in this case
+                        settings.addString("value", "");
+                        settings.addString("missingCellError", missingCell.getError());
+                    } else {
+                        try {
+                            DynamicValue.writeDataCell(cell, //
+                                d -> settings.addDouble("value", d), //
+                                i -> settings.addInt("value", i), //
+                                b -> settings.addBoolean("value", b), //
+                                s -> settings.addString("value", s));
+                        } catch (ConverterException ex) {
+                            throw new RuntimeException(
+                                String.format("Could not persist data cell value: %s.", ex.get().getMessage()),
+                                ex.get()); // TODO (RuntimeException ?) Maybe we should save nothing in this case and let the settings validation deal with it
+                        }
                     }
                 }
             }
@@ -372,6 +437,10 @@ public class DynamicValuesInput implements PersistableSettings {
 
     public Optional<DataCell> getCellAt(final int index) {
         return m_values[index].m_value;
+    }
+
+    public <T extends DefaultNodeSettings> T getModifiersAt(final int index, final Class<T> clazz) {
+        return (T)m_values[index].m_modifiers.orElseThrow();
     }
 
     static final class ConverterException extends Exception {
@@ -386,5 +455,23 @@ public class DynamicValuesInput implements PersistableSettings {
         Exception get() {
             return m_exception;
         }
+    }
+
+    /**
+     * TODO return true whenever the current state can be obtained by configuring starting with newValue.
+     *
+     * @param newValue
+     * @return
+     */
+    public boolean isConfigurableFrom(final DynamicValuesInput newValue) {
+        if (newValue.m_values.length != m_values.length) {
+            return false;
+        }
+        for (int i = 0; i < newValue.m_values.length; i++) {
+            if (!newValue.m_values[i].m_type.equals(m_values[i].m_type)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

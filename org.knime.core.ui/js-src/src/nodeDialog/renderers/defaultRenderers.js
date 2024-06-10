@@ -60,5 +60,5 @@ export const defaultRenderers = [
   legacyCredentialsRenderer,
   localFileChooserRenderer,
   fileChooserRenderer,
-  dynamicValueRenderer
+  dynamicValueRenderer,
 ];

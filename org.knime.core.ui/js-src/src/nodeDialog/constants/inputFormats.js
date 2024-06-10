@@ -20,5 +20,5 @@ export const inputFormats = {
   legacyCredentials: "legacyCredentials",
   localFileChooser: "localFileChooser",
   fileChooser: "fileChooser",
-  dynamicValue: "dynamicValue"
+  dynamicValue: "dynamicValue",
 };

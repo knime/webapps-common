@@ -1,5 +1,5 @@
 import { isControl, rankWith } from "@jsonforms/core";
-import DynamicValuesInput from "../uiComponents/DynamicValuesInput.vue";
+import DynamicValuesInput from "../uiComponents/dynamicValue/DynamicValuesInput.vue";
 import { priorityRanks, inputFormats } from "../constants";
 
 export const dynamicValueTester = (uischema, _schema) =>

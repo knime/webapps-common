@@ -51,7 +51,6 @@ export const getConfigPaths = (params: {
   path: string;
   subConfigKeys: string[] | undefined;
 }): { configPath: string; deprecatedConfigPaths: string[] }[] => {
-  console.log(params.path, params)
   const { path, control, subConfigKeys } = params;
   const segments = path.split(".");
   let configPaths = [""];
@@ -61,10 +60,7 @@ export const getConfigPaths = (params: {
     if (isArraySchema(schema)) {
       configPaths = configPaths.map((p) => composePaths(p, segment));
       schema = schema.items;
-    } else if (isObjectSchema(schema)) {
-      /**
-       * properties is guaranteed to exist here, since the schema is the schema of the given subpath
-       */
+    } else if (isObjectSchema(schema) && schema.properties) {
       schema = schema.properties[segment];
 
       (schema.deprecatedConfigKeys ?? []).forEach((part) =>
@@ -82,6 +78,12 @@ export const getConfigPaths = (params: {
       deprecatedConfigPathsCandidates = updateCandidates(
         deprecatedConfigPathsCandidates,
         new Set(nextPathSegments),
+      );
+    } else {
+      configPaths = configPaths.map((parent) => composePaths(parent, segment));
+      deprecatedConfigPathsCandidates = updateCandidates(
+        deprecatedConfigPathsCandidates,
+        new Set([segment]),
       );
     }
   }
