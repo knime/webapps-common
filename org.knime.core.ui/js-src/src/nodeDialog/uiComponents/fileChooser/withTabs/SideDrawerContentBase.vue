@@ -5,6 +5,7 @@ import FileExplorerTab from "./FileExplorerTab.vue";
 import UrlTab from "./UrlTab.vue";
 import TabBar from "webapps-common/ui/components/TabBar.vue";
 import LinkIcon from "webapps-common/ui/assets/img/icons/link.svg";
+import LocalSpaceIcon from "webapps-common/ui/assets/img/icons/local-space.svg";
 import ComputerDesktopIcon from "webapps-common/ui/assets/img/icons/computer-desktop.svg";
 import KnimeIcon from "./knime.svg";
 import { useFileChooserBrowseOptions } from "../composables/useFileChooserBrowseOptions";
@@ -54,7 +55,7 @@ const possibleCategories: TabSpec[] = [
   {
     value: "relative-to-current-hubspace",
     label: mountId.value,
-    icon: KnimeIcon,
+    icon: isLocal.value ? LocalSpaceIcon : KnimeIcon,
   },
   {
     value: "CUSTOM_URL",

@@ -33,17 +33,17 @@ const props = withDefaults(defineProps<Props>(), {
   appendedExtension: null,
   clickOutsideException: null,
   openFileByExplorer: false,
-  rootPath: "",
+  spacePath: "",
 });
 
 const currentPathDisplay = computed(() => {
-  if (currentPath.value && props.rootPath) {
-    return `${props.rootPath}/${currentPath.value}`;
+  if (currentPath.value && props.spacePath) {
+    return `${props.spacePath}/${currentPath.value}`;
   }
   if (currentPath.value) {
     return currentPath.value;
   }
-  return props.rootPath ?? "";
+  return props.spacePath ?? "";
 });
 
 const emit = defineEmits<{

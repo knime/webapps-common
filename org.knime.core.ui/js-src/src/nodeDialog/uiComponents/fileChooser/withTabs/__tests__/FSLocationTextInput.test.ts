@@ -31,7 +31,7 @@ describe("FSLocationTextInput.vue", () => {
         options,
       }: {
         method?: string | undefined;
-        options: [null, string];
+        options: [unknown, unknown, string];
       }) => {
         return Promise.resolve({ path: absolute(options[2]) });
       },

@@ -3,7 +3,7 @@ import { FileChooserValue, FSCategory } from "../types/FileChooserProps";
 interface Props {
   modelValue: FileChooserValue;
   disabled: boolean;
-  isLocal: boolean;
+  isLocal?: boolean;
 }
 export { Props };
 
