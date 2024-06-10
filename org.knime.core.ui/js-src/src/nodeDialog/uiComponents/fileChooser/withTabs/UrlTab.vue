@@ -36,7 +36,7 @@ watch(
 const urlErrorMessage = computed(() =>
   urlIsValid.value
     ? null
-    : 'The url needs to start with a scheme (e.g. "https:")',
+    : 'The url needs to start with a scheme (e.g. "https://")',
 );
 </script>
 

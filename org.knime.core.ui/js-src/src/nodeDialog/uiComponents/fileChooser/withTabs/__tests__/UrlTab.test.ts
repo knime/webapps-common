@@ -58,7 +58,7 @@ describe("UrlTab.vue", () => {
     expect(errorMessage.props()).toStrictEqual({
       errors: [
         {
-          message: 'The url needs to start with a scheme (e.g. "https:")',
+          message: 'The url needs to start with a scheme (e.g. "https://")',
         },
       ],
     });
