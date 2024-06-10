@@ -1,7 +1,7 @@
 import { describe, vi, it, expect } from "vitest";
 import { mount } from "@vue/test-utils";
 import FileSelector from "./FileSelector.vue";
-import Button from "../Button/Button.vue";
+import Button from "../Buttons/Button.vue";
 import LensIcon from "@knime/styles/img/icons/lens.svg";
 
 describe("FileSelector.vue", () => {

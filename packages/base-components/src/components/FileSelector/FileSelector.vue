@@ -1,6 +1,6 @@
 <script>
 import { getCurrentInstance } from "vue";
-import Button from "../Button/Button.vue";
+import Button from "../Buttons/Button.vue";
 import LensIcon from "@knime/styles/img/icons/lens.svg";
 
 export default {
