@@ -167,6 +167,8 @@ describe("Twinlist.vue", () => {
     const wrapper = mount(Twinlist, {
       props: {
         possibleValues: defaultPossibleValues,
+        leftLabel: "Choose",
+        rightLabel: "The value",
       },
     });
     expect(wrapper.vm.possibleValueIds).toStrictEqual([
