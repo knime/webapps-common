@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { mount, shallowMount } from "@vue/test-utils";
 
-import LinkList from "../LinkList.vue";
+import LinkList from "./LinkList.vue";
 
 describe("LinkList.vue", () => {
   it("renders links", () => {

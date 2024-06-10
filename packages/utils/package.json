@@ -7,16 +7,18 @@
   "author": "KNIME AG, Zurich, Switzerland",
   "type": "module",
   "scripts": {},
-  "dependencies": {},
-  "main": "src/index.js",
-  "module": "src/index.js",
+  "dependencies": {
+    "@knime/styles": "workspace:*"
+  },
+  "main": "src/index.ts",
+  "module": "src/index.ts",
   "files": [
     "src",
     "test-utils"
   ],
   "exports": {
     ".": {
-      "import": "./src/index.js"
+      "import": "./src/index.ts"
     },
     "./test-utils": {
       "import": "./test-utils/index.ts"

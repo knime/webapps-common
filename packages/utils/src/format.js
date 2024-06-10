@@ -1,4 +1,4 @@
-import getLocalTimeZone from "../util/localTimezone";
+import getLocalTimeZone from "./localTimezone";
 /**
  * Converts the specified date String to human readable text containing the day, month, and year.
  * Example: '2018-07-31T09:44:31+00:00' => 'Jul 31, 2018'

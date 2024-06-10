@@ -1,6 +1,6 @@
 <script>
 import { partial } from "filesize";
-import { icons } from "../util/fileTypeIcons";
+import { icons } from "@knime/utils";
 
 export default {
   components: {

@@ -1,8 +1,5 @@
 <script>
-import {
-  formatDateTimeString,
-  formatLocalDateTimeString,
-} from "./../../util/format";
+import { formatDateTimeString, formatLocalDateTimeString } from "@knime/utils";
 
 export default {
   props: {
