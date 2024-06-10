@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { shallowMount } from "@vue/test-utils";
 
 import NodeTorsoNormal from "../NodeTorsoNormal.vue";
-import * as nodeColors from "../../../colors/nodeColors.mjs";
+import * as nodeColors from "@knime/styles/colors/nodeColors.mjs";
 
 describe("NodeTorsoNormal.vue", () => {
   let doShallowMount = (props) => shallowMount(NodeTorsoNormal, { props });
