@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { shallowMount } from "@vue/test-utils";
 
-import LegacyBrowserWarning from "../LegacyBrowserWarning.vue";
+import LegacyBrowserWarning from "./LegacyBrowserWarning.vue";
 
 describe("LegacyBrowserWarning.vue", () => {
   let props;

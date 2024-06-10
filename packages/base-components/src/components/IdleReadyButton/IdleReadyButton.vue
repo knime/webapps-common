@@ -1,7 +1,7 @@
 <script>
-import Button from "./Button.vue";
-import DownIcon from "../assets/img/icons/circle-arrow-down.svg";
-import { resolveClientOnlyComponent } from "../util/nuxtComponentResolver";
+import Button from "../Button/Button.vue";
+import DownIcon from "@knime/styles/img/icons/circle-arrow-down.svg";
+import { resolveClientOnlyComponent } from "@knime/utils";
 
 export default {
   components: {

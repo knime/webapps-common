@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { shallowMount, mount } from "@vue/test-utils";
 
-import IdleReadyButton from "../IdleReadyButton.vue";
-import Button from "../Button.vue";
-import DownIcon from "../../assets/img/icons/circle-arrow-down.svg";
+import IdleReadyButton from "./IdleReadyButton.vue";
+import Button from "../Button/Button.vue";
+import DownIcon from "@knime/styles/img/icons/circle-arrow-down.svg";
 
 describe("IdleReadyButton.vue", () => {
   it("doesn’t render when not needed", () => {

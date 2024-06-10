@@ -1,7 +1,7 @@
 <script>
 import { getCurrentInstance } from "vue";
-import Button from "./Button.vue";
-import LensIcon from "../assets/img/icons/lens.svg";
+import Button from "../Button/Button.vue";
+import LensIcon from "@knime/styles/img/icons/lens.svg";
 
 export default {
   components: {

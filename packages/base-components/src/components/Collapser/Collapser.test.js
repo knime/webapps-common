@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { mount } from "@vue/test-utils";
 
-import Collapser from "../Collapser.vue";
+import Collapser from "./Collapser.vue";
 
 describe("Collapser.vue", () => {
   it("renders content and title", () => {

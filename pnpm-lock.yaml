@@ -72,6 +72,9 @@ importers:
       '@vueuse/shared':
         specifier: ^10.10.0
         version: 10.10.0(vue@3.4.27(typescript@5.4.5))
+      filesize:
+        specifier: 10.0.6
+        version: 10.0.6
       focus-trap-vue:
         specifier: 4.0.2
         version: 4.0.2(focus-trap@7.5.4)(vue@3.4.27(typescript@5.4.5))
@@ -256,7 +259,11 @@ importers:
         specifier: ^2.0.19
         version: 2.0.19(typescript@5.4.5)
 
-  packages/utils: {}
+  packages/utils:
+    dependencies:
+      '@knime/styles':
+        specifier: workspace:*
+        version: link:../styles
 
 packages:
 
@@ -1982,6 +1989,10 @@ packages:
   file-entry-cache@9.0.0:
     resolution: {integrity: sha512-6MgEugi8p2tiUhqO7GnPsmbCCzj0YRCwwaTbpGRyKZesjRSzkqkAE9fPp7V2yMs5hwfgbQLgdvSSkGNg1s5Uvw==}
     engines: {node: '>=18'}
+
+  filesize@10.0.6:
+    resolution: {integrity: sha512-rzpOZ4C9vMFDqOa6dNpog92CoLYjD79dnjLk2TYDDtImRIyLTOzqojCb05Opd1WuiWjs+fshhCgTd8cl7y5t+g==}
+    engines: {node: '>= 10.4.0'}
 
   fill-range@7.0.1:
     resolution: {integrity: sha512-qOo9F+dMUmC2Lcb4BbVvnKJxTPjCm+RRpe4gDuGrzkL7mEVl/djYSu2OdQ2Pa302N4oqkSg9ir6jaLWJ2USVpQ==}
@@ -5892,6 +5903,8 @@ snapshots:
   file-entry-cache@9.0.0:
     dependencies:
       flat-cache: 5.0.0
+
+  filesize@10.0.6: {}
 
   fill-range@7.0.1:
     dependencies:
