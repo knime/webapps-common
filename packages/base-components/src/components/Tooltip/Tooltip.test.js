@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { mount } from "@vue/test-utils";
 
-import Tooltip from "../Tooltip.vue";
+import Tooltip from "./Tooltip.vue";
 
 describe("Tooltip", () => {
   it("renders", () => {

@@ -9,11 +9,14 @@ import {
   autoUpdate,
 } from "@floating-ui/vue";
 
-import FunctionButton from "./FunctionButton.vue";
-import MenuItems from "./MenuItems.vue";
-import useClickOutside from "../composables/useClickOutside";
+import FunctionButton from "../Buttons/FunctionButton.vue";
+import MenuItems from "../base/MenuItem/MenuItems.vue";
+import { useClickOutside } from "../../composables";
 
-import type { MenuItem, Props as MenuItemsProps } from "./MenuItems.vue";
+import type {
+  MenuItem,
+  Props as MenuItemsProps,
+} from "../base/MenuItem/MenuItems.vue";
 import type { PropType } from "vue";
 
 const orientations = ["right", "top", "left"] as const;

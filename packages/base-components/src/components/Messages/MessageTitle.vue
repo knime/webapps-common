@@ -1,6 +1,6 @@
 <script>
-import Button from "./Button.vue";
-import CloseIcon from "../assets/img/icons/close.svg";
+import Button from "../Buttons/Button.vue";
+import CloseIcon from "@knime/styles/img/icons/close.svg";
 
 export default {
   components: {

@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import { mount, shallowMount } from "@vue/test-utils";
 
-import MenuItems from "../MenuItems.vue";
-import SubMenu from "../SubMenu.vue";
-import FunctionButton from "../FunctionButton.vue";
+import MenuItems from "../base/MenuItem/MenuItems.vue";
+import SubMenu from "./SubMenu.vue";
+import FunctionButton from "../Buttons/FunctionButton.vue";
 import { ref, unref } from "vue";
 import { useFloating } from "@floating-ui/vue";
-import useClickOutside from "../../composables/useClickOutside";
+import { useClickOutside } from "../../composables";
 
 const dropdownNavigation = {
   currentIndex: ref(1),

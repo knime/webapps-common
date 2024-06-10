@@ -1,10 +1,10 @@
 <script>
-import BaseMessage from "./BaseMessage.vue";
+import BaseMessage from "../base/Message/BaseMessage.vue";
 import MessageTitle from "./MessageTitle.vue";
-import Collapser from "./Collapser.vue";
+import Collapser from "../Collapser/Collapser.vue";
 import MessageLink from "./MessageLink.vue";
-import CopyIcon from "../assets/img/icons/copy.svg";
-import { copyText } from "../../util/copyText";
+import CopyIcon from "@knime/styles/img/icons/copy.svg";
+import { copyText } from "@knime/utils";
 
 /**
  * Message banner component with close button
@@ -254,8 +254,7 @@ export default {
     display: flex;
     align-content: center;
     margin-top: 15px;
-    padding: 10px calc(3 * var(--grid-gap-width)) 5px
-      calc(3 * var(--grid-gap-width));
+    padding: 10px calc(3 * var(--grid-gap-width)) 5px;
     position: relative;
     left: calc((100% - 100vw) / 2);
 

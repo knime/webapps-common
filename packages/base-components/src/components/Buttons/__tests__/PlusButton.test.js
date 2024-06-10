@@ -3,8 +3,8 @@ import { shallowMount, mount } from "@vue/test-utils";
 
 import PlusButton from "../PlusButton.vue";
 import Button from "../Button.vue";
-import Tooltip from "../Tooltip.vue";
-import PlusIcon from "../../assets/img/icons/plus-small.svg";
+import Tooltip from "../../Tooltip/Tooltip.vue";
+import PlusIcon from "@knime/styles/img/icons/plus-small.svg";
 
 describe("PlusButton.vue", () => {
   it("renders plus button", () => {

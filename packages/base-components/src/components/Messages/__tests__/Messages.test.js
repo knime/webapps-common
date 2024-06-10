@@ -5,7 +5,7 @@ import { markRaw } from "vue";
 import Messages from "../Messages.vue";
 import MessageLink from "../MessageLink.vue";
 import Message from "../Message.vue";
-import SuccessIcon from "../../assets/img/icons/circle-check.svg";
+import SuccessIcon from "@knime/styles/img/icons/circle-check.svg";
 
 // TODO add test case for message.content prop
 

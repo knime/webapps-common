@@ -1,5 +1,5 @@
 <script>
-import CheckIcon from "../assets/img/icons/check.svg";
+import CheckIcon from "@knime/styles/img/icons/check.svg";
 
 export default {
   components: {

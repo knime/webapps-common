@@ -1,5 +1,5 @@
 <script>
-import { resolveNuxtLinkComponent } from "../util/nuxtComponentResolver";
+import { resolveNuxtLinkComponent } from "@knime/utils";
 
 /**
  * Link component for use in the Message component. Minimally styled to allow reuse in the body

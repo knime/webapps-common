@@ -1,5 +1,5 @@
 <script>
-import Button from "../Button/Button.vue";
+import Button from "../Buttons/Button.vue";
 import DownIcon from "@knime/styles/img/icons/circle-arrow-down.svg";
 import { resolveClientOnlyComponent } from "@knime/utils";
 

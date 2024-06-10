@@ -2,10 +2,10 @@ import { describe, it, expect } from "vitest";
 import { shallowMount } from "@vue/test-utils";
 import { markRaw } from "vue";
 
-import TabBar from "../TabBar.vue";
-import WorkflowIcon from "../../assets/img/icons/workflow.svg";
-import NodeIcon from "../../assets/img/icons/node.svg";
-import Carousel from "../Carousel.vue";
+import TabBar from "./TabBar.vue";
+import WorkflowIcon from "@knime/styles/img/icons/workflow.svg";
+import NodeIcon from "@knime/styles/img/icons/node.svg";
+import Carousel from "../Carousel/Carousel.vue";
 
 describe("TabBar.vue", () => {
   let possibleValues = [

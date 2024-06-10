@@ -1,8 +1,8 @@
 <script>
 // @ts-ignore
-import packages from "../../buildtools/opensourcecredits/used-packages.json";
-import Description from "../components/Description.vue";
-import ArrowNextIcon from "../assets/img/icons/arrow-next.svg";
+import packages from "../../../buildtools/opensourcecredits/used-packages.json"; // TODO confirm this path
+import Description from "../Description/Description.vue";
+import ArrowNextIcon from "@knime/styles/img/icons/arrow-next.svg";
 
 /**
  * This component displays a list of npm packages to be used on a credits/licenses

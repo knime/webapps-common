@@ -3,7 +3,7 @@
 import { mount } from "@vue/test-utils";
 import { describe, it, expect, vi } from "vitest";
 
-import StyledListItem from "../StyledListItem.vue";
+import StyledListItem from "./StyledListItem.vue";
 
 vi.useFakeTimers();
 

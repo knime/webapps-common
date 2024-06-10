@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeAll, vi } from "vitest";
 import { mount } from "@vue/test-utils";
 
-import OpenSourceCredits from "../OpenSourceCredits.vue";
-import Description from "../Description.vue";
+import OpenSourceCredits from "./OpenSourceCredits.vue";
+import Description from "../Description/Description.vue";
 
-vi.mock("../../buildtools/opensourcecredits/used-packages.json", () => ({
+vi.mock("../../../buildtools/opensourcecredits/used-packages.json", () => ({
   default: [
     {
       name: "a-package",

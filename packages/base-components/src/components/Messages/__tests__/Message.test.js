@@ -2,11 +2,11 @@ import { describe, it, expect, vi } from "vitest";
 import { shallowMount, mount } from "@vue/test-utils";
 
 import Message from "../Message.vue";
-import Button from "../Button.vue";
-import WarnIcon from "../../assets/img/icons/sign-warning.svg";
+import Button from "../../Buttons/Button.vue";
+import WarnIcon from "@knime/styles/img/icons/sign-warning.svg";
 
-import { copyText } from "../../../util/copyText";
-vi.mock("../../../util/copyText", () => ({
+import { copyText } from "@knime/utils";
+vi.mock("@knime/utils", () => ({
   copyText: vi.fn(),
 }));
 

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { shallowMount } from "@vue/test-utils";
 
-import SideDrawer from "../SideDrawer.vue";
+import SideDrawer from "./SideDrawer.vue";
 
 const assertExpandStatus = (wrapper, isExpanded) => {
   expect(wrapper.find(".side-drawer").exists()).toBe(isExpanded);
