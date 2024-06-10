@@ -139,7 +139,6 @@ export default {
   },
   emits: ["update:modelValue"],
   setup(props) {
-    const possibleValues = ref(props.possibleValues);
     const selectedValues = ref(props.modelValue);
     const searchTerm = ref(props.initialSearchTerm);
     const caseSensitiveSearch = ref(props.initialCaseSensitiveSearch);
@@ -147,14 +146,14 @@ export default {
     const possibleValueMap = computed(() => {
       return Object.assign(
         {},
-        ...possibleValues.value.map((obj: PossibleValue, index) => ({
+        ...props.possibleValues.map((obj: PossibleValue, index) => ({
           [obj.id]: { item: obj, index },
         })),
       ) as Record<Id, { item: PossibleValue; index: number }>;
     });
 
     const matchingValidIds = computed(() => {
-      return possibleValues.value.map(
+      return props.possibleValues.map(
         (possibleValue) =>
           possibleValueMap.value[possibleValue.id]?.item as PossibleValue,
       );
