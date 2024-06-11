@@ -2,7 +2,7 @@
 require("@rushstack/eslint-patch/modern-module-resolution");
 
 module.exports = {
-  extends: ["@knime/eslint-config/typescript", "@knime/eslint-config/base"],
+  extends: ["@knime/eslint-config/typescript", "@knime/eslint-config/vitest"],
   env: {
     node: true,
     browser: true,

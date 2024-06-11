@@ -3,6 +3,7 @@ import {
   BuildOptions,
   defineConfig,
   LibraryFormats,
+  PluginOption,
   TerserOptions,
 } from "vite";
 import dts from "vite-plugin-dts";
@@ -29,8 +30,16 @@ const terserOptions: Record<LibraryBuildTypes, TerserOptions> = {
 export default defineConfig(({ mode }) => {
   const formats: LibraryFormats[] = [];
   const buildOptions: BuildOptions = {};
+  const plugins: PluginOption[] = [];
   if (mode === "es") {
     formats.push("es");
+    plugins.push(
+      dts({
+        rollupTypes: true,
+        copyDtsFiles: true,
+        tsconfigPath: "tsconfig.app.json",
+      }),
+    );
   } else {
     formats.push("iife");
     buildOptions.minify = "terser";
@@ -38,13 +47,7 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
-    plugins: [
-      dts({
-        rollupTypes: mode === "es",
-        copyDtsFiles: mode === "es",
-        tsconfigPath: "tsconfig.app.json",
-      }),
-    ],
+    plugins,
     resolve: {
       alias: {
         "@": fileURLToPath(new URL("src/.", import.meta.url)),
@@ -61,6 +64,7 @@ export default defineConfig(({ mode }) => {
         },
         formats,
       },
+      emptyOutDir: false,
       ...buildOptions,
     },
   };

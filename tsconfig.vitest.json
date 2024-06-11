@@ -5,6 +5,7 @@
     "composite": true,
     "types": ["node"],
     "noEmit": true,
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.vitest.tsbuildinfo",
     "verbatimModuleSyntax": false,
     "esModuleInterop": true,
     "skipLibCheck": true

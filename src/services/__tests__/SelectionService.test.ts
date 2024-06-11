@@ -26,7 +26,7 @@ describe("SelectionService", () => {
   };
 
   describe("initialization", () => {
-    it("Creates selection service", () => {
+    it("creates selection service", () => {
       const { selectionService } = constructSelectionService(extensionConfig);
 
       expect(selectionService).toHaveProperty("add");
@@ -41,7 +41,7 @@ describe("SelectionService", () => {
   });
 
   describe("methods", () => {
-    it("Calls selection service add/remove/replace methods with correct params", async () => {
+    it("calls selection service add/remove/replace methods with correct params", async () => {
       const { selectionService, updateDataPointSelection } =
         constructSelectionService(extensionConfig);
 
@@ -82,7 +82,7 @@ describe("SelectionService", () => {
       selection: ["a", "c"],
     };
 
-    it("Adds callback to event with addOnSelectionChangeCallback", () => {
+    it("adds callback to event with addOnSelectionChangeCallback", () => {
       const { selectionService, dispatchPushEvent } =
         constructSelectionService(extensionConfig);
 
@@ -118,7 +118,7 @@ describe("SelectionService", () => {
       expect(callback).not.toHaveBeenCalledWith(testPayload);
     });
 
-    it("Removes event callback with removeOnSelectionChangeCallback", () => {
+    it("removes event callback with removeOnSelectionChangeCallback", () => {
       const { selectionService } = constructSelectionService(extensionConfig);
 
       const callback = () => {};

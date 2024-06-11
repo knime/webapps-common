@@ -36,20 +36,20 @@ describe("JsonDataService", () => {
   };
 
   describe("initialization", () => {
-    it("Creates data service", () => {
+    it("creates data service", () => {
       const { jsonDataService } = constructJsonDataService();
       expect(jsonDataService).toHaveProperty("initialData");
     });
   });
 
   describe("service.initialData", () => {
-    it("Fetches initialData if it's passed to constructor", async () => {
+    it("fetches initialData if it's passed to constructor", async () => {
       const { jsonDataService } = constructJsonDataService();
       const response = await jsonDataService.initialData();
       expect(response).toStrictEqual(extensionConfig.initialData.result);
     });
 
-    it("Fetches initialData via KnimeService", async () => {
+    it("fetches initialData via KnimeService", async () => {
       const localExtensionConfig = { ...extensionConfig };
       delete localExtensionConfig.initialData;
       const { jsonDataService, callNodeDataService } =
@@ -112,7 +112,7 @@ describe("JsonDataService", () => {
         constructJsonDataService(extensionConfig);
       callNodeDataService.mockResolvedValue({ result: { result: "" } });
       const response = await jsonDataService.data();
-      expect(response).toEqual("");
+      expect(response).toBe("");
     });
   });
 

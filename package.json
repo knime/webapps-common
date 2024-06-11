@@ -10,7 +10,7 @@
     "url": "https://bitbucket.org/KNIME/knime-ui-extension-service"
   },
   "scripts": {
-    "build": "npm run cleanDist && run-p type-check build:*",
+    "build": "npm-run-all cleanDist type-check --parallel build:* -l",
     "build:es": "vite build --mode es",
     "build:iifeMin": "vite build --mode iifeMin",
     "build:iifeDev": "vite build --mode iifeDev",
@@ -19,10 +19,10 @@
     "format:check": "prettier --cache --check .",
     "lint": "eslint --cache --fix --ext .ts .",
     "ci:lint": "eslint --cache --ext .ts,.vue -f json -o test-results/eslint.json",
-    "ci:lint-format": "run-p ci:lint format:check -c",
+    "ci:lint-format": "run-p ci:lint format:check -c -l",
     "cleanDist": "rimraf dist",
     "audit": "npm audit --omit=dev",
-    "test:unit": "vitest  --testTimeout=1000",
+    "test:unit": "vitest",
     "coverage": "vitest run --coverage",
     "coverage:watch": "npm run test:unit -- --coverage --watch",
     "prepare": "husky"
@@ -52,6 +52,7 @@
     "vitest": "1.6.0"
   },
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
