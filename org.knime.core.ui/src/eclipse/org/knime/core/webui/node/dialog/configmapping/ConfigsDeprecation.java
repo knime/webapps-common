@@ -53,7 +53,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.knime.core.node.util.CheckUtils;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 
@@ -114,9 +113,7 @@ public final class ConfigsDeprecation {
         private final List<ConfigPath> m_deprecatedConfigPaths = new ArrayList<>(0);
 
         /**
-         * Builder for {@link ConfigsDeprecation}. Use {@link #forDeprecatedConfigPath(String...)} and
-         * {@link #forNewConfigPath(String...)} at least one time each before building. See {@link ConfigsDeprecation}
-         * for more information.
+         * Builder for {@link ConfigsDeprecation}. See {@link ConfigsDeprecation} for more information.
          */
         public Builder() {
             // Builder
@@ -154,10 +151,6 @@ public final class ConfigsDeprecation {
          *         {@link FieldNodeSettingsPersistor#getConfigsDeprecations()}
          */
         public ConfigsDeprecation build() {
-            CheckUtils.check(!m_newConfigPaths.isEmpty(), RuntimeException::new,
-                () -> "No new config path was set. Use #withNewConfigPath.");
-            CheckUtils.check(!m_deprecatedConfigPaths.isEmpty(), RuntimeException::new,
-                () -> "No deprecated config path was set. Use #forDeprecatedConfigPath.");
             return new ConfigsDeprecation(m_newConfigPaths, m_deprecatedConfigPaths);
         }
 
