@@ -75,7 +75,7 @@ describe("ComboBox.vue", () => {
     expect(multiselectComponent.props("sizeVisibleOptions")).toBe(1);
   });
 
-  it("doesn't have reactive possible values", async () => {
+  it("has reactive possible values", async () => {
     const possibleValuesCopy = [...possibleValues];
     const wrapper = doMount({ possibleValues: possibleValuesCopy });
 
@@ -88,7 +88,9 @@ describe("ComboBox.vue", () => {
     await wrapper.setProps({
       possibleValues: [{ id: "newPossibleValue", text: "newPossibleValue" }],
     });
-    expect(wrapper.vm.allPossibleItems).toStrictEqual(possibleValues);
+    expect(wrapper.vm.allPossibleItems).toStrictEqual([
+      { id: "newPossibleValue", text: "newPossibleValue" },
+    ]);
   });
 
   describe("focussing", () => {

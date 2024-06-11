@@ -23,7 +23,6 @@ interface ComponentData {
    */
   focusElement: any; // TODO - remove any type. Multiselect is not properly typed so when this value is passed as a prop the type-checker errors out
   refocusElement: any; // TODO - remove any type. Multiselect is not properly typed so when this value is passed as a prop the type-checker errors out
-  allPossibleItems: Array<ComboBoxItem>;
 }
 
 type MultiselectRef = InstanceType<typeof Multiselect>;
@@ -104,11 +103,13 @@ export default defineComponent({
        */
       focusElement: null,
       refocusElement: null,
-      allPossibleItems: [...this.possibleValues],
     };
   },
 
   computed: {
+    allPossibleItems() {
+      return [...this.possibleValues];
+    },
     trimmedSearchValue() {
       return this.searchValue.trim();
     },
