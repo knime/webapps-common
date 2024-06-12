@@ -14,9 +14,13 @@ const codeExample = `<QuantityInput
 /* eslint-disable no-magic-numbers */
 const min = ref(-99);
 const max = ref(99);
-const inputValue1 = ref(3);
-const inputValue2 = ref(2);
+const inputValue1 = ref(2);
+const inputValue2 = ref(3);
 const inputValue3 = ref(5);
+const inputValue4 = ref(7);
+const step1 = ref(1);
+const step2 = ref(10);
+const step3 = ref(3);
 /* eslint-enable no-magic-numbers */
 </script>
 
@@ -44,35 +48,47 @@ const inputValue3 = ref(5);
       <div class="grid-container">
         <div class="grid-item-6">
           <div class="grid-container no-wrap">
-            <div class="grid-item-6">How many workflows</div>
+            <div class="grid-item-6">How many workflows (steps: 1)</div>
             <div class="grid-item-6">
               <QuantityInput
                 v-model="inputValue1"
                 :min="min"
                 :max="max"
-                :step="step"
+                :step="step1"
               />
             </div>
           </div>
           <div class="grid-container no-wrap">
-            <div class="grid-item-6">How many nodes</div>
+            <div class="grid-item-6">How many nodes (steps: 10)</div>
             <div class="grid-item-6">
               <QuantityInput
                 v-model="inputValue2"
                 :min="min"
                 :max="max"
-                :step="step"
+                :step="step2"
               />
             </div>
           </div>
           <div class="grid-container no-wrap">
-            <div class="grid-item-6">How many components</div>
+            <div class="grid-item-6">How many components (steps: 3)</div>
             <div class="grid-item-6">
               <QuantityInput
                 v-model="inputValue3"
                 :min="min"
                 :max="max"
-                :step="step"
+                :step="step3"
+              />
+            </div>
+          </div>
+          <div class="grid-container no-wrap">
+            <div class="grid-item-6">How many collections</div>
+            <div class="grid-item-6">
+              <QuantityInput
+                v-model="inputValue4"
+                :min="min"
+                :max="max"
+                :step="step1"
+                :disabled="true"
               />
             </div>
           </div>
