@@ -13,6 +13,7 @@ module.exports = {
     "Public Domain",
     "Zlib",
     "Unlicense",
+    "BlueOak-1.0.0",
   ],
 
   // e.g. 'nuxt@2.0.0'
@@ -24,8 +25,6 @@ module.exports = {
     "knime-pagebuilder@1.0.0",
     "cluster-key-slot@1.1.0", // recognized as Apache* but is actually Apache-2.0 license
     "argparse@2.0.1", // licensed under Python-2.0 but not included in the production app
-    "jackspeak@2.3.6", // licensed under BlueOak-1.0.0 but not included in the production app
-    "path-scurry@1.10.1", // licensed under BlueOak-1.0.0 but not included in the production app
     "@img/sharp-libvips-darwin-arm64@1.0.2", // licensed under LGPL-3.0, included in knime-hub-webapp without modifications and with attribution
     "@img/sharp-libvips-darwin-x64@1.0.2",
     "@img/sharp-libvips-linux-arm64@1.0.2",
