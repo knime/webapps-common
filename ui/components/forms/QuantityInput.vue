@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import FunctionButton from "../FunctionButton.vue";
-import { computed, ref, Ref, WritableComputedRef } from "vue";
+import { computed, ref, type Ref, type WritableComputedRef } from "vue";
 import PlusSmall from "../../assets/img/icons/plus-small.svg";
 import MinusSmall from "../../assets/img/icons/minus-small.svg";
 
