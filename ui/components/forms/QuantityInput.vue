@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import FunctionButton from "../FunctionButton.vue";
-import { computed, ref, type Ref, type WritableComputedRef } from "vue";
+import { computed, ref, type WritableComputedRef } from "vue";
 import PlusSmall from "../../assets/img/icons/plus-small.svg";
 import MinusSmall from "../../assets/img/icons/minus-small.svg";
 
@@ -23,7 +23,7 @@ const emit = defineEmits<{
   "update:modelValue": [value: number];
 }>();
 
-const numberField: Ref<null | HTMLInputElement> = ref(null);
+const numberField = ref<null | HTMLInputElement>(null);
 
 const inputVal: WritableComputedRef<number> = computed({
   get: () => props.modelValue,
