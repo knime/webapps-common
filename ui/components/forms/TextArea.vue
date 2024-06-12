@@ -77,6 +77,8 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
+@import url("../../css/mixins.css");
+
 div {
   position: relative;
   isolation: isolate;
@@ -115,14 +117,13 @@ div {
     }
 
     &:focus {
-      box-shadow: var(--theme-inset-focus-state);
-      border-color: var(--theme-default-focus-color);
+      @mixin focus-style;
     }
 
     &:focus + .invalid-marker {
-      left: 2px;
-      top: 2px;
-      bottom: 2px;
+      left: 1px;
+      top: 1px;
+      bottom: 1px;
     }
 
     &:hover:not(:focus, :disabled) {

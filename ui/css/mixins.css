@@ -13,3 +13,10 @@
 
   @mixin-content;
 }
+
+@define-mixin focus-style $focus-color: var(--theme-default-focus-color) {
+  outline: 1px solid $focus-color;
+  border-color: $focus-color;
+
+  @mixin-content;
+}

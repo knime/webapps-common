@@ -256,6 +256,7 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length);
 
 <style lang="postcss" scoped>
 @import url("./styles.css");
+@import url("../../../css/mixins.css");
 
 .editor-wrapper {
   --toolbar-height: 48px;
@@ -279,8 +280,7 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length);
 
   &:focus-within:not(.disabled),
   &:focus-within:not(.disabled).with-border {
-    box-shadow: 0 0 0 1px var(--theme-date-input-border-focus-color);
-    border-color: var(--theme-date-input-border-focus-color);
+    @mixin focus-style;
   }
 }
 

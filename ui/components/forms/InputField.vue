@@ -145,6 +145,8 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
+@import url("../../css/mixins.css");
+
 .input-wrapper {
   display: flex;
   align-items: center;
@@ -155,8 +157,7 @@ export default {
   padding: 0 5px;
 
   &:focus-within {
-    box-shadow: var(--theme-inset-focus-state);
-    border-color: var(--theme-default-focus-color);
+    @mixin focus-style;
   }
 
   & .icon {
@@ -244,8 +245,8 @@ input {
 }
 
 .input-wrapper:focus-within .invalid-marker {
-  left: calc(1 * var(--form-border-width));
-  top: calc(1 * var(--form-border-width));
-  height: calc(100% - 2 * var(--form-border-width));
+  left: 0;
+  top: 0;
+  bottom: 0;
 }
 </style>

@@ -248,7 +248,4 @@
 
   /* Focus State */
   --theme-default-focus-color: var(--knime-cornflower);
-  --theme-default-focus-state: 0 0 0 2px var(--theme-default-focus-color);
-  --theme-thin-focus-state: 0 0 0 1px var(--theme-default-focus-color);
-  --theme-inset-focus-state: inset 0 0 0 1px var(--theme-default-focus-color);
 }

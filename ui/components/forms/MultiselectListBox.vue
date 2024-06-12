@@ -637,6 +637,8 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
+@import url("../../css/mixins.css");
+
 .multiselect-list-box {
   position: relative; /* required by .invalid::after */
   isolation: isolate;
@@ -714,8 +716,7 @@ export default {
 
   &:focus-within:not(.disabled) {
     & .box {
-      box-shadow: var(--theme-thin-focus-state);
-      border-color: var(--theme-default-focus-color);
+      @mixin focus-style;
     }
 
     &.invalid::after {

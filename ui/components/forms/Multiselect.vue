@@ -356,6 +356,8 @@ export default {
 </template>
 
 <style scoped lang="postcss">
+@import url("../../css/mixins.css");
+
 .multiselect {
   position: relative;
   background-color: var(--knime-white);
@@ -372,8 +374,7 @@ export default {
       box-shadow: none;
 
       &:deep(input) {
-        box-shadow: none;
-        border: none;
+        outline: none;
       }
     }
   }
@@ -416,8 +417,7 @@ export default {
   }
 
   &:focus-within [role="button"] {
-    box-shadow: var(--theme-thin-focus-state);
-    border-color: var(--theme-default-focus-color);
+    @mixin focus-style;
   }
 
   &.collapsed:hover:not(:focus-within) {

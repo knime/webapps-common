@@ -65,6 +65,8 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
+@import url("../../css/mixins.css");
+
 /* if you consider removing this class: don't!
    selector specificity requires it for container system used in page-builder */
 .checkbox {
@@ -178,8 +180,10 @@ export default {
     }
 
     &:focus-visible {
-      outline: none;
-      box-shadow: var(--theme-default-focus-state);
+      @mixin focus-style {
+        outline-width: 2px;
+        outline-offset: 0;
+      }
     }
   }
 }

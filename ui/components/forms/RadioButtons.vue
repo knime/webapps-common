@@ -67,6 +67,8 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
+@import url("../../css/mixins.css");
+
 .radio-buttons :deep() {
   user-select: none;
 
@@ -164,8 +166,10 @@ export default {
 
 /* .radio-buttons:focus-within :deep(label input:not(:disabled) + span::before) { */
 .radio-buttons :deep(input:focus-visible) {
-  outline: none;
-  box-shadow: var(--theme-default-focus-state);
+  @mixin focus-style {
+    outline-width: 2px;
+    outline-offset: 0;
+  }
 }
 
 .horizontal :deep() {

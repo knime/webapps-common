@@ -65,6 +65,8 @@ export default defineComponent({
 </template>
 
 <style lang="postcss" scoped>
+@import url("../../css/mixins.css");
+
 .value-switch {
   --border-radius: 50px;
 
@@ -129,11 +131,11 @@ export default defineComponent({
     }
 
     & input:focus-visible + span {
-      border-radius: var(--border-radius);
-      outline: none;
-      box-shadow:
-        inset 0 0 0 2px var(--theme-default-focus-color),
-        inset 0 0 0 3px var(--theme-value-switch-background-color);
+      @mixin focus-style {
+        outline-offset: -2px;
+        outline-width: 2px;
+        border: 3px solid var(--theme-value-switch-background-color);
+      }
     }
   }
 }

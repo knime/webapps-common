@@ -332,6 +332,8 @@ export default defineComponent({
 </template>
 
 <style lang="postcss" scoped>
+@import url("../../css/mixins.css");
+
 .multiselect {
   & .summary-input-icon-wrapper {
     border: var(--form-border-width) solid var(--knime-stone-gray);
@@ -420,13 +422,11 @@ export default defineComponent({
 
   &:focus-within {
     & .summary-input-icon-wrapper {
-      box-shadow: var(--theme-inset-focus-state);
-      border-color: var(--theme-default-focus-color);
+      @mixin focus-style;
     }
 
     & :deep(.checkbox input) {
-      box-shadow: none;
-      border: none;
+      outline: none;
     }
   }
 }

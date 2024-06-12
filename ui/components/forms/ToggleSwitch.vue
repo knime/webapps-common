@@ -61,6 +61,8 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
+@import url("../../css/mixins.css");
+
 .toggle {
   display: inline-block;
   position: relative;
@@ -145,9 +147,10 @@ export default {
 
   &:focus-within {
     & input + span::before {
-      box-shadow:
-        0 0 0 3px var(--theme-toggle-switch-background-color),
-        0 0 0 5px var(--theme-default-focus-color);
+      @mixin focus-style {
+        outline-offset: 3px;
+        outline-width: 2px;
+      }
     }
   }
 
