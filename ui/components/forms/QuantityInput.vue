@@ -1,37 +1,32 @@
-<script setup>
+<script lang="ts" setup>
+import FunctionButton from "../FunctionButton.vue";
+import { computed, ref, Ref, WritableComputedRef } from "vue";
 import PlusSmall from "../../assets/img/icons/plus-small.svg";
 import MinusSmall from "../../assets/img/icons/minus-small.svg";
-import FunctionButton from "../FunctionButton.vue";
-import { computed, ref } from "vue";
 
-const props = defineProps({
-  modelValue: {
-    type: Number,
-    required: true,
-  },
-  step: {
-    type: Number,
-    default: 1,
-  },
-  min: {
-    type: Number,
-    default: -Infinity,
-  },
-  max: {
-    type: Number,
-    default: Infinity,
-  },
-  disabled: {
-    type: Boolean,
-    default: false,
-  },
+type Props = {
+  modelValue: number;
+  step?: number;
+  min?: number;
+  max?: number;
+  disabled?: boolean;
+};
+
+const props = withDefaults(defineProps<Props>(), {
+  step: 1,
+  min: -Infinity,
+  max: Infinity,
+  disabled: false,
 });
 
-const emit = defineEmits(["update:modelValue"]);
-const numberField = ref(null);
+const emit = defineEmits<{
+  "update:modelValue": [value: number];
+}>();
 
-const inputVal = computed({
-  get: () => parseInt(props.modelValue, 10),
+const numberField: Ref<null | HTMLInputElement> = ref(null);
+
+const inputVal: WritableComputedRef<number> = computed({
+  get: () => props.modelValue,
   set: (val) => {
     const number = Math.min(Math.max(val, props.min), props.max);
     emit("update:modelValue", number);
@@ -39,13 +34,13 @@ const inputVal = computed({
 });
 
 const onIncrease = () => {
-  numberField.value.stepUp();
-  inputVal.value = parseInt(numberField.value.value, 10);
+  numberField.value!.stepUp();
+  inputVal.value = parseInt(numberField.value!.value, 10);
 };
 
 const onDecrease = () => {
-  numberField.value.stepDown();
-  inputVal.value = parseInt(numberField.value.value, 10);
+  numberField.value!.stepDown();
+  inputVal.value = parseInt(numberField.value!.value, 10);
 };
 </script>
 
