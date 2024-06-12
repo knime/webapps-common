@@ -3,7 +3,8 @@
     "name": "Deprecated Flow Variables",
     "data": {
       "model": {
-        "settingWithDeprecatedFlowVariables": "I am old"
+        "settingWithDeprecatedFlowVariables": "I am old",
+        "settingWithMultipleDeprecatedFlowVariables": "I am also old"
       }
     },
     "schema": {
@@ -27,6 +28,22 @@
               "type": "string",
               "title": "Deprecated flow variables set",
               "description": "Icon + disabled + text and unset-buttons in popover"
+            },
+            "settingWithMultipleDeprecatedFlowVariables": {
+              "type": "string",
+              "title": "One data path, multiple persist paths",
+              "description": "One data path, multiple persist paths which deviate from the data path.",
+              "configKeys": ["one", "two"],
+              "deprecatedConfigKeys": [
+                {
+                  "new": [["one"]],
+                  "deprecated": [["i", "am", "also", "deprecated"]]
+                },
+                {
+                  "new": [["two"]],
+                  "deprecated": [["and", "i", "am", "too"]]
+                }
+              ]
             }
           }
         }
@@ -41,6 +58,10 @@
             {
               "type": "Control",
               "scope": "#/properties/model/properties/settingWithDeprecatedFlowVariables"
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/settingWithMultipleDeprecatedFlowVariables"
             }
           ]
         }
@@ -53,6 +74,13 @@
       },
       "model.me.too": {
         "exposedFlowVariableName": "oldVariable2"
+      },
+      "model.i.am.also.deprecated": {
+        "controllingFlowVariableAvailable": true,
+        "controllingFlowVariableName": "oldVariable3"
+      },
+      "model.and.i.am.too": {
+        "exposedFlowVariableName": "oldVariable4"
       }
     }
   }
