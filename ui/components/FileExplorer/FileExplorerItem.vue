@@ -18,13 +18,11 @@ interface Props {
   isSelected: boolean;
   isDragging: boolean;
   isRenameActive: boolean;
-  itemIconRenderer?: ItemIconRenderer | null;
   isDraggingEnabled?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  itemIconRenderer: null,
-  isDraggingDisabled: true,
+  isDraggingEnabled: true,
 });
 
 const defaultIconRenderer: ItemIconRenderer = (item) => {
@@ -125,7 +123,9 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
   >
     <template #icon>
       <span v-if="item.isOpen" class="open-indicator" />
-      <Component :is="(itemIconRenderer || defaultIconRenderer)(item)" />
+      <slot name="icon">
+        <Component :is="defaultIconRenderer(item)" />
+      </slot>
     </template>
 
     <td
@@ -136,26 +136,35 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
       }"
       :title="item.name"
     >
-      <span v-if="!isRenameActive">{{ item.name }}</span>
+      <template v-if="$slots.default">
+        <slot :is-rename-active="isRenameActive" :is-selected="isSelected" />
+      </template>
+
       <template v-else>
-        <OnClickOutside
-          @trigger="($event: any) => onRenameSubmit($event, true)"
-        >
-          <div>
-            <InputField
-              ref="renameInput"
-              v-model="renameValue"
-              class="rename-input"
-              type="text"
-              title="rename"
-              :is-valid="isValid"
-              @keydown.stop="onRenameSubmit($event)"
-            />
-            <div v-if="!isValid" class="item-error">
-              <span>{{ errorMessage }}</span>
+        <span v-if="!isRenameActive">
+          {{ item.name }}
+        </span>
+
+        <template v-else>
+          <OnClickOutside
+            @trigger="($event: any) => onRenameSubmit($event, true)"
+          >
+            <div>
+              <InputField
+                ref="renameInput"
+                v-model="renameValue"
+                class="rename-input"
+                type="text"
+                title="rename"
+                :is-valid="isValid"
+                @keydown.stop="onRenameSubmit($event)"
+              />
+              <div v-if="!isValid" class="item-error">
+                <span>{{ errorMessage }}</span>
+              </div>
             </div>
-          </div>
-        </OnClickOutside>
+          </OnClickOutside>
+        </template>
       </template>
     </td>
   </FileExplorerItemBase>

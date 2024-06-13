@@ -9,7 +9,6 @@ import FileExplorerItemBack from "./FileExplorerItemBack.vue";
 import type {
   FileExplorerItem as FileExplorerItemType,
   FileExplorerContextMenu as FileExplorerContextMenuNamespace,
-  ItemIconRenderer,
 } from "./types";
 import useClickOutside from "../../composables/useClickOutside";
 import useKeyPressedUntilMouseClick from "../../composables/useKeyPressedUntilMouseClick";
@@ -20,7 +19,7 @@ import { getMetaOrCtrlKey } from "../../../util/navigator";
  *
  * NOTE: Do not add store bindings to component to keep it as reusable as possible
  */
-export interface Props {
+interface Props {
   mode?: "normal" | "mini";
   /**
    * full path of the currently displayed directory. This is used to
@@ -29,18 +28,13 @@ export interface Props {
    */
   fullPath?: string;
   /**
-   * Determines whether the "back" item should be rendered or not
-   */
-  isRootFolder: boolean;
-  /**
    * List of items to be rendered for the displayed directory
    */
   items: Array<FileExplorerItemType>;
   /**
-   * This function can let you customize the icons that get rendered for each item
-   * displayed in the directory
+   * Determines whether the "back" item should be rendered or not
    */
-  itemIconRenderer?: ItemIconRenderer | null;
+  isRootFolder?: boolean;
   /**
    * Used to externally bind which item should be in the "rename" state.
    * This prop is not required but it's useful
@@ -55,6 +49,10 @@ export interface Props {
    * Disable multi-selection
    */
   disableMultiSelect?: boolean;
+  /**
+   * Disables selection completely. (Regardless of the value of the disableMultiSelect prop)
+   */
+  disableSelection?: boolean;
   /**
    * Disable dragging completely
    */
@@ -86,10 +84,11 @@ export interface Props {
 const props = withDefaults(defineProps<Props>(), {
   mode: "normal",
   fullPath: "",
-  itemIconRenderer: null,
+  isRootFolder: true,
   activeRenamedItemId: null,
   disableContextMenu: false,
   disableMultiSelect: false,
+  disableSelection: false,
   disableDragging: false,
   draggingAnimationMode: "auto",
   clickOutsideException: null,
@@ -97,8 +96,6 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const emit = defineEmits<{
-  /** @deprecated please use update:selectedItemIds */
-  (e: "changeSelection", selectedItemIds: Array<string>): void;
   (e: "update:selectedItemIds", selectedItemIds: Array<string>): void;
   (e: "changeDirectory", pathId: string): void;
   (e: "openFile", item: FileExplorerItemType): void;
@@ -141,6 +138,7 @@ const multiSelection = useFocusableMultiSelection({
   singleSelectionOnly: toRef(props, "disableMultiSelect"),
   numberOfItems: computed(() => props.items.length),
   startIndex: computed(() => (itemBack.value ? -1 : 0)),
+  disabled: props.disableSelection,
 });
 const {
   multiSelectionState,
@@ -162,8 +160,7 @@ const getItemElement = (index: number) => {
   return itemRefs.value[index]?.$el;
 };
 
-// handle selection of items via prop change
-watch(toRef(props, "selectedItemIds"), (itemIds) => {
+const selectItems = (itemIds: string[]) => {
   // look up item indices
   const itemIndices = itemIds
     .map((id) => props.items.findIndex((item) => item.id === id))
@@ -182,20 +179,27 @@ watch(toRef(props, "selectedItemIds"), (itemIds) => {
   const firstIndex = itemIndices.slice().sort().at(0) ?? -1; // NOSONAR
   const element = itemRefs.value[firstIndex]?.$el;
   element?.scrollIntoView({ behavior: "smooth", block: "center" });
-});
+};
+
+// handle selection of items via prop change
+watch(toRef(props, "selectedItemIds"), selectItems);
 
 watch(multiSelectionState, () => {
   const itemIds = selectedItems.value.map((item) => item.id);
-  emit("changeSelection", itemIds);
   emit("update:selectedItemIds", itemIds);
 });
 
-watch(toRef(props, "items"), (itemIds) => {
-  // reset selection and focus value if current focus is not possible anymore
-  if (focusedIndex.value >= itemIds.length) {
-    resetSelection(focusedIndex.value);
-  }
-});
+watch(
+  toRef(props, "items"),
+  (items) => {
+    // reset selection and focus value if current focus is not possible anymore
+    if (focusedIndex.value >= items.length) {
+      resetSelection(focusedIndex.value);
+    }
+    selectItems(props.selectedItemIds);
+  },
+  { immediate: true },
+);
 
 /** MULTISELECTION */
 
@@ -487,7 +491,6 @@ useClickOutside({
         :is-selected="isSelected(index)"
         :is-rename-active="item.id === renamedItemId"
         :blacklisted-names="blacklistedNames"
-        :item-icon-renderer="itemIconRenderer"
         :is-dragging-enabled="!disableDragging"
         @dragstart="onDragStart($event, index)"
         @dragenter="onDragEnter($event, index)"
@@ -505,10 +508,25 @@ useClickOutside({
         @keydown.enter.prevent="handleEnterKey($event, item)"
         @rename:submit="emit('renameFile', $event)"
         @rename:clear="renamedItemId = null"
-      />
+      >
+        <template v-if="$slots.itemIcon" #icon>
+          <slot name="itemIcon" :item="item" />
+        </template>
+
+        <template v-if="$slots.itemContent" #default="slotProps">
+          <slot
+            name="itemContent"
+            :item="item"
+            :is-rename-active="slotProps.isRenameActive"
+            :is-selected="slotProps.isSelected"
+          />
+        </template>
+      </FileExplorerItem>
 
       <tr v-if="items.length === 0" class="empty">
-        <td>Folder is empty</td>
+        <td>
+          <slot name="emptyFolder">Folder is empty</slot>
+        </td>
       </tr>
     </tbody>
 

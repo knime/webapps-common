@@ -300,97 +300,60 @@ const sliceOnExceptions = (
 };
 
 /**
- * Removes any ranges that could be included inside any other (bigger) existing range
- * inside the input.
+ * Normalizes a multiselection state into an array of selection ranges that:
+ * - **Excludes anchor exceptions**.
+ *    - Example:
+ *      Given a state with ranges: [(1-5), (7-10)], and anchorExceptions: [2, 8]
+ *      The output for this example should be these ranges: [(1-1), (3-5), (7-7), (9-10)]. Since they do not
+ *      include items 2 and 8.
  *
- * e.g: Given two ranges: (1-6) and (2-4), the latter would be "included" in the first one
- */
-const removeSubRanges = (
-  ranges: Array<SelectionRange>,
-): Array<SelectionRange> =>
-  ranges.reduce((acc, range, _, arr) => {
-    const isIncluded = arr.find((subRange) => {
-      const isContained = subRange.from < range.from && range.to < subRange.to;
-      const hasSameStart =
-        subRange.from <= range.from && range.to < subRange.to;
-      const hasSameEnd = subRange.from < range.from && range.to <= subRange.to;
-
-      return isContained || hasSameStart || hasSameEnd;
-    });
-
-    return isIncluded ? acc : acc.concat(range);
-  }, [] as SelectionRange[]);
-
-/**
- * Removes any ranges that could be overlapping inside the input joining them as required.
+ * - **Has no overlapping ranges**.
+ *    - Example:
+ *      Given two ranges: (4-7) and (1-6), the latter would be "overlapping" (the left side) of the first one.
+ *      The correct output range for this example should be just the range (1-7)
  *
- * e.g - 1: Given two ranges: (4-7) and (1-6), the latter would be "overlapping" (the left side) of the first one
- *      The correct output range for this example should be: (1-7)
- *
- * e.g - 2: Given two ranges: (1-5) and (4-9), the latter would be "overlapping" (the right side) of the first one
- *      The correct output range for this example should be: (1-9)
- *
- * @returns contiguous ranges without overlap
- */
-const removeOverlappingRanges = (
-  ranges: Array<SelectionRange>,
-): Array<SelectionRange> => {
-  if (ranges.length <= 1) {
-    return ranges;
-  }
-
-  // eslint-disable-next-line prefer-const
-  let [firstRange, ...sortedRanges] = ranges
-    .slice()
-    .sort((a, b) => a.from - b.from);
-  let latestTo = firstRange.to;
-  let resultingRanges = [firstRange];
-
-  while (sortedRanges.length) {
-    const [currentRange] = sortedRanges;
-
-    // if currentRange is beyond the most recent one then simply remove it from the
-    // sorted array and add it to the resultingRanges
-    if (currentRange.from > latestTo) {
-      resultingRanges.push(currentRange);
-      sortedRanges = sortedRanges.slice(1);
-      continue;
-    }
-
-    // when range overlaps
-    const isOverlapping =
-      currentRange.from <= latestTo && currentRange.to > latestTo;
-
-    if (isOverlapping) {
-      // (1) grab the last range in the resultingRanges
-      const [lastRange] = resultingRanges.slice(-1);
-      // (2) increase the `to` value to match that of the currentRange
-      const nextRange = { from: lastRange.from, to: currentRange.to };
-      // (3) update the reference cursor
-      latestTo = currentRange.to;
-      // (4) replace the last item in the resultingRanges with the updated `nextRange`
-      resultingRanges = resultingRanges.slice(0, -1).concat(nextRange);
-      // (5) remove the range from the sorted ranges since we just finished checking it
-      sortedRanges = sortedRanges.slice(1);
-    }
-  }
-
-  return resultingRanges;
-};
-
-/**
- * Normalizes a multiselection state into an array of selection ranges that contain:
- * - no repeated ranges
- * - no overlapping ranges
- * - no subranges
+ * - **Has no subranges**.
+ *    - Example:
+ *      Given two ranges: (1-6) and (2-4), the latter would be "included" in the first one.
+ *      The correct output range for this example should be just the range (1-6)
  */
 export const normalizeRanges = (
   state: MultiSelectionState,
 ): Array<SelectionRange> => {
   const slicedByExceptions = sliceOnExceptions(state);
-  const withoutSubRanges = removeSubRanges(slicedByExceptions);
-  const withoutOverlap = removeOverlappingRanges(withoutSubRanges);
-  return withoutOverlap;
+
+  if (slicedByExceptions.length === 0) {
+    return [];
+  }
+
+  // Sort the ranges by the 'from' value, and by the 'to' value in case of a tie
+  const sortedRanges = slicedByExceptions.sort((a, b) => {
+    if (a.from === b.from) {
+      return a.to - b.to;
+    }
+    return a.from - b.from;
+  });
+
+  const mergedRanges: SelectionRange[] = [];
+  let currentRange = sortedRanges[0];
+
+  for (let i = 1; i < sortedRanges.length; i++) {
+    const nextRange = sortedRanges[i];
+    if (nextRange.from <= currentRange.to) {
+      // There is overlap
+      // Extend the current range to include the next range
+      currentRange.to = Math.max(currentRange.to, nextRange.to);
+    } else {
+      // No overlap, add the current range to the merged list and update the current range
+      mergedRanges.push(currentRange);
+      currentRange = nextRange;
+    }
+  }
+
+  // Add the last range
+  mergedRanges.push(currentRange);
+
+  return mergedRanges;
 };
 
 /**

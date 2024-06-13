@@ -3,12 +3,10 @@ import * as Vue from "vue";
 import { expect, describe, beforeEach, it, vi, beforeAll } from "vitest";
 import { DOMWrapper, mount, VueWrapper } from "@vue/test-utils";
 
+import FileTextIcon from "../../../assets/img/icons/file-text.svg";
 import FolderIcon from "../../../assets/img/icons/folder.svg";
-import WorkflowIcon from "../../../assets/img/icons/workflow.svg";
-import ComponentIcon from "../../../assets/img/icons/node-workflow.svg";
-import MetaNodeIcon from "../../../assets/img/icons/workflow-node-stack.svg";
 
-import FileExplorer, { type Props } from "../FileExplorer.vue";
+import FileExplorer from "../FileExplorer.vue";
 import FileExplorerItemComp from "../FileExplorerItem.vue";
 import FileExplorerContextMenu from "../FileExplorerContextMenu.vue";
 import type { FileExplorerItem } from "../types";
@@ -23,6 +21,8 @@ vi.mock("gsap", () => ({
     killTweensOf: vi.fn(),
   },
 }));
+
+type Props = InstanceType<typeof FileExplorer>["$props"];
 
 describe("FileExplorer.vue", () => {
   const MOCK_DATA: Array<FileExplorerItem> = [
@@ -100,22 +100,9 @@ describe("FileExplorer.vue", () => {
     },
   ];
 
-  const itemIconRenderer = (item: FileExplorerItem) => {
-    const typeIcons = {
-      Folder: FolderIcon,
-      Workflow: WorkflowIcon,
-      Component: ComponentIcon,
-      Metanode: MetaNodeIcon,
-    };
-
-    return item.meta?.type
-      ? typeIcons[item.meta?.type as keyof typeof typeIcons]
-      : typeIcons.Workflow;
-  };
-
   type DoMountOptions = {
     props?: Props | {};
-    customSlots?: { contextMenu: any };
+    customSlots?: { contextMenu?: any; itemIcon?: any; itemContent?: any };
   };
 
   const scrollIntoView = vi.fn();
@@ -124,26 +111,29 @@ describe("FileExplorer.vue", () => {
     HTMLElement.prototype.scrollIntoView = scrollIntoView;
   });
 
+  const valueOrEmpty = <T>(input: T, key: keyof typeof input) =>
+    input[key] ? { [key]: input[key] } : {};
+
   const doMount = ({
     props = {},
     customSlots = {
       contextMenu: null,
+      itemIcon: null,
+      itemContent: null,
     },
   }: DoMountOptions = {}) => {
     const defaultProps: Props = {
       items: MOCK_DATA,
       isRootFolder: true,
       mode: "normal",
-      itemIconRenderer,
       activeRenamedItemId: "",
       draggingAnimationMode: "manual",
     };
 
     const slots = {
-      // eslint-disable-next-line @typescript-eslint/no-extra-parens
-      ...(customSlots.contextMenu
-        ? { contextMenu: customSlots.contextMenu }
-        : {}),
+      ...valueOrEmpty(customSlots, "contextMenu"),
+      ...valueOrEmpty(customSlots, "itemIcon"),
+      ...valueOrEmpty(customSlots, "itemContent"),
     };
 
     vi.stubGlobal("IntersectionObserver", MockIntersectionObserver);
@@ -159,19 +149,6 @@ describe("FileExplorer.vue", () => {
   const getRenderedItems = (_wrapper: VueWrapper<any>) =>
     _wrapper.findAll('[data-test-id="file-explorer-item"]');
 
-  it("should display all files and directories correctly", () => {
-    const { wrapper } = doMount();
-
-    const allItems = getRenderedItems(wrapper);
-
-    expect(allItems.length).toBe(MOCK_DATA.length);
-
-    allItems.forEach((item, index) => {
-      const icon = itemIconRenderer(MOCK_DATA.at(index)!);
-      expect(wrapper.findComponent(icon).exists()).toBe(true);
-    });
-  });
-
   it("should only allow navigating into directories", () => {
     const { wrapper } = doMount();
 
@@ -185,6 +162,37 @@ describe("FileExplorer.vue", () => {
     allItems.at(3)?.trigger("dblclick");
     expect(wrapper.emitted("changeDirectory")?.[1]).toBeUndefined();
   });
+
+  type SlotNames = keyof Required<Required<DoMountOptions>["customSlots"]>;
+
+  const doMountCustomWithSlots = ({
+    slotName,
+    props,
+  }: {
+    slotName: SlotNames;
+    props?: Props;
+  }) => {
+    const slottedComponentTemplate = `<div
+        id="slotted-component"
+        v-bind="scope"
+      ></div>`;
+
+    const { renderSlot, getSlottedChildComponent, getSlottedStubProp } =
+      createSlottedChildComponent({
+        slottedComponentTemplate,
+      });
+
+    const mountResults = doMount({
+      props,
+      customSlots: { [slotName]: renderSlot },
+    });
+
+    return {
+      ...mountResults,
+      getSlottedChildComponent,
+      getSlottedStubProp,
+    };
+  };
 
   it("should navigate back to parent", () => {
     const { wrapper } = doMount({ props: { isRootFolder: false } });
@@ -212,49 +220,58 @@ describe("FileExplorer.vue", () => {
   });
 
   describe("selection", () => {
-    it.each(["update:selectedItemIds", "changeSelection"])(
-      "should select items and emit '%s' for selected ones",
-      async (eventName) => {
-        const { wrapper } = doMount();
-        await getRenderedItems(wrapper).at(1)?.trigger("click");
-        await getRenderedItems(wrapper)
-          .at(3)
-          ?.trigger("click", { shiftKey: true });
-        await getRenderedItems(wrapper)
-          .at(5)
-          ?.trigger("click", { ctrlKey: true });
+    it("should select items and emit 'update:selectedItemIds' for selected ones", async () => {
+      const { wrapper } = doMount();
+      await getRenderedItems(wrapper).at(1)?.trigger("click");
+      await getRenderedItems(wrapper)
+        .at(3)
+        ?.trigger("click", { shiftKey: true });
+      await getRenderedItems(wrapper)
+        .at(5)
+        ?.trigger("click", { ctrlKey: true });
 
-        expect(getRenderedItems(wrapper).at(1)?.classes()).toContain(
-          "selected",
-        );
-        expect(getRenderedItems(wrapper).at(2)?.classes()).toContain(
-          "selected",
-        );
-        expect(getRenderedItems(wrapper).at(3)?.classes()).toContain(
-          "selected",
-        );
-        expect(getRenderedItems(wrapper).at(5)?.classes()).toContain(
-          "selected",
-        );
+      expect(getRenderedItems(wrapper).at(1)?.classes()).toContain("selected");
+      expect(getRenderedItems(wrapper).at(2)?.classes()).toContain("selected");
+      expect(getRenderedItems(wrapper).at(3)?.classes()).toContain("selected");
+      expect(getRenderedItems(wrapper).at(5)?.classes()).toContain("selected");
 
-        expect(wrapper.emitted(eventName)?.[0][0]).toEqual(["1"]);
-        expect(wrapper.emitted(eventName)?.[1][0]).toEqual(["1", "2", "3"]);
-        expect(wrapper.emitted(eventName)?.[2][0]).toEqual([
-          "1",
-          "2",
-          "3",
-          "5",
-        ]);
-      },
-    );
+      expect(wrapper.emitted("update:selectedItemIds")?.[0][0]).toEqual(["1"]);
+      expect(wrapper.emitted("update:selectedItemIds")?.[1][0]).toEqual([
+        "1",
+        "2",
+        "3",
+      ]);
+      expect(wrapper.emitted("update:selectedItemIds")?.[2][0]).toEqual([
+        "1",
+        "2",
+        "3",
+        "5",
+      ]);
+    });
 
-    it("should select items on prop change", async () => {
+    it("should select items on change of selectedItems prop", async () => {
       const { wrapper } = doMount({ props: { mode: "mini" } });
 
       await wrapper.setProps({ selectedItemIds: ["2", "3"] });
 
       expect(getRenderedItems(wrapper).at(2)?.classes()).toContain("selected");
       expect(getRenderedItems(wrapper).at(3)?.classes()).toContain("selected");
+      expect(scrollIntoView).toHaveBeenCalled();
+    });
+
+    it("should select items on change of items prop", async () => {
+      const { wrapper } = doMount({
+        props: { mode: "mini", selectedItemIds: ["6"] },
+      });
+
+      await wrapper.setProps({
+        items: [
+          ...MOCK_DATA,
+          { ...MOCK_DATA[0], id: "6", name: "Some new Folder" },
+        ],
+      });
+
+      expect(getRenderedItems(wrapper).at(6)?.classes()).toContain("selected");
       expect(scrollIntoView).toHaveBeenCalled();
     });
 
@@ -281,6 +298,33 @@ describe("FileExplorer.vue", () => {
         "selected",
       );
       expect(getRenderedItems(wrapper).at(5)?.classes()).toContain("selected");
+    });
+
+    it("should disable selection completely configuration", async () => {
+      const { wrapper } = doMount({
+        props: { disableSelection: true },
+      });
+
+      await getRenderedItems(wrapper).at(1)?.trigger("click");
+      await getRenderedItems(wrapper)
+        .at(3)
+        ?.trigger("click", { shiftKey: true });
+      await getRenderedItems(wrapper)
+        .at(5)
+        ?.trigger("click", { ctrlKey: true });
+
+      expect(getRenderedItems(wrapper).at(1)?.classes()).not.toContain(
+        "selected",
+      );
+      expect(getRenderedItems(wrapper).at(2)?.classes()).not.toContain(
+        "selected",
+      );
+      expect(getRenderedItems(wrapper).at(3)?.classes()).not.toContain(
+        "selected",
+      );
+      expect(getRenderedItems(wrapper).at(5)?.classes()).not.toContain(
+        "selected",
+      );
     });
   });
 
@@ -702,6 +746,50 @@ describe("FileExplorer.vue", () => {
     ).toBe(true);
   });
 
+  describe("slots", () => {
+    const itemIconRenderer = (item: FileExplorerItem) =>
+      item.isDirectory ? FolderIcon : FileTextIcon;
+
+    it("should display all files and directories correctly", () => {
+      const { wrapper } = doMount();
+
+      const allItems = getRenderedItems(wrapper);
+
+      expect(allItems.length).toBe(MOCK_DATA.length);
+
+      allItems.forEach((item, index) => {
+        const icon = itemIconRenderer(MOCK_DATA.at(index)!);
+        expect(wrapper.findComponent(icon).exists()).toBe(true);
+      });
+    });
+
+    it("should provide slot props for the `itemIcon` slot", () => {
+      const { wrapper, getSlottedStubProp } = doMountCustomWithSlots({
+        slotName: "itemIcon",
+      });
+
+      expect(getSlottedStubProp({ wrapper, propName: "item" })).toEqual(
+        MOCK_DATA.at(0),
+      );
+    });
+
+    it("should provide slot props for the `itemContent` slot", () => {
+      const { wrapper, getSlottedStubProp } = doMountCustomWithSlots({
+        slotName: "itemContent",
+      });
+
+      expect(getSlottedStubProp({ wrapper, propName: "item" })).toEqual(
+        MOCK_DATA.at(0),
+      );
+      expect(getSlottedStubProp({ wrapper, propName: "isRenameActive" })).toBe(
+        false,
+      );
+      expect(getSlottedStubProp({ wrapper, propName: "isSelected" })).toBe(
+        false,
+      );
+    });
+  });
+
   describe("context menu", () => {
     const openContextMenu = (
       _wrapper: VueWrapper<any>,
@@ -1016,38 +1104,19 @@ describe("FileExplorer.vue", () => {
     });
 
     describe("slot", () => {
-      const doMountCustomWithSlots = ({ props = {} } = {}) => {
-        const slottedComponentTemplate = `<div
-          id="slotted-component"
-          v-bind="scope"
-        ></div>`;
-
-        const { renderSlot, getSlottedChildComponent, getSlottedStubProp } =
-          createSlottedChildComponent({
-            slottedComponentTemplate,
-          });
-
-        const mountResults = doMount({
-          props,
-          customSlots: { contextMenu: renderSlot },
-        });
-
-        return {
-          ...mountResults,
-          getSlottedChildComponent,
-          getSlottedStubProp,
-        };
-      };
-
       it("should render a custom component on the contextmenu slot", async () => {
-        const { wrapper, getSlottedChildComponent } = doMountCustomWithSlots();
+        const { wrapper, getSlottedChildComponent } = doMountCustomWithSlots({
+          slotName: "contextMenu",
+        });
 
         await openContextMenu(wrapper, 0);
         expect(getSlottedChildComponent(wrapper).exists()).toBe(true);
       });
 
       it("should provide contextmenu-related values on the slot as props", async () => {
-        const { wrapper, getSlottedStubProp } = doMountCustomWithSlots();
+        const { wrapper, getSlottedStubProp } = doMountCustomWithSlots({
+          slotName: "contextMenu",
+        });
 
         const firstItem = getRenderedItems(wrapper).at(0)!;
         await openContextMenu(wrapper, 0, { clientX: 200, clientY: 200 });
@@ -1090,7 +1159,9 @@ describe("FileExplorer.vue", () => {
       ])(
         'should provide a "%s" function on the slot',
         async (expectedFunctionName, expectedReturnValue) => {
-          const { wrapper, getSlottedStubProp } = doMountCustomWithSlots();
+          const { wrapper, getSlottedStubProp } = doMountCustomWithSlots({
+            slotName: "contextMenu",
+          });
 
           await openContextMenu(wrapper, 0);
 
@@ -1112,6 +1183,7 @@ describe("FileExplorer.vue", () => {
         }));
 
         const { wrapper, getSlottedStubProp } = doMountCustomWithSlots({
+          slotName: "contextMenu",
           props: { items },
         });
 
@@ -1151,6 +1223,7 @@ describe("FileExplorer.vue", () => {
         }));
 
         const { wrapper, getSlottedStubProp } = doMountCustomWithSlots({
+          slotName: "contextMenu",
           props: { items },
         });
 
@@ -1170,7 +1243,9 @@ describe("FileExplorer.vue", () => {
       ])(
         "should allow sending custom values to the default options",
         async (createOptionFnName, baseValue) => {
-          const { wrapper, getSlottedStubProp } = doMountCustomWithSlots();
+          const { wrapper, getSlottedStubProp } = doMountCustomWithSlots({
+            slotName: "contextMenu",
+          });
 
           await openContextMenu(wrapper, 0);
           const getOptionFn = getSlottedStubProp({
@@ -1192,7 +1267,9 @@ describe("FileExplorer.vue", () => {
       );
 
       it('should expose an "onItemClick" function on the slot', async () => {
-        const { wrapper, getSlottedStubProp } = doMountCustomWithSlots();
+        const { wrapper, getSlottedStubProp } = doMountCustomWithSlots({
+          slotName: "contextMenu",
+        });
 
         await openContextMenu(wrapper, 0);
         const onItemClick = getSlottedStubProp({

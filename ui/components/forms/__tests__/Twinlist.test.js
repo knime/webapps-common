@@ -163,6 +163,30 @@ describe("Twinlist.vue", () => {
     expect(wrapper.vm.validate().isValid).toBe(true);
   });
 
+  it("has reactive possible values", async () => {
+    const wrapper = mount(Twinlist, {
+      props: {
+        possibleValues: defaultPossibleValues,
+        leftLabel: "Choose",
+        rightLabel: "The value",
+      },
+    });
+    expect(wrapper.vm.possibleValueIds).toStrictEqual([
+      "test1",
+      "test2",
+      "test3",
+    ]);
+    await wrapper.setProps({
+      possibleValues: [
+        {
+          id: "test4",
+          text: "Text 4",
+        },
+      ],
+    });
+    expect(wrapper.vm.possibleValueIds).toStrictEqual(["test4"]);
+  });
+
   it("keeps valid state but removes invalid chosen values on possible values change", async () => {
     let props = {
       possibleValues: [
