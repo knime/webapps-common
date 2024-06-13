@@ -63,6 +63,7 @@ export default defineComponent({
         <slot name="icon" />
       </span>
       <h2>{{ title }}</h2>
+      <slot name="titleAppend" />
       <FunctionButton class="closer" @click="onCloserClick">
         <CloseIcon />
       </FunctionButton>
