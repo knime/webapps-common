@@ -187,7 +187,6 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
 
         @Override
         public ConfigMappings getConfigMappings(final S[] array) {
-            m_persistors.get(0).getConfigMappings(array[0]);
             ensureEnoughPersistors(array.length);
             return new ConfigMappings(m_configKey, IntStream.range(0, array.length)
                 .mapToObj(i -> m_persistors.get(i).getConfigMappings(array[i])).toList());
