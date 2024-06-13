@@ -46,7 +46,7 @@
     "gsap": "3.12.2",
     "lodash-es": "4.17.21",
     "modern-normalize": "1.1.0",
-    "v-calendar": "3.0.0-alpha.8"
+    "v-calendar": "3.1.2"
   },
   "devDependencies": {
     "@knime/eslint-config": "8.0.11",
