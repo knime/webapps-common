@@ -32,7 +32,7 @@
     "uuid": "9.0.1"
   },
   "devDependencies": {
-    "@knime/eslint-config": "8.0.14",
+    "@knime/eslint-config": "8.1.0",
     "@tsconfig/node20": "20.1.2",
     "@types/color-convert": "2.0.3",
     "@types/uuid": "9.0.8",
