@@ -33,7 +33,7 @@ export default defineComponent({
 </template>
 
 <style lang="postcss" scoped>
-@import url("../../css/mixins.css");
+@import url("@knime/styles/css/mixins.css");
 
 .file-explorer-item-base {
   --icon-size: 18;

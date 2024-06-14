@@ -1,7 +1,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 
-import ArrowIcon from "../../assets/img/icons/arrow-back.svg";
+import ArrowIcon from "@knime/styles/img/icons/arrow-back.svg";
 
 import FileExplorerItemBase from "./FileExplorerItemBase.vue";
 

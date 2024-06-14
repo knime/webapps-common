@@ -1,6 +1,6 @@
 import { gsap } from "gsap";
 // @ts-ignore
-import * as knimeColors from "../../colors/knimeColors.mjs";
+import * as knimeColors from "@knime/styles/colors/knimeColors.mjs";
 
 const COLORS = {
   dragGhostContainer: {
