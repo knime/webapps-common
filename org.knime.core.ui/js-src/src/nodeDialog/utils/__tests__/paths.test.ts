@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getConfigPaths, getDataPaths } from "../paths";
+import { getConfigPaths, getDataPaths, getLongestCommonPrefix } from "../paths";
 import Control from "@/nodeDialog/types/Control";
 
 describe("paths", () => {
@@ -220,6 +220,32 @@ describe("paths", () => {
           ],
         },
       ]);
+    });
+  });
+
+  describe("longest common prefixes", () => {
+    it("determines longest common prefix for empty path array", () => {
+      expect(getLongestCommonPrefix([])).toBe("");
+    });
+
+    it("determines longest common prefix", () => {
+      const path = "my.path";
+      const dataPaths = getDataPaths({
+        path,
+        subConfigKeys: [],
+      });
+      const prefix = getLongestCommonPrefix(dataPaths);
+      expect(prefix).toBe("my.path");
+    });
+
+    it("determines longest common prefix with subConfigKeys", () => {
+      const path = "my.path";
+      const dataPaths = getDataPaths({
+        path,
+        subConfigKeys: ["one.two", "one.three"],
+      });
+      const prefix = getLongestCommonPrefix(dataPaths);
+      expect(prefix).toBe("my.path.one.");
     });
   });
 });
