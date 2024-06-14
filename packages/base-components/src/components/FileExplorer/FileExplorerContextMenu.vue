@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, toRefs, watch } from "vue";
 
-import type { MenuItem as BaseMenuItem } from "../MenuItems.vue";
-import MenuItems from "../MenuItems.vue";
+import type { MenuItem as BaseMenuItem } from "../base/MenuItem/MenuItems.vue";
+import MenuItems from "../base/MenuItem/MenuItems.vue";
 import { useFloating, autoUpdate, offset } from "@floating-ui/vue";
 
 import type { FileExplorerItem, FileExplorerContextMenu } from "./types";

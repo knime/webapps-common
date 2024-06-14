@@ -3,10 +3,10 @@ import * as Vue from "vue";
 import { expect, describe, beforeEach, it, vi, beforeAll } from "vitest";
 import { DOMWrapper, mount, VueWrapper } from "@vue/test-utils";
 
-import FolderIcon from "../../../assets/img/icons/folder.svg";
-import WorkflowIcon from "../../../assets/img/icons/workflow.svg";
-import ComponentIcon from "../../../assets/img/icons/node-workflow.svg";
-import MetaNodeIcon from "../../../assets/img/icons/workflow-node-stack.svg";
+import FolderIcon from "@knime/styles/img/icons/folder.svg";
+import WorkflowIcon from "@knime/styles/img/icons/workflow.svg";
+import ComponentIcon from "@knime/styles/img/icons/node-workflow.svg";
+import MetaNodeIcon from "@knime/styles/img/icons/workflow-node-stack.svg";
 
 import FileExplorer, { type Props } from "../FileExplorer.vue";
 import FileExplorerItemComp from "../FileExplorerItem.vue";

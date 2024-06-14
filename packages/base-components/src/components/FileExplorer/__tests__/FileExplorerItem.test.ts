@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { mount } from "@vue/test-utils";
 
-import InputField from "../../forms/InputField.vue";
+import InputField from "../../forms/inputs/InputField.vue";
 
 import FileExplorerItemComponent from "../FileExplorerItem.vue";
 import FileExplorerItemBase from "../FileExplorerItemBase.vue";
