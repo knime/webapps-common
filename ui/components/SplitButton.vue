@@ -73,6 +73,11 @@
         stroke: var(--theme-button-split-foreground-color);
       }
     }
+
+    &.disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
   }
 }
 </style>
