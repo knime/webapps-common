@@ -21,6 +21,7 @@ export const useTriggersReexecution = (control: Ref<Control>) => {
 
 export interface DialogControl<T = any> {
   onChange: (newValue: T) => void;
+  handleChange: (path: string, value: any) => Promise<void>;
   flowSettings: Ref<null | FlowSettings>;
   control: Ref<Control>;
   disabled: Ref<boolean>;
