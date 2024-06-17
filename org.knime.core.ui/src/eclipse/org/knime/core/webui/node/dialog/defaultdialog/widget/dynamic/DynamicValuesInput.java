@@ -89,47 +89,55 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 /**
+ * A settings class for a "dynamic widget" where the concrete input widget(s) depend on the selected data type.
  *
  * @author Paul Bärnreuther
  * @author Manuel Hotz, KNIME GmbH, Konstanz, Germany
  */
 public class DynamicValuesInput implements PersistableSettings {
 
-    public DynamicValuesInput() {
-        m_values = new DynamicValue[]{//
-            new DynamicValue(StringCell.TYPE), //
-            new DynamicValue(DoubleCell.TYPE), //
-            new DynamicValue(IntCell.TYPE), //
-            new DynamicValue(BooleanCell.TYPE),//
-                //new DynamicValue(IntervalCell.TYPE)// currently breaks things, since we have no validation on dialog close
-        };
-        m_inputKind = InputKind.Single;
-    }
-
-    public DynamicValuesInput(final DataType singleValue) {
-        m_values = new DynamicValue[]{new DynamicValue(singleValue)};
-        m_inputKind = InputKind.Single;
-    }
-
-    public DynamicValuesInput(final DataCell singleValue) {
-        m_values = new DynamicValue[]{new DynamicValue(singleValue, null)};
-        m_inputKind = InputKind.Single;
-    }
-
-    public static DynamicValuesInput emptySingle() {
-        final var result = new DynamicValuesInput();
-        result.m_values = new DynamicValue[]{};
-        result.m_inputKind = InputKind.Single;
-        return result;
-    }
-
     static Map<String, DataType> knownDataTypes = new ConcurrentHashMap<>();
 
     DynamicValue[] m_values;
 
-    String m_valueType;
-
     InputKind m_inputKind;
+
+    /**
+     * Needed for schema generation.
+     */
+    DynamicValuesInput() {
+    }
+
+    private DynamicValuesInput(final DynamicValue[] values, final InputKind kind) {
+        m_values = values;
+        m_inputKind = kind;
+    }
+
+    /**
+     * Constructor for a single input value, given the data type of the value.
+     * @param singleValueType type of the single value
+     */
+    public DynamicValuesInput(final DataType singleValueType) {
+        this(new DynamicValue[]{new DynamicValue(singleValueType)}, InputKind.Single);
+    }
+
+    /**
+     * Constructor for a single input value, given a data cell that specifies the data type and an initial value.
+     * @param singleValue data type and initial value
+     */
+    public DynamicValuesInput(final DataCell singleValue) {
+        this(new DynamicValue[]{new DynamicValue(singleValue, null)}, InputKind.Single);
+    }
+
+    /**
+     * Creates an empty input, i.e. an input that does not actually have a concrete input widget.
+     * Used for boolean operators {@code IS_TRUE} and {@code IS_FALSE}, that don't need an input value.
+     *
+     * @return new input
+     */
+    public static DynamicValuesInput emptySingle() {
+        return new DynamicValuesInput(new DynamicValue[]{}, InputKind.Single);
+    }
 
     enum InputKind {
             Single, Double, Collection
@@ -139,6 +147,12 @@ public class DynamicValuesInput implements PersistableSettings {
         static Map<String, Class<? extends DefaultNodeSettings>> modifierClasses = new HashMap<>();
     }
 
+    /**
+     * The actual dynamic value.
+     *
+     * @author Paul Bärnreuther
+     * @author Manuel Hotz, KNIME GmbH, Konstanz, Germany
+     */
     @Persistor(DynamicValue.Persistor.class)
     public static class DynamicValue implements PersistableSettings {
 
@@ -473,5 +487,17 @@ public class DynamicValuesInput implements PersistableSettings {
             }
         }
         return true;
+    }
+
+    // can be used for testing
+    static DynamicValuesInput testDummy() {
+        return new DynamicValuesInput(
+            new DynamicValue[]{//
+                new DynamicValue(StringCell.TYPE), //
+                new DynamicValue(DoubleCell.TYPE), //
+                new DynamicValue(IntCell.TYPE), //
+                new DynamicValue(BooleanCell.TYPE),//
+            //new DynamicValue(IntervalCell.TYPE)// currently breaks things, since we have no validation on dialog close
+            }, InputKind.Single);
     }
 }
