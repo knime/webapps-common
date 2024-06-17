@@ -84,6 +84,10 @@ export default {
       type: String,
       default: null,
     },
+    compact: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: [
     "clear",
@@ -157,6 +161,7 @@ export default {
     :aria-owns="ariaOwns"
     :aria-activedescendant="ariaActivedescendant"
     role="searchbox"
+    :compact="compact"
     @focus="$emit('focus', $event)"
     @update:model-value="$emit('update:modelValue', $event)"
   >
@@ -171,6 +176,7 @@ export default {
       <FunctionButton
         v-if="showClearButton"
         class="clear-search"
+        :compact="compact"
         :title="tooltipsWithDefaults.clear"
         @click="clearSearch"
       >
@@ -180,6 +186,7 @@ export default {
       <FunctionButton
         v-if="!disabled && showCaseSensitiveSearchButton"
         class="toggle-case-sensitive-search"
+        :compact="compact"
         :active="caseSensitiveSearch"
         :title="tooltipsWithDefaults.caseSensitive"
         @click="toggleCaseSensitiveSearch"
@@ -189,6 +196,7 @@ export default {
       <FunctionButton
         v-if="!disabled && showInverseSearchButton"
         class="toggle-inverse-search"
+        :compact="compact"
         :title="tooltipsWithDefaults.inverseSearch"
         :active="inverseSearch"
         @click="toggleInverseSearch"

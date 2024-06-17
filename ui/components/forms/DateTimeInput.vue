@@ -115,6 +115,10 @@ export default {
       default: false,
       type: Boolean,
     },
+    compact: {
+      default: false,
+      type: Boolean,
+    },
   },
   emits: ["update:modelValue"],
   data() {
@@ -333,7 +337,7 @@ export default {
 
 <template>
   <div class="date-time-input">
-    <div v-if="showDate" :class="['date-picker', { disabled }]">
+    <div v-if="showDate" :class="['date-picker', { disabled, compact }]">
       <Component :is="clientOnlyComponent">
         <DatePicker
           ref="datePicker"
@@ -375,11 +379,12 @@ export default {
       </Component>
       <span v-if="!isValid" class="invalid-marker" />
     </div>
-    <div v-if="showTime" :class="['time', { 'two-lines': twoLines }]">
+    <div v-if="showTime" :class="['time', { 'two-lines': twoLines, compact }]">
       <TimePartInput
         ref="hours"
         class="time-part"
         type="integer"
+        :compact="compact"
         :min="0"
         :max="23"
         :min-digits="2"
@@ -393,6 +398,7 @@ export default {
         ref="minutes"
         class="time-part"
         type="integer"
+        :compact="compact"
         :min="0"
         :max="59"
         :min-digits="2"
@@ -407,6 +413,7 @@ export default {
         ref="seconds"
         class="time-part"
         type="integer"
+        :compact="compact"
         :min="0"
         :max="59"
         :min-digits="2"
@@ -421,6 +428,7 @@ export default {
         ref="milliseconds"
         class="time-part"
         type="integer"
+        :compact="compact"
         :min="0"
         :max="999"
         :min-digits="3"
@@ -474,6 +482,22 @@ export default {
   & .date-picker {
     &.disabled {
       opacity: 0.5;
+    }
+
+    &.compact {
+      height: var(--single-line-form-height-compact);
+
+      & input {
+        height: calc(
+          var(--single-line-form-height-compact) - 2 * var(--form-border-width)
+        );
+      }
+
+      & .button {
+        height: calc(
+          var(--single-line-form-height-compact) - 2 * var(--form-border-width)
+        );
+      }
     }
 
     /* v-calendar theme
@@ -569,6 +593,7 @@ export default {
       border-color: var(--theme-date-input-border-focus-color);
     }
 
+    /* stylelint-disable-next-line no-descending-specificity */
     & input {
       font-size: 13px;
       font-weight: 300;
@@ -610,6 +635,7 @@ export default {
       background-color: var(--theme-color-error);
     }
 
+    /* stylelint-disable-next-line no-descending-specificity */
     & .button {
       position: absolute;
       z-index: 1;

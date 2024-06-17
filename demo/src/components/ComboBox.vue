@@ -102,6 +102,18 @@ export default {
         </div>
         <div class="grid-item-3">selected-ids: {{ selected[3] }}</div>
       </div>
+      <div class="grid-container">
+        <div class="grid-item-3">compact mode</div>
+        <div class="grid-item-6">
+          <ComboBox
+            v-model="selected[3]"
+            :possible-values="values"
+            close-dropdown-on-selection
+            compact
+          />
+        </div>
+        <div class="grid-item-3">selected-ids: {{ selected[3] }}</div>
+      </div>
     </section>
     <section>
       <div class="grid-container">

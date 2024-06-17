@@ -136,6 +136,10 @@ export default {
       required: false,
       default: "Unknown values",
     },
+    compact: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ["update:modelValue"],
   setup(props) {
@@ -308,6 +312,7 @@ export default {
       :initial-case-sensitive-search="initialCaseSensitiveSearch"
       show-case-sensitive-search-button
       :disabled="disabled"
+      :compact="compact"
       @update:model-value="onSearchInput"
       @toggle-case-sensitive-search="caseSensitiveSearch = $event"
     />

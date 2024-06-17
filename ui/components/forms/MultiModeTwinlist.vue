@@ -146,6 +146,10 @@ export default {
       type: Array as PropType<PossibleType[]>,
       default: () => [],
     },
+    compact: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: [
     // Prop updates
@@ -294,6 +298,7 @@ export default {
       <ValueSwitch
         :id="labelForId"
         ref="mode"
+        :compact="compact"
         :model-value="mode"
         :disabled="disabled"
         :possible-values="possibleModes"
@@ -321,6 +326,7 @@ export default {
         :tooltips="{
           inverseSearch: 'Move matching to other side',
         }"
+        :compact="compact"
         @update:model-value="onPatternInput"
         @toggle-case-sensitive-search="onToggleCaseSensitivePattern"
         @toggle-inverse-search="onToggleInversePattern"
@@ -350,6 +356,7 @@ export default {
       :show-search="mode === 'manual' && showSearch"
       :model-value="twinlistModelValue"
       :possible-values="possibleValues"
+      :compact="compact"
       @update:model-value="onManualInput"
     />
   </div>

@@ -86,6 +86,10 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    compact: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   emits: {
@@ -272,6 +276,7 @@ export default defineComponent({
     :parent-refocus-element-on-close="refocusElement"
     :close-dropdown-on-selection="closeDropdownOnSelection"
     :is-valid="isValid"
+    :compact="compact"
     @focus-outside="onFocusOutside"
     @update:model-value="updateSelectedIds"
   >
@@ -285,7 +290,7 @@ export default defineComponent({
         <div
           :class="[
             'summary-input-wrapper',
-            { 'with-icon-right': hasSelection },
+            { 'with-icon-right': hasSelection, compact },
           ]"
           @click.stop="focusInput"
         >
@@ -298,6 +303,7 @@ export default defineComponent({
             <span class="text">{{ item.text }}</span>
             <FunctionButton
               class="remove-tag-button"
+              :compact="compact"
               @click.stop="removeTag(item.id)"
             >
               <CloseIcon class="remove-tag-button-icon" />
@@ -321,6 +327,7 @@ export default defineComponent({
           <FunctionButton
             ref="removeAllTags"
             class="remove-all-tags-button"
+            :compact="compact"
             @click.stop="removeAllTags"
           >
             <CloseIcon />
@@ -364,6 +371,15 @@ export default defineComponent({
               var(--inner-height)
           ) / 2
       );
+
+      &.compact {
+        padding: calc(
+          (
+              var(--single-line-form-height-compact) - 2 *
+                var(--form-border-width) - var(--inner-height)
+            ) / 2
+        );
+      }
 
       &.with-icon-right {
         max-width: calc(100% - 40px);

@@ -178,6 +178,19 @@ export default {
         </div>
         <div class="grid-item-3">selected ids: {{ selected[6] }}</div>
       </div>
+      <br />
+      <div class="grid-container">
+        <div class="grid-item-3">compact mode</div>
+        <div class="grid-item-5">
+          <Multiselect
+            v-model="selected[5]"
+            :possible-values="possibleValues"
+            :size-visible-options="2"
+            compact
+          />
+        </div>
+        <div class="grid-item-3">selected ids: {{ selected[5] }}</div>
+      </div>
     </section>
     <section>
       <div class="grid-container">

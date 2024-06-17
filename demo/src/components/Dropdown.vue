@@ -395,6 +395,32 @@ export default {
         </div>
         <div class="grid-item-2">selected id: {{ withSlotsSelected }}</div>
       </div>
+      <br />
+      <div class="grid-container">
+        <div class="grid-item-5">
+          <Dropdown
+            v-model="withSlotsSelected"
+            placeholder="In compact mode"
+            aria-label="A List"
+            compact
+            :possible-values="[
+              {
+                id: 'foo',
+                text: 'Foo',
+              },
+              {
+                id: 'bar',
+                text: 'Bar',
+              },
+              {
+                id: 'baz',
+                text: 'Baz',
+              },
+            ]"
+          />
+        </div>
+        <div class="grid-item-2">selected id: {{ withSlotsSelected }}</div>
+      </div>
       <div class="grid-container">
         <div class="grid-item-12">
           <p>
@@ -456,6 +482,35 @@ export default {
             v-model="slottedSelected"
             aria-label="A limited list"
             size="3"
+            :possible-values="slottedExamplePossibleValue"
+          >
+            <template
+              #option="{ slotData: { icon, title, subtitle, year } } = {
+                slotData: {},
+              }"
+            >
+              <div class="slot-option">
+                <component :is="icon" />
+                <div class="description">
+                  <div class="title">{{ title }}</div>
+                  <div class="subtitle">{{ subtitle }}</div>
+                </div>
+                <div class="year">{{ year }}</div>
+              </div>
+            </template>
+          </Dropdown>
+        </div>
+        <div class="grid-item-2">selected id: {{ slottedSelected }}</div>
+      </div>
+      <br />
+      <div class="grid-container">
+        <div class="grid-item-5">
+          <Dropdown
+            v-model="withSlotsSelected"
+            placeholder="In compact mode"
+            aria-label="A limited list"
+            size="3"
+            compact
             :possible-values="slottedExamplePossibleValue"
           >
             <template

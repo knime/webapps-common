@@ -183,6 +183,24 @@ export default {
             </div>
             <div class="grid-item-2" />
           </div>
+          <div class="grid-container">
+            <div class="grid-item-6 inputs">
+              <Label #default="{ labelForId }" text="Compact">
+                <NumberInput
+                  :id="labelForId"
+                  v-model="inputValue1"
+                  :min="min"
+                  :max="max"
+                  :is-valid="isValid1"
+                  type="integer"
+                  title="Compact"
+                  compact
+                  @update:model-value="validate1"
+                />
+              </Label>
+            </div>
+            <div class="grid-item-2" />
+          </div>
         </div>
       </div>
     </section>

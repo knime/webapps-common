@@ -161,6 +161,21 @@ export default {
               </FunctionButton>
             </template>
           </InputField>
+          <InputField
+            ref="buttonDemo"
+            model-value="demo with compact mode"
+            type="text"
+            compact
+          >
+            <template #iconRight>
+              <FunctionButton @click="alert('demo')">
+                <CircleCheckIcon />
+              </FunctionButton>
+              <FunctionButton @click="alert('demo 2')">
+                <CloseIcon />
+              </FunctionButton>
+            </template>
+          </InputField>
         </div>
         <div class="grid-item-6">input value: {{ inputValue }}</div>
       </div>

@@ -57,6 +57,10 @@ export default {
       type: String,
       default: null,
     },
+    compact: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ["update:modelValue", "focus", "keyup", "keypress", "keydown"],
   computed: {
@@ -113,7 +117,7 @@ export default {
 </script>
 
 <template>
-  <div class="input-wrapper">
+  <div class="input-wrapper" :class="{ compact }">
     <div v-if="hasLeftIcon" class="icon">
       <slot name="icon" />
     </div>
@@ -153,6 +157,10 @@ export default {
   background-color: var(--theme-input-field-background-color);
   height: var(--single-line-form-height);
   padding: 0 5px;
+
+  &.compact {
+    height: var(--single-line-form-height-compact);
+  }
 
   &:focus {
     border-color: var(--knime-masala);

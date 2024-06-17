@@ -120,6 +120,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    compact: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ["update:modelValue", "focusOutside"],
   setup() {
@@ -316,7 +320,7 @@ export default {
 <template>
   <div
     ref="multiselect"
-    :class="['multiselect', { collapsed, invalid: !isValid }]"
+    :class="['multiselect', { collapsed, invalid: !isValid, compact }]"
     @keydown.esc="closeOptionsAndStop"
     @keydown.up.stop.prevent="onUp"
     @keydown.down.stop.prevent="onDown"
@@ -406,6 +410,19 @@ export default {
     }
   }
 
+  &.compact {
+    & [role="button"] {
+      height: var(--single-line-form-height-compact);
+      line-height: var(--single-line-form-height-compact);
+    }
+
+    & .icon {
+      top: calc(
+        (var(--single-line-form-height-compact) - var(--icon-size)) / 2
+      );
+    }
+  }
+
   &:not(.collapsed) [role="button"] {
     border-color: var(--knime-masala);
   }
@@ -414,6 +431,7 @@ export default {
     background: var(--theme-multiselect-background-color-hover);
   }
 
+  /* stylelint-disable-next-line no-descending-specificity */
   & .icon {
     --icon-size: 18px;
 

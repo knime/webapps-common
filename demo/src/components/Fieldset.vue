@@ -78,6 +78,24 @@ export default {
           </Fieldset>
         </div>
       </div>
+      <div class="grid-container">
+        <div class="grid-item-6">
+          <Fieldset text="Login Compact">
+            <template #icon><InfoIcon /></template>
+            <Label #default="{ labelForId }" text="User">
+              <InputField :id="labelForId" compact type="text" />
+            </Label>
+            <Label #default="{ labelForId }" text="Password">
+              <InputField
+                :id="labelForId"
+                type="password"
+                model-value="secret-password"
+                compact
+              />
+            </Label>
+          </Fieldset>
+        </div>
+      </div>
     </section>
     <section>
       <div class="grid-container">
