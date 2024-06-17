@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, beforeAll, vi } from "vitest";
 import { mount } from "@vue/test-utils";
 
 import TimePartInput from "../TimePartInput.vue";
@@ -40,6 +40,14 @@ describe("DateTimeInput.vue", () => {
         },
       },
     };
+  });
+
+  beforeAll(() => {
+    global.ResizeObserver = vi.fn().mockImplementation(() => ({
+      observe: vi.fn(),
+      unobserve: vi.fn(),
+      disconnect: vi.fn(),
+    }));
   });
 
   describe("renders", () => {
