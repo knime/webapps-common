@@ -75,6 +75,8 @@ const onDecrease = () => {
 </template>
 
 <style lang="postcss" scoped>
+@import url("../../css/mixins.css");
+
 .quantity-input {
   display: flex;
   align-items: center;
@@ -115,8 +117,7 @@ const onDecrease = () => {
     }
 
     &:focus {
-      border-color: var(--knime-cornflower);
-      box-shadow: 0 0 0 1px var(--knime-cornflower);
+      @mixin focus-style;
     }
 
     &:hover:not(:focus, :disabled) {
