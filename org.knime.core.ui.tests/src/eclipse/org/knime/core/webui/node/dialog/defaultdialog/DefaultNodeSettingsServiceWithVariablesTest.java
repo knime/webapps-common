@@ -138,15 +138,25 @@ class DefaultNodeSettingsServiceWithVariablesTest {
     }
 
     @Test
-    void testDelegateToNodeSettings() {
+    void testDelegateToNodeSettings() throws InvalidSettingsException {
         final var service = getDefaultNodeSettingsServiceWithVariables();
         final var textSettings = """
-                {"data": "dummyData"}
+                {
+                    "data": "dummyData",
+                    "flowVariableSettings": {
+                        "model.textSettings": {
+                            "controllingFlowVariableName": "flowVar1"
+                        }
+                    }
+                }
                 """;
         final var settings = new NodeSettings("model");
-        service.toNodeSettings(textSettings, createEmptyPreviousSettings(), createWOSettings(settings));
+        final var variableSettings = new VariableSettings(new NodeSettings("variables"), settings);
+        service.toNodeSettings(textSettings, createEmptyPreviousSettings(),
+            createWOSettings(settings, variableSettings));
         assertThat(TestNodeSettingsService.getAddedNodeSettingsValue(createROSettings(settings)))
             .isEqualTo(textSettings);
+        assertThat(variableSettings.getUsedVariable("textSettings")).isEqualTo("flowVar1");
     }
 
     @Test

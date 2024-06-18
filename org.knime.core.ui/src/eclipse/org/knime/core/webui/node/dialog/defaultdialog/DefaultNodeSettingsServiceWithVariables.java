@@ -91,8 +91,8 @@ public final class DefaultNodeSettingsServiceWithVariables implements NodeSettin
     public void toNodeSettings(final String textSettings,
         final Map<SettingsType, NodeAndVariableSettingsRO> previousSettings,
         final Map<SettingsType, NodeAndVariableSettingsWO> settings) {
-        rootJsonToVariableSettings(textToJson(textSettings), restrictValues(settings));
         m_delegate.toNodeSettings(textSettings, previousSettings, settings);
+        rootJsonToVariableSettings(textToJson(textSettings), restrictValues(settings));
     }
 
     @Override
