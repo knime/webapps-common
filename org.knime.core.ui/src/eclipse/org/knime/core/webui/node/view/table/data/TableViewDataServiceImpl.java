@@ -299,7 +299,7 @@ public class TableViewDataServiceImpl implements TableViewDataService {
     }
 
     private static String[] getTrimmedColumns(final int numDisplayedColumns, final String[] allDisplayedColumns) {
-        final var maxNumColumns = 100;
+        final var maxNumColumns = 1000;
         if (numDisplayedColumns > maxNumColumns) {
             return Arrays.copyOfRange(allDisplayedColumns, 0, maxNumColumns);
         }
