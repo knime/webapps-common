@@ -50,6 +50,7 @@ package org.knime.core.webui.node.dialog.defaultdialog;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.knime.core.webui.node.dialog.NodeDialogTest.createNodeAndVariableSettingsRO;
 
 import java.util.Map;
 
@@ -159,7 +160,7 @@ class DefaultNodeSettingsServiceTest {
     }
 
     @Test
-    void testApplyData() throws InvalidSettingsException, JsonProcessingException {
+    void testApplyData() {
         // create "foo" view data and empty node settings
         final var viewData = JsonFormsDataUtil.toJsonData(new TestSettings("foo"));
         final var nodeSettings = new NodeSettings("node_settings");
@@ -170,7 +171,8 @@ class DefaultNodeSettingsServiceTest {
         final var wrappedViewData = MAPPER.createObjectNode().set("data",
             MAPPER.createObjectNode().set(SettingsType.VIEW.getConfigKey(), viewData));
         settingsService.toNodeSettings(wrappedViewData.toString(),
-            Map.of(SettingsType.VIEW, new NodeSettings("previousSettings")),
+            Map.of(SettingsType.VIEW,
+                NodeDialogTest.createNodeAndVariableSettingsRO(new NodeSettings("previousSettings"))),
             Map.of(SettingsType.VIEW, NodeDialogTest.createNodeAndVariableSettingsWO(nodeSettings)));
 
         // assert that node settings are no longer empty but equal to the "foo" view data
@@ -196,7 +198,8 @@ class DefaultNodeSettingsServiceTest {
                         }
                     }
                 }""";
-        settingsService.toNodeSettings(textSettings, Map.of(SettingsType.VIEW, previousNodeSettings),
+        settingsService.toNodeSettings(textSettings,
+            Map.of(SettingsType.VIEW, createNodeAndVariableSettingsRO(previousNodeSettings)),
             Map.of(SettingsType.VIEW, nodeAndVariableSettingsWO));
 
         assertThat(nodeSettings.getString("value")).isEqualTo("old");
@@ -272,7 +275,8 @@ class DefaultNodeSettingsServiceTest {
                         }
                     }
                 }""", flowVarType);
-        settingsService.toNodeSettings(textSettings, Map.of(SettingsType.VIEW, previousNodeSettings),
+        settingsService.toNodeSettings(textSettings,
+            Map.of(SettingsType.VIEW, createNodeAndVariableSettingsRO(previousNodeSettings)),
             Map.of(SettingsType.VIEW, nodeAndVariableSettingsWO));
 
         assertThat(nodeSettings.getString("valueLegacy1")).isEqualTo("old1");
@@ -325,7 +329,8 @@ class DefaultNodeSettingsServiceTest {
                         }
                     }
                 }""";
-        settingsService.toNodeSettings(textSettings, Map.of(SettingsType.VIEW, previousNodeSettings),
+        settingsService.toNodeSettings(textSettings,
+            Map.of(SettingsType.VIEW, createNodeAndVariableSettingsRO(previousNodeSettings)),
             Map.of(SettingsType.VIEW, nodeAndVariableSettingsWO));
 
         assertThat(nodeSettings.containsKey("valueLegacy1")).isFalse();
@@ -378,7 +383,8 @@ class DefaultNodeSettingsServiceTest {
                         }
                     }
                 }""";
-        settingsService.toNodeSettings(textSettings, Map.of(SettingsType.VIEW, previousNodeSettings),
+        settingsService.toNodeSettings(textSettings,
+            Map.of(SettingsType.VIEW, createNodeAndVariableSettingsRO(previousNodeSettings)),
             Map.of(SettingsType.VIEW, nodeAndVariableSettingsWO));
 
         assertThat(nodeSettings.containsKey("valueLegacy1")).isFalse();
@@ -405,7 +411,8 @@ class DefaultNodeSettingsServiceTest {
                         }
                     }
                 }""";
-        settingsService.toNodeSettings(textSettings, Map.of(SettingsType.VIEW, previousNodeSettings),
+        settingsService.toNodeSettings(textSettings,
+            Map.of(SettingsType.VIEW, createNodeAndVariableSettingsRO(previousNodeSettings)),
             Map.of(SettingsType.VIEW, nodeAndVariableSettingsWO));
 
         assertThat(nodeSettings.getString("value")).isEqualTo("new");

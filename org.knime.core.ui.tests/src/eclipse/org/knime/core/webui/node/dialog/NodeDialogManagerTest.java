@@ -309,7 +309,8 @@ public class NodeDialogManagerTest {
         Supplier<NodeDialog> nodeDialogSupplier = () -> createNodeDialog(page, new NodeSettingsService() { // NOSONAR
 
             @Override
-            public void toNodeSettings(final String s, final Map<SettingsType, NodeSettingsRO> previousSettings,
+            public void toNodeSettings(final String s,
+                final Map<SettingsType, NodeAndVariableSettingsRO> previousSettings,
                 final Map<SettingsType, NodeAndVariableSettingsWO> settings) {
                 var split = s.split(",");
                 settings.get(SettingsType.MODEL).addString(split[0], split[1]);

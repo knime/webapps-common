@@ -163,7 +163,7 @@ final class ApplyData {
     private void populateNewSettings(final String data, final NodeSettings nodeSettings,
         final NodeSettings previousNodeSettings) throws InvalidSettingsException {
         var settingsMap = new EnumMap<SettingsType, NodeAndVariableSettingsWO>(SettingsType.class);
-        var previousSettingsMap = new EnumMap<SettingsType, NodeSettingsRO>(SettingsType.class);
+        var previousSettingsMap = new EnumMap<SettingsType, NodeAndVariableSettingsRO>(SettingsType.class);
         for (var settingsType : m_settingsTypes) {
             nodeSettings.addNodeSettings(new NodeSettings(settingsType.getConfigKey()));
             nodeSettings.addNodeSettings(new NodeSettings(settingsType.getVariablesConfigKey()));
@@ -171,7 +171,10 @@ final class ApplyData {
                 getOrCreateSubSettings(nodeSettings, settingsType), //
                 new VariableSettings(nodeSettings, settingsType)//
             ));
-            previousSettingsMap.put(settingsType, getOrCreateSubSettings(previousNodeSettings, settingsType));
+            previousSettingsMap.put(settingsType, NodeAndVariableSettingsProxy.createROProxy( //
+                getOrCreateSubSettings(previousNodeSettings, settingsType),
+                new VariableSettings(previousNodeSettings, settingsType) //
+            ));
         }
         m_nodeSettingsService.toNodeSettings(data, previousSettingsMap, settingsMap);
     }

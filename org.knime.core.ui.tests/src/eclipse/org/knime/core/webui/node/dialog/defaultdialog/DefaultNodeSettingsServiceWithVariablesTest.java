@@ -55,7 +55,6 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
-import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.webui.node.dialog.NodeAndVariableSettingsRO;
@@ -84,7 +83,8 @@ class DefaultNodeSettingsServiceWithVariablesTest {
         }
 
         @Override
-        public void toNodeSettings(final String textSettings, final Map<SettingsType, NodeSettingsRO> previousSettings,
+        public void toNodeSettings(final String textSettings,
+            final Map<SettingsType, NodeAndVariableSettingsRO> previousSettings,
             final Map<SettingsType, NodeAndVariableSettingsWO> settings) {
             setAddedNodeAndVariableSettingsValue(textSettings, settings);
         }
@@ -132,8 +132,9 @@ class DefaultNodeSettingsServiceWithVariablesTest {
         return Map.of(SettingsType.MODEL, NodeDialogTest.createNodeAndVariableSettingsWO(settings, variableSettings));
     }
 
-    private static final Map<SettingsType, NodeSettingsRO> createEmptyPreviousSettings() {
-        return Map.of(SettingsType.MODEL, new NodeSettings("previouseSettings"));
+    private static final Map<SettingsType, NodeAndVariableSettingsRO> createEmptyPreviousSettings() {
+        return Map.of(SettingsType.MODEL,
+            NodeDialogTest.createNodeAndVariableSettingsRO(new NodeSettings("previouseSettings")));
     }
 
     @Test

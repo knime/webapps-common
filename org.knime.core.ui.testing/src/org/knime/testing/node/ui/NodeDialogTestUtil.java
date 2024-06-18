@@ -104,7 +104,7 @@ public final class NodeDialogTestUtil {
 
             @Override
             public void toNodeSettings(final String textSettings,
-                final Map<SettingsType, NodeSettingsRO> previousSettings,
+                final Map<SettingsType, NodeAndVariableSettingsRO> previousSettings,
                 final Map<SettingsType, NodeAndVariableSettingsWO> settings) {
                 //
             }
@@ -202,7 +202,7 @@ public final class NodeDialogTestUtil {
 
             @Override
             public void toNodeSettings(final String textSettings,
-                final Map<SettingsType, NodeSettingsRO> previousSettings,
+                final Map<SettingsType, NodeAndVariableSettingsRO> previousSettings,
                 final Map<SettingsType, NodeAndVariableSettingsWO> settings) {
                 stringToSettings(textSettings, settings.get(SettingsType.MODEL), settings.get(SettingsType.VIEW),
                     settings.get(SettingsType.MODEL), settings.get(SettingsType.VIEW));

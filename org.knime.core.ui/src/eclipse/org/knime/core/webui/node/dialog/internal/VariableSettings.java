@@ -98,7 +98,6 @@ public final class VariableSettings implements VariableSettingsWO, VariableSetti
      *
      * @param nodeSettings
      * @param type
-     * @throws InvalidSettingsException
      */
     public VariableSettings(final NodeSettings nodeSettings, final SettingsType type) {
         m_nodeSettings = getNodeSettingsForType(type, nodeSettings);

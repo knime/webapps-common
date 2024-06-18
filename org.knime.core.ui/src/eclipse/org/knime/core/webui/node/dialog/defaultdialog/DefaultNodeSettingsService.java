@@ -57,6 +57,7 @@ import static org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.
 import static org.knime.core.webui.node.dialog.defaultdialog.util.MapValuesUtil.restrictValues;
 
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -110,7 +111,8 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
     }
 
     @Override
-    public void toNodeSettings(final String textSettings, final Map<SettingsType, NodeSettingsRO> previousSettings,
+    public void toNodeSettings(final String textSettings,
+        final Map<SettingsType, NodeAndVariableSettingsRO> previousSettings,
         final Map<SettingsType, NodeAndVariableSettingsWO> settings) {
 
         final var root = textToJson(textSettings);
@@ -120,7 +122,9 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
         final var extractedVariableSettings = extractVariableSettings(settings, root);
 
         alignSettingsWithFlowVariables(//
-            extractedNodeSettings, previousSettings, extractedVariableSettings, defaultNodeSettings);
+            extractedNodeSettings,
+            previousSettings.entrySet().stream().collect(Collectors.toMap(Entry::getKey, Entry::getValue)),
+            extractedVariableSettings, defaultNodeSettings);
         copyLeftToRight(extractedNodeSettings, settings);
         rootJsonToVariableSettings(root, restrictValues(settings));
     }

@@ -52,7 +52,6 @@ import java.util.Map;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
-import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.workflow.NodeContext;
 
@@ -92,7 +91,7 @@ public interface NodeSettingsService {
      * @param previousSettings the version the node settings that were used when opening the dialog.
      * @param settings the settings instances to write into
      */
-    void toNodeSettings(final String textSettings, Map<SettingsType, NodeSettingsRO> previousSettings,
+    void toNodeSettings(final String textSettings, Map<SettingsType, NodeAndVariableSettingsRO> previousSettings,
         Map<SettingsType, NodeAndVariableSettingsWO> settings);
 
     /**
