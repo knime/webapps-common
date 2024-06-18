@@ -23,66 +23,76 @@ type Keys =
   | "Enter"
   | "Backspace"
   | "Home"
-  | "End";
+  | "End"
+  | " "; // Space;
 
-type Modifiers = "Ctrl" | "Alt" | "Shift";
+type Modifiers = "CtrlOrCmd" | "Ctrl" | "Alt" | "Shift";
 
 // creates loose autocomplete by using a union of the passed-in type
 // and the entire `string` set *except* the passed-in type
 type LooseAutoComplete<T extends string> = T | Omit<string, T>;
 
-export type KnownHotkey = Keys | Modifiers;
+export type NumberRange = `${number}-${number}`;
+export type KnownHotkey = Keys | Modifiers | NumberRange;
 
 export type Hotkey = LooseAutoComplete<Keys | Modifiers>;
+
+const globalKeyMap = {
+  ArrowUp: "↑",
+  ArrowDown: "↓",
+  ArrowLeft: "←",
+  ArrowRight: "→",
+  Enter: "↵",
+  " ": "Space", // we use event.key and there space is an actual space not the code "Space"
+  CtrlOrCmd: "Ctrl",
+} as const;
+
+const MacOSkeyMap = {
+  Shift: "⇧",
+  Delete: "⌫",
+  CtrlOrCmd: "⌘",
+  Ctrl: "⌃",
+  Alt: "⌥",
+  Enter: "↩",
+} as const;
+
+type KeyFormatMap = typeof MacOSkeyMap | typeof globalKeyMap;
+
 /**
- * Returns a string array where all special chars are replaced
+ * Returns a string representation of a single hotkey. Replaces some special key names with symbols
  */
-export const mapKeyFormat = (hotkeys: Array<Hotkey>) => {
-  type KeyFormatMap = Partial<Record<KnownHotkey, string>>;
-  const globalKeyMap: KeyFormatMap = {
-    ArrowUp: "↑",
-    ArrowDown: "↓",
-    ArrowLeft: "←",
-    ArrowRight: "→",
-    Enter: "↵",
-  };
+export const formatHotkey = (hotkey: Hotkey): string => {
+  /**
+   * Returns the symbol corresponding to the `key` based on the given
+   * `formatMap`. Otherwise, if not found, returns the same `key` value given
+   */
+  const mapSymbols = (formatMap: KeyFormatMap) => (key: Hotkey) =>
+    formatMap[key as keyof KeyFormatMap] ?? key;
 
-  const MacOSkeyMap: KeyFormatMap = {
-    Shift: "⇧",
-    Delete: "⌫",
-    Ctrl: "⌘",
-    Alt: "⌥",
-    Enter: "↩",
-  };
+  /**
+   * Pipe function implementation. Receives a list of functions to execute in order
+   * and will pipe the parameter passed at the end to each function returning the final output
+   */
+  const pipe = <T extends () => any>(
+    ...fns: Array<(...args: any[]) => ReturnType<T>>
+  ) => fns.reduce((f, g) => (arg) => g(f(arg)));
 
-  const mapSymbols =
-    (formatMap: KeyFormatMap) =>
-    (key: KnownHotkey): KnownHotkey | Omit<string, KnownHotkey> =>
-      formatMap[key] ?? key;
-
-  const identity = (value: any) => value;
-
-  return (
-    hotkeys
-      // map only for mac the symbols that should be displayed differently
-      .map((key) =>
-        isMac() ? mapSymbols(MacOSkeyMap)(key as KnownHotkey) : identity(key),
-      )
-      // map all keys that should be displayed differently
-      .map(mapSymbols(globalKeyMap))
+  const macKeyFormatter = pipe(
+    mapSymbols(MacOSkeyMap),
+    mapSymbols(globalKeyMap),
   );
+
+  const generalKeyFormatter = mapSymbols(globalKeyMap);
+
+  return isMac() ? macKeyFormatter(hotkey) : generalKeyFormatter(hotkey);
 };
 
-const defaultGetSeparator = () => {
-  return " ";
-};
+export const getDefaultSeparator = () => " ";
 
 /**
- * Returns a string representation of a hotkey. Replaces some special key names with symbols
+ * Returns a string representation of a list of hotkeys. Replaces some special key names with symbols
  */
 export const formatHotkeys = (
   hotkeys: Array<Hotkey>,
-  getSeparator = defaultGetSeparator,
-) => {
-  return mapKeyFormat(hotkeys).join(getSeparator());
-};
+  getSeparator = getDefaultSeparator,
+) => hotkeys.map(formatHotkey).join(getSeparator());
