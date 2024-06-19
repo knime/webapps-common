@@ -23,10 +23,7 @@ import { valueSwitchRenderer } from "./valueSwitchRenderer";
 import { textAreaRenderer } from "./textAreaRenderer";
 import { credentialsRenderer } from "./credentialsRenderer";
 import { localFileChooserRenderer } from "./localFileChooserRenderer";
-import {
-  fileChooserRenderer,
-  fileChooserLabsRenderer,
-} from "./fileChooserRenderer";
+import { fileChooserRenderer } from "./fileChooserRenderer";
 import { legacyCredentialsRenderer } from "./legacyCredentialsRenderer";
 import { vennDiagramLayoutRenderer } from "./vennDiagramRenderer";
 
@@ -62,5 +59,4 @@ export const defaultRenderers = [
   legacyCredentialsRenderer,
   localFileChooserRenderer,
   fileChooserRenderer,
-  fileChooserLabsRenderer,
 ];

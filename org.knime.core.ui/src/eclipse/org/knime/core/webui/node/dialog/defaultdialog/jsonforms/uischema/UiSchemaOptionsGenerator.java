@@ -261,9 +261,6 @@ final class UiSchemaOptionsGenerator {
 
         if (annotatedWidgets.contains(FileReaderWidget.class)) {
             final var fileReaderWidget = m_field.getAnnotation(FileReaderWidget.class);
-            if (fileReaderWidget.isLabs()) {
-                options.put("isLabs", true);
-            }
             resolveFileExtensions(options, fileReaderWidget.fileExtensions());
         }
         if (annotatedWidgets.contains(FileWriterWidget.class)) {

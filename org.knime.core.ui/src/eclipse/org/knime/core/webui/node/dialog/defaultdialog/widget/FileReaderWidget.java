@@ -70,11 +70,4 @@ public @interface FileReaderWidget {
      */
     String[] fileExtensions() default {};
 
-    /**
-     * TODO: UIEXT-1734 remove this
-     *
-     * @return true e.g. for the CSV Reader (Labs) in order to show the new side drawer file chooser that will replace
-     *         the existing one before releasing AP version 5.3.0
-     */
-    boolean isLabs() default false;
 }

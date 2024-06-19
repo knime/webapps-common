@@ -140,50 +140,7 @@
               "type": "Control",
               "scope": "#/properties/view/properties/empty",
               "options": {
-                "format": "fileChooser"
-              }
-            },
-            {
-              "type": "Control",
-              "scope": "#/properties/view/properties/writer",
-              "options": {
                 "format": "fileChooser",
-                "isWriter": true
-              }
-            },
-            {
-              "type": "Control",
-              "scope": "#/properties/view/properties/disabledPath",
-              "options": {
-                "format": "fileChooser"
-              }
-            },
-            {
-              "type": "Control",
-              "scope": "#/properties/view/properties/overwrittenByNonSupported",
-              "options": {
-                "format": "fileChooser"
-              }
-            },
-            {
-              "type": "Control",
-              "scope": "#/properties/view/properties/pathCustom",
-              "options": {
-                "format": "fileChooser"
-              }
-            }
-          ]
-        },
-        {
-          "type": "Section",
-          "label": "File Chooser With Side Drawer",
-          "elements": [
-            {
-              "type": "Control",
-              "scope": "#/properties/view/properties/empty",
-              "options": {
-                "format": "fileChooser",
-                "isLabs": true,
                 "spacePath": "Users/j_bond/Public",
                 "mountId": "My-KNIME-Hub ;)"
               }
@@ -194,7 +151,6 @@
               "options": {
                 "format": "fileChooser",
                 "isLocal": true,
-                "isLabs": true,
                 "spacePath": "Users/j_bond/Public",
                 "mountId": "My-KNIME-Hub ;)"
               }
@@ -205,7 +161,6 @@
               "options": {
                 "format": "fileChooser",
                 "isLocal": true,
-                "isLabs": true,
                 "currentSpaceName": "My Space XYZ"
               }
             },
@@ -215,7 +170,6 @@
               "options": {
                 "format": "fileChooser",
                 "isWriter": true,
-                "isLabs": true,
                 "spacePath": "Users/j_bond/Public",
                 "mountId": "My-KNIME-Hub ;)"
               }
@@ -225,7 +179,6 @@
               "scope": "#/properties/view/properties/disabledPath",
               "options": {
                 "format": "fileChooser",
-                "isLabs": true,
                 "spacePath": "Users/j_bond/Public",
                 "mountId": "My-KNIME-Hub ;)"
               }
@@ -235,7 +188,6 @@
               "scope": "#/properties/view/properties/overwrittenByNonSupported",
               "options": {
                 "format": "fileChooser",
-                "isLabs": true,
                 "spacePath": "Users/j_bond/Public",
                 "mountId": "My-KNIME-Hub ;)"
               }
@@ -245,7 +197,6 @@
               "scope": "#/properties/view/properties/pathCustom",
               "options": {
                 "format": "fileChooser",
-                "isLabs": true,
                 "spacePath": "Users/j_bond/Public",
                 "mountId": "My-KNIME-Hub ;)"
               }
