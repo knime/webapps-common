@@ -151,7 +151,7 @@ public class DynamicValuesInput implements PersistableSettings {
             Single, Double, Collection
     }
 
-    static class ModifyersRegistry {
+    static class ModifiersRegistry {
         static Map<String, Class<? extends DefaultNodeSettings>> modifierClasses = new HashMap<>();
     }
 
@@ -209,6 +209,10 @@ public class DynamicValuesInput implements PersistableSettings {
         }
 
         public static final class StringValueModifiers implements DefaultNodeSettings {
+
+            static {
+                ModifiersRegistry.modifierClasses.put(StringValueModifiers.class.getName(), StringValueModifiers.class);
+            }
 
             public enum CaseMatching {
                     /** Respect case when matching strings. */
@@ -439,7 +443,6 @@ public class DynamicValuesInput implements PersistableSettings {
                     final var modifiersData = JsonFormsDataUtil.toJsonData(modifiers);
                     final var modifiersClass = modifiers.getClass();
                     final var modifiersClassName = modifiersClass.getName();
-                    ModifyersRegistry.modifierClasses.put(modifiersClassName, modifiersClass);
                     gen.writeObjectField(MODIFIERS_CLASS_NAME_KEY, modifiersClassName);
                     gen.writeObjectField(MODIFIERS_KEY, modifiersData);
                 }
@@ -466,7 +469,7 @@ public class DynamicValuesInput implements PersistableSettings {
                 final var modifiersClassName = node.get(MODIFIERS_CLASS_NAME_KEY);
                 DefaultNodeSettings modifiers = null;
                 if (modifiersClassName != null && !modifiersClassName.isMissingNode()) {
-                    final var modifiersClass = ModifyersRegistry.modifierClasses.get(modifiersClassName.asText());
+                    final var modifiersClass = ModifiersRegistry.modifierClasses.get(modifiersClassName.asText());
                     modifiers = modifiersClass == null ? null
                         : JsonFormsDataUtil.toDefaultNodeSettings(node.get(MODIFIERS_KEY), modifiersClass);
                 }
@@ -487,7 +490,7 @@ public class DynamicValuesInput implements PersistableSettings {
                 final var dataType = getDataTypeForCellClassName(cellClassName, InvalidSettingsException::new);
 
                 final var modifiersClass = // TODO
-                    ModifyersRegistry.modifierClasses.get(settings.getString(MODIFIERS_CLASS_NAME_KEY, ""));
+                    ModifiersRegistry.modifierClasses.get(settings.getString(MODIFIERS_CLASS_NAME_KEY, ""));
                 final var modifiers = modifiersClass == null ? null : DefaultFieldNodeSettingsPersistorFactory
                     .createDefaultPersistor(modifiersClass, MODIFIERS_KEY).load(settings);
 
