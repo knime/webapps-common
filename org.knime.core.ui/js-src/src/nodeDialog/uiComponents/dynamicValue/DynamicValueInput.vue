@@ -35,7 +35,7 @@ export type DynamicValueType =
 </script>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, watch } from "vue";
 
 const props = defineProps<{ value: DynamicValueType }>();
 
@@ -117,6 +117,20 @@ const modifiersDef = computed(() => {
   }
   return null;
 });
+
+const emit = defineEmits<{
+  updateValue: [unknown];
+}>();
+
+watch(
+  () => props.value,
+  (newValue) => {
+    if (newValue === null) {
+      emit("updateValue", initialValue);
+    }
+  },
+  { immediate: true },
+);
 </script>
 
 <template>
@@ -143,6 +157,5 @@ const modifiersDef = computed(() => {
             elements: [...modifiersDef.uischemaElements, valueUiSchema],
           }
     "
-    :initial-value="initialValue"
   />
 </template>

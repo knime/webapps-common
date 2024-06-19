@@ -8,7 +8,6 @@ import {
 import DynamicValueInput, {
   type DynamicValueType,
 } from "./DynamicValueInput.vue";
-import WithInitialValue from "./WithInitialValue.vue";
 import { ControlProps } from "@jsonforms/core";
 
 enum InputKind {
@@ -30,25 +29,20 @@ const { control, handleChange } = useJsonFormsControl(props as ControlProps);
 <template>
   <DynamicValueInput
     v-for="(value, index) in control.data.values"
-    #default="{ uischema, schema, initialValue }"
+    #default="{ uischema, schema }"
     :key="index"
     :value="value"
+    @update-value="
+      handleChange(`${control.path}.values.${index}.value`, $event)
+    "
   >
-    <WithInitialValue
-      :initial-value="initialValue"
-      :value="value.value"
-      @update-value="
-        handleChange(`${control.path}.values.${index}.value`, $event)
-      "
-    >
-      <DispatchRenderer
-        :schema="schema"
-        :uischema="uischema"
-        :path="`${control.path}.values.${index}`"
-        :enabled="control.enabled"
-        :renderers="control.renderers"
-        :cells="control.cells"
-      />
-    </WithInitialValue>
+    <DispatchRenderer
+      :schema="schema"
+      :uischema="uischema"
+      :path="`${control.path}.values.${index}`"
+      :enabled="control.enabled"
+      :renderers="control.renderers"
+      :cells="control.cells"
+    />
   </DynamicValueInput>
 </template>
