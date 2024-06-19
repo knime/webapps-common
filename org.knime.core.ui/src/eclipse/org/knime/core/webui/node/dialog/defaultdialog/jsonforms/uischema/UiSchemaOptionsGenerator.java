@@ -48,6 +48,7 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.OPTIONS_HIDE_FLOW_VARIABLE_BUTTON;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.OPTIONS_IS_ADVANCED;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ACTION_HANDLER;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ARRAY_LAYOUT_ADD_BUTTON_TEXT;
@@ -237,6 +238,9 @@ final class UiSchemaOptionsGenerator {
         }
         if (widget.hideTitle()) {
             control.put(TAG_LABEL, "");
+        }
+        if (widget.hideFlowVariableButton()) {
+            options.put(OPTIONS_HIDE_FLOW_VARIABLE_BUTTON, true);
         }
 
         if (annotatedWidgets.contains(DateTimeWidget.class)) {

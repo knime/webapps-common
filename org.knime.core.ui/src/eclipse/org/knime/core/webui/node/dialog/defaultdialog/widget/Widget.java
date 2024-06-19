@@ -93,4 +93,9 @@ public @interface Widget {
      */
     boolean hideTitle() default false;
 
+    /**
+     * @return true if the flow variable button should be hidden
+     */
+    boolean hideFlowVariableButton() default false;
+
 }

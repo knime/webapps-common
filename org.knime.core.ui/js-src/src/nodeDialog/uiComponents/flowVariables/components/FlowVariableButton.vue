@@ -7,9 +7,13 @@ import DialogPopover from "@/nodeDialog/popover/DialogPopover.vue";
 import type FlowVariableButtonProps from "../types/FlowVariableButtonProps";
 
 import { computed, ref } from "vue";
+import { getFlowVariableSettingsProvidedByControl } from "@/nodeDialog/composables/components/useFlowVariables";
 
 defineProps<FlowVariableButtonProps>();
 const emit = defineEmits(["controllingFlowVariableSet"]);
+
+const hideFlowVariableButton =
+  getFlowVariableSettingsProvidedByControl()?.hideFlowVariableButton || false;
 
 const tooltipPrefix = ref<string | null>(null);
 const setTooltipPrefix = (prefix: string) => {
@@ -25,7 +29,11 @@ const tooltip = computed(() => {
 </script>
 
 <template>
-  <DialogPopover popover-width="380px" :tooltip="tooltip">
+  <DialogPopover
+    v-if="!hideFlowVariableButton"
+    popover-width="380px"
+    :tooltip="tooltip"
+  >
     <template #icon="{ expanded, focused }">
       <FlowVariableIcon
         :show="hover || expanded || focused"

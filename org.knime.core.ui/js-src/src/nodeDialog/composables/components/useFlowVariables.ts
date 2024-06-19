@@ -15,6 +15,7 @@ export interface FlowVariableSettingsProvidedByControl {
     }[]
   >;
   settingStateFlowVariables: SettingStateWrapper["flowVariables"];
+  hideFlowVariableButton?: true;
 }
 
 /** Exported only for tests */
@@ -93,6 +94,7 @@ export interface UseFlowSettingsProps {
   control: Ref<Control>;
   subConfigKeys?: string[];
   settingState: { settingState: SettingStateWrapper; isNew: boolean };
+  hideFlowVariableButton?: true;
 }
 
 export const useFlowSettings = (
@@ -101,7 +103,8 @@ export const useFlowSettings = (
   flowSettings: Ref<FlowSettings | null>;
   disabledByFlowVariables: Ref<boolean>;
 } => {
-  const { control, subConfigKeys, settingState } = params;
+  const { control, subConfigKeys, settingState, hideFlowVariableButton } =
+    params;
   const flowVariablesMap = getFlowVariablesMap();
   const path = computed(() => control.value.path);
   const configPaths = computed(() =>
@@ -129,6 +132,7 @@ export const useFlowSettings = (
       allConfigPaths,
       flowVariablesMap,
     ),
+    hideFlowVariableButton,
   });
 
   const hasDeprecatedVariables = computed(

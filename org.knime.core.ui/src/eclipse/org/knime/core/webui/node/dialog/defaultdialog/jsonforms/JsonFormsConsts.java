@@ -319,6 +319,11 @@ public final class JsonFormsConsts {
         public static final String OPTIONS_IS_ADVANCED = "isAdvanced";
 
         /**
+         * Whether the flow variable button for this setting should be hidden
+         */
+        public static final String OPTIONS_HIDE_FLOW_VARIABLE_BUTTON = "hideFlowVariableButton";
+
+        /**
          * The type of a control
          */
         public static final String TYPE_CONTROL = "Control";
