@@ -167,6 +167,7 @@ const onChange = (value: string) => {
       :disabled="disabled"
       :model-value="dropdownValue"
       :possible-values="options"
+      compact
       @update:model-value="onChange"
     />
   </LabeledInput>

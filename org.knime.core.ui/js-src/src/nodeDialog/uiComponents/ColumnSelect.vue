@@ -91,6 +91,7 @@ onMounted(async () => {
     :async-initial-options="asyncInitialOptions"
     :json-forms-control="jsonFormsControl"
     :control-data-to-dropdown-value="toValue"
+    compact
     :dropdown-value-to-control-data="toData"
   />
 </template>

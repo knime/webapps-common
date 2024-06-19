@@ -82,6 +82,7 @@ const onApply = () => {
             class="fit-content"
             :disabled="disabled"
             primary
+            compact
             @click="expand"
             ><FolderLenseIcon
           /></FunctionButton>

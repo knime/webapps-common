@@ -61,12 +61,14 @@ const chooseFile = (chosen: string) => {
     :disabled="disabled"
     :model-value="modelValue"
     :placeholder="placeholder"
+    compact
     @update:model-value="onChange"
   >
     <template #iconRight>
       <FunctionButton
         :disabled="disabled"
         title="Browse local file system"
+        compact
         @click="activateFileChooser"
       >
         <FolderLenseIcon />

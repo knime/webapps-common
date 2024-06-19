@@ -79,6 +79,7 @@ const marginBottom = computed(() =>
       :alignment="alignment"
       :disabled="disabled"
       :model-value="control.data"
+      compact
       @update:model-value="onChange"
     />
   </LabeledInput>

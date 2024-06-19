@@ -125,6 +125,7 @@ const onControllingFlowVariableSet = (value: Credentials) => {
         :placeholder="usernameLabel"
         :model-value="data.username"
         :disabled="disabled"
+        compact
         type="text"
         @update:model-value="onChangeUsername"
       />
@@ -134,6 +135,7 @@ const onControllingFlowVariableSet = (value: Credentials) => {
         :placeholder="passwordLabel"
         :model-value="displayedPassword"
         :disabled="disabled"
+        compact
         type="password"
         @update:model-value="onChangePassword"
       />
@@ -143,6 +145,7 @@ const onControllingFlowVariableSet = (value: Credentials) => {
         :placeholder="secondFactorLabel"
         :model-value="displayedSecondFactor"
         :disabled="disabled"
+        compact
         type="password"
         @update:model-value="onChangeSecondFactor"
       />

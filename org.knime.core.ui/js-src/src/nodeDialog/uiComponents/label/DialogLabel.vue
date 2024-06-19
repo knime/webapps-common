@@ -51,6 +51,7 @@ onMounted(() => {
         <Label
           :text="title"
           class="label"
+          compact
           @label-for-id="labelForId = $event"
         />
         <ReexecutionIcon v-if="showReexecutionIcon" class="reexecution-icon" />

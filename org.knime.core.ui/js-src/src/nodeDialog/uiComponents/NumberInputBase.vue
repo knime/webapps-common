@@ -42,6 +42,7 @@ const onFocusOut = () => {
       :type="type"
       :min="control.schema.minimum"
       :max="control.schema.maximum"
+      compact
       @update:model-value="onChange"
       @focusout="onFocusOut"
     />

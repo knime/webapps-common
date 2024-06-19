@@ -61,6 +61,7 @@ const disabled = computed(
       :disabled="disabled"
       :possible-values="noPossibleValuesPresent ? [] : options"
       :model-value="selectedIds"
+      compact
       @update:model-value="onChange"
     />
   </LabeledInput>

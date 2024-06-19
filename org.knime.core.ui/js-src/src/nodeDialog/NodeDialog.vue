@@ -377,8 +377,7 @@ export default {
     display: flex;
     justify-content: space-between;
     text-decoration: underline;
-    margin-top: 10px;
-    margin-bottom: 20px;
+    margin-top: var(--space-32);
     font-size: 13px;
     cursor: pointer;
     color: var(--knime-dove-gray);

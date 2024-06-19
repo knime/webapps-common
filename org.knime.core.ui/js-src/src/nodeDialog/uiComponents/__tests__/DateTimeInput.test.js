@@ -1,4 +1,12 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  beforeEach,
+  beforeAll,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 import {
   mountJsonFormsComponent,
   initializesJsonFormsControl,
@@ -11,6 +19,14 @@ import DateTimeInputBase from "webapps-common/ui/components/forms/DateTimeInput.
 
 describe("DateTimeInput.vue", () => {
   let defaultProps, wrapper, component;
+
+  beforeAll(() => {
+    global.ResizeObserver = vi.fn().mockImplementation(() => ({
+      observe: vi.fn(),
+      unobserve: vi.fn(),
+      disconnect: vi.fn(),
+    }));
+  });
 
   beforeEach(() => {
     defaultProps = {

@@ -33,6 +33,7 @@ const disabledOrNoOptions = computed(
     :disabled="disabledOrNoOptions"
     :possible-values="possibleValues ?? []"
     :placeholder="placeholderText"
+    compact
   >
     <template #icon-right>
       <LoadingIcon v-if="possibleValues === null" class="loading-icon" />

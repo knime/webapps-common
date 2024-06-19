@@ -283,6 +283,7 @@ const rightLabel = computed(
       :size="twinlistSize"
       :left-label="leftLabel"
       :right-label="rightLabel"
+      compact
       @update:selected="onSelectedChange"
       @update:manual-selection="onManualSelectionChange"
       @update:pattern="onPatternChange"

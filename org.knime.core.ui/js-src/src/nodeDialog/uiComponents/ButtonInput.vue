@@ -183,6 +183,7 @@ const showTitleAndDescription = computed(
         :disabled="currentState.disabled"
         class="button-input"
         :primary="currentState.primary"
+        compact
         @click="onClick"
       >
         <div class="button-input-text">{{ currentState.text }}</div>

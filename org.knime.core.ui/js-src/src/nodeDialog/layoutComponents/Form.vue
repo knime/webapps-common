@@ -18,12 +18,12 @@ container
 }
 
 .form {
-  --horizontal-dialog-padding: 20px;
+  --horizontal-dialog-padding: var(--space-16);
 
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  padding: 0 var(--horizontal-dialog-padding);
+  padding: 0 var(--horizontal-dialog-padding) var(--space-16);
   overflow: hidden;
   overflow-y: auto;
 

@@ -112,6 +112,7 @@ const onTextInput = (text: string) => {
     ref="inputField"
     :model-value="currentValue"
     :disabled="disabled"
+    compact
     @update:model-value="onTextInput"
     @focusout="updateCurrentValueFromModelValue"
   />

@@ -35,6 +35,7 @@ const maximum = computed(() =>
       :date-format="options?.dateFormat"
       :min="minimum"
       :max="maximum"
+      compact
       :disabled="disabled"
       @update:model-value="onChange"
     />

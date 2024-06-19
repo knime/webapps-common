@@ -111,6 +111,7 @@ const resetAll = () => {
       :model-value="data"
       :ariaLabel="control.label"
       :disabled="disabled"
+      compact
       @update:model-value="onChange"
     />
   </LabeledInput>

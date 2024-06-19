@@ -73,6 +73,7 @@ if (!choicesProvider.value) {
       :size="twinlistSize"
       :left-label="twinlistLeftLabel"
       :right-label="twinlistRightLabel"
+      compact
       :filter-chosen-values-on-possible-values-change="false"
       @update:model-value="onChange"
     />

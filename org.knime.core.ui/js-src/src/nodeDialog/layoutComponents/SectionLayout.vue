@@ -26,7 +26,7 @@ export default SectionLayout;
 </script>
 
 <template>
-  <LayoutComponentWrapper :layout="layout">
+  <LayoutComponentWrapper :layout="layout" class="layout-component-wrapper">
     <div class="section">
       <div class="section-header">
         <h3>{{ layout.uischema.label }}</h3>
@@ -50,6 +50,12 @@ export default SectionLayout;
 </template>
 
 <style lang="postcss" scoped>
+.layout-component-wrapper {
+  &:not(:first-child) {
+    padding-top: var(--space-32);
+  }
+}
+
 .section {
   & .section-header {
     position: sticky;

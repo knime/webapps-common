@@ -208,7 +208,7 @@ export default ArrayLayout;
 .array {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: var(--space-16);
   margin-bottom: 10px;
 
   & .item {

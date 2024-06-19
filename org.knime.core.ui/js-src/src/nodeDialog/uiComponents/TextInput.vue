@@ -45,6 +45,7 @@ const { showCheckbox, showControl, checkboxProps } = useHideOnNull(
         :placeholder="placeholder"
         :model-value="control.data"
         :disabled="disabled"
+        compact
         @update:model-value="onChange"
       />
     </template>
