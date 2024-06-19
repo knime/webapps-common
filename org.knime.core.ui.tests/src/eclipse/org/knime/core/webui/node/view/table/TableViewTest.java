@@ -410,7 +410,7 @@ class TableViewTest {
 
     @Test
     void testDataServiceSetsGetTableTrimColumns() {
-        final var numColumns = 200;
+        final var numColumns = 1200;
         var stringColumns = IntStream.range(0, numColumns)
             .mapToObj(i -> new ObjectColumn(String.format("Column %s", i), StringCell.TYPE, new String[]{"content"}))
             .toArray(ObjectColumn[]::new);
@@ -419,7 +419,7 @@ class TableViewTest {
         final var result =
             testTable.getTable(inputTable.getSpec().getColumnNames(), 0, 1, null, true, true, true, false);
         assertThat(result.getColumnCount()).isEqualTo(numColumns);
-        assertThat(result.getDisplayedColumns().length).isEqualTo(100);
+        assertThat(result.getDisplayedColumns().length).isEqualTo(1000);
     }
 
     @Test
