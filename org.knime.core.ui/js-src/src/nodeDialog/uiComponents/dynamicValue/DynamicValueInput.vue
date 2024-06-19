@@ -82,39 +82,40 @@ const initialValue = computed(() => {
 });
 
 const modifiersDef = computed(() => {
-  switch (props.value.modifiersClassName) {
-    case "org.knime.core.webui.node.dialog.defaultdialog.widget.dynamic.DynamicValuesInput$DynamicValue$StringValueModifiers":
-      return {
-        schemaProperties: {
-          caseMatching: {
-            oneOf: [
-              {
-                const: "CASESENSITIVE",
-                title: "Case sensitive",
-              },
-              {
-                const: "CASEINSENSITIVE",
-                title: "Case insensitive",
-              },
-            ],
-            title: "Case matching",
-            description:
-              "Whether RowIDs and strings should be matched case-sensitive or case-insensitive.",
+  if (
+    props.value.modifiersClassName ===
+    "org.knime.core.webui.node.dialog.defaultdialog.widget.dynamic.DynamicValuesInput$DynamicValue$StringValueModifiers"
+  ) {
+    return {
+      schemaProperties: {
+        caseMatching: {
+          oneOf: [
+            {
+              const: "CASESENSITIVE",
+              title: "Case sensitive",
+            },
+            {
+              const: "CASEINSENSITIVE",
+              title: "Case insensitive",
+            },
+          ],
+          title: "Case matching",
+          description:
+            "Whether RowIDs and strings should be matched case-sensitive or case-insensitive.",
+        },
+      },
+      uischemaElements: [
+        {
+          scope: "#/properties/modifiers/properties/caseMatching",
+          type: "Control",
+          options: {
+            format: "valueSwitch",
           },
         },
-        uischemaElements: [
-          {
-            scope: "#/properties/modifiers/properties/caseMatching",
-            type: "Control",
-            options: {
-              format: "valueSwitch",
-            },
-          },
-        ],
-      };
-    default:
-      return null;
+      ],
+    };
   }
+  return null;
 });
 </script>
 

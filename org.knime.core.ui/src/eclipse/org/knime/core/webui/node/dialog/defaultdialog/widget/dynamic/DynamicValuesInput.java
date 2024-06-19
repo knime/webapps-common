@@ -72,7 +72,6 @@ import org.knime.core.data.def.IntCell.IntCellFactory;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.util.CheckUtils;
@@ -101,8 +100,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
  */
 public class DynamicValuesInput implements PersistableSettings {
 
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(DynamicValuesInput.class);
-
     DynamicValue[] m_values;
 
     InputKind m_inputKind;
@@ -123,7 +120,7 @@ public class DynamicValuesInput implements PersistableSettings {
      * @param singleValueType type of the single value
      */
     public DynamicValuesInput(final DataType singleValueType) {
-        this(new DynamicValue[]{new DynamicValue(singleValueType)}, InputKind.Single);
+        this(new DynamicValue[]{new DynamicValue(singleValueType)}, InputKind.SINGLE);
     }
 
     /**
@@ -134,7 +131,7 @@ public class DynamicValuesInput implements PersistableSettings {
      * @param initialValue data type and initial value
      */
     public DynamicValuesInput(final DataType dataType, final DataCell initialValue) {
-        this(new DynamicValue[]{new DynamicValue(dataType, initialValue, null)}, InputKind.Single);
+        this(new DynamicValue[]{new DynamicValue(dataType, initialValue, null)}, InputKind.SINGLE);
     }
 
     /**
@@ -144,14 +141,16 @@ public class DynamicValuesInput implements PersistableSettings {
      * @return new input
      */
     public static DynamicValuesInput emptySingle() {
-        return new DynamicValuesInput(new DynamicValue[]{}, InputKind.Single);
+        return new DynamicValuesInput(new DynamicValue[]{}, InputKind.SINGLE);
     }
 
     enum InputKind {
-            Single, Double, Collection
+            SINGLE, DOUBLE, COLLECTION
     }
 
-    static class ModifiersRegistry {
+    static final class ModifiersRegistry {
+        private ModifiersRegistry() { /* empty default constructor */ }
+
         static Map<String, Class<? extends DefaultNodeSettings>> modifierClasses = new HashMap<>();
     }
 
@@ -280,7 +279,7 @@ public class DynamicValuesInput implements PersistableSettings {
                     if (message == null) {
                         message = "Unable to convert \"%s\" to cell of type \"%s\"".formatted(stringValue, m_type);
                     }
-                    throw new InvalidSettingsException(message, e.getCause());
+                    throw new InvalidSettingsException(message, e);
                 }
             }
             throw new IllegalStateException(
@@ -344,12 +343,12 @@ public class DynamicValuesInput implements PersistableSettings {
         }
 
         private static String getStringFromDataCell(final DataCell dataCell) throws ConverterException {
-            final var dataType = dataCell.getType();
             // convertUnsafe does not handle missing cells
             if (dataCell instanceof MissingCell) {
                 return null;
             }
             // check afterwards, since missing cells are also collection types
+            final var dataType = dataCell.getType();
             if (dataType.isCollectionType()) {
                 throw new IllegalArgumentException("Collection types are not supported. Given type is: %s"
                     .formatted(dataType));
@@ -365,7 +364,7 @@ public class DynamicValuesInput implements PersistableSettings {
                 throw new ConverterException(
                     msg != null ? msg
                         : "Unable to convert data cell of type \"%s\" to String.".formatted(dataCell.getType()),
-                    e.getCause());
+                    e);
             }
         }
 
@@ -380,7 +379,6 @@ public class DynamicValuesInput implements PersistableSettings {
          * @return data cell for the string representation
          * @throws Exception
          */
-        // TODO update javadoc
         private static DataCell readDataCellFromString(final DataType dataType, final String value)
                 throws ConverterException {
             if (dataType.isCollectionType()) {
@@ -474,10 +472,10 @@ public class DynamicValuesInput implements PersistableSettings {
                         : JsonFormsDataUtil.toDefaultNodeSettings(node.get(MODIFIERS_KEY), modifiersClass);
                 }
                 final var dataCell = DynamicValue.readDataCell(dataType, //
-                    () -> valueNode.asDouble(), //
-                    () -> valueNode.asInt(), //
-                    () -> valueNode.asBoolean(), //
-                    () -> valueNode.asText());
+                    valueNode::asDouble, //
+                    valueNode::asInt, //
+                    valueNode::asBoolean, //
+                    valueNode::asText);
                 return new DynamicValue(dataType, dataCell, modifiers);
             }
         }
@@ -486,17 +484,16 @@ public class DynamicValuesInput implements PersistableSettings {
 
             @Override
             public DynamicValue load(final NodeSettingsRO settings) throws InvalidSettingsException {
-                final var cellClassName = settings.getString(TYPE_ID_KEY);
-                final var dataType = getDataTypeForCellClassName(cellClassName, InvalidSettingsException::new);
-
-                final var modifiersClass = // TODO
-                    ModifiersRegistry.modifierClasses.get(settings.getString(MODIFIERS_CLASS_NAME_KEY, ""));
-                final var modifiers = modifiersClass == null ? null : DefaultFieldNodeSettingsPersistorFactory
-                    .createDefaultPersistor(modifiersClass, MODIFIERS_KEY).load(settings);
-
                 if (settings.containsKey(MISSING_CELL_ERR_KEY)) {
                     throw new InvalidSettingsException(settings.getString(MISSING_CELL_ERR_KEY));
                 }
+
+                final var modifiersClass = // TODO
+                        ModifiersRegistry.modifierClasses.get(settings.getString(MODIFIERS_CLASS_NAME_KEY, ""));
+                final var modifiers = modifiersClass == null ? null : DefaultFieldNodeSettingsPersistorFactory
+                    .createDefaultPersistor(modifiersClass, MODIFIERS_KEY).load(settings);
+                final var cellClassName = settings.getString(TYPE_ID_KEY);
+                final var dataType = getDataTypeForCellClassName(cellClassName, InvalidSettingsException::new);
                 if (settings.containsKey(VALUE_KEY)) {
                     final var dataCell = DynamicValue.<InvalidSettingsException> readDataCell(dataType, //
                         () -> settings.getDouble(VALUE_KEY), //
@@ -528,7 +525,7 @@ public class DynamicValuesInput implements PersistableSettings {
                             s -> settings.addString(VALUE_KEY, s));
                     } catch (final ConverterException e) {
                         throw new RuntimeException(
-                            String.format("Could not persist data cell value: %s.", e.getMessage()), e.getCause());
+                            String.format("Could not persist data cell value: %s.", e.getMessage()), e);
                     }
                 }
             }
@@ -554,7 +551,7 @@ public class DynamicValuesInput implements PersistableSettings {
         return m_values[index].m_value;
     }
 
-    public <T extends DefaultNodeSettings> T getModifiersAt(final int index, final Class<T> clazz) {
+    public <T extends DefaultNodeSettings> T getModifiersAt(final int index) {
         return (T)m_values[index].m_modifiers.orElseThrow();
     }
 
@@ -585,6 +582,6 @@ public class DynamicValuesInput implements PersistableSettings {
                 new DynamicValue(IntCell.TYPE), //
                 new DynamicValue(BooleanCell.TYPE),//
             //new DynamicValue(IntervalCell.TYPE)// currently breaks things, since we have no validation on dialog close
-            }, InputKind.Single);
+            }, InputKind.SINGLE);
     }
 }
