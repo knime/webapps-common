@@ -294,14 +294,16 @@ public final class NodeViewManager {
             var wfm = nc.getParent();
             var inPortIndex = tnv.getPortIndex();
             // plus 1 because the inPortIdx excludes the flow variable port
-            var conn = wfm.getIncomingConnectionFor(nc.getID(), inPortIndex + 1);
-            NodeOutPort outPort;
-            if (conn.getType() == ConnectionType.WFMIN) {
-                outPort = wfm.getWorkflowIncomingPort(conn.getSourcePort());
-            } else {
-                outPort = wfm.getNodeContainer(conn.getSource()).getOutPort(conn.getSourcePort());
-            }
-            return Optional.of((DataTableSpec)outPort.getPortObjectSpec());
+            return Optional.ofNullable(wfm.getIncomingConnectionFor(nc.getID(), inPortIndex + 1)) // connection
+                .map(conn -> {
+                    if (conn.getType() == ConnectionType.WFMIN) {
+                        return wfm.getWorkflowIncomingPort(conn.getSourcePort());
+                    } else {
+                        return wfm.getNodeContainer(conn.getSource()).getOutPort(conn.getSourcePort());
+                    }
+                }) // output port
+                .map(NodeOutPort::getPortObjectSpec) // port object spec
+                .map(spec -> spec instanceof DataTableSpec tableSpec ? tableSpec : null); // table spec
         } else {
             return Optional.empty();
         }
