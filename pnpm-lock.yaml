@@ -186,9 +186,6 @@ importers:
       '@knime/styles':
         specifier: workspace:*
         version: link:../packages/styles
-      '@storybook/addon-a11y':
-        specifier: ^8.1.6
-        version: 8.1.6
       consola:
         specifier: 3.2.3
         version: 3.2.3
@@ -199,6 +196,9 @@ importers:
       '@knime/eslint-config':
         specifier: workspace:*
         version: link:../packages/lint
+      '@storybook/addon-a11y':
+        specifier: ^8.1.6
+        version: 8.1.6
       '@storybook/addon-essentials':
         specifier: ^8.1.6
         version: 8.1.6(@types/react@18.3.3)(prettier@3.1.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)

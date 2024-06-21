@@ -1,7 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/vue3";
+import { userEvent, within, expect, fn } from "@storybook/test";
+import { markRaw } from "vue";
+
 import Twinlist from "../../../../../ui/components/forms/Twinlist.vue";
 import LoadingIcon from "../../../../../ui/components/LoadingIcon.vue";
-import { markRaw } from "vue";
+// import { userEvent, waitFor, within, expect, fn } from "@storybook/test";
 
 const demoValues = [
   {
@@ -110,6 +113,9 @@ export const Overview: Story = {
     setup() {
       return { args };
     },
+    args: {
+      onLeftListBoxDoubleClick: fn(),
+    },
     template:
       '<Twinlist v-bind="args"/><br/><div class="grid-item-6">selected ids: {{args.modelValue}}</div>',
   }),
@@ -121,6 +127,16 @@ export const Overview: Story = {
       },
     },
   },
+  play: async ({ args, canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    await step("Double click list item", async () => {
+      await userEvent.dblClick(canvas.getByText(args.possibleValues[0].text));
+    });
+
+    step("Double clicked item is selected", () => {
+      expect(args.modelValue).toContain(args.possibleValues[0].id);
+    });
+  },
 };
 
 export const Disabled: Story = {
@@ -128,6 +144,16 @@ export const Disabled: Story = {
   args: {
     ...Overview.args,
     disabled: true,
+  },
+  play: async ({ args, canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    await step("Double click disabled list item", async () => {
+      await userEvent.dblClick(canvas.getByText(args.possibleValues[0].text));
+    });
+
+    step("Double clicked item is not selected", () => {
+      expect(args.modelValue).not.toContain(args.possibleValues[0].id);
+    });
   },
 };
 
@@ -168,6 +194,17 @@ export const MissingSelectedValue: Story = {
         story: "The Twinlist with missing selected items.",
       },
     },
+  },
+  play: async ({ args, canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    await step("Double click missing  list item", async () => {
+      const missingValue = `(MISSING) ${selectedMissing[1]}`;
+      await userEvent.dblClick(canvas.getByText(missingValue));
+    });
+
+    step("Missing item removed from selected items", () => {
+      expect(args.modelValue).not.toContain(selectedMissing[1]);
+    });
   },
 };
 

@@ -3,6 +3,7 @@ import { userEvent, waitFor, within, expect, fn } from "@storybook/test";
 
 import Button from "../Button.vue";
 import LightningIcon from "@knime/styles/img/icons/lightning.svg";
+import PlayIcon from "@knime/styles/img/icons/circle-play.svg";
 
 // More on how to set up stories at: https://storybook.js.org/docs/vue/writing-stories/introduction
 const meta = {
@@ -16,14 +17,6 @@ const meta = {
     compact: false,
     onDark: false,
     withBorder: false,
-  },
-  parameters: {
-    docs: {
-      /* description: { component: "Hello Helian" } */ extractComponentDescription:
-        () => {
-          return "some string";
-        },
-    },
   },
 } satisfies Meta<typeof Button>;
 
@@ -39,8 +32,7 @@ export const Primary: Story = {
     template: '<Button v-bind="args">{{ args.default }}</Button>',
   }),
   args: {
-    // @ts-expect-error
-    default: "Click me!",
+    default: "Primary button",
     onClick: fn(),
   },
   parameters: { docs: { description: { story: "Story description" } } },
@@ -57,19 +49,31 @@ export const Primary: Story = {
 
 export const WithIcon: Story = {
   render: (args) => ({
-    components: { Button, LightningIcon },
+    components: { Button, PlayIcon },
     setup() {
       return { args };
     },
-    template:
-      '<Button v-bind="args"><LightningIcon /> {{ args.default }}</Button>',
+    template: '<Button v-bind="args"><PlayIcon /> {{ args.default }}</Button>',
   }),
   args: {
-    // @ts-expect-error
-    default: "Click me too!",
+    default: "Button with icon",
   },
 };
 
+export const Compact: Story = {
+  render: (args) => ({
+    components: { Button },
+    setup() {
+      return { args };
+    },
+    template: '<Button v-bind="args">{{ args.default }}</Button>',
+  }),
+  args: {
+    primary: true,
+    compact: true,
+    default: "Compact button",
+  },
+};
 export const WithWarning: Story = {
   render: (args) => ({
     components: { Button, LightningIcon },
@@ -83,7 +87,14 @@ export const WithWarning: Story = {
     primary: false,
     withBorder: true,
     withWarning: true,
-    // @ts-expect-error
-    default: "I have a warning",
+    default: "Forceful action",
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "In some cases, we want to indicate a warning. Example: Forceful action with potential damaging effects. Use with-border and with-warning.",
+      },
+    },
   },
 };

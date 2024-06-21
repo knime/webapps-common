@@ -31,7 +31,6 @@ const preview: Preview = {
       return story({ ...context, updateArgs });
     },
   ],
-
   tags: ["autodocs"],
 };
 
