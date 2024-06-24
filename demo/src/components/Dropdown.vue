@@ -455,6 +455,71 @@ export default {
       </div>
       <div class="grid-container">
         <div class="grid-item-12">
+          <p>Dropdown with option groups</p>
+        </div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-5">
+          <Dropdown
+            v-model="dropupSelected"
+            aria-label="A Dropup"
+            :possible-values="[
+              {
+                id: 'foo',
+                text: 'Foo',
+                group: 'group a',
+              },
+              {
+                id: 'bar',
+                text: 'Bar',
+                group: 'group a',
+              },
+              {
+                id: 'bar2',
+                text: 'Bar 2',
+                group: 'group a',
+              },
+              {
+                id: 'bar3',
+                text: 'Bar 3',
+                group: 'group b',
+              },
+              {
+                id: 'bar4',
+                text: 'Bar 4',
+                group: 'group b',
+              },
+              {
+                id: 'bar5',
+                text: 'Bar 5',
+                group: 'group c',
+              },
+              {
+                id: 'bar6',
+                text: 'Bar 6',
+                group: 'group c',
+              },
+              {
+                id: 'bar7',
+                text: 'Bar 8',
+                group: 'group c',
+              },
+              {
+                id: 'bar9',
+                text: 'Bar 9',
+              },
+              {
+                id: 'bar10',
+                text: 'Bar 10',
+              },
+            ]"
+            direction="up"
+          />
+        </div>
+        <div class="grid-item-2">selected id: {{ dropupSelected }}</div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-12">
           <h4>Slotted Dropdown</h4>
           <p>
             The optional <code>slotData</code> property can be used to
