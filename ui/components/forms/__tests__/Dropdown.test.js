@@ -75,6 +75,34 @@ const POSSIBLE_SLOTTED_VALUES_MOCK = [
     },
   },
 ];
+
+const POSSIBLE_VALUES_WITH_GROUPS_MOCK = [
+  {
+    id: "test1",
+    text: "Text 1",
+    group: "Group 1",
+  },
+  {
+    id: "test2",
+    text: "Text 2",
+    group: "Group 1",
+  },
+  {
+    id: "test3",
+    text: "Text 3",
+    group: "Group 2",
+  },
+  {
+    id: "test4",
+    text: "Text 4",
+    group: "Group 2",
+  },
+  {
+    id: "test5",
+    text: "Text 5",
+    group: "Group 3",
+  },
+];
 const OPTION_SLOT_CONTENT_MOCK = `
   <template #option="{ slotData: { a, b, c } } = { slotData: {}, }">
     {{ a }} {{ b }} {{ c }}
@@ -434,6 +462,17 @@ describe("Dropdown.vue", () => {
       const option = wrapper.find("li");
       expect(option.classes()).not.toContain("slotted");
       expect(option.text()).toBe(possibleValues[0].text);
+    });
+  });
+
+  describe("dropdown with options groups", () => {
+    it("render devider between groups", () => {
+      const { wrapper } = doMount({
+        possibleValues: POSSIBLE_VALUES_WITH_GROUPS_MOCK,
+      });
+      const deviders = wrapper.findAll(".group-divider");
+      consola.log(deviders);
+      expect(deviders.length).toBe(3);
     });
   });
 });
