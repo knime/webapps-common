@@ -75,6 +75,34 @@ const POSSIBLE_SLOTTED_VALUES_MOCK = [
     },
   },
 ];
+
+const POSSIBLE_VALUES_WITH_GROUPS_MOCK = [
+  {
+    id: "test1",
+    text: "Text 1",
+    group: "Group 1",
+  },
+  {
+    id: "test2",
+    text: "Text 2",
+    group: "Group 1",
+  },
+  {
+    id: "test3",
+    text: "Text 3",
+    group: "Group 2",
+  },
+  {
+    id: "test4",
+    text: "Text 4",
+    group: "Group 2",
+  },
+  {
+    id: "test5",
+    text: "Text 5",
+    group: "Group 3",
+  },
+];
 const OPTION_SLOT_CONTENT_MOCK = `
   <template #option="{ slotData: { a, b, c } } = { slotData: {}, }">
     {{ a }} {{ b }} {{ c }}
@@ -86,6 +114,7 @@ const doMount = ({
   name = null,
   modelValue = null,
   placeholder = null,
+  useGroupLabels = false,
   isValid,
   possibleValues = POSSIBLE_VALUES_MOCK,
   ariaLabel = ARIA_LABEL_MOCK,
@@ -98,6 +127,7 @@ const doMount = ({
     placeholder,
     name,
     isValid: isUndefined(isValid) ? true : isValid,
+    useGroupLabels,
   };
   const wrapper = mount(Dropdown, {
     propsData,
@@ -434,6 +464,26 @@ describe("Dropdown.vue", () => {
       const option = wrapper.find("li");
       expect(option.classes()).not.toContain("slotted");
       expect(option.text()).toBe(possibleValues[0].text);
+    });
+  });
+
+  describe("dropdown with options groups", () => {
+    it("render devider between groups", () => {
+      const { wrapper } = doMount({
+        possibleValues: POSSIBLE_VALUES_WITH_GROUPS_MOCK,
+      });
+
+      expect(wrapper.findAll(".group-divider").length).toBe(3);
+      expect(wrapper.findAll(".group-label").length).toBe(0);
+    });
+
+    it("render group labels", () => {
+      const { wrapper } = doMount({
+        possibleValues: POSSIBLE_VALUES_WITH_GROUPS_MOCK,
+        useGroupLabels: true,
+      });
+      expect(wrapper.findAll(".group-label").length).toBe(3);
+      expect(wrapper.findAll(".group-divider").length).toBe(0);
     });
   });
 });

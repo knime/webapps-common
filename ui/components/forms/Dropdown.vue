@@ -11,6 +11,7 @@ interface PossibleValue {
   id: Id;
   text: string;
   title?: string;
+  group?: string;
   slotData?: {
     [K in keyof any]: string | number | boolean;
   };
@@ -101,6 +102,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    useGroupLabels: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ["update:modelValue"],
   data() {
@@ -111,15 +116,39 @@ export default {
     };
   },
   computed: {
+    groupedValues() {
+      const groups: Record<string, { label?: string; items: PossibleValue[] }> =
+        {};
+      for (const item of this.possibleValues) {
+        const groupLabel = item.group || "";
+        if (!groups[groupLabel]) {
+          groups[groupLabel] = { label: item.group, items: [] };
+        }
+        groups[groupLabel].items.push(item);
+      }
+      return Object.values(groups);
+    },
+    orderedGroupedValues() {
+      const namedGroups = this.groupedValues.filter(
+        (group) => group.items[0].group,
+      );
+      const unnamedGroups = this.groupedValues.filter(
+        (group) => !group.items[0].group,
+      );
+      return [...namedGroups, ...unnamedGroups];
+    },
+    flatOrderedValues() {
+      return this.orderedGroupedValues.flatMap((group) => group.items);
+    },
     selectedIndex() {
-      return this.possibleValues.map((x) => x.id).indexOf(this.modelValue);
+      return this.flatOrderedValues.map((x) => x.id).indexOf(this.modelValue);
     },
     showPlaceholder() {
       return !this.modelValue;
     },
     displayTextMap() {
       let map = {} as Record<Id, string>;
-      for (let value of this.possibleValues) {
+      for (let value of this.flatOrderedValues) {
         map[value.id] = value.text;
       }
       return map;
@@ -142,7 +171,7 @@ export default {
       return this.$slots["icon-right"]?.().length;
     },
     hasOptionTemplate() {
-      return this.possibleValues.every(
+      return this.flatOrderedValues.every(
         (value) => value.slotData && !isEmpty(value.slotData),
       );
     },
@@ -189,10 +218,10 @@ export default {
     },
     onArrowDown() {
       let next = this.selectedIndex + 1;
-      if (next >= this.possibleValues.length) {
+      if (next >= this.flatOrderedValues.length) {
         return;
       }
-      this.setSelected(this.possibleValues[next].id);
+      this.setSelected(this.flatOrderedValues[next].id);
       this.scrollTo(next);
     },
     onArrowUp() {
@@ -200,18 +229,18 @@ export default {
       if (next < 0) {
         return;
       }
-      this.setSelected(this.possibleValues[next].id);
+      this.setSelected(this.flatOrderedValues[next].id);
       this.scrollTo(next);
     },
     onEndKey() {
-      let next = this.possibleValues.length - 1;
-      this.setSelected(this.possibleValues[next].id);
+      let next = this.flatOrderedValues.length - 1;
+      this.setSelected(this.flatOrderedValues[next].id);
       const listBoxNode = this.getListBoxNodeRef();
       listBoxNode.scrollTop = listBoxNode.scrollHeight;
     },
     onHomeKey() {
       let next = 0;
-      this.setSelected(this.possibleValues[next].id);
+      this.setSelected(this.flatOrderedValues[next].id);
       this.getListBoxNodeRef().scrollTop = 0;
     },
     toggleExpanded() {
@@ -287,7 +316,7 @@ export default {
       }, TYPING_TIMEOUT);
       this.searchQuery += e.key;
       consola.trace(`Searching for ${this.searchQuery}`);
-      const candidate = this.possibleValues.find((item) =>
+      const candidate = this.flatOrderedValues.find((item) =>
         item.text.toLowerCase().startsWith(this.searchQuery.toLowerCase()),
       );
       if (candidate) {
@@ -299,7 +328,7 @@ export default {
     },
     getCurrentSelectedId() {
       try {
-        return this.possibleValues[this.selectedIndex].id;
+        return this.flatOrderedValues[this.selectedIndex].id;
       } catch (e) {
         return "";
       }
@@ -358,29 +387,39 @@ export default {
         :class="{ 'drops-upwards': direction === 'up' }"
         @keydown="handleKeyDownList"
       >
-        <li
-          v-for="item of possibleValues"
-          :id="generateId('option', item.id)"
-          :key="`listbox-${item.id}`"
-          ref="options"
-          role="option"
-          :title="typeof item.title === 'undefined' ? item.text : item.title"
-          :class="{
-            focused: isCurrentValue(item.id),
-            noselect: true,
-            empty: item.text.trim() === '',
-            'has-option-template': hasOptionTemplate,
-          }"
-          :aria-selected="isCurrentValue(item.id)"
-          @click="onOptionClick(item.id)"
+        <template
+          v-for="(group, groupIndex) in orderedGroupedValues"
+          :key="groupIndex"
         >
-          <template v-if="hasOptionTemplate">
-            <slot name="option" :slot-data="item.slotData" />
-          </template>
-          <template v-else>
-            {{ item.text }}
-          </template>
-        </li>
+          <span v-if="useGroupLabels" class="group-label">{{
+            group.label
+          }}</span>
+          <span v-else class="group-divider" />
+          <li
+            v-for="item in group.items"
+            :id="generateId('option', item.id)"
+            :key="`listbox-${item.id}`"
+            ref="options"
+            role="option"
+            :title="typeof item.title === 'undefined' ? item.text : item.title"
+            :class="{
+              focused: isCurrentValue(item.id),
+              noselect: true,
+              empty: item.text.trim() === '',
+              'has-option-template': hasOptionTemplate,
+              'has-group-label': useGroupLabels,
+            }"
+            :aria-selected="isCurrentValue(item.id)"
+            @click="onOptionClick(item.id)"
+          >
+            <template v-if="hasOptionTemplate">
+              <slot name="option" :slot-data="item.slotData" />
+            </template>
+            <template v-else>
+              {{ item.text }}
+            </template>
+          </li>
+        </template>
       </ul>
       <input :id="id" type="hidden" :name="name" :value="modelValue" />
     </div>
@@ -581,10 +620,31 @@ export default {
     &.empty {
       white-space: pre-wrap;
     }
+
+    &.has-group-label {
+      padding-left: 15px;
+    }
   }
 
   & .noselect {
     user-select: none;
+  }
+
+  & .group-label {
+    display: block;
+    margin: 5px 10px;
+    cursor: default;
+    font-weight: 500;
+  }
+
+  & .group-divider {
+    display: block;
+    margin: 10px 10px 5px;
+    border-top: 1px solid var(--knime-silver-sand);
+
+    &:first-child {
+      display: none;
+    }
   }
 }
 </style>
