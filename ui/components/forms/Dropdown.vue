@@ -3,25 +3,15 @@ import "./variables.css";
 import { isEmpty } from "lodash-es";
 
 import DropdownIcon from "../../assets/img/icons/arrow-dropdown.svg";
-import { type PropType, defineComponent } from "vue";
+import { type PropType, defineComponent, computed, ref, toRef } from "vue";
 import { OnClickOutside } from "@vueuse/components";
-
-type Id = string | number;
-interface PossibleValue {
-  id: Id;
-  text: string;
-  title?: string;
-  slotData?: {
-    [K in keyof any]: string | number | boolean;
-  };
-}
+import { useSearch, type PossibleValue, type Id } from "./possibleValues";
 
 interface ComponentData {
-  searchValue: string;
   typingTimeout: null | ReturnType<typeof setTimeout>;
   isExpanded: boolean;
   searchQuery: string;
-  candidate: string;
+  candidate: Id;
   emptyState: string;
   optionRefs: Map<Id, HTMLElement>;
   isActive: boolean;
@@ -49,6 +39,10 @@ export default defineComponent({
       default() {
         return `Dropdown-${count++}`;
       },
+    },
+    initialCaseSensitive: {
+      type: Boolean,
+      default: false,
     },
     modelValue: {
       type: String as PropType<Id>,
@@ -115,13 +109,30 @@ export default defineComponent({
     },
   },
   emits: ["update:modelValue"],
+  setup(props) {
+    const searchValue = ref("");
+
+    const filteredPossibleValues = computed(() => {
+      if (searchValue.value.length === 0) {
+        return props.possibleValues;
+      }
+
+      const filteredItems = useSearch(
+        searchValue,
+        toRef(props.initialCaseSensitive),
+        toRef(props.possibleValues),
+      );
+      return filteredItems;
+    });
+
+    return { filteredPossibleValues, searchValue };
+  },
   data(): ComponentData {
     return {
-      searchValue: "",
       typingTimeout: null,
       isExpanded: false,
       searchQuery: "",
-      candidate: this.modelValue as string,
+      candidate: this.modelValue,
       emptyState: "Nothing found",
       optionRefs: new Map(),
       isActive: false,
@@ -149,7 +160,7 @@ export default defineComponent({
       } else if (this.displayTextMap.hasOwnProperty(this.modelValue)) {
         return this.displayTextMap[this.modelValue];
       } else {
-        return `(MISSING) ${this.modelValue}`;
+        return `(MISSING) ${this.modelValue.toString()}`;
       }
     },
     isMissing() {
@@ -165,20 +176,8 @@ export default defineComponent({
         (value) => value.slotData && !isEmpty(value.slotData),
       );
     },
-    filteredPossibleValues() {
-      if (this.searchValue.length === 0) {
-        return this.possibleValues;
-      }
 
-      const filteredItems = this.possibleValues.filter(
-        (possibleValue: PossibleValue) =>
-          (possibleValue.text as string)
-            .toLowerCase()
-            .includes(this.searchValue.toLowerCase()),
-      );
-      return filteredItems;
-    },
-    renderEmptyState() {
+    hasNoFilteredPossibleValues() {
       return this.filteredPossibleValues.length === 0;
     },
 
@@ -188,11 +187,11 @@ export default defineComponent({
   },
   watch: {
     filteredPossibleValues(newVal: PossibleValue[]) {
-      this.candidate = newVal[0]?.id as string;
+      this.candidate = newVal[0]?.id;
     },
   },
   methods: {
-    updateCandidate(candidate: string) {
+    updateCandidate(candidate: Id) {
       this.candidate = candidate;
     },
     isCurrentValue(candidate: Id) {
@@ -204,7 +203,7 @@ export default defineComponent({
       /**
        * Fired when the selection changes.
        */
-      this.updateCandidate(id as string);
+      this.updateCandidate(id);
     },
     getButtonRef() {
       return this.$refs.button as HTMLElement;
@@ -216,13 +215,11 @@ export default defineComponent({
       return this.$refs.ul as HTMLElement;
     },
     onOptionClick(id: Id) {
+      this.isActive = false;
       this.setSelected(id);
       this.$emit("update:modelValue", id);
       this.isExpanded = false;
       this.getButtonRef().focus();
-      this.$nextTick(
-        () => (this.$refs.searchInput as HTMLInputElement)?.blur(),
-      );
       this.searchValue = "";
     },
     scrollTo(id: Id) {
@@ -231,7 +228,7 @@ export default defineComponent({
         let element = this.optionRefs.get(id);
         if (!element) {
           consola.error(
-            `trying to scroll to element with Id ${id} which does not exist`,
+            `trying to scroll to element with Id ${id.toString()} which does not exist`,
           );
           return;
         }
@@ -250,7 +247,7 @@ export default defineComponent({
       if (next >= this.filteredPossibleValues.length) {
         return;
       }
-      const nextId = this.filteredPossibleValues[next].id as string;
+      const nextId = this.filteredPossibleValues[next].id;
 
       this.setSelected(nextId);
       this.scrollTo(nextId);
@@ -261,7 +258,7 @@ export default defineComponent({
         this.$nextTick(
           () =>
             ((this.$refs.searchInput as HTMLInputElement).value =
-              this.candidate),
+              this.displayTextMap[this.modelValue]),
         );
       }
     },
@@ -271,7 +268,7 @@ export default defineComponent({
       if (next < 0) {
         return;
       }
-      const nextId = this.filteredPossibleValues[next].id as string;
+      const nextId = this.filteredPossibleValues[next].id;
       this.setSelected(nextId);
       this.scrollTo(nextId);
 
@@ -281,14 +278,14 @@ export default defineComponent({
         this.$nextTick(
           () =>
             ((this.$refs.searchInput as HTMLInputElement).value =
-              this.candidate),
+              this.displayTextMap[this.modelValue]),
         );
       }
     },
     onArrowRight() {
       this.$nextTick(() => {
-        (this.$refs.searchInput as HTMLInputElement).value = this
-          .modelValue as string;
+        (this.$refs.searchInput as HTMLInputElement).value =
+          this.displayTextMap[this.modelValue];
       });
     },
     onEnter() {
@@ -305,12 +302,15 @@ export default defineComponent({
       listBoxNode.scrollTop = listBoxNode.scrollHeight;
     },
     selectFirst() {
-      let next = 0;
-      this.setSelected(this.filteredPossibleValues[next]?.id);
+      const { id } = this.filteredPossibleValues[0];
+      this.setSelected(id);
       this.getListBoxNodeRef().scrollTop = 0;
-      this.candidate = this.filteredPossibleValues[0]?.id as string;
+      this.candidate = id;
     },
     toggleExpanded() {
+      if (this.hasNoFilteredPossibleValues) {
+        return;
+      }
       if (this.disabled) {
         return;
       }
@@ -320,8 +320,8 @@ export default defineComponent({
       if (this.isExpanded) {
         this.selectFirst();
       } else {
-        this.isActive = false;
         this.$nextTick(() => this.getButtonRef().focus());
+        this.isActive = false;
       }
     },
 
@@ -332,7 +332,6 @@ export default defineComponent({
         e.key !== KEY_UP &&
         e.key !== KEY_ENTER &&
         e.key !== KEY_END &&
-        e.key !== KEY_HOME &&
         e.key !== KEY_HOME
       ) {
         this.isActive = true;
@@ -341,6 +340,9 @@ export default defineComponent({
         );
       }
       if (e.key === KEY_ENTER) {
+        if (this.hasNoFilteredPossibleValues) {
+          return;
+        }
         this.onEnter();
         e.preventDefault();
         return;
@@ -357,8 +359,6 @@ export default defineComponent({
       }
       if (e.key === KEY_RIGHT) {
         this.onArrowRight();
-        e.preventDefault();
-        e.stopImmediatePropagation();
         return;
       }
       if (e.key === KEY_UP) {
@@ -417,11 +417,12 @@ export default defineComponent({
       return `${node}-${this.id}-${cleanId}`;
     },
     clickAway() {
-      this.isExpanded = false;
+      this.isActive = false;
       this.searchValue = "";
+      this.isExpanded = false;
     },
-    handleSearch(e: Event) {
-      this.searchValue = (e.target as HTMLInputElement).value;
+    handleSearch(item: string) {
+      this.searchValue = item;
     },
   },
 });
@@ -453,12 +454,7 @@ export default defineComponent({
           @click="toggleExpanded"
           @keydown="handleKeyDownButton"
         >
-          <template v-if="!isActive">
-            <span ref="span" :class="{ span: isExpanded && !isActive }">{{
-              displayText
-            }}</span>
-          </template>
-          <div v-else class="summary-input-wrapper">
+          <div v-if="isActive" class="summary-input-wrapper">
             <input
               ref="searchInput"
               :value="searchValue"
@@ -466,9 +462,12 @@ export default defineComponent({
               role="searchbox"
               class="search-input"
               type="text"
-              @input="handleSearch"
+              @input="(e) => handleSearch((e.target as HTMLInputElement).value)"
             />
           </div>
+          <span v-else ref="span" :class="{ span: isExpanded }">{{
+            displayText
+          }}</span>
           <div v-if="hasRightIcon" class="loading-icon">
             <slot name="icon-right" />
           </div>
@@ -484,15 +483,13 @@ export default defineComponent({
           isExpanded ? generateId('option', getCurrentSelectedId()) : undefined
         "
       >
-        <template v-if="renderEmptyState">
-          <div class="empty-state">
-            {{ emptyState }}
-          </div>
-        </template>
+        <div v-if="hasNoFilteredPossibleValues" class="empty-state">
+          {{ emptyState }}
+        </div>
         <li
           v-for="item of isActive ? filteredPossibleValues : possibleValues"
           :id="generateId('option', item.id)"
-          :key="`listbox-${item.id}`"
+          :key="`listbox-${item}`"
           :ref="(element) => optionRefs.set(item.id, element as HTMLElement)"
           role="option"
           :title="typeof item.title === 'undefined' ? item.text : item.title"
@@ -550,6 +547,7 @@ export default defineComponent({
     justify-content: center;
     font-size: 0.8rem;
     padding: 0.5rem;
+    cursor: default;
   }
 
   &.collapsed {

@@ -5,6 +5,10 @@ export interface PossibleValue {
   text: string;
   invalid?: boolean;
   special?: true;
+  title?: string;
+  slotData?: {
+    [K in keyof any]: string | number | boolean;
+  };
 }
 
 export type BottomValue = {

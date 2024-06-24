@@ -149,13 +149,13 @@ describe("Dropdown.vue", () => {
     );
   });
 
-  it("check if we have search value", async () => {
+  it("checks if we have search value", () => {
     const { wrapper } = doMount({
       Dropdown,
     });
     expect(wrapper.vm.activeSearch).toBe(false);
 
-    await wrapper.setData({ searchValue: "a" });
+    wrapper.vm.searchValue = "a";
     expect(wrapper.vm.activeSearch).toBe(true);
   });
 
@@ -172,7 +172,7 @@ describe("Dropdown.vue", () => {
       Dropdown,
     });
     const list = wrapper.vm.filteredPossibleValues;
-    expect(list.length.toBeTruthy);
+    expect(list.length).toBeTruthy();
   });
 
   it("sets the correct aria-* attributes", () => {
@@ -182,7 +182,7 @@ describe("Dropdown.vue", () => {
     expect(button.attributes("aria-label")).toBe(ariaLabel);
   });
 
-  it("reset the Dropdown when click outside of Dropdown", async () => {
+  it("resets the Dropdown when click outside of Dropdown", async () => {
     const { wrapper } = doMount({
       Dropdown,
     });
@@ -201,7 +201,7 @@ describe("Dropdown.vue", () => {
 
     wrapper.vm.clickAway();
 
-    expect((wrapper.vm.searchValue = ""));
+    expect(wrapper.vm.searchValue).toBe("");
     expect(wrapper.vm.isExpanded).toBeFalsy();
     expect(wrapper.vm.inputOrOptionsFocussed).toBeFalsy();
   });
@@ -306,8 +306,13 @@ describe("Dropdown.vue", () => {
     const { wrapper } = doMount();
     expect(wrapper.vm.hasSelection()).toBe(false);
     await wrapper.setData({ candidate: "test2" });
-    // console.log("selection",wrapper.vm.filteredPossibleValues.includes(wrapper.vm.modelValue))
     expect(wrapper.vm.hasSelection()).toBe(true);
+  });
+
+  it("updates searchValue", () => {
+    const { wrapper } = doMount();
+    wrapper.vm.handleSearch("a");
+    expect(wrapper.vm.searchValue).toBe("a");
   });
 
   describe.each([
