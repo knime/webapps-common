@@ -24,18 +24,16 @@ describe("Description.vue", () => {
       },
     });
     expect(wrapper.find(".plain").exists()).toBeFalsy();
-    expect(wrapper.find(".description").exists()).toBeTruthy();
-    expect(wrapper.find(".html-description").exists()).toBeFalsy();
+    expect(wrapper.find(".html-description").exists()).toBeTruthy();
     expect(wrapper.html()).toContain(html);
   });
 
-  it("uses RTE styling if specified", () => {
+  it("uses RTE styling for html description", () => {
     const html = "<p>testtext</p>";
     const wrapper = mount(Description, {
       props: {
         text: html,
         renderAsHtml: true,
-        useRichTextEditorStyles: true,
       },
     });
     expect(wrapper.find(".plain").exists()).toBeFalsy();

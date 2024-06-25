@@ -144,10 +144,60 @@
     color: var(--theme-text-link-foreground-color);
     text-decoration-style: dashed;
 
+    @supports (mask: url("") no-repeat 50% 50%) {
+      &[href^="http"]::after {
+        content: "";
+        mask: url("../assets/img/icons/link-external.svg?data") no-repeat 50%
+          50%;
+        mask-size: cover;
+        background-color: var(--knime-masala); /* defines icon color */
+        width: 16px;
+        height: 16px;
+        display: inline-block;
+        margin-left: 4px;
+        vertical-align: -2px;
+      }
+    }
+
     &:hover {
       text-decoration-style: solid;
       background: var(--theme-text-link-background-color-hover);
       color: var(--theme-text-link-foreground-color-hover);
+    }
+  }
+
+  @mixin-content;
+}
+
+@define-mixin rich-text-editor-table {
+  & table {
+    border-spacing: 15px 0;
+    width: calc(100% + 2 * 15px);
+    text-align: left;
+    margin: 20px 0;
+    position: relative;
+    left: -15px;
+
+    & th {
+      font-weight: 500;
+      font-family: var(--theme-text-medium-font-family);
+      color: var(--theme-text-medium-color);
+      border-bottom: solid 2px var(--knime-masala);
+    }
+
+    & th,
+    & td {
+      padding: 4px 8px;
+    }
+
+    & td {
+      border-bottom: solid 1px var(--knime-masala);
+    }
+
+    & colgroup {
+      font-size: 16px;
+      font-weight: 700;
+      border-bottom: solid 3px var(--knime-masala);
     }
   }
 
@@ -163,6 +213,7 @@
   @mixin rich-text-editor-code;
   @mixin rich-text-editor-lists;
   @mixin rich-text-editor-links;
+  @mixin rich-text-editor-table;
 
   @mixin-content;
 }

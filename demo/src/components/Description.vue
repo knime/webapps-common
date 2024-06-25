@@ -2,13 +2,11 @@
 import CodeExample from "./demo/CodeExample.vue";
 import Description from "webapps-common/ui/components/Description.vue";
 import code from "webapps-common/ui/components/Description.vue?raw";
-import Checkbox from "webapps-common/ui/components/forms/Checkbox.vue";
 
 export default {
   components: {
     Description,
     CodeExample,
-    Checkbox,
   },
   data() {
     return {
@@ -16,13 +14,48 @@ export default {
 
 <Description :text="htmlString" renderAsHtml />`,
       descriptionWithHtmlText: `<h4>This is a description without a slot, rendering an html string</h4>
-      <p>It can be configured to use the same styles as the RichTextEditor component using the checkbox below<br>
+      <p>It uses the same styles as the RichTextEditor component<br>
         <hr>
         <strong>strong</strong> <br>
         <i>italics</i> <br>
         <ul><li>one</li><li>two</li></ul>
         <pre><code>this is a code block</code></pre>
-        <a href="www.knime.com">This is a link</a>
+        <a href="https://www.knime.com">This is an external link</a><br>
+        <a href="/">This is an internal link</a> 
+        <table>
+            <tbody>
+              <tr>
+                <th>level0</th>
+                <th>level1</th>
+                <th>level2</th>
+                <th>value</th>
+              </tr>
+              <tr>
+                <td>Carnivora</td>
+                <td>Felidae</td>
+                <td>Panthera</td>
+                <td>10</td>
+              </tr>
+              <tr>
+                <td>Carnivora</td>
+                <td>Mustelidae</td>
+                <td>Mephitis</td>
+                <td>6</td>
+              </tr>
+              <tr>
+                <td>Carnivora</td>
+                <td>Mustelidae</td>
+                <td>Lutra</td>
+                <td>7</td>
+              </tr>
+              <tr>
+                <td>Carnivora</td>
+                <td>Canidae</td>
+                <td>?</td>
+                <td>14</td>
+              </tr>
+            </tbody>
+          </table>
       </p><br>`,
       useRichTextEditorStyles: false,
     };
@@ -140,11 +173,6 @@ return (new XMLSerializer()).serializeToString(svgElement);</pre
           :render-as-html="true"
           :use-rich-text-editor-styles="useRichTextEditorStyles"
         />
-      </div>
-      <div class="grid-container">
-        <Checkbox v-model="useRichTextEditorStyles" class="grid-item-12"
-          >Use RichTextEditor styles</Checkbox
-        >
       </div>
     </section>
     <section>

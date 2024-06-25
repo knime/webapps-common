@@ -15,10 +15,6 @@ export default {
       type: Boolean,
       default: false,
     },
-    useRichTextEditorStyles: {
-      type: Boolean,
-      default: false,
-    },
   },
 };
 </script>
@@ -32,10 +28,7 @@ export default {
   <div
     v-else-if="!$slots.default && renderAsHtml"
     v-bind="{ ...$attrs }"
-    :class="{
-      'html-description': useRichTextEditorStyles,
-      description: !useRichTextEditorStyles,
-    }"
+    class="html-description"
     v-html="text"
   />
   <div v-else class="description plain" v-text="text" />
@@ -195,6 +188,7 @@ export default {
     @mixin rich-text-editor-code;
     @mixin rich-text-editor-lists;
     @mixin rich-text-editor-links;
+    @mixin rich-text-editor-table;
 
     font-size: var(--description-font-size, 18px);
   }
