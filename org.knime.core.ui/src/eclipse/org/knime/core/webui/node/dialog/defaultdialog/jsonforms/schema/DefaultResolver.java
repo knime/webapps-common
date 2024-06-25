@@ -76,8 +76,10 @@ final class DefaultResolver implements ConfigFunction<FieldScope, Object> {
         if (field.isFakeContainerItemScope()) {
             return null;
         }
-
-        final var declaringClass = field.getDeclaringType().getErasedType();
+        // support fields in abstract classes (need to instantiate the concrete class later)
+        final var types = field.getDeclaringTypeMembers().mainTypeAndOverrides();
+        final var declaringClass =
+            types.isEmpty() ? field.getDeclaringType().getErasedType() : types.get(types.size() - 1).getErasedType();
         try {
             final var defaultObject = m_defaultObjects.computeIfAbsent(declaringClass,
                 c -> m_context == null ? createInstance(c) : createInstanceWithContext(c, m_context));
