@@ -12,6 +12,7 @@ const DRAFT_ITEM_ID = "draft-id-combobox-preview-item";
 interface ComboBoxItem {
   id: string;
   text: string;
+  invalid?: boolean;
 }
 
 interface ComponentData {
@@ -107,7 +108,7 @@ export default defineComponent({
        */
       focusElement: null,
       refocusElement: null,
-      allPossibleItems: this.possibleValues,
+      allPossibleItems: [...this.possibleValues],
     };
   },
 
@@ -147,7 +148,14 @@ export default defineComponent({
     },
 
     selectedValues() {
-      return this.getSelectedValues(this.modelValue);
+      return this.modelValue.map(
+        (id) =>
+          this.allPossibleItems.find((item) => id === item.id) || {
+            id,
+            text: `(MISSING) ${id}`,
+            invalid: true,
+          },
+      );
     },
 
     maxSizeVisibleOptions() {
@@ -155,6 +163,14 @@ export default defineComponent({
         ? this.searchResults.length
         : this.sizeVisibleOptions;
     },
+  },
+
+  created() {
+    if (!this.allowNewValues) {
+      this.$watch("possibleValues", (newPossibleValues) => {
+        this.allPossibleItems = [...newPossibleValues];
+      });
+    }
   },
 
   mounted() {
@@ -289,15 +305,15 @@ export default defineComponent({
           @click.stop="focusInput"
         >
           <div
-            v-for="(item, index) in selectedValues"
+            v-for="({ id, text, invalid }, index) in selectedValues"
             :key="`item.id${index}`"
             class="tag"
-            :title="item.text"
+            :title="text"
           >
-            <span class="text">{{ item.text }}</span>
+            <span :class="['text', { invalid }]">{{ text }}</span>
             <FunctionButton
               class="remove-tag-button"
-              @click.stop="removeTag(item.id)"
+              @click.stop="removeTag(id)"
             >
               <CloseIcon class="remove-tag-button-icon" />
             </FunctionButton>
@@ -397,6 +413,10 @@ export default defineComponent({
           white-space: nowrap;
           text-overflow: ellipsis;
           line-height: 12px;
+
+          &.invalid {
+            color: var(--theme-color-error);
+          }
         }
 
         & .remove-tag-button {

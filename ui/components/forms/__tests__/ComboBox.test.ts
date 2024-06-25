@@ -4,6 +4,21 @@ import { mount } from "@vue/test-utils";
 import ComboBox from "../ComboBox.vue";
 import Multiselect from "../Multiselect.vue";
 
+const possibleValues = [
+  {
+    id: "test1",
+    text: "test1",
+  },
+  {
+    id: "test2",
+    text: "test2",
+  },
+  {
+    id: "test3",
+    text: "test3",
+  },
+];
+
 const doMount = (
   dynamicProps?: Record<string, any>,
   options?: { attachTo: HTMLElement },
@@ -71,6 +86,55 @@ describe("ComboBox.vue", () => {
     const multiselectComponent = wrapper.findComponent(Multiselect);
     expect(multiselectComponent.props("possibleValues").length).toBe(1);
     expect(multiselectComponent.props("sizeVisibleOptions")).toBe(1);
+  });
+
+  it("has reactive possible values when new values cannot be added", async () => {
+    const newPossibleValues = [
+      {
+        id: "newPossibleValue",
+        text: "newPossibleValue",
+      },
+    ];
+    const wrapper = doMount({ possibleValues });
+
+    expect(wrapper.vm.allPossibleItems).toStrictEqual(possibleValues);
+
+    await wrapper.setProps({
+      possibleValues: newPossibleValues,
+    });
+    expect(wrapper.vm.allPossibleItems).toStrictEqual(newPossibleValues);
+  });
+
+  it("doesn't have reactive possible values when new values can be added", async () => {
+    const possibleValuesCopy = [...possibleValues];
+    const wrapper = doMount({
+      possibleValues: possibleValuesCopy,
+      allowNewValues: true,
+    });
+
+    possibleValuesCopy.push({
+      id: "newPossibleValue",
+      text: "newPossibleValue",
+    });
+    expect(wrapper.vm.allPossibleItems).toStrictEqual(possibleValues);
+
+    await wrapper.setProps({
+      possibleValues: [{ id: "newPossibleValue", text: "newPossibleValue" }],
+    });
+    expect(wrapper.vm.allPossibleItems).toStrictEqual(possibleValues);
+  });
+
+  it("renders invalid possible values for modelValue entries that are not present in the possible values", () => {
+    const missingId = "missing";
+    const wrapper = doMount({ modelValue: [possibleValues[0].id, missingId] });
+    expect(wrapper.vm.selectedValues).toStrictEqual([
+      possibleValues[0],
+      {
+        id: missingId,
+        text: `(MISSING) ${missingId}`,
+        invalid: true,
+      },
+    ]);
   });
 
   describe("focussing", () => {
