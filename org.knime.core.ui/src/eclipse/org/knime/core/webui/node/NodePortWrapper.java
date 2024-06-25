@@ -48,10 +48,15 @@
  */
 package org.knime.core.webui.node;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.NodeOutPort;
+import org.knime.core.node.workflow.WorkflowManager;
 import org.knime.core.webui.node.port.PortContext;
 
 import com.google.common.base.Objects;
@@ -96,6 +101,18 @@ public interface NodePortWrapper extends NodeWrapper {
             }
 
             @Override
+            public List<NodeContainer> getNodesConnectedToOutputPorts() {
+                if (nc instanceof WorkflowManager wfm && nc.getNrOutPorts() > 0) {
+                    return IntStream.range(0, nc.getNrOutPorts())//
+                        .mapToObj(wfm::getOutPort)//
+                        .map(NodeOutPort::getConnectedNodeContainer)//
+                        .map(NodeContainer.class::cast)//
+                        .toList();
+                }
+                return Collections.emptyList();
+            }
+
+            @Override
             public <T> T getWithContext(final Supplier<T> supplier) {
                 PortContext.pushContext(nc.getOutPort(portIdx));
                 try {
@@ -117,13 +134,20 @@ public interface NodePortWrapper extends NodeWrapper {
                     return false;
                 }
                 var w = (NodePortWrapper)o;
-                return Objects.equal(nc, w.get()) && portIdx == w.getPortIdx()
-                    && viewIdx == w.getViewIdx();
+                return Objects.equal(nc, w.get()) //
+                    && portIdx == w.getPortIdx() //
+                    && viewIdx == w.getViewIdx() //
+                    && this.getNodesConnectedToOutputPorts().equals(w.getNodesConnectedToOutputPorts());
             }
 
             @Override
             public int hashCode() {
-                return new HashCodeBuilder().append(nc).append(portIdx).append(viewIdx).toHashCode();
+                return new HashCodeBuilder()//
+                    .append(nc)//
+                    .append(portIdx)//
+                    .append(viewIdx)//
+                    .append(this.getNodesConnectedToOutputPorts())//
+                    .toHashCode();
             }
         };
     }
@@ -137,4 +161,12 @@ public interface NodePortWrapper extends NodeWrapper {
      * @return the view index
      */
     int getViewIdx();
+
+    /**
+     * To be able to know whether the nodes internally connected to a metanodes output ports, we need to track them.
+     * Otherwise the node port view cache might yield invalid port views, see NXT-1950.
+     *
+     * @return The list of nodes internally connected to a metanodes output ports; empty if not a metanode
+     */
+    List<NodeContainer> getNodesConnectedToOutputPorts();
 }
