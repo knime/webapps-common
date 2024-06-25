@@ -452,27 +452,6 @@ export default {
             direction="up"
           />
         </div>
-        <div class="grid-item-5">
-          <Dropdown
-            v-model="dropupSelected"
-            aria-label="A Dropup"
-            :possible-values="[
-              {
-                id: 'foo',
-                text: 'Foo',
-              },
-              {
-                id: 'bar',
-                text: 'Bar',
-              },
-              {
-                id: 'baz',
-                text: 'Baz',
-              },
-            ]"
-            direction="up"
-          />
-        </div>
         <div class="grid-item-2">selected id: {{ dropupSelected }}</div>
       </div>
       <div class="grid-container">
