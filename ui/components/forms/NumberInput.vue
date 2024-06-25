@@ -138,10 +138,10 @@ export default {
     onInput(event: InputEvent) {
       const newValue = (event.target as InputHTMLAttributes).value;
       /**
-       * do not emit input event when decimal point is being
-       * used because number input field treats it as invalid
+       * do not emit input event when decimal point or minus sign is
+       * used because number input field treats them as invalid
        */
-      if (event && event.data === "." && !newValue) {
+      if (event && !newValue && (event.data === "." || event.data === "-")) {
         return;
       }
       if (!newValue) {
