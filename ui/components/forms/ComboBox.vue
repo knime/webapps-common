@@ -5,13 +5,10 @@ import { defineComponent, type PropType } from "vue";
 import Multiselect from "./Multiselect.vue";
 import FunctionButton from "../FunctionButton.vue";
 import CloseIcon from "../../assets/img/icons/close.svg";
+import { createMissingItem } from "./possibleValues";
+import type { PossibleValue, Id } from "./possibleValues";
 
 const DRAFT_ITEM_ID = "draft-id-combobox-preview-item";
-
-interface ComboBoxItem {
-  id: string;
-  text: string;
-}
 
 interface ComponentData {
   searchValue: string;
@@ -23,7 +20,7 @@ interface ComponentData {
    */
   focusElement: any; // TODO - remove any type. Multiselect is not properly typed so when this value is passed as a prop the type-checker errors out
   refocusElement: any; // TODO - remove any type. Multiselect is not properly typed so when this value is passed as a prop the type-checker errors out
-  allPossibleItems: Array<ComboBoxItem>;
+  allPossibleItems: Array<PossibleValue>;
 }
 
 type MultiselectRef = InstanceType<typeof Multiselect>;
@@ -40,7 +37,7 @@ export default defineComponent({
      * can be used that are specified in Multiselect.vue.
      */
     possibleValues: {
-      type: Array as PropType<Array<ComboBoxItem>>,
+      type: Array as PropType<Array<PossibleValue>>,
       default: () => [],
       validator(values) {
         if (!Array.isArray(values)) {
@@ -55,7 +52,7 @@ export default defineComponent({
      * List of initial selected ids.
      */
     modelValue: {
-      type: Array as PropType<Array<string>>,
+      type: Array as PropType<Array<Id>>,
       default: () => [],
     },
     /**
@@ -94,7 +91,7 @@ export default defineComponent({
 
   emits: {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    "update:modelValue": (_payload: Array<string>) => true,
+    "update:modelValue": (_payload: Array<Id>) => true,
   },
 
   data(): ComponentData {
@@ -163,10 +160,8 @@ export default defineComponent({
     selectedValues() {
       return this.modelValue.map(
         (id) =>
-          this.allPossibleItems.find((item) => item.id === id) || {
-            id,
-            text: id,
-          },
+          this.allPossibleItems.find((item) => id === item.id) ||
+          createMissingItem(id),
       );
     },
 
@@ -177,13 +172,21 @@ export default defineComponent({
     },
   },
 
+  created() {
+    if (!this.allowNewValues) {
+      this.$watch("possibleValues", (newPossibleValues) => {
+        this.allPossibleItems = [...newPossibleValues];
+      });
+    }
+  },
+
   mounted() {
     this.focusElement = this.$refs.searchInput as HTMLInputElement;
     this.refocusElement = this.$refs.listBox as HTMLDivElement;
   },
 
   methods: {
-    emitNewSelection(newSelectedIds: string[]) {
+    emitNewSelection(newSelectedIds: Id[]) {
       this.$emit("update:modelValue", newSelectedIds);
     },
     focusInput() {
@@ -226,7 +229,7 @@ export default defineComponent({
       (this.$refs.combobox as MultiselectRef).updateFocusOptions();
     },
 
-    updateSelectedIds(selectedIds: Array<string>) {
+    updateSelectedIds(selectedIds: Array<Id>) {
       const hasNewItem = selectedIds.includes(DRAFT_ITEM_ID);
 
       if (!hasNewItem) {
@@ -234,7 +237,7 @@ export default defineComponent({
         return;
       }
 
-      const newItem: ComboBoxItem = {
+      const newItem: PossibleValue = {
         id: this.trimmedSearchValue,
         text: this.trimmedSearchValue,
       };
@@ -246,7 +249,7 @@ export default defineComponent({
       );
     },
 
-    removeTag(idToRemove: string) {
+    removeTag(idToRemove: Id) {
       this.emitNewSelection(this.modelValue.filter((id) => id !== idToRemove));
       this.closeOptions();
     },
@@ -295,16 +298,16 @@ export default defineComponent({
           @click.stop="focusInput"
         >
           <div
-            v-for="(item, index) in selectedValues"
+            v-for="({ id, text, invalid }, index) in selectedValues"
             :key="`item.id${index}`"
             class="tag"
-            :title="item.text"
+            :title="text"
           >
-            <span class="text">{{ item.text }}</span>
+            <span :class="['text', { invalid }]">{{ text }}</span>
             <FunctionButton
               class="remove-tag-button"
               :compact="compact"
-              @click.stop="removeTag(item.id)"
+              @click.stop="removeTag(id)"
             >
               <CloseIcon class="remove-tag-button-icon" />
             </FunctionButton>
@@ -414,6 +417,10 @@ export default defineComponent({
           white-space: nowrap;
           text-overflow: ellipsis;
           line-height: 12px;
+
+          &.invalid {
+            color: var(--theme-color-error);
+          }
         }
 
         & .remove-tag-button {

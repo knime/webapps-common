@@ -75,9 +75,29 @@ describe("ComboBox.vue", () => {
     expect(multiselectComponent.props("sizeVisibleOptions")).toBe(1);
   });
 
-  it("doesn't have reactive possible values", async () => {
+  it("has reactive possible values when new values cannot be added", async () => {
+    const newPossibleValues = [
+      {
+        id: "newPossibleValue",
+        text: "newPossibleValue",
+      },
+    ];
+    const wrapper = doMount({ possibleValues });
+
+    expect(wrapper.vm.allPossibleItems).toStrictEqual(possibleValues);
+
+    await wrapper.setProps({
+      possibleValues: newPossibleValues,
+    });
+    expect(wrapper.vm.allPossibleItems).toStrictEqual(newPossibleValues);
+  });
+
+  it("doesn't have reactive possible values when new values can be added", async () => {
     const possibleValuesCopy = [...possibleValues];
-    const wrapper = doMount({ possibleValues: possibleValuesCopy });
+    const wrapper = doMount({
+      possibleValues: possibleValuesCopy,
+      allowNewValues: true,
+    });
 
     possibleValuesCopy.push({
       id: "newPossibleValue",
@@ -89,6 +109,19 @@ describe("ComboBox.vue", () => {
       possibleValues: [{ id: "newPossibleValue", text: "newPossibleValue" }],
     });
     expect(wrapper.vm.allPossibleItems).toStrictEqual(possibleValues);
+  });
+
+  it("renders invalid possible values for modelValue entries that are not present in the possible values", () => {
+    const missingId = "missing";
+    const wrapper = doMount({ modelValue: [possibleValues[0].id, missingId] });
+    expect(wrapper.vm.selectedValues).toStrictEqual([
+      possibleValues[0],
+      {
+        id: missingId,
+        text: `(MISSING) ${missingId}`,
+        invalid: true,
+      },
+    ]);
   });
 
   describe("focussing", () => {

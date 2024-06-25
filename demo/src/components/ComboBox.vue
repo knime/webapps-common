@@ -28,7 +28,7 @@ export default {
   data() {
     return {
       codeExample,
-      selected: [[], [], [], []],
+      selected: [[], [], [], ["Missing"], [], []],
       values: [
         { id: "foo", text: "Foo" },
         { id: "bar", text: "Bar" },
@@ -60,7 +60,7 @@ export default {
         </div>
       </div>
       <div class="grid-container">
-        <div class="grid-item-3">default</div>
+        <div class="grid-item-3">Default</div>
         <div class="grid-item-6">
           <ComboBox v-model="selected[0]" :possible-values="values" />
         </div>
@@ -68,7 +68,7 @@ export default {
       </div>
       <br />
       <div class="grid-container">
-        <div class="grid-item-3">max visible options: 3</div>
+        <div class="grid-item-3">Max visible options: 3</div>
         <div class="grid-item-6">
           <ComboBox
             v-model="selected[1]"
@@ -80,7 +80,7 @@ export default {
       </div>
       <br />
       <div class="grid-container">
-        <div class="grid-item-3">allow new values</div>
+        <div class="grid-item-3">Allow new values</div>
         <div class="grid-item-6">
           <ComboBox
             v-model="selected[2]"
@@ -92,27 +92,36 @@ export default {
       </div>
       <br />
       <div class="grid-container">
-        <div class="grid-item-3">close dropdown on selection</div>
+        <div class="grid-item-3">Missing values</div>
+        <div class="grid-item-6">
+          <ComboBox v-model="selected[3]" :possible-values="values" />
+        </div>
+        <div class="grid-item-3">selected-ids: {{ selected[3] }}</div>
+      </div>
+      <br />
+      <div class="grid-container">
+        <div class="grid-item-3">Close dropdown on selection</div>
         <div class="grid-item-6">
           <ComboBox
-            v-model="selected[3]"
+            v-model="selected[4]"
             :possible-values="values"
             close-dropdown-on-selection
           />
         </div>
-        <div class="grid-item-3">selected-ids: {{ selected[3] }}</div>
+        <div class="grid-item-3">selected-ids: {{ selected[4] }}</div>
       </div>
+      <br />
       <div class="grid-container">
-        <div class="grid-item-3">compact mode</div>
+        <div class="grid-item-3">Compact mode</div>
         <div class="grid-item-6">
           <ComboBox
-            v-model="selected[3]"
+            v-model="selected[5]"
             :possible-values="values"
             close-dropdown-on-selection
             compact
           />
         </div>
-        <div class="grid-item-3">selected-ids: {{ selected[3] }}</div>
+        <div class="grid-item-3">selected-ids: {{ selected[5] }}</div>
       </div>
     </section>
     <section>
