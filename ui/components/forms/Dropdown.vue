@@ -102,6 +102,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    useGroupLabels: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ["update:modelValue"],
   data() {
@@ -113,14 +117,14 @@ export default {
   },
   computed: {
     groupedValues() {
-      const groups: Record<string, { title?: string; items: PossibleValue[] }> =
+      const groups: Record<string, { label?: string; items: PossibleValue[] }> =
         {};
       for (const item of this.possibleValues) {
-        const groupTitle = item.group || "";
-        if (!groups[groupTitle]) {
-          groups[groupTitle] = { title: item.group, items: [] };
+        const groupLabel = item.group || "";
+        if (!groups[groupLabel]) {
+          groups[groupLabel] = { label: item.group, items: [] };
         }
-        groups[groupTitle].items.push(item);
+        groups[groupLabel].items.push(item);
       }
       return Object.values(groups);
     },
@@ -387,8 +391,10 @@ export default {
           v-for="(group, groupIndex) in orderedGroupedValues"
           :key="groupIndex"
         >
-          <!-- <li class="group-title">{{ group.title }}</li> -->
-          <span class="group-divider" />
+          <span v-if="useGroupLabels" class="group-label">{{
+            group.label
+          }}</span>
+          <span v-else class="group-divider" />
           <li
             v-for="item in group.items"
             :id="generateId('option', item.id)"
@@ -401,6 +407,7 @@ export default {
               noselect: true,
               empty: item.text.trim() === '',
               'has-option-template': hasOptionTemplate,
+              'has-group-label': useGroupLabels,
             }"
             :aria-selected="isCurrentValue(item.id)"
             @click="onOptionClick(item.id)"
@@ -613,10 +620,21 @@ export default {
     &.empty {
       white-space: pre-wrap;
     }
+
+    &.has-group-label {
+      padding-left: 15px;
+    }
   }
 
   & .noselect {
     user-select: none;
+  }
+
+  & .group-label {
+    display: block;
+    margin: 5px 10px;
+    cursor: default;
+    font-weight: 500;
   }
 
   & .group-divider {
