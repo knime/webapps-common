@@ -269,6 +269,7 @@ watch(toRef(props, "active"), (active) => {
         font-size: 13px;
         line-height: 150%;
         word-break: break-word;
+        white-space: break-spaces;
 
         & button.show-more {
           all: unset;
