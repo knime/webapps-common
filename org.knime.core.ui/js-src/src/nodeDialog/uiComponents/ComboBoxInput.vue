@@ -7,12 +7,13 @@ import LabeledInput from "./label/LabeledInput.vue";
 import { rendererProps } from "@jsonforms/vue";
 import useProvidedState from "../composables/components/useProvidedState";
 import { withSpecialChoices } from "../utils/getPossibleValuesFromUiSchema";
+import { Id } from "@@/webapps-common/ui/components/forms/possibleValues";
 const props = defineProps(rendererProps());
 const {
   control,
   onChange,
   disabled: disabledByDefault,
-} = useDialogControl<string[]>({ props });
+} = useDialogControl<Id[]>({ props });
 
 const choicesProvider = computed<string | undefined>(
   () => control.value.uischema?.options?.choicesProvider,
