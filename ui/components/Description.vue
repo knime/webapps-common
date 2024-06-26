@@ -57,24 +57,31 @@ export default {
     margin: 0 0 20px;
   }
 
+  & :deep(a[href^="http"]) {
+    &::after {
+      content: "";
+      mask: url("../assets/img/icons/link-external.svg?data") no-repeat 50% 50%;
+      mask-size: cover;
+      background: var(--theme-text-link-foreground-color);
+      width: 16px;
+      height: 16px;
+      display: inline-block;
+      margin-left: 4px;
+      vertical-align: -2px;
+    }
+
+    &:hover {
+      &::after {
+        background-color: var(
+          --theme-text-link-foreground-color-hover
+        ); /* defines icon color */
+      }
+    }
+  }
+
   & :deep(a) {
     color: var(--theme-text-link-foreground-color);
     background: var(--theme-text-link-background-color);
-
-    @supports (mask: url("") no-repeat 50% 50%) {
-      &[href^="http"]::after {
-        content: "";
-        mask: url("../assets/img/icons/link-external.svg?data") no-repeat 50%
-          50%;
-        mask-size: cover;
-        background-color: var(--knime-masala); /* defines icon color */
-        width: 16px;
-        height: 16px;
-        display: inline-block;
-        margin-left: 4px;
-        vertical-align: -2px;
-      }
-    }
 
     &:hover {
       outline: none;
