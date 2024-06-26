@@ -55,6 +55,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.function.FailableConsumer;
@@ -62,7 +63,11 @@ import org.apache.commons.lang3.function.FailableSupplier;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataType;
+import org.knime.core.data.DataTypeRegistry;
+import org.knime.core.data.DataValue;
+import org.knime.core.data.convert.datacell.JavaToDataCellConverterFactory;
 import org.knime.core.data.convert.datacell.JavaToDataCellConverterRegistry;
+import org.knime.core.data.convert.java.DataCellToJavaConverterFactory;
 import org.knime.core.data.convert.java.DataCellToJavaConverterRegistry;
 import org.knime.core.data.def.BooleanCell;
 import org.knime.core.data.def.BooleanCell.BooleanCellFactory;
@@ -189,8 +194,7 @@ public class DynamicValuesInput implements PersistableSettings {
 
     // we need to be able to parse strings from the string input and put cells back to string for settings/json
     private static boolean supportsSerialization(final DataType type) {
-        return !TO_DATACELL.getConverterFactories(String.class, type).isEmpty()
-            && !FROM_DATACELL.getConverterFactories(type, String.class).isEmpty();
+        return converterToDataCell(type).isPresent() && converterFromDataCell(type).isPresent();
     }
 
     /**
@@ -395,8 +399,7 @@ public class DynamicValuesInput implements PersistableSettings {
                 throw new IllegalArgumentException(
                     "Collection types are not supported. Given type is: %s".formatted(dataType));
             }
-            final var registry = DataCellToJavaConverterRegistry.getInstance();
-            final var converter = registry.getConverterFactories(dataCell.getType(), String.class).stream().findFirst()
+            final var converter = converterFromDataCell(dataType)
                 .orElseThrow(() -> new ConverterException("No serializer for type %s".formatted(dataCell.getType())))
                 .create();
             try {
@@ -426,8 +429,7 @@ public class DynamicValuesInput implements PersistableSettings {
                     "Collection types are not supported. Given type is: %s".formatted(dataType));
             }
 
-            final var registry = JavaToDataCellConverterRegistry.getInstance();
-            final var converter = registry.getConverterFactories(String.class, dataType).stream().findFirst()
+            final var converter = converterToDataCell(dataType)
                 .orElseThrow(() -> new ConverterException("No deserializer for type %s".formatted(dataType)))
                 .create((ExecutionContext)null);
             try {
@@ -618,6 +620,8 @@ public class DynamicValuesInput implements PersistableSettings {
      */
     private static final class ConverterException extends Exception {
 
+        private static final long serialVersionUID = 1L;
+
         ConverterException(final String msg) {
             super(msg);
         }
@@ -693,5 +697,58 @@ public class DynamicValuesInput implements PersistableSettings {
      */
     public static DynamicValuesInput forRowNumber() {
         return new DynamicValuesInput(LongCell.TYPE, new LongCell(1));
+    }
+
+    /* == Lookup of type-mappers. == */
+
+    /**
+     * Tries to get a converter from String to the given target data type, including support for types that the given
+     * target type can adapt to.
+     *
+     * @param registry converter registry to use
+     * @param targetType target type
+     * @return deserializing converter
+     */
+    private static Optional<JavaToDataCellConverterFactory<String>> converterToDataCell(final DataType targetType) {
+        final var direct = TO_DATACELL.getConverterFactories(String.class, targetType);
+        if (!direct.isEmpty()) {
+            return Optional.of(direct.iterator().next());
+        }
+        // reverse-lookup adapted types and get the converter for one of those, fitting our target type
+        // e.g. targetType = SmilesAdapterCell, adapted type will be SmilesCell for which a converter exists
+        return getAdaptedTypes(targetType) //
+                .flatMap(type -> TO_DATACELL.getConverterFactories(String.class, type).stream()) //
+                .findFirst();
+    }
+
+    /**
+     * Tries to get a converter from the source type to String, including support for types that the given source type
+     * can adapt to.
+     * @param registry converter registry to use
+     * @param srcType source type
+     * @return serializing converter
+     */
+    private static Optional<DataCellToJavaConverterFactory<? extends DataValue, String>> // NOSONAR
+            converterFromDataCell(final DataType srcType) {
+        final var direct = FROM_DATACELL.getConverterFactories(srcType, String.class);
+        if (!direct.isEmpty()) {
+            return Optional.of(direct.iterator().next());
+        }
+        return getAdaptedTypes(srcType) //
+                .flatMap(type -> FROM_DATACELL.getConverterFactories(type, String.class).stream()) //
+                .findFirst();
+    }
+
+    private static Stream<DataType> getAdaptedTypes(final DataType maybeAdapterType) {
+        // Why does this method exist?
+        // Example: the registry only contains converters to non-adapter cell types, e.g. String->SmilesCell.
+        // When passsed a SmilesAdapterCell, the above lookup fails to identify any converters, so we have to look
+        // further. Since SmilesCell and SmilesAdapterCell do not implement the exact same value interfaces
+        // (there is RWAdapterValue(AdapterValue) included for the adapter one), we need to do a reverse lookup on the
+        // adapted types.
+        final var dtr = DataTypeRegistry.getInstance();
+        final var className = maybeAdapterType.getCellClass().getName();
+        return dtr.availableDataTypes().stream()
+            .filter(t -> dtr.getImplementationSubDataTypes(t).anyMatch(className::equals));
     }
 }
