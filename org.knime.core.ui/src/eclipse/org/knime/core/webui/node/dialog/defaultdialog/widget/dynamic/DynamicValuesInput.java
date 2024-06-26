@@ -51,6 +51,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.widget.dynamic;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -60,7 +61,6 @@ import org.apache.commons.lang3.function.FailableSupplier;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataType;
 import org.knime.core.data.DataTypeRegistry;
-import org.knime.core.data.MissingCell;
 import org.knime.core.data.convert.datacell.JavaToDataCellConverterRegistry;
 import org.knime.core.data.convert.java.DataCellToJavaConverterRegistry;
 import org.knime.core.data.def.BooleanCell;
@@ -69,6 +69,7 @@ import org.knime.core.data.def.DoubleCell;
 import org.knime.core.data.def.DoubleCell.DoubleCellFactory;
 import org.knime.core.data.def.IntCell;
 import org.knime.core.data.def.IntCell.IntCellFactory;
+import org.knime.core.data.def.LongCell;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
@@ -131,7 +132,7 @@ public class DynamicValuesInput implements PersistableSettings {
      * @param initialValue data type and initial value
      */
     public DynamicValuesInput(final DataType dataType, final DataCell initialValue) {
-        this(new DynamicValue[]{new DynamicValue(dataType, initialValue, null)}, InputKind.SINGLE);
+        this(new DynamicValue[]{new DynamicValue(dataType, initialValue)}, InputKind.SINGLE);
     }
 
     /**
@@ -178,33 +179,71 @@ public class DynamicValuesInput implements PersistableSettings {
         private static final String CELL_CLASS_NAME_KEY = "cellClassName";
 
         /**
-         * Stored value. If present, either already of the target type or a StringCell.
-         */
-        Optional<DataCell> m_value = Optional.empty();
-
-        /**
          * Target type.
          */
         DataType m_type;
 
-        Optional<DefaultNodeSettings> m_modifiers = Optional.empty();
+        /**
+         * Non-{@code null} stored value.
+         */
+        DataCell m_value;
+
+        /**
+         * Nullable modifiers.
+         */
+        DefaultNodeSettings m_modifiers;
 
         DynamicValue() {
             // For Deserialization
         }
 
         /**
-         * Value with content. Can be used to supply initial value.
-         * @param dataType target type
-         * @param dataCell cell specifying the content (and compatible type)
+         * Value without content. Default content will be supplied by dialog.
+         *
+         * @param columnType type of the content
          */
-        private DynamicValue(final DataType dataType, final DataCell dataCell, final DefaultNodeSettings modifiers) {
-            this(dataType);
-            final var cellType = dataCell.getType();
-            CheckUtils.checkArgument(dataType.isASuperTypeOf(cellType) || StringCell.TYPE.equals(cellType),
-                "Cell type \"%s\" is not a subtype of target data type \"%s\" nor a StringCell.", cellType, dataType);
-            m_value = Optional.of(dataCell);
-            m_modifiers = Optional.ofNullable(modifiers);
+        public DynamicValue(final DataType columnType) {
+            this(columnType, DataType.getMissingCell());
+        }
+
+        /**
+         * Value with initial content.
+         *
+         * @param columnType type of the content
+         * @param initialValue initial value or {@link DataType#getMissingCell()} if it should be supplied by dialog
+         */
+        public DynamicValue(final DataType columnType, final DataCell initialValue) {
+            this(columnType, initialValue, columnType == StringCell.TYPE ? new StringValueModifiers() : null);
+        }
+
+        /**
+         * Value without content. Default content will be supplied by dialog.
+         *
+         * @param columnType type of the content
+         * @param modifiers nullable input value modifiers
+         */
+        public DynamicValue(final DataType columnType, final DefaultNodeSettings modifiers) {
+            this(columnType, DataType.getMissingCell(), modifiers);
+        }
+
+        /**
+         * @param columnType target data type
+         * @param initial initial value or {@link DataType#getMissingCell()}
+         * @param modifiers optional modifiers
+         */
+        private DynamicValue(final DataType columnType, final DataCell initial, final DefaultNodeSettings modifiers) {
+            m_value = Objects.requireNonNull(initial);
+            if (columnType.equals(DataType.getMissingCell().getType())) {
+                throw new IllegalArgumentException("DynamicValue must not be of \"MissingCell\" type");
+            }
+            m_type = columnType;
+            if (!initial.isMissing()) {
+                final var cellType = initial.getType();
+                CheckUtils.checkArgument(columnType.isASuperTypeOf(cellType) || StringCell.TYPE.equals(cellType),
+                    "Cell type \"%s\" is not a subtype of target data type \"%s\" nor a StringCell.", cellType,
+                    columnType);
+            }
+            m_modifiers = modifiers;
         }
 
         public static final class StringValueModifiers implements DefaultNodeSettings {
@@ -232,63 +271,45 @@ public class DynamicValuesInput implements PersistableSettings {
             }
         }
 
-        /**
-         * Value without content. Default content will be supplied by dialog.
-         *
-         * @param type type of the content
-         */
-        public DynamicValue(final DataType type) {
-            if (type.equals(DataType.getMissingCell().getType())) {
-                throw new IllegalArgumentException("DynamicValue must be of non-MissingCell type");
+        private void validate() throws InvalidSettingsException {
+            CheckUtils.checkSetting(!m_value.isMissing(), "The comparison value is missing.");
+
+            final var cellType = m_value.getType();
+            if (m_type.isASuperTypeOf(cellType)) {
+                return;
             }
-            m_type = type;
-            if (type.equals(StringCell.TYPE)) {
-                m_modifiers = Optional.of(new StringValueModifiers());
+            // A "real" StringCell (where our column type is also StringCell's type) would have been returned above
+            // already... so this must be a StringCell that contains an unconvertible user input.
+            if (!(m_value instanceof StringCell stringCell)) {
+                throw new IllegalStateException("Unexpected cell type when retrieving converter error: " + cellType);
             }
+            // This is the case if `readDataCellFromStringSafe` failed to type-map when closing the dialog.
+            throw retrieveConverterError(m_type, stringCell);
         }
 
         /**
-         * Value without content. Default content will be supplied by dialog.
+         * Expects the conversion of the given string cell to the target type to fail,
+         * retrieving the conversion exception.
          *
-         * @param type type of the content
+         * @param targetType target type for conversion
+         * @param stringCell cell to convert to target
+         * @return exception with parse error
          */
-        public DynamicValue(final DataType type, final DefaultNodeSettings modifiers) {
-            if (type.equals(DataType.getMissingCell().getType())) {
-                throw new IllegalArgumentException("DynamicValue must be of non-MissingCell type");
-            }
-            m_type = type;
-            m_modifiers = Optional.ofNullable(modifiers);
-        }
-
-        Optional<DataCell> getCell() throws InvalidSettingsException {
-            if (m_value.isEmpty()) {
-                return Optional.empty();
-            }
-            final var inputCell = m_value.get();
-            final var cellType = inputCell.getType();
-            if (cellType.equals(m_type)) {
-                return Optional.of(inputCell);
-            }
-            if (inputCell instanceof StringCell stringCell) {
-                // input must still be converted (also to retrieve any parse errors)
-                final var stringValue = stringCell.getStringValue();
-                try {
-                    return Optional.of(readDataCellFromString(m_type, stringValue));
-                } catch (final Exception e) {
-                    var message = e.getMessage();
-                    if (message == null) {
-                        message = "Unable to convert \"%s\" to cell of type \"%s\"".formatted(stringValue, m_type);
-                    }
-                    throw new InvalidSettingsException(message, e);
+        private static InvalidSettingsException retrieveConverterError(final DataType targetType,
+            final StringCell stringCell) {
+            final var stringValue = stringCell.getStringValue();
+            try {
+                Optional.of(readDataCellFromString(targetType, stringValue));
+                throw new IllegalStateException(
+                    "Expected conversion of string \"%s\" to target type \"%s\" to fail, but it succeeded."
+                        .formatted(stringValue, targetType));
+            } catch (final Exception e) {
+                var message = e.getMessage();
+                if (message == null) {
+                    message = "Unable to convert \"%s\" to cell of type \"%s\"".formatted(stringValue, targetType);
                 }
+                return new InvalidSettingsException(message, e);
             }
-            throw new IllegalStateException(
-                "Input cell must already be of target data type or a StringCell, but was \"%s\""
-                    .formatted(cellType));
-        }
-
-        public void validate() throws InvalidSettingsException {
-            CheckUtils.checkSetting(getCell().isPresent(), "The comparison value is missing.");
         }
 
         /**
@@ -314,6 +335,9 @@ public class DynamicValuesInput implements PersistableSettings {
             final FailableConsumer<Boolean, E> writeBoolean, //
             final FailableConsumer<String, E> writeString //
         ) throws ConverterException, E {
+            if (dataCell.isMissing()) {
+                throw new IllegalArgumentException("Cannot write MissingCell");
+            }
             if (dataCell instanceof DoubleCell doubleCell) {
                 writeDouble.accept(doubleCell.getDoubleValue());
             } else if (dataCell instanceof IntCell intCell) {
@@ -344,8 +368,8 @@ public class DynamicValuesInput implements PersistableSettings {
 
         private static String getStringFromDataCell(final DataCell dataCell) throws ConverterException {
             // convertUnsafe does not handle missing cells
-            if (dataCell instanceof MissingCell) {
-                return null;
+            if (dataCell.isMissing()) {
+                throw new IllegalArgumentException("Cannot get string from MissingCell");
             }
             // check afterwards, since missing cells are also collection types
             final var dataType = dataCell.getType();
@@ -421,9 +445,9 @@ public class DynamicValuesInput implements PersistableSettings {
 
                 gen.writeStartObject();
                 gen.writeFieldName(VALUE_KEY);
-                if (value.m_value.isPresent()) {
+                if (!value.m_value.isMissing()) {
                     try {
-                        DynamicValue.<IOException> writeDataCell(value.m_value.get(), //
+                        DynamicValue.<IOException> writeDataCell(value.m_value, //
                             gen::writeNumber, //
                             gen::writeNumber, //
                             gen::writeBoolean, //
@@ -436,8 +460,8 @@ public class DynamicValuesInput implements PersistableSettings {
                 }
                 final var cellClassName = value.m_type.getCellClass().getName();
                 gen.writeObjectField(CELL_CLASS_NAME_KEY, cellClassName);
-                if (value.m_modifiers.isPresent()) {
-                    final var modifiers = value.m_modifiers.get();
+                if (value.m_modifiers != null) {
+                    final var modifiers = value.m_modifiers;
                     final var modifiersData = JsonFormsDataUtil.toJsonData(modifiers);
                     final var modifiersClass = modifiers.getClass();
                     final var modifiersClassName = modifiersClass.getName();
@@ -445,7 +469,6 @@ public class DynamicValuesInput implements PersistableSettings {
                     gen.writeObjectField(MODIFIERS_KEY, modifiersData);
                 }
                 gen.writeEndObject();
-
             }
         }
 
@@ -460,6 +483,7 @@ public class DynamicValuesInput implements PersistableSettings {
                 final var dataType = getDataTypeForCellClassName(cellClassName, IOException::new);
 
                 final var valueNode = node.get(VALUE_KEY);
+                // handle missing cell already here
                 if (valueNode == null || valueNode.isNull()) {
                     return new DynamicValue(dataType);
                 }
@@ -508,15 +532,15 @@ public class DynamicValuesInput implements PersistableSettings {
             @Override
             public void save(final DynamicValue obj, final NodeSettingsWO settings) {
                 settings.addString(TYPE_ID_KEY, obj.m_type.getCellClass().getName());
-                if (obj.m_modifiers.isPresent()) {
-                    final var modifiers = obj.m_modifiers.get();
+                if (obj.m_modifiers != null) {
+                    final var modifiers = obj.m_modifiers;
                     settings.addString(MODIFIERS_CLASS_NAME_KEY, modifiers.getClass().getName());
                     DefaultFieldNodeSettingsPersistorFactory
                         .createDefaultPersistor((Class<DefaultNodeSettings>)modifiers.getClass(), MODIFIERS_KEY)
                         .save(modifiers, settings);
                 }
-                if (obj.m_value.isPresent()) {
-                    final var cell = obj.m_value.get();
+                final var cell = obj.m_value;
+                if (!cell.isMissing()) {
                     try {
                         DynamicValue.writeDataCell(cell, //
                             d -> settings.addDouble(VALUE_KEY, d), //
@@ -547,12 +571,28 @@ public class DynamicValuesInput implements PersistableSettings {
         }
     }
 
+    /**
+     * Gets the cell at the specified index, or {@link Optional#empty()} if no value exists at the specified index.
+     * If the index does not exist, will throw a runtime exception.
+     * @param index index to get value at
+     * @return value or empty optional if no value exists at the specified index
+     */
     public Optional<DataCell> getCellAt(final int index) {
-        return m_values[index].m_value;
+        return Optional.ofNullable(m_values[index].m_value);
     }
 
-    public <T extends DefaultNodeSettings> T getModifiersAt(final int index) {
-        return (T)m_values[index].m_modifiers.orElseThrow();
+    /**
+     * Gets the modifiers for the value at the specified index, or {@link Optional#empty()} if no modifiers exist at
+     * the specified index, casting the modifiers to the return type.
+     * If the index does not exist, will throw a runtime exception.
+     *
+     * @param <T> modifiers type
+     * @param index index of the modifiers to get
+     * @return modifiers or empty optional if no modifiers exist at the specified index.
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends DefaultNodeSettings> Optional<T> getModifiersAt(final int index) {
+        return Optional.ofNullable((T)m_values[index].m_modifiers);
     }
 
     /**
@@ -583,5 +623,19 @@ public class DynamicValuesInput implements PersistableSettings {
                 new DynamicValue(BooleanCell.TYPE),//
             //new DynamicValue(IntervalCell.TYPE)// currently breaks things, since we have no validation on dialog close
             }, InputKind.SINGLE);
+    }
+
+    /**
+     * @return a dynamic values input for a single value of RowID.
+     */
+    public static DynamicValuesInput forRowID() {
+        return new DynamicValuesInput(StringCell.TYPE, new StringCell(""));
+    }
+
+    /**
+     * @return a dynamic values input for a single value of Row Number.
+     */
+    public static DynamicValuesInput forRowNumber() {
+        return new DynamicValuesInput(LongCell.TYPE, new LongCell(1));
     }
 }
