@@ -8,6 +8,7 @@ import Button from "webapps-common/ui/components/Button.vue";
 import useDialogControl from "../composables/components/useDialogControl";
 import { rendererProps } from "@jsonforms/vue";
 import LabeledInput from "./label/LabeledInput.vue";
+import inject from "../utils/inject";
 import { computed, onMounted, watch } from "vue";
 import { indexOf } from "lodash-es";
 import useProvidedState from "../composables/components/useProvidedState";
@@ -70,11 +71,14 @@ const addUnknownValuesToData = (currentPossibleValues: { id: string }[]) => {
     onChange(before.concat(unknownValues, after));
   }
 };
+const getPossibleValuesFromUiSchema = inject("getPossibleValuesFromUiSchema");
 
-onMounted(() => {
+onMounted(async () => {
   const staticPossibleValues = control.value.uischema.options!.possibleValues;
   if (staticPossibleValues) {
     possibleValues.value = staticPossibleValues;
+  } else if (!choicesProvider.value) {
+    possibleValues.value = await getPossibleValuesFromUiSchema(control.value);
   }
 });
 
