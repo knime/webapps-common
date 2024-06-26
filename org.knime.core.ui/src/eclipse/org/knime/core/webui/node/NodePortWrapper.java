@@ -137,7 +137,7 @@ public interface NodePortWrapper extends NodeWrapper {
                 return Objects.equal(nc, w.get()) //
                     && portIdx == w.getPortIdx() //
                     && viewIdx == w.getViewIdx() //
-                    && this.getNodesConnectedToOutputPorts().equals(w.getNodesConnectedToOutputPorts());
+                    && Objects.equal(this.getNodesConnectedToOutputPorts(), w.getNodesConnectedToOutputPorts());
             }
 
             @Override
