@@ -171,7 +171,6 @@ return (new XMLSerializer()).serializeToString(svgElement);</pre
           class="grid-item-12"
           :text="descriptionWithHtmlText"
           :render-as-html="true"
-          :use-rich-text-editor-styles="useRichTextEditorStyles"
         />
       </div>
     </section>
