@@ -134,7 +134,8 @@ export default defineComponent({
           <h5>Render output HTML using same styles</h5>
 
           If you want to statically render the markup outputted by the editor,
-          you can do it like in this example:
+          you can use the <a href="?q=Description">Description.vue</a> component
+          or do it like in this example:
 
           <!-- eslint-disable-next-line vue/no-v-html -->
           <div class="static-output" v-html="value" />
