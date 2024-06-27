@@ -27,4 +27,23 @@ public final class StringValueModifiers implements DefaultNodeSettings {
     public boolean isCaseSensitive() {
         return this.m_caseMatching == CaseMatching.CASESENSITIVE;
     }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof StringValueModifiers mod)) {
+            return false;
+        }
+        return m_caseMatching == mod.m_caseMatching;
+    }
+
+    @Override
+    public int hashCode() {
+        return m_caseMatching.hashCode();
+    }
 }

@@ -51,6 +51,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.widget.dynamic;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -58,6 +59,9 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.commons.lang3.function.FailableConsumer;
 import org.apache.commons.lang3.function.FailableSupplier;
 import org.knime.core.data.DataCell;
@@ -162,6 +166,31 @@ public class DynamicValuesInput implements PersistableSettings {
 
     private enum InputKind {
             SINGLE, DOUBLE, COLLECTION
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof DynamicValuesInput dvi)) {
+            return false;
+        }
+        return m_inputKind == dvi.m_inputKind && Arrays.equals(m_values, dvi.m_values);
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(m_inputKind).append(m_values).toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append(m_inputKind).append(m_values)
+            .toString();
     }
 
     static final class ModifiersRegistry {
@@ -281,7 +310,7 @@ public class DynamicValuesInput implements PersistableSettings {
                 throw new IllegalArgumentException(
                     "Collection types are unsupported: \"%s\"".formatted(columnType.getName()));
             }
-            m_type = columnType;
+            m_type = Objects.requireNonNull(columnType);
             if (!initial.isMissing()) {
                 final var cellType = initial.getType();
                 CheckUtils.checkArgument(columnType.isASuperTypeOf(cellType) || StringCell.TYPE.equals(cellType),
@@ -289,6 +318,32 @@ public class DynamicValuesInput implements PersistableSettings {
                     columnType);
             }
             m_modifiers = modifiers;
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            if (obj == this) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (!(obj instanceof DynamicValue dv)) {
+                return false;
+            }
+            return m_type.equals(dv.m_type) && m_value.equals(dv.m_value)
+                && Objects.equals(m_modifiers, dv.m_modifiers);
+        }
+
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder(13, 37).append(m_type).append(m_value).append(m_modifiers).toHashCode();
+        }
+
+        @Override
+        public String toString() {
+            return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append(m_type).append(m_value)
+                .append(m_modifiers).toString();
         }
 
         /**
