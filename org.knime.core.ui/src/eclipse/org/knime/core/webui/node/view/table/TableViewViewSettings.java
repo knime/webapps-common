@@ -377,6 +377,6 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     @SuppressWarnings("javadoc")
     public String[] getDisplayedColumns(final DataTableSpec spec) {
         final var choices = spec.getColumnNames();
-        return m_displayedColumns.getSelected(choices, spec);
+        return m_displayedColumns.getSelectedIncludingMissing(choices, spec);
     }
 }

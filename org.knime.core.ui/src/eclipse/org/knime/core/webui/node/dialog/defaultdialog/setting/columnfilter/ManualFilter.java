@@ -103,7 +103,7 @@ class ManualFilter implements PersistableSettings {
      * @param choices for selected values from which previously unknown ones are either selected or deselected.
      * @return the manually selected columns plus the new previously unknown ones if these are included.
      */
-    List<String> getNonMissingUpdatedManuallySelected(final String[] choices) {
+    List<String> getUpdatedManuallySelected(final String[] choices) {
         return m_includeUnknownColumns //
             ? filterExcludingDeselected(choices) //
             : getManuallySelectedIn(choices);
@@ -118,8 +118,8 @@ class ManualFilter implements PersistableSettings {
      * @param choices for selected values from which previously unknown ones are either selected or deselected.
      * @return the manually selected columns plus the new previously unknown ones if these are included.
      */
-    String[] getUpdatedManuallySelected(final String[] choices) {
-        final List<String> validSelectedValues = getNonMissingUpdatedManuallySelected(choices);
+    String[] getUpdatedManuallySelectedIncludingMissing(final String[] choices) {
+        final List<String> validSelectedValues = getUpdatedManuallySelected(choices);
         final var missingManuallySelected = getMissingManuallySelected(new HashSet<>(validSelectedValues));
         return Stream.concat(missingManuallySelected, validSelectedValues.stream()).toArray(String[]::new);
     }

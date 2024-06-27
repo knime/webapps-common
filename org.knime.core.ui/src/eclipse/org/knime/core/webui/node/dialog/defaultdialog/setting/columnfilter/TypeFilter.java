@@ -50,6 +50,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.IntStream;
@@ -97,9 +98,11 @@ class TypeFilter implements PersistableSettings {
      * @param choices the list of all possible column names
      * @param spec of the input data table (for type selection)
      * @return the array of currently selected columns with respect to the mode
+     * @throws NullPointerException if {@code spec} is {@code null}
      */
     @JsonIgnore
     String[] getSelected(final String[] choices, final DataTableSpec spec) {
+        Objects.requireNonNull(spec);
         final var types = getTypes(choices, spec);
         var selectedTypes = Set.of(m_selectedTypes);
         return IntStream.range(0, types.length)//

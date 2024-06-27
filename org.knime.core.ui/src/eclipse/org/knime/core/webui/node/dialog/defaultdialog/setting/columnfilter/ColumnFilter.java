@@ -154,32 +154,42 @@ public class ColumnFilter implements PersistableSettings {
     }
 
     /**
+     * Get selected columns, including columns that were selected but are not in the provided column list.
+     * You likely want to use {@link #getSelected(String[], DataTableSpec)} instead.
+     *
+     * @see #getSelected(String[], DataTableSpec)
      * @param choices the non-null list of all possible column names
      * @param spec of the input data table (for type selection)
      * @return the array of currently selected columns with respect to the mode
+     * @throws NullPointerException if {@code choices} is {@code null} or the filter mode
+     *             is @{@link ColumnFilterMode#TYPE} and {@code spec} is {@code null}
      */
-    public String[] getSelected(final String[] choices, final DataTableSpec spec) {
-        switch (m_mode) {
-            case MANUAL:
-                return m_manualFilter.getUpdatedManuallySelected(Objects.requireNonNull(choices));
-            case TYPE:
-                return m_typeFilter.getSelected(choices, spec);
-            default:
-                return m_patternFilter.getSelected(PatternMode.of(m_mode), choices);
-        }
+    public String[] getSelectedIncludingMissing(final String[] choices, final DataTableSpec spec) {
+        Objects.requireNonNull(choices);
+        return switch (m_mode) {
+            case MANUAL -> m_manualFilter.getUpdatedManuallySelectedIncludingMissing(choices);
+            case TYPE -> m_typeFilter.getSelected(choices, spec);
+            default -> m_patternFilter.getSelected(PatternMode.of(m_mode), choices);
+        };
     }
 
     /**
-     * @param allCurrentChoices the non-null list of all possible column names
+     * Get selected columns, but only those that are available in the provided column list. This is likely the method
+     * you want to use.
+     *
+     * @see #getSelectedIncludingMissing(String[], DataTableSpec)
+     * @param choices the non-null list of all possible column names
      * @param spec of the input data table (for type selection)
      * @return the array of currently selected columns with respect to the mode which are contained in the given array
      *         of choices
+     * @throws NullPointerException if {@code choices} is {@code null} or the filter mode
+     *             is @{@link ColumnFilterMode#TYPE} and {@code spec} is {@code null}
      */
-    public String[] getNonMissingSelected(final String[] allCurrentChoices, final DataTableSpec spec) {
-        if (m_mode == ColumnFilterMode.MANUAL) {
-            return m_manualFilter.getNonMissingUpdatedManuallySelected(allCurrentChoices).toArray(String[]::new);
-        } else {
-            return getSelected(allCurrentChoices, spec);
-        }
+    public String[] getSelected(final String[] choices, final DataTableSpec spec) {
+        Objects.requireNonNull(choices);
+        return switch (m_mode) {
+            case MANUAL -> m_manualFilter.getUpdatedManuallySelected(choices).toArray(String[]::new);
+            default -> getSelectedIncludingMissing(choices, spec);
+        };
     }
 }

@@ -120,12 +120,11 @@ public class NameFilter implements PersistableSettings {
      * @return the array of currently selected names with respect to the mode
      */
     public String[] getSelected(final String[] allCurrentChoices) {
-        switch (m_mode) {
-            case MANUAL:
-                return m_manualFilter.getUpdatedManuallySelected(Objects.requireNonNull(allCurrentChoices));
-            default:
-                return m_patternFilter.getSelected(PatternMode.of(m_mode), allCurrentChoices);
-        }
+        return switch (m_mode) {
+            case MANUAL -> m_manualFilter
+                .getUpdatedManuallySelectedIncludingMissing(Objects.requireNonNull(allCurrentChoices));
+            default -> m_patternFilter.getSelected(PatternMode.of(m_mode), allCurrentChoices);
+        };
     }
 
     /**
@@ -135,7 +134,7 @@ public class NameFilter implements PersistableSettings {
      */
     public String[] getNonMissingSelected(final String[] allCurrentChoices) {
         if (m_mode == NameFilterMode.MANUAL) {
-            return m_manualFilter.getNonMissingUpdatedManuallySelected(Objects.requireNonNull(allCurrentChoices))
+            return m_manualFilter.getUpdatedManuallySelected(Objects.requireNonNull(allCurrentChoices))
                 .toArray(String[]::new);
         } else {
             return getSelected(allCurrentChoices);
