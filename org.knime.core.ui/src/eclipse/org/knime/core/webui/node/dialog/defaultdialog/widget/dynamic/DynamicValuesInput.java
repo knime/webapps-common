@@ -116,9 +116,9 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  */
 public class DynamicValuesInput implements PersistableSettings {
 
-    private final static JavaToDataCellConverterRegistry TO_DATACELL = JavaToDataCellConverterRegistry.getInstance();
+    private static final JavaToDataCellConverterRegistry TO_DATACELL = JavaToDataCellConverterRegistry.getInstance();
 
-    private final static DataCellToJavaConverterRegistry FROM_DATACELL = DataCellToJavaConverterRegistry.getInstance();
+    private static final DataCellToJavaConverterRegistry FROM_DATACELL = DataCellToJavaConverterRegistry.getInstance();
 
     DynamicValue[] m_values;
 
@@ -194,11 +194,15 @@ public class DynamicValuesInput implements PersistableSettings {
             .toString();
     }
 
-    static final class ModifiersRegistry {
+    private static final class ModifiersRegistry {
         private ModifiersRegistry() {
             /* empty default constructor */ }
 
-        static Map<String, Class<? extends DefaultNodeSettings>> modifierClasses = new HashMap<>();
+        private static Map<String, Class<? extends DefaultNodeSettings>> modifierClasses = new HashMap<>();
+
+        static {
+            modifierClasses.put(StringValueModifiers.class.getName(), StringValueModifiers.class);
+        }
     }
 
     /**
@@ -211,11 +215,6 @@ public class DynamicValuesInput implements PersistableSettings {
         for (final var value : m_values) {
             value.validate(colSpec);
         }
-    }
-
-    private static boolean isOfNativeType(final DataType type) {
-        // TODO check if this is enough to disallow non-native types
-        return type.getCellClass() != null;
     }
 
     private static boolean isOfNonCollectionType(final DataType type) {
@@ -234,8 +233,7 @@ public class DynamicValuesInput implements PersistableSettings {
      * @return {@code true} if the given type is supported, {@code false} otherwise
      */
     public static boolean supportsDataType(final DataType type) {
-        // we disallow non-native types for now
-        return isOfNonCollectionType(type) && isOfNativeType(type) && supportsSerialization(type);
+        return isOfNonCollectionType(type) && supportsSerialization(type);
     }
 
     /**
@@ -398,11 +396,11 @@ public class DynamicValuesInput implements PersistableSettings {
         private static InvalidSettingsException retrieveConversionError(final DataType type, final StringCell cell) {
             final var stringValue = cell.getStringValue();
             try {
-                Optional.of(readDataCellFromString(type, stringValue));
+                readDataCellFromString(type, stringValue);
                 throw new IllegalStateException(
                     "Expected conversion of string \"%s\" to target type \"%s\" to fail, but it succeeded."
                         .formatted(stringValue, type));
-            } catch (final ConverterException e) {
+            } catch (final ConverterException e) { // NOSONAR we unwrap our own exception
                 return new InvalidSettingsException(e.getMessage(), e.getCause());
             }
         }
@@ -747,7 +745,7 @@ public class DynamicValuesInput implements PersistableSettings {
             new DynamicValue(DoubleCell.TYPE), //
             new DynamicValue(IntCell.TYPE), //
             new DynamicValue(BooleanCell.TYPE),//
-                //new DynamicValue(IntervalCell.TYPE)// currently breaks things, since we have no validation on dialog close
+            //new DynamicValue(IntervalCell.TYPE)// currently breaks things, since we have no validation on dialog close
         }, InputKind.SINGLE);
     }
 
@@ -813,7 +811,12 @@ public class DynamicValuesInput implements PersistableSettings {
         // (there is RWAdapterValue(AdapterValue) included for the adapter one), we need to do a reverse lookup on the
         // adapted types.
         final var dtr = DataTypeRegistry.getInstance();
-        final var className = maybeAdapterType.getCellClass().getName();
+        final var cellClass = maybeAdapterType.getCellClass();
+        // non-native types are not adapter types, which we handle here (they have no CellClass)
+        if (cellClass == null) {
+            return Stream.empty();
+        }
+        final var className = cellClass.getName();
         return dtr.availableDataTypes().stream()
             .filter(t -> dtr.getImplementationSubDataTypes(t).anyMatch(className::equals));
     }

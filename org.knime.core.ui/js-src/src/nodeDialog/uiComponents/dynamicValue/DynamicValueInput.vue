@@ -4,7 +4,7 @@ type CaseMatching = "CASESENSITIVE" | "CASEINSENSITIVE";
 interface StringValue {
   value: string;
   cellClassName: "org.knime.core.data.def.StringCell";
-  modifiersClassName: "org.knime.core.webui.node.dialog.defaultdialog.widget.dynamic.DynamicValuesInput$DynamicValue$StringValueModifiers";
+  modifiersClassName: "org.knime.core.webui.node.dialog.defaultdialog.widget.dynamic.StringValueModifiers";
   modifiers: { caseMatching: CaseMatching };
 }
 
@@ -84,7 +84,7 @@ const initialValue = computed(() => {
 const modifiersDef = computed(() => {
   if (
     props.value.modifiersClassName ===
-    "org.knime.core.webui.node.dialog.defaultdialog.widget.dynamic.DynamicValuesInput$DynamicValue$StringValueModifiers"
+    "org.knime.core.webui.node.dialog.defaultdialog.widget.dynamic.StringValueModifiers"
   ) {
     return {
       schemaProperties: {
