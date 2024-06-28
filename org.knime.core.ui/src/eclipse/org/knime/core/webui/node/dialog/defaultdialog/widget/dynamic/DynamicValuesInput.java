@@ -80,6 +80,7 @@ import org.knime.core.data.def.DoubleCell.DoubleCellFactory;
 import org.knime.core.data.def.IntCell;
 import org.knime.core.data.def.IntCell.IntCellFactory;
 import org.knime.core.data.def.LongCell;
+import org.knime.core.data.def.LongCell.LongCellFactory;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
@@ -409,6 +410,7 @@ public class DynamicValuesInput implements PersistableSettings {
         private static <E extends Exception> void writeDataCell(final DataCell dataCell,
             final FailableConsumer<Double, E> writeDouble, //
             final FailableConsumer<Integer, E> writeInteger, //
+            final FailableConsumer<Long, E> writeLong, //
             final FailableConsumer<Boolean, E> writeBoolean, //
             final FailableConsumer<String, E> writeString //
         ) throws ConverterException, E {
@@ -419,6 +421,8 @@ public class DynamicValuesInput implements PersistableSettings {
                 writeDouble.accept(doubleCell.getDoubleValue());
             } else if (dataCell instanceof IntCell intCell) {
                 writeInteger.accept(intCell.getIntValue());
+            } else if (dataCell instanceof LongCell longCell) {
+                writeLong.accept(longCell.getLongValue());
             } else if (dataCell instanceof BooleanCell booleanCell) {
                 writeBoolean.accept(booleanCell.getBooleanValue());
             } else {
@@ -429,6 +433,7 @@ public class DynamicValuesInput implements PersistableSettings {
         private static <E extends Throwable> DataCell readDataCell(final DataType dataType,
             final FailableSupplier<Double, E> readDouble, //
             final FailableSupplier<Integer, E> readInteger, //
+            final FailableSupplier<Long, E> readLong, //
             final FailableSupplier<Boolean, E> readBoolean, //
             final FailableSupplier<String, E> readString //
         ) throws E {
@@ -436,6 +441,8 @@ public class DynamicValuesInput implements PersistableSettings {
                 return DoubleCellFactory.create(readDouble.get());
             } else if (dataType.equals(IntCell.TYPE)) {
                 return IntCellFactory.create(readInteger.get());
+            } else if (dataType.equals(LongCell.TYPE)) {
+                return LongCellFactory.create(readLong.get());
             } else if (dataType.equals(BooleanCell.TYPE)) {
                 return BooleanCellFactory.create(readBoolean.get());
             } else {
@@ -542,6 +549,7 @@ public class DynamicValuesInput implements PersistableSettings {
                     DynamicValue.<IOException> writeDataCell(value.m_value, //
                         gen::writeNumber, //
                         gen::writeNumber, //
+                        gen::writeNumber, //
                         gen::writeBoolean, //
                         gen::writeString);
                 } catch (final ConverterException e) {
@@ -611,6 +619,7 @@ public class DynamicValuesInput implements PersistableSettings {
             final var dataCell = DynamicValue.readDataCell(dataType, //
                 valueNode::asDouble, //
                 valueNode::asInt, //
+                valueNode::asLong, //
                 valueNode::asBoolean, //
                 valueNode::asText);
             return new DynamicValue(dataType, dataCell, modifiers);
@@ -635,6 +644,7 @@ public class DynamicValuesInput implements PersistableSettings {
                 final var dataCell = DynamicValue.<InvalidSettingsException> readDataCell(dataType, //
                     () -> settings.getDouble(VALUE_KEY), //
                     () -> settings.getInt(VALUE_KEY), //
+                    () -> settings.getLong(VALUE_KEY), //
                     () -> settings.getBoolean(VALUE_KEY), //
                     () -> settings.getString(VALUE_KEY) //
                 );
@@ -660,6 +670,7 @@ public class DynamicValuesInput implements PersistableSettings {
                     DynamicValue.writeDataCell(cell, //
                         d -> settings.addDouble(VALUE_KEY, d), //
                         i -> settings.addInt(VALUE_KEY, i), //
+                        l -> settings.addLong(VALUE_KEY, l), //
                         b -> settings.addBoolean(VALUE_KEY, b), //
                         s -> settings.addString(VALUE_KEY, s));
                 } catch (final ConverterException e) {
