@@ -484,6 +484,9 @@ public class DynamicValuesInput implements PersistableSettings {
          */
         private static DataCell readDataCellFromString(final DataType dataType, final String value)
             throws ConverterException {
+            if (value == null) {
+                return DataType.getMissingCell();
+            }
             if (dataType.isCollectionType()) {
                 throw new IllegalArgumentException(
                     "Collection types are not supported. Given type is: %s".formatted(dataType));
@@ -675,6 +678,8 @@ public class DynamicValuesInput implements PersistableSettings {
                     throw new RuntimeException(
                         String.format("Could not persist data cell value: %s.", e.getMessage()), e);
                 }
+            } else {
+                settings.addString(VALUE_KEY, null);
             }
         }
     }
