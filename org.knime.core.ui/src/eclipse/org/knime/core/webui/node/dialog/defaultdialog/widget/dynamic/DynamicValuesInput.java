@@ -59,6 +59,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.function.FailableConsumer;
 import org.apache.commons.lang3.function.FailableSupplier;
 import org.knime.core.data.DataCell;
+import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataType;
 import org.knime.core.data.DataTypeRegistry;
 import org.knime.core.data.convert.datacell.JavaToDataCellConverterRegistry;
@@ -75,6 +76,7 @@ import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.message.Message;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
@@ -155,10 +157,14 @@ public class DynamicValuesInput implements PersistableSettings {
         static Map<String, Class<? extends DefaultNodeSettings>> modifierClasses = new HashMap<>();
     }
 
-
-    public void validate() throws InvalidSettingsException {
+    /**
+     * Validates input values.
+     * @param colSpec current column spec
+     * @throws InvalidSettingsException
+     */
+    public void validate(final DataColumnSpec colSpec) throws InvalidSettingsException {
         for (final var value : m_values) {
-            value.validate();
+            value.validate(colSpec);
         }
     }
 
@@ -271,44 +277,57 @@ public class DynamicValuesInput implements PersistableSettings {
             }
         }
 
-        private void validate() throws InvalidSettingsException {
+        private void validate(final DataColumnSpec colSpec) throws InvalidSettingsException {
             CheckUtils.checkSetting(!m_value.isMissing(), "The comparison value is missing.");
+            // check if the saved type is still compatible with the current column type
+            final var columnType = colSpec.getType();
+            if (!m_type.isASuperTypeOf(columnType)) {
+                final var colName = colSpec.getName();
+                throw Message.builder()
+                    .withSummary(
+                        "Type of input column \"%s\" is not compatible with comparison value.".formatted(colName))
+                    .addTextIssue(
+                        "Input column \"%s\" has type \"%s\", but comparison value is of incompatible type \"%s\""
+                            .formatted(colName, columnType.getName(), m_type.getName()))
+                    .addResolutions("Reconfigure the node to supply a comparison value of type \"%s\"."
+                        .formatted(columnType.getName())) //
+                    .addResolutions("Change the input column type to \"%s\".".formatted(m_type.getName())) //
+                    .build().orElseThrow().toInvalidSettingsException();
+            }
 
             final var cellType = m_value.getType();
-            if (m_type.isASuperTypeOf(cellType)) {
+            // this condition is `false` iff we packaged a non-convertible input string in a StringCell
+            // (in which case m_type will be the column type at point in time when we saved the config)
+            if (m_type.equals(cellType)) {
                 return;
             }
             // A "real" StringCell (where our column type is also StringCell's type) would have been returned above
             // already... so this must be a StringCell that contains an unconvertible user input.
+            // Otherwise, there is something unexpected happening.
             if (!(m_value instanceof StringCell stringCell)) {
                 throw new IllegalStateException("Unexpected cell type when retrieving converter error: " + cellType);
             }
             // This is the case if `readDataCellFromStringSafe` failed to type-map when closing the dialog.
-            throw retrieveConverterError(m_type, stringCell);
+            throw retrieveConversionError(m_type, stringCell);
         }
 
         /**
-         * Expects the conversion of the given string cell to the target type to fail,
-         * retrieving the conversion exception.
+         * Expects the conversion of the given string cell to the target type to fail, retrieving the conversion
+         * exception.
          *
-         * @param targetType target type for conversion
-         * @param stringCell cell to convert to target
+         * @param type target type for conversion
+         * @param cell cell to convert to target, expected to fail
          * @return exception with parse error
          */
-        private static InvalidSettingsException retrieveConverterError(final DataType targetType,
-            final StringCell stringCell) {
-            final var stringValue = stringCell.getStringValue();
+        private static InvalidSettingsException retrieveConversionError(final DataType type, final StringCell cell) {
+            final var stringValue = cell.getStringValue();
             try {
-                Optional.of(readDataCellFromString(targetType, stringValue));
+                Optional.of(readDataCellFromString(type, stringValue));
                 throw new IllegalStateException(
                     "Expected conversion of string \"%s\" to target type \"%s\" to fail, but it succeeded."
-                        .formatted(stringValue, targetType));
-            } catch (final Exception e) {
-                var message = e.getMessage();
-                if (message == null) {
-                    message = "Unable to convert \"%s\" to cell of type \"%s\"".formatted(stringValue, targetType);
-                }
-                return new InvalidSettingsException(message, e);
+                        .formatted(stringValue, type));
+            } catch (final ConverterException e) {
+                return new InvalidSettingsException(e.getMessage(), e.getCause());
             }
         }
 
@@ -458,6 +477,7 @@ public class DynamicValuesInput implements PersistableSettings {
                 } else {
                     gen.writeNull();
                 }
+                //TODO this does not work for non-native types
                 final var cellClassName = value.m_type.getCellClass().getName();
                 gen.writeObjectField(CELL_CLASS_NAME_KEY, cellClassName);
                 if (value.m_modifiers != null) {
@@ -531,6 +551,7 @@ public class DynamicValuesInput implements PersistableSettings {
 
             @Override
             public void save(final DynamicValue obj, final NodeSettingsWO settings) {
+                // TODO this does not work for non-native types
                 settings.addString(TYPE_ID_KEY, obj.m_type.getCellClass().getName());
                 if (obj.m_modifiers != null) {
                     final var modifiers = obj.m_modifiers;
