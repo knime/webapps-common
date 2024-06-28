@@ -125,6 +125,7 @@
   & ul,
   & ol {
     padding-left: 20px;
+    display: table; /* avoid bullet points overlapping floating elements https://stackoverflow.com/a/11293198/1312073 */
 
     & li,
     & li > p {
