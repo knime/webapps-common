@@ -139,27 +139,33 @@ describe("FileChooserInput.vue", () => {
     expect(findFolderLenseButton(wrapper).props().disabled).toBe(true);
   });
 
-  it("sets default data when unsetting controlling flow variable", async () => {
-    const stringRepresentation = "myStringRepresentation";
-    props.control.data.path.fsCategory = "RELATIVE";
-    props.control.data.path.context = { fsToString: stringRepresentation };
-    const { flowVariablesMap, wrapper, handleChange } =
-      await mountJsonFormsComponent(FileChooserInput, {
-        props,
-        withControllingFlowVariable: `${props.control.path}.path` as any,
+  it.each(["LOCAL", "relative-to-current-hubspace"])(
+    "sets default data when unsetting controlling flow variable",
+    async (fsCategory) => {
+      const stringRepresentation = "myStringRepresentation";
+      props.control.data.path.fsCategory = "RELATIVE";
+      props.control.data.path.context = { fsToString: stringRepresentation };
+      if (fsCategory === "LOCAL") {
+        props.control.uischema.options.isLocal = true;
+      }
+      const { flowVariablesMap, wrapper, handleChange } =
+        await mountJsonFormsComponent(FileChooserInput, {
+          props,
+          withControllingFlowVariable: `${props.control.path}.path` as any,
+        });
+      flowVariablesMap[
+        `${props.control.path}.path` as any
+      ].controllingFlowVariableName = null as any;
+      // @ts-ignore
+      wrapper.vm.control = { ...wrapper.vm.control };
+      await flushPromises();
+      expect(handleChange).toHaveBeenCalledWith(props.control.path, {
+        path: {
+          path: "",
+          fsCategory,
+          timeout: 10000,
+        },
       });
-    flowVariablesMap[
-      `${props.control.path}.path` as any
-    ].controllingFlowVariableName = null as any;
-    // @ts-ignore
-    wrapper.vm.control = { ...wrapper.vm.control };
-    await flushPromises();
-    expect(handleChange).toHaveBeenCalledWith(props.control.path, {
-      path: {
-        path: "",
-        fsCategory: "relative-to-current-hubspace",
-        timeout: 10000,
-      },
-    });
-  });
+    },
+  );
 });

@@ -21,11 +21,17 @@ const {
   props,
 });
 
+const browseOptions = computed(() => {
+  return control.value.uischema.options as FileChooserOptions;
+});
+
 const getDefaultData = () => {
   return {
     path: "",
     timeout: 10000,
-    fsCategory: "relative-to-current-hubspace",
+    fsCategory: browseOptions.value.isLocal
+      ? "LOCAL"
+      : "relative-to-current-hubspace",
   };
 };
 
@@ -36,10 +42,6 @@ const data = computed(() => {
 const onChange = (value: any) => {
   onChangeControl({ path: value });
 };
-
-const browseOptions = computed(() => {
-  return control.value.uischema.options as FileChooserOptions;
-});
 
 watch(
   () => Boolean(flowSettings.value?.controllingFlowVariableName),
