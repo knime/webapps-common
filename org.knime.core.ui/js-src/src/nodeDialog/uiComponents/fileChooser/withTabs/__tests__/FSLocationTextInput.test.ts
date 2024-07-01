@@ -9,7 +9,6 @@ import InputField from "@@/webapps-common/ui/components/forms/InputField.vue";
 
 describe("FSLocationTextInput.vue", () => {
   const currentSpacePrefix = "knime://knime.space/";
-  const localPrefix = "file://";
   let props: FSLocationTextInputProps;
 
   beforeEach(() => {
@@ -89,7 +88,7 @@ describe("FSLocationTextInput.vue", () => {
     expect(
       (await mountFsLocationTextInput()).findComponent(InputField).props()
         .modelValue,
-    ).toBe(localPrefix + absolute(path));
+    ).toBe(absolute(path));
   });
 
   it("shows non-supported paths", async () => {

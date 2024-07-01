@@ -8,10 +8,8 @@ interface Props {
 export { Props };
 
 const currentSpacePrefix = "knime://knime.space/";
-const localPrefix = "file://";
 export const prefixes: [keyof typeof FSCategory, string][] = [
   ["relative-to-current-hubspace", currentSpacePrefix],
-  ["LOCAL", localPrefix],
 ];
 </script>
 
@@ -49,7 +47,7 @@ const fsLocationToText = async (fsLocation: FileChooserValue) => {
     if (errorMessage) {
       return fsLocation.path;
     }
-    return localPrefix + path;
+    return path || "";
   } else {
     return fsLocation.context!.fsToString;
   }
