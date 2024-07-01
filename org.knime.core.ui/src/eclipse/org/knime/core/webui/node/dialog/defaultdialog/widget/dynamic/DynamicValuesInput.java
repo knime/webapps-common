@@ -52,8 +52,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -91,7 +89,6 @@ import org.knime.core.node.config.base.JSONConfig;
 import org.knime.core.node.config.base.JSONConfig.WriterConfig;
 import org.knime.core.node.message.Message;
 import org.knime.core.node.util.CheckUtils;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
@@ -114,20 +111,21 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  * @author Paul Bärnreuther
  * @author Manuel Hotz, KNIME GmbH, Konstanz, Germany
  */
-public class DynamicValuesInput implements PersistableSettings {
+public final class DynamicValuesInput implements PersistableSettings {
 
     private static final JavaToDataCellConverterRegistry TO_DATACELL = JavaToDataCellConverterRegistry.getInstance();
 
     private static final DataCellToJavaConverterRegistry FROM_DATACELL = DataCellToJavaConverterRegistry.getInstance();
 
-    DynamicValue[] m_values;
+    final DynamicValue[] m_values;
 
-    InputKind m_inputKind;
+    final InputKind m_inputKind;
 
     /**
      * Needed for schema generation.
      */
     DynamicValuesInput() {
+        this((DynamicValue[])null, null);
     }
 
     private DynamicValuesInput(final DynamicValue[] values, final InputKind kind) {
@@ -140,7 +138,7 @@ public class DynamicValuesInput implements PersistableSettings {
      *
      * @param singleValueType type of the single value
      */
-    public DynamicValuesInput(final DataType singleValueType) {
+    private DynamicValuesInput(final DataType singleValueType) {
         this(new DynamicValue[]{new DynamicValue(singleValueType)}, InputKind.SINGLE);
     }
 
@@ -151,7 +149,7 @@ public class DynamicValuesInput implements PersistableSettings {
      * @param dataType target data type
      * @param initialValue data type and initial value
      */
-    public DynamicValuesInput(final DataType dataType, final DataCell initialValue) {
+    private DynamicValuesInput(final DataType dataType, final DataCell initialValue) {
         this(new DynamicValue[]{new DynamicValue(dataType, initialValue)}, InputKind.SINGLE);
     }
 
@@ -163,6 +161,18 @@ public class DynamicValuesInput implements PersistableSettings {
      */
     public static DynamicValuesInput emptySingle() {
         return new DynamicValuesInput(new DynamicValue[]{}, InputKind.SINGLE);
+    }
+
+    /**
+     * Creates a single-value input that offers case-matching settings for String inputs.
+     *
+     * @noreference This method is not intended to be referenced by clients.
+     *
+     * @param dataType data type of input value
+     * @return dynamic widget
+     */
+    public static DynamicValuesInput singleValueWithCaseMatchingForString(final DataType dataType) {
+        return new DynamicValuesInput(dataType);
     }
 
     private enum InputKind {
@@ -192,17 +202,6 @@ public class DynamicValuesInput implements PersistableSettings {
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append(m_inputKind).append(m_values)
             .toString();
-    }
-
-    private static final class ModifiersRegistry {
-        private ModifiersRegistry() {
-            /* empty default constructor */ }
-
-        private static Map<String, Class<? extends DefaultNodeSettings>> modifierClasses = new HashMap<>();
-
-        static {
-            modifierClasses.put(StringValueModifiers.class.getName(), StringValueModifiers.class);
-        }
     }
 
     /**
@@ -258,9 +257,9 @@ public class DynamicValuesInput implements PersistableSettings {
         private DataCell m_value;
 
         /**
-         * Nullable modifiers.
+         * Nullable string case matching settings.
          */
-        private DefaultNodeSettings m_modifiers;
+        private StringCaseMatchingSettings m_caseMatching;
 
         DynamicValue() {
             // For Deserialization
@@ -281,26 +280,21 @@ public class DynamicValuesInput implements PersistableSettings {
          * @param columnType type of the content
          * @param initialValue initial value or {@link DataType#getMissingCell()} if it should be supplied by dialog
          */
-        public DynamicValue(final DataType columnType, final DataCell initialValue) {
-            this(columnType, initialValue, columnType == StringCell.TYPE ? new StringValueModifiers() : null);
+        private DynamicValue(final DataType columnType, final DataCell initialValue) {
+            this(columnType, initialValue, columnType == StringCell.TYPE ? new StringCaseMatchingSettings() : null);
         }
 
-        /**
-         * Value without content. Default content will be supplied by dialog.
-         *
-         * @param columnType type of the content
-         * @param modifiers nullable input value modifiers
-         */
-        private DynamicValue(final DataType columnType, final DefaultNodeSettings modifiers) {
-            this(columnType, DataType.getMissingCell(), modifiers);
+        private DynamicValue(final DataType columnType, final StringCaseMatchingSettings caseMatchingSettings) {
+            this(columnType, DataType.getMissingCell(), caseMatchingSettings);
         }
 
         /**
          * @param columnType target data type
          * @param initial initial value or {@link DataType#getMissingCell()}
-         * @param modifiers optional modifiers
+         * @param caseMatchingSettings optional settings for String case matching
          */
-        private DynamicValue(final DataType columnType, final DataCell initial, final DefaultNodeSettings modifiers) {
+        private DynamicValue(final DataType columnType, final DataCell initial,
+                final StringCaseMatchingSettings caseMatchingSettings) {
             m_value = Objects.requireNonNull(initial);
             if (columnType.equals(DataType.getMissingCell().getType())) {
                 throw new IllegalArgumentException("DynamicValue must not be of \"MissingCell\" type");
@@ -316,7 +310,7 @@ public class DynamicValuesInput implements PersistableSettings {
                     "Cell type \"%s\" is not a subtype of target data type \"%s\" nor a StringCell.", cellType,
                     columnType);
             }
-            m_modifiers = modifiers;
+            m_caseMatching = caseMatchingSettings;
         }
 
         @Override
@@ -331,18 +325,18 @@ public class DynamicValuesInput implements PersistableSettings {
                 return false;
             }
             return m_type.equals(dv.m_type) && m_value.equals(dv.m_value)
-                && Objects.equals(m_modifiers, dv.m_modifiers);
+                && Objects.equals(m_caseMatching, dv.m_caseMatching);
         }
 
         @Override
         public int hashCode() {
-            return new HashCodeBuilder(13, 37).append(m_type).append(m_value).append(m_modifiers).toHashCode();
+            return new HashCodeBuilder(13, 37).append(m_type).append(m_value).append(m_caseMatching).toHashCode();
         }
 
         @Override
         public String toString() {
             return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append(m_type).append(m_value)
-                .append(m_modifiers).toString();
+                .append(m_caseMatching).toString();
         }
 
         /**
@@ -519,11 +513,13 @@ public class DynamicValuesInput implements PersistableSettings {
         }
     }
 
-    private static final String MODIFIERS_KEY = "modifiers";
+    // used in frontend to show custom string case matching settings
+    private static final String USE_STRING_CASE_MATCHING = "useStringCaseMatchingSettings";
+
+    // this contains the actual data for case matching of strings
+    private static final String MATCHING_KEY = "stringCaseMatching";
 
     private static final String VALUE_KEY = "value";
-
-    private static final String MODIFIERS_CLASS_NAME_KEY = "modifiersClassName";
 
     private static final String MISSING_CELL_ERR_KEY = "missingCellError";
 
@@ -575,13 +571,12 @@ public class DynamicValuesInput implements PersistableSettings {
             JSONConfig.writeJSON(settings, w, WriterConfig.DEFAULT);
             gen.writeStringField(DATA_TYPE_CONFIG_FIELD_NAME, w.toString());
 
-            if (value.m_modifiers != null) {
-                final var modifiers = value.m_modifiers;
-                final var modifiersData = JsonFormsDataUtil.toJsonData(modifiers);
-                final var modifiersClass = modifiers.getClass();
-                final var modifiersClassName = modifiersClass.getName();
-                gen.writeObjectField(MODIFIERS_CLASS_NAME_KEY, modifiersClassName);
-                gen.writeObjectField(MODIFIERS_KEY, modifiersData);
+            // get frontend to show custom widget
+            final var caseMatching = value.m_caseMatching;
+            gen.writeBooleanField(USE_STRING_CASE_MATCHING, caseMatching != null);
+            if (caseMatching != null) {
+                final var matchingData = JsonFormsDataUtil.toJsonData(caseMatching);
+                gen.writeObjectField(MATCHING_KEY, matchingData);
             }
             gen.writeEndObject();
         }
@@ -610,13 +605,12 @@ public class DynamicValuesInput implements PersistableSettings {
                 return new DynamicValue(dataType);
             }
 
-            final var modifiersClassName = node.get(MODIFIERS_CLASS_NAME_KEY);
-            DefaultNodeSettings modifiers = null;
-            if (modifiersClassName != null && !modifiersClassName.isMissingNode()) {
-                final var modifiersClass = ModifiersRegistry.modifierClasses.get(modifiersClassName.asText());
-                modifiers = modifiersClass == null ? null
-                    : JsonFormsDataUtil.toDefaultNodeSettings(node.get(MODIFIERS_KEY), modifiersClass);
+            final var caseMatchingNode = node.get(MATCHING_KEY);
+            StringCaseMatchingSettings modifiers = null;
+            if (caseMatchingNode != null && !caseMatchingNode.isMissingNode()) {
+                modifiers = JsonFormsDataUtil.toDefaultNodeSettings(caseMatchingNode, StringCaseMatchingSettings.class);
             }
+
             final var dataCell = DynamicValue.readDataCell(dataType, //
                 valueNode::asDouble, //
                 valueNode::asInt, //
@@ -634,13 +628,14 @@ public class DynamicValuesInput implements PersistableSettings {
             if (settings.containsKey(MISSING_CELL_ERR_KEY)) {
                 throw new InvalidSettingsException(settings.getString(MISSING_CELL_ERR_KEY));
             }
-
-            final var modifiersClass = // TODO
-                ModifiersRegistry.modifierClasses.get(settings.getString(MODIFIERS_CLASS_NAME_KEY, ""));
-            final var modifiers = modifiersClass == null ? null : DefaultFieldNodeSettingsPersistorFactory
-                .createDefaultPersistor(modifiersClass, MODIFIERS_KEY).load(settings);
-
             final var dataType = settings.getDataType(TYPE_ID_KEY);
+
+            final var caseMatching = settings.containsKey(MATCHING_KEY) ? DefaultFieldNodeSettingsPersistorFactory
+                .createDefaultPersistor(StringCaseMatchingSettings.class, MATCHING_KEY).load(settings) : null;
+
+            CheckUtils.checkSetting(!dataType.equals(StringCell.TYPE) || caseMatching != null,
+                "Missing case-matching settings for String comparison");
+
             if (settings.containsKey(VALUE_KEY)) {
                 final var dataCell = DynamicValue.<InvalidSettingsException> readDataCell(dataType, //
                     () -> settings.getDouble(VALUE_KEY), //
@@ -649,20 +644,19 @@ public class DynamicValuesInput implements PersistableSettings {
                     () -> settings.getBoolean(VALUE_KEY), //
                     () -> settings.getString(VALUE_KEY) //
                 );
-                return new DynamicValue(dataType, dataCell, modifiers);
+                return new DynamicValue(dataType, dataCell, caseMatching);
             }
-            return new DynamicValue(dataType, modifiers);
+            return new DynamicValue(dataType, caseMatching);
         }
 
         @Override
         public void save(final DynamicValue obj, final NodeSettingsWO settings) {
             settings.addDataType(TYPE_ID_KEY, obj.m_type);
-            if (obj.m_modifiers != null) {
-                final var modifiers = obj.m_modifiers;
-                settings.addString(MODIFIERS_CLASS_NAME_KEY, modifiers.getClass().getName());
+            final var caseMatching = obj.m_caseMatching;
+            if (caseMatching != null) {
                 DefaultFieldNodeSettingsPersistorFactory
-                    .createDefaultPersistor((Class<DefaultNodeSettings>)modifiers.getClass(), MODIFIERS_KEY)
-                    .save(modifiers, settings);
+                    .createDefaultPersistor(StringCaseMatchingSettings.class, MATCHING_KEY)
+                    .save(caseMatching, settings);
             }
             final var cell = obj.m_value;
             if (!cell.isMissing()) {
@@ -706,23 +700,25 @@ public class DynamicValuesInput implements PersistableSettings {
      *
      * @param index index to get value at
      * @return value or empty optional if no value exists at the specified index
+     * @throws ArrayIndexOutOfBoundsException
      */
     public Optional<DataCell> getCellAt(final int index) {
         return Optional.ofNullable(m_values[index].m_value);
     }
 
     /**
-     * Gets the modifiers for the value at the specified index, or {@link Optional#empty()} if no modifiers exist at the
-     * specified index, casting the modifiers to the return type. If the index does not exist, will throw a runtime
-     * exception.
+     * Checks case-matching for string value at given existing index.
      *
-     * @param <T> modifiers type
-     * @param index index of the modifiers to get
-     * @return modifiers or empty optional if no modifiers exist at the specified index.
+     * @noreference This method is not intended to be referenced by clients.
+     *
+     * @param index index to check
+     * @return {@code true} if the value at the given index should be matched case-sensitive, {@code false} otherwise
+     * @throws IllegalArgumentException If the value at the specified index does not use the case-matching setting
      */
-    @SuppressWarnings("unchecked")
-    public <T extends DefaultNodeSettings> Optional<T> getModifiersAt(final int index) {
-        return Optional.ofNullable((T)m_values[index].m_modifiers);
+    public boolean isStringMatchCaseSensitive(final int index) {
+        CheckUtils.checkArgument(m_values[index].m_caseMatching != null,
+            "Value at index %d does not use case-matching settings".formatted(index));
+        return m_values[index].m_caseMatching.isCaseSensitive();
     }
 
     /**
@@ -815,12 +811,12 @@ public class DynamicValuesInput implements PersistableSettings {
         // further. Since SmilesCell and SmilesAdapterCell do not implement the exact same value interfaces
         // (there is RWAdapterValue(AdapterValue) included for the adapter one), we need to do a reverse lookup on the
         // adapted types.
-        final var dtr = DataTypeRegistry.getInstance();
         final var cellClass = maybeAdapterType.getCellClass();
         // non-native types are not adapter types, which we handle here (they have no CellClass)
         if (cellClass == null) {
             return Stream.empty();
         }
+        final var dtr = DataTypeRegistry.getInstance();
         final var className = cellClass.getName();
         return dtr.availableDataTypes().stream()
             .filter(t -> dtr.getImplementationSubDataTypes(t).anyMatch(className::equals));

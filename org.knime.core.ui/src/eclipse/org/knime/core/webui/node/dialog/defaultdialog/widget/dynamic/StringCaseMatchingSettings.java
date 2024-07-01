@@ -51,9 +51,17 @@ package org.knime.core.webui.node.dialog.defaultdialog.widget.dynamic;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 
-public final class StringValueModifiers implements DefaultNodeSettings {
+/**
+ * Case-matching setting provided by the framework, since we currently lack a flexible extension mechanism for
+ * individual widgets.
+ */
+final class StringCaseMatchingSettings implements DefaultNodeSettings {
 
-    public enum CaseMatching {
+    // TODO Ideally, this settings class is entirely opaque to the framework and the concrete implementation is supplied
+    // by the node that uses it.
+
+    // Actual labels/description is hard-coded in the frontend!
+    enum CaseMatching {
             /** Respect case when matching strings. */
             @Label("Case sensitive")
             CASESENSITIVE, //
@@ -79,7 +87,7 @@ public final class StringValueModifiers implements DefaultNodeSettings {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof StringValueModifiers mod)) {
+        if (!(obj instanceof StringCaseMatchingSettings mod)) {
             return false;
         }
         return m_caseMatching == mod.m_caseMatching;

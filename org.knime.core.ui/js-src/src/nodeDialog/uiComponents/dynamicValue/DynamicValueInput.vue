@@ -4,26 +4,26 @@ type CaseMatching = "CASESENSITIVE" | "CASEINSENSITIVE";
 interface StringValue {
   value: string;
   cellClassName: "org.knime.core.data.def.StringCell";
-  modifiersClassName: "org.knime.core.webui.node.dialog.defaultdialog.widget.dynamic.StringValueModifiers";
-  modifiers: { caseMatching: CaseMatching };
+  useStringCaseMatchingSettings: boolean;
+  stringCaseMatching: { caseMatching: CaseMatching };
 }
 
 interface IntValue {
   value: number;
   cellClassName: "org.knime.core.data.def.IntCell";
-  modifiersClassName: undefined;
+  useStringCaseMatchingSettings: undefined;
 }
 
 interface DoubleValue {
   value: number;
   cellClassName: "org.knime.core.data.def.DoubleCell";
-  modifiersClassName: undefined;
+  useStringCaseMatchingSettings: undefined;
 }
 
 interface BooleanValue {
   value: boolean;
   cellClassName: "org.knime.core.data.def.BooleanCell";
-  modifiersClassName: undefined;
+  useStringCaseMatchingSettings: undefined;
 }
 
 export type DynamicValueType =
@@ -31,7 +31,11 @@ export type DynamicValueType =
   | DoubleValue
   | IntValue
   | BooleanValue
-  | { value: unknown; cellClassName: string; modifiersClassName: undefined };
+  | {
+      value: unknown;
+      cellClassName: string;
+      useStringCaseMatchingSettings: undefined;
+    };
 </script>
 
 <script setup lang="ts">
@@ -81,11 +85,8 @@ const initialValue = computed(() => {
   }
 });
 
-const modifiersDef = computed(() => {
-  if (
-    props.value.modifiersClassName ===
-    "org.knime.core.webui.node.dialog.defaultdialog.widget.dynamic.StringValueModifiers"
-  ) {
+const stringCaseMatchingDef = computed(() => {
+  if (props.value.useStringCaseMatchingSettings) {
     return {
       schemaProperties: {
         caseMatching: {
@@ -106,7 +107,7 @@ const modifiersDef = computed(() => {
       },
       uischemaElements: [
         {
-          scope: "#/properties/modifiers/properties/caseMatching",
+          scope: "#/properties/stringCaseMatching/properties/caseMatching",
           type: "Control",
           options: {
             format: "valueSwitch",
@@ -139,22 +140,25 @@ watch(
       type: 'object',
       properties: {
         value: valueSchema,
-        ...(modifiersDef === null
+        ...(stringCaseMatchingDef === null
           ? {}
           : {
-              modifiers: {
+              stringCaseMatching: {
                 type: 'object',
-                properties: modifiersDef.schemaProperties,
+                properties: stringCaseMatchingDef.schemaProperties,
               },
             }),
       },
     }"
     :uischema="
-      modifiersDef === null
+      stringCaseMatchingDef === null
         ? valueUiSchema
         : {
             type: 'VerticalLayout',
-            elements: [...modifiersDef.uischemaElements, valueUiSchema],
+            elements: [
+              ...stringCaseMatchingDef.uischemaElements,
+              valueUiSchema,
+            ],
           }
     "
   />
