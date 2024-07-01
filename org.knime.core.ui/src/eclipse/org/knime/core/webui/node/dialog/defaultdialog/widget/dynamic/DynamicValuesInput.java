@@ -252,7 +252,8 @@ public final class DynamicValuesInput implements PersistableSettings {
         private DataType m_type;
 
         /**
-         * Non-{@code null} stored value.
+         * Non-{@code null} stored value. Usualy of {@link #m_type}'s {@code DataType}, but in case type-mapping fails,
+         * will be of type {@link StringCell#TYPE} containing the user-entered string value.
          */
         private DataCell m_value;
 
@@ -469,12 +470,10 @@ public final class DynamicValuesInput implements PersistableSettings {
          * Converts the given string value to a cell of the given data type. In case the value was {@code null}, a plain
          * missing cell without an error message is returned.
          *
-         * The error message is (ab)used to ferry conversion exceptions through the frontend (via the settings).
-         *
          * @param dataType target data type
          * @param value string value to deserialize
          * @return data cell for the string representation
-         * @throws Exception
+         * @throws ConverterException in case the string value could not be converted into the given data type
          */
         private static DataCell readDataCellFromString(final DataType dataType, final String value)
             throws ConverterException {
@@ -507,6 +506,8 @@ public final class DynamicValuesInput implements PersistableSettings {
         private static DataCell readDataCellFromStringSafe(final DataType dataType, final String value) {
             try {
                 return readDataCellFromString(dataType, value);
+                // We keep the user-entered value in a StringCell (the m_type remains of another type),
+                // in order to parse it again for error reporting
             } catch (final ConverterException e) {
                 return new StringCell(value);
             }
@@ -722,10 +723,8 @@ public final class DynamicValuesInput implements PersistableSettings {
     }
 
     /**
-     * TODO return true whenever the current state can be obtained by configuring starting with newValue.
-     *
-     * @param newValue
-     * @return
+     * @param newValue starting value
+     * @return {@code true} whenever the current state can be obtained by configuring starting with newValue.
      */
     public boolean isConfigurableFrom(final DynamicValuesInput newValue) {
         if (newValue.m_values.length != m_values.length) {
@@ -767,8 +766,7 @@ public final class DynamicValuesInput implements PersistableSettings {
     /* == Lookup of type-mappers. == */
 
     /**
-     * Tries to get a converter from String to the given target data type, including support for types that the given
-     * target type can adapt to.
+     * Tries to get a converter from String to the given target data type (or a super type of it).
      *
      * @param registry converter registry to use
      * @param targetType target type
@@ -779,9 +777,9 @@ public final class DynamicValuesInput implements PersistableSettings {
         if (!direct.isEmpty()) {
             return Optional.of(direct.iterator().next());
         }
-        // reverse-lookup adapted types and get the converter for one of those, fitting our target type
-        // e.g. targetType = SmilesAdapterCell, adapted type will be SmilesCell for which a converter exists
-        return getAdaptedTypes(targetType) //
+        // reverse-lookup types and get the converter for one of those, fitting our target type
+        // e.g. targetType = SmilesAdapterCell, super type will be SmilesCell for which a converter exists
+        return getSuperTypes(targetType) //
                 .flatMap(type -> TO_DATACELL.getConverterFactories(String.class, type).stream()) //
                 .findFirst();
     }
@@ -799,20 +797,25 @@ public final class DynamicValuesInput implements PersistableSettings {
         if (!direct.isEmpty()) {
             return Optional.of(direct.iterator().next());
         }
-        return getAdaptedTypes(srcType) //
+        return getSuperTypes(srcType) //
                 .flatMap(type -> FROM_DATACELL.getConverterFactories(type, String.class).stream()) //
                 .findFirst();
     }
 
-    private static Stream<DataType> getAdaptedTypes(final DataType maybeAdapterType) {
-        // Why does this method exist?
-        // Example: the registry only contains converters to non-adapter cell types, e.g. String->SmilesCell.
+    /**
+     * Gets all super types of the given type to use in type-mapping.
+     *
+     * @param type type which maybe is a subtype of any other super types
+     * @return stream of types which the given type is a subtype of
+     */
+    private static Stream<DataType> getSuperTypes(final DataType type) {
+        // Example: the registry only contains converters to non-subtype cell types, e.g. String->SmilesCell.
         // When passsed a SmilesAdapterCell, the above lookup fails to identify any converters, so we have to look
         // further. Since SmilesCell and SmilesAdapterCell do not implement the exact same value interfaces
         // (there is RWAdapterValue(AdapterValue) included for the adapter one), we need to do a reverse lookup on the
-        // adapted types.
-        final var cellClass = maybeAdapterType.getCellClass();
-        // non-native types are not adapter types, which we handle here (they have no CellClass)
+        // subtype map.
+        final var cellClass = type.getCellClass();
+        // non-native types have no CellClass, so we cannot type-map them
         if (cellClass == null) {
             return Stream.empty();
         }
