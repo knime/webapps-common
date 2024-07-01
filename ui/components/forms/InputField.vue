@@ -57,6 +57,10 @@ export default {
       type: String,
       default: null,
     },
+    compact: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ["update:modelValue", "focus", "keyup", "keypress", "keydown"],
   computed: {
@@ -113,7 +117,7 @@ export default {
 </script>
 
 <template>
-  <div class="input-wrapper">
+  <div class="input-wrapper" :class="{ compact }">
     <div v-if="hasLeftIcon" class="icon">
       <slot name="icon" />
     </div>
@@ -158,6 +162,10 @@ export default {
 
   &:focus-within {
     @mixin focus-style;
+  }
+
+  &.compact {
+    height: var(--single-line-form-height-compact);
   }
 
   & .icon {

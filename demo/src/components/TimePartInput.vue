@@ -110,7 +110,7 @@ export default {
               @bounds="millisecondsBound"
             />
           </Label>
-          <Label text="Disabled">
+          <Label text="Disabled" large>
             <TimePartInput
               v-model="milliseconds"
               disabled
@@ -122,6 +122,14 @@ export default {
             <TimePartInput
               v-model="milliseconds"
               :is-valid="false"
+              type="integer"
+              :min-digits="3"
+            />
+          </Label>
+          <Label text="Compact">
+            <TimePartInput
+              v-model="milliseconds"
+              compact
               type="integer"
               :min-digits="3"
             />

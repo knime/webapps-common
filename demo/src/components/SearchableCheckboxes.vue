@@ -267,6 +267,33 @@ export default {
         </div>
         <div class="grid-item-2">selected ids: {{ missingValues }}</div>
       </div>
+      <br />
+      <div class="grid-container">
+        <div class="grid-item-5">
+          <span>Compact</span>
+          <SearchableCheckboxes
+            :model-value="[]"
+            :disabled="true"
+            :show-search="true"
+            :size="3"
+            compact
+            :possible-values="[
+              {
+                id: 'foo',
+                text: 'Foo',
+              },
+              {
+                id: 'bar',
+                text: 'Bar',
+              },
+              {
+                id: 'baz',
+                text: 'Baz',
+              },
+            ]"
+          />
+        </div>
+      </div>
     </section>
     <section>
       <div class="grid-container">

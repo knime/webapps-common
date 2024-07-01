@@ -59,6 +59,10 @@ export default {
       default: false,
       type: Boolean,
     },
+    compact: {
+      default: false,
+      type: Boolean,
+    },
   },
   emits: ["update:modelValue", "bounds"],
   data() {
@@ -301,7 +305,7 @@ export default {
 </script>
 
 <template>
-  <div :class="['wrapper', { disabled }]">
+  <div :class="['wrapper', { disabled, compact }]">
     <input
       :id="id"
       ref="input"
@@ -446,6 +450,24 @@ export default {
       & svg {
         stroke: var(--knime-white);
       }
+    }
+  }
+
+  &.compact {
+    & input[type="number"] {
+      height: calc(
+        var(--single-line-form-height-compact) - 2 * var(--form-border-width)
+      );
+    }
+
+    /* stylelint-disable-next-line no-descending-specificity */
+    & .increase,
+    & .decrease {
+      height: calc(
+        (var(--single-line-form-height-compact) - 2 * var(--form-border-width)) /
+          2
+      );
+      line-height: 14px;
     }
   }
 }

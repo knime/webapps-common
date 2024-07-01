@@ -240,6 +240,29 @@ export default {
           />
         </div>
       </div>
+      <div class="grid-container">
+        <div class="grid-item-12">
+          <p>Compact mode</p>
+        </div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-6">
+          <MultiModeTwinlist
+            :key="key"
+            v-model:manualSelection="manualSelection2"
+            :size="7"
+            show-mode
+            :with-mode-label="true"
+            :with-search-label="true"
+            :with-pattern-label="true"
+            :with-types-label="true"
+            left-label="Select from the visible items"
+            right-label="The selected stuff"
+            compact
+            :possible-values="demoValues"
+          />
+        </div>
+      </div>
     </section>
     <section>
       <div class="grid-container">

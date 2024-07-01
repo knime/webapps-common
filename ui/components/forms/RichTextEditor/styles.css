@@ -125,6 +125,7 @@
   & ul,
   & ol {
     padding-left: 20px;
+    display: table; /* avoid bullet points overlapping floating elements https://stackoverflow.com/a/11293198/1312073 */
 
     & li,
     & li > p {
@@ -144,10 +145,66 @@
     color: var(--theme-text-link-foreground-color);
     text-decoration-style: dashed;
 
+    &[href^="http"]::after {
+      content: "";
+      mask: url("../../../assets/img/icons/link-external.svg?url") no-repeat 50%
+        50%;
+      mask-size: cover;
+      background: var(
+        --theme-text-link-foreground-color
+      ); /* defines icon color */
+      width: 16px;
+      height: 16px;
+      display: inline-block;
+      margin-left: 4px;
+      vertical-align: -2px;
+    }
+
     &:hover {
       text-decoration-style: solid;
       background: var(--theme-text-link-background-color-hover);
       color: var(--theme-text-link-foreground-color-hover);
+
+      &[href^="http"]::after {
+        background: var(
+          --theme-text-link-foreground-color-hover
+        ); /* defines icon color */
+      }
+    }
+  }
+
+  @mixin-content;
+}
+
+@define-mixin rich-text-editor-table {
+  & table {
+    border-spacing: 15px 0;
+    width: calc(100% + 2 * 15px);
+    text-align: left;
+    margin: 20px 0;
+    position: relative;
+    left: -15px;
+
+    & th {
+      font-weight: 500;
+      font-family: var(--theme-text-medium-font-family);
+      color: var(--theme-text-medium-color);
+      border-bottom: solid 2px var(--knime-masala);
+    }
+
+    & th,
+    & td {
+      padding: 4px 8px;
+    }
+
+    & td {
+      border-bottom: solid 1px var(--knime-masala);
+    }
+
+    & colgroup {
+      font-size: 16px;
+      font-weight: 700;
+      border-bottom: solid 3px var(--knime-masala);
     }
   }
 
@@ -163,6 +220,7 @@
   @mixin rich-text-editor-code;
   @mixin rich-text-editor-lists;
   @mixin rich-text-editor-links;
+  @mixin rich-text-editor-table;
 
   @mixin-content;
 }

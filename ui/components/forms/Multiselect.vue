@@ -120,6 +120,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    compact: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ["update:modelValue", "focusOutside"],
   setup() {
@@ -128,7 +132,6 @@ export default {
   },
   data() {
     return {
-      checkedValue: this.modelValue,
       collapsed: true,
       focusOptions: [],
     };
@@ -138,16 +141,16 @@ export default {
       return [...this.focusOptions, this.parentFocusElement];
     },
     summary() {
-      if (this.checkedValue.length === 0) {
+      if (this.modelValue.length === 0) {
         return this.placeholder;
       }
 
-      if (this.checkedValue.length > this.summaryMaxItemCount) {
-        return `${this.checkedValue.length} ${this.summaryName}`;
+      if (this.modelValue.length > this.summaryMaxItemCount) {
+        return `${this.modelValue.length} ${this.summaryName}`;
       }
 
       return this.possibleValues
-        .filter(({ id }) => this.checkedValue.indexOf(id) > -1)
+        .filter(({ id }) => this.modelValue.indexOf(id) > -1)
         .map(({ text, selectedText = text }) => selectedText)
         .join(this.separator);
     },
@@ -175,18 +178,13 @@ export default {
         : this.$refs.toggle;
     },
   },
-  watch: {
-    modelValue: {
-      handler(newValue) {
-        this.checkedValue = newValue;
-      },
-      deep: true,
-    },
-  },
   mounted() {
     this.updateFocusOptions();
   },
   methods: {
+    emitNewSelection(newSelectedIds) {
+      this.$emit("update:modelValue", newSelectedIds);
+    },
     /**
      * Returns the next HTML Element from the list of items. If the current focused Element is at the top or bottom
      * of the list, this method will return the opposite end.
@@ -206,18 +204,16 @@ export default {
     },
     onUpdateModelValue(value, toggled) {
       if (toggled) {
-        if (this.checkedValue.indexOf(value) === -1) {
-          this.checkedValue.push(value);
+        if (this.modelValue.indexOf(value) === -1) {
+          this.emitNewSelection([...this.modelValue, value]);
         }
       } else {
-        this.checkedValue = this.checkedValue.filter((x) => x !== value);
+        this.emitNewSelection(this.modelValue.filter((x) => x !== value));
       }
-      consola.trace("Multiselect value changed to", this.checkedValue);
 
       /**
        * Fired when the selection changes.
        */
-      this.$emit("update:modelValue", this.checkedValue);
       if (this.closeDropdownOnSelection) {
         this.closeOptions();
       }
@@ -229,7 +225,7 @@ export default {
       }, BLUR_TIMEOUT);
     },
     isChecked(itemId) {
-      return this.checkedValue.includes(itemId);
+      return this.modelValue.includes(itemId);
     },
     /**
      * Handle closing the options.
@@ -316,7 +312,7 @@ export default {
 <template>
   <div
     ref="multiselect"
-    :class="['multiselect', { collapsed, invalid: !isValid }]"
+    :class="['multiselect', { collapsed, invalid: !isValid, compact }]"
     @keydown.esc="closeOptionsAndStop"
     @keydown.up.stop.prevent="onUp"
     @keydown.down.stop.prevent="onDown"
@@ -329,7 +325,7 @@ export default {
         ref="toggle"
         role="button"
         tabindex="0"
-        :class="{ placeholder: !checkedValue.length }"
+        :class="{ placeholder: !modelValue.length }"
         @click="toggle"
         @keydown.space.prevent="toggle"
       >
@@ -412,6 +408,19 @@ export default {
     }
   }
 
+  &.compact {
+    & [role="button"] {
+      height: var(--single-line-form-height-compact);
+      line-height: var(--single-line-form-height-compact);
+    }
+
+    & .icon {
+      top: calc(
+        (var(--single-line-form-height-compact) - var(--icon-size)) / 2
+      );
+    }
+  }
+
   &:not(.collapsed) [role="button"] {
     border-color: var(--knime-masala);
   }
@@ -424,6 +433,7 @@ export default {
     background: var(--theme-multiselect-background-color-hover);
   }
 
+  /* stylelint-disable-next-line no-descending-specificity */
   & .icon {
     --icon-size: 18px;
 

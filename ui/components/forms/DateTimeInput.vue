@@ -115,6 +115,10 @@ export default {
       default: false,
       type: Boolean,
     },
+    compact: {
+      default: false,
+      type: Boolean,
+    },
   },
   emits: ["update:modelValue"],
   data() {
@@ -333,7 +337,7 @@ export default {
 
 <template>
   <div class="date-time-input">
-    <div v-if="showDate" :class="['date-picker', { disabled }]">
+    <div v-if="showDate" :class="['date-picker', { disabled, compact }]">
       <Component :is="clientOnlyComponent">
         <DatePicker
           ref="datePicker"
@@ -375,11 +379,12 @@ export default {
       </Component>
       <span v-if="!isValid" class="invalid-marker" />
     </div>
-    <div v-if="showTime" :class="['time', { 'two-lines': twoLines }]">
+    <div v-if="showTime" :class="['time', { 'two-lines': twoLines, compact }]">
       <TimePartInput
         ref="hours"
         class="time-part"
         type="integer"
+        :compact="compact"
         :min="0"
         :max="23"
         :min-digits="2"
@@ -393,6 +398,7 @@ export default {
         ref="minutes"
         class="time-part"
         type="integer"
+        :compact="compact"
         :min="0"
         :max="59"
         :min-digits="2"
@@ -407,6 +413,7 @@ export default {
         ref="seconds"
         class="time-part"
         type="integer"
+        :compact="compact"
         :min="0"
         :max="59"
         :min-digits="2"
@@ -421,6 +428,7 @@ export default {
         ref="milliseconds"
         class="time-part"
         type="integer"
+        :compact="compact"
         :min="0"
         :max="999"
         :min-digits="3"
@@ -479,6 +487,22 @@ export default {
       opacity: 0.5;
     }
 
+    &.compact {
+      height: var(--single-line-form-height-compact);
+
+      & input {
+        height: calc(
+          var(--single-line-form-height-compact) - 2 * var(--form-border-width)
+        );
+      }
+
+      & .button {
+        height: calc(
+          var(--single-line-form-height-compact) - 2 * var(--form-border-width)
+        );
+      }
+    }
+
     /* v-calendar theme
        new 1.1+ theme with css-vars see https://github.com/nathanreyes/v-calendar/blob/master/src/styles/base.css */
 
@@ -500,13 +524,20 @@ export default {
       opacity: 0.5;
     }
 
+    & :deep(.vc-popover-content) {
+      /* popover box shadow */
+      box-shadow: var(--shadow-elevation-1);
+    }
+
+    & :deep(.vc-arrow):not(:hover),
+    & :deep(.vc-title) {
+      background: var(--vc-white);
+    }
+
     & :deep(.vc-container) {
       /* remove roundness */
-      --rounded: 0;
-      --rounded-lg: 0;
-
-      /* popover box shadow */
-      --shadow-lg: var(--shadow-elevation-1);
+      --vc-rounded: 0;
+      --vc-rounded-lg: 0;
 
       /* color prop value (in our case 'masala' see above) and vc-COLOR-PROP-NAME need to be defined */
       --masala-100: var(--theme-date-input-accent-100);
@@ -519,16 +550,16 @@ export default {
       --masala-800: var(--theme-date-input-accent-800);
       --masala-900: var(--theme-date-input-accent-900);
 
-      &.vc-masala {
-        --accent-100: var(--masala-100);
-        --accent-200: var(--masala-200);
-        --accent-300: var(--masala-300);
-        --accent-400: var(--masala-400);
-        --accent-500: var(--masala-500);
-        --accent-600: var(--masala-600);
-        --accent-700: var(--masala-700);
-        --accent-800: var(--masala-800);
-        --accent-900: var(--masala-900);
+      & .vc-masala {
+        --vc-accent-100: var(--masala-100);
+        --vc-accent-200: var(--masala-200);
+        --vc-accent-300: var(--masala-300);
+        --vc-accent-400: var(--masala-400);
+        --vc-accent-500: var(--masala-500);
+        --vc-accent-600: var(--masala-600);
+        --vc-accent-700: var(--masala-700);
+        --vc-accent-800: var(--masala-800);
+        --vc-accent-900: var(--masala-900);
       }
 
       /* not themed items */
@@ -537,18 +568,20 @@ export default {
       }
 
       /* non "color" prop colors which are used regardless of color prop value */
-      --white: var(--theme-date-input-white);
-      --black: var(--theme-date-input-black);
+      --vc-white: var(--theme-date-input-white);
+      --vc-black: var(--theme-date-input-black);
 
-      --gray-100: var(--theme-date-input-gray-100);
-      --gray-200: var(--theme-date-input-gray-200);
-      --gray-300: var(--theme-date-input-gray-300);
-      --gray-400: var(--theme-date-input-gray-400);
-      --gray-500: var(--theme-date-input-gray-500);
-      --gray-600: var(--theme-date-input-gray-600);
-      --gray-700: var(--theme-date-input-gray-700);
-      --gray-800: var(--theme-date-input-gray-800);
-      --gray-900: var(--theme-date-input-gray-900);
+      --vc-gray-100: var(--theme-date-input-gray-100);
+      --vc-gray-200: var(--theme-date-input-gray-200);
+      --vc-gray-300: var(--theme-date-input-gray-300);
+      --vc-gray-400: var(--theme-date-input-gray-400);
+      --vc-gray-500: var(--theme-date-input-gray-500);
+      --vc-gray-600: var(--theme-date-input-gray-600);
+      --vc-gray-700: var(--theme-date-input-gray-700);
+      --vc-gray-800: var(--theme-date-input-gray-800);
+      --vc-gray-900: var(--theme-date-input-gray-900);
+
+      border: 1px solid var(--vc-gray-400);
     }
 
     /* -- end v-calendar 'theme' */
@@ -563,6 +596,7 @@ export default {
       @mixin focus-style;
     }
 
+    /* stylelint-disable-next-line no-descending-specificity */
     & input {
       font-size: 13px;
       font-weight: 300;
@@ -604,6 +638,7 @@ export default {
       background-color: var(--theme-color-error);
     }
 
+    /* stylelint-disable-next-line no-descending-specificity */
     & .button {
       position: absolute;
       z-index: 1;

@@ -103,6 +103,14 @@ export default {
               disabled
             />
           </Label>
+          <Label text="With compact mode">
+            <DateTimeInput
+              v-model="dateDefault"
+              :show-seconds="true"
+              :show-milliseconds="true"
+              compact
+            />
+          </Label>
         </div>
         <div class="grid-item-4">
           <p>Default (and disabled): {{ dateDefault }}</p>

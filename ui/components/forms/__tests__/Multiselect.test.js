@@ -4,8 +4,8 @@ import { mount } from "@vue/test-utils";
 import Multiselect from "../Multiselect.vue";
 import Checkbox from "../Checkbox.vue";
 
-const doMount = (options, dynamicProps) =>
-  mount(Multiselect, {
+const doMount = (options, dynamicProps) => {
+  const wrapper = mount(Multiselect, {
     props: {
       possibleValues: [
         {
@@ -21,10 +21,13 @@ const doMount = (options, dynamicProps) =>
           text: "test3",
         },
       ],
+      "onUpdate:modelValue": (e) => wrapper.setProps({ modelValue: e }),
       ...dynamicProps,
     },
     ...options,
   });
+  return wrapper;
+};
 
 describe("Multiselect.vue", () => {
   it("renders", () => {
@@ -71,11 +74,11 @@ describe("Multiselect.vue", () => {
     expect(button.text()).toBe("Test Title");
     expect(button.classes()).toContain("placeholder");
 
-    await wrapper.vm.onUpdateModelValue("test1", true);
+    await wrapper.setProps({ modelValue: ["test1"] });
     expect(button.text()).toBe("test1");
     expect(button.classes()).not.toContain("placeholder");
 
-    await wrapper.vm.onUpdateModelValue("test2", true);
+    await wrapper.setProps({ modelValue: ["test1", "test2"] });
     expect(button.text()).toBe("test1, Test2");
     expect(button.classes()).not.toContain("placeholder");
   });
@@ -84,6 +87,20 @@ describe("Multiselect.vue", () => {
     const wrapper = doMount();
     await wrapper.vm.onUpdateModelValue("test1", true);
     expect(wrapper.emitted("update:modelValue")).toBeTruthy();
+    expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual(["test1"]);
+
+    await wrapper.vm.onUpdateModelValue("test2", true);
+    expect(wrapper.emitted("update:modelValue")).toHaveLength(2);
+    expect(wrapper.emitted("update:modelValue")[1][0]).toStrictEqual([
+      "test1",
+      "test2",
+    ]);
+
+    await wrapper.vm.onUpdateModelValue("test2", true);
+    expect(wrapper.emitted("update:modelValue")).toHaveLength(2);
+
+    await wrapper.vm.onUpdateModelValue("test2", false);
+    expect(wrapper.emitted("update:modelValue")[2][0]).toStrictEqual(["test1"]);
   });
 
   it("closes the menu after selection when prop closeDropdownOnSelection is true", async () => {
@@ -103,21 +120,6 @@ describe("Multiselect.vue", () => {
     expect(wrapper.vm.collapsed).toBe(false);
     wrapper.vm.toggle();
     expect(wrapper.vm.collapsed).toBe(true);
-  });
-
-  it("adds values to the checked values", () => {
-    const wrapper = doMount();
-    wrapper.vm.onUpdateModelValue("test1", true);
-    expect(wrapper.vm.checkedValue).toContain("test1");
-  });
-
-  it("removes values from the checked values", () => {
-    const wrapper = doMount();
-    wrapper.vm.onUpdateModelValue("test1", true);
-    expect(wrapper.vm.checkedValue).toContain("test1");
-    expect(wrapper.vm.checkedValue).toHaveLength(1);
-    wrapper.vm.onUpdateModelValue("test1", false);
-    expect(wrapper.vm.checkedValue).toHaveLength(0);
   });
 
   describe("keyboard interaction", () => {

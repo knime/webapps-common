@@ -213,6 +213,7 @@ export default {
         <div class="grid-item-6">selected ids: {{ selected2 }}</div>
       </div>
       <br />
+      Disabled
       <div class="grid-container">
         <div class="grid-item-6">
           <SearchableList
@@ -260,6 +261,58 @@ export default {
               },
             ]"
             disabled
+          />
+        </div>
+      </div>
+      <br />
+      Compact
+      <div class="grid-container">
+        <div class="grid-item-6">
+          <SearchableList
+            v-model="disabledSelected2"
+            :size="4"
+            aria-label="Compact..."
+            with-bottom-value
+            :show-search="true"
+            :bottom-value="{
+              id: bottomValueSymbol,
+              text: 'Custom text',
+            }"
+            :possible-values="[
+              {
+                id: 'foo',
+                text: 'Foo',
+              },
+              {
+                id: 'bar',
+                text: 'Bar',
+              },
+              {
+                id: 'baz',
+                text: 'Baz',
+              },
+              {
+                id: 'baz2',
+                text: 'Baz 2',
+              },
+              {
+                id: 'baz3',
+                text: 'Baz 3',
+              },
+              {
+                id: 'baz4',
+                text: 'Baz 4',
+              },
+              {
+                id: 'baz5',
+                text: 'Baz 5',
+              },
+              {
+                id: 'baz6',
+                text: 'Baz 6',
+              },
+            ]"
+            compact
           />
         </div>
       </div>

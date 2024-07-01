@@ -250,6 +250,10 @@ export default {
       default: true,
       required: false,
     },
+    compact: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: [
     /**
@@ -658,6 +662,7 @@ export default {
         :tooltips="{
           inverseSearch: 'Move matching to other side',
         }"
+        :compact="compact"
         @update:model-value="onSearchInput"
         @toggle-case-sensitive-search="caseSensitiveSearch = $event"
       />

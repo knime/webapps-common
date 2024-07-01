@@ -137,6 +137,19 @@ describe("NumberInput.vue", () => {
     expect(wrapper.emitted("update:modelValue")).toBeFalsy();
   });
 
+  it("does not emit a new value when the input is a minus sign", () => {
+    const mockEvent = {
+      data: "-",
+      inputType: "",
+      target: {
+        modelValue: "",
+      },
+    };
+
+    wrapper.vm.onInput(mockEvent);
+    expect(wrapper.emitted("update:modelValue")).toBeFalsy();
+  });
+
   it("emits NaN when all digits were deleted", () => {
     const mockEvent = {
       data: null,

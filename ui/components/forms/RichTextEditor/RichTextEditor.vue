@@ -234,7 +234,12 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length);
           :base-extensions="baseExtensions"
         >
           <template #default="{ tools }">
-            <slot name="customToolbar" :editor="editor" :tools="tools">
+            <slot
+              name="customToolbar"
+              :editor="editor"
+              :tools="tools"
+              :hotkey-formatter="hotkeyFormatter"
+            >
               <RichTextEditorToolbar
                 :editor="editor"
                 :tools="tools"
@@ -263,10 +268,14 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length);
   --rich-text-editor-font-size: 13px;
   --rich-text-editor-small-font-size: 7px;
   --rich-text-editor-padding: 10px;
+  --rich-text-editor-border-color: var(--knime-stone-gray);
+  --rich-text-editor-background-color: var(
+    --theme-input-field-background-color
+  );
 
   &.with-border {
-    border: 1px solid var(--knime-stone-gray);
-    background-color: var(--theme-input-field-background-color);
+    border: 1px solid var(--rich-text-editor-border-color);
+    background-color: var(--rich-text-editor-background-color);
 
     /* stylelint-disable-next-line selector-class-pattern */
     &:has(.ProseMirror-focused) {

@@ -64,6 +64,10 @@ export default {
       default: false,
       type: Boolean,
     },
+    compact: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ["update:modelValue"],
   data() {
@@ -138,10 +142,10 @@ export default {
     onInput(event: InputEvent) {
       const newValue = (event.target as InputHTMLAttributes).value;
       /**
-       * do not emit input event when decimal point is being
-       * used because number input field treats it as invalid
+       * do not emit input event when decimal point or minus sign is
+       * used because number input field treats them as invalid
        */
-      if (event && event.data === "." && !newValue) {
+      if (event && !newValue && (event.data === "." || event.data === "-")) {
         return;
       }
       if (!newValue) {
@@ -274,7 +278,7 @@ export default {
 </script>
 
 <template>
-  <div :class="['wrapper', { disabled }]">
+  <div :class="['wrapper', { disabled, compact }]">
     <input
       :id="id"
       ref="input"
@@ -413,6 +417,23 @@ export default {
           stroke: var(--knime-white);
         }
       }
+    }
+  }
+
+  &.compact {
+    height: 30px;
+
+    /* stylelint-disable-next-line no-descending-specificity */
+    & .increase,
+    & .decrease {
+      height: calc(
+        (var(--single-line-form-height-compact) - 2 * var(--form-border-width)) /
+          2
+      );
+      line-height: calc(
+        (var(--single-line-form-height-compact) - 2 * var(--form-border-width)) /
+          2
+      );
     }
   }
 }

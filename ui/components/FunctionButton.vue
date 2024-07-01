@@ -31,6 +31,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    compact: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     single() {
@@ -71,7 +75,7 @@ export default {
   <BaseButton
     ref="baseButton"
     :disabled="disabled"
-    :class="['function-button', { single, active, primary, disabled }]"
+    :class="['function-button', { single, active, primary, disabled, compact }]"
   >
     <slot />
   </BaseButton>
@@ -110,6 +114,10 @@ export default {
 
   &.single {
     padding: 6px;
+  }
+
+  &.compact {
+    padding: 3px;
   }
 
   & :deep(svg) {

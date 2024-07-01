@@ -314,6 +314,27 @@ export default {
         </div>
         <div class="grid-item-6">selected ids: {{ selectedSearchLabel }}</div>
       </div>
+      <div class="grid-container">
+        <div class="grid-item-6">
+          <p>Compact mode</p>
+        </div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-6">
+          <Twinlist
+            v-model="selected2"
+            :size="7"
+            show-search
+            left-label="Select from the visible items"
+            right-label="The selected stuff"
+            search-label="Search items"
+            search-placeholder="Placeholder"
+            :possible-values="demoValues"
+            compact
+          />
+        </div>
+        <div class="grid-item-6">selected ids: {{ selectedSearchLabel }}</div>
+      </div>
     </section>
     <section>
       <div class="grid-container">

@@ -97,6 +97,10 @@ export default {
       type: Array as PropType<PossibleValue[]>,
       default: () => [],
     },
+    compact: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ["update:modelValue"],
   data() {
@@ -320,7 +324,7 @@ export default {
       :id="id"
       :class="[
         'dropdown',
-        { collapsed: !isExpanded, invalid: !isValid, disabled },
+        { collapsed: !isExpanded, invalid: !isValid, disabled, compact },
       ]"
     >
       <div
@@ -395,6 +399,19 @@ export default {
     }
   }
 
+  &.compact {
+    & [role="button"] {
+      height: var(--single-line-form-height-compact);
+    }
+
+    & .icon {
+      top: calc(
+        (var(--single-line-form-height-compact) - var(--icon-size)) / 2
+      );
+      right: var(--space-8);
+    }
+  }
+
   &:not(.disabled).collapsed:hover {
     background: var(--knime-silver-sand-semi);
   }
@@ -425,6 +442,7 @@ export default {
     user-select: none;
   }
 
+  /* stylelint-disable-next-line no-descending-specificity */
   & [role="button"] {
     margin: 0;
     border: var(--form-border-width) solid var(--knime-stone-gray);
@@ -452,6 +470,7 @@ export default {
     cursor: pointer;
   }
 
+  /* stylelint-disable-next-line no-descending-specificity */
   & .icon {
     --icon-size: 18px;
 

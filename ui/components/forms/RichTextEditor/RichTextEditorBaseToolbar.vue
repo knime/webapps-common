@@ -178,7 +178,7 @@ const editorTools: EditorTools = [
     id: "strikethrough",
     icon: StrikeThroughIcon,
     name: "Strikethrough",
-    hotkey: ["Ctrl", "Shift", "X"],
+    hotkey: ["Ctrl", "Shift", "S"],
     active: () => props.editor.isActive("strike"),
     onClick: () => props.editor.chain().focus().toggleStrike().run(),
     secondary: true,
