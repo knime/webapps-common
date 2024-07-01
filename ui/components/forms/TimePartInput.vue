@@ -343,6 +343,8 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
+@import url("../../css/mixins.css");
+
 .wrapper {
   position: relative;
   isolation: isolate;
@@ -431,8 +433,7 @@ export default {
   }
 
   &:focus-within {
-    box-shadow: var(--theme-thin-focus-state);
-    border-color: var(--theme-default-focus-color);
+    @mixin focus-style;
   }
 
   & .increase:not(.disabled):hover,

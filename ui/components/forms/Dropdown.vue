@@ -388,6 +388,8 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
+@import url("../../css/mixins.css");
+
 .dropdown {
   position: relative;
 
@@ -462,8 +464,7 @@ export default {
   }
 
   &:focus-within [role="button"] {
-    box-shadow: var(--theme-inset-focus-state);
-    border-color: var(--theme-default-focus-color);
+    @mixin focus-style;
   }
 
   &:not(.disabled) [role="button"] {
@@ -520,7 +521,7 @@ export default {
     min-height: 22px;
     width: 100%;
     padding: 0;
-    margin: 0 0 1px;
+    margin: 1px 0;
     background: var(--theme-dropdown-background-color);
     box-shadow: var(--shadow-elevation-1);
     cursor: pointer;
