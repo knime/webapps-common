@@ -42,6 +42,7 @@ const emit = defineEmits(["controllingFlowVariableSet"]);
               : 'Overwrite '.concat(configPath.configPath.slice(prefixLength))
           "
           class="label"
+          :class="{ multiple: i > 0 }"
         >
           <FlowVariableSelector
             :id="labelForId"
@@ -81,5 +82,9 @@ const emit = defineEmits(["controllingFlowVariableSet"]);
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.multiple {
+  margin-top: 10px;
 }
 </style>
