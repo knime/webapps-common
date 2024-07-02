@@ -276,6 +276,7 @@ export default {
     },
     onChange(newVal: Id[]) {
       this.selectedValues = newVal;
+      this.$emit("update:modelValue", newVal);
     },
     onSearchInput(value: string) {
       this.searchTerm = value;
