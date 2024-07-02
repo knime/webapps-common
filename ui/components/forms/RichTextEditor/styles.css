@@ -143,7 +143,7 @@
 @define-mixin rich-text-editor-links {
   & a {
     color: var(--theme-text-link-foreground-color);
-    text-decoration-style: dashed;
+    text-decoration-style: underline;
 
     &[href^="http"]::after {
       content: "";
@@ -153,10 +153,10 @@
       background: var(
         --theme-text-link-foreground-color
       ); /* defines icon color */
-      width: 16px;
-      height: 16px;
+      width: 0.8em;
+      height: 0.8em;
       display: inline-block;
-      margin-left: 4px;
+      margin-left: 0.125em;
       vertical-align: -2px;
     }
 
