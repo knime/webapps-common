@@ -218,6 +218,9 @@ importers:
       '@knime/base-components':
         specifier: workspace:*
         version: link:../base-components
+      '@knime/styles':
+        specifier: workspace:*
+        version: link:../styles
       '@tiptap/extension-link':
         specifier: 2.0.3
         version: 2.0.3(@tiptap/core@2.4.0(@tiptap/pm@2.0.3))(@tiptap/pm@2.0.3(@tiptap/core@2.4.0))

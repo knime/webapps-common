@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@knime/base-components": "workspace:*",
+    "@knime/styles": "workspace:*",
     "@tiptap/extension-link": "2.0.3",
     "@tiptap/extension-text-align": "2.0.3",
     "@tiptap/extension-underline": "2.0.3",
