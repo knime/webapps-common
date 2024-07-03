@@ -1,13 +1,13 @@
 <script>
 import ImagePreviews from "./demo/ImagePreviews.vue";
 import CodeExample from "./demo/CodeExample.vue";
-import ListNumbersIcon from "webapps-common/ui/assets/img/icons/list-numbers.svg";
-import FolderIcon from "webapps-common/ui/assets/img/icons/folder.svg";
-import svgWithTitle from "webapps-common/ui/util/svgWithTitle";
-import InputField from "webapps-common/ui/components/forms/InputField.vue";
+import ListNumbersIcon from "@knime/styles/img/icons/list-numbers.svg";
+import FolderIcon from "@knime/styles/img/icons/folder.svg";
+import { svgWithTitle } from "@knime/utils";
+import { InputField } from "@knime/components";
 
 const codeExample1 = `<script>
-import FolderIcon from '~/webapps-common/ui/assets/img/icons/folder.svg';
+import FolderIcon from '~/@knime/styles/img/icons/folder.svg';
 
 export default {
   components: {
@@ -48,7 +48,7 @@ svg {
 </style>`;
 
 const codeExample2 = `<script>
-import ListNumbersIcon from '~/webapps-common/ui/assets/img/icons/list-numbers.svg';
+import ListNumbersIcon from '~/@knime/styles/img/icons/list-numbers.svg';
 
 export default {
   components: {
@@ -98,7 +98,7 @@ svg {
 </style>`;
 
 const codeExampleTooltip = `<script>
-import ListNumbersIcon from '~/webapps-common/ui/assets/img/icons/list-numbers.svg';
+import ListNumbersIcon from '~/@knime/styles/img/icons/list-numbers.svg';
 import svgWithTitle from '~/webapps-common/ui/util/svgWithTitle';
 
 export default {
@@ -134,13 +134,16 @@ export default {
   },
   computed: {
     icons() {
-      const files = import.meta.glob("@@/../ui/assets/img/icons/*.svg", {
-        as: "url",
-        eager: true,
-      });
+      const files = import.meta.glob(
+        "../../../packages/styles/img/icons/*.svg",
+        {
+          as: "url",
+          eager: true,
+        },
+      );
 
       return Object.keys(files).map((file) => ({
-        name: file.replace("../ui/assets/img/icons/", ""),
+        name: file.replace("../../../packages/", "@knime/"),
         src: files[file],
       }));
     },

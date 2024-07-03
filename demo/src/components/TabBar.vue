@@ -1,15 +1,16 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
-import TabBar from "webapps-common/ui/components/TabBar.vue";
-import tabbarCode from "webapps-common/ui/components/TabBar.vue?raw";
-import BulbIcon from "webapps-common/ui/assets/img/icons/bulb.svg";
-import HelpIcon from "webapps-common/ui/assets/img/icons/circle-help.svg";
-import StarIcon from "webapps-common/ui/assets/img/icons/star.svg";
+import { TabBar } from "@knime/components";
+// import tabbarCode from "webapps-common/ui/components/TabBar.vue?raw";
+const tabbarCode = "";
+import BulbIcon from "@knime/styles/img/icons/bulb.svg";
+import HelpIcon from "@knime/styles/img/icons/circle-help.svg";
+import StarIcon from "@knime/styles/img/icons/star.svg";
 
 const codeExampleStandalone = `<script>
 import TabBar from '~/webapps-common/ui/components/TabBar.vue';
-import BulbIcon from '~/webapps-common/ui/assets/img/icons/bulb.svg';
-import HelpIcon from '~/webapps-common/ui/assets/img/icons/circle-help.svg';
+import BulbIcon from '~/@knime/styles/img/icons/bulb.svg';
+import HelpIcon from '~/@knime/styles/img/icons/circle-help.svg';
 
 export default {
     components: {

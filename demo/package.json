@@ -1,5 +1,5 @@
 {
-  "name": "webapps-common-demo",
+  "name": "demo",
   "version": "1.0.0",
   "description": "Showcase for common UI components",
   "license": "UNLICENSED",
@@ -14,13 +14,18 @@
     "lint:css": "stylelint '**/*.{css,vue}'",
     "format": "prettier --write --cache .",
     "format:check": "prettier --check --cache .",
-    "deploy": "gh-pages -d dist -m 'Deploy to GitHub pages' --dotfiles",
-    "preinstall": "npm i --prefix ../ && npm i --prefix ../lint"
+    "deploy": "gh-pages -d dist -m 'Deploy to GitHub pages' --dotfiles"
   },
   "dependencies": {
+    "@knime/components": "workspace:*",
+    "@knime/rte": "workspace:*",
+    "@knime/styles": "workspace:*",
+    "@knime/utils": "workspace:*",
+    "@vueuse/core": "10.4.1",
+    "consola": "2.15.3",
     "prismjs": "1.29.0",
-    "vue-router": "4.1.6",
-    "webapps-common": "file:.."
+    "vue": "^3.4.21",
+    "vue-router": "4.1.6"
   },
   "devDependencies": {
     "@knime/eslint-config": "workspace:*",

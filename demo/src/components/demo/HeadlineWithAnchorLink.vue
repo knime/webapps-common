@@ -1,9 +1,8 @@
 <script>
 import { useClipboard } from "@vueuse/core";
-import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
-import LinkIcon from "webapps-common/ui/assets/img/icons/link.svg";
-import CheckIcon from "webapps-common/ui/assets/img/icons/check.svg";
-import Tooltip from "webapps-common/ui/components/Tooltip.vue";
+import { FunctionButton, Tooltip } from "@knime/components";
+import LinkIcon from "@knime/styles/img/icons/link.svg";
+import CheckIcon from "@knime/styles/img/icons/check.svg";
 
 export default {
   components: {

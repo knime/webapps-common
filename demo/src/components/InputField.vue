@@ -1,11 +1,11 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
-import InputField from "webapps-common/ui/components/forms/InputField.vue";
-import MailIcon from "webapps-common/ui/assets/img/icons/mail.svg";
-import CircleCheckIcon from "webapps-common/ui/assets/img/icons/circle-check.svg";
-import CloseIcon from "webapps-common/ui/assets/img/icons/close.svg";
-import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
-import code from "webapps-common/ui/components/forms/InputField.vue?raw";
+import { InputField, FunctionButton } from "@knime/components";
+import MailIcon from "@knime/styles/img/icons/mail.svg";
+import CircleCheckIcon from "@knime/styles/img/icons/circle-check.svg";
+import CloseIcon from "@knime/styles/img/icons/close.svg";
+// import code from "webapps-common/ui/components/forms/InputField.vue?raw";
+const code = "";
 
 const codeExample = `<InputField
   v-model="inputValue"

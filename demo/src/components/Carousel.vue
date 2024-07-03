@@ -1,7 +1,8 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
-import Carousel from "webapps-common/ui/components/Carousel.vue";
-import carouselCode from "webapps-common/ui/components/Carousel.vue?raw";
+import { Carousel } from "@knime/components";
+// import carouselCode from "webapps-common/ui/components/Carousel.vue?raw";
+const carouselCode = "";
 
 const codeExample = `
   <Carousel>

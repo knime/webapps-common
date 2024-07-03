@@ -1,10 +1,10 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import CodeExample from "./demo/CodeExample.vue";
-import Checkbox from "webapps-common/ui/components/forms/Checkbox.vue";
-import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
-import RichTextEditor from "webapps-common/ui/components/forms/RichTextEditor/RichTextEditor.vue";
-import code from "webapps-common/ui/components/forms/RichTextEditor/RichTextEditor.vue?raw";
+import { Checkbox, FunctionButton } from "@knime/components";
+import RichTextEditor from "@knime/rte";
+// import code from "webapps-common/ui/components/forms/RichTextEditor/RichTextEditor.vue?raw";
+const code = "";
 
 const codeExample = `
 <RichTextEditor
@@ -44,7 +44,7 @@ const codeExample = `
 </template>
 
 <style lang="postcss" scoped>
-@import url("webapps-common/ui/components/forms/RichTextEditor/styles.css");
+@import url("@knime/styles/css/rich-text-editor.css");
 
 .static-output:deep() {
   @mixin rich-text-editor-styles;
@@ -164,7 +164,7 @@ export default defineComponent({
 </template>
 
 <style lang="postcss" scoped>
-@import url("webapps-common/ui/components/forms/RichTextEditor/styles.css");
+@import url("@knime/styles/css/rich-text-editor.css");
 
 .static-output:deep() {
   border: 1px solid var(--knime-masala);

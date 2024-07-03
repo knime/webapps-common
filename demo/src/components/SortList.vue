@@ -1,7 +1,8 @@
 <script lang="ts">
 import CodeExample from "./demo/CodeExample.vue";
-import SortList from "webapps-common/ui/components/forms/SortList.vue";
-import code from "webapps-common/ui/components/forms/SortList.vue?raw";
+import { SortList } from "@knime/components";
+// import code from "webapps-common/ui/components/forms/SortList.vue?raw";
+const code = "";
 
 const codeExample = `<SortList
   v-model="selected"

@@ -1,17 +1,18 @@
 <script>
 import { markRaw } from "vue";
 import CodeExample from "./demo/CodeExample.vue";
-import SubMenu from "webapps-common/ui/components/SubMenu.vue";
-import HelpIcon from "webapps-common/ui/assets/img/icons/circle-help.svg";
-import StarIcon from "webapps-common/ui/assets/img/icons/star.svg";
-import LeaveIcon from "webapps-common/ui/assets/img/icons/leave.svg";
-import HeartIcon from "webapps-common/ui/assets/img/icons/heart.svg";
-import MenuIcon from "webapps-common/ui/assets/img/icons/menu-options.svg";
-import code from "webapps-common/ui/components/SubMenu.vue?raw";
+import { SubMenu } from "@knime/components";
+import HelpIcon from "@knime/styles/img/icons/circle-help.svg";
+import StarIcon from "@knime/styles/img/icons/star.svg";
+import LeaveIcon from "@knime/styles/img/icons/leave.svg";
+import HeartIcon from "@knime/styles/img/icons/heart.svg";
+import MenuIcon from "@knime/styles/img/icons/menu-options.svg";
+// import code from "webapps-common/ui/components/SubMenu.vue?raw";
+const code = "";
 
 const codeExampleStandalone = `<script>
 import SubMenu from '~/webapps-common/ui/components/SubMenu.vue';
-import MenuIcon from '~/webapps-common/ui/assets/img/icons/menu-options.svg';
+import MenuIcon from '~/@knime/styles/img/icons/menu-options.svg';
 
 const subMenuItems = [{
     href: 'https://apple.com',

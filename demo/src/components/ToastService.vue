@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import CodeExample from "./demo/CodeExample.vue";
-import Button from "webapps-common/ui/components/Button.vue";
-import Interactive from "webapps-common/ui/assets/img/icons/interactive.svg";
+import { Button } from "@knime/components";
+import Interactive from "@knime/styles/img/icons/interactive.svg";
 // @ts-ignore
-import { useToasts, type Toast } from "webapps-common/ui/services/toast";
+import { useToasts, type Toast } from "@knime/components";
 
-import toastServiceCode from "webapps-common/ui/services/toast/toastService?raw";
-import typesCode from "webapps-common/ui/services/toast/types?raw";
+// import toastServiceCode from "webapps-common/ui/services/toast/toastService?raw";
+// import typesCode from "webapps-common/ui/services/toast/types?raw";
+const toastServiceCode = "";
+const typesCode = "";
 
 const composableCodeExample = `
   // App.vue (root component of a Vue 3-based project)

@@ -1,9 +1,10 @@
 <script lang="ts">
 import CodeExample from "./demo/CodeExample.vue";
-import MultiModeTwinlist from "webapps-common/ui/components/forms/MultiModeTwinlist.vue";
-import code from "webapps-common/ui/components/forms/MultiModeTwinlist.vue?raw";
+import { MultiModeTwinList } from "@knime/components";
+// import code from "webapps-common/ui/components/forms/MultiModeTwinList.vue?raw";
+const code = "";
 
-const codeExample = `<MultiModeTwinlist
+const codeExample = `<MultiModeTwinList
   :size="7"
   show-mode
   case-sensitive-pattern
@@ -26,7 +27,7 @@ const codeExample = `<MultiModeTwinlist
     type: { id: 'type2', text: 'Type 2' }
   }]"
 />
-<MultiModeTwinlist
+<MultiModeTwinList
   :size="7"
   show-mode
   :with-mode-label="false"
@@ -53,7 +54,7 @@ const codeExample = `<MultiModeTwinlist
 
 export default {
   components: {
-    MultiModeTwinlist,
+    MultiModeTwinList,
     CodeExample,
   },
   data() {
@@ -152,7 +153,7 @@ export default {
       <div class="grid-container">
         <div class="grid-item-12">
           <p>
-            A MultiModeTwinlist with mode selection set to initial regex
+            A MultiModeTwinList with mode selection set to initial regex
             selection. The demo list include items with special characters that
             need to be escaped for regular expression filters. On type selection
             mode, the types of the possible values as well as an additional
@@ -162,7 +163,7 @@ export default {
       </div>
       <div class="grid-container">
         <div class="grid-item-6">
-          <MultiModeTwinlist
+          <MultiModeTwinList
             v-model:pattern="pattern"
             v-model:manualSelection="manualSelection"
             v-model:case-sensitive-pattern="isCaseSensitivePattern"
@@ -197,7 +198,7 @@ export default {
       <br />
       <div class="grid-container">
         <div class="grid-item-6">
-          <MultiModeTwinlist
+          <MultiModeTwinList
             :key="key"
             disabled
             :size="7"
@@ -225,7 +226,7 @@ export default {
       </div>
       <div class="grid-container">
         <div class="grid-item-6">
-          <MultiModeTwinlist
+          <MultiModeTwinList
             :key="key"
             v-model:manualSelection="manualSelection2"
             :size="7"
@@ -247,7 +248,7 @@ export default {
       </div>
       <div class="grid-container">
         <div class="grid-item-6">
-          <MultiModeTwinlist
+          <MultiModeTwinList
             :key="key"
             v-model:manualSelection="manualSelection2"
             :size="7"
@@ -270,7 +271,7 @@ export default {
           <CodeExample summary="Show usage example">{{
             codeExample
           }}</CodeExample>
-          <CodeExample summary="Show MultiModeTwinlist.vue source code">{{
+          <CodeExample summary="Show MultiModeTwinList.vue source code">{{
             code
           }}</CodeExample>
         </div>

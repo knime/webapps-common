@@ -1,8 +1,9 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
-import Tooltip from "webapps-common/ui/components/Tooltip.vue";
-import BrainIcon from "webapps-common/ui/assets/img/icons/ai-brain.svg";
-import code from "webapps-common/ui/components/Tooltip.vue?raw";
+import { Tooltip } from "@knime/components";
+import BrainIcon from "@knime/styles/img/icons/ai-brain.svg";
+// import code from "webapps-common/ui/components/Tooltip.vue?raw";
+const code = "";
 
 const codeExample = `
 <Tooltip

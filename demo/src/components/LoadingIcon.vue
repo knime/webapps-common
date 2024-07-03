@@ -1,7 +1,8 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
-import LoadingIcon from "webapps-common/ui/components/LoadingIcon.vue";
-import code from "webapps-common/ui/components/LoadingIcon.vue?raw";
+import { LoadingIcon } from "@knime/components";
+// import code from "webapps-common/ui/components/LoadingIcon.vue?raw";
+const code = "";
 
 const codeExample = `
 <script>

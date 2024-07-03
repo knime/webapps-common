@@ -1,10 +1,12 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
-import Button from "webapps-common/ui/components/Button.vue";
-import buttonCode from "webapps-common/ui/components/Button.vue?raw";
-import baseButtonCode from "webapps-common/ui/components/BaseButton.vue?raw";
-import PlayIcon from "webapps-common/ui/assets/img/icons/circle-play.svg";
-import LightningIcon from "webapps-common/ui/assets/img/icons/lightning.svg";
+import { Button } from "@knime/components";
+// import buttonCode from "webapps-common/ui/components/Button.vue?raw";
+const buttonCode = "";
+// import baseButtonCode from "webapps-common/ui/components/BaseButton.vue?raw";
+const baseButtonCode = "";
+import PlayIcon from "@knime/styles/img/icons/circle-play.svg";
+import LightningIcon from "@knime/styles/img/icons/lightning.svg";
 
 const codeExample = `<Button>Button</Button>
 <Button with-border>Button with border</Button>

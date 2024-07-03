@@ -1,19 +1,18 @@
 <script lang="ts">
 import { markRaw } from "vue";
 import CodeExample from "./demo/CodeExample.vue";
-import MenuItems from "webapps-common/ui/components/MenuItems.vue";
-import HelpIcon from "webapps-common/ui/assets/img/icons/circle-help.svg";
-import DownloadIcon from "webapps-common/ui/assets/img/icons/cloud-download.svg";
-import StarIcon from "webapps-common/ui/assets/img/icons/star.svg";
-import LeaveIcon from "webapps-common/ui/assets/img/icons/leave.svg";
-import HeartIcon from "webapps-common/ui/assets/img/icons/heart.svg";
-import code from "webapps-common/ui/components/MenuItems.vue?raw";
-// @ts-ignore
-import type { MenuItem } from "webapps-common/ui/components/MenuItems.vue";
+import { MenuItems, type MenuItem } from "@knime/components";
+import HelpIcon from "@knime/styles/img/icons/circle-help.svg";
+import DownloadIcon from "@knime/styles/img/icons/cloud-download.svg";
+import StarIcon from "@knime/styles/img/icons/star.svg";
+import LeaveIcon from "@knime/styles/img/icons/leave.svg";
+import HeartIcon from "@knime/styles/img/icons/heart.svg";
+// import code from "webapps-common/ui/components/MenuItems.vue?raw";
+const code = "";
 
 const codeExampleStandalone = `<script>
 import MenuItems from '~/webapps-common/ui/components/MenuItems.vue';
-import MenuIcon from '~/webapps-common/ui/assets/img/icons/menu-options.svg';
+import MenuIcon from '~/@knime/styles/img/icons/menu-options.svg';
 
 const items = [{
     href: 'https://apple.com',

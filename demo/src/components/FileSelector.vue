@@ -1,8 +1,8 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
-import FileSelector from "webapps-common/ui/components/FileSelector.vue";
-import fileSelectorCode from "webapps-common/ui/components/FileSelector.vue?raw";
-import Dropdown from "webapps-common/ui/components/forms/Dropdown.vue";
+import { FileSelector, Dropdown } from "@knime/components";
+// import fileSelectorCode from "webapps-common/ui/components/FileSelector.vue?raw";
+const fileSelectorCode = "";
 
 const codeExample = `<FileSelector
   accepted-file-types="*"
