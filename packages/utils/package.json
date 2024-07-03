@@ -9,6 +9,7 @@
   "scripts": {},
   "dependencies": {
     "@knime/styles": "workspace:*",
+    "consola": "2.15.3",
     "date-fns-tz": "2.0.0"
   },
   "main": "src/index.ts",

@@ -1,14 +1,13 @@
 // Use this method to reduce many method calls to a few.
-// It's an 'immediate' implementation, so it will call the callback once immediately an then again after the given wait.
+// It's an 'immediate' implementation, so it will call the callbackindex: number once immediately an then again after the given wait.
 
-import type { Id } from "packages/base-components/src/components/forms/possibleValues";
+type CallbackFunc<T> = (value: T, index: number) => void;
 
-type CallbackFunc = (value: Id, index: number) => void;
-
-const debounce = (callback: CallbackFunc, wait: number) => {
+const debounce = <T>(callback: CallbackFunc<T>, wait: number) => {
   let timer: ReturnType<typeof setTimeout>;
   let lastCall = 0;
-  return (...args: [Id, number]) => {
+
+  return (...args: Parameters<typeof callback>) => {
     const [value, index] = args;
     clearTimeout(timer);
     const now = Date.now();

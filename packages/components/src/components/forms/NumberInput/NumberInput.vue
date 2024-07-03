@@ -299,17 +299,17 @@ export default {
     <span v-if="!isValid" class="invalid-marker" />
     <span
       :class="['increase', { disabled }]"
-      @mousedown.prevent="(e) => mouseEvent(e, 'increase')"
-      @mouseup.prevent="(e) => mouseEvent(e, 'increase')"
-      @mouseleave="(e) => mouseEvent(e, 'increase')"
+      @mousedown.prevent="mouseEvent($event, 'increase')"
+      @mouseup.prevent="mouseEvent($event, 'increase')"
+      @mouseleave="mouseEvent($event, 'increase')"
     >
       <ArrowIcon />
     </span>
     <span
       :class="['decrease', { disabled }]"
-      @mousedown.prevent="(e) => mouseEvent(e, 'decrease')"
-      @mouseup.prevent="(e) => mouseEvent(e, 'decrease')"
-      @mouseleave="(e) => mouseEvent(e, 'decrease')"
+      @mousedown.prevent="mouseEvent($event, 'decrease')"
+      @mouseup.prevent="mouseEvent($event, 'decrease')"
+      @mouseleave="mouseEvent($event, 'decrease')"
     >
       <ArrowIcon />
     </span>

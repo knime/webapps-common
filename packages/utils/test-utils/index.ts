@@ -1,3 +1,3 @@
-import muteConsole from "muteConsole";
+import muteConsole from "./muteConsole";
 
 export { muteConsole };

@@ -1,6 +1,6 @@
 import { computed, ref, type ComputedRef, type Ref } from "vue";
 import * as multiSelectionService from "./multiSelectionStateService";
-import { getMetaOrCtrlKey } from "../../../util/navigator";
+import { navigator } from "@knime/utils";
 
 export type UseMultiSelectionOptions = {
   singleSelectionOnly: Ref<boolean>;
@@ -67,7 +67,7 @@ export const useMultiSelection = (
       return;
     }
 
-    const metaOrCtrlKey = getMetaOrCtrlKey();
+    const metaOrCtrlKey = navigator.getMetaOrCtrlKey();
 
     if (event.shiftKey) {
       shiftClickItem(index);

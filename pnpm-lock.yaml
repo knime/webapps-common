@@ -94,6 +94,9 @@ importers:
       focus-trap-vue:
         specifier: 4.0.2
         version: 4.0.2(focus-trap@7.5.4)(vue@3.4.27(typescript@5.4.5))
+      gsap:
+        specifier: ^3.12.5
+        version: 3.12.5
       lodash-es:
         specifier: 4.17.21
         version: 4.17.21
@@ -213,9 +216,21 @@ importers:
       '@knime/styles':
         specifier: workspace:*
         version: link:../styles
+      '@tiptap/core':
+        specifier: ^2.4.0
+        version: 2.4.0(@tiptap/pm@2.0.3)
+      '@tiptap/extension-hard-break':
+        specifier: ^2.4.0
+        version: 2.4.0(@tiptap/core@2.4.0(@tiptap/pm@2.0.3))
+      '@tiptap/extension-heading':
+        specifier: ^2.4.0
+        version: 2.4.0(@tiptap/core@2.4.0(@tiptap/pm@2.0.3))
       '@tiptap/extension-link':
         specifier: 2.0.3
         version: 2.0.3(@tiptap/core@2.4.0(@tiptap/pm@2.0.3))(@tiptap/pm@2.0.3(@tiptap/core@2.4.0))
+      '@tiptap/extension-paragraph':
+        specifier: ^2.4.0
+        version: 2.4.0(@tiptap/core@2.4.0(@tiptap/pm@2.0.3))
       '@tiptap/extension-text-align':
         specifier: 2.0.3
         version: 2.0.3(@tiptap/core@2.4.0(@tiptap/pm@2.0.3))
@@ -344,6 +359,9 @@ importers:
       '@knime/styles':
         specifier: workspace:*
         version: link:../styles
+      consola:
+        specifier: 2.15.3
+        version: 2.15.3
       date-fns-tz:
         specifier: 2.0.0
         version: 2.0.0(date-fns@2.30.0)
@@ -2445,6 +2463,9 @@ packages:
 
   graphemer@1.4.0:
     resolution: {integrity: sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==}
+
+  gsap@3.12.5:
+    resolution: {integrity: sha512-srBfnk4n+Oe/ZnMIOXt3gT605BX9x5+rh/prT2F1SsNJsU1XuMiP0E2aptW481OnonOGACZWBqseH5Z7csHxhQ==}
 
   hard-rejection@2.1.0:
     resolution: {integrity: sha512-VIZB+ibDhx7ObhAe7OVtoEbuP4h/MuOTHJ+J8h/eBXotJYl0fBgR72xDFCKgIh22OJZIOVNxBMWuhAr10r8HdA==}
@@ -6807,6 +6828,8 @@ snapshots:
   grapheme-splitter@1.0.4: {}
 
   graphemer@1.4.0: {}
+
+  gsap@3.12.5: {}
 
   hard-rejection@2.1.0: {}
 
