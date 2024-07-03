@@ -11,7 +11,6 @@ import {
   type Mock,
 } from "vitest";
 import flushPromises from "flush-promises";
-import { type Ref, ref } from "vue";
 import FlowVariableSelector from "../FlowVariableSelector.vue";
 import type FlowVariableSelectorProps from "../../types/FlowVariableSelectorProps";
 import { ProvidedForFlowVariables } from "@/nodeDialog/types/provided";
@@ -26,7 +25,6 @@ type MockedMethods<T extends Record<string, (...args: any[]) => any>> = {
 describe("FlowVariableSelector.vue", () => {
   let props: FlowVariableSelectorProps,
     flowVariablesMap: Record<string, FlowSettings>,
-    flowSettings: Ref<FlowSettings | undefined>,
     setDirtyState: Mock,
     unsetDirtyState: Mock;
 
@@ -38,7 +36,6 @@ describe("FlowVariableSelector.vue", () => {
       dataPath: "model.myPath",
       persistPath: "persist.path.to.setting",
     };
-    flowSettings = ref(undefined);
   });
 
   afterEach(() => {
@@ -58,7 +55,6 @@ describe("FlowVariableSelector.vue", () => {
       global: {
         provide: {
           [providedByComponentKey as symbol]: {
-            flowSettings,
             settingStateFlowVariables: {
               controlling: {
                 get: () => ({
@@ -98,7 +94,7 @@ describe("FlowVariableSelector.vue", () => {
 
   it("does not disable the control if there is a value set", async () => {
     const flowVariableName = "myVariable";
-    flowSettings.value = {
+    flowVariablesMap[props.persistPath] = {
       controllingFlowVariableName: flowVariableName,
       controllingFlowVariableAvailable: false,
       exposedFlowVariableName: null,
@@ -168,7 +164,7 @@ describe("FlowVariableSelector.vue", () => {
 
   it("sets the initial model value", async () => {
     const varName = "var";
-    flowSettings.value = {
+    flowVariablesMap[props.persistPath] = {
       controllingFlowVariableName: varName,
       controllingFlowVariableAvailable: true,
       exposedFlowVariableName: null,

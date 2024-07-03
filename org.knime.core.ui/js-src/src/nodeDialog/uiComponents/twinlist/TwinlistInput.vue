@@ -72,7 +72,7 @@ const props = defineProps({
 
 const subConfigKeys = [
   "mode",
-  "patterFilter.pattern",
+  "patternFilter.pattern",
   "patternFilter.isCaseSensitive",
   "patternFilter.isInverted",
   "manualFilter.manuallySelected",

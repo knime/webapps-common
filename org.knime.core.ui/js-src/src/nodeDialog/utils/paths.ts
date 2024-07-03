@@ -98,3 +98,20 @@ export const getConfigPaths = (params: {
     deprecatedConfigPathsCandidates,
   );
 };
+
+export const getLongestCommonPrefix = (paths: string[]) => {
+  if (!paths.length) {
+    return "";
+  }
+  const segments = paths[0].split(".");
+  let prefix = "";
+  for (const segment of segments) {
+    for (let j = 1; j < paths.length; j++) {
+      if (!paths[j].startsWith(prefix + segment)) {
+        return paths[0].slice(0, prefix.length);
+      }
+    }
+    prefix += segment.concat(".");
+  }
+  return paths[0];
+};

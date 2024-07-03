@@ -4,8 +4,9 @@ defineProps<{ configPaths: string[]; subConfigKeys?: string[] }>();
 
 <template>
   <p>
-    This setting includes multiple config keys. Setting flow variables here is
-    not yet possible.
+    This setting includes different numbers of config and data keys. A mapping
+    of one to the other is not possible. Setting flow variables here is not
+    possible either.
   </p>
   <p>
     To do so, select <b>"Configure flow variables"</b> in the context menu of

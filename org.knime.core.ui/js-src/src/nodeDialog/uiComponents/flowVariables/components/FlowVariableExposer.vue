@@ -7,7 +7,7 @@ import useExposedFlowVariable from "../composables/useExposedFlowVariable";
 
 const props = defineProps<FlowVariableExposerProps>();
 const { setExposedFlowVariable, exposedFlowVariableName } =
-  useExposedFlowVariable();
+  useExposedFlowVariable(props.persistPath);
 
 const modelValue = ref("");
 watchEffect(() => {

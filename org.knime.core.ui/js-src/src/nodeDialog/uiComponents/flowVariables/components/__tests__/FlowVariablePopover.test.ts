@@ -5,7 +5,7 @@ import Fieldset from "webapps-common/ui/components/forms/Fieldset.vue";
 import FlowVariablePopover from "../FlowVariablePopover.vue";
 import FlowVariableSelector from "../FlowVariableSelector.vue";
 import FlowVariableExposer from "../FlowVariableExposer.vue";
-import MultipleConfigKeysNotYetSupported from "../MultipleConfigKeysNotYetSupported.vue";
+import DifferingNumbersOfConfigAndDataKeys from "../DifferingNumbersOfConfigAndDataKeys.vue";
 import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
 import { type Ref, ref } from "vue";
 import { FlowSettings } from "@/nodeDialog/api/types";
@@ -37,7 +37,7 @@ describe("FlowVariablePopover", () => {
           },
           [flowVarMapKey as symbol]: flowVariablesMap,
         },
-        stubs: { MultipleConfigKeysNotYetSupported, Label, Fieldset },
+        stubs: { DifferingNumbersOfConfigAndDataKeys, Label, Fieldset },
       },
     });
   };
@@ -63,16 +63,81 @@ describe("FlowVariablePopover", () => {
     expect(wrapper.findComponent(DeprecatedFlowVariables).exists()).toBe(false);
   });
 
-  it("does not render selector in case of multiple config keys", () => {
+  it("renders selector in case of multiple config keys with single data keys", () => {
+    const localConfigPaths = ["firstConfigPath", "secondConfigPath"];
+    configPaths.value = localConfigPaths.map((configPath) => ({
+      configPath,
+      deprecatedConfigPaths: [],
+    }));
+    dataPaths.value = ["firstDataPath"];
+    const wrapper = mountFlowVariablePopover();
+
+    for (let i = 0; i < localConfigPaths.length; i++) {
+      const labelForSelector = wrapper.findAllComponents(Label).at(i * 2);
+      const selector = wrapper.findAllComponents(FlowVariableSelector).at(i);
+      expect(labelForSelector?.text()).toBe(
+        "Overwrite ".concat(localConfigPaths[i]),
+      );
+      expect(selector?.exists()).toBeTruthy();
+      expect(selector?.attributes().id).toBe(
+        labelForSelector?.find("label").attributes().for,
+      );
+
+      const labelForExposer = wrapper.findAllComponents(Label).at(i * 2 + 1)!;
+      const exposer = wrapper.findAllComponents(FlowVariableExposer).at(i);
+      expect(labelForExposer.text()).toBe(
+        "Output ".concat(localConfigPaths[i]),
+      );
+      expect(exposer?.exists()).toBeTruthy();
+      expect(exposer?.attributes().id).toBe(
+        labelForExposer.find("label").attributes().for,
+      );
+    }
+  });
+
+  it("renders selector in case of multiple config keys with corresponding data keys", () => {
+    const localConfigPaths = ["firstConfigPath", "secondConfigPath"];
+    configPaths.value = localConfigPaths.map((configPath) => ({
+      configPath,
+      deprecatedConfigPaths: [],
+    }));
+    dataPaths.value = ["firstDataPath", "secondDataPath"];
+    const wrapper = mountFlowVariablePopover();
+
+    for (let i = 0; i < localConfigPaths.length; i++) {
+      const labelForSelector = wrapper.findAllComponents(Label).at(i * 2);
+      const selector = wrapper.findAllComponents(FlowVariableSelector).at(i);
+      expect(labelForSelector?.text()).toBe(
+        "Overwrite ".concat(localConfigPaths[i]),
+      );
+      expect(selector?.exists()).toBeTruthy();
+      expect(selector?.attributes().id).toBe(
+        labelForSelector?.find("label").attributes().for,
+      );
+
+      const labelForExposer = wrapper.findAllComponents(Label).at(i * 2 + 1)!;
+      const exposer = wrapper.findAllComponents(FlowVariableExposer).at(i);
+      expect(labelForExposer.text()).toBe(
+        "Output ".concat(localConfigPaths[i]),
+      );
+      expect(exposer?.exists()).toBeTruthy();
+      expect(exposer?.attributes().id).toBe(
+        labelForExposer.find("label").attributes().for,
+      );
+    }
+  });
+
+  it("does not render selector in case of multiple config and data keys", () => {
     const localConfigPaths = ["firstPath", "secondPath"];
     configPaths.value = localConfigPaths.map((configPath) => ({
       configPath,
       deprecatedConfigPaths: [],
     }));
+    dataPaths.value = ["firstPath", "secondPath", "thirdPath"];
     const wrapper = mountFlowVariablePopover();
     expect(wrapper.findComponent(FlowVariableSelector).exists()).toBeFalsy();
     expect(
-      wrapper.findComponent(MultipleConfigKeysNotYetSupported).exists(),
+      wrapper.findComponent(DifferingNumbersOfConfigAndDataKeys).exists(),
     ).toBeTruthy();
     localConfigPaths.forEach((key) => expect(wrapper.text()).toContain(key));
   });
