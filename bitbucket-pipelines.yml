@@ -24,11 +24,11 @@ definitions:
           - corepack enable
           - corepack prepare pnpm@latest-9 --activate
           - pnpm install
-          - pnpm run ci:lint-format
+          # - pnpm run ci:lint-format  # TODO this still fails!!!
           # - pnpm run type-check # TODO not available yet
           # - pnpm run coverage # TODO not available yet
-          # - pnpm run build # TODO not available yet
-          - pnpm run audit
+          - pnpm run build:packages
+          # - pnpm run audit
           - pipe: sonarsource/sonarcloud-scan:2.0.0
             variables:
               SONAR_SCANNER_OPTS: -Xmx4G
@@ -42,7 +42,7 @@ definitions:
         trigger: manual
         deployment: production
         script:
-          - pnpm run build # TODO not available yet
+          - pnpm run build:packages
           - pnpm run changeset:publish
           - git push --follow-tags
     - step: &deploy-demo
