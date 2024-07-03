@@ -1,8 +1,8 @@
 <script setup lang="ts">
 // import HelloWorld from "./components/HelloWorld.vue";
-// import { Button } from "@knime/base-components";
+// import { Button } from "@knime/components";
 import Icon from "@knime/styles/img/icons/ai-brain.svg";
-import { MenuItems } from "@knime/base-components";
+import { MenuItems } from "@knime/components";
 
 const items = [
   {

@@ -35,9 +35,9 @@ importers:
 
   demo2:
     dependencies:
-      '@knime/base-components':
+      '@knime/components':
         specifier: workspace:*
-        version: link:../packages/base-components
+        version: link:../packages/components
       '@knime/styles':
         specifier: workspace:*
         version: link:../packages/styles
@@ -61,7 +61,7 @@ importers:
         specifier: ^2.0.6
         version: 2.0.19(typescript@5.4.5)
 
-  packages/base-components:
+  packages/components:
     dependencies:
       '@floating-ui/vue':
         specifier: 1.0.2
@@ -72,24 +72,6 @@ importers:
       '@knime/utils':
         specifier: workspace:*
         version: link:../utils
-      '@tiptap/extension-link':
-        specifier: 2.0.3
-        version: 2.0.3(@tiptap/core@2.4.0(@tiptap/pm@2.0.3))(@tiptap/pm@2.0.3(@tiptap/core@2.4.0))
-      '@tiptap/extension-text-align':
-        specifier: 2.0.3
-        version: 2.0.3(@tiptap/core@2.4.0(@tiptap/pm@2.0.3))
-      '@tiptap/extension-underline':
-        specifier: 2.0.3
-        version: 2.0.3(@tiptap/core@2.4.0(@tiptap/pm@2.0.3))
-      '@tiptap/pm':
-        specifier: 2.0.3
-        version: 2.0.3(@tiptap/core@2.4.0)
-      '@tiptap/starter-kit':
-        specifier: 2.0.3
-        version: 2.0.3(@tiptap/pm@2.0.3(@tiptap/core@2.4.0))
-      '@tiptap/vue-3':
-        specifier: 2.0.3
-        version: 2.0.3(@tiptap/core@2.4.0(@tiptap/pm@2.0.3))(@tiptap/pm@2.0.3(@tiptap/core@2.4.0))(vue@3.4.27(typescript@5.4.5))
       '@vueuse/shared':
         specifier: ^10.10.0
         version: 10.10.0(vue@3.4.27(typescript@5.4.5))
@@ -215,9 +197,9 @@ importers:
 
   packages/rte:
     dependencies:
-      '@knime/base-components':
+      '@knime/components':
         specifier: workspace:*
-        version: link:../base-components
+        version: link:../components
       '@knime/styles':
         specifier: workspace:*
         version: link:../styles
@@ -303,9 +285,9 @@ importers:
 
   packages/ui-extensions-renderer:
     dependencies:
-      '@knime/base-components':
+      '@knime/components':
         specifier: workspace:*
-        version: link:../base-components
+        version: link:../components
       '@knime/styles':
         specifier: workspace:*
         version: link:../styles
@@ -4339,7 +4321,7 @@ snapshots:
   '@babel/code-frame@7.24.2':
     dependencies:
       '@babel/highlight': 7.24.2
-      picocolors: 1.0.0
+      picocolors: 1.0.1
 
   '@babel/helper-string-parser@7.24.6': {}
 
@@ -4352,7 +4334,7 @@ snapshots:
       '@babel/helper-validator-identifier': 7.22.20
       chalk: 2.4.2
       js-tokens: 4.0.0
-      picocolors: 1.0.0
+      picocolors: 1.0.1
 
   '@babel/parser@7.24.6':
     dependencies:

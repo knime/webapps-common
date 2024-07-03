@@ -12,7 +12,7 @@ import { h, shallowRef, type Slot } from "vue";
 
 import { useEditor } from "@tiptap/vue-3";
 
-import { FunctionButton, SubMenu } from "@knime/base-components";
+import { FunctionButton, SubMenu } from "@knime/components";
 
 import RichTextEditor from "../RichTextEditor.vue";
 
