@@ -1,5 +1,5 @@
 import { expect, describe, beforeAll, afterAll, it, vi } from "vitest";
-import { flushPromises } from "@vue/test-utils";
+import flushPromises from "flush-promises";
 
 import sleep from "../sleep";
 

@@ -368,6 +368,10 @@ importers:
       date-fns-tz:
         specifier: 2.0.0
         version: 2.0.0(date-fns@2.30.0)
+    devDependencies:
+      flush-promises:
+        specifier: ^1.0.2
+        version: 1.0.2
 
 packages:
 
@@ -2347,6 +2351,9 @@ packages:
 
   flatted@3.3.1:
     resolution: {integrity: sha512-X8cqMLLie7KsNUDSdzeN8FYK9rEt4Dt67OsG/DNGnYTSDBG4uFAJFBnUeiV+zCVAvwFy56IjM9sH51jVaEhNxw==}
+
+  flush-promises@1.0.2:
+    resolution: {integrity: sha512-G0sYfLQERwKz4+4iOZYQEZVpOt9zQrlItIxQAAYAWpfby3gbHrx0osCHz5RLl/XoXevXk0xoN4hDFky/VV9TrA==}
 
   focus-trap-vue@4.0.2:
     resolution: {integrity: sha512-2iQN2xKCSCzyhcD90VpueQcTIAhaCRxxo67fkz7RSqLmEd16QKjfGslCr3KxvBx0LfpVN9j0IAyKKuJKw3Intg==}
@@ -6693,6 +6700,8 @@ snapshots:
       keyv: 4.5.4
 
   flatted@3.3.1: {}
+
+  flush-promises@1.0.2: {}
 
   focus-trap-vue@4.0.2(focus-trap@7.5.4)(vue@3.4.27(typescript@5.4.5)):
     dependencies:

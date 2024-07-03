@@ -28,5 +28,8 @@
     "./test-utils": {
       "import": "./test-utils/index.ts"
     }
+  },
+  "devDependencies": {
+    "flush-promises": "^1.0.2"
   }
 }
