@@ -12,10 +12,9 @@ import { h, shallowRef, type Slot } from "vue";
 
 import { useEditor } from "@tiptap/vue-3";
 
-import FunctionButton from "../../../Buttons/FunctionButton.vue";
+import { FunctionButton, SubMenu } from "@knime/base-components";
 
 import RichTextEditor from "../RichTextEditor.vue";
-import SubMenu from "../../../SubMenu/SubMenu.vue";
 
 // mock for editor's isActive function. declared separately due to mock hoisting via vi.mock
 const mockEditorIsActive = vi.fn();
