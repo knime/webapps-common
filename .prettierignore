@@ -4,3 +4,4 @@ coverage
 dist
 test-results
 **/opensourcecredits/used-packages.json
+.pnpm-store
