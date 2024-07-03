@@ -134,15 +134,6 @@ public final class DynamicValuesInput implements PersistableSettings {
     }
 
     /**
-     * Constructor for a single input value, given the data type of the value.
-     *
-     * @param singleValueType type of the single value
-     */
-    private DynamicValuesInput(final DataType singleValueType) {
-        this(new DynamicValue[]{new DynamicValue(singleValueType)}, InputKind.SINGLE);
-    }
-
-    /**
      * Constructor for a single input value, given a data type and cell (of same or subtype) and an initial value. The
      * initial value can be the {@link DataType#getMissingCell()} instance.
      *
@@ -171,8 +162,22 @@ public final class DynamicValuesInput implements PersistableSettings {
      * @param dataType data type of input value
      * @return dynamic widget
      */
-    public static DynamicValuesInput singleValueWithCaseMatchingForString(final DataType dataType) {
-        return new DynamicValuesInput(dataType);
+    public static DynamicValuesInput singleValueWithCaseMatchingForStringWithDefault(final DataType dataType) {
+            final DataCell defaultValue;
+        // we need to provide some default value such that correct types show up int the settings XML and the
+        // flow variable popup can infer which flow variables to show
+        if (IntCell.TYPE.equals(dataType)) {
+            defaultValue = new IntCell(0);
+        } else if (LongCell.TYPE.equals(dataType)) {
+            defaultValue = new LongCell(0);
+        } else if (DoubleCell.TYPE.equals(dataType)) {
+            defaultValue = new DoubleCell(0);
+        } else if (BooleanCell.TYPE.equals(dataType)) {
+            defaultValue = BooleanCell.FALSE;
+        } else {
+            defaultValue = DynamicValue.readDataCellFromStringSafe(dataType, "");
+        }
+        return new DynamicValuesInput(dataType, defaultValue);
     }
 
     private enum InputKind {
@@ -673,8 +678,6 @@ public final class DynamicValuesInput implements PersistableSettings {
                     throw new RuntimeException(
                         String.format("Could not persist data cell value: %s.", e.getMessage()), e);
                 }
-            } else {
-                settings.addString(VALUE_KEY, null);
             }
         }
     }
