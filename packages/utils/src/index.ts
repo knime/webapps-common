@@ -20,8 +20,10 @@ import getLocalTimeZone from "./localTimezone";
 import numIntegerDigits from "./numIntegerDigits";
 import { formatHotkeys } from "./formatHotkeys";
 import type { Hotkey, KnownHotkey } from "./formatHotkeys";
+import * as navigator from "./navigator";
 
 export type { Hotkey, KnownHotkey };
+
 export {
   capitalize,
   caseFormatter,
@@ -44,4 +46,5 @@ export {
   isBeforeMinDate,
   numIntegerDigits,
   formatHotkeys,
+  navigator,
 };

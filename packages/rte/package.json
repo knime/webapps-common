@@ -21,7 +21,11 @@
   "dependencies": {
     "@knime/components": "workspace:*",
     "@knime/styles": "workspace:*",
+    "@tiptap/core": "^2.4.0",
+    "@tiptap/extension-hard-break": "^2.4.0",
+    "@tiptap/extension-heading": "^2.4.0",
     "@tiptap/extension-link": "2.0.3",
+    "@tiptap/extension-paragraph": "^2.4.0",
     "@tiptap/extension-text-align": "2.0.3",
     "@tiptap/extension-underline": "2.0.3",
     "@tiptap/pm": "2.0.3",
@@ -37,10 +41,10 @@
     "@vue/test-utils": "2.4.4",
     "typescript": "^5.4.5",
     "vite": "^5.2.12",
-    "vitest": "1.4.0",
-    "vue-tsc": "^2.0.19",
-    "vite-svg-loader": "4.0.0",
     "vite-plugin-css-injected-by-js": "^3.5.1",
-    "vite-plugin-dts": "^3.9.1"
+    "vite-plugin-dts": "^3.9.1",
+    "vite-svg-loader": "4.0.0",
+    "vitest": "1.4.0",
+    "vue-tsc": "^2.0.19"
   }
 }

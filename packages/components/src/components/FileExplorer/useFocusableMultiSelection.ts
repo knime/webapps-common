@@ -4,7 +4,7 @@ import {
 } from "./useMultiSelection";
 import * as multiSelectionService from "./multiSelectionStateService";
 import { computed, ref, type Ref } from "vue";
-import { getMetaOrCtrlKey } from "../../../util/navigator";
+import { navigator } from "@knime/utils";
 
 const PAGE_SIZE = 15;
 const INVALID_INDEX = -Infinity;
@@ -106,7 +106,7 @@ export const useFocusableMultiSelection = (
       return;
     }
 
-    const metaOrCtrlKey = getMetaOrCtrlKey();
+    const metaOrCtrlKey = navigator.getMetaOrCtrlKey();
 
     if (event.shiftKey) {
       shiftClickItem(index);
@@ -128,7 +128,7 @@ export const useFocusableMultiSelection = (
       return;
     }
 
-    const metaOrCtrl = getMetaOrCtrlKey();
+    const metaOrCtrl = navigator.getMetaOrCtrlKey();
     const isHandledKey = [
       "Enter",
       " " /* Space */,
