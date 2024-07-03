@@ -102,6 +102,7 @@ public class ColumnFilter implements PersistableSettings {
         m_manualFilter = new ManualFilter(Objects.requireNonNull(initialSelected));
         m_patternFilter = new PatternFilter();
         m_typeFilter = new TypeFilter();
+        m_selected = initialSelected;
     }
 
     /**

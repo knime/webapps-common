@@ -2,6 +2,7 @@
   "data" : {
     "view" : {
       "displayedColumns" : {
+        "selected" : [ "test1", "test2" ],
         "mode" : "MANUAL",
         "patternFilter" : {
           "pattern" : "",
