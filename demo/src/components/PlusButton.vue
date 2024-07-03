@@ -1,8 +1,10 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
-import PlusButton from "webapps-common/ui/components/PlusButton.vue";
-import PlusButtonCode from "webapps-common/ui/components/PlusButton.vue?raw";
-import buttonCode from "webapps-common/ui/components/Button.vue?raw";
+import { PlusButton } from "@knime/components";
+// import PlusButtonCode from "webapps-common/ui/components/PlusButton.vue?raw";
+const PlusButtonCode = "";
+// import buttonCode from "webapps-common/ui/components/Button.vue?raw";
+const buttonCode = "";
 
 const codeExample = `
   <PlusButton title="Plus button"/>

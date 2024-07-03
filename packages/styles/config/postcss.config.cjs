@@ -1,6 +1,6 @@
 /*
 Example usage in Vue postcss.config.js:
-    const { preset } = require('webapps-common/config/postcss.config');
+    const { preset } = require('@knime/styles/config/postcss.config');
 
     module.exports = {
         plugins: {

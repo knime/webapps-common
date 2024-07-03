@@ -9,25 +9,25 @@ export default {
   },
   data() {
     return {
-      codeExample: `<img src="~webapps-common/ui/assets/img/KNIME_Logo_gray.svg">
+      codeExample: `<img src="~@knime/styles/img/KNIME_Logo_gray.svg">
 
 or e.g. inline as base64 in CSS:
 
 <style>
 .foo {
-  background: url("~webapps-common/ui/assets/img/KNIME_Logo_gray.svg?data") no-repeat 50% 50%;
+  background: url("~@knime/styles/img/KNIME_Logo_gray.svg?data") no-repeat 50% 50%;
 }
 </style>`,
     };
   },
   computed: {
     images() {
-      const files = import.meta.glob("@@/../ui/assets/img/*", {
+      const files = import.meta.glob("../../../packages/styles/img/*", {
         as: "url",
         eager: true,
       });
       return Object.keys(files).map((file) => ({
-        name: file.replace("../ui/assets/img/", ""),
+        name: file.replace("../../../packages/", "@knime/"),
         src: files[file],
       }));
     },

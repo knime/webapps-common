@@ -1,5 +1,5 @@
 <script>
-import Description from "webapps-common/ui/components/Description.vue";
+import { Description } from "@knime/components";
 
 export default {
   components: {

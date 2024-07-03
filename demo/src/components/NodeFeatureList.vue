@@ -1,7 +1,8 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
-import NodeFeatureList from "webapps-common/ui/components/node/NodeFeatureList.vue";
-import code from "webapps-common/ui/components/node/NodeFeatureList.vue?raw";
+import { NodeFeatureList } from "@knime/components";
+// import code from "webapps-common/ui/components/node/NodeFeatureList.vue?raw";
+const code = "";
 
 const codeExample = `<NodeFeatureList
   :in-ports="[{

@@ -1,7 +1,8 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
-import LinkList from "webapps-common/ui/components/LinkList.vue";
-import code from "webapps-common/ui/components/LinkList.vue?raw";
+import { LinkList } from "@knime/components";
+// import code from "webapps-common/ui/components/LinkList.vue?raw";
+const code = "";
 
 const codeExample = `<LinkList
   :links="[

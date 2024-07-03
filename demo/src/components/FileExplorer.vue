@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { h, onMounted, reactive, ref } from "vue";
-import Checkbox from "webapps-common/ui/components/forms/Checkbox.vue";
-import Dropdown from "webapps-common/ui/components/forms/Dropdown.vue";
-import Button from "webapps-common/ui/components/Button.vue";
-import FileExplorer from "webapps-common/ui/components/FileExplorer/FileExplorer.vue";
+import { Checkbox, Dropdown, Button, FileExplorer } from "@knime/components";
 
 import type {
   FileExplorerItem,

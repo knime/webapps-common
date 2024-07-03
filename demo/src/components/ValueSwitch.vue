@@ -1,8 +1,9 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 
-import ValueSwitch from "webapps-common/ui/components/forms/ValueSwitch.vue";
-import code from "webapps-common/ui/components/forms/ValueSwitch.vue?raw";
+import { ValueSwitch } from "@knime/components";
+// import code from "webapps-common/ui/components/forms/ValueSwitch.vue?raw";
+const code = "";
 
 import CodeExample from "./demo/CodeExample.vue";
 

@@ -1,16 +1,16 @@
 <script>
-import Modal from "webapps-common/ui/components/Modal.vue";
-import PlayIcon from "webapps-common/ui/assets/img/icons/circle-play.svg";
-import Button from "webapps-common/ui/components/Button.vue";
+import { Modal, Button, Checkbox } from "@knime/components";
+import PlayIcon from "@knime/styles/img/icons/circle-play.svg";
 import CodeExample from "./demo/CodeExample.vue";
 
-import code from "webapps-common/ui/components/Modal.vue?raw";
-import baseModalCode from "webapps-common/ui/components/BaseModal.vue?raw";
-import Checkbox from "webapps-common/ui/components/forms/Checkbox.vue";
+// import code from "webapps-common/ui/components/Modal.vue?raw";
+const code = "";
+// import baseModalCode from "webapps-common/ui/components/BaseModal.vue?raw";
+const baseModalCode = "";
 
 const codeExample = `<script>
 import Modal from '~/webapps-common/ui/components/Modal.vue';
-import PlayIcon from '~/webapps-common/ui/assets/img/icons/circle-play.svg';
+import PlayIcon from '~/@knime/styles/img/icons/circle-play.svg';
 import Button from '~/webapps-common/ui/components/Button.vue';
 
 export default {

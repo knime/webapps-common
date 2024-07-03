@@ -1,4 +1,4 @@
-@import "webapps-common/ui/css";
+@import "@knime/styles/css";
 @import "./prism-theme-knime";
 
 :root {

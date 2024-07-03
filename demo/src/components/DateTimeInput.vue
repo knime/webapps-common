@@ -1,8 +1,8 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
-import DateTimeInput from "webapps-common/ui/components/forms/DateTimeInput.vue";
-import Label from "webapps-common/ui/components/forms/Label.vue";
-import code from "webapps-common/ui/components/forms/DateTimeInput.vue?raw";
+import { DateTimeInput, Label } from "@knime/components";
+// import code from "webapps-common/ui/components/forms/DateTimeInput.vue?raw";
+const code = "";
 
 const codeExample = `<DateTimeInput
   :value="new Date()"

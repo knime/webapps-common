@@ -2,22 +2,20 @@
 import { defineAsyncComponent, h as createElement } from "vue";
 import "./assets/index.css";
 
-import TabBarComponent from "webapps-common/ui/components/TabBar.vue";
-import ImageIcon from "webapps-common/ui/assets/img/icons/media-image.svg";
-import InteractiveIcon from "webapps-common/ui/assets/img/icons/interactive.svg";
-import PaletteIcon from "webapps-common/ui/assets/img/icons/color-palette.svg";
-import CheckboxIcon from "webapps-common/ui/assets/img/icons/checkboxes.svg";
-import ViewListIcon from "webapps-common/ui/assets/img/icons/view-list.svg";
-import UnknownIcon from "webapps-common/ui/assets/img/icons/file-question.svg";
-import ListThumbs from "webapps-common/ui/assets/img/icons/list-thumbs.svg";
-import HeadlineWithAnchorLink from "./components/demo/HeadlineWithAnchorLink.vue";
-
-import SearchInputComponent from "webapps-common/ui/components/forms/SearchInput.vue";
-
 import {
+  TabBar as TabBarComponent,
+  SearchInput as SearchInputComponent,
   ToastStack,
   ToastServiceProvider,
-} from "webapps-common/ui/services/toast";
+} from "@knime/components";
+import ImageIcon from "@knime/styles/img/icons/media-image.svg";
+import InteractiveIcon from "@knime/styles/img/icons/interactive.svg";
+import PaletteIcon from "@knime/styles/img/icons/color-palette.svg";
+import CheckboxIcon from "@knime/styles/img/icons/checkboxes.svg";
+import ViewListIcon from "@knime/styles/img/icons/view-list.svg";
+import UnknownIcon from "@knime/styles/img/icons/file-question.svg";
+import ListThumbs from "@knime/styles/img/icons/list-thumbs.svg";
+import HeadlineWithAnchorLink from "./components/demo/HeadlineWithAnchorLink.vue";
 
 import NpmLink from "./components/demo/NpmLink.vue";
 
@@ -159,9 +157,9 @@ const demoComponents = {
     NodeFeatureList: defineAsyncComponent(
       () => import("./components/NodeFeatureList.vue"),
     ),
-    OpenSourceCredits: defineAsyncComponent(
-      () => import("./components/OpenSourceCredits.vue"),
-    ),
+    // OpenSourceCredits: defineAsyncComponent(
+    //   () => import("./components/OpenSourceCredits.vue"),
+    // ),
   },
   npm: {
     "KNIME UI Table": {
@@ -298,7 +296,7 @@ export default {
   <div>
     <header>
       <img
-        src="~webapps-common/ui/assets/img/KNIME_Logo_gray.svg?file"
+        src="@knime/styles/img/KNIME_Logo_gray.svg?file"
         class="logo"
         alt="KNIME"
       />

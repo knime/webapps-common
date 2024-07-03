@@ -1,7 +1,8 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
-import Description from "webapps-common/ui/components/Description.vue";
-import code from "webapps-common/ui/components/Description.vue?raw";
+import { Description } from "@knime/components";
+// import code from "webapps-common/ui/components/Description.vue?raw";
+const code = "";
 
 export default {
   components: {

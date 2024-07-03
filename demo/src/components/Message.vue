@@ -1,15 +1,16 @@
 <script>
-import Message from "webapps-common/ui/components/Message.vue";
-import BulbIcon from "webapps-common/ui/assets/img/icons/bulb.svg";
-import CheckIcon from "webapps-common/ui/assets/img/icons/circle-check.svg";
-import InfoIcon from "webapps-common/ui/assets/img/icons/circle-info.svg";
+import { Message } from "@knime/components";
+import BulbIcon from "@knime/styles/img/icons/bulb.svg";
+import CheckIcon from "@knime/styles/img/icons/circle-check.svg";
+import InfoIcon from "@knime/styles/img/icons/circle-info.svg";
 import CodeExample from "./demo/CodeExample.vue";
-import code from "webapps-common/ui/components/Message.vue?raw";
+// import code from "webapps-common/ui/components/Message.vue?raw";
+const code = "";
 
 const codeExample = `<script>
 import Message from 'webapps-common/ui/components/Message';
-import BulbIcon from '~/webapps-common/ui/assets/img/icons/bulb.svg';
-import CheckIcon from '~/webapps-common/ui/assets/img/icons/circle-check.svg';
+import BulbIcon from '~/@knime/styles/img/icons/bulb.svg';
+import CheckIcon from '~/@knime/styles/img/icons/circle-check.svg';
 
 export default {
     components: {

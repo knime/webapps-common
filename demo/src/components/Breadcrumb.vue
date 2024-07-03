@@ -1,9 +1,10 @@
 <script>
 import { markRaw } from "vue";
 import CodeExample from "./demo/CodeExample.vue";
-import FolderIcon from "webapps-common/ui/assets/img/icons/folder.svg";
-import Breadcrumb from "webapps-common/ui/components/Breadcrumb.vue";
-import breadcrumbCode from "webapps-common/ui/components/Breadcrumb.vue?raw";
+import FolderIcon from "@knime/styles/img/icons/folder.svg";
+import { Breadcrumb } from "@knime/components";
+// import breadcrumbCode from "webapps-common/ui/components/Breadcrumb.vue?raw";
+const breadcrumbCode = "";
 
 const codeExample = `<Breadcrumb
   :items="[

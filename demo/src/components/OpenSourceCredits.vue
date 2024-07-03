@@ -1,7 +1,8 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
 import OpenSourceCredits from "webapps-common/ui/components/OpenSourceCredits.vue";
-import code from "webapps-common/ui/components/OpenSourceCredits.vue?raw";
+// import code from "webapps-common/ui/components/OpenSourceCredits.vue?raw";
+const code = "";
 
 export default {
   components: {

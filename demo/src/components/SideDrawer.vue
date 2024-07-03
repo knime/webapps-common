@@ -1,8 +1,8 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
-import SideDrawer from "webapps-common/ui/components/SideDrawer.vue";
-import Button from "webapps-common/ui/components/Button.vue";
-import code from "webapps-common/ui/components/SideDrawer.vue?raw";
+import { SideDrawer, Button } from "@knime/components";
+// import code from "webapps-common/ui/components/SideDrawer.vue?raw";
+const code = "";
 
 const codeExample = `<script>
 import SideDrawer from '~/webapps-common/ui/components/SideDrawer.vue';

@@ -1,7 +1,8 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
-import LocalDateTime from "webapps-common/ui/components/LocalDateTime.vue";
-import code from "webapps-common/ui/components/LocalDateTime.vue?raw";
+import { LocalDateTime } from "@knime/components";
+// import code from "webapps-common/ui/components/LocalDateTime.vue?raw";
+const code = "";
 
 const codeExample =
   '<LocalDateTime date="2023-10-27T11:17:42.460Z" :show-time="true"/>';

@@ -1,15 +1,16 @@
 <script>
 import { markRaw } from "vue";
-import Messages from "webapps-common/ui/components/Messages.vue";
-import BulbIcon from "webapps-common/ui/assets/img/icons/bulb.svg";
+import { Messages } from "@knime/components";
+import BulbIcon from "@knime/styles/img/icons/bulb.svg";
 import CodeExample from "./demo/CodeExample.vue";
-import code from "webapps-common/ui/components/Messages.vue?raw";
+// import code from "webapps-common/ui/components/Messages.vue?raw";
+const code = "";
 
 // TODO add demo case for message.content prop
 
 const codeExample = `<script>
-import Messages from 'webapps-common/ui/components/Messages';
-import BulbIcon from '~/webapps-common/ui/assets/img/icons/bulb.svg';
+import { Messages } from '@knime/components';
+import BulbIcon from '@knime/styles/img/icons/bulb.svg';
 
 export default {
     components: {

@@ -1,7 +1,8 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
-import NodePreview from "webapps-common/ui/components/node/NodePreview.vue";
-import sourceCode from "webapps-common/ui/components/node/NodePreview.vue?raw";
+import { NodePreview } from "@knime/components";
+// import sourceCode from "webapps-common/ui/components/node/NodePreview.vue?raw";
+const sourceCode = "";
 
 const icon =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAsklEQVR4nGNgoBUwMDBwMDIyakDGIDFiN" +

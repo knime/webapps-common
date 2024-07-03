@@ -1,21 +1,20 @@
 <script>
 import { markRaw } from "vue";
 import CodeExample from "./demo/CodeExample.vue";
-import SubMenu from "webapps-common/ui/components/SubMenu.vue";
-import HelpIcon from "webapps-common/ui/assets/img/icons/circle-help.svg";
-import StarIcon from "webapps-common/ui/assets/img/icons/star.svg";
-import LeaveIcon from "webapps-common/ui/assets/img/icons/leave.svg";
-import HeartIcon from "webapps-common/ui/assets/img/icons/heart.svg";
-import DropdownIcon from "webapps-common/ui/assets/img/icons/arrow-dropdown.svg";
-import Button from "webapps-common/ui/components/Button.vue";
-import SplitButton from "webapps-common/ui/components/SplitButton.vue";
-import code from "webapps-common/ui/components/SplitButton.vue?raw";
+import { SubMenu, Button, SplitButton } from "@knime/components";
+import HelpIcon from "@knime/styles/img/icons/circle-help.svg";
+import StarIcon from "@knime/styles/img/icons/star.svg";
+import LeaveIcon from "@knime/styles/img/icons/leave.svg";
+import HeartIcon from "@knime/styles/img/icons/heart.svg";
+import DropdownIcon from "@knime/styles/img/icons/arrow-dropdown.svg";
+// import code from "webapps-common/ui/components/SplitButton.vue?raw";
+const code = "";
 
 const codeExample = `<script>
 import Button from '~/webapps-common/ui/components/Button.vue';
 import SubMenu from '~/webapps-common/ui/components/SubMenu.vue';
 import SplitButton from '~/webapps-common/ui/components/SplitButton.vue';
-import DropdownIcon from '~/webapps-common/ui/assets/img/icons/arrow-dropdown.svg';
+import DropdownIcon from '~/@knime/styles/img/icons/arrow-dropdown.svg';
 
 const subMenuItems = [{
     href: 'https://apple.com',

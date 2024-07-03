@@ -1,8 +1,9 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
-import Collapser from "webapps-common/ui/components/Collapser.vue";
-import BulbIcon from "webapps-common/ui/assets/img/icons/bulb.svg";
-import code from "webapps-common/ui/components/Collapser.vue?raw";
+import { Collapser } from "@knime/components";
+import BulbIcon from "@knime/styles/img/icons/bulb.svg";
+// import code from "webapps-common/ui/components/Collapser.vue?raw";
+const code = "";
 
 export default {
   components: {

@@ -1,8 +1,8 @@
 <script>
 import CodeExample from "../demo/CodeExample.vue";
-import ExpandTransition from "webapps-common/ui/components/transitions/ExpandTransition.vue";
-import Button from "webapps-common/ui/components/Button.vue";
-import code from "webapps-common/ui/components/transitions/ExpandTransition.vue?raw";
+import { ExpandTransition, Button } from "@knime/components";
+// import code from "webapps-common/ui/components/transitions/ExpandTransition.vue?raw";
+const code = "";
 
 export default {
   components: {
