@@ -20,6 +20,9 @@
     ".": {
       "import": "./src/index.ts"
     },
+    "./globals.d.ts": {
+      "import": "./src/config/globals.d.ts"
+    },
     "./test-utils": {
       "import": "./test-utils/index.ts"
     }
