@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { mount } from "@vue/test-utils";
-import SearchInput from "../SearchInput.vue";
+import SearchInput from "../../SearchInput/SearchInput.vue";
 import SearchableList from "../SearchableList.vue";
-import MultiselectListBox from "../MultiselectListBox.vue";
+import MultiselectListBox from "../../MultiselectListBox/MultiselectListBox.vue";
 
 describe("SearchableList.vue", () => {
   let defaultPossibleValues;

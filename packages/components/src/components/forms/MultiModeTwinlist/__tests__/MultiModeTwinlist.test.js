@@ -6,7 +6,7 @@ import FilterIcon from "@knime/styles/img/icons/filter.svg";
 import SearchInput from "../../SearchInput/SearchInput.vue";
 import MultiModeTwinlist from "../MultiModeTwinlist.vue";
 import MultiselectListBox from "../../MultiselectListBox/MultiselectListBox.vue";
-import Twinlist from "../../TwinList/Twinlist.vue";
+import Twinlist from "../../Twinlist/Twinlist.vue";
 import ValueSwitch from "../../ValueSwitch/ValueSwitch.vue";
 import Checkboxes from "../../Checkboxes/Checkboxes.vue";
 import Label from "../../Label/Label.vue";
