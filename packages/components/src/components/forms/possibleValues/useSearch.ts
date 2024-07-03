@@ -1,5 +1,5 @@
 import { computed, type Ref } from "vue";
-import { filters } from "../../../../util/filters";
+import { filters } from "@knime/utils";
 import { type PossibleValue } from "./types";
 
 export const useSearch = (

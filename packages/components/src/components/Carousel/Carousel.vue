@@ -38,6 +38,8 @@ export default defineComponent({
       this.isMouseDown = false;
     },
     onMouseMove(e: MouseEvent) {
+      console.log("here :>> ", e);
+      console.log("here :>> ", e.pageX);
       if (!this.isMouseDown) {
         return;
       }

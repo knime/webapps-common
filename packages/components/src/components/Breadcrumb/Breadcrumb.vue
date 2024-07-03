@@ -1,6 +1,6 @@
 <script>
 import ArrowNext from "@knime/styles/img/icons/arrow-next.svg";
-import { resolveNuxtLinkComponent } from "@knime/utils";
+import { resolveNuxtLinkComponent } from "../nuxtComponentResolver";
 
 export default {
   components: {

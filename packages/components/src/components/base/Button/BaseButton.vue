@@ -1,6 +1,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
-// import { resolveNuxtLinkComponent } from "../util/nuxtComponentResolver";
+import { resolveNuxtLinkComponent } from "../../nuxtComponentResolver";
 
 export default defineComponent({
   props: {
@@ -37,9 +37,9 @@ export default defineComponent({
     // TODO: Can be made into a composition function
     component() {
       // TODO
-      // if (this.to) {
-      //   return resolveNuxtLinkComponent();
-      // }
+      if (this.to) {
+        return resolveNuxtLinkComponent();
+      }
 
       if (this.href) {
         return "a";

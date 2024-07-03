@@ -334,6 +334,9 @@ importers:
       '@knime/styles':
         specifier: workspace:*
         version: link:../styles
+      date-fns-tz:
+        specifier: 2.0.0
+        version: 2.0.0(date-fns@2.30.0)
 
 packages:
 
