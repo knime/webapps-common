@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { shallowMount } from "@vue/test-utils";
 
 import Carousel from "./Carousel.vue";
+import { nextTick } from "vue";
 
 describe("Carousel.vue", () => {
   it("renders default", () => {
@@ -20,7 +21,7 @@ describe("Carousel.vue", () => {
     expect(wrapper.find(".slot").exists()).toBe(true);
   });
 
-  it("calls scroll methods", () => {
+  it("calls scroll methods", async () => {
     const dragStartSpy = vi.spyOn(Carousel.methods, "onDragStart");
     const mouseLeaveSpy = vi.spyOn(Carousel.methods, "onMouseEnd");
     const mouseDownSpy = vi.spyOn(Carousel.methods, "onMouseDown");
@@ -39,9 +40,11 @@ describe("Carousel.vue", () => {
 
     const scrollValue = 30;
 
-    wrapper.find({ ref: "carousel" }).trigger("mousemove", {
-      pageX: -scrollValue,
-    });
+    const event = new Event("mousemove");
+    event.pageX = -scrollValue;
+
+    wrapper.find(".carousel").element.dispatchEvent(event);
+    await nextTick();
     expect(wrapper.vm.$refs.carousel.scrollLeft).toBe(scrollValue);
     expect(mouseMoveSpy).toHaveBeenCalled();
 

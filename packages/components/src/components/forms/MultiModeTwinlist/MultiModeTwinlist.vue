@@ -1,4 +1,3 @@
-ww
 <script lang="ts">
 import Label from "../Label/Label.vue";
 import SearchInput from "../SearchInput/SearchInput.vue";

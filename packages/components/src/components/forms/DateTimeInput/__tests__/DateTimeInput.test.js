@@ -13,7 +13,7 @@ import {
   getDate,
   getMonth,
   getYear,
-} from "date-fns";
+} from "date-fns-tz";
 
 // TODO fix test
 describe("DateTimeInput.vue", () => {

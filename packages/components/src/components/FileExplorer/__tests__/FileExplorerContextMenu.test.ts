@@ -50,11 +50,17 @@ describe("FileExplorerContextMenu.vue", () => {
     selectedItems: [mockItem],
   };
 
-  const doMount = ({ props = {} } = {}) => {
+  type MountOpts = {
+    props?: Partial<InstanceType<typeof FileExplorerContextMenu>["$props"]>;
+    attachTo?: HTMLElement | string;
+  };
+
+  const doMount = ({ props = {}, attachTo }: MountOpts = {}) => {
     vi.stubGlobal("IntersectionObserver", MockIntersectionObserver);
 
     const wrapper = mount(FileExplorerContextMenu, {
       props: { ...defaultProps, ...props },
+      attachTo,
     });
 
     return { wrapper, MockIntersectionObserver };
@@ -99,7 +105,9 @@ describe("FileExplorerContextMenu.vue", () => {
   });
 
   it("should hide the menu if the anchor is not visible", async () => {
-    const { wrapper, MockIntersectionObserver } = doMount();
+    const { wrapper, MockIntersectionObserver } = doMount({
+      attachTo: document.body,
+    });
 
     expect(wrapper.isVisible()).toBe(true);
 

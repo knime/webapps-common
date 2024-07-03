@@ -4,7 +4,7 @@ import LensIcon from "@knime/styles/img/icons/lens.svg";
 import InverseSearchIcon from "@knime/styles/img/icons/arrows-order-left-right.svg";
 import UpperLowerCaseIcon from "@knime/styles/img/icons/upper-lower-case.svg";
 
-import InputField from "./InputField.vue";
+import InputField from "../InputField/InputField.vue";
 import FunctionButton from "../../Buttons/FunctionButton.vue";
 
 const defaultTooltips = {

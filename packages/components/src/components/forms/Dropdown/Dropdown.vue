@@ -1,10 +1,10 @@
 <script lang="ts">
-import "../variables.css";
+import { type PropType } from "vue";
+import { OnClickOutside } from "@vueuse/components";
 import { isEmpty } from "lodash-es";
 
 import DropdownIcon from "@knime/styles/img/icons/arrow-dropdown.svg";
-import { type PropType } from "vue";
-import { OnClickOutside } from "@vueuse/components";
+import "../variables.css";
 
 type Id = string | number;
 interface PossibleValue {
