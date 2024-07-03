@@ -62,6 +62,8 @@ pipelines:
       - step: *lint-test-build
       - step: *deploy-npm
   branches:
+    "**":
+      - step: *lint-test-build
     master:
       - step: *lint-test-build
       - step: *deploy-demo
