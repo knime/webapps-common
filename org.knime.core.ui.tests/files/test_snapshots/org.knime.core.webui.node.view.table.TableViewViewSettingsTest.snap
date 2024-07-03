@@ -140,6 +140,7 @@
                 }
               },
               "selected" : {
+                "default" : [ ],
                 "configKeys" : [ "selected_Internals" ],
                 "type" : "array",
                 "items" : {
@@ -182,6 +183,7 @@
             "title" : "Displayed columns",
             "description" : "Select the columns that should be displayed in the table",
             "default" : {
+              "selected" : [ "test1", "test2" ],
               "mode" : "MANUAL",
               "patternFilter" : {
                 "pattern" : "",
