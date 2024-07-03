@@ -3,7 +3,7 @@ import BoldIcon from "@knime/styles/img/icons/bold.svg";
 import type { EditorToolItem } from "../../types";
 import { shallowMount } from "@vue/test-utils";
 import RichTextEditorToolbar from "../RichTextEditorToolbar.vue";
-import { type MenuItem, SubMenu } from "@knime/base-components";
+import { type MenuItem, SubMenu } from "@knime/components";
 
 describe("RichTextEditorToolbar.vue", () => {
   it("displays seconda", () => {

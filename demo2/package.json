@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@knime/base-components": "workspace:*",
+    "@knime/components": "workspace:*",
     "@knime/styles": "workspace:*",
     "vue": "^3.4.21"
   },

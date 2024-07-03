@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import type { Editor } from "@tiptap/vue-3";
 import MoreActionsIcon from "@knime/styles/img/icons/menu-options.svg";
-import { FunctionButton, type MenuItem, SubMenu } from "@knime/base-components";
+import { FunctionButton, type MenuItem, SubMenu } from "@knime/components";
 import type { EditorTools } from "../types.ts";
 
 interface Props {

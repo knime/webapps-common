@@ -5,7 +5,11 @@ import { defineComponent, type PropType } from "vue";
 import Multiselect from "../Mutliselect/Multiselect.vue";
 import FunctionButton from "../../Buttons/FunctionButton.vue";
 import CloseIcon from "@knime/styles/img/icons/close.svg";
-import { type PossibleValue, type Id, createMissingItem } from "../possibleValues";
+import {
+  type PossibleValue,
+  type Id,
+  createMissingItem,
+} from "../possibleValues";
 
 const DRAFT_ITEM_ID = "draft-id-combobox-preview-item";
 

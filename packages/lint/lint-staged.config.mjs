@@ -5,13 +5,10 @@ export default {
   ],
   "*.vue": [
     "eslint --cache --fix",
-    "stylelint --cache --fix --allow-empty-input",
+    "stylelint --fix --allow-empty-input",
     "prettier --cache --write",
   ],
-  "*.css": [
-    "stylelint --cache --fix --allow-empty-input",
-    "prettier --cache --write",
-  ],
+  "*.css": ["stylelint --fix --allow-empty-input", "prettier --cache --write"],
   "*.!({js,jsx,cjs,mjs,ts,tsx,cts,mts,vue,css})": [
     "prettier --cache --ignore-unknown --write",
   ],
