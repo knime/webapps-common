@@ -1,4 +1,4 @@
-# @knime/base-components
+# @knime/components
 
 ## 0.1.3
 

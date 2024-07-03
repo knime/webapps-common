@@ -1,4 +1,4 @@
-import type { MenuItem } from "@knime/base-components";
+import type { MenuItem } from "@knime/components";
 import type { FunctionalComponent, SVGAttributes } from "vue";
 
 interface EditorToolItemBase {
