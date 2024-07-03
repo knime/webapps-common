@@ -5,19 +5,19 @@ import { computed, onMounted, ref, type Ref } from "vue";
 import type { PossibleFlowVariable } from "@/nodeDialog/api/types";
 import useControllingFlowVariable from "../composables/useControllingFlowVariable";
 import { injectForFlowVariables } from "../../../utils/inject";
-
-const props = defineProps<FlowVariableSelectorProps>();
 const {
   setControllingFlowVariable,
   unsetControllingFlowVariable,
   controllingFlowVariableName,
   invalidateSetFlowVariable,
-} = useControllingFlowVariable(props.persistPath);
+} = useControllingFlowVariable();
 const {
   getAvailableFlowVariables,
   getFlowVariableOverrideValue,
   clearControllingFlowVariable,
 } = injectForFlowVariables("flowVariablesApi")!;
+
+const props = defineProps<FlowVariableSelectorProps>();
 
 const dropdownPossibleValues: Ref<
   {

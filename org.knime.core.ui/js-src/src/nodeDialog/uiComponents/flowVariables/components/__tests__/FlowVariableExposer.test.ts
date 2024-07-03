@@ -9,16 +9,19 @@ import type FlowVariableExposerProps from "../../types/FlowVariableExposerProps"
 import ErrorMessage from "../../../ErrorMessage.vue";
 import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
 import { FlowSettings } from "@/nodeDialog/api/types";
+import { ref, type Ref } from "vue";
 import { injectionKey as flowVarMapKey } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
 
 describe("FlowVariableExposer", () => {
   let props: FlowVariableExposerProps,
+    flowSettings: Ref<FlowSettings | undefined>,
     flowVariablesMap: Record<string, FlowSettings>,
     setDirtyState: Mock,
     unsetDirtyState: Mock;
 
   beforeEach(() => {
     flowVariablesMap = {};
+    flowSettings = ref(undefined);
     props = {
       persistPath: "persist.path.to.setting",
     };
@@ -40,6 +43,7 @@ describe("FlowVariableExposer", () => {
       global: {
         provide: {
           [providedByComponentKey as symbol]: {
+            flowSettings,
             settingStateFlowVariables: {
               exposed: {
                 get: () => ({
@@ -71,7 +75,7 @@ describe("FlowVariableExposer", () => {
 
   it("sets the initial model value", () => {
     const varName = "var";
-    flowVariablesMap[props.persistPath] = {
+    flowSettings.value = {
       controllingFlowVariableName: null,
       controllingFlowVariableAvailable: true,
       exposedFlowVariableName: varName,

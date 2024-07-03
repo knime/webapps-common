@@ -8,19 +8,7 @@
         "exposed": "Enabled",
         "exposedAndControlling": "Disabled",
         "missingFlowVariable": "Disabled",
-        "controlledByNonAvailable": "Disabled",
-        "oneDataPathMultiplePersistPaths": "Enabled",
-        "multipleDataAndPersistPaths": {
-          "mode": "MANUAL",
-          "manualFilter": {
-            "manuallySelected": [],
-            "manuallyDeselected": [],
-            "includeUnknownColumns": false
-          },
-          "patternFilter": {
-            "pattern": ""
-          }
-        }
+        "controlledByNonAvailable": "Disabled"
       }
     },
     "schema": {
@@ -59,23 +47,6 @@
               "type": "string",
               "title": "Controlled by a flow variable which is not available",
               "description": "Controlling flow variable is selected but not available."
-            },
-            "oneDataPathMultiplePersistPaths": {
-              "type": "string",
-              "title": "One data path, multiple persist paths",
-              "description": "One data path, multiple persist paths which deviate from the data path.",
-              "configKeys": ["one", "two"]
-            },
-            "multipleDataAndPersistPaths": {
-              "type": "object",
-              "title": "Multiple data and corresponding persist paths",
-              "description": "Multiple data paths and multiple persist paths which are identical to the data paths.",
-              "properties": {
-                "selected": {
-                  "type": "array"
-                }
-              },
-              "configKeys": ["one"]
             }
           }
         }
@@ -116,23 +87,6 @@
             {
               "type": "Control",
               "scope": "#/properties/model/properties/controlledByNonAvailable"
-            }
-          ]
-        },
-        {
-          "type": "Section",
-          "label": "Multiple Flow Variable Handling",
-          "elements": [
-            {
-              "type": "Control",
-              "scope": "#/properties/model/properties/oneDataPathMultiplePersistPaths"
-            },
-            {
-              "type": "Control",
-              "scope": "properties/model/properties/multipleDataAndPersistPaths",
-              "options": {
-                "format": "twinList"
-              }
             }
           ]
         }

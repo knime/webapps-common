@@ -2,15 +2,15 @@ import { computed } from "vue";
 import { getFlowVariableSettingsProvidedByControl } from "../../../composables/components/useFlowVariables";
 import { getFlowVariablesMap } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
 
-export default (persistPath: string) => {
+export default () => {
   const flowVariablesMap = getFlowVariablesMap();
 
   const {
+    flowSettings,
     settingStateFlowVariables: {
       exposed: { get: getDirtyExposedVariable },
     },
   } = getFlowVariableSettingsProvidedByControl();
-  const flowSettings = computed(() => flowVariablesMap[persistPath]);
   const exposedFlowVariableName = computed(
     () => flowSettings.value?.exposedFlowVariableName ?? "",
   );
