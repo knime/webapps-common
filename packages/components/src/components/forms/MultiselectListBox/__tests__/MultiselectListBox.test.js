@@ -202,10 +202,14 @@ describe("MultiselectListBox.vue", () => {
       await wrapper
         .findAll("[role=option]")[3]
         .trigger("click", { ctrlKey: true });
+      expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
+        "test1",
+        "test4",
+      ]);
       await wrapper
         .findAll("[role=option]")[1]
         .trigger("click", { ctrlKey: true });
-      expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
+      expect(wrapper.emitted("update:modelValue")[1][0]).toStrictEqual([
         "test1",
         "test4",
         "test2",

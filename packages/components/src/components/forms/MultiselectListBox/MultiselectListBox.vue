@@ -187,7 +187,7 @@ export default {
   watch: {
     modelValue: {
       handler(newValue) {
-        this.selectedValues = newValue;
+        this.selectedValues = [...newValue];
       },
       deep: true,
     },
