@@ -1,3 +1,3 @@
-export * from "./components/components";
+export * from "./components";
 export * from "./components/types";
-export * from "./composables/index";
+export * from "./composables";
