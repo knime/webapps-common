@@ -20,7 +20,8 @@
   "dependencies": {
     "prismjs": "1.29.0",
     "vue-router": "4.1.6",
-    "webapps-common": "file:.."
+    "@knime/base-components": "workspace:*",
+    "@knime/styles": "workspace:*"
   },
   "devDependencies": {
     "@knime/eslint-config": "workspace:*",
