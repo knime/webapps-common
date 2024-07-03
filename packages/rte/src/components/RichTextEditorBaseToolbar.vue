@@ -17,13 +17,13 @@ import DividerIcon from "@knime/styles/img/icons/divider.svg";
 
 import getParagraphTextStyleChildTools, {
   type ParagraphTextStyleId,
-} from "./paragraphTextStyle";
+} from "../utils/paragraphTextStyle";
 
 import type {
   BaseExtensionsConfig,
   EditorTools,
   EditorToolItem,
-} from "./types";
+} from "../types";
 
 interface Props {
   editor: Editor;
@@ -178,7 +178,7 @@ const editorTools: EditorTools = [
     id: "strikethrough",
     icon: StrikeThroughIcon,
     name: "Strikethrough",
-    hotkey: ["Ctrl", "Shift", "S"],
+    hotkey: ["Ctrl", "Shift", "X"],
     active: () => props.editor.isActive("strike"),
     onClick: () => props.editor.chain().focus().toggleStrike().run(),
     secondary: true,

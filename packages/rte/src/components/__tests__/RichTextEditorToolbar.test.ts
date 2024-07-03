@@ -1,10 +1,9 @@
 import { describe, expect, vi, it } from "vitest";
 import BoldIcon from "@knime/styles/img/icons/bold.svg";
-import type { EditorToolItem } from "../types";
+import type { EditorToolItem } from "../../types";
 import { shallowMount } from "@vue/test-utils";
 import RichTextEditorToolbar from "../RichTextEditorToolbar.vue";
-import SubMenu from "../../../SubMenu/SubMenu.vue";
-import type { MenuItem } from "../../../base/MenuItem/MenuItems.vue";
+import { type MenuItem, SubMenu } from "@knime/base-components";
 
 describe("RichTextEditorToolbar.vue", () => {
   it("displays seconda", () => {

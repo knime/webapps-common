@@ -35,12 +35,6 @@
     "lodash-es": "4.17.21",
     "filesize": "10.0.6",
     "@floating-ui/vue": "1.0.2",
-    "@tiptap/extension-link": "2.0.3",
-    "@tiptap/extension-text-align": "2.0.3",
-    "@tiptap/extension-underline": "2.0.3",
-    "@tiptap/pm": "2.0.3",
-    "@tiptap/starter-kit": "2.0.3",
-    "@tiptap/vue-3": "2.0.3",
     "date-fns-tz": "2.0.0",
     "v-calendar": "3.0.0-alpha.8"
   },

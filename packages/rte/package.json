@@ -1,0 +1,46 @@
+{
+  "name": "@knime/rte",
+  "version": "0.1.0",
+  "description": "tbd.",
+  "homepage": "https://knime.github.io/webapps-common/",
+  "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE the file LICENSE)",
+  "author": "KNIME AG, Zurich, Switzerland",
+  "type": "module",
+  "files": [
+    "src"
+  ],
+  "main": "./src/index.ts",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@knime/base-components": "workspace:*",
+    "@knime/styles": "workspace:*",
+    "@tiptap/extension-link": "2.0.3",
+    "@tiptap/extension-text-align": "2.0.3",
+    "@tiptap/extension-underline": "2.0.3",
+    "@tiptap/pm": "2.0.3",
+    "@tiptap/starter-kit": "2.0.3",
+    "@tiptap/vue-3": "2.0.3"
+  },
+  "peerDependencies": {
+    "vue": "3.x"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.5",
+    "@vitest/coverage-v8": "1.2.1",
+    "@vue/test-utils": "2.4.4",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.12",
+    "vitest": "1.4.0",
+    "vue-tsc": "^2.0.19",
+    "vite-svg-loader": "4.0.0",
+    "vite-plugin-css-injected-by-js": "^3.5.1",
+    "vite-plugin-dts": "^3.9.1"
+  }
+}
