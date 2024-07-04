@@ -93,7 +93,7 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import url("../css/mixins.css");
+@import url("@knime/styles/css/mixins.css");
 
 .breadcrumb {
   color: var(--knime-dove-gray);
