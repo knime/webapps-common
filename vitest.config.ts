@@ -12,6 +12,7 @@ export default defineConfig({
         "install-subDependencies.js",
         "test-results/**",
         "dist/**",
+        "**/types/**/*.ts",
         "**/*.d.ts",
         "**/types.ts",
         "**/__tests__/**",
