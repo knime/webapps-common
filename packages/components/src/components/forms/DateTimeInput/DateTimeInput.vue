@@ -1,5 +1,4 @@
 <script>
-import "../variables.css";
 import {
   parse,
   isValid,
@@ -7,10 +6,8 @@ import {
   setMinutes,
   setSeconds,
   setMilliseconds,
-  format,
-  utcToZonedTime,
-  zonedTimeToUtc,
-} from "date-fns-tz";
+} from "date-fns";
+import { format, utcToZonedTime, zonedTimeToUtc } from "date-fns-tz";
 
 import { DatePicker } from "v-calendar";
 import {
@@ -19,9 +16,11 @@ import {
   isAfterMaxDate,
   getLocalTimeZone,
 } from "@knime/utils";
+
 import CalendarIcon from "@knime/styles/img/icons/calendar.svg";
-import TimePartInput from "./TimePartInput.vue";
+import TimePartInput from "../TimePartInput/TimePartInput.vue";
 import { resolveClientOnlyComponent } from "../../nuxtComponentResolver";
+import "../variables.css";
 
 /**
  * DateTime component shows input field with a button and a popover calendar to choose the date. Time is represented

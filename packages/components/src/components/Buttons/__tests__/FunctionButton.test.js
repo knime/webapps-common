@@ -82,6 +82,7 @@ describe("FunctionButton.vue", () => {
     });
     wrapper.vm.focus();
     expect(document.activeElement).toBe(wrapper.get("button").wrapperElement);
+    wrapper.unmount();
   });
 
   it("gets button component with getComponent", () => {
@@ -95,6 +96,7 @@ describe("FunctionButton.vue", () => {
     const comp = wrapper.vm.getComponent();
     expect(comp.tagName).toBe("BUTTON");
     expect(comp.innerHTML).toBe(slot);
+    wrapper.unmount();
   });
 
   it("renders disabled button", () => {

@@ -3,8 +3,8 @@ import * as Vue from "vue";
 import { expect, describe, beforeEach, it, vi, beforeAll } from "vitest";
 import { DOMWrapper, mount, VueWrapper } from "@vue/test-utils";
 
-import FileTextIcon from "@knime/styles/img/img/icons/file-text.svg";
-import FolderIcon from "@knime/styles/img/img/icons/folder.svg";
+import FileTextIcon from "@knime/styles/img/icons/file-text.svg";
+import FolderIcon from "@knime/styles/img/icons/folder.svg";
 
 import FileExplorer from "../FileExplorer.vue";
 import FileExplorerItemComp from "../FileExplorerItem.vue";

@@ -32,6 +32,7 @@
     "@knime/styles": "workspace:*",
     "@knime/utils": "workspace:*",
     "@vueuse/shared": "^10.10.0",
+    "date-fns": "2.30.0",
     "date-fns-tz": "2.0.0",
     "filesize": "10.0.6",
     "focus-trap-vue": "4.0.2",

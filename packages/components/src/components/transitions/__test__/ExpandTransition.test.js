@@ -12,22 +12,23 @@ describe("ExpandTransition.vue", () => {
         isExpanded: false,
       },
       slots: {
-        default: "<p>some test content <strong>here</strong></p>",
+        default:
+          "<p class='slotted'>some test content <strong>here</strong></p>",
       },
+      attachTo: document.body,
     });
+
+    expect(wrapper.find(".slotted").isVisible()).toBe(false);
 
     // open
     await wrapper.setProps({ isExpanded: true });
 
-    expect(enterSpy).toHaveBeenCalled();
-
-    // only check if height style property is set as height will be always 0 with vue test utils
-    expect(wrapper.find(".panel").attributes("style")).toContain("height");
+    expect(wrapper.find(".slotted").isVisible()).toBe(true);
 
     // close
     await wrapper.setProps({ isExpanded: false });
+    expect(wrapper.find(".slotted").isVisible()).toBe(false);
 
-    expect(leaveSpy).toHaveBeenCalled();
-    expect(wrapper.find(".panel").attributes("style")).toBe("height: 0px;");
+    wrapper.unmount();
   });
 });

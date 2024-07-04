@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { toRefs, ref, watch, nextTick, type Ref } from "vue";
 
-import InputField from "../forms/inputs/InputField.vue";
 import FolderIcon from "@knime/styles/img/icons/folder.svg";
 import FileTextIcon from "@knime/styles/img/icons/file-text.svg";
+import InputField from "../forms/InputField/InputField.vue";
 
 import { useNameValidator } from "./useNameValidator";
 

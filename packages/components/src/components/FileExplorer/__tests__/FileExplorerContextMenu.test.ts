@@ -116,6 +116,7 @@ describe("FileExplorerContextMenu.vue", () => {
     await nextTick();
 
     expect(wrapper.isVisible()).toBe(false);
+    wrapper.unmount();
   });
 
   it("should set the popper offset accounting distance to the window bottom", async () => {
