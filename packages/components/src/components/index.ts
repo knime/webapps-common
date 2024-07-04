@@ -3,6 +3,8 @@ import BaseButton from "./base/Button/BaseButton.vue";
 import BaseMenuItem from "./base/MenuItem/BaseMenuItem.vue";
 import BaseMenuItems from "./base/MenuItem/BaseMenuItems.vue";
 import BaseMenuItemText from "./base/MenuItem/BaseMenuItemText.vue";
+import Breadcrumb from "./Breadcrumb/Breadcrumb.vue";
+import Carousel from "./Carousel/Carousel.vue";
 import MenuItems from "./base/MenuItem/MenuItems.vue";
 import BaseMessage from "./base/Message/BaseMessage.vue";
 import FunctionButton from "./Buttons/FunctionButton.vue";
@@ -41,6 +43,8 @@ export * from "./forms";
 export {
   Button,
   BaseButton,
+  Breadcrumb,
+  Carousel,
   FunctionButton,
   Error,
   BaseMenuItem,
