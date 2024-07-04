@@ -215,6 +215,7 @@ describe("Multiselect.vue", () => {
         expect(document.activeElement).toBe(wrapper.vm.focusOptions[2]);
         expect(wrapper.vm.getNextElement(-1)).toBe(wrapper.vm.focusOptions[1]);
         expect(wrapper.vm.getNextElement(1)).toBe(wrapper.vm.focusOptions[0]);
+        wrapper.unmount();
       });
 
       it("focuses next element on key down", () => {
@@ -234,6 +235,7 @@ describe("Multiselect.vue", () => {
 
         expect(document.activeElement).toBe(wrapper.vm.focusOptions[1]);
         expect(onDownMock).toHaveBeenCalled();
+        wrapper.unmount();
       });
 
       it("focuses previous element on key up", () => {
@@ -253,6 +255,7 @@ describe("Multiselect.vue", () => {
 
         expect(document.activeElement).toBe(wrapper.vm.focusOptions[0]);
         expect(onUpMock).toHaveBeenCalled();
+        wrapper.unmount();
       });
 
       it("focuses first element on key down at list end", () => {
@@ -272,6 +275,7 @@ describe("Multiselect.vue", () => {
 
         expect(document.activeElement).toBe(wrapper.vm.focusOptions[0]);
         expect(onDownMock).toHaveBeenCalled();
+        wrapper.unmount();
       });
 
       it("focuses last element on key up at list start", () => {
@@ -291,6 +295,7 @@ describe("Multiselect.vue", () => {
 
         expect(document.activeElement).toBe(wrapper.vm.focusOptions[2]);
         expect(onUpMock).toHaveBeenCalled();
+        wrapper.unmount();
       });
 
       it("disables options if `disabled` is set", () => {
@@ -321,6 +326,7 @@ describe("Multiselect.vue", () => {
         expect(checkboxes[0].props("disabled")).toBe(true);
         expect(checkboxes[1].props("disabled")).toBe(false);
         expect(checkboxes[2].props("disabled")).toBe(true);
+        wrapper.unmount();
       });
 
       it("renders custom seperator", () => {

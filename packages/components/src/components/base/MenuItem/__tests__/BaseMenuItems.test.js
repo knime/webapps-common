@@ -3,6 +3,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { mount, RouterLinkStub } from "@vue/test-utils";
 
 import BaseMenuItems from "../BaseMenuItems.vue";
+import { afterEach } from "vitest";
 
 describe("BaseMenuItems.vue", () => {
   it("renders the items", () => {
@@ -462,6 +463,10 @@ describe("BaseMenuItems.vue", () => {
         },
         attachTo: document.body,
       });
+    });
+
+    afterEach(() => {
+      wrapper.unmount();
     });
 
     it("emits @item-focused initially", () => {

@@ -88,6 +88,9 @@ importers:
       '@vueuse/shared':
         specifier: ^10.10.0
         version: 10.10.0(vue@3.4.27(typescript@5.4.5))
+      date-fns:
+        specifier: 2.30.0
+        version: 2.30.0
       date-fns-tz:
         specifier: 2.0.0
         version: 2.0.0(date-fns@2.30.0)
@@ -365,6 +368,9 @@ importers:
       consola:
         specifier: 2.15.3
         version: 2.15.3
+      date-fns:
+        specifier: 2.30.0
+        version: 2.30.0
       date-fns-tz:
         specifier: 2.0.0
         version: 2.0.0(date-fns@2.30.0)

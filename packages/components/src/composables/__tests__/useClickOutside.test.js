@@ -25,6 +25,7 @@ describe("useClickOutside", () => {
     });
     clickOnElementWithId(wrapper, "#buttonOutside");
     expect(props.callback).toHaveBeenCalled();
+    wrapper.unmount();
   });
 
   it("does not call callback when clicking one of the targets", () => {
@@ -34,6 +35,7 @@ describe("useClickOutside", () => {
     });
     clickOnElementWithId(wrapper, "#buttonInside");
     expect(props.callback).not.toHaveBeenCalled();
+    wrapper.unmount();
   });
 
   it("does not call callback when clicking a subelement of one of the targets", () => {
@@ -43,6 +45,7 @@ describe("useClickOutside", () => {
     });
     clickOnElementWithId(wrapper, "#nestedButtonInside");
     expect(props.callback).not.toHaveBeenCalled();
+    wrapper.unmount();
   });
 
   describe("active", () => {
@@ -56,6 +59,7 @@ describe("useClickOutside", () => {
       clickOnElementWithId(wrapper, "#buttonOutside");
 
       expect(props.callback).not.toHaveBeenCalled();
+      wrapper.unmount();
     });
 
     it("reacts to change of active state", async () => {
@@ -73,6 +77,7 @@ describe("useClickOutside", () => {
 
       clickOnElementWithId(wrapper, "#buttonOutside");
       expect(props.callback).toHaveBeenCalled();
+      wrapper.unmount();
     });
   });
 });
