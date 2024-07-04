@@ -28,7 +28,7 @@ const color = computed(() => {
 </template>
 
 <style lang="postcss" scoped>
-@import url("../css/mixins.css");
+@import url("@knime/styles/css/mixins.css");
 
 .pill {
   --pill-height: 20px;
