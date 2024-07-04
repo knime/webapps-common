@@ -17,8 +17,7 @@
   },
   "scripts": {
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
-    "test:unit": "TZ='Europe/Berlin' vitest",
-    "coverage": "TZ='Europe/Berlin' vitest run --coverage"
+    "test:unit": "TZ='Europe/Berlin' vitest"
   },
   "dependencies": {
     "@knime/components": "workspace:*",
@@ -37,7 +36,7 @@
     "consola": "2.15.3",
     "jsdom": "^24.1.0",
     "typescript": "^5.4.5",
-    "vitest": "1.2.1",
+    "vite-svg-loader": "4.0.0",
     "vue-tsc": "^2.0.19"
   }
 }
