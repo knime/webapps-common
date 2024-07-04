@@ -6,7 +6,9 @@
   "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE the file LICENSE)",
   "author": "KNIME AG, Zurich, Switzerland",
   "type": "module",
-  "scripts": {},
+  "scripts": {
+    "test:unit": "TZ='Europe/Berlin' vitest"
+  },
   "dependencies": {
     "@knime/styles": "workspace:*",
     "consola": "2.15.3",

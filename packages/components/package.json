@@ -22,10 +22,8 @@
     }
   },
   "scripts": {
-    "build": "vite build",
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
-    "test:unit": "TZ='Europe/Berlin' vitest",
-    "coverage": "TZ='Europe/Berlin' vitest run --coverage"
+    "test:unit": "TZ='Europe/Berlin' vitest"
   },
   "dependencies": {
     "@floating-ui/vue": "1.0.2",
@@ -58,7 +56,6 @@
     "vite-plugin-css-injected-by-js": "^3.5.1",
     "vite-plugin-dts": "^3.9.1",
     "vite-svg-loader": "4.0.0",
-    "vitest": "1.4.0",
     "vue-tsc": "^2.0.19"
   }
 }
