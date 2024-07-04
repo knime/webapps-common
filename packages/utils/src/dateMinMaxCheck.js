@@ -1,4 +1,4 @@
-import { isAfter, isBefore } from "date-fns-tz";
+import { isAfter, isBefore } from "date-fns";
 import updateTime from "./updateTime";
 import updateDate from "./updateDate";
 

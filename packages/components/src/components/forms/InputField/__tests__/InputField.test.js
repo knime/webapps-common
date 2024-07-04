@@ -187,6 +187,7 @@ describe("InputField.vue", () => {
     });
     wrapper.vm.focus();
     expect(document.activeElement).toEqual(wrapper.find("input").element);
+    wrapper.unmount();
   });
 
   it("emits focus event", () => {
