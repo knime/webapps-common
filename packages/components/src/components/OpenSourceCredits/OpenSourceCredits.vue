@@ -1,6 +1,6 @@
 <script>
 // @ts-ignore
-import packages from "../../../buildtools/opensourcecredits/used-packages.json"; // TODO confirm this path
+import packages from "../../../../../buildtools/opensourcecredits/used-packages.json"; // TODO confirm this path
 import Description from "../Description/Description.vue";
 import ArrowNextIcon from "@knime/styles/img/icons/arrow-next.svg";
 
