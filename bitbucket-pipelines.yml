@@ -25,10 +25,11 @@ definitions:
           - corepack prepare pnpm@latest-9 --activate
           - pnpm install
           - pnpm run ci:lint-format
-          - pnpm run type-check
-          # - pnpm run coverage # TODO not available yet
+          # - pnpm run type-check
+          - pnpm run coverage
           - pnpm run build:packages
-          # - pnpm run audit
+          - pnpm run build:demo
+          - pnpm run audit
           - pipe: sonarsource/sonarcloud-scan:2.0.0
             variables:
               SONAR_SCANNER_OPTS: -Xmx4G
