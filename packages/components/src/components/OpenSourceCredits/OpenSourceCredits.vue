@@ -1,6 +1,4 @@
 <script>
-// @ts-ignore
-import packages from "../../../../../buildtools/opensourcecredits/used-packages.json"; // TODO confirm this path
 import Description from "../Description/Description.vue";
 import ArrowNextIcon from "@knime/styles/img/icons/arrow-next.svg";
 
@@ -11,8 +9,9 @@ import ArrowNextIcon from "@knime/styles/img/icons/arrow-next.svg";
  * where the package is maintained. If the project uses additional npm packages, they
  * can be provided as a prop, where they will be de-duplicated before being displayed.
  *
- * It requires an additional build step to be run to generate the used-packages.json
- * file. For additional information @see file:webapps-common/buildtools.
+ * It requires an additional build step to be run to generate the JSON file.
+ * It is recommended to use the @knime/licenses 'license-check' tool in a postinstall step so that the file is
+ * also present during development time.
  */
 export default {
   components: {
@@ -21,12 +20,23 @@ export default {
   },
   props: {
     /**
+     * Packages provided for display. They will be sorted and de-duplicated before being displayed.
+     *
+     * The packages should be the correct format when provided as a prop. For information
+     * @see file:@knime/licenses/config/collect-packages-format.json
+     *
+     */
+    packages: {
+      type: Array,
+      default: () => [],
+    },
+    /**
      * Additional packages may be provided for display. The packages (provided in an array)
-     * will be combined with the packages imported from the `packages` import. They will
+     * will be combined with the packages imported from the `packages` prop. They will
      * be sorted and de-duplicated before being displayed.
      *
      * The packages should be the correct format when provided as a prop. For information
-     * @see file:webapps-common/buildtools/opensourcecredits/collect-packages-format.json
+     * @see file:@knime/licenses/config/collect-packages-format.json
      *
      * Additionally, packages can have a `repository` property with a URL to their source.
      */
@@ -41,10 +51,10 @@ export default {
     };
   },
   computed: {
-    packages() {
+    displayPackages() {
       let allUniquePackages = [];
 
-      packages.concat(this.additionalPackages).forEach((pkg) => {
+      this.packages.concat(this.additionalPackages).forEach((pkg) => {
         const alreadyExists = allUniquePackages.some(
           (firstPkg) =>
             firstPkg.name.toLowerCase() === pkg.name.toLowerCase() &&
@@ -87,7 +97,7 @@ export default {
             and acknowledge their work. Here we list all components which may be contained in portions in this web
             application. Please refer to the individual component source for detailed information."
           />
-          <dl v-for="(pkg, index) of packages" :key="index">
+          <dl v-for="(pkg, index) of displayPackages" :key="index">
             <dt>
               <button aria-expanded="false" tabindex="0" @click="toggleDetails">
                 <ArrowNextIcon />

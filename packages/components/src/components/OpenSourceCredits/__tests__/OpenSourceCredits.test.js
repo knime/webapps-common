@@ -1,37 +1,36 @@
-import { describe, it, expect, beforeAll, vi } from "vitest";
+import { describe, it, expect, beforeAll } from "vitest";
 import { mount } from "@vue/test-utils";
 
 import OpenSourceCredits from "../OpenSourceCredits.vue";
 import Description from "../../Description/Description.vue";
 
-vi.mock(
-  "../../../../../buildtools/opensourcecredits/used-packages.json",
-  () => ({
-    default: [
-      {
-        name: "a-package",
-        repository: "/",
-        licenseText: "I am a license",
-      },
-      {
-        name: "a-package",
-        repository: "/",
-        licenseText: "I am a license",
-      },
-      {
-        name: "b-package",
-        repository: "/",
-        licenseText: "I am a license",
-      },
-    ],
-  }),
-);
+const samplePackages = [
+  {
+    name: "a-package",
+    repository: "/",
+    licenseText: "I am a license",
+  },
+  {
+    name: "a-package",
+    repository: "/",
+    licenseText: "I am a license",
+  },
+  {
+    name: "b-package",
+    repository: "/",
+    licenseText: "I am a license",
+  },
+];
 
 describe("OpenSourceCredits.vue", () => {
   let wrapper;
 
   beforeAll(() => {
-    wrapper = mount(OpenSourceCredits);
+    wrapper = mount(OpenSourceCredits, {
+      props: {
+        packages: samplePackages,
+      },
+    });
   });
 
   it("renders", () => {
