@@ -29,7 +29,10 @@ import Messages from "./Messages/Messages.vue";
 import MessageLink from "./Messages/MessageLink.vue";
 import MessageTitle from "./Messages/MessageTitle.vue";
 import Modal from "./Modal/Modal.vue";
+import NodeFeatureList from "./node/NodeFeatureList.vue";
+import NodePreview from "./node/NodePreview.vue";
 import OpenSourceCredits from "./OpenSourceCredits/OpenSourceCredits.vue";
+import PortIcon from "./node/PortIcon.vue";
 import SideDrawer from "./SideDrawer/SideDrawer.vue";
 import StyledListItem from "./StyleListItem/StyledListItem.vue";
 import SubMenu from "./SubMenu/SubMenu.vue";
@@ -72,7 +75,10 @@ export {
   MessageLink,
   MessageTitle,
   Modal,
+  NodeFeatureList,
+  NodePreview,
   OpenSourceCredits,
+  PortIcon,
   SideDrawer,
   StyledListItem,
   SubMenu,
