@@ -63,6 +63,9 @@ importers:
       '@knime/components':
         specifier: workspace:*
         version: link:../packages/components
+      '@knime/licenses':
+        specifier: workspace:*
+        version: link:../packages/licenses
       '@knime/rte':
         specifier: workspace:*
         version: link:../packages/rte
