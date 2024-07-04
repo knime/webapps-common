@@ -5,7 +5,7 @@ This project contains Vue components & composables, that can be used for the fro
 ## Demo
 
 A demo of all contained UI components, icons, CSS colors etc. can be found here:
-https://knime.github.io/webapps-common/?
+https://knime.github.io/webapps-common/
 
 ## Installation
 
@@ -42,7 +42,7 @@ import { useClickOutside } from "@knime/components";
 Additional requirements when used with Nuxt:
 
 - Nuxt-native `ClientOnly` and `NuxtLink` components need to be registered globally,
-  otherwise they can't get resolved in [`ui/util/nuxtComponentResolver.js`](ui/util/nuxtComponentResolver.js)
+  otherwise they can't get resolved in [`src/components/nuxtComponentResolver.ts`](src/components/nuxtComponentResolver.ts)
 
 ### Stacking order and z-index
 
