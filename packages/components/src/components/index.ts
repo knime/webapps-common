@@ -10,6 +10,7 @@ import Error from "./Error/Error.vue";
 import Collapser from "./Collapser/Collapser.vue";
 import Description from "./Description/Description.vue";
 import DonutChart from "./DonutChart/DonutChart.vue";
+import FileExplorer from "./FileExplorer/FileExplorer.vue";
 import FileLink from "./FileLink/FileLink.vue";
 import FileSelector from "./FileSelector/FileSelector.vue";
 import IdleReadyButton from "./IdleReadyButton/IdleReadyButton.vue";
@@ -18,6 +19,7 @@ import LinkList from "./LinkList/LinkList.vue";
 import LoadingIcon from "./LoadingIcon/LoadingIcon.vue";
 import LocalDateTime from "./LocalDateTime/LocalDateTime.vue";
 import ExpandTransition from "./transitions/ExpandTransition.vue";
+import Pill from "./Pill/Pill.vue";
 import PlusButton from "./Buttons/PlusButton.vue";
 import SplitButton from "./Buttons/SplitButton.vue";
 import Message from "./Messages/Message.vue";
@@ -49,6 +51,7 @@ export {
   Collapser,
   Description,
   DonutChart,
+  FileExplorer,
   FileLink,
   FileSelector,
   IdleReadyButton,
@@ -58,6 +61,7 @@ export {
   LocalDateTime,
   ExpandTransition,
   PlusButton,
+  Pill,
   SplitButton,
   Message,
   Messages,
