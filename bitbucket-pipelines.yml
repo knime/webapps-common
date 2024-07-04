@@ -46,9 +46,8 @@ definitions:
           - corepack enable
           - corepack prepare pnpm@latest-9 --activate
           - pnpm install
-          - pnpm run build:packages
-          # - pnpm run publish
-          # - git push --follow-tags
+          - pnpm run publish
+          - git push --follow-tags
     - step: &deploy-demo
         name: Deploy demo to GitHub Pages
         caches:
