@@ -11,14 +11,16 @@
     "generate-css": "node ./colors/generateCSS.mjs"
   },
   "dependencies": {
-    "@fontsource/roboto": "5.0.13",
-    "@fontsource/roboto-mono": "5.0.18",
     "modern-normalize": "2.0.0",
+    "postcss": "8.4.38",
     "postcss-import": "16.1.0",
     "postcss-mixins": "10.0.1",
     "postcss-preset-env": "9.5.14",
-    "postcss-url": "10.1.3",
-    "postcss": "8.4.38"
+    "postcss-url": "10.1.3"
+  },
+  "peerDependencies": {
+    "@fontsource/roboto": "4.5.8",
+    "@fontsource/roboto-mono": "4.5.10"
   },
   "main": "index.js",
   "files": [
