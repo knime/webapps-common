@@ -6,8 +6,7 @@
   "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE the file LICENSE)",
   "author": "KNIME AG, Zurich, Switzerland",
   "scripts": {
-    "opensourcecredits": "node src/collect-packages",
-    "package": "node packageversion/package"
+    "opensourcecredits": "node src/collect-packages"
   },
   "dependencies": {
     "commander": "12.1.0",
