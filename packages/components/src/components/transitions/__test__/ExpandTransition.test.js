@@ -1,12 +1,9 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import { mount } from "@vue/test-utils";
 import ExpandTransition from "../ExpandTransition.vue";
 
 describe("ExpandTransition.vue", () => {
   it("calls transition handlers and expands", async () => {
-    const enterSpy = vi.spyOn(ExpandTransition.methods, "onEnter");
-    const leaveSpy = vi.spyOn(ExpandTransition.methods, "onLeave");
-
     const wrapper = mount(ExpandTransition, {
       propsData: {
         isExpanded: false,
