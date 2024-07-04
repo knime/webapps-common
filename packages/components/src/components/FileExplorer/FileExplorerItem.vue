@@ -171,7 +171,7 @@ const onRenameSubmit = (keyupEvent: KeyboardEvent, isClickAway = false) => {
 </template>
 
 <style lang="postcss" scoped>
-@import url("../../css/mixins.css");
+@import url("@knime/styles/css/mixins.css");
 
 .file-explorer-item {
   & .item-content {
