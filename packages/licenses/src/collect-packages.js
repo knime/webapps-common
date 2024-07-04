@@ -1,35 +1,50 @@
 /* eslint-disable no-process-env */
-const config = require("../config/opensourcecredits.config");
-const licensechecker = require("license-checker");
+/* eslint-disable no-console */
 const fs = require("fs");
 const path = require("path");
-const outFile = path.resolve(__dirname, "used-packages.json");
 const semver = require("semver");
 const pkgUp = require("pkg-up");
+const chalk = require("chalk");
+const licensechecker = require("license-checker");
+const { Command } = require("commander");
+const read = require("./read-packages");
+const config = require("../config/license.config");
+
+const program = new Command();
+const basePath = process.cwd();
+
+program
+  .name("KNIME License Checker and Open Source Credits collector")
+  .description(
+    "CLI to check for allowed licenses and collect open source license attributions",
+  )
+  .version("0.1.0");
+
+program
+  .option(
+    "-c, --check-only",
+    "Check for valid licenses and report not allowed ones",
+  )
+  .option("-s, --summary", "Print a summary of all used licenses")
+  .option(
+    "-o, --output <file>",
+    "Location of the output file to be created, relative to the calling project root",
+    path.resolve(basePath, "used-packages.json"),
+  )
+  // .option("-n, --no-overwrite", "skip generation of output file", true)
+  .parse();
+
+const programOptions = program.opts();
+const outFile = path.resolve(basePath, programOptions.output);
+
 const parentPkgPath =
   // find the package.json file path of the webapps-common parent project
-  pkgUp.sync({ cwd: "../.." }) ||
+  pkgUp.sync({ cwd: basePath }) ||
   // if used in development, there will be no parent project, so fallback to the root dir
   pkgUp.sync({ cwd: ".." });
 const parentRoot = path.resolve(parentPkgPath, "..");
 
-const skip = process.argv.includes("--no-overwrite") && fs.existsSync(outFile);
-
-const excludeScopedPackages = (allPackages) => {
-  const formatDependencyList = (packages, orgPrefix) =>
-    Object.entries(packages)
-      .filter(([name]) => name.startsWith(orgPrefix))
-      .map(([name, version]) => `${name}@${semver.coerce(version)}`, []);
-
-  const excludePackagesByScope = (orgPrefix) => [
-    ...formatDependencyList(allPackages.dependencies, orgPrefix),
-    ...formatDependencyList(allPackages.devDependencies, orgPrefix),
-  ];
-
-  return excludePackagesByScope("@knime").join(";");
-};
-
-if (!skip) {
+const checkLicenses = (knimePackages) => {
   // exclude parent package
   const parentPkg = require(parentPkgPath);
 
@@ -45,29 +60,33 @@ if (!skip) {
   }).version;
 
   config.excludePackages.push(`${parentPkg.name}@${parentPkgVersion}`);
-
-  config.excludePackages.push(excludeScopedPackages(parentPkg));
-
-  // add packages form WAC itself in non dev mode, this fixes problems when two different versions are used
-  const webappsCommonPkgPath = pkgUp.sync({ cwd: ".." });
-  if (parentPkgPath !== webappsCommonPkgPath) {
-    config.excludePackages.push(
-      excludeScopedPackages(require(webappsCommonPkgPath)),
-    );
-  }
+  config.excludePackages.push(...knimePackages);
 
   // collect all used production packages and their licenses
   const options = {
     start: parentRoot,
-    production: true,
+    production: false,
     onlyAllow: config.onlyAllow.join(";"),
     excludePackages: config.excludePackages.join(";"),
-    customPath: path.resolve(__dirname, "collect-packages-format.json"),
+    customPath: path.resolve(
+      __dirname,
+      "../config/collect-packages-format.json",
+    ),
   };
 
   licensechecker.init(options, (err, collectedPackages) => {
     if (err) {
       throw err;
+    }
+    if (programOptions.summary) {
+      console.log("Summary of used licenses:");
+      console.log(licensechecker.asSummary(collectedPackages));
+    }
+    if (programOptions.checkOnly) {
+      console.log(
+        chalk.green("License checker succeeded. All licenses allowed."),
+      );
+      return;
     }
     // convert collected packages to array and merge with manually added packages
     let allPackages = Object.values(collectedPackages).concat(
@@ -107,4 +126,8 @@ if (!skip) {
       }
     });
   });
-}
+};
+
+read(parentRoot, "@knime", (knimePackages) => {
+  checkLicenses(knimePackages);
+});

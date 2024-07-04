@@ -94,3 +94,4 @@ buildtools/opensourcecredits/used-packages.json
 # IDE
 .history/
 /.idea/**
+used-packages.json
