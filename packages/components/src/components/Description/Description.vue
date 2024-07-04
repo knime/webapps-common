@@ -35,7 +35,7 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import url("./forms/RichTextEditor/styles.css");
+@import url("@knime/styles/css/rich-text-editor.css");
 
 .description {
   --rich-text-editor-font-size: var(--description-font-size, 18px);

@@ -255,7 +255,7 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length);
 </template>
 
 <style lang="postcss" scoped>
-@import url("./styles.css");
+@import url("@knime/styles/css/rich-text-editor.css");
 
 .editor-wrapper {
   --toolbar-height: 48px;
