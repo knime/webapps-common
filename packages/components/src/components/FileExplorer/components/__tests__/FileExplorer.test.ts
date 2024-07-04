@@ -9,8 +9,11 @@ import FolderIcon from "@knime/styles/img/icons/folder.svg";
 import FileExplorer from "../FileExplorer.vue";
 import FileExplorerItemComp from "../FileExplorerItem.vue";
 import FileExplorerContextMenu from "../FileExplorerContextMenu.vue";
-import type { FileExplorerItem } from "../types";
-import { MockIntersectionObserver, createSlottedChildComponent } from "./utils";
+import type { FileExplorerItem } from "../../types";
+import {
+  MockIntersectionObserver,
+  createSlottedChildComponent,
+} from "../../composables/useTestUtils";
 
 vi.mock("gsap", () => ({
   gsap: {

@@ -12,7 +12,6 @@ import Error from "./Error/Error.vue";
 import Collapser from "./Collapser/Collapser.vue";
 import Description from "./Description/Description.vue";
 import DonutChart from "./DonutChart/DonutChart.vue";
-import FileExplorer from "./FileExplorer/FileExplorer.vue";
 import FileLink from "./FileLink/FileLink.vue";
 import FileSelector from "./FileSelector/FileSelector.vue";
 import IdleReadyButton from "./IdleReadyButton/IdleReadyButton.vue";
@@ -43,6 +42,8 @@ import Tooltip from "./Tooltip/Tooltip.vue";
 
 export * from "./Toast";
 export * from "./forms";
+export * from "./FileExplorer";
+
 export {
   Button,
   BaseButton,
@@ -58,7 +59,6 @@ export {
   Collapser,
   Description,
   DonutChart,
-  FileExplorer,
   FileLink,
   FileSelector,
   IdleReadyButton,

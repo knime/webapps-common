@@ -3,12 +3,12 @@ import { toRefs, ref, watch, nextTick, type Ref } from "vue";
 
 import FolderIcon from "@knime/styles/img/icons/folder.svg";
 import FileTextIcon from "@knime/styles/img/icons/file-text.svg";
-import InputField from "../forms/InputField/InputField.vue";
+import InputField from "../../forms/InputField/InputField.vue";
 
-import { useNameValidator } from "./useNameValidator";
+import { useNameValidator } from "../composables/useNameValidator";
 
 import FileExplorerItemBase from "./FileExplorerItemBase.vue";
-import type { FileExplorerItem, ItemIconRenderer } from "./types";
+import type { FileExplorerItem, ItemIconRenderer } from "../types";
 
 import { OnClickOutside } from "@vueuse/components";
 

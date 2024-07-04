@@ -2,11 +2,11 @@ import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { mount } from "@vue/test-utils";
 import { nextTick } from "vue";
 
-import MenuItems from "../../base/MenuItem/MenuItems.vue";
+import MenuItems from "../../../base/MenuItem/MenuItems.vue";
 
-import FileExplorerContextMenu from "../FileExplorerContextMenu.vue";
-import type { FileExplorerItem } from "../types";
-import { MockIntersectionObserver } from "./utils";
+import FileExplorerContextMenu from "../../components/FileExplorerContextMenu.vue";
+import type { FileExplorerItem } from "../../types";
+import { MockIntersectionObserver } from "../../composables/useTestUtils";
 import { useFloating } from "@floating-ui/vue";
 
 vi.mock("@floating-ui/vue", () => ({
