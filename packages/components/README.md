@@ -9,24 +9,32 @@ https://knime.github.io/webapps-common/?
 
 ## Installation
 
-To install the `@knime/rte` package, you can use npm:
+To install the `@knime/components` package, you can use npm:
 
 ```bash
-npm install @knime/rte
+npm install @knime/components
 ```
 
 ## Usage
 
-To use the Rich Text Editor in your project, you can import it as follows:
+To use it in your project, you can import it as follows:
+
+#### Components
 
 ```javascript
-import { RichTextEditor } from "@knime/rte";
+import { DonutChart } from "@knime/components";
 ```
 
 or import types as follow:
 
 ```typescript
-import type { EditorTools } from "@knime/rte";
+import type { MenuItem } from "@knime/components";
+```
+
+#### Composables
+
+```javascript
+import { useClickOutside } from "@knime/components";
 ```
 
 ### Nuxt
