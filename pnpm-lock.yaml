@@ -27,6 +27,9 @@ importers:
       '@tsconfig/node20':
         specifier: ^20.1.4
         version: 20.1.4
+      '@vitest/coverage-v8':
+        specifier: 1.2.1
+        version: 1.2.1(vitest@1.2.1(@types/node@20.14.9)(jsdom@24.1.0)(sugarss@4.0.1(postcss@8.4.38)))
       '@vue/tsconfig':
         specifier: ^0.5.1
         version: 0.5.1
@@ -5509,6 +5512,25 @@ snapshots:
     dependencies:
       vite: 5.2.12(@types/node@20.14.9)(sugarss@4.0.1(postcss@8.4.38))
       vue: 3.4.27(typescript@5.4.5)
+
+  '@vitest/coverage-v8@1.2.1(vitest@1.2.1(@types/node@20.14.9)(jsdom@24.1.0)(sugarss@4.0.1(postcss@8.4.38)))':
+    dependencies:
+      '@ampproject/remapping': 2.3.0
+      '@bcoe/v8-coverage': 0.2.3
+      debug: 4.3.4
+      istanbul-lib-coverage: 3.2.2
+      istanbul-lib-report: 3.0.1
+      istanbul-lib-source-maps: 4.0.1
+      istanbul-reports: 3.1.7
+      magic-string: 0.30.10
+      magicast: 0.3.4
+      picocolors: 1.0.1
+      std-env: 3.7.0
+      test-exclude: 6.0.0
+      v8-to-istanbul: 9.2.0
+      vitest: 1.2.1(@types/node@20.14.9)(jsdom@24.1.0)(sugarss@4.0.1(postcss@8.4.38))
+    transitivePeerDependencies:
+      - supports-color
 
   '@vitest/coverage-v8@1.2.1(vitest@1.4.0(@types/node@20.14.9)(jsdom@24.1.0)(sugarss@4.0.1(postcss@8.4.38)))':
     dependencies:
