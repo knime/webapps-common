@@ -36,8 +36,8 @@ definitions:
           - pipe: sonarsource/sonarcloud-quality-gate:0.1.6
         artifacts:
           - demo/dist/**
-    - step: &deploy-npm
-        name: Deploy packages to npm
+    - step: &publish-npm
+        name: Publish packages to npm
         caches:
           - pnpm
         trigger: manual
@@ -54,13 +54,13 @@ definitions:
           # TODO do we need to re-build the demo? Do we get it from the artifacts?
           # https://support.atlassian.com/bitbucket-cloud/docs/push-back-to-your-repository/#Configuring-an-alternate-Git-client
           - git config --global http.${BITBUCKET_GIT_HTTP_ORIGIN}.proxy http://localhost:29418/
-          - pnpm run deploy-demo # TODO not available yet
+          - pnpm run --filter demo deploy
 
 pipelines:
   pull-requests:
     "**":
       - step: *lint-test-build
-      - step: *deploy-npm
+      - step: *publish-npm
   branches:
     master:
       - step: *lint-test-build
