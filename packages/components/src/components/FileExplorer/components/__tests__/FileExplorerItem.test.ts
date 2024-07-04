@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { mount } from "@vue/test-utils";
 
-import InputField from "../../forms/InputField/InputField.vue";
+import InputField from "../../../forms/InputField/InputField.vue";
 
 import FileExplorerItemComponent from "../FileExplorerItem.vue";
 import FileExplorerItemBase from "../FileExplorerItemBase.vue";
-import type { FileExplorerItem } from "../types";
+import type { FileExplorerItem } from "../../types";
 
 describe("FileExplorerItem.vue", () => {
   const defaultProps = {
