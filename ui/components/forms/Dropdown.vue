@@ -102,10 +102,6 @@ export default {
       type: Boolean,
       default: false,
     },
-    useGroupLabels: {
-      type: Boolean,
-      default: false,
-    },
   },
   emits: ["update:modelValue"],
   data() {
@@ -391,10 +387,7 @@ export default {
           v-for="(group, groupIndex) in orderedGroupedValues"
           :key="groupIndex"
         >
-          <span v-if="useGroupLabels" class="group-label">{{
-            group.label
-          }}</span>
-          <span v-else class="group-divider" />
+          <span class="group-divider" />
           <li
             v-for="item in group.items"
             :id="generateId('option', item.id)"
@@ -407,7 +400,6 @@ export default {
               noselect: true,
               empty: item.text.trim() === '',
               'has-option-template': hasOptionTemplate,
-              'has-group-label': useGroupLabels,
             }"
             :aria-selected="isCurrentValue(item.id)"
             @click="onOptionClick(item.id)"
@@ -619,10 +611,6 @@ export default {
 
     &.empty {
       white-space: pre-wrap;
-    }
-
-    &.has-group-label {
-      padding-left: 15px;
     }
   }
 

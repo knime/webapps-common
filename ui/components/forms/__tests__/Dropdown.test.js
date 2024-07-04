@@ -474,16 +474,6 @@ describe("Dropdown.vue", () => {
       });
 
       expect(wrapper.findAll(".group-divider").length).toBe(3);
-      expect(wrapper.findAll(".group-label").length).toBe(0);
-    });
-
-    it("render group labels", () => {
-      const { wrapper } = doMount({
-        possibleValues: POSSIBLE_VALUES_WITH_GROUPS_MOCK,
-        useGroupLabels: true,
-      });
-      expect(wrapper.findAll(".group-label").length).toBe(3);
-      expect(wrapper.findAll(".group-divider").length).toBe(0);
     });
   });
 });

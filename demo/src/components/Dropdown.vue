@@ -519,66 +519,6 @@ export default {
             ]"
           />
         </div>
-        <div class="grid-item-5">
-          <Dropdown
-            v-model="withGroupSelected"
-            placeholder="With group labels"
-            aria-label="Dropdown with groups"
-            :use-group-labels="true"
-            :possible-values="[
-              {
-                id: 'foo',
-                text: 'Foo',
-                group: 'Group a',
-              },
-              {
-                id: 'bar',
-                text: 'Bar',
-                group: 'Group a',
-              },
-              {
-                id: 'bar2',
-                text: 'Bar 2',
-                group: 'Group a',
-              },
-              {
-                id: 'bar3',
-                text: 'Bar 3',
-                group: 'Group b',
-              },
-              {
-                id: 'bar4',
-                text: 'Bar 4',
-                group: 'Group b',
-              },
-              {
-                id: 'bar5',
-                text: 'Bar 5',
-                group: 'Group c',
-              },
-              {
-                id: 'bar6',
-                text: 'Bar 6',
-                group: 'Group c',
-              },
-              {
-                id: 'bar7',
-                text: 'Bar 8',
-                group: 'Group c',
-              },
-              {
-                id: 'bar9',
-                text: 'Bar 9',
-                group: 'Group c',
-              },
-              {
-                id: 'bar10',
-                text: 'Bar 10',
-                group: 'Group c',
-              },
-            ]"
-          />
-        </div>
         <div class="grid-item-2">selected id: {{ withGroupSelected }}</div>
       </div>
       <div class="grid-container">
