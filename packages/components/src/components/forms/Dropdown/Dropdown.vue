@@ -102,10 +102,6 @@ export default {
       type: Boolean,
       default: false,
     },
-    useGroupLabels: {
-      type: Boolean,
-      default: false,
-    },
   },
   emits: ["update:modelValue"],
   data() {
@@ -615,10 +611,6 @@ export default {
 
     &.empty {
       white-space: pre-wrap;
-    }
-
-    &.has-group-label {
-      padding-left: 15px;
     }
   }
 
