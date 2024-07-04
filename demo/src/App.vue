@@ -157,9 +157,9 @@ const demoComponents = {
     NodeFeatureList: defineAsyncComponent(
       () => import("./components/NodeFeatureList.vue"),
     ),
-    // OpenSourceCredits: defineAsyncComponent(
-    //   () => import("./components/OpenSourceCredits.vue"),
-    // ),
+    OpenSourceCredits: defineAsyncComponent(
+      () => import("./components/OpenSourceCredits.vue"),
+    ),
   },
   npm: {
     "KNIME UI Table": {

@@ -1,8 +1,9 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
-import OpenSourceCredits from "webapps-common/ui/components/OpenSourceCredits.vue";
+import { OpenSourceCredits } from "@knime/components";
 // import code from "webapps-common/ui/components/OpenSourceCredits.vue?raw";
 const code = "";
+import usedPackages from "../../licenses/used-packages.json";
 
 export default {
   components: {
@@ -13,6 +14,7 @@ export default {
     return {
       codeExample: `<OpenSourceCredits
   class="license-content"
+  :packages="usedPackages"
   :additional-packages="additionalPackages"
 >
   <template v-slot:header="{ title }">
@@ -30,6 +32,7 @@ export default {
           licenseText: "I am a license",
         },
       ],
+      usedPackages,
     };
   },
   computed: {
@@ -61,6 +64,7 @@ export default {
       <div class="grid-container page-content">
         <OpenSourceCredits
           class="license-content"
+          :packages="usedPackages"
           :additional-packages="additionalPackages"
         >
           <template #header="{ title }">
