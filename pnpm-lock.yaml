@@ -54,6 +54,12 @@ importers:
 
   demo:
     dependencies:
+      '@fontsource/roboto':
+        specifier: ^5.0.13
+        version: 5.0.13
+      '@fontsource/roboto-mono':
+        specifier: ^5.0.18
+        version: 5.0.18
       '@knime/components':
         specifier: workspace:*
         version: link:../packages/components
@@ -1083,8 +1089,14 @@ packages:
   '@fontsource/roboto-mono@4.5.10':
     resolution: {integrity: sha512-KrJdmkqz6DszT2wV/bbhXef4r0hV3B0vw2mAqei8A2kRnvq+gcJLmmIeQ94vu9VEXrUQzos5M9lH1TAAXpRphw==}
 
+  '@fontsource/roboto-mono@5.0.18':
+    resolution: {integrity: sha512-hKuwk/cy3i6fWPzazT5xjgWq4YNqZWDHVbJh2Wwj3KYvWGi2v3ToBw/4LKQ+ggEkPLcIG6VU8GpCT3Xtf+mbbA==}
+
   '@fontsource/roboto@4.5.8':
     resolution: {integrity: sha512-CnD7zLItIzt86q4Sj3kZUiLcBk1dSk81qcqgMGaZe7SQ1P8hFNxhMl5AZthK1zrDM5m74VVhaOpuMGIL4gagaA==}
+
+  '@fontsource/roboto@5.0.13':
+    resolution: {integrity: sha512-j61DHjsdUCKMXSdNLTOxcG701FWnF0jcqNNQi2iPCDxU8seN/sMxeh62dC++UiagCWq9ghTypX+Pcy7kX+QOeQ==}
 
   '@humanwhocodes/config-array@0.11.14':
     resolution: {integrity: sha512-3T8LkOmg45BV5FICb15QQMsyUSWrQ8AygVfC7ZG32zOalnqrilm018ZVCw0eapXux8FtA33q8PSRSstjee3jSg==}
@@ -5434,7 +5446,11 @@ snapshots:
 
   '@fontsource/roboto-mono@4.5.10': {}
 
+  '@fontsource/roboto-mono@5.0.18': {}
+
   '@fontsource/roboto@4.5.8': {}
+
+  '@fontsource/roboto@5.0.13': {}
 
   '@humanwhocodes/config-array@0.11.14':
     dependencies:

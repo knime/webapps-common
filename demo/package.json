@@ -17,6 +17,8 @@
     "deploy": "gh-pages -d dist -m 'Deploy to GitHub pages' --dotfiles"
   },
   "dependencies": {
+    "@fontsource/roboto": "^5.0.13",
+    "@fontsource/roboto-mono": "^5.0.18",
     "@knime/components": "workspace:*",
     "@knime/rte": "workspace:*",
     "@knime/styles": "workspace:*",
