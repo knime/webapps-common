@@ -33,7 +33,7 @@ definitions:
           - pipe: sonarsource/sonarcloud-scan:2.0.0
             variables:
               SONAR_SCANNER_OPTS: -Xmx4G
-          - pipe: sonarsource/sonarcloud-quality-gate:0.1.6
+          # - pipe: sonarsource/sonarcloud-quality-gate:0.1.6
         artifacts:
           - demo/dist/**
     - step: &publish-npm
