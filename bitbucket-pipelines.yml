@@ -43,6 +43,9 @@ definitions:
         trigger: manual
         deployment: production
         script:
+          - corepack enable
+          - corepack prepare pnpm@latest-9 --activate
+          - pnpm install
           - pnpm run build:packages
           # - pnpm run publish
           # - git push --follow-tags
@@ -52,6 +55,9 @@ definitions:
           - pnpm
         deployment: production
         script:
+          - corepack enable
+          - corepack prepare pnpm@latest-9 --activate
+          - pnpm install
           # https://support.atlassian.com/bitbucket-cloud/docs/push-back-to-your-repository/#Configuring-an-alternate-Git-client
           - git config --global http.${BITBUCKET_GIT_HTTP_ORIGIN}.proxy http://localhost:29418/
           - pnpm run --filter demo deploy
