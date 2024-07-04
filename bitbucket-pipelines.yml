@@ -43,15 +43,15 @@ definitions:
         trigger: manual
         deployment: production
         script:
-          - pnpm run publish
-          - git push --follow-tags
+          - pnpm run build:packages
+          # - pnpm run publish
+          # - git push --follow-tags
     - step: &deploy-demo
         name: Deploy demo to GitHub Pages
         caches:
           - pnpm
         deployment: production
         script:
-          # TODO do we need to re-build the demo? Do we get it from the artifacts?
           # https://support.atlassian.com/bitbucket-cloud/docs/push-back-to-your-repository/#Configuring-an-alternate-Git-client
           - git config --global http.${BITBUCKET_GIT_HTTP_ORIGIN}.proxy http://localhost:29418/
           - pnpm run --filter demo deploy
