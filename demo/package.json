@@ -14,12 +14,14 @@
     "lint:css": "stylelint '**/*.{css,vue}'",
     "format": "prettier --write --cache .",
     "format:check": "prettier --check --cache .",
-    "deploy": "gh-pages -d dist -m 'Deploy to GitHub pages' --dotfiles"
+    "deploy": "gh-pages -d dist -m 'Deploy to GitHub pages' --dotfiles",
+    "postinstall": "license-check -o licenses/used-packages.json"
   },
   "dependencies": {
     "@fontsource/roboto": "^5.0.13",
     "@fontsource/roboto-mono": "^5.0.18",
     "@knime/components": "workspace:*",
+    "@knime/licenses": "workspace:*",
     "@knime/rte": "workspace:*",
     "@knime/styles": "workspace:*",
     "@knime/utils": "workspace:*",
