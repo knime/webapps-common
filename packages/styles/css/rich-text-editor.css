@@ -147,8 +147,7 @@
 
     &[href^="http"]::after {
       content: "";
-      mask: url("@knime/styles/img/icons/link-external.svg?url") no-repeat 50%
-        50%;
+      mask: url("../img/icons/link-external.svg?url") no-repeat 50% 50%;
       mask-size: cover;
       background: var(
         --theme-text-link-foreground-color
