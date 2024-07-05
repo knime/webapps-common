@@ -1,7 +1,7 @@
 {
   "name": "@knime/styles",
   "version": "1.0.0",
-  "description": "tbd.",
+  "description": "Internal style definitions and icons shared across @knime packages",
   "homepage": "https://knime.github.io/webapps-common/",
   "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE the file LICENSE)",
   "author": "KNIME AG, Zurich, Switzerland",
@@ -27,6 +27,7 @@
     "colors/*",
     "config/*",
     "css/**/*",
-    "img/**/*"
+    "img/**/*",
+    "CHANGELOG.md"
   ]
 }

@@ -1,7 +1,7 @@
 {
   "name": "@knime/utils",
   "version": "1.0.0",
-  "description": "tbd.",
+  "description": "Internal utility functions and constants shared across @knime packages.",
   "homepage": "https://knime.github.io/webapps-common/",
   "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE the file LICENSE)",
   "author": "KNIME AG, Zurich, Switzerland",
@@ -19,7 +19,9 @@
   "module": "src/index.ts",
   "files": [
     "src",
-    "test-utils"
+    "!src/__tests__",
+    "test-utils",
+    "CHANGELOG.md"
   ],
   "exports": {
     ".": {

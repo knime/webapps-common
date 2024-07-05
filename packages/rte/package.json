@@ -1,13 +1,15 @@
 {
-  "name": "@knime/rte",
-  "version": "0.1.0",
-  "description": "tbd.",
+  "name": "@knime/rich-text-editor",
+  "version": "1.0.0",
+  "description": "Vue components of a rich text editor that can be used for the frontend of all KNIME web projects.",
   "homepage": "https://knime.github.io/webapps-common/",
   "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE the file LICENSE)",
   "author": "KNIME AG, Zurich, Switzerland",
   "type": "module",
   "files": [
-    "src"
+    "src",
+    "!src/**/__tests__",
+    "CHANGELOG.md"
   ],
   "main": "./src/index.ts",
   "exports": {
