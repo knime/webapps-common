@@ -1,4 +1,4 @@
-# KNIME ESLint/Stylelint config
+# ![Image](https://www.knime.com/sites/default/files/knime_logo_github_40x40_4layers.png) @knime/eslint-config
 
 This repository contains an [ESLint] ruleset for typical KNIME frontend projects. Rules cover simple
 JavaScript/TypeScript setups as well as [Vue2]/[Vue3] and [Nuxt] projects. A few overrides to cover common test
@@ -16,13 +16,13 @@ Formatting is supposed to be handled via [Prettier].
 
 Newer versions may also work, but have not been tested.
 
-### Install dependencies
+## Installation
+
+To install the `@knime/eslint-config` package, you can use npm:
 
 ```sh
-npm install
+npm install @knime/eslint-config
 ```
-
-and then use the following commands.
 
 ### Linting
 
