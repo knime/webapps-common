@@ -7,9 +7,9 @@ import HelpIcon from "@knime/styles/img/icons/circle-help.svg";
 import StarIcon from "@knime/styles/img/icons/star.svg";
 
 const codeExampleStandalone = `<script>
-import TabBar from '~/webapps-common/ui/components/TabBar.vue';
-import BulbIcon from '~/@knime/styles/img/icons/bulb.svg';
-import HelpIcon from '~/@knime/styles/img/icons/circle-help.svg';
+import { TabBar } from '@knime/components';
+import BulbIcon from '@knime/styles/img/icons/bulb.svg';
+import HelpIcon from '@knime/styles/img/icons/circle-help.svg';
 
 export default {
     components: {

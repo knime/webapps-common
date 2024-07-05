@@ -7,9 +7,8 @@ import code from "@@source/components/components/Modal/Modal.vue?raw";
 import baseModalCode from "@@source/components/components/base/Modal/BaseModal.vue?raw";
 
 const codeExample = `<script>
-import Modal from '~/webapps-common/ui/components/Modal.vue';
-import PlayIcon from '~/@knime/styles/img/icons/circle-play.svg';
-import Button from '~/webapps-common/ui/components/Button.vue';
+import { Modal, Button } from '@knime/components';
+import PlayIcon from '@knime/styles/img/icons/circle-play.svg';
 
 export default {
     components: {

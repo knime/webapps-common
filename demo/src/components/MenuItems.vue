@@ -10,8 +10,8 @@ import HeartIcon from "@knime/styles/img/icons/heart.svg";
 import code from "@@source/components/components/base/MenuItem/MenuItems.vue?raw";
 
 const codeExampleStandalone = `<script>
-import MenuItems from '~/webapps-common/ui/components/MenuItems.vue';
-import MenuIcon from '~/@knime/styles/img/icons/menu-options.svg';
+import { MenuItems } from '@knime/components';
+import MenuIcon from '@knime/styles/img/icons/menu-options.svg';
 
 const items = [{
     href: 'https://apple.com',

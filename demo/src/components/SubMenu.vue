@@ -10,8 +10,8 @@ import MenuIcon from "@knime/styles/img/icons/menu-options.svg";
 import code from "@@source/components/components/SubMenu/SubMenu.vue?raw";
 
 const codeExampleStandalone = `<script>
-import SubMenu from '~/webapps-common/ui/components/SubMenu.vue';
-import MenuIcon from '~/@knime/styles/img/icons/menu-options.svg';
+import { SubMenu } from '@knime/components';
+import MenuIcon from '@knime/styles/img/icons/menu-options.svg';
 
 const subMenuItems = [{
     href: 'https://apple.com',

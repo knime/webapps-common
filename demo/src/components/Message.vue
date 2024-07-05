@@ -7,9 +7,9 @@ import CodeExample from "./demo/CodeExample.vue";
 import code from "@@source/components/components/Messages/Message.vue?raw";
 
 const codeExample = `<script>
-import Message from 'webapps-common/ui/components/Message';
-import BulbIcon from '~/@knime/styles/img/icons/bulb.svg';
-import CheckIcon from '~/@knime/styles/img/icons/circle-check.svg';
+import { Message } from '@knime/components';
+import BulbIcon from '@knime/styles/img/icons/bulb.svg';
+import CheckIcon from '@knime/styles/img/icons/circle-check.svg';
 
 export default {
     components: {

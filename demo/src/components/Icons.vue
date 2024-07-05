@@ -6,7 +6,7 @@ import FolderIcon from "@knime/styles/img/icons/folder.svg";
 import { InputField, svgWithTitle } from "@knime/components";
 
 const codeExample1 = `<script>
-import FolderIcon from '~/@knime/styles/img/icons/folder.svg';
+import FolderIcon from '@knime/styles/img/icons/folder.svg';
 
 export default {
   components: {
@@ -47,7 +47,7 @@ svg {
 </style>`;
 
 const codeExample2 = `<script>
-import ListNumbersIcon from '~/@knime/styles/img/icons/list-numbers.svg';
+import ListNumbersIcon from '@knime/styles/img/icons/list-numbers.svg';
 
 export default {
   components: {
@@ -97,7 +97,8 @@ svg {
 </style>`;
 
 const codeExampleTooltip = `<script>
-import { ListNumbersIcon, svgWithTitle } from '@knime/components';
+import ListNumbersIcon from '@knime/styles/img/icons/list-numbers.svg';
+import { svgWithTitle } from '@knime/components';
 
 export default {
   components: {

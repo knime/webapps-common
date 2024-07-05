@@ -10,10 +10,8 @@ import DropdownIcon from "@knime/styles/img/icons/arrow-dropdown.svg";
 import code from "@@source/components/components/Buttons/SplitButton.vue?raw";
 
 const codeExample = `<script>
-import Button from '~/webapps-common/ui/components/Button.vue';
-import SubMenu from '~/webapps-common/ui/components/SubMenu.vue';
-import SplitButton from '~/webapps-common/ui/components/SplitButton.vue';
-import DropdownIcon from '~/@knime/styles/img/icons/arrow-dropdown.svg';
+import { Button, SubMenu, SplitButton } from '@knime/components';
+import DropdownIcon from '@knime/styles/img/icons/arrow-dropdown.svg';
 
 const subMenuItems = [{
     href: 'https://apple.com',

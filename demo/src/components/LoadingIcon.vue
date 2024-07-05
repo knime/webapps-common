@@ -5,7 +5,7 @@ import code from "@@source/components/components/LoadingIcon/LoadingIcon.vue?raw
 
 const codeExample = `
 <script>
-import LoadingIcon from '~/webapps-common/ui/components/LoadingIcon.vue';
+import { LoadingIcon } from '@knime/components';
 
 export default {
     components: {

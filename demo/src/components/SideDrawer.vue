@@ -4,8 +4,7 @@ import { SideDrawer, Button } from "@knime/components";
 import code from "@@source/components/components/SideDrawer/SideDrawer.vue?raw";
 
 const codeExample = `<script>
-import SideDrawer from '~/webapps-common/ui/components/SideDrawer.vue';
-import Button from '~/webapps-common/ui/components/Button.vue';
+import { SideDrawer, Button } from '@knime/components';
 
 export default {
     components: {
