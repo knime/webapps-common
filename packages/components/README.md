@@ -56,6 +56,13 @@ import type { MenuItem } from "@knime/components";
 import { useClickOutside } from "@knime/components";
 ```
 
+### Vue
+
+The Vue components expect that the app provides the following:
+
+- Vue and Consola compatible to the versions defined in [`package.json`](package.json)
+- global `window.consola` instance for logging
+
 ### Nuxt
 
 Additional requirements when used with Nuxt:

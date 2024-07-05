@@ -46,6 +46,32 @@ import @knime/styles/config/svg.d.ts
 import * as $colors from "@knime/styles/colors/knimeColors.mjs";
 ```
 
+## Styling
+
+---
+
+### KNIME color scheme
+
+The KNIME color scheme is defined in JavaScript and has to be converted into CSS by running
+
+```sh
+npm run generate-css
+```
+
+This is done automatically on `pnpm install`, but needs to be run manually after changing any of the `colors/*` files.
+
+Other JS-defined colors are:
+
+- Node Background Colors
+
+### Theming
+
+Custom theming can be supported by overwriting the theme CSS custom properties defined in `/css/variables`.
+
+# SVG-Style-Guidelines
+
+- [SVG Guideline](documentation/SVG-Style-README.md)
+
 # Join the Community!
 
 - [KNIME Forum](https://forum.knime.com/)
