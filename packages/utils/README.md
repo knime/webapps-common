@@ -1,4 +1,4 @@
-# # ![Image](https://www.knime.com/sites/default/files/knime_logo_github_40x40_4layers.png) @knime/utils
+# ![Image](https://www.knime.com/sites/default/files/knime_logo_github_40x40_4layers.png) @knime/utils
 
 Internal utility functions and constants shared across `@knime` packages.
 
