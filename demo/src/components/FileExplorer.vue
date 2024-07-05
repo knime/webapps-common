@@ -5,8 +5,7 @@ import { Checkbox, Dropdown, Button, FileExplorer } from "@knime/components";
 import type {
   FileExplorerItem,
   FileExplorerContextMenu,
-  // @ts-ignore
-} from "webapps-common/ui/components/FileExplorer/types";
+} from "@knime/components";
 
 const items = [
   {
