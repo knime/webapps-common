@@ -25,7 +25,7 @@ definitions:
           - corepack prepare pnpm@latest-9 --activate
           - pnpm install
           - pnpm run ci:lint-format
-          # - pnpm run type-check
+          - pnpm run type-check
           - pnpm run coverage
           - pnpm run build:packages
           - pnpm run build:demo
