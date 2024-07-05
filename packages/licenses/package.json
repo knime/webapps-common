@@ -1,7 +1,7 @@
 {
   "name": "@knime/licenses",
   "version": "1.0.0",
-  "description": "tbd.",
+  "description": "License checker and open source attribution collector",
   "homepage": "https://knime.github.io/webapps-common/",
   "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE the file LICENSE)",
   "author": "KNIME AG, Zurich, Switzerland",
@@ -19,7 +19,8 @@
   "main": "src/collect-packages.js",
   "files": [
     "src",
-    "config"
+    "config",
+    "CHANGELOG.md"
   ],
   "exports": {
     ".": {
