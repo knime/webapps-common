@@ -4,8 +4,7 @@ import BulbIcon from "@knime/styles/img/icons/bulb.svg";
 import CheckIcon from "@knime/styles/img/icons/circle-check.svg";
 import InfoIcon from "@knime/styles/img/icons/circle-info.svg";
 import CodeExample from "./demo/CodeExample.vue";
-// import code from "webapps-common/ui/components/Message.vue?raw";
-const code = "";
+import code from "@@source/components/components/Messages/Message.vue?raw";
 
 const codeExample = `<script>
 import Message from 'webapps-common/ui/components/Message';

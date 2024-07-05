@@ -1,8 +1,7 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
 import { MultiselectListBox } from "@knime/components";
-// import code from "webapps-common/ui/components/forms/MultiselectListBox.vue?raw";
-const code = "";
+import code from "@@source/components/components/forms/MultiselectListBox/MultiselectListBox.vue?raw";
 
 const codeExample = `<MultiselectListBox
   v-model="selected"

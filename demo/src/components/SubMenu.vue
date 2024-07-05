@@ -7,8 +7,7 @@ import StarIcon from "@knime/styles/img/icons/star.svg";
 import LeaveIcon from "@knime/styles/img/icons/leave.svg";
 import HeartIcon from "@knime/styles/img/icons/heart.svg";
 import MenuIcon from "@knime/styles/img/icons/menu-options.svg";
-// import code from "webapps-common/ui/components/SubMenu.vue?raw";
-const code = "";
+import code from "@@source/components/components/SubMenu/SubMenu.vue?raw";
 
 const codeExampleStandalone = `<script>
 import SubMenu from '~/webapps-common/ui/components/SubMenu.vue';

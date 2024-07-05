@@ -1,8 +1,7 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
 import { ComboBox } from "@knime/components";
-// import code from "webapps-common/ui/components/forms/ComboBox.vue?raw";
-const code = "";
+import code from "@@source/components/components/forms/ComboBox/ComboBox.vue?raw";
 
 const codeExample = `<ComboBox
   v-model="modelValue"

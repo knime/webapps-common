@@ -4,8 +4,7 @@ import { InputField, FunctionButton } from "@knime/components";
 import MailIcon from "@knime/styles/img/icons/mail.svg";
 import CircleCheckIcon from "@knime/styles/img/icons/circle-check.svg";
 import CloseIcon from "@knime/styles/img/icons/close.svg";
-// import code from "webapps-common/ui/components/forms/InputField.vue?raw";
-const code = "";
+import code from "@@source/components/components/forms/InputField/InputField.vue?raw";
 
 const codeExample = `<InputField
   v-model="inputValue"

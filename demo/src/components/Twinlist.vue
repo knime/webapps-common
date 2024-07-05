@@ -2,8 +2,7 @@
 import { markRaw } from "vue";
 import CodeExample from "./demo/CodeExample.vue";
 import { Twinlist, LoadingIcon } from "@knime/components";
-// import code from "webapps-common/ui/components/forms/Twinlist.vue?raw";
-const code = "";
+import code from "@@source/components/components/forms/Twinlist/Twinlist.vue?raw";
 
 const codeExample = `<Twinlist
   v-model="selected"

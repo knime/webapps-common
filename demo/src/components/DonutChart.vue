@@ -1,8 +1,7 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
 import { DonutChart } from "@knime/components";
-// import code from "webapps-common/ui/components/DonutChart.vue?raw";
-const code = "";
+import code from "@@source/components/components/DonutChart/DonutChart.vue?raw";
 
 const codeExample = `<DonutChart
   :value="3"

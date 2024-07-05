@@ -1,8 +1,7 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
 import { ListBox } from "@knime/components";
-// import code from "webapps-common/ui/components/forms/ListBox.vue?raw";
-const code = "";
+import code from "@@source/components/components/forms/ListBox/ListBox.vue?raw";
 
 const codeExample = `<ListBox
   v-model="selected"

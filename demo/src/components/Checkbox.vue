@@ -1,8 +1,7 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
 import { Checkbox } from "@knime/components";
-// import code from "webapps-common/ui/components/forms/Checkbox.vue?raw";
-const code = "";
+import code from "@@source/components/components/forms/Checkbox/Checkbox.vue?raw";
 
 const codeExample = `<Checkbox v-model="selected">
   I want cookies!

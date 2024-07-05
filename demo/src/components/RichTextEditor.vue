@@ -3,8 +3,7 @@ import { defineComponent } from "vue";
 import CodeExample from "./demo/CodeExample.vue";
 import { Checkbox, FunctionButton } from "@knime/components";
 import { RichTextEditor } from "@knime/rich-text-editor";
-// import code from "webapps-common/ui/components/forms/RichTextEditor/RichTextEditor.vue?raw";
-const code = "";
+import code from "@@source/rich-text-editor/components/RichTextEditor.vue?raw";
 
 const codeExample = `
 <RichTextEditor

@@ -1,8 +1,7 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
 import { OpenSourceCredits } from "@knime/components";
-// import code from "webapps-common/ui/components/OpenSourceCredits.vue?raw";
-const code = "";
+import code from "@@source/components/components/OpenSourceCredits/OpenSourceCredits.vue?raw";
 import usedPackages from "../../licenses/used-packages.json";
 
 export default {

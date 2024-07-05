@@ -1,8 +1,7 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
 import { TextArea } from "@knime/components";
-// import code from "webapps-common/ui/components/forms/TextArea.vue?raw";
-const code = "";
+import code from "@@source/components/components/forms/TextArea/TextArea.vue?raw";
 
 const codeExample = `<TextArea
   v-model="inputValue"

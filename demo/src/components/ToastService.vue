@@ -4,11 +4,8 @@ import { Button } from "@knime/components";
 import Interactive from "@knime/styles/img/icons/interactive.svg";
 // @ts-ignore
 import { useToasts, type Toast } from "@knime/components";
-
-// import toastServiceCode from "@knime/components/toastService?raw";
-// import typesCode from "@knime/components/types?raw";
-const toastServiceCode = "";
-const typesCode = "";
+import toastServiceCode from "@@source/components/components/Toast/toastService?raw";
+import typesCode from "@@source/components/components/Toast/types?raw";
 
 const composableCodeExample = `
   // App.vue (root component of a Vue 3-based project)

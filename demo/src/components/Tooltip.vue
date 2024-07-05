@@ -2,8 +2,7 @@
 import CodeExample from "./demo/CodeExample.vue";
 import { Tooltip } from "@knime/components";
 import BrainIcon from "@knime/styles/img/icons/ai-brain.svg";
-// import code from "webapps-common/ui/components/Tooltip.vue?raw";
-const code = "";
+import code from "@@source/components/components/Tooltip/Tooltip.vue?raw";
 
 const codeExample = `
 <Tooltip

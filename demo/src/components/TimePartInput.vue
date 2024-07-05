@@ -1,8 +1,7 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
 import { TimePartInput, Label } from "@knime/components";
-// import code from "webapps-common/ui/components/forms/TimePartInput.vue?raw";
-const code = "";
+import code from "@@source/components/components/forms/TimePartInput/TimePartInput.vue?raw";
 
 const codeExample = `<Label text="Hours">
   <TimePartInput

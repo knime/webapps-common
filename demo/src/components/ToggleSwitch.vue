@@ -1,8 +1,7 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
 import { ToggleSwitch } from "@knime/components";
-// import code from "webapps-common/ui/components/forms/ToggleSwitch.vue?raw";
-const code = "";
+import code from "@@source/components/components/forms/ToggleSwitch/ToggleSwitch.vue?raw";
 
 const codeExample = `<ToggleSwitch />
 <ToggleSwitch value="true" />`;

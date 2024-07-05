@@ -1,8 +1,7 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
 import { InputField, Label } from "@knime/components";
-// import code from "webapps-common/ui/components/forms/Label.vue?raw";
-const code = "";
+import code from "@@source/components/components/forms/Label/Label.vue?raw";
 
 const codeExample = `<!-- The labelForId syntax is used to associate the label with the form field --\>
 <Label

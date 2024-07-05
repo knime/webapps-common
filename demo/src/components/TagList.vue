@@ -1,8 +1,7 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
 import { TagList } from "@knime/components";
-// import code from "webapps-common/ui/components/TagList.vue?raw";
-const code = "";
+import code from "@@source/components/components/Tag/TagList.vue?raw";
 
 const codeExample = `<TagList
   :tags="['Apple', 'Banana', 'Guanábana', 'Papaya', 'Mango', 'Granadilla']"

@@ -1,8 +1,7 @@
 <script lang="ts">
 import CodeExample from "./demo/CodeExample.vue";
 import { MultiModeTwinList } from "@knime/components";
-// import code from "webapps-common/ui/components/forms/MultiModeTwinList.vue?raw";
-const code = "";
+import code from "@@source/components/components/forms/MultiModeTwinlist/MultiModeTwinlist.vue?raw";
 
 const codeExample = `<MultiModeTwinList
   :size="7"

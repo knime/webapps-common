@@ -3,10 +3,8 @@ import { Modal, Button, Checkbox } from "@knime/components";
 import PlayIcon from "@knime/styles/img/icons/circle-play.svg";
 import CodeExample from "./demo/CodeExample.vue";
 
-// import code from "webapps-common/ui/components/Modal.vue?raw";
-const code = "";
-// import baseModalCode from "webapps-common/ui/components/BaseModal.vue?raw";
-const baseModalCode = "";
+import code from "@@source/components/components/Modal/Modal.vue?raw";
+import baseModalCode from "@@source/components/components/base/Modal/BaseModal.vue?raw";
 
 const codeExample = `<script>
 import Modal from '~/webapps-common/ui/components/Modal.vue';

@@ -1,7 +1,6 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
-// import code from "webapps-common/ui/components/forms/SearchableCheckboxes.vue?raw";
-const code = "";
+import code from "@@source/components/components/forms/SearchableCheckboxes/SearchableCheckboxes.vue?raw";
 import { SearchableCheckboxes } from "@knime/components";
 
 const codeExample = `<SearchableCheckboxes

@@ -1,8 +1,7 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
 import { FileLink } from "@knime/components";
-// import fileLinkCode from "webapps-common/ui/components/FileLink.vue?raw";
-const fileLinkCode = "";
+import fileLinkCode from "@@source/components/components/FileLink/FileLink.vue?raw";
 
 const codeExample = `
 <FileLink

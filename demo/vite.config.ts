@@ -11,8 +11,15 @@ export default defineConfig({
   base: "/webapps-common/",
   resolve: {
     alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
-      "@@": fileURLToPath(new URL(".", import.meta.url)),
+      "@@source/components": fileURLToPath(
+        new URL("../packages/components/src/", import.meta.url),
+      ),
+      "@@source/rich-text-editor": fileURLToPath(
+        new URL("../packages/rte/src/", import.meta.url),
+      ),
+      "@@source/styles": fileURLToPath(
+        new URL("../packages/styles/", import.meta.url),
+      ),
     },
     dedupe: [
       "vue", // needed for v-calendar to work

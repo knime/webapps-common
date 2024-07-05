@@ -2,8 +2,7 @@
 import CodeExample from "./demo/CodeExample.vue";
 import { Collapser } from "@knime/components";
 import BulbIcon from "@knime/styles/img/icons/bulb.svg";
-// import code from "webapps-common/ui/components/Collapser.vue?raw";
-const code = "";
+import code from "@@source/components/components/Collapser/Collapser.vue?raw";
 
 export default {
   components: {

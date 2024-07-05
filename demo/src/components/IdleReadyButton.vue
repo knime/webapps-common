@@ -1,7 +1,6 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
-// import code from "webapps-common/ui/components/IdleReadyButton.vue?raw";
-const code = "";
+import code from "@@source/components/components/IdleReadyButton/IdleReadyButton.vue?raw";
 import { IdleReadyButton } from "@knime/components";
 
 const codeExample = `<IdleReadyButton
