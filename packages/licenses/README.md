@@ -1,4 +1,4 @@
-# @knime/licenses
+# ![Image](https://www.knime.com/sites/default/files/knime_logo_github_40x40_4layers.png)@knime/licenses
 
 Internal utility functions checking all dependencies for allowed licenses and reporting disallowed ones.
 
