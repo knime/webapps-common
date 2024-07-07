@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"
+    fill="none" stroke="#000" stroke-linejoin="round">
+  <path d="M21.56 9.24H10.44c-.66 0-1.2.54-1.2 1.2v11.12c0 .66.54 1.2 1.2 1.2h11.12c.66 0 1.2-.54 1.2-1.2V10.44c0-.66
+  -.54-1.2-1.2-1.2zM12.547 16h6.906M16 12.547v6.906"/>
+  <ellipse cx="16" cy="16" stroke-dasharray="1.0024 4.0097" rx="14.362" ry="14.362" transform="matrix(.382 -.9242 .9242
+  .382 -4.8987 24.6744)"/>
+  <line stroke-linecap="square" x1="0" y1="0" x2="0" y2="0"
+    transform="translate(4.15, 7.8) scale(1.1) rotate(35 0 0)" />
+  <line stroke-linecap="square" x1="0" y1="0" x2="0" y2="0"
+    transform="translate(7.7,4.25) scale(1.1) rotate(55 0 0)" />
+  <line stroke-linecap="square" x1="0" y1="0" x2="0" y2="0"
+    transform="translate(12.2,2.2) scale(1.1) rotate(75 0 0)" />
+  <line stroke-linecap="square" x1="0" y1="0" x2="0" y2="0"
+    transform="translate(17.1,1.7) scale(1.1) rotate(95 0 0)" />
+  <line stroke-linecap="square" x1="0" y1="0" x2="0" y2="0"
+    transform="translate(21.9,2.9) scale(1.1) rotate(115 0 0)" />
+  <line stroke-linecap="square" x1="0" y1="0" x2="0" y2="0"
+    transform="translate(26.05,5.75) scale(1.1) rotate(135 0 0)" />
+  <line stroke-linecap="square" x1="0" y1="0" x2="0" y2="0"
+    transform="translate(28.9,9.8) scale(1.1) rotate(155 0 0)" />
+  <line stroke-linecap="square" x1="0" y1="0" x2="0" y2="0"
+    transform="translate(28.9,9.8) scale(1.1) rotate(155 0 0)" />
+  <line stroke-linecap="square" x1="0" y1="0" x2="0" y2="0"
+    transform="translate(30.3,14.6) scale(1.1) rotate(175 0 0)" />
+  <line stroke-linecap="square" x1="0" y1="0" x2="0" y2="0"
+    transform="translate(29.9,19.6) scale(1.1) rotate(-155 0 0)" />
+  <line stroke-linecap="square" x1="0" y1="0" x2="0" y2="0"
+    transform="translate(27.9,24.1) scale(1.1) rotate(-135 0 0)" />
+  <line stroke-linecap="square" x1="0" y1="0" x2="0" y2="0"
+    transform="translate(24.4,27.7) scale(1.1) rotate(-115 0 0)" />
+  <line stroke-linecap="square" x1="0" y1="0" x2="0" y2="0"
+    transform="translate(19.8,29.9) scale(1.1) rotate(-105 0 0)" />
+  <line stroke-linecap="square" x1="0" y1="0" x2="0" y2="0"
+    transform="translate(14.9,30.3) scale(1.1) rotate(-85 0 0)" />
+  <line stroke-linecap="square" x1="0" y1="0" x2="0" y2="0"
+    transform="translate(10,29.1) scale(1.1) rotate(-65 0 0)" />
+  <line stroke-linecap="square" x1="0" y1="0" x2="0" y2="0"
+    transform="translate(5.9,26.3) scale(1.1) rotate(-45 0 0)" />
+  <line stroke-linecap="square" x1="0" y1="0" x2="0" y2="0"
+    transform="translate(3.1,22.2) scale(1.1) rotate(-25 0 0)" />
+  <line stroke-linecap="square" x1="0" y1="0" x2="0" y2="0"
+    transform="translate(1.7,17.4) scale(1.1) rotate(-5 0 0)" />
+  <line stroke-linecap="square" x1="0" y1="0" x2="0" y2="0"
+    transform="translate(2.1,12.4) scale(1.1) rotate(15 0 0)" />
+</svg>
