@@ -1,6 +1,6 @@
 import { computed, ref, watch, type Ref } from "vue";
 
-import type { UseMultiSelectionReturn } from "./useMultiSelection";
+import type { UseMultiSelectionReturn } from "../../../composables/multiSelection/useMultiSelection";
 import { createDragGhosts } from "../utils/dragGhostHelpers";
 import type { FileExplorerItem } from "../types";
 

@@ -1,5 +1,5 @@
 import { computed, ref, type ComputedRef, type Ref } from "vue";
-import * as multiSelectionService from "../utils/multiSelectionStateService";
+import * as multiSelectionService from "./multiSelectionStateService";
 import { navigator } from "@knime/utils";
 
 export type UseMultiSelectionOptions = {

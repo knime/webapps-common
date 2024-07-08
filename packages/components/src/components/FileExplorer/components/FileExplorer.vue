@@ -2,7 +2,7 @@
 import { ref, toRefs, toRef, computed, watch, nextTick } from "vue";
 
 import { useItemDragging } from "../composables/useItemDragging";
-import { useFocusableMultiSelection } from "../composables/useFocusableMultiSelection";
+import { useFocusableMultiSelection } from "../../../composables/multiSelection/useFocusableMultiSelection";
 import FileExplorerContextMenu from "./FileExplorerContextMenu.vue";
 import FileExplorerItem from "./FileExplorerItem.vue";
 import FileExplorerItemBack from "./FileExplorerItemBack.vue";
