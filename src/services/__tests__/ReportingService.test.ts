@@ -4,6 +4,7 @@ import { setUpCustomEmbedderService } from "@/embedder";
 import { ReportingService } from "../ReportingService";
 
 import { extensionConfig } from "./mocks";
+import { RenderingType } from "@/types/RenderingConfig";
 
 describe("ReportingService", () => {
   const constructReportingService = (
@@ -18,15 +19,30 @@ describe("ReportingService", () => {
     return { reportingService, ...apiLayer };
   };
 
-  it("sets isReportingActive to false if generateImageActionId is not set", () => {
-    const { reportingService } = constructReportingService(extensionConfig);
+  it("sets isReportingActive to false if the type of the renderingConfig is not REPORT", () => {
+    const localExtensionConfig = {
+      ...extensionConfig,
+      renderingConfig: { type: RenderingType.DEFAULT },
+    };
+    const { reportingService } =
+      constructReportingService(localExtensionConfig);
     expect(reportingService.isReportingActive()).toBe(false);
   });
 
-  it("sets isReportingActive to true if generateImageActionId is set", () => {
+  it("sets isReportingActive to false if the type of the renderingConfig is REPORT but it cannot be used in report", () => {
     const localExtensionConfig = {
       ...extensionConfig,
-      generatedImageActionId: "dummyId",
+      renderingConfig: { type: RenderingType.REPORT, canBeUsedInReport: false },
+    };
+    const { reportingService } =
+      constructReportingService(localExtensionConfig);
+    expect(reportingService.isReportingActive()).toBe(false);
+  });
+
+  it("sets isReportingActive to true if the type of the renderingConfig is REPORT and it can be used in report", () => {
+    const localExtensionConfig = {
+      ...extensionConfig,
+      renderingConfig: { type: RenderingType.REPORT, canBeUsedInReport: true },
     };
     const { reportingService } =
       constructReportingService(localExtensionConfig);

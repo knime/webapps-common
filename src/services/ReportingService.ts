@@ -1,3 +1,4 @@
+import { RenderingType, ReportRenderingConfig } from "@/types/RenderingConfig";
 import { AbstractService } from "./AbstractService";
 import { ReportingServiceAPILayer } from "./types/serviceApiLayers";
 
@@ -7,7 +8,11 @@ import { ReportingServiceAPILayer } from "./types/serviceApiLayers";
  */
 export class ReportingService extends AbstractService<ReportingServiceAPILayer> {
   isReportingActive() {
-    return Boolean(this.baseService.getConfig().generatedImageActionId);
+    const { renderingConfig } = this.baseService.getConfig();
+    return (
+      renderingConfig.type === RenderingType.REPORT &&
+      (renderingConfig as ReportRenderingConfig).canBeUsedInReport
+    );
   }
 
   /**

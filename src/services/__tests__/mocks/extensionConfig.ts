@@ -1,6 +1,7 @@
 /* eslint-disable no-magic-numbers */
 import { UIExtensionServiceConfig } from "@/types/uiExtensionService";
 import { ExtensionTypes } from "@/types/ExtensionTypes";
+import { RenderingType } from "@/types";
 
 export const extensionConfig: UIExtensionServiceConfig = {
   initialData: {
@@ -53,4 +54,7 @@ export const extensionConfig: UIExtensionServiceConfig = {
   },
   extensionType: ExtensionTypes.VIEW,
   hasNodeView: true,
+  renderingConfig: {
+    type: RenderingType.DEFAULT,
+  },
 };

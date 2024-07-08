@@ -3,6 +3,7 @@ import { DataServiceType } from "@/types/DataServiceType";
 import { Alert, AlertConfig } from "@/types/alert";
 import { ColorModel } from "./ColorModel";
 import { UIExtensionPushEvents } from "./pushEvents";
+import { RenderingConfig } from "./RenderingConfig";
 
 export type Identifiers = {
   /**
@@ -42,11 +43,9 @@ export type UIExtensionServiceConfig = AlertConfig &
      */
     initialSharedData?: any;
     /**
-     * optional action-id to communicate the generated image back to Java.
-     *  TODO UIEXT-1031: We are also (mis)using this prop for communicating the report back to Java. The two concerns
-     *  should either be unified or separated.
+     * rendering config to determine in which context the ui extension is rendered
      */
-    generatedImageActionId?: string | null;
+    renderingConfig: RenderingConfig;
     hasNodeView: boolean;
     writeProtected?: boolean;
     /**

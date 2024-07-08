@@ -16,6 +16,7 @@ export {
   type SettingComparator,
   DefaultSettingComparator,
   type SettingState,
+  type SelectionEventCallbackParams,
 } from "./services";
 
 export * from "./types";

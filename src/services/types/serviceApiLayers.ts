@@ -5,6 +5,7 @@ import {
   UIExtensionServiceAPILayer,
 } from "@/types";
 import { ColorModel } from "@/types/ColorModel";
+import { RenderingConfig } from "@/types/RenderingConfig";
 
 export type AlertingServiceAPILayer = Pick<
   UIExtensionServiceAPILayer,
@@ -38,7 +39,7 @@ export type DialogServiceAPILayer = Pick<
 };
 
 type ImageGenerationServiceExtensionConfig = {
-  generatedImageActionId?: string | null;
+  renderingConfig: RenderingConfig;
 };
 
 export type ImageGenerationServiceAPILayer = Pick<
@@ -67,7 +68,7 @@ export type SharedDataServiceAPILayer = Pick<
 > & { getConfig: () => SharedDataServiceExtensionConfig };
 
 type ReportingServiceExtensionConfig = {
-  generatedImageActionId?: string | null;
+  renderingConfig: RenderingConfig;
 };
 
 export type ReportingServiceAPILayer = Pick<
