@@ -2,7 +2,7 @@
 import { defineComponent } from "vue";
 import CodeExample from "./demo/CodeExample.vue";
 import { Checkbox, FunctionButton } from "@knime/components";
-import RichTextEditor from "@knime/rte";
+import RichTextEditor from "@knime/rich-text-editor";
 // import code from "webapps-common/ui/components/forms/RichTextEditor/RichTextEditor.vue?raw";
 const code = "";
 

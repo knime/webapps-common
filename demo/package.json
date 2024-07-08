@@ -22,7 +22,7 @@
     "@fontsource/roboto-mono": "^5.0.18",
     "@knime/components": "workspace:*",
     "@knime/licenses": "workspace:*",
-    "@knime/rte": "workspace:*",
+    "@knime/rich-text-editor": "workspace:*",
     "@knime/styles": "workspace:*",
     "@knime/utils": "workspace:*",
     "@vueuse/core": "10.4.1",

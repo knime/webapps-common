@@ -75,7 +75,7 @@ importers:
       '@knime/licenses':
         specifier: workspace:*
         version: link:../packages/licenses
-      '@knime/rte':
+      '@knime/rich-text-editor':
         specifier: workspace:*
         version: link:../packages/rte
       '@knime/styles':
@@ -145,9 +145,18 @@ importers:
       '@knime/utils':
         specifier: workspace:*
         version: link:../utils
+      '@vueuse/components':
+        specifier: ^10.7.2
+        version: 10.10.0(vue@3.4.27(typescript@5.4.5))
+      '@vueuse/core':
+        specifier: 10.4.1
+        version: 10.4.1(vue@3.4.27(typescript@5.4.5))
       '@vueuse/shared':
         specifier: ^10.10.0
         version: 10.10.0(vue@3.4.27(typescript@5.4.5))
+      consola:
+        specifier: 2.15.3
+        version: 2.15.3
       date-fns:
         specifier: 2.30.0
         version: 2.30.0
@@ -188,15 +197,6 @@ importers:
       '@vue/test-utils':
         specifier: 2.4.4
         version: 2.4.4(@vue/server-renderer@3.4.27(vue@3.4.27(typescript@5.4.5)))(vue@3.4.27(typescript@5.4.5))
-      '@vueuse/components':
-        specifier: ^10.7.2
-        version: 10.10.0(vue@3.4.27(typescript@5.4.5))
-      '@vueuse/core':
-        specifier: 10.4.1
-        version: 10.4.1(vue@3.4.27(typescript@5.4.5))
-      consola:
-        specifier: 2.15.3
-        version: 2.15.3
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
@@ -330,6 +330,9 @@ importers:
       '@tiptap/vue-3':
         specifier: 2.0.3
         version: 2.0.3(@tiptap/core@2.4.0(@tiptap/pm@2.0.3))(@tiptap/pm@2.0.3(@tiptap/core@2.4.0))(vue@3.4.27(typescript@5.4.5))
+      consola:
+        specifier: 2.15.3
+        version: 2.15.3
       vue:
         specifier: 3.x
         version: 3.4.27(typescript@5.4.5)
@@ -343,9 +346,6 @@ importers:
       '@vue/test-utils':
         specifier: 2.4.4
         version: 2.4.4(@vue/server-renderer@3.4.27(vue@3.4.27(typescript@5.4.5)))(vue@3.4.27(typescript@5.4.5))
-      consola:
-        specifier: 2.15.3
-        version: 2.15.3
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
