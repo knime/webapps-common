@@ -1,18 +1,14 @@
-import { describe, it, beforeAll, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import { filters } from "../filters";
 
 describe("filters", () => {
-  beforeAll(() => {
-    document.execCommand = vi.fn();
-  });
-
   it("search matches correctly", () => {
     const filter = filters.search;
-    let searchTerm = "A";
+    const searchTerm = "A";
 
     let isCaseSensitive = false;
     let isInverted = false;
-    let normalized = filter.normalize(searchTerm, isCaseSensitive, isInverted);
+    let normalized = filter.normalize(searchTerm, isCaseSensitive);
     expect(
       filter.test("--a--", normalized, isCaseSensitive, isInverted),
     ).toBeTruthy();
@@ -22,7 +18,7 @@ describe("filters", () => {
 
     // case sensitive
     isCaseSensitive = true;
-    normalized = filter.normalize(searchTerm, isCaseSensitive, isInverted);
+    normalized = filter.normalize(searchTerm, isCaseSensitive);
     expect(
       filter.test("--a--", normalized, isCaseSensitive, isInverted),
     ).toBeFalsy();
@@ -30,7 +26,7 @@ describe("filters", () => {
     // inverted
     isCaseSensitive = false;
     isInverted = true;
-    normalized = filter.normalize(searchTerm, isCaseSensitive, isInverted);
+    normalized = filter.normalize(searchTerm, isCaseSensitive);
     expect(
       filter.test("--A--", normalized, isCaseSensitive, isInverted),
     ).toBeFalsy();
@@ -41,7 +37,7 @@ describe("filters", () => {
     // empty search term
     isCaseSensitive = false;
     isInverted = false;
-    normalized = filter.normalize("", isCaseSensitive, isInverted);
+    normalized = filter.normalize("", isCaseSensitive);
     expect(
       filter.test("--A--", normalized, isCaseSensitive, isInverted),
     ).toBeTruthy();
@@ -49,11 +45,11 @@ describe("filters", () => {
 
   it("regex search matches correctly", () => {
     const filter = filters.regex;
-    let searchTerm = ".*A.*";
+    const searchTerm = ".*A.*";
 
     let isCaseSensitive = false;
     let isInverted = false;
-    let normalized = filter.normalize(searchTerm, isCaseSensitive, isInverted);
+    let normalized = filter.normalize(searchTerm, isCaseSensitive);
     expect(
       filter.test("--a--", normalized, isCaseSensitive, isInverted),
     ).toBeTruthy();
@@ -64,7 +60,7 @@ describe("filters", () => {
     // case sensitive
     isCaseSensitive = true;
     isInverted = false;
-    normalized = filter.normalize(searchTerm, isCaseSensitive, isInverted);
+    normalized = filter.normalize(searchTerm, isCaseSensitive);
     expect(
       filter.test("--a--", normalized, isCaseSensitive, isInverted),
     ).toBeFalsy();
@@ -72,7 +68,7 @@ describe("filters", () => {
     // inverted
     isCaseSensitive = false;
     isInverted = true;
-    normalized = filter.normalize(searchTerm, isCaseSensitive, isInverted);
+    normalized = filter.normalize(searchTerm, isCaseSensitive);
     expect(
       filter.test("--A--", normalized, isCaseSensitive, isInverted),
     ).toBeFalsy();
@@ -83,7 +79,7 @@ describe("filters", () => {
     // partial match --> do not match
     isCaseSensitive = false;
     isInverted = false;
-    normalized = filter.normalize("A", isCaseSensitive, isInverted);
+    normalized = filter.normalize("A", isCaseSensitive);
     expect(
       filter.test("--A--", normalized, isCaseSensitive, isInverted),
     ).toBeFalsy();
@@ -91,7 +87,7 @@ describe("filters", () => {
     // empty search term
     isCaseSensitive = false;
     isInverted = false;
-    normalized = filter.normalize("", isCaseSensitive, isInverted);
+    normalized = filter.normalize("", isCaseSensitive);
     expect(
       filter.test("--A--", normalized, isCaseSensitive, isInverted),
     ).toBeFalsy();
@@ -99,7 +95,7 @@ describe("filters", () => {
     // or concantenated expressions
     isCaseSensitive = false;
     isInverted = false;
-    normalized = filter.normalize("test1|test2", isCaseSensitive, isInverted);
+    normalized = filter.normalize("test1|test2", isCaseSensitive);
     expect(
       filter.test("test1", normalized, isCaseSensitive, isInverted),
     ).toBeTruthy();
@@ -130,7 +126,7 @@ describe("filters", () => {
     // partial match --> do not match
     let isCaseSensitive = false;
     let isInverted = false;
-    let normalized = filter.normalize("A", isCaseSensitive, isInverted);
+    let normalized = filter.normalize("A", isCaseSensitive);
     expect(
       filter.test("--A--", normalized, isCaseSensitive, isInverted),
     ).toBeFalsy();
@@ -138,7 +134,7 @@ describe("filters", () => {
     // empty search term
     isCaseSensitive = false;
     isInverted = false;
-    normalized = filter.normalize("", isCaseSensitive, isInverted);
+    normalized = filter.normalize("", isCaseSensitive);
     expect(
       filter.test("--A--", normalized, isCaseSensitive, isInverted),
     ).toBeFalsy();
@@ -146,7 +142,7 @@ describe("filters", () => {
     // case sensitive
     isCaseSensitive = true;
     isInverted = false;
-    normalized = filter.normalize("--A--", isCaseSensitive, isInverted);
+    normalized = filter.normalize("--A--", isCaseSensitive);
     expect(
       filter.test("--a--", normalized, isCaseSensitive, isInverted),
     ).toBeFalsy();
@@ -154,7 +150,7 @@ describe("filters", () => {
     // inverted
     isCaseSensitive = false;
     isInverted = true;
-    normalized = filter.normalize("--a--", isCaseSensitive, isInverted);
+    normalized = filter.normalize("--a--", isCaseSensitive);
     expect(
       filter.test("--A--", normalized, isCaseSensitive, isInverted),
     ).toBeFalsy();
@@ -165,11 +161,11 @@ describe("filters", () => {
 
   it('matches wildcard "*" search correctly', () => {
     const filter = filters.wildcard;
-    let searchTerm = "*A*";
+    const searchTerm = "*A*";
 
-    let isCaseSensitive = false;
-    let isInverted = false;
-    let normalized = filter.normalize(searchTerm, isCaseSensitive, isInverted);
+    const isCaseSensitive = false;
+    const isInverted = false;
+    const normalized = filter.normalize(searchTerm, isCaseSensitive);
     expect(
       filter.test("--a--", normalized, isCaseSensitive, isInverted),
     ).toBeTruthy();
@@ -180,11 +176,11 @@ describe("filters", () => {
 
   it('matches wildcard "?" search correctly', () => {
     const filter = filters.wildcard;
-    let searchTerm = "??A??";
+    const searchTerm = "??A??";
 
     let isCaseSensitive = false;
     let isInverted = false;
-    let normalized = filter.normalize(searchTerm, isCaseSensitive, isInverted);
+    let normalized = filter.normalize(searchTerm, isCaseSensitive);
     expect(
       filter.test("--a--", normalized, isCaseSensitive, isInverted),
     ).toBeTruthy();
@@ -195,7 +191,7 @@ describe("filters", () => {
     // checks that '?' only accepts one random character
     isCaseSensitive = false;
     isInverted = false;
-    normalized = filter.normalize(searchTerm, isCaseSensitive, isInverted);
+    normalized = filter.normalize(searchTerm, isCaseSensitive);
     expect(
       filter.test("---a--", normalized, isCaseSensitive, isInverted),
     ).toBeFalsy();
@@ -206,10 +202,10 @@ describe("filters", () => {
 
   it("type search matches correctly", () => {
     const filter = filters.type;
-    let selectedTypes = ["Type A", "Type B"];
+    const selectedTypes = ["Type A", "Type B"];
 
-    let normalized = filter.normalize(selectedTypes);
-    expect(filter.test("Type A", normalized)).toBeTruthy();
-    expect(filter.test("Type C", normalized)).toBeFalsy();
+    const normalized = filter.normalize(selectedTypes, false);
+    expect(filter.test("Type A", normalized, false, false)).toBeTruthy();
+    expect(filter.test("Type C", normalized, false, false)).toBeFalsy();
   });
 });

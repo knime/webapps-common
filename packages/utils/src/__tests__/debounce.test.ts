@@ -6,15 +6,15 @@ import debounce from "../debounce";
 vi.useFakeTimers();
 
 describe("debounce", () => {
-  let method = vi.fn();
+  const method = vi.fn();
 
   it("debounces many calls to a few", () => {
     const debouncedMethod = debounce(method, 100);
 
-    debouncedMethod();
-    debouncedMethod();
-    debouncedMethod();
-    debouncedMethod();
+    debouncedMethod("", 0);
+    debouncedMethod("", 0);
+    debouncedMethod("", 0);
+    debouncedMethod("", 0);
 
     expect(method).toHaveBeenCalledTimes(1);
 

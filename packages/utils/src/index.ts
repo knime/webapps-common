@@ -1,23 +1,26 @@
-import { capitalize, caseFormatter } from "./capitalize.js"; // eslint-disable-line import/extensions
-import { copyText } from "./copyText.js"; // eslint-disable-line import/extensions
+import { capitalize, caseFormatter } from "./capitalize";
+import { copyText } from "./copyText";
 import debounce from "./debounce";
 import { filters } from "./filters";
-import truncateString from "./truncateString.js"; // eslint-disable-line import/extensions
+import truncateString from "./truncateString";
 import getWrappedAroundIndex from "./getWrappedAroundIndex";
 import sleep from "./sleep";
 import { icons, isIconExisting } from "./fileTypeIcons";
-import svgWithTitle from "./svgWithTitle.js"; // eslint-disable-line import/extensions
-import updateDate from "./updateDate.js"; // eslint-disable-line import/extensions
-import { isAfterMaxDate, isBeforeMinDate } from "./dateMinMaxCheck.js"; // eslint-disable-line import/extensions
+
+// eslint-disable-next-line import/extensions
+import svgWithTitle from "./svgWithTitle.js";
+
+import updateDate from "./updateDate";
+import { isAfterMaxDate, isBeforeMinDate } from "./dateMinMaxCheck";
 import {
   formatDateString,
   formatDateTimeString,
   formatLocalDateTimeString,
   formatTimeString,
-} from "./format.js"; // eslint-disable-line import/extensions
+} from "./format";
 
-import getLocalTimeZone from "./localTimezone.js"; // eslint-disable-line import/extensions
-import numIntegerDigits from "./numIntegerDigits.js"; // eslint-disable-line import/extensions
+import getLocalTimeZone from "./localTimezone";
+import numIntegerDigits from "./numIntegerDigits";
 import { formatHotkeys } from "./formatHotkeys";
 import type { Hotkey, KnownHotkey } from "./formatHotkeys";
 import * as navigator from "./navigator";

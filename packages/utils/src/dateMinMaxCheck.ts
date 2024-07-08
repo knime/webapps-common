@@ -4,13 +4,18 @@ import updateDate from "./updateDate";
 
 /**
  * Check if date is before min.
- * @param {Date} date
- * @param {Date | null} min
- * @param {Boolean} checkDate - check date part (year, day, month).
- * @param {Boolean} checkTime - check time part (hour, minutes etc.).
- * @returns {Boolean} whether limit is kept or not.
+ * @param date
+ * @param min
+ * @param checkDate - check date part (year, day, month).
+ * @param checkTime - check time part (hour, minutes etc.).
+ * @returns whether limit is kept or not.
  */
-export const isBeforeMinDate = (date, min, checkDate, checkTime) => {
+export const isBeforeMinDate = (
+  date: Date,
+  min: Date | null,
+  checkDate: boolean,
+  checkTime: boolean,
+) => {
   if (min) {
     if (checkTime && checkDate) {
       return isBefore(date, min);
@@ -31,13 +36,18 @@ export const isBeforeMinDate = (date, min, checkDate, checkTime) => {
 
 /**
  * Check
- * @param {Date} date - date to check.
- * @param {Date | null} max - maximum date.
- * @param {Boolean} checkDate - check date part (year, day, month).
- * @param {Boolean} checkTime - check time part (hour, minutes etc.).
- * @returns {Boolean} whether limit is kept or not.
+ * @param date - date to check.
+ * @param max - maximum date.
+ * @param checkDate - check date part (year, day, month).
+ * @param checkTime - check time part (hour, minutes etc.).
+ * @returns whether limit is kept or not.
  */
-export const isAfterMaxDate = (date, max, checkDate, checkTime) => {
+export const isAfterMaxDate = (
+  date: Date,
+  max: Date | null,
+  checkDate: boolean,
+  checkTime: boolean,
+) => {
   if (max) {
     if (checkTime && checkDate) {
       return isAfter(date, max);

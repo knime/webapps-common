@@ -3,11 +3,11 @@ import { isValid, getYear, getMonth, getDate, set } from "date-fns";
  * Updates the date part (year, day and month) of a date object (base)
  * time, offset (timezone) and so on will be left untouched.
  *
- * @param {Date} base - Date which will be used (copied) to set day, month and year.
- * @param {Date | null} date - Extract day, month and year from this date object.
- * @returns {Date} Copy of base with day, month and year of date.
+ * @param  base - Date which will be used (copied) to set day, month and year.
+ * @param  date - Extract day, month and year from this date object.
+ * @returns Copy of base with day, month and year of date.
  */
-export default (base, date) => {
+export default (base: Date, date: Date | null) => {
   // ignore falsy dates
   if (date) {
     // allow invalid base and set time to 0
@@ -18,5 +18,6 @@ export default (base, date) => {
       date: getDate(date),
     });
   }
+
   return base;
 };
