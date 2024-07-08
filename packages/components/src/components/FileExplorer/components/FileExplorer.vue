@@ -304,12 +304,7 @@ const handleFocusOnTable = (event: FocusEvent) => {
   focusIndex(focusedIndex.value, false);
 };
 
-watch(focusedIndex, async (index, oldIndex) => {
-  // block key navigation if rename is active
-  if (renamedItemId.value) {
-    focusedIndex.value = oldIndex;
-    return;
-  }
+watch(focusedIndex, async (index) => {
   await nextTick();
   focusIndex(index, false);
 });
