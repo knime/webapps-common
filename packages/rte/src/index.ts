@@ -1,4 +1,5 @@
 import RichTextEditor from "./components/RichTextEditor.vue";
+import RichTextEditorToolbar from "./components/RichTextEditorToolbar.vue";
 
-export default RichTextEditor;
+export { RichTextEditor, RichTextEditorToolbar };
 export * from "./types";
