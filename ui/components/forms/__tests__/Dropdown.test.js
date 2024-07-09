@@ -184,7 +184,17 @@ describe("Dropdown.vue", () => {
       modelValue: "test1",
       slots: { "icon-right": ICON_SLOT_CONTENT_MOCK },
     });
-    expect(wrapper.find("[role=button]").text()).toBe("Text 1 Right");
+    expect(wrapper.find("[role=button]").text()).toBe("Text 1Right");
+  });
+
+  it("checks if we have search value", () => {
+    const { wrapper } = doMount({
+      Dropdown,
+    });
+    expect(wrapper.vm.activeSearch).toBe(false);
+
+    wrapper.vm.searchValue = "a";
+    expect(wrapper.vm.activeSearch).toBe(true);
   });
 
   it("sets the correct aria-* attributes", () => {
@@ -192,6 +202,20 @@ describe("Dropdown.vue", () => {
     const { wrapper } = doMount({ ariaLabel });
     const button = wrapper.find("[role=button]");
     expect(button.attributes("aria-label")).toBe(ariaLabel);
+  });
+
+  it("resets the searchValue clicking the close icon", async () => {
+    const { wrapper } = doMount({
+      Dropdown,
+    });
+
+    await wrapper.find("[role=button]").trigger("keydown.down");
+
+    wrapper.vm.handleSearch("abas");
+    expect(wrapper.vm.searchValue).toBe("abas");
+
+    wrapper.vm.handleResetInput();
+    expect(wrapper.vm.searchValue).toBe("");
   });
 
   it("sets titles from text or optional titles of items", () => {
@@ -289,6 +313,12 @@ describe("Dropdown.vue", () => {
     expect(listbox.isVisible()).toBe(false);
   });
 
+  it("updates searchValue", () => {
+    const { wrapper } = doMount();
+    wrapper.vm.handleSearch("a");
+    expect(wrapper.vm.searchValue).toBe("a");
+  });
+
   it("provides a valid hasSelection method", async () => {
     const { wrapper } = doMount();
     expect(wrapper.vm.hasSelection()).toBe(false);
@@ -310,6 +340,7 @@ describe("Dropdown.vue", () => {
   ])("keyboard navigation", ({ possibleValues, slots, type }) => {
     it(`opens and closes the listbox on enter/esc for a ${type}`, async () => {
       const { wrapper } = doMount({ possibleValues, slots });
+      let button = wrapper.find("[role=button]");
       let listbox = wrapper.find("[role=listbox]");
 
       // open list
@@ -317,28 +348,24 @@ describe("Dropdown.vue", () => {
       expect(listbox.isVisible()).toBe(true);
 
       // close listbox
-      await listbox.trigger("keydown", { key: "Escape" });
+      await button.trigger("keydown", { key: "Escape" });
       expect(listbox.isVisible()).toBe(false);
     });
 
     it(`sets the values on keydown navigation for a ${type}`, () => {
       const modelValue = possibleValues[1].id; // defines start point
       const { wrapper } = doMount({ possibleValues, modelValue, slots });
-      const ul = wrapper.find("ul");
-      ul.trigger("keydown", { key: "ArrowDown" });
-      expect(wrapper.emitted("update:modelValue")[0][0]).toBe(
-        possibleValues[2].id,
-      );
+      const button = wrapper.find("[role=button]");
+      button.trigger("keydown", { key: "ArrowDown" });
+      expect(wrapper.vm.candidate).toBe(possibleValues[2].id);
     });
 
     it(`sets the values on keyup navigation for a ${type}`, () => {
       const modelValue = possibleValues[1].id; // defines start point
       const { wrapper } = doMount({ possibleValues, modelValue, slots });
-      const ul = wrapper.find("ul");
-      ul.trigger("keydown", { key: "ArrowUp" });
-      expect(wrapper.emitted("update:modelValue")[0][0]).toBe(
-        possibleValues[0].id,
-      );
+      const button = wrapper.find("[role=button]");
+      button.trigger("keydown", { key: "ArrowUp" });
+      expect(wrapper.vm.candidate).toBe(possibleValues[0].id);
     });
 
     it(`sets no values on keyup navigation at the start for a ${type}`, () => {
@@ -352,27 +379,25 @@ describe("Dropdown.vue", () => {
     it(`sets no values on keydown navigation at the end for a ${type}`, () => {
       const modelValue = possibleValues[possibleValues.length - 1].id; // defines start point
       const { wrapper } = doMount({ possibleValues, modelValue, slots });
-      const ul = wrapper.find("ul");
-      ul.trigger("keydown.down");
+      const button = wrapper.find("[role=button]");
+      button.trigger("keydown.down");
       expect(wrapper.emitted("update:modelValue")).toBeFalsy();
     });
 
     it(`sets the values to the first value on home key for a ${type}`, () => {
       const modelValue = possibleValues[2].id; // defines start point
       const { wrapper } = doMount({ possibleValues, modelValue, slots });
-      const ul = wrapper.find("ul");
-      ul.trigger("keydown", { key: "Home" });
-      expect(wrapper.emitted("update:modelValue")[0][0]).toBe(
-        possibleValues[0].id,
-      );
+      const button = wrapper.find("[role=button]");
+      button.trigger("keydown", { key: "Home" });
+      expect(wrapper.vm.candidate).toBe(possibleValues[0].id);
     });
 
     it(`sets the values to the last value on end key for a ${type}`, () => {
       const modelValue = possibleValues[2].id; // defines start point
       const { wrapper } = doMount({ possibleValues, modelValue, slots });
-      const ul = wrapper.find("ul");
-      ul.trigger("keydown", { key: "End" });
-      expect(wrapper.emitted("update:modelValue")[0][0]).toBe(
+      const button = wrapper.find("[role=button]");
+      button.trigger("keydown", { key: "End" });
+      expect(wrapper.vm.candidate).toBe(
         possibleValues[possibleValues.length - 1].id,
       );
     });
@@ -393,45 +418,45 @@ describe("Dropdown.vue", () => {
     it(`finds the first matching item for a ${type}`, () => {
       const modelValue = possibleValues[2].id; // defines start point
       const { wrapper } = doMount({ possibleValues, modelValue, slots });
-      const ul = wrapper.find("ul");
-      ul.trigger("keydown", { key: "t" });
-      expect(wrapper.emitted("update:modelValue")[0][0]).toBe("test1");
+      const button = wrapper.find("[role=button]");
+      button.trigger("keydown", { key: "t" });
+      expect(wrapper.vm.candidate).toBe("test1");
     });
 
     it(`finds a more exact matching item for a ${type}`, () => {
       const modelValue = possibleValues[2].id; // defines start point
       const { wrapper } = doMount({ possibleValues, modelValue, slots });
-      const ul = wrapper.find("ul");
+      const button = wrapper.find("[role=button]");
 
-      ul.trigger("keydown", { key: "t" });
-      ul.trigger("keydown", { key: "e" });
-      ul.trigger("keydown", { key: "x" });
-      ul.trigger("keydown", { key: "t" });
-      ul.trigger("keydown", { key: " " });
-      ul.trigger("keydown", { key: "4" });
+      button.trigger("keydown", { key: "t" });
+      button.trigger("keydown", { key: "e" });
+      button.trigger("keydown", { key: "x" });
+      button.trigger("keydown", { key: "t" });
+      button.trigger("keydown", { key: " " });
+      button.trigger("keydown", { key: "4" });
 
-      expect(wrapper.emitted("update:modelValue")[5][0]).toBe("test4");
+      expect(wrapper.vm.candidate).toBe("test4");
     });
 
     it(`resets after stop typing for a ${type}`, () => {
       const modelValue = possibleValues[2].id; // defines start point
       const { wrapper } = doMount({ possibleValues, modelValue, slots });
-      const ul = wrapper.find("ul");
+      const button = wrapper.find("[role=button]");
 
-      ul.trigger("keydown", { key: "t" });
-      expect(wrapper.emitted("update:modelValue")[0][0]).toBe("test1");
+      button.trigger("keydown", { key: "t" });
+      expect(wrapper.vm.candidate).toBe("test1");
 
       // stopping typing
       vi.runAllTimers();
 
-      ul.trigger("keydown", { key: "t" });
-      ul.trigger("keydown", { key: "e" });
-      ul.trigger("keydown", { key: "x" });
-      ul.trigger("keydown", { key: "t" });
-      ul.trigger("keydown", { key: " " });
-      ul.trigger("keydown", { key: "3" });
+      button.trigger("keydown", { key: "t" });
+      button.trigger("keydown", { key: "e" });
+      button.trigger("keydown", { key: "x" });
+      button.trigger("keydown", { key: "t" });
+      button.trigger("keydown", { key: " " });
+      button.trigger("keydown", { key: "3" });
 
-      expect(wrapper.emitted("update:modelValue")[6][0]).toBe("test3");
+      expect(wrapper.vm.candidate).toBe("test3");
     });
   });
 
