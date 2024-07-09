@@ -5,6 +5,7 @@
   "license": "UNLICENSED",
   "author": "KNIME AG, Zurich, Switzerland",
   "type": "module",
+  "private": true,
   "scripts": {
     "dev": "vite",
     "build": "vite build",
