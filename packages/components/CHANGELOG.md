@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.0.7
+
+### Patch Changes
+
+- e48ef4d: replace mousedown event with pointerdown event in useKeyPressedUntilMouseClick to prevent timing issues
+
 ## 1.0.6
 
 ### Patch Changes
