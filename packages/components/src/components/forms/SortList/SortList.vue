@@ -2,7 +2,7 @@
 import { computed, nextTick, ref, watch } from "vue";
 import { partition, indexOf, keyBy } from "lodash-es";
 
-import { formatHotkeys, type Hotkey } from "@knime/utils";
+import { hotkeys, type HotkeysNS } from "@knime/utils";
 import ArrowDownIcon from "@knime/styles/img/icons/arrow-down.svg";
 import ArrowUpIcon from "@knime/styles/img/icons/arrow-up.svg";
 import ArrowDownloadIcon from "@knime/styles/img/icons/arrow-download.svg";
@@ -108,8 +108,8 @@ const moveDown = move("down");
 const moveToStart = () => moveUp({ to: 0 });
 const moveToEnd = () => moveDown({ to: props.modelValue.length });
 
-const getFormattedTooltip = (text: string, hotkey: Array<Hotkey>) => {
-  return `${text} (${formatHotkeys(hotkey)})`;
+const getFormattedTooltip = (text: string, hotkey: Array<HotkeysNS.Hotkey>) => {
+  return `${text} (${hotkeys.formatHotkeys(hotkey)})`;
 };
 </script>
 

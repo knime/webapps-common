@@ -20,11 +20,26 @@ import {
 
 import getLocalTimeZone from "./localTimezone";
 import numIntegerDigits from "./numIntegerDigits";
-import { formatHotkeys } from "./formatHotkeys";
-import type { Hotkey, KnownHotkey } from "./formatHotkeys";
+
+import {
+  formatHotkeys,
+  formatHotkey,
+  getDefaultSeparator,
+} from "./formatHotkeys";
+
+import type {
+  Hotkey as _Hotkey,
+  KnownHotkey as _KnownHotkey,
+} from "./formatHotkeys";
+
 import * as navigator from "./navigator";
 
-export type { Hotkey, KnownHotkey };
+const hotkeys = { formatHotkeys, formatHotkey, getDefaultSeparator };
+
+export namespace HotkeysNS {
+  export type Hotkey = _Hotkey;
+  export type KnownHotkey = _KnownHotkey;
+}
 
 export {
   capitalize,
@@ -46,6 +61,6 @@ export {
   getLocalTimeZone,
   isBeforeMinDate,
   numIntegerDigits,
-  formatHotkeys,
+  hotkeys,
   navigator,
 };
