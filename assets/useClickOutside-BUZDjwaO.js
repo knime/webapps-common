@@ -1,0 +1,1 @@
+import{J as d,a1 as r,K as u,E as f,$ as c}from"./index-DQX5xbrx.js";const p=({targets:s,callback:n},i=f(!0))=>{let e;const o=()=>{e=c(s[0],n,{ignore:s})},t=()=>{typeof e<"u"&&e()};d(()=>r(i),a=>{a?o():t()},{immediate:!0}),u(t)};export{p as u};
