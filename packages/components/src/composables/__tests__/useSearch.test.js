@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { useSearch } from "../useSearch";
+import useSearch from "../useSearch";
 import { ref } from "vue";
 
 describe("useSearch.ts", () => {
@@ -31,7 +31,7 @@ describe("useSearch.ts", () => {
       availableValues,
     );
 
-    expect(firstSample).toStrictEqual([
+    expect(firstSample.value).toStrictEqual([
       { id: "leon", text: "Goretzka" },
       { id: "matthias", text: "Ginter" },
       { id: "kai", text: "Havertz" },
@@ -43,7 +43,7 @@ describe("useSearch.ts", () => {
       caseSensitiveSearch,
       availableValues,
     );
-    expect(secondSample).toStrictEqual([]);
+    expect(secondSample.value).toStrictEqual([]);
   });
 
   it("applies the caseSensitivity", () => {
@@ -51,20 +51,18 @@ describe("useSearch.ts", () => {
     const caseSensitiveSearch = ref(true);
     const searchTerm = ref("k");
 
-    const firstSample = useSearch(
+    const filteredValues = useSearch(
       searchTerm,
       caseSensitiveSearch,
       availableValues,
     );
-    expect(firstSample).toStrictEqual([{ id: "leon", text: "Goretzka" }]);
+    expect(filteredValues.value).toStrictEqual([
+      { id: "leon", text: "Goretzka" },
+    ]);
 
     caseSensitiveSearch.value = false; // toggle caseSensitivity
-    const secondSample = useSearch(
-      searchTerm,
-      caseSensitiveSearch,
-      availableValues,
-    );
-    expect(secondSample).toStrictEqual([
+
+    expect(filteredValues.value).toStrictEqual([
       { id: "toni", text: "Kroos" },
       { id: "joshua", text: "Kimmich" },
       { id: "leon", text: "Goretzka" },
@@ -76,29 +74,20 @@ describe("useSearch.ts", () => {
     const caseSensitiveSearch = ref(false);
     const searchTerm = ref("t");
 
-    const firstSample = useSearch(
+    const filteredValues = useSearch(
       searchTerm,
       caseSensitiveSearch,
       availableValues,
     );
 
-    expect(firstSample).toStrictEqual([]);
+    expect(filteredValues.value).toStrictEqual([]);
 
     availableValues.value = null;
-    const secondSample = useSearch(
-      searchTerm,
-      caseSensitiveSearch,
-      availableValues,
-    );
-    expect(secondSample).toStrictEqual([]);
+
+    expect(filteredValues.value).toStrictEqual([]);
 
     availableValues.value = undefined;
-    const thirdSample = useSearch(
-      searchTerm,
-      caseSensitiveSearch,
-      availableValues,
-    );
-    expect(thirdSample).toStrictEqual([]);
+    expect(filteredValues.value).toStrictEqual([]);
   });
 
   it("returns default possibleValues if receives empty searchTerm or null", () => {
@@ -106,27 +95,19 @@ describe("useSearch.ts", () => {
     const caseSensitiveSearch = ref(false);
     const searchTerm = ref("");
 
-    const firstSample = useSearch(
+    const filteredValues = useSearch(
       searchTerm,
       caseSensitiveSearch,
       availableValues,
     );
-    expect(firstSample).toStrictEqual(defaultPossibleValues);
+    expect(filteredValues.value).toStrictEqual(defaultPossibleValues);
 
     searchTerm.value = null;
-    const secondSample = useSearch(
-      searchTerm,
-      caseSensitiveSearch,
-      availableValues,
-    );
-    expect(secondSample).toStrictEqual(defaultPossibleValues);
+
+    expect(filteredValues.value).toStrictEqual(defaultPossibleValues);
 
     searchTerm.value = undefined;
-    const thirdSample = useSearch(
-      searchTerm,
-      caseSensitiveSearch,
-      availableValues,
-    );
-    expect(thirdSample).toStrictEqual(defaultPossibleValues);
+
+    expect(filteredValues.value).toStrictEqual(defaultPossibleValues);
   });
 });

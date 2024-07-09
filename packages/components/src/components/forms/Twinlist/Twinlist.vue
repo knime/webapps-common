@@ -7,7 +7,6 @@ import ArrowNextDoubleIcon from "@knime/styles/img/icons/arrow-next-double.svg";
 import ArrowPrevIcon from "@knime/styles/img/icons/arrow-prev.svg";
 import ArrowPrevDoubleIcon from "@knime/styles/img/icons/arrow-prev-double.svg";
 import {
-  useSearch,
   useLabelInfo,
   createMissingItem,
   type Id,
@@ -16,6 +15,8 @@ import {
 import Label from "../Label/Label.vue";
 import SearchInput from "../SearchInput/SearchInput.vue";
 import MultiselectListBox from "../MultiselectListBox/MultiselectListBox.vue";
+
+import useSearch from "../../../composables/useSearch";
 
 const KEY_ENTER = "Enter";
 const MIN_LIST_SIZE = 5;
@@ -316,12 +317,14 @@ export default {
       );
     });
 
-    const filteredIncludedItems = computed(() => {
-      if (!props.showSearch) {
-        return allIncludedItems.value;
-      }
-      return useSearch(searchTerm, caseSensitiveSearch, allIncludedItems);
-    });
+    const showSearch = toRef(props, "showSearch");
+
+    const filteredIncludedItems = useSearch(
+      searchTerm,
+      caseSensitiveSearch,
+      allIncludedItems,
+      showSearch,
+    );
 
     const knownExcludedValues = computed(() => {
       if (!excludedValues.value) {
@@ -349,13 +352,12 @@ export default {
       );
     });
 
-    const filteredExcludedItems = computed(() => {
-      if (!props.showSearch) {
-        return allExcludedItems.value;
-      }
-
-      return useSearch(searchTerm, caseSensitiveSearch, allExcludedItems);
-    });
+    const filteredExcludedItems = useSearch(
+      searchTerm,
+      caseSensitiveSearch,
+      allExcludedItems,
+      showSearch,
+    );
 
     const hasActiveSearch = computed(() => {
       return props.showSearch && searchTerm.value !== "";

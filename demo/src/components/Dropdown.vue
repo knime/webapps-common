@@ -96,7 +96,7 @@ export default {
     return {
       codeExample,
       slottedCodeExample,
-      selected: "bar",
+      selected: "Id 123",
       placeholderModel: "",
       disabledSelected: "",
       withSlotsSelected: "",
@@ -176,20 +176,12 @@ export default {
           <Dropdown
             v-model="selected"
             aria-label="A List"
-            :possible-values="[
-              {
-                id: 'foo',
-                text: 'Foo',
-              },
-              {
-                id: 'bar',
-                text: 'Bar',
-              },
-              {
-                id: 'baz',
-                text: 'Baz',
-              },
-            ]"
+            :possible-values="
+              Array.from({ length: 1000 }, (_v, i) => ({
+                id: `Id ${i}`,
+                text: `Option ${i}`,
+              }))
+            "
           />
         </div>
         <div class="grid-item-5">
@@ -365,6 +357,17 @@ export default {
               },
             ]"
             disabled
+          />
+        </div>
+        <div class="grid-item-2">selected id: {{ disabledSelected }}</div>
+      </div>
+      <br />
+      <div class="grid-container">
+        <div class="grid-item-5">
+          <Dropdown
+            v-model="disabledSelected"
+            placeholder="No values present"
+            aria-label="A List"
           />
         </div>
         <div class="grid-item-2">selected id: {{ disabledSelected }}</div>

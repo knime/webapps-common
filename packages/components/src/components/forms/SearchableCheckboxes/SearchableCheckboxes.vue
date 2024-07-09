@@ -1,16 +1,17 @@
 <script lang="ts">
-import { ref, computed, type Ref, type PropType } from "vue";
+import { ref, computed, toRef } from "vue";
+import type { PropType, Ref } from "vue";
 
 import Label from "../Label/Label.vue";
 import SearchInput from "../SearchInput/SearchInput.vue";
 import Checkboxes from "../Checkboxes/Checkboxes.vue";
 import {
-  useSearch,
   useLabelInfo,
   type Id,
   type PossibleValue,
   createMissingItem,
 } from "../possibleValues";
+import useSearch from "../../../composables/useSearch";
 
 const MIN_LIST_SIZE = 5;
 const DEF_PIX_SIZE = 28;
@@ -181,12 +182,12 @@ export default {
       return [...matchingInvalidValueIds.value, ...matchingValidIds.value];
     });
 
-    const allItems = computed(() => {
-      if (!props.showSearch) {
-        return visibleValues.value;
-      }
-      return useSearch(searchTerm, caseSensitiveSearch, visibleValues);
-    });
+    const allItems = useSearch(
+      searchTerm,
+      caseSensitiveSearch,
+      visibleValues,
+      toRef(props, "showSearch"),
+    );
 
     const concatenatedItems = computed(() => {
       if (allItems.value.length === 0) {

@@ -2,9 +2,13 @@
 import { type PropType } from "vue";
 import { OnClickOutside } from "@vueuse/components";
 import { isEmpty } from "lodash-es";
+import { computed, ref, toRefs, watch } from "vue";
 
 import DropdownIcon from "@knime/styles/img/icons/arrow-dropdown.svg";
 import "../variables.css";
+import useSearch from "../../../composables/useSearch";
+import CloseIcon from "@knime/styles/img/icons/close.svg";
+import FunctionButton from "../../Buttons/FunctionButton.vue";
 
 type Id = string | number;
 interface PossibleValue {
@@ -25,13 +29,13 @@ const KEY_END = "End";
 const KEY_ESC = "Escape";
 const KEY_ENTER = "Enter";
 
-const TYPING_TIMEOUT = 1000; // in ms
-
 export default {
   name: "Dropdown",
   components: {
     DropdownIcon,
     OnClickOutside,
+    FunctionButton,
+    CloseIcon,
   },
   props: {
     id: {
@@ -99,24 +103,63 @@ export default {
       type: Array as PropType<PossibleValue[]>,
       default: () => [],
     },
+    caseSensitiveSearch: {
+      type: Boolean,
+      default: false,
+    },
     compact: {
       type: Boolean,
       default: false,
     },
   },
   emits: ["update:modelValue"],
+  setup(props) {
+    const { caseSensitiveSearch, possibleValues } = toRefs(props);
+    const useFilterValues = ref(false);
+    const displayTextMap = computed(() => {
+      let map = {} as Record<Id, string>;
+      for (let value of possibleValues.value) {
+        map[value.id] = value.text;
+      }
+      return map;
+    });
+
+    const searchValue = ref(displayTextMap.value[props.modelValue]);
+    watch(
+      () => props.modelValue,
+      (newVal: Id) => {
+        searchValue.value = displayTextMap.value[newVal];
+      },
+    );
+
+    const currentPossibleValues = useSearch(
+      searchValue,
+      caseSensitiveSearch,
+      possibleValues,
+      useFilterValues,
+    );
+
+    return {
+      searchValue,
+      useFilterValues,
+      currentPossibleValues,
+    };
+  },
   data() {
     return {
       typingTimeout: null as null | ReturnType<typeof setTimeout>,
       isExpanded: false,
       searchQuery: "",
+      candidate: this.modelValue,
+      emptyState: "Nothing found",
+      optionRefs: new Map(),
     };
   },
   computed: {
     groupedValues() {
       const groups: Record<string, { label?: string; items: PossibleValue[] }> =
         {};
-      for (const item of this.possibleValues) {
+      for (const item of this.currentPossibleValues) {
         const groupLabel = item.group || "";
         if (!groups[groupLabel]) {
           groups[groupLabel] = { label: item.group, items: [] };
@@ -138,14 +181,14 @@ export default {
       return this.orderedGroupedValues.flatMap((group) => group.items);
     },
     selectedIndex() {
-      return this.flatOrderedValues.map((x) => x.id).indexOf(this.modelValue);
+      return this.flatOrderedValues.map((x) => x.id).indexOf(this.candidate);
     },
     showPlaceholder() {
       return !this.modelValue;
     },
     displayTextMap() {
       let map = {} as Record<Id, string>;
-      for (let value of this.flatOrderedValues) {
+      for (let value of this.possibleValues) {
         map[value.id] = value.text;
       }
       return map;
@@ -156,7 +199,7 @@ export default {
       } else if (this.displayTextMap.hasOwnProperty(this.modelValue)) {
         return this.displayTextMap[this.modelValue];
       } else {
-        return `(MISSING) ${this.modelValue}`;
+        return `(MISSING) ${this.modelValue.toString()}`;
       }
     },
     isMissing() {
@@ -168,6 +211,9 @@ export default {
       return this.$slots["icon-right"]?.().length;
     },
     hasOptionTemplate() {
+      if (this.flatOrderedValues.length === 0) {
+        return false;
+      }
       return this.flatOrderedValues.every(
         (value) => value.slotData && !isEmpty(value.slotData),
       );
@@ -175,11 +221,37 @@ export default {
     selectedOption() {
       return this.possibleValues.find((value) => value.id === this.modelValue);
     },
+    hasNoFilteredPossibleValues() {
+      return this.currentPossibleValues.length === 0;
+    },
+    nonEmptySearchValue() {
+      return this.searchValue?.length > 0;
+    },
+    possibleValuesIsProvided() {
+      return Boolean(this.possibleValues.length);
+    },
+    isDisabled() {
+      return this.disabled || !this.possibleValuesIsProvided;
+    },
+    closeIconTooltip() {
+      return "Clear";
+    },
+  },
+  watch: {
+    currentPossibleValues(newVal: PossibleValue[]) {
+      this.candidate = newVal[0]?.id;
+    },
+    isExpanded() {
+      this.useFilterValues = false;
+    },
   },
 
   methods: {
+    updateCandidate(candidate: Id) {
+      this.candidate = candidate;
+    },
     isCurrentValue(candidate: Id) {
-      return this.modelValue === candidate;
+      return this.candidate === candidate;
     },
     setSelected(id: Id) {
       consola.trace("Dropdown setSelected on", id);
@@ -187,7 +259,7 @@ export default {
       /**
        * Fired when the selection changes.
        */
-      this.$emit("update:modelValue", id);
+      this.updateCandidate(id);
     },
     getButtonRef() {
       return this.$refs.button as HTMLElement;
@@ -195,18 +267,26 @@ export default {
     getOptionsRefs() {
       return this.$refs.options as HTMLElement[];
     },
+    getSearchInput() {
+      return this.$refs.searchInput as HTMLInputElement;
+    },
     getListBoxNodeRef() {
       return this.$refs.ul as HTMLElement;
     },
-    onOptionClick(id: Id) {
-      this.setSelected(id);
-      this.isExpanded = false;
-      this.getButtonRef().focus();
+    emitAndClose(id: Id) {
+      this.$emit("update:modelValue", id);
+      this.toggleExpanded();
     },
-    scrollTo(optionIndex: number) {
+    scrollTo(id: Id) {
       let listBoxNode = this.getListBoxNodeRef();
-      if (listBoxNode.scrollHeight > listBoxNode.clientHeight) {
-        let element = this.getOptionsRefs()[optionIndex];
+      if (listBoxNode.scrollHeight >= listBoxNode.clientHeight) {
+        let element = this.optionRefs.get(id);
+        if (!element) {
+          consola.error(
+            `trying to scroll to element with Id ${id.toString()} which does not exist`,
+          );
+          return;
+        }
         let scrollBottom = listBoxNode.clientHeight + listBoxNode.scrollTop;
         let elementBottom = element.offsetTop + element.offsetHeight;
         if (elementBottom > scrollBottom) {
@@ -221,16 +301,31 @@ export default {
       if (next >= this.flatOrderedValues.length) {
         return;
       }
-      this.setSelected(this.flatOrderedValues[next].id);
-      this.scrollTo(next);
+      const nextId = this.flatOrderedValues[next].id;
+      this.setSelected(nextId);
+      this.scrollTo(nextId);
     },
     onArrowUp() {
       let next = this.selectedIndex - 1;
       if (next < 0) {
         return;
       }
-      this.setSelected(this.flatOrderedValues[next].id);
-      this.scrollTo(next);
+      const nextId = this.flatOrderedValues[next].id;
+      this.setSelected(nextId);
+      this.scrollTo(nextId);
+    },
+    onEnter() {
+      if (!this.isExpanded) {
+        this.toggleExpanded();
+        return;
+      }
+      if (
+        this.hasNoFilteredPossibleValues ||
+        typeof this.candidate === "undefined"
+      ) {
+        return;
+      }
+      this.emitAndClose(this.candidate);
     },
     onEndKey() {
       let next = this.flatOrderedValues.length - 1;
@@ -243,88 +338,65 @@ export default {
       this.setSelected(this.flatOrderedValues[next].id);
       this.getListBoxNodeRef().scrollTop = 0;
     },
+    selectFirst() {
+      const { id } = this.flatOrderedValues[0];
+      this.setSelected(id);
+      this.getListBoxNodeRef().scrollTop = 0;
+      this.candidate = id;
+    },
     toggleExpanded() {
-      if (this.disabled) {
-        return;
-      }
-      this.isExpanded = !this.isExpanded;
       if (this.isExpanded) {
-        this.$nextTick(() => this.getListBoxNodeRef().focus());
+        this.collapse();
+      } else {
+        this.expand();
       }
     },
-    handleKeyDownList(e: KeyboardEvent) {
+    expand() {
+      if (this.isDisabled) {
+        return;
+      }
+      this.searchValue = this.displayTextMap[this.modelValue];
+      this.isExpanded = true;
+      this.selectFirst();
+      this.$nextTick(() => {
+        this.getSearchInput().focus();
+        this.getSearchInput().select();
+      });
+    },
+    collapse() {
+      this.isExpanded = false;
+      this.getButtonRef().focus();
+    },
+    handleKeyDownButton(e: KeyboardEvent) {
       /* NOTE: we use a single keyDown method because @keydown.up bindings are not testable. */
       if (e.key === KEY_DOWN) {
         this.onArrowDown();
         e.preventDefault();
-        return;
       }
       if (e.key === KEY_UP) {
         this.onArrowUp();
         e.preventDefault();
-        return;
       }
       if (e.key === KEY_END) {
         this.onEndKey();
         e.preventDefault();
-        return;
       }
       if (e.key === KEY_HOME) {
-        this.onHomeKey();
+        this.selectFirst();
         e.preventDefault();
-        return;
       }
       if (e.key === KEY_ESC) {
-        this.isExpanded = false;
-        this.getButtonRef().focus();
+        this.collapse();
         e.preventDefault();
         e.stopPropagation();
-        return;
       }
       if (e.key === KEY_ENTER) {
-        this.isExpanded = false;
-        this.getButtonRef().focus();
+        this.onEnter();
         e.preventDefault();
-        return;
-      }
-      this.searchItem(e);
-    },
-    handleKeyDownButton(e: KeyboardEvent) {
-      if (e.key === KEY_ENTER) {
-        this.toggleExpanded();
-        e.preventDefault();
-        return;
-      }
-      if (e.key === KEY_DOWN) {
-        this.onArrowDown();
-        e.preventDefault();
-        return;
-      }
-      if (e.key === KEY_UP) {
-        this.onArrowUp();
-        e.preventDefault();
-        return;
-      }
-      this.searchItem(e);
-    },
-    searchItem(e: KeyboardEvent) {
-      if (this.typingTimeout !== null) {
-        clearTimeout(this.typingTimeout);
-      }
-      this.typingTimeout = setTimeout(() => {
-        this.searchQuery = "";
-      }, TYPING_TIMEOUT);
-      this.searchQuery += e.key;
-      consola.trace(`Searching for ${this.searchQuery}`);
-      const candidate = this.flatOrderedValues.find((item) =>
-        item.text.toLowerCase().startsWith(this.searchQuery.toLowerCase()),
-      );
-      if (candidate) {
-        this.setSelected(candidate.id);
       }
     },
     hasSelection() {
-      return this.selectedIndex >= 0;
+      return Boolean(this.modelValue && !this.isMissing);
     },
     getCurrentSelectedId() {
       try {
@@ -340,55 +412,101 @@ export default {
       let cleanId = String(itemId).replace(/[^\w]/gi, "");
       return `${node}-${this.id}-${cleanId}`;
     },
-    clickAway() {
+    closeDropdown() {
+      this.searchValue = this.displayTextMap[this.modelValue];
       this.isExpanded = false;
+    },
+    handleSearch(item: string) {
+      this.useFilterValues = true;
+      this.searchValue = item;
+    },
+    handleResetInput() {
+      this.searchValue = "";
+      this.getSearchInput().focus();
     },
   },
 };
 </script>
 
 <template>
-  <OnClickOutside @trigger="clickAway">
+  <OnClickOutside @trigger="closeDropdown">
     <div
       :id="id"
       :class="[
         'dropdown',
-        { collapsed: !isExpanded, invalid: !isValid, disabled, compact },
+        {
+          collapsed: !isExpanded,
+          invalid: !isValid,
+          disabled: isDisabled,
+          compact,
+        },
       ]"
     >
-      <div
-        :id="generateId('button')"
-        ref="button"
-        role="button"
-        tabindex="0"
-        aria-haspopup="listbox"
-        :class="{
-          placeholder: showPlaceholder,
-          missing: isMissing,
-          'has-option-template': hasOptionTemplate,
-        }"
-        :aria-label="ariaLabel"
-        :aria-labelledby="generateId('button')"
-        :aria-expanded="isExpanded"
-        @click="toggleExpanded"
-        @keydown="handleKeyDownButton"
-      >
-        <template v-if="hasOptionTemplate">
-          <slot
-            name="option"
-            :slot-data="selectedOption?.slotData"
-            :is-missing="isMissing"
-            :selected-value="modelValue"
+      <div class="button-wrapper">
+        <div
+          :id="generateId('button')"
+          ref="button"
+          role="button"
+          tabindex="0"
+          aria-haspopup="listbox"
+          :class="{
+            placeholder: showPlaceholder && !isExpanded,
+            missing: isMissing && !isExpanded,
+            'has-option-template': hasOptionTemplate && !isExpanded,
+          }"
+          :aria-label="ariaLabel"
+          :aria-labelledby="generateId('button')"
+          :aria-expanded="isExpanded"
+          @click="toggleExpanded"
+          @keydown="handleKeyDownButton"
+        >
+          <input
+            v-if="isExpanded"
+            ref="searchInput"
+            :value="searchValue"
+            tabindex="0"
+            role="searchbox"
+            class="search-input"
+            type="text"
+            @click.stop
+            @input="(e) => handleSearch((e.target as HTMLInputElement).value)"
           />
-        </template>
-        <template v-else>
-          {{ displayText }}
-          <div v-if="hasRightIcon" class="loading-icon">
-            <slot name="icon-right" />
+          <template v-else-if="hasOptionTemplate">
+            <slot
+              name="option"
+              :slot-data="selectedOption?.slotData"
+              :is-missing="isMissing"
+              :selected-value="modelValue"
+            />
+          </template>
+          <span v-else ref="span">{{ displayText }}</span>
+          <div class="right">
+            <div v-if="hasRightIcon" class="loading-icon">
+              <slot name="icon-right" />
+            </div>
+            <FunctionButton
+              v-if="isExpanded && nonEmptySearchValue"
+              ref="closeButton"
+              title="Close"
+              tabindex="0"
+              class="button"
+              @keydown.enter.stop
+              @click.stop="handleResetInput"
+            >
+              <CloseIcon class="icon" />
+            </FunctionButton>
+            <FunctionButton
+              v-if="!isExpanded || !nonEmptySearchValue"
+              class="button"
+              :disabled="isDisabled"
+              :title="isExpanded ? 'Cancel' : 'Expand'"
+              :tabindex="isExpanded ? 0 : -1"
+              @click.stop="toggleExpanded"
+            >
+              <DropdownIcon :class="['dropdown-icon', 'icon']" />
+            </FunctionButton>
           </div>
-        </template>
-        <!-- @vue-ignore -->
-        <DropdownIcon class="icon" />
+        </div>
       </div>
       <ul
         v-show="isExpanded"
@@ -399,8 +517,10 @@ export default {
           isExpanded ? generateId('option', getCurrentSelectedId()) : undefined
         "
         :class="{ 'drops-upwards': direction === 'up' }"
-        @keydown="handleKeyDownList"
       >
+        <div v-if="hasNoFilteredPossibleValues" class="empty-state">
+          {{ emptyState }}
+        </div>
         <template
           v-for="(group, groupIndex) in orderedGroupedValues"
           :key="groupIndex"
@@ -409,8 +529,8 @@ export default {
           <li
             v-for="item in group.items"
             :id="generateId('option', item.id)"
-            :key="`listbox-${item.id}`"
-            ref="options"
+            :key="`listbox-${item.id as string}`"
+            :ref="(element) => optionRefs.set(item.id, element as HTMLElement)"
             role="option"
             :title="typeof item.title === 'undefined' ? item.text : item.title"
             :class="{
@@ -420,7 +540,8 @@ export default {
               'has-option-template': hasOptionTemplate,
             }"
             :aria-selected="isCurrentValue(item.id)"
-            @click="onOptionClick(item.id)"
+            @mouseenter="setSelected(item.id)"
+            @click="emitAndClose(item.id)"
           >
             <template v-if="hasOptionTemplate">
               <slot name="option" :slot-data="item.slotData" />
@@ -440,29 +561,35 @@ export default {
 .dropdown {
   position: relative;
 
+  & .search-input {
+    outline: none;
+    border-style: none;
+    font-weight: 300;
+    line-height: normal;
+    padding: 0;
+  }
+
+  & .empty-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    padding: 0.5rem;
+    cursor: default;
+  }
+
+  & .right {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
   &.collapsed {
     background: var(--theme-dropdown-background-color);
 
     &.disabled {
       opacity: 0.5;
     }
-  }
-
-  &.compact {
-    & [role="button"] {
-      height: var(--single-line-form-height-compact);
-    }
-
-    & .icon {
-      top: calc(
-        (var(--single-line-form-height-compact) - var(--icon-size)) / 2
-      );
-      right: var(--space-8);
-    }
-  }
-
-  &:not(.disabled).collapsed:hover {
-    background: var(--knime-silver-sand-semi);
   }
 
   & .missing {
@@ -495,7 +622,7 @@ export default {
   & [role="button"] {
     margin: 0;
     border: var(--form-border-width) solid var(--knime-stone-gray);
-    padding: 0 38px 0 10px;
+    padding: 0 6px 0 10px;
     font-size: 13px;
     white-space: nowrap;
     overflow: hidden;
@@ -503,14 +630,38 @@ export default {
     display: flex;
     align-items: center;
     gap: 10px;
+    justify-content: space-between;
+
+    & .button {
+      padding: 4px;
+    }
 
     &:focus {
       outline: none;
+    }
+
+    & > :first-child {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  &.compact {
+    & [role="button"] {
+      height: var(--single-line-form-height-compact);
+
+      & .button {
+        padding: 2px;
+      }
     }
   }
 
   & [role="button"]:not(.has-option-template) {
     height: var(--single-line-form-height);
+  }
+
+  &:not(.disabled).collapsed:hover {
+    background: var(--knime-silver-sand-semi);
   }
 
   &:not(.collapsed) [role="button"] {
@@ -533,9 +684,6 @@ export default {
     height: var(--icon-size);
     stroke-width: calc(32px / 18);
     stroke: var(--knime-masala);
-    position: absolute;
-    right: 10px;
-    top: calc((var(--single-line-form-height) - var(--icon-size)) / 2);
     pointer-events: none;
     transition: transform 0.2s ease-in-out;
   }
@@ -557,7 +705,7 @@ export default {
     }
   }
 
-  &:not(.collapsed) .icon {
+  &:not(.collapsed) .dropdown-icon {
     transform: scaleY(-1);
   }
 
@@ -599,17 +747,14 @@ export default {
     }
 
     &:hover {
-      background: var(--theme-dropdown-background-color-hover);
-      color: var(--theme-dropdown-foreground-color-hover);
-
       & :slotted(svg) {
         stroke: var(--theme-dropdown-foreground-color-hover);
       }
     }
 
     &:focus {
-      background: var(--theme-dropdown-background-color-focus);
-      color: var(--theme-dropdown-foreground-color-focus);
+      background: var(--theme-dropdown-background-color-hover);
+      color: var(--theme-dropdown-foreground-color-hover);
 
       & :slotted(svg) {
         stroke: var(--theme-dropdown-foreground-color-focus);
@@ -617,8 +762,8 @@ export default {
     }
 
     &.focused {
-      background: var(--theme-dropdown-background-color-selected);
-      color: var(--theme-dropdown-foreground-color-selected);
+      background: var(--theme-dropdown-background-color-hover);
+      color: var(--theme-dropdown-foreground-color-hover);
 
       & :slotted(svg) {
         stroke: var(--theme-dropdown-foreground-color-selected);
