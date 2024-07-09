@@ -274,7 +274,7 @@ importers:
         version: 3.1.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.4.5))(eslint@8.56.0)(typescript@5.4.5))(eslint@8.56.0)
       eslint-plugin-vitest:
         specifier: 0.3.20
-        version: 0.3.20(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.4.5))(eslint@8.56.0)(typescript@5.4.5))(eslint@8.56.0)(typescript@5.4.5)(vitest@1.4.0(@types/node@20.14.9)(jsdom@24.1.0)(sugarss@4.0.1(postcss@8.4.38)))
+        version: 0.3.20(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.4.5))(eslint@8.56.0)(typescript@5.4.5))(eslint@8.56.0)(typescript@5.4.5)(vitest@1.2.1(@types/node@20.14.9)(jsdom@24.1.0)(sugarss@4.0.1(postcss@8.4.38)))
       eslint-plugin-vue:
         specifier: ^9.19.2
         version: 9.25.0(eslint@8.56.0)
@@ -6813,13 +6813,13 @@ snapshots:
     optionalDependencies:
       '@typescript-eslint/eslint-plugin': 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.4.5))(eslint@8.56.0)(typescript@5.4.5)
 
-  eslint-plugin-vitest@0.3.20(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.4.5))(eslint@8.56.0)(typescript@5.4.5))(eslint@8.56.0)(typescript@5.4.5)(vitest@1.4.0(@types/node@20.14.9)(jsdom@24.1.0)(sugarss@4.0.1(postcss@8.4.38))):
+  eslint-plugin-vitest@0.3.20(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.4.5))(eslint@8.56.0)(typescript@5.4.5))(eslint@8.56.0)(typescript@5.4.5)(vitest@1.2.1(@types/node@20.14.9)(jsdom@24.1.0)(sugarss@4.0.1(postcss@8.4.38))):
     dependencies:
       '@typescript-eslint/utils': 6.21.0(eslint@8.56.0)(typescript@5.4.5)
       eslint: 8.56.0
     optionalDependencies:
       '@typescript-eslint/eslint-plugin': 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.4.5))(eslint@8.56.0)(typescript@5.4.5)
-      vitest: 1.4.0(@types/node@20.14.9)(jsdom@24.1.0)(sugarss@4.0.1(postcss@8.4.38))
+      vitest: 1.2.1(@types/node@20.14.9)(jsdom@24.1.0)(sugarss@4.0.1(postcss@8.4.38))
     transitivePeerDependencies:
       - supports-color
       - typescript
