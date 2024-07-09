@@ -32,7 +32,7 @@ import type {
   KnownHotkey as _KnownHotkey,
 } from "./formatHotkeys";
 
-import * as navigator from "./navigator";
+import * as navigatorUtils from "./navigator";
 
 const hotkeys = { formatHotkeys, formatHotkey, getDefaultSeparator };
 
@@ -62,5 +62,5 @@ export {
   isBeforeMinDate,
   numIntegerDigits,
   hotkeys,
-  navigator,
+  navigatorUtils,
 };

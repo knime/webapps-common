@@ -12,7 +12,7 @@ import type {
 } from "../types";
 import useClickOutside from "../../../composables/useClickOutside";
 import useKeyPressedUntilMouseClick from "../../../composables/useKeyPressedUntilMouseClick";
-import { navigator } from "@knime/utils";
+import { navigatorUtils } from "@knime/utils";
 
 /**
  * Component that handles FileExplorer interactions.
@@ -427,7 +427,7 @@ const openFileOrEnterFolder = (item: FileExplorerItemType) => {
 };
 
 const handleEnterKey = (event: KeyboardEvent, item: FileExplorerItemType) => {
-  const ctrlOrMeta = navigator.getMetaOrCtrlKey();
+  const ctrlOrMeta = navigatorUtils.getMetaOrCtrlKey();
   if (event[ctrlOrMeta]) {
     return;
   }

@@ -1,5 +1,12 @@
 # @knime/utils
 
+## 1.0.2
+
+### Patch Changes
+
+- 45d2d81: Update navigator utils export name, because it conflicts with the native
+  global property of the same name.
+
 ## 1.0.1
 
 ### Patch Changes
