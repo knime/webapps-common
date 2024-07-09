@@ -25,6 +25,7 @@
     "test:unit": "vitest",
     "coverage": "vitest run --coverage",
     "coverage:watch": "npm run test:unit -- --coverage --watch",
+    "postinstall": "license-check -c",
     "prepare": "husky"
   },
   "dependencies": {
@@ -33,6 +34,7 @@
   },
   "devDependencies": {
     "@knime/eslint-config": "8.1.0",
+    "@knime/licenses": "1.0.1",
     "@tsconfig/node20": "20.1.2",
     "@types/color-convert": "2.0.3",
     "@types/uuid": "9.0.8",
