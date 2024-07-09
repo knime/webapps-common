@@ -43,10 +43,12 @@ definitions:
         trigger: manual
         deployment: production
         script:
+          - echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+          - cat ~/.npmrc
           - corepack enable
           - corepack prepare pnpm@latest-9 --activate
           - pnpm install
-          - pnpm run publish --otp=$NPM_TOKEN
+          - pnpm run publish
           - git push --follow-tags
     - step: &deploy-demo
         name: Deploy demo to GitHub Pages
