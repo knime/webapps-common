@@ -3,5 +3,4 @@ coverage
 test-results
 target
 dist
-webapps-common
 .vscode
