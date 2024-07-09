@@ -5,10 +5,10 @@ import Message from "../Message.vue";
 import Button from "../../Buttons/Button.vue";
 import WarnIcon from "@knime/styles/img/icons/sign-warning.svg";
 
-import { copyText } from "@knime/utils";
-vi.mock("@knime/utils", () => ({
-  copyText: vi.fn(),
-}));
+// import { copyText } from "@knime/utils";
+// vi.mock("@knime/utils", () => ({
+//   copyText: vi.fn(),
+// }));
 
 // TODO split tests up into MessageTitle.test.js
 
@@ -170,6 +170,8 @@ describe("Message.vue", () => {
   });
 
   it("copies text by enter key", () => {
+    const writeTextMock = vi.fn();
+    Object.assign(navigator, { clipboard: { writeText: writeTextMock } });
     wrapper = mount(Message, {
       props: {
         type: "error",
@@ -177,7 +179,7 @@ describe("Message.vue", () => {
       },
     });
     wrapper.find(".copy-button").trigger("keyup.space");
-    expect(vi.mocked(copyText)).toHaveBeenCalledWith("test message");
+    expect(writeTextMock).toHaveBeenCalledWith("test message");
   });
 
   it("closes", () => {

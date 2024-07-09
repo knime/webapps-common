@@ -4,7 +4,6 @@ import MessageTitle from "./MessageTitle.vue";
 import Collapser from "../Collapser/Collapser.vue";
 import MessageLink from "./MessageLink.vue";
 import CopyIcon from "@knime/styles/img/icons/copy.svg";
-import { copyText } from "@knime/utils";
 
 /**
  * Message banner component with close button
@@ -108,8 +107,8 @@ export default {
        */
       this.$emit("dismiss");
     },
-    copyMessage(event) {
-      copyText(this.details);
+    async copyMessage(event) {
+      await navigator.clipboard.writeText(this.detailsText);
       /**
        * copied event. Fired when the copy button in the detail area is clicked.
        * The embedding component should use this to notify the user that the message was copied successfully.

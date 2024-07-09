@@ -15,7 +15,7 @@ npm install @knime/utils
 To use it in your project, you can import it as follows:
 
 ```javascript
-import { copyText } from "@knime/utils";
+import { capitalize } from "@knime/utils";
 ```
 
 # Join the Community!
