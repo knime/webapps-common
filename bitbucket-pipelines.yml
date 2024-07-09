@@ -46,7 +46,7 @@ definitions:
           - corepack enable
           - corepack prepare pnpm@latest-9 --activate
           - pnpm install
-          - pnpm run publish
+          - pnpm run publish --otp=$NPM_TOKEN
           - git push --follow-tags
     - step: &deploy-demo
         name: Deploy demo to GitHub Pages
