@@ -41,7 +41,8 @@
     "gsap": "^3.12.5",
     "lodash-es": "4.17.21",
     "consola": "2.15.3",
-    "v-calendar": "3.0.0-alpha.8"
+    "typescript": "^5.4.5",
+    "v-calendar": "3.0.3"
   },
   "peerDependencies": {
     "vue": "3.x"
@@ -52,7 +53,6 @@
     "@vitejs/plugin-vue": "^5.0.5",
     "@vitest/coverage-v8": "1.2.1",
     "@vue/test-utils": "2.4.4",
-    "typescript": "^5.4.5",
     "vite": "^5.2.12",
     "vite-plugin-css-injected-by-js": "^3.5.1",
     "vite-plugin-dts": "^3.9.1",
