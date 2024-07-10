@@ -6,6 +6,7 @@ import getWrappedAroundIndex from "./getWrappedAroundIndex";
 import sleep from "./sleep";
 import { icons, isIconExisting } from "./fileTypeIcons";
 
+// @ts-ignore
 // eslint-disable-next-line import/extensions
 import svgWithTitle from "./svgWithTitle.js";
 
