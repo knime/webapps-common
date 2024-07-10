@@ -3,8 +3,7 @@ import ImagePreviews from "./demo/ImagePreviews.vue";
 import CodeExample from "./demo/CodeExample.vue";
 import ListNumbersIcon from "@knime/styles/img/icons/list-numbers.svg";
 import FolderIcon from "@knime/styles/img/icons/folder.svg";
-import { svgWithTitle } from "@knime/utils";
-import { InputField } from "@knime/components";
+import { InputField, svgWithTitle } from "@knime/components";
 
 const codeExample1 = `<script>
 import FolderIcon from '~/@knime/styles/img/icons/folder.svg';
@@ -98,8 +97,7 @@ svg {
 </style>`;
 
 const codeExampleTooltip = `<script>
-import ListNumbersIcon from '~/@knime/styles/img/icons/list-numbers.svg';
-import svgWithTitle from '~/webapps-common/ui/util/svgWithTitle';
+import { ListNumbersIcon, svgWithTitle } from '@knime/components';
 
 export default {
   components: {

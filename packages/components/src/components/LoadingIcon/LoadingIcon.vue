@@ -1,6 +1,6 @@
 <script>
 import ReloadIcon from "@knime/styles/img/icons/reload.svg";
-import { svgWithTitle } from "@knime/utils";
+import svgWithTitle from "../SvgWithTitle/svgWithTitle";
 
 export default {
   components: {
