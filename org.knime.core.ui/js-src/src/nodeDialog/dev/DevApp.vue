@@ -5,6 +5,7 @@ import {
   UIExtensionPushEvents,
   type UIExtensionService,
   type Alert,
+  RenderingType,
 } from "@knime/ui-extension-service";
 import NodeDialog from "@/nodeDialog/NodeDialog.vue";
 import dataServiceMock from "./dataServiceMock";
@@ -89,6 +90,9 @@ export default {
         },
         hasNodeView: false,
         extensionType: ExtensionTypes.DIALOG,
+        renderingConfig: {
+          type: RenderingType.DEFAULT,
+        },
       };
       return {
         callNodeDataService: (params) => {
