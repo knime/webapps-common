@@ -42,6 +42,7 @@ import Tooltip from "./Tooltip/Tooltip.vue";
 
 export * from "./Toast";
 export * from "./forms";
+export * from "./node";
 export * from "./FileExplorer";
 
 export {
