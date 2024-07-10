@@ -5,7 +5,7 @@ import FolderIcon from "@knime/styles/img/icons/folder.svg";
 import FileTextIcon from "@knime/styles/img/icons/file-text.svg";
 import InputField from "../../forms/InputField/InputField.vue";
 
-import { useNameValidator } from "../composables/useNameValidator";
+import { useNameValidator } from "../../../composables";
 
 import FileExplorerItemBase from "./FileExplorerItemBase.vue";
 import type { FileExplorerItem, ItemIconRenderer } from "../types";
