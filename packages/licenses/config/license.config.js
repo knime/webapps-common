@@ -34,6 +34,7 @@ module.exports = {
     "@img/sharp-libvips-linuxmusl-arm64@1.0.2",
     "@img/sharp-libvips-linuxmusl-x64@1.0.2",
     "@img/sharp-libvips-win32-x64",
+    "audit-resolve-core@3.0.0-3", // licensed under Apache-2.0 but file not included in the production app
   ],
 
   // manually add packages to the credits, e.g.:
