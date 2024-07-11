@@ -1,5 +1,17 @@
 # @knime/components
 
+## 1.0.3
+
+### Patch Changes
+
+- d8340c6: Updated Dependencies (Typescript + v-calendar)
+- 2d43ad8: Move svgWithTitle component from @knime/utils to @knime/components
+- deed6b1: Move `useNameValidator` to composables (was previously not exported)
+- 34248af: Export all components from the `node` folder (e.g NodeTorso, DialogOptions, etc)
+- Updated dependencies [2d43ad8]
+- Updated dependencies [d818500]
+  - @knime/utils@1.0.3
+
 ## 1.0.2
 
 ### Patch Changes

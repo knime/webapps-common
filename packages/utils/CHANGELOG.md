@@ -1,5 +1,11 @@
 # @knime/utils
 
+## 1.0.3
+
+### Patch Changes
+
+- 2d43ad8: Move svgWithTitle component from @knime/utils to @knime/components
+
 ## 1.0.2
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @knime/licenses
 
+## 1.0.2
+
+### Patch Changes
+
+- a3a94cb: Added 'audit-resolve-core@3.0.0-3' to excluded packages on license checker
+- aedb94f: Added esm-resolve to excluded packages from license check
+- f8d099b: Added 'npm-audit-resolver@3.0.0-7' to excluded packages on license checker
+
 ## 1.0.1
 
 ### Patch Changes
