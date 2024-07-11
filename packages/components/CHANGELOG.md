@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.0.4
+
+### Patch Changes
+
+- Export DateTimeInput under @knime/components/date-time-input and remove it from top-level export
+
 ## 1.0.3
 
 ### Patch Changes
