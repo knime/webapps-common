@@ -7,7 +7,6 @@ import { computed, ref, toRef, type PropType } from "vue";
 import { OnClickOutside } from "@vueuse/components";
 import { useSearch, type PossibleValue, type Id } from "./possibleValues";
 import CloseIcon from "../../assets/img/icons/close.svg";
-import FunctionButton from "../FunctionButton.vue";
 
 let count = 0;
 const KEY_DOWN = "ArrowDown";
@@ -16,6 +15,7 @@ const KEY_HOME = "Home";
 const KEY_END = "End";
 const KEY_ESC = "Escape";
 const KEY_ENTER = "Enter";
+const KEY_TAB = "Tab";
 
 const TYPING_TIMEOUT = 1000; // in ms
 
@@ -23,7 +23,6 @@ export default {
   components: {
     DropdownIcon,
     OnClickOutside,
-    FunctionButton,
     CloseIcon,
   },
   props: {
@@ -217,12 +216,6 @@ export default {
     activeSearch() {
       return this.searchValue?.length > 0;
     },
-    showCloseIcon() {
-      if (this.useFilterValues && this.searchValue?.length > 0) {
-        return true;
-      }
-      return false;
-    },
   },
   watch: {
     filteredPossibleValues(newVal: PossibleValue[]) {
@@ -304,6 +297,7 @@ export default {
     },
     onEnter() {
       this.toggleExpanded();
+
       if (!this.isExpanded) {
         this.$emit("update:modelValue", this.candidate);
         this.useFilterValues = false;
@@ -392,6 +386,15 @@ export default {
         e.preventDefault();
         return;
       }
+
+      if (e.key === KEY_TAB) {
+        if (this.isExpanded) {
+          this.searchValue = this.displayTextMap[this.modelValue];
+          this.toggleExpanded();
+          this.getButtonRef().focus();
+        }
+      }
+
       this.searchItem(e);
     },
 
@@ -488,13 +491,13 @@ export default {
           <div v-if="hasRightIcon" class="loading-icon">
             <slot name="icon-right" />
           </div>
-          <FunctionButton
-            v-if="showCloseIcon"
+          <button
+            v-if="isActive"
             role="closeButton"
             @click="handleResetInput()"
           >
-            <CloseIcon />
-          </FunctionButton>
+            <CloseIcon class="icon" />
+          </button>
           <DropdownIcon v-else class="icon" />
         </div>
       </div>
@@ -583,6 +586,14 @@ export default {
     font-size: 0.8rem;
     padding: 0.5rem;
     cursor: default;
+  }
+
+  & button {
+    margin-right: 12px;
+    padding: 6px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
   }
 
   &.collapsed {
