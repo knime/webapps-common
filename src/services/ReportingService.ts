@@ -10,9 +10,15 @@ export class ReportingService extends AbstractService<ReportingServiceAPILayer> 
   isReportingActive() {
     const { renderingConfig } = this.baseService.getConfig();
     return (
-      renderingConfig.type === RenderingType.REPORT &&
+      renderingConfig?.type === RenderingType.REPORT &&
       (renderingConfig as ReportRenderingConfig).canBeUsedInReport
     );
+  }
+
+  getImageFileFormat() {
+    return (
+      this.baseService.getConfig().renderingConfig as ReportRenderingConfig
+    ).imageFileFormat;
   }
 
   /**

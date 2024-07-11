@@ -4,10 +4,14 @@ import { setUpCustomEmbedderService } from "@/embedder";
 import { ImageGenerationService } from "../ImageGenerationService";
 
 import { extensionConfig } from "./mocks";
-import { RenderingType } from "@/types/RenderingConfig";
+import {
+  ImageFileFormat,
+  ImageGenerationRenderingConfig,
+  RenderingType,
+} from "@/types/RenderingConfig";
 
 describe("ImageGenerationService", () => {
-  const constructReportingService = (
+  const constructImageGenerationService = (
     extensionConfig: UIExtensionServiceConfig,
   ) => {
     const apiLayer = {
@@ -23,19 +27,35 @@ describe("ImageGenerationService", () => {
 
   it("returns the actionId", () => {
     const actionId = "123";
-    const { imageGenerationService } = constructReportingService({
+    const localRenderingConfig: ImageGenerationRenderingConfig = {
+      actionId,
+      type: RenderingType.IMAGE,
+      imageFileFormat: ImageFileFormat.PNG,
+    };
+    const { imageGenerationService } = constructImageGenerationService({
       ...extensionConfig,
-      renderingConfig: {
-        actionId,
-        type: RenderingType.IMAGE,
-      },
+      renderingConfig: localRenderingConfig,
     });
     expect(imageGenerationService.getActionId()).toBe(actionId);
   });
 
+  it("returns the image file format", () => {
+    const imageFileFormat = ImageFileFormat.PNG;
+    const localRenderingConfig: ImageGenerationRenderingConfig = {
+      actionId: "actionId",
+      type: RenderingType.IMAGE,
+      imageFileFormat,
+    };
+    const { imageGenerationService } = constructImageGenerationService({
+      ...extensionConfig,
+      renderingConfig: localRenderingConfig,
+    });
+    expect(imageGenerationService.getImageFileFormat()).toBe(imageFileFormat);
+  });
+
   it("calls pushEventCallback when calling imageGenerated", () => {
     const { imageGenerationService, imageGenerated } =
-      constructReportingService(extensionConfig);
+      constructImageGenerationService(extensionConfig);
 
     const reportingContent = "<div>reporting content</div>";
     imageGenerationService.imageGenerated(reportingContent);
@@ -48,7 +68,7 @@ describe("ImageGenerationService", () => {
       renderingConfig: { actionId: null, type: RenderingType.DEFAULT },
     };
     const { imageGenerationService } =
-      constructReportingService(localExtensionConfig);
+      constructImageGenerationService(localExtensionConfig);
     expect(imageGenerationService.isImageGenerationActive()).toBe(false);
   });
 
@@ -58,7 +78,7 @@ describe("ImageGenerationService", () => {
       renderingConfig: { actionId: null, type: RenderingType.IMAGE },
     };
     const { imageGenerationService } =
-      constructReportingService(localExtensionConfig);
+      constructImageGenerationService(localExtensionConfig);
 
     expect(imageGenerationService.isImageGenerationActive()).toBe(true);
   });

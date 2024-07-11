@@ -4,7 +4,11 @@ import { setUpCustomEmbedderService } from "@/embedder";
 import { ReportingService } from "../ReportingService";
 
 import { extensionConfig } from "./mocks";
-import { RenderingType } from "@/types/RenderingConfig";
+import {
+  ImageFileFormat,
+  RenderingType,
+  ReportRenderingConfig,
+} from "@/types/RenderingConfig";
 
 describe("ReportingService", () => {
   const constructReportingService = (
@@ -48,6 +52,20 @@ describe("ReportingService", () => {
       constructReportingService(localExtensionConfig);
 
     expect(reportingService.isReportingActive()).toBe(true);
+  });
+
+  it("returns the image file format", () => {
+    const imageFileFormat = ImageFileFormat.PNG;
+    const localRenderingConfig: ReportRenderingConfig = {
+      type: RenderingType.REPORT,
+      imageFileFormat,
+      canBeUsedInReport: true,
+    };
+    const { reportingService } = constructReportingService({
+      ...extensionConfig,
+      renderingConfig: localRenderingConfig,
+    });
+    expect(reportingService.getImageFileFormat()).toBe(imageFileFormat);
   });
 
   it("calls pushEventCallback when setting reporting content", () => {

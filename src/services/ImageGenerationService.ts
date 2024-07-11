@@ -1,6 +1,9 @@
 import { AbstractService } from "./AbstractService";
 import { ImageGenerationServiceAPILayer } from "./types/serviceApiLayers";
-import { ImageRenderingConfig, RenderingType } from "@/types/RenderingConfig";
+import {
+  ImageGenerationRenderingConfig,
+  RenderingType,
+} from "@/types/RenderingConfig";
 
 /**
  * ImageGenerationService is used in views in order to detect that the view is generated in an image generation context
@@ -9,15 +12,22 @@ import { ImageRenderingConfig, RenderingType } from "@/types/RenderingConfig";
 export class ImageGenerationService extends AbstractService<ImageGenerationServiceAPILayer> {
   isImageGenerationActive() {
     return (
-      this.baseService.getConfig()?.renderingConfig?.type ===
-      RenderingType.IMAGE
+      this.baseService.getConfig().renderingConfig?.type === RenderingType.IMAGE
     );
   }
 
   getActionId() {
     return (
-      this.baseService.getConfig()?.renderingConfig as ImageRenderingConfig
+      this.baseService.getConfig()
+        .renderingConfig as ImageGenerationRenderingConfig
     ).actionId;
+  }
+
+  getImageFileFormat() {
+    return (
+      this.baseService.getConfig()
+        .renderingConfig as ImageGenerationRenderingConfig
+    ).imageFileFormat;
   }
 
   /**
