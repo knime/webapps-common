@@ -281,12 +281,26 @@ export default {
         this.$router.replace({ query });
       }
     },
+    activeTab(newTabVal, oldTabVal) {
+      if (newTabVal !== oldTabVal) {
+        const query = {};
+        if (newTabVal) {
+          query.tab = newTabVal;
+        }
+        this.$router.replace({ query });
+      }
+    },
   },
+
   async created() {
     this.demoComponents = demoComponents;
     await this.$router.isReady();
     if (this.$route.query.q) {
       this.searchQuery = this.$route.query.q.trim();
+    }
+
+    if (this.$route.query.tab) {
+      this.activeTab = this.$route.query.tab;
     }
   },
 };

@@ -2,6 +2,11 @@
 
 Internal style definitions, config, base CSS, icons and images shared across `@knime` packages.
 
+## Demo
+
+A demo of all contained UI components, icons, CSS colors etc. can be found here:
+https://knime.github.io/webapps-common/?tab=images
+
 ## Installation
 
 To install the `@knime/styles` package, you can use npm:
