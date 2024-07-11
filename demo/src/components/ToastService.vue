@@ -5,15 +5,15 @@ import Interactive from "@knime/styles/img/icons/interactive.svg";
 // @ts-ignore
 import { useToasts, type Toast } from "@knime/components";
 
-// import toastServiceCode from "webapps-common/ui/services/toast/toastService?raw";
-// import typesCode from "webapps-common/ui/services/toast/types?raw";
+// import toastServiceCode from "@knime/components/toastService?raw";
+// import typesCode from "@knime/components/types?raw";
 const toastServiceCode = "";
 const typesCode = "";
 
 const composableCodeExample = `
   // App.vue (root component of a Vue 3-based project)
   <script setup lang="ts">
-  import { ToastStack, ToastServiceProvider } from "webapps-common/ui/services/toast";
+  import { ToastStack, ToastServiceProvider } from "@knime/components";
 
   // Instantiate the service provider and call the composable method
   const toastServiceProvider = new ToastServiceProvider();
@@ -30,7 +30,7 @@ const composableCodeExample = `
   ------------------------------------
   // SomeChildComponent.vue
   <script setup lang="ts">
-  import { useToasts, type Toast } from "webapps-common/ui/services/toast";
+  import { useToasts, type Toast } from "@knime/components";
 
   // Inject the service properties that the component needs
   const { show } = useToasts();
@@ -54,7 +54,7 @@ const composableCodeExample = `
 
 const pluginCodeExample = `
   // main.ts (root script of a Vue 3-based project)
-  import { ToastServiceProvider } from "webapps-common/ui/services/toast";
+  import { ToastServiceProvider } from "@knime/components";
 
   // Instantiate the service provider and get the plugin object
   const toastServiceProvider = new ToastServiceProvider();
@@ -71,7 +71,7 @@ const pluginCodeExample = `
   ------------------------------------
   // App.vue (root component of the same project)
   <script setup lang="ts">
-  import { ToastStack } from "webapps-common/ui/services/toast";
+  import { ToastStack } from "@knime/components";
   <\/script>
 
   <template>
@@ -84,7 +84,7 @@ const pluginCodeExample = `
   ------------------------------------
   // SomeChildComponent.vue
   <script lang="ts">
-  import type { Toast } from "webapps-common/ui/services/toast";
+  import type { Toast } from "@knime/components";
 
   export default {
     data() {
@@ -109,7 +109,7 @@ const pluginCodeExample = `
 
 const storeCodeExample = `
   // main.ts (root script of a Vue 3-based project)
-  import { ToastServiceProvider } from "webapps-common/ui/services/toast";
+  import { ToastServiceProvider } from "@knime/components";
 
   // Instantiate the service provider and get the toast service object directly
   const toastServiceProvider = new ToastServiceProvider();
@@ -130,7 +130,7 @@ const storeCodeExample = `
   ------------------------------------
   // App.vue (root component of the same project)
   <script setup lang="ts">
-  import { ToastStack } from "webapps-common/ui/services/toast";
+  import { ToastStack } from "@knime/components";
   <\/script>
 
   <template>
@@ -162,7 +162,7 @@ const multipleServicesComposableCodeExample = `
   // SomeComponent.vue
   <script setup lang="ts">
   import { customSymbol } from "./someConfigFile";
-  import { ToastStack, ToastServiceProvider } from "webapps-common/ui/services/toast";
+  import { ToastStack, ToastServiceProvider } from "@knime/components";
 
   // Instantiate the service provider
   const toastServiceProvider = new ToastServiceProvider();
@@ -189,7 +189,7 @@ const multipleServicesComposableCodeExample = `
   // SomeChildComponent.vue
   <script setup lang="ts">
   import { customSymbol } from "./someConfigFile";
-  import { useToasts, type Toast } from "webapps-common/ui/services/toast";
+  import { useToasts, type Toast } from "@knime/components";
 
   // Inject the service bound to the custom symbol
   const { show } = useToasts({
@@ -208,7 +208,7 @@ const multipleServicesComposableCodeExample = `
 
 const multipleServicesPluginCodeExample = `
   // main.ts
-  import { ToastServiceProvider } from "webapps-common/ui/services/toast";
+  import { ToastServiceProvider } from "@knime/components";
 
   // Instantiate the service provider and get the plugin object
   const toastServiceProvider = new ToastServiceProvider();
@@ -226,7 +226,7 @@ const multipleServicesPluginCodeExample = `
   ------------------------------------
   // SomeComponent.vue
   <script setup lang="ts">
-  import { ToastStack } from "webapps-common/ui/services/toast";
+  import { ToastStack } from "@knime/components";
   <\/script>
 
   <template>
@@ -239,7 +239,7 @@ const multipleServicesPluginCodeExample = `
   ------------------------------------
   // SomeOtherComponent.vue
   <script lang="ts">
-  import type { Toast } from "webapps-common/ui/services/toast";
+  import type { Toast } from "@knime/components";
 
   export default {
     data() {
@@ -344,7 +344,7 @@ const callbackToast: Toast = {
           <p>
             You are able to import all of the public-facing components of the
             framework, including types, from
-            <code>webapps-common/ui/services/toast</code>.
+            <code>@knime/components</code>.
           </p>
           <p>
             To use the toast service in your project, follow these steps (see

@@ -161,7 +161,7 @@ const useToastsFromGlobalProperty = (propertyName: string): ToastService => {
  * names to differentiate them.
  *
  * @example
- * import { useToasts } from "webapps-common/ui/services/toast";
+ * import { useToasts } from "@knime/components";
  *
  * // Using default options (the app has a shared toast service between components)
  * const { show } = useToasts();
