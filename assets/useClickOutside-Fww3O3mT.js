@@ -1,0 +1,1 @@
+import{H as d,a0 as r,J as u,B as f,Z as c}from"./index-C9vqjUQ1.js";const p=({targets:s,callback:n},i=f(!0))=>{let e;const o=()=>{e=c(s[0],n,{ignore:s})},t=()=>{typeof e<"u"&&e()};d(()=>r(i),a=>{a?o():t()},{immediate:!0}),u(t)};export{p as u};
