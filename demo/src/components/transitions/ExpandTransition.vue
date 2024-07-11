@@ -1,7 +1,7 @@
 <script>
 import CodeExample from "../demo/CodeExample.vue";
 import { ExpandTransition, Button } from "@knime/components";
-// import code from "webapps-common/ui/components/transitions/ExpandTransition.vue?raw";
+
 const code = "";
 
 export default {

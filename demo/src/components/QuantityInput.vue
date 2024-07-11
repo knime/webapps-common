@@ -1,7 +1,7 @@
 <script setup>
 import CodeExample from "./demo/CodeExample.vue";
 import { QuantityInput } from "@knime/components";
-// import code from "webapps-common/ui/components/forms/QuantityInput.vue?raw";
+
 const code = "";
 import { ref } from "vue";
 

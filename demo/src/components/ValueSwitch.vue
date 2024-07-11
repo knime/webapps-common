@@ -2,7 +2,7 @@
 import { defineComponent } from "vue";
 
 import { ValueSwitch } from "@knime/components";
-// import code from "webapps-common/ui/components/forms/ValueSwitch.vue?raw";
+
 const code = "";
 
 import CodeExample from "./demo/CodeExample.vue";

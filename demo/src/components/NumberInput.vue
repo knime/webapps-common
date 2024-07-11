@@ -1,7 +1,7 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
 import { NumberInput, Label } from "@knime/components";
-// import code from "webapps-common/ui/components/forms/NumberInput.vue?raw";
+
 const code = "";
 
 const codeExample = `<NumberInput

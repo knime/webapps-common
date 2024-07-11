@@ -1,6 +1,6 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
-// import code from "webapps-common/ui/components/forms/SearchableList.vue?raw";
+
 const code = "";
 import { SearchableList } from "@knime/components";
 const codeExample = `<SearchableList

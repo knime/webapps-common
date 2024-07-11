@@ -7,7 +7,7 @@ import DownloadIcon from "@knime/styles/img/icons/cloud-download.svg";
 import StarIcon from "@knime/styles/img/icons/star.svg";
 import LeaveIcon from "@knime/styles/img/icons/leave.svg";
 import HeartIcon from "@knime/styles/img/icons/heart.svg";
-// import code from "webapps-common/ui/components/MenuItems.vue?raw";
+
 const code = "";
 
 const codeExampleStandalone = `<script>

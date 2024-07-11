@@ -7,7 +7,7 @@ import StarIcon from "@knime/styles/img/icons/star.svg";
 import LeaveIcon from "@knime/styles/img/icons/leave.svg";
 import HeartIcon from "@knime/styles/img/icons/heart.svg";
 import DropdownIcon from "@knime/styles/img/icons/arrow-dropdown.svg";
-// import code from "webapps-common/ui/components/SplitButton.vue?raw";
+
 const code = "";
 
 const codeExample = `<script>

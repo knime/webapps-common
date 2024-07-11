@@ -1,7 +1,7 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
 import { ComboBox } from "@knime/components";
-// import code from "webapps-common/ui/components/forms/ComboBox.vue?raw";
+
 const code = "";
 
 const codeExample = `<ComboBox

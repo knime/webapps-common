@@ -5,8 +5,6 @@ import Interactive from "@knime/styles/img/icons/interactive.svg";
 // @ts-ignore
 import { useToasts, type Toast } from "@knime/components";
 
-// import toastServiceCode from "@knime/components/toastService?raw";
-// import typesCode from "@knime/components/types?raw";
 const toastServiceCode = "";
 const typesCode = "";
 

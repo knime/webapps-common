@@ -2,7 +2,7 @@
 import CodeExample from "./demo/CodeExample.vue";
 import FilterIcon from "@knime/styles/img/icons/filter.svg";
 import { SearchInput } from "@knime/components";
-// import code from "webapps-common/ui/components/forms/SearchInput.vue?raw";
+
 const code = "";
 
 const codeExample = `<SearchInput

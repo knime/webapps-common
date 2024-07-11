@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { h, onMounted, reactive, ref } from "vue";
-import { Checkbox, Dropdown, Button, FileExplorer } from "@knime/components";
-
-import type {
-  FileExplorerItem,
-  FileExplorerContextMenu,
-  // @ts-ignore
-} from "webapps-common/ui/components/FileExplorer/types";
+import {
+  Checkbox,
+  Dropdown,
+  Button,
+  FileExplorer,
+  type FileExplorerContextMenu,
+  type FileExplorerItem,
+} from "@knime/components";
 
 const items = [
   {

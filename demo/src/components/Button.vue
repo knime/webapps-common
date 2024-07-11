@@ -1,9 +1,9 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
 import { Button } from "@knime/components";
-// import buttonCode from "webapps-common/ui/components/Button.vue?raw";
+
 const buttonCode = "";
-// import baseButtonCode from "webapps-common/ui/components/BaseButton.vue?raw";
+
 const baseButtonCode = "";
 import PlayIcon from "@knime/styles/img/icons/circle-play.svg";
 import LightningIcon from "@knime/styles/img/icons/lightning.svg";

@@ -1,7 +1,7 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
 import { Description } from "@knime/components";
-// import code from "webapps-common/ui/components/Description.vue?raw";
+
 const code = "";
 
 export default {
@@ -22,7 +22,7 @@ export default {
         <ul><li>one</li><li>two</li></ul>
         <pre><code>this is a code block</code></pre>
         <a href="https://www.knime.com">This is an external link</a><br>
-        <a href="/">This is an internal link</a> 
+        <a href="/">This is an internal link</a>
         <table>
             <tbody>
               <tr>

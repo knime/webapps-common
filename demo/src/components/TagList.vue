@@ -1,7 +1,7 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
 import { TagList } from "@knime/components";
-// import code from "webapps-common/ui/components/TagList.vue?raw";
+
 const code = "";
 
 const codeExample = `<TagList

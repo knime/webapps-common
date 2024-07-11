@@ -5,7 +5,6 @@ import Message from "../Message.vue";
 import Button from "../../Buttons/Button.vue";
 import WarnIcon from "@knime/styles/img/icons/sign-warning.svg";
 
-// import { copyText } from "@knime/utils";
 // vi.mock("@knime/utils", () => ({
 //   copyText: vi.fn(),
 // }));

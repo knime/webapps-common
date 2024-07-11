@@ -1,7 +1,7 @@
 <script>
 import CodeExample from "./demo/CodeExample.vue";
 import { RadioButtons } from "@knime/components";
-// import code from "webapps-common/ui/components/forms/RadioButtons.vue?raw";
+
 const code = "";
 
 const codeExample = `<RadioButtons

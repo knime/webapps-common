@@ -3,9 +3,8 @@ import { Modal, Button, Checkbox } from "@knime/components";
 import PlayIcon from "@knime/styles/img/icons/circle-play.svg";
 import CodeExample from "./demo/CodeExample.vue";
 
-// import code from "webapps-common/ui/components/Modal.vue?raw";
 const code = "";
-// import baseModalCode from "webapps-common/ui/components/BaseModal.vue?raw";
+
 const baseModalCode = "";
 
 const codeExample = `<script>

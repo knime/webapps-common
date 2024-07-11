@@ -18,7 +18,6 @@ module.exports = {
 
   // e.g. 'nuxt@2.0.0'
   excludePackages: [
-    "webapps-common@0.0.0",
     "knime-build-tools@0.0.0",
     "knime-ui@0.0.0-unused",
     "knime-ui-extension-service@1.0.0",

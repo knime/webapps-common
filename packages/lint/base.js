@@ -19,7 +19,6 @@ module.exports = {
     "test-results/",
     "dist/",
     "target/",
-    "webapps-common/",
     "knime-ui-extension-service/",
     "knime-js-pagebuilder/",
     "*env.d.ts",

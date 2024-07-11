@@ -2,7 +2,7 @@
 import CodeExample from "./demo/CodeExample.vue";
 import { InputField, Label, Fieldset } from "@knime/components";
 import InfoIcon from "@knime/styles/img/icons/circle-info.svg";
-// import code from "webapps-common/ui/components/forms/Fieldset.vue?raw";
+
 const code = "";
 
 const codeExample = `<Fieldset text="Login">
