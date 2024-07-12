@@ -10,12 +10,12 @@
   "scripts": {
     "format": "prettier --cache --write .",
     "format:check": "prettier --cache --check .",
-    "lint": "run-p 'lint:* -- --fix'",
+    "lint": "run-p 'lint:* --fix'",
     "lint:js": "eslint . --cache --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts",
     "lint:css": "stylelint '**/*.{css,vue}'",
     "ci:lint-format": "run-p ci:lint:* format:check -c",
-    "ci:lint:js": "npm run lint:js && npm run lint:js -- -f json -o test-results/eslint.json",
-    "ci:lint:css": "npm run lint:css -- -f json -o test-results/stylelint.json",
+    "ci:lint:js": "pnpm run lint:js && npm run lint:js -- -f json -o test-results/eslint.json",
+    "ci:lint:css": "pnpm run lint:css -- -f json -o test-results/stylelint.json",
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json",
     "build:packages": "pnpm run build:styles",
     "build:styles": "pnpm --filter @knime/styles build",
@@ -30,24 +30,26 @@
     "coverage": "TZ='Europe/Berlin' vitest run --coverage",
     "publish": "pnpm build:packages && pnpm changeset:publish",
     "audit": "pnpm audit --prod",
-    "postinstall": "license-check -c",
-    "prepare": "husky"
+    "prepare": "husky",
+    "postinstall": "license-check -c"
   },
-  "engines": {
-    "node": "18.x - 20.x"
+  "dependencies": {
+    "@types/jsdom": "^21.1.7",
+    "@types/node": "^20.14.9",
+    "vue-tsc": "^2.0.24"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.27.1",
+    "@changesets/cli": "^2.27.7",
     "@knime/eslint-config": "workspace:*",
     "@knime/licenses": "workspace:*",
     "@tsconfig/node20": "^20.1.4",
-    "@types/node": "20.14.9",
+    "@types/node": "20.14.10",
     "@vitest/coverage-v8": "1.2.1",
     "@vue/tsconfig": "^0.5.1",
     "eslint": "8.56.0",
     "husky": "^9.0.11",
     "npm-run-all": "^4.1.5",
-    "prettier": "3.3.1",
+    "prettier": "3.3.2",
     "stylelint": "16.6.1",
     "vitest": "1.2.1"
   },
@@ -64,13 +66,11 @@
       "ws@>=8.0.0 <8.17.1": ">=8.17.1"
     }
   },
-  "volta": {
-    "node": "20.11.0",
-    "pnpm": "9.1.4"
+  "engines": {
+    "node": "20.x"
   },
-  "dependencies": {
-    "@types/jsdom": "^21.1.7",
-    "@types/node": "^20.14.9",
-    "vue-tsc": "^2.0.24"
+  "volta": {
+    "node": "20.15.1",
+    "pnpm": "9.1.4"
   }
 }

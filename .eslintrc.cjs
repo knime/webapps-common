@@ -14,9 +14,5 @@ module.exports = {
   globals: {
     consola: true,
   },
-  ignorePatterns: [
-    "**/opensourcecredits/used-packages.json",
-    "demo/*",
-    "demo2/*",
-  ],
+  ignorePatterns: ["demo/*", "check-pnpm.js"],
 };

@@ -23,6 +23,7 @@
     "test-utils",
     "CHANGELOG.md"
   ],
+  "sideEffects": false,
   "exports": {
     ".": {
       "import": "./src/index.ts"
