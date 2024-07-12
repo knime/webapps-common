@@ -1,5 +1,12 @@
 # @knime/utils
 
+## 1.0.4
+
+### Patch Changes
+
+- a087e42: Specify `sideEffects: false` to allow for better tree shaking
+- b2c9869: fix inconsistent consola versions
+
 ## 1.0.3
 
 ### Patch Changes

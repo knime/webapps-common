@@ -1,5 +1,19 @@
 # demo
 
+## 1.0.5
+
+### Patch Changes
+
+- b2c9869: fix inconsistent consola versions
+- Updated dependencies [a087e42]
+- Updated dependencies [57586d6]
+- Updated dependencies [b2c9869]
+- Updated dependencies [64bdbe1]
+  - @knime/components@1.0.5
+  - @knime/utils@1.0.4
+  - @knime/licenses@1.0.3
+  - @knime/rich-text-editor@1.0.5
+
 ## 1.0.4
 
 ### Patch Changes

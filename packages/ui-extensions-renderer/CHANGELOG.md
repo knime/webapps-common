@@ -1,5 +1,14 @@
 # @knime/ui-extensions-renderer
 
+## 1.0.5
+
+### Patch Changes
+
+- b2c9869: fix inconsistent consola versions
+- Updated dependencies [a087e42]
+- Updated dependencies [b2c9869]
+  - @knime/components@1.0.5
+
 ## 1.0.4
 
 ### Patch Changes
