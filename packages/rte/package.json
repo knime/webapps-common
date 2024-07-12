@@ -33,7 +33,7 @@
     "@tiptap/pm": "2.0.3",
     "@tiptap/starter-kit": "2.0.3",
     "@tiptap/vue-3": "2.0.3",
-    "consola": "2.15.3"
+    "consola": "3.2.3"
   },
   "peerDependencies": {
     "vue": "3.x"

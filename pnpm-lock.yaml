@@ -88,8 +88,8 @@ importers:
         specifier: 10.4.1
         version: 10.4.1(vue@3.4.27(typescript@5.4.5))
       consola:
-        specifier: 2.15.3
-        version: 2.15.3
+        specifier: 3.2.3
+        version: 3.2.3
       prismjs:
         specifier: 1.29.0
         version: 1.29.0
@@ -155,8 +155,8 @@ importers:
         specifier: ^10.10.0
         version: 10.10.0(vue@3.4.27(typescript@5.4.5))
       consola:
-        specifier: 2.15.3
-        version: 2.15.3
+        specifier: 3.2.3
+        version: 3.2.3
       date-fns:
         specifier: 2.30.0
         version: 2.30.0
@@ -331,8 +331,8 @@ importers:
         specifier: 2.0.3
         version: 2.0.3(@tiptap/core@2.4.0(@tiptap/pm@2.0.3))(@tiptap/pm@2.0.3(@tiptap/core@2.4.0))(vue@3.4.27(typescript@5.4.5))
       consola:
-        specifier: 2.15.3
-        version: 2.15.3
+        specifier: 3.2.3
+        version: 3.2.3
       vue:
         specifier: 3.x
         version: 3.4.27(typescript@5.4.5)
@@ -423,8 +423,8 @@ importers:
         specifier: 2.4.4
         version: 2.4.4(@vue/server-renderer@3.4.27(vue@3.4.27(typescript@5.4.5)))(vue@3.4.27(typescript@5.4.5))
       consola:
-        specifier: 2.15.3
-        version: 2.15.3
+        specifier: 3.2.3
+        version: 3.2.3
       jsdom:
         specifier: ^24.1.0
         version: 24.1.0
@@ -444,8 +444,8 @@ importers:
         specifier: workspace:*
         version: link:../styles
       consola:
-        specifier: 2.15.3
-        version: 2.15.3
+        specifier: 3.2.3
+        version: 3.2.3
       date-fns:
         specifier: 2.30.0
         version: 2.30.0
@@ -1940,9 +1940,6 @@ packages:
 
   config-chain@1.1.13:
     resolution: {integrity: sha512-qj+f8APARXHrM0hraqXYb2/bOVSV4PvJQlNZ/DVj0QrmNM2q2euizkeuVckQ57J+W0mRH6Hvi+k50M4Jul2VRQ==}
-
-  consola@2.15.3:
-    resolution: {integrity: sha512-9vAdYbHj6x2fLKC4+oPH0kFzY/orMZyG2Aj+kNylHxKGJ/Ed4dpNyAQYwJOdqO4zdM7XpVHmyejQDcQHrnuXbw==}
 
   consola@3.2.3:
     resolution: {integrity: sha512-I5qxpzLv+sJhTVEoLYNcTW+bThDCPsit0vLNKShZx6rLtpilNpmmeTPaeqJb9ZE9dV3DGaeby6Vuhrw38WjeyQ==}
@@ -6382,8 +6379,6 @@ snapshots:
     dependencies:
       ini: 1.3.8
       proto-list: 1.2.4
-
-  consola@2.15.3: {}
 
   consola@3.2.3: {}
 

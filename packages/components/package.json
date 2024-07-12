@@ -43,7 +43,7 @@
     "focus-trap-vue": "4.0.2",
     "gsap": "^3.12.5",
     "lodash-es": "4.17.21",
-    "consola": "2.15.3",
+    "consola": "3.2.3",
     "typescript": "^5.4.5",
     "v-calendar": "3.0.3"
   },

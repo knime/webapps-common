@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@knime/styles": "workspace:*",
-    "consola": "2.15.3",
+    "consola": "3.2.3",
     "date-fns": "2.30.0",
     "date-fns-tz": "2.0.0"
   },
