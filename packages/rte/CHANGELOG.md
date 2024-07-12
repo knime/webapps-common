@@ -1,5 +1,11 @@
 # @knime/rich-text-editor
 
+## 1.0.6
+
+### Patch Changes
+
+- 55692fa: add Link extension to editor
+
 ## 1.0.5
 
 ### Patch Changes
