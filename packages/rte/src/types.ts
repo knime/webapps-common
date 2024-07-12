@@ -47,4 +47,5 @@ export type BaseExtensionsConfig = {
   codeBlock?: true;
   horizontalRule?: true;
   strike?: true;
+  link?: true;
 };

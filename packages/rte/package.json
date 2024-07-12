@@ -23,6 +23,7 @@
   "dependencies": {
     "@knime/components": "workspace:*",
     "@knime/styles": "workspace:*",
+    "@knime/utils": "workspace:*",
     "@tiptap/core": "^2.4.0",
     "@tiptap/extension-hard-break": "^2.4.0",
     "@tiptap/extension-heading": "^2.4.0",

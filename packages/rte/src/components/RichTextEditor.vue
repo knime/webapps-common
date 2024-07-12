@@ -4,12 +4,14 @@ import { EditorContent, useEditor, type AnyExtension } from "@tiptap/vue-3";
 import UnderLine from "@tiptap/extension-underline";
 import StarterKit from "@tiptap/starter-kit";
 
+import { navigatorUtils } from "@knime/utils";
 import RichTextEditorBaseToolbar from "./RichTextEditorBaseToolbar.vue";
 import RichTextEditorToolbar from "./RichTextEditorToolbar.vue";
 import type { BaseExtensionsConfig } from "../types";
 import { CustomTextAlign } from "../utils/custom-text-align";
 import { SmallText } from "../utils/paragraphTextStyle/extension";
 import { CustomHardBreak } from "../utils/custom-hard-break";
+import { CustomLink, validateURL } from "../utils/custom-link";
 
 type BaseExtensions =
   | BaseExtensionsConfig
@@ -65,8 +67,6 @@ const props = withDefaults(defineProps<Props>(), {
   maxHeight: null,
   baseExtensions: () => ({}) as BaseExtensions,
   hotkeyFormatter: (hotkey: string[]) => {
-    const isMac = () => navigator?.userAgent?.toLowerCase()?.includes("mac");
-
     const MacOSkeyMap: Record<string, string> = {
       Shift: "⇧",
       Ctrl: "⌘",
@@ -79,7 +79,7 @@ const props = withDefaults(defineProps<Props>(), {
     return (
       hotkey
         // map only for mac the symbols that should be displayed differently
-        .map(isMac() ? mapSymbols : identityFn)
+        .map(navigatorUtils.isMac() ? mapSymbols : identityFn)
         .join(" ")
     );
   },
@@ -147,6 +147,9 @@ const extensions = [
           alignments: ["left", "right", "center"],
         }),
       ]
+    : []),
+  ...(isToolEnabled("link")
+    ? [CustomLink.configure({ validate: validateURL })]
     : []),
 
   CustomHardBreak,
