@@ -1,4 +1,4 @@
-import * as knime from "./knimeColors.mjs";
+import * as knime from "./knimeColors";
 
 export const Component = knime.SilverSand;
 export const Configuration = knime.Avocado;

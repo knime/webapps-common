@@ -48,7 +48,7 @@ import @knime/styles/config/svg.d.ts
 ### Color
 
 ```javascript
-import * as $colors from "@knime/styles/colors/knimeColors.mjs";
+import * as $colors from "@knime/styles/colors/knimeColors";
 ```
 
 ## Styling

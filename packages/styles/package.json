@@ -1,6 +1,6 @@
 {
   "name": "@knime/styles",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Internal style definitions and icons shared across @knime packages",
   "homepage": "https://knime.github.io/webapps-common/",
   "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE the file LICENSE)",
@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "build": "pnpm generate-css",
-    "generate-css": "node ./colors/generateCSS.mjs"
+    "generate-css": "tsx ./colors/generateCSS.ts"
   },
   "dependencies": {
     "modern-normalize": "2.0.0",
@@ -29,5 +29,8 @@
     "css/**/*",
     "img/**/*",
     "CHANGELOG.md"
-  ]
+  ],
+  "devDependencies": {
+    "tsx": "^4.16.2"
+  }
 }

@@ -1,5 +1,5 @@
 <script>
-import { Yellow, AquamarineDark } from "@knime/styles/colors/knimeColors.mjs";
+import { Yellow, AquamarineDark } from "@knime/styles/colors/knimeColors";
 
 const DEFAULT_PRIMARY_COLOR = Yellow;
 const DEFAULT_SECONDARY_COLOR = AquamarineDark;
