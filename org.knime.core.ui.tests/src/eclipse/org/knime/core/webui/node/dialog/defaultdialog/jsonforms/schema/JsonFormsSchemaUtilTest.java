@@ -429,6 +429,11 @@ class JsonFormsSchemaUtilTest {
         public String[] getConfigKeys() {
             return new String[]{"config_key_from_persistor_1", "config_key_from_persistor_2"};
         }
+
+        @Override
+        public String[][] getSubConfigKeys() {
+            return new String[][]{{"custom", "sub", "config"}, {"keys", "from", "persistor"}};
+        }
     }
 
     private static class SettingWithCustomPersistor {
@@ -438,7 +443,8 @@ class JsonFormsSchemaUtilTest {
             + "\"format\":\"int32\"," //
             + "\"title\":\"my_title\"," //
             + "\"default\":0," //
-            + "\"configKeys\":[\"config_key_from_persistor_1\",\"config_key_from_persistor_2\"]" //
+            + "\"configKeys\":[\"config_key_from_persistor_1\",\"config_key_from_persistor_2\"]," //
+            + "\"subConfigKeys\":[[\"custom\",\"sub\",\"config\"],[\"keys\",\"from\",\"persistor\"]]" //
             + "}}";
 
         @Persist(customPersistor = CustomPersistor.class)
@@ -482,7 +488,7 @@ class JsonFormsSchemaUtilTest {
     }
 
     @Test
-    void testConfigKeyFromCustomPersistor() throws JsonProcessingException {
+    void testConfigKeyAndSubConfigKeysFromCustomPersistor() throws JsonProcessingException {
         testSettingsWithoutContext(SettingWithCustomPersistor.class);
     }
 

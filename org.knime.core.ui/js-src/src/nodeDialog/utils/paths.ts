@@ -31,27 +31,101 @@ const getNextConfigPathSegments = ({
   return configKeys;
 };
 
+const getSubConfigKeysRecursive = (
+  schema: Schema,
+  prefix: string[],
+): string[][] => {
+  if (!schema) {
+    return [];
+  }
+
+  if (schema.subConfigKeys) {
+    return schema.subConfigKeys.map((subConfigKey) => [
+      ...prefix,
+      ...subConfigKey,
+    ]);
+  }
+
+  if (isArraySchema(schema) && schema.items) {
+    return getSubConfigKeysRecursive(schema.items, prefix);
+  } else if (isObjectSchema(schema) && schema.properties) {
+    const subConfigKeys: string[][] = [];
+    for (const key of Object.keys(schema.properties)) {
+      const configKeys = getNextConfigPathSegments({
+        schema: schema.properties[key],
+        segment: key,
+      });
+      configKeys
+        .filter((configKey) => !configKey.endsWith("_Internals"))
+        .forEach((configKey) =>
+          subConfigKeys.push(
+            ...getSubConfigKeysRecursive(schema.properties[key], [
+              ...prefix,
+              configKey,
+            ]),
+          ),
+        );
+    }
+    return subConfigKeys;
+  }
+  return prefix.length ? [prefix] : [];
+};
+
 /**
- * Note that there exists at least one data path in any case
+ * Unless custom sub config keys are found in the given schema, sub config keys are inferred by traversing the schema
+ * depth-first, replacing encountered segments with config keys, if custom config keys are found in the schema (as in
+ * @see getConfigPaths). Further traversal at any segment ends prematurely if, (i) custom sub config keys are found in
+ * the segment's schema or (ii) the current segment's config key is hidden (i.e., suffixed with "_Internals").
  */
-export const getDataPaths = ({
-  path,
-  subConfigKeys,
-}: {
-  path: string;
-  subConfigKeys: string[] | undefined;
-}) => {
-  return subConfigKeys?.length
-    ? subConfigKeys.map((subKey) => composePaths(path, subKey))
+export const getSubConfigKeys = (schema: Schema): string[][] => {
+  return getSubConfigKeysRecursive(schema, []);
+};
+
+const composePathWithSubConfigKeys = (
+  path: string,
+  subConfigKeys: string[][],
+) => {
+  return subConfigKeys.length
+    ? subConfigKeys.map((subConfigKey) =>
+        composePaths(
+          path,
+          subConfigKey.reduce(
+            (prefix, suffix) => composePaths(prefix, suffix),
+            "",
+          ),
+        ),
+      )
     : [path];
 };
 
+/**
+ * Data (JsonForms schema) paths are assembled by concatenating the given path with any potential sub config keys of the
+ * given control's schema.
+ * @see getSubConfigKeys for details on how subConfigKeys are determined.
+ *
+ * Note that there exists at least one data path in any case.
+ */
+export const getDataPaths = ({
+  control,
+  path,
+}: {
+  control: Control;
+  path: string;
+}) => {
+  return composePathWithSubConfigKeys(path, getSubConfigKeys(control.schema));
+};
+
+/**
+ * Config (persist) paths are assembled by traversing the control's root schema along the given path, replacing any
+ * segments along the traversal with custom config keys, if such custom config keys are found in any of the segments'
+ * schemas. Potential sub config keys are then appended to to the determined config paths.
+ * @see getSubConfigKeys for details on how subConfigKeys are determined.
+ */
 export const getConfigPaths = (params: {
   control: Control;
   path: string;
-  subConfigKeys: string[] | undefined;
 }): { configPath: string; deprecatedConfigPaths: string[] }[] => {
-  const { path, control, subConfigKeys } = params;
+  const { path, control } = params;
   const segments = path.split(".");
   let configPaths = [""];
   let schema: Schema = control.rootSchema;
@@ -87,11 +161,11 @@ export const getConfigPaths = (params: {
       );
     }
   }
-  if (subConfigKeys?.length) {
-    configPaths = configPaths.flatMap((configPath) =>
-      subConfigKeys.map((subKey) => composePaths(configPath, subKey)),
-    );
-  }
+
+  const subConfigKeys = getSubConfigKeys(control.schema);
+  configPaths = configPaths.flatMap((configPath) =>
+    composePathWithSubConfigKeys(configPath, subConfigKeys),
+  );
 
   return toConfigPathsWithDeprecatedConfigPaths(
     configPaths,
@@ -99,6 +173,9 @@ export const getConfigPaths = (params: {
   );
 };
 
+/**
+ * Determines the longest common / shared prefix among a given array of paths.
+ */
 export const getLongestCommonPrefix = (paths: string[]) => {
   if (!paths.length) {
     return "";

@@ -18,7 +18,6 @@ const {
   flowSettings,
 } = useDialogControl<LegacyCredentials>({
   props,
-  subConfigKeys: ["credentials"],
 });
 
 const onChange = (credentials: Credentials) => {

@@ -1,53 +1,226 @@
 import { describe, expect, it } from "vitest";
-import { getConfigPaths, getDataPaths, getLongestCommonPrefix } from "../paths";
-import Control from "@/nodeDialog/types/Control";
+import {
+  getConfigPaths,
+  getDataPaths,
+  getLongestCommonPrefix,
+  getSubConfigKeys,
+} from "../paths";
+import Control, { Schema } from "@/nodeDialog/types/Control";
 
 describe("paths", () => {
-  describe("data paths", () => {
-    it("returns given path if subConfigKeys are undefined", () => {
-      const path = "myPath";
-      const dataPaths = getDataPaths({ path, subConfigKeys: undefined });
-      expect(dataPaths).toStrictEqual([path]);
+  const createControl = (
+    schema: Schema,
+    rootSchema: Control["rootSchema"],
+  ): Control =>
+    ({
+      rootSchema,
+      schema,
+    }) as any;
+
+  describe("sub config keys", () => {
+    it("returns empty sub config keys if provided", () => {
+      const schema: Schema = {
+        subConfigKeys: [],
+      } as any;
+      expect(getSubConfigKeys(schema)).toStrictEqual(schema.subConfigKeys);
     });
 
+    it("returns non-empty sub config keys if provided", () => {
+      const schema: Schema = {
+        subConfigKeys: [["first"], ["second", "third"]],
+      } as any;
+      expect(getSubConfigKeys(schema)).toStrictEqual(schema.subConfigKeys);
+    });
+
+    it("infers sub config keys from atomic schema if no sub config keys provided", () => {
+      const schema: Schema = {
+        type: "string",
+      } as any;
+      expect(getSubConfigKeys(schema)).toStrictEqual([]);
+    });
+
+    it("infers sub config keys from nested schema if no sub config keys provided", () => {
+      const schema: Schema = {
+        type: "object",
+        properties: {
+          a: {
+            type: "object",
+            properties: {
+              b: {
+                type: "string",
+              },
+              c: {
+                type: "array",
+                items: {
+                  type: "string",
+                },
+              },
+            },
+          },
+          d: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                e: {
+                  type: "string",
+                },
+              },
+            },
+          },
+        },
+      } as any;
+      expect(getSubConfigKeys(schema)).toStrictEqual([
+        ["a", "b"],
+        ["a", "c"],
+        ["d", "e"],
+      ]);
+    });
+
+    it("respects overridden config keys when inferring sub config keys", () => {
+      const schema: Schema = {
+        type: "object",
+        properties: {
+          a: {
+            type: "object",
+            configKeys: ["b", "c"],
+            properties: {
+              d: {
+                type: "object",
+                properties: {
+                  e: {
+                    type: "string",
+                  },
+                  f: {
+                    type: "string",
+                  },
+                },
+              },
+            },
+          },
+        },
+      } as any;
+      expect(getSubConfigKeys(schema)).toStrictEqual([
+        ["b", "d", "e"],
+        ["b", "d", "f"],
+        ["c", "d", "e"],
+        ["c", "d", "f"],
+      ]);
+    });
+
+    it("ignores hidden settings when inferring sub config keys", () => {
+      const schema: Schema = {
+        type: "object",
+        properties: {
+          a: {
+            type: "string",
+            configKeys: ["b", "c_Internals", "d"],
+          },
+          d: {
+            type: "string",
+            configKeys: ["e_Internals"],
+          },
+        },
+      } as any;
+      expect(getSubConfigKeys(schema)).toStrictEqual([["b"], ["d"]]);
+    });
+
+    it("respects overridden sub config keys when inferring sub config keys", () => {
+      const schema: Schema = {
+        type: "object",
+        properties: {
+          a: {
+            type: "object",
+            configKeys: ["b", "c"],
+            subConfigKeys: ["d", "e"],
+            properties: {
+              f: {
+                type: "object",
+                properties: {
+                  g: {
+                    type: "string",
+                  },
+                  h: {
+                    type: "string",
+                  },
+                },
+              },
+            },
+          },
+        },
+      } as any;
+      expect(getSubConfigKeys(schema)).toStrictEqual([
+        ["b", "d"],
+        ["b", "e"],
+        ["c", "d"],
+        ["c", "e"],
+      ]);
+    });
+  });
+
+  describe("data paths", () => {
     it("returns given path if subConfigKeys are empty", () => {
-      const path = "myPath";
-      const dataPaths = getDataPaths({ path, subConfigKeys: [] });
+      const path = "model.mySetting";
+      const schema: Schema = {};
+      const control: Control = createControl(schema, {
+        type: "object",
+        properties: {
+          model: {
+            type: "object",
+            subConfigKeys: [],
+            properties: {
+              mySetting: schema,
+            },
+          },
+        },
+      });
+      const dataPaths = getDataPaths({ control, path });
       expect(dataPaths).toStrictEqual([path]);
     });
 
     it("appends subConfigKeys", () => {
-      const path = "myPath";
-      const dataPaths = getDataPaths({
-        path,
-        subConfigKeys: ["first", "second"],
+      const path = "model.mySetting";
+      const schema: Schema = { subConfigKeys: [["first"], ["second"]] };
+      const control: Control = createControl(schema, {
+        type: "object",
+        properties: {
+          model: {
+            type: "object",
+
+            properties: {
+              mySetting: schema,
+            },
+          },
+        },
       });
-      expect(dataPaths).toStrictEqual(["myPath.first", "myPath.second"]);
+      const dataPaths = getDataPaths({
+        control,
+        path,
+      });
+      expect(dataPaths).toStrictEqual([
+        "model.mySetting.first",
+        "model.mySetting.second",
+      ]);
     });
   });
 
   describe("config paths", () => {
-    const createControl = (rootSchema: Control["rootSchema"]): Control =>
-      ({
-        rootSchema,
-      }) as any;
-
     it("returns given path if no configKeys and no subConfigKeys are given", () => {
       const path = "model.mySetting";
-      const control: Control = createControl({
+      const schema: Schema = {};
+      const control: Control = createControl(schema, {
         type: "object",
         properties: {
           model: {
             type: "object",
             properties: {
-              mySetting: {},
+              mySetting: schema,
             },
           },
         },
       });
       const configPaths = getConfigPaths({
         path,
-        subConfigKeys: undefined,
         control,
       });
       expect(configPaths).toStrictEqual([
@@ -57,20 +230,20 @@ describe("paths", () => {
 
     it("appends subConfigKeys", () => {
       const path = "model.mySetting";
-      const control: Control = createControl({
+      const schema: Schema = { subConfigKeys: [["first"], ["second"]] };
+      const control: Control = createControl(schema, {
         type: "object",
         properties: {
           model: {
             type: "object",
             properties: {
-              mySetting: {},
+              mySetting: schema,
             },
           },
         },
       });
       const configPaths = getConfigPaths({
         path,
-        subConfigKeys: ["first", "second"],
         control,
       });
       expect(configPaths).toStrictEqual(
@@ -82,23 +255,24 @@ describe("paths", () => {
 
     it("uses configKeys", () => {
       const path = "model.mySetting";
-      const control: Control = createControl({
+      const schema: Schema = {
+        configKeys: ["mySetting_1", "mySetting_2"],
+        subConfigKeys: [["subConfigKey"]],
+      };
+      const control: Control = createControl(schema, {
         type: "object",
         properties: {
           model: {
             type: "object",
             configKeys: ["model_1", "model_2"],
             properties: {
-              mySetting: {
-                configKeys: ["mySetting_1", "mySetting_2"],
-              },
+              mySetting: schema,
             },
           },
         },
       });
       const configPaths = getConfigPaths({
         path,
-        subConfigKeys: ["subConfigKey"],
         control,
       });
       expect(configPaths).toStrictEqual(
@@ -113,7 +287,11 @@ describe("paths", () => {
 
     it("navigates to items and ignores config keys for array schema ", () => {
       const path = "model.3.mySetting";
-      const control: Control = createControl({
+      const schema: Schema = {
+        configKeys: ["mySetting_1", "mySetting_2"],
+        subConfigKeys: [["subConfigKey"]],
+      };
+      const control: Control = createControl(schema, {
         type: "object",
         properties: {
           model: {
@@ -122,9 +300,7 @@ describe("paths", () => {
             items: {
               type: "object",
               properties: {
-                mySetting: {
-                  configKeys: ["mySetting_1", "mySetting_2"],
-                },
+                mySetting: schema,
               },
               configKeys: ["ignored"],
             } as any,
@@ -133,7 +309,6 @@ describe("paths", () => {
       });
       const configPaths = getConfigPaths({
         path,
-        subConfigKeys: ["subConfigKey"],
         control,
       });
       expect(configPaths).toStrictEqual(
@@ -148,7 +323,17 @@ describe("paths", () => {
 
     it("detects deprecated configKeys", () => {
       const path = "model.mySetting";
-      const control: Control = createControl({
+      const schema: Schema = {
+        deprecatedConfigKeys: [
+          {
+            deprecated: [["deprecated", "4"]],
+            new: [["mySetting_2"]],
+          },
+        ],
+        configKeys: ["mySetting_1", "mySetting_2"],
+        subConfigKeys: [["subConfigKey"]],
+      };
+      const control: Control = createControl(schema, {
         type: "object",
         properties: {
           model: {
@@ -171,15 +356,7 @@ describe("paths", () => {
               },
             ],
             properties: {
-              mySetting: {
-                deprecatedConfigKeys: [
-                  {
-                    deprecated: [["deprecated", "4"]],
-                    new: [["mySetting_2"]],
-                  },
-                ],
-                configKeys: ["mySetting_1", "mySetting_2"],
-              },
+              mySetting: schema,
             },
           },
           view: {
@@ -190,7 +367,6 @@ describe("paths", () => {
       });
       const configPaths = getConfigPaths({
         path,
-        subConfigKeys: ["subConfigKey"],
         control,
       });
       expect(configPaths).toStrictEqual([
@@ -229,23 +405,52 @@ describe("paths", () => {
     });
 
     it("determines longest common prefix", () => {
-      const path = "my.path";
+      const path = "model.mySetting";
+      const schema: Schema = {};
+      const control: Control = createControl(schema, {
+        type: "object",
+        properties: {
+          model: {
+            type: "object",
+            properties: {
+              mySetting: schema,
+            },
+          },
+        },
+      });
       const dataPaths = getDataPaths({
+        control,
         path,
-        subConfigKeys: [],
       });
       const prefix = getLongestCommonPrefix(dataPaths);
-      expect(prefix).toBe("my.path");
+      expect(prefix).toBe("model.mySetting");
     });
 
     it("determines longest common prefix with subConfigKeys", () => {
-      const path = "my.path";
+      const path = "model.mySetting";
+      const schema: Schema = {
+        subConfigKeys: [
+          ["one", "two"],
+          ["one", "three"],
+        ],
+      };
+      const control: Control = createControl(schema, {
+        type: "object",
+        properties: {
+          model: {
+            type: "object",
+            properties: {
+              mySetting: schema,
+            },
+          },
+        },
+      });
       const dataPaths = getDataPaths({
+        control,
         path,
-        subConfigKeys: ["one.two", "one.three"],
       });
       const prefix = getLongestCommonPrefix(dataPaths);
-      expect(prefix).toBe("my.path.one.");
+      expect(prefix).toBe("model.mySetting.one.");
     });
   });
 });

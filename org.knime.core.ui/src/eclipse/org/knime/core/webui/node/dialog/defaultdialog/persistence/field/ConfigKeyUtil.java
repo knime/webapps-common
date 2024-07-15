@@ -94,6 +94,26 @@ public final class ConfigKeyUtil {
     }
 
     /**
+     * Get the sub config keys (i.e., keys of subsettings under this setting that don't have their own control) that are
+     * used by the given field if it is annotated with a {@link Persist} annotation and if the annotation defines a
+     * {@link Persist#customPersistor()} that overrides {@link FieldNodeSettingsPersistor#getSubConfigKeys()}.
+     *
+     * @param field
+     * @return the sub config keys used by the persistor or null, if the sub config keys are to be inferred from the
+     *         schema by the frontend
+     */
+    public static String[][] getSubConfigKeysUsedByField(final Field field) {
+        var persist = field.getAnnotation(Persist.class);
+        if (persist == null) {
+            return null;  // NOSONAR null and [] have different meanings here:
+            // null means that sub config keys are to be inferred from the schema
+            // [] means that there are no sub config keys
+        }
+        return extractCustomFieldNodeSettingsPersistor(field, persist).map(FieldNodeSettingsPersistor::getSubConfigKeys)
+            .orElse(null);
+    }
+
+    /**
      * Get the collection of {@link ConfigsDeprecation} that are used by the given field if it is annotated with a
      * {@link Persist} annotation.
      *

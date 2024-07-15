@@ -135,8 +135,7 @@ public final class LegacyColumnFilterPersistor extends NodeSettingsPersistorWith
         }
     }
 
-    private static TypeFilter loadTypeFilter(final NodeSettingsRO typeFilterSettings)
-        throws InvalidSettingsException {
+    private static TypeFilter loadTypeFilter(final NodeSettingsRO typeFilterSettings) throws InvalidSettingsException {
         var typeFilter = new TypeFilter();
         typeFilter.m_selectedTypes = loadSelectedTypes(typeFilterSettings);
         typeFilter.m_typeDisplays = getDisplays(typeFilter.m_selectedTypes);
@@ -213,5 +212,22 @@ public final class LegacyColumnFilterPersistor extends NodeSettingsPersistorWith
     @Override
     public void save(final ColumnFilter obj, final NodeSettingsWO settings) {
         save(obj, settings, getConfigKey());
+    }
+
+    @Override
+    public String[][] getSubConfigKeys() {
+        return subConfigKeys();
+    }
+
+    /**
+     * @return the array of all sub config keys overridden by this persistor
+     */
+    public static String[][] subConfigKeys() {
+        return new String[][]{{KEY_FILTER_TYPE}, {LegacyManualFilterPersistorUtil.KEY_INCLUDED_NAMES},
+            {LegacyManualFilterPersistorUtil.OLD_EXCLUDED_NAMES}, {LegacyManualFilterPersistorUtil.KEY_ENFORCE_OPTION},
+            {PatternFilterConfiguration.TYPE, LegacyPatternFilterPersistorUtil.PATTERN_FILTER_PATTERN},
+            {PatternFilterConfiguration.TYPE, LegacyPatternFilterPersistorUtil.PATTERN_FILTER_TYPE},
+            {PatternFilterConfiguration.TYPE, LegacyPatternFilterPersistorUtil.PATTERN_FILTER_CASESENSITIVE},
+            {PatternFilterConfiguration.TYPE, LegacyPatternFilterPersistorUtil.PATTERN_FILTER_EXCLUDEMATCHING}};
     }
 }

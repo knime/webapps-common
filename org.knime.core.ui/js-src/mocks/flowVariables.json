@@ -11,14 +11,39 @@
         "controlledByNonAvailable": "Disabled",
         "oneDataPathMultiplePersistPaths": "Enabled",
         "multipleDataAndPersistPaths": {
+          "selected": ["test1", "test2"],
           "mode": "MANUAL",
           "manualFilter": {
-            "manuallySelected": [],
+            "manuallySelected": ["test1", "test2"],
             "manuallyDeselected": [],
             "includeUnknownColumns": false
           },
           "patternFilter": {
-            "pattern": ""
+            "pattern": "",
+            "isCaseSensitive": false,
+            "isInverted": false
+          },
+          "typeFilter": {
+            "selectedTypes": [],
+            "typeDisplays": []
+          }
+        },
+        "multipleDataAndPersistPathsWithCustomSubConfigKeys": {
+          "selected": ["test3", "test4"],
+          "mode": "MANUAL",
+          "manualFilter": {
+            "manuallySelected": ["test3"],
+            "manuallyDeselected": ["test4"],
+            "includeUnknownColumns": false
+          },
+          "patternFilter": {
+            "pattern": "",
+            "isCaseSensitive": false,
+            "isInverted": false
+          },
+          "typeFilter": {
+            "selectedTypes": [],
+            "typeDisplays": []
           }
         }
       }
@@ -37,18 +62,18 @@
             "controlling": {
               "type": "string",
               "title": "Controlled by flow variable",
-              "description": "The respective icon with one red dot at the left should be permanenty visible and the flow variable should be preselected among the options.",
+              "description": "The respective icon with one red dot at the left should be permanently visible and the flow variable should be preselected among the options.",
               "default": ""
             },
             "exposed": {
               "type": "string",
               "title": "Exposes flow variable",
-              "description": "The respective icon with one red dot at the right should be permanenty visible."
+              "description": "The respective icon with one red dot at the right should be permanently visible."
             },
             "exposedAndControlling": {
               "type": "string",
               "title": "Exposes and is controlled by flow variable",
-              "description": "The respective icon with two red dot should be permanenty visible."
+              "description": "The respective icon with two red dot should be permanently visible."
             },
             "missingFlowVariable": {
               "type": "string",
@@ -71,11 +96,240 @@
               "title": "Multiple data and corresponding persist paths",
               "description": "Multiple data paths and multiple persist paths which are identical to the data paths.",
               "properties": {
+                "manualFilter": {
+                  "type": "object",
+                  "properties": {
+                    "includeUnknownColumns": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "manuallyDeselected": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "manuallySelected": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "default": {
+                    "manuallySelected": [],
+                    "manuallyDeselected": [],
+                    "includeUnknownColumns": false
+                  }
+                },
+                "mode": {
+                  "oneOf": [
+                    {
+                      "const": "MANUAL",
+                      "title": "Manual"
+                    },
+                    {
+                      "const": "REGEX",
+                      "title": "Regex"
+                    },
+                    {
+                      "const": "WILDCARD",
+                      "title": "Wildcard"
+                    },
+                    {
+                      "const": "TYPE",
+                      "title": "Type"
+                    }
+                  ],
+                  "default": "MANUAL"
+                },
+                "patternFilter": {
+                  "type": "object",
+                  "properties": {
+                    "isCaseSensitive": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "isInverted": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "pattern": {
+                      "type": "string",
+                      "default": ""
+                    }
+                  },
+                  "default": {
+                    "pattern": "",
+                    "isCaseSensitive": false,
+                    "isInverted": false
+                  }
+                },
                 "selected": {
-                  "type": "array"
+                  "default": [],
+                  "configKeys": ["selected_Internals"],
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "configKeys": ["selected_Internals"]
+                  }
+                },
+                "typeFilter": {
+                  "type": "object",
+                  "properties": {
+                    "selectedTypes": {
+                      "default": [],
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "typeDisplays": {
+                      "default": [],
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "text": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "subConfigKeys": []
+                    }
+                  },
+                  "default": {
+                    "selectedTypes": [],
+                    "typeDisplays": []
+                  }
                 }
               },
               "configKeys": ["one"]
+            },
+            "multipleDataAndPersistPathsWithCustomSubConfigKeys": {
+              "type": "object",
+              "title": "Multiple paths with custom sub config keys",
+              "description": "Multiple data paths corresponding persist paths with custom sub config keys.",
+              "properties": {
+                "manualFilter": {
+                  "type": "object",
+                  "properties": {
+                    "includeUnknownColumns": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "manuallyDeselected": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "manuallySelected": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "default": {
+                    "manuallySelected": [],
+                    "manuallyDeselected": [],
+                    "includeUnknownColumns": false
+                  }
+                },
+                "mode": {
+                  "oneOf": [
+                    {
+                      "const": "MANUAL",
+                      "title": "Manual"
+                    },
+                    {
+                      "const": "REGEX",
+                      "title": "Regex"
+                    },
+                    {
+                      "const": "WILDCARD",
+                      "title": "Wildcard"
+                    },
+                    {
+                      "const": "TYPE",
+                      "title": "Type"
+                    }
+                  ],
+                  "default": "MANUAL"
+                },
+                "patternFilter": {
+                  "type": "object",
+                  "properties": {
+                    "isCaseSensitive": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "isInverted": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "pattern": {
+                      "type": "string",
+                      "default": ""
+                    }
+                  },
+                  "default": {
+                    "pattern": "",
+                    "isCaseSensitive": false,
+                    "isInverted": false
+                  }
+                },
+                "selected": {
+                  "default": [],
+                  "configKeys": ["selected_Internals"],
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "configKeys": ["selected_Internals"]
+                  }
+                },
+                "typeFilter": {
+                  "type": "object",
+                  "properties": {
+                    "selectedTypes": {
+                      "default": [],
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "typeDisplays": {
+                      "default": [],
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "text": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "subConfigKeys": []
+                    }
+                  },
+                  "default": {
+                    "selectedTypes": [],
+                    "typeDisplays": []
+                  }
+                }
+              },
+              "configKeys": ["one"],
+              "subConfigKeys": [
+                ["some", "sub", "config", "key"],
+                ["some", "other", "sub", "config", "key"]
+              ]
             }
           }
         }
@@ -131,7 +385,84 @@
               "type": "Control",
               "scope": "properties/model/properties/multipleDataAndPersistPaths",
               "options": {
-                "format": "twinList"
+                "format": "columnFilter",
+                "possibleValues": [
+                  {
+                    "id": "test1",
+                    "text": "test1",
+                    "type": {
+                      "id": "org.knime.core.data.DoubleValue",
+                      "text": "Number (double)"
+                    },
+                    "compatibleTypes": [
+                      "org.knime.core.data.DoubleValue",
+                      "org.knime.core.data.DataValue",
+                      "org.knime.core.data.ComplexNumberValue",
+                      "org.knime.core.data.FuzzyNumberValue",
+                      "org.knime.core.data.FuzzyIntervalValue",
+                      "org.knime.core.data.BoundedValue"
+                    ]
+                  },
+                  {
+                    "id": "test2",
+                    "text": "test2",
+                    "type": {
+                      "id": "org.knime.core.data.StringValue",
+                      "text": "String"
+                    },
+                    "compatibleTypes": [
+                      "org.knime.core.data.StringValue",
+                      "org.knime.core.data.DataValue",
+                      "org.knime.core.data.NominalValue"
+                    ]
+                  }
+                ],
+                "showNoneColumn": false,
+                "showRowKeys": false,
+                "showSearch": true,
+                "showMode": true
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "properties/model/properties/multipleDataAndPersistPathsWithCustomSubConfigKeys",
+              "options": {
+                "format": "columnFilter",
+                "possibleValues": [
+                  {
+                    "id": "test3",
+                    "text": "test3",
+                    "type": {
+                      "id": "org.knime.core.data.DoubleValue",
+                      "text": "Number (double)"
+                    },
+                    "compatibleTypes": [
+                      "org.knime.core.data.DoubleValue",
+                      "org.knime.core.data.DataValue",
+                      "org.knime.core.data.ComplexNumberValue",
+                      "org.knime.core.data.FuzzyNumberValue",
+                      "org.knime.core.data.FuzzyIntervalValue",
+                      "org.knime.core.data.BoundedValue"
+                    ]
+                  },
+                  {
+                    "id": "test4",
+                    "text": "test4",
+                    "type": {
+                      "id": "org.knime.core.data.StringValue",
+                      "text": "String"
+                    },
+                    "compatibleTypes": [
+                      "org.knime.core.data.StringValue",
+                      "org.knime.core.data.DataValue",
+                      "org.knime.core.data.NominalValue"
+                    ]
+                  }
+                ],
+                "showNoneColumn": false,
+                "showRowKeys": false,
+                "showSearch": true,
+                "showMode": true
               }
             }
           ]

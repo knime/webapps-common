@@ -1,12 +1,6 @@
 import { rendererProps } from "@jsonforms/vue";
 import { useJsonFormsControlWithUpdate } from "./useJsonFormsControlWithUpdate";
-import {
-  type Ref,
-  type MaybeRef,
-  computed,
-  ExtractPropTypes,
-  unref,
-} from "vue";
+import { type Ref, computed, ExtractPropTypes } from "vue";
 import { isModelSettingAndHasNodeView } from "@/nodeDialog/utils";
 import { useFlowSettings } from "./useFlowVariables";
 import Control from "@/nodeDialog/types/Control";
@@ -29,11 +23,9 @@ export interface DialogControl<T = any> {
 
 export const useDialogControl = <ValueType extends Stringifyable = any>({
   props,
-  subConfigKeys,
   valueComparator,
 }: {
   props: Readonly<ExtractPropTypes<ReturnType<typeof rendererProps>>>;
-  subConfigKeys?: MaybeRef<string[] | undefined>;
   valueComparator?: SettingComparator<ValueType | undefined>;
 }): DialogControl<ValueType> => {
   const { control, handleChange } = useJsonFormsControlWithUpdate(props);
@@ -48,7 +40,6 @@ export const useDialogControl = <ValueType extends Stringifyable = any>({
     control.value.uischema.options?.hideFlowVariableButton;
   const { flowSettings, disabledByFlowVariables } = useFlowSettings({
     control,
-    subConfigKeys: unref(subConfigKeys),
     settingState,
     hideFlowVariableButton,
   });

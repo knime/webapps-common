@@ -95,6 +95,16 @@ public interface FieldNodeSettingsPersistor<T> extends NodeSettingsPersistor<T> 
     String[] getConfigKeys();
 
     /**
+     * @return an array of all overridden sub config keys (i.e., keys of subsettings under this setting that don't have
+     *         their own control)
+     */
+    default String[][] getSubConfigKeys() {
+        return null; // NOSONAR null and [] have different meanings here:
+        // null means that sub config keys are to be inferred from the schema
+        // [] means that there are no sub config keys
+    }
+
+    /**
      * @return an array of all pairs of collections of deprecated and accociated new configs (see
      *         {@link ConfigsDeprecation})
      */

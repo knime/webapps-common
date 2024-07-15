@@ -26,28 +26,7 @@ describe("LegacyCredentialsInput.vue", () => {
           },
         },
         schema: {
-          properties: {
-            legacyCredentials: {
-              type: "object",
-              credentials: {
-                type: "object",
-                properties: {
-                  username: {
-                    type: "string",
-                  },
-                  password: {
-                    type: "string",
-                  },
-                  secondFactor: {
-                    type: "string",
-                  },
-                },
-                flowVarName: {
-                  type: "string",
-                },
-              },
-            },
-          },
+          type: "object",
         },
         uischema: {
           type: "Control",
@@ -87,12 +66,10 @@ describe("LegacyCredentialsInput.vue", () => {
         provide: { flowVariablesApiMock, settingStateControllingGetMock },
       },
     );
-    expect(flowVariablesMap[`${props.control.path}.credentials`]).toStrictEqual(
-      {
-        controllingFlowVariableAvailable: true,
-        controllingFlowVariableName: flowVarName,
-      },
-    );
+    expect(flowVariablesMap[`${props.control.path}`]).toStrictEqual({
+      controllingFlowVariableAvailable: true,
+      controllingFlowVariableName: flowVarName,
+    });
     expect(setFlowVarState).toHaveBeenCalledWith(flowVarName);
     await flushPromises();
     expect(handleChange).toHaveBeenCalledWith(props.control.path, {
@@ -118,12 +95,10 @@ describe("LegacyCredentialsInput.vue", () => {
         provide: { flowVariablesApiMock, settingStateControllingGetMock },
       },
     );
-    expect(flowVariablesMap[`${props.control.path}.credentials`]).toStrictEqual(
-      {
-        controllingFlowVariableAvailable: true,
-        controllingFlowVariableName: flowVarName,
-      },
-    );
+    expect(flowVariablesMap[`${props.control.path}`]).toStrictEqual({
+      controllingFlowVariableAvailable: true,
+      controllingFlowVariableName: flowVarName,
+    });
     expect(setFlowVarState).toHaveBeenNthCalledWith(1, flowVarName);
     await flushPromises();
     expect(handleChange).toHaveBeenCalledWith(props.control.path, {
@@ -159,7 +134,7 @@ describe("LegacyCredentialsInput.vue", () => {
   it("disables input when controlled by a flow variable", async () => {
     const { wrapper } = mountJsonFormsComponent(LegacyCredentialsInput, {
       props,
-      withControllingFlowVariable: `${props.control.path}.credentials`,
+      withControllingFlowVariable: `${props.control.path}`,
     });
     await flushPromises();
     expect(wrapper.vm.disabled).toBeTruthy();

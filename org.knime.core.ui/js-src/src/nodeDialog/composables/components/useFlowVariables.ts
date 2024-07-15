@@ -92,7 +92,6 @@ const getProvidedSettingStateFlowVariables = (
 
 export interface UseFlowSettingsProps {
   control: Ref<Control>;
-  subConfigKeys?: string[];
   settingState: { settingState: SettingStateWrapper; isNew: boolean };
   hideFlowVariableButton?: true;
 }
@@ -103,12 +102,14 @@ export const useFlowSettings = (
   flowSettings: Ref<FlowSettings | null>;
   disabledByFlowVariables: Ref<boolean>;
 } => {
-  const { control, subConfigKeys, settingState, hideFlowVariableButton } =
-    params;
+  const { control, settingState, hideFlowVariableButton } = params;
   const flowVariablesMap = getFlowVariablesMap();
   const path = computed(() => control.value.path);
   const configPaths = computed(() =>
-    getConfigPaths({ control: control.value, path: path.value, subConfigKeys }),
+    getConfigPaths({ control: control.value, path: path.value }),
+  );
+  const dataPaths = computed(() =>
+    getDataPaths({ control: control.value, path: path.value }),
   );
   const flowSettings = computed(() => {
     return toFlowSetting(flowVariablesMap, configPaths.value);
@@ -123,9 +124,7 @@ export const useFlowSettings = (
 
   provide(injectionKey, {
     flowSettings,
-    dataPaths: computed(() =>
-      getDataPaths({ path: path.value, subConfigKeys }),
-    ),
+    dataPaths,
     configPaths,
     settingStateFlowVariables: getProvidedSettingStateFlowVariables(
       settingState,

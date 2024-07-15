@@ -218,6 +218,7 @@ public final class JsonFormsSchemaUtil {
 
         builder.forFields().withPropertyNameOverrideResolver(field -> StringUtils.removeStart(field.getName(), "m_"));
 
+        // TODO NOSONAR Will be moved out of the schema in UIEXT-2032
         builder.forFields().withInstanceAttributeOverride(JsonFormsSchemaUtil::addConfigKeys);
 
         builder.forFields().withTargetTypeOverridesResolver(JsonFormsSchemaUtil::overrideClass);
@@ -278,6 +279,14 @@ public final class JsonFormsSchemaUtil {
         if (configKeys.length > 0) {
             var configKeysNode = node.putArray("configKeys");
             Arrays.stream(configKeys).forEach(configKeysNode::add);
+        }
+        var subConfigKeys = ConfigKeyUtil.getSubConfigKeysUsedByField(field.getRawMember());
+        if (subConfigKeys != null) {
+            var subConfigKeysNode = node.putArray("subConfigKeys");
+            for (var subConfigKey : subConfigKeys) {
+                var subConfigKeyNode = subConfigKeysNode.addArray();
+                Arrays.stream(subConfigKey).forEach(subConfigKeyNode::add);
+            }
         }
         var deprecatedConfigsArray = ConfigKeyUtil.getDeprecatedConfigsUsedByField(field.getRawMember());
         if (deprecatedConfigsArray.length > 0) {

@@ -32,7 +32,6 @@ class ColumnSelectValueComparator extends DefaultSettingComparator<
 const props = defineProps(rendererProps());
 const jsonFormsControl = useDialogControl({
   props,
-  subConfigKeys: ["selected"],
   valueComparator: new ColumnSelectValueComparator(),
 });
 

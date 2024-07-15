@@ -78,13 +78,13 @@ import com.google.common.collect.Table;
  */
 final class SettingsModelFieldNodeSettingsPersistorFactory {
 
-    private static final Table<Class<?>, Class<? extends SettingsModel>, FieldPersistor<?>> IMPL_TABLE =
+    private static final Table<Class<?>, Class<? extends SettingsModel>, SettingsModelFieldPersistor> IMPL_TABLE =
         createImplTable();
 
-    private static Table<Class<?>, Class<? extends SettingsModel>, FieldPersistor<?>> createImplTable() {
-        Table<Class<?>, Class<? extends SettingsModel>, FieldPersistor<?>> table = HashBasedTable.create();
+    private static Table<Class<?>, Class<? extends SettingsModel>, SettingsModelFieldPersistor> createImplTable() {
+        Table<Class<?>, Class<? extends SettingsModel>, SettingsModelFieldPersistor> table = HashBasedTable.create();
         for (var value : SettingsModelFieldPersistor.values()) {
-            table.put(value.getFieldType(), value.getSettingsModelType(), value.getFieldPersistor());
+            table.put(value.getFieldType(), value.getSettingsModelType(), value);
         }
         return table;
     }
@@ -105,7 +105,8 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
             return createEnumPersistor(fieldType, configKey);
         } else if (IMPL_TABLE.contains(fieldType, settingsModelType)) {
             var impl = IMPL_TABLE.get(fieldType, settingsModelType);
-            return new DefaultFieldNodeSettingsPersistor<>(configKey, (FieldPersistor<T>)impl);
+            return new DefaultFieldNodeSettingsPersistor<>(configKey, impl.getSubConfigKeys(),
+                (FieldPersistor<T>)impl.getFieldPersistor());
         }
         throw new IllegalArgumentException(
             String.format("There is no persistor registered for the type '%s' and the SettingModel type '%s'.",
@@ -132,7 +133,7 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
             COLUMN_NAME(String.class, SettingsModelColumnName.class, SettingsModelFieldPersistor::loadColumnName,
                 SettingsModelFieldPersistor::saveColumnName),
             COLUMN_FILTER2(ColumnFilter.class, SettingsModelColumnFilter2.class, LegacyColumnFilterPersistor::load,
-                LegacyColumnFilterPersistor::save),
+                LegacyColumnFilterPersistor::save, LegacyColumnFilterPersistor.subConfigKeys()),
             READER_FILE_CHOOSER(FileChooser.class, SettingsModelReaderFileChooser.class,
                 LegacyReaderFilerChooserPersistor::load, LegacyReaderFilerChooserPersistor::save),
             AUTHENTICATION(AuthenticationSettings.class, SettingsModelAuthentication.class,
@@ -146,12 +147,21 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
 
         private final FieldPersistor<?> m_fieldPersistor;
 
+        private final String[][] m_subConfigKeys;
+
         <T> SettingsModelFieldPersistor(final Class<T> fieldType,
             final Class<? extends SettingsModel> settingsModelType, final FieldLoader<T> loader,
             final FieldSaver<T> saver) {
+            this(fieldType, settingsModelType, loader, saver, null);
+        }
+
+        <T> SettingsModelFieldPersistor(final Class<T> fieldType,
+            final Class<? extends SettingsModel> settingsModelType, final FieldLoader<T> loader,
+            final FieldSaver<T> saver, final String[][] subConfigKeys) {
             m_fieldType = fieldType;
             m_settingsModelType = settingsModelType;
             m_fieldPersistor = new FieldPersistorLoaderSaverAdapter<>(loader, saver);
+            m_subConfigKeys = subConfigKeys;
         }
 
         <T> SettingsModelFieldPersistor(final Class<T> fieldType,
@@ -161,6 +171,7 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
             m_settingsModelType = settingsModelType;
             m_fieldPersistor =
                 new FieldPersistorNodeSettingsPersistorAdapter<>(fieldNodeSettingsPersistorClass, fieldType);
+            m_subConfigKeys = null;
         }
 
         Class<?> getFieldType() {
@@ -173,6 +184,10 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
 
         FieldPersistor<?> getFieldPersistor() {
             return m_fieldPersistor;
+        }
+
+        String[][] getSubConfigKeys() {
+            return m_subConfigKeys;
         }
 
         private static int loadInt(final NodeSettingsRO settings, final String configKey)

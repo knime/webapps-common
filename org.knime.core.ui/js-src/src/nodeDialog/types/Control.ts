@@ -17,6 +17,7 @@ type DeprecatedConfigs = { new: string[][]; deprecated: string[][] };
 
 export type Schema = (ArraySchema<Schema> | ObjectSchema<Schema> | {}) & {
   configKeys?: string[];
+  subConfigKeys?: string[][];
   deprecatedConfigKeys?: DeprecatedConfigs[];
 };
 

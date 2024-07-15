@@ -54,7 +54,6 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.PatternFilter.PatternMode;
 
 /**
- *
  * @author Paul Bärnreuther
  */
 class LegacyPatternFilterPersistorUtil {
@@ -63,22 +62,35 @@ class LegacyPatternFilterPersistorUtil {
         // Utility
     }
 
-
     /**
      * See PatternFilterConfiguration.CFG_TYPE
      */
-    private static final String PATTERN_FILTER_TYPE = "type";
+    static final String PATTERN_FILTER_TYPE = "type";
 
     /**
      * See PatternFilterConfiguration.PatternFilterType.Regex
      */
-    private static final String PATTERN_FILTER_REGEX = "Regex";
+    static final String PATTERN_FILTER_REGEX = "Regex";
 
     /**
      * See PatternFilterConfiguration.PatternFilterType.Wildcard
      */
-    private static final String PATTERN_FILTER_WILDCARD = "Wildcard";
+    static final String PATTERN_FILTER_WILDCARD = "Wildcard";
 
+    /**
+     * See PatternFilterConfiguration.CFG_PATTERN
+     */
+    static final String PATTERN_FILTER_PATTERN = "pattern";
+
+    /**
+     * See PatternFilterConfiguration.CFG_CASESENSITIVE
+     */
+    static final String PATTERN_FILTER_CASESENSITIVE = "caseSensitive";
+
+    /**
+     * See PatternFilterConfiguration.CFG_EXCLUDEMATCHING
+     */
+    static final String PATTERN_FILTER_EXCLUDEMATCHING = "excludeMatching";
 
     static PatternMode loadPatternMode(final NodeSettingsRO patternMatchingSettings) throws InvalidSettingsException {
         var patternMatchingType = patternMatchingSettings.getString(PATTERN_FILTER_TYPE);
@@ -94,23 +106,22 @@ class LegacyPatternFilterPersistorUtil {
     static PatternFilter loadPatternMatching(final NodeSettingsRO patternMatchingSettings)
         throws InvalidSettingsException {
         var patternFilter = new PatternFilter();
-        patternFilter.m_pattern = patternMatchingSettings.getString("pattern");
-        patternFilter.m_isCaseSensitive = patternMatchingSettings.getBoolean("caseSensitive");
+        patternFilter.m_pattern = patternMatchingSettings.getString(PATTERN_FILTER_PATTERN);
+        patternFilter.m_isCaseSensitive = patternMatchingSettings.getBoolean(PATTERN_FILTER_CASESENSITIVE);
         // In some very old workflows this field might not have existed, yet, and we default to 'false'
         // see, e.g., knime://Testflows/Testflows%20(master)/knime-base/Loops/test_LoopEnd_Bug4029
-        patternFilter.m_isInverted = patternMatchingSettings.getBoolean("excludeMatching", false);
+        patternFilter.m_isInverted = patternMatchingSettings.getBoolean(PATTERN_FILTER_EXCLUDEMATCHING, false);
         return patternFilter;
     }
 
     static void savePatternMatching(final PatternFilter patternFilter, final PatternMode mode,
         final NodeSettingsWO patternMatchingSettings) {
-        patternMatchingSettings.addString("pattern", patternFilter.m_pattern);
+        patternMatchingSettings.addString(PATTERN_FILTER_PATTERN, patternFilter.m_pattern);
         // not entirely backwards compatible because we don't persist the pattern type if pattern matching
         // is not the current mode but we accept that
-        patternMatchingSettings.addString("type",
+        patternMatchingSettings.addString(PATTERN_FILTER_TYPE,
             mode == PatternMode.REGEX ? PATTERN_FILTER_REGEX : PATTERN_FILTER_WILDCARD);
-        patternMatchingSettings.addBoolean("caseSensitive", patternFilter.m_isCaseSensitive);
-        patternMatchingSettings.addBoolean("excludeMatching", patternFilter.m_isInverted);
+        patternMatchingSettings.addBoolean(PATTERN_FILTER_CASESENSITIVE, patternFilter.m_isCaseSensitive);
+        patternMatchingSettings.addBoolean(PATTERN_FILTER_EXCLUDEMATCHING, patternFilter.m_isInverted);
     }
-
 }

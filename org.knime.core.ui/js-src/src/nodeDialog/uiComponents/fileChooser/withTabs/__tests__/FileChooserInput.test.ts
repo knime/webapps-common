@@ -37,27 +37,6 @@ describe("FileChooserInput.vue", () => {
           properties: {
             path: {
               type: "object",
-              properties: {
-                path: {
-                  type: "string",
-                },
-                fsCategory: {
-                  oneOf: [
-                    {
-                      const: "relative-to-current-hubspace",
-                      title: "relative-to-current-hubspace",
-                    },
-                    {
-                      const: "CUSTOM_URL",
-                      title: "CUSTOM_URL",
-                    },
-                  ],
-                },
-                timeout: {
-                  type: "integer",
-                  format: "int32",
-                },
-              },
             },
           },
           default: "default value",

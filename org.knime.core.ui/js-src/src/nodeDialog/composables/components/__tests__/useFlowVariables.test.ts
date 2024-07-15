@@ -51,9 +51,11 @@ describe("useFlowVariables", () => {
   const createControl = ({
     path,
     configKeys,
+    subConfigKeys,
   }: {
     path: string;
     configKeys?: string[];
+    subConfigKeys?: string[][];
   }) => {
     const rootSchema: Control["rootSchema"] = {};
     let schema: any = rootSchema;
@@ -66,14 +68,16 @@ describe("useFlowVariables", () => {
     if (configKeys) {
       schema.configKeys = configKeys;
     }
-    return ref({ path, rootSchema });
+    if (subConfigKeys) {
+      schema.subConfigKeys = subConfigKeys;
+    }
+    return ref({ path, rootSchema, schema });
   };
 
   const mountTestComponent = (props: Props) => {
     return mount(UseFlowVariablesTestComponent, {
       props: {
         control: props.control as any,
-        subConfigKeys: props.subConfigKeys,
         settingState: {
           isNew: props.isNew ?? false,
           settingState: {
@@ -101,13 +105,13 @@ describe("useFlowVariables", () => {
     const configKey = "configKey";
     const subConfigKey = "subConfigKey";
     const configKeys = [configKey];
-    const subConfigKeys = [subConfigKey];
+    const subConfigKeys = [[subConfigKey]];
     return mountTestComponent({
       control: createControl({
         path,
         configKeys,
+        subConfigKeys,
       }),
-      subConfigKeys,
       ...params,
     });
   };

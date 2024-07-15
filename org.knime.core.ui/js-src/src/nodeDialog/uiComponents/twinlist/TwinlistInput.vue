@@ -70,17 +70,6 @@ const props = defineProps({
   },
 });
 
-const subConfigKeys = [
-  "mode",
-  "patternFilter.pattern",
-  "patternFilter.isCaseSensitive",
-  "patternFilter.isInverted",
-  "manualFilter.manuallySelected",
-  "manualFilter.manuallyDeselected",
-  "manualFilter.includeUnknownColumns",
-  "typeFilter.selectedTypes",
-];
-
 class TwinlistValueComparator extends DefaultSettingComparator<
   TwinlistData | undefined,
   string
@@ -102,7 +91,6 @@ const {
   onChange: onChangeControl,
 } = useDialogControl<TwinlistData | undefined>({
   props,
-  subConfigKeys,
   valueComparator: new TwinlistValueComparator(),
 });
 const control = untypedControl as Ref<ControlWithTwinlistData>;

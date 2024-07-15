@@ -17,7 +17,6 @@ const {
   disabled,
   flowSettings,
 } = useDialogControl({
-  subConfigKeys: ["path"],
   props,
 });
 

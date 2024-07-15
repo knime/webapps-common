@@ -54,42 +54,35 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.util.filter.NameFilterConfiguration.EnforceOption;
 
 /**
- *
  * @author Paul Bärnreuther
  */
 public class LegacyManualFilterPersistorUtil {
 
-
-
     /**
      * See NameFilterConfiguration.KEY_ENFORCE_OPTION
      */
-    private static final String KEY_ENFORCE_OPTION = "enforce_option";
+    static final String KEY_ENFORCE_OPTION = "enforce_option";
 
     /**
      * See NameFilterConfiguration.KEY_EXCLUDED_NAMES
      */
-    private static final String OLD_EXCLUDED_NAMES = "excluded_names";
+    static final String OLD_EXCLUDED_NAMES = "excluded_names";
 
     /**
      * See NameFilterConfiguration.KEY_INCLUDED_NAMES
      */
-    private static final String KEY_INCLUDED_NAMES = "included_names";
-
+    static final String KEY_INCLUDED_NAMES = "included_names";
 
     private LegacyManualFilterPersistorUtil() {
         // Utility
     }
 
-    static ManualFilter loadManualFilter(final NodeSettingsRO columnFilterSettings)
-        throws InvalidSettingsException {
+    static ManualFilter loadManualFilter(final NodeSettingsRO columnFilterSettings) throws InvalidSettingsException {
         var manualFilter = new ManualFilter(columnFilterSettings.getStringArray(KEY_INCLUDED_NAMES));
         manualFilter.m_manuallyDeselected = columnFilterSettings.getStringArray(OLD_EXCLUDED_NAMES);
         manualFilter.m_includeUnknownColumns = loadIncludeUnknownColumns(columnFilterSettings);
         return manualFilter;
     }
-
-
 
     private static boolean loadIncludeUnknownColumns(final NodeSettingsRO columnFilterSettings)
         throws InvalidSettingsException {
@@ -98,10 +91,7 @@ public class LegacyManualFilterPersistorUtil {
         return enforceOption == EnforceOption.EnforceExclusion;
     }
 
-
-
-    static void saveManualFilter(final ManualFilter manualFilter,
-        final NodeSettingsWO columnFilterSettings) {
+    static void saveManualFilter(final ManualFilter manualFilter, final NodeSettingsWO columnFilterSettings) {
         columnFilterSettings.addStringArray(KEY_INCLUDED_NAMES, manualFilter.m_manuallySelected);
         columnFilterSettings.addStringArray(OLD_EXCLUDED_NAMES, manualFilter.m_manuallyDeselected);
         columnFilterSettings.addString(KEY_ENFORCE_OPTION, getEnforceOption(manualFilter).name());
@@ -114,6 +104,4 @@ public class LegacyManualFilterPersistorUtil {
             return EnforceOption.EnforceInclusion;
         }
     }
-
 }
-
