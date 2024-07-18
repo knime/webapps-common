@@ -1,1 +1,0 @@
-import{H as r,Z as u,J as a,B as f,X as c}from"./index-CQZj96oP.js";const p=({targets:s,callback:n},i=f(!0))=>{let e;const o=()=>{e=c(s[0],n,{ignore:s})},t=()=>{typeof e<"u"&&e()};r(()=>u(i),d=>{d?o():t()},{immediate:!0}),a(t)};export{p as u};
