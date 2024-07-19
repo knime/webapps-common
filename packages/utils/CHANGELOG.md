@@ -1,5 +1,11 @@
 # @knime/utils
 
+## 1.0.6
+
+### Patch Changes
+
+- 20b0b36: Export updateTime utility, type muteConsole
+
 ## 1.0.5
 
 ### Patch Changes
