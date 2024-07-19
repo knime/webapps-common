@@ -1,11 +1,6 @@
 {
   "extends": "@vue/tsconfig/tsconfig.dom.json",
-  "include": [
-    "packages/utils/**/globals.d.ts",
-    "vite-env.d.ts",
-    "**/*",
-    "**/*.vue"
-  ],
+  "include": ["vite-env.d.ts", "**/*", "**/*.vue"],
   "exclude": ["**/__tests__/*"],
   "compilerOptions": {
     "composite": true,

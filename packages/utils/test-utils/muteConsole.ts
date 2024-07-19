@@ -1,21 +1,25 @@
 /* eslint-disable no-console */
 
-const methods = ["log", "error", "warn"];
+type ConsoleMethod = "log" | "warn" | "error" | "info";
+const methods: ConsoleMethod[] = ["log", "warn", "error", "info"];
 
 /**
  * Helper function to run code suppressing all console output
- * @param {Function} f The function to run. Can be async.
- * @returns {any} The original function's return value
+ * @param f The function to run. Can be async.
+ * @returns The original function's return value
  */
-export default (f) => {
-  let originals = methods.map((method) => console[method]);
+export default (f: Function) => {
+  const originals = methods.map((method) => console[method]);
   methods.forEach((method) => {
     console[method] = () => {};
   });
 
-  let originalConsola;
+  let originalConsola: typeof consola;
+  // @ts-ignore - needs to extend the globalThis namespace
   if (global.consola) {
+    // @ts-ignore
     originalConsola = global.consola;
+    // @ts-ignore
     global.consola = consola.create({
       level: -1,
     });
@@ -26,6 +30,7 @@ export default (f) => {
       console[method] = originals[i];
     });
     if (originalConsola) {
+      // @ts-ignore
       global.consola = originalConsola;
     }
   };

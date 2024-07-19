@@ -7,6 +7,7 @@ import sleep from "./sleep";
 import { icons, isIconExisting } from "./fileTypeIcons";
 
 import updateDate from "./updateDate";
+import updateTime from "./updateTime";
 import { isAfterMaxDate, isBeforeMinDate } from "./dateMinMaxCheck";
 import {
   formatDateString,
@@ -43,20 +44,21 @@ export {
   caseFormatter,
   debounce,
   filters,
-  truncateString,
-  getWrappedAroundIndex,
-  sleep,
-  icons,
-  isIconExisting,
   formatDateString,
   formatDateTimeString,
   formatLocalDateTimeString,
   formatTimeString,
-  updateDate,
-  isAfterMaxDate,
   getLocalTimeZone,
-  isBeforeMinDate,
-  numIntegerDigits,
+  getWrappedAroundIndex,
   hotkeys,
+  icons,
+  isAfterMaxDate,
+  isBeforeMinDate,
+  isIconExisting,
   navigatorUtils,
+  numIntegerDigits,
+  sleep,
+  truncateString,
+  updateDate,
+  updateTime,
 };
