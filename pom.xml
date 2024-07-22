@@ -77,6 +77,21 @@
                     <url>${knime.tp.p2}</url>
                 </repository>
                 <!-- Repositories needed for tests below -->
+                <repository>
+                    <id>p2-knime-base</id>
+                    <layout>p2</layout>
+                    <url>${knime.base.p2}</url>
+                </repository>
+                <repository>
+                    <id>p2-knime-chemistry</id>
+                    <layout>p2</layout>
+                    <url>${knime.chemistry.p2}</url>
+                </repository>
+                <repository>
+                    <id>p2-knime-python</id>
+                    <layout>p2</layout>
+                    <url>${knime.python.p2}</url>
+                </repository>
             </repositories>
         </profile>
     </profiles>
