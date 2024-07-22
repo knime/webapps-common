@@ -140,7 +140,7 @@ public final class DynamicValuesInput implements PersistableSettings {
      * @param dataType target data type
      * @param initialValue data type and initial value
      */
-    private DynamicValuesInput(final DataType dataType, final DataCell initialValue) {
+    DynamicValuesInput(final DataType dataType, final DataCell initialValue) {
         this(new DynamicValue[]{new DynamicValue(dataType, initialValue)}, InputKind.SINGLE);
     }
 
@@ -299,6 +299,7 @@ public final class DynamicValuesInput implements PersistableSettings {
          * @param initial initial value or {@link DataType#getMissingCell()}
          * @param caseMatchingSettings optional settings for String case matching
          */
+        @SuppressWarnings("unchecked")
         private DynamicValue(final DataType columnType, final DataCell initial,
                 final StringCaseMatchingSettings caseMatchingSettings) {
             m_value = Objects.requireNonNull(initial);
@@ -312,8 +313,14 @@ public final class DynamicValuesInput implements PersistableSettings {
             m_type = Objects.requireNonNull(columnType);
             if (!initial.isMissing()) {
                 final var cellType = initial.getType();
-                CheckUtils.checkArgument(columnType.isASuperTypeOf(cellType) || StringCell.TYPE.equals(cellType),
-                    "Cell type \"%s\" is not a subtype of target data type \"%s\" nor a StringCell.", cellType,
+                CheckUtils.checkArgument(
+                    // normal case (including normal StringCells)
+                    columnType.isASuperTypeOf(cellType)
+                        // handle adapter cells
+                        || cellType.getValueClasses().stream().anyMatch(columnType::isAdaptable)
+                        // error case where the column type is any type except StringCell
+                        || StringCell.TYPE.equals(cellType),
+                    "Value's type \"%s\" is not a subtype of target data type \"%s\" nor a StringCell.", cellType,
                     columnType);
             }
             m_caseMatching = caseMatchingSettings;
@@ -353,6 +360,7 @@ public final class DynamicValuesInput implements PersistableSettings {
          */
         private void validate(final DataColumnSpec colSpec) throws InvalidSettingsException {
             CheckUtils.checkSetting(!m_value.isMissing(), "The comparison value is missing.");
+
             // check if the saved type is still compatible with the current column type
             final var columnType = colSpec.getType();
             if (!m_type.isASuperTypeOf(columnType)) {
@@ -369,20 +377,13 @@ public final class DynamicValuesInput implements PersistableSettings {
                     .build().orElseThrow().toInvalidSettingsException();
             }
 
-            final var cellType = m_value.getType();
-            // this condition is `false` iff we packaged a non-convertible input string in a StringCell
-            // (in which case m_type will be the column type at point in time when we saved the config)
-            if (m_type.equals(cellType)) {
-                return;
+            // validate that the current value is not an "error value"
+            final var valueType = m_value.getType();
+            // if we have a StringCell but we do not expect one, we had a conversion error and need to report it
+            if (valueType.equals(StringCell.TYPE) && !m_type.equals(StringCell.TYPE)) {
+                // This is the case if `readDataCellFromStringSafe` failed to type-map when closing the dialog
+                throw retrieveConversionError(m_type, (StringCell)m_value);
             }
-            // A "real" StringCell (where our column type is also StringCell's type) would have been returned above
-            // already... so this must be a StringCell that contains an unconvertible user input.
-            // Otherwise, there is something unexpected happening.
-            if (!(m_value instanceof StringCell stringCell)) {
-                throw new IllegalStateException("Unexpected cell type when retrieving converter error: " + cellType);
-            }
-            // This is the case if `readDataCellFromStringSafe` failed to type-map when closing the dialog.
-            throw retrieveConversionError(m_type, stringCell);
         }
 
         /**
@@ -401,7 +402,16 @@ public final class DynamicValuesInput implements PersistableSettings {
                     "Expected conversion of string \"%s\" to target type \"%s\" to fail, but it succeeded."
                         .formatted(stringValue, type));
             } catch (final ConverterException e) { // NOSONAR we unwrap our own exception
-                return new InvalidSettingsException(e.getMessage(), e.getCause());
+                final var msgBuilder = Message.builder() //
+                        .withSummary(e.getMessage());
+                final var cause = e.getCause();
+                final var causeMsg = cause != null ? cause.getMessage() : null;
+                if (causeMsg != null && !StringUtils.isEmpty(stringValue)) {
+                    msgBuilder.addTextIssue(causeMsg);
+                }
+                return msgBuilder.build() //
+                        .orElseThrow() // we set a summary
+                        .toInvalidSettingsException();
             }
         }
 
@@ -498,13 +508,8 @@ public final class DynamicValuesInput implements PersistableSettings {
             } catch (final Exception e) {
                 final var isEmpty = StringUtils.isEmpty(value);
                 final var content = isEmpty ? "empty input" : "input \"%s\"".formatted(value);
-                var message = "Could not convert %s to \"%s\"".formatted(content, dataType);
-                final var cause = e.getCause();
-                final var causeMsg = cause != null ? cause.getMessage() : null;
-                if (causeMsg != null && !isEmpty) {
-                    message += ": " + causeMsg;
-                }
-                throw new ConverterException(message, cause);
+                final var message = "Could not convert %s to \"%s\"".formatted(content, dataType);
+                throw new ConverterException(message, e.getCause());
             }
         }
 
