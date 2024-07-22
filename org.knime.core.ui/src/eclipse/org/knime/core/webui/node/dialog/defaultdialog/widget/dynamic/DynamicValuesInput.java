@@ -746,6 +746,71 @@ public final class DynamicValuesInput implements PersistableSettings {
         return true;
     }
 
+    /**
+     * Converts this input to the given template type, if possible. If a conversion of a value is not possible, it uses
+     * the provided value from the given template at the corresponding position.
+     *
+     * @param template input arity, type information, and default value
+     * @return non-empty input with values of types according to given template (either re-used or from template),
+     *   or {@link Optional#empty()} if conversion is not possible due to arity and input kind mismatch
+     */
+    public Optional<DynamicValuesInput> convertToType(final DynamicValuesInput template) {
+        if (m_values.length != template.m_values.length || m_inputKind != template.m_inputKind) {
+            return Optional.empty();
+        }
+        final var convertedValues = new DynamicValue[m_values.length];
+        for (int i = 0; i < m_values.length; i++) {
+            convertedValues[i] = convert(m_values[i], template.m_values[i]);
+        }
+        return Optional.of(new DynamicValuesInput(convertedValues, m_inputKind));
+    }
+
+
+    /**
+     * Tries to convert the given value into the template's type or uses the template if no conversion is
+     * possible.
+     * @param currentValue value to convert
+     * @param templateValue template to convert to
+     * @return converted value or template value if conversion is not possible
+     */
+    private static DynamicValue convert(final DynamicValue value, final DynamicValue templateValue) {
+        final var targetType = templateValue.m_type;
+        final var currentValueCell = value.m_value;
+        if (currentValueCell.isMissing()) {
+            return new DynamicValue(targetType);
+        }
+        if (currentValueCell.getType().equals(targetType)
+                && !(value.m_caseMatching == null ^ templateValue.m_caseMatching == null)) {
+            // we can use the provided value as-is (we cannot use DynamicValue#equals, since the template's value and
+            // case matching setting can be different)
+            return value;
+        }
+        final var caseMatching = getCaseMatching(templateValue.m_caseMatching, value.m_caseMatching);
+        try {
+            final var stringValue = currentValueCell instanceof StringCell sc ? sc.getStringValue()
+                : DynamicValue.getStringFromDataCell(currentValueCell);
+            final var convertedCell = DynamicValue.readDataCellFromString(targetType, stringValue);
+            return new DynamicValue(targetType, convertedCell, caseMatching);
+        } catch (final ConverterException e) { // NOSONAR best effort input conversion expected to fail quite often
+            return templateValue;
+        }
+    }
+
+    /**
+     * Re-uses or initializes default case matching settings, if the template specifies to use the setting.
+     *
+     * @param templateValue template specifying whether to use case matching settings
+     * @param currentValue value to copy in case it is present
+     * @return
+     */
+    private static StringCaseMatchingSettings getCaseMatching(
+        final StringCaseMatchingSettings templateCaseMatching, final StringCaseMatchingSettings currentCaseMatching) {
+        if (templateCaseMatching == null) {
+            return null;
+        }
+        return currentCaseMatching == null ? new StringCaseMatchingSettings() : currentCaseMatching;
+    }
+
     // can be used for testing
     static DynamicValuesInput testDummy() {
         return new DynamicValuesInput(new DynamicValue[]{//
