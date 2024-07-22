@@ -1,6 +1,6 @@
 {
   "name": "@knime/ui-extension-service",
-  "version": "0.33.0",
+  "version": "0.34.0",
   "description": "KNIME UI Extension Service for KNIME Analytics Platform",
   "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE LICENSE IN license.txt)",
   "author": "KNIME AG, Zurich, Switzerland",
