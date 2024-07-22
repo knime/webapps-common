@@ -8,16 +8,30 @@ properties([
     pipelineTriggers([upstream(
         'knime-core/' + env.BRANCH_NAME.replaceAll('/', '%2F')
     )]),
-    parameters([p2Tools.getP2pruningParameter()]),
+    parameters([p2Tools.getP2pruningParameter()] + workflowTests.getConfigurationsAsParameters()),
     buildDiscarder(logRotator(numToKeepStr: '5')),
     disableConcurrentBuilds()
 ])
 
 try {
+    
+    buildConfigs = [
+        Tycho: {
+            knimetools.defaultTychoBuild(updateSiteProject: 'org.knime.update.core.ui')
+        },
+        UnitTests: {
+            workflowTests.runIntegratedWorkflowTests(
+                configurations: workflowTests.DEFAULT_FEATURE_BRANCH_CONFIGURATIONS,
+                profile: "test"
+            )
+        }
+    ]
+    
     node('maven && java17 && large') {
-        knimetools.defaultTychoBuild(updateSiteProject: 'org.knime.update.core.ui')
 
-        junit '**/test-results/junit.xml'
+        parallel buildConfigs
+
+        // junit '**/test-results/junit.xml'
 
         stage('Sonarqube analysis') {
             workflowTests.runSonar(withOutNode: true)
