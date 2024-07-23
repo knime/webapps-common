@@ -1,5 +1,23 @@
 # @knime/components
 
+## 1.0.9
+
+### Patch Changes
+
+- 8d1c239: TagList:
+
+  - add ability to control show all from outside (optional v-model)
+  - add keyboard navigation support (activate via enter)
+  - move focus after show more on the next item
+  - fix hover/focus bug for show-more (+<NUM>)
+  - add prop to sort by active elements (show active first)
+
+  Tag:
+
+  - add focus visible (keyboard nav) style
+  - change hover style
+  - make focusable
+
 ## 1.0.8
 
 ### Patch Changes

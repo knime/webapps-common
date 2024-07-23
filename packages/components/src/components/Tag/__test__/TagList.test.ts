@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { shallowMount } from "@vue/test-utils";
+import { shallowMount, VueWrapper } from "@vue/test-utils";
 
 import TagList from "../TagList.vue";
 import Tag from "../Tag.vue";
@@ -16,8 +16,12 @@ const sevenTags = [
 const threeTags = ["tag1", "tag2", "tagedyTag"];
 const defaultNumInitialTags = 5;
 
-describe("tagList.vue", () => {
-  const checkTagTexts = (wrappers, expectedTags, numInitialTags) => {
+describe("TagList.vue", () => {
+  const checkTagTexts = (
+    wrappers: VueWrapper[],
+    expectedTags: string[],
+    numInitialTags: number,
+  ) => {
     if (expectedTags.length > numInitialTags) {
       // initial plus expander tag
       expect(wrappers.length).toEqual(numInitialTags + 1);
@@ -45,7 +49,7 @@ describe("tagList.vue", () => {
       props: { tags: threeTags },
     });
 
-    let tagWrappers = wrapper.findAllComponents(Tag);
+    const tagWrappers = wrapper.findAllComponents(Tag);
     checkTagTexts(tagWrappers, threeTags, defaultNumInitialTags);
   });
 
@@ -54,7 +58,7 @@ describe("tagList.vue", () => {
       props: { tags: sevenTags },
     });
 
-    let tagWrappers = wrapper.findAllComponents(Tag);
+    const tagWrappers = wrapper.findAllComponents(Tag);
     checkTagTexts(tagWrappers, sevenTags, defaultNumInitialTags);
   });
 
@@ -63,7 +67,7 @@ describe("tagList.vue", () => {
       props: { tags: sevenTags, numberOfInitialTags: 2 },
     });
 
-    let tagWrappers = wrapper.findAllComponents(Tag);
+    const tagWrappers = wrapper.findAllComponents(Tag);
     checkTagTexts(tagWrappers, sevenTags, 2);
   });
 
@@ -72,15 +76,18 @@ describe("tagList.vue", () => {
       props: { tags: sevenTags },
     });
 
-    let tagWrappers = wrapper.findAllComponents(Tag);
+    const tagWrappers = wrapper.findAllComponents(Tag);
     checkTagTexts(tagWrappers, sevenTags, defaultNumInitialTags);
 
     // last tag is expander button
+    expect(tagWrappers[defaultNumInitialTags].props("clickable")).toBe(true);
     await tagWrappers[defaultNumInitialTags].trigger("click");
+
+    expect(wrapper.emitted("update:showAll")?.[0][0]).toBe(true);
     expect(wrapper.findAllComponents(Tag).length).toEqual(sevenTags.length);
   });
 
-  it("doesnt show active tags by default", () => {
+  it("doesn't show active tags by default", () => {
     const wrapper = shallowMount(TagList, {
       props: { tags: sevenTags },
     });
@@ -98,6 +105,23 @@ describe("tagList.vue", () => {
     const tags = wrapper.findAllComponents(Tag);
 
     const expected = [false, false, false, true, false, true, false];
+    tags.forEach((tag, index) => {
+      expect(tag.props("active")).toBe(expected.at(index));
+    });
+  });
+
+  it("shows active tags at the beginning of the list if prop is given", async () => {
+    const wrapper = shallowMount(TagList, {
+      props: {
+        tags: sevenTags,
+        sortByActive: true,
+        activeTags: ["tagMaster", "moarTags"],
+      },
+    });
+    await wrapper.find(".more-tags").trigger("click");
+    const tags = wrapper.findAllComponents(Tag);
+
+    const expected = [true, true, false, false, false, false, false];
     tags.forEach((tag, index) => {
       expect(tag.props("active")).toBe(expected.at(index));
     });
