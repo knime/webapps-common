@@ -12,6 +12,11 @@ const MockComponent = defineComponent({
 
 const dynamicImportMock = vi.fn();
 
+vi.mock("@knime/ui-extension-service", async () => {
+  const actual = await vi.importActual("@knime/ui-extension-service");
+  return { ...actual };
+});
+
 vi.mock("../useDynamicImport", () => {
   return {
     useDynamicImport: () => ({
