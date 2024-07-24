@@ -63,8 +63,12 @@ definitions:
           - pnpm
         deployment: production
         script:
+          - export SHELL=bash
           - corepack enable
           - corepack prepare pnpm@latest-9 --activate
+          - pnpm setup
+          - source /root/.bashrc
+          - pnpm add -g @knime/licenses
           - pnpm install
           # https://support.atlassian.com/bitbucket-cloud/docs/push-back-to-your-repository/#Configuring-an-alternate-Git-client
           - git config --global http.${BITBUCKET_GIT_HTTP_ORIGIN}.proxy http://localhost:29418/
