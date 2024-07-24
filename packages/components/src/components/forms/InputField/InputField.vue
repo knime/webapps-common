@@ -122,6 +122,7 @@ export default {
       <slot name="icon" />
     </div>
     <input
+      v-bind="$attrs"
       :id="id"
       ref="input"
       :name="name"
