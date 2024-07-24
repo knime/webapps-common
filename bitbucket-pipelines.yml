@@ -48,8 +48,12 @@ definitions:
         deployment: production
         script:
           - echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+          - export SHELL=bash
           - corepack enable
           - corepack prepare pnpm@latest-9 --activate
+          - pnpm setup
+          - source /root/.bashrc
+          - pnpm add -g @knime/licenses
           - pnpm install
           - pnpm run publish
           - git push --follow-tags

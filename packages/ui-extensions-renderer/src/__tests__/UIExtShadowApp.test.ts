@@ -5,6 +5,11 @@ import type { UIExtensionServiceAPILayer } from "@knime/ui-extension-service";
 import * as ExtensionServiceModule from "@knime/ui-extension-service";
 import { createApp, defineComponent } from "vue";
 
+vi.mock("@knime/ui-extension-service", async () => {
+  const actual = await vi.importActual("@knime/ui-extension-service");
+  return { ...actual };
+});
+
 const MockComponent = defineComponent({
   name: "MockComp",
   template: "<div class='mock' />",
