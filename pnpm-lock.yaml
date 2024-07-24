@@ -273,7 +273,7 @@ importers:
         version: 3.1.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.4.5))(eslint@8.56.0)(typescript@5.4.5))(eslint@8.56.0)
       eslint-plugin-vitest:
         specifier: 0.3.20
-        version: 0.3.20(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.4.5))(eslint@8.56.0)(typescript@5.4.5))(eslint@8.56.0)(typescript@5.4.5)(vitest@1.4.0(@types/node@20.14.12)(jsdom@24.1.0)(sugarss@4.0.1(postcss@8.4.38)))
+        version: 0.3.20(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.4.5))(eslint@8.56.0)(typescript@5.4.5))(eslint@8.56.0)(typescript@5.4.5)(vitest@1.2.1(@types/node@20.14.12)(jsdom@24.1.0)(sugarss@4.0.1(postcss@8.4.38)))
       eslint-plugin-vue:
         specifier: ^9.19.2
         version: 9.25.0(eslint@8.56.0)
@@ -407,8 +407,8 @@ importers:
         specifier: workspace:*
         version: link:../styles
       '@knime/ui-extension-service':
-        specifier: ^0.32.0
-        version: 0.32.0
+        specifier: ^0.35.0
+        version: 0.35.0
       '@vueuse/shared':
         specifier: ^10.10.0
         version: 10.10.0(vue@3.4.27(typescript@5.4.5))
@@ -1162,8 +1162,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
 
-  '@knime/ui-extension-service@0.32.0':
-    resolution: {integrity: sha512-h8uUY6blEDKyS2PsLSSbIfDE4i3VvRozkfiq2FZviZRg0W3bMEal0Sg++Ab479PQeA5cz+hRqx/PT2NS3bzCCQ==}
+  '@knime/ui-extension-service@0.35.0':
+    resolution: {integrity: sha512-nJwke0tEYrY4w676ootb0h4wwhp3vNv3cO97Or9ghgfm+9HHn7g1lVDsT3CtSDuqMqqP/5r1q0txGHN/gs5Zyw==}
     engines: {node: 18.x - 20.x}
 
   '@manypkg/find-root@1.1.0':
@@ -5311,7 +5311,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.4.15
 
-  '@knime/ui-extension-service@0.32.0':
+  '@knime/ui-extension-service@0.35.0':
     dependencies:
       color-convert: 2.0.1
       uuid: 9.0.1
@@ -6830,13 +6830,13 @@ snapshots:
     optionalDependencies:
       '@typescript-eslint/eslint-plugin': 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.4.5))(eslint@8.56.0)(typescript@5.4.5)
 
-  eslint-plugin-vitest@0.3.20(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.4.5))(eslint@8.56.0)(typescript@5.4.5))(eslint@8.56.0)(typescript@5.4.5)(vitest@1.4.0(@types/node@20.14.12)(jsdom@24.1.0)(sugarss@4.0.1(postcss@8.4.38))):
+  eslint-plugin-vitest@0.3.20(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.4.5))(eslint@8.56.0)(typescript@5.4.5))(eslint@8.56.0)(typescript@5.4.5)(vitest@1.2.1(@types/node@20.14.12)(jsdom@24.1.0)(sugarss@4.0.1(postcss@8.4.38))):
     dependencies:
       '@typescript-eslint/utils': 6.21.0(eslint@8.56.0)(typescript@5.4.5)
       eslint: 8.56.0
     optionalDependencies:
       '@typescript-eslint/eslint-plugin': 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.4.5))(eslint@8.56.0)(typescript@5.4.5)
-      vitest: 1.4.0(@types/node@20.14.12)(jsdom@24.1.0)(sugarss@4.0.1(postcss@8.4.38))
+      vitest: 1.2.1(@types/node@20.14.12)(jsdom@24.1.0)(sugarss@4.0.1(postcss@8.4.38))
     transitivePeerDependencies:
       - supports-color
       - typescript
