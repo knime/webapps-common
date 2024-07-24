@@ -33,17 +33,14 @@
     "prepare": "husky",
     "postinstall": "license-check -c"
   },
-  "dependencies": {
-    "@types/jsdom": "^21.1.7",
-    "@types/node": "^20.14.9",
-    "vue-tsc": "^2.0.24"
-  },
   "devDependencies": {
+    "@types/jsdom": "^21.1.7",
+    "@types/node": "^20.14.12",
+    "vue-tsc": "^2.0.28",
     "@changesets/cli": "^2.27.7",
     "@knime/eslint-config": "workspace:*",
     "@knime/licenses": "workspace:*",
     "@tsconfig/node20": "^20.1.4",
-    "@types/node": "20.14.10",
     "@vitest/coverage-v8": "1.2.1",
     "@vue/tsconfig": "^0.5.1",
     "eslint": "8.56.0",
