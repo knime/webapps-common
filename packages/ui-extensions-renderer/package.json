@@ -1,6 +1,6 @@
 {
   "name": "@knime/ui-extensions-renderer",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Internal shared components and utilities to render UI-Extensions. Used in other consuming `@knime` packages.",
   "homepage": "https://knime.github.io/webapps-common/",
   "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE LICENSE IN license.txt)",
