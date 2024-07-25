@@ -215,7 +215,7 @@ describe("Dropdown.vue", () => {
     expect(wrapper.vm.searchValue).toBe("abas");
 
     wrapper.vm.handleResetInput();
-    expect(wrapper.vm.searchValue).toBe("");
+    expect(wrapper.vm.searchValue).toBeUndefined();
   });
 
   it("sets titles from text or optional titles of items", () => {

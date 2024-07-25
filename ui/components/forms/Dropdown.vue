@@ -3,6 +3,7 @@ import "./variables.css";
 import { isEmpty } from "lodash-es";
 
 import DropdownIcon from "../../assets/img/icons/arrow-dropdown.svg";
+import FunctionButton from "../FunctionButton.vue";
 import { computed, ref, toRef, type PropType } from "vue";
 import { OnClickOutside } from "@vueuse/components";
 import { useSearch, type PossibleValue, type Id } from "./possibleValues";
@@ -23,6 +24,7 @@ export default {
   components: {
     DropdownIcon,
     OnClickOutside,
+    FunctionButton,
     CloseIcon,
   },
   props: {
@@ -147,6 +149,7 @@ export default {
       emptyState: "Nothing found",
       optionRefs: new Map(),
       isActive: false,
+      closeIconFocused: false,
     };
   },
   computed: {
@@ -182,7 +185,7 @@ export default {
     },
     displayTextMap() {
       let map = {} as Record<Id, string>;
-      for (let value of this.flatOrderedValues) {
+      for (let value of this.possibleValues) {
         map[value.id] = value.text;
       }
       return map;
@@ -256,7 +259,6 @@ export default {
       this.$emit("update:modelValue", id);
       this.isExpanded = false;
       this.getButtonRef().focus();
-      this.searchValue = "";
     },
     scrollTo(id: Id) {
       let listBoxNode = this.getListBoxNodeRef();
@@ -373,10 +375,11 @@ export default {
       }
       if (e.key === KEY_ESC) {
         if (this.isExpanded) {
-          this.searchValue = "";
           this.toggleExpanded();
         }
         this.getButtonRef().focus();
+        this.searchValue = this.displayTextMap[this.modelValue];
+
         e.preventDefault();
         e.stopPropagation();
         return;
@@ -388,10 +391,16 @@ export default {
       }
 
       if (e.key === KEY_TAB) {
-        if (this.isExpanded) {
-          this.searchValue = this.displayTextMap[this.modelValue];
-          this.toggleExpanded();
-          this.getButtonRef().focus();
+        if (this.isExpanded && !this.useFilterValues) {
+          this.moveFocusPushingTab();
+        }
+        if (this.useFilterValues && this.isExpanded) {
+          (this.$refs.closeButton as HTMLElement).focus();
+          if (this.closeIconFocused) {
+            this.moveFocusPushingTab();
+            return;
+          }
+          this.closeIconFocused = true;
         }
       }
 
@@ -414,6 +423,11 @@ export default {
         this.setSelected(candidate.id);
       }
     },
+    moveFocusPushingTab() {
+      this.searchValue = this.displayTextMap[this.modelValue];
+      this.toggleExpanded();
+      this.getButtonRef().focus();
+    },
     hasSelection() {
       return this.selectedIndex >= 0;
     },
@@ -432,8 +446,8 @@ export default {
       return `${node}-${this.id}-${cleanId}`;
     },
     clickAway() {
+      this.searchValue = this.displayTextMap[this.modelValue];
       this.isActive = false;
-      this.searchValue = "";
       this.isExpanded = false;
     },
     handleSearch(item: string) {
@@ -441,7 +455,7 @@ export default {
       this.searchValue = item;
     },
     handleResetInput() {
-      this.searchValue = "";
+      this.searchValue = this.displayTextMap[this.modelValue];
       this.toggleExpanded();
     },
   },
@@ -491,13 +505,15 @@ export default {
           <div v-if="hasRightIcon" class="loading-icon">
             <slot name="icon-right" />
           </div>
-          <button
+          <FunctionButton
             v-if="isActive"
+            ref="closeButton"
             role="closeButton"
+            class="button"
             @click="handleResetInput()"
           >
             <CloseIcon class="icon" />
-          </button>
+          </FunctionButton>
           <DropdownIcon v-else class="icon" />
         </div>
       </div>
@@ -588,11 +604,13 @@ export default {
     cursor: default;
   }
 
+  & .button {
+    padding: 12px;
+  }
+
   & button {
-    margin-right: 12px;
+    margin-right: 6px;
     padding: 6px;
-    background-color: transparent;
-    border: none;
     cursor: pointer;
   }
 
