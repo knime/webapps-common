@@ -77,8 +77,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.view.table.TableViewLayout.DataSection;
 import org.knime.core.webui.node.view.table.TableViewLayout.InteractivitySection;
 import org.knime.core.webui.node.view.table.TableViewLayout.ViewSection;
-import org.knime.core.webui.node.view.table.TableViewViewSettings.RowHeightMode.CompactModeToRowHeightModePersistor;
+import org.knime.core.webui.node.view.table.TableViewViewSettings.RowHeightMode.CompactModeAndLegacyRowHeightModePersistor;
 import org.knime.core.webui.node.view.table.TableViewViewSettings.RowHeightMode.RowHeightIsCustom;
+import org.knime.core.webui.node.view.table.TableViewViewSettings.VerticalPaddingMode.RowHeightModeToVerticalPaddingModePersistor;
 
 /**
  * @author Konrad Amtenbrink, KNIME GmbH, Berlin, Germany
@@ -178,21 +179,21 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     public int m_pageSize = 10;
 
     enum AUTO_SIZE_COLUMNS {
-            @Label("Fixed")
+            @Label(value = "Fixed", description = "the column sizing is fixed")
             FIXED, //
-            @Label("Fit content")
+            @Label(value = "Fit content",
+                description = "the columns are sized according to the largest element in the column within the first"
+                    + " 11 rows or within the current page when the page size is smaller than 11.")
             FIT_CONTENT, //
-            @Label("Fit content and header")
+            @Label(value = "Fit content and header",
+                description = "the content and the headers are considered for the size calculation of the columns.")
             FIT_CONTENT_AND_HEADER;
     }
 
     /**
      * If the column widths should be calculated from the first rows
      */
-    @Widget(title = "Column width", description = "Fixed, the column sizing is fixed."
-        + " Fit content, the columns are sized according to the largest element in the column within the first 10"
-        + " rows or within the current page when the page size is smaller than 10."
-        + " Fit content and header, the content and the headers are considered for the size calculation of the columns.")
+    @Widget(title = "Column width", description = "Set the width of the individual columns:")
     @Persist(optional = true)
     @Layout(ViewSection.class)
     @ValueSwitchWidget
@@ -200,11 +201,21 @@ public class TableViewViewSettings implements DefaultNodeSettings {
 
     @SuppressWarnings("javadoc")
     public enum RowHeightMode {
-            @Label("Default")
-            DEFAULT, //
-            @Label("Compact")
-            COMPACT, //
-            @Label("Custom")
+            //            @Label(value = "Default",
+            //                description = "shows one line of text, visually well separated by whitespace. In case of reporting"
+            //                    + " this option will grow the row height as high as the content.")
+            //            DEFAULT, //
+            //            @Label(value = "Compact",
+            //                description = "reduces white space around rows to a minimum. Choose this option to show as many rows"
+            //                    + " as possible in given space.")
+            //            COMPACT, //
+            @Label(value = "Auto",
+                description = "shows as much as you need. For instance, show images at a size that enables to grasp"
+                    + " their gist.")
+            AUTO, //
+            @Label(value = "Custom",
+                description = "shows as much as you need. For instance, show images at a size that enables to grasp"
+                    + " their gist.")
             CUSTOM; //
 
         public static final class RowHeightIsCustom extends OneOfEnumCondition<RowHeightMode> {
@@ -216,7 +227,7 @@ public class TableViewViewSettings implements DefaultNodeSettings {
 
         }
 
-        static final class CompactModeToRowHeightModePersistor
+        static final class CompactModeAndLegacyRowHeightModePersistor
             extends NodeSettingsPersistorWithConfigKey<RowHeightMode> {
 
             private NodeSettingsPersistor<RowHeightMode> m_persistor;
@@ -233,9 +244,15 @@ public class TableViewViewSettings implements DefaultNodeSettings {
                 if (!settings.containsKey(getConfigKey())) {
                     if (settings.containsKey("compactMode")) {
                         final var compactModeLegacySetting = settings.getBoolean("compactMode");
-                        return compactModeLegacySetting ? COMPACT : DEFAULT;
+                        return compactModeLegacySetting ? CUSTOM : AUTO;
                     }
-                    return DEFAULT;
+                    return AUTO;
+                }
+
+                final var rowHeightMode = settings.getString(getConfigKey());
+
+                if (rowHeightMode.equals("DEFAULT") || rowHeightMode.equals("COMPACT")) {
+                    return RowHeightMode.CUSTOM;
                 }
                 return m_persistor.load(settings);
             }
@@ -250,27 +267,109 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     /**
      * The mode of the row height. Either a compact small height, a default height or a custom larger height.
      */
-    @Widget(title = "Row height", description = "Set the initial height of the rows:" //
-        + "<ul> " //
-        + "<li><b>Default</b>, shows one line of text, visually well separated by whitespace. In case of reporting this option will grow the row height as high as the content.</li>" //
-        + "<li><b>Compact</b>, reduces white space around rows to a minimum. Choose this option to show as many rows as possible in given space.</li>" //
-        + "<li><b>Custom</b>, shows as much as you need. For instance, show images at a size that enables to grasp their gist.</li>" //
-        + "</ul>")
+    @Widget(title = "Row height", description = "Set the initial height of the rows:")
     @ValueSwitchWidget
     @Layout(ViewSection.class)
-    @Persist(customPersistor = CompactModeToRowHeightModePersistor.class)
+    @Persist(customPersistor = CompactModeAndLegacyRowHeightModePersistor.class)
     @Signal(condition = RowHeightIsCustom.class)
-    public RowHeightMode m_rowHeightMode = RowHeightMode.DEFAULT;
+    public RowHeightMode m_rowHeightMode = RowHeightMode.AUTO;
+
+    @SuppressWarnings("javadoc")
+    public enum VerticalPaddingMode {
+            @Label("Default")
+            DEFAULT, //
+            @Label("Compact")
+            COMPACT;
+
+        static final class RowHeightModeToVerticalPaddingModePersistor
+            extends NodeSettingsPersistorWithConfigKey<VerticalPaddingMode> {
+
+            private NodeSettingsPersistor<VerticalPaddingMode> m_persistor;
+
+            @Override
+            public void setConfigKey(final String configKey) {
+                super.setConfigKey(configKey);
+                m_persistor = new EnumFieldPersistor<>(configKey, VerticalPaddingMode.class);
+            }
+
+            @Override
+            public VerticalPaddingMode load(final NodeSettingsRO settings) throws InvalidSettingsException {
+
+                if (settings.containsKey(getConfigKey())) {
+                    return m_persistor.load(settings);
+                }
+
+                if (settings.containsKey("compactMode")) {
+                    final var compactModeLegacySetting = settings.getBoolean("compactMode");
+                    return compactModeLegacySetting ? COMPACT : DEFAULT;
+                }
+
+                if (settings.containsKey("rowHeightMode") && settings.getString("rowHeightMode").equals("COMPACT")) {
+                    return VerticalPaddingMode.COMPACT;
+                }
+                return DEFAULT;
+            }
+
+            @Override
+            public void save(final VerticalPaddingMode verticalPaddingMode, final NodeSettingsWO settings) {
+                m_persistor.save(verticalPaddingMode, settings);
+            }
+        }
+    }
+
+    /**
+     * The mode of the row padding. Either a default larger padding or a compact smaller padding.
+     */
+    @Widget(title = "Row padding", description = "Set the vertical padding of the rows:")
+    @ValueSwitchWidget
+    @Layout(ViewSection.class)
+    @Persist(customPersistor = RowHeightModeToVerticalPaddingModePersistor.class)
+    public VerticalPaddingMode m_verticalPaddingMode = VerticalPaddingMode.DEFAULT;
+
+    static final int DEFAULT_CUSTOM_ROW_HEIGHT = 80;
+
+    static final int CUSTOM_ROW_HEIGHT_COMPACT_PADDING = 24;
+
+    static final int CUSTOM_ROW_HEIGHT_DEFAULT_PADDING = 40;
+
+    static final class RowHeightModeToCustomRowHeightPersistor extends NodeSettingsPersistorWithConfigKey<Integer> {
+
+        @Override
+        public Integer load(final NodeSettingsRO settings) throws InvalidSettingsException {
+
+            if (!settings.containsKey("verticalPaddingMode")) {
+                if (settings.containsKey("compactMode") && settings.getBoolean("compactMode")) {
+                    return CUSTOM_ROW_HEIGHT_COMPACT_PADDING;
+                }
+
+                if (settings.containsKey("rowHeightMode")) {
+                    if (settings.getString("rowHeightMode").equals("COMPACT")) {
+                        return CUSTOM_ROW_HEIGHT_COMPACT_PADDING;
+                    }
+                    if (settings.getString("rowHeightMode").equals("DEFAULT")) {
+                        return CUSTOM_ROW_HEIGHT_DEFAULT_PADDING;
+                    }
+                }
+            }
+
+            return settings.getInt(getConfigKey());
+        }
+
+        @Override
+        public void save(final Integer customRowHeight, final NodeSettingsWO settings) {
+            settings.addInt(getConfigKey(), customRowHeight);
+        }
+    }
 
     /**
      *
      */
     @Widget(title = "Custom row height", description = "Set the initial height of the rows.")
-    @NumberInputWidget(min = 40, max = 1000000)
+    @NumberInputWidget(min = 24, max = 1000000)
     @Layout(ViewSection.class)
-    @Persist(optional = true)
+    @Persist(customPersistor = RowHeightModeToCustomRowHeightPersistor.class)
     @Effect(signals = RowHeightIsCustom.class, type = EffectType.SHOW)
-    public int m_customRowHeight = 80;
+    public int m_customRowHeight = DEFAULT_CUSTOM_ROW_HEIGHT;
 
     /**
      * If global search is enabled
