@@ -4,7 +4,7 @@ import type {
   ColumnSizes,
 } from "../types";
 import { computed, ref, type Ref } from "vue";
-import { AutoSizeColumnsToContent } from "../types/ViewSettings";
+import { AutoSizeColumnsToContent, RowHeightMode } from "../types/ViewSettings";
 import type TableViewViewSettings from "../types/ViewSettings";
 import { BORDER_BOTTOM_WIDTH } from "../constants";
 
@@ -43,6 +43,10 @@ export default ({
     );
   });
 
+  const autoRowHeightsActive = computed(
+    () => settings.value.rowHeightMode === RowHeightMode.AUTO,
+  );
+
   const includeHeadersInAutoColumnSizes = computed(
     () =>
       settings.value.autoSizeColumnsToContent ===
@@ -74,10 +78,16 @@ export default ({
     fixedSizes: fixedColumnSizes.value,
   }));
 
+  const autoRowHeightOptions = computed(() => ({
+    calculate: autoRowHeightsActive.value,
+    fixedHeights: {},
+  }));
+
   return {
     autoColumnSizes,
     autoColumnSizesActive,
     autoColumnSizesOptions,
+    autoRowHeightOptions,
     onAutoColumnSizesUpdate,
   };
 };

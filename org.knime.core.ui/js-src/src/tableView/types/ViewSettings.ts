@@ -1,6 +1,7 @@
 export enum RowHeightMode {
   AUTO = "AUTO",
   CUSTOM = "CUSTOM",
+  DEFAULT = "DEFAULT",
 }
 
 export enum VerticalPaddingMode {
@@ -27,7 +28,7 @@ type GenericTableViewViewSettings<T extends string[] | undefined> = {
   enableRendererSelection: boolean;
   showTableSize: boolean;
   rowHeightMode: RowHeightMode;
-  m_verticalPaddingMode: VerticalPaddingMode;
+  verticalPaddingMode: VerticalPaddingMode;
   customRowHeight: number;
   selectionMode: SelectionMode;
   enableColumnSearch: boolean;

@@ -5,12 +5,13 @@ import type {
 } from "@knime/knime-ui-table";
 import { getCustomRowHeight } from "../composables/useRowHeight";
 import type TableViewViewSettings from "../types/ViewSettings";
-import { RowHeightMode } from "../types/ViewSettings";
+import { RowHeightMode, VerticalPaddingMode } from "../types/ViewSettings";
 import specialColumns from "./specialColumns";
 import type { DataType, HeaderMenuItem } from "../types";
 import type { Renderer } from "../types/InitialData";
 import type { MenuItem } from "@knime/components";
 import { ColumnContentType } from "../types/Table";
+import { Ref } from "vue";
 const { INDEX, ROW_ID, SKIPPED_REMAINING_COLUMNS_COLUMN } = specialColumns;
 const isImage = (contentType?: ColumnContentType) => contentType === "img_path";
 const isHtml = (contentType?: ColumnContentType) => contentType === "html";
@@ -31,6 +32,7 @@ export default ({
   indicateRemainingColumnsSkipped,
   enableRowResizing,
   enableDynamicRowHeight,
+  currentRowHeight,
 }: {
   settings: TableViewViewSettings;
   columnSizes: number[];
@@ -45,6 +47,7 @@ export default ({
   indicateRemainingColumnsSkipped: boolean;
   enableRowResizing: boolean;
   enableDynamicRowHeight: boolean;
+  currentRowHeight: Ref<number>;
 }): DataConfig => {
   const {
     showRowKeys,
@@ -53,6 +56,7 @@ export default ({
     customRowHeight,
     showColumnDataType,
     enableRendererSelection,
+    verticalPaddingMode,
   } = settings;
 
   const createHeaderSubMenuItems = (
@@ -185,12 +189,14 @@ export default ({
       }),
     );
   }
-  const compactMode = rowHeightMode === RowHeightMode.COMPACT;
+  const autoMode = rowHeightMode === RowHeightMode.AUTO;
   const customMode = rowHeightMode === RowHeightMode.CUSTOM;
   const defaultMode = rowHeightMode === RowHeightMode.DEFAULT;
+  const compactMode = verticalPaddingMode === VerticalPaddingMode.COMPACT;
   return {
     columnConfigs,
     rowConfig: {
+      ...(autoMode && { rowHeight: currentRowHeight.value }),
       ...(customMode && { rowHeight: getCustomRowHeight({ customRowHeight }) }),
       ...(defaultMode &&
         enableDynamicRowHeight && { rowHeight: "dynamic" as const }),

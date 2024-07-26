@@ -5,7 +5,7 @@ import { RowHeightMode } from "../types/ViewSettings";
 
 type RelevantViewSettings = Pick<
   TableViewViewSettings,
-  "customRowHeight" | "rowHeightMode"
+  "customRowHeight" | "rowHeightMode" | "verticalPaddingMode"
 >;
 
 export const getCustomRowHeight = ({
@@ -16,8 +16,8 @@ export const getCustomRowHeight = ({
 
 export const getInitialRowHeight = (settings: RelevantViewSettings) => {
   switch (settings.rowHeightMode) {
-    case RowHeightMode.COMPACT:
-      return constants.COMPACT_ROW_HEIGHT;
+    case RowHeightMode.AUTO:
+      return constants.DEFAULT_ROW_HEIGHT;
     case RowHeightMode.CUSTOM:
       return getCustomRowHeight(settings);
     default:

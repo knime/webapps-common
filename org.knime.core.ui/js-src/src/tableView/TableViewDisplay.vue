@@ -12,7 +12,11 @@ import getDataConfig from "./utils/getDataConfig";
 import getTableConfig from "./utils/getTableConfig";
 import useColumnSizes from "./composables/useColumnSizes";
 import useAutoColumnSizes from "./composables/useAutoColumnSizes";
-import type { HeaderMenuItem, TableViewDisplayProps } from "./types";
+import type {
+  HeaderMenuItem,
+  TableViewDisplayProps,
+  ColumnSizes,
+} from "./types";
 import useBoolean from "./utils/useBoolean";
 import { separateSpecialColumns } from "./utils/specialColumns";
 import { BORDER_BOTTOM_WIDTH } from "./constants";
@@ -113,13 +117,14 @@ const {
 const hasDynamicRowHeight = computed(
   () =>
     enableDynamicRowHeight.value &&
-    settings.value.rowHeightMode === RowHeightMode.DEFAULT,
+    settings.value.rowHeightMode !== RowHeightMode.CUSTOM,
 );
 
 const {
   autoColumnSizes,
   autoColumnSizesActive,
   autoColumnSizesOptions,
+  autoRowHeightOptions,
   onAutoColumnSizesUpdate,
 } = useAutoColumnSizes({
   settings,
@@ -147,6 +152,7 @@ const dataConfig = computed(() => {
     columnSizes: columnSizes.value,
     enableRowResizing: props.enableRowResizing,
     enableDynamicRowHeight: props.enableDynamicRowHeight,
+    currentRowHeight,
     ...reactive(props.header),
   });
   emit("updateColumnConfigs", conf.columnConfigs);
@@ -199,6 +205,14 @@ const tableIsReady = ref(false);
 const onTableIsReady = () => {
   emit("tableIsReady");
   tableIsReady.value = true;
+};
+
+const onAutoSizesUpdate = (
+  newAutoColumnSizes: ColumnSizes,
+  newRowHeight: number,
+) => {
+  onAutoColumnSizesUpdate(newAutoColumnSizes);
+  emit("rowHeightUpdate", newRowHeight);
 };
 
 defineExpose({
@@ -266,6 +280,7 @@ const onCopySelection = ({
       :num-rows-above="rows.numRowsAbove"
       :num-rows-below="rows.numRowsBelow"
       :auto-column-sizes-options="autoColumnSizesOptions"
+      :auto-row-height-options="autoRowHeightOptions"
       @page-change="(arg: any) => $emit('pageChange', arg)"
       @column-sort="
         (colIndex: number) =>
@@ -298,7 +313,7 @@ const onCopySelection = ({
             getColumnId(colIndex) as string,
           )
       "
-      @auto-column-sizes-update="onAutoColumnSizesUpdate"
+      @auto-sizes-update="onAutoSizesUpdate"
       @row-height-update="$emit('rowHeightUpdate', $event)"
       @ready="onTableIsReady"
       @copy-selection="onCopySelection"
