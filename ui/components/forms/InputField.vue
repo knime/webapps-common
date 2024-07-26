@@ -124,6 +124,7 @@ export default {
     <input
       :id="id"
       ref="input"
+      v-bind="$attrs"
       :name="name"
       :value="modelValue"
       :class="inputClassList"
