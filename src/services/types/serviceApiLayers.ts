@@ -39,7 +39,7 @@ export type DialogServiceAPILayer = Pick<
 };
 
 type ImageGenerationServiceExtensionConfig = {
-  renderingConfig: RenderingConfig;
+  renderingConfig?: RenderingConfig;
 };
 
 export type ImageGenerationServiceAPILayer = Pick<
@@ -68,7 +68,7 @@ export type SharedDataServiceAPILayer = Pick<
 > & { getConfig: () => SharedDataServiceExtensionConfig };
 
 type ReportingServiceExtensionConfig = {
-  renderingConfig: RenderingConfig;
+  renderingConfig?: RenderingConfig;
 };
 
 export type ReportingServiceAPILayer = Pick<

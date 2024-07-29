@@ -45,7 +45,7 @@ export type UIExtensionServiceConfig = AlertConfig &
     /**
      * rendering config to determine in which context the ui extension is rendered
      */
-    renderingConfig: RenderingConfig;
+    renderingConfig?: RenderingConfig;
     hasNodeView: boolean;
     writeProtected?: boolean;
     /**
