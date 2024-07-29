@@ -22,5 +22,5 @@ Require-Bundle: org.eclipse.jetty.servlet-api;bundle-version="[4.0.6,5.0.0)",
  net.javacrumbs.json-unit.json-unit-assertj;bundle-version="[2.26.0,3.0.0)",
  junit-jupiter-params;bundle-version="5.9.2",
  org.knime.chem.types;bundle-version="[5.3.0,6.0.0)",
- org.knime.time;bundle-version="[5.4.0,6.0.0)"
+ org.knime.time;bundle-version="[5.3.0,6.0.0)"
 Automatic-Module-Name: org.knime.core.ui.tests
