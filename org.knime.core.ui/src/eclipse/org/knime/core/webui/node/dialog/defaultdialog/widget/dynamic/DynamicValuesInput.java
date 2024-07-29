@@ -221,6 +221,14 @@ public final class DynamicValuesInput implements PersistableSettings {
         }
     }
 
+    /** Checks if values are not missing and can be converted to their expected type.
+     * @throws InvalidSettingsException ...  */
+    public void checkParseError() throws InvalidSettingsException {
+        for (final var value : m_values) {
+            value.checkParseError();
+        }
+    }
+
     private static boolean isOfNonCollectionType(final DataType type) {
         return !type.isCollectionType();
     }
@@ -359,7 +367,7 @@ public final class DynamicValuesInput implements PersistableSettings {
          * @throws InvalidSettingsException if settings are invalid given spec
          */
         private void validate(final DataColumnSpec colSpec) throws InvalidSettingsException {
-            CheckUtils.checkSetting(!m_value.isMissing(), "The comparison value is missing.");
+            checkParseError();
 
             // check if the saved type is still compatible with the current column type
             final var columnType = colSpec.getType();
@@ -367,7 +375,7 @@ public final class DynamicValuesInput implements PersistableSettings {
                 final var colName = colSpec.getName();
                 throw Message.builder()
                     .withSummary(
-                        "Type of input column \"%s\" is not compatible with comparison value.".formatted(colName))
+                        "Type of input column \"%s\" is not compatible with comparison value".formatted(colName))
                     .addTextIssue(
                         "Input column \"%s\" has type \"%s\", but comparison value is of incompatible type \"%s\""
                             .formatted(colName, columnType.getName(), m_type.getName()))
@@ -376,7 +384,12 @@ public final class DynamicValuesInput implements PersistableSettings {
                     .addResolutions("Change the input column type to \"%s\".".formatted(m_type.getName())) //
                     .build().orElseThrow().toInvalidSettingsException();
             }
+        }
 
+        /** Checks if the value is not missing and can be converted to the expected type.
+         * @throws InvalidSettingsException ...  */
+        private void checkParseError() throws InvalidSettingsException {
+            CheckUtils.checkSetting(!m_value.isMissing(), "The comparison value is missing.");
             // validate that the current value is not an "error value"
             final var valueType = m_value.getType();
             // if we have a StringCell but we do not expect one, we had a conversion error and need to report it
