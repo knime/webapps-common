@@ -760,13 +760,18 @@ public final class DynamicValuesInput implements PersistableSettings {
     }
 
     /**
-     * Converts this input to the given template type, if possible. If a conversion of a value is not possible, it uses
-     * the provided value from the given template at the corresponding position.
+     * Converts this input to the given template type, if possible. If a conversion to the target type is not possible
+     * since the given value cannot be expressed in the target type by going through its string representation,
+     * the string representation will be stored. If the given value has no string representation an empty optional will
+     * be returned.
+     *
+     * The actual parse error can be checked by validating the input.
      *
      * @param template input arity, type information, and default value
-     * @return non-empty input with values converted to types according to given template
-     *   or {@link Optional#empty()} if conversion is not possible due to type conversion problem or arity and input
-     *   kind mismatch
+     * @return non-empty input with values converted to types according to given template,
+     *   string value if the input does not represent a valid value in the target type,
+     *   or {@link Optional#empty()} if conversion is not possible due to arity mismatch, input kind mismatch,
+     *   or missing string representation of source value
      */
     public Optional<DynamicValuesInput> convertToType(final DynamicValuesInput template) {
         if (m_values.length != template.m_values.length || m_inputKind != template.m_inputKind) {
@@ -785,11 +790,15 @@ public final class DynamicValuesInput implements PersistableSettings {
 
 
     /**
-     * Tries to convert the given value into the template's type or uses the template if no conversion is
-     * possible.
+     * Tries to convert the given value into the template's type. If a conversion to the target type is not possible
+     * since the given value cannot be expressed in the target type by going through its string representation,
+     * the string representation will be stored. If the given value has no string representation an empty optional will
+     * be returned.
+     *
      * @param currentValue value to convert
      * @param templateValue template to convert to
-     * @return converted value or template value if conversion is not possible
+     * @return converted value or string value if conversion is not possible, empty optional if source value has no
+     *   string representation
      */
     private static Optional<DynamicValue> convert(final DynamicValue value, final DynamicValue templateValue) {
         final var targetType = templateValue.m_type;

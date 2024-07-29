@@ -199,16 +199,24 @@ class DynamicValuesInputTest {
     }
 
     /**
-     * Tests that a conversion from a string that does not represent a local date returns the template value.
+     * Tests that a conversion from a string that does not represent a local date returns an error.
      */
     @Test
     void testConversionNotPossible() {
+        // provide empty string as input, which is not a valid local date
         final var stringInput = DynamicValuesInput.singleValueWithCaseMatchingForStringWithDefault(StringCell.TYPE);
         final var template =
-            new DynamicValuesInput(LocalDateCellFactory.TYPE, LocalDateCellFactory.create(LocalDate.of(2024, 7, 10)));
+            new DynamicValuesInput(LocalDateCellFactory.TYPE, LocalDateCellFactory.create(LocalDate.of(1970, 1, 1)));
         final var converted = stringInput.convertToType(template);
         assertThat(converted).isPresent().as("Some value is returned");
-        assertThat(converted).contains(template).as("Template value is returned");
+        assertThat(converted.get()).isNotEqualTo(template).as("Template value should not be returned");
+        try {
+            converted.get().checkParseError();
+        } catch (InvalidSettingsException ex) {
+            // expected
+            return;
+        }
+        failBecauseExceptionWasNotThrown(InvalidSettingsException.class);
     }
 
     @Test
