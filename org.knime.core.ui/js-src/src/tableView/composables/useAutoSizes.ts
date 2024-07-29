@@ -10,9 +10,9 @@ import { BORDER_BOTTOM_WIDTH } from "../constants";
 
 type RelevantViewSettings = Pick<
   TableViewViewSettings,
-  "autoSizeColumnsToContent"
+  "autoSizeColumnsToContent" | "rowHeightMode"
 >;
-export interface UseAutoColumnSizesOptions {
+export interface UseAutoSizesOptions {
   settings: Ref<RelevantViewSettings>;
   firstRowImageDimensions: Ref<
     TableViewDisplayProps["firstRowImageDimensions"]
@@ -26,7 +26,7 @@ export default ({
   firstRowImageDimensions,
   currentRowHeight,
   hasDynamicRowHeight,
-}: UseAutoColumnSizesOptions) => {
+}: UseAutoSizesOptions) => {
   const autoColumnSizes: Ref<ColumnSizes> = ref({});
 
   /**
@@ -43,29 +43,34 @@ export default ({
     );
   });
 
-  const autoRowHeightsActive = computed(
-    () => settings.value.rowHeightMode === RowHeightMode.AUTO,
-  );
-
   const includeHeadersInAutoColumnSizes = computed(
     () =>
       settings.value.autoSizeColumnsToContent ===
       AutoSizeColumnsToContent.FIT_CONTENT_AND_HEADER,
   );
 
-  const fixedColumnSizes = computed(() => {
+  const fixedSizes = computed(() => {
     const fixedColumnSizes: ColumnSizes = {};
+    const fixedRowHeights: ColumnSizes = {};
     // calculate the size of an img column by the ratio of the original img and the current row height
     Object.entries(firstRowImageDimensions.value).forEach(
       ([columnName, imageDimension]: [string, ImageDimension]) => {
         const { widthInPx, heightInPx } = imageDimension;
-        const autoSizeWidth = hasDynamicRowHeight.value
-          ? widthInPx
-          : Math.floor((widthInPx * innerRowHeight.value) / heightInPx);
-        fixedColumnSizes[columnName] = Math.min(autoSizeWidth, widthInPx);
+        if (settings.value.rowHeightMode === RowHeightMode.AUTO) {
+          fixedColumnSizes[columnName] = widthInPx;
+          fixedRowHeights[columnName] = heightInPx;
+        } else {
+          const autoSizeWidth = hasDynamicRowHeight.value
+            ? widthInPx
+            : Math.min(
+                Math.floor((widthInPx * innerRowHeight.value) / heightInPx),
+                widthInPx,
+              );
+          fixedColumnSizes[columnName] = autoSizeWidth;
+        }
       },
     );
-    return fixedColumnSizes;
+    return { fixedColumnSizes, fixedRowHeights };
   });
 
   const onAutoColumnSizesUpdate = (newAutoColumnSizes: ColumnSizes) => {
@@ -75,12 +80,16 @@ export default ({
   const autoColumnSizesOptions = computed(() => ({
     calculateForBody: autoColumnSizesActive.value,
     calculateForHeader: includeHeadersInAutoColumnSizes.value,
-    fixedSizes: fixedColumnSizes.value,
+    fixedSizes: fixedSizes.value.fixedColumnSizes,
   }));
+
+  const autoRowHeightsActive = computed(
+    () => settings.value.rowHeightMode === RowHeightMode.AUTO,
+  );
 
   const autoRowHeightOptions = computed(() => ({
     calculate: autoRowHeightsActive.value,
-    fixedHeights: {},
+    fixedHeights: fixedSizes.value.fixedRowHeights,
   }));
 
   return {

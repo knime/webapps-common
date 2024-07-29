@@ -1,6 +1,9 @@
 import { it, describe, expect, beforeEach } from "vitest";
 import useRowHeight from "../useRowHeight";
-import { RowHeightMode } from "@/tableView/types/ViewSettings";
+import {
+  RowHeightMode,
+  VerticalPaddingMode,
+} from "@/tableView/types/ViewSettings";
 
 describe("useColumnSizes", () => {
   let comp: ReturnType<typeof useRowHeight>;
@@ -10,19 +13,21 @@ describe("useColumnSizes", () => {
   });
 
   describe("row height from settings", () => {
-    it("creates the correct column sizes of image columns with compact row height", () => {
+    it("creates the correct column sizes of image columns with compact row padding", () => {
       comp.setRowHeightSettings({
         customRowHeight: 0,
-        rowHeightMode: RowHeightMode.COMPACT,
+        rowHeightMode: RowHeightMode.AUTO,
+        verticalPaddingMode: VerticalPaddingMode.COMPACT,
       });
 
       expect(comp.currentRowHeight.value).toBe(24);
     });
 
-    it("creates the correct column sizes of image columns with default row height", () => {
+    it("creates the correct column sizes of image columns with default row padding", () => {
       comp.setRowHeightSettings({
         customRowHeight: 0,
-        rowHeightMode: RowHeightMode.DEFAULT,
+        rowHeightMode: RowHeightMode.AUTO,
+        verticalPaddingMode: VerticalPaddingMode.DEFAULT,
       });
 
       expect(comp.currentRowHeight.value).toBe(40);
@@ -33,6 +38,7 @@ describe("useColumnSizes", () => {
       comp.setRowHeightSettings({
         customRowHeight,
         rowHeightMode: RowHeightMode.CUSTOM,
+        verticalPaddingMode: VerticalPaddingMode.DEFAULT,
       });
 
       expect(comp.currentRowHeight.value).toBe(customRowHeight);
@@ -43,9 +49,10 @@ describe("useColumnSizes", () => {
       comp.setRowHeightSettings({
         customRowHeight,
         rowHeightMode: RowHeightMode.CUSTOM,
+        verticalPaddingMode: VerticalPaddingMode.DEFAULT,
       });
 
-      expect(comp.currentRowHeight.value).toBe(40);
+      expect(comp.currentRowHeight.value).toBe(24);
     });
   });
 

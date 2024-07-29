@@ -6,6 +6,7 @@ import {
   AutoSizeColumnsToContent,
   RowHeightMode,
   SelectionMode,
+  VerticalPaddingMode,
 } from "@/tableView/types/ViewSettings";
 
 export const mountDisplay = async ({
@@ -77,7 +78,8 @@ export const getDefaultProps = (): TableViewDisplayProps => {
       showRowKeys: false,
       showRowIndices: false,
       showTableSize: false,
-      rowHeightMode: RowHeightMode.DEFAULT,
+      rowHeightMode: RowHeightMode.AUTO,
+      verticalPaddingMode: VerticalPaddingMode.DEFAULT,
       customRowHeight: 80,
       showColumnDataType: false,
       enableRendererSelection: false,

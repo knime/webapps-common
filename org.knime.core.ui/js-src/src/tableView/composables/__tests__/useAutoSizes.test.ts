@@ -1,18 +1,20 @@
 import { it, describe, expect, beforeEach } from "vitest";
-import useAutoColumnSizes, {
-  type UseAutoColumnSizesOptions,
-} from "../useAutoColumnSizes";
+import useAutoSizes, { type UseAutoSizesOptions } from "../useAutoSizes";
 import { ref, type Ref } from "vue";
-import { AutoSizeColumnsToContent } from "@/tableView/types/ViewSettings";
+import {
+  AutoSizeColumnsToContent,
+  RowHeightMode,
+} from "@/tableView/types/ViewSettings";
 
-describe("useAutoColumnSizes", () => {
-  let initialDataMock: UseAutoColumnSizesOptions, currentRowHeight: Ref<number>;
+describe("useAutoSizes", () => {
+  let initialDataMock: UseAutoSizesOptions, currentRowHeight: Ref<number>;
 
   beforeEach(() => {
     currentRowHeight = ref(80);
     initialDataMock = {
       settings: ref({
         autoSizeColumnsToContent: AutoSizeColumnsToContent.FIT_CONTENT,
+        rowHeightMode: RowHeightMode.AUTO,
       }),
       currentRowHeight,
       firstRowImageDimensions: ref({}),
@@ -24,7 +26,7 @@ describe("useAutoColumnSizes", () => {
     initialDataMock.settings.value.autoSizeColumnsToContent =
       AutoSizeColumnsToContent.FIXED;
     const { autoColumnSizesActive, autoColumnSizesOptions } =
-      useAutoColumnSizes(initialDataMock);
+      useAutoSizes(initialDataMock);
 
     expect(autoColumnSizesOptions.value).toStrictEqual({
       calculateForBody: false,
@@ -36,7 +38,7 @@ describe("useAutoColumnSizes", () => {
 
   it("creates the correct auto size options when using FIT_CONTENT", () => {
     const { autoColumnSizesActive, autoColumnSizesOptions } =
-      useAutoColumnSizes(initialDataMock);
+      useAutoSizes(initialDataMock);
 
     expect(autoColumnSizesOptions.value).toStrictEqual({
       calculateForBody: true,
@@ -50,7 +52,7 @@ describe("useAutoColumnSizes", () => {
     initialDataMock.settings.value.autoSizeColumnsToContent =
       AutoSizeColumnsToContent.FIT_CONTENT_AND_HEADER;
     const { autoColumnSizesActive, autoColumnSizesOptions } =
-      useAutoColumnSizes(initialDataMock);
+      useAutoSizes(initialDataMock);
 
     expect(autoColumnSizesOptions.value).toStrictEqual({
       calculateForBody: true,
@@ -64,7 +66,7 @@ describe("useAutoColumnSizes", () => {
     initialDataMock.settings.value.autoSizeColumnsToContent =
       AutoSizeColumnsToContent.FIT_CONTENT;
     const { autoColumnSizes, onAutoColumnSizesUpdate } =
-      useAutoColumnSizes(initialDataMock);
+      useAutoSizes(initialDataMock);
 
     const newAutoSizes = { col1: 55, col2: 66, col3: 77 };
     onAutoColumnSizesUpdate(newAutoSizes);
@@ -82,7 +84,8 @@ describe("useAutoColumnSizes", () => {
     });
 
     it("sets the correct column sizes of image columns on row height update", () => {
-      const { autoColumnSizesOptions } = useAutoColumnSizes(initialDataMock);
+      initialDataMock.settings.value.rowHeightMode = RowHeightMode.CUSTOM;
+      const { autoColumnSizesOptions } = useAutoSizes(initialDataMock);
 
       const newRowHeight = 120;
       currentRowHeight.value = newRowHeight;
@@ -98,8 +101,23 @@ describe("useAutoColumnSizes", () => {
     });
 
     it("sets the correct column sizes of image columns on dynamic row height", () => {
+      initialDataMock.settings.value.rowHeightMode = RowHeightMode.CUSTOM;
       initialDataMock.hasDynamicRowHeight.value = true;
-      const { autoColumnSizesOptions } = useAutoColumnSizes(initialDataMock);
+      const { autoColumnSizesOptions } = useAutoSizes(initialDataMock);
+
+      expect(autoColumnSizesOptions.value).toStrictEqual({
+        calculateForBody: true,
+        calculateForHeader: false,
+        fixedSizes: {
+          col1: 150,
+          col2: 120,
+          col3: 150,
+        },
+      });
+    });
+
+    it("sets the correct column sizes of image columns on automatic row height", () => {
+      const { autoColumnSizesOptions } = useAutoSizes(initialDataMock);
 
       expect(autoColumnSizesOptions.value).toStrictEqual({
         calculateForBody: true,
@@ -114,12 +132,13 @@ describe("useAutoColumnSizes", () => {
   });
 
   it("prevents the image from getting bigger than their preferred dimension", () => {
+    initialDataMock.settings.value.rowHeightMode = RowHeightMode.CUSTOM;
     initialDataMock.firstRowImageDimensions = ref({
       col1: { widthInPx: 50, heightInPx: 150 },
       col2: { widthInPx: 150, heightInPx: 50 },
       col3: { widthInPx: 70, heightInPx: 70 },
     });
-    const { autoColumnSizesOptions } = useAutoColumnSizes(initialDataMock);
+    const { autoColumnSizesOptions } = useAutoSizes(initialDataMock);
 
     expect(autoColumnSizesOptions.value).toStrictEqual({
       calculateForBody: true,

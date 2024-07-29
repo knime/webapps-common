@@ -18,6 +18,15 @@ const isHtml = (contentType?: ColumnContentType) => contentType === "html";
 const isMultiLineTxt = (contentType?: ColumnContentType) =>
   contentType === "multi_line_txt";
 
+const getRowHeightByRowHeightMode = (
+  rowHeightMode: RowHeightMode,
+  currentRowHeight: number,
+  customRowHeight: number,
+) =>
+  rowHeightMode === RowHeightMode.AUTO
+    ? currentRowHeight
+    : getCustomRowHeight({ customRowHeight });
+
 export default ({
   settings,
   displayedColumns,
@@ -31,7 +40,7 @@ export default ({
   columnNamesColors,
   indicateRemainingColumnsSkipped,
   enableRowResizing,
-  enableDynamicRowHeight,
+  hasDynamicRowHeight,
   currentRowHeight,
 }: {
   settings: TableViewViewSettings;
@@ -46,7 +55,7 @@ export default ({
   columnNamesColors: string[] | null;
   indicateRemainingColumnsSkipped: boolean;
   enableRowResizing: boolean;
-  enableDynamicRowHeight: boolean;
+  hasDynamicRowHeight: boolean;
   currentRowHeight: Ref<number>;
 }): DataConfig => {
   const {
@@ -189,17 +198,20 @@ export default ({
       }),
     );
   }
-  const autoMode = rowHeightMode === RowHeightMode.AUTO;
-  const customMode = rowHeightMode === RowHeightMode.CUSTOM;
-  const defaultMode = rowHeightMode === RowHeightMode.DEFAULT;
+
+  const rowHeight = hasDynamicRowHeight
+    ? ("dynamic" as const)
+    : getRowHeightByRowHeightMode(
+        rowHeightMode,
+        currentRowHeight.value,
+        customRowHeight,
+      );
   const compactMode = verticalPaddingMode === VerticalPaddingMode.COMPACT;
+
   return {
     columnConfigs,
     rowConfig: {
-      ...(autoMode && { rowHeight: currentRowHeight.value }),
-      ...(customMode && { rowHeight: getCustomRowHeight({ customRowHeight }) }),
-      ...(defaultMode &&
-        enableDynamicRowHeight && { rowHeight: "dynamic" as const }),
+      rowHeight,
       compactMode,
       enableResizing: enableRowResizing,
     },

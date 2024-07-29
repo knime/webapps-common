@@ -1,7 +1,6 @@
 export enum RowHeightMode {
   AUTO = "AUTO",
   CUSTOM = "CUSTOM",
-  DEFAULT = "DEFAULT",
 }
 
 export enum VerticalPaddingMode {

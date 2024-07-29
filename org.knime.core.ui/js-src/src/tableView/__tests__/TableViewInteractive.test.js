@@ -147,7 +147,7 @@ describe("TableViewInteractive.vue", () => {
         enablePagination: true,
         enableSortingByHeader: true,
         selectionMode: SelectionMode.EDIT,
-        rowHeightMode: RowHeightMode.DEFAULT,
+        rowHeightMode: RowHeightMode.AUTO,
         skipRemainingColumns: false,
         autoSizeColumnsToContent: AutoSizeColumnsToContent.FIXED,
         showOnlySelectedRows: false,

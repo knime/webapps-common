@@ -19,5 +19,6 @@ const lines = computed(() => props.text.split("\n"));
 <style scoped>
 .knime-cell-content {
   word-break: normal;
+  display: inline-block;
 }
 </style>

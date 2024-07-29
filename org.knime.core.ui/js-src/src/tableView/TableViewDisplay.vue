@@ -11,12 +11,8 @@ import MultiLineTextRenderer from "./renderers/MultiLineTextRenderer.vue";
 import getDataConfig from "./utils/getDataConfig";
 import getTableConfig from "./utils/getTableConfig";
 import useColumnSizes from "./composables/useColumnSizes";
-import useAutoColumnSizes from "./composables/useAutoColumnSizes";
-import type {
-  HeaderMenuItem,
-  TableViewDisplayProps,
-  ColumnSizes,
-} from "./types";
+import useAutoSizes from "./composables/useAutoSizes";
+import type { HeaderMenuItem, TableViewDisplayProps } from "./types";
 import useBoolean from "./utils/useBoolean";
 import { separateSpecialColumns } from "./utils/specialColumns";
 import { BORDER_BOTTOM_WIDTH } from "./constants";
@@ -117,7 +113,7 @@ const {
 const hasDynamicRowHeight = computed(
   () =>
     enableDynamicRowHeight.value &&
-    settings.value.rowHeightMode !== RowHeightMode.CUSTOM,
+    settings.value.rowHeightMode === RowHeightMode.AUTO,
 );
 
 const {
@@ -126,7 +122,7 @@ const {
   autoColumnSizesOptions,
   autoRowHeightOptions,
   onAutoColumnSizesUpdate,
-} = useAutoColumnSizes({
+} = useAutoSizes({
   settings,
   firstRowImageDimensions,
   currentRowHeight,
@@ -151,7 +147,7 @@ const dataConfig = computed(() => {
     settings: props.settings,
     columnSizes: columnSizes.value,
     enableRowResizing: props.enableRowResizing,
-    enableDynamicRowHeight: props.enableDynamicRowHeight,
+    hasDynamicRowHeight: hasDynamicRowHeight.value,
     currentRowHeight,
     ...reactive(props.header),
   });
@@ -205,14 +201,6 @@ const tableIsReady = ref(false);
 const onTableIsReady = () => {
   emit("tableIsReady");
   tableIsReady.value = true;
-};
-
-const onAutoSizesUpdate = (
-  newAutoColumnSizes: ColumnSizes,
-  newRowHeight: number,
-) => {
-  onAutoColumnSizesUpdate(newAutoColumnSizes);
-  emit("rowHeightUpdate", newRowHeight);
 };
 
 defineExpose({
@@ -313,7 +301,8 @@ const onCopySelection = ({
             getColumnId(colIndex) as string,
           )
       "
-      @auto-sizes-update="onAutoSizesUpdate"
+      @auto-column-sizes-update="onAutoColumnSizesUpdate"
+      @auto-row-height-update="$emit('rowHeightUpdate', $event)"
       @row-height-update="$emit('rowHeightUpdate', $event)"
       @ready="onTableIsReady"
       @copy-selection="onCopySelection"

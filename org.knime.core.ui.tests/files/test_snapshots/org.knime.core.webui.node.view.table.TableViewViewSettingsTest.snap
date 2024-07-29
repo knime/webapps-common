@@ -27,8 +27,9 @@
       "enablePagination" : false,
       "pageSize" : 10,
       "autoSizeColumnsToContent" : "FIXED",
-      "rowHeightMode" : "DEFAULT",
+      "rowHeightMode" : "AUTO",
       "customRowHeight" : 80,
+      "verticalPaddingMode" : "DEFAULT",
       "enableGlobalSearch" : true,
       "enableColumnSearch" : true,
       "enableSortingByHeader" : true,
@@ -58,7 +59,7 @@
               "title" : "Fit content and header"
             } ],
             "title" : "Column width",
-            "description" : "Fixed, the column sizing is fixed. Fit content, the columns are sized according to the largest element in the column within the first 10 rows or within the current page when the page size is smaller than 10. Fit content and header, the content and the headers are considered for the size calculation of the columns.",
+            "description" : "Set the width of the individual columns:\n<ul>\n<li><b>Fixed</b>: the column sizing is fixed</li>\n<li><b>Fit content</b>: the columns are sized according to the largest element in the column within the first 11 rows or within the current page when the page size is smaller than 11.</li>\n<li><b>Fit content and header</b>: the content and the headers are considered for the size calculation of the columns.</li>\n</ul>",
             "default" : "FIXED",
             "configKeys" : [ "autoSizeColumnsToContent" ]
           },
@@ -68,9 +69,19 @@
             "title" : "Custom row height",
             "description" : "Set the initial height of the rows.",
             "default" : 80,
-            "minimum" : 40.0,
+            "minimum" : 24.0,
             "maximum" : 1000000.0,
-            "configKeys" : [ "customRowHeight" ]
+            "configKeys" : [ "customRowHeight" ],
+            "deprecatedConfigKeys" : [ {
+              "new" : [ [ "customRowHeight" ] ],
+              "deprecated" : [ ]
+            }, {
+              "new" : [ [ "customRowHeight" ] ],
+              "deprecated" : [ [ "compactMode" ] ]
+            }, {
+              "new" : [ [ "customRowHeight" ] ],
+              "deprecated" : [ [ "rowHeightMode" ] ]
+            } ]
           },
           "displayedColumns" : {
             "type" : "object",
@@ -257,19 +268,26 @@
           },
           "rowHeightMode" : {
             "oneOf" : [ {
-              "const" : "DEFAULT",
-              "title" : "Default"
-            }, {
-              "const" : "COMPACT",
-              "title" : "Compact"
+              "const" : "AUTO",
+              "title" : "Auto"
             }, {
               "const" : "CUSTOM",
               "title" : "Custom"
             } ],
             "title" : "Row height",
-            "description" : "Set the initial height of the rows:<ul> <li><b>Default</b>, shows one line of text, visually well separated by whitespace. In case of reporting this option will grow the row height as high as the content.</li><li><b>Compact</b>, reduces white space around rows to a minimum. Choose this option to show as many rows as possible in given space.</li><li><b>Custom</b>, shows as much as you need. For instance, show images at a size that enables to grasp their gist.</li></ul>",
-            "default" : "DEFAULT",
-            "configKeys" : [ "rowHeightMode" ]
+            "description" : "Set the initial height of the rows.\n<ul>\n<li><b>Auto</b>: the rows are sized according to the largest element across all columns and rows within the first 11 rows or within the current page when the page size is smaller than 11. In case of reporting each row will be as high as its content.</li>\n<li><b>Custom</b>: shows as much as you need. For instance, shows images at a size that enables to grasp their gist.</li>\n</ul>",
+            "default" : "AUTO",
+            "configKeys" : [ "rowHeightModeV2" ],
+            "deprecatedConfigKeys" : [ {
+              "new" : [ [ "rowHeightModeV2" ] ],
+              "deprecated" : [ ]
+            }, {
+              "new" : [ [ "rowHeightModeV2" ] ],
+              "deprecated" : [ [ "compactMode" ] ]
+            }, {
+              "new" : [ [ "rowHeightModeV2" ] ],
+              "deprecated" : [ [ "rowHeightMode" ] ]
+            } ]
           },
           "selectionMode" : {
             "oneOf" : [ {
@@ -340,6 +358,29 @@
             "description" : "The title of the table shown above the generated image. If left blank, no title will be shown.",
             "default" : "Table View",
             "configKeys" : [ "title" ]
+          },
+          "verticalPaddingMode" : {
+            "oneOf" : [ {
+              "const" : "DEFAULT",
+              "title" : "Default"
+            }, {
+              "const" : "COMPACT",
+              "title" : "Compact"
+            } ],
+            "title" : "Row padding",
+            "description" : "Set the vertical white space of the rows:\n<ul>\n<li><b>Default</b>: sets the default amount of white space to increase the differentiation of the rows.</li>\n<li><b>Compact</b>: reduces white space around rows to a minimum. Choose this option to show as many rows as possible in given space.</li>\n</ul>",
+            "default" : "DEFAULT",
+            "configKeys" : [ "verticalPaddingMode" ],
+            "deprecatedConfigKeys" : [ {
+              "new" : [ [ "verticalPaddingMode" ] ],
+              "deprecated" : [ ]
+            }, {
+              "new" : [ [ "verticalPaddingMode" ] ],
+              "deprecated" : [ [ "compactMode" ] ]
+            }, {
+              "new" : [ [ "verticalPaddingMode" ] ],
+              "deprecated" : [ [ "rowHeightMode" ] ]
+            } ]
           }
         }
       }
@@ -459,6 +500,12 @@
               } ]
             }
           }
+        }
+      }, {
+        "type" : "Control",
+        "scope" : "#/properties/view/properties/verticalPaddingMode",
+        "options" : {
+          "format" : "valueSwitch"
         }
       } ]
     }, {
