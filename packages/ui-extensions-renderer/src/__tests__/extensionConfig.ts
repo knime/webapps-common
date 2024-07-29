@@ -1,4 +1,4 @@
-import { ExtensionTypes, RenderingType } from "@knime/ui-extension-service";
+import { ExtensionTypes } from "@knime/ui-extension-service";
 import type { ExtensionConfig } from "../types/ExtensionConfig";
 import { ResourceTypes } from "../types/ResourceTypes";
 
@@ -13,7 +13,6 @@ const baseConfig = {
     nodeName: "Scatter Plot",
   },
   hasNodeView: false,
-  renderingConfig: { type: RenderingType.DEFAULT },
 };
 
 export const componentExtensionConfig: ExtensionConfig = {

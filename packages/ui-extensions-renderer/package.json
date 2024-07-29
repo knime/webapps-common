@@ -24,7 +24,7 @@
   "dependencies": {
     "@knime/components": "workspace:*",
     "@knime/styles": "workspace:*",
-    "@knime/ui-extension-service": "^0.35.0",
+    "@knime/ui-extension-service": "^0.36.0",
     "@vueuse/shared": "^10.10.0"
   },
   "peerDependencies": {
