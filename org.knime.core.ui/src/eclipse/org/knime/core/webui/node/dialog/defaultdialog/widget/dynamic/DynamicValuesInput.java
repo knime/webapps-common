@@ -260,7 +260,7 @@ public final class DynamicValuesInput implements PersistableSettings {
     static class DynamicValue implements PersistableSettings {
 
         /**
-         * Target type.
+         * Target type, i.e. the type of the input column at configuration time.
          */
         private DataType m_type;
 
@@ -369,7 +369,7 @@ public final class DynamicValuesInput implements PersistableSettings {
         private void validate(final DataColumnSpec colSpec) throws InvalidSettingsException {
             checkParseError();
 
-            // check if the saved type is still compatible with the current column type
+            // all OK if the "runtime" input column type is more specific than the type at configuration time
             final var columnType = colSpec.getType();
             if (!m_type.isASuperTypeOf(columnType)) {
                 final var colName = colSpec.getName();
@@ -378,10 +378,10 @@ public final class DynamicValuesInput implements PersistableSettings {
                         "Type of input column \"%s\" is not compatible with comparison value".formatted(colName))
                     .addTextIssue(
                         "Input column \"%s\" has type \"%s\", but comparison value is of incompatible type \"%s\""
-                            .formatted(colName, columnType.getName(), m_type.getName()))
+                            .formatted(colName, columnType.toPrettyString(), m_type.toPrettyString()))
                     .addResolutions("Reconfigure the node to supply a comparison value of type \"%s\"."
-                        .formatted(columnType.getName())) //
-                    .addResolutions("Change the input column type to \"%s\".".formatted(m_type.getName())) //
+                        .formatted(columnType.toPrettyString())) //
+                    .addResolutions("Change the input column type to \"%s\".".formatted(m_type.toPrettyString())) //
                     .build().orElseThrow().toInvalidSettingsException();
             }
         }
@@ -764,8 +764,9 @@ public final class DynamicValuesInput implements PersistableSettings {
      * the provided value from the given template at the corresponding position.
      *
      * @param template input arity, type information, and default value
-     * @return non-empty input with values of types according to given template (either re-used or from template),
-     *   or {@link Optional#empty()} if conversion is not possible due to arity and input kind mismatch
+     * @return non-empty input with values converted to types according to given template
+     *   or {@link Optional#empty()} if conversion is not possible due to type conversion problem or arity and input
+     *   kind mismatch
      */
     public Optional<DynamicValuesInput> convertToType(final DynamicValuesInput template) {
         if (m_values.length != template.m_values.length || m_inputKind != template.m_inputKind) {
@@ -773,7 +774,11 @@ public final class DynamicValuesInput implements PersistableSettings {
         }
         final var convertedValues = new DynamicValue[m_values.length];
         for (int i = 0; i < m_values.length; i++) {
-            convertedValues[i] = convert(m_values[i], template.m_values[i]);
+            final var value = convert(m_values[i], template.m_values[i]);
+            if (value.isEmpty()) {
+                return Optional.empty();
+            }
+            convertedValues[i] = value.get();
         }
         return Optional.of(new DynamicValuesInput(convertedValues, m_inputKind));
     }
@@ -786,26 +791,26 @@ public final class DynamicValuesInput implements PersistableSettings {
      * @param templateValue template to convert to
      * @return converted value or template value if conversion is not possible
      */
-    private static DynamicValue convert(final DynamicValue value, final DynamicValue templateValue) {
+    private static Optional<DynamicValue> convert(final DynamicValue value, final DynamicValue templateValue) {
         final var targetType = templateValue.m_type;
         final var currentValueCell = value.m_value;
         if (currentValueCell.isMissing()) {
-            return new DynamicValue(targetType);
+            return Optional.of(new DynamicValue(targetType));
         }
         if (currentValueCell.getType().equals(targetType)
                 && !(value.m_caseMatching == null ^ templateValue.m_caseMatching == null)) {
             // we can use the provided value as-is (we cannot use DynamicValue#equals, since the template's value and
             // case matching setting can be different)
-            return value;
+            return Optional.of(value);
         }
         final var caseMatching = getCaseMatching(templateValue.m_caseMatching, value.m_caseMatching);
         try {
             final var stringValue = currentValueCell instanceof StringCell sc ? sc.getStringValue()
                 : DynamicValue.getStringFromDataCell(currentValueCell);
-            final var convertedCell = DynamicValue.readDataCellFromString(targetType, stringValue);
-            return new DynamicValue(targetType, convertedCell, caseMatching);
+            final var convertedCell = DynamicValue.readDataCellFromStringSafe(targetType, stringValue);
+            return Optional.of(new DynamicValue(targetType, convertedCell, caseMatching));
         } catch (final ConverterException e) { // NOSONAR best effort input conversion expected to fail quite often
-            return templateValue;
+            return Optional.empty();
         }
     }
 
