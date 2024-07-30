@@ -170,9 +170,10 @@ export default {
       });
     },
     async trigger(params: { id: string; indexIds?: string[] }) {
-      this.currentData = await this.getTriggerCallback(params)(
+      const transformation = await this.getTriggerCallback(params)(
         this.currentData,
       );
+      this.currentData = transformation(this.currentData);
     },
     isTriggerActive(params: { id: string; indexIds?: string[] }) {
       return this.getTriggerIsActiveCallback(params)(this.currentData);
@@ -186,7 +187,9 @@ export default {
     async registerGlobalUpdates(globalUpdates: Update[]) {
       const initialTransformation = this.registerUpdates(globalUpdates);
       if (initialTransformation) {
-        this.currentData = await initialTransformation(this.currentData);
+        this.currentData = (await initialTransformation(this.currentData))(
+          this.currentData,
+        );
       }
     },
     getData() {

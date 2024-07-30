@@ -10,7 +10,7 @@ import {
 } from "@knime/ui-extension-service";
 import Result from "@/nodeDialog/api/types/Result";
 import { getIndex } from "./useArrayIds";
-import { IsActiveCallback } from "./useTriggers";
+import { IsActiveCallback, TriggerCallback } from "./useTriggers";
 
 const resolveToIndices = (ids: string[] | undefined) =>
   (ids ?? []).map((id) => getIndex(id));
@@ -115,7 +115,7 @@ export default ({
   registerTrigger: (
     id: string,
     isActive: IsActiveCallback,
-    callback: (indexIds: string[]) => TransformSettingsMethod,
+    callback: TriggerCallback,
   ) => void;
   sendAlert: (params: CreateAlertParams) => void;
 }) => {
@@ -342,8 +342,20 @@ export default ({
    */
   const registerUpdates = (
     globalUpdates: Update[],
-  ): null | TransformSettingsMethod => {
-    let initialTransformation: null | TransformSettingsMethod = null;
+  ):
+    | null
+    | ((
+        dependencySettings: DialogSettingsObject,
+      ) => Promise<
+        (newSettings: DialogSettingsObject) => DialogSettingsObject
+      >) => {
+    let initialTransformation:
+      | null
+      | ((
+          dependencySettings: DialogSettingsObject,
+        ) => Promise<
+          (newSettings: DialogSettingsObject) => DialogSettingsObject
+        >) = null;
     globalUpdates.forEach((update) => {
       const isActive = getIsUpdateNecessary(update);
       const inducedInitialTransformation = setTrigger(

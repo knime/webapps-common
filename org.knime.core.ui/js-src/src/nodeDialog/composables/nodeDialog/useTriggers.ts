@@ -1,22 +1,25 @@
 import Result from "@/nodeDialog/api/types/Result";
-import { TransformSettingsMethod, DialogSettingsObject } from "./useUpdates";
+import { DialogSettingsObject } from "./useUpdates";
 
 export type IsActiveCallback = (
   indexIds: string[],
 ) => (settings: DialogSettingsObject) => Promise<Result<boolean>>;
 
+export type TriggerCallback = (
+  indexIds: string[],
+) => (
+  dependencySettings: DialogSettingsObject,
+) => Promise<(newSettings: DialogSettingsObject) => DialogSettingsObject>;
+
 export default () => {
-  const registeredTriggers = new Map<
-    string,
-    (indexIds: string[]) => TransformSettingsMethod
-  >();
+  const registeredTriggers = new Map<string, TriggerCallback>();
 
   const registeredTriggersActive = new Map<string, IsActiveCallback>();
 
   const registerTrigger = (
     triggerId: string,
     isActive: IsActiveCallback,
-    callback: (indexIds: string[]) => TransformSettingsMethod,
+    callback: TriggerCallback,
   ) => {
     registeredTriggers.set(triggerId, callback);
     registeredTriggersActive.set(triggerId, isActive);
