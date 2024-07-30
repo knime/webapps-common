@@ -17,6 +17,7 @@ const KEY_END = "End";
 const KEY_ESC = "Escape";
 const KEY_ENTER = "Enter";
 const KEY_TAB = "Tab";
+const KEY_SHIFT = "Shift";
 
 const TYPING_TIMEOUT = 1000; // in ms
 
@@ -150,6 +151,7 @@ export default {
       optionRefs: new Map(),
       isActive: false,
       closeIconFocused: false,
+      shiftIsPressed: false,
     };
   },
   computed: {
@@ -346,7 +348,8 @@ export default {
         e.key !== KEY_UP &&
         e.key !== KEY_ENTER &&
         e.key !== KEY_END &&
-        e.key !== KEY_HOME
+        e.key !== KEY_HOME &&
+        e.key !== "Shift"
       ) {
         this.isActive = true;
         this.$nextTick(
@@ -389,7 +392,9 @@ export default {
         e.preventDefault();
         return;
       }
-
+      if (e.key === KEY_SHIFT) {
+        this.shiftIsPressed = !this.shiftIsPressed;
+      }
       if (e.key === KEY_TAB) {
         if (this.isExpanded && !this.useFilterValues) {
           this.moveFocusPushingTab();
@@ -424,9 +429,19 @@ export default {
       }
     },
     moveFocusPushingTab() {
-      this.searchValue = this.displayTextMap[this.modelValue];
-      this.toggleExpanded();
-      this.getButtonRef().focus();
+      if (!this.shiftIsPressed) {
+        this.searchValue = this.displayTextMap[this.modelValue];
+        this.toggleExpanded();
+        this.getButtonRef().focus();
+      } else if (this.closeIconFocused) {
+        this.$nextTick(
+          () => (this.$refs.searchInput as HTMLInputElement)?.focus(),
+        );
+
+        this.shiftIsPressed = !this.shiftIsPressed;
+        this.useFilterValues = !this.useFilterValues;
+        this.closeIconFocused = !this.closeIconFocused;
+      }
     },
     hasSelection() {
       return this.selectedIndex >= 0;

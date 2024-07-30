@@ -197,6 +197,59 @@ describe("Dropdown.vue", () => {
     expect(wrapper.vm.activeSearch).toBe(true);
   });
 
+  it("handles handleSearch function", () => {
+    const { wrapper } = doMount({
+      Dropdown,
+    });
+
+    wrapper.vm.handleSearch("a");
+
+    expect(wrapper.vm.searchValue).toBe("a");
+    expect(wrapper.vm.useFilterValues).toBeTruthy();
+  });
+
+  it("handles click away", () => {
+    const modelValue = "test1";
+    const { wrapper } = doMount({
+      modelValue,
+    });
+
+    wrapper.vm.clickAway();
+
+    expect(wrapper.vm.searchValue).toBe("Text 1");
+    expect(wrapper.vm.isActive).toBeFalsy();
+    expect(wrapper.vm.isExpanded).toBeFalsy();
+  });
+
+  it("moves the focus", () => {
+    const modelValue = "test1";
+    const { wrapper } = doMount({
+      modelValue,
+    });
+
+    wrapper.vm.shiftIsPressed = false;
+    wrapper.vm.moveFocusPushingTab();
+
+    expect(wrapper.vm.isExpanded).toBe(true);
+    expect(wrapper.vm.searchValue).toBe("Text 1");
+  });
+
+  it("moves the focus backward", () => {
+    const { wrapper } = doMount({
+      Dropdown,
+    });
+    wrapper.vm.closeIconFocused = true;
+    wrapper.vm.moveFocusPushingTab();
+
+    expect(wrapper.vm.shiftIsPressed).toBe(false);
+    expect(wrapper.vm.useFilterValues).toBeFalsy();
+    expect(wrapper.vm.closeIconFocused).toBeTruthy();
+
+    wrapper.vm.isActive = true;
+    const button = wrapper.find("[role=closeBTN]");
+    expect(button).toBeTruthy();
+  });
+
   it("sets the correct aria-* attributes", () => {
     const ariaLabel = "Look mum no label";
     const { wrapper } = doMount({ ariaLabel });
@@ -400,6 +453,17 @@ describe("Dropdown.vue", () => {
       expect(wrapper.vm.candidate).toBe(
         possibleValues[possibleValues.length - 1].id,
       );
+    });
+
+    it("handles focus throw keyboard navigation", () => {
+      const modelValue = possibleValues[0].id;
+      const { wrapper } = doMount({ possibleValues, modelValue, slots });
+      const button = wrapper.find("[role=button]");
+      wrapper.vm.toggleExpanded();
+      wrapper.vm.useFilterValues = true;
+      button.trigger("keydown", { key: "Shift" });
+
+      expect(wrapper.vm.shiftIsPressed).toBe(true);
     });
   });
 
