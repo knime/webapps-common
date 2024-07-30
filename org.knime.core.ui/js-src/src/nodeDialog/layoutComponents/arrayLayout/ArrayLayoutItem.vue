@@ -89,7 +89,6 @@ onUnmounted(() => {
 
 <style scoped lang="postcss">
 .item-header {
-  margin-bottom: var(--space-16);
   display: flex;
   justify-content: space-between;
   align-items: baseline;
@@ -99,6 +98,11 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   gap: var(--space-16);
+  margin-top: var(--space-16);
+
+  &:empty {
+    margin-top: 0;
+  }
 }
 
 .element {
