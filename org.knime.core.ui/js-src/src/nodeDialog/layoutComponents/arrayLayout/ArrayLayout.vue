@@ -19,6 +19,7 @@ import {
   deleteId,
 } from "@/nodeDialog/composables/nodeDialog/useArrayIds";
 import inject from "@/nodeDialog/utils/inject";
+import { editResetButtonFormat } from "@/nodeDialog/renderers/editResetButtonRenderer";
 
 const ArrayLayout = defineComponent({
   name: "ArrayLayout",
@@ -98,6 +99,7 @@ const ArrayLayout = defineComponent({
   data() {
     return {
       arrayElementTitleKey: "arrayElementTitle",
+      editResetButtonFormat,
     };
   },
   computed: {
@@ -145,6 +147,9 @@ const ArrayLayout = defineComponent({
     deleteItem(index) {
       this.removeItems(composePaths(this.control.path, ""), [index])();
     },
+    onReset() {
+      window.alert("!!!");
+    },
   },
 });
 export default ArrayLayout;
@@ -186,7 +191,31 @@ export default ArrayLayout;
               @move-up="moveItemUp(objIndex)"
               @move-down="moveItemDown(objIndex)"
               @delete="deleteItem(objIndex)"
-            />
+            >
+              <template #before>
+                <DispatchRenderer
+                  :schema="{
+                    type: 'object',
+                    properties: {
+                      _edit: {
+                        type: 'boolean',
+                      },
+                    },
+                  }"
+                  :uischema="{
+                    scope: '#/properties/_edit',
+                    options: {
+                      format: editResetButtonFormat,
+                    },
+                  }"
+                  :path="`${control.path}.${objIndex}`"
+                  :enabled="control.enabled"
+                  :renderers="control.renderers"
+                  :cells="control.cells"
+                  @reset="onReset"
+                />
+              </template>
+            </ArrayLayoutItemControls>
           </template>
         </ArrayLayoutItem>
       </div>

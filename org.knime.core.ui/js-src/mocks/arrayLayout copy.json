@@ -1,0 +1,156 @@
+{
+  "result": {
+    "name": "Array Layout",
+    "data": {
+      "view": {
+        "whatYouShouldSee": "There should be an edit/reset button next to the other array controls. All but the first element are already edited. Clicking the reset button there should lead to the same state as the first one.",
+        "dummyArrayLayout": [
+          {
+            "doubleInput": 1,
+            "_edit": true,
+            "stringInput": "label 1",
+            "radioInput": "OPTION1"
+          },
+          {
+            "doubleInput": 2,
+            "_edit": true,
+            "stringInput": "label 2",
+            "radioInput": "OPTION2"
+          },
+          {
+            "doubleInput": 3,
+            "_edit": false,
+            "stringInput": "label 3",
+            "radioInput": "OPTION3"
+          }
+        ]
+      }
+    },
+    "schema": {
+      "type": "object",
+      "properties": {
+        "view": {
+          "type": "object",
+          "properties": {
+            "whatYouShouldSee": {
+              "type": "string"
+            },
+            "dummyArrayLayout": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "_edit": {
+                    "type": "boolean"
+                  },
+                  "doubleInput": {
+                    "type": "number",
+                    "title": "Double",
+                    "default": 0
+                  },
+                  "stringInput": {
+                    "type": "string",
+                    "title": "String",
+                    "default": ""
+                  },
+                  "radioInput": {
+                    "oneOf": [
+                      {
+                        "const": "OPTION1",
+                        "title": "Option 1"
+                      },
+                      {
+                        "const": "OPTION2",
+                        "title": "Option 2"
+                      },
+                      {
+                        "const": "OPTION3",
+                        "title": "Option 3"
+                      }
+                    ],
+                    "title": "Radio input",
+                    "default": "DASHED"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "ui_schema": {
+      "elements": [
+        {
+          "type": "Section",
+          "label": "Section headline",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/whatYouShouldSee",
+              "label": "What you should see here:",
+              "options": {
+                "format": "textArea",
+                "rows": 5
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/view/properties/dummyArrayLayout",
+              "options": {
+                "addButtonText": "Add dummy element",
+                "arrayElementTitle": "Dummy element",
+                "withEditAndReset": true,
+                "showSortButtons": true,
+                "showEditButton": true,
+                "detail": {
+                  "horizontalLayout": {
+                    "type": "HorizontalLayout",
+                    "elements": [
+                      {
+                        "type": "Control",
+                        "scope": "#/properties/stringInput",
+                        "rule": {
+                          "effect": "SHOW",
+                          "condition": {
+                            "scope": "#/properties/_edit",
+                            "schema": { "const": true }
+                          }
+                        }
+                      },
+                      {
+                        "type": "Control",
+                        "scope": "#/properties/doubleInput",
+                        "rule": {
+                          "effect": "SHOW",
+                          "condition": {
+                            "scope": "#/properties/_edit",
+                            "schema": { "const": true }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "radioInput": {
+                    "type": "Control",
+                    "scope": "#/properties/radioInput",
+                    "rule": {
+                      "effect": "SHOW",
+                      "condition": {
+                        "scope": "#/properties/_edit",
+                        "schema": { "const": true }
+                      }
+                    },
+                    "options": {
+                      "format": "radio",
+                      "radioLayout": "horizontal"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -36,6 +36,7 @@ export default {
 
 <template>
   <div class="item-controls">
+    <slot name="before" />
     <FunctionButton
       v-if="showSortControls"
       :disabled="isFirst"

@@ -27,6 +27,7 @@ import { fileChooserRenderer } from "./fileChooserRenderer";
 import { legacyCredentialsRenderer } from "./legacyCredentialsRenderer";
 import { vennDiagramLayoutRenderer } from "./vennDiagramRenderer";
 import { dynamicValueRenderer } from "./dynamicValueRenderer";
+import { editResetButtonRenderer } from "./editResetButtonRenderer";
 
 export const defaultRenderers = [
   /* layout renderers */
@@ -61,4 +62,8 @@ export const defaultRenderers = [
   localFileChooserRenderer,
   fileChooserRenderer,
   dynamicValueRenderer,
+  /**
+   * Internal renderers
+   */
+  editResetButtonRenderer,
 ];

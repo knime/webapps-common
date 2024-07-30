@@ -55,6 +55,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import org.knime.core.webui.node.dialog.defaultdialog.examples.ArrayWidgetExample;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonReference;
 
 /**
  * An annotation to set the button text and element title of array or collection settings.
@@ -87,4 +88,14 @@ public @interface ArrayWidget {
      * @return whether add and delete buttons should be hidden such that the size of the array cannot be changed
      */
     boolean hasFixedSize() default false;
+
+
+    interface ElementResetButton extends ButtonReference {
+    }
+
+    // TODO: UIEXT-1956 Make this a Condition
+    interface ElementIsEditedSignal {
+    }
+
+
 }
