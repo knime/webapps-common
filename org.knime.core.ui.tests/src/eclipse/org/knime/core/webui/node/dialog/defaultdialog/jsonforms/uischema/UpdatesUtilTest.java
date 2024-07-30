@@ -80,6 +80,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.StringChoicesStateP
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SimpleButtonWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.internal.InternalArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonReference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
@@ -627,7 +628,7 @@ class UpdatesUtilTest {
             assertThatJson(response).inPath("$.globalUpdates").isArray().hasSize(1);
 
         }
-        
+
         @Test
         void testTextInputWidgetPlaceholderProvider() {
 
@@ -830,6 +831,44 @@ class UpdatesUtilTest {
                     + "array layout (with paths [[array], [dependencyInsideArray]]). This is not yet supported.");
 
         }
+
+    }
+
+    @Test
+    void testInternalArrayWidgetElementResetButtonId() {
+
+        class InternalArrayWidgetTestSettings implements DefaultNodeSettings {
+
+            static final class ElementSettings implements DefaultNodeSettings {
+                static final class ElementValueResetter implements StateProvider<String> {
+
+                    @Override
+                    public void init(final StateProviderInitializer initializer) {
+                        initializer.computeOnButtonClick(InternalArrayWidget.ElementResetButton.class);
+                    }
+
+                    @Override
+                    public String computeState(final DefaultNodeSettingsContext context) {
+                        return null;
+                    }
+
+                }
+
+                @ValueProvider(ElementValueResetter.class)
+                @Widget(title = "Element value", description = "")
+                String m_elementValue;
+            }
+
+            @InternalArrayWidget(withEditAndReset = true)
+            @Widget(title = "title", description = "description")
+            ElementSettings[] m_elementSettings;
+
+        }
+
+        final Map<String, WidgetGroup> settings = Map.of("test", new InternalArrayWidgetTestSettings());
+        final var response = buildUpdates(settings);
+
+        assertThatJson(response).inPath("$.globalUpdates[0].trigger.id").isString().isEqualTo("ElementResetButton");
 
     }
 }

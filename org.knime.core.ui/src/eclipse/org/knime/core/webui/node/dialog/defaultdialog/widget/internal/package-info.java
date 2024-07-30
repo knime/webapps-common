@@ -44,47 +44,13 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 8, 2023 (benjamin): created
+ *   Jul 30, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget;
-
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import org.knime.core.webui.node.dialog.defaultdialog.examples.ArrayWidgetExample;
-
 /**
- * An annotation to set the button text and element title of array or collection settings.
+ * This package contains widget annotations which are not ready to be API.
  *
- * See {@link ArrayWidgetExample} for an example on how to use the annotation.
+ * Either because it is only necessary as internal use case or because it is not polished enough.
  *
- * @author Benjamin Wilhelm, KNIME GmbH, Berlin, Germany
  * @author Paul Bärnreuther
  */
-@Retention(RUNTIME)
-@Target(FIELD)
-public @interface ArrayWidget {
-
-    /**
-     * @return the label of the add button which adds new elements to the settings
-     */
-    String addButtonText() default "";
-
-    /**
-     * @return a title that is shown above each element of the array
-     */
-    String elementTitle() default "";
-
-    /**
-     * @return whether sort buttons should be shown that allow to change the order of the array elements
-     */
-    boolean showSortButtons() default false;
-
-    /**
-     * @return whether add and delete buttons should be hidden such that the size of the array cannot be changed
-     */
-    boolean hasFixedSize() default false;
-}
+package org.knime.core.webui.node.dialog.defaultdialog.widget.internal;

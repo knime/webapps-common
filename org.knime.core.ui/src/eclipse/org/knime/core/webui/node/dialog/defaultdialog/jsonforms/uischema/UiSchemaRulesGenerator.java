@@ -56,11 +56,13 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsScopeUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.ConstantExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.ConstantSignal;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
@@ -69,7 +71,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.rule.JsonFormsExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Operator;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.ScopedExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.TrueCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.internal.InternalArrayWidget;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -148,6 +152,9 @@ final class UiSchemaRulesGenerator {
                     throw new UiSchemaGenerationException("Unable to instantiate instance of " + signalClass.getName(),
                         ex);
                 }
+            } else if (InternalArrayWidget.ElementIsEditedSignal.class.equals(signalClass)) {
+                expression =
+                    new ScopedExpression(JsonFormsScopeUtil.toScope(List.of("_edit"), null), new TrueCondition());
             } else if (m_effect.ignoreOnMissingSignals()) {
                 return Optional.empty();
             } else {

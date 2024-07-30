@@ -106,6 +106,9 @@ const ArrayLayout = defineComponent({
     showSortControls() {
       return this.control.uischema.options.showSortButtons;
     },
+    showEditAndResetControls() {
+      return this.control.uischema.options.withEditAndReset;
+    },
     showAddAndDeleteButtons() {
       return !this.control.uischema.options.hasFixedSize;
     },

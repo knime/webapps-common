@@ -271,6 +271,11 @@ public final class JsonFormsConsts {
         public static final String TAG_ARRAY_LAYOUT_SHOW_SORT_BUTTONS = "showSortButtons";
 
         /**
+         * Whether to add edit and reset buttons to array layout elements
+         */
+        public static final String TAG_ARRAY_LAYOUT_WITH_EDIT_AND_RESET = "withEditAndReset";
+
+        /**
          * Whether to hide add and delete buttons such that the size of the array cannot be changed
          */
         public static final String TAG_ARRAY_LAYOUT_HAS_FIXED_SIZE = "hasFixedSize";

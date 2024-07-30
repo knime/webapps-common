@@ -65,6 +65,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.JsonFormsSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.TestButtonActionHandler.TestStates;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect.EffectType;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.NameFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
@@ -97,6 +99,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.Passwor
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.UsernameWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DeclaringDefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.internal.InternalArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonReference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
@@ -1116,5 +1119,32 @@ class UiSchemaOptionsTest {
         assertThatJson(response).inPath("$.elements[2].scope").isString().contains("textInputOptional");
         assertThatJson(response).inPath("$.elements[2].options.hideOnNull").isBoolean().isTrue();
     }
+
+    @Test
+    void testInternalArrayWidget() {
+        class InternalArrayWidgetTestSettings implements DefaultNodeSettings {
+
+            static final class ElementSettings implements DefaultNodeSettings {
+
+                @Widget(title = "Element value", description = "")
+                @Effect(signals = InternalArrayWidget.ElementIsEditedSignal.class, type = EffectType.SHOW)
+                String m_elementValue;
+            }
+
+            @InternalArrayWidget(withEditAndReset = true)
+            @Widget(title = "title", description = "description")
+            ElementSettings[] m_elementSettings;
+
+        }
+
+        var response = buildTestUiSchema(InternalArrayWidgetTestSettings.class);
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("elementSettings");
+        assertThatJson(response).inPath("$.elements[0].options.withEditAndReset").isBoolean().isTrue();
+
+        assertThatJson(response).inPath("$.elements[0].options.detail[0].scope").isString().contains("elementValue");
+        assertThatJson(response).inPath("$.elements[0].options.detail[0].rule.condition.scope").isString().isEqualTo("#/properties/_edit");
+
+    }
+
 
 }

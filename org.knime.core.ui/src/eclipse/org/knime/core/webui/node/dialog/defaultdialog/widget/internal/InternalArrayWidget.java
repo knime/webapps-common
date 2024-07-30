@@ -44,9 +44,9 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   May 8, 2023 (benjamin): created
+ *   Jul 30, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget;
+package org.knime.core.webui.node.dialog.defaultdialog.widget.internal;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -54,37 +54,55 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.knime.core.webui.node.dialog.defaultdialog.examples.ArrayWidgetExample;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonReference;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueProvider;
 
 /**
- * An annotation to set the button text and element title of array or collection settings.
+ * In addition to {@link ArrayWidget} this annotation provides UI parts of array layouts.
  *
- * See {@link ArrayWidgetExample} for an example on how to use the annotation.
- *
- * @author Benjamin Wilhelm, KNIME GmbH, Berlin, Germany
  * @author Paul Bärnreuther
  */
 @Retention(RUNTIME)
 @Target(FIELD)
-public @interface ArrayWidget {
+public @interface InternalArrayWidget {
 
     /**
-     * @return the label of the add button which adds new elements to the settings
+     * When set to true, a button flipping between an edit button and a reset button appears in the array layout
+     * elemnents controls.
+     *
+     * <ul>
+     * <li><b>Edit:</b> For showing widgets only when the edit button was clicked, use the {@link ElementIsEditedSignal}
+     * like you would use any other signal in an {@link Effect} annotation.</li>
+     * <li><b>Reset:</b> The {@link ElementResetButton} has to be referenced in one ore multiple state providers used
+     * within {@link ValueProvider} annotations on fields inside the element settings.</li>
+     * </ul>
+     *
+     *
+     * @return whether an edit and reset behavior should be added to array layout elements
      */
-    String addButtonText() default "";
+    boolean withEditAndReset() default false;
 
     /**
-     * @return a title that is shown above each element of the array
+     * Use this button as you would use any other button reference within a {@link StateProvider} (i.e. via
+     * {@link StateProvider.StateProviderInitializer#computeOnButtonClick}) to reset the values of widgets inside the
+     * element using {@link ValueProvider}. Note that this even has to be done in case the default value is static.
+     *
+     * @author Paul Bärnreuther
      */
-    String elementTitle() default "";
+    @InternalButtonReferenceId("ElementResetButton")
+    final class ElementResetButton implements ButtonReference {
+    }
 
     /**
-     * @return whether sort buttons should be shown that allow to change the order of the array elements
+     * Use this when having {@link InternalArrayWidget#withEditAndReset} activated to show widgets inside an array
+     * layout element only when it is in edit mode.
+     *
+     * @author Paul Bärnreuther
      */
-    boolean showSortButtons() default false;
+    interface ElementIsEditedSignal {
+    }
 
-    /**
-     * @return whether add and delete buttons should be hidden such that the size of the array cannot be changed
-     */
-    boolean hasFixedSize() default false;
 }

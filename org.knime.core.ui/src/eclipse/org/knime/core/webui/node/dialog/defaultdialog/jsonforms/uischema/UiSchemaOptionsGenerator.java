@@ -56,6 +56,7 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ARRAY_LAYOUT_ELEMENT_TITLE;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ARRAY_LAYOUT_HAS_FIXED_SIZE;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ARRAY_LAYOUT_SHOW_SORT_BUTTONS;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ARRAY_LAYOUT_WITH_EDIT_AND_RESET;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_CHOICES_UPDATE_HANDLER;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_DEPENDENCIES;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ELEMENTS;
@@ -126,6 +127,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.Credent
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.PasswordWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.UsernameWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.internal.InternalArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.NoopBooleanProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.NoopStringProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
@@ -669,10 +671,15 @@ final class UiSchemaOptionsGenerator {
 
         Optional.ofNullable(m_field.getAnnotation(ArrayWidget.class))
             .ifPresent(arrayWidget -> addArrayLayoutOptions(arrayWidget, options));
+        Optional.ofNullable(m_field.getAnnotation(InternalArrayWidget.class))
+            .ifPresent(internalArrayWidget -> addInternalArrayLayoutOptions(internalArrayWidget, options));
     }
 
     private static void addArrayLayoutOptions(final ArrayWidget arrayWidget, final ObjectNode options) {
         var addButtonText = arrayWidget.addButtonText();
+        if (!addButtonText.isEmpty()) {
+            options.put(TAG_ARRAY_LAYOUT_ADD_BUTTON_TEXT, addButtonText);
+        }
         if (!addButtonText.isEmpty()) {
             options.put(TAG_ARRAY_LAYOUT_ADD_BUTTON_TEXT, addButtonText);
         }
@@ -685,6 +692,15 @@ final class UiSchemaOptionsGenerator {
         }
         if (arrayWidget.hasFixedSize()) {
             options.put(TAG_ARRAY_LAYOUT_HAS_FIXED_SIZE, true);
+        }
+    }
+
+    private static void addInternalArrayLayoutOptions(final InternalArrayWidget internalArrayWidget,
+        final ObjectNode options) {
+
+        if (internalArrayWidget.withEditAndReset()) {
+            options.put(TAG_ARRAY_LAYOUT_WITH_EDIT_AND_RESET, true);
+
         }
     }
 }
