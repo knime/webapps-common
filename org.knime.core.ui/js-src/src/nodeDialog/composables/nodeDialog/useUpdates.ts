@@ -9,17 +9,13 @@ import {
   UIExtensionService,
 } from "@knime/ui-extension-service";
 import Result from "@/nodeDialog/api/types/Result";
-import { RegisterWatcherTransformSettings } from "./useGlobalWatchers";
 import { getIndex } from "./useArrayIds";
+import { IsActiveCallback } from "./useTriggers";
 
 const resolveToIndices = (ids: string[] | undefined) =>
   (ids ?? []).map((id) => getIndex(id));
 
-type DialogSettingsObject = DialogSettings & object;
-
-export type TransformSettingsMethod = (
-  newSettings: DialogSettingsObject,
-) => Promise<DialogSettingsObject>;
+export type DialogSettingsObject = DialogSettings & object;
 
 /**
  * @returns an array of paths. If there are multiple, all but the first one lead to an array in
@@ -86,6 +82,17 @@ const copyAndTransform = <T>(
   return updateSettings(newSettings);
 };
 
+const useCopyOfNewSettings =
+  (callback: TriggerCallback): TriggerCallback =>
+  (indexIds) =>
+  async (dependencySettings) => {
+    const inducedTransformation = await callback(indexIds)(dependencySettings);
+    return (newSettings) =>
+      copyAndTransform(newSettings, (settings) =>
+        inducedTransformation(settings),
+      );
+  };
+
 export default ({
   callStateProviderListener,
   registerWatcher,
@@ -99,7 +106,7 @@ export default ({
   ) => void;
   registerWatcher: (params: {
     dependencies: string[][];
-    transformSettings: RegisterWatcherTransformSettings;
+    transformSettings: TriggerCallback;
   }) => void;
   /**
    * Used to trigger a new update depending on value update results (i.e. transitive updates)
@@ -107,6 +114,7 @@ export default ({
   updateData: (path: string, currentSettings: DialogSettingsObject) => void;
   registerTrigger: (
     id: string,
+    isActive: IsActiveCallback,
     callback: (indexIds: string[]) => TransformSettingsMethod,
   ) => void;
   sendAlert: (params: CreateAlertParams) => void;
@@ -167,10 +175,7 @@ export default ({
     });
   };
 
-  const setValueTrigger = (
-    scope: string[],
-    callback: RegisterWatcherTransformSettings,
-  ) => {
+  const setValueTrigger = (scope: string[], callback: TriggerCallback) => {
     registerWatcher({
       dependencies: [scope],
       transformSettings: callback,
@@ -179,26 +184,19 @@ export default ({
 
   const setTrigger = (
     trigger: Update["trigger"],
-    triggerCallback: RegisterWatcherTransformSettings,
-  ): null | TransformSettingsMethod => {
+    isActive: IsActiveCallback,
+    triggerCallback: TriggerCallback,
+  ): null | ReturnType<TriggerCallback> => {
     if (trigger.scopes) {
       setValueTrigger(trigger.scopes, triggerCallback);
       return null;
     }
-    const transformSettings =
-      (indexIds: string[]): TransformSettingsMethod =>
-      (settings) =>
-        copyAndTransform(settings, async (settings) => {
-          const inducedTransformation = await triggerCallback(indexIds)(
-            settings,
-          );
-          return inducedTransformation(settings);
-        });
+    const transformSettings = useCopyOfNewSettings(triggerCallback);
 
     if (trigger.triggerInitially) {
       return transformSettings([]);
     }
-    registerTrigger(trigger.id, transformSettings);
+    registerTrigger(trigger.id, isActive, transformSettings);
     return null;
   };
 
@@ -234,12 +232,13 @@ export default ({
       }),
     );
   };
-  const getTriggerCallback =
+
+  const getUpdateResults =
     ({ dependencies, trigger }: Update) =>
     (indexIds: string[]) =>
-    async (
+    (
       dependencySettings: DialogSettingsObject,
-    ): Promise<(newSettings: DialogSettingsObject) => DialogSettingsObject> => {
+    ): Promise<Result<UpdateResult[]>> => {
       const indicesBeforeUpdate = resolveToIndices(indexIds);
       if (!indicesAreDefined(indicesBeforeUpdate)) {
         throw Error("Trigger called with wrong ids: No indices found.");
@@ -249,10 +248,78 @@ export default ({
         dependencySettings,
         indicesBeforeUpdate,
       );
-      const response = await callDataServiceUpdate2({
+      return callDataServiceUpdate2({
         triggerId: trigger.id,
         currentDependencies,
       });
+    };
+
+  const isUpdateNecessary = ({
+    updateResult,
+    settings,
+    indexIds,
+  }: {
+    updateResult: UpdateResult[];
+    settings: DialogSettingsObject;
+    indexIds: string[];
+  }) =>
+    Boolean(
+      updateResult.find(({ id, scopes, value }) => {
+        if (id) {
+          // for simplicity, if an ui state is provided, the update is seen as necessary
+          return true;
+        }
+        if (scopes) {
+          const currentIndices = resolveToIndices(indexIds);
+          if (indicesAreDefined(currentIndices)) {
+            const { toBeAdjustedByLastPathSegment, lastPathSegment } =
+              getToBeAdjustedSegments(scopes, currentIndices, settings);
+            if (
+              toBeAdjustedByLastPathSegment.find(
+                ({ settings: s }) => get(s, lastPathSegment) !== value,
+              )
+            ) {
+              return true;
+            }
+          }
+        }
+        return false;
+      }),
+    );
+
+  const getIsUpdateNecessary =
+    ({ dependencies, trigger }: Update) =>
+    (indexIds: string[]) =>
+    async (
+      dependencySettings: DialogSettingsObject,
+    ): Promise<Result<boolean>> => {
+      const response = await getUpdateResults({ dependencies, trigger })(
+        indexIds,
+      )(dependencySettings);
+      if (response.state === "SUCCESS") {
+        const isNecessary = isUpdateNecessary({
+          updateResult: response.result,
+          settings: dependencySettings,
+          indexIds,
+        });
+        return {
+          state: "SUCCESS",
+          result: isNecessary,
+          message: response.message,
+        };
+      }
+      return response;
+    };
+
+  const getTriggerCallback =
+    ({ dependencies, trigger }: Update) =>
+    (indexIds: string[]) =>
+    async (
+      dependencySettings: DialogSettingsObject,
+    ): Promise<(newSettings: DialogSettingsObject) => DialogSettingsObject> => {
+      const response = await getUpdateResults({ dependencies, trigger })(
+        indexIds,
+      )(dependencySettings);
       return (newSettings) => {
         if (response.state === "FAIL" || response.state === "SUCCESS") {
           sendAlerts(response.message);
@@ -278,8 +345,10 @@ export default ({
   ): null | TransformSettingsMethod => {
     let initialTransformation: null | TransformSettingsMethod = null;
     globalUpdates.forEach((update) => {
+      const isActive = getIsUpdateNecessary(update);
       const inducedInitialTransformation = setTrigger(
         update.trigger,
+        isActive,
         getTriggerCallback(update),
       );
       initialTransformation =

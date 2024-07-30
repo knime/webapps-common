@@ -147,9 +147,6 @@ const ArrayLayout = defineComponent({
     deleteItem(index) {
       this.removeItems(composePaths(this.control.path, ""), [index])();
     },
-    onReset() {
-      window.alert("!!!");
-    },
   },
 });
 export default ArrayLayout;
@@ -174,12 +171,9 @@ export default ArrayLayout;
         >
           <template #renderer="{ element, path }">
             <DispatchRenderer
-              :schema="control.schema"
+              v-bind="control"
               :uischema="element"
               :path="path"
-              :enabled="control.enabled"
-              :renderers="control.renderers"
-              :cells="control.cells"
             />
           </template>
           <template #controls>
@@ -194,6 +188,8 @@ export default ArrayLayout;
             >
               <template #before>
                 <DispatchRenderer
+                  v-if="showEditAndResetControls"
+                  v-bind="control"
                   :schema="{
                     type: 'object',
                     properties: {
@@ -209,10 +205,6 @@ export default ArrayLayout;
                     },
                   }"
                   :path="`${control.path}.${objIndex}`"
-                  :enabled="control.enabled"
-                  :renderers="control.renderers"
-                  :cells="control.cells"
-                  @reset="onReset"
                 />
               </template>
             </ArrayLayoutItemControls>

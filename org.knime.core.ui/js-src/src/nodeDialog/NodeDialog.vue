@@ -54,6 +54,7 @@ export default {
   provide() {
     return {
       trigger: this.trigger,
+      isTriggerActive: this.isTriggerActive,
       registerWatcher: this.registerWatcher,
       addStateProviderListener: this.addStateProviderListener,
       updateData: this.updateData,
@@ -81,7 +82,8 @@ export default {
       useStateProviders();
     const { registerWatcher, updateData, registeredWatchers } =
       useGlobalWatchers();
-    const { registerTrigger, getTriggerCallback } = useTriggers();
+    const { registerTrigger, getTriggerCallback, getTriggerIsActiveCallback } =
+      useTriggers();
     const { registerUpdates, resolveUpdateResults } = useUpdates({
       callStateProviderListener,
       registerTrigger,
@@ -102,6 +104,7 @@ export default {
       registerUpdates,
       resolveUpdateResults,
       getTriggerCallback,
+      getTriggerIsActiveCallback,
       updateDataInternal: updateData,
       registerWatcherInternal: registerWatcher,
       registeredWatchers,
@@ -170,6 +173,9 @@ export default {
       this.currentData = await this.getTriggerCallback(params)(
         this.currentData,
       );
+    },
+    isTriggerActive(params: { id: string; indexIds?: string[] }) {
+      return this.getTriggerIsActiveCallback(params)(this.currentData);
     },
     resolveInitialUpdates(initialUpdates: UpdateResult[]) {
       this.currentData = this.resolveUpdateResults(

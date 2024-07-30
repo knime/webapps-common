@@ -7,6 +7,7 @@ import type { getPossibleValuesFromUiSchema } from "../utils";
 import type Control from "./Control";
 import type SettingsData from "./SettingsData";
 import { IdsRecord } from "../composables/nodeDialog/useArrayIds";
+import Result from "../api/types/Result";
 
 type getPossibleValuesFromUiSchema = (
   control: Control,
@@ -35,6 +36,10 @@ interface Provided {
   addStateProviderListener: addStateProviderListener<any>;
   registerWatcher: registerWatcher;
   trigger: (triggerId: { id: string; indexIds?: string[] }) => void;
+  isTriggerActive: (triggerId: {
+    id: string;
+    indexIds?: string[];
+  }) => Promise<Result<boolean>>;
   updateData: (path: string) => void;
   sendAlert: sendAlert;
   getData: getData;

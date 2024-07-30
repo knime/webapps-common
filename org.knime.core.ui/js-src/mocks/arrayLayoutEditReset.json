@@ -6,20 +6,22 @@
         "whatYouShouldSee": "There should be an edit/reset button next to the other array controls. All but the first element are already edited. Clicking the reset button there should lead to the same state as the first one.",
         "dummyArrayLayout": [
           {
+            "doubleInput": 0,
+            "stringInput": "",
+            "radioInput": "OPTION1"
+          },
+          {
             "doubleInput": 1,
-            "_edit": true,
             "stringInput": "label 1",
             "radioInput": "OPTION1"
           },
           {
             "doubleInput": 2,
-            "_edit": true,
             "stringInput": "label 2",
             "radioInput": "OPTION2"
           },
           {
             "doubleInput": 3,
-            "_edit": false,
             "stringInput": "label 3",
             "radioInput": "OPTION3"
           }
@@ -69,7 +71,7 @@
                       }
                     ],
                     "title": "Radio input",
-                    "default": "DASHED"
+                    "default": "OPTION1"
                   }
                 }
               }
@@ -105,6 +107,13 @@
                 "detail": {
                   "horizontalLayout": {
                     "type": "HorizontalLayout",
+                    "rule": {
+                      "effect": "SHOW",
+                      "condition": {
+                        "scope": "#/properties/_edit",
+                        "schema": { "const": true }
+                      }
+                    },
                     "elements": [
                       {
                         "type": "Control",
@@ -149,6 +158,14 @@
               }
             }
           ]
+        }
+      ],
+      "globalUpdates": [
+        {
+          "trigger": {
+            "id": "ElementResetButton"
+          },
+          "dependencies": []
         }
       ]
     }

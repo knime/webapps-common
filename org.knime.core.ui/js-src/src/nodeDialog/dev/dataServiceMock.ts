@@ -32,6 +32,34 @@ export default (rpcRequest: { method: string; params: any[] }) => {
         NUMBER: [{ name: "numberVariable", value: "100", abbreviated: false }],
       };
     case "settings.update2": {
+      if (rpcRequest.params[1] === "ElementResetButton") {
+        return {
+          state: "SUCCESS",
+          result: [
+            {
+              scopes: [
+                "#/properties/view/properties/dummyArrayLayout",
+                "#/properties/doubleInput",
+              ],
+              value: 0,
+            },
+            {
+              scopes: [
+                "#/properties/view/properties/dummyArrayLayout",
+                "#/properties/stringInput",
+              ],
+              value: "",
+            },
+            {
+              scopes: [
+                "#/properties/view/properties/dummyArrayLayout",
+                "#/properties/radioInput",
+              ],
+              value: "OPTION1",
+            },
+          ],
+        };
+      }
       if (
         rpcRequest.params[1] === "buttonTriggerId (from simpleButtonInput.json)"
       ) {

@@ -34,6 +34,7 @@ export const mountJsonFormsComponent = (
     getDataMock,
     sendAlertMock,
     triggerMock,
+    isTriggerActiveMock,
     asyncChoicesProviderMock,
     addStateProviderListenerMock,
     flowVariablesApiMock,
@@ -47,6 +48,9 @@ export const mountJsonFormsComponent = (
   const getData = getDataMock ?? vi.fn();
   const sendAlert = sendAlertMock ?? vi.fn();
   const trigger = triggerMock ?? vi.fn();
+  const isTriggerActive =
+    isTriggerActiveMock ??
+    vi.fn().mockResolvedValue({ state: "SUCCESS", result: true });
   const asyncChoicesProvider = asyncChoicesProviderMock ?? vi.fn();
   const addStateProviderListener = addStateProviderListenerMock ?? vi.fn();
   const createArrayAtPath = createArrayAtPathMock ?? vi.fn(() => ({}));
@@ -124,6 +128,7 @@ export const mountJsonFormsComponent = (
         sendAlert,
         addStateProviderListener,
         trigger,
+        isTriggerActive,
         flowVariablesApi,
         [flowVarMapKey]: flowVariablesMap,
         getPanelsContainer,

@@ -48,10 +48,27 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.widget.updates;
 
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
+
 /**
  * Marker interface for a class used as id for a button. It can be used in
  * {@link StateProvider.StateProviderInitializer#computeOnButtonClick}.
  */
 public interface ButtonReference {
+
+    /**
+     * This annotation can optionally be put on a {@link ButtonReference} in order to use the provided id instead of the
+     * name of the reference. This is used internally for buttons added by the framework (e.g. the
+     * {@link ArrayWidget.ElementResetButton}).
+     *
+     * @author Paul Bärnreuther
+     */
+    public @interface Id {
+        /**
+         * @return A unique id used internally for the annotated button.
+         */
+        String value();
+
+    }
 
 }

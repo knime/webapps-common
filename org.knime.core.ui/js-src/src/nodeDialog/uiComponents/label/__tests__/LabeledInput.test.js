@@ -10,6 +10,7 @@ import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables
 import { ref } from "vue";
 import DialogLabel from "../DialogLabel.vue";
 import DialogComponentWrapper from "../../DialogComponentWrapper.vue";
+import Label from "webapps-common/ui/components/forms/Label.vue";
 
 describe("LabeledInput.vue", () => {
   let props, flowSettings;
@@ -130,5 +131,11 @@ describe("LabeledInput.vue", () => {
     expect(wrapper.findComponent(ErrorMessage).props().errors).toStrictEqual([
       { message: testError },
     ]);
+  });
+
+  it("does not render the label line if the label is empty", () => {
+    props.control.label = "";
+    const wrapper = mountLabeledInput();
+    expect(wrapper.findComponent(Label).exists()).toBeFalsy();
   });
 });

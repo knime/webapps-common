@@ -90,6 +90,7 @@ public @interface ArrayWidget {
     boolean hasFixedSize() default false;
 
 
+    @ButtonReference.Id("ElementResetButton")
     interface ElementResetButton extends ButtonReference {
     }
 

@@ -22,10 +22,10 @@ export const addIndexToStateProviders = (indexId: string) => {
 };
 
 export const addIndexToTriggers = (indexId: string) => {
-  const injectionKey = "trigger";
-  const trigger = inject(injectionKey);
+  const injectionKeyTrigger = "trigger";
+  const trigger = inject(injectionKeyTrigger);
 
-  const wrapperWithIndex: Provided[typeof injectionKey] = ({
+  const wrapperWithIndexTrigger: Provided[typeof injectionKeyTrigger] = ({
     id,
     indexIds = [],
   }) =>
@@ -34,5 +34,17 @@ export const addIndexToTriggers = (indexId: string) => {
       indexIds: [indexId, ...indexIds],
     });
 
-  provide(injectionKey, wrapperWithIndex);
+  provide(injectionKeyTrigger, wrapperWithIndexTrigger);
+
+  const injectionKeyIsTriggerActive = "isTriggerActive";
+  const isTriggerActive = inject(injectionKeyIsTriggerActive);
+
+  const wrapperWithIndexTriggerIsActive: Provided[typeof injectionKeyIsTriggerActive] =
+    ({ id, indexIds = [] }) =>
+      isTriggerActive({
+        id,
+        indexIds: [indexId, ...indexIds],
+      });
+
+  provide(injectionKeyIsTriggerActive, wrapperWithIndexTriggerIsActive);
 };

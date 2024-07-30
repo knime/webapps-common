@@ -11,6 +11,8 @@ import ArrowUpIcon from "webapps-common/ui/assets/img/icons/arrow-up.svg";
 import ArrowDownIcon from "webapps-common/ui/assets/img/icons/arrow-down.svg";
 import TrashIcon from "webapps-common/ui/assets/img/icons/trash.svg";
 import { ref } from "vue";
+import { DispatchRenderer } from "@jsonforms/vue";
+import { editResetButtonFormat } from "@/nodeDialog/renderers/editResetButtonRenderer";
 
 const control = {
   visible: true,
@@ -247,6 +249,22 @@ describe("ArrayLayout.vue", () => {
       control.path,
       control.data.map(expect.objectContaining),
     );
+  });
+
+  it("renders an edit/reset button if configured to do so", () => {
+    control.uischema.options.withEditAndReset = true;
+    const { wrapper } = mountJsonFormsComponent(ArrayLayout, {
+      props: { control },
+    });
+    const itemControls = wrapper.findAllComponents(ArrayLayoutItemControls);
+    const dispatchedProps = itemControls
+      .at(0)
+      .findComponent(DispatchRenderer)
+      .props();
+    expect(dispatchedProps.uischema.options.format).toBe(editResetButtonFormat);
+    expect(dispatchedProps.uischema.scope).toBe("#/properties/_edit");
+    expect(dispatchedProps.path).toBe("view/referenceLines.0");
+    expect(dispatchedProps.schema.properties._edit.type).toBe("boolean");
   });
 
   it("does not render sort buttons when showSortButtons is not present or false", () => {
