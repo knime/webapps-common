@@ -28,6 +28,7 @@ import { legacyCredentialsRenderer } from "./legacyCredentialsRenderer";
 import { vennDiagramLayoutRenderer } from "./vennDiagramRenderer";
 import { dynamicValueRenderer } from "./dynamicValueRenderer";
 import { editResetButtonRenderer } from "./editResetButtonRenderer";
+import { elementCheckboxRenderer } from "./elementCheckboxRenderer";
 
 export const defaultRenderers = [
   /* layout renderers */
@@ -66,4 +67,5 @@ export const defaultRenderers = [
    * Internal renderers
    */
   editResetButtonRenderer,
+  elementCheckboxRenderer,
 ];

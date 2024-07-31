@@ -60,6 +60,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.Defaul
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil.LayoutSkeleton;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.ScopedExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesAdder;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.internal.InternalArrayWidget;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -111,6 +112,12 @@ final class LayoutNodesGenerator {
     }
 
     private void addControlElement(final ArrayNode root, final JsonFormsControl controlElement) {
+        /**
+         * Rendering the element checkbox widget of array layout elements is handled via the framework.
+         */
+        if (controlElement.field().getAnnotation(InternalArrayWidget.ElementCheckboxWidget.class) != null) {
+            return;
+        }
         final var scope = controlElement.scope();
         final var control = root.addObject().put(TAG_TYPE, TYPE_CONTROL).put(TAG_SCOPE, scope);
         final var field = controlElement.field();

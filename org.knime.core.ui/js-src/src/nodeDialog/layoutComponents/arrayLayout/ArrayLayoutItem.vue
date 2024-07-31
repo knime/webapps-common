@@ -12,9 +12,11 @@ import {
 } from "@/nodeDialog/composables/nodeDialog/useArrayIds";
 import inject from "@/nodeDialog/utils/inject";
 import { AlertType } from "@knime/ui-extension-service";
+import { elementCheckboxFormat } from "@/nodeDialog/renderers/elementCheckboxRenderer";
 
 const props = defineProps<{
   elements: [string, any][];
+  elementCheckboxScope: string | undefined;
   arrayElementTitle: false | string;
   index: number;
   path: string;
@@ -64,7 +66,21 @@ onUnmounted(() => {
 <template>
   <template v-if="showElementTitles">
     <div class="item-header">
-      <Label :text="elementTitle" :compact="true" />
+      <div class="left">
+        <slot
+          v-if="elementCheckboxScope"
+          name="renderer"
+          :path="indexedPath"
+          :element="{
+            type: 'Control',
+            scope: elementCheckboxScope,
+            options: {
+              format: elementCheckboxFormat,
+            },
+          }"
+        />
+        <Label :text="elementTitle" :compact="true" />
+      </div>
       <slot name="controls" />
     </div>
     <div class="elements">
@@ -92,6 +108,11 @@ onUnmounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
+
+  & .left {
+    display: flex;
+    align-items: end;
+  }
 }
 
 .elements {

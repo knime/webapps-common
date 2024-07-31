@@ -105,4 +105,23 @@ public @interface InternalArrayWidget {
     interface ElementIsEditedSignal {
     }
 
+    /**
+     * When set to true, put the {@link ElementCheckboxWidget} on exactly one boolean field within the element settings
+     * class in order to not show it as a regular checkbox but instead a title-less checkbox next to the header of the
+     * element.
+     * @return whether to display a checkbox left of each array layout elements header
+     */
+    boolean withElementCheckboxes() default false;
+
+    /**
+     * See {@link InternalArrayWidget#withElementCheckboxes}.
+     *
+     * @author Paul Bärnreuther
+     */
+    @Retention(RUNTIME)
+    @Target(FIELD)
+    @interface ElementCheckboxWidget {
+
+    }
+
 }

@@ -53,6 +53,7 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ACTION_HANDLER;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ARRAY_LAYOUT_ADD_BUTTON_TEXT;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ARRAY_LAYOUT_DETAIL;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ARRAY_LAYOUT_ELEMENT_CHECKBOX_SCOPE;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ARRAY_LAYOUT_ELEMENT_TITLE;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ARRAY_LAYOUT_HAS_FIXED_SIZE;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ARRAY_LAYOUT_SHOW_SORT_BUTTONS;
@@ -89,12 +90,15 @@ import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.Format;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsScopeUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.NameFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.util.ArrayLayoutUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.util.WidgetGroupTraverser;
+import org.knime.core.webui.node.dialog.defaultdialog.util.WidgetGroupTraverser.TraversedField;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.AsyncChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
@@ -671,8 +675,8 @@ final class UiSchemaOptionsGenerator {
 
         Optional.ofNullable(m_field.getAnnotation(ArrayWidget.class))
             .ifPresent(arrayWidget -> addArrayLayoutOptions(arrayWidget, options));
-        Optional.ofNullable(m_field.getAnnotation(InternalArrayWidget.class))
-            .ifPresent(internalArrayWidget -> addInternalArrayLayoutOptions(internalArrayWidget, options));
+        Optional.ofNullable(m_field.getAnnotation(InternalArrayWidget.class)).ifPresent(
+            internalArrayWidget -> addInternalArrayLayoutOptions(internalArrayWidget, options, componentType));
     }
 
     private static void addArrayLayoutOptions(final ArrayWidget arrayWidget, final ObjectNode options) {
@@ -696,11 +700,29 @@ final class UiSchemaOptionsGenerator {
     }
 
     private static void addInternalArrayLayoutOptions(final InternalArrayWidget internalArrayWidget,
-        final ObjectNode options) {
+        final ObjectNode options, final Class<? extends WidgetGroup> componentType) {
 
         if (internalArrayWidget.withEditAndReset()) {
             options.put(TAG_ARRAY_LAYOUT_WITH_EDIT_AND_RESET, true);
 
         }
+
+        if (internalArrayWidget.withElementCheckboxes()) {
+            final var elementCheckboxScope = findElementCheckboxScope(componentType);
+            options.put(TAG_ARRAY_LAYOUT_ELEMENT_CHECKBOX_SCOPE, elementCheckboxScope);
+        }
+    }
+
+    private static String findElementCheckboxScope(final Class<? extends WidgetGroup> componentType) {
+        final var traverser = new WidgetGroupTraverser(componentType);
+        final var elementCheckboxField = traverser.getAllFields().stream()
+            .filter(UiSchemaOptionsGenerator::hasElementCheckboxWidgetAnnotation).findFirst().orElseThrow(
+                () -> new UiSchemaGenerationException("No field with a @ElementCheckboxWidget annotation found "
+                    + "within an array layout with @InternalArrayLayout#withElementCheckboxes."));
+        return JsonFormsScopeUtil.toScope(elementCheckboxField.path(), null);
+    }
+
+    private static boolean hasElementCheckboxWidgetAnnotation(final TraversedField field) {
+        return field.propertyWriter().getAnnotation(InternalArrayWidget.ElementCheckboxWidget.class) != null;
     }
 }

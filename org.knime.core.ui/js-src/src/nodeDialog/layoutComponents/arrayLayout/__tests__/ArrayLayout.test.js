@@ -13,6 +13,8 @@ import TrashIcon from "webapps-common/ui/assets/img/icons/trash.svg";
 import { ref } from "vue";
 import { DispatchRenderer } from "@jsonforms/vue";
 import { editResetButtonFormat } from "@/nodeDialog/renderers/editResetButtonRenderer";
+import ArrayLayoutItem from "../ArrayLayoutItem.vue";
+import { elementCheckboxFormat } from "@/nodeDialog/renderers/elementCheckboxRenderer";
 
 const control = {
   visible: true,
@@ -257,14 +259,33 @@ describe("ArrayLayout.vue", () => {
       props: { control },
     });
     const itemControls = wrapper.findAllComponents(ArrayLayoutItemControls);
-    const dispatchedProps = itemControls
+    const firstDispatchedProps = itemControls
       .at(0)
       .findComponent(DispatchRenderer)
       .props();
-    expect(dispatchedProps.uischema.options.format).toBe(editResetButtonFormat);
-    expect(dispatchedProps.uischema.scope).toBe("#/properties/_edit");
-    expect(dispatchedProps.path).toBe("view/referenceLines.0");
-    expect(dispatchedProps.schema.properties._edit.type).toBe("boolean");
+    expect(firstDispatchedProps.uischema.options.format).toBe(
+      editResetButtonFormat,
+    );
+    expect(firstDispatchedProps.uischema.scope).toBe("#/properties/_edit");
+    expect(firstDispatchedProps.path).toBe("view/referenceLines.0");
+    expect(firstDispatchedProps.schema.properties._edit.type).toBe("boolean");
+  });
+
+  it("renders a checkbox next to the header when given an elementCheckboxScope", () => {
+    const elementCheckboxScope = "#/properties/booleanInput";
+    control.uischema.options.elementCheckboxScope = elementCheckboxScope;
+    const { wrapper } = mountJsonFormsComponent(ArrayLayout, {
+      props: { control },
+    });
+    const firstDispatchedProps = wrapper
+      .findAllComponents(ArrayLayoutItem)
+      .at(0)
+      .findComponent(DispatchRenderer)
+      .props();
+    expect(firstDispatchedProps.uischema.options.format).toBe(
+      elementCheckboxFormat,
+    );
+    expect(firstDispatchedProps.uischema.scope).toBe(elementCheckboxScope);
   });
 
   it("does not render sort buttons when showSortButtons is not present or false", () => {

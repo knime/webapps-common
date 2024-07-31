@@ -60,6 +60,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.ChoicesUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.IdAndText;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.internal.InternalArrayWidget;
 
 /**
  * Test UI schema generation with arrays.
@@ -291,8 +292,36 @@ class JsonFormsUiSchemaUtilArrayTest {
         assertThatJson(response).inPath("$.elements[1].options.detail[0].scope").isString()
             .isEqualTo("#/properties/innerSetting");
         assertThatJson(response).inPath("$.elements[1].options.detail[0].options.choicesUpdateHandler").isString()
-            .isEqualTo("org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtilArrayTest$1TestArrayLayoutWithUpdateSettings$DependencyHandler");
+            .isEqualTo(
+                "org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtilArrayTest$1TestArrayLayoutWithUpdateSettings$DependencyHandler");
         assertThatJson(response).inPath("$.elements[1].options.detail[0].options.dependencies[0]").isString()
-        .isEqualTo("#/properties/test/properties/dependency");
+            .isEqualTo("#/properties/test/properties/dependency");
+    }
+
+    @Test
+    void testInternalArrayLayoutElementCheckboxWidget() {
+        class TestArrayLayoutWithUpdateSettings implements DefaultNodeSettings {
+
+            @Widget(title = "", description = "")
+            @InternalArrayWidget(withElementCheckboxes = true)
+            ArrayElements[] m_arraySetting;
+
+            class ArrayElements implements WidgetGroup {
+
+                @InternalArrayWidget.ElementCheckboxWidget
+                @Widget(title = "inner setting", description = "inner setting description")
+                boolean m_innerSetting;
+            }
+        }
+
+        final var response = buildTestUiSchema(TestArrayLayoutWithUpdateSettings.class);
+
+        assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Control");
+        assertThatJson(response).inPath("$.elements[0].scope").isString()
+            .isEqualTo("#/properties/test/properties/arraySetting");
+        assertThatJson(response).inPath("$.elements[0].options.detail").isArray().isEmpty();
+        assertThatJson(response).inPath("$.elements[0].options.elementCheckboxScope").isString()
+            .isEqualTo("#/properties/innerSetting");
+
     }
 }

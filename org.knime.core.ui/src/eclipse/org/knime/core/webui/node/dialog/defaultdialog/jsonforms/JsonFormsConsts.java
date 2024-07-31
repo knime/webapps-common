@@ -276,6 +276,11 @@ public final class JsonFormsConsts {
         public static final String TAG_ARRAY_LAYOUT_WITH_EDIT_AND_RESET = "withEditAndReset";
 
         /**
+         * The scope controlling a checkbox appearing next to the header of an array layout element
+         */
+        public static final String TAG_ARRAY_LAYOUT_ELEMENT_CHECKBOX_SCOPE = "elementCheckboxScope";
+
+        /**
          * Whether to hide add and delete buttons such that the size of the array cannot be changed
          */
         public static final String TAG_ARRAY_LAYOUT_HAS_FIXED_SIZE = "hasFixedSize";

@@ -109,6 +109,9 @@ const ArrayLayout = defineComponent({
     showEditAndResetControls() {
       return this.control.uischema.options.withEditAndReset;
     },
+    elementCheckboxScope() {
+      return this.control.uischema.options.elementCheckboxScope;
+    },
     showAddAndDeleteButtons() {
       return !this.control.uischema.options.hasFixedSize;
     },
@@ -171,6 +174,7 @@ export default ArrayLayout;
           :path="control.path"
           :index="objIndex"
           :has-been-added="objIndex >= cleanArrayLength"
+          :element-checkbox-scope="elementCheckboxScope"
         >
           <template #renderer="{ element, path }">
             <DispatchRenderer
