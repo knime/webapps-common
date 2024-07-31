@@ -148,9 +148,9 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
 
         private final Class<S> m_elementType;
 
-        private final ArrayList<NodeSettingsPersistor<S>> m_persistors = new ArrayList<>();
+        private final List<NodeSettingsPersistor<S>> m_persistors = new ArrayList<>();
 
-        public static final Pattern IS_DIGIT = Pattern.compile("^\\d+$");
+        private static final Pattern IS_DIGIT = Pattern.compile("^\\d+$");
 
         ArrayFieldPersistor(final Class<S> elementType, final String configKey) {
             m_configKey = configKey;
@@ -160,7 +160,7 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
         @Override
         public S[] load(final NodeSettingsRO settings) throws InvalidSettingsException {
             var arraySettings = settings.getNodeSettings(m_configKey);
-            int size = arraySettings.keySet().stream().filter(s -> IS_DIGIT.matcher(s).matches()).toList().size();
+            int size = (int)arraySettings.keySet().stream().filter(s -> IS_DIGIT.matcher(s).matches()).count();
             ensureEnoughPersistors(size);
             @SuppressWarnings("unchecked")
             var values = (S[])Array.newInstance(m_elementType, size);
@@ -170,7 +170,7 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
             return values;
         }
 
-        private void ensureEnoughPersistors(final int numPersistors) {
+        private synchronized void ensureEnoughPersistors(final int numPersistors) {
             for (int i = m_persistors.size(); i < numPersistors; i++) {
                 m_persistors.add(new NestedFieldBasedNodeSettingsPersistor<>(Integer.toString(i), m_elementType));
             }
