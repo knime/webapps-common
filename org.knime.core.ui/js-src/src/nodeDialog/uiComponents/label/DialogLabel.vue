@@ -39,7 +39,7 @@ onMounted(() => {
 
 <template>
   <div
-    v-if="show"
+    v-if="show && title"
     ref="wrapper"
     class="dialog-label"
     @mouseover="hover = true"
