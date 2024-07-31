@@ -11,15 +11,35 @@ import { computed } from "vue";
 
 const props = defineProps<{
   titleConfig: TitleConfig;
+  subTitleProvider: string | undefined;
   index: number;
 }>();
 
+const titleConfig = props.titleConfig;
+
 const elementTitle =
-  props.titleConfig.type === "provided"
-    ? useProvidedState(props.titleConfig.provider, "")
-    : computed(() => `${props.titleConfig} ${props.index + 1}`);
+  titleConfig.type === "provided"
+    ? useProvidedState(titleConfig.provider, "")
+    : computed(() => `${titleConfig.title} ${props.index + 1}`);
+
+const subTitle = useProvidedState(props.subTitleProvider, "");
 </script>
 
 <template>
-  <Label :text="elementTitle" compact />
+  <div class="vertical">
+    <Label :text="elementTitle" compact />
+    <span v-if="subTitle">{{ subTitle }}</span>
+  </div>
 </template>
+
+<style scoped>
+.vertical {
+  display: flex;
+  flex-direction: column;
+
+  & span {
+    font-style: italic;
+    font-size: 10px;
+  }
+}
+</style>

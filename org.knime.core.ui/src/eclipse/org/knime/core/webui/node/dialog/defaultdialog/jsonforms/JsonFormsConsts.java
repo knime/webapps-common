@@ -286,6 +286,11 @@ public final class JsonFormsConsts {
         public static final String TAG_ARRAY_LAYOUT_ELEMENT_TITLE_PROVIDER = "elementTitleProvider";
 
         /**
+         * The id by which dynamic sub titles for array layout elements can be accessed
+         */
+        public static final String TAG_ARRAY_LAYOUT_ELEMENT_SUB_TITLE_PROVIDER = "elementSubTitleProvider";
+
+        /**
          * Whether to hide add and delete buttons such that the size of the array cannot be changed
          */
         public static final String TAG_ARRAY_LAYOUT_HAS_FIXED_SIZE = "hasFixedSize";

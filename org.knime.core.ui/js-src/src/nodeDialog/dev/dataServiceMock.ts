@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import Result from "../api/types/Result";
 import { UpdateResult } from "../types/Update";
 
@@ -148,6 +149,28 @@ export default (rpcRequest: { method: string; params: any[] }) => {
             },
           ],
         } satisfies Result<UpdateResult[]>;
+      } else if (Object.keys(dependencies).includes("Title")) {
+        return {
+          state: "SUCCESS",
+          result: [
+            {
+              scopes: null,
+              id: "myTitleProvider",
+              value: dependencies.Title,
+            },
+          ],
+        };
+      } else if (Object.keys(dependencies).includes("SubTitle")) {
+        return {
+          state: "SUCCESS",
+          result: [
+            {
+              scopes: null,
+              id: "mySubTitleProvider",
+              value: dependencies.SubTitle,
+            },
+          ],
+        };
       } else {
         /**
          * See updatesInArray.json

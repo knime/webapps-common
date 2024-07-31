@@ -15,6 +15,7 @@ import { DispatchRenderer } from "@jsonforms/vue";
 import { editResetButtonFormat } from "@/nodeDialog/renderers/editResetButtonRenderer";
 import ArrayLayoutItem from "../ArrayLayoutItem.vue";
 import { elementCheckboxFormat } from "@/nodeDialog/renderers/elementCheckboxRenderer";
+import flushPromises from "flush-promises";
 
 const control = {
   visible: true,
@@ -406,4 +407,34 @@ describe("ArrayLayout.vue", () => {
       expect(itemControlsWithTrash).toHaveLength(numberIcons);
     },
   );
+
+  it("displays provided title and subtitle", async () => {
+    const titleProvider = "myTitleProvider";
+    const subTitleProvider = "mySubTitleProvider";
+    control.uischema.options.elementTitleProvider = titleProvider;
+    control.uischema.options.elementSubTitleProvider = subTitleProvider;
+
+    const provideState = [];
+    const addStateProviderListenerMock = vi.fn((_id, callback) => {
+      provideState.push(callback);
+    });
+    const { wrapper } = mountJsonFormsComponent(ArrayLayout, {
+      props: { control },
+      provide: { addStateProviderListenerMock },
+    });
+    expect(addStateProviderListenerMock).toHaveBeenCalledWith(
+      { id: titleProvider, indexIds: expect.anything() },
+      expect.anything(),
+    );
+    expect(addStateProviderListenerMock).toHaveBeenCalledWith(
+      { id: subTitleProvider, indexIds: expect.anything() },
+      expect.anything(),
+    );
+    const providedState = "provided";
+    provideState.forEach((callback) => callback(providedState));
+    await flushPromises();
+    expect(wrapper.find(".item-header").text()).toBe(
+      providedState + providedState,
+    );
+  });
 });

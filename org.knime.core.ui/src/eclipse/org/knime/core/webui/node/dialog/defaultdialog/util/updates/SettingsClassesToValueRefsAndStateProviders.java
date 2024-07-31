@@ -172,10 +172,15 @@ final class SettingsClassesToValueRefsAndStateProviders {
                 NoopStringProvider.class //
             ), //
             new UiStateProviderSpec<>( //
-                    InternalArrayWidget.class, //
-                    InternalArrayWidget::titleProvider, //
+                InternalArrayWidget.class, //
+                InternalArrayWidget::titleProvider, //
                 NoopStringProvider.class //
-                ));
+            ), //
+            new UiStateProviderSpec<>( //
+                InternalArrayWidget.class, //
+                InternalArrayWidget::subTitleProvider, //
+                NoopStringProvider.class //
+            ));
 
     private void addUiStateProviderForField(final TraversedField field) {
         uiStateProviderSpecs.stream().forEach(

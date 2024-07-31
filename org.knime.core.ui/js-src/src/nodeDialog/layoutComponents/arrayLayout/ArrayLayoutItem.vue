@@ -18,6 +18,7 @@ const props = defineProps<{
   elements: [string, any][];
   elementCheckboxScope: string | undefined;
   arrayElementTitle: false | TitleConfig;
+  subTitleProvider: string | undefined;
   index: number;
   path: string;
   hasBeenAdded: boolean;
@@ -60,7 +61,10 @@ onUnmounted(() => {
 <template>
   <template v-if="arrayElementTitle">
     <div class="item-header">
-      <div class="left">
+      <div
+        class="left"
+        :style="{ alignItems: subTitleProvider ? 'normal' : 'baseline' }"
+      >
         <slot
           v-if="elementCheckboxScope"
           name="renderer"
@@ -75,6 +79,7 @@ onUnmounted(() => {
         />
         <ArrayLayoutItemLabel
           :title-config="arrayElementTitle"
+          :sub-title-provider="subTitleProvider"
           :index="index"
         />
       </div>

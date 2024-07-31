@@ -647,6 +647,28 @@ class UpdatesUtilTest {
 
         }
 
+        @Test
+        void testInternalArrayLayoutProviders() {
+
+            class TestSettings implements DefaultNodeSettings {
+
+                static class ElementSettings {
+
+                }
+
+                @InternalArrayWidget(titleProvider = MyStringProvider.class, subTitleProvider = MyStringProvider.class)
+                ElementSettings[] m_array;
+
+            }
+
+            final Map<String, WidgetGroup> settings = Map.of("test", new TestSettings());
+
+            final var response = buildUpdates(settings);
+
+            assertThatJson(response).inPath("$.globalUpdates").isArray().hasSize(1);
+
+        }
+
         static final class TestStringChoicesProvider implements StringChoicesStateProvider {
 
             static final String[] RESULT = new String[]{"A", "B", "C"};

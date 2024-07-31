@@ -131,4 +131,11 @@ public @interface InternalArrayWidget {
      */
     Class<? extends StateProvider<String>> titleProvider() default NoopStringProvider.class;
 
+
+    /**
+     * @return the provider for an optional subtitle of the array layout elements
+     */
+    Class<? extends StateProvider<String>> subTitleProvider() default NoopStringProvider.class;
+
+
 }

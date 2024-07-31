@@ -140,6 +140,9 @@ const ArrayLayout = defineComponent({
       }
       return false;
     },
+    subTitleProvider() {
+      return this.control.uischema.options?.elementSubTitleProvider;
+    },
     useCardLayout() {
       return this.arrayElementTitle !== false;
     },
@@ -185,6 +188,7 @@ export default ArrayLayout;
           :ids-record="idsRecord"
           :elements="elements"
           :array-element-title="arrayElementTitle"
+          :sub-title-provider="subTitleProvider"
           :path="control.path"
           :index="objIndex"
           :has-been-added="objIndex >= cleanArrayLength"

@@ -1077,30 +1077,30 @@ class UiSchemaOptionsTest {
         assertThatJson(response).inPath("$.elements[0].options.fileExtensions").isArray().containsExactly("txt", "csv");
     }
 
+    static final class TestStringProvider implements StateProvider<String> {
+
+        @Override
+        public void init(final StateProviderInitializer initializer) {
+            throw new IllegalStateException("This method should never be called");
+        }
+
+        @Override
+        public String computeState(final DefaultNodeSettingsContext context) {
+            throw new IllegalStateException("This method should never be called");
+        }
+
+    }
+
     @Test
     void testTextInputWidget() {
         class TextInputWidgetTestSettings implements DefaultNodeSettings {
-
-            static final class PlaceholderProvider implements StateProvider<String> {
-
-                @Override
-                public void init(final StateProviderInitializer initializer) {
-                    throw new IllegalStateException("This method should never be called");
-                }
-
-                @Override
-                public String computeState(final DefaultNodeSettingsContext context) {
-                    throw new IllegalStateException("This method should never be called");
-                }
-
-            }
 
             @Widget(title = "", description = "")
             @TextInputWidget(placeholder = "Bond")
             String m_textInputPlaceholder;
 
             @Widget(title = "", description = "")
-            @TextInputWidget(placeholderProvider = PlaceholderProvider.class)
+            @TextInputWidget(placeholderProvider = TestStringProvider.class)
             String m_textInputPlaceholderProvider;
 
             @Widget(title = "", description = "")
@@ -1114,7 +1114,7 @@ class UiSchemaOptionsTest {
 
         assertThatJson(response).inPath("$.elements[1].scope").isString().contains("textInputPlaceholderProvider");
         assertThatJson(response).inPath("$.elements[1].options.placeholderProvider").isString()
-            .isEqualTo(TextInputWidgetTestSettings.PlaceholderProvider.class.getName());
+            .isEqualTo(TestStringProvider.class.getName());
 
         assertThatJson(response).inPath("$.elements[2].scope").isString().contains("textInputOptional");
         assertThatJson(response).inPath("$.elements[2].options.hideOnNull").isBoolean().isTrue();
@@ -1131,7 +1131,7 @@ class UiSchemaOptionsTest {
                 String m_elementValue;
             }
 
-            @InternalArrayWidget(withEditAndReset = true)
+            @InternalArrayWidget(withEditAndReset = true, titleProvider = TestStringProvider.class, subTitleProvider = TestStringProvider.class)
             @Widget(title = "title", description = "description")
             ElementSettings[] m_elementSettings;
 
@@ -1140,11 +1140,16 @@ class UiSchemaOptionsTest {
         var response = buildTestUiSchema(InternalArrayWidgetTestSettings.class);
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("elementSettings");
         assertThatJson(response).inPath("$.elements[0].options.withEditAndReset").isBoolean().isTrue();
+        assertThatJson(response).inPath("$.elements[0].options.elementTitleProvider").isString()
+        .isEqualTo(TestStringProvider.class.getName());
+        assertThatJson(response).inPath("$.elements[0].options.elementSubTitleProvider").isString()
+        .isEqualTo(TestStringProvider.class.getName());
+        assertThatJson(response).inPath("$.elements[0].options.withEditAndReset").isBoolean().isTrue();
 
         assertThatJson(response).inPath("$.elements[0].options.detail[0].scope").isString().contains("elementValue");
-        assertThatJson(response).inPath("$.elements[0].options.detail[0].rule.condition.scope").isString().isEqualTo("#/properties/_edit");
+        assertThatJson(response).inPath("$.elements[0].options.detail[0].rule.condition.scope").isString()
+            .isEqualTo("#/properties/_edit");
 
     }
-
 
 }
