@@ -61,16 +61,17 @@ import org.apache.commons.lang3.ClassUtils;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaGenerationException;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.WidgetGroupTraverser;
 import org.knime.core.webui.node.dialog.defaultdialog.util.WidgetGroupTraverser.Configuration;
 import org.knime.core.webui.node.dialog.defaultdialog.util.WidgetGroupTraverser.TraversedField;
-import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesStateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.CredentialsWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.internal.InternalArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.NoopBooleanProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.NoopStringProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
@@ -169,7 +170,12 @@ final class SettingsClassesToValueRefsAndStateProviders {
                 TextInputWidget.class, //
                 TextInputWidget::placeholderProvider, //
                 NoopStringProvider.class //
-            ));
+            ), //
+            new UiStateProviderSpec<>( //
+                    InternalArrayWidget.class, //
+                    InternalArrayWidget::titleProvider, //
+                NoopStringProvider.class //
+                ));
 
     private void addUiStateProviderForField(final TraversedField field) {
         uiStateProviderSpecs.stream().forEach(

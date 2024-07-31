@@ -122,9 +122,23 @@ const ArrayLayout = defineComponent({
       return [];
     },
     arrayElementTitle() {
-      return (
-        this.control.uischema.options?.[this.arrayElementTitleKey] ?? false
-      );
+      const elementTitleProvider =
+        this.control.uischema.options?.elementTitleProvider;
+      if (elementTitleProvider) {
+        return {
+          type: "provided",
+          provider: elementTitleProvider,
+        };
+      }
+      const elementTitle =
+        this.control.uischema.options?.[this.arrayElementTitleKey];
+      if (elementTitle) {
+        return {
+          type: "enumerated",
+          title: elementTitle,
+        };
+      }
+      return false;
     },
     useCardLayout() {
       return this.arrayElementTitle !== false;

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, provide } from "vue";
-import Label from "webapps-common/ui/components/forms/Label.vue";
 import { provideForAddedArrayLayoutElements } from "@/nodeDialog/composables/components/useAddedArrayLayoutItem";
 import { addIndexToStateProviders, addIndexToTriggers } from "./composables";
 import { composePaths } from "@jsonforms/core";
@@ -13,11 +12,12 @@ import {
 import inject from "@/nodeDialog/utils/inject";
 import { AlertType } from "@knime/ui-extension-service";
 import { elementCheckboxFormat } from "@/nodeDialog/renderers/elementCheckboxRenderer";
+import ArrayLayoutItemLabel, { TitleConfig } from "./ArrayLayoutItemLabel.vue";
 
 const props = defineProps<{
   elements: [string, any][];
   elementCheckboxScope: string | undefined;
-  arrayElementTitle: false | string;
+  arrayElementTitle: false | TitleConfig;
   index: number;
   path: string;
   hasBeenAdded: boolean;
@@ -35,19 +35,13 @@ const childPaths = createForArrayItem(props.idsRecord, props.id);
 provide("createArrayAtPath", (path: string) =>
   createArrayAtPath(childPaths, path),
 );
-
-const showElementTitles = computed(() => props.arrayElementTitle !== false);
-
-const elementTitle = computed(
-  () => `${props.arrayElementTitle} ${props.index + 1}`,
-);
 const indexedPath = computed(() => composePaths(props.path, `${props.index}`));
 
 const updateData = inject("updateData");
 
 const sendAlert = inject("sendAlert");
 onMounted(() => {
-  if (!showElementTitles.value && props.elements.length > 1) {
+  if (!props.arrayElementTitle && props.elements.length > 1) {
     sendAlert({
       message:
         "For displaying more than one row of widgets within an array layout element, " +
@@ -64,7 +58,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <template v-if="showElementTitles">
+  <template v-if="arrayElementTitle">
     <div class="item-header">
       <div class="left">
         <slot
@@ -79,7 +73,10 @@ onUnmounted(() => {
             },
           }"
         />
-        <Label :text="elementTitle" :compact="true" />
+        <ArrayLayoutItemLabel
+          :title-config="arrayElementTitle"
+          :index="index"
+        />
       </div>
       <slot name="controls" />
     </div>
