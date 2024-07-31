@@ -23,7 +23,7 @@
     "generate-css": "node ./ui/colors/generateCSS.mjs",
     "opensourcecredits": "npm run --prefix buildtools/ opensourcecredits",
     "preinstall": "node ./install-subDependencies.cjs",
-    "postinstall": "run-p generate-css opensourcecredits",
+    "postinstall": "run-p generate-css",
     "prepare": "husky install"
   },
   "dependencies": {
@@ -73,7 +73,7 @@
     "typescript": "5.3.3",
     "vite-svg-loader": "5.1.0",
     "vitest": "1.2.1",
-    "vue": "3.4.21",
+    "vue": "3.4.27",
     "vue-tsc": "1.8.27"
   },
   "engines": {
