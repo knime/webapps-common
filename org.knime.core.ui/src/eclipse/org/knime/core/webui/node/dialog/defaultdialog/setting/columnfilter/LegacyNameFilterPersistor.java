@@ -150,4 +150,21 @@ public final class LegacyNameFilterPersistor extends NodeSettingsPersistorWithCo
     public void save(final NameFilter obj, final NodeSettingsWO settings) {
         save(obj, settings, getConfigKey());
     }
+
+    @Override
+    public String[][] getSubConfigKeys() {
+        return subConfigKeys();
+    }
+
+    /**
+     * @return the array of all sub config keys overridden by this persistor
+     */
+    public static String[][] subConfigKeys() {
+        return new String[][]{{KEY_FILTER_TYPE}, {LegacyManualFilterPersistorUtil.KEY_INCLUDED_NAMES},
+            {LegacyManualFilterPersistorUtil.OLD_EXCLUDED_NAMES}, {LegacyManualFilterPersistorUtil.KEY_ENFORCE_OPTION},
+            {PatternFilterConfiguration.TYPE, LegacyPatternFilterPersistorUtil.PATTERN_FILTER_PATTERN},
+            {PatternFilterConfiguration.TYPE, LegacyPatternFilterPersistorUtil.PATTERN_FILTER_TYPE},
+            {PatternFilterConfiguration.TYPE, LegacyPatternFilterPersistorUtil.PATTERN_FILTER_CASESENSITIVE},
+            {PatternFilterConfiguration.TYPE, LegacyPatternFilterPersistorUtil.PATTERN_FILTER_EXCLUDEMATCHING}};
+    }
 }
