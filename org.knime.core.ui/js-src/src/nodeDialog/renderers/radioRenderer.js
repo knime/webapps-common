@@ -1,6 +1,11 @@
 import { rankWith, isOneOfControl } from "@jsonforms/core";
 import { priorityRanks, inputFormats } from "../constants";
-import RadioControl from "../uiComponents/RadioControl.vue";
+
+import { defineAsyncComponent } from "vue";
+
+const RadioControl = defineAsyncComponent(() =>
+  import("../uiComponents/RadioControl.vue"),
+);
 
 export const radioTester = (uischema, schema) => {
   const isOneOf = isOneOfControl(uischema, schema);

@@ -1,8 +1,14 @@
 import { and, isControl, not, rankWith, schemaMatches } from "@jsonforms/core";
-import TwinlistControl from "../uiComponents/twinlist/TwinlistControl.vue";
-import SimpleTwinlistControl from "../uiComponents/twinlist/SimpleTwinlistControl.vue";
-
 import { inputFormats, priorityRanks } from "../constants";
+
+import { defineAsyncComponent } from "vue";
+
+const TwinlistControl = defineAsyncComponent(() =>
+  import("../uiComponents/twinlist/TwinlistControl.vue"),
+);
+const SimpleTwinlistControl = defineAsyncComponent(() =>
+  import("../uiComponents/twinlist/SimpleTwinlistControl.vue"),
+);
 
 const isSelection = schemaMatches(
   (s) =>

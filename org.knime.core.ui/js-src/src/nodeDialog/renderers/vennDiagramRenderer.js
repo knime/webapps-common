@@ -1,6 +1,11 @@
 import { rankWith, uiTypeIs } from "@jsonforms/core";
-import VennDiagramLayout from "../layoutComponents/vennDiagram/VennDiagramLayout.vue";
 import { priorityRanks } from "../constants";
+
+import { defineAsyncComponent } from "vue";
+
+const VennDiagramLayout = defineAsyncComponent(() =>
+  import("../layoutComponents/vennDiagram/VennDiagramLayout.vue"),
+);
 
 export const vennDiagramLayoutTester = uiTypeIs("VennDiagram");
 

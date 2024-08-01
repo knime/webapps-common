@@ -1,6 +1,11 @@
 import { rankWith, isBooleanControl } from "@jsonforms/core";
-import CheckboxControl from "../uiComponents/CheckboxControl.vue";
 import { priorityRanks, inputFormats } from "../constants";
+
+import { defineAsyncComponent } from "vue";
+
+const CheckboxControl = defineAsyncComponent(() =>
+  import("../uiComponents/CheckboxControl.vue"),
+);
 
 export const checkboxTester = (uischema, schema) => {
   const isBoolean = isBooleanControl(uischema, schema);

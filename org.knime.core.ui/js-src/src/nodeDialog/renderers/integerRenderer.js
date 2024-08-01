@@ -1,6 +1,11 @@
 import { rankWith, isIntegerControl } from "@jsonforms/core";
-import IntegerControl from "../uiComponents/IntegerControl.vue";
 import { priorityRanks, inputFormats } from "../constants";
+
+import { defineAsyncComponent } from "vue";
+
+const IntegerControl = defineAsyncComponent(() =>
+  import("../uiComponents/IntegerControl.vue"),
+);
 
 export const integerTester = (uischema, schema) => {
   const isInteger = isIntegerControl(uischema, schema);

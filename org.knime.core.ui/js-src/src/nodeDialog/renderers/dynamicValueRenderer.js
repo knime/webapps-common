@@ -1,6 +1,11 @@
 import { isControl, rankWith } from "@jsonforms/core";
-import DynamicValuesControl from "../uiComponents/dynamicValue/DynamicValuesControl.vue";
 import { priorityRanks, inputFormats } from "../constants";
+
+import { defineAsyncComponent } from "vue";
+
+const DynamicValuesControl = defineAsyncComponent(() =>
+  import("../uiComponents/dynamicValue/DynamicValuesControl.vue"),
+);
 
 export const dynamicValueTester = (uischema, _schema) =>
   isControl(uischema) && uischema.options?.format === inputFormats.dynamicValue;

@@ -1,6 +1,11 @@
 import { isControl, rankWith } from "@jsonforms/core";
-import NameFilter from "../uiComponents/twinlist/NameFilter.vue";
 import { priorityRanks, inputFormats } from "../constants";
+
+import { defineAsyncComponent } from "vue";
+
+const NameFilter = defineAsyncComponent(() =>
+  import("../uiComponents/twinlist/NameFilter.vue"),
+);
 
 export const nameFilterTester = (uischema, _schema) =>
   isControl(uischema) && uischema.options?.format === inputFormats.nameFilter;

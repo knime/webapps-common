@@ -1,6 +1,10 @@
 import { isControl, rankWith } from "@jsonforms/core";
-import DropdownControl from "../uiComponents/DropdownControl.vue";
 import { priorityRanks, inputFormats } from "../constants";
+import { defineAsyncComponent } from "vue";
+
+const DropdownControl = defineAsyncComponent(() =>
+  import("../uiComponents/DropdownControl.vue"),
+);
 
 export const dropdownTester = (uischema, _schema) =>
   isControl(uischema) && uischema.options?.format === inputFormats.dropDown;

@@ -1,6 +1,10 @@
 import { rankWith, isDateTimeControl } from "@jsonforms/core";
 import { priorityRanks } from "../constants";
-import DateTimeControl from "../uiComponents/DateTimeControl.vue";
+import { defineAsyncComponent } from "vue";
+
+const DateTimeControl = defineAsyncComponent(() =>
+  import("../uiComponents/DateTimeControl.vue"),
+);
 
 export const dateTimeRenderer = {
   renderer: DateTimeControl,

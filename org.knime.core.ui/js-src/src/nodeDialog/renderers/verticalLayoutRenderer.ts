@@ -1,6 +1,11 @@
 import { rankWith, uiTypeIs, or } from "@jsonforms/core";
-import VerticalLayout from "../layoutComponents/VerticalLayout.vue";
 import { priorityRanks } from "../constants";
+
+import { defineAsyncComponent } from "vue";
+
+const VerticalLayout = defineAsyncComponent(
+  () => import("../layoutComponents/VerticalLayout.vue"),
+);
 
 export const verticalLayoutTester = or(uiTypeIs("VerticalLayout"));
 

@@ -1,6 +1,10 @@
 import { rankWith } from "@jsonforms/core";
-import FileChooserControl from "../uiComponents/fileChooser/withTabs/FileChooserControl.vue";
 import { priorityRanks, inputFormats } from "../constants";
+import { defineAsyncComponent } from "vue";
+
+const FileChooserControl = defineAsyncComponent(() =>
+  import("../uiComponents/fileChooser/withTabs/FileChooserControl.vue"),
+);
 
 export const hasFileChooserFormat = (uischema, _schema) =>
   uischema.options?.format === inputFormats.fileChooser;

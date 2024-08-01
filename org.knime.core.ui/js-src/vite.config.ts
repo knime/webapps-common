@@ -115,7 +115,7 @@ export default defineConfig(({ mode }) => {
                   return;
                 }
                 const bundleKeys = Object.keys(bundle);
-                const bundleFilename = bundleKeys.find((name) =>
+                const bundleFilename = bundleKeys.filter((name) =>
                   name.endsWith(".js"),
                 );
                 const cssFilename = bundleKeys.find((name) =>
@@ -128,18 +128,19 @@ export default defineConfig(({ mode }) => {
                   return;
                 }
 
-                const {
+                bundleFilename.forEach((file) => {
+                  const {
+                    // @ts-ignore
+                    [cssFilename]: { source: rawCss },
+                    [file]: component,
+                  } = bundle;
+
                   // @ts-ignore
-                  [cssFilename]: { source: rawCss },
-                  [bundleFilename]: component,
-                } = bundle;
-
-                // @ts-ignore
-                component.code = component.code.replace(
-                  "__INLINE_CSS_CODE__",
-                  JSON.stringify(rawCss),
-                );
-
+                  component.code = component.code.replace(
+                    "__INLINE_CSS_CODE__",
+                    JSON.stringify(rawCss),
+                  );
+                });
                 // remove css file from final bundle
                 delete bundle[cssFilename];
               },

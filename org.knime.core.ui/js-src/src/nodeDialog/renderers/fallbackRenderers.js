@@ -12,10 +12,17 @@ import { priorityRanks } from "../constants";
 import { numberRenderer } from "./numberRenderer";
 import { checkboxRenderer } from "./checkboxRenderer";
 import { integerRenderer } from "./integerRenderer";
-import OneOfDropdown from "../uiComponents/OneOfDropdown.vue";
-import AnyOfTwinlist from "../uiComponents/twinlist/AnyOfTwinlist.vue";
 import { textRenderer } from "./textRenderer";
 import { verticalLayoutRenderer } from "./verticalLayoutRenderer";
+
+import { defineAsyncComponent } from "vue";
+
+const OneOfDropdown = defineAsyncComponent(() =>
+  import("../uiComponents/OneOfDropdown.vue"),
+);
+const AnyOfTwinlist = defineAsyncComponent(() =>
+  import("../uiComponents/twinlist/AnyOfTwinlist.vue"),
+);
 
 export const fallbackRenderers = [
   {

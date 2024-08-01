@@ -3,7 +3,6 @@ import {
   UIExtensionService,
   CreateAlertParams,
 } from "@knime/ui-extension-service";
-import { vanillaRenderers } from "@jsonforms/vue-vanilla";
 import { JsonForms } from "@jsonforms/vue";
 import Form from "./layoutComponents/Form.vue";
 import "../common/main.css";
@@ -39,11 +38,7 @@ import useProvidedFlowVariablesMap from "./composables/components/useProvidedFlo
 import useCurrentData from "./composables/nodeDialog/useCurrentData";
 import useServices from "./composables/nodeDialog/useServices";
 
-const renderers = [
-  ...vanillaRenderers,
-  ...fallbackRenderers,
-  ...defaultRenderers,
-];
+const renderers = [...fallbackRenderers, ...defaultRenderers];
 
 export default {
   components: {
