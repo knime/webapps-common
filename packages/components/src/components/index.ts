@@ -1,4 +1,5 @@
 import BaseButton from "./base/Button/BaseButton.vue";
+import BaseModal from "./base/Modal/BaseModal.vue";
 import BaseMenuItem from "./base/MenuItem/BaseMenuItem.vue";
 import BaseMenuItems from "./base/MenuItem/BaseMenuItems.vue";
 import BaseMenuItemText from "./base/MenuItem/BaseMenuItemText.vue";
@@ -90,4 +91,5 @@ export {
   TagList,
   Tooltip,
   svgWithTitle,
+  BaseModal,
 };
