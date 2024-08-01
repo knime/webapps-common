@@ -57,6 +57,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.knime.core.node.InvalidSettingsException;
@@ -115,40 +116,75 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
     }
 
     private NodeSettingsPersistor<?> createPersistorForField(final Field field) {
+        var customOrDefaultPersistor = getCustomOrDefaultPersistor(field);
+        return createOptionalPersistor(field, customOrDefaultPersistor);
+    }
+
+    /**
+     *
+     * @param field
+     * @return the persistor inherent to the given field if it is persistable
+     */
+    static Optional<NodeSettingsPersistor<?>> getCustomOrDefaultPersistorIfPresent(final Field field) {
+        try {
+            return Optional.of(getCustomOrDefaultPersistor(field));
+        } catch (IllegalArgumentException ex) { // NOSONAR
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * @throws IllegalArgumentException if there is no persistor available for the provided field
+     */
+    @SuppressWarnings({"unchecked"}) // annotations and generics don't mix well
+    private static NodeSettingsPersistor<?> getCustomOrDefaultPersistor(final Field field) {
         var isLatentWidget = field.getAnnotation(LatentWidget.class) != null;
         if (isLatentWidget) {
             return new LatentWidgetPersistor<>();
         }
-        var persist = field.getAnnotation(Persist.class);
-        if (persist != null) {
-            return createPersistorFromPersistAnnotation(persist, field);
-        } else {
-            return DefaultFieldNodeSettingsPersistorFactory.createDefaultPersistor(field.getType(),
-                ConfigKeyUtil.getConfigKey(field));
-        }
-    }
 
-    private NodeSettingsPersistor<?> createPersistorFromPersistAnnotation(final Persist persist,
-        final Field field) {
-        var customPersistorClass = persist.customPersistor();
         var type = field.getType();
         var configKey = ConfigKeyUtil.getConfigKey(field);
-        var persistor = getCustomOrDefaultPersistor(persist, customPersistorClass, type, configKey);
-        if (isOptional(persist, field.getName())) {
-            persistor = createOptionalPersistor(field, configKey, persistor, persist);
+        var persist = field.getAnnotation(Persist.class);
+        if (persist != null) {
+            final var customPersistorClass = persist.customPersistor();
+            if (!customPersistorClass.equals(FieldNodeSettingsPersistor.class)) {
+                return createCustomPersistor(customPersistorClass, type, configKey);
+            }
+            var settingsModelClass = persist.settingsModel();
+            if (!settingsModelClass.equals(SettingsModel.class)) {
+                return createSettingsModelPersistor(settingsModelClass, type, configKey);
+            }
         }
-        return persistor;
+        return createDefaultPersistor(type, configKey);
+
     }
 
-    @SuppressWarnings("rawtypes") // annotations and generics don't mix well
-    private static NodeSettingsPersistor<?> getCustomOrDefaultPersistor(final Persist persistence,
+    private static NodeSettingsPersistor<?> createDefaultPersistor(final Class<?> type, final String configKey) {
+        return DefaultFieldNodeSettingsPersistorFactory.createDefaultPersistor(type, configKey);
+    }
+
+    private static FieldNodeSettingsPersistor<?> createSettingsModelPersistor(
+        final Class<? extends SettingsModel> settingsModelClass, final Class<?> type, final String configKey) {
+        return SettingsModelFieldNodeSettingsPersistorFactory.createPersistor(type, settingsModelClass, configKey);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private static FieldNodeSettingsPersistor createCustomPersistor(
         final Class<? extends FieldNodeSettingsPersistor> customPersistorClass, final Class<?> type,
         final String configKey) {
-        if (!customPersistorClass.equals(FieldNodeSettingsPersistor.class)) {
-            return FieldNodeSettingsPersistor.createInstance(customPersistorClass, type, configKey);
-        }
-        return createNonCustomPersistor(persistence, type, configKey);
+        return FieldNodeSettingsPersistor.createInstance(customPersistorClass, type, configKey);
+    }
 
+    private <F> NodeSettingsPersistor<F> createOptionalPersistor(final Field field,
+        final NodeSettingsPersistor<F> delegate) {
+        var persist = field.getAnnotation(Persist.class);
+        if (persist == null || !isOptional(persist, field.getName())) {
+            return delegate;
+        }
+        var configKey = ConfigKeyUtil.getConfigKey(field);
+        F defaultValue = getDefault(field, persist);//NOSONAR
+        return new OptionalFieldPersistor<>(defaultValue, configKey, delegate);
     }
 
     private boolean isOptional(final Persist persist, final String fieldName) {
@@ -161,12 +197,6 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
                 fieldName, m_settingsClass);
         }
         return isOptional || hasDefaultProvider;
-    }
-
-    private <F> NodeSettingsPersistor<F> createOptionalPersistor(final Field field, final String configKey,
-        final NodeSettingsPersistor<F> delegate, final Persist persist) {
-        F defaultValue = getDefault(field, persist);//NOSONAR
-        return new OptionalFieldPersistor<>(defaultValue, configKey, delegate);
     }
 
     @SuppressWarnings("unchecked")
@@ -193,16 +223,6 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
             throw new IllegalArgumentException(
                 String.format("Can't access field '%s' of PersistableSettings class '%s'.", field, m_defaultSettings),
                 ex);
-        }
-    }
-
-    private static NodeSettingsPersistor<?> createNonCustomPersistor(final Persist persistence, final Class<?> type,
-        final String configKey) {
-        var settingsModelClass = persistence.settingsModel();
-        if (!settingsModelClass.equals(SettingsModel.class)) {
-            return SettingsModelFieldNodeSettingsPersistorFactory.createPersistor(type, settingsModelClass, configKey);
-        } else {
-            return DefaultFieldNodeSettingsPersistorFactory.createDefaultPersistor(type, configKey);
         }
     }
 

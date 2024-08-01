@@ -65,6 +65,7 @@ import org.knime.core.webui.node.dialog.configmapping.ConfigPath;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation.Builder;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.AuthenticationSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
 /**
@@ -130,6 +131,16 @@ class ConfigKeyUtilTest {
 
         @Persist(settingsModel = SettingsModelAuthentication.class)
         AuthenticationSettings setting6;
+
+        // field with special default persistor which alters the default subConfigKeys
+        Credentials setting7;
+
+        static final class NonPersitableSettings {
+
+        }
+
+        // Might be part of a parent perstiable settings which defined its persist behavior from outside
+        NonPersitableSettings setting8;
     }
 
     @Test
@@ -202,6 +213,18 @@ class ConfigKeyUtilTest {
     void testSubConfigKeysUsedWithCustomPersistor() throws NoSuchFieldException {
         assertArrayEquals(new String[][]{{"foo"}, {"bar", "baz"}}, usedSubConfigKeysFor("setting5"),
             "subConfigKeys should come from the custom persistor");
+    }
+
+    @Test
+    void testSubConfigKeysUsedWithSpecialDefaultPersistor() throws NoSuchFieldException {
+        assertArrayEquals(new String[0][], usedSubConfigKeysFor("setting7"),
+            "subConfigKeys should come from the default persistor");
+    }
+
+    @Test
+    void testSubConfigKeysForNonPersistableSettings() throws NoSuchFieldException {
+        assertArrayEquals(null, usedSubConfigKeysFor("setting8"),
+            "should not fail for non-persistable settings");
     }
 
     @Test

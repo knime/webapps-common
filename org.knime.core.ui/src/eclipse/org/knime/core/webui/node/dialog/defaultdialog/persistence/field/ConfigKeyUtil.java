@@ -103,14 +103,7 @@ public final class ConfigKeyUtil {
      *         schema by the frontend
      */
     public static String[][] getSubConfigKeysUsedByField(final Field field) {
-        var persist = field.getAnnotation(Persist.class);
-        if (persist == null) {
-            return null;  // NOSONAR null and [] have different meanings here:
-            // null means that sub config keys are to be inferred from the schema
-            // [] means that there are no sub config keys
-        }
-        return extractCustomFieldNodeSettingsPersistor(field, persist).map(FieldNodeSettingsPersistor::getSubConfigKeys)
-            .orElse(null);
+        return extractFieldNodeSettingsPersistor(field).map(FieldNodeSettingsPersistor::getSubConfigKeys).orElse(null);
     }
 
     /**
@@ -125,23 +118,23 @@ public final class ConfigKeyUtil {
         if (persist == null) {
             return new ConfigsDeprecation[]{};
         }
-        return extractCustomFieldNodeSettingsPersistor(field, persist)
-            .map(FieldNodeSettingsPersistor::getConfigsDeprecations).orElse(new ConfigsDeprecation[]{});
+
+        return extractFieldNodeSettingsPersistor(field).map(FieldNodeSettingsPersistor::getConfigsDeprecations)
+            .orElse(new ConfigsDeprecation[]{});
     }
 
-    private static Optional<FieldNodeSettingsPersistor<?>> extractCustomFieldNodeSettingsPersistor(final Field field,
-        final Persist persist) {
-        final var customPersistor = persist.customPersistor();
-        var configKey = getConfigKey(field);
-        if (!customPersistor.equals(FieldNodeSettingsPersistor.class)) {
-            return Optional.of(FieldNodeSettingsPersistor.createInstance(customPersistor, field.getType(), configKey));
-        }
-        final var settingsModelClass = persist.settingsModel();
-        if (!settingsModelClass.equals(SettingsModel.class)) {
-            return Optional.of(SettingsModelFieldNodeSettingsPersistorFactory.createPersistor(field.getType(),
-                settingsModelClass, configKey));
-        }
-        return Optional.empty();
+    private static Optional<FieldNodeSettingsPersistor<?>> extractFieldNodeSettingsPersistor(final Field field) {
+        /**
+         * There might not exist a persistor in some cases where the persistence is defined on a parent level class or
+         * field.
+         */
+        return FieldNodeSettingsPersistorFactory.getCustomOrDefaultPersistorIfPresent(field).flatMap(persistor -> {
+            if (persistor instanceof FieldNodeSettingsPersistor<?> fieldNodeSettingsPersistor) {
+                return Optional.of(fieldNodeSettingsPersistor);
+            }
+            return Optional.empty();
+        });
+
     }
 
     /**
