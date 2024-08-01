@@ -22,9 +22,15 @@ let __replaceGhostPreview:
   | ReturnType<typeof createDragGhosts>["replaceGhostPreview"]
   | null = null;
 
-export const EMPTY_DRAG_IMAGE = new Image(1, 1);
-EMPTY_DRAG_IMAGE.src =
-  "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
+export const EMPTY_DRAG_IMAGE = (() => {
+  if (typeof window !== "undefined") {
+    const img = new Image(1, 1);
+    img.src =
+      "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
+    return img;
+  }
+  return null;
+})();
 
 export const useItemDragging = (options: UseItemDraggingOptions) => {
   const {
@@ -63,6 +69,7 @@ export const useItemDragging = (options: UseItemDraggingOptions) => {
 
     // remove native drag image for custom animation modes
     if (
+      EMPTY_DRAG_IMAGE &&
       EMPTY_DRAG_IMAGE.complete &&
       options.draggingAnimationMode.value !== "disabled"
     ) {
