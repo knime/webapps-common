@@ -4,7 +4,7 @@ export enum RenderingType {
   IMAGE = "IMAGE",
 }
 
-export enum ImageFileFormat {
+export enum ImageFormat {
   SVG = "SVG",
   PNG = "PNG",
 }
@@ -17,17 +17,17 @@ export interface DefaultRenderingConfig extends RenderingConfig {
   type: RenderingType.DEFAULT;
 }
 
-export interface ImageFileFormatRenderingConfig extends RenderingConfig {
-  imageFileFormat: ImageFileFormat; // file format that the generated image should have
+export interface ImageFormatRenderingConfig extends RenderingConfig {
+  imageFormat: ImageFormat; // file format that the generated image should have
 }
 
 export interface ImageGenerationRenderingConfig
-  extends ImageFileFormatRenderingConfig {
+  extends ImageFormatRenderingConfig {
   type: RenderingType.IMAGE;
   actionId: string; // communicate the generated image to the backend
 }
 
-export interface ReportRenderingConfig extends ImageFileFormatRenderingConfig {
+export interface ReportRenderingConfig extends ImageFormatRenderingConfig {
   type: RenderingType.REPORT;
   canBeUsedInReport: boolean;
 }

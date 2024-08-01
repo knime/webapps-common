@@ -15,10 +15,10 @@ export class ReportingService extends AbstractService<ReportingServiceAPILayer> 
     );
   }
 
-  getImageFileFormat() {
+  getImageFormat() {
     return (
       this.baseService.getConfig().renderingConfig as ReportRenderingConfig
-    ).imageFileFormat;
+    ).imageFormat;
   }
 
   /**

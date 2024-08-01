@@ -5,7 +5,7 @@ import { ReportingService } from "../ReportingService";
 
 import { extensionConfig } from "./mocks";
 import {
-  ImageFileFormat,
+  ImageFormat,
   RenderingType,
   ReportRenderingConfig,
 } from "@/types/RenderingConfig";
@@ -55,17 +55,17 @@ describe("ReportingService", () => {
   });
 
   it("returns the image file format", () => {
-    const imageFileFormat = ImageFileFormat.PNG;
+    const imageFormat = ImageFormat.PNG;
     const localRenderingConfig: ReportRenderingConfig = {
       type: RenderingType.REPORT,
-      imageFileFormat,
+      imageFormat,
       canBeUsedInReport: true,
     };
     const { reportingService } = constructReportingService({
       ...extensionConfig,
       renderingConfig: localRenderingConfig,
     });
-    expect(reportingService.getImageFileFormat()).toBe(imageFileFormat);
+    expect(reportingService.getImageFormat()).toBe(imageFormat);
   });
 
   it("calls pushEventCallback when setting reporting content", () => {

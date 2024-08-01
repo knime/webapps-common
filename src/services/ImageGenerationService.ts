@@ -8,6 +8,7 @@ import {
 /**
  * ImageGenerationService is used in views in order to detect that the view is generated in an image generation context
  * and to communicate the generated image.
+ * TODO: This should only be API once UIEXT-782 is tackled.
  */
 export class ImageGenerationService extends AbstractService<ImageGenerationServiceAPILayer> {
   isImageGenerationActive() {
@@ -16,18 +17,11 @@ export class ImageGenerationService extends AbstractService<ImageGenerationServi
     );
   }
 
-  getActionId() {
+  getImageFormat() {
     return (
       this.baseService.getConfig()
         .renderingConfig as ImageGenerationRenderingConfig
-    ).actionId;
-  }
-
-  getImageFileFormat() {
-    return (
-      this.baseService.getConfig()
-        .renderingConfig as ImageGenerationRenderingConfig
-    ).imageFileFormat;
+    ).imageFormat;
   }
 
   /**

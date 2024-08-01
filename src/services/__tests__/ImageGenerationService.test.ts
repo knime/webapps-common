@@ -5,7 +5,7 @@ import { ImageGenerationService } from "../ImageGenerationService";
 
 import { extensionConfig } from "./mocks";
 import {
-  ImageFileFormat,
+  ImageFormat,
   ImageGenerationRenderingConfig,
   RenderingType,
 } from "@/types/RenderingConfig";
@@ -25,32 +25,18 @@ describe("ImageGenerationService", () => {
     return { imageGenerationService, ...apiLayer };
   };
 
-  it("returns the actionId", () => {
-    const actionId = "123";
-    const localRenderingConfig: ImageGenerationRenderingConfig = {
-      actionId,
-      type: RenderingType.IMAGE,
-      imageFileFormat: ImageFileFormat.PNG,
-    };
-    const { imageGenerationService } = constructImageGenerationService({
-      ...extensionConfig,
-      renderingConfig: localRenderingConfig,
-    });
-    expect(imageGenerationService.getActionId()).toBe(actionId);
-  });
-
   it("returns the image file format", () => {
-    const imageFileFormat = ImageFileFormat.PNG;
+    const imageFormat = ImageFormat.PNG;
     const localRenderingConfig: ImageGenerationRenderingConfig = {
       actionId: "actionId",
       type: RenderingType.IMAGE,
-      imageFileFormat,
+      imageFormat,
     };
     const { imageGenerationService } = constructImageGenerationService({
       ...extensionConfig,
       renderingConfig: localRenderingConfig,
     });
-    expect(imageGenerationService.getImageFileFormat()).toBe(imageFileFormat);
+    expect(imageGenerationService.getImageFormat()).toBe(imageFormat);
   });
 
   it("calls pushEventCallback when calling imageGenerated", () => {
