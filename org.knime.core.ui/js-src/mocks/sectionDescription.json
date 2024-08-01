@@ -1,0 +1,41 @@
+{
+  "result": {
+    "name": "Section Description",
+    "data": {},
+    "schema": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string",
+          "description": "An ordinary settings description"
+        }
+      }
+    },
+    "ui_schema": {
+      "type": "VerticalLayout",
+      "elements": [
+        {
+          "type": "Section",
+          "label": "A Section Without Description",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/value"
+            }
+          ]
+        },
+        {
+          "type": "Section",
+          "label": "A Section With Description -->",
+          "description": "Yes, also sections can have descriptions!",
+          "elements": [
+            {
+              "type": "Control",
+              "scope": "#/properties/value"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

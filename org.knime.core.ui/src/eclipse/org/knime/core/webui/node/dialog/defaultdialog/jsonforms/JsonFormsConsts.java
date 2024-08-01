@@ -331,6 +331,11 @@ public final class JsonFormsConsts {
         public static final String TAG_LABEL = "label";
 
         /**
+         * The description of a section
+         */
+        public static final String TAG_DESCRIPTION = "description";
+
+        /**
          * The children of a layout part
          */
         public static final String TAG_ELEMENTS = "elements";

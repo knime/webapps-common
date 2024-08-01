@@ -1,5 +1,4 @@
-<script>
-import { defineComponent } from "vue";
+<script setup>
 import {
   useJsonFormsLayout,
   rendererProps,
@@ -7,29 +6,27 @@ import {
 } from "@jsonforms/vue";
 import VerticalLayoutBase from "./VerticalLayoutBase.vue";
 import LayoutComponentWrapper from "./LayoutComponentWrapper.vue";
+import DescriptionPopover from "../uiComponents/description/DescriptionPopover.vue";
+import { ref } from "vue";
 
-const SectionLayout = defineComponent({
-  name: "SectionLayout",
-  components: {
-    DispatchRenderer,
-    LayoutComponentWrapper,
-    VerticalLayoutBase,
-  },
-  props: {
-    ...rendererProps(),
-  },
-  setup(props) {
-    return useJsonFormsLayout(props);
-  },
-});
-export default SectionLayout;
+const props = defineProps(rendererProps());
+const { layout } = useJsonFormsLayout(props);
+
+const hover = ref(false);
 </script>
 
 <template>
   <LayoutComponentWrapper :layout="layout" class="layout-component-wrapper">
-    <div class="section">
+    <div class="section" @mouseover="hover = true" @mouseleave="hover = false">
       <div class="section-header">
-        <h3>{{ layout.uischema.label }}</h3>
+        <h3>
+          {{ layout.uischema.label }}
+          <DescriptionPopover
+            v-if="layout.uischema.description"
+            :html="layout.uischema.description"
+            :hover="hover"
+          />
+        </h3>
       </div>
       <VerticalLayoutBase
         #default="{ element, index }"
@@ -70,6 +67,9 @@ export default SectionLayout;
       color: var(--knime-masala);
       font-size: 16px;
       line-height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
   }
 }

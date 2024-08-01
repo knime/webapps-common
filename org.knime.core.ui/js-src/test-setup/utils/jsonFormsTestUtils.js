@@ -79,6 +79,11 @@ export const mountJsonFormsComponent = (
       control: ref(props.control),
     });
   }
+  if (props.layout) {
+    vi.spyOn(jsonformsVueModule, "useJsonFormsLayout").mockReturnValue({
+      layout: props.layout,
+    });
+  }
   const settingState = {
     setValue: (..._args2) => {},
     flowVariables: {

@@ -48,8 +48,8 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
-
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.OPTIONS_IS_ADVANCED;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_DESCRIPTION;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_ELEMENTS;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_LABEL;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_OPTIONS;
@@ -102,8 +102,8 @@ enum LayoutPart {
         return VIRTUAL_SECTION;
     }
 
-    ArrayNode create(final DefaultNodeSettingsContext context, final ArrayNode parent,
-        final Class<?> layoutClass, final Map<Class<?>, ScopedExpression> signals) {
+    ArrayNode create(final DefaultNodeSettingsContext context, final ArrayNode parent, final Class<?> layoutClass,
+        final Map<Class<?>, ScopedExpression> signals) {
         return m_create.apply(new LayoutNodeCreationContext(parent, layoutClass, signals, context));
     }
 
@@ -117,6 +117,9 @@ enum LayoutPart {
         node.put(TAG_TYPE, TYPE_SECTION);
         if (sectionAnnotation.advanced()) {
             node.putObject(TAG_OPTIONS).put(OPTIONS_IS_ADVANCED, true);
+        }
+        if (!sectionAnnotation.description().isEmpty()) {
+            node.put(TAG_DESCRIPTION, sectionAnnotation.description());
         }
         applyRules(node, creationContext);
         return node.putArray(TAG_ELEMENTS);
@@ -137,8 +140,8 @@ enum LayoutPart {
     }
 
     private static void applyRules(final ObjectNode node, final LayoutNodeCreationContext creationContext) {
-        new UiSchemaRulesGenerator(creationContext.layoutClass.getAnnotation(Effect.class),
-            creationContext.signals(), creationContext.context()).applyRulesTo(node);
+        new UiSchemaRulesGenerator(creationContext.layoutClass.getAnnotation(Effect.class), creationContext.signals(),
+            creationContext.context()).applyRulesTo(node);
     }
 
     private record LayoutNodeCreationContext(ArrayNode parent, Class<?> layoutClass,

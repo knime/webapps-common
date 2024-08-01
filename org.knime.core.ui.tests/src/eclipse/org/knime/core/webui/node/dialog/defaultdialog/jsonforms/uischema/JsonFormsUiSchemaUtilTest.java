@@ -113,7 +113,7 @@ class JsonFormsUiSchemaUtilTest {
         interface Section1 {
         }
 
-        @Section(title = "Test section title", advanced = true)
+        @Section(title = "Test section title", description = "Test section description", advanced = true)
         interface Section2 {
             @Section(title = "Nested section title")
             interface NestedSection {
@@ -139,8 +139,10 @@ class JsonFormsUiSchemaUtilTest {
         assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
         assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Section");
         assertThatJson(response).inPath("$.elements[0].label").isString().isEqualTo("");
+        assertThatJson(response).inPath("$.elements[0]").isObject().doesNotContainKey("description");
         assertThatJson(response).inPath("$.elements[1].type").isString().isEqualTo("Section");
         assertThatJson(response).inPath("$.elements[1].label").isString().isEqualTo("Test section title");
+        assertThatJson(response).inPath("$.elements[1].description").isString().isEqualTo("Test section description");
         assertThatJson(response).inPath("$.elements[1].options.isAdvanced").isBoolean().isTrue();
         assertThatJson(response).inPath("$.elements[1].elements[0].type").isString().isEqualTo("Section");
         assertThatJson(response).inPath("$.elements[1].elements[0].label").isString().isEqualTo("Nested section title");

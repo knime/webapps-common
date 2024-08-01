@@ -70,6 +70,11 @@ public @interface Section {
     String title() default "";
 
     /**
+     * @return an optional description of the section
+     */
+    String description() default "";
+
+    /**
      * @return Whether the whole section is only shown when advanced settings are visible.
      */
     boolean advanced() default false;

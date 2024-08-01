@@ -4,6 +4,7 @@ import {
   initializesJsonFormsLayout,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import SectionLayout from "../SectionLayout.vue";
+import DescriptionPopover from "@/nodeDialog/uiComponents/description/DescriptionPopover.vue";
 
 describe("SectionLayout.vue", () => {
   let defaultProps, wrapper;
@@ -59,5 +60,14 @@ describe("SectionLayout.vue", () => {
 
   it("initializes jsonforms", () => {
     initializesJsonFormsLayout(wrapper);
+  });
+
+  it("shows a description popover if desired", async () => {
+    defaultProps.layout.uischema.description = "myDescription";
+    const { wrapper } = await mountJsonFormsComponent(SectionLayout, {
+      props: defaultProps,
+    });
+
+    expect(wrapper.findComponent(DescriptionPopover).exists()).toBeTruthy();
   });
 });
