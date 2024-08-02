@@ -12,6 +12,7 @@ export const getOptions = ({
       },
       stubs: {
         Form,
+        Suspense: false,
         ...(stubButtonsBySlot && {
           Button: {
             inheritAttrs: false,

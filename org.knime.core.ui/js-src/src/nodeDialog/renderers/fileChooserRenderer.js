@@ -10,6 +10,7 @@ export const hasFileChooserFormat = (uischema, _schema) =>
   uischema.options?.format === inputFormats.fileChooser;
 
 export const fileChooserRenderer = {
+  name: "FileChooserControl",
   renderer: FileChooserControl,
   tester: rankWith(priorityRanks.default, hasFileChooserFormat),
 };

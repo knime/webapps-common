@@ -12,6 +12,7 @@ export const credentialsTester = (uischema, _schema) => {
 };
 
 export const credentialsRenderer = {
+  name: "CredentialsControl",
   renderer: CredentialsControl,
   tester: rankWith(priorityRanks.default, credentialsTester),
 };

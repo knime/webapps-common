@@ -10,6 +10,7 @@ const VerticalLayout = defineAsyncComponent(
 export const verticalLayoutTester = or(uiTypeIs("VerticalLayout"));
 
 export const verticalLayoutRenderer = {
+  name: "VerticalLayout",
   renderer: VerticalLayout,
   tester: rankWith(priorityRanks.default, verticalLayoutTester),
 };

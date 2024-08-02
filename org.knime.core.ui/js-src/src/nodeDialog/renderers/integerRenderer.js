@@ -13,6 +13,7 @@ export const integerTester = (uischema, schema) => {
 };
 
 export const integerRenderer = {
+  name: "IntegerControl",
   renderer: IntegerControl,
   tester: rankWith(priorityRanks.default, integerTester),
 };

@@ -13,6 +13,7 @@ export const checkboxesTester = (uischema, schema) => {
 };
 
 export const checkboxesRenderer = {
+  name: "CheckboxesControl",
   renderer: CheckboxesControl,
   tester: rankWith(priorityRanks.default, checkboxesTester),
 };

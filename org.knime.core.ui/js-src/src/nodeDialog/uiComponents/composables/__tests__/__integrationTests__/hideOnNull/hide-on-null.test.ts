@@ -34,6 +34,18 @@ describe("hide on null", () => {
   const mountNodeDialog = async () => {
     wrapper = mount(NodeDialog as any, getOptions()) as Wrapper;
     await flushPromises();
+    await flushPromises();
+    await flushPromises();
+    await flushPromises();
+    await flushPromises();
+    await flushPromises();
+    await flushPromises();
+    await flushPromises();
+    await flushPromises();
+    await flushPromises();
+    await flushPromises();
+    await flushPromises();
+    await flushPromises();
   };
 
   const mockInitialData = (

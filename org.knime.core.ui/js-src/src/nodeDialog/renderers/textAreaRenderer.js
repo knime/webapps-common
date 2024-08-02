@@ -11,6 +11,7 @@ export const textAreaTester = (uischema) =>
   isStringControl && uischema.options?.format === inputFormats.textArea;
 
 export const textAreaRenderer = {
+  name: "TextAreaControl",
   renderer: TextAreaControl,
   tester: rankWith(priorityRanks.default, textAreaTester),
 };

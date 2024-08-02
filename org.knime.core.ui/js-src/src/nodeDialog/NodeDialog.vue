@@ -357,15 +357,19 @@ export default {
     <div ref="subPanels" />
     <Form>
       <div ref="dialogPopoverTeleportDest" class="popover-container" />
-      <JsonForms
-        v-if="ready"
-        ref="jsonforms"
-        :data="getCurrentData()"
-        :schema="schema"
-        :uischema="uischema"
-        :renderers="renderers"
-        @change="onSettingsChanged"
-      />
+      <Suspense v-if="ready">
+        <!-- component with nested async dependencies -->
+        <JsonForms
+          ref="jsonforms"
+          :data="getCurrentData()"
+          :schema="schema"
+          :uischema="uischema"
+          :renderers="renderers"
+          @change="onSettingsChanged"
+        />
+        <!-- loading state via #fallback slot -->
+        <template #fallback><div class="loading">Loading...</div></template>
+      </Suspense>
       <a
         v-if="hasAdvancedOptions()"
         class="advanced-options"
@@ -394,6 +398,11 @@ export default {
   & .popover-container {
     position: relative;
     width: 100%;
+  }
+
+  & .loading {
+    margin-top: var(--space-32);
+    height: 100%;
   }
 
   & .advanced-options {

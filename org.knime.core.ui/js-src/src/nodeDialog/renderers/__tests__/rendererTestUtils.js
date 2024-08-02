@@ -25,11 +25,12 @@ const findRenderer = (uiSchema, schema) => {
   if (renderer === undefined || renderer.tester(uiSchema, schema) === -1) {
     return {};
   } else {
-    return renderer.renderer;
+    return renderer;
   }
 };
 
 export const determineRenderer = (uiSchema, schema) => {
   const renderer = findRenderer(uiSchema, schema);
+
   return renderer?.name ?? renderer?.__name;
 };

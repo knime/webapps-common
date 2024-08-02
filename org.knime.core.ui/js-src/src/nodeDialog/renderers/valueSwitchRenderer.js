@@ -13,6 +13,7 @@ export const valueSwitchTester = (uischema, schema) => {
 };
 
 export const valueSwitchRenderer = {
+  name: "ValueSwitchControl",
   renderer: ValueSwitchControl,
   tester: rankWith(priorityRanks.default, valueSwitchTester),
 };

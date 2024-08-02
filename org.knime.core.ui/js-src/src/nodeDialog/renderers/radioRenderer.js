@@ -13,6 +13,7 @@ export const radioTester = (uischema, schema) => {
 };
 
 export const radioRenderer = {
+  name: "RadioControl",
   renderer: RadioControl,
   tester: rankWith(priorityRanks.default, radioTester),
 };

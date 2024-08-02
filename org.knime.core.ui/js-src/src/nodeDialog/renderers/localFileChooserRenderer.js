@@ -16,6 +16,7 @@ export const localFileChooserTester = and(
 );
 
 export const localFileChooserRenderer = {
+  name: "LocalFileChooserControl",
   renderer: LabeledLocalFileChooserControl,
   tester: rankWith(priorityRanks.default, localFileChooserTester),
 };

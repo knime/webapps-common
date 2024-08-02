@@ -10,5 +10,6 @@ const ArrayLayout = defineAsyncComponent(() =>
 export const arrayLayoutTester = isObjectArray;
 export const arrayLayoutRenderer = {
   renderer: ArrayLayout,
+  name: "ArrayLayout",
   tester: rankWith(priorityRanks.default, arrayLayoutTester),
 };

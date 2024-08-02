@@ -10,6 +10,7 @@ const TextControl = defineAsyncComponent(() =>
 export const textTester = isStringControl;
 
 export const textRenderer = {
+  name: "TextControl",
   renderer: TextControl,
   tester: rankWith(priorityRanks.default, textTester),
 };

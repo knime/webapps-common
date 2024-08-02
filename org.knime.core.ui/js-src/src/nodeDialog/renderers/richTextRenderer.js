@@ -13,6 +13,7 @@ export const richTextTester = (uischema, _schema) => {
 };
 
 export const richTextRenderer = {
+  name: "RichTextControl",
   renderer: RichTextControl,
   tester: rankWith(priorityRanks.default, richTextTester),
 };

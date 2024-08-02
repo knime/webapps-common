@@ -10,6 +10,7 @@ const HorizontalLayout = defineAsyncComponent(() =>
 export const horizontalLayoutTester = uiTypeIs("HorizontalLayout");
 
 export const horizontalLayoutRenderer = {
+  name: "HorizontalLayout",
   renderer: HorizontalLayout,
   tester: rankWith(priorityRanks.default, horizontalLayoutTester),
 };

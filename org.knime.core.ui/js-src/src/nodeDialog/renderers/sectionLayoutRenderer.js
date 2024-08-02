@@ -10,6 +10,7 @@ const SectionLayout = defineAsyncComponent(() =>
 export const sectionLayoutTester = uiTypeIs("Section");
 
 export const sectionLayoutRenderer = {
+  name: "SectionLayout",
   renderer: SectionLayout,
   tester: rankWith(priorityRanks.default, sectionLayoutTester),
 };

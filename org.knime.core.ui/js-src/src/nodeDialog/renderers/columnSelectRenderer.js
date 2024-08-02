@@ -11,6 +11,7 @@ export const columnSelectTester = (uischema, _schema) =>
   isControl(uischema) && uischema.options?.format === inputFormats.columnSelect;
 
 export const columnSelectRenderer = {
+  name: "ColumnSelect",
   renderer: ColumnSelect,
   tester: rankWith(priorityRanks.default, columnSelectTester),
 };

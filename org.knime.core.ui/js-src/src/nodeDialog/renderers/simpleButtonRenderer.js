@@ -11,6 +11,7 @@ export const simpleButtonTester = (uischema, _schema) =>
   uischema.options?.format === inputFormats.simpleButton;
 
 export const simpleButtonRenderer = {
+  name: "SimpleButtonControl",
   renderer: SimpleButtonControl,
   tester: rankWith(priorityRanks.default, simpleButtonTester),
 };

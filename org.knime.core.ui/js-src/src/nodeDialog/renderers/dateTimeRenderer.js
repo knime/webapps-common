@@ -7,6 +7,7 @@ const DateTimeControl = defineAsyncComponent(() =>
 );
 
 export const dateTimeRenderer = {
+  name: "DateTimeControl",
   renderer: DateTimeControl,
   tester: rankWith(priorityRanks.default, isDateTimeControl),
 };

@@ -21,6 +21,7 @@ const isTwinlist = (uischema, _schema) =>
 export const twinlistTester = and(isTwinlist, isSelection);
 
 export const twinlistRenderer = {
+  name: "TwinlistControl",
   renderer: TwinlistControl,
   tester: rankWith(priorityRanks.default, twinlistTester),
 };
@@ -28,6 +29,7 @@ export const twinlistRenderer = {
 export const simpleTwinlistTester = and(isTwinlist, not(isSelection));
 
 export const simpleTwinlistRenderer = {
+  name: "SimpleTwinlistControl",
   renderer: SimpleTwinlistControl,
   tester: rankWith(priorityRanks.default, simpleTwinlistTester),
 };

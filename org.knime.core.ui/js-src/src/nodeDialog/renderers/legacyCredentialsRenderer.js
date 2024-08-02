@@ -12,6 +12,7 @@ export const legacyCredentialsTester = (uischema, _schema) => {
 };
 
 export const legacyCredentialsRenderer = {
+  name: "LegacyCredentialsControl",
   renderer: LegacyCredentialsControl,
   tester: rankWith(priorityRanks.default, legacyCredentialsTester),
 };

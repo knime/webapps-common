@@ -10,6 +10,7 @@ const VennDiagramLayout = defineAsyncComponent(() =>
 export const vennDiagramLayoutTester = uiTypeIs("VennDiagram");
 
 export const vennDiagramLayoutRenderer = {
+  name: "VennDiagramLayout",
   renderer: VennDiagramLayout,
   tester: rankWith(priorityRanks.default, vennDiagramLayoutTester),
 };

@@ -26,10 +26,12 @@ const AnyOfTwinlist = defineAsyncComponent(() =>
 
 export const fallbackRenderers = [
   {
+    name: "OneOfDropdown",
     renderer: OneOfDropdown,
     tester: rankWith(priorityRanks.fallback, isOneOfControl),
   },
   {
+    name: "AnyOfTwinlist",
     renderer: AnyOfTwinlist,
     tester: rankWith(priorityRanks.fallback, isAnyOfControl),
   },

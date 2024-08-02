@@ -14,6 +14,7 @@ const hasComboBoxFormat = (uischema, _schema) =>
 export const comboBoxTester = and(isArray, hasComboBoxFormat);
 
 export const comboBoxRenderer = {
+  name: "ComboBoxControl",
   renderer: ComboBoxControl,
   tester: rankWith(priorityRanks.default, comboBoxTester),
 };

@@ -13,6 +13,7 @@ export const numberTester = (uischema, schema) => {
 };
 
 export const numberRenderer = {
+  name: "NumberControl",
   renderer: NumberControl,
   tester: rankWith(priorityRanks.default, numberTester),
 };

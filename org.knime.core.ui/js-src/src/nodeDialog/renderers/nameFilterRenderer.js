@@ -11,6 +11,7 @@ export const nameFilterTester = (uischema, _schema) =>
   isControl(uischema) && uischema.options?.format === inputFormats.nameFilter;
 
 export const nameFilterRenderer = {
+  name: "NameFilter",
   renderer: NameFilter,
   tester: rankWith(priorityRanks.default, nameFilterTester),
 };
