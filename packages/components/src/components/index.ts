@@ -53,6 +53,7 @@ export {
   BaseMenuItem,
   BaseMenuItems,
   BaseMenuItemText,
+  BaseModal,
   BaseMessage,
   Breadcrumb,
   Button,
@@ -91,5 +92,4 @@ export {
   TagList,
   Tooltip,
   svgWithTitle,
-  BaseModal,
 };

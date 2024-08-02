@@ -17,8 +17,6 @@ npm install @knime/styles
 
 ### SVG loading
 
-Components use SVG files as Vue components. Therefore, you need to use the vite plugin [vite-svg-loader](https://www.npmjs.com/package/vite-svg-loader) in your `vite.config.ts`:
-
 ```javascript
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
