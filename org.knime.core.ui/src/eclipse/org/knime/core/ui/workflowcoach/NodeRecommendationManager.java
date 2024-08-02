@@ -79,6 +79,7 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeTriple;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.ConnectionContainer.ConnectionType;
+import org.knime.core.ui.node.workflow.ConnectionContainerUI;
 import org.knime.core.ui.node.workflow.NativeNodeContainerUI;
 import org.knime.core.ui.node.workflow.NodeContainerUI;
 import org.knime.core.ui.workflowcoach.data.NodeTripleProvider;
@@ -126,7 +127,7 @@ public final class NodeRecommendationManager {
 
     private final List<IUpdateListener> m_listeners = new ArrayList<>(1);
 
-    private static List<Map<String, List<NodeRecommendation>>> cachedRecommendations;
+    private static List<Map<String, RecommendationList>> cachedRecommendations;
 
     /* modifiable for testing purposes */
     static List<NodeTripleProvider> nodeTripleProviders;
@@ -220,12 +221,12 @@ public final class NodeRecommendationManager {
 
         // Read from multiple frequency sources
         List<NodeTripleProvider> providers = getNodeTripleProviders();
-        var recommendations = new ArrayList<Map<String, List<NodeRecommendation>>>(providers.size());
+        var recommendations = new ArrayList<Map<String, RecommendationList>>(providers.size());
 
         for (NodeTripleProvider provider : providers) {
             LOGGER.info(String.format("Loading node recommendations from <%s>", provider.getClass().getName()));
             if (provider.isEnabled() && !updateRequired(provider)) {
-                Map<String, List<NodeRecommendation>> recommendationMap = new HashMap<>();
+                Map<String, RecommendationList> recommendationMap = new HashMap<>();
                 recommendations.add(recommendationMap);
 
                 provider.getNodeTriples().forEach(
@@ -243,10 +244,13 @@ public final class NodeRecommendationManager {
         m_listeners.stream().forEach(IUpdateListener::updated); // Notify all update listeners after (un-)loading node recommendations
     }
 
+    private record RecommendationList(List<NodeRecommendation> predecessors, List<NodeRecommendation> successors) {
+    }
+
     /*
      * Aggregate multiple occurring id's.
      */
-    private static void aggregateNodeRecommendations(final Map<String, List<NodeRecommendation>> recommendationMap) {
+    private static void aggregateNodeRecommendations(final Map<String, RecommendationList> recommendationMap) {
         // apply different aggregation methods for 'independent recommendations' (e.g. source nodes)
         BiConsumer<NodeRecommendation, NodeRecommendation> avgAggr =
             (np1, np2) -> np1.increaseFrequency(np2.getFrequency(), 1);
@@ -256,17 +260,19 @@ public final class NodeRecommendationManager {
             var key = entry.getKey();
             var recommendations = entry.getValue();
             if (key.equals(SOURCE_NODES_KEY) || key.equals(ALL_NODES_KEY)) {
-                aggregate(recommendations, sumAggr);
-                Collections.sort(recommendations);
-                var totalFrequency = recommendations.stream().mapToInt(NodeRecommendation::getFrequency).sum();
-                recommendations.forEach(nr -> nr.setTotalFrequency(totalFrequency));
+                aggregate(recommendations.successors, sumAggr);
+                Collections.sort(recommendations.successors);
+
+                var totalFrequency = recommendations.successors.stream().mapToInt(NodeRecommendation::getFrequency).sum();
+                recommendations.successors.forEach(nr -> nr.setTotalFrequency(totalFrequency));
             } else {
-                aggregate(recommendations, avgAggr);
+                aggregate(recommendations.predecessors, avgAggr);
+                aggregate(recommendations.successors, avgAggr);
             }
         });
     }
 
-    private static void fillRecommendationsMap(final Map<String, List<NodeRecommendation>> recommendationMap,
+    private static void fillRecommendationsMap(final Map<String, RecommendationList> recommendationMap,
         final NodeTriple nt, final Function<String, NodeType> getNodeType) {
 
         var successor = getInternalNodeInfo(nt.getSuccessor(), getNodeType);
@@ -275,33 +281,46 @@ public final class NodeRecommendationManager {
 
         /* keep track of 'all nodes' to be able to determine the most frequently used nodes */
         if (node != null && node.isKnown()) {
-            add(recommendationMap, ALL_NODES_KEY, node.id, nt.getCount());
+            // place recommendations for ALL_NODES_KEY in successors field by default
+            add(recommendationMap, ALL_NODES_KEY, node.id, nt.getCount(), true);
         }
 
         /* considering the successor only, i.e. for all entries where the predecessor and the node
          * itself is not present
          */
         if (node == null && predecessor == null && successor != null && successor.isSource()) {
-            add(recommendationMap, SOURCE_NODES_KEY, successor.id, nt.getCount());
+         // place recommendations for SOURCE_NODES_KEY in successors field by default
+            add(recommendationMap, SOURCE_NODES_KEY, successor.id, nt.getCount(), true);
         }
 
         /* considering the the node itself as successor, but only for those nodes that don't have a
          * predecessor -> source nodes, i.e. nodes without an input port
          */
         if (predecessor == null && node != null && node.isSource()) {
-            add(recommendationMap, SOURCE_NODES_KEY, node.id, nt.getCount());
+            add(recommendationMap, SOURCE_NODES_KEY, node.id, nt.getCount(), true);
         }
 
         /* without predecessor but with the node, if given */
         if (predecessor == null && node != null && successor != null //
             && node.isKnown() && successor.isKnown()) {
-            add(recommendationMap, node.id, successor.id, nt.getCount());
+            add(recommendationMap, node.id, successor.id, nt.getCount(), true);
+            add(recommendationMap, successor.id, node.id, nt.getCount(), false);
         }
 
-        /* considering predecessor, if given */
+        /* considering all triplet, if given */
         if (predecessor != null && node != null && successor != null //
             && predecessor.isKnown() && node.isKnown() && successor.isKnown()) {
-            add(recommendationMap, predecessor.id + NODE_NAME_SEP + node.id, successor.id, nt.getCount());
+            // key: predecessor#node value: successor
+            add(recommendationMap, predecessor.id + NODE_NAME_SEP + node.id, successor.id, nt.getCount(), true);
+            // key: node#successor value: predecessor
+            add(recommendationMap, node.id + NODE_NAME_SEP + successor.id, predecessor.id, nt.getCount(), false);
+        }
+
+        /* considering predecessor, regardless of successor */
+        if (predecessor != null && node != null //
+                && predecessor.isKnown() && node.isKnown()) {
+            add(recommendationMap, predecessor.id, node.id, nt.getCount(), true);
+            add(recommendationMap, node.id, predecessor.id, nt.getCount(), false);
         }
     }
 
@@ -354,10 +373,15 @@ public final class NodeRecommendationManager {
      * Adds a new node recommendation to the map. This also updates node recommendations whose names have changed,
      * avoiding duplicated appearances and NPEs.
      */
-    private static void add(final Map<String, List<NodeRecommendation>> recommendation, final String key,
-        final String factoryId, final int count) {
-        List<NodeRecommendation> p = recommendation.computeIfAbsent(key, k -> new ArrayList<>());
-        p.add(new NodeRecommendation(factoryId, count));
+    private static void add(final Map<String, RecommendationList> recommendation, final String key,
+        final String factoryId, final int count, final boolean isSuccesor) {
+        RecommendationList p =
+            recommendation.computeIfAbsent(key, k -> new RecommendationList(new ArrayList<>(), new ArrayList<>()));
+        if (isSuccesor) {
+            p.successors.add(new NodeRecommendation(factoryId, count));
+        } else {
+            p.predecessors.add(new NodeRecommendation(factoryId, count));
+        }
     }
 
     /**
@@ -382,6 +406,24 @@ public final class NodeRecommendationManager {
         }
         l.clear();
         l.addAll(aggregates.values());
+    }
+
+    /**
+     * Get recommendations for possible successors of the given nodes, see {@link #getNodeRecommendationFor} for more details.
+     * @param nnc Array of nodes to get successor recommendations for; if empty, only source nodes will be recommended
+     * @return A list of node recommendations
+     */
+    public List<NodeRecommendation>[] getSuccessorNodeRecommendationFor(final NativeNodeContainerUI... nnc) {
+        return getNodeRecommendationFor(true, nnc);
+    }
+
+    /**
+     * Get recommendations for possible predecessors of the given nodes, see {@link #getNodeRecommendationFor} for more details.
+     * @param nnc Array of nodes to get predecessor recommendations for; if empty, only source nodes will be recommended
+     * @return A list of node recommendations
+     */
+    public List<NodeRecommendation>[] getPredecessorNodeRecommendationFor(final NativeNodeContainerUI... nnc) {
+        return getNodeRecommendationFor(false, nnc);
     }
 
     /**
@@ -412,7 +454,7 @@ public final class NodeRecommendationManager {
      *         node statistics!
      */
     @SuppressWarnings("static-method") // Not static to avoid failing initialization
-    public List<NodeRecommendation>[] getNodeRecommendationFor(final NativeNodeContainerUI... nnc) {
+    private List<NodeRecommendation>[] getNodeRecommendationFor(final boolean getSuccessors, final NativeNodeContainerUI... nnc) {
         if (cachedRecommendations == null) {
             return null; // NOSONAR: Returning null makes sense here
         }
@@ -421,18 +463,18 @@ public final class NodeRecommendationManager {
         for (var idx = 0; idx < res.length; idx++) {
             if (nnc.length == 0) {
                 // recommendations if no node is given -> source nodes are recommended
-                res[idx] = cachedRecommendations.get(idx).get(SOURCE_NODES_KEY);
-                if (res[idx] == null) {
-                    res[idx] = Collections.emptyList();
-                }
+                var sourceNodes = cachedRecommendations.get(idx).get(SOURCE_NODES_KEY);
+                res[idx] = sourceNodes == null ? Collections.emptyList() : sourceNodes.successors;
+
             } else if (nnc.length == 1) {
                 String nodeID = nnc[0].getNodeFactoryId();
-                /* recommendations based on the given node and possible predecessors */
-                var set = processNodeRecommendationsForAllPorts(idx, nnc);
+                /* recommendations based on the given node and possible predecessors/successors */
+                var set = getSuccessors ? processSucessorNodeRecommendationsForAllPorts(idx, nnc)
+                    : processPredecessorNodeRecommendationsForAllPorts(idx, nnc);
                 /* recommendation based on the given node only */
-                List<NodeRecommendation> p1 = cachedRecommendations.get(idx).get(nodeID);
+                var p1 = cachedRecommendations.get(idx).get(nodeID);
                 if (p1 != null) {
-                    set.addAll(p1);
+                    set.addAll(getSuccessors ? p1.successors : p1.predecessors);
                 }
                 //add to the result list
                 res[idx] = new ArrayList<>(set.size());
@@ -467,15 +509,13 @@ public final class NodeRecommendationManager {
         @SuppressWarnings("unchecked")
         List<NodeRecommendation>[] res = new List[cachedRecommendations.size()];
         for (var idx = 0; idx < res.length; idx++) {
-            res[idx] = cachedRecommendations.get(idx).get(ALL_NODES_KEY);
-            if (res[idx] == null) {
-                res[idx] = Collections.emptyList();
-            }
+            var allNodes = cachedRecommendations.get(idx).get(ALL_NODES_KEY);
+            res[idx] = allNodes == null ? Collections.emptyList() : allNodes.successors;
         }
         return res;
     }
 
-    private static Set<NodeRecommendation> processNodeRecommendationsForAllPorts(final int idx,
+    private static Set<NodeRecommendation> processSucessorNodeRecommendationsForAllPorts(final int idx,
         final NativeNodeContainerUI... nnc) {
         Set<NodeRecommendation> set = new HashSet<>();
         for (var i = 0; i < nnc[0].getNrInPorts(); i++) {
@@ -491,7 +531,31 @@ public final class NodeRecommendationManager {
                 var map = cachedRecommendations.get(idx);
                 var key = nncUI.getNodeFactoryId() + NODE_NAME_SEP + nnc[0].getNodeFactoryId();
                 if(map.containsKey(key)) {
-                    set.addAll(map.get(key));
+                    set.addAll(map.get(key).successors);
+                }
+            }
+        }
+        return set;
+    }
+
+    private static Set<NodeRecommendation> processPredecessorNodeRecommendationsForAllPorts(final int idx,
+        final NativeNodeContainerUI... nnc) {
+        Set<NodeRecommendation> set = new HashSet<>();
+        for (var i = 0; i < nnc[0].getNrOutPorts(); i++) {
+            var wfm = nnc[0].getParent();
+            // only take the successors that are not leaving the workflow
+            // (e.g. one or more successors are outside of a metanode)
+            var cc = wfm.getOutgoingConnectionsFor(nnc[0].getID(), i).stream()
+                    .filter(conn -> conn != null || !conn.getType().isLeavingWorkflow()).toList();
+
+            for (ConnectionContainerUI conn : cc) {
+                NodeContainerUI successor = wfm.getNodeContainer(conn.getDest());
+                if (successor instanceof NativeNodeContainerUI nncUI) {
+                    var map = cachedRecommendations.get(idx);
+                    var key = nnc[0].getNodeFactoryId() + NODE_NAME_SEP + nncUI.getNodeFactoryId();
+                    if (map.containsKey(key)) {
+                        set.addAll(map.get(key).predecessors);
+                    }
                 }
             }
         }
