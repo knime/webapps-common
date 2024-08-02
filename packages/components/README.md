@@ -15,25 +15,6 @@ To install the `@knime/components` package, you can use npm:
 npm install @knime/components
 ```
 
-## Setup
-
-### SVG loading
-
-Components use SVG files as Vue components. Therefore, you need to use the vite plugin [vite-svg-loader](https://www.npmjs.com/package/vite-svg-loader) in your `vite.config.ts`:
-
-```javascript
-import { defineConfig } from "vite";
-import vue from "@vitejs/plugin-vue";
-
-import svgLoader from "vite-svg-loader";
-import { svgoConfig } from "@knime/styles/config/svgo.config";
-
-export default defineConfig({
-  plugins: [vue(), svgLoader({ svgoConfig })],
-  // [...]
-});
-```
-
 ## Usage
 
 To use it in your project, you can import it as follows:
