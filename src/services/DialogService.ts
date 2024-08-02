@@ -1,12 +1,26 @@
-import { UIExtensionPushEvents } from "@/types";
+import { UIExtensionPushEvents, UIExtensionService } from "@/types";
 import { AbstractService } from "./AbstractService";
 import { DialogServiceAPILayer } from "./types/serviceApiLayers";
 import { createDialogDirtyStateHandler } from "./dialogDirtyState";
+
+export interface DisplayModeEventPayload {
+  mode: "small" | "large";
+}
+
+export interface DisplayModeEventCallbackParams
+  extends Pick<DisplayModeEventPayload, "mode"> {}
 
 /**
  * A utility class to interact with Dialog settings implemented by a UI Extension node.
  */
 export class DialogService extends AbstractService<DialogServiceAPILayer> {
+  private removeCallbacksMap: Map<Function, () => void>;
+
+  constructor(baseService: UIExtensionService<DialogServiceAPILayer>) {
+    super(baseService);
+    this.removeCallbacksMap = new Map();
+  }
+
   /**
    * @returns {boolean} - true, if the node this dialog belongs to also has a node view, otherwise false
    */
@@ -54,5 +68,31 @@ export class DialogService extends AbstractService<DialogServiceAPILayer> {
 
   setControlsVisibility(param: { shouldBeVisible: boolean }) {
     this.baseService.setControlsVisibility(param);
+  }
+
+  /**
+   * Adds callback that will be triggered when the display mode of the dialog changes.
+   */
+  addOnDisplayModeChangeCallback(
+    callback: (event: DisplayModeEventCallbackParams) => void,
+  ): void {
+    const removeCallback = this.baseService.addPushEventListener(
+      UIExtensionPushEvents.EventTypes.DisplayModeEvent,
+      callback,
+    );
+
+    this.removeCallbacksMap.set(callback, removeCallback);
+  }
+
+  /**
+   * Removes previously added callback.
+   * @param {function} callback - that needs to be removed from events.
+   * @returns {void}
+   */
+  removeOnDisplayModeChangeCallback(
+    callback: (event: DisplayModeEventCallbackParams) => void,
+  ): void {
+    this.removeCallbacksMap.get(callback)();
+    this.removeCallbacksMap.delete(callback);
   }
 }

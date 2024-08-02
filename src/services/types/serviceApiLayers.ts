@@ -26,9 +26,10 @@ export type ColorServiceAPILayer = Pick<
   getConfig: () => ColorServiceExtensionConfig;
 };
 
-type DialogServiceExtensionConfig = {
+type DialogServiceExtensionConfig = Identifiers & {
   hasNodeView: boolean;
   writeProtected?: boolean;
+  canBeEnlarged?: boolean;
 };
 
 export type DialogServiceAPILayer = Pick<

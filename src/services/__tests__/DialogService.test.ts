@@ -104,4 +104,37 @@ describe("DialogService", () => {
 
     expect(onDirtyStateChange).toHaveBeenCalledWith(cleanState);
   });
+
+  it("adds callback to event with addOnDisplayModeChangeCallback", () => {
+    const { dialogService, dispatchPushEvent } = constructDialogService();
+
+    const callback = vi.fn();
+
+    dialogService.addOnDisplayModeChangeCallback(callback);
+
+    const payload = { mode: "large" as const };
+
+    dispatchPushEvent({
+      eventType: UIExtensionPushEvents.EventTypes.DisplayModeEvent,
+      payload,
+    });
+
+    expect(callback).toHaveBeenCalledWith(payload);
+  });
+
+  it("removes event callback with removeOnSelectionChangeCallback", () => {
+    const { dialogService, dispatchPushEvent } = constructDialogService();
+
+    const callback = vi.fn();
+
+    dialogService.addOnDisplayModeChangeCallback(callback);
+    dialogService.removeOnDisplayModeChangeCallback(callback);
+
+    dispatchPushEvent({
+      eventType: UIExtensionPushEvents.EventTypes.DisplayModeEvent,
+      payload: { mode: "large" },
+    });
+
+    expect(callback).not.toHaveBeenCalled();
+  });
 });

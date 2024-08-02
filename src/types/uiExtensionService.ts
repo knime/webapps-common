@@ -58,6 +58,10 @@ export type UIExtensionServiceConfig = AlertConfig &
      * codes
      */
     columnNamesColorModel?: ColorModel;
+    /**
+     * whether the ui-extension (dialog) supports a large mode or not
+     */
+    canBeEnlarged?: boolean;
   };
 
 export enum ApplyState {

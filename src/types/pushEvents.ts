@@ -1,3 +1,4 @@
+import { DisplayModeEventPayload } from "@/services/DialogService";
 import { SelectionEventPayload } from "@/services/SelectionService";
 
 export type Foo = "";
@@ -10,10 +11,12 @@ export namespace UIExtensionPushEvents {
     DataEvent = "DataEvent",
     SelectionEvent = "SelectionEvent",
     ApplyDataEvent = "ApplyDataEvent",
+    DisplayModeEvent = "DisplayModeEvent",
   }
 
   type KnownPushEvents = {
     [EventTypes.SelectionEvent]: SelectionEventPayload;
+    [EventTypes.DisplayModeEvent]: DisplayModeEventPayload;
     [EventTypes.DataEvent]: any;
     [EventTypes.ApplyDataEvent]: never;
   };
@@ -32,6 +35,7 @@ export namespace UIExtensionPushEvents {
 
   export type SelectionEvent = PushEvent<EventTypes.SelectionEvent>;
   export type DataEvent = PushEvent<EventTypes.DataEvent>;
+  export type DisplayModeEvent = PushEvent<EventTypes.DisplayModeEvent>;
 
   export type PushEventListenerCallback<T extends EventType> = (
     payload: PushEvent<T>["payload"],

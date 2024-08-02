@@ -119,14 +119,20 @@ describe("SelectionService", () => {
     });
 
     it("removes event callback with removeOnSelectionChangeCallback", () => {
-      const { selectionService } = constructSelectionService(extensionConfig);
+      const { selectionService, dispatchPushEvent } =
+        constructSelectionService(extensionConfig);
 
-      const callback = () => {};
+      const callback = vi.fn();
 
       selectionService.addOnSelectionChangeCallback(callback);
       selectionService.removeOnSelectionChangeCallback(callback);
 
-      // expect(knime.eventCallbacksMap.get("SelectionEvent")).toEqual([]);
+      dispatchPushEvent({
+        eventType: "SelectionEvent",
+        payload: { nodeId: extensionConfig.nodeId, ...selectionPayload },
+      });
+
+      expect(callback).not.toHaveBeenCalled();
     });
   });
 });
