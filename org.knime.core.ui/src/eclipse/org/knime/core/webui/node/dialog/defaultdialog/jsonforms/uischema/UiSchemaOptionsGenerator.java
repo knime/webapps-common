@@ -76,9 +76,7 @@ import static org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetI
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.stream.Stream;
@@ -89,18 +87,13 @@ import org.knime.core.node.workflow.contextv2.HubSpaceLocationInfo;
 import org.knime.core.node.workflow.contextv2.LocalLocationInfo;
 import org.knime.core.node.workflow.contextv2.ServerLocationInfo;
 import org.knime.core.util.Pair;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.Format;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsScopeUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.NameFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
-import org.knime.core.webui.node.dialog.defaultdialog.util.ArrayLayoutUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.util.WidgetGroupTraverser;
-import org.knime.core.webui.node.dialog.defaultdialog.util.WidgetGroupTraverser.TraversedField;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.AsyncChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
@@ -138,12 +131,13 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.NoopBoolean
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.NoopStringProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.WidgetAnnotation;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.ArrayWidgetNode;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
 import org.knime.filehandling.core.util.WorkflowContextUtil;
 
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.ser.PropertyWriter;
 
 /**
  *
@@ -151,44 +145,40 @@ import com.fasterxml.jackson.databind.ser.PropertyWriter;
  */
 final class UiSchemaOptionsGenerator {
 
-    private final PropertyWriter m_field;
+    private final WidgetTreeNode m_node;
 
     private final Class<?> m_fieldClass;
 
     private final String m_fieldName;
 
-    private final JavaType m_fieldType;
-
     private final DefaultNodeSettingsContext m_defaultNodeSettingsContext;
-
-    private final Collection<JsonFormsControl> m_fields;
 
     private final String m_scope;
 
     private final AsyncChoicesAdder m_asyncChoicesAdder;
 
+    private Collection<WidgetTree> m_widgetTrees;
+
     private static final int ASYNC_CHOICES_THRESHOLD = 100;
 
     /**
      *
-     * @param mapper the object mapper used for the ui schema generation
-     * @param field the field for which options are to be added from {@link Widget} annotations
+     * @param node the node for which options are to be added from {@link Widget} annotations
      * @param context the current context of the default node settings
      * @param fields all traversed fields
      * @param scope of the current field
      * @param asyncChoicesProvider to be used to store results of asynchronously computed choices of
      *            {@link ChoicesWidget}s.
      */
-    UiSchemaOptionsGenerator(final PropertyWriter field, final DefaultNodeSettingsContext context,
-        final Collection<JsonFormsControl> fields, final String scope, final AsyncChoicesAdder asyncChoicesAdder) {
-        m_field = field;
+    UiSchemaOptionsGenerator(final WidgetTreeNode node, final DefaultNodeSettingsContext context, final String scope,
+        final AsyncChoicesAdder asyncChoicesAdder, final Collection<WidgetTree> widgetTrees) {
+        m_node = node;
         m_asyncChoicesAdder = asyncChoicesAdder;
-        m_fieldType = field.getType();
-        m_fieldClass = field.getType().getRawClass();
-        m_fieldName = field.getName();
+        m_fieldClass = node.getType();
+        m_fieldName = node.getName();
         m_defaultNodeSettingsContext = context;
-        m_fields = fields;
         m_scope = scope;
+        m_widgetTrees = widgetTrees;
     }
 
     /**
@@ -199,8 +189,7 @@ final class UiSchemaOptionsGenerator {
     void addOptionsTo(final ObjectNode control) {
         final var defaultWidgets = getApplicableDefaults(m_fieldClass);
         final var annotatedWidgets = getAnnotatedWidgets();
-        final var isArrayLayoutField = ArrayLayoutUtil.isArrayLayoutField(m_fieldType);
-        if (defaultWidgets.isEmpty() && annotatedWidgets.isEmpty() && !isArrayLayoutField) {
+        if (defaultWidgets.isEmpty() && annotatedWidgets.isEmpty() && !(m_node instanceof ArrayWidgetNode)) {
             return;
         }
         final var options = control.putObject(TAG_OPTIONS);
@@ -241,8 +230,7 @@ final class UiSchemaOptionsGenerator {
             }
         }
 
-        assert annotatedWidgets.contains(Widget.class);
-        final var widget = m_field.getAnnotation(Widget.class);
+        final var widget = m_node.getAnnotation(Widget.class).orElseThrow();
         if (widget.advanced()) {
             options.put(OPTIONS_IS_ADVANCED, true);
         }
@@ -254,7 +242,7 @@ final class UiSchemaOptionsGenerator {
         }
 
         if (annotatedWidgets.contains(DateTimeWidget.class)) {
-            final var dateTimeWidget = m_field.getAnnotation(DateTimeWidget.class);
+            final var dateTimeWidget = m_node.getAnnotation(DateTimeWidget.class).orElseThrow();
             options.put(TAG_FORMAT, Format.DATE_TIME);
             selectTimeFields(options, dateTimeWidget.showTime(), dateTimeWidget.showSeconds(),
                 dateTimeWidget.showMilliseconds());
@@ -265,7 +253,7 @@ final class UiSchemaOptionsGenerator {
         }
 
         if (annotatedWidgets.contains(DateWidget.class)) {
-            final var dateWidget = m_field.getAnnotation(DateWidget.class);
+            final var dateWidget = m_node.getAnnotation(DateWidget.class).orElseThrow();
             setMinAndMaxDate(options, dateWidget.minDate(), dateWidget.maxDate());
         }
 
@@ -274,12 +262,12 @@ final class UiSchemaOptionsGenerator {
         }
 
         if (annotatedWidgets.contains(FileReaderWidget.class)) {
-            final var fileReaderWidget = m_field.getAnnotation(FileReaderWidget.class);
+            final var fileReaderWidget = m_node.getAnnotation(FileReaderWidget.class).orElseThrow();
             resolveFileExtensions(options, fileReaderWidget.fileExtensions());
         }
         if (annotatedWidgets.contains(FileWriterWidget.class)) {
             options.put(TAG_IS_WRITER, true);
-            final var fileWriterWidget = m_field.getAnnotation(FileWriterWidget.class);
+            final var fileWriterWidget = m_node.getAnnotation(FileWriterWidget.class).orElseThrow();
             resolveFileExtension(options, fileWriterWidget.fileExtension(), fileWriterWidget.fileExtensionProvider());
 
         }
@@ -289,20 +277,20 @@ final class UiSchemaOptionsGenerator {
                     "A widget cannot be both a LocalFileReaderWidget and a LocalFileWriterWidget.");
             }
             options.put(TAG_FORMAT, Format.LOCAL_FILE_CHOOSER);
-            final var localFileReaderWidget = m_field.getAnnotation(LocalFileReaderWidget.class);
+            final var localFileReaderWidget = m_node.getAnnotation(LocalFileReaderWidget.class).orElseThrow();
             resolveFileExtensions(options, localFileReaderWidget.fileExtensions());
             options.put("placeholder", localFileReaderWidget.placeholder());
         }
         if (annotatedWidgets.contains(LocalFileWriterWidget.class)) {
             options.put(TAG_FORMAT, Format.LOCAL_FILE_CHOOSER);
-            final var localFileWriterWidget = m_field.getAnnotation(LocalFileWriterWidget.class);
+            final var localFileWriterWidget = m_node.getAnnotation(LocalFileWriterWidget.class).orElseThrow();
             options.put("placeholder", localFileWriterWidget.placeholder());
             options.put(TAG_IS_WRITER, true);
             resolveFileExtension(options, localFileWriterWidget.fileExtension(),
                 localFileWriterWidget.fileExtensionProvider());
         }
         if (annotatedWidgets.contains(ButtonWidget.class)) {
-            final var buttonWidget = m_field.getAnnotation(ButtonWidget.class);
+            final var buttonWidget = m_node.getAnnotation(ButtonWidget.class).orElseThrow();
             final var handler = buttonWidget.actionHandler();
             options.put(TAG_ACTION_HANDLER, handler.getName());
             options.put(TAG_FORMAT, Format.BUTTON);
@@ -324,7 +312,7 @@ final class UiSchemaOptionsGenerator {
         }
         if (annotatedWidgets.contains(SimpleButtonWidget.class)) {
             options.put(TAG_FORMAT, Format.SIMPLE_BUTTON);
-            final var simpleButtonWidget = m_field.getAnnotation(SimpleButtonWidget.class);
+            final var simpleButtonWidget = m_node.getAnnotation(SimpleButtonWidget.class).orElseThrow();
             options.put("triggerId", simpleButtonWidget.ref().getName());
             if (simpleButtonWidget.icon() != Icon.NONE) {
                 options.put("icon", switch (simpleButtonWidget.icon()) {
@@ -343,7 +331,7 @@ final class UiSchemaOptionsGenerator {
         }
 
         if (isRadioButtons) {
-            final var radioButtons = m_field.getAnnotation(RadioButtonsWidget.class);
+            final var radioButtons = m_node.getAnnotation(RadioButtonsWidget.class).orElseThrow();
             options.put(TAG_FORMAT, Format.RADIO);
             options.put("radioLayout", radioButtons.horizontal() ? "horizontal" : "vertical");
         }
@@ -371,7 +359,7 @@ final class UiSchemaOptionsGenerator {
                 "@UsernameWidget, @PasswordWidget and @CredentialsWidget should not be used together in one place.");
         }
         if (hasCredentialsWidgetAnnotation) {
-            final var credentialsWidget = m_field.getAnnotation(CredentialsWidget.class);
+            final var credentialsWidget = m_node.getAnnotation(CredentialsWidget.class).orElseThrow();
             options.put("usernameLabel", credentialsWidget.usernameLabel());
             options.put("passwordLabel", credentialsWidget.passwordLabel());
             if (credentialsWidget.hasSecondAuthenticationFactor()) {
@@ -388,12 +376,12 @@ final class UiSchemaOptionsGenerator {
             }
         }
         if (hasUsernameWidgetAnnotation) {
-            final var usernameWidget = m_field.getAnnotation(UsernameWidget.class);
+            final var usernameWidget = m_node.getAnnotation(UsernameWidget.class).orElseThrow();
             options.put("hidePassword", true);
             options.put("usernameLabel", usernameWidget.value());
         }
         if (hasPasswordWidgetAnnotation) {
-            final var passwordWidget = m_field.getAnnotation(PasswordWidget.class);
+            final var passwordWidget = m_node.getAnnotation(PasswordWidget.class).orElseThrow();
             options.put("hideUsername", true);
             options.put("passwordLabel", passwordWidget.passwordLabel());
             if (passwordWidget.hasSecondAuthenticationFactor()) {
@@ -403,7 +391,7 @@ final class UiSchemaOptionsGenerator {
         }
 
         if (annotatedWidgets.contains(ChoicesWidget.class)) {
-            final var choicesWidget = m_field.getAnnotation(ChoicesWidget.class);
+            final var choicesWidget = m_node.getAnnotation(ChoicesWidget.class).orElseThrow();
             final var choicesProviderClass = choicesWidget.choices();
 
             final var choicesUpdateHandlerClass = choicesWidget.choicesUpdateHandler();
@@ -474,7 +462,7 @@ final class UiSchemaOptionsGenerator {
         }
 
         if (annotatedWidgets.contains(TextInputWidget.class)) {
-            final var textInputWidget = m_field.getAnnotation(TextInputWidget.class);
+            final var textInputWidget = m_node.getAnnotation(TextInputWidget.class).orElseThrow();
             options.put("hideOnNull", textInputWidget.optional());
             if (!textInputWidget.placeholder().equals("")) {
                 options.put("placeholder", textInputWidget.placeholder());
@@ -484,9 +472,8 @@ final class UiSchemaOptionsGenerator {
             }
         }
 
-        if (isArrayLayoutField) {
-            applyArrayLayoutOptions(options,
-                (Class<? extends DefaultNodeSettings>)m_fieldType.getContentType().getRawClass());
+        if (m_node instanceof ArrayWidgetNode arrayWidgetNode) {
+            applyArrayLayoutOptions(options, arrayWidgetNode.getElementWidgetTree());
         }
 
         if (options.isEmpty()) {
@@ -630,7 +617,7 @@ final class UiSchemaOptionsGenerator {
 
     private void addDependencies(final ArrayNode dependencies,
         final Class<? extends DependencyHandler<?>> actionHandler) {
-        new DependencyResolver(m_fields, m_scope).addDependencyScopes(actionHandler, dependencies::add);
+        new DependencyResolver(m_node, m_widgetTrees, m_scope).addDependencyScopes(actionHandler, dependencies::add);
     }
 
     /**
@@ -641,7 +628,7 @@ final class UiSchemaOptionsGenerator {
      */
     private String getChoicesComponentFormat() {
         String format = Format.DROP_DOWN;
-        if (m_fieldType.isArrayType() && m_fieldType.getContentType().getRawClass().equals(String.class)) {
+        if (String.class.equals(m_node.getContentType())) {
             format = Format.TWIN_LIST;
         }
         return format;
@@ -649,7 +636,9 @@ final class UiSchemaOptionsGenerator {
 
     private Collection<?> getAnnotatedWidgets() {
         final var partitionedWidgetAnnotations = partitionWidgetAnnotationsByApplicability(
-            widgetAnnotation -> m_field.getAnnotation(widgetAnnotation) != null, m_fieldClass);
+            widgetAnnotation -> m_node.getPossibleAnnotations().contains(widgetAnnotation)
+                && m_node.getAnnotation(widgetAnnotation).isPresent(),
+            m_fieldClass);
 
         if (!partitionedWidgetAnnotations.get(false).isEmpty()) {
             throw new UiSchemaGenerationException(
@@ -660,25 +649,21 @@ final class UiSchemaOptionsGenerator {
         return partitionedWidgetAnnotations.get(true).stream().map(WidgetAnnotation::widgetAnnotation).toList();
     }
 
-    private void applyArrayLayoutOptions(final ObjectNode options, final Class<? extends WidgetGroup> componentType) {
-
-        Map<String, Class<? extends WidgetGroup>> arraySettings = new HashMap<>();
-        arraySettings.put(null, componentType);
+    private void applyArrayLayoutOptions(final ObjectNode options, final WidgetTree elementTree) {
         /**
          * We need a persistent async choices adder in case of settings nested inside an array layout, since the
          * frontend fetches the choices for every element in it individually and one can add more than initially
          * present.
          */
         final var persistentAsyncChoicesAdder = new PersistentAsyncChoicesAdder(m_asyncChoicesAdder);
-        var details = JsonFormsUiSchemaUtil
-            .buildUISchema(arraySettings, m_defaultNodeSettingsContext, persistentAsyncChoicesAdder, m_fields)
-            .get(TAG_ELEMENTS);
+        var details = JsonFormsUiSchemaUtil.buildUISchema(List.of(elementTree), m_widgetTrees,
+            m_defaultNodeSettingsContext, persistentAsyncChoicesAdder).get(TAG_ELEMENTS);
         options.set(TAG_ARRAY_LAYOUT_DETAIL, details);
 
-        Optional.ofNullable(m_field.getAnnotation(ArrayWidget.class))
-            .ifPresent(arrayWidget -> addArrayLayoutOptions(arrayWidget, options));
-        Optional.ofNullable(m_field.getAnnotation(InternalArrayWidget.class)).ifPresent(
-            internalArrayWidget -> addInternalArrayLayoutOptions(internalArrayWidget, options, componentType));
+        m_node.getAnnotation(ArrayWidget.class).ifPresent(arrayWidget -> addArrayLayoutOptions(arrayWidget, options));
+
+        m_node.getAnnotation(InternalArrayWidget.class)
+            .ifPresent(internalArrayWidget -> addInternalArrayLayoutOptions(internalArrayWidget, options, elementTree));
     }
 
     private static void addArrayLayoutOptions(final ArrayWidget arrayWidget, final ObjectNode options) {
@@ -702,7 +687,7 @@ final class UiSchemaOptionsGenerator {
     }
 
     private static void addInternalArrayLayoutOptions(final InternalArrayWidget internalArrayWidget,
-        final ObjectNode options, final Class<? extends WidgetGroup> componentType) {
+        final ObjectNode options, final WidgetTree elementWidgetTree) {
 
         if (internalArrayWidget.withEditAndReset()) {
             options.put(TAG_ARRAY_LAYOUT_WITH_EDIT_AND_RESET, true);
@@ -710,7 +695,7 @@ final class UiSchemaOptionsGenerator {
         }
 
         if (internalArrayWidget.withElementCheckboxes()) {
-            final var elementCheckboxScope = findElementCheckboxScope(componentType);
+            final var elementCheckboxScope = findElementCheckboxScope(elementWidgetTree);
             options.put(TAG_ARRAY_LAYOUT_ELEMENT_CHECKBOX_SCOPE, elementCheckboxScope);
         }
 
@@ -723,16 +708,16 @@ final class UiSchemaOptionsGenerator {
         }
     }
 
-    private static String findElementCheckboxScope(final Class<? extends WidgetGroup> componentType) {
-        final var traverser = new WidgetGroupTraverser(componentType);
-        final var elementCheckboxField = traverser.getAllFields().stream()
+    private static String findElementCheckboxScope(final WidgetTree elementWidgetTree) {
+        final var elementCheckboxField = elementWidgetTree.getWidgetNodes()
             .filter(UiSchemaOptionsGenerator::hasElementCheckboxWidgetAnnotation).findFirst().orElseThrow(
                 () -> new UiSchemaGenerationException("No field with a @ElementCheckboxWidget annotation found "
                     + "within an array layout with @InternalArrayLayout#withElementCheckboxes."));
-        return JsonFormsScopeUtil.toScope(elementCheckboxField.path(), null);
+        return JsonFormsScopeUtil.toScope(elementCheckboxField);
     }
 
-    private static boolean hasElementCheckboxWidgetAnnotation(final TraversedField field) {
-        return field.propertyWriter().getAnnotation(InternalArrayWidget.ElementCheckboxWidget.class) != null;
+    static boolean hasElementCheckboxWidgetAnnotation(final WidgetTreeNode field) {
+        return field.getPossibleAnnotations().contains(InternalArrayWidget.ElementCheckboxWidget.class)
+            && field.getAnnotation(InternalArrayWidget.ElementCheckboxWidget.class).isPresent();
     }
 }

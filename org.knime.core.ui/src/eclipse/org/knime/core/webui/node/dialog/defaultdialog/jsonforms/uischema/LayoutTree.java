@@ -55,12 +55,12 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Before;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Inside;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
 
 /**
  * A tree of layout parts. The tree has the structure that is needed to build a JSON Forms UI Schema from it. Its nodes
@@ -84,7 +84,7 @@ final class LayoutTree {
      *
      * @param layoutClassesToControls
      */
-    public LayoutTree(final Map<Class<?>, List<JsonFormsControl>> layoutClassesToControls) {
+    public LayoutTree(final Map<Optional<Class<?>>, List<WidgetTreeNode>> layoutClassesToControls) {
 
         buildTreeFromContentMap(layoutClassesToControls);
 
@@ -93,7 +93,7 @@ final class LayoutTree {
         m_nodes.values().forEach(LayoutTreeNode::adaptParentFromPointers);
 
         m_rootNode = shakeTreeAndFindRoot();
-        Optional.ofNullable(layoutClassesToControls.get(null)).ifPresent(m_rootNode::addControls);
+        Optional.ofNullable(layoutClassesToControls.get(Optional.empty())).ifPresent(m_rootNode::addControls);
         prepareForTraversal(m_rootNode);
     }
 
@@ -113,9 +113,9 @@ final class LayoutTree {
         return roots.stream().findFirst().orElse(new LayoutTreeNode(null));
     }
 
-    private void buildTreeFromContentMap(final Map<Class<?>, List<JsonFormsControl>> layoutClassesToControls) {
-        layoutClassesToControls.entrySet().stream().filter(e -> e.getKey() != null)
-            .forEach(this::constructNodeFromEntry);
+    private void buildTreeFromContentMap(final Map<Optional<Class<?>>, List<WidgetTreeNode>> layoutClassesToControls) {
+        layoutClassesToControls.entrySet().stream().filter(e -> e.getKey().isPresent())
+            .forEach(e -> constructNodeFromEntry(e.getKey().get(), e.getValue()));
 
     }
 
@@ -125,9 +125,9 @@ final class LayoutTree {
      * @param entry
      * @return
      */
-    private LayoutTreeNode constructNodeFromEntry(final Entry<Class<?>, List<JsonFormsControl>> entry) {
-        var node = getOrConstructNode(entry.getKey());
-        node.addControls(entry.getValue());
+    private LayoutTreeNode constructNodeFromEntry(final Class<?> clazz, final List<WidgetTreeNode> widgetTreeNodes) {
+        var node = getOrConstructNode(clazz);
+        node.addControls(widgetTreeNodes);
         return node;
     }
 

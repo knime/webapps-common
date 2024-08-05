@@ -652,7 +652,7 @@ class UpdatesUtilTest {
 
             class TestSettings implements DefaultNodeSettings {
 
-                static class ElementSettings {
+                static class ElementSettings implements WidgetGroup {
 
                 }
 

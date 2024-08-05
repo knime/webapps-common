@@ -44,34 +44,30 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Feb 7, 2024 (Paul Bärnreuther): created
+ *   Aug 5, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
+package org.knime.core.webui.node.dialog.defaultdialog.widgettree;
 
-import java.util.List;
-import java.util.stream.Stream;
+import java.util.Collection;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
+import org.knime.core.util.Pair;
 
 /**
  *
  * @author Paul Bärnreuther
- * @param paths the path to the field in a {@link DefaultNodeSettings} class. It contains mulitple paths whenever the
- *            field is nested inside an array layout
- * @param settingsKey the key of the {@link DefaultNodeSettings} class
  */
-public record PathsWithSettingsKey(List<List<String>> paths, String settingsKey) {
+public final class AnnotationsUtil {
 
-    /**
-     * @param node
-     * @return the paths leading to that node in its tree together with the settingsKey of the root
-     */
-    public static PathsWithSettingsKey fromWidgetTreeNode(final WidgetTreeNode node) {
-        final var listOfFields = Stream.concat(node.getContainingArrayWidgetNodes().stream(), Stream.of(node)).toList();
-        final var settingsKey = listOfFields.get(0).getSettingsKey().orElseThrow();
-        final var listOfPaths = listOfFields.stream().map(WidgetTreeNode::getPath).toList();
-        return new PathsWithSettingsKey(listOfPaths, settingsKey);
+    private AnnotationsUtil() {
+        // UTILITY
+    }
+
+    static <K, V> Map<K, V> toMap(final Function<K, V> function, final Collection<K> keys) {
+        return keys.stream().map(key -> new Pair<>(key, function.apply(key))).filter(pair -> pair.getSecond() != null)
+            .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
     }
 
 }

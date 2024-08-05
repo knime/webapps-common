@@ -44,34 +44,70 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Feb 7, 2024 (Paul Bärnreuther): created
+ *   Aug 5, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
+package org.knime.core.webui.node.dialog.defaultdialog.widgettree;
 
+import java.lang.annotation.Annotation;
+import java.util.Collection;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.function.Function;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.LatentWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
 
 /**
  *
+ * A intermediate node which corresponds to a field whose type is a {@link WidgetGroup} and thus has nested fields which
+ * are part of this tree structure.
+ *
  * @author Paul Bärnreuther
- * @param paths the path to the field in a {@link DefaultNodeSettings} class. It contains mulitple paths whenever the
- *            field is nested inside an array layout
- * @param settingsKey the key of the {@link DefaultNodeSettings} class
  */
-public record PathsWithSettingsKey(List<List<String>> paths, String settingsKey) {
+public final class WidgetGroupNode extends WidgetTreeNode {
+
+    WidgetGroupNode(final WidgetTree parent, final Class<?> type, final Class<?> contentType, final String name,
+        final Function<Class<? extends Annotation>, Annotation> annotations) {
+        super(parent, type, contentType, name, annotations);
+    }
+
+    WidgetTree m_widgetTree;
+
+    @Override
+    public Collection<Class<? extends Annotation>> getPossibleAnnotations() {
+        return List.of(LatentWidget.class, Layout.class, Signal.class, Effect.class, ValueReference.class,
+            ValueProvider.class);
+    }
+
+    @Override
+    public void postProcessAnnotations() {
+        List.of(Effect.class, Layout.class).forEach(annotationClass -> {
+            if (m_annotations.containsKey(annotationClass)) {
+                getWidgetTree().setParentAnnotation(annotationClass, m_annotations.get(annotationClass));
+            }
+        });
+        getWidgetTree().postProcessAnnotations();
+    }
+
+    @Override
+    protected void validate() {
+        if (getAnnotation(Layout.class).isPresent() && getWidgetTree().hasAnnotation(Layout.class)) {
+            throw new IllegalStateException(String.format(
+                "The an annotation for field %s collides with the an annotation of the field type class %s.", getName(),
+                getWidgetTree().getWidgetGroupClass().getSimpleName()));
+        }
+        getWidgetTree().validate();
+    }
 
     /**
-     * @param node
-     * @return the paths leading to that node in its tree together with the settingsKey of the root
+     * @return the widgetTree
      */
-    public static PathsWithSettingsKey fromWidgetTreeNode(final WidgetTreeNode node) {
-        final var listOfFields = Stream.concat(node.getContainingArrayWidgetNodes().stream(), Stream.of(node)).toList();
-        final var settingsKey = listOfFields.get(0).getSettingsKey().orElseThrow();
-        final var listOfPaths = listOfFields.stream().map(WidgetTreeNode::getPath).toList();
-        return new PathsWithSettingsKey(listOfPaths, settingsKey);
+    public WidgetTree getWidgetTree() {
+        return m_widgetTree;
     }
 
 }

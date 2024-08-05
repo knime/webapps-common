@@ -52,6 +52,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.PathsWithSettingsKey;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
 
 /**
  * The scope of a setting is its json schema path (i.e. #/properties/...) We use this scope whenever we need to point to
@@ -77,6 +78,14 @@ public final class JsonFormsScopeUtil {
         }
         pathWithPrefix.add(0, "#");
         return toScope(pathWithPrefix);
+    }
+
+    /**
+     * @param node
+     * @return the json schema scope
+     */
+    public static String toScope(final WidgetTreeNode node) {
+        return toScope(node.getPath(), node.getSettingsKey().orElse(null));
     }
 
     /**

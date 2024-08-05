@@ -44,34 +44,65 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Feb 7, 2024 (Paul Bärnreuther): created
+ *   Aug 5, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
+package org.knime.core.webui.node.dialog.defaultdialog.widgettree;
 
+import java.lang.annotation.Annotation;
+import java.util.Collection;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.function.Function;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.Signals;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.LatentWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.internal.InternalArrayWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
 
 /**
  *
+ * This node is both "leaf" to one widget tree and parent to another one. With respect to its parent widget tree, it has
+ * no further sub-nodes as the {@link WidgetGroupNode}. But instead it gives rise to a new tree retrieved via
+ * {@link #getElementWidgetTree}, which is to be interpreted as an independent tree corresponding to the type of an
+ * element of the fields value.
+ *
  * @author Paul Bärnreuther
- * @param paths the path to the field in a {@link DefaultNodeSettings} class. It contains mulitple paths whenever the
- *            field is nested inside an array layout
- * @param settingsKey the key of the {@link DefaultNodeSettings} class
  */
-public record PathsWithSettingsKey(List<List<String>> paths, String settingsKey) {
+public final class ArrayWidgetNode extends WidgetTreeNode {
+
+    ArrayWidgetNode(final WidgetTree parent, final Class<?> type, final Class<?> contentType, final String name,
+        final Function<Class<? extends Annotation>, Annotation> annotations) {
+        super(parent, type, contentType, name, annotations);
+    }
+
+    WidgetTree m_elementWidgetTree;
+
+    @Override
+    public Collection<Class<? extends Annotation>> getPossibleAnnotations() {
+        return List.of(LatentWidget.class, Widget.class, ArrayWidget.class, InternalArrayWidget.class, Signal.class,
+            Signals.class, Layout.class, Effect.class, ValueReference.class, ValueProvider.class);
+    }
 
     /**
-     * @param node
-     * @return the paths leading to that node in its tree together with the settingsKey of the root
+     * @return the elementWidgetTree
      */
-    public static PathsWithSettingsKey fromWidgetTreeNode(final WidgetTreeNode node) {
-        final var listOfFields = Stream.concat(node.getContainingArrayWidgetNodes().stream(), Stream.of(node)).toList();
-        final var settingsKey = listOfFields.get(0).getSettingsKey().orElseThrow();
-        final var listOfPaths = listOfFields.stream().map(WidgetTreeNode::getPath).toList();
-        return new PathsWithSettingsKey(listOfPaths, settingsKey);
+    public WidgetTree getElementWidgetTree() {
+        return m_elementWidgetTree;
+    }
+
+    @Override
+    public void postProcessAnnotations() {
+        m_elementWidgetTree.postProcessAnnotations();
+    }
+
+    @Override
+    protected void validate() {
+        m_elementWidgetTree.validate();
     }
 
 }

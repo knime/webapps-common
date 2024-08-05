@@ -51,14 +51,20 @@ package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsScopeUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.WidgetGroupTraverser;
 import org.knime.core.webui.node.dialog.defaultdialog.util.WidgetGroupTraverser.TraversedField;
-import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DeclaringDefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.ArrayWidgetNode;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
 
 /**
  *
@@ -66,17 +72,27 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyH
  */
 final class DependencyResolver {
 
-    private final Collection<JsonFormsControl> m_fields;
+    private final Collection<WidgetTreeNodeWithRootClass> m_fields;
 
     private final String m_scope;
 
-    DependencyResolver(final Collection<JsonFormsControl> fields, final String scope) {
-        m_fields = fields;
+    DependencyResolver(final WidgetTreeNode node, final Collection<WidgetTree> rootWidgetTrees, final String scope) {
+
+        m_fields = Stream
+            .concat(rootWidgetTrees.stream(),
+                node.getContainingArrayWidgetNodes().stream().map(ArrayWidgetNode::getElementWidgetTree))
+            .flatMap(widgetTree -> widgetTree.getWidgetNodes()
+                .map(n -> new WidgetTreeNodeWithRootClass(n, widgetTree.getWidgetGroupClass())))
+            .collect(Collectors.toSet());
+
         m_scope = scope;
     }
 
-    DependencyResolver(final Collection<JsonFormsControl> fields) {
-        this(fields, null);
+    record WidgetTreeNodeWithRootClass(WidgetTreeNode node, Class<? extends WidgetGroup> rootClass) {
+
+        private String getScope() {
+            return JsonFormsScopeUtil.toScope(node);
+        }
     }
 
     void addDependencyScopes(final Class<? extends DependencyHandler<?>> dependencyHandlerClass,
@@ -111,10 +127,10 @@ final class DependencyResolver {
             if (declaringDefaultNodeSettings != null && !control.rootClass().equals(declaringDefaultNodeSettings)) {
                 return false;
             }
-            boolean classEquals = control.field().getType().getRawClass().equals(clazz);
-            boolean matchesSearchPath = control.scope().endsWith(searchScope);
+            boolean classEquals = control.node().getType().equals(clazz);
+            boolean matchesSearchPath = control.getScope().endsWith(searchScope);
             return classEquals && matchesSearchPath;
-        }).map(JsonFormsControl::scope).toList();
+        }).map(WidgetTreeNodeWithRootClass::getScope).toList();
         if (candidates.size() > 1) {
             throw new UiSchemaGenerationException(
                 String.format("Multiple settings found for path %s. Consider using @DeclaringDefaultNodeSettings to "

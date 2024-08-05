@@ -61,8 +61,7 @@ import java.util.stream.Collectors;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Before;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Inside;
-
-import com.fasterxml.jackson.databind.ser.PropertyWriter;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
 
 /**
  * A representation of a layout part class which is used in {@link LayoutTree} to determine the structure between all
@@ -141,7 +140,7 @@ public final class LayoutTreeNode {
 
     }
 
-    private final List<JsonFormsControl> m_controls = new ArrayList<>(0);
+    private final List<WidgetTreeNode> m_controls = new ArrayList<>(0);
 
     private Collection<LayoutTreeNode> m_children;
 
@@ -169,13 +168,13 @@ public final class LayoutTreeNode {
     }
 
     /**
-     * @return the {@link JsonFormsControl}s that are associated with this layout part
+     * @return the {@link WidgetTreeNode}s that are associated with this layout part
      */
-    public List<JsonFormsControl> getControls() {
+    public List<WidgetTreeNode> getControls() {
         return m_controls;
     }
 
-    void addControls(final List<JsonFormsControl> controls) {
+    void addControls(final List<WidgetTreeNode> controls) {
         m_controls.addAll(controls);
     }
 
@@ -379,8 +378,8 @@ public final class LayoutTreeNode {
                     e.getValue().stream().map(LayoutTreeNode::getValue).map(Class::getSimpleName).toList()));
             }
         });
-        getControls().stream().map(JsonFormsControl::field).map(PropertyWriter::getName)
-            .map(name -> String.format("%s| -> %s", indent, name)).forEach(lines::add); // NOSONAR
+        getControls().stream().map(WidgetTreeNode::getName).map(name -> String.format("%s| -> %s", indent, name))
+            .forEach(lines::add); // NOSONAR
         getChildren().stream().map(child -> child.toString(childIndent)).forEach(lines::add); // NOSONAR
 
         return String.join("\n", lines);

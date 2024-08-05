@@ -1,0 +1,306 @@
+/*
+ * ------------------------------------------------------------------------
+ *
+ *  Copyright by KNIME AG, Zurich, Switzerland
+ *  Website: http://www.knime.com; Email: contact@knime.com
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License, Version 3, as
+ *  published by the Free Software Foundation.
+ *
+ *  This program is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, see <http://www.gnu.org/licenses>.
+ *
+ *  Additional permission under GNU GPL version 3 section 7:
+ *
+ *  KNIME interoperates with ECLIPSE solely via ECLIPSE's plug-in APIs.
+ *  Hence, KNIME and ECLIPSE are both independent programs and are not
+ *  derived from each other. Should, however, the interpretation of the
+ *  GNU GPL Version 3 ("License") under any applicable laws result in
+ *  KNIME and ECLIPSE being a combined program, KNIME AG herewith grants
+ *  you the additional permission to use and propagate KNIME together with
+ *  ECLIPSE with only the license terms in place for ECLIPSE applying to
+ *  ECLIPSE and the GNU GPL Version 3 applying for KNIME, provided the
+ *  license terms of ECLIPSE themselves allow for the respective use and
+ *  propagation of ECLIPSE together with KNIME.
+ *
+ *  Additional permission relating to nodes for KNIME that extend the Node
+ *  Extension (and in particular that are based on subclasses of NodeModel,
+ *  NodeDialog, and NodeView) and that only interoperate with KNIME through
+ *  standard APIs ("Nodes"):
+ *  Nodes are deemed to be separate and independent programs and to not be
+ *  covered works.  Notwithstanding anything to the contrary in the
+ *  License, the License does not apply to Nodes, you are not required to
+ *  license Nodes under the License, and you are granted a license to
+ *  prepare and propagate Nodes, in each case even if such Nodes are
+ *  propagated with or for interoperation with KNIME.  The owner of a Node
+ *  may freely choose the license terms applicable to such Node, including
+ *  when such Node is propagated with or for interoperation with KNIME.
+ * ---------------------------------------------------------------------
+ *
+ * History
+ *   Aug 5, 2024 (Paul Bärnreuther): created
+ */
+package org.knime.core.webui.node.dialog.defaultdialog.widgettree;
+
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Stream;
+
+import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+
+/**
+ * Corresponds to a field within a {@link WidgetGroup}. It can either be parent to another {@link WidgetGroup} (see
+ * {@link WidgetGroupNode}), represent an array widget of another tree (see {@link ArrayWidgetNode}) or be a standard
+ * field (see {@link WidgetTreeLeafNode}).
+ *
+ * @author Paul Bärnreuther
+ */
+public abstract sealed class WidgetTreeNode permits WidgetTreeLeafNode, WidgetGroupNode, ArrayWidgetNode {
+
+    final Map<Class<? extends Annotation>, Annotation> m_annotations;
+
+    private final WidgetTree m_parent;
+
+    List<String> m_path;
+
+    Optional<String> m_settingsKey;
+
+    private Optional<ArrayWidgetNode> m_containingArrayWidgetNode;
+
+    private final Class<?> m_type;
+
+    private final Class<?> m_contentType;
+
+    private final String m_name;
+
+    /**
+     * @return the collection of respected annotations for this node
+     */
+    public abstract Collection<Class<? extends Annotation>> getPossibleAnnotations();
+
+    WidgetTreeNode(final WidgetTree parent, final Class<?> type, final Class<?> contentType, final String name,
+        final Function<Class<? extends Annotation>, Annotation> annotations) {
+        m_annotations = AnnotationsUtil.toMap(annotations, getPossibleAnnotations());
+        m_parent = parent;
+        m_type = type;
+        m_contentType = contentType;
+        m_name = name;
+    }
+
+    /**
+     * @return the name, which is also the last key in the {@link #getPath}
+     */
+    public String getName() {
+        return m_name;
+    }
+
+    /**
+     * @return the path to the current node starting from the root widgetTree (which can be an element widget tree of an
+     *         {@link ArrayWidgetNode})
+     */
+    public List<String> getPath() {
+        if (m_path == null) {
+            m_path = getPathUsingParents();
+        }
+        return m_path;
+    }
+
+    private List<String> getPathUsingParents() {
+        final var name = getName();
+        final var parentTree = getParent();
+        final var parentNode = parentTree.getParent();
+        if (parentNode instanceof WidgetGroupNode) {
+            final var parentPath = parentNode.getPath();
+            return Stream.concat(parentPath.stream(), Stream.of(name)).toList();
+        } else {
+            return List.of(name);
+        }
+    }
+
+    /**
+     * @return the settingsKey of the root widgetTree (which can be an element widget tree of an
+     *         {@link ArrayWidgetNode})
+     */
+    public Optional<String> getSettingsKey() {
+        if (m_settingsKey == null) { // NOSONAR
+            m_settingsKey = getSettingsKeyUsingParents();
+        }
+        return m_settingsKey;
+    }
+
+    private Optional<String> getSettingsKeyUsingParents() {
+        final var parentTree = getParent();
+        final var parentTreeParent = parentTree.getParent();
+        if (parentTreeParent == null) {
+            return Optional.ofNullable(parentTree.getSettingsKey());
+        }
+        if (parentTreeParent instanceof ArrayWidgetNode) {
+            return Optional.empty();
+        }
+        return parentTreeParent.getSettingsKey();
+
+    }
+
+    /**
+     * @return the next parent {@link ArrayWidgetNode} if any
+     */
+    public Optional<ArrayWidgetNode> getContainingArrayWidgetNode() {
+        if (m_containingArrayWidgetNode == null) { // NOSONAR
+            m_containingArrayWidgetNode = getContainingArrayWidgetNodeUsingParents();
+        }
+        return m_containingArrayWidgetNode;
+    }
+
+    /**
+     * @return a collection of all containing {@link ArrayWidgetNode}s starting with the most outer one.
+     */
+    public List<ArrayWidgetNode> getContainingArrayWidgetNodes() {
+        final List<ArrayWidgetNode> containingArrayWidgetNodes = new ArrayList<>();
+        getContainingArrayWidgetNode().ifPresent(containingNode -> {
+            containingArrayWidgetNodes.addAll(containingNode.getContainingArrayWidgetNodes());
+            containingArrayWidgetNodes.add(containingNode);
+        });
+        return containingArrayWidgetNodes;
+    }
+
+    private Optional<ArrayWidgetNode> getContainingArrayWidgetNodeUsingParents() {
+        final var parentTree = getParent();
+        final var parentField = parentTree.getParent();
+        if (parentField == null) {
+            return Optional.empty();
+        }
+        if (parentField instanceof ArrayWidgetNode arrayWidgetNode) {
+            return Optional.of(arrayWidgetNode);
+        }
+        return parentField.getContainingArrayWidgetNode();
+    }
+
+    static final class Builder {
+
+        final WidgetTree m_parent;
+
+        Class<?> m_type;
+
+        Class<?> m_contentType;
+
+        String m_name;
+
+        Function<Class<? extends Annotation>, Annotation> m_annotations;
+
+        Builder(final WidgetTree parent) {
+            m_parent = parent;
+        }
+
+        Builder withType(final Class<?> type) {
+            m_type = type;
+            return this;
+        }
+
+        Builder withContentType(final Class<?> contentType) {
+            m_contentType = contentType;
+            return this;
+        }
+
+        Builder withName(final String name) {
+            m_name = name;
+            return this;
+        }
+
+        Builder withAnnotations(final Function<Class<? extends Annotation>, Annotation> annotations) {
+            m_annotations = annotations;
+            return this;
+        }
+
+        WidgetTreeLeafNode build() {
+            return addedToParent(new WidgetTreeLeafNode(m_parent, m_type, m_contentType, m_name, m_annotations));
+        }
+
+        WidgetGroupNode buildGroup() {
+            return addedToParent(new WidgetGroupNode(m_parent, m_type, m_contentType, m_name, m_annotations));
+        }
+
+        ArrayWidgetNode buildArray() {
+            return addedToParent(new ArrayWidgetNode(m_parent, m_type, m_contentType, m_name, m_annotations));
+        }
+
+        private <T extends WidgetTreeNode> T addedToParent(final T node) {
+            m_parent.getChildren().add(node);
+            return node;
+        }
+
+    }
+
+    /**
+     * Called before {@link #setParentAnnotation}.
+     */
+    protected void validate() {
+
+    }
+
+    /**
+     * @param key the annotation class
+     * @param value of this annotation on the {@link #getParent() parent}
+     */
+    void setParentAnnotation(final Class<? extends Annotation> key, final Annotation value) {
+        m_annotations.putIfAbsent(key, value);
+    }
+
+    /**
+     * Adjustments to the annotations within this tree depending on the annotations of parent nodes. E.g.
+     * {@link Layout @Layout} should set the layout of nested fields when set on a parent field.
+     *
+     * <p>
+     * Called after {@link #setParentAnnotation}.
+     * </p>
+     */
+    protected void postProcessAnnotations() {
+
+    }
+
+    /**
+     * @param annotationClass
+     * @param <T>
+     * @return the annotation if present (or added during {@link WidgetTree#postProcessAnnotations()})
+     */
+    @SuppressWarnings("unchecked") // The m_annotations map is constructed as required
+    public <T extends Annotation> Optional<T> getAnnotation(final Class<T> annotationClass) {
+        if (!getPossibleAnnotations().contains(annotationClass)) {
+            throw new IllegalArgumentException(String.format("Annotation %s should not be used on a %s.",
+                annotationClass.getSimpleName(), this.getClass().getSimpleName()));
+        }
+        return Optional.ofNullable((T)this.m_annotations.get(annotationClass));
+    }
+
+    /**
+     * @return the parent
+     */
+    public WidgetTree getParent() {
+        return m_parent;
+    }
+
+    /**
+     * @return the type
+     */
+    public Class<?> getType() {
+        return m_type;
+    }
+
+    /**
+     * @return the contentType if the type is an array/collection type or null if not
+     */
+    public Class<?> getContentType() {
+        return m_contentType;
+    }
+}

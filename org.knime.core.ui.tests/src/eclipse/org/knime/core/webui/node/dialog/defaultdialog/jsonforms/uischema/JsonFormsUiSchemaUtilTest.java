@@ -71,7 +71,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.util.FieldAnnotationsHolder;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
 
@@ -263,10 +262,8 @@ class JsonFormsUiSchemaUtilTest {
         @Layout(TestDefaultParentLayout.Section1.class)
         String m_sectionSetting;
 
-        @Widget(title = "", description = "")
         ClusterOfSettings m_clusterOfSettingsDefaultParent;
 
-        @Widget(title = "", description = "")
         @Layout(TestDefaultParentLayout.Section1.class)
         ClusterOfSettings m_clusterOfSettingsInSection;
     }
@@ -423,7 +420,7 @@ class JsonFormsUiSchemaUtilTest {
     void testThrowsIfThereIsAFieldAndAFieldClassAnnotationForAField() {
         final Map<String, Class<? extends WidgetGroup>> settings =
             Map.of("test", TestFieldWithTwoLayoutAnnotationsSettings.class);
-        assertThrows(FieldAnnotationsHolder.FieldAnnotationException.class, () -> buildUiSchema(settings));
+        assertThrows(IllegalStateException.class, () -> buildUiSchema(settings));
     }
 
     @Test

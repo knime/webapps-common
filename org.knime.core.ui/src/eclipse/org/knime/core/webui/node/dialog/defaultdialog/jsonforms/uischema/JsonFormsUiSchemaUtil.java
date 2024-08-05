@@ -48,17 +48,23 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
+import static org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeUtil.parseToWidgetTree;
+
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.ScopedExpression;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.LatentWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesAdder;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -69,8 +75,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  *
  * The UiSchema generation follows these steps:
  * <ol type="1">
- * <li>Collect all {@link Layout} and {@link Signal} annotations and register all controls (see
- * {@link UiSchemaDefaultNodeSettingsTraverser})</li>
+ * <li>Create a tree representation of the provided {@link WidgetGroup} classes.</li>
  * <li>Use order annotations (see e.g. {@link After}) and class hierarchies to determine a tree structure (see
  * {@link LayoutTree})</li>
  * <li>Generate the layout parts starting from the root and add the mapped controls (see
@@ -107,11 +112,10 @@ public final class JsonFormsUiSchemaUtil {
      *
      * @param parentFields the fields of the "outside" layout
      */
-    static ObjectNode buildUISchema(final Map<String, Class<? extends WidgetGroup>> settingsClasses,
-        final DefaultNodeSettingsContext context, final AsyncChoicesAdder asyncChoicesAdder,
-        final Collection<JsonFormsControl> parentFields) {
-        final var layoutSkeleton = resolveLayout(settingsClasses);
-        layoutSkeleton.fields().addAll(parentFields);
+    static ObjectNode buildUISchema(final Collection<WidgetTree> widgetTrees,
+        final Collection<WidgetTree> parentWidgetTrees, final DefaultNodeSettingsContext context,
+        final AsyncChoicesAdder asyncChoicesAdder) {
+        final var layoutSkeleton = resolveLayout(widgetTrees, parentWidgetTrees);
         return new LayoutNodesGenerator(layoutSkeleton, context, asyncChoicesAdder).build();
     }
 
@@ -123,30 +127,52 @@ public final class JsonFormsUiSchemaUtil {
      */
     public static ObjectNode buildUISchema(final Map<String, Class<? extends WidgetGroup>> settingsClasses,
         final DefaultNodeSettingsContext context, final AsyncChoicesAdder asyncChoicesAdder) {
-        return buildUISchema(settingsClasses, context, asyncChoicesAdder, Collections.emptyList());
+        final var widgetTrees = constructWidgetTrees(settingsClasses);
+        return buildUISchema(widgetTrees, List.of(), context, asyncChoicesAdder);
+    }
+
+    private static List<WidgetTree>
+        constructWidgetTrees(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
+        return settingsClasses.entrySet().stream().map(e -> parseToWidgetTree(e.getValue(), e.getKey())).toList();
     }
 
     /**
      * Resolves a map of default node settings classes to a tree structure representing the layout of the node dialog
      *
-     * @param settings the map of default node settings classes
-     * @return the resolved tree structure and some additional information which is necessary to generator the uischema
-     *         from that
+     * @param settingsClasses
+     * @return the resolved tree structure
      */
-    public static LayoutSkeleton resolveLayout(final Map<String, Class<? extends WidgetGroup>> settings) {
-        final var traverser = new UiSchemaDefaultNodeSettingsTraverser();
-        final var traversalResult = traverser.traverse(settings);
-        final var layoutTreeRoot = new LayoutTree(traversalResult.layoutPartToControls()).getRootNode();
-        return new LayoutSkeleton(layoutTreeRoot, traversalResult.signals(), traversalResult.fields());
+    public static LayoutSkeleton resolveLayout(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
+        final var widgetTrees = constructWidgetTrees(settingsClasses);
+        return resolveLayout(widgetTrees, List.of());
+    }
+
+    static LayoutSkeleton resolveLayout(final Collection<WidgetTree> widgetTrees,
+        final Collection<WidgetTree> parentWidgetTrees) {
+        final var layoutTreeRoot = widgetTreesToLayoutTreeRoot(widgetTrees);
+        return new LayoutSkeleton(layoutTreeRoot, widgetTrees, parentWidgetTrees);
+    }
+
+    private static LayoutTreeNode widgetTreesToLayoutTreeRoot(final Collection<WidgetTree> widgetTrees) {
+        final Map<Optional<Class<?>>, List<WidgetTreeNode>> layoutPartsToWidgets =
+            widgetTrees.stream().flatMap(WidgetTree::getWidgetNodes).filter(node -> !isHiddenOrLatent(node))
+                .collect(Collectors.groupingBy(node -> node.getAnnotation(Layout.class).map(Layout::value)));
+        return new LayoutTree(layoutPartsToWidgets).getRootNode();
+    }
+
+    private static boolean isHiddenOrLatent(final WidgetTreeNode node) {
+        final var isHidden = node.getAnnotation(Widget.class).isEmpty();
+        final var isLatent = node.getAnnotation(LatentWidget.class).isPresent();
+        return isHidden || isLatent;
     }
 
     /**
      * @param layoutTreeRoot a tree structure representation of the node dialogs layout. Its leafs represent controls
      *            and other nodes can be visible layout elements or just structural placeholders.
-     * @param signals a map of all present {@link Signal} annotations.
-     * @param fields a collection of all traversed fields (the leaves of the tree)
+     * @param widgetTrees one ore multiple widget trees given by the annotated {@link WidgetGroup WidgetGroups}
+     * @param parentWidgetTrees
      */
-    public static record LayoutSkeleton(LayoutTreeNode layoutTreeRoot, Map<Class<?>, ScopedExpression> signals,
-        Collection<JsonFormsControl> fields) {
+    public static record LayoutSkeleton(LayoutTreeNode layoutTreeRoot, Collection<WidgetTree> widgetTrees,
+        Collection<WidgetTree> parentWidgetTrees) {
     }
 }
