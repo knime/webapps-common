@@ -1,5 +1,11 @@
 # @knime/licenses
 
+## 1.0.4
+
+### Patch Changes
+
+- cf27a91: Fixed license checker failling on undefined values
+
 ## 1.0.3
 
 ### Patch Changes

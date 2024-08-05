@@ -1,5 +1,16 @@
 # @knime/components
 
+## 1.0.11
+
+### Patch Changes
+
+- 86c6ca6: Fix Image Document Initialization on SSR apps
+  Updated README
+- 90424b2: Exported BaseModal component
+- Updated dependencies [4de967c]
+  - @knime/styles@1.0.2
+  - @knime/utils@1.0.7
+
 ## 1.0.10
 
 ### Patch Changes
