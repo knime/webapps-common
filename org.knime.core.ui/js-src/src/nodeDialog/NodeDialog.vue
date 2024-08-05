@@ -1,11 +1,7 @@
 <script lang="ts">
 import {
-  JsonDataService,
-  DialogService,
   UIExtensionService,
-  AlertingService,
   CreateAlertParams,
-  SharedDataService,
 } from "@knime/ui-extension-service";
 import { vanillaRenderers } from "@jsonforms/vue-vanilla";
 import { JsonForms } from "@jsonforms/vue";
@@ -30,7 +26,9 @@ import type { FlowSettings } from "./api/types";
 
 import useStateProviders from "./composables/nodeDialog/useStateProviders";
 import useUpdates from "./composables/nodeDialog/useUpdates";
-import useTriggers from "./composables/nodeDialog/useTriggers";
+import useTriggers, {
+  TriggerCallback,
+} from "./composables/nodeDialog/useTriggers";
 import useGlobalWatchers from "./composables/nodeDialog/useGlobalWatchers";
 import { provideAndGetSetupMethod } from "./composables/nodeDialog/useDirtySettings";
 import {
@@ -38,6 +36,8 @@ import {
   getArrayIdsRecord,
 } from "./composables/nodeDialog/useArrayIds";
 import useProvidedFlowVariablesMap from "./composables/components/useProvidedFlowVariablesMap";
+import useCurrentData from "./composables/nodeDialog/useCurrentData";
+import useServices from "./composables/nodeDialog/useServices";
 
 const renderers = [
   ...vanillaRenderers,
@@ -74,39 +74,122 @@ export default {
     } satisfies ProvidedMethods & ProvidedForFlowVariables;
   },
   setup() {
+    const { setCurrentData, getCurrentData } = useCurrentData();
     const getKnimeService =
       inject<() => UIExtensionService>("getKnimeService")!;
+
+    const {
+      dialogService,
+      jsonDataService,
+      sharedDataService,
+      alertingService,
+    } = useServices(getKnimeService());
+
+    const { providedFlowVariablesMap, setInitialFlowVariablesMap } =
+      useProvidedFlowVariablesMap();
+
+    const getData = () => ({
+      data: getCurrentData(),
+      flowVariableSettings: providedFlowVariablesMap,
+    });
+
+    const publishSettings = () => {
+      const publishedData = cloneDeep(getData());
+      sharedDataService!.shareData(publishedData);
+    };
+
     const sendAlert = (params: CreateAlertParams) =>
-      new AlertingService(getKnimeService()).sendAlert(params, true);
+      alertingService.sendAlert(params, true);
     const { addStateProviderListener, callStateProviderListener } =
       useStateProviders();
-    const { registerWatcher, updateData, registeredWatchers } =
-      useGlobalWatchers();
+    const {
+      registerWatcher: registerWatcherInternal,
+      updateData: updateDataInternal,
+      registeredWatchers,
+    } = useGlobalWatchers();
+
+    // WATCHERS
+    const registerWatcher = async ({
+      transformSettings,
+      init,
+      dependencies,
+    }: Parameters<ProvidedMethods["registerWatcher"]>[0]) => {
+      const removeWatcher = registerWatcherInternal({
+        transformSettings: () => async (dependencyData) => {
+          const settingsConsumer = await transformSettings(dependencyData);
+          return (newSettings) => {
+            settingsConsumer?.(newSettings);
+            return newSettings;
+          };
+        },
+        dependencies: dependencies.map((dep) => [dep]),
+      });
+      if (typeof init === "function") {
+        await init(getCurrentData());
+      }
+      return removeWatcher;
+    };
+    const updateData = (path: string) =>
+      updateDataInternal(path, getCurrentData());
+
+    // TRIGGERS
     const { registerTrigger, getTriggerCallback, getTriggerIsActiveCallback } =
       useTriggers();
+
+    /**
+     * We need to use getCurrentData() twice when running triggers:
+     * Once for setting the dependencies and once the transformation is to be performed on them.
+     * The settings might have changed in the meantime.
+     */
+    const runWithDependencies = async (
+      triggerCallback: ReturnType<TriggerCallback>,
+    ) => (await triggerCallback(getCurrentData()))(getCurrentData());
+
+    const trigger = (params: { id: string; indexIds?: string[] }) =>
+      runWithDependencies(getTriggerCallback(params));
+    const isTriggerActive = (params: { id: string; indexIds?: string[] }) =>
+      getTriggerIsActiveCallback(params)(getCurrentData());
+    // UPDATES
     const { registerUpdates, resolveUpdateResults } = useUpdates({
       callStateProviderListener,
       registerTrigger,
-      registerWatcher,
+      registerWatcher: registerWatcherInternal,
       updateData,
       sendAlert,
+      publishSettings,
     });
-    const { providedFlowVariablesMap, setInitialFlowVariablesMap } =
-      useProvidedFlowVariablesMap();
+    const resolveInitialUpdates = (initialUpdates: UpdateResult[]) =>
+      resolveUpdateResults(initialUpdates, getCurrentData());
+    const registerGlobalUpdates = async (globalUpdates: Update[]) => {
+      const initialTransformation = registerUpdates(globalUpdates);
+      if (initialTransformation) {
+        await runWithDependencies(initialTransformation);
+      }
+    };
+
     const { setRegisterSettingsMethod } = provideAndGetSetupMethod();
     const subPanels = ref<null | HTMLElement>(null);
     const dialogPopoverTeleportDest = ref<null | HTMLElement>(null);
     return {
-      getKnimeService,
+      setCurrentData,
+      getCurrentData,
+      jsonDataService,
+      sharedDataService,
+      dialogService,
+      getData,
+      publishSettings,
       sendAlert,
       addStateProviderListener,
       callStateProviderListener,
       registerUpdates,
       resolveUpdateResults,
       getTriggerCallback,
-      getTriggerIsActiveCallback,
-      updateDataInternal: updateData,
-      registerWatcherInternal: registerWatcher,
+      updateData,
+      trigger,
+      isTriggerActive,
+      resolveInitialUpdates,
+      registerGlobalUpdates,
+      registerWatcher,
       registeredWatchers,
       setRegisterSettingsMethod,
       subPanels,
@@ -117,13 +200,9 @@ export default {
   },
   data() {
     return {
-      jsonDataService: null as JsonDataService | null,
-      dialogService: null as DialogService | null,
-      sharedDataService: null as SharedDataService | null,
       flawedControllingVariablePaths: new Set() satisfies Set<string>,
       possiblyFlawedControllingVariablePaths: new Set() satisfies Set<string>,
       renderers: Object.freeze(renderers),
-      currentData: {} as SettingsData,
       schema: {} as JsonSchema & {
         showAdvancedSettings: boolean;
         flowVariablesMap: Record<string, FlowSettings>;
@@ -143,9 +222,6 @@ export default {
     };
   },
   async mounted() {
-    this.jsonDataService = new JsonDataService(this.getKnimeService());
-    this.dialogService = new DialogService(this.getKnimeService());
-    this.sharedDataService = new SharedDataService(this.getKnimeService());
     const initialSettings = await this.jsonDataService.initialData();
     const { schema } = initialSettings;
     schema.flowVariablesMap = this.initializeFlowVariablesMap(initialSettings);
@@ -154,7 +230,7 @@ export default {
     schema.showAdvancedSettings = false;
     this.schema = schema;
     this.uischema = initialSettings.ui_schema;
-    this.currentData = initialSettings.data;
+    this.setCurrentData(initialSettings.data);
     this.setRegisterSettingsMethod(
       this.dialogService.registerSettings.bind(this.dialogService),
     );
@@ -169,42 +245,6 @@ export default {
         shouldBeVisible: !isExpanded,
       });
     },
-    async trigger(params: { id: string; indexIds?: string[] }) {
-      const transformation = await this.getTriggerCallback(params)(
-        this.currentData,
-      );
-      this.currentData = transformation(this.currentData);
-    },
-    isTriggerActive(params: { id: string; indexIds?: string[] }) {
-      return this.getTriggerIsActiveCallback(params)(this.currentData);
-    },
-    resolveInitialUpdates(initialUpdates: UpdateResult[]) {
-      this.currentData = this.resolveUpdateResults(
-        initialUpdates,
-        this.currentData,
-      );
-    },
-    async registerGlobalUpdates(globalUpdates: Update[]) {
-      const initialTransformation = this.registerUpdates(globalUpdates);
-      if (initialTransformation) {
-        this.currentData = (await initialTransformation(this.currentData))(
-          this.currentData,
-        );
-      }
-    },
-    getData() {
-      return {
-        data: this.currentData,
-        flowVariableSettings: this.providedFlowVariablesMap,
-      };
-    },
-    publishSettings() {
-      const publishedData = cloneDeep(this.getData());
-      this.sharedDataService!.shareData(publishedData);
-    },
-    getModelSettings(data: SettingsData) {
-      return data.model;
-    },
     callDataService({
       method,
       options,
@@ -217,33 +257,6 @@ export default {
         getChoices(this.callDataService.bind(this)),
         this.sendAlert.bind(this),
       );
-    },
-    /**
-     * @param {string} path The path of the setting that is changed
-     * @returns {void}
-     */
-    updateData(path: string) {
-      return this.updateDataInternal(path, this.currentData);
-    },
-    async registerWatcher({
-      transformSettings,
-      init,
-      dependencies,
-    }: Parameters<ProvidedMethods["registerWatcher"]>[0]) {
-      const removeWatcher = this.registerWatcherInternal({
-        transformSettings: () => async (dependencyData) => {
-          const settingsConsumer = await transformSettings(dependencyData);
-          return (newSettings) => {
-            settingsConsumer?.(newSettings);
-            return newSettings;
-          };
-        },
-        dependencies: dependencies.map((dep) => [dep]),
-      });
-      if (typeof init === "function") {
-        await init(this.currentData);
-      }
-      return removeWatcher;
     },
     getAvailableFlowVariables(persistPath: string) {
       return flowVariablesApi.getAvailableFlowVariables(
@@ -305,11 +318,7 @@ export default {
     },
     onSettingsChanged({ data }: { data: SettingsData }) {
       if (data) {
-        // We must not set this.currentData = data directly, as this would update the internal
-        // data of the jsonforms component.
-        Object.keys(data).forEach((key: string) => {
-          this.currentData[key] = data[key];
-        });
+        this.setCurrentData(data);
         this.publishSettings();
       }
     },
@@ -346,7 +355,7 @@ export default {
       <JsonForms
         v-if="ready"
         ref="jsonforms"
-        :data="markRaw(currentData)"
+        :data="getCurrentData()"
         :schema="schema"
         :uischema="uischema"
         :renderers="renderers"

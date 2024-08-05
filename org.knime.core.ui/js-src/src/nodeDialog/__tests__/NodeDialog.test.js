@@ -19,6 +19,12 @@ import flushPromises from "flush-promises";
 
 import { getOptions } from "./utils";
 
+const clear = (obj) => {
+  for (const prop of Object.getOwnPropertyNames(obj)) {
+    delete obj[prop];
+  }
+};
+
 describe("NodeDialog.vue", () => {
   let initialDataSpy, setApplyListenerSpy;
 
@@ -190,7 +196,7 @@ describe("NodeDialog.vue", () => {
     const wrapper = shallowMount(NodeDialog, getOptions());
     const path = "path.to.my.setting";
     const currentData = { foo: "bar" };
-    wrapper.vm.currentData = currentData;
+    wrapper.vm.setCurrentData(currentData);
     const flowVariablesMap = {};
     wrapper.vm.schema = { flowVariablesMap };
     wrapper.vm.getAvailableFlowVariables(path);
@@ -207,22 +213,20 @@ describe("NodeDialog.vue", () => {
   });
 
   it("provides 'getFlowVariableOverrideValue' method", async () => {
-    const wrapper = shallowMount(NodeDialog, getOptions());
+    const wrapper = await shallowMount(NodeDialog, getOptions());
     const expectedResult = "value";
     const getDataSpy = vi
       .spyOn(wrapper.vm.jsonDataService, "data")
       .mockResolvedValue(expectedResult);
     const path = "path.to.my.setting";
     const currentData = { foo: "bar" };
-    const flowVariablesMap = {
-      myPath: {
-        controllingFlowVariableAvailable: true,
-        controllingFlowVariableName: "myVar",
-        exposedFlowVariableName: null,
-      },
+    wrapper.vm.setCurrentData(currentData);
+    clear(wrapper.vm.providedFlowVariablesMap);
+    wrapper.vm.providedFlowVariablesMap.myPath = {
+      controllingFlowVariableAvailable: true,
+      controllingFlowVariableName: "myVar",
+      exposedFlowVariableName: null,
     };
-    wrapper.vm.currentData = currentData;
-    wrapper.vm.providedFlowVariablesMap = flowVariablesMap;
     const result = await wrapper.vm.getFlowVariableOverrideValue(
       "_persistPath",
       path,
@@ -232,7 +236,7 @@ describe("NodeDialog.vue", () => {
       options: [
         JSON.stringify({
           data: currentData,
-          flowVariableSettings: flowVariablesMap,
+          flowVariableSettings: wrapper.vm.providedFlowVariablesMap,
         }),
         ["path", "to", "my", "setting"],
       ],
@@ -593,7 +597,7 @@ describe("NodeDialog.vue", () => {
         method: "settings.update2",
         options: [null, triggerId, { [dependencyId]: "secondSetting" }],
       });
-      expect(wrapper.vm.currentData).toStrictEqual({
+      expect(wrapper.vm.getCurrentData()).toStrictEqual({
         view: {
           firstSetting: "firstSetting",
         },
@@ -660,6 +664,10 @@ describe("NodeDialog.vue", () => {
         },
       ];
 
+      const sendAlert = vi.fn();
+      AlertingService.mockImplementation(() => ({
+        sendAlert,
+      }));
       const { wrapper, dataServiceSpy } = await getWrapperWithDataServiceSpy();
 
       const errorMessage = "my error message";
@@ -668,10 +676,6 @@ describe("NodeDialog.vue", () => {
         message: [errorMessage],
       });
 
-      const sendAlert = vi.fn();
-      AlertingService.mockImplementation(() => ({
-        sendAlert,
-      }));
       await wrapper.vm.trigger({ id: triggerId });
       expect(sendAlert).toHaveBeenCalledWith(
         {
@@ -692,7 +696,7 @@ describe("NodeDialog.vue", () => {
 
       const wrapper = shallowMount(NodeDialog, getOptions());
       await flushPromises();
-      expect(wrapper.vm.currentData).toStrictEqual({
+      expect(wrapper.vm.getCurrentData()).toStrictEqual({
         view: {
           firstSetting: "firstSetting",
         },
@@ -734,7 +738,7 @@ describe("NodeDialog.vue", () => {
         method: "settings.update2",
         options: [null, triggerId, {}],
       });
-      expect(wrapper.vm.currentData).toStrictEqual({
+      expect(wrapper.vm.getCurrentData()).toStrictEqual({
         view: {
           firstSetting: "firstSetting",
         },
@@ -770,19 +774,19 @@ describe("NodeDialog.vue", () => {
       const persistPathFlawedSetting = "flawed";
       const persistPathOtherSetting = "other";
       await flushPromises();
-      wrapper.vm.providedFlowVariablesMap = {
-        [persistPathFlawedSetting]: {
-          controllingFlowVariableName: "flawedSettingVariable",
-          controllingFlowVariableFlawed: true,
-        },
-        [persistPathOtherSetting]: {
-          controllingFlowVariableName: "otherSettingsVariable",
-          controllingFlowVariableFlawed: false,
-        },
+
+      clear(wrapper.vm.providedFlowVariablesMap);
+      wrapper.vm.providedFlowVariablesMap[persistPathFlawedSetting] = {
+        controllingFlowVariableName: "flawedSettingVariable",
+        controllingFlowVariableFlawed: true,
+      };
+      wrapper.vm.providedFlowVariablesMap[persistPathOtherSetting] = {
+        controllingFlowVariableName: "otherSettingsVariable",
+        controllingFlowVariableFlawed: false,
       };
       wrapper.vm.flawedControllingVariablePaths.add(persistPathFlawedSetting);
 
-      wrapper.vm.currentData = {};
+      wrapper.vm.setCurrentData({});
       await wrapper.vm.getFlowVariableOverrideValue(
         persistPathOtherSetting,
         "_dataPath",
@@ -808,18 +812,20 @@ describe("NodeDialog.vue", () => {
         .mockResolvedValue("not_undefined");
       const persistPathFlawedSetting = "flawed";
       await flushPromises();
-      const variableSettingsMap = {
-        [persistPathFlawedSetting]: {
-          controllingFlowVariableName: "flawedSettingVariable",
-          controllingFlowVariableFlawed: true,
-        },
+      const flawedSettings = {
+        controllingFlowVariableName: "flawedSettingVariable",
+        controllingFlowVariableFlawed: true,
       };
-      const variableSettingsMapBeforeRequest =
-        JSON.stringify(variableSettingsMap);
-      wrapper.vm.providedFlowVariablesMap = variableSettingsMap;
+
+      wrapper.vm.providedFlowVariablesMap[persistPathFlawedSetting] =
+        flawedSettings;
+
+      const variableSettingsMapBeforeRequest = JSON.stringify({
+        [persistPathFlawedSetting]: flawedSettings,
+      });
       wrapper.vm.flawedControllingVariablePaths.add(persistPathFlawedSetting);
 
-      wrapper.vm.currentData = {};
+      wrapper.vm.setCurrentData({});
       await wrapper.vm.getFlowVariableOverrideValue(
         persistPathFlawedSetting,
         "_dataPath",

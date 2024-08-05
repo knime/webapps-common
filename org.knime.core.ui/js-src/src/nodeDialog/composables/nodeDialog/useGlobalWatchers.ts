@@ -4,9 +4,7 @@ import { toDataPath } from "@jsonforms/core";
 import { ref } from "vue";
 import { DialogSettings } from "@knime/ui-extension-service";
 import { toIndexIds } from "./useArrayIds";
-export type TransformSettings = (
-  newSettings: DialogSettings & object,
-) => DialogSettings & object;
+export type TransformSettings = (newSettings: DialogSettings & object) => void;
 
 export type RegisterWatcherTransformSettings = (
   indexIds: string[],
@@ -179,7 +177,7 @@ export default () => {
       }
     }
     transformations.forEach((transformation) => {
-      currentData = transformation(currentData);
+      transformation(currentData);
     });
   };
   /**

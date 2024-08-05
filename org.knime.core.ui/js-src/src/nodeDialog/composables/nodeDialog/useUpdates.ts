@@ -1,5 +1,5 @@
 import { Update, UpdateResult, ValueReference } from "../../types/Update";
-import { cloneDeep, set, get } from "lodash-es";
+import { set, get } from "lodash-es";
 import { composePaths, toDataPath } from "@jsonforms/core";
 import { inject } from "vue";
 import {
@@ -74,31 +74,13 @@ const getToBeAdjustedSegments = (
   };
 };
 
-const copyAndTransform = <T>(
-  settings: DialogSettingsObject,
-  updateSettings: (newSettings: DialogSettingsObject) => T,
-): T => {
-  const newSettings = cloneDeep(settings);
-  return updateSettings(newSettings);
-};
-
-const useCopyOfNewSettings =
-  (callback: TriggerCallback): TriggerCallback =>
-  (indexIds) =>
-  async (dependencySettings) => {
-    const inducedTransformation = await callback(indexIds)(dependencySettings);
-    return (newSettings) =>
-      copyAndTransform(newSettings, (settings) =>
-        inducedTransformation(settings),
-      );
-  };
-
 export default ({
   callStateProviderListener,
   registerWatcher,
   registerTrigger,
   updateData,
   sendAlert,
+  publishSettings,
 }: {
   callStateProviderListener: (
     location: { id: string; indexIds?: string[] },
@@ -118,6 +100,7 @@ export default ({
     callback: TriggerCallback,
   ) => void;
   sendAlert: (params: CreateAlertParams) => void;
+  publishSettings: () => void;
 }) => {
   const baseService = inject<() => UIExtensionService>("getKnimeService")!();
   const jsonDataService = new JsonDataService(baseService);
@@ -151,29 +134,22 @@ export default ({
             set(settings, lastPathSegment, value);
             updateData(composePaths(path, lastPathSegment), newSettings);
           });
+          publishSettings();
         }
       } else if (id) {
         callStateProviderListener({ id, indexIds }, value);
       }
-      return newSettings;
     };
 
   const resolveUpdateResults = (
     initialUpdates: UpdateResult[],
     currentSettings: DialogSettingsObject,
-  ) => {
-    if (initialUpdates.length === 0) {
-      return currentSettings;
-    }
-    return copyAndTransform(currentSettings, (newSettings) => {
-      initialUpdates
-        .map((updateResult) => resolveUpdateResult(updateResult))
-        .forEach((transform) => {
-          newSettings = transform(newSettings);
-        });
-      return newSettings;
-    });
-  };
+  ) =>
+    initialUpdates
+      .map((updateResult) => resolveUpdateResult(updateResult))
+      .forEach((transform) => {
+        transform(currentSettings);
+      });
 
   const setValueTrigger = (scope: string[], callback: TriggerCallback) => {
     registerWatcher({
@@ -191,12 +167,11 @@ export default ({
       setValueTrigger(trigger.scopes, triggerCallback);
       return null;
     }
-    const transformSettings = useCopyOfNewSettings(triggerCallback);
 
     if (trigger.triggerInitially) {
-      return transformSettings([]);
+      return triggerCallback([]);
     }
-    registerTrigger(trigger.id, isActive, transformSettings);
+    registerTrigger(trigger.id, isActive, triggerCallback);
     return null;
   };
 
@@ -312,11 +287,9 @@ export default ({
     };
 
   const getTriggerCallback =
-    ({ dependencies, trigger }: Update) =>
-    (indexIds: string[]) =>
-    async (
-      dependencySettings: DialogSettingsObject,
-    ): Promise<(newSettings: DialogSettingsObject) => DialogSettingsObject> => {
+    ({ dependencies, trigger }: Update): TriggerCallback =>
+    (indexIds) =>
+    async (dependencySettings) => {
       const response = await getUpdateResults({ dependencies, trigger })(
         indexIds,
       )(dependencySettings);
@@ -326,13 +299,9 @@ export default ({
         }
         if (response.state === "SUCCESS") {
           (response.result ?? []).forEach((updateResult: UpdateResult) => {
-            newSettings = resolveUpdateResult(
-              updateResult,
-              indexIds,
-            )(newSettings);
+            resolveUpdateResult(updateResult, indexIds)(newSettings);
           });
         }
-        return newSettings;
       };
     };
 
@@ -342,20 +311,8 @@ export default ({
    */
   const registerUpdates = (
     globalUpdates: Update[],
-  ):
-    | null
-    | ((
-        dependencySettings: DialogSettingsObject,
-      ) => Promise<
-        (newSettings: DialogSettingsObject) => DialogSettingsObject
-      >) => {
-    let initialTransformation:
-      | null
-      | ((
-          dependencySettings: DialogSettingsObject,
-        ) => Promise<
-          (newSettings: DialogSettingsObject) => DialogSettingsObject
-        >) = null;
+  ): null | ReturnType<TriggerCallback> => {
+    let initialTransformation: null | ReturnType<TriggerCallback> = null;
     globalUpdates.forEach((update) => {
       const isActive = getIsUpdateNecessary(update);
       const inducedInitialTransformation = setTrigger(

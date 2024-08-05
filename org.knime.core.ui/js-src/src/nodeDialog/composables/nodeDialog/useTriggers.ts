@@ -9,7 +9,7 @@ export type TriggerCallback = (
   indexIds: string[],
 ) => (
   dependencySettings: DialogSettingsObject,
-) => Promise<(newSettings: DialogSettingsObject) => DialogSettingsObject>;
+) => Promise<(newSettings: DialogSettingsObject) => void>;
 
 export default () => {
   const registeredTriggers = new Map<string, TriggerCallback>();

@@ -1,6 +1,9 @@
 import { describe, it, vi, beforeEach, expect } from "vitest";
 import { mount, VueWrapper } from "@vue/test-utils";
-import { JsonDataService } from "@knime/ui-extension-service";
+import {
+  JsonDataService,
+  SharedDataService,
+} from "@knime/ui-extension-service";
 
 import NodeDialog from "@/nodeDialog/NodeDialog.vue";
 import flushPromises from "flush-promises";
@@ -12,6 +15,7 @@ import {
   UpdateResult,
   ValueReference,
 } from "@/nodeDialog/types/Update";
+import Result from "@/nodeDialog/api/types/Result";
 
 describe("updates in array layouts", () => {
   type Wrapper = VueWrapper<any> & {
@@ -70,17 +74,25 @@ describe("updates in array layouts", () => {
     },
   ];
 
-  const getGlobalUpdates = (
-    getScopes: (fieldKey: string) => string[],
-  ): Update[] => [
-    {
-      trigger: {
-        scopes: undefined,
-        id: triggers.Initially,
-        triggerInitially: true,
-      },
-      dependencies: [] as ValueReference[],
-    },
+  const getGlobalUpdates = ({
+    getScopes,
+    withInitialTrigger,
+  }: {
+    getScopes: (fieldKey: string) => string[];
+    withInitialTrigger: boolean;
+  }): Update[] => [
+    ...(withInitialTrigger
+      ? [
+          {
+            trigger: {
+              scopes: undefined,
+              id: triggers.Initially,
+              triggerInitially: true as const,
+            },
+            dependencies: [] as ValueReference[],
+          },
+        ]
+      : []),
     {
       trigger: {
         scopes: getScopes("a"),
@@ -104,21 +116,28 @@ describe("updates in array layouts", () => {
       .spyOn(JsonDataService.prototype, "initialData")
       .mockResolvedValue(initialDataJson);
 
+  const toBeResolved: (() => void)[] = [];
+
   const mockRpcCall = (getScopes: (fieldKey: string) => string[]) =>
-    vi
-      .spyOn(JsonDataService.prototype, "data")
-      .mockImplementation(({ options } = { options: [] }) =>
-        Promise.resolve({
-          state: "SUCCESS",
-          result: [
-            {
-              scopes: getScopes(updates[options[1] as keyof typeof triggers]),
-              value: "Updated",
-              id: null,
-            },
-          ] satisfies UpdateResult[],
+    vi.spyOn(JsonDataService.prototype, "data").mockImplementation(
+      ({ options } = { options: [] }) =>
+        new Promise<Result<UpdateResult[]>>((resolve) => {
+          const resolvePromise = () =>
+            resolve({
+              state: "SUCCESS",
+              result: [
+                {
+                  scopes: getScopes(
+                    updates[options[1] as keyof typeof triggers],
+                  ),
+                  value: "Updated",
+                  id: null,
+                },
+              ] satisfies UpdateResult[],
+            });
+          toBeResolved.push(resolvePromise);
         }),
-      );
+    );
 
   const mountNodeDialog = async ({
     initialDataJson,
@@ -135,10 +154,17 @@ describe("updates in array layouts", () => {
     return wrapper;
   };
 
+  const flushNextPromise = async () => {
+    expect(toBeResolved.length).toBe(1);
+    toBeResolved.pop()!();
+    await flushPromises();
+  };
+
   it("triggers transitive updates", async () => {
     const getScopes = (fieldKey: string) => [
       `#/properties/view/properties/${fieldKey}`,
     ];
+    const shareDataSpy = vi.spyOn(SharedDataService.prototype, "shareData");
     const wrapper = await mountNodeDialog({
       initialDataJson: {
         data: {
@@ -154,19 +180,45 @@ describe("updates in array layouts", () => {
         },
         [uiSchemaKey]: {
           elements: elementUiSchema,
-          globalUpdates: getGlobalUpdates(getScopes),
+          globalUpdates: getGlobalUpdates({
+            getScopes,
+            withInitialTrigger: true,
+          }),
           initialUpdates: [] as UpdateResult[],
         },
         flowVariableSettings: {},
       },
       getScopes,
     });
+    shareDataSpy.mockClear();
+
+    await flushNextPromise();
+
+    expect(wrapper.vm.getData().data.view).toStrictEqual({
+      a: "Updated",
+      c: "InitialValue",
+    });
+    expect(shareDataSpy).toHaveBeenCalledTimes(1);
+    shareDataSpy.mockClear();
+
+    await flushNextPromise();
+
+    expect(wrapper.vm.getData().data.view).toStrictEqual({
+      a: "Updated",
+      b: "Updated",
+      c: "InitialValue",
+    });
+    expect(shareDataSpy).toHaveBeenCalledTimes(1);
+    shareDataSpy.mockClear();
+
+    await flushNextPromise();
 
     expect(wrapper.vm.getData().data.view).toStrictEqual({
       a: "Updated",
       b: "Updated",
       c: "Updated",
     });
+    expect(shareDataSpy).toHaveBeenCalledTimes(1);
   });
 
   it("triggers transitive updates within array layouts", async () => {
@@ -179,7 +231,7 @@ describe("updates in array layouts", () => {
         data: {
           values: [
             {
-              c: "InitialValue",
+              a: "InitialValue",
             },
           ],
         },
@@ -203,7 +255,10 @@ describe("updates in array layouts", () => {
               },
             },
           ],
-          globalUpdates: getGlobalUpdates(getScopes),
+          globalUpdates: getGlobalUpdates({
+            getScopes,
+            withInitialTrigger: false,
+          }),
           initialUpdates: [] as UpdateResult[],
         },
         flowVariableSettings: {},
@@ -211,8 +266,22 @@ describe("updates in array layouts", () => {
       getScopes,
     });
 
+    await flushNextPromise();
+
     expect(wrapper.vm.getData().data.values[0]).toMatchObject({
-      a: "Updated",
+      a: "InitialValue",
+    });
+
+    await flushNextPromise();
+
+    expect(wrapper.vm.getData().data.values[0]).toMatchObject({
+      a: "InitialValue",
+      b: "Updated",
+    });
+    await flushNextPromise();
+
+    expect(wrapper.vm.getData().data.values[0]).toMatchObject({
+      a: "InitialValue",
       b: "Updated",
       c: "Updated",
     });
