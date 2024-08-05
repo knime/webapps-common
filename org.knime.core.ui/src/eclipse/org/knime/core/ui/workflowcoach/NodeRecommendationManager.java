@@ -79,7 +79,6 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeTriple;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.node.workflow.ConnectionContainer.ConnectionType;
-import org.knime.core.ui.node.workflow.ConnectionContainerUI;
 import org.knime.core.ui.node.workflow.NativeNodeContainerUI;
 import org.knime.core.ui.node.workflow.NodeContainerUI;
 import org.knime.core.ui.workflowcoach.data.NodeTripleProvider;
@@ -263,7 +262,8 @@ public final class NodeRecommendationManager {
                 aggregate(recommendations.successors, sumAggr);
                 Collections.sort(recommendations.successors);
 
-                var totalFrequency = recommendations.successors.stream().mapToInt(NodeRecommendation::getFrequency).sum();
+                var totalFrequency =
+                    recommendations.successors.stream().mapToInt(NodeRecommendation::getFrequency).sum();
                 recommendations.successors.forEach(nr -> nr.setTotalFrequency(totalFrequency));
             } else {
                 aggregate(recommendations.predecessors, avgAggr);
@@ -454,7 +454,8 @@ public final class NodeRecommendationManager {
      *         node statistics!
      */
     @SuppressWarnings("static-method") // Not static to avoid failing initialization
-    private List<NodeRecommendation>[] getNodeRecommendationFor(final boolean getSuccessors, final NativeNodeContainerUI... nnc) {
+    List<NodeRecommendation>[] getNodeRecommendationFor(final boolean getSuccessors,
+        final NativeNodeContainerUI... nnc) {
         if (cachedRecommendations == null) {
             return null; // NOSONAR: Returning null makes sense here
         }
@@ -548,7 +549,7 @@ public final class NodeRecommendationManager {
             var cc = wfm.getOutgoingConnectionsFor(nnc[0].getID(), i).stream()
                     .filter(conn -> conn != null || !conn.getType().isLeavingWorkflow()).toList();
 
-            for (ConnectionContainerUI conn : cc) {
+            cc.forEach(conn -> {
                 NodeContainerUI successor = wfm.getNodeContainer(conn.getDest());
                 if (successor instanceof NativeNodeContainerUI nncUI) {
                     var map = cachedRecommendations.get(idx);
@@ -557,7 +558,7 @@ public final class NodeRecommendationManager {
                         set.addAll(map.get(key).predecessors);
                     }
                 }
-            }
+            });
         }
         return set;
     }

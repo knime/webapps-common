@@ -75,6 +75,7 @@ import org.knime.core.ui.workflowcoach.TestNodeTripleProviderFactory.TestNodeTri
 import org.knime.core.ui.workflowcoach.data.NodeTripleProvider;
 import org.knime.core.ui.workflowcoach.data.NodeTripleProviderFactory;
 import org.knime.core.ui.wrapper.NativeNodeContainerWrapper;
+import org.knime.testing.node.SinkNodeTestFactory;
 import org.knime.testing.util.WorkflowManagerUtil;
 
 /**
@@ -120,10 +121,10 @@ class NodeRecommendationManagerTest {
      * @throws IOException
      */
     @Test
-    void testGetNodeRecommendationForNativeNodeContainer() throws IOException {
+    void testGetSuccessorNodeRecommendationForNativeNodeContainer() throws IOException {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var nnc = WorkflowManagerUtil.createAndAddNode(wfm, new PortObjectInNodeFactory());
-        var recommendations = getAndAssertNodeRecommendations(nnc);
+        var recommendations = getAndAssertNodeRecommendations(true, nnc);
 
         // Only receive 3 recommendations, even though 4 are available
         assertThat(recommendations.size()).as("Expected exactly 3 recommendations").isEqualTo(2);
@@ -138,7 +139,36 @@ class NodeRecommendationManagerTest {
         // No recommendations for more than one node
         Assertions
             .assertThatThrownBy(() -> NodeRecommendationManager.getInstance()
-                .getNodeRecommendationFor(NativeNodeContainerWrapper.wrap(nnc), NativeNodeContainerWrapper.wrap(nnc)))
+                .getNodeRecommendationFor(true, NativeNodeContainerWrapper.wrap(nnc), NativeNodeContainerWrapper.wrap(nnc)))
+            .isInstanceOf(UnsupportedOperationException.class)
+            .hasMessage("Recommendations for more than one node are not supported, yet.");
+    }
+
+    /**
+     * Test {@link NodeRecommendationManager#getNodeRecommendationFor(NativeNodeContainerUI...)} using a node present in
+     * the workflow
+     *
+     * @throws IOException
+     */
+    @Test
+    void testGetPredecessorNodeRecommendationForNativeNodeContainer() throws IOException {
+        var wfm = WorkflowManagerUtil.createEmptyWorkflow();
+        var nnc = WorkflowManagerUtil.createAndAddNode(wfm, new SinkNodeTestFactory());
+        var recommendations = getAndAssertNodeRecommendations(false, nnc);
+
+        assertThat(recommendations.size()).as("Expected exactly 2 recommendations").isEqualTo(2);
+        assertThat(recommendations).as("Response is not a list").isInstanceOf(List.class);
+        recommendations.forEach(nr -> {
+            assertThat(nr).as("Item is not a node recommendation").isInstanceOf(NodeRecommendation.class);
+            assertThat(nr.getTotalFrequency()).as("Could not retrieve the total frequency").isNotNegative();
+            assertThat(nr.getFactoryId()).as("Could not retrieve factory id").isNotEmpty()
+                .isNotNull();
+        });
+
+        // No recommendations for more than one node
+        Assertions
+            .assertThatThrownBy(() -> NodeRecommendationManager.getInstance()
+                .getNodeRecommendationFor(true, NativeNodeContainerWrapper.wrap(nnc), NativeNodeContainerWrapper.wrap(nnc)))
             .isInstanceOf(UnsupportedOperationException.class)
             .hasMessage("Recommendations for more than one node are not supported, yet.");
     }
@@ -151,7 +181,7 @@ class NodeRecommendationManagerTest {
      */
     @Test
     void testGetNodeRecommendationForNoneAndUpdateListener() throws IOException {
-        var recommendations = getAndAssertNodeRecommendations(null);
+        var recommendations = getAndAssertNodeRecommendations(true, null);
 
         assertThat(recommendations.size()).as("Expected exactly 1 recommendation").isEqualTo(1);
         assertThat(recommendations).as("Response is not a list").isInstanceOf(List.class);
@@ -167,9 +197,9 @@ class NodeRecommendationManagerTest {
      * @param nnc The native node container to get recommendations for
      * @return The list of node recommendations
      */
-    private List<NodeRecommendation> getAndAssertNodeRecommendations(final NativeNodeContainer nnc) {
-        var recommendations = nnc == null ? NodeRecommendationManager.getInstance().getNodeRecommendationFor()
-            : NodeRecommendationManager.getInstance().getNodeRecommendationFor(NativeNodeContainerWrapper.wrap(nnc));
+    private List<NodeRecommendation> getAndAssertNodeRecommendations(final boolean getSuccessors, final NativeNodeContainer nnc) {
+        var recommendations = nnc == null ? NodeRecommendationManager.getInstance().getNodeRecommendationFor(getSuccessors)
+            : NodeRecommendationManager.getInstance().getNodeRecommendationFor(getSuccessors, NativeNodeContainerWrapper.wrap(nnc));
 
         // Checks `getNodeRecommendationFor()` result (maybe add type check)
         assertThat(recommendations).as("Expected a non-empty array").isNotEmpty();
@@ -239,11 +269,11 @@ class NodeRecommendationManagerTest {
             var recommendations = NodeRecommendationManager.getInstance().getMostFrequentlyUsedNodes();
             assertThat(recommendations[0].get(0).getFactoryId())
                 .isEqualTo("test_org.knime.base.node.preproc.filter.row.RowFilterNodeFactory");
-            assertThat(recommendations[0].get(0).getFrequency()).isEqualTo(2);
+            assertThat(recommendations[0].get(0).getFrequency()).isEqualTo(3);
             assertThat(recommendations[0].get(1).getFactoryId())
                 .isEqualTo("org.knime.core.node.exec.dataexchange.in.PortObjectInNodeFactory");
             assertThat(recommendations[0].get(1).getFrequency()).isEqualTo(2);
-            assertThat(recommendations[0]).hasSize(3);
+            assertThat(recommendations[0]).hasSize(4);
 
             assertThat(recommendations[1].get(0).getFactoryId())
                 .isEqualTo("org.knime.core.node.exec.dataexchange.in.PortObjectInNodeFactory");

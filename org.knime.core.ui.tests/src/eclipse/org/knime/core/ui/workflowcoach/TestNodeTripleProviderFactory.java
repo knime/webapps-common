@@ -110,6 +110,8 @@ public class TestNodeTripleProviderFactory implements NodeTripleProviderFactory 
             var rowSplitter = new NodeInfo(//
                 "test_org.knime.base.node.preproc.filter.row2.RowSplitterNodeFactory", // Added "test_" to avoid side effects
                 "Test Row Splitter");
+            var sinkNode = new NodeInfo(//
+                "org.knime.testing.node.SinkNodeTestFactory", "SinkNode");
             var nonExisting = new NodeInfo(//
                 "non.existing.factory", //
                 "Non-Existing Node");
@@ -122,6 +124,8 @@ public class TestNodeTripleProviderFactory implements NodeTripleProviderFactory 
                 new NodeTriple(rowSplitter, null, rowFilter), //
                 new NodeTriple(rowSplitter, null, portObjectIn), //
                 new NodeTriple(null, rowFilter, rowSplitter), //
+                new NodeTriple(rowSplitter, sinkNode, rowSplitter), //
+                new NodeTriple(null, rowFilter, sinkNode), //
                 new NodeTriple(rowFilter, nonExisting, rowFilter)//
             ).map(nt -> {
                 nt.incrementCount();
