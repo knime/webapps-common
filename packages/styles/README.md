@@ -15,7 +15,19 @@ To install the `@knime/styles` package, you can use npm:
 npm install @knime/styles
 ```
 
-### SVG loading
+## Usage
+
+To use it in your project, you can import it as follows:
+
+### Icons
+
+```javascript
+import ImageIcon from "@knime/styles/img/icons/media-image.svg";
+```
+
+**NOTE**: You will need to have the image extension at the end of the path
+
+Make sure you have an appropriate SVG loader setup in your project, e.g. for Vue:
 
 ```javascript
 import { defineConfig } from "vite";
@@ -29,18 +41,6 @@ export default defineConfig({
   // [...]
 });
 ```
-
-## Usage
-
-To use it in your project, you can import it as follows:
-
-### Icons
-
-```javascript
-import ImageIcon from "@knime/styles/img/icons/media-image.svg";
-```
-
-NOTE: You will need to have the image extension at the end of the path
 
 ### CSS
 
