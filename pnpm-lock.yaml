@@ -407,8 +407,8 @@ importers:
         specifier: workspace:*
         version: link:../styles
       '@knime/ui-extension-service':
-        specifier: ^0.36.0
-        version: 0.36.0
+        specifier: ^0.38.0
+        version: 0.38.0
       '@vueuse/shared':
         specifier: ^10.10.0
         version: 10.10.0(vue@3.4.27(typescript@5.4.5))
@@ -1162,8 +1162,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
 
-  '@knime/ui-extension-service@0.36.0':
-    resolution: {integrity: sha512-CtTgdhDlBQKnRs7Ydh0DKpO4PoiIQ57CZJWuGsMCA1fAWKfGoZgwWE1B48fRDJfJHUmoqNQy+EJm73UU9Ed/GA==}
+  '@knime/ui-extension-service@0.38.0':
+    resolution: {integrity: sha512-92bJIuO0saRB3bqEaAcE1hxVNfYkjBZ5CA78TxVkfhCNWuIwHLrCrIpAEBGQO5fum6aZne2tgaXM9oC2NTtqZg==}
     engines: {node: 18.x - 20.x}
 
   '@manypkg/find-root@1.1.0':
@@ -5311,7 +5311,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.4.15
 
-  '@knime/ui-extension-service@0.36.0':
+  '@knime/ui-extension-service@0.38.0':
     dependencies:
       color-convert: 2.0.1
       uuid: 9.0.1

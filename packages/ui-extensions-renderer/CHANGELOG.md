@@ -1,5 +1,11 @@
 # @knime/ui-extensions-renderer
 
+## 1.0.14
+
+### Patch Changes
+
+- 289e2b3: update ui-extension-service dependency version
+
 ## 1.0.13
 
 ### Patch Changes
