@@ -1,6 +1,7 @@
 import type { Ref } from "vue";
 import type { BackendType, FolderAndError, PathAndError } from "../types";
 import inject from "@/nodeDialog/utils/inject";
+import { FSCategory } from "../types/FileChooserProps";
 
 interface ListItemsConfig {
   /**
@@ -104,4 +105,17 @@ export default ({
     listItems,
     getFilePath,
   };
+};
+
+export const getBackendType = (
+  fsCategory: keyof typeof FSCategory,
+  portIndex?: number,
+): BackendType => {
+  if (fsCategory === "LOCAL") {
+    return "local";
+  }
+  if (fsCategory === "CONNECTED") {
+    return `connected${portIndex ?? -1}`;
+  }
+  return "relativeToCurrentHubSpace";
 };

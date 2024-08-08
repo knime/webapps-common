@@ -81,7 +81,7 @@ describe("FSLocationTextControl.vue", () => {
     ).toBe(path);
   });
 
-  it("shows local paths", async () => {
+  it("shows local path", async () => {
     props.modelValue.fsCategory = "LOCAL";
     const path = "myLocalPath";
     props.modelValue.path = path;
@@ -89,6 +89,17 @@ describe("FSLocationTextControl.vue", () => {
       (await mountFsLocationTextInput()).findComponent(InputField).props()
         .modelValue,
     ).toBe(absolute(path));
+  });
+
+  it("shows connected path", async () => {
+    props.modelValue.fsCategory = "CONNECTED";
+    props.portIndex = 1;
+    const path = "myLocalPath";
+    props.modelValue.path = path;
+    expect(
+      (await mountFsLocationTextInput()).findComponent(InputField).props()
+        .modelValue,
+    ).toBe(path);
   });
 
   it("shows non-supported paths", async () => {
@@ -101,6 +112,42 @@ describe("FSLocationTextControl.vue", () => {
       (await mountFsLocationTextInput()).findComponent(InputField).props()
         .modelValue,
     ).toBe(fsToString);
+  });
+
+  it.each(["LOCAL", "relative-to-current-hubspace", "CUSTOM_URL"] as const)(
+    "shows %s as non-supported when portIndex is present",
+    async (fsCategory) => {
+      const fsToString = "myFsPathString";
+      props.modelValue.fsCategory = fsCategory;
+      props.portIndex = 1;
+      props.modelValue.context = {
+        fsToString,
+      };
+      expect(
+        (await mountFsLocationTextInput()).findComponent(InputField).props()
+          .modelValue,
+      ).toBe(fsToString);
+    },
+  );
+
+  it("shows CONNECTED as non-supported when no portIndex is present", async () => {
+    const fsToString = "myFsPathString";
+    props.modelValue.fsCategory = "CONNECTED";
+    props.modelValue.context = {
+      fsToString,
+    };
+    expect(
+      (await mountFsLocationTextInput()).findComponent(InputField).props()
+        .modelValue,
+    ).toBe(fsToString);
+  });
+
+  it("shows nothing in case of non-supported paths without context", async () => {
+    props.modelValue.fsCategory = "RELATIVE" as any;
+    expect(
+      (await mountFsLocationTextInput()).findComponent(InputField).props()
+        .modelValue,
+    ).toBe("");
   });
 
   it.each(prefixes)(
@@ -153,7 +200,7 @@ describe("FSLocationTextControl.vue", () => {
     ]);
   });
 
-  it("emits local FS location on text input prefixed without valid scheme in case of isLocal", async () => {
+  it("emits LOCAL FS location on text input in case of isLocal", async () => {
     props.isLocal = true;
     const wrapper = await mountFsLocationTextInput();
     const path = "foo";
@@ -162,6 +209,22 @@ describe("FSLocationTextControl.vue", () => {
       [
         {
           fsCategory: "LOCAL",
+          path,
+          timeout: wrapper.props().modelValue.timeout,
+        },
+      ],
+    ]);
+  });
+
+  it("emits CONNECTED FS location on text input in case a portIndex is present", async () => {
+    props.portIndex = 1;
+    const wrapper = await mountFsLocationTextInput();
+    const path = "foo";
+    wrapper.findComponent(InputField).vm.$emit("update:model-value", path);
+    expect(wrapper.emitted("update:modelValue")).toStrictEqual([
+      [
+        {
+          fsCategory: "CONNECTED",
           path,
           timeout: wrapper.props().modelValue.timeout,
         },

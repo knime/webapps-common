@@ -44,58 +44,37 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Oct 30, 2023 (Paul Bärnreuther): created
+ *   Aug 7, 2024 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.dataservice.filechooser;
 
-import java.io.IOException;
-import java.nio.file.FileSystem;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
-import org.knime.core.webui.node.dialog.defaultdialog.dataservice.filechooser.FileSystemConnector.FileChooserBackend;
 import org.knime.filehandling.core.connections.FSConnection;
+import org.knime.filehandling.core.port.FileSystemPortObjectSpec;
 
 /**
- * An implementation of a file chooser backend for simple file systems.
+ * FileChooser backend for connected input ports
  *
  * @author Paul Bärnreuther
  */
-abstract class SimpleFileChooserBackend implements FileChooserBackend {
-    private FSConnection m_fsConnection;
+class ConnectedFileChooserBackend extends SimpleFileChooserBackend {
 
-    private FSConnection getFSConnection() {
-        if (m_fsConnection == null) {
-            m_fsConnection = createFSConnection();
-        }
-        return m_fsConnection;
-    }
-
-    abstract FSConnection createFSConnection();
-
-    @SuppressWarnings("resource")
-    @Override
-    public FileSystem getFileSystem() {
-        return getFSConnection().getFileSystem();
-    }
+    private final FileSystemPortObjectSpec m_portObjectSpec;
 
     /**
-     * This record contains the information about a single item in the file explorer to be displayed in the front-end.
+     * @param portObjectSpec
      */
-    record Item(boolean isDirectory, String name) {
+    public ConnectedFileChooserBackend(final FileSystemPortObjectSpec portObjectSpec) {
+        m_portObjectSpec = portObjectSpec;
     }
 
     @Override
-    public Item pathToObject(final Path path) {
-        return new Item(Files.isDirectory(path),
-            path.getFileName() == null ? path.toString() : path.getFileName().toString());
+    FSConnection createFSConnection() {
+        return m_portObjectSpec.getFileSystemConnection().orElseThrow(
+            () -> new IllegalStateException("Unable to create a file system connection for the connected port."));
     }
 
     @Override
-    public void close() throws IOException {
-        if (m_fsConnection != null) {
-            m_fsConnection.close();
-        }
+    public boolean isAbsoluteFileSystem() {
+        return false;
     }
-
 }

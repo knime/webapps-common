@@ -27,4 +27,7 @@ export type PathAndError =
       errorMessage: string;
     };
 
-export type BackendType = "local" | "relativeToCurrentHubSpace";
+export type BackendType =
+  | "local"
+  | "relativeToCurrentHubSpace"
+  | `connected${number}`;

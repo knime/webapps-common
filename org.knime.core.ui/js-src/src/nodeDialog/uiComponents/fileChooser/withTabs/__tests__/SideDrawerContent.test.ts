@@ -6,6 +6,8 @@ import { TabBar } from "@knime/components";
 import FileExplorerTab from "../FileExplorerTab.vue";
 import UrlTab from "../UrlTab.vue";
 import flushPromises from "flush-promises";
+import ConnectionPreventsTab from "../ConnectionPreventsTab.vue";
+import { FSCategory } from "../../types/FileChooserProps";
 
 describe("SideDrawerContent.vue", () => {
   let props: Props;
@@ -107,12 +109,41 @@ describe("SideDrawerContent.vue", () => {
     });
   });
 
-  it("switcher to current hub space if non-supported fsCategory is given", () => {
-    props.initialValue.fsCategory = "LOCAL";
-    const wrapper = mountSideDrawerContent();
-    expect(wrapper.vm.modelValue).toStrictEqual({
-      ...props.initialValue,
-      fsCategory: "relative-to-current-hubspace",
+  describe("when a file system port exists", () => {
+    let wrapper: ReturnType<typeof mountSideDrawerContent>;
+
+    beforeEach(() => {
+      props.options!.portIndex = 1;
+      wrapper = mountSideDrawerContent();
     });
+
+    it("renders CONNECTED tab", async () => {
+      await wrapper
+        .findComponent(TabBar)
+        .vm.$emit("update:model-value", "CONNECTED");
+      const fileExplorerTab = wrapper.findComponent(FileExplorerTab);
+      expect(fileExplorerTab.exists()).toBeTruthy();
+      expect(fileExplorerTab.props().backendType).toBe("connected1");
+      const updatedPath = "updatedPath";
+      await fileExplorerTab.vm.$emit("chooseFile", updatedPath);
+      expect(wrapper.vm.modelValue).toStrictEqual({
+        path: updatedPath,
+        timeout: props.initialValue.timeout,
+        fsCategory: "CONNECTED",
+      });
+    });
+
+    it.each(["CUSTOM_URL", "LOCAL", "relative-to-current-hubspace"] as const)(
+      "renders ConnectionPreventsTab for all other tabs",
+      async (otherFsCategory: keyof typeof FSCategory) => {
+        const wrapper = mountSideDrawerContent();
+        await wrapper
+          .findComponent(TabBar)
+          .vm.$emit("update:model-value", otherFsCategory);
+        expect(
+          wrapper.findComponent(ConnectionPreventsTab).exists(),
+        ).toBeTruthy();
+      },
+    );
   });
 });

@@ -66,6 +66,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.JsonFormsSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.TestButtonActionHandler.TestStates;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect.EffectType;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.NameFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
@@ -105,6 +107,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect.EffectType;
+import org.knime.filehandling.core.connections.FSConnection;
+import org.knime.filehandling.core.port.FileSystemPortObjectSpec;
+import org.mockito.Mockito;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -1107,6 +1112,7 @@ class UiSchemaOptionsTest {
         assertThatJson(response).inPath("$.elements[2].options.isWriter").isBoolean().isTrue();
     }
 
+    @SuppressWarnings("resource")
     @Test
     void testFileReaderWidget() {
         class FileWriterWidgetTestSettings implements DefaultNodeSettings {
@@ -1115,10 +1121,49 @@ class UiSchemaOptionsTest {
             @FileReaderWidget(fileExtensions = {"txt", "csv"})
             FileChooser m_fileReader;
 
+            static final class MyPortIndexSupplier implements FileReaderWidget.FileSystemPortIndexSupplier {
+
+                @Override
+                public OptionalInt getFileSystemPortIndex(final DefaultNodeSettingsContext context) {
+                    return OptionalInt.of(0);
+                }
+
+            }
+
+            @Widget(title = "", description = "")
+            @FileReaderWidget(fileSystemPortIndexSupplier = MyPortIndexSupplier.class)
+            FileChooser m_fileReaderWithConnection;
+
+            static final class MyEmptyPortIndexSupplier implements FileReaderWidget.FileSystemPortIndexSupplier {
+
+                @Override
+                public OptionalInt getFileSystemPortIndex(final DefaultNodeSettingsContext context) {
+                    return OptionalInt.empty();
+                }
+
+            }
+
+            @Widget(title = "", description = "")
+            @FileReaderWidget(fileSystemPortIndexSupplier = MyEmptyPortIndexSupplier.class)
+            FileChooser m_fileReaderWithoutConnection;
+
         }
-        var response = buildTestUiSchema(FileWriterWidgetTestSettings.class);
+        final var fileSystemType = "myFileSystemType";
+        final var context = Mockito.mock(DefaultNodeSettingsContext.class);
+        final var spec = Mockito.mock(FileSystemPortObjectSpec.class);
+        Mockito.when(spec.getFileSystemType()).thenReturn(fileSystemType);
+        Mockito.when(spec.getFileSystemConnection()).thenReturn(Optional.of(Mockito.mock(FSConnection.class)));
+        Mockito.when(context.getPortObjectSpec(0)).thenReturn(Optional.of(spec));
+        var response = buildTestUiSchema(FileWriterWidgetTestSettings.class, context);
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("fileReader");
         assertThatJson(response).inPath("$.elements[0].options.fileExtensions").isArray().containsExactly("txt", "csv");
+        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("fileReaderWithConnection");
+        assertThatJson(response).inPath("$.elements[1].options.portIndex").isNumber().isZero();
+        assertThatJson(response).inPath("$.elements[1].options.fileSystemType").isString().isEqualTo(fileSystemType);
+        assertThatJson(response).inPath("$.elements[1].options").isObject()
+            .doesNotContainKey("fileSystemConnectionMissing");
+        assertThatJson(response).inPath("$.elements[2].scope").isString().contains("fileReaderWithoutConnection");
+        assertThatJson(response).inPath("$.elements[2].options").isObject().doesNotContainKey("portIndex");
     }
 
     static final class TestStringProvider implements StateProvider<String> {

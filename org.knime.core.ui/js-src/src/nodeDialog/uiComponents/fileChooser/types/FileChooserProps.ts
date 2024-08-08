@@ -3,6 +3,7 @@ import { FileChooserOptions } from "@/nodeDialog/types/FileChooserUiSchema";
 export enum FSCategory {
   LOCAL,
   CUSTOM_URL,
+  CONNECTED,
   "relative-to-current-hubspace",
 }
 

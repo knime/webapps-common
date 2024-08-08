@@ -7,10 +7,14 @@ import { TabBar } from "@knime/components";
 import LinkIcon from "@knime/styles/img/icons/link.svg";
 import LocalSpaceIcon from "@knime/styles/img/icons/local-space.svg";
 import ComputerDesktopIcon from "@knime/styles/img/icons/computer-desktop.svg";
+import PluginInputIcon from "@knime/styles/img/icons/plugin-input.svg";
 import KnimeIcon from "./knime.svg";
 import { useFileChooserBrowseOptions } from "../composables/useFileChooserBrowseOptions";
-import { FunctionalComponent, onMounted, toRef } from "vue";
+import { computed, FunctionalComponent, toRef } from "vue";
 import useFileChooserStateChange from "../composables/useFileChooserStateChange";
+import { BackendType } from "../types";
+import { getBackendType } from "../composables/useFileChooserBackend";
+import ConnectionPreventsTab from "./ConnectionPreventsTab.vue";
 
 const props = withDefaults(defineProps<FileChooserProps>(), {
   options: () => ({}),
@@ -32,6 +36,9 @@ const {
   isLoaded,
   spacePath,
   mountId,
+  isConnected,
+  portFileSystemName,
+  portIndex,
 } = useFileChooserBrowseOptions(toRef(props, "options"));
 
 type TabSpec = {
@@ -50,7 +57,18 @@ const localFileSystemTab: TabSpec[] = isLocal.value
     ]
   : [];
 
+const connectedFileSystemTab: TabSpec[] = isConnected.value
+  ? [
+      {
+        value: "CONNECTED",
+        label: portFileSystemName.value,
+        icon: PluginInputIcon,
+      },
+    ]
+  : [];
+
 const possibleCategories: TabSpec[] = [
+  ...connectedFileSystemTab,
   ...localFileSystemTab,
   {
     value: "relative-to-current-hubspace",
@@ -64,19 +82,18 @@ const possibleCategories: TabSpec[] = [
   },
 ];
 
-/**
- * This currently can happen in case a node implementation sets the default value to one that is not supported in this frontend.
- * In this case, we switch to a default when the drawer is opened.
- */
-onMounted(() => {
-  if (
-    !possibleCategories
-      .map(({ value }) => value)
-      .includes(props.modelValue.fsCategory)
-  ) {
-    onFsCategoryUpdate("relative-to-current-hubspace");
-  }
-});
+const backendType = computed<BackendType>(() =>
+  getBackendType(props.modelValue.fsCategory, portIndex.value),
+);
+
+const toDoWhat: Record<
+  Exclude<keyof typeof FSCategory, "CONNECTED">,
+  string
+> = {
+  "relative-to-current-hubspace": "browse the current space",
+  CUSTOM_URL: "use a URL to read files",
+  LOCAL: "browse the local file system",
+};
 </script>
 
 <template>
@@ -87,8 +104,12 @@ onMounted(() => {
       @update:model-value="onFsCategoryUpdate"
     />
     <div class="flex-grow">
+      <ConnectionPreventsTab
+        v-if="isConnected && modelValue.fsCategory !== 'CONNECTED'"
+        :to-do-what="toDoWhat[modelValue.fsCategory]"
+      />
       <UrlTab
-        v-if="modelValue.fsCategory === 'CUSTOM_URL'"
+        v-else-if="modelValue.fsCategory === 'CUSTOM_URL'"
         :id="id"
         :model-value="modelValue"
         :disabled="disabled"
@@ -101,11 +122,7 @@ onMounted(() => {
         :filtered-extensions="filteredExtensions"
         :appended-extension="appendedExtension"
         :is-writer="isWriter"
-        :backend-type="
-          modelValue.fsCategory === 'LOCAL'
-            ? 'local'
-            : 'relativeToCurrentHubSpace'
-        "
+        :backend-type="backendType"
         :initial-file-path="modelValue.path"
         :space-path="spacePath"
         @choose-file="onPathUpdate"

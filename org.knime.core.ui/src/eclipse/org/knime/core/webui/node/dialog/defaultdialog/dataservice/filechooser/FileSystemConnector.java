@@ -54,6 +54,9 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.knime.core.webui.data.DataServiceContext;
+import org.knime.filehandling.core.port.FileSystemPortObjectSpec;
+
 /**
  * An instance of this class manages the open file connections of the {@link FileChooserDataService} and provides the
  * respective functionality depending on a String id per file system.
@@ -85,6 +88,11 @@ final class FileSystemConnector {
         }
         if (fileSystemId.equals("relativeToCurrentHubSpace")) {
             return new HubFileChooserBackend();
+        }
+        if (fileSystemId.startsWith("connected")) {
+            final var portIndex = Integer.valueOf(fileSystemId.split("connected")[1]);
+            final var portObjectSpec = (FileSystemPortObjectSpec)DataServiceContext.get().getInputSpecs()[portIndex];
+            return new ConnectedFileChooserBackend(portObjectSpec);
         }
         throw new IllegalArgumentException(String.format("%s is not a valid file system id", fileSystemId));
     }

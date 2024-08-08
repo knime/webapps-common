@@ -98,6 +98,7 @@ public class FileChooserTest {
         assertThatJson(result).inPath("fileChooser.path.path").isString().isEqualTo("");//
         assertThatJson(result).inPath("fileChooser.path.fsCategory").isString().isEqualTo("LOCAL");
         assertThatJson(result).inPath("fileChooser.path.timeout").isIntegralNumber().isEqualTo(10000);
+        assertThatJson(result).inPath("fileChooser.path.context.fsToString").isString().isEqualTo("(LOCAL, )");
 
     }
 
@@ -110,6 +111,8 @@ public class FileChooserTest {
         assertThatJson(result).inPath("fileChooser.path.path").isString().isEqualTo("myPath");//
         assertThatJson(result).inPath("fileChooser.path.fsCategory").isString().isEqualTo("CUSTOM_URL");
         assertThatJson(result).inPath("fileChooser.path.timeout").isIntegralNumber().isEqualTo(1);
+        assertThatJson(result).inPath("fileChooser.path.context.fsToString").isString()
+            .isEqualTo("(CUSTOM_URL, 1, myPath)");
 
     }
 
@@ -124,6 +127,8 @@ public class FileChooserTest {
         assertThatJson(result).inPath("fileChooser.path.fsCategory").isString()
             .isEqualTo("relative-to-current-hubspace");
         assertThatJson(result).inPath("fileChooser.path.timeout").isIntegralNumber().isEqualTo(10000);
+        assertThatJson(result).inPath("fileChooser.path.context.fsToString").isString()
+            .isEqualTo("(RELATIVE, knime.space, myPath)");
 
     }
 

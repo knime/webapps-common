@@ -116,15 +116,20 @@ public class FSLocationJsonSerializationUtil {
                 .map(Integer::valueOf) //
                 .orElse(DEFAULT_TIMEOUT);
             gen.writeNumberField(TIMEOUT_KEY, timeout);
+            writeContext(gen, fsLocation, fsCategory);
+            gen.writeEndObject();
+        }
+
+        private static void writeContext(final JsonGenerator gen, final FSLocation fsLocation, final String fsCategory)
+            throws IOException {
+            gen.writeObjectFieldStart(CONTEXT_KEY);
             if (!isSupportedByFrontend(fsCategory)) {
-                gen.writeObjectFieldStart(CONTEXT_KEY);
                 final var fsSpecifier = fsLocation.getFileSystemSpecifier();
                 if (fsSpecifier.isPresent()) {
                     gen.writeStringField(FS_SPECIFIER_KEY, fsSpecifier.get());
                 }
-                gen.writeStringField(FS_TO_STRING_KEY, fsLocation.toString());
-                gen.writeEndObject();
             }
+            gen.writeStringField(FS_TO_STRING_KEY, fsLocation.toString());
             gen.writeEndObject();
         }
     }
@@ -168,13 +173,18 @@ public class FSLocationJsonSerializationUtil {
         return fsCategory.equals(FSCategory.CUSTOM_URL.toString());
     }
 
+    static boolean isConnected(final String fsCategory) {
+        return fsCategory.equals(FSCategory.CONNECTED.toString());
+    }
+
     static boolean isCurrentHubSpace(final FSLocation fsLocation) {
         return fsLocation.getFSCategory() == FSCategory.RELATIVE && fsLocation.getFileSystemSpecifier()
             .filter(specifier -> specifier.equals(RelativeTo.SPACE.getSettingsValue())).isPresent();
     }
 
     static boolean isSupportedByFrontend(final String fsCategory) {
-        return isLocal(fsCategory) || isCustomURL(fsCategory) || fsCategory.equals(RELATIVE_TO_CURRENT_HUBSPACE);
+        return isConnected(fsCategory) || isLocal(fsCategory) || isCustomURL(fsCategory)
+            || fsCategory.equals(RELATIVE_TO_CURRENT_HUBSPACE);
     }
 
 }

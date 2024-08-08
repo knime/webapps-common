@@ -4,6 +4,7 @@ interface Props {
   modelValue: FileChooserValue;
   disabled: boolean;
   isLocal?: boolean;
+  portIndex?: number;
 }
 export { Props };
 
@@ -18,7 +19,9 @@ import { computed, ref, watch, onMounted } from "vue";
 import getDeepActiveElement from "@/utils/getDeepActiveElement";
 import { InputField } from "@knime/components";
 import { startsWithSchemeRegex } from "./urlUtil";
-import useFileChooserBackend from "../composables/useFileChooserBackend";
+import useFileChooserBackend, {
+  getBackendType,
+} from "../composables/useFileChooserBackend";
 
 const props = defineProps<Props>();
 
@@ -26,31 +29,38 @@ const emit = defineEmits<{
   "update:modelValue": [FileChooserValue];
 }>();
 
+const isConnected = computed(() => typeof props.portIndex !== "undefined");
+
 const { getFilePath } = useFileChooserBackend({
   filteredExtensions: ref([]), // only relevant for browsing
   appendedExtension: ref(null), // We do not wish to append anything here, since the user should be able to manually access any file
   isWriter: ref(false), // only relevant for browsing
   backendType: computed(() =>
-    props.isLocal ? "local" : "relativeToCurrentHubSpace",
+    getBackendType(props.modelValue.fsCategory, props.portIndex),
   ),
 });
 
 const fsLocationToText = async (fsLocation: FileChooserValue) => {
-  if (fsLocation.fsCategory === "relative-to-current-hubspace") {
+  if (
+    !isConnected.value &&
+    fsLocation.fsCategory === "relative-to-current-hubspace"
+  ) {
     return currentSpacePrefix + fsLocation.path;
   }
-  if (fsLocation.fsCategory === "CUSTOM_URL") {
+  if (!isConnected.value && fsLocation.fsCategory === "CUSTOM_URL") {
     return fsLocation.path;
   }
-  if (fsLocation.fsCategory === "LOCAL") {
+  if (!isConnected.value && fsLocation.fsCategory === "LOCAL") {
     const { path, errorMessage } = await getFilePath(null, fsLocation.path);
     if (errorMessage) {
       return fsLocation.path;
     }
     return path || "";
-  } else {
-    return fsLocation.context!.fsToString;
   }
+  if (isConnected.value && fsLocation.fsCategory === "CONNECTED") {
+    return fsLocation.path;
+  }
+  return fsLocation.context?.fsToString ?? "";
 };
 
 const inputField = ref<null | { $refs: { input: HTMLElement } }>(null);
@@ -78,6 +88,13 @@ watch(
 );
 
 const textToFsLocation = (text: string): FileChooserValue => {
+  if (isConnected.value) {
+    return {
+      fsCategory: "CONNECTED",
+      path: text,
+      timeout: props.modelValue.timeout,
+    };
+  }
   for (const [fsCategory, prefix] of prefixes) {
     if (text.startsWith(prefix)) {
       return {

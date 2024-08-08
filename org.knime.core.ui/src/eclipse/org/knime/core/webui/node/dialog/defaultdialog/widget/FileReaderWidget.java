@@ -53,8 +53,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.util.OptionalInt;
 
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FileChooser;
+import org.knime.filehandling.core.port.FileSystemPortObjectSpec;
 
 /**
  * Put this annotation on a {@link FileChooser} field in order to equip it with additional reader features.
@@ -64,6 +67,30 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FileCh
 @Retention(RUNTIME)
 @Target(FIELD)
 public @interface FileReaderWidget {
+
+    /**
+     * Extract the port index of the to be used port of type {@link FileSystemPortObjectSpec}.
+     *
+     * @author Paul Bärnreuther
+     */
+    interface FileSystemPortIndexSupplier {
+
+        /**
+         * @param context the current {@link DefaultNodeSettingsContext}
+         * @return the index of the to be used {@link FileSystemPortObjectSpec} or empty if no file system should be
+         *         used.
+         */
+        OptionalInt getFileSystemPortIndex(DefaultNodeSettingsContext context);
+
+    }
+
+    /**
+     * If the given supplier yields a non-empty optional, the file reader widget switches to browsing the given
+     * connected input port.
+     *
+     * @return {@link FileSystemPortIndexSupplier}
+     */
+    Class<? extends FileSystemPortIndexSupplier> fileSystemPortIndexSupplier() default FileSystemPortIndexSupplier.class;
 
     /**
      * @return the valid extensions by which the browsable files should be filtered

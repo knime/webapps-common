@@ -150,7 +150,12 @@ public final class FileChooserDataService {
      * is not accessible or does not exist, the next valid parent folder up to the root directory is used instead
      * together and returned with an appropriate error message.
      *
-     * @param fileSystemId specifying the file system.
+     * @param fileSystemId specifying the file system. Supported ids are:
+     *            <ul>
+     *            <li>"local": For the local file system</li>
+     *            <li>"relativeToCurrentHubSpace": For the current space</li>
+     *            <li>"connected${portIndex}": For the file system connected at portIndex.</li>
+     *            </ul>
      * @param path the current path or null to reference the root level.
      * @param nextFolder - the name of the to be accessed folder relative to the path or ".." if the parent folder
      *            should be accessed. Set to null in order to access the path directly.
@@ -227,7 +232,12 @@ public final class FileChooserDataService {
     /**
      * Get the path of the file at the specified path
      *
-     * @param fileSystemId specifying the file system.
+     * @param fileSystemId specifying the file system. Supported ids are:
+     *            <ul>
+     *            <li>"local": For the local file system</li>
+     *            <li>"relativeToCurrentHubSpace": For the current space</li>
+     *            <li>"connected${portIndex}": For the file system connected at portIndex.</li>
+     *            </ul>
      * @param path of the folder containing the file
      * @param fileName the name of the to be accessed file relative to the path.
      * @param appendedExtension a file extension that is added to the filename whenever it does not already exist or end

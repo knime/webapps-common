@@ -10,6 +10,7 @@ import { useJsonFormsControlWithUpdate } from "../composables/components/useJson
 
 const props = defineProps(rendererProps());
 const { control } = useJsonFormsControlWithUpdate(props);
+const disabled = computed(() => !control.value.enabled);
 
 const triggerId = computed(() => control.value.uischema.options!.triggerId);
 
@@ -32,7 +33,13 @@ const hover = ref(false);
       @mouseover="hover = true"
       @mouseleave="hover = false"
     >
-      <Button compact with-border class="button-input" @click="onClick">
+      <Button
+        compact
+        with-border
+        :disabled="disabled"
+        class="button-input"
+        @click="onClick"
+      >
         <DynamicIcon v-if="icon" :icon="icon" />{{ control.label }}
       </Button>
       <DescriptionPopover

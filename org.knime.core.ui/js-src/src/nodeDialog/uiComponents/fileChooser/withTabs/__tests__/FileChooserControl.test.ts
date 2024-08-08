@@ -146,4 +146,78 @@ describe("FileChooserControl.vue", () => {
       });
     },
   );
+
+  describe("switches to valid values when mounted", () => {
+    it("switches to current hub space if non-supported fsCategory is given", async () => {
+      props.control.data.fsCategory = "LOCAL";
+      const { handleChange } = await mountJsonFormsComponent(
+        FileChooserControl,
+        {
+          props,
+        },
+      );
+      expect(handleChange).toHaveBeenCalledWith(
+        props.control.path,
+        expect.objectContaining({
+          path: {
+            ...props.control.data.path,
+            fsCategory: "relative-to-current-hubspace",
+          },
+        }),
+      );
+    });
+
+    it("switches to LOCAL if non-supported fsCategory is given and isLocal is true", async () => {
+      props.control.data.fsCategory = "CONNECTED";
+      props.control.uischema.options.isLocal = true;
+      const { handleChange } = await mountJsonFormsComponent(
+        FileChooserControl,
+        {
+          props,
+        },
+      );
+      expect(handleChange).toHaveBeenCalledWith(
+        props.control.path,
+        expect.objectContaining({
+          path: {
+            ...props.control.data.path,
+            fsCategory: "LOCAL",
+          },
+        }),
+      );
+    });
+
+    it("switches to CONNECTED if any other fsCategory is given and ", async () => {
+      props.control.data.fsCategory = "relative-to-current-hubspace";
+      props.control.uischema.options.portIndex = 1;
+      const { handleChange } = await mountJsonFormsComponent(
+        FileChooserControl,
+        {
+          props,
+        },
+      );
+      expect(handleChange).toHaveBeenCalledWith(
+        props.control.path,
+        expect.objectContaining({
+          path: {
+            ...props.control.data.path,
+            fsCategory: "CONNECTED",
+          },
+        }),
+      );
+    });
+
+    it("does not switch to a valid category when overwritten by a flow variable.", async () => {
+      props.control.data.fsCategory = "CONNECTED";
+      props.control.uischema.options.portIndex = 1;
+      const { handleChange } = await mountJsonFormsComponent(
+        FileChooserControl,
+        {
+          props,
+          withControllingFlowVariable: `${props.control.path}.path` as any,
+        },
+      );
+      expect(handleChange).not.toHaveBeenCalled();
+    });
+  });
 });
