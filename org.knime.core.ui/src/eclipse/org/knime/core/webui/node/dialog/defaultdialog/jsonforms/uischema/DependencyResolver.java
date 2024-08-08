@@ -82,7 +82,7 @@ final class DependencyResolver {
             .concat(rootWidgetTrees.stream(),
                 node.getContainingArrayWidgetNodes().stream().map(ArrayWidgetNode::getElementWidgetTree))
             .flatMap(widgetTree -> widgetTree.getWidgetNodes()
-                .map(n -> new WidgetTreeNodeWithRootClass(n, widgetTree.getWidgetGroupClass())))
+                .map(n -> new WidgetTreeNodeWithRootClass(n, widgetTree.getType())))
             .collect(Collectors.toSet());
 
         m_scope = scope;

@@ -51,65 +51,97 @@ package org.knime.core.webui.node.dialog.defaultdialog.widgettree;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.LatentWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
 
 /**
- * A widget tree has widget tree nodes as children who can either be a {@link WidgetTreeLeafNode} or are parent of
- * another {@link WidgetTree}.
+ * An instance of this class is either a root (i.e. a global root of all settings of one {@link SettingsType} or a root
+ * of an element settings tree of an array widget) or an intermediate node with another tree as parent.
  *
- * In terms of the construction from {@link DefaultNodeSettings}, this object is associated to the class of a
- * {@link WidgetGroup} while {@link WidgetTreeNode WidgetTreeNodes} are associated to their fields.
+ * It is the only type of node in this tree structure with children (apart from the element tree <-> array widget
+ * relationship of the {@link ArrayWidgetNode})
  *
  * Use the {@link WidgetTreeUtil} to construct a widget tree from a {@link WidgetGroup}.
  *
  * @author Paul Bärnreuther
  */
-public final class WidgetTree {
+public final class WidgetTree extends WidgetTreeNode {
 
-    static final Collection<Class<? extends Annotation>> POSSIBLE_ANNOTATIONS = List.of(Layout.class, Effect.class);
-
-    /**
-     * Either the defining parent node in the present tree or null if this is the root of the tree.
-     */
-    private WidgetTreeNode m_parent;
+    private ArrayWidgetNode m_arrayWidgetNodeParent;
 
     private final Collection<WidgetTreeNode> m_children = new ArrayList<>();
 
+    private final Map<WidgetTreeNode, String> m_childNames = new HashMap<>();
+
     private final Class<? extends WidgetGroup> m_widgetGroupClass;
 
-    private final Map<Class<? extends Annotation>, Annotation> m_annotations;
-
-    /**
-     * An additional id, if there are multiple widgetTrees that needs to be differentiated (e.g. view and model
-     * settings). This can be null and e.g. in {@link WidgetTreeUtil#parseToWidgetTree} is only non-null for the root
-     * node.
-     */
-    private final String m_settingsKey;
-
-    /**
-     *
-     * @param getAnnotation a function by which to retrieve annotations regarding this tree
-     * @param widgetGroupClass the class of the underlying {@link WidgetGroup}
-     * @param settingsKey an id to differentiate between widget trees (each node can access this key via
-     *            {@link WidgetTreeNode#getSettingsKey()}.
-     */
-    WidgetTree(final Function<Class<? extends Annotation>, Annotation> getAnnotation,
-        final Class<? extends WidgetGroup> widgetGroupClass, final String settingsKey) {
-        m_annotations = AnnotationsUtil.toMap(getAnnotation, POSSIBLE_ANNOTATIONS);
-        m_widgetGroupClass = widgetGroupClass;
-        m_settingsKey = settingsKey;
+    static WidgetTree createElementTree(final ArrayWidgetNode arrayWidgetNodeParent,
+        final Class<? extends WidgetGroup> widgetGroupClass,
+        final Function<Class<? extends Annotation>, Annotation> annotations) {
+        final var elementTree = new WidgetTree(null, null, widgetGroupClass, annotations);
+        elementTree.m_arrayWidgetNodeParent = arrayWidgetNodeParent;
+        return elementTree;
     }
 
-    WidgetTreeNode.Builder getNextChildBuilder() {
-        return new WidgetTreeNode.Builder(this);
+    static WidgetTree createRootTree(final SettingsType settingsType,
+        final Class<? extends WidgetGroup> widgetGroupClass,
+        final Function<Class<? extends Annotation>, Annotation> annotations) {
+        return new WidgetTree(null, settingsType, widgetGroupClass, annotations);
+    }
+
+    static WidgetTree createIntermediateWidgetTree(final WidgetTree parent,
+        final Class<? extends WidgetGroup> widgetGroupClass,
+        final Function<Class<? extends Annotation>, Annotation> annotations) {
+        return new WidgetTree(parent, parent.getSettingsType(), widgetGroupClass, annotations);
+    }
+
+    private WidgetTree(final WidgetTree parent, final SettingsType settingsType,
+        final Class<? extends WidgetGroup> widgetGroupClass,
+        final Function<Class<? extends Annotation>, Annotation> annotations) {
+        super(parent, settingsType, widgetGroupClass, annotations);
+        m_widgetGroupClass = widgetGroupClass;
+    }
+
+    @Override
+    public Collection<Class<? extends Annotation>> getPossibleAnnotations() {
+        return List.of(LatentWidget.class, Layout.class, Signal.class, Effect.class, ValueReference.class,
+            ValueProvider.class);
+    }
+
+    @Override
+    public void postProcessAnnotations() {
+        List.of(Effect.class, Layout.class).forEach(annotationClass -> {
+            if (m_annotations.containsKey(annotationClass)) {
+                getChildren()
+                    .forEach(child -> child.setParentAnnotation(annotationClass, m_annotations.get(annotationClass)));
+            }
+            getChildren().forEach(WidgetTreeNode::postProcessAnnotations);
+        });
+    }
+
+    @Override
+    protected Optional<ArrayWidgetNode> getContainingArrayWidgetNodeUsingParents() {
+        final var parentTree = getParent();
+        if (parentTree != null) {
+            return parentTree.getContainingArrayWidgetNode();
+        }
+        if (m_arrayWidgetNodeParent != null) {
+            return Optional.of(m_arrayWidgetNodeParent);
+        }
+        return Optional.empty();
     }
 
     /**
@@ -119,74 +151,34 @@ public final class WidgetTree {
         return m_children;
     }
 
-    /**
-     * @return the id
-     */
-    public String getSettingsKey() {
-        return m_settingsKey;
+    void addChild(final String name, final WidgetTreeNode child) {
+        m_children.add(child);
+        m_childNames.put(child, name);
     }
 
-    /**
-     * Adjustments to the annotations within this tree depending on the annotations of parent nodes. E.g.
-     * {@link Layout @Layout} should set the layout of fields when set on the containing class.
-     */
-    void postProcessAnnotations() {
-        List.of(Effect.class, Layout.class).forEach(annotationClass -> {
-            if (m_annotations.containsKey(annotationClass)) {
-                m_children
-                    .forEach(node -> node.setParentAnnotation(annotationClass, m_annotations.get(annotationClass)));
-            }
-        });
-        m_children.forEach(WidgetTreeNode::postProcessAnnotations);
+    String getChildName(final WidgetTreeNode child) {
+        return m_childNames.get(child);
     }
 
-    void setParentAnnotation(final Class<? extends Annotation> key, final Annotation value) {
-        m_annotations.putIfAbsent(key, value);
-    }
-
-    void validate() {
-        m_children.forEach(WidgetTreeNode::validate);
-    }
-
-    /**
-     * @return the parent
-     */
-    public WidgetTreeNode getParent() {
-        return m_parent;
-    }
-
-    /**
-     * @param parent the parent to set
-     */
-    public void setParent(final WidgetTreeNode parent) {
-        m_parent = parent;
-    }
-
-    /**
-     * @return the widgetGroupClass
-     */
-    public Class<? extends WidgetGroup> getWidgetGroupClass() {
+    @Override
+    public Class<? extends WidgetGroup> getType() {
         return m_widgetGroupClass;
-    }
-
-    boolean hasAnnotation(final Class<? extends Annotation> annotationClass) {
-        return m_annotations.containsKey(annotationClass);
     }
 
     /**
      * Flatten the tree without traversing into element trees of {@link ArrayWidgetNode ArrayWidgetNodes}.
      *
-     * @return the union of all {@link WidgetTreeLeafNode WidgetTreeLeafNodes} and {@link ArrayWidgetNode
-     *         ArrayWidgetNodes} that are reached by traversing the tree from the root without traversing into the
-     *         element trees of {@link ArrayWidgetNode ArrayWidgetNodes}
+     * @return the union of all {@link WidgetNode WidgetTreeLeafNodes} and {@link ArrayWidgetNode ArrayWidgetNodes} that
+     *         are reached by traversing the tree from the root without traversing into the element trees of
+     *         {@link ArrayWidgetNode ArrayWidgetNodes}
      */
     public Stream<WidgetTreeNode> getWidgetNodes() {
         return getChildren().stream().flatMap(WidgetTree::getWidgetNodes);
     }
 
     private static Stream<WidgetTreeNode> getWidgetNodes(final WidgetTreeNode node) {
-        if (node instanceof WidgetGroupNode widgetGroupNode) {
-            return widgetGroupNode.getWidgetTree().getWidgetNodes();
+        if (node instanceof WidgetTree widgetGroupNode) {
+            return widgetGroupNode.getWidgetNodes();
         }
         return Stream.of(node);
     }

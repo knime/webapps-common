@@ -57,53 +57,48 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 
 /**
- * Corresponds to a field within a {@link WidgetGroup}. It can either be parent to another {@link WidgetGroup} (see
- * {@link WidgetGroupNode}), represent an array widget of another tree (see {@link ArrayWidgetNode}) or be a standard
- * field (see {@link WidgetTreeLeafNode}).
+ * These are the nodes within a {@link WidgetTree}. Next to the branching {@link WidgetTree} node, there are two kinds
+ * of leafs: {@link WidgetNode}s with no further child widgets and {@link ArrayWidgetNode}s with an attached separate
+ * {@link WidgetTree} for elements.
  *
  * @author Paul Bärnreuther
  */
-public abstract sealed class WidgetTreeNode permits WidgetTreeLeafNode, WidgetGroupNode, ArrayWidgetNode {
+public abstract sealed class WidgetTreeNode permits WidgetNode, WidgetTree, ArrayWidgetNode {
 
     final Map<Class<? extends Annotation>, Annotation> m_annotations;
 
     private final WidgetTree m_parent;
 
-    List<String> m_path;
-
-    Optional<String> m_settingsKey;
+    private List<String> m_path;
 
     private Optional<ArrayWidgetNode> m_containingArrayWidgetNode;
 
     private final Class<?> m_type;
 
-    private final Class<?> m_contentType;
-
-    private final String m_name;
+    private final SettingsType m_settingsType;
 
     /**
      * @return the collection of respected annotations for this node
      */
     public abstract Collection<Class<? extends Annotation>> getPossibleAnnotations();
 
-    WidgetTreeNode(final WidgetTree parent, final Class<?> type, final Class<?> contentType, final String name,
+    WidgetTreeNode(final WidgetTree parent, final SettingsType settingsType, final Class<?> type,
         final Function<Class<? extends Annotation>, Annotation> annotations) {
         m_annotations = AnnotationsUtil.toMap(annotations, getPossibleAnnotations());
         m_parent = parent;
         m_type = type;
-        m_contentType = contentType;
-        m_name = name;
+        m_settingsType = settingsType;
     }
 
     /**
-     * @return the name, which is also the last key in the {@link #getPath}
+     * @return "view" or "model" or null in case of element widget trees of array widgets.
      */
-    public String getName() {
-        return m_name;
+    public SettingsType getSettingsType() {
+        return m_settingsType;
     }
 
     /**
@@ -118,38 +113,12 @@ public abstract sealed class WidgetTreeNode permits WidgetTreeLeafNode, WidgetGr
     }
 
     private List<String> getPathUsingParents() {
-        final var name = getName();
         final var parentTree = getParent();
-        final var parentNode = parentTree.getParent();
-        if (parentNode instanceof WidgetGroupNode) {
-            final var parentPath = parentNode.getPath();
-            return Stream.concat(parentPath.stream(), Stream.of(name)).toList();
-        } else {
-            return List.of(name);
+        if (parentTree == null) {
+            return List.of();
         }
-    }
-
-    /**
-     * @return the settingsKey of the root widgetTree (which can be an element widget tree of an
-     *         {@link ArrayWidgetNode})
-     */
-    public Optional<String> getSettingsKey() {
-        if (m_settingsKey == null) { // NOSONAR
-            m_settingsKey = getSettingsKeyUsingParents();
-        }
-        return m_settingsKey;
-    }
-
-    private Optional<String> getSettingsKeyUsingParents() {
-        final var parentTree = getParent();
-        final var parentTreeParent = parentTree.getParent();
-        if (parentTreeParent == null) {
-            return Optional.ofNullable(parentTree.getSettingsKey());
-        }
-        if (parentTreeParent instanceof ArrayWidgetNode) {
-            return Optional.empty();
-        }
-        return parentTreeParent.getSettingsKey();
+        final var name = parentTree.getChildName(this);
+        return Stream.concat(parentTree.getPath().stream(), Stream.of(name)).toList();
 
     }
 
@@ -175,78 +144,11 @@ public abstract sealed class WidgetTreeNode permits WidgetTreeLeafNode, WidgetGr
         return containingArrayWidgetNodes;
     }
 
-    private Optional<ArrayWidgetNode> getContainingArrayWidgetNodeUsingParents() {
-        final var parentTree = getParent();
-        final var parentField = parentTree.getParent();
-        if (parentField == null) {
-            return Optional.empty();
-        }
-        if (parentField instanceof ArrayWidgetNode arrayWidgetNode) {
-            return Optional.of(arrayWidgetNode);
-        }
-        return parentField.getContainingArrayWidgetNode();
-    }
-
-    static final class Builder {
-
-        final WidgetTree m_parent;
-
-        Class<?> m_type;
-
-        Class<?> m_contentType;
-
-        String m_name;
-
-        Function<Class<? extends Annotation>, Annotation> m_annotations;
-
-        Builder(final WidgetTree parent) {
-            m_parent = parent;
-        }
-
-        Builder withType(final Class<?> type) {
-            m_type = type;
-            return this;
-        }
-
-        Builder withContentType(final Class<?> contentType) {
-            m_contentType = contentType;
-            return this;
-        }
-
-        Builder withName(final String name) {
-            m_name = name;
-            return this;
-        }
-
-        Builder withAnnotations(final Function<Class<? extends Annotation>, Annotation> annotations) {
-            m_annotations = annotations;
-            return this;
-        }
-
-        WidgetTreeLeafNode build() {
-            return addedToParent(new WidgetTreeLeafNode(m_parent, m_type, m_contentType, m_name, m_annotations));
-        }
-
-        WidgetGroupNode buildGroup() {
-            return addedToParent(new WidgetGroupNode(m_parent, m_type, m_contentType, m_name, m_annotations));
-        }
-
-        ArrayWidgetNode buildArray() {
-            return addedToParent(new ArrayWidgetNode(m_parent, m_type, m_contentType, m_name, m_annotations));
-        }
-
-        private <T extends WidgetTreeNode> T addedToParent(final T node) {
-            m_parent.getChildren().add(node);
-            return node;
-        }
-
-    }
-
     /**
-     * Called before {@link #setParentAnnotation}.
+     * @return the first ancestor {@link ArrayWidgetNode} of this node if there are any.
      */
-    protected void validate() {
-
+    protected Optional<ArrayWidgetNode> getContainingArrayWidgetNodeUsingParents() {
+        return getParent().getContainingArrayWidgetNodeUsingParents();
     }
 
     /**
@@ -295,12 +197,5 @@ public abstract sealed class WidgetTreeNode permits WidgetTreeLeafNode, WidgetGr
      */
     public Class<?> getType() {
         return m_type;
-    }
-
-    /**
-     * @return the contentType if the type is an array/collection type or null if not
-     */
-    public Class<?> getContentType() {
-        return m_contentType;
     }
 }

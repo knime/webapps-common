@@ -51,7 +51,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.ConvertValueUtil.convertDependencies;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.ConvertValueUtil.convertValue;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -94,11 +94,11 @@ public final class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialog
     public DefaultNodeDialogDataServiceImpl(
         final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses,
         final AsyncChoicesGetter asyncChoicesGetter) {
-        final Map<String, Class<? extends WidgetGroup>> keyToSettingsClassMap = new HashMap<>();
-        settingsClasses.forEach((type, settingsClass) -> keyToSettingsClassMap.put(type.getConfigKey(), settingsClass));
-        m_buttonActionHandlers = new ButtonWidgetActionHandlerHolder(keyToSettingsClassMap);
-        m_buttonUpdateHandlers = new ButtonWidgetUpdateHandlerHolder(keyToSettingsClassMap);
-        m_choicesUpdateHandlers = new ChoicesWidgetUpdateHandlerHolder(keyToSettingsClassMap);
+        final Map<SettingsType, Class<? extends WidgetGroup>> keyToSettingsClassMap = new EnumMap<>(SettingsType.class);
+        settingsClasses.forEach(keyToSettingsClassMap::put);
+        m_buttonActionHandlers = new ButtonWidgetActionHandlerHolder(keyToSettingsClassMap.values());
+        m_buttonUpdateHandlers = new ButtonWidgetUpdateHandlerHolder(keyToSettingsClassMap.values());
+        m_choicesUpdateHandlers = new ChoicesWidgetUpdateHandlerHolder(keyToSettingsClassMap.values());
         m_requestHandler = new DataServiceRequestHandler();
         m_triggerInvocationHandler = new DataServiceTriggerInvocationHandler(keyToSettingsClassMap);
         m_asyncChoicesGetter = asyncChoicesGetter;

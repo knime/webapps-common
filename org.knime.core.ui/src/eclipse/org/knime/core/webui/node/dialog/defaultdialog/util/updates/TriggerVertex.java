@@ -66,7 +66,7 @@ final class TriggerVertex extends Vertex {
 
     private final String m_id;
 
-    private final Optional<PathsWithSettingsKey> m_fieldLocation;
+    private final Optional<PathsWithSettingsType> m_fieldLocation;
 
     TriggerVertex(final String specialTriggerVertexId) {
         m_id = specialTriggerVertexId;
@@ -99,7 +99,7 @@ final class TriggerVertex extends Vertex {
     /**
      * @return information about the associated field of the trigger if there is any
      */
-    Optional<PathsWithSettingsKey> getFieldLocation() {
+    Optional<PathsWithSettingsType> getFieldLocation() {
         return m_fieldLocation;
     }
 

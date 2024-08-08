@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.ConvertValueUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.UpdateResultsUtil;
@@ -68,7 +69,7 @@ final class DataServiceTriggerInvocationHandler {
 
     private TriggerInvocationHandler m_triggerInvocationHandler;
 
-    DataServiceTriggerInvocationHandler(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
+    DataServiceTriggerInvocationHandler(final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses) {
         m_triggerInvocationHandler = new TriggerInvocationHandler(settingsClasses);
     }
 

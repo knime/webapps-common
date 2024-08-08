@@ -49,6 +49,7 @@
 package org.knime.core.webui.node.impl;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,18 +95,18 @@ final class OptionsAdder {
 
     private static void addOptions(final Class<? extends DefaultNodeSettings> modelSettingsClass,
         final Class<? extends DefaultNodeSettings> viewSettingsClass, final Consumer<WidgetTreeNode> addField) {
-        final Map<String, Class<? extends WidgetGroup>> settings = new HashMap<>();
+        final Map<SettingsType, Class<? extends WidgetGroup>> settings = new EnumMap<>(SettingsType.class);
         if (modelSettingsClass != null) {
-            settings.put(SettingsType.MODEL.getConfigKey(), modelSettingsClass);
+            settings.put(SettingsType.MODEL, modelSettingsClass);
         }
         if (viewSettingsClass != null) {
-            settings.put(SettingsType.VIEW.getConfigKey(), viewSettingsClass);
+            settings.put(SettingsType.VIEW, viewSettingsClass);
         }
         addOptions(addField, settings);
     }
 
     private static void addOptions(final Consumer<WidgetTreeNode> addField,
-        final Map<String, Class<? extends WidgetGroup>> settings) {
+        final Map<SettingsType, Class<? extends WidgetGroup>> settings) {
         final var layoutTree = JsonFormsUiSchemaUtil.resolveLayout(settings).layoutTreeRoot();
         applyToAllLeaves(layoutTree, addField);
     }
@@ -131,8 +132,8 @@ final class OptionsAdder {
             final var widget = widgetAnnotation.get();
             var description = JsonFormsSchemaUtil.resolveDescription(widget, field.getType()).orElse("");
             if (field instanceof ArrayWidgetNode arrayField) {
-                description = getDescriptionPlusChildDescriptions(description,
-                    arrayField.getElementWidgetTree().getWidgetGroupClass());
+                description =
+                    getDescriptionPlusChildDescriptions(description, arrayField.getElementWidgetTree().getType());
             }
             return Optional.of(new TitleAndDescription(widget.title(), description));
         }
@@ -142,7 +143,7 @@ final class OptionsAdder {
 
     private static String getDescriptionPlusChildDescriptions(final String description,
         final Class<? extends WidgetGroup> contentType) {
-        Map<String, Class<? extends WidgetGroup>> arraySettings = new HashMap<>();
+        Map<SettingsType, Class<? extends WidgetGroup>> arraySettings = new HashMap<>();
         arraySettings.put(null, contentType);
         final List<TitleAndDescription> childElementDescriptions = new ArrayList<>();
 

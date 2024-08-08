@@ -51,8 +51,6 @@ package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.Map;
-
 import org.junit.jupiter.api.Test;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
@@ -60,7 +58,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.Before;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Inside;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
 /**
@@ -372,8 +369,8 @@ class JsonFormsUiSchemaUtilOrdersTest {
             String m_setting2;
         }
 
-        final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", DummySettings.class);
-        assertThrows(UiSchemaGenerationException.class, () -> JsonFormsUiSchemaUtilTest.buildUiSchema(settings));
+        assertThrows(UiSchemaGenerationException.class,
+            () -> JsonFormsUiSchemaUtilTest.buildTestUiSchema(DummySettings.class));
     }
 
     @Test
@@ -401,8 +398,8 @@ class JsonFormsUiSchemaUtilOrdersTest {
             String m_setting2;
         }
 
-        final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", DummySettings.class);
-        assertThrows(UiSchemaGenerationException.class, () -> JsonFormsUiSchemaUtilTest.buildUiSchema(settings));
+        assertThrows(UiSchemaGenerationException.class,
+            () -> JsonFormsUiSchemaUtilTest.buildTestUiSchema(DummySettings.class));
     }
 
     @Test
@@ -440,8 +437,8 @@ class JsonFormsUiSchemaUtilOrdersTest {
             String m_setting3;
         }
 
-        final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", DummySettings.class);
-        assertThrows(UiSchemaGenerationException.class, () -> JsonFormsUiSchemaUtilTest.buildUiSchema(settings));
+        assertThrows(UiSchemaGenerationException.class,
+            () -> JsonFormsUiSchemaUtilTest.buildTestUiSchema(DummySettings.class));
     }
 
     @Test
@@ -750,8 +747,8 @@ class JsonFormsUiSchemaUtilOrdersTest {
             String m_setting2;
         }
 
-        final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", DummySettings.class);
-        assertThrows(UiSchemaGenerationException.class, () -> JsonFormsUiSchemaUtilTest.buildUiSchema(settings));
+        assertThrows(UiSchemaGenerationException.class,
+            () -> JsonFormsUiSchemaUtilTest.buildTestUiSchema(DummySettings.class));
     }
 
     @Test
@@ -815,8 +812,8 @@ class JsonFormsUiSchemaUtilOrdersTest {
 
         }
 
-        final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", DummySettings.class);
-        assertThrows(UiSchemaGenerationException.class, () -> JsonFormsUiSchemaUtilTest.buildUiSchema(settings));
+        assertThrows(UiSchemaGenerationException.class,
+            () -> JsonFormsUiSchemaUtilTest.buildTestUiSchema(DummySettings.class));
 
     }
 }

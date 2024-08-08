@@ -57,6 +57,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.knime.core.node.util.CheckUtils;
+import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.ConvertValueUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
@@ -92,7 +93,7 @@ public class TriggerAndDependencies {
     /**
      * @return Information on the field associated to the trigger, if such a field exists. Otherwise empty.
      */
-    public Optional<PathsWithSettingsKey> getTriggerFieldLocation() {
+    public Optional<PathsWithSettingsType> getTriggerFieldLocation() {
         return m_triggerVertex.getFieldLocation();
     }
 
@@ -100,7 +101,7 @@ public class TriggerAndDependencies {
      * @param fieldLocation - information on the field associated to this dependency
      * @param valueRef - an id of the reference class
      */
-    public record Dependency(PathsWithSettingsKey fieldLocation, String valueRef) {
+    public record Dependency(PathsWithSettingsType fieldLocation, String valueRef) {
     }
 
     /**
@@ -115,16 +116,16 @@ public class TriggerAndDependencies {
      * @param context the current {@link DefaultNodeSettingsContext}
      * @return a mapping to the values of the required dependencies
      */
-    public Map<Class<? extends Reference>, Object> extractDependencyValues(final Map<String, WidgetGroup> settings,
-        final DefaultNodeSettingsContext context) {
+    public Map<Class<? extends Reference>, Object> extractDependencyValues(
+        final Map<SettingsType, WidgetGroup> settings, final DefaultNodeSettingsContext context) {
         final var mapper = JsonFormsDataUtil.getMapper();
-        final Map<String, JsonNode> jsonNodes = getDependencySettingsKeys().stream().collect(
-            Collectors.toMap(Function.identity(), settingsKey -> mapper.valueToTree(settings.get(settingsKey))));
+        final Map<SettingsType, JsonNode> jsonNodes = getDependencySettingsTypes().stream().collect(
+            Collectors.toMap(Function.identity(), settingsType -> mapper.valueToTree(settings.get(settingsType))));
         return createDependenciesValuesMap(context, jsonNodes);
     }
 
-    private Map<Class<? extends Reference>, Object>
-        createDependenciesValuesMap(final DefaultNodeSettingsContext context, final Map<String, JsonNode> jsonNodes) {
+    private Map<Class<? extends Reference>, Object> createDependenciesValuesMap(
+        final DefaultNodeSettingsContext context, final Map<SettingsType, JsonNode> jsonNodes) {
         final Map<Class<? extends Reference>, Object> dependencyValues = new HashMap<>();
         for (var vertex : m_dependencyVertices) {
             dependencyValues.put(vertex.getValueRef(), extractValue(vertex, jsonNodes, context));
@@ -132,9 +133,9 @@ public class TriggerAndDependencies {
         return dependencyValues;
     }
 
-    private static Object extractValue(final DependencyVertex vertex, final Map<String, JsonNode> jsonNodes,
+    private static Object extractValue(final DependencyVertex vertex, final Map<SettingsType, JsonNode> jsonNodes,
         final DefaultNodeSettingsContext context) {
-        var groupJsonNode = jsonNodes.get(vertex.getFieldLocation().settingsKey());
+        var groupJsonNode = jsonNodes.get(vertex.getFieldLocation().settingsType());
         var fieldJsonNode = groupJsonNode.at(toJsonPointer(vertex.getFieldLocation().paths()));
         return ConvertValueUtil.convertValueRef(fieldJsonNode, vertex.getValueRef(), context);
     }
@@ -151,8 +152,8 @@ public class TriggerAndDependencies {
         return "/" + String.join("/", paths.get(0));
     }
 
-    private Collection<String> getDependencySettingsKeys() {
-        return getDependencies().stream().map(Dependency::fieldLocation).map(PathsWithSettingsKey::settingsKey)
+    private Collection<SettingsType> getDependencySettingsTypes() {
+        return getDependencies().stream().map(Dependency::fieldLocation).map(PathsWithSettingsType::settingsType)
             .collect(Collectors.toSet());
     }
 

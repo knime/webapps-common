@@ -56,10 +56,11 @@ import java.util.stream.Collectors;
 import org.knime.core.util.Pair;
 
 /**
+ * Convert a mapping from classes to instances to a map to {@link Optional}s
  *
  * @author Paul Bärnreuther
  */
-public final class AnnotationsUtil {
+final class AnnotationsUtil {
 
     private AnnotationsUtil() {
         // UTILITY

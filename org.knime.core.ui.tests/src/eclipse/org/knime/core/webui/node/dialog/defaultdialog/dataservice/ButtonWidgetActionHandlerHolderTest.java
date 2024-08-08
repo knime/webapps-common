@@ -50,12 +50,11 @@ package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.Map;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonChange;
@@ -106,8 +105,8 @@ class ButtonWidgetActionHandlerHolderTest {
             String m_button;
         }
 
-        final Map<String, Class<? extends WidgetGroup>> settingsClasses = Map.of("model", ButtonSettings.class);
-        assertThrows(IllegalArgumentException.class, () -> new ButtonWidgetActionHandlerHolder(settingsClasses));
+        assertThrows(IllegalArgumentException.class,
+            () -> new ButtonWidgetActionHandlerHolder(List.of(ButtonSettings.class)));
     }
 
 }

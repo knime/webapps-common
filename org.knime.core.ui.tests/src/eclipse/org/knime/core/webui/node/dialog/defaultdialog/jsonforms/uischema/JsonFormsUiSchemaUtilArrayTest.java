@@ -104,7 +104,7 @@ class JsonFormsUiSchemaUtilArrayTest {
 
         assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Control");
         assertThatJson(response).inPath("$.elements[0].scope").isString()
-            .isEqualTo("#/properties/test/properties/arraySetting");
+            .isEqualTo("#/properties/model/properties/arraySetting");
         assertThatJson(response).inPath("$.elements[0].options").isObject().doesNotContainKey("arrayElementTitle");
         assertThatJson(response).inPath("$.elements[0].options").isObject().doesNotContainKey("addButtonText");
         assertThatJson(response).inPath("$.elements[0].options.detail[0].type").isString().isEqualTo("Control");
@@ -116,7 +116,7 @@ class JsonFormsUiSchemaUtilArrayTest {
 
         assertThatJson(response).inPath("$.elements[1].type").isString().isEqualTo("Control");
         assertThatJson(response).inPath("$.elements[1].scope").isString()
-            .isEqualTo("#/properties/test/properties/collectionSetting");
+            .isEqualTo("#/properties/model/properties/collectionSetting");
         assertThatJson(response).inPath("$.elements[1].options").isObject().doesNotContainKey("arrayElementTitle");
         assertThatJson(response).inPath("$.elements[1].options").isObject().doesNotContainKey("addButtonText");
         assertThatJson(response).inPath("$.elements[1].options.detail[0].type").isString().isEqualTo("Control");
@@ -287,7 +287,7 @@ class JsonFormsUiSchemaUtilArrayTest {
 
         assertThatJson(response).inPath("$.elements[1].type").isString().isEqualTo("Control");
         assertThatJson(response).inPath("$.elements[1].scope").isString()
-            .isEqualTo("#/properties/test/properties/arraySetting");
+            .isEqualTo("#/properties/model/properties/arraySetting");
         assertThatJson(response).inPath("$.elements[1].options.detail[0].type").isString().isEqualTo("Control");
         assertThatJson(response).inPath("$.elements[1].options.detail[0].scope").isString()
             .isEqualTo("#/properties/innerSetting");
@@ -295,7 +295,7 @@ class JsonFormsUiSchemaUtilArrayTest {
             .isEqualTo(
                 "org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtilArrayTest$1TestArrayLayoutWithUpdateSettings$DependencyHandler");
         assertThatJson(response).inPath("$.elements[1].options.detail[0].options.dependencies[0]").isString()
-            .isEqualTo("#/properties/test/properties/dependency");
+            .isEqualTo("#/properties/model/properties/dependency");
     }
 
     @Test
@@ -318,7 +318,7 @@ class JsonFormsUiSchemaUtilArrayTest {
 
         assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Control");
         assertThatJson(response).inPath("$.elements[0].scope").isString()
-            .isEqualTo("#/properties/test/properties/arraySetting");
+            .isEqualTo("#/properties/model/properties/arraySetting");
         assertThatJson(response).inPath("$.elements[0].options.detail").isArray().isEmpty();
         assertThatJson(response).inPath("$.elements[0].options.elementCheckboxScope").isString()
             .isEqualTo("#/properties/innerSetting");

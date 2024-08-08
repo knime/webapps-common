@@ -59,6 +59,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.Format;
@@ -572,11 +573,11 @@ class UiSchemaOptionsTest {
             assertThatJson(response).inPath("$.elements[0]").isObject().containsKey("options");
             assertThatJson(response).inPath("$.elements[0].options.dependencies").isArray().hasSize(3);
             assertThatJson(response).inPath("$.elements[0].options.dependencies[0]").isString()
-                .isEqualTo("#/properties/test/properties/otherSetting1");
+                .isEqualTo("#/properties/model/properties/otherSetting1");
             assertThatJson(response).inPath("$.elements[0].options.dependencies[1]").isString()
-                .isEqualTo("#/properties/test/properties/otherSetting2");
+                .isEqualTo("#/properties/model/properties/otherSetting2");
             assertThatJson(response).inPath("$.elements[0].options.dependencies[2]").isString()
-                .isEqualTo("#/properties/test/properties/otherSetting3/properties/sub2");
+                .isEqualTo("#/properties/model/properties/otherSetting3/properties/sub2");
         }
 
         @Test
@@ -647,8 +648,8 @@ class UiSchemaOptionsTest {
 
         @Test
         void testThrowsForButtonWidgetWithAmbigousDependencies() {
-            final Map<String, Class<? extends WidgetGroup>> settingsClasses =
-                Map.of("foo", ButtonWidgetWithAmbigousDependenciesTestSettings.class, "bar", SecondSettings.class);
+            final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses = Map.of(SettingsType.MODEL,
+                ButtonWidgetWithAmbigousDependenciesTestSettings.class, SettingsType.VIEW, SecondSettings.class);
             assertThrows(UiSchemaGenerationException.class, () -> buildUiSchema(settingsClasses));
         }
 
@@ -676,14 +677,14 @@ class UiSchemaOptionsTest {
 
         @Test
         void testButtonWidgetWithAmbigousDependenciesUsingSpecifyingContainingClass() {
-            final var settingsClasses = new LinkedHashMap<String, Class<? extends WidgetGroup>>();
-            settingsClasses.put("foo", ButtonWidgetWithDisAmbigousDependenciesTestSettings.class);
-            settingsClasses.put("bar", SecondSettings.class);
+            final var settingsClasses = new LinkedHashMap<SettingsType, Class<? extends WidgetGroup>>();
+            settingsClasses.put(SettingsType.MODEL, ButtonWidgetWithDisAmbigousDependenciesTestSettings.class);
+            settingsClasses.put(SettingsType.VIEW, SecondSettings.class);
             var response = buildUiSchema(settingsClasses);
             assertThatJson(response).inPath("$.elements[0]").isObject().containsKey("options");
             assertThatJson(response).inPath("$.elements[0].options.dependencies").isArray().hasSize(1);
             assertThatJson(response).inPath("$.elements[0].options.dependencies[0]").isString()
-                .isEqualTo("#/properties/bar/properties/otherSetting1");
+                .isEqualTo("#/properties/view/properties/otherSetting1");
         }
 
         class ButtonWidgetWithWrongTypeDependenciesTestSettings implements DefaultNodeSettings {
@@ -1131,7 +1132,8 @@ class UiSchemaOptionsTest {
                 String m_elementValue;
             }
 
-            @InternalArrayWidget(withEditAndReset = true, titleProvider = TestStringProvider.class, subTitleProvider = TestStringProvider.class)
+            @InternalArrayWidget(withEditAndReset = true, titleProvider = TestStringProvider.class,
+                subTitleProvider = TestStringProvider.class)
             @Widget(title = "title", description = "description")
             ElementSettings[] m_elementSettings;
 
@@ -1141,9 +1143,9 @@ class UiSchemaOptionsTest {
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("elementSettings");
         assertThatJson(response).inPath("$.elements[0].options.withEditAndReset").isBoolean().isTrue();
         assertThatJson(response).inPath("$.elements[0].options.elementTitleProvider").isString()
-        .isEqualTo(TestStringProvider.class.getName());
+            .isEqualTo(TestStringProvider.class.getName());
         assertThatJson(response).inPath("$.elements[0].options.elementSubTitleProvider").isString()
-        .isEqualTo(TestStringProvider.class.getName());
+            .isEqualTo(TestStringProvider.class.getName());
         assertThatJson(response).inPath("$.elements[0].options.withEditAndReset").isBoolean().isTrue();
 
         assertThatJson(response).inPath("$.elements[0].options.detail[0].scope").isString().contains("elementValue");

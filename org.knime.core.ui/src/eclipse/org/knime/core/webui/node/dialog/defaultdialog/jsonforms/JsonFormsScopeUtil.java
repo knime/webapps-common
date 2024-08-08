@@ -51,7 +51,8 @@ package org.knime.core.webui.node.dialog.defaultdialog.jsonforms;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.PathsWithSettingsKey;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.PathsWithSettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
 
 /**
@@ -68,13 +69,13 @@ public final class JsonFormsScopeUtil {
     /**
      *
      * @param path
-     * @param settingsKey
+     * @param settingsType
      * @return the json schema scope
      */
-    public static String toScope(final List<String> path, final String settingsKey) {
+    public static String toScope(final List<String> path, final SettingsType settingsType) {
         final var pathWithPrefix = new ArrayList<String>(path);
-        if (settingsKey != null) {
-            pathWithPrefix.add(0, settingsKey);
+        if (settingsType != null) {
+            pathWithPrefix.add(0, settingsType.getConfigKey());
         }
         pathWithPrefix.add(0, "#");
         return toScope(pathWithPrefix);
@@ -85,7 +86,7 @@ public final class JsonFormsScopeUtil {
      * @return the json schema scope
      */
     public static String toScope(final WidgetTreeNode node) {
-        return toScope(node.getPath(), node.getSettingsKey().orElse(null));
+        return toScope(node.getPath(), node.getSettingsType());
     }
 
     /**
@@ -103,10 +104,10 @@ public final class JsonFormsScopeUtil {
      * @param location of a state provider or trigger
      * @return the list of jsonforms scopes
      */
-    public static List<String> resolveFieldLocationToScope(final PathsWithSettingsKey location) {
+    public static List<String> resolveFieldLocationToScope(final PathsWithSettingsType location) {
         final var numScopes = location.paths().size();
         final List<String> scopes = new ArrayList<>(numScopes);
-        scopes.add(JsonFormsScopeUtil.toScope(location.paths().get(0), location.settingsKey()));
+        scopes.add(JsonFormsScopeUtil.toScope(location.paths().get(0), location.settingsType()));
         for (int i = 1; i < numScopes; i++) {
             scopes.add(JsonFormsScopeUtil.toScope(location.paths().get(i), null));
         }

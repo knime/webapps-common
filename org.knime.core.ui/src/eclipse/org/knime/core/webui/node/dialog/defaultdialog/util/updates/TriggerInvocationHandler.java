@@ -54,6 +54,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
@@ -68,7 +69,7 @@ public class TriggerInvocationHandler {
     /**
      * @param settingsClasses the settings classes to collect annotations from
      */
-    public TriggerInvocationHandler(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
+    public TriggerInvocationHandler(final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses) {
         m_triggers = SettingsClassesToDependencyTreeUtil.settingsToDependencyTree(settingsClasses);
     }
 
@@ -78,7 +79,7 @@ public class TriggerInvocationHandler {
      * @param valueUpdates keys here are the path locations of fields whose value is updated
      * @param otherUpdates keys here are the ids (the names) of the state providers
      */
-    public record TriggerResult(Map<PathsWithSettingsKey, Object> valueUpdates, Map<String, Object> otherUpdates) {
+    public record TriggerResult(Map<PathsWithSettingsType, Object> valueUpdates, Map<String, Object> otherUpdates) {
 
     }
 
@@ -97,7 +98,7 @@ public class TriggerInvocationHandler {
         final var partitionedResult = resultPerUpdateHandler.entrySet().stream()
             .collect(Collectors.partitioningBy(e -> e.getKey().getFieldLocation().isPresent()));
 
-        final Map<PathsWithSettingsKey, Object> valueUpdates = new HashMap<>();
+        final Map<PathsWithSettingsType, Object> valueUpdates = new HashMap<>();
         for (var entry : partitionedResult.get(true)) {
             valueUpdates.put(//
                 entry.getKey().getFieldLocation().get(), // NOSONAR isPresent() is checked during partitioning

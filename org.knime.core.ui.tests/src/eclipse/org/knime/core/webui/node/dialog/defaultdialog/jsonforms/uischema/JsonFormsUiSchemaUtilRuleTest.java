@@ -754,7 +754,7 @@ class JsonFormsUiSchemaUtilRuleTest {
             assertThrows(UiSchemaGenerationException.class, () -> buildTestUiSchema(EffectWithoutSignalsSettings.class))
                 .getMessage())
                     .isEqualTo(String.format(
-                        "Error when resolving @Effect annotation for #/properties/test/properties/setting.:"
+                        "Error when resolving @Effect annotation for #/properties/model/properties/setting.:"
                             + " Missing source annotation: %s. "
                             + "If this is wanted and the rule should be ignored instead of throwing this error,"
                             + " use the respective flag in the @Effect annotation.",

@@ -48,10 +48,11 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
-import java.util.Map;
+import java.util.Collection;
 import java.util.Optional;
 
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.util.WidgetGroupTraverser.TraversedField;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonUpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.NoopButtonUpdateHandler;
@@ -65,14 +66,13 @@ class ButtonWidgetUpdateHandlerHolder extends HandlerHolder<ButtonUpdateHandler<
     /**
      * @param settingsClasses
      */
-    ButtonWidgetUpdateHandlerHolder(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
+    ButtonWidgetUpdateHandlerHolder(final Collection<Class<? extends WidgetGroup>> settingsClasses) {
         super(settingsClasses);
     }
 
     @Override
-    Optional<Class<? extends ButtonUpdateHandler<?, ?, ?>>>
-        getHandlerClass(final FieldWithDefaultNodeSettingsKey field) {
-        final var buttonWidget = field.field().propertyWriter().getAnnotation(ButtonWidget.class);
+    Optional<Class<? extends ButtonUpdateHandler<?, ?, ?>>> getHandlerClass(final TraversedField field) {
+        final var buttonWidget = field.propertyWriter().getAnnotation(ButtonWidget.class);
         if (buttonWidget == null) {
             return Optional.empty();
         }

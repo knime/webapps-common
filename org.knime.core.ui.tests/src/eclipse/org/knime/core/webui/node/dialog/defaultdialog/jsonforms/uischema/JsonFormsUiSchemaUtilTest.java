@@ -55,6 +55,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtilTest.SuperclassAnnotationTestLayout.AfterCenterLayout;
@@ -84,17 +85,17 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @SuppressWarnings("java:S2698") // we accept assertions without messages
 class JsonFormsUiSchemaUtilTest {
 
-    static ObjectNode buildUiSchema(final Map<String, Class<? extends WidgetGroup>> settings) {
+    static ObjectNode buildUiSchema(final Map<SettingsType, Class<? extends WidgetGroup>> settings) {
         return buildUiSchema(settings, null, new AsyncChoicesHolder());
     }
 
-    static ObjectNode buildUiSchema(final Map<String, Class<? extends WidgetGroup>> settings,
+    static ObjectNode buildUiSchema(final Map<SettingsType, Class<? extends WidgetGroup>> settings,
         final DefaultNodeSettingsContext context, final AsyncChoicesHolder asyncChoicesHolder) {
         return JsonFormsUiSchemaUtil.buildUISchema(settings, context, asyncChoicesHolder);
     }
 
     static ObjectNode buildTestUiSchema(final Class<? extends DefaultNodeSettings> settingsClass) {
-        return buildUiSchema(Map.of("test", settingsClass));
+        return buildUiSchema(Map.of(SettingsType.MODEL, settingsClass));
     }
 
     static ObjectNode buildTestUiSchema(final Class<? extends DefaultNodeSettings> settingsClass,
@@ -104,7 +105,7 @@ class JsonFormsUiSchemaUtilTest {
 
     static ObjectNode buildTestUiSchema(final Class<? extends DefaultNodeSettings> settingsClass,
         final DefaultNodeSettingsContext context, final AsyncChoicesHolder asyncChoicesHolder) {
-        return buildUiSchema(Map.of("test", settingsClass), context, asyncChoicesHolder);
+        return buildUiSchema(Map.of(SettingsType.MODEL, settingsClass), context, asyncChoicesHolder);
     }
 
     interface TestSettingsLayout {
@@ -134,7 +135,7 @@ class JsonFormsUiSchemaUtilTest {
 
     @Test
     void testSection() throws JsonProcessingException {
-        final var response = buildUiSchema(Map.of("test", DummySettings.class));
+        final var response = buildTestUiSchema(DummySettings.class);
         assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
         assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Section");
         assertThatJson(response).inPath("$.elements[0].label").isString().isEqualTo("");
@@ -169,9 +170,9 @@ class JsonFormsUiSchemaUtilTest {
 
     @Test
     void testLayout() throws JsonProcessingException {
-        final var settings = new LinkedHashMap<String, Class<? extends WidgetGroup>>();
-        settings.put("model", TestLayoutModelSettings.class);
-        settings.put("view", TestLayoutViewSettings.class);
+        final var settings = new LinkedHashMap<SettingsType, Class<? extends WidgetGroup>>();
+        settings.put(SettingsType.MODEL, TestLayoutModelSettings.class);
+        settings.put(SettingsType.VIEW, TestLayoutViewSettings.class);
         final var response = buildUiSchema(settings);
         assertThatJson(response).inPath("$.elements[0].elements").isArray().hasSize(2);
         //Section1
@@ -215,16 +216,16 @@ class JsonFormsUiSchemaUtilTest {
 
     @Test
     void testAddsControlsWithCorrectScope() throws JsonProcessingException {
-        final var response = buildUiSchema(Map.of("test", TestControlSettings.class));
+        final var response = buildTestUiSchema(TestControlSettings.class);
         assertThatJson(response).inPath("$.elements").isArray().hasSize(4);
         assertThatJson(response).inPath("$.elements[0].scope").isString()
-            .isEqualTo("#/properties/test/properties/normalSetting");
+            .isEqualTo("#/properties/model/properties/normalSetting");
         assertThatJson(response).inPath("$.elements[1].scope").isString()
-            .isEqualTo("#/properties/test/properties/settingWithNestedUiElements/properties/sub1");
+            .isEqualTo("#/properties/model/properties/settingWithNestedUiElements/properties/sub1");
         assertThatJson(response).inPath("$.elements[2].scope").isString()
-            .isEqualTo("#/properties/test/properties/settingWithNestedUiElements/properties/sub2");
+            .isEqualTo("#/properties/model/properties/settingWithNestedUiElements/properties/sub2");
         assertThatJson(response).inPath("$.elements[3].scope").isString()
-            .isEqualTo("#/properties/test/properties/customSetting");
+            .isEqualTo("#/properties/model/properties/customSetting");
     }
 
     @Test
@@ -237,10 +238,10 @@ class JsonFormsUiSchemaUtilTest {
             String m_hiddenSetting;
 
         }
-        final var response = buildUiSchema(Map.of("test", TestHiddenSettings.class));
+        final var response = buildTestUiSchema(TestHiddenSettings.class);
         assertThatJson(response).inPath("$.elements").isArray().hasSize(1);
         assertThatJson(response).inPath("$.elements[0].scope").isString()
-            .isEqualTo("#/properties/test/properties/normalSetting");
+            .isEqualTo("#/properties/model/properties/normalSetting");
     }
 
     interface TestDefaultParentLayout {
@@ -270,24 +271,24 @@ class JsonFormsUiSchemaUtilTest {
 
     @Test
     void testDefaultParent() throws JsonProcessingException {
-        final var response = buildUiSchema(Map.of("test", TestDefaultParentSettings.class));
+        final var response = buildTestUiSchema(TestDefaultParentSettings.class);
         assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
         //Default Section
         assertThatJson(response).inPath("$.elements[0].elements").isArray().hasSize(3);
         assertThatJson(response).inPath("$.elements[0].elements[0].scope").isString()
-            .isEqualTo("#/properties/test/properties/defaultParentSetting");
+            .isEqualTo("#/properties/model/properties/defaultParentSetting");
         assertThatJson(response).inPath("$.elements[0].elements[1].scope").isString()
-            .isEqualTo("#/properties/test/properties/clusterOfSettingsDefaultParent/properties/sub1");
+            .isEqualTo("#/properties/model/properties/clusterOfSettingsDefaultParent/properties/sub1");
         assertThatJson(response).inPath("$.elements[0].elements[2].scope").isString()
-            .isEqualTo("#/properties/test/properties/clusterOfSettingsDefaultParent/properties/sub2");
+            .isEqualTo("#/properties/model/properties/clusterOfSettingsDefaultParent/properties/sub2");
         //Section1
         assertThatJson(response).inPath("$.elements[1].elements").isArray().hasSize(3);
         assertThatJson(response).inPath("$.elements[1].elements[0].scope").isString()
-            .isEqualTo("#/properties/test/properties/sectionSetting");
+            .isEqualTo("#/properties/model/properties/sectionSetting");
         assertThatJson(response).inPath("$.elements[1].elements[1].scope").isString()
-            .isEqualTo("#/properties/test/properties/clusterOfSettingsInSection/properties/sub1");
+            .isEqualTo("#/properties/model/properties/clusterOfSettingsInSection/properties/sub1");
         assertThatJson(response).inPath("$.elements[1].elements[2].scope").isString()
-            .isEqualTo("#/properties/test/properties/clusterOfSettingsInSection/properties/sub2");
+            .isEqualTo("#/properties/model/properties/clusterOfSettingsInSection/properties/sub2");
     }
 
     interface TestNoLayoutAnnotationLayout {
@@ -310,14 +311,14 @@ class JsonFormsUiSchemaUtilTest {
 
     @Test
     void testNoLayoutAnnotation() throws JsonProcessingException {
-        final var response = buildUiSchema(Map.of("test", TestNoLayoutAnnotationSettings.class));
+        final var response = buildTestUiSchema(TestNoLayoutAnnotationSettings.class);
         assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
         assertThatJson(response).inPath("$.elements[0].scope").isString()
-            .isEqualTo("#/properties/test/properties/rootSetting");
+            .isEqualTo("#/properties/model/properties/rootSetting");
         //Section1
         assertThatJson(response).inPath("$.elements[1].elements").isArray().hasSize(1);
         assertThatJson(response).inPath("$.elements[1].elements[0].scope").isString()
-            .isEqualTo("#/properties/test/properties/sectionSetting");
+            .isEqualTo("#/properties/model/properties/sectionSetting");
     }
 
     static class TestLayoutWithinSettingsSettings implements DefaultNodeSettings {
@@ -340,7 +341,7 @@ class JsonFormsUiSchemaUtilTest {
 
     @Test
     void testLayoutWithinSettings() {
-        final var response = buildUiSchema(Map.of("test", TestLayoutWithinSettingsSettings.class));
+        final var response = buildTestUiSchema(TestLayoutWithinSettingsSettings.class);
 
         assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
 
@@ -348,13 +349,13 @@ class JsonFormsUiSchemaUtilTest {
         assertThatJson(response).inPath("$.elements[0].label").isString().isEqualTo("first");
         assertThatJson(response).inPath("$.elements[0].elements").isArray().hasSize(1);
         assertThatJson(response).inPath("$.elements[0].elements[0].scope").isString()
-            .isEqualTo("#/properties/test/properties/foo");
+            .isEqualTo("#/properties/model/properties/foo");
 
         assertThatJson(response).inPath("$.elements[1].type").isString().isEqualTo("Section");
         assertThatJson(response).inPath("$.elements[1].label").isString().isEqualTo("second");
         assertThatJson(response).inPath("$.elements[1].elements").isArray().hasSize(1);
         assertThatJson(response).inPath("$.elements[1].elements[0].scope").isString()
-            .isEqualTo("#/properties/test/properties/bar");
+            .isEqualTo("#/properties/model/properties/bar");
     }
 
     static class NoRootForSectionSettings implements DefaultNodeSettings {
@@ -365,12 +366,12 @@ class JsonFormsUiSchemaUtilTest {
 
     @Test
     void testSingleLayoutPartWithoutRoot() {
-        var response = buildUiSchema(Map.of("test", NoRootForSectionSettings.class));
+        var response = buildTestUiSchema(NoRootForSectionSettings.class);
 
         assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Section");
         assertThatJson(response).inPath("$.elements[0].elements[0].type").isString().isEqualTo("Control");
         assertThatJson(response).inPath("$.elements[0].elements[0].scope").isString()
-            .isEqualTo("#/properties/test/properties/foo");
+            .isEqualTo("#/properties/model/properties/foo");
     }
 
     static class TestMultipleRootsOne implements DefaultNodeSettings {
@@ -392,8 +393,8 @@ class JsonFormsUiSchemaUtilTest {
 
     @Test
     void testThrowsIfMultipleLayoutRootsAreDetected() {
-        final Map<String, Class<? extends WidgetGroup>> settings =
-            Map.of("model", TestMultipleRootsOne.class, "view", TestMultipleRootsTwo.class);
+        final Map<SettingsType, Class<? extends WidgetGroup>> settings =
+            Map.of(SettingsType.MODEL, TestMultipleRootsOne.class, SettingsType.VIEW, TestMultipleRootsTwo.class);
         assertThrows(UiSchemaGenerationException.class, () -> buildUiSchema(settings));
     }
 
@@ -408,19 +409,18 @@ class JsonFormsUiSchemaUtilTest {
         }
 
         @Layout(Section1.class)
-        class SettingsType implements WidgetGroup {
+        class TwoAnnotationsFieldClass implements WidgetGroup {
 
         }
 
         @Layout(Section2.class)
-        SettingsType m_settingWithTowAnnotations;
+        TwoAnnotationsFieldClass m_settingWithTowAnnotations;
     }
 
     @Test
     void testThrowsIfThereIsAFieldAndAFieldClassAnnotationForAField() {
-        final Map<String, Class<? extends WidgetGroup>> settings =
-            Map.of("test", TestFieldWithTwoLayoutAnnotationsSettings.class);
-        assertThrows(IllegalStateException.class, () -> buildUiSchema(settings));
+        assertThrows(IllegalStateException.class,
+            () -> buildTestUiSchema(TestFieldWithTwoLayoutAnnotationsSettings.class));
     }
 
     @Test
@@ -452,8 +452,7 @@ class JsonFormsUiSchemaUtilTest {
             String m_setting3;
         }
 
-        final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", VirtualLayoutSettings.class);
-        final var response = buildUiSchema(settings);
+        final var response = buildTestUiSchema(VirtualLayoutSettings.class);
 
         assertThatJson(response).inPath("$.elements").isArray().hasSize(3);
         assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Section");
@@ -481,8 +480,7 @@ class JsonFormsUiSchemaUtilTest {
             String m_setting1;
         }
 
-        final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", TestEmptySectionSettings.class);
-        final var response = buildUiSchema(settings);
+        final var response = buildTestUiSchema(TestEmptySectionSettings.class);
 
         assertThatJson(response).inPath("$.elements").isArray().hasSize(1);
         assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Section");
@@ -508,14 +506,13 @@ class JsonFormsUiSchemaUtilTest {
             String m_setting2;
         }
 
-        final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", TestHorizontalLayoutSettings.class);
-        final var response = buildUiSchema(settings);
+        final var response = buildTestUiSchema(TestHorizontalLayoutSettings.class);
 
         assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("HorizontalLayout");
         assertThatJson(response).inPath("$.elements[0].elements[0].scope").isString()
-            .isEqualTo("#/properties/test/properties/setting1");
+            .isEqualTo("#/properties/model/properties/setting1");
         assertThatJson(response).inPath("$.elements[0].elements[1].scope").isString()
-            .isEqualTo("#/properties/test/properties/setting2");
+            .isEqualTo("#/properties/model/properties/setting2");
     }
 
     @Test
@@ -541,16 +538,15 @@ class JsonFormsUiSchemaUtilTest {
             String m_right;
         }
 
-        final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", TestHorizontalLayoutSettings.class);
-        final var response = buildUiSchema(settings);
+        final var response = buildTestUiSchema(TestHorizontalLayoutSettings.class);
 
         assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("VennDiagram");
         assertThatJson(response).inPath("$.elements[0].elements[0].scope").isString()
-            .isEqualTo("#/properties/test/properties/inner");
+            .isEqualTo("#/properties/model/properties/inner");
         assertThatJson(response).inPath("$.elements[0].elements[1].scope").isString()
-            .isEqualTo("#/properties/test/properties/left");
+            .isEqualTo("#/properties/model/properties/left");
         assertThatJson(response).inPath("$.elements[0].elements[2].scope").isString()
-            .isEqualTo("#/properties/test/properties/right");
+            .isEqualTo("#/properties/model/properties/right");
     }
 
     @Inside(FirstSection.class)
@@ -601,9 +597,7 @@ class JsonFormsUiSchemaUtilTest {
             String stringInSecondSection;
         }
 
-        final Map<String, Class<? extends WidgetGroup>> settings = Map.of("test", TestSettings.class);
-
-        final var response = buildUiSchema(settings);
+        final var response = buildTestUiSchema(TestSettings.class);
 
         assertThatJson(response).inPath("$.elements[0].label").isString().isEqualTo("First");
         assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("Section");

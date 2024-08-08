@@ -57,57 +57,65 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
+import org.knime.core.webui.node.dialog.defaultdialog.rule.Signals;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ComboBoxWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.FileReaderWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LatentWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileReaderWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.RichTextInputWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.SortListWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SimpleButtonWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.CredentialsWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.PasswordWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.UsernameWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.internal.InternalArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
 
 /**
  *
- * A intermediate node which corresponds to a field whose type is a {@link WidgetGroup} and thus has nested fields which
- * are part of this tree structure.
+ * A node representing a final leaf of the {@link WidgetTree}, i.e. it corresponds to a field within a
+ * {@link WidgetGroup} and its type is neither another {@link WidgetGroup} nor an array of such.
  *
  * @author Paul Bärnreuther
  */
-public final class WidgetGroupNode extends WidgetTreeNode {
+public final class WidgetNode extends WidgetTreeNode {
 
-    WidgetGroupNode(final WidgetTree parent, final Class<?> type, final Class<?> contentType, final String name,
+    private final Class<?> m_contentType;
+
+    WidgetNode(final WidgetTree parent, final Class<?> type, final Class<?> contentType,
         final Function<Class<? extends Annotation>, Annotation> annotations) {
-        super(parent, type, contentType, name, annotations);
-    }
+        super(parent, parent.getSettingsType(), type, annotations);
 
-    WidgetTree m_widgetTree;
-
-    @Override
-    public Collection<Class<? extends Annotation>> getPossibleAnnotations() {
-        return List.of(LatentWidget.class, Layout.class, Signal.class, Effect.class, ValueReference.class,
-            ValueProvider.class);
-    }
-
-    @Override
-    public void postProcessAnnotations() {
-        List.of(Effect.class, Layout.class).forEach(annotationClass -> {
-            if (m_annotations.containsKey(annotationClass)) {
-                getWidgetTree().setParentAnnotation(annotationClass, m_annotations.get(annotationClass));
-            }
-        });
-        getWidgetTree().postProcessAnnotations();
-    }
-
-    @Override
-    protected void validate() {
-        if (getAnnotation(Layout.class).isPresent() && getWidgetTree().hasAnnotation(Layout.class)) {
-            throw new IllegalStateException(String.format(
-                "The an annotation for field %s collides with the an annotation of the field type class %s.", getName(),
-                getWidgetTree().getWidgetGroupClass().getSimpleName()));
-        }
-        getWidgetTree().validate();
+        m_contentType = contentType;
     }
 
     /**
-     * @return the widgetTree
+     * @return the contentType if the type is an array/collection type or null if not
      */
-    public WidgetTree getWidgetTree() {
-        return m_widgetTree;
+    public Class<?> getContentType() {
+        return m_contentType;
+    }
+
+    @Override
+    public Collection<Class<? extends Annotation>> getPossibleAnnotations() {
+        return List.of(LatentWidget.class, Layout.class, Widget.class, Signal.class, Signals.class,
+            RadioButtonsWidget.class, ValueSwitchWidget.class, ChoicesWidget.class, ComboBoxWidget.class,
+            SortListWidget.class, ButtonWidget.class, SimpleButtonWidget.class, DateTimeWidget.class, DateWidget.class,
+            RichTextInputWidget.class, CredentialsWidget.class, PasswordWidget.class, UsernameWidget.class,
+            FileReaderWidget.class, FileWriterWidget.class, LocalFileReaderWidget.class, LocalFileWriterWidget.class,
+            TextInputWidget.class, Effect.class, ValueReference.class, ValueProvider.class,
+            InternalArrayWidget.ElementCheckboxWidget.class);
     }
 
 }

@@ -51,6 +51,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
 
@@ -59,19 +60,19 @@ import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
  * @author Paul Bärnreuther
  * @param paths the path to the field in a {@link DefaultNodeSettings} class. It contains mulitple paths whenever the
  *            field is nested inside an array layout
- * @param settingsKey the key of the {@link DefaultNodeSettings} class
+ * @param settingsType of the {@link DefaultNodeSettings} class
  */
-public record PathsWithSettingsKey(List<List<String>> paths, String settingsKey) {
+public record PathsWithSettingsType(List<List<String>> paths, SettingsType settingsType) {
 
     /**
      * @param node
      * @return the paths leading to that node in its tree together with the settingsKey of the root
      */
-    public static PathsWithSettingsKey fromWidgetTreeNode(final WidgetTreeNode node) {
+    static PathsWithSettingsType fromWidgetTreeNode(final WidgetTreeNode node) {
         final var listOfFields = Stream.concat(node.getContainingArrayWidgetNodes().stream(), Stream.of(node)).toList();
-        final var settingsKey = listOfFields.get(0).getSettingsKey().orElseThrow();
+        final var settingsKey = listOfFields.get(0).getSettingsType();
         final var listOfPaths = listOfFields.stream().map(WidgetTreeNode::getPath).toList();
-        return new PathsWithSettingsKey(listOfPaths, settingsKey);
+        return new PathsWithSettingsType(listOfPaths, settingsKey);
     }
 
 }

@@ -53,9 +53,9 @@ import static org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTr
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
@@ -110,7 +110,8 @@ public final class JsonFormsUiSchemaUtil {
      * Call this method to build the uischema of sub layouts which are independent from the parent layout apart from
      * having access to the parentFields
      *
-     * @param parentFields the fields of the "outside" layout
+     * @param widgetTree to derive the uischema from
+     * @param parentWidgetTrees of the fields of the "outside" layout. With UIEXT-1673 This can be removed again
      */
     static ObjectNode buildUISchema(final Collection<WidgetTree> widgetTrees,
         final Collection<WidgetTree> parentWidgetTrees, final DefaultNodeSettingsContext context,
@@ -125,14 +126,14 @@ public final class JsonFormsUiSchemaUtil {
      * @param asyncChoicesAdder
      * @return the ui schema resolved by the mapper from the given settings
      */
-    public static ObjectNode buildUISchema(final Map<String, Class<? extends WidgetGroup>> settingsClasses,
+    public static ObjectNode buildUISchema(final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses,
         final DefaultNodeSettingsContext context, final AsyncChoicesAdder asyncChoicesAdder) {
         final var widgetTrees = constructWidgetTrees(settingsClasses);
         return buildUISchema(widgetTrees, List.of(), context, asyncChoicesAdder);
     }
 
     private static List<WidgetTree>
-        constructWidgetTrees(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
+        constructWidgetTrees(final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses) {
         return settingsClasses.entrySet().stream().map(e -> parseToWidgetTree(e.getValue(), e.getKey())).toList();
     }
 
@@ -142,7 +143,7 @@ public final class JsonFormsUiSchemaUtil {
      * @param settingsClasses
      * @return the resolved tree structure
      */
-    public static LayoutSkeleton resolveLayout(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
+    public static LayoutSkeleton resolveLayout(final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses) {
         final var widgetTrees = constructWidgetTrees(settingsClasses);
         return resolveLayout(widgetTrees, List.of());
     }
@@ -154,10 +155,15 @@ public final class JsonFormsUiSchemaUtil {
     }
 
     private static LayoutTreeNode widgetTreesToLayoutTreeRoot(final Collection<WidgetTree> widgetTrees) {
-        final Map<Optional<Class<?>>, List<WidgetTreeNode>> layoutPartsToWidgets =
+        final Map<Boolean, List<WidgetTreeNode>> hasLayoutToWidgets =
             widgetTrees.stream().flatMap(WidgetTree::getWidgetNodes).filter(node -> !isHiddenOrLatent(node))
-                .collect(Collectors.groupingBy(node -> node.getAnnotation(Layout.class).map(Layout::value)));
-        return new LayoutTree(layoutPartsToWidgets).getRootNode();
+                .collect(Collectors.partitioningBy(node -> node.getAnnotation(Layout.class).isPresent()));
+
+        final Map<Class<?>, List<WidgetTreeNode>> layoutPartsToWidgets = hasLayoutToWidgets.get(true).stream()
+            .collect(Collectors.groupingBy(node -> node.getAnnotation(Layout.class).orElseThrow().value()));
+
+        final var widgetsWithoutLayout = hasLayoutToWidgets.get(false);
+        return new LayoutTree(layoutPartsToWidgets, widgetsWithoutLayout).getRootNode();
     }
 
     private static boolean isHiddenOrLatent(final WidgetTreeNode node) {
@@ -170,7 +176,7 @@ public final class JsonFormsUiSchemaUtil {
      * @param layoutTreeRoot a tree structure representation of the node dialogs layout. Its leafs represent controls
      *            and other nodes can be visible layout elements or just structural placeholders.
      * @param widgetTrees one ore multiple widget trees given by the annotated {@link WidgetGroup WidgetGroups}
-     * @param parentWidgetTrees
+     * @param parentWidgetTrees of the fields of the "outside" layout. With UIEXT-1673 This can be removed again
      */
     public static record LayoutSkeleton(LayoutTreeNode layoutTreeRoot, Collection<WidgetTree> widgetTrees,
         Collection<WidgetTree> parentWidgetTrees) {

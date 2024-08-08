@@ -54,9 +54,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -66,12 +64,14 @@ import org.knime.core.data.def.StringCell;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialogTest;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FileChooser;
+import org.knime.core.webui.node.dialog.defaultdialog.util.MapValuesUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesStateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
@@ -102,11 +102,10 @@ class UpdatesUtilTest {
             new PortObjectSpec[]{null}, null, null);
     }
 
-    static ObjectNode buildUpdates(final Map<String, WidgetGroup> settings) {
+    static ObjectNode buildUpdates(final Map<SettingsType, WidgetGroup> settings) {
         final var objectNode = new ObjectMapper().createObjectNode();
-        final Map<String, Class<? extends WidgetGroup>> settingsClasses =
-            settings.entrySet().stream().collect(Collectors.toMap(Entry::getKey, e -> e.getValue().getClass()));
-
+        final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses =
+            MapValuesUtil.mapValues(settings, WidgetGroup::getClass);
         UpdatesUtil.addUpdates(objectNode, settingsClasses, settings, createDefaultNodeSettingsContext());
         return objectNode;
     }
@@ -180,7 +179,7 @@ class UpdatesUtilTest {
             String anotherTarget;
         }
 
-        final Map<String, WidgetGroup> settings = Map.of("test", new TestSettings());
+        final Map<SettingsType, WidgetGroup> settings = Map.of(SettingsType.MODEL, new TestSettings());
 
         final var response = buildUpdates(settings);
 
@@ -189,20 +188,20 @@ class UpdatesUtilTest {
         assertThatJson(response).inPath("$.globalUpdates[0].trigger.id").isString()
             .isEqualTo(TestSettings.DependencyA.class.getName());
         assertThatJson(response).inPath("$.globalUpdates[0].trigger.scopes").isArray()
-            .isEqualTo(List.of("#/properties/test/properties/dependency"));
+            .isEqualTo(List.of("#/properties/model/properties/dependency"));
         assertThatJson(response).inPath("$.globalUpdates[0].dependencies").isArray().hasSize(1);
         assertThatJson(response).inPath("$.globalUpdates[0].dependencies[0].scopes").isArray()
-            .isEqualTo(List.of("#/properties/test/properties/dependency"));
+            .isEqualTo(List.of("#/properties/model/properties/dependency"));
         assertThatJson(response).inPath("$.globalUpdates[0].dependencies[0].id").isString()
             .isEqualTo(TestSettings.DependencyA.class.getName());
 
         assertThatJson(response).inPath("$.globalUpdates[1].trigger.id").isString()
             .isEqualTo(TestSettings.DependencyB.class.getName());
         assertThatJson(response).inPath("$.globalUpdates[1].trigger.scopes").isArray()
-            .isEqualTo(List.of("#/properties/test/properties/anotherDependency"));
+            .isEqualTo(List.of("#/properties/model/properties/anotherDependency"));
         assertThatJson(response).inPath("$.globalUpdates[1].dependencies").isArray().hasSize(1);
         assertThatJson(response).inPath("$.globalUpdates[1].dependencies[0].scopes").isArray()
-            .isEqualTo(List.of("#/properties/test/properties/dependency"));
+            .isEqualTo(List.of("#/properties/model/properties/dependency"));
         assertThatJson(response).inPath("$.globalUpdates[1].dependencies[0].id").isString()
             .isEqualTo(TestSettings.DependencyA.class.getName());
 
@@ -244,7 +243,7 @@ class UpdatesUtilTest {
             String target;
         }
 
-        final Map<String, WidgetGroup> settings = Map.of("test", new WrongTypeReferenceSettings());
+        final Map<SettingsType, WidgetGroup> settings = Map.of(SettingsType.MODEL, new WrongTypeReferenceSettings());
 
         assertThat(assertThrows(UiSchemaGenerationException.class, () -> buildUpdates(settings)).getMessage())
             .isEqualTo(
@@ -288,7 +287,7 @@ class UpdatesUtilTest {
             String target;
         }
 
-        final Map<String, WidgetGroup> settings = Map.of("test", new WrongTypeReferenceSettings());
+        final Map<SettingsType, WidgetGroup> settings = Map.of(SettingsType.MODEL, new WrongTypeReferenceSettings());
 
         assertThat(assertThrows(UiSchemaGenerationException.class, () -> buildUpdates(settings)).getMessage())
             .isEqualTo(
@@ -329,7 +328,7 @@ class UpdatesUtilTest {
             String target;
         }
 
-        final Map<String, WidgetGroup> settings = Map.of("test", new DanglingReferenceSettings());
+        final Map<SettingsType, WidgetGroup> settings = Map.of(SettingsType.MODEL, new DanglingReferenceSettings());
 
         assertThat(assertThrows(RuntimeException.class, () -> buildUpdates(settings)).getMessage())
             .isEqualTo("The value reference DanglingReference is used in a state provider but could not be found. "
@@ -373,7 +372,7 @@ class UpdatesUtilTest {
             String m_updated;
         }
 
-        final Map<String, WidgetGroup> settings = Map.of("test", new TestSettings());
+        final Map<SettingsType, WidgetGroup> settings = Map.of(SettingsType.MODEL, new TestSettings());
 
         final var response = buildUpdates(settings);
 
@@ -444,14 +443,14 @@ class UpdatesUtilTest {
             MySetting m_valueUpdateSetting;
 
         }
-        final Map<String, WidgetGroup> settings = Map.of("test", new TestSettings());
+        final Map<SettingsType, WidgetGroup> settings = Map.of(SettingsType.MODEL, new TestSettings());
 
         final var response = buildUpdates(settings);
 
         assertThatJson(response).inPath("$").isObject().doesNotContainKey("globalUpdates");
         assertThatJson(response).inPath("$.initialUpdates").isArray().hasSize(2);
         assertThatJson(response).inPath("$.initialUpdates[0].scopes").isArray()
-            .isEqualTo(List.of("#/properties/test/properties/valueUpdateSetting"));
+            .isEqualTo(List.of("#/properties/model/properties/valueUpdateSetting"));
         assertThatJson(response).inPath("$.initialUpdates[0].value").isObject().containsEntry("value",
             TestSettings.MyValueProvider.RESULT);
         assertThatJson(response).inPath("$.initialUpdates[1].id").isString()
@@ -506,11 +505,11 @@ class UpdatesUtilTest {
             String m_valueUpdateSetting;
 
         }
-        final Map<String, WidgetGroup> settings = Map.of("test", new TestSettings());
+        final Map<SettingsType, WidgetGroup> settings = Map.of(SettingsType.MODEL, new TestSettings());
         final var response = buildUpdates(settings);
         assertThatJson(response).inPath("$.initialUpdates").isArray().hasSize(1);
         assertThatJson(response).inPath("$.initialUpdates[0].scopes").isArray()
-            .isEqualTo(List.of("#/properties/test/properties/valueUpdateSetting"));
+            .isEqualTo(List.of("#/properties/model/properties/valueUpdateSetting"));
         assertThatJson(response).inPath("$.initialUpdates[0].value").isString().isEqualTo("{self:null,other:foo}");
 
     }
@@ -563,7 +562,7 @@ class UpdatesUtilTest {
             String m_valueUpdateSetting;
 
         }
-        final Map<String, WidgetGroup> settings = Map.of("test", new TestSettings());
+        final Map<SettingsType, WidgetGroup> settings = Map.of(SettingsType.MODEL, new TestSettings());
 
         final var response = buildUpdates(settings);
 
@@ -603,7 +602,7 @@ class UpdatesUtilTest {
 
             }
 
-            final Map<String, WidgetGroup> settings = Map.of("test", new TestSettings());
+            final Map<SettingsType, WidgetGroup> settings = Map.of(SettingsType.MODEL, new TestSettings());
 
             final var response = buildUpdates(settings);
 
@@ -621,7 +620,7 @@ class UpdatesUtilTest {
 
             }
 
-            final Map<String, WidgetGroup> settings = Map.of("test", new TestSettings());
+            final Map<SettingsType, WidgetGroup> settings = Map.of(SettingsType.MODEL, new TestSettings());
 
             final var response = buildUpdates(settings);
 
@@ -639,7 +638,7 @@ class UpdatesUtilTest {
 
             }
 
-            final Map<String, WidgetGroup> settings = Map.of("test", new TestSettings());
+            final Map<SettingsType, WidgetGroup> settings = Map.of(SettingsType.MODEL, new TestSettings());
 
             final var response = buildUpdates(settings);
 
@@ -661,7 +660,7 @@ class UpdatesUtilTest {
 
             }
 
-            final Map<String, WidgetGroup> settings = Map.of("test", new TestSettings());
+            final Map<SettingsType, WidgetGroup> settings = Map.of(SettingsType.MODEL, new TestSettings());
 
             final var response = buildUpdates(settings);
 
@@ -688,7 +687,7 @@ class UpdatesUtilTest {
                 String m_string;
 
             }
-            final Map<String, WidgetGroup> settings = Map.of("test", new TestSettings());
+            final Map<SettingsType, WidgetGroup> settings = Map.of(SettingsType.MODEL, new TestSettings());
 
             final var response = buildUpdates(settings);
 
@@ -722,7 +721,7 @@ class UpdatesUtilTest {
                 ColumnSelection m_columnSelection;
 
             }
-            final Map<String, WidgetGroup> settings = Map.of("test", new TestSettings());
+            final Map<SettingsType, WidgetGroup> settings = Map.of(SettingsType.MODEL, new TestSettings());
 
             final var response = buildUpdates(settings);
 
@@ -793,7 +792,7 @@ class UpdatesUtilTest {
 
             }
 
-            final Map<String, WidgetGroup> settings = Map.of("test", new TestSettings());
+            final Map<SettingsType, WidgetGroup> settings = Map.of(SettingsType.MODEL, new TestSettings());
             final var response = buildUpdates(settings);
             assertThatJson(response).inPath("$.globalUpdates[0].trigger.id").isString()
                 .isEqualTo(TestSettings.ElementSettings.TriggerReference.class.getName());
@@ -801,11 +800,11 @@ class UpdatesUtilTest {
             assertThatJson(response).inPath("$.globalUpdates[0].dependencies[0].id").isString()
                 .isEqualTo(TestSettings.DependencyOutsideArray.class.getName());
             assertThatJson(response).inPath("$.globalUpdates[0].dependencies[0].scopes").isArray()
-                .isEqualTo(List.of("#/properties/test/properties/dependencyOutsideArray"));
+                .isEqualTo(List.of("#/properties/model/properties/dependencyOutsideArray"));
             assertThatJson(response).inPath("$.globalUpdates[0].dependencies[1].id").isString()
                 .isEqualTo(TestSettings.ElementSettings.DependencyInsideArray.class.getName());
             assertThatJson(response).inPath("$.globalUpdates[0].dependencies[1].scopes").isArray()
-                .isEqualTo(List.of("#/properties/test/properties/array", "#/properties/dependencyInsideArray"));
+                .isEqualTo(List.of("#/properties/model/properties/array", "#/properties/dependencyInsideArray"));
 
         }
 
@@ -847,7 +846,7 @@ class UpdatesUtilTest {
 
             }
 
-            final Map<String, WidgetGroup> settings = Map.of("test", new TestSettings());
+            final Map<SettingsType, WidgetGroup> settings = Map.of(SettingsType.MODEL, new TestSettings());
             assertThat(assertThrows(UiSchemaGenerationException.class, () -> buildUpdates(settings)).getMessage())
                 .isEqualTo("There exists an initially triggered state provider with dependencies inside an "
                     + "array layout (with paths [[array], [dependencyInsideArray]]). This is not yet supported.");
@@ -887,7 +886,8 @@ class UpdatesUtilTest {
 
         }
 
-        final Map<String, WidgetGroup> settings = Map.of("test", new InternalArrayWidgetTestSettings());
+        final Map<SettingsType, WidgetGroup> settings =
+            Map.of(SettingsType.MODEL, new InternalArrayWidgetTestSettings());
         final var response = buildUpdates(settings);
 
         assertThatJson(response).inPath("$.globalUpdates[0].trigger.id").isString().isEqualTo("ElementResetButton");

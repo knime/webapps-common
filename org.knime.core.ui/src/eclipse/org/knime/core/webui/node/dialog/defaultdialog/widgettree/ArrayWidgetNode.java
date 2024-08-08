@@ -65,19 +65,23 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueProvid
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
 
 /**
+ * An instance of this class corresponds to an array widget, i.e. a widget whose subwidgets are repeated n times.
  *
- * This node is both "leaf" to one widget tree and parent to another one. With respect to its parent widget tree, it has
- * no further sub-nodes as the {@link WidgetGroupNode}. But instead it gives rise to a new tree retrieved via
- * {@link #getElementWidgetTree}, which is to be interpreted as an independent tree corresponding to the type of an
- * element of the fields value.
+ * <p>
+ * It is a leaf of the containing {@link WidgetTree}, i.e. with it has no further sub-nodes.
+ * </p>
+ *
+ * But it also gives rise to a new tree retrieved via {@link #getElementWidgetTree}, which is to be interpreted as an
+ * independent tree corresponding to the type of an elements of this array widget.
+ * </p>
  *
  * @author Paul Bärnreuther
  */
 public final class ArrayWidgetNode extends WidgetTreeNode {
 
-    ArrayWidgetNode(final WidgetTree parent, final Class<?> type, final Class<?> contentType, final String name,
+    ArrayWidgetNode(final WidgetTree parent, final Class<?> type,
         final Function<Class<? extends Annotation>, Annotation> annotations) {
-        super(parent, type, contentType, name, annotations);
+        super(parent, parent.getSettingsType(), type, annotations);
     }
 
     WidgetTree m_elementWidgetTree;
@@ -98,11 +102,6 @@ public final class ArrayWidgetNode extends WidgetTreeNode {
     @Override
     public void postProcessAnnotations() {
         m_elementWidgetTree.postProcessAnnotations();
-    }
-
-    @Override
-    protected void validate() {
-        m_elementWidgetTree.validate();
     }
 
 }

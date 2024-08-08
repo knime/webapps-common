@@ -54,12 +54,13 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.knime.core.node.util.CheckUtils;
+import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsScopeUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.UpdateResultsUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.UpdateResultsUtil.UpdateResult;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.PathsWithSettingsKey;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.PathsWithSettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToDependencyTreeUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerAndDependencies;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerInvocationHandler;
@@ -89,8 +90,8 @@ public final class UpdatesUtil {
      * @param context
      */
     public static void addUpdates(final ObjectNode rootNode,
-        final Map<String, Class<? extends WidgetGroup>> settingsClasses, final Map<String, WidgetGroup> settings,
-        final DefaultNodeSettingsContext context) {
+        final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses,
+        final Map<SettingsType, WidgetGroup> settings, final DefaultNodeSettingsContext context) {
         final var triggersWithDependencies =
             SettingsClassesToDependencyTreeUtil.getTriggersWithDependencies(settingsClasses);
         final var partitioned = triggersWithDependencies.stream()
@@ -101,7 +102,8 @@ public final class UpdatesUtil {
     }
 
     private static void addInitialUpdates(final ObjectNode rootNode,
-        final Map<String, Class<? extends WidgetGroup>> settingsClasses, final Map<String, WidgetGroup> settings,
+        final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses,
+        final Map<SettingsType, WidgetGroup> settings,
         final List<TriggerAndDependencies> initialTriggersWithDependencies, final DefaultNodeSettingsContext context) {
         if (!initialTriggersWithDependencies.isEmpty()) {
             CheckUtils.check(initialTriggersWithDependencies.size() == 1, IllegalStateException::new,
@@ -112,8 +114,8 @@ public final class UpdatesUtil {
 
     private static void addInitialUpdates(final ObjectNode rootNode,
         final TriggerAndDependencies triggerWithDependencies,
-        final Map<String, Class<? extends WidgetGroup>> settingsClasses, final Map<String, WidgetGroup> settings,
-        final DefaultNodeSettingsContext context) {
+        final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses,
+        final Map<SettingsType, WidgetGroup> settings, final DefaultNodeSettingsContext context) {
         final var invocationHandler = new TriggerInvocationHandler(settingsClasses);
         final var dependencyValues = triggerWithDependencies.extractDependencyValues(settings, context);
         final var triggerResult =
@@ -169,7 +171,7 @@ public final class UpdatesUtil {
     }
 
     private static void addLocationTo(final ObjectNode newDependency, final String propertyName,
-        final PathsWithSettingsKey location) {
+        final PathsWithSettingsType location) {
         final var scopesNodes = newDependency.putArray(propertyName);
         JsonFormsScopeUtil.resolveFieldLocationToScope(location).forEach(scopesNodes::add);
     }

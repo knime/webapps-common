@@ -141,16 +141,16 @@ public final class JsonFormsSettingsImpl implements JsonFormsSettings {
         return JsonFormsDataUtil.toCombinedJsonData(settings);
     }
 
-    private static <T> Map<String, T> createSettingsTypeMap(final T modelSettingsObj, final T viewSettingsObj) {
+    private static <T> Map<SettingsType, T> createSettingsTypeMap(final T modelSettingsObj, final T viewSettingsObj) {
         /**
          * Some nodes rely on view settings within the same section as model settings appear beneath those.
          */
-        final Map<String, T> sortedMap = new TreeMap<>();
+        final Map<SettingsType, T> sortedMap = new TreeMap<>();
         if (modelSettingsObj != null) {
-            sortedMap.put(SettingsType.MODEL.getConfigKey(), modelSettingsObj);
+            sortedMap.put(SettingsType.MODEL, modelSettingsObj);
         }
         if (viewSettingsObj != null) {
-            sortedMap.put(SettingsType.VIEW.getConfigKey(), viewSettingsObj);
+            sortedMap.put(SettingsType.VIEW, viewSettingsObj);
         }
         return sortedMap;
     }

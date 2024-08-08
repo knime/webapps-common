@@ -378,8 +378,8 @@ public final class LayoutTreeNode {
                     e.getValue().stream().map(LayoutTreeNode::getValue).map(Class::getSimpleName).toList()));
             }
         });
-        getControls().stream().map(WidgetTreeNode::getName).map(name -> String.format("%s| -> %s", indent, name))
-            .forEach(lines::add); // NOSONAR
+        getControls().stream().map(WidgetTreeNode::getPath)
+            .map(path -> String.format("%s| -> %s", indent, String.join(".", path))).forEach(lines::add); // NOSONAR
         getChildren().stream().map(child -> child.toString(childIndent)).forEach(lines::add); // NOSONAR
 
         return String.join("\n", lines);

@@ -132,6 +132,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.NoopStringP
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.WidgetAnnotation;
 import org.knime.core.webui.node.dialog.defaultdialog.widgettree.ArrayWidgetNode;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetNode;
 import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
 import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
 import org.knime.filehandling.core.util.WorkflowContextUtil;
@@ -149,15 +150,13 @@ final class UiSchemaOptionsGenerator {
 
     private final Class<?> m_fieldClass;
 
-    private final String m_fieldName;
-
     private final DefaultNodeSettingsContext m_defaultNodeSettingsContext;
 
     private final String m_scope;
 
     private final AsyncChoicesAdder m_asyncChoicesAdder;
 
-    private Collection<WidgetTree> m_widgetTrees;
+    private final Collection<WidgetTree> m_widgetTrees;
 
     private static final int ASYNC_CHOICES_THRESHOLD = 100;
 
@@ -169,13 +168,13 @@ final class UiSchemaOptionsGenerator {
      * @param scope of the current field
      * @param asyncChoicesProvider to be used to store results of asynchronously computed choices of
      *            {@link ChoicesWidget}s.
+     * @param widgetTrees the widgetTrees to resolve dependencies from. With UIEXT-1673 This can be removed again
      */
     UiSchemaOptionsGenerator(final WidgetTreeNode node, final DefaultNodeSettingsContext context, final String scope,
         final AsyncChoicesAdder asyncChoicesAdder, final Collection<WidgetTree> widgetTrees) {
         m_node = node;
         m_asyncChoicesAdder = asyncChoicesAdder;
         m_fieldClass = node.getType();
-        m_fieldName = node.getName();
         m_defaultNodeSettingsContext = context;
         m_scope = scope;
         m_widgetTrees = widgetTrees;
@@ -628,7 +627,7 @@ final class UiSchemaOptionsGenerator {
      */
     private String getChoicesComponentFormat() {
         String format = Format.DROP_DOWN;
-        if (String.class.equals(m_node.getContentType())) {
+        if (m_node instanceof WidgetNode leafNode && String.class.equals(leafNode.getContentType())) {
             format = Format.TWIN_LIST;
         }
         return format;
@@ -643,7 +642,7 @@ final class UiSchemaOptionsGenerator {
         if (!partitionedWidgetAnnotations.get(false).isEmpty()) {
             throw new UiSchemaGenerationException(
                 String.format("The annotation %s is not applicable for setting field %s with type %s",
-                    partitionedWidgetAnnotations.get(false).get(0), m_fieldName, m_fieldClass));
+                    partitionedWidgetAnnotations.get(false).get(0), String.join(".", m_node.getPath()), m_fieldClass));
         }
 
         return partitionedWidgetAnnotations.get(true).stream().map(WidgetAnnotation::widgetAnnotation).toList();

@@ -60,7 +60,7 @@ final class DependencyVertex extends Vertex {
 
     private final Class<? extends Reference> m_ref;
 
-    private final PathsWithSettingsKey m_fieldLocation;
+    private final PathsWithSettingsType m_fieldLocation;
 
     DependencyVertex(final ValueRefWrapper valueRefWrapper) {
         m_ref = valueRefWrapper.valueRef();
@@ -79,7 +79,7 @@ final class DependencyVertex extends Vertex {
     /**
      * @return the scope of the field this dependency points to
      */
-    PathsWithSettingsKey getFieldLocation() {
+    PathsWithSettingsType getFieldLocation() {
         return m_fieldLocation;
     }
 

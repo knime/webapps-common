@@ -55,11 +55,11 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Before;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Inside;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
 
 /**
@@ -82,9 +82,11 @@ final class LayoutTree {
      * be controlled by {@link After} and {@link Before} annotations, while the vertical structure is derived from the
      * class nesting structure.
      *
-     * @param layoutClassesToControls
+     * @param layoutClassesToControls mapping the values of {@link Layout} annotations to their widget nodes
+     * @param nodesWithoutLayout i.e. nodes without a designated {@link Layout} annotation
      */
-    public LayoutTree(final Map<Optional<Class<?>>, List<WidgetTreeNode>> layoutClassesToControls) {
+    public LayoutTree(final Map<Class<?>, List<WidgetTreeNode>> layoutClassesToControls,
+        final List<WidgetTreeNode> nodesWithoutLayout) {
 
         buildTreeFromContentMap(layoutClassesToControls);
 
@@ -93,7 +95,7 @@ final class LayoutTree {
         m_nodes.values().forEach(LayoutTreeNode::adaptParentFromPointers);
 
         m_rootNode = shakeTreeAndFindRoot();
-        Optional.ofNullable(layoutClassesToControls.get(Optional.empty())).ifPresent(m_rootNode::addControls);
+        m_rootNode.addControls(nodesWithoutLayout);
         prepareForTraversal(m_rootNode);
     }
 
@@ -113,9 +115,8 @@ final class LayoutTree {
         return roots.stream().findFirst().orElse(new LayoutTreeNode(null));
     }
 
-    private void buildTreeFromContentMap(final Map<Optional<Class<?>>, List<WidgetTreeNode>> layoutClassesToControls) {
-        layoutClassesToControls.entrySet().stream().filter(e -> e.getKey().isPresent())
-            .forEach(e -> constructNodeFromEntry(e.getKey().get(), e.getValue()));
+    private void buildTreeFromContentMap(final Map<Class<?>, List<WidgetTreeNode>> layoutClassesToControls) {
+        layoutClassesToControls.entrySet().stream().forEach(e -> constructNodeFromEntry(e.getKey(), e.getValue()));
 
     }
 

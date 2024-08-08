@@ -126,12 +126,11 @@ final class LayoutNodesGenerator {
         return JsonFormsScopeUtil.toScope(node);
     }
 
+    /**
+     * If a single signal is added, the annotation can only be retrieved by Signal.class If multiple signals are added,
+     * the annotations can only be retrieved by Signals.class
+     */
     private static List<Signal> getSignalList(final WidgetTreeNode node) {
-        /**
-         * This is needed because of the way Jackson handles annotations internally; If a single signal is added, the
-         * annotation can only be retrieved by Signal.class If multiple signals are added, the annotations can only be
-         * retrieved by Signals.class
-         */
         var singleSignal = node.getAnnotation(Signal.class);
         if (singleSignal.isPresent()) {
             return List.of(singleSignal.get());
@@ -155,11 +154,11 @@ final class LayoutNodesGenerator {
         final var layoutPart = LayoutPart.determineFromClassAnnotation(rootNode.getValue());
         final var layoutNode =
             layoutPart.create(m_defaultNodeSettingsContext, parentNode, rootNode.getValue(), m_signals);
-        rootNode.getControls().forEach(control -> addWidgetTreeNode(layoutNode, control));
+        rootNode.getControls().forEach(control -> addControlElement(layoutNode, control));
         rootNode.getChildren().forEach(childLayoutNode -> buildLayout(childLayoutNode, layoutNode));
     }
 
-    private void addWidgetTreeNode(final ArrayNode root, final WidgetTreeNode node) {
+    private void addControlElement(final ArrayNode root, final WidgetTreeNode node) {
         /**
          * Rendering the element checkbox widget of array layout elements is handled via the framework.
          */

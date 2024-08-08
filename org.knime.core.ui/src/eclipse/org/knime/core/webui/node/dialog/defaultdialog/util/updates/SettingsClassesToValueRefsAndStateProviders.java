@@ -58,6 +58,7 @@ import java.util.function.Function;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.knime.core.node.util.CheckUtils;
+import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaGenerationException;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
@@ -76,17 +77,17 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvid
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
 import org.knime.core.webui.node.dialog.defaultdialog.widgettree.ArrayWidgetNode;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetGroupNode;
 import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
 import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
 import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeUtil;
 
 final class SettingsClassesToValueRefsAndStateProviders {
 
-    record ValueRefWrapper(Class<? extends Reference> valueRef, PathsWithSettingsKey fieldLocation) {
+    record ValueRefWrapper(Class<? extends Reference> valueRef, PathsWithSettingsType fieldLocation) {
     }
 
-    record ValueProviderWrapper(Class<? extends StateProvider> stateProviderClass, PathsWithSettingsKey fieldLocation) {
+    record ValueProviderWrapper(Class<? extends StateProvider> stateProviderClass,
+        PathsWithSettingsType fieldLocation) {
     }
 
     record ValueRefsAndStateProviders(Collection<ValueRefWrapper> valueRefs,
@@ -107,8 +108,8 @@ final class SettingsClassesToValueRefsAndStateProviders {
      * @param settingsClasses a map of settings classes to collect annotated fields from
      * @return the valueRef and updates annotations
      */
-    ValueRefsAndStateProviders
-        settingsClassesToValueRefsAndStateProviders(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
+    ValueRefsAndStateProviders settingsClassesToValueRefsAndStateProviders(
+        final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses) {
         final var widgetTrees =
             settingsClasses.entrySet().stream().map(e -> WidgetTreeUtil.parseToWidgetTree(e.getValue(), e.getKey()));
         widgetTrees.forEach(this::traverseWidgetTree);
@@ -120,12 +121,12 @@ final class SettingsClassesToValueRefsAndStateProviders {
         tree.getChildren().forEach(this::traverseWidgetTreeNode);
     }
 
-    private void traverseWidgetTreeNode(final WidgetTreeNode field) {
-        addWidgetValueAnnotationValueRefAndValueProviderForField(field);
-        addUiStateProviderForField(field);
-        if (field instanceof WidgetGroupNode widgetGroupNode) {
-            traverseWidgetTree(widgetGroupNode.getWidgetTree());
-        } else if (field instanceof ArrayWidgetNode arrayWidgetNode) {
+    private void traverseWidgetTreeNode(final WidgetTreeNode node) {
+        addWidgetValueAnnotationValueRefAndValueProviderForNode(node);
+        addUiStateProviderForNode(node);
+        if (node instanceof WidgetTree widgetTree) {
+            traverseWidgetTree(widgetTree);
+        } else if (node instanceof ArrayWidgetNode arrayWidgetNode) {
             traverseWidgetTree(arrayWidgetNode.getElementWidgetTree());
         }
     }
@@ -180,18 +181,18 @@ final class SettingsClassesToValueRefsAndStateProviders {
                 NoopStringProvider.class //
             ));
 
-    private void addUiStateProviderForField(final WidgetTreeNode field) {
+    private void addUiStateProviderForNode(final WidgetTreeNode node) {
         uiStateProviderSpecs.stream().forEach(
-            spec -> getUiStateProviderForFieldAndSpecificAnnotation(field, spec).ifPresent(m_uiStateProviders::add));
+            spec -> getUiStateProviderForNodeAndSpecificAnnotation(node, spec).ifPresent(m_uiStateProviders::add));
     }
 
     private static <T extends Annotation, S extends StateProvider> Optional<Class<? extends S>>
-        getUiStateProviderForFieldAndSpecificAnnotation(final WidgetTreeNode field,
+        getUiStateProviderForNodeAndSpecificAnnotation(final WidgetTreeNode node,
             final UiStateProviderSpec<T, S> spec) {
-        if (!field.getPossibleAnnotations().contains(spec.annotationClass())) {
+        if (!node.getPossibleAnnotations().contains(spec.annotationClass())) {
             return Optional.empty();
         }
-        final var annotation = field.getAnnotation(spec.annotationClass());
+        final var annotation = node.getAnnotation(spec.annotationClass());
         if (annotation.isEmpty()) {
             return Optional.empty();
         }
@@ -203,33 +204,33 @@ final class SettingsClassesToValueRefsAndStateProviders {
 
     }
 
-    private void addWidgetValueAnnotationValueRefAndValueProviderForField(final WidgetTreeNode field) {
-        final var pathsWithSettingsKey = PathsWithSettingsKey.fromWidgetTreeNode(field);
-        final var fieldType = field.getType();
-        field.getAnnotation(ValueReference.class)
-            .ifPresent(valueReference -> addValueRef(valueReference.value(), fieldType, pathsWithSettingsKey));
-        field.getAnnotation(ValueProvider.class)
-            .ifPresent(valueProvider -> addValueProvider(valueProvider.value(), fieldType, pathsWithSettingsKey));
+    private void addWidgetValueAnnotationValueRefAndValueProviderForNode(final WidgetTreeNode node) {
+        final var pathsWithSettingsKey = PathsWithSettingsType.fromWidgetTreeNode(node);
+        final var type = node.getType();
+        node.getAnnotation(ValueReference.class)
+            .ifPresent(valueReference -> addValueRef(valueReference.value(), type, pathsWithSettingsKey));
+        node.getAnnotation(ValueProvider.class)
+            .ifPresent(valueProvider -> addValueProvider(valueProvider.value(), type, pathsWithSettingsKey));
     }
 
-    private void addValueRef(final Class<? extends Reference> valueRef, final Class<?> fieldType,
-        final PathsWithSettingsKey pathWithSettingsKey) {
+    private void addValueRef(final Class<? extends Reference> valueRef, final Class<?> type,
+        final PathsWithSettingsType pathWithSettingsKey) {
         if (!valueRef.equals(Reference.class)) {
-            validateAgainstFieldType(fieldType, valueRef, Reference.class);
+            validateAgainstType(type, valueRef, Reference.class);
             m_valueRefs.add(new ValueRefWrapper(valueRef, pathWithSettingsKey));
         }
     }
 
     private void addValueProvider(final Class<? extends StateProvider> valueProviderClass, final Class<?> fieldType,
-        final PathsWithSettingsKey pathWithSettingsKey) {
+        final PathsWithSettingsType pathWithSettingsKey) {
         if (!valueProviderClass.equals(StateProvider.class)) {
-            validateAgainstFieldType(fieldType, valueProviderClass, StateProvider.class);
+            validateAgainstType(fieldType, valueProviderClass, StateProvider.class);
             m_valueProviders.add(new ValueProviderWrapper(valueProviderClass, pathWithSettingsKey));
         }
     }
 
-    private static <T> void validateAgainstFieldType(final Class<?> fieldType,
-        final Class<? extends T> implementingClass, final Class<T> genericInterface) {
+    private static <T> void validateAgainstType(final Class<?> fieldType, final Class<? extends T> implementingClass,
+        final Class<T> genericInterface) {
         final var genericType = GenericTypeFinderUtil.getFirstGenericType(implementingClass, genericInterface);
         CheckUtils.check(ClassUtils.primitiveToWrapper(fieldType).isAssignableFrom(genericType),
             UiSchemaGenerationException::new,

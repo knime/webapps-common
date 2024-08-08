@@ -55,6 +55,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
+import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FSLocationJsonSerializationUtil;
@@ -164,11 +165,11 @@ public final class JsonFormsDataUtil {
         return getMapper().valueToTree(settings);
     }
 
-    static JsonNode toCombinedJsonData(final Map<String, DefaultNodeSettings> settings) {
+    static JsonNode toCombinedJsonData(final Map<SettingsType, DefaultNodeSettings> settings) {
         final var root = getMapper().createObjectNode();
         settings.entrySet().stream() //
             .sorted(Comparator.comparing(Entry::getKey)) //
-            .forEachOrdered(e -> root.set(e.getKey(), toJsonData(e.getValue())));
+            .forEachOrdered(e -> root.set(e.getKey().getConfigKey(), toJsonData(e.getValue())));
         return root;
     }
 

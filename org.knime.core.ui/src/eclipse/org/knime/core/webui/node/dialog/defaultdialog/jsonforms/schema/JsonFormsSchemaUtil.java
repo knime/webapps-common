@@ -73,6 +73,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.configmapping.ConfigPath;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
@@ -133,14 +134,15 @@ public final class JsonFormsSchemaUtil {
      * @param mapper the object mapper to be used
      * @return a schema representation
      */
-    public static JsonNode buildCombinedSchema(final Map<String, Class<? extends DefaultNodeSettings>> settingsClasses,
+    public static JsonNode buildCombinedSchema(
+        final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses,
         final DefaultNodeSettingsContext context, final ObjectMapper mapper) {
         final var root = mapper.createObjectNode();
         root.put(TAG_TYPE, TYPE_OBJECT);
         final var properties = root.putObject(TAG_PROPERTIES);
         settingsClasses.entrySet().stream() //
             .sorted(Comparator.comparing(Entry::getKey)) //
-            .forEachOrdered(e -> properties.set(e.getKey(), buildSchema(e.getValue(), context, mapper)));
+            .forEachOrdered(e -> properties.set(e.getKey().getConfigKey(), buildSchema(e.getValue(), context, mapper)));
         return root;
     }
 

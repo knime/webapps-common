@@ -52,6 +52,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 
 /**
@@ -66,7 +67,7 @@ public final class SettingsClassesToDependencyTreeUtil {
     }
 
     static Collection<TriggerVertex>
-        settingsToDependencyTree(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
+        settingsToDependencyTree(final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses) {
         final var valueRefsAndStateProviders = new SettingsClassesToValueRefsAndStateProviders()
             .settingsClassesToValueRefsAndStateProviders(settingsClasses);
         return ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree
@@ -80,7 +81,7 @@ public final class SettingsClassesToDependencyTreeUtil {
      *         frontend
      */
     public static List<TriggerAndDependencies>
-        getTriggersWithDependencies(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
+        getTriggersWithDependencies(final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses) {
         final var triggers = SettingsClassesToDependencyTreeUtil.settingsToDependencyTree(settingsClasses);
         final var triggerToDependencies = new TriggerToDependencies();
         return triggers.stream()

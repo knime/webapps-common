@@ -50,6 +50,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
 import static org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil.createInstance;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,23 +73,18 @@ public abstract class HandlerHolder<H> {
 
     private Map<String, H> m_handlers = new HashMap<>();
 
-    HandlerHolder(final Map<String, Class<? extends WidgetGroup>> settingsClasses) {
-        final List<FieldWithDefaultNodeSettingsKey> traversedFields = settingsClasses.entrySet().stream()
-            .flatMap(entry -> getTraversedFields(entry.getValue(), entry.getKey())).toList();
+    HandlerHolder(final Collection<Class<? extends WidgetGroup>> settingsClasses) {
+        final List<TraversedField> traversedFields =
+            settingsClasses.stream().flatMap(HandlerHolder::getTraversedFields).toList();
         m_handlers = toHandlers(traversedFields);
     }
 
-    private static Stream<FieldWithDefaultNodeSettingsKey>
-        getTraversedFields(final Class<? extends WidgetGroup> settingsClass, final String settingsKey) {
+    private static Stream<TraversedField> getTraversedFields(final Class<? extends WidgetGroup> settingsClass) {
         return new WidgetGroupTraverser(settingsClass,
-            new Configuration.Builder().includeFieldsNestedInArrayLayout().build()).getAllFields().stream()
-                .map(field -> new FieldWithDefaultNodeSettingsKey(field, settingsKey));
+            new Configuration.Builder().includeFieldsNestedInArrayLayout().build()).getAllFields().stream();
     }
 
-    record FieldWithDefaultNodeSettingsKey(TraversedField field, String settingsKey) {
-    }
-
-    private Map<String, H> toHandlers(final List<FieldWithDefaultNodeSettingsKey> fields) {
+    private Map<String, H> toHandlers(final List<TraversedField> fields) {
         final Map<String, H> handlers = new HashMap<>();
         fields.forEach(field -> getHandlerClass(field)
             .ifPresent(handlerClass -> handlers.put(handlerClass.getName(), createInstance(handlerClass))));
@@ -99,7 +95,7 @@ public abstract class HandlerHolder<H> {
      * @param field of the traversed settings
      * @return the relevant handler parameter of the annotation
      */
-    abstract Optional<Class<? extends H>> getHandlerClass(final FieldWithDefaultNodeSettingsKey field);
+    abstract Optional<Class<? extends H>> getHandlerClass(final TraversedField field);
 
     H getHandler(final String handlerClassName) {
         return m_handlers.get(handlerClassName);
