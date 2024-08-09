@@ -142,14 +142,14 @@ final class PopulateWidgetTreeHelper {
         if (WidgetGroup.class.isAssignableFrom(type)) {
             @SuppressWarnings("unchecked") // checked by the if condition above
             final var widgetGroupType = (Class<? extends WidgetGroup>)type;
-            final var widgetGroupChild = childBuilder.buildGroup(widgetGroupType);
-            populateWidgetTree(widgetGroupChild, widgetGroupType);
+            childBuilder.buildGroup(widgetGroupType);
         } else if (ArrayLayoutUtil.isArrayLayoutField(field.getType())) {
             @SuppressWarnings("unchecked") // checked by {@link ArrayLayoutUtil.isArrayLayoutField}
-            final var arrayChild = childBuilder.buildArray(type);
             final var elementWidgetGroupType =
                 (Class<? extends WidgetGroup>)field.getType().getContentType().getRawClass();
-            addElementWidgetTree(arrayChild, elementWidgetGroupType);
+            final var elementWidgetTree =
+                new WidgetTree(null, null, elementWidgetGroupType, elementWidgetGroupType::getAnnotation);
+            childBuilder.buildArray(type, elementWidgetTree);
         } else {
             Class<?> contentType = null;
             if (field.getType().isArrayType()) {
@@ -157,20 +157,6 @@ final class PopulateWidgetTreeHelper {
             }
             childBuilder.build(type, contentType);
         }
-    }
-
-    private static void addElementWidgetTree(final ArrayWidgetNode arrayChild,
-        final Class<? extends WidgetGroup> elementWidgetGroupType) {
-        final var elementWidgetTree =
-            createElementTree(arrayChild, elementWidgetGroupType, elementWidgetGroupType::getAnnotation);
-        populateWidgetTree(elementWidgetTree, elementWidgetGroupType);
-        arrayChild.m_elementWidgetTree = elementWidgetTree;
-    }
-
-    private static WidgetTree createElementTree(final ArrayWidgetNode arrayWidgetNodeParent,
-        final Class<? extends WidgetGroup> widgetGroupClass,
-        final Function<Class<? extends Annotation>, Annotation> annotations) {
-        return new WidgetTree(null, null, widgetGroupClass, annotations, arrayWidgetNodeParent);
     }
 
     private static WidgetTreeNodeBuilder getNextChildBuilder(final WidgetTree tree) {
@@ -242,8 +228,8 @@ final class PopulateWidgetTreeHelper {
             }
         }
 
-        ArrayWidgetNode buildArray(final Class<?> type) {
-            return addedToParent(m_name, new ArrayWidgetNode(m_parent, type, m_fieldAnnotations));
+        ArrayWidgetNode buildArray(final Class<?> type, final WidgetTree elementWidgetTree) {
+            return addedToParent(m_name, new ArrayWidgetNode(m_parent, elementWidgetTree, type, m_fieldAnnotations));
         }
 
         private <T extends WidgetTreeNode> T addedToParent(final String name, final T node) {

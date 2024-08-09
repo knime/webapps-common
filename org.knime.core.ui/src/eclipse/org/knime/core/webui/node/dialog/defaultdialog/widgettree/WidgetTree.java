@@ -80,7 +80,10 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRefere
  */
 public final class WidgetTree extends WidgetTreeNode {
 
-    private final ArrayWidgetNode m_arrayWidgetNodeParent;
+    private static final Collection<Class<? extends Annotation>> POSSIBLE_ANNOTATIONS = List.of(LatentWidget.class,
+        Layout.class, Signal.class, Effect.class, ValueReference.class, ValueProvider.class);
+
+    ArrayWidgetNode m_arrayWidgetNodeParent;
 
     private final Collection<WidgetTreeNode> m_children = new ArrayList<>();
 
@@ -94,40 +97,36 @@ public final class WidgetTree extends WidgetTreeNode {
      */
     public WidgetTree(final Class<? extends WidgetGroup> rootClass, final SettingsType settingsType) {
         this(null, settingsType, rootClass, rootClass::getAnnotation);
-        PopulateWidgetTreeHelper.populateWidgetTree(this, rootClass);
-        postProcessAnnotations();
     }
 
     WidgetTree(final WidgetTree parent, final SettingsType settingsType,
         final Class<? extends WidgetGroup> widgetGroupClass,
         final Function<Class<? extends Annotation>, Annotation> annotations) {
-        this(parent, settingsType, widgetGroupClass, annotations, null);
-    }
-
-    WidgetTree(final WidgetTree parent, final SettingsType settingsType,
-        final Class<? extends WidgetGroup> widgetGroupClass,
-        final Function<Class<? extends Annotation>, Annotation> annotations,
-        final ArrayWidgetNode arrayWidgetNodeParent) {
-        super(parent, settingsType, widgetGroupClass, annotations);
+        super(parent, settingsType, widgetGroupClass, annotations, POSSIBLE_ANNOTATIONS);
+        PopulateWidgetTreeHelper.populateWidgetTree(this, widgetGroupClass);
+        propagateAnnotationsToChildren();
         m_widgetGroupClass = widgetGroupClass;
-        m_arrayWidgetNodeParent = arrayWidgetNodeParent;
     }
 
-    @Override
-    public Collection<Class<? extends Annotation>> getPossibleAnnotations() {
-        return List.of(LatentWidget.class, Layout.class, Signal.class, Effect.class, ValueReference.class,
-            ValueProvider.class);
-    }
-
-    @Override
-    protected void postProcessAnnotations() {
-        List.of(Effect.class, Layout.class).forEach(annotationClass -> {
-            if (m_annotations.containsKey(annotationClass)) {
-                getChildren()
-                    .forEach(child -> child.setParentAnnotation(annotationClass, m_annotations.get(annotationClass)));
+    private void propagateAnnotationsToChildren() {
+        getChildren().forEach(child -> {
+            for (var annotationClass : List.of(Effect.class, Layout.class)) {
+                if (m_annotations.containsKey(annotationClass)) {
+                    child.addAnnotation(annotationClass, m_annotations.get(annotationClass));
+                }
             }
-            getChildren().forEach(WidgetTreeNode::postProcessAnnotations);
+            getWidgetTreeFrom(child).ifPresent(WidgetTree::propagateAnnotationsToChildren);
         });
+    }
+
+    private static Optional<WidgetTree> getWidgetTreeFrom(final WidgetTreeNode node) {
+        WidgetTree widgetTree = null;
+        if (node instanceof ArrayWidgetNode awn) {
+            widgetTree = awn.getElementWidgetTree();
+        } else if (node instanceof WidgetTree wt) {
+            widgetTree = wt;
+        }
+        return Optional.ofNullable(widgetTree);
     }
 
     @Override

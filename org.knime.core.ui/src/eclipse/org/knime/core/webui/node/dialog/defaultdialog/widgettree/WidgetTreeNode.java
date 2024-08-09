@@ -55,10 +55,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.SettingsType;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 
 /**
  * These are the nodes within a {@link WidgetTree}. Next to the branching {@link WidgetTree} node, there are two kinds
@@ -68,8 +69,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
  * @author Paul Bärnreuther
  */
 public abstract sealed class WidgetTreeNode permits WidgetNode, WidgetTree, ArrayWidgetNode {
-
-    protected final Map<Class<? extends Annotation>, Annotation> m_annotations;
 
     private final WidgetTree m_parent;
 
@@ -81,17 +80,23 @@ public abstract sealed class WidgetTreeNode permits WidgetNode, WidgetTree, Arra
 
     private final SettingsType m_settingsType;
 
-    /**
-     * @return the collection of respected annotations for this node
-     */
-    public abstract Collection<Class<? extends Annotation>> getPossibleAnnotations();
+    protected final Map<Class<? extends Annotation>, Annotation> m_annotations;
+
+    private final Collection<Class<? extends Annotation>> m_possibleAnnotations;
 
     WidgetTreeNode(final WidgetTree parent, final SettingsType settingsType, final Class<?> type,
-        final Function<Class<? extends Annotation>, Annotation> annotations) {
-        m_annotations = AnnotationsUtil.toMap(annotations, getPossibleAnnotations());
+        final Function<Class<? extends Annotation>, Annotation> annotations,
+        final Collection<Class<? extends Annotation>> possibleAnnotations) {
         m_parent = parent;
         m_type = type;
         m_settingsType = settingsType;
+        m_annotations = toMap(annotations, possibleAnnotations);
+        m_possibleAnnotations = possibleAnnotations;
+    }
+
+    private static <K, V> Map<K, V> toMap(final Function<K, V> function, final Collection<K> keys) {
+        return keys.stream().map(key -> new Pair<>(key, function.apply(key))).filter(pair -> pair.getSecond() != null)
+            .collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
     }
 
     /**
@@ -155,34 +160,29 @@ public abstract sealed class WidgetTreeNode permits WidgetNode, WidgetTree, Arra
      * @param key the annotation class
      * @param value of this annotation on the {@link #getParent() parent}
      */
-    void setParentAnnotation(final Class<? extends Annotation> key, final Annotation value) {
+    void addAnnotation(final Class<? extends Annotation> key, final Annotation value) {
         m_annotations.putIfAbsent(key, value);
-    }
-
-    /**
-     * Adjustments to the annotations within this tree depending on the annotations of parent nodes. E.g.
-     * {@link Layout @Layout} should set the layout of nested fields when set on a parent field.
-     *
-     * <p>
-     * Called after {@link #setParentAnnotation}.
-     * </p>
-     */
-    protected void postProcessAnnotations() {
-
     }
 
     /**
      * @param annotationClass
      * @param <T>
-     * @return the annotation if present (or added during {@link WidgetTree#postProcessAnnotations()})
+     * @return the annotation if present (or added via {@link WidgetTree#addAnnotation(Class, Annotation)})
      */
     @SuppressWarnings("unchecked") // The m_annotations map is constructed as required
     public <T extends Annotation> Optional<T> getAnnotation(final Class<T> annotationClass) {
-        if (!getPossibleAnnotations().contains(annotationClass)) {
+        if (!m_possibleAnnotations.contains(annotationClass)) {
             throw new IllegalArgumentException(String.format("Annotation %s should not be used on a %s.",
                 annotationClass.getSimpleName(), this.getClass().getSimpleName()));
         }
         return Optional.ofNullable((T)this.m_annotations.get(annotationClass));
+    }
+
+    /**
+     * @return the collection of respected annotations for this node
+     */
+    public final Collection<Class<? extends Annotation>> getPossibleAnnotations() {
+        return m_possibleAnnotations;
     }
 
     /**

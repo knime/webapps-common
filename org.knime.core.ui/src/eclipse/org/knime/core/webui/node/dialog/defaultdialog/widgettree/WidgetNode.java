@@ -91,12 +91,19 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRefere
  */
 public final class WidgetNode extends WidgetTreeNode {
 
+    private static final Collection<Class<? extends Annotation>> POSSIBLE_ANNOTATIONS = List.of(LatentWidget.class,
+        Layout.class, Widget.class, Signal.class, Signals.class, RadioButtonsWidget.class, ValueSwitchWidget.class,
+        ChoicesWidget.class, ComboBoxWidget.class, SortListWidget.class, ButtonWidget.class, SimpleButtonWidget.class,
+        DateTimeWidget.class, DateWidget.class, RichTextInputWidget.class, CredentialsWidget.class,
+        PasswordWidget.class, UsernameWidget.class, FileReaderWidget.class, FileWriterWidget.class,
+        LocalFileReaderWidget.class, LocalFileWriterWidget.class, TextInputWidget.class, Effect.class,
+        ValueReference.class, ValueProvider.class, InternalArrayWidget.ElementCheckboxWidget.class);
+
     private final Class<?> m_contentType;
 
     WidgetNode(final WidgetTree parent, final Class<?> type, final Class<?> contentType,
         final Function<Class<? extends Annotation>, Annotation> annotations) {
-        super(parent, parent.getSettingsType(), type, annotations);
-
+        super(parent, parent.getSettingsType(), type, annotations, POSSIBLE_ANNOTATIONS);
         m_contentType = contentType;
     }
 
@@ -105,17 +112,6 @@ public final class WidgetNode extends WidgetTreeNode {
      */
     public Class<?> getContentType() {
         return m_contentType;
-    }
-
-    @Override
-    public Collection<Class<? extends Annotation>> getPossibleAnnotations() {
-        return List.of(LatentWidget.class, Layout.class, Widget.class, Signal.class, Signals.class,
-            RadioButtonsWidget.class, ValueSwitchWidget.class, ChoicesWidget.class, ComboBoxWidget.class,
-            SortListWidget.class, ButtonWidget.class, SimpleButtonWidget.class, DateTimeWidget.class, DateWidget.class,
-            RichTextInputWidget.class, CredentialsWidget.class, PasswordWidget.class, UsernameWidget.class,
-            FileReaderWidget.class, FileWriterWidget.class, LocalFileReaderWidget.class, LocalFileWriterWidget.class,
-            TextInputWidget.class, Effect.class, ValueReference.class, ValueProvider.class,
-            InternalArrayWidget.ElementCheckboxWidget.class);
     }
 
 }

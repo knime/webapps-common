@@ -79,17 +79,17 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRefere
  */
 public final class ArrayWidgetNode extends WidgetTreeNode {
 
-    ArrayWidgetNode(final WidgetTree parent, final Class<?> type,
-        final Function<Class<? extends Annotation>, Annotation> annotations) {
-        super(parent, parent.getSettingsType(), type, annotations);
-    }
-
-    WidgetTree m_elementWidgetTree;
-
-    @Override
-    public Collection<Class<? extends Annotation>> getPossibleAnnotations() {
-        return List.of(LatentWidget.class, Widget.class, ArrayWidget.class, InternalArrayWidget.class, Signal.class,
+    private static final Collection<Class<? extends Annotation>> POSSIBLE_ANNOTATIONS =
+        List.of(LatentWidget.class, Widget.class, ArrayWidget.class, InternalArrayWidget.class, Signal.class,
             Signals.class, Layout.class, Effect.class, ValueReference.class, ValueProvider.class);
+
+    private final WidgetTree m_elementWidgetTree;
+
+    ArrayWidgetNode(final WidgetTree parent, final WidgetTree elementWidgetTree, final Class<?> type,
+        final Function<Class<? extends Annotation>, Annotation> annotations) {
+        super(parent, parent.getSettingsType(), type, annotations, POSSIBLE_ANNOTATIONS);
+        m_elementWidgetTree = elementWidgetTree;
+        m_elementWidgetTree.m_arrayWidgetNodeParent = this;
     }
 
     /**
@@ -97,11 +97,6 @@ public final class ArrayWidgetNode extends WidgetTreeNode {
      */
     public WidgetTree getElementWidgetTree() {
         return m_elementWidgetTree;
-    }
-
-    @Override
-    public void postProcessAnnotations() {
-        m_elementWidgetTree.postProcessAnnotations();
     }
 
 }
