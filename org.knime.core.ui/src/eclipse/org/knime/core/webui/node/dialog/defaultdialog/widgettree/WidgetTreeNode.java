@@ -69,7 +69,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
  */
 public abstract sealed class WidgetTreeNode permits WidgetNode, WidgetTree, ArrayWidgetNode {
 
-    final Map<Class<? extends Annotation>, Annotation> m_annotations;
+    protected final Map<Class<? extends Annotation>, Annotation> m_annotations;
 
     private final WidgetTree m_parent;
 
@@ -125,7 +125,7 @@ public abstract sealed class WidgetTreeNode permits WidgetNode, WidgetTree, Arra
     /**
      * @return the next parent {@link ArrayWidgetNode} if any
      */
-    public Optional<ArrayWidgetNode> getContainingArrayWidgetNode() {
+    Optional<ArrayWidgetNode> getContainingArrayWidgetNode() {
         if (m_containingArrayWidgetNode == null) { // NOSONAR
             m_containingArrayWidgetNode = getContainingArrayWidgetNodeUsingParents();
         }
@@ -188,7 +188,7 @@ public abstract sealed class WidgetTreeNode permits WidgetNode, WidgetTree, Arra
     /**
      * @return the parent
      */
-    public WidgetTree getParent() {
+    WidgetTree getParent() {
         return m_parent;
     }
 

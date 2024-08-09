@@ -48,8 +48,6 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
-import static org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeUtil.parseToWidgetTree;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -134,7 +132,7 @@ public final class JsonFormsUiSchemaUtil {
 
     private static List<WidgetTree>
         constructWidgetTrees(final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses) {
-        return settingsClasses.entrySet().stream().map(e -> parseToWidgetTree(e.getValue(), e.getKey())).toList();
+        return settingsClasses.entrySet().stream().map(e -> new WidgetTree(e.getValue(), e.getKey())).toList();
     }
 
     /**

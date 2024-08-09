@@ -74,13 +74,13 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRefere
  * It is the only type of node in this tree structure with children (apart from the element tree <-> array widget
  * relationship of the {@link ArrayWidgetNode})
  *
- * Use the {@link WidgetTreeUtil} to construct a widget tree from a {@link WidgetGroup}.
+ * Use {@link WidgetTree#WidgetTree(Class, SettingsType)} to create a root widget tree.
  *
  * @author Paul Bärnreuther
  */
 public final class WidgetTree extends WidgetTreeNode {
 
-    private ArrayWidgetNode m_arrayWidgetNodeParent;
+    private final ArrayWidgetNode m_arrayWidgetNodeParent;
 
     private final Collection<WidgetTreeNode> m_children = new ArrayList<>();
 
@@ -88,31 +88,29 @@ public final class WidgetTree extends WidgetTreeNode {
 
     private final Class<? extends WidgetGroup> m_widgetGroupClass;
 
-    static WidgetTree createElementTree(final ArrayWidgetNode arrayWidgetNodeParent,
-        final Class<? extends WidgetGroup> widgetGroupClass,
-        final Function<Class<? extends Annotation>, Annotation> annotations) {
-        final var elementTree = new WidgetTree(null, null, widgetGroupClass, annotations);
-        elementTree.m_arrayWidgetNodeParent = arrayWidgetNodeParent;
-        return elementTree;
+    /**
+     * @param rootClass implementing {@link WidgetGroup}.
+     * @param settingsType "view" or "model" or null for element widget trees of array widgets
+     */
+    public WidgetTree(final Class<? extends WidgetGroup> rootClass, final SettingsType settingsType) {
+        this(null, settingsType, rootClass, rootClass::getAnnotation);
+        PopulateWidgetTreeHelper.populateWidgetTree(this, rootClass);
+        postProcessAnnotations();
     }
 
-    static WidgetTree createRootTree(final SettingsType settingsType,
+    WidgetTree(final WidgetTree parent, final SettingsType settingsType,
         final Class<? extends WidgetGroup> widgetGroupClass,
         final Function<Class<? extends Annotation>, Annotation> annotations) {
-        return new WidgetTree(null, settingsType, widgetGroupClass, annotations);
+        this(parent, settingsType, widgetGroupClass, annotations, null);
     }
 
-    static WidgetTree createIntermediateWidgetTree(final WidgetTree parent,
+    WidgetTree(final WidgetTree parent, final SettingsType settingsType,
         final Class<? extends WidgetGroup> widgetGroupClass,
-        final Function<Class<? extends Annotation>, Annotation> annotations) {
-        return new WidgetTree(parent, parent.getSettingsType(), widgetGroupClass, annotations);
-    }
-
-    private WidgetTree(final WidgetTree parent, final SettingsType settingsType,
-        final Class<? extends WidgetGroup> widgetGroupClass,
-        final Function<Class<? extends Annotation>, Annotation> annotations) {
+        final Function<Class<? extends Annotation>, Annotation> annotations,
+        final ArrayWidgetNode arrayWidgetNodeParent) {
         super(parent, settingsType, widgetGroupClass, annotations);
         m_widgetGroupClass = widgetGroupClass;
+        m_arrayWidgetNodeParent = arrayWidgetNodeParent;
     }
 
     @Override
@@ -122,7 +120,7 @@ public final class WidgetTree extends WidgetTreeNode {
     }
 
     @Override
-    public void postProcessAnnotations() {
+    protected void postProcessAnnotations() {
         List.of(Effect.class, Layout.class).forEach(annotationClass -> {
             if (m_annotations.containsKey(annotationClass)) {
                 getChildren()

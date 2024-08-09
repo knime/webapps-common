@@ -79,7 +79,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRefere
 import org.knime.core.webui.node.dialog.defaultdialog.widgettree.ArrayWidgetNode;
 import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
 import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeUtil;
 
 final class SettingsClassesToValueRefsAndStateProviders {
 
@@ -110,8 +109,7 @@ final class SettingsClassesToValueRefsAndStateProviders {
      */
     ValueRefsAndStateProviders settingsClassesToValueRefsAndStateProviders(
         final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses) {
-        final var widgetTrees =
-            settingsClasses.entrySet().stream().map(e -> WidgetTreeUtil.parseToWidgetTree(e.getValue(), e.getKey()));
+        final var widgetTrees = settingsClasses.entrySet().stream().map(e -> new WidgetTree(e.getValue(), e.getKey()));
         widgetTrees.forEach(this::traverseWidgetTree);
         return new ValueRefsAndStateProviders(m_valueRefs, m_valueProviders, m_uiStateProviders);
 

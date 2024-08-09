@@ -55,7 +55,6 @@ import java.util.List;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
-import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaGenerationException;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
@@ -74,13 +73,13 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedField;
 import com.fasterxml.jackson.databind.ser.PropertyWriter;
 
 /**
- * Use {@link #parseToWidgetTree} to construct a {@link WidgetTree} from a class implementing {@link WidgetGroup}.
+ * Helper to populate a widget tree from a {@link WidgetGroup}-class.
  *
  * @author Paul Bärnreuther
  */
-public final class WidgetTreeUtil {
+final class PopulateWidgetTreeHelper {
 
-    private WidgetTreeUtil() {
+    private PopulateWidgetTreeHelper() {
         // Utility
     }
 
@@ -130,23 +129,8 @@ public final class WidgetTreeUtil {
         }
     }
 
-    /**
-     * @param rootClass implementing {@link WidgetGroup}.
-     * @param settingsType "view" or "model" or null for element widget trees of array widgets
-     * @return the processed tree
-     */
-    public static WidgetTree parseToWidgetTree(final Class<? extends WidgetGroup> rootClass,
-        final SettingsType settingsType) {
-        final var widgetTree = WidgetTree.createRootTree(settingsType, rootClass, rootClass::getAnnotation);
-        fillWidgetTree(rootClass, widgetTree);
-        widgetTree.postProcessAnnotations();
-        return widgetTree;
-    }
-
-    private static WidgetTree fillWidgetTree(final Class<? extends WidgetGroup> rootClass,
-        final WidgetTree widgetTree) {
+    static void populateWidgetTree(final WidgetTree widgetTree, final Class<? extends WidgetGroup> rootClass) {
         getSerializableProperties(rootClass).forEachRemaining(field -> addField(widgetTree, field));
-        return widgetTree;
     }
 
     private static void addField(final WidgetTree widgetTree, final PropertyWriter field) {
@@ -159,7 +143,7 @@ public final class WidgetTreeUtil {
             @SuppressWarnings("unchecked") // checked by the if condition above
             final var widgetGroupType = (Class<? extends WidgetGroup>)type;
             final var widgetGroupChild = childBuilder.buildGroup(widgetGroupType);
-            fillWidgetTree(widgetGroupType, widgetGroupChild);
+            populateWidgetTree(widgetGroupChild, widgetGroupType);
         } else if (ArrayLayoutUtil.isArrayLayoutField(field.getType())) {
             @SuppressWarnings("unchecked") // checked by {@link ArrayLayoutUtil.isArrayLayoutField}
             final var arrayChild = childBuilder.buildArray(type);
@@ -178,9 +162,15 @@ public final class WidgetTreeUtil {
     private static void addElementWidgetTree(final ArrayWidgetNode arrayChild,
         final Class<? extends WidgetGroup> elementWidgetGroupType) {
         final var elementWidgetTree =
-            WidgetTree.createElementTree(arrayChild, elementWidgetGroupType, elementWidgetGroupType::getAnnotation);
-        fillWidgetTree(elementWidgetGroupType, elementWidgetTree);
+            createElementTree(arrayChild, elementWidgetGroupType, elementWidgetGroupType::getAnnotation);
+        populateWidgetTree(elementWidgetTree, elementWidgetGroupType);
         arrayChild.m_elementWidgetTree = elementWidgetTree;
+    }
+
+    private static WidgetTree createElementTree(final ArrayWidgetNode arrayWidgetNodeParent,
+        final Class<? extends WidgetGroup> widgetGroupClass,
+        final Function<Class<? extends Annotation>, Annotation> annotations) {
+        return new WidgetTree(null, null, widgetGroupClass, annotations, arrayWidgetNodeParent);
     }
 
     private static WidgetTreeNodeBuilder getNextChildBuilder(final WidgetTree tree) {
@@ -215,8 +205,14 @@ public final class WidgetTreeUtil {
         }
 
         WidgetTree buildGroup(final Class<? extends WidgetGroup> type) {
-            return addedToParent(m_name, WidgetTree.createIntermediateWidgetTree(m_parent, type,
+            return addedToParent(m_name, createIntermediateWidgetTree(m_parent, type,
                 annotationClass -> getAnnotationFromFieldOrClass(type, annotationClass)));
+        }
+
+        private static WidgetTree createIntermediateWidgetTree(final WidgetTree parent,
+            final Class<? extends WidgetGroup> widgetGroupClass,
+            final Function<Class<? extends Annotation>, Annotation> annotations) {
+            return new WidgetTree(parent, parent.getSettingsType(), widgetGroupClass, annotations);
         }
 
         static final Collection<Class<? extends Annotation>> POSSIBLE_CLASS_ANNOTATIONS =
