@@ -1,6 +1,5 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { mount } from "@vue/test-utils";
-
 import InputField from "../InputField.vue";
 
 describe("InputField.vue", () => {
@@ -36,6 +35,18 @@ describe("InputField.vue", () => {
       },
     });
     expect(wrapper.find("input").attributes().autofocus).toBeDefined();
+  });
+
+  it("renders with focus on mount", () => {
+    const focusSpy = vi.spyOn(InputField.methods, "focus");
+    mount(InputField, {
+      props: {
+        modelValue: "",
+        autofocus: false,
+        focusOnMount: true,
+      },
+    });
+    expect(focusSpy).toHaveBeenCalled();
   });
 
   it("renders with icon slot", () => {
@@ -174,7 +185,6 @@ describe("InputField.vue", () => {
     "emits %s events",
     (eventName) => {
       const wrapper = mount(InputField);
-
       const input = wrapper.find("input");
       input.trigger(eventName, { key: "X" });
       expect(wrapper.emitted(eventName)[0][0].key).toBe("X");

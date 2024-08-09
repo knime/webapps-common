@@ -41,6 +41,10 @@ export default {
       default: false,
       type: Boolean,
     },
+    focusOnMount: {
+      default: false,
+      type: Boolean,
+    },
     inputClasses: {
       default: "",
       type: String,
@@ -83,6 +87,11 @@ export default {
       }
       return classes;
     },
+  },
+  mounted() {
+    if (this.focusOnMount) {
+      this.focus();
+    }
   },
   methods: {
     getValue() {

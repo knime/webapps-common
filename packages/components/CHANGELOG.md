@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.0.13
+
+### Patch Changes
+
+- Extended InputField to focus on mount via props
+
 ## 1.0.12
 
 ### Patch Changes
