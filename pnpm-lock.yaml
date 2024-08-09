@@ -233,8 +233,8 @@ importers:
         specifier: 2.0.1
         version: 2.0.1
       semver:
-        specifier: '>=6.3.1'
-        version: 7.6.0
+        specifier: 6.3.1
+        version: 6.3.1
 
   packages/lint:
     dependencies:
@@ -7616,7 +7616,7 @@ snapshots:
 
   make-dir@3.1.0:
     dependencies:
-      semver: 7.6.0
+      semver: 6.3.1
 
   make-dir@4.0.0:
     dependencies:
@@ -8382,7 +8382,7 @@ snapshots:
       '@npmcli/fs': 3.1.1
       debug: 4.3.4
       read-package-json: 6.0.4
-      semver: 7.6.0
+      semver: 6.3.1
       slide: 1.1.6
     optionalDependencies:
       graceful-fs: 4.2.11

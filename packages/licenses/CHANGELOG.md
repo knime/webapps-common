@@ -1,5 +1,11 @@
 # @knime/licenses
 
+## 1.0.5
+
+### Patch Changes
+
+- 96ed6ae: Updated semver version to 6.3.1
+
 ## 1.0.4
 
 ### Patch Changes
