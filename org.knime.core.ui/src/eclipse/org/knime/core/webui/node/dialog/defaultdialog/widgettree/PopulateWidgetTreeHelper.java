@@ -177,7 +177,7 @@ final class PopulateWidgetTreeHelper {
     private static <T extends Annotation> T getAnnotationsFromFieldWithDeclaringClass(final PropertyWriter field,
         final Class<?> declaringClass, final Class<T> annotationClass) {
         return Optional.ofNullable(field.getAnnotation(annotationClass))
-            .orElse(field.getMember().getDeclaringClass().getAnnotation(annotationClass));
+            .orElse(declaringClass.getAnnotation(annotationClass));
     }
 
     private static WidgetTreeNodeBuilder getNextChildBuilder(final WidgetTree tree) {

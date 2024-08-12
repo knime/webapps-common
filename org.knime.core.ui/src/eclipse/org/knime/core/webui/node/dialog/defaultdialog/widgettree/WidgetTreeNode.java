@@ -68,7 +68,7 @@ import org.knime.core.webui.node.dialog.SettingsType;
  *
  * @author Paul Bärnreuther
  */
-public abstract sealed class WidgetTreeNode permits WidgetNode, WidgetTree, ArrayWidgetNode {
+public sealed class WidgetTreeNode permits WidgetNode, WidgetTree, ArrayWidgetNode {
 
     private final WidgetTree m_parent;
 
@@ -84,7 +84,15 @@ public abstract sealed class WidgetTreeNode permits WidgetNode, WidgetTree, Arra
 
     private final Collection<Class<? extends Annotation>> m_possibleAnnotations;
 
-    WidgetTreeNode(final WidgetTree parent, final SettingsType settingsType, final Class<?> type,
+    /**
+     * @param parent the parent widget tree or {@code null} if it's the root
+     * @param settingsType
+     * @param type the type this widget tree node represents
+     * @param annotations function to get get the 'annotation instance' for an annotation class; function returns
+     *            {@code null} if there is none
+     * @param possibleAnnotations all allowed annotations
+     */
+    protected WidgetTreeNode(final WidgetTree parent, final SettingsType settingsType, final Class<?> type,
         final Function<Class<? extends Annotation>, Annotation> annotations,
         final Collection<Class<? extends Annotation>> possibleAnnotations) {
         m_parent = parent;

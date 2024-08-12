@@ -105,7 +105,7 @@ public final class WidgetTree extends WidgetTreeNode {
         final Function<Class<? extends Annotation>, Annotation> annotations) {
         super(parent, settingsType, widgetGroupClass, annotations, POSSIBLE_ANNOTATIONS);
         m_widgetGroupClass = widgetGroupClass;
-        PopulateWidgetTreeHelper.populateWidgetTree(this, widgetGroupClass);
+        PopulateWidgetTreeHelper.populateWidgetTree(this, widgetGroupClass); // NOSONAR doesn't need to be thread-safe
     }
 
     void propagateAnnotationsToChildren() {

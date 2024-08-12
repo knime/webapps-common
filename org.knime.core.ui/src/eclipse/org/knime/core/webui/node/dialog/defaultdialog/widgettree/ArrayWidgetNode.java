@@ -89,7 +89,7 @@ public final class ArrayWidgetNode extends WidgetTreeNode {
         final Function<Class<? extends Annotation>, Annotation> annotations) {
         super(parent, parent.getSettingsType(), type, annotations, POSSIBLE_ANNOTATIONS);
         m_elementWidgetTree = elementWidgetTree;
-        m_elementWidgetTree.m_arrayWidgetNodeParent = this;
+        m_elementWidgetTree.m_arrayWidgetNodeParent = this; // NOSONAR doesn't need to be thread-safe
     }
 
     /**
