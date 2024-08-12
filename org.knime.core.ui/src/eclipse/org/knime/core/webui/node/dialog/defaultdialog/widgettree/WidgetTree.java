@@ -97,18 +97,18 @@ public final class WidgetTree extends WidgetTreeNode {
      */
     public WidgetTree(final Class<? extends WidgetGroup> rootClass, final SettingsType settingsType) {
         this(null, settingsType, rootClass, rootClass::getAnnotation);
+        propagateAnnotationsToChildren();
     }
 
     WidgetTree(final WidgetTree parent, final SettingsType settingsType,
         final Class<? extends WidgetGroup> widgetGroupClass,
         final Function<Class<? extends Annotation>, Annotation> annotations) {
         super(parent, settingsType, widgetGroupClass, annotations, POSSIBLE_ANNOTATIONS);
-        PopulateWidgetTreeHelper.populateWidgetTree(this, widgetGroupClass);
-        propagateAnnotationsToChildren();
         m_widgetGroupClass = widgetGroupClass;
+        PopulateWidgetTreeHelper.populateWidgetTree(this, widgetGroupClass);
     }
 
-    private void propagateAnnotationsToChildren() {
+    void propagateAnnotationsToChildren() {
         getChildren().forEach(child -> {
             for (var annotationClass : List.of(Effect.class, Layout.class)) {
                 if (m_annotations.containsKey(annotationClass)) {

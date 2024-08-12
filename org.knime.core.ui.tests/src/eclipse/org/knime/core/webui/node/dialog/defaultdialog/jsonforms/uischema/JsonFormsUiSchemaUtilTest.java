@@ -291,6 +291,71 @@ class JsonFormsUiSchemaUtilTest {
             .isEqualTo("#/properties/model/properties/clusterOfSettingsInSection/properties/sub2");
     }
 
+    interface TestDefaultParentOnSuperClassLayout {
+
+        @Section
+        interface DefaultSection {
+        }
+
+        @Section
+        interface FieldSection {
+        }
+
+        @Section
+        interface SuperClassDefaultSection {
+        }
+
+        @Section
+        interface SuperClassFieldSection {
+        }
+    }
+
+    @Layout(TestDefaultParentOnSuperClassLayout.SuperClassDefaultSection.class)
+    class SuperClassWithDefaultParent implements DefaultNodeSettings {
+
+        @Widget(title = "", description = "")
+        String m_defaultParentSuperClassSetting;
+
+        @Widget(title = "", description = "")
+        @Layout(TestDefaultParentOnSuperClassLayout.SuperClassFieldSection.class)
+        String m_superClassSetting;
+
+    }
+
+    @Layout(TestDefaultParentOnSuperClassLayout.DefaultSection.class)
+    class TestDefaultParentOnSuperClassSettings extends SuperClassWithDefaultParent {
+
+        @Widget(title = "", description = "")
+        String m_defaultParentSetting;
+
+        @Widget(title = "", description = "")
+        @Layout(TestDefaultParentOnSuperClassLayout.FieldSection.class)
+        String m_setting;
+
+    }
+
+    @Test
+    void testDefaultParentOnSuperclass() throws JsonProcessingException {
+        final var response = buildTestUiSchema(TestDefaultParentOnSuperClassSettings.class);
+        assertThatJson(response).inPath("$.elements").isArray().hasSize(4);
+        // DefaultSection
+        assertThatJson(response).inPath("$.elements[0].elements").isArray().hasSize(1);
+        assertThatJson(response).inPath("$.elements[0].elements[0].scope").isString()
+            .isEqualTo("#/properties/model/properties/defaultParentSetting");
+        // FieldSection
+        assertThatJson(response).inPath("$.elements[1].elements").isArray().hasSize(1);
+        assertThatJson(response).inPath("$.elements[1].elements[0].scope").isString()
+            .isEqualTo("#/properties/model/properties/setting");
+        // SuperClassDefaultSection
+        assertThatJson(response).inPath("$.elements[2].elements").isArray().hasSize(1);
+        assertThatJson(response).inPath("$.elements[2].elements[0].scope").isString()
+            .isEqualTo("#/properties/model/properties/defaultParentSuperClassSetting");
+        // SuperClassFieldSection
+        assertThatJson(response).inPath("$.elements[3].elements").isArray().hasSize(1);
+        assertThatJson(response).inPath("$.elements[3].elements[0].scope").isString()
+            .isEqualTo("#/properties/model/properties/superClassSetting");
+    }
+
     interface TestNoLayoutAnnotationLayout {
 
         @Section

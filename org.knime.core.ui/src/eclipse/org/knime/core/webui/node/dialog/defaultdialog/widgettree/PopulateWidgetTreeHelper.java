@@ -52,6 +52,7 @@ import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
@@ -130,13 +131,14 @@ final class PopulateWidgetTreeHelper {
     }
 
     static void populateWidgetTree(final WidgetTree widgetTree, final Class<? extends WidgetGroup> rootClass) {
-        getSerializableProperties(rootClass).forEachRemaining(field -> addField(widgetTree, field));
+        getSerializableProperties(rootClass).forEachRemaining(field -> addField(widgetTree, field, rootClass));
     }
 
-    private static void addField(final WidgetTree widgetTree, final PropertyWriter field) {
+    private static void addField(final WidgetTree widgetTree, final PropertyWriter field,
+        final Class<? extends WidgetGroup> populatingRootClass) {
         final var childBuilder = getNextChildBuilder(widgetTree)//
             .withName(field.getName()) //
-            .withFieldAnnotations(field::getAnnotation);
+            .withFieldAnnotations(getAnnotationsForField(field, populatingRootClass));
         final var type = field.getType().getRawClass();
 
         if (WidgetGroup.class.isAssignableFrom(type)) {
@@ -157,6 +159,25 @@ final class PopulateWidgetTreeHelper {
             }
             childBuilder.build(type, contentType);
         }
+    }
+
+    /**
+     * We need to extract annotations also from the declaring class in case it is not the same as the
+     * {@link WidgetGroup} that is populated.
+     */
+    private static Function<Class<? extends Annotation>, Annotation> getAnnotationsForField(final PropertyWriter field,
+        final Class<? extends WidgetGroup> populatingRootClass) {
+        final var declaringClass = field.getMember().getDeclaringClass();
+        if (declaringClass.equals(populatingRootClass)) {
+            return field::getAnnotation;
+        }
+        return annotationClass -> getAnnotationsFromFieldWithDeclaringClass(field, declaringClass, annotationClass);
+    }
+
+    private static <T extends Annotation> T getAnnotationsFromFieldWithDeclaringClass(final PropertyWriter field,
+        final Class<?> declaringClass, final Class<T> annotationClass) {
+        return Optional.ofNullable(field.getAnnotation(annotationClass))
+            .orElse(field.getMember().getDeclaringClass().getAnnotation(annotationClass));
     }
 
     private static WidgetTreeNodeBuilder getNextChildBuilder(final WidgetTree tree) {
