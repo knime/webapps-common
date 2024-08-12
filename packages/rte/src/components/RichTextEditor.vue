@@ -237,7 +237,12 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length);
           :base-extensions="baseExtensions"
         >
           <template #default="{ tools }">
-            <slot name="customToolbar" :editor="editor" :tools="tools">
+            <slot
+              name="customToolbar"
+              :editor="editor"
+              :tools="tools"
+              :hotkey-formatter="hotkeyFormatter"
+            >
               <RichTextEditorToolbar
                 :editor="editor"
                 :tools="tools"

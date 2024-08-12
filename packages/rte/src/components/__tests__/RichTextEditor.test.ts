@@ -560,13 +560,17 @@ describe("RichTextEditor.vue", () => {
     };
 
     it("should render custom toolbar", () => {
+      const hotkeyFormatter = vi.fn();
       const customToolbar = (props: any) =>
         h(getScopedComponent, { scope: props });
 
       const { wrapper } = doMount({
         // @ts-ignore
         slots: { customToolbar },
-        props: { baseExtensions: { all: true } },
+        props: {
+          baseExtensions: { all: true },
+          hotkeyFormatter,
+        },
       });
 
       expect(getSlottedStubProp({ wrapper, propName: "editor" })).toEqual(
@@ -576,6 +580,12 @@ describe("RichTextEditor.vue", () => {
       expect(getSlottedStubProp({ wrapper, propName: "tools" })).toEqual(
         expect.any(Array),
       );
+
+      expect(getSlottedStubProp({ wrapper, propName: "hotkeyFormatter" })).toBe(
+        hotkeyFormatter,
+      );
+
+      // TODO to check if we have the right properties in the slot. And check if the RichTextEditorToolbar is rendered
     });
   });
 });
