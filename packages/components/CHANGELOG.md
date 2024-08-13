@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.0.14
+
+### Patch Changes
+
+- b542f53: Export TwinlistModelValue
+
 ## 1.0.13
 
 ### Patch Changes

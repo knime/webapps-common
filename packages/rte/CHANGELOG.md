@@ -1,5 +1,13 @@
 # @knime/rich-text-editor
 
+## 1.0.15
+
+### Patch Changes
+
+- b542f53: Export createOnEscapeExtension
+- Updated dependencies [b542f53]
+  - @knime/components@1.0.14
+
 ## 1.0.14
 
 ### Patch Changes
