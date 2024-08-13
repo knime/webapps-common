@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import InputField from "webapps-common/ui/components/forms/InputField.vue";
+import { InputField } from "@knime/components";
 import { mount } from "@vue/test-utils";
 import { beforeEach, afterEach, describe, expect, it, vi, Mock } from "vitest";
 import flushPromises from "flush-promises";

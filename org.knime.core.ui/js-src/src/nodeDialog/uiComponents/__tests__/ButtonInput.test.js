@@ -6,9 +6,7 @@ import {
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import ButtonInput from "../ButtonInput.vue";
 import DialogComponentWrapper from "../DialogComponentWrapper.vue";
-import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
-import LoadingIcon from "webapps-common/ui/components/LoadingIcon.vue";
-import Label from "webapps-common/ui/components/forms/Label.vue";
+import { FunctionButton, LoadingIcon, Label } from "@knime/components";
 import DialogLabel from "../label/DialogLabel.vue";
 import flushPromises from "flush-promises";
 

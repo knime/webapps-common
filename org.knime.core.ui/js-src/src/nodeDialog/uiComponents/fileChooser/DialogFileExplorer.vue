@@ -15,13 +15,15 @@ export { Props };
 
 <script setup lang="ts">
 import { ref, computed, toRefs, watch } from "vue";
-import FileExplorer from "webapps-common/ui/components/FileExplorer/FileExplorer.vue";
-import type { FileExplorerItem } from "webapps-common/ui/components/FileExplorer/types";
+import {
+  FileExplorer,
+  InputField,
+  LoadingIcon,
+  type FileExplorerItem,
+} from "@knime/components";
 import useFileChooserBackend from "./composables/useFileChooserBackend";
 import { toFileExplorerItem } from "./utils";
-import LoadingIcon from "webapps-common/ui/components/LoadingIcon.vue";
-import FolderIcon from "webapps-common/ui/assets/img/icons/folder.svg";
-import InputField from "webapps-common/ui/components/forms/InputField.vue";
+import FolderIcon from "@knime/styles/img/icons/folder.svg";
 
 const currentPath = ref<string | null>(null);
 

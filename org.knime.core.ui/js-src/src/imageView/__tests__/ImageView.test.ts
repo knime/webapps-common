@@ -14,7 +14,7 @@ import {
   ResourceService,
   SharedDataService,
 } from "@knime/ui-extension-service";
-import Label from "webapps-common/ui/components/forms/Label.vue";
+import { Label } from "@knime/components";
 import flushPromises from "flush-promises";
 import { VueWrapper, mount } from "@vue/test-utils";
 import * as fetchImage from "@/utils/images";

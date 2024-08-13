@@ -12,9 +12,9 @@ import { Update, UpdateResult } from "@/nodeDialog/types/Update";
 import TextInput from "@/nodeDialog/uiComponents/TextInput.vue";
 import EditResetButton from "@/nodeDialog/layoutComponents/arrayLayout/EditResetButton.vue";
 
-import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
-import EditIcon from "webapps-common/ui/assets/img/icons/pencil.svg";
-import ResetIcon from "webapps-common/ui/assets/img/icons/reset-all.svg";
+import { FunctionButton } from "@knime/components";
+import EditIcon from "@knime/styles/img/icons/pencil.svg";
+import ResetIcon from "@knime/styles/img/icons/reset-all.svg";
 
 describe("edit/reset button in array layouts", () => {
   type Wrapper = VueWrapper<any> & {

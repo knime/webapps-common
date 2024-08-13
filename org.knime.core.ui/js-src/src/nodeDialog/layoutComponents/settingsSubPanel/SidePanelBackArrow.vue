@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import ArrowLeft from "webapps-common/ui/assets/img/icons/arrow-left.svg";
-import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
+import ArrowLeft from "@knime/styles/img/icons/arrow-left.svg";
+import { FunctionButton } from "@knime/components";
 
 const emit = defineEmits(["click"]);
 </script>

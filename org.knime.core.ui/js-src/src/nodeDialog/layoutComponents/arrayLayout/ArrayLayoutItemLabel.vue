@@ -5,7 +5,7 @@ export type TitleConfig =
 </script>
 
 <script setup lang="ts">
-import Label from "webapps-common/ui/components/forms/Label.vue";
+import { Label } from "@knime/components";
 import useProvidedState from "@/nodeDialog/composables/components/useProvidedState";
 import { computed } from "vue";
 

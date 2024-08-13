@@ -8,7 +8,7 @@ import { cloneDeep } from "lodash-es";
 
 import { getOptions } from "@/nodeDialog/__tests__/utils";
 import { mockRegisterSettings } from "@@/test-setup/utils/integration/dirtySettingState";
-import Checkbox from "@@/webapps-common/ui/components/forms/Checkbox.vue";
+import { Checkbox } from "@knime/components";
 
 describe("edit/reset button in array layouts", () => {
   type Wrapper = VueWrapper<any> & {

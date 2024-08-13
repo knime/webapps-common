@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import Dropdown from "webapps-common/ui/components/forms/Dropdown.vue";
+import { Dropdown } from "@knime/components";
 import { mount } from "@vue/test-utils";
 import {
   beforeEach,

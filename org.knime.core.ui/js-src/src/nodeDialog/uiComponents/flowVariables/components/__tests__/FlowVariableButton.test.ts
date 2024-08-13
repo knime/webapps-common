@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
+import { FunctionButton } from "@knime/components";
 import FlowVariableIcon from "../FlowVariableIcon.vue";
 import FlowVariablePopover from "../FlowVariablePopover.vue";
 

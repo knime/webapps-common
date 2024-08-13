@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Checkbox from "webapps-common/ui/components/forms/Checkbox.vue";
+import { Checkbox } from "@knime/components";
 import useDialogControl from "@/nodeDialog/composables/components/useDialogControl";
 import { rendererProps } from "@jsonforms/vue";
 

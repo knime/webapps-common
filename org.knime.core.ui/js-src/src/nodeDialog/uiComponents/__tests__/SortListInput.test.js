@@ -10,8 +10,7 @@ import flushPromises from "flush-promises";
 import SortListInput, {
   DEFAULT_ANY_UNKNOWN_VALUES_ID,
 } from "../SortListInput.vue";
-import SortList from "webapps-common/ui/components/forms/SortList.vue";
-import Button from "webapps-common/ui/components/Button.vue";
+import { SortList, Button } from "@knime/components";
 
 describe("SortListInput.vue", () => {
   let props, wrapper, component;

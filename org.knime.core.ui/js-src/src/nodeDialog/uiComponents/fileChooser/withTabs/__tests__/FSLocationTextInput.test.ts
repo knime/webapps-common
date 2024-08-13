@@ -5,7 +5,7 @@ import FSLocationTextInput, {
 import { shallowMount } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import flushPromises from "flush-promises";
-import InputField from "@@/webapps-common/ui/components/forms/InputField.vue";
+import { InputField } from "@knime/components";
 
 describe("FSLocationTextInput.vue", () => {
   const currentSpacePrefix = "knime://knime.space/";

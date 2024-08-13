@@ -11,12 +11,6 @@ They are built as [Vue libraries] and used in KNIME Analytics Platform and/or KN
 
 Newer versions may also work, but have not been tested.
 
-Pull the contained [git submodules](https://stackoverflow.com/a/4438292/5134084) with
-
-```sh
-git submodule update --init
-```
-
 ### Install dependencies
 
 ```sh
@@ -148,7 +142,7 @@ The views expect that the embedding app provides the following:
 
 - Vue and Consola compatible to the versions defined in [`package.json`](package.json)
 - global `window.consola` instance for logging
-- CSS variables as defined in the `webapps-common` project.
+- CSS variables as defined in the `@knime/styles` project.
   They are not included in the build in order to avoid duplication.
 
 ### Usage example

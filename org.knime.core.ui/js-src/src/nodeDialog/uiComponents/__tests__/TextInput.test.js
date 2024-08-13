@@ -7,7 +7,7 @@ import {
 import TextInput from "../TextInput.vue";
 import LabeledInput from "../label/LabeledInput.vue";
 import DialogLabel from "../label/DialogLabel.vue";
-import InputField from "webapps-common/ui/components/forms/InputField.vue";
+import { InputField } from "@knime/components";
 import flushPromises from "flush-promises";
 
 describe("TextInput.vue", () => {

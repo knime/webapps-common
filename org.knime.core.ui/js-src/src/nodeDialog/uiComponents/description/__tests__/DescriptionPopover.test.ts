@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
 import DialogPopover from "@/nodeDialog/popover/DialogPopover.vue";
-import Description from "webapps-common/ui/components/Description.vue";
-import DescriptionIcon from "webapps-common/ui/assets/img/icons/circle-help.svg";
+import { Description, FunctionButton } from "@knime/components";
+import DescriptionIcon from "@knime/styles/img/icons/circle-help.svg";
 
 import { mount } from "@vue/test-utils";
 import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";

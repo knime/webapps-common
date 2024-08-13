@@ -6,8 +6,7 @@ import {
 import RadioInput from "../RadioInput.vue";
 import RadioInputBase from "../RadioInputBase.vue";
 import LabeledInput from "../label/LabeledInput.vue";
-import RadioButtons from "webapps-common/ui/components/forms/RadioButtons.vue";
-import BaseRadioButtons from "webapps-common/ui/components/forms/BaseRadioButtons.vue";
+import { RadioButtons } from "@knime/components";
 
 describe("RadioInput.vue", () => {
   let props;
@@ -51,7 +50,6 @@ describe("RadioInput.vue", () => {
     expect(wrapper.getComponent(RadioInputBase).exists()).toBe(true);
     expect(wrapper.findComponent(LabeledInput).exists()).toBe(true);
     expect(wrapper.findComponent(RadioButtons).exists()).toBe(true);
-    expect(wrapper.findComponent(BaseRadioButtons).exists()).toBe(true);
   });
 
   it("sets correct type prop", async () => {

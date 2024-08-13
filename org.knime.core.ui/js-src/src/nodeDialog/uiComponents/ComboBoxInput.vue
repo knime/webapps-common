@@ -1,19 +1,18 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import ComboBox from "webapps-common/ui/components/forms/ComboBox.vue";
+import { ComboBox } from "@knime/components";
 import type { PossibleValue } from "../types/ChoicesUiSchema";
 import useDialogControl from "../composables/components/useDialogControl";
 import LabeledInput from "./label/LabeledInput.vue";
 import { rendererProps } from "@jsonforms/vue";
 import useProvidedState from "../composables/components/useProvidedState";
 import { withSpecialChoices } from "../utils/getPossibleValuesFromUiSchema";
-import { Id } from "@@/webapps-common/ui/components/forms/possibleValues";
 const props = defineProps(rendererProps());
 const {
   control,
   onChange,
   disabled: disabledByDefault,
-} = useDialogControl<Id[]>({ props });
+} = useDialogControl<string[]>({ props });
 
 const choicesProvider = computed<string | undefined>(
   () => control.value.uischema?.options?.choicesProvider,
@@ -63,7 +62,7 @@ const disabled = computed(
       :possible-values="noPossibleValuesPresent ? [] : options"
       :model-value="selectedIds"
       compact
-      @update:model-value="onChange"
+      @update:model-value="(newValue: any[]) => onChange(newValue)"
     />
   </LabeledInput>
 </template>

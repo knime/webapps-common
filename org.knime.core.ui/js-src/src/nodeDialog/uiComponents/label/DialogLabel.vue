@@ -3,8 +3,8 @@ import { Ref, nextTick, onMounted, ref } from "vue";
 import FlowVariableButton from "../flowVariables/components/FlowVariableButton.vue";
 import DescriptionPopover from "../description/DescriptionPopover.vue";
 import ErrorMessage from "../ErrorMessage.vue";
-import Label from "webapps-common/ui/components/forms/Label.vue";
-import ReexecutionIcon from "webapps-common/ui/assets/img/icons/reexecution.svg";
+import { Label } from "@knime/components";
+import ReexecutionIcon from "@knime/styles/img/icons/reexecution.svg";
 
 withDefaults(
   defineProps<{

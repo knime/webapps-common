@@ -6,7 +6,7 @@ import {
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import NameFilter from "../NameFilter.vue";
 import TwinlistInput from "../TwinlistInput.vue";
-import Twinlist from "@@/webapps-common/ui/components/forms/Twinlist.vue";
+import { Twinlist } from "@knime/components";
 
 describe("NameFilter.vue", () => {
   const defaultProps = {

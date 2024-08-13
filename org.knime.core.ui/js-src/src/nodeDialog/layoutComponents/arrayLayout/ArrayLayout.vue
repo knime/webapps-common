@@ -7,8 +7,8 @@ import {
 } from "@jsonforms/vue";
 import { composePaths, toDataPath } from "@jsonforms/core";
 import { useJsonFormsControlWithUpdate } from "@/nodeDialog/composables/components/useJsonFormsControlWithUpdate";
-import Button from "webapps-common/ui/components/Button.vue";
-import PlusIcon from "webapps-common/ui/assets/img/icons/plus.svg";
+import { Button } from "@knime/components";
+import PlusIcon from "@knime/styles/img/icons/plus.svg";
 import DialogComponentWrapper from "@/nodeDialog/uiComponents/DialogComponentWrapper.vue";
 import ArrayLayoutItemControls from "./ArrayLayoutItemControls.vue";
 import ArrayLayoutItem from "./ArrayLayoutItem.vue";

@@ -5,9 +5,7 @@ import type { Folder, PathAndError } from "../types";
 import { toFileExplorerItem } from "../utils";
 
 import DialogFileExplorer, { type Props } from "../DialogFileExplorer.vue";
-import FileExplorer from "webapps-common/ui/components/FileExplorer/FileExplorer.vue";
-import LoadingIcon from "webapps-common/ui/components/LoadingIcon.vue";
-import InputField from "webapps-common/ui/components/forms/InputField.vue";
+import { FileExplorer, InputField, LoadingIcon } from "@knime/components";
 
 describe("DialogFileExplorer.vue", () => {
   let dataServiceSpy: MockInstance, props: Props;

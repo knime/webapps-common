@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import RichTextEditor from "webapps-common/ui/components/forms/RichTextEditor/RichTextEditor.vue";
-import createOnEscapeExtension from "webapps-common/ui/components/forms/RichTextEditor/createOnEscapeExtension";
+import {
+  RichTextEditor,
+  createOnEscapeExtension,
+} from "@knime/rich-text-editor";
 import useDialogControl from "../composables/components/useDialogControl";
 import { rendererProps } from "@jsonforms/vue";
 import LabeledInput from "./label/LabeledInput.vue";

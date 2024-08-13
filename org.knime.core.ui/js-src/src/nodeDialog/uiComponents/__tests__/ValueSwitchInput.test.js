@@ -6,8 +6,7 @@ import {
 import RadioInputBase from "../RadioInputBase.vue";
 import ValueSwitchInput from "../ValueSwitchInput.vue";
 import LabeledInput from "../label/LabeledInput.vue";
-import ValueSwitch from "webapps-common/ui/components/forms/ValueSwitch.vue";
-import BaseRadioButtons from "webapps-common/ui/components/forms/BaseRadioButtons.vue";
+import { ValueSwitch } from "@knime/components";
 
 describe("ValueSwitchInput.vue", () => {
   const defaultProps = {
@@ -54,7 +53,6 @@ describe("ValueSwitchInput.vue", () => {
     expect(wrapper.getComponent(RadioInputBase).exists()).toBe(true);
     expect(wrapper.findComponent(LabeledInput).exists()).toBe(true);
     expect(wrapper.findComponent(ValueSwitch).exists()).toBe(true);
-    expect(wrapper.findComponent(BaseRadioButtons).exists()).toBe(true);
   });
 
   it("sets correct type prop", () => {

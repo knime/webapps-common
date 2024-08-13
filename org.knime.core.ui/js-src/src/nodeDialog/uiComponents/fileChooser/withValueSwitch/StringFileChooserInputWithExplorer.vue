@@ -22,9 +22,8 @@ export { StringFileChooserInputWithExplorerProps };
 <script setup lang="ts">
 import FileChooserWithButtons from "./FileChooserWithButtons.vue";
 import { computed, ref, toRef } from "vue";
-import InputField from "webapps-common/ui/components/forms/InputField.vue";
-import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
-import FolderLenseIcon from "webapps-common/ui/assets/img/icons/folder-lense.svg";
+import { InputField, FunctionButton } from "@knime/components";
+import FolderLenseIcon from "@knime/styles/img/icons/folder-lense.svg";
 import { useFileChooserBrowseOptions } from "../composables/useFileChooserBrowseOptions";
 
 const props = withDefaults(

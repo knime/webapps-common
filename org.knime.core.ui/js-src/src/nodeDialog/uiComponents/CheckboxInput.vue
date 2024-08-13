@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import Checkbox from "webapps-common/ui/components/forms/Checkbox.vue";
-import ReexecutionIcon from "webapps-common/ui/assets/img/icons/reexecution.svg";
+import { Checkbox } from "@knime/components";
+import ReexecutionIcon from "@knime/styles/img/icons/reexecution.svg";
 import FlowVariableButton from "./flowVariables/components/FlowVariableButton.vue";
 import ErrorMessage from "./ErrorMessage.vue";
 import DescriptionPopover from "./description/DescriptionPopover.vue";

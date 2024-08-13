@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import Description from "webapps-common/ui/components/Description.vue";
-import DescriptionIcon from "webapps-common/ui/assets/img/icons/circle-help.svg";
+import { Description } from "@knime/components";
+import DescriptionIcon from "@knime/styles/img/icons/circle-help.svg";
 import DialogPopover from "@/nodeDialog/popover/DialogPopover.vue";
 import type DescriptionPopoverProps from "./types/DescriptionPopoverProps";
 

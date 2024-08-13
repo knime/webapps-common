@@ -17,7 +17,7 @@ import useBoolean from "./utils/useBoolean";
 import { separateSpecialColumns } from "./utils/specialColumns";
 import { BORDER_BOTTOM_WIDTH } from "./constants";
 import { RowHeightMode } from "./types/ViewSettings";
-import LoadingIcon from "webapps-common/ui/components/LoadingIcon.vue";
+import { LoadingIcon } from "@knime/components";
 
 const emit = defineEmits<{
   pageChange: [pageNumberDiff: -1 | 1];

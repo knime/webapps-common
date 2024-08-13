@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
+import { FunctionButton, useClickOutside } from "@knime/components";
 import { computed, nextTick, ref, toRef, watch, type Ref } from "vue";
 import {
   useFloating,
@@ -11,7 +11,6 @@ import {
   autoUpdate,
 } from "@floating-ui/vue";
 import type { Side, Placement } from "@floating-ui/vue";
-import useClickOutside from "webapps-common/ui/composables/useClickOutside";
 import type DialogPopoverProps from "./types/DialogPopoverProps";
 import { FocusTrap } from "focus-trap-vue";
 import { tabbable } from "tabbable";

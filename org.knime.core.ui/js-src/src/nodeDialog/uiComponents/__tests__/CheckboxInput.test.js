@@ -7,8 +7,8 @@ import {
 import CheckboxInput from "../CheckboxInput.vue";
 import ErrorMessage from "../ErrorMessage.vue";
 import DescriptionPopover from "../description/DescriptionPopover.vue";
-import ReexecutionIcon from "webapps-common/ui/assets/img/icons/reexecution.svg";
-import Checkbox from "webapps-common/ui/components/forms/Checkbox.vue";
+import ReexecutionIcon from "@knime/styles/img/icons/reexecution.svg";
+import { Checkbox } from "@knime/components";
 import flushPromises from "flush-promises";
 
 describe("CheckboxInput.vue", () => {

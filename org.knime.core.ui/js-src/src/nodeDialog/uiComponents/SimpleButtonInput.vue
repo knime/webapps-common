@@ -4,7 +4,7 @@ import { computed, ref } from "vue";
 import { rendererProps } from "@jsonforms/vue";
 import DescriptionPopover from "./description/DescriptionPopover.vue";
 import DialogComponentWrapper from "./DialogComponentWrapper.vue";
-import Button from "webapps-common/ui/components/Button.vue";
+import { Button } from "@knime/components";
 import DynamicIcon, { type Icon } from "./DynamicIcon.vue";
 import { useJsonFormsControlWithUpdate } from "../composables/components/useJsonFormsControlWithUpdate";
 

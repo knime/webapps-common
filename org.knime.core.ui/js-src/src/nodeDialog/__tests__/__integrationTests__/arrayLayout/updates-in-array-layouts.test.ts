@@ -8,16 +8,14 @@ import { cloneDeep } from "lodash-es";
 
 import { getOptions } from "@/nodeDialog/__tests__/utils";
 import SimpleButtonInput from "@/nodeDialog/uiComponents/SimpleButtonInput.vue";
-import Button from "webapps-common/ui/components/Button.vue";
+import { Button, Dropdown, Checkbox } from "@knime/components";
 import { mockRegisterSettings } from "@@/test-setup/utils/integration/dirtySettingState";
-import Dropdown from "webapps-common/ui/components/forms/Dropdown.vue";
 import {
   Update,
   UpdateResult,
   ValueReference,
 } from "@/nodeDialog/types/Update";
 import TextInput from "@/nodeDialog/uiComponents/TextInput.vue";
-import Checkbox from "webapps-common/ui/components/forms/Checkbox.vue";
 import { ref } from "vue";
 
 describe("updates in array layouts", () => {

@@ -5,11 +5,9 @@ import { JsonDataService } from "@knime/ui-extension-service";
 
 import DeferredTableView from "../DeferredTableView.vue";
 import TableViewInteractive from "../../tableView/TableViewInteractive.vue";
-import Button from "webapps-common/ui/components/Button.vue";
-import SubMenu from "webapps-common/ui/components/SubMenu.vue";
-import SplitButton from "webapps-common/ui/components/SplitButton.vue";
-import CircleArrow from "webapps-common/ui/assets/img/icons/circle-arrow-down.svg";
-import DropdownIcon from "webapps-common/ui/assets/img/icons/arrow-dropdown.svg";
+import { Button, SubMenu, SplitButton } from "@knime/components";
+import CircleArrow from "@knime/styles/img/icons/circle-arrow-down.svg";
+import DropdownIcon from "@knime/styles/img/icons/arrow-dropdown.svg";
 
 describe("DeferredTableView.vue", () => {
   const jsonDataServiceDataMock = vi

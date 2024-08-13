@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import InputField from "webapps-common/ui/components/forms/InputField.vue";
-import NumberInput from "webapps-common/ui/components/forms/NumberInput.vue";
-import Label from "webapps-common/ui/components/forms/Label.vue";
+import { InputField, NumberInput, Label } from "@knime/components";
 import ErrorMessage from "../ErrorMessage.vue";
 
 withDefaults(

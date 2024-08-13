@@ -12,11 +12,11 @@ module.exports = {
   },
   settings: {
     "import/resolver": {
-      alias: {
-        map: [
-          ["@", "src/."],
-          ["@@", "."],
-        ],
+      "eslint-import-resolver-custom-alias": {
+        alias: {
+          "@": "src/.",
+          "@@": ".",
+        },
       },
     },
   },

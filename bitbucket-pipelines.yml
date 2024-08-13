@@ -7,7 +7,6 @@ definitions:
         caches:
           - node
         script:
-          - git submodule update --init
           - cd org.knime.core.ui/js-src
           - npm ci
           - npm run ci:lint-format

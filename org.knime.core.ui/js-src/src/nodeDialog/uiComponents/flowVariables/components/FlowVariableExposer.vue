@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import InputField from "webapps-common/ui/components/forms/InputField.vue";
+import { InputField } from "@knime/components";
 import { computed, ref, watchEffect } from "vue";
 import type FlowVariableExposerProps from "../types/FlowVariableExposerProps";
 import ErrorMessage from "../../ErrorMessage.vue";

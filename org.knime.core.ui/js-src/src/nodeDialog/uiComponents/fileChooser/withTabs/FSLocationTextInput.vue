@@ -16,7 +16,7 @@ export const prefixes: [keyof typeof FSCategory, string][] = [
 <script setup lang="ts">
 import { computed, ref, watch, onMounted } from "vue";
 import getDeepActiveElement from "@/utils/getDeepActiveElement";
-import InputField from "webapps-common/ui/components/forms/InputField.vue";
+import { InputField } from "@knime/components";
 import { startsWithSchemeRegex } from "./urlUtil";
 import useFileChooserBackend from "../composables/useFileChooserBackend";
 

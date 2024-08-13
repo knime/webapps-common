@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import LoadingIcon from "webapps-common/ui/components/LoadingIcon.vue";
-import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
-import EditIcon from "webapps-common/ui/assets/img/icons/pencil.svg";
-import ResetIcon from "webapps-common/ui/assets/img/icons/reset-all.svg";
+import { LoadingIcon, FunctionButton } from "@knime/components";
+import EditIcon from "@knime/styles/img/icons/pencil.svg";
+import ResetIcon from "@knime/styles/img/icons/reset-all.svg";
 import { rendererProps } from "@jsonforms/vue";
 import { useJsonFormsControlWithUpdate } from "@/nodeDialog/composables/components/useJsonFormsControlWithUpdate";
 import inject from "@/nodeDialog/utils/inject";

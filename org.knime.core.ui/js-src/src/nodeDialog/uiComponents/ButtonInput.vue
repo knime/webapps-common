@@ -1,7 +1,6 @@
 <script setup lang="ts" generic="SettingValue extends Stringifyable">
 import LabeledInput from "./label/LabeledInput.vue";
-import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
-import LoadingIcon from "webapps-common/ui/components/LoadingIcon.vue";
+import { FunctionButton, LoadingIcon } from "@knime/components";
 import { v4 as uuidv4 } from "uuid";
 import inject from "../utils/inject";
 import { computed, onMounted, ref } from "vue";

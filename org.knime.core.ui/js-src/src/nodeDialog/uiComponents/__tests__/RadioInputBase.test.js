@@ -7,9 +7,7 @@ import {
 import RadioInputBase from "../RadioInputBase.vue";
 import LabeledInput from "../label/LabeledInput.vue";
 import DialogLabel from "../label/DialogLabel.vue";
-import RadioButtons from "webapps-common/ui/components/forms/RadioButtons.vue";
-import ValueSwitch from "webapps-common/ui/components/forms/ValueSwitch.vue";
-import BaseRadioButtons from "webapps-common/ui/components/forms/BaseRadioButtons.vue";
+import { RadioButtons, ValueSwitch } from "@knime/components";
 
 describe("RadioInputBase.vue", () => {
   let props, wrapper, component;
@@ -59,7 +57,6 @@ describe("RadioInputBase.vue", () => {
     expect(wrapper.getComponent(RadioInputBase).exists()).toBe(true);
     expect(wrapper.findComponent(LabeledInput).exists()).toBe(true);
     expect(wrapper.findComponent(RadioButtons).exists()).toBe(true);
-    expect(wrapper.findComponent(BaseRadioButtons).exists()).toBe(true);
   });
 
   it("sets labelForId", () => {
@@ -100,7 +97,6 @@ describe("RadioInputBase.vue", () => {
     const { wrapper } = await createTypedWrapper(type);
     expect(wrapper.getComponent(RadioInputBase).exists()).toBe(true);
     expect(wrapper.findComponent(LabeledInput).exists()).toBe(true);
-    expect(wrapper.findComponent(BaseRadioButtons).exists()).toBe(true);
     expect(wrapper.getComponent(comp).exists()).toBe(true);
   });
 
@@ -142,7 +138,7 @@ describe("RadioInputBase.vue", () => {
   });
 
   it("sets correct initial value", () => {
-    expect(wrapper.findComponent(BaseRadioButtons).vm.modelValue).toBe(
+    expect(wrapper.findComponent(RadioButtons).vm.modelValue).toBe(
       props.control.data,
     );
   });
@@ -153,7 +149,7 @@ describe("RadioInputBase.vue", () => {
 
   it("sets correct possible values", () => {
     expect(
-      wrapper.findComponent(BaseRadioButtons).props().possibleValues,
+      wrapper.findComponent(RadioButtons).props().possibleValues,
     ).toStrictEqual([
       { id: "LOG", text: "Logarithmic" },
       { id: "VALUE", text: "Linear" },
@@ -166,7 +162,7 @@ describe("RadioInputBase.vue", () => {
       props,
     });
     expect(
-      wrapper.findComponent(BaseRadioButtons).props().possibleValues,
+      wrapper.findComponent(RadioButtons).props().possibleValues,
     ).toStrictEqual([
       { id: "LOG", text: "Logarithmic", disabled: true },
       { id: "VALUE", text: "Linear" },

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import LoadingIcon from "webapps-common/ui/components/LoadingIcon.vue";
+import { LoadingIcon } from "@knime/components";
 </script>
 
 <template>

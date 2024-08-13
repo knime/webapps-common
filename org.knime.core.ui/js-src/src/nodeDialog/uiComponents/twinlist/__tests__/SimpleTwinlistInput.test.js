@@ -8,8 +8,7 @@ import SimpleTwinlistInput from "../SimpleTwinlistInput.vue";
 import TwinlistLoadingInfo from "../../loading/TwinlistLoadingInfo.vue";
 import LabeledInput from "../../label/LabeledInput.vue";
 import DialogLabel from "../../label/DialogLabel.vue";
-import Twinlist from "webapps-common/ui/components/forms/Twinlist.vue";
-import MultiselectListBox from "webapps-common/ui/components/forms/MultiselectListBox.vue";
+import { Twinlist, MultiselectListBox } from "@knime/components";
 import flushPromises from "flush-promises";
 
 describe("SimpleTwinlistInput.vue", () => {

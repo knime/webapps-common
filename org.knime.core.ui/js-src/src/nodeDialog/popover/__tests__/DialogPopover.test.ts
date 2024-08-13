@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
+import { FunctionButton, useClickOutside } from "@knime/components";
 import { FocusTrap } from "focus-trap-vue";
 
 import { DOMWrapper, mount, VueWrapper } from "@vue/test-utils";
@@ -17,14 +17,17 @@ import flushPromises from "flush-promises";
 import DialogPopover from "../DialogPopover.vue";
 import type DialogPopoverProps from "../types/DialogPopoverProps";
 
-import useClickOutside from "webapps-common/ui/composables/useClickOutside";
 import { unref } from "vue";
 
 const useClickOutsideMock = useClickOutside as Mock<any[], any>;
 
-vi.mock("webapps-common/ui/composables/useClickOutside", () => ({
-  default: vi.fn(),
-}));
+vi.mock("@knime/components", async (importOriginal) => {
+  const actual = (await importOriginal()) as object;
+  return {
+    ...actual,
+    useClickOutside: vi.fn(),
+  };
+});
 
 const observe = vi.fn();
 const unobserve = vi.fn();

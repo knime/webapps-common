@@ -5,7 +5,7 @@ import svgLoader from "vite-svg-loader";
 import type { LibraryOptions } from "vite";
 import { loadEnv } from "vite";
 // @ts-ignore
-import { svgoConfig } from "webapps-common/config/svgo.config";
+import { svgoConfig } from "@knime/styles/config/svgo.config";
 
 const camelCase = (input: string) => {
   return input
@@ -163,7 +163,6 @@ export default defineConfig(({ mode }) => {
           "buildtools/",
           "coverage/**",
           "dist/**",
-          "webapps-common/**",
           "lib/**",
           "**/*.d.ts",
           "**/__tests__/**",

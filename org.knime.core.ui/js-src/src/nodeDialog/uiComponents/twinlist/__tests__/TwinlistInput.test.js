@@ -9,9 +9,11 @@ import TwinlistInput from "../TwinlistInput.vue";
 import TwinlistLoadingInfo from "../../loading/TwinlistLoadingInfo.vue";
 import LabeledInput from "../../label/LabeledInput.vue";
 import DialogLabel from "../../label/DialogLabel.vue";
-import MultiModeTwinlist from "webapps-common/ui/components/forms/MultiModeTwinlist.vue";
-import Twinlist from "webapps-common/ui/components/forms/Twinlist.vue";
-import MultiselectListBox from "webapps-common/ui/components/forms/MultiselectListBox.vue";
+import {
+  MultiModeTwinList,
+  Twinlist,
+  MultiselectListBox,
+} from "@knime/components";
 import { mergeDeep } from "@/nodeDialog/utils";
 import flushPromises from "flush-promises";
 
@@ -174,9 +176,9 @@ describe("TwinlistInput.vue", () => {
   });
 
   it("renders", () => {
-    expect(wrapper.getComponent(TwinlistInput).exists()).toBe(true);
+    expect(wrapper.findComponent(TwinlistInput).exists()).toBe(true);
     expect(wrapper.findComponent(LabeledInput).exists()).toBe(true);
-    expect(wrapper.findComponent(MultiModeTwinlist).exists()).toBe(true);
+    expect(wrapper.findComponent(MultiModeTwinList).exists()).toBe(true);
   });
 
   it("sets labelForId", () => {
@@ -238,7 +240,7 @@ describe("TwinlistInput.vue", () => {
     it("handles selected values change", async () => {
       const selected = ["A", "B", "C"];
       await wrapper
-        .findComponent(MultiModeTwinlist)
+        .findComponent(MultiModeTwinList)
         .vm.$emit("update:selected", selected);
       expect(handleChange).toHaveBeenCalledWith(
         props.control.path,
@@ -249,7 +251,7 @@ describe("TwinlistInput.vue", () => {
     it("handles array manual selection values change", () => {
       const selected = ["A", "B", "C"];
       wrapper
-        .findComponent(MultiModeTwinlist)
+        .findComponent(MultiModeTwinList)
         .vm.$emit("update:manualSelection", selected);
       expect(handleChange).toHaveBeenCalledWith(
         props.control.path,
@@ -266,7 +268,7 @@ describe("TwinlistInput.vue", () => {
       const deselected = ["E", "F", "G"];
       const includeUnknownValues = true;
       wrapper
-        .findComponent(MultiModeTwinlist)
+        .findComponent(MultiModeTwinList)
         .vm.$emit("update:manualSelection", {
           includedValues: selected,
           excludedValues: deselected,
@@ -287,7 +289,7 @@ describe("TwinlistInput.vue", () => {
     it("handles pattern change", () => {
       const pattern = "abc";
       wrapper
-        .findComponent(MultiModeTwinlist)
+        .findComponent(MultiModeTwinList)
         .vm.$emit("update:pattern", pattern);
       expect(handleChange).toHaveBeenNthCalledWith(
         1,
@@ -301,7 +303,7 @@ describe("TwinlistInput.vue", () => {
     it("handles isInverted change", () => {
       const isInverted = true;
       wrapper
-        .findComponent(MultiModeTwinlist)
+        .findComponent(MultiModeTwinList)
         .vm.$emit("update:inversePattern", isInverted);
       expect(handleChange).toHaveBeenNthCalledWith(
         1,
@@ -315,7 +317,7 @@ describe("TwinlistInput.vue", () => {
     it("handles isCaseSensitive change", () => {
       const isCaseSensitive = true;
       wrapper
-        .findComponent(MultiModeTwinlist)
+        .findComponent(MultiModeTwinList)
         .vm.$emit("update:caseSensitivePattern", isCaseSensitive);
       expect(handleChange).toHaveBeenNthCalledWith(
         1,
@@ -334,7 +336,7 @@ describe("TwinlistInput.vue", () => {
         { id: "C", text: "Text C" },
       ];
       wrapper
-        .findComponent(MultiModeTwinlist)
+        .findComponent(MultiModeTwinList)
         .vm.$emit("update:selected-types", selectedTypes, typeDisplays);
       expect(handleChange).toHaveBeenNthCalledWith(
         1,
@@ -348,7 +350,7 @@ describe("TwinlistInput.vue", () => {
 
   it("correctly transforms the data into possible values", () => {
     expect(
-      wrapper.findComponent(MultiModeTwinlist).props().possibleValues,
+      wrapper.findComponent(MultiModeTwinList).props().possibleValues,
     ).toEqual([
       {
         id: "test_1",
@@ -379,7 +381,7 @@ describe("TwinlistInput.vue", () => {
 
   it("correctly determines previously selected types", () => {
     expect(
-      wrapper.findComponent(MultiModeTwinlist).props().additionalPossibleTypes,
+      wrapper.findComponent(MultiModeTwinList).props().additionalPossibleTypes,
     ).toEqual([
       {
         id: "StringValue",
@@ -423,7 +425,7 @@ describe("TwinlistInput.vue", () => {
       const manuallySelected = ["A", "B"];
       expect(handleChange).not.toHaveBeenCalled();
       expect(
-        wrapper.findComponent(MultiModeTwinlist).props().manualSelection,
+        wrapper.findComponent(MultiModeTwinList).props().manualSelection,
       ).toStrictEqual({
         includedValues: manuallySelected,
         excludedValues: ["C", "D", "E"],
@@ -459,22 +461,22 @@ describe("TwinlistInput.vue", () => {
       const manuallySelected = ["A", "B", "E"];
       expect(handleChange).not.toHaveBeenCalled();
       expect(
-        wrapper.findComponent(MultiModeTwinlist).props().manualSelection,
+        wrapper.findComponent(MultiModeTwinList).props().manualSelection,
       ).toStrictEqual(manuallySelected);
     });
   });
 
   it("sets correct initial value", () => {
-    expect(wrapper.findComponent(MultiModeTwinlist).props().pattern).toBe(
+    expect(wrapper.findComponent(MultiModeTwinList).props().pattern).toBe(
       props.control.data.patternFilter.pattern,
     );
     expect(
-      wrapper.findComponent(MultiModeTwinlist).props().selectedTypes,
+      wrapper.findComponent(MultiModeTwinList).props().selectedTypes,
     ).toStrictEqual(props.control.data.typeFilter.selectedTypes);
     expect(
-      wrapper.findComponent(MultiModeTwinlist).props().manualSelection,
+      wrapper.findComponent(MultiModeTwinList).props().manualSelection,
     ).toStrictEqual(props.control.data.manualFilter.manuallySelected);
-    expect(wrapper.findComponent(MultiModeTwinlist).props().mode).toBe(
+    expect(wrapper.findComponent(MultiModeTwinList).props().mode).toBe(
       "manual",
     );
   });
@@ -490,7 +492,7 @@ describe("TwinlistInput.vue", () => {
       withControllingFlowVariable: `${props.control.path}.${oneOfTheSubKeys}`,
     });
     expect(
-      wrapper.findComponent(MultiModeTwinlist).props().disabled,
+      wrapper.findComponent(MultiModeTwinList).props().disabled,
     ).toBeTruthy();
   });
 

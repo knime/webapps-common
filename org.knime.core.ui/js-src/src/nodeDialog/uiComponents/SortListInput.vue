@@ -3,8 +3,7 @@ export const DEFAULT_ANY_UNKNOWN_VALUES_ID = "<any unknown new column>";
 </script>
 
 <script setup lang="ts">
-import SortList from "webapps-common/ui/components/forms/SortList.vue";
-import Button from "webapps-common/ui/components/Button.vue";
+import { SortList, Button } from "@knime/components";
 import useDialogControl from "../composables/components/useDialogControl";
 import { rendererProps } from "@jsonforms/vue";
 import LabeledInput from "./label/LabeledInput.vue";

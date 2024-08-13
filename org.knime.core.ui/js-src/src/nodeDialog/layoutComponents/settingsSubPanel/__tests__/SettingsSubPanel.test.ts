@@ -6,9 +6,7 @@ import TestSettingsSubPanel, {
 } from "./TestSettingsSubPanel.vue";
 import { VueWrapper, mount } from "@vue/test-utils";
 import flushPromises from "flush-promises";
-import Button from "webapps-common/ui/components/Button.vue";
-import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
-import SideDrawer from "webapps-common/ui/components/SideDrawer.vue";
+import { Button, FunctionButton, SideDrawer } from "@knime/components";
 
 describe("SettingsSubPanel", () => {
   let props: TestComponentProps,

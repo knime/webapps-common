@@ -8,7 +8,7 @@ import ComboBoxInput from "../ComboBoxInput.vue";
 import LabeledInput from "../label/LabeledInput.vue";
 import DialogLabel from "../label/DialogLabel.vue";
 
-import ComboBox from "webapps-common/ui/components/forms/ComboBox.vue";
+import { ComboBox } from "@knime/components";
 import flushPromises from "flush-promises";
 
 describe("ComboBoxInput.vue", () => {

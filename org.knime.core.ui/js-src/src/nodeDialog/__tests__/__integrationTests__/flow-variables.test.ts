@@ -1,7 +1,6 @@
 import { MockInstance, beforeEach, describe, expect, it, vi } from "vitest";
 import { DOMWrapper, mount, VueWrapper } from "@vue/test-utils";
-import Dropdown from "webapps-common/ui/components/forms/Dropdown.vue";
-import InputField from "webapps-common/ui/components/forms/InputField.vue";
+import { Dropdown, InputField } from "@knime/components";
 
 import { JsonDataService } from "@knime/ui-extension-service";
 

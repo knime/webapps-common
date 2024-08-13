@@ -9,7 +9,7 @@ import { RowHeightMode } from "../types/ViewSettings";
 import specialColumns from "./specialColumns";
 import type { DataType, HeaderMenuItem } from "../types";
 import type { Renderer } from "../types/InitialData";
-import type { MenuItem } from "webapps-common/ui/components/MenuItems.vue";
+import type { MenuItem } from "@knime/components";
 import { ColumnContentType } from "../types/Table";
 const { INDEX, ROW_ID, SKIPPED_REMAINING_COLUMNS_COLUMN } = specialColumns;
 const isImage = (contentType?: ColumnContentType) => contentType === "img_path";

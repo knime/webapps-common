@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import DateInput from "webapps-common/ui/components/forms/DateTimeInput.vue";
+import { DateTimeInput } from "@knime/components/date-time-input";
 import useDialogControl from "../composables/components/useDialogControl";
 import LabeledInput from "./label/LabeledInput.vue";
 import { rendererProps } from "@jsonforms/vue";
@@ -22,7 +22,7 @@ const maximum = computed(() =>
     :control="control"
     @controlling-flow-variable-set="onChange"
   >
-    <DateInput
+    <DateTimeInput
       :id="labelForId"
       two-lines
       :model-value="new Date(control.data)"

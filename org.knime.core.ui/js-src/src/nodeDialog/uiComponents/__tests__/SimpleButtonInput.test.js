@@ -3,9 +3,9 @@ import {
   mountJsonFormsComponent,
   getControlBase,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
-import ReloadIcon from "webapps-common/ui/assets/img/icons/reload.svg";
+import ReloadIcon from "@knime/styles/img/icons/reload.svg";
 import SimpleButtonInput from "../SimpleButtonInput.vue";
-import Button from "webapps-common/ui/components/Button.vue";
+import { Button } from "@knime/components";
 
 describe("SimpleButtonInput.vue", () => {
   let props, wrapper, component;

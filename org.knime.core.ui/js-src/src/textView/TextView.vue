@@ -72,7 +72,7 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
-@import url("webapps-common/ui/components/forms/RichTextEditor/styles.css");
+@import url("@knime/styles/css/rich-text-editor.css");
 
 .text-view-container:deep() {
   @mixin rich-text-editor-styles;

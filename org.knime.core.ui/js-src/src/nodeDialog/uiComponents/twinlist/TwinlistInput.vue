@@ -3,7 +3,7 @@ import type {
   IdAndText,
   PossibleValue,
 } from "@/nodeDialog//types/ChoicesUiSchema";
-import type { TwinlistModelValue } from "webapps-common/ui/components/forms/Twinlist.vue";
+import type { TwinlistModelValue } from "@knime/components";
 export type TwinlistData = {
   mode: string;
   manualFilter: {
@@ -30,7 +30,7 @@ export type TwinlistData = {
 import { markRaw, type Ref, ref, computed } from "vue";
 import { rendererProps } from "@jsonforms/vue";
 import { mergeDeep } from "@/nodeDialog/utils";
-import MultiModeTwinlist from "webapps-common/ui/components/forms/MultiModeTwinlist.vue";
+import { MultiModeTwinList } from "@knime/components";
 import inject from "@/nodeDialog/utils/inject";
 
 import type Control from "@/nodeDialog/types/Control";
@@ -249,7 +249,7 @@ const rightLabel = computed(
     :control="control"
     @controlling-flow-variable-set="onChange"
   >
-    <MultiModeTwinlist
+    <MultiModeTwinList
       v-bind="$attrs"
       :id="labelForId"
       :show-mode="showMode"

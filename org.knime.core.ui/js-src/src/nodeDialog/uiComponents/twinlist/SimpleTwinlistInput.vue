@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, markRaw } from "vue";
 import { rendererProps } from "@jsonforms/vue";
-import Twinlist from "webapps-common/ui/components/forms/Twinlist.vue";
+import { Twinlist } from "@knime/components";
 import inject from "@/nodeDialog/utils/inject";
 import TwinlistLoadingInfo from "../loading/TwinlistLoadingInfo.vue";
 import type { IdAndText } from "@/nodeDialog/types/ChoicesUiSchema";

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import NumberInput from "webapps-common/ui/components/forms/NumberInput.vue";
+import { NumberInput } from "@knime/components";
 import { rendererProps } from "@jsonforms/vue";
 import useDialogControl from "../composables/components/useDialogControl";
 import { type PropType, computed } from "vue";

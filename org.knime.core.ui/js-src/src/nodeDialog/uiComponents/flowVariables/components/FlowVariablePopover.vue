@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Label from "webapps-common/ui/components/forms/Label.vue";
+import { Label } from "@knime/components";
 import FlowVariableSelector from "./FlowVariableSelector.vue";
 import { computed } from "vue";
 import FlowVariableExposer from "./FlowVariableExposer.vue";

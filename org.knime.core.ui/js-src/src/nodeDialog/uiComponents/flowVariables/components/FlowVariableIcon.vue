@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import OnlyFlowVariable from "webapps-common/ui/assets/img/icons/only-flow-variables.svg";
-import ExposeFlowVariable from "webapps-common/ui/assets/img/icons/expose-flow-variables.svg";
-import BothFlowVariables from "webapps-common/ui/assets/img/icons/both-flow-variables.svg";
+import OnlyFlowVariable from "@knime/styles/img/icons/only-flow-variables.svg";
+import ExposeFlowVariable from "@knime/styles/img/icons/expose-flow-variables.svg";
+import BothFlowVariables from "@knime/styles/img/icons/both-flow-variables.svg";
 
 import type FlowVariableIconProps from "../types/FlowVariableIconProps";
 import { computed, watch } from "vue";

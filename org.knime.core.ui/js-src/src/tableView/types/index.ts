@@ -1,6 +1,6 @@
 import type { UIExtensionService } from "@knime/ui-extension-service";
 import type TableViewViewSettings from "./ViewSettings";
-import { MenuItem } from "@@/webapps-common/ui/components/MenuItems.vue";
+import type { MenuItem } from "@knime/components";
 import { FilterConfig } from "@knime/knime-ui-table";
 
 export interface DataType {

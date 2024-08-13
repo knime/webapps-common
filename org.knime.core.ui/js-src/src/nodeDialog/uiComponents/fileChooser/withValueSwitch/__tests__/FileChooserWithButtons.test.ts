@@ -4,9 +4,7 @@ import flushPromises from "flush-promises";
 import type { Folder, PathAndError } from "../../types";
 
 import FileChooserWithButtons from "../FileChooserWithButtons.vue";
-import FileExplorer from "webapps-common/ui/components/FileExplorer/FileExplorer.vue";
-import Button from "webapps-common/ui/components/Button.vue";
-import InputField from "webapps-common/ui/components/forms/InputField.vue";
+import { FileExplorer, InputField, Button } from "@knime/components";
 import DialogFileExplorer from "../../DialogFileExplorer.vue";
 
 describe("FileChooserWithButtons.vue", () => {

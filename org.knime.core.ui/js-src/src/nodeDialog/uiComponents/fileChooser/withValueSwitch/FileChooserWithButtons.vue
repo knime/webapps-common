@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import type { BackendType } from "../types";
-import Button from "webapps-common/ui/components/Button.vue";
+import { Button } from "@knime/components";
 import DialogFileExplorer from "../DialogFileExplorer.vue";
 
 const props = withDefaults(

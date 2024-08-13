@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import Dropdown from "webapps-common/ui/components/forms/Dropdown.vue";
+import { Dropdown, LoadingIcon } from "@knime/components";
 import type LoadingDropdownProps from "./types/LoadingDropdownProps";
-import LoadingIcon from "webapps-common/ui/components/LoadingIcon.vue";
 
 const props = defineProps<LoadingDropdownProps>();
 

@@ -15,7 +15,7 @@ import {
 import DateTimeInput from "../DateTimeInput.vue";
 import LabeledInput from "../label/LabeledInput.vue";
 import DialogLabel from "../label/DialogLabel.vue";
-import DateTimeInputBase from "webapps-common/ui/components/forms/DateTimeInput.vue";
+import { DateTimeInput as DateTimeInputBase } from "@knime/components/date-time-input";
 
 describe("DateTimeInput.vue", () => {
   let defaultProps, wrapper, component;

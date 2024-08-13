@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Label from "webapps-common/ui/components/forms/Label.vue";
+import { Label } from "@knime/components";
 defineProps<{
   title: string;
   scale: boolean;

@@ -7,8 +7,8 @@ import flushPromises from "flush-promises";
 
 import { getOptions } from "@/nodeDialog/__tests__/utils";
 
-import PlusIcon from "webapps-common/ui/assets/img/icons/plus.svg";
-import TrashIcon from "webapps-common/ui/assets/img/icons/trash.svg";
+import PlusIcon from "@knime/styles/img/icons/plus.svg";
+import TrashIcon from "@knime/styles/img/icons/trash.svg";
 import {
   controllingFlowVariableState,
   exposedFlowVariableState,

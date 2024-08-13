@@ -11,7 +11,7 @@ import { ref, unref } from "vue";
 import useColumnSizes from "../composables/useColumnSizes";
 import useAutoColumnSizes from "../composables/useAutoColumnSizes";
 import { RowHeightMode, SelectionMode } from "../types/ViewSettings";
-import LoadingIcon from "webapps-common/ui/components/LoadingIcon.vue";
+import { LoadingIcon } from "@knime/components";
 
 const useColumnSizesMock: { [key: string]: any } = {
   columnSizes: ref([50, 50, 50]),

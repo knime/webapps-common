@@ -6,7 +6,7 @@ import {
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import NumberInput from "../NumberInput.vue";
 import NumberInputBase from "../NumberInputBase.vue";
-import NumberInputComponent from "webapps-common/ui/components/forms/NumberInput.vue";
+import { NumberInput as NumberInputComponent } from "@knime/components";
 import ErrorMessage from "../ErrorMessage.vue";
 import LabeledInput from "../label/LabeledInput.vue";
 import DialogLabel from "../label/DialogLabel.vue";

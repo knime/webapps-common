@@ -191,7 +191,7 @@ export default {
 </template>
 
 <style lang="postcss">
-@import url("webapps-common/ui/css");
+@import url("@knime/styles/css");
 
 body {
   margin: 10px;

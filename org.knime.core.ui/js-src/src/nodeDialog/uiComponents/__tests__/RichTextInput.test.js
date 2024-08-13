@@ -4,7 +4,7 @@ import {
   initializesJsonFormsControl,
   getControlBase,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
-import RichTextEditor from "webapps-common/ui/components/forms/RichTextEditor/RichTextEditor.vue";
+import { RichTextEditor } from "@knime/rich-text-editor";
 import RichTextInput from "../RichTextInput.vue";
 import { inputFormats } from "@/nodeDialog/constants";
 import DialogLabel from "../label/DialogLabel.vue";

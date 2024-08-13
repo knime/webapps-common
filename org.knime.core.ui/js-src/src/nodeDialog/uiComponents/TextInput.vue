@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import InputField from "webapps-common/ui/components/forms/InputField.vue";
+import { InputField, Checkbox } from "@knime/components";
 import LabeledInput from "./label/LabeledInput.vue";
 import useDialogControl from "../composables/components/useDialogControl";
 import { rendererProps } from "@jsonforms/vue";
 import useHideOnNull from "./composables/useHideOnNull";
-import Checkbox from "webapps-common/ui/components/forms/Checkbox.vue";
 import useProvidedState from "../composables/components/useProvidedState";
 
 const props = defineProps(rendererProps());

@@ -6,10 +6,10 @@ import {
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import ArrayLayout from "../ArrayLayout.vue";
 import ArrayLayoutItemControls from "../ArrayLayoutItemControls.vue";
-import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
-import ArrowUpIcon from "webapps-common/ui/assets/img/icons/arrow-up.svg";
-import ArrowDownIcon from "webapps-common/ui/assets/img/icons/arrow-down.svg";
-import TrashIcon from "webapps-common/ui/assets/img/icons/trash.svg";
+import { FunctionButton } from "@knime/components";
+import ArrowUpIcon from "@knime/styles/img/icons/arrow-up.svg";
+import ArrowDownIcon from "@knime/styles/img/icons/arrow-down.svg";
+import TrashIcon from "@knime/styles/img/icons/trash.svg";
 import { ref } from "vue";
 import { DispatchRenderer } from "@jsonforms/vue";
 import { editResetButtonFormat } from "@/nodeDialog/renderers/editResetButtonRenderer";
@@ -157,19 +157,6 @@ describe("ArrayLayout.vue", () => {
     initializesJsonFormsArrayControl(wrapper);
   });
 
-  it("creates a default value", () => {
-    const expectedDefaultValue = {
-      borderStyle: "DASHED",
-      color: "blue",
-      label: undefined,
-      size: 1,
-      value: "0",
-    };
-    expect(
-      wrapper.getComponent(ArrayLayout).vm.createDefaultValue(control.schema),
-    ).toStrictEqual(expectedDefaultValue);
-  });
-
   it("renders an add button", () => {
     const { wrapper } = mountJsonFormsComponent(ArrayLayout, {
       props: { control },
@@ -177,7 +164,17 @@ describe("ArrayLayout.vue", () => {
     const addButton = wrapper.find(".array > button");
     expect(addButton.text()).toBe("New");
     addButton.element.click();
-    expect(wrapper.vm.addItem).toHaveBeenCalled();
+    const expectedDefaultValue = {
+      borderStyle: "DASHED",
+      color: "blue",
+      label: undefined,
+      size: 1,
+      value: "0",
+    };
+    expect(wrapper.vm.addItem).toHaveBeenCalledWith(
+      control.path,
+      expectedDefaultValue,
+    );
   });
 
   it("sets add button text", () => {
@@ -203,7 +200,7 @@ describe("ArrayLayout.vue", () => {
     });
     expect(useJsonFormsControlMock.handleChange).toHaveBeenCalledWith(
       control.path,
-      control.data.map(expect.objectContaining),
+      control.data.map((d) => expect.objectContaining(d)),
     );
   });
 
@@ -218,7 +215,7 @@ describe("ArrayLayout.vue", () => {
     ]);
     expect(useJsonFormsControlMock.handleChange).toHaveBeenCalledWith(
       control.path,
-      control.data.map(expect.objectContaining),
+      control.data.map((d) => expect.objectContaining(d)),
     );
   });
 
@@ -234,7 +231,7 @@ describe("ArrayLayout.vue", () => {
     expect(wrapper.vm.moveUp).toHaveBeenCalledWith(control.path, index);
     expect(useJsonFormsControlMock.handleChange).toHaveBeenCalledWith(
       control.path,
-      control.data.map(expect.objectContaining),
+      control.data.map((d) => expect.objectContaining(d)),
     );
   });
 
@@ -250,7 +247,7 @@ describe("ArrayLayout.vue", () => {
     expect(wrapper.vm.moveDown).toHaveBeenCalledWith(control.path, index);
     expect(useJsonFormsControlMock.handleChange).toHaveBeenCalledWith(
       control.path,
-      control.data.map(expect.objectContaining),
+      control.data.map((d) => expect.objectContaining(d)),
     );
   });
 

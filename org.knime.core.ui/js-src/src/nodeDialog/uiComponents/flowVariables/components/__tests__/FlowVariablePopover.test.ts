@@ -1,7 +1,6 @@
 import { shallowMount } from "@vue/test-utils";
 import { beforeEach, describe, expect, it } from "vitest";
-import Label from "webapps-common/ui/components/forms/Label.vue";
-import Fieldset from "webapps-common/ui/components/forms/Fieldset.vue";
+import { Label, Fieldset } from "@knime/components";
 import FlowVariablePopover from "../FlowVariablePopover.vue";
 import FlowVariableSelector from "../FlowVariableSelector.vue";
 import FlowVariableExposer from "../FlowVariableExposer.vue";

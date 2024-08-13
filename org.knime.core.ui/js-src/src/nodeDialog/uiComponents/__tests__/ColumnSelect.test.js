@@ -6,7 +6,7 @@ import {
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import ColumnSelect from "../ColumnSelect.vue";
 import DropdownInput from "../DropdownInput.vue";
-import Dropdown from "webapps-common/ui/components/forms/Dropdown.vue";
+import { Dropdown } from "@knime/components";
 import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
 import DialogLabel from "../label/DialogLabel.vue";
 import { inject } from "vue";

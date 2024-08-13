@@ -7,7 +7,7 @@ import {
 import TextAreaInput from "../TextAreaInput.vue";
 import LabeledInput from "../label/LabeledInput.vue";
 import DialogLabel from "../label/DialogLabel.vue";
-import TextArea from "webapps-common/ui/components/forms/TextArea.vue";
+import { TextArea } from "@knime/components";
 
 describe("TextInput.vue", () => {
   let defaultProps, wrapper, component;

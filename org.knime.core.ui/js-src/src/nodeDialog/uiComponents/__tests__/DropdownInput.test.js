@@ -7,7 +7,7 @@ import {
 import DropdownInput from "../DropdownInput.vue";
 import LabeledInput from "../label/LabeledInput.vue";
 import DialogLabel from "../label/DialogLabel.vue";
-import Dropdown from "webapps-common/ui/components/forms/Dropdown.vue";
+import { Dropdown } from "@knime/components";
 import flushPromises from "flush-promises";
 
 describe("DropdownInput.vue", () => {

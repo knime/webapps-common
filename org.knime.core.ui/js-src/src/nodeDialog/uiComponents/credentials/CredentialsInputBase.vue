@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, watch } from "vue";
 import { mergeDeep } from "@/nodeDialog/utils";
-import InputField from "webapps-common/ui/components/forms/InputField.vue";
+import { InputField } from "@knime/components";
 import LabeledInput from "@/nodeDialog/uiComponents/label/LabeledInput.vue";
 import useProvidedState from "@/nodeDialog/composables/components/useProvidedState";
 import type Control from "@/nodeDialog/types/Control";

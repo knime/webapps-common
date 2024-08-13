@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import SideDrawerContent, { type Props } from "../SideDrawerContent.vue";
 import SideDrawerContentBase from "../SideDrawerContentBase.vue";
 import { shallowMount } from "@vue/test-utils";
-import TabBar from "webapps-common/ui/components/TabBar.vue";
+import { TabBar } from "@knime/components";
 import FileExplorerTab from "../FileExplorerTab.vue";
 import UrlTab from "../UrlTab.vue";
 import flushPromises from "flush-promises";

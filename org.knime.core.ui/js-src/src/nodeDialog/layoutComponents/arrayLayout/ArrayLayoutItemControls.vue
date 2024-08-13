@@ -1,8 +1,8 @@
 <script>
-import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
-import TrashIcon from "webapps-common/ui/assets/img/icons/trash.svg";
-import ArrowUpIcon from "webapps-common/ui/assets/img/icons/arrow-up.svg";
-import ArrowDownIcon from "webapps-common/ui/assets/img/icons/arrow-down.svg";
+import { FunctionButton } from "@knime/components";
+import TrashIcon from "@knime/styles/img/icons/trash.svg";
+import ArrowUpIcon from "@knime/styles/img/icons/arrow-up.svg";
+import ArrowDownIcon from "@knime/styles/img/icons/arrow-down.svg";
 
 export default {
   name: "ArrayLayoutItemControls",

@@ -4,8 +4,7 @@ import StringFileChooserInputWithExplorer, {
   type StringFileChooserInputWithExplorerProps,
 } from "../StringFileChooserInputWithExplorer.vue";
 import FileChooser from "../FileChooserWithButtons.vue";
-import InputField from "webapps-common/ui/components/forms/InputField.vue";
-import FunctionButton from "webapps-common/ui/components/FunctionButton.vue";
+import { InputField, FunctionButton } from "@knime/components";
 
 describe("StringFileChooserInputWithExplorer.vue", () => {
   let props: StringFileChooserInputWithExplorerProps;

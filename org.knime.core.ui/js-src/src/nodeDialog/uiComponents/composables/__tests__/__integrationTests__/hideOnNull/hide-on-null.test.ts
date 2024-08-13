@@ -7,8 +7,7 @@ import flushPromises from "flush-promises";
 
 import { getOptions } from "@/nodeDialog/__tests__/utils";
 import TextInput from "@/nodeDialog/uiComponents/TextInput.vue";
-import Checkbox from "webapps-common/ui/components/forms/Checkbox.vue";
-import InputField from "webapps-common/ui/components/forms/InputField.vue";
+import { Checkbox, InputField } from "@knime/components";
 import { mockRegisterSettings } from "@@/test-setup/utils/integration/dirtySettingState";
 
 describe("hide on null", () => {
