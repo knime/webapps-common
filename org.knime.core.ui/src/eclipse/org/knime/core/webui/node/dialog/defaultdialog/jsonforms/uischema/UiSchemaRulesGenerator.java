@@ -53,15 +53,13 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_RULE;
 
 import java.util.Collection;
-import java.util.Optional;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect.EffectType;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.PredicateProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.PredicateProvider.PredicateInitializer;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.Expression;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.JsonFormsExpression;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Predicate;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.PredicateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect.EffectType;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.PredicateProvider.PredicateInitializer;
 import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -73,17 +71,17 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 final class UiSchemaRulesGenerator {
 
-    private final ExpressionExtractor m_expressionExtractor;
+    private final PredicateExtractor m_predicateExtractor;
 
-    private JsonFormsExpressionResolver m_visitor;
+    private JsonFormsPredicateResolver m_visitor;
 
     /**
      * @param widgetTrees containing the nodes that the to be generated rules can depend on
      * @param context the node's context (inputs, flow vars)
      */
     UiSchemaRulesGenerator(final Collection<WidgetTree> widgetTrees, final DefaultNodeSettingsContext context) {
-        m_expressionExtractor = new ExpressionExtractor(widgetTrees, context);
-        m_visitor = new JsonFormsExpressionResolver(context);
+        m_predicateExtractor = new PredicateExtractor(widgetTrees, context);
+        m_visitor = new JsonFormsPredicateResolver(context);
     }
 
     /**
@@ -95,40 +93,27 @@ final class UiSchemaRulesGenerator {
      * @param control the object node to which the rule should be applied
      */
     public void applyEffectTo(final Effect effect, final ObjectNode control) {
-        extractExpressionFromAnnotation(effect)
-            .ifPresent(expression -> writeExpressionAsRule(effect.type(), expression, control));
+        if (effect == null) {
+            return;
+        }
+        final var predicate = extractPredicateFromAnnotation(effect.predicate());
+        writePredicateAsRule(effect.type(), predicate, control);
     }
 
-    private JsonNode writeExpressionAsRule(final EffectType type, final Expression<JsonFormsExpression> expression,
-        final ObjectNode control) {
+    private JsonNode writePredicateAsRule(final EffectType type, final Predicate predicate, final ObjectNode control) {
         return control.putObject(TAG_RULE)//
             .put(TAG_EFFECT, String.valueOf(type)) //
-            .set(TAG_CONDITION, expression.accept(m_visitor));
+            .set(TAG_CONDITION, predicate.accept(m_visitor));
     }
 
-    @SuppressWarnings("unchecked")
-    private Optional<Expression<JsonFormsExpression>> extractExpressionFromAnnotation(final Effect effect) {
-        if (effect == null) {
-            return Optional.empty();
-        }
-        final var expressionCreatorClass = effect.condition();
-        if (expressionCreatorClass != PredicateProvider.class) {
-            try {
-                return Optional.of(m_expressionExtractor.createExpression(expressionCreatorClass));
-            } catch (InvalidReferenceException e) {
-                if (effect.ignoreOnMissingSignals()) {
-                    return Optional.empty();
-                }
-                throw new UiSchemaGenerationException(String.format(
-                    "Missing reference annotation: %s. "
-                        + "If this is correct and desired, check for that in advance using %s.",
-                    e.getReference().getName(), getIsMissingMethodName()), e);
-            }
-        } else { // TODO Remove this
-            final var signalClasses = effect.signals();
-            final var operationClass = effect.operation();
-            return m_expressionExtractor.createExpressionLegacy(signalClasses, operationClass,
-                effect.ignoreOnMissingSignals());
+    private Predicate extractPredicateFromAnnotation(final Class<? extends PredicateProvider> predicateProviderClass) {
+        try {
+            return m_predicateExtractor.createPredicate(predicateProviderClass);
+        } catch (InvalidReferenceException e) {
+            throw new UiSchemaGenerationException(String.format(
+                "Missing reference annotation: %s. "
+                    + "If this is correct and desired, check for that in advance using %s.",
+                e.getReference().getName(), getIsMissingMethodName()), e);
         }
     }
 

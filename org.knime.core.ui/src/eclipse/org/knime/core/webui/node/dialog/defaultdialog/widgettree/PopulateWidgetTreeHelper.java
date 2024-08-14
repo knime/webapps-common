@@ -59,8 +59,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaGenerationException;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.util.ArrayLayoutUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.PredicateProvider;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -169,15 +171,32 @@ final class PopulateWidgetTreeHelper {
         final Class<? extends WidgetGroup> populatingRootClass) {
         final var declaringClass = field.getMember().getDeclaringClass();
         if (declaringClass.equals(populatingRootClass)) {
-            return field::getAnnotation;
+            return annotationClass -> getAnnotationFromField(field, annotationClass);
         }
         return annotationClass -> getAnnotationsFromFieldWithDeclaringClass(field, declaringClass, annotationClass);
     }
 
     private static <T extends Annotation> T getAnnotationsFromFieldWithDeclaringClass(final PropertyWriter field,
         final Class<?> declaringClass, final Class<T> annotationClass) {
-        return Optional.ofNullable(field.getAnnotation(annotationClass))
+        return Optional.ofNullable(getAnnotationFromField(field, annotationClass))
             .orElse(declaringClass.getAnnotation(annotationClass));
+    }
+
+    @SuppressWarnings("unchecked") // checked by Effect.class.equals(annotationClass)
+    private static <T extends Annotation> T getAnnotationFromField(final PropertyWriter field,
+        final Class<T> annotationClass) {
+        if (Effect.class.equals(annotationClass)) {
+            final var widgetAnnotation = field.getAnnotation(Widget.class);
+            if (widgetAnnotation != null && !PredicateProvider.class.equals(widgetAnnotation.effect().predicate())) {
+                if (field.getAnnotation(Effect.class) != null) {
+                    throw new IllegalStateException(String.format(
+                        "Conflicting Effect annotations on field and inside Widget annotation for field %s",
+                        field.getName()));
+                }
+                return (T)widgetAnnotation.effect();
+            }
+        }
+        return field.getAnnotation(annotationClass);
     }
 
     private static WidgetTreeNodeBuilder getNextChildBuilder(final WidgetTree tree) {

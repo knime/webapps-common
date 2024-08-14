@@ -44,71 +44,63 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   4 Nov 2021 (Marc Bux, KNIME GmbH, Berlin, Germany): created
+ *   22 Mar 2023 (Marc Bux, KNIME GmbH, Berlin, Germany): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget;
+package org.knime.core.webui.node.dialog.defaultdialog.widget.updates;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect.EffectType;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.PredicateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.PredicateProvider.PredicateInitializer;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.And;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.ConstantPredicate;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.FrameworkPredicate;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.Not;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.Operator;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.Or;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.PredicateVisitor;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.ScopedPredicate;
 
 /**
- * An annotation for a field indicating that its contributing to the dialog UI. And it allows one to control common
- * widget metadata of the field.
+ * The only way to construct such a predicate as a user of this API is by using the provided methods in the
+ * {@link PredicateInitializer} and the operations {@link #and} {@link #or} and {@link #negate}.
  *
- * Depending on the type of the field being annotated and in case there is <b> no</b>
- * {@link org.knime.core.webui.node.dialog.defaultdialog.widget other widget annotation} present, a default widget will
- * be displayed in the dialog (see {@link DefaultNodeSettings} for details). In case the default widget is not desired,
- * an additional specialized widget-annotation (e.g. {@link TextInputWidget}) can be used to customize it.
+ * It can either be one of the three {@link Operator}s ({@link And}, {@link Or} or {@link Not}) defining how to combine
+ * multiple predicates or an atomic predicate which is either constant ({@link ConstantPredicate}) depending on a value
+ * ({@link ScopedPredicate}) or provided by the framework ({@link FrameworkPredicate}).
+ *
+ * Predicates are resolved via {@link PredicateVisitor}s.
+ *
  *
  * @author Marc Bux, KNIME GmbH, Berlin, Germany
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-@Inherited
-public @interface Widget {
+public interface Predicate {
 
     /**
-     * @return the title / label of the field
+     * @param <T> the type of the resolved value
+     * @param visitor an implementation dependent predicate resolver
+     * @return a resolved value of the predicate depending on the implementation.
      */
-    String title();
+    <T> T accept(PredicateVisitor<T> visitor);
 
     /**
-     * @return the description of the field (for tooltips or node descriptions)
+     * @param other
+     * @return this and the other predicate is fulfilled
      */
-    String description();
+    default Predicate and(final Predicate other) {
+        return new And(this, other);
+    }
 
     /**
-     * @return true if the annotated setting is advanced
+     * @param other
+     * @return this or the other predicate is fulfilled
      */
-    boolean advanced() default false;
+    default Predicate or(final Predicate other) {
+        return new Or(this, other);
+    }
 
     /**
-     * @return true if the title should be hidden from the dialog, but should still be available in the node
-     *         description.
+     * @return the opposite predicate
      */
-    boolean hideTitle() default false;
-
-    /**
-     * @return true if the flow variable button should be hidden
-     */
-    boolean hideFlowVariableButton() default false;
-
-    /**
-     * Add an effect annotation here as an alternative to putting it on the annotated field directly. if an effect
-     * annotation also exists on the field, an error is thrown.
-     *
-     * @return whether the widget should be disabled or hidden.
-     * @see Effect
-     *
-     */
-    Effect effect() default @Effect(predicate = PredicateProvider.class, type = EffectType.SHOW);
+    default Predicate negate() {
+        return new Not(this);
+    }
 
 }

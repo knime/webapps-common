@@ -48,7 +48,7 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection;
 
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.IsNoneColumnStringCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.IsNoneColumnStringCondition;
 
 /**
  * Condition that triggers when "None" column is selected. Should be used only with {@link ColumnSelection} fields. For
@@ -56,7 +56,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.IsNoneColumnStri
  *
  * @author Rupert Ettrich
  */
-public class IsNoneColumnCondition extends IsSpecificColumnCondition {
+public class IsNoneColumnCondition implements IsSpecificColumnCondition {
 
     @Override
     public String getColumnName() {

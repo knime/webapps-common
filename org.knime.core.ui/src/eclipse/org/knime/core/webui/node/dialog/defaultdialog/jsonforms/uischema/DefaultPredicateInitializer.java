@@ -48,24 +48,20 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
-import java.util.function.Predicate;
-
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.PredicateProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.PredicateProvider.PredicateInitializer;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.Condition;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.ConstantExpression;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.Expression;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.ConditionToExpressionTranslator;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.FrameworkExpression;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.FrameworkPredicateProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.JsonFormsExpression;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.ScopedExpression;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Predicate;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.PredicateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.PredicateProvider.PredicateInitializer;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.Condition;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.ConditionToPredicateTranslator;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.ConstantPredicate;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.FrameworkPredicate;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.FrameworkPredicateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.ScopedPredicate;
 import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
-
 
 class DefaultPredicateInitializer implements PredicateInitializer {
 
@@ -75,7 +71,11 @@ class DefaultPredicateInitializer implements PredicateInitializer {
 
     interface ScopeFromReference {
 
-        WidgetTreeNode getScope(Class<?> reference) throws InvalidReferenceException;
+        /**
+         * @param reference
+         * @return the node with the reference. Return null if no such node exists.
+         */
+        WidgetTreeNode getScope(Class<?> reference);
 
     }
 
@@ -84,64 +84,68 @@ class DefaultPredicateInitializer implements PredicateInitializer {
         m_context = context;
     }
 
-    private Expression<JsonFormsExpression> createExpression(final Class<?> reference, final Condition condition) {
-        return new ScopedExpression(m_scopeFromReference.getScope(reference), condition);
+    private Predicate createPredicate(final Class<?> reference, final Condition condition)
+        throws InvalidReferenceException {
+        final var scope = m_scopeFromReference.getScope(reference);
+        if (scope == null) {
+            throw new InvalidReferenceException(reference);
+        }
+        return new ScopedPredicate(scope, condition);
     }
 
     @Override
     @SuppressWarnings("unchecked") // checked by isAssignableFrom
-    public PredicateProvider.Predicate getPredicate(final Class<? extends PredicateProvider> otherConditionClass) {
+    public Predicate getPredicate(final Class<? extends PredicateProvider> otherConditionClass) {
         if (FrameworkPredicateProvider.class.isAssignableFrom(otherConditionClass)) {
-            return new FrameworkExpression((Class<? extends FrameworkPredicateProvider>)otherConditionClass);
+            return new FrameworkPredicate((Class<? extends FrameworkPredicateProvider>)otherConditionClass);
         }
         return getPredicate(InstantiationUtil.createInstance(otherConditionClass));
     }
 
     @Override
-    public PredicateProvider.Predicate getPredicate(final PredicateProvider predicateProvider) {
+    public Predicate getPredicate(final PredicateProvider predicateProvider) {
         return predicateProvider.init(this);
     }
 
     @Override
-    public PredicateProvider.Predicate getConstant(final Predicate<DefaultNodeSettingsContext> predicate) {
-        return new ConstantExpression(predicate.test(m_context));
+    public Predicate getConstant(final java.util.function.Predicate<DefaultNodeSettingsContext> predicate) {
+        return new ConstantPredicate(predicate.test(m_context));
     }
 
     @Override
     public StringReference getString(final Class<? extends Reference<String>> reference) {
-        return new ConditionToExpressionTranslator.StringFieldReference<>(condition -> createExpression(reference, condition));
+        return new ConditionToPredicateTranslator.StringFieldReference(
+            condition -> createPredicate(reference, condition));
     }
 
     @Override
     public BooleanReference getBoolean(final Class<? extends Reference<Boolean>> reference) {
-        return new ConditionToExpressionTranslator.BooleanFieldReference<>(condition -> createExpression(reference, condition));
+        return new ConditionToPredicateTranslator.BooleanFieldReference(
+            condition -> createPredicate(reference, condition));
 
     }
 
     @Override
     public <E extends Enum<E>> EnumReference<E> getEnum(final Class<? extends Reference<E>> reference) {
-        return new ConditionToExpressionTranslator.EnumFieldReference<>(condition -> createExpression(reference, condition));
+        return new ConditionToPredicateTranslator.EnumFieldReference<>(
+            condition -> createPredicate(reference, condition));
     }
 
     @Override
     public <T> ArrayReference getArray(final Class<? extends Reference<T[]>> reference) {
-        return new ConditionToExpressionTranslator.ArrayFieldReference<>(condition -> createExpression(reference, condition));
+        return new ConditionToPredicateTranslator.ArrayFieldReference(
+            condition -> createPredicate(reference, condition));
     }
 
     @Override
     public ColumnSelectionReference getColumnSelection(final Class<? extends Reference<ColumnSelection>> reference) {
-        return new ConditionToExpressionTranslator.ColumnFieldSelectionReference<>(
-            condition -> createExpression(reference, condition));
+        return new ConditionToPredicateTranslator.ColumnFieldSelectionReference(
+            condition -> createPredicate(reference, condition));
     }
 
     @Override
     public boolean isMissing(final Class<? extends Reference<?>> reference) {
-        try {
-            m_scopeFromReference.getScope(reference);
-            return false;
-        } catch (InvalidReferenceException ex) { // NOSONAR
-            return true;
-        }
+        return m_scopeFromReference.getScope(reference) == null;
     }
 
 }

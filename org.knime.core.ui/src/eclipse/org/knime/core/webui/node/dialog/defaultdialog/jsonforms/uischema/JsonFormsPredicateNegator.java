@@ -44,39 +44,85 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Aug 13, 2024 (Paul Bärnreuther): created
+ *   Apr 4, 2023 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.FIELD_NAME_SCHEMA;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_NOT;
-import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil.getMapper;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import java.util.List;
+
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Predicate;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.And;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.ConstantPredicate;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.FrameworkPredicate;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.Not;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.Or;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.PredicateVisitor;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.ScopedPredicate;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
+ * A visitor used to resolve the "not" operation in the {@link JsonFormsPredicateResolver}
  *
  * @author Paul Bärnreuther
  */
-final class JsonFormsSchemaConditionUtil {
+@SuppressWarnings("javadoc")
+final class JsonFormsPredicateNegator implements PredicateVisitor<ObjectNode> {
 
-    private JsonFormsSchemaConditionUtil() {
-        // Utility
+    private final PredicateVisitor<ObjectNode> m_predicateResolver;
+
+    /**
+     * @param predicateResolver
+     */
+    public JsonFormsPredicateNegator(final JsonFormsPredicateResolver predicateResolver) {
+        m_predicateResolver = predicateResolver;
     }
 
-    static ObjectNode createCondition(final ScopedPredicate scopedPredicate, final DefaultNodeSettingsContext context) {
-        return scopedPredicate.condition().accept(new JsonFormsConditionResolver(scopedPredicate.node(), context));
+    @Override
+    public ObjectNode visit(final And and) {
+        final var resolvedOperation = new Or(reverseAll(and.getChildren()));
+        return resolvedOperation.accept(m_predicateResolver);
     }
 
-    static ObjectNode createCondition(final ConstantPredicate constantPredicate) {
-        final var schemaNode = getMapper().createObjectNode();
-        if (!constantPredicate.value()) {
-            schemaNode.putObject(TAG_NOT);
-        }
-        return schemaNode;
+    @Override
+    public ObjectNode visit(final Or or) {
+        final var resolvedOperation = new And(reverseAll(or.getChildren()));
+        return resolvedOperation.accept(m_predicateResolver);
+    }
+
+    private static Predicate[] reverseAll(final List<Predicate> predicates) {
+        return predicates.stream().map(Not::new).toArray(Predicate[]::new);
+    }
+
+    @Override
+    public ObjectNode visit(final Not not) {
+        return not.getChildPredicate().accept(m_predicateResolver);
+    }
+
+    @Override
+    public ObjectNode visit(final ConstantPredicate constantPredicate) {
+        return visitAtomicPredicate(constantPredicate);
+    }
+
+    @Override
+    public ObjectNode visit(final ScopedPredicate scopedPredicate) {
+        return visitAtomicPredicate(scopedPredicate);
+    }
+
+    @Override
+    public ObjectNode visit(final FrameworkPredicate frameworkPredicate) {
+        return visitAtomicPredicate(frameworkPredicate);
+    }
+
+    private ObjectNode visitAtomicPredicate(final Predicate predicate) {
+        final var node = predicate.accept(m_predicateResolver);
+        final var positiveSchema = node.get(FIELD_NAME_SCHEMA);
+        node.replace(FIELD_NAME_SCHEMA,
+            JsonFormsUiSchemaUtil.getMapper().createObjectNode().set(TAG_NOT, positiveSchema));
+        return node;
     }
 
 }

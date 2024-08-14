@@ -59,12 +59,13 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.HorizontalLayout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect.EffectType;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.PredicateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect.EffectType;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Predicate;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.PredicateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
 
@@ -97,7 +98,7 @@ class JsonFormsUiSchemaUtilRuleTest {
             }
 
             @Widget(title = "", description = "")
-            @Effect(condition = SomeBooleanIsTrue.class, type = EffectType.DISABLE)
+            @Effect(predicate = SomeBooleanIsTrue.class, type = EffectType.DISABLE)
             boolean m_tagetSetting;
 
         }
@@ -127,19 +128,19 @@ class JsonFormsUiSchemaUtilRuleTest {
             }
 
             @Widget(title = "", description = "")
-            @Effect(condition = DummyCondition.class, type = EffectType.DISABLE)
+            @Effect(predicate = DummyCondition.class, type = EffectType.DISABLE)
             boolean m_disable;
 
             @Widget(title = "", description = "")
-            @Effect(condition = DummyCondition.class, type = EffectType.ENABLE)
+            @Effect(predicate = DummyCondition.class, type = EffectType.ENABLE)
             boolean m_enable;
 
             @Widget(title = "", description = "")
-            @Effect(condition = DummyCondition.class, type = EffectType.HIDE)
+            @Effect(predicate = DummyCondition.class, type = EffectType.HIDE)
             boolean m_hide;
 
             @Widget(title = "", description = "")
-            @Effect(condition = DummyCondition.class, type = EffectType.SHOW)
+            @Effect(predicate = DummyCondition.class, type = EffectType.SHOW)
             boolean m_show;
 
         }
@@ -149,6 +150,54 @@ class JsonFormsUiSchemaUtilRuleTest {
         assertThatJson(response).inPath("$.elements[1].rule.effect").isString().isEqualTo("ENABLE");
         assertThatJson(response).inPath("$.elements[2].rule.effect").isString().isEqualTo("HIDE");
         assertThatJson(response).inPath("$.elements[3].rule.effect").isString().isEqualTo("SHOW");
+    }
+
+    @Test
+    void testEffectInsideWidget() {
+
+        final class EffectSettings implements DefaultNodeSettings {
+
+            static final class DummyCondition implements PredicateProvider {
+
+                @Override
+                public Predicate init(final PredicateInitializer i) {
+                    return i.getConstant(context -> true);
+                }
+
+            }
+
+            @Widget(title = "", description = "",
+                effect = @Effect(predicate = DummyCondition.class, type = EffectType.DISABLE))
+            boolean m_disable;
+
+        }
+
+        final var response = buildTestUiSchema(EffectSettings.class);
+        assertThatJson(response).inPath("$.elements[0].rule.effect").isString().isEqualTo("DISABLE");
+    }
+
+    @Test
+    void testThrowsOnEffectInsideWidgetAndOnField() {
+
+        final class EffectSettings implements DefaultNodeSettings {
+
+            static final class DummyCondition implements PredicateProvider {
+
+                @Override
+                public Predicate init(final PredicateInitializer i) {
+                    return i.getConstant(context -> true);
+                }
+
+            }
+
+            @Effect(predicate = DummyCondition.class, type = EffectType.DISABLE)
+            @Widget(title = "", description = "",
+                effect = @Effect(predicate = DummyCondition.class, type = EffectType.DISABLE))
+            boolean m_disable;
+
+        }
+
+        assertThrows(IllegalStateException.class, () -> buildTestUiSchema(EffectSettings.class));
     }
 
     @Test
@@ -174,11 +223,11 @@ class JsonFormsUiSchemaUtilRuleTest {
             }
 
             @Widget(title = "", description = "")
-            @Effect(condition = AlwaysTruePredicate.class, type = EffectType.DISABLE)
+            @Effect(predicate = AlwaysTruePredicate.class, type = EffectType.DISABLE)
             boolean m_constantlyDisabled;
 
             @Widget(title = "", description = "")
-            @Effect(condition = AlwaysFalsePredicate.class, type = EffectType.DISABLE)
+            @Effect(predicate = AlwaysFalsePredicate.class, type = EffectType.DISABLE)
             boolean m_constantlyEnabled;
         }
 
@@ -222,7 +271,7 @@ class JsonFormsUiSchemaUtilRuleTest {
             }
 
             @Widget(title = "", description = "")
-            @Effect(condition = SomeBooleanAndNotAnotherBoolean.class, type = EffectType.ENABLE)
+            @Effect(predicate = SomeBooleanAndNotAnotherBoolean.class, type = EffectType.ENABLE)
             boolean m_effect;
         }
         final var response = buildTestUiSchema(OrSettings.class);
@@ -273,7 +322,7 @@ class JsonFormsUiSchemaUtilRuleTest {
             }
 
             @Widget(title = "", description = "")
-            @Effect(condition = SomeBooleanAndNotAnotherBoolean.class, type = EffectType.ENABLE)
+            @Effect(predicate = SomeBooleanAndNotAnotherBoolean.class, type = EffectType.ENABLE)
             boolean m_effect;
         }
         final var response = buildTestUiSchema(AndSettings.class);
@@ -315,7 +364,7 @@ class JsonFormsUiSchemaUtilRuleTest {
             }
 
             @Widget(title = "", description = "")
-            @Effect(condition = MyCondition.class, type = EffectType.ENABLE)
+            @Effect(predicate = MyCondition.class, type = EffectType.ENABLE)
             boolean m_effect;
         }
         final var response = buildTestUiSchema(NotSettings.class);
@@ -359,7 +408,7 @@ class JsonFormsUiSchemaUtilRuleTest {
             }
 
             @Widget(title = "", description = "")
-            @Effect(condition = MyCondition.class, type = EffectType.ENABLE)
+            @Effect(predicate = MyCondition.class, type = EffectType.ENABLE)
             boolean m_effect;
         }
         final var response = buildTestUiSchema(NotAndSettings.class);
@@ -412,7 +461,7 @@ class JsonFormsUiSchemaUtilRuleTest {
             }
 
             @Widget(title = "", description = "")
-            @Effect(condition = MyCondition.class, type = EffectType.ENABLE)
+            @Effect(predicate = MyCondition.class, type = EffectType.ENABLE)
             boolean m_effect;
         }
         final var response = buildTestUiSchema(NotOrSettings.class);
@@ -455,7 +504,7 @@ class JsonFormsUiSchemaUtilRuleTest {
             }
 
             @Widget(title = "", description = "")
-            @Effect(condition = MyCondition.class, type = EffectType.ENABLE)
+            @Effect(predicate = MyCondition.class, type = EffectType.ENABLE)
             boolean m_effect;
         }
         final var response = buildTestUiSchema(DoubleNegationSettings.class);
@@ -480,7 +529,7 @@ class JsonFormsUiSchemaUtilRuleTest {
         }
 
         @HorizontalLayout()
-        @Effect(condition = MyCondition.class, type = EffectType.DISABLE)
+        @Effect(predicate = MyCondition.class, type = EffectType.DISABLE)
         interface OptionalHorizontalLayout {
         }
 
@@ -535,7 +584,7 @@ class JsonFormsUiSchemaUtilRuleTest {
             }
 
             @Widget(title = "", description = "")
-            @Effect(condition = ArrayElementsHasMultipleItems.class, type = EffectType.SHOW)
+            @Effect(predicate = ArrayElementsHasMultipleItems.class, type = EffectType.SHOW)
             boolean m_targetSetting;
 
             class ArraySettings {
@@ -596,11 +645,11 @@ class JsonFormsUiSchemaUtilRuleTest {
             boolean m_referenced;
 
             @Widget(title = "", description = "")
-            @Effect(condition = UnmetReferenceIsPresent.class, type = EffectType.HIDE)
+            @Effect(predicate = UnmetReferenceIsPresent.class, type = EffectType.HIDE)
             boolean m_effectSetting1;
 
             @Widget(title = "", description = "")
-            @Effect(condition = MetReferenceIsPresent.class, type = EffectType.HIDE)
+            @Effect(predicate = MetReferenceIsPresent.class, type = EffectType.HIDE)
             boolean m_effectSetting2;
 
         }
@@ -631,7 +680,7 @@ class JsonFormsUiSchemaUtilRuleTest {
             }
 
             @Widget(title = "", description = "")
-            @Effect(condition = MyCondition.class, type = EffectType.HIDE)
+            @Effect(predicate = MyCondition.class, type = EffectType.HIDE)
             boolean m_setting;
 
         }
@@ -651,7 +700,7 @@ class JsonFormsUiSchemaUtilRuleTest {
         String m_subSubEffectSetting;
     }
 
-    @Effect(condition = EffectOnClassSettings.SomeBooleanIsTrue.class, type = EffectType.HIDE)
+    @Effect(predicate = EffectOnClassSettings.SomeBooleanIsTrue.class, type = EffectType.HIDE)
     static class SubSettings implements WidgetGroup {
 
         @Widget(title = "", description = "")
@@ -666,7 +715,7 @@ class JsonFormsUiSchemaUtilRuleTest {
         String m_extendingSetting;
     }
 
-    @Effect(condition = EffectOnClassSettings.SomeBooleanIsTrue.class, type = EffectType.HIDE)
+    @Effect(predicate = EffectOnClassSettings.SomeBooleanIsTrue.class, type = EffectType.HIDE)
     static final class ExtendingSubSettingsWithExtraAnnotation extends SubSettings {
         @Widget(title = "", description = "")
         String m_extendingWithExtraEffectSetting;
@@ -737,7 +786,7 @@ class JsonFormsUiSchemaUtilRuleTest {
             }
 
             @Widget(title = "", description = "")
-            @Effect(condition = MyCondition.class, type = EffectType.SHOW)
+            @Effect(predicate = MyCondition.class, type = EffectType.SHOW)
             boolean someConditionalSetting = true;
 
         }
@@ -775,7 +824,7 @@ class JsonFormsUiSchemaUtilRuleTest {
             }
 
             @Widget(title = "", description = "")
-            @Effect(condition = MyCondition.class, type = EffectType.SHOW)
+            @Effect(predicate = MyCondition.class, type = EffectType.SHOW)
             boolean someConditionalSetting = true;
 
         }
@@ -812,7 +861,7 @@ class JsonFormsUiSchemaUtilRuleTest {
             }
 
             @Widget(title = "", description = "")
-            @Effect(condition = MyCondition.class, type = EffectType.SHOW)
+            @Effect(predicate = MyCondition.class, type = EffectType.SHOW)
             boolean someConditionalSetting = true;
 
         }
@@ -848,7 +897,7 @@ class JsonFormsUiSchemaUtilRuleTest {
             }
 
             @Widget(title = "", description = "")
-            @Effect(condition = MyCondition.class, type = EffectType.SHOW)
+            @Effect(predicate = MyCondition.class, type = EffectType.SHOW)
             boolean someConditionalSetting = true;
         }
         final var response = buildTestUiSchema(ChoicesWithNoneColumnCondition.class);
@@ -883,7 +932,7 @@ class JsonFormsUiSchemaUtilRuleTest {
             }
 
             @Widget(title = "", description = "")
-            @Effect(condition = PatternSettingMatchesMyPattern.class, type = EffectType.SHOW)
+            @Effect(predicate = PatternSettingMatchesMyPattern.class, type = EffectType.SHOW)
             boolean effectSetting;
         }
         final var response = buildTestUiSchema(PatternConditionTestSettings.class);
@@ -931,7 +980,7 @@ class JsonFormsUiSchemaUtilRuleTest {
             }
 
             @Widget(title = "", description = "")
-            @Effect(condition = ContainsProvider.class, type = EffectType.SHOW)
+            @Effect(predicate = ContainsProvider.class, type = EffectType.SHOW)
             boolean effectSetting;
         }
         final var response = buildTestUiSchema(ArrayContainsConditionTestSettings.class);
@@ -987,7 +1036,7 @@ class JsonFormsUiSchemaUtilRuleTest {
             }
 
             @Widget(title = "", description = "")
-            @Effect(condition = ContainsProvider.class, type = EffectType.SHOW)
+            @Effect(predicate = ContainsProvider.class, type = EffectType.SHOW)
             boolean effectSetting;
         }
         final var response = buildTestUiSchema(ArrayContainsConditionTestSettings.class);
@@ -1028,7 +1077,7 @@ class JsonFormsUiSchemaUtilRuleTest {
             }
 
             @Widget(title = "", description = "")
-            @Effect(condition = SomeBooleanIsTrue.class, type = EffectType.HIDE)
+            @Effect(predicate = SomeBooleanIsTrue.class, type = EffectType.HIDE)
             String m_effected;
 
         }

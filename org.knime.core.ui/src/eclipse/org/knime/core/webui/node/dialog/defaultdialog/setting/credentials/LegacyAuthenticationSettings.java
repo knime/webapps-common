@@ -64,18 +64,16 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect.EffectType;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.AuthenticationSettings.AuthenticationType;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.AuthenticationSettings.AuthenticationType.RequiresCredentialsCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.AuthenticationSettings.AuthenticationTypeRef;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.AuthenticationSettings.RequiresPasswordProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.AuthenticationSettings.RequiresUsernameProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.CredentialsWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect.EffectType;
 
 /**
  * Similarly to {@link AuthenticationSettings}, but additionally supports the
@@ -95,11 +93,10 @@ public final class LegacyAuthenticationSettings implements WidgetGroup {
     @Widget(title = "Authentication type", description = "The type of the used authentication.")
     @ValueReference(AuthenticationTypeRef.class)
     @RadioButtonsWidget(horizontal = true)
-    @Signal(condition = AuthenticationType.RequiresCredentialsCondition.class)
     final AuthenticationType m_type;
 
     @Widget(title = "Credentials", description = "The credentials used for the authentication.")
-    @Effect(signals = RequiresCredentialsCondition.class, type = EffectType.SHOW)
+    @Effect(predicate = AuthenticationTypeRef.RequiresCredentials.class, type = EffectType.SHOW)
     @CredentialsWidget(hasPasswordProvider = RequiresPasswordProvider.class,
         hasUsernameProvider = RequiresUsernameProvider.class)
     final LegacyCredentials m_legacyCredentials;

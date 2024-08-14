@@ -57,19 +57,17 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil.getMapper;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.ArrayContainsCondition;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.ArrayContainsCondition2;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.ConditionVisitor;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.FalseCondition;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.HasMultipleItemsCondition;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.IsSpecificStringCondition;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.OneOfEnumCondition;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.PatternCondition;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.TrueCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.IsColumnOfTypeCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.IsSpecificColumnCondition;
-import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.ArrayContainsCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.ConditionVisitor;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.FalseCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.HasMultipleItemsCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.IsSpecificStringCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.OneOfEnumCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.PatternCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.TrueCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.widgettree.ArrayWidgetNode;
 import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
 
@@ -152,23 +150,10 @@ class JsonFormsConditionResolver implements ConditionVisitor<ObjectNode> {
 
     @Override
     public ObjectNode visit(final ArrayContainsCondition arrayContainsCondition) {
-        final var itemConditionClass = arrayContainsCondition.getItemCondition();
-        final var itemCondition = InstantiationUtil.createInstance(itemConditionClass);
-        final var conditionObjectNode = getMapper().createObjectNode();
-        var currentObjectNode = conditionObjectNode.putObject(TAG_CONTAINS);
-        for (var pathEntry : arrayContainsCondition.getItemFieldPath()) {
-            currentObjectNode = currentObjectNode.putObject(TAG_PROPERTIES).putObject(pathEntry);
-        }
-        currentObjectNode.setAll(itemCondition.accept(this));
-        return conditionObjectNode;
-    }
-
-    @Override
-    public ObjectNode visit(final ArrayContainsCondition2 arrayContainsCondition) {
         if (m_widgetTreeNode instanceof ArrayWidgetNode arrayWidgetNode) {
-            final var elementExpression = new ExpressionExtractor(arrayWidgetNode.getElementWidgetTree(), m_context)
-                .createExpression(arrayContainsCondition.getElementPredicate());
-            final var containsCondition = elementExpression.accept(new SchemaInternalExpressionVisitor(m_context));
+            final var elementPredicate = new PredicateExtractor(arrayWidgetNode.getElementWidgetTree(), m_context)
+                .createPredicate(arrayContainsCondition.getElementPredicate());
+            final var containsCondition = elementPredicate.accept(new SchemaInternalPredicateVisitor(m_context));
 
             final var conditionObjectNode = getMapper().createObjectNode();
             conditionObjectNode.putObject(TAG_CONTAINS).setAll(containsCondition);

@@ -54,12 +54,13 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
 
 /**
- * Since {@link Signal} should only be allowed on other widgets. But until it is possible to have custom conditions
- * utilizing backend calls, one can instead use a {@link Widget#valueProvider} together with a {@Signal} on a
- * {@link LatentWidget}.
+ * Until it is possible to have custom conditions utilizing backend calls, one can instead use a {@link ValueProvider}
+ * together with a {@link ValueReference} referenced within an {@link Effect} on a {@link LatentWidget}.
  *
  * This will lead to the setting not being persisted and not being displayed in the dialog.
  *

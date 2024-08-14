@@ -63,11 +63,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPe
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.EnumFieldPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect.EffectType;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.OneOfEnumCondition;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.TrueCondition;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.StringArrayToColumnFilterPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.selection.SelectionCheckboxesToSelectionModePersistor;
@@ -78,12 +73,18 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.BooleanReference;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect.EffectType;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Predicate;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.PredicateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
 import org.knime.core.webui.node.view.table.RowHeightPersistorUtil.LegacyLoadResult;
 import org.knime.core.webui.node.view.table.TableViewLayout.DataSection;
 import org.knime.core.webui.node.view.table.TableViewLayout.InteractivitySection;
 import org.knime.core.webui.node.view.table.TableViewLayout.ViewSection;
 import org.knime.core.webui.node.view.table.TableViewViewSettings.RowHeightMode.CompactModeAndLegacyRowHeightModePersistor;
-import org.knime.core.webui.node.view.table.TableViewViewSettings.RowHeightMode.RowHeightIsCustom;
 import org.knime.core.webui.node.view.table.TableViewViewSettings.VerticalPaddingMode.VerticalPaddingModePersistor;
 
 /**
@@ -146,7 +147,7 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     @Widget(title = "Show table size",
         description = "Whether to display the number of rows " + "and columns above the table or not.")
     @Persist(optional = true)
-    @Effect(signals = IsPaginationEnabled.class, type = EffectType.HIDE)
+    @Effect(predicate = EnablePagination.class, type = EffectType.HIDE)
     @Layout(ViewSection.class)
     public boolean m_showTableSize = true;
 
@@ -159,7 +160,8 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     @Layout(ViewSection.class)
     public boolean m_showColumnDataType = true;
 
-    interface IsPaginationEnabled {
+    static class EnablePagination implements BooleanReference {
+
     }
 
     /**
@@ -170,7 +172,7 @@ public class TableViewViewSettings implements DefaultNodeSettings {
             + "Enabling pagination hides the option “Show table size”.")
     @Persist(optional = true)
     @Layout(ViewSection.class)
-    @Signal(id = IsPaginationEnabled.class, condition = TrueCondition.class)
+    @ValueReference(EnablePagination.class)
     public boolean m_enablePagination;
 
     /**
@@ -180,7 +182,7 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     @NumberInputWidget(min = 1)
     @Persist(optional = true)
     @Layout(ViewSection.class)
-    @Effect(signals = IsPaginationEnabled.class, type = EffectType.SHOW)
+    @Effect(predicate = EnablePagination.class, type = EffectType.SHOW)
     public int m_pageSize = 10;
 
     enum AUTO_SIZE_COLUMNS {
@@ -216,11 +218,15 @@ public class TableViewViewSettings implements DefaultNodeSettings {
                     + " their gist.")
             CUSTOM;
 
-        public static final class RowHeightIsCustom extends OneOfEnumCondition<RowHeightMode> {
+        class Ref implements Reference<RowHeightMode> {
+
+        }
+
+        static final class IsCustom implements PredicateProvider {
 
             @Override
-            public RowHeightMode[] oneOf() {
-                return new RowHeightMode[]{CUSTOM};
+            public Predicate init(final PredicateInitializer i) {
+                return i.getEnum(Ref.class).isOneOf(CUSTOM);
             }
 
         }
@@ -263,8 +269,9 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     @Widget(title = "Row height", description = "Set the initial height of the rows.")
     @ValueSwitchWidget
     @Layout(ViewSection.class)
-    @Persist(configKey = CURRENT_ROW_HEIGHT_MODE_CFG_KEY, customPersistor = CompactModeAndLegacyRowHeightModePersistor.class)
-    @Signal(condition = RowHeightIsCustom.class)
+    @Persist(configKey = CURRENT_ROW_HEIGHT_MODE_CFG_KEY,
+        customPersistor = CompactModeAndLegacyRowHeightModePersistor.class)
+    @ValueReference(RowHeightMode.Ref.class)
     public RowHeightMode m_rowHeightMode = RowHeightMode.AUTO;
 
     static final int DEFAULT_CUSTOM_ROW_HEIGHT = 80;
@@ -296,7 +303,7 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     @NumberInputWidget(min = 24, max = 1000000)
     @Layout(ViewSection.class)
     @Persist(customPersistor = CustomRowHeightPersistor.class)
-    @Effect(signals = RowHeightIsCustom.class, type = EffectType.SHOW)
+    @Effect(predicate = RowHeightMode.IsCustom.class, type = EffectType.SHOW)
     public int m_customRowHeight = DEFAULT_CUSTOM_ROW_HEIGHT;
 
     @SuppressWarnings("javadoc")

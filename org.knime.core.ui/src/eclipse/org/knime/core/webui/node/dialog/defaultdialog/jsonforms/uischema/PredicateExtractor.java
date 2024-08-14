@@ -44,39 +44,73 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Aug 13, 2024 (Paul Bärnreuther): created
+ *   Apr 3, 2023 (Paul Bärnreuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
-import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_NOT;
-import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil.getMapper;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.ConstantPredicate;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.ScopedPredicate;
-
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Predicate;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.PredicateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.PredicateProvider.PredicateInitializer;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
 
 /**
+ * Extracts references from widget trees to enable creating predicates from predicate providers.
  *
  * @author Paul Bärnreuther
  */
-final class JsonFormsSchemaConditionUtil {
+final class PredicateExtractor {
 
-    private JsonFormsSchemaConditionUtil() {
-        // Utility
+    private final DefaultNodeSettingsContext m_context;
+
+    private final PredicateInitializer m_predicateInitializer;
+
+    /**
+     * @param widgetTrees to extract references from
+     * @param context the node's context (inputs, flow vars)
+     */
+    PredicateExtractor(final Collection<WidgetTree> widgetTrees, final DefaultNodeSettingsContext context) {
+        m_context = context;
+        m_predicateInitializer = getPredicateInitializer(widgetTrees);
     }
 
-    static ObjectNode createCondition(final ScopedPredicate scopedPredicate, final DefaultNodeSettingsContext context) {
-        return scopedPredicate.condition().accept(new JsonFormsConditionResolver(scopedPredicate.node(), context));
+    /**
+     * @param widgetTree to extract references from
+     * @param context the node's context (inputs, flow vars)
+     */
+    PredicateExtractor(final WidgetTree widgetTree, final DefaultNodeSettingsContext context) {
+        this(List.of(widgetTree), context);
     }
 
-    static ObjectNode createCondition(final ConstantPredicate constantPredicate) {
-        final var schemaNode = getMapper().createObjectNode();
-        if (!constantPredicate.value()) {
-            schemaNode.putObject(TAG_NOT);
-        }
-        return schemaNode;
+    private PredicateInitializer getPredicateInitializer(final Collection<WidgetTree> widgetTrees) {
+        return new DefaultPredicateInitializer(getReferences(widgetTrees)::get, m_context);
+    }
+
+    private static Map<Class<?>, WidgetTreeNode> getReferences(final Collection<WidgetTree> widgetTrees) {
+        final Map<Class<?>, WidgetTreeNode> references = new HashMap<>();
+        widgetTrees.stream().flatMap(WidgetTree::getWidgetAndWidgetTreeNodes)
+            .forEach(node -> addReference(references, node));
+        return references;
+    }
+
+    private static void addReference(final Map<Class<?>, WidgetTreeNode> references, final WidgetTreeNode node) {
+        node.getAnnotation(ValueReference.class).map(ValueReference::value)
+            .ifPresent(referenceClass -> references.put(referenceClass, node));
+    }
+
+    Predicate createPredicate(final Class<? extends PredicateProvider> predicateProviderClass) {
+        return m_predicateInitializer.getPredicate(predicateProviderClass);
+    }
+
+    Predicate createPredicate(final PredicateProvider predicateProvider) {
+        return m_predicateInitializer.getPredicate(predicateProvider);
     }
 
 }

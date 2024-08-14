@@ -61,9 +61,8 @@ import java.util.stream.Stream;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LatentWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
 
@@ -80,8 +79,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRefere
  */
 public final class WidgetTree extends WidgetTreeNode {
 
-    private static final Collection<Class<? extends Annotation>> POSSIBLE_ANNOTATIONS = List.of(LatentWidget.class,
-        Layout.class, Signal.class, Effect.class, ValueReference.class, ValueProvider.class);
+    private static final Collection<Class<? extends Annotation>> POSSIBLE_ANNOTATIONS =
+        List.of(LatentWidget.class, Layout.class, Effect.class, ValueReference.class, ValueProvider.class);
 
     ArrayWidgetNode m_arrayWidgetNodeParent;
 
@@ -166,8 +165,8 @@ public final class WidgetTree extends WidgetTreeNode {
      * Flatten the tree without traversing into element trees of {@link ArrayWidgetNode ArrayWidgetNodes}. Hereby
      * intermediate {@link WidgetTree} nodes are not included in the output.
      *
-     * @return the union of all {@link WidgetNode WidgetTreeLeafNodes} and {@link ArrayWidgetNode ArrayWidgetNodes} that
-     *         are reached by traversing the tree from the root without traversing into the element trees of
+     * @return the union of all {@link WidgetNode WidgetNodes} and {@link ArrayWidgetNode ArrayWidgetNodes} that are
+     *         reached by traversing the tree from the root without traversing into the element trees of
      *         {@link ArrayWidgetNode ArrayWidgetNodes}
      */
     public Stream<WidgetTreeNode> getWidgetNodes() {
@@ -185,8 +184,8 @@ public final class WidgetTree extends WidgetTreeNode {
      * Flatten the tree without traversing into element trees of {@link ArrayWidgetNode ArrayWidgetNodes}. Also
      * intermediate {@link WidgetTree} nodes are included in the output.
      *
-     * @return the union of all {@link WidgetTreeNode}s that are reached by traversing the tree from the root without
-     *         traversing into the element trees of {@link ArrayWidgetNode ArrayWidgetNodes}
+     * @return the union of all {@link WidgetTreeNode WidgetTreeNodes} that are reached by traversing the tree from the
+     *         root without traversing into the element trees of {@link ArrayWidgetNode ArrayWidgetNodes}
      */
     public Stream<WidgetTreeNode> getWidgetAndWidgetTreeNodes() {
         return getChildren().stream().flatMap(WidgetTree::getWidgetAndWidgetTreeNodes);

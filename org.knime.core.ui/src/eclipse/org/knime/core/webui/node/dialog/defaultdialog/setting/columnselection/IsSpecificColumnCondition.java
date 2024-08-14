@@ -48,8 +48,8 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection;
 
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.Condition;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.ConditionVisitor;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.Condition;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.ConditionVisitor;
 
 /**
  * Condition to be used for {@link ColumnSelection} fields. It is triggered whenever the name of the selected column is
@@ -57,21 +57,21 @@ import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.ConditionVisitor
  *
  * @author Rupert Ettrich
  */
-public abstract class IsSpecificColumnCondition implements Condition {
+public interface IsSpecificColumnCondition extends Condition {
 
     @Override
-    public <T> T accept(final ConditionVisitor<T> visitor) {
+    default <T> T accept(final ConditionVisitor<T> visitor) {
         return visitor.visit(this);
     }
 
     /**
      * The property within a {@link ColumnSelection} containing the name of the column.
      */
-    public static final String PROPERTY_NAME = "selected";
+    String PROPERTY_NAME = "selected";
 
     /**
      * @return Returns the column name that should trigger the condition.
      */
-    public abstract String getColumnName();
+    String getColumnName();
 
 }

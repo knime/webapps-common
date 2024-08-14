@@ -44,71 +44,40 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   4 Nov 2021 (Marc Bux, KNIME GmbH, Berlin, Germany): created
+ *   Apr 6, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget;
+package org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.Arrays;
+import java.util.List;
 
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect.EffectType;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.PredicateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Predicate;
 
 /**
- * An annotation for a field indicating that its contributing to the dialog UI. And it allows one to control common
- * widget metadata of the field.
  *
- * Depending on the type of the field being annotated and in case there is <b> no</b>
- * {@link org.knime.core.webui.node.dialog.defaultdialog.widget other widget annotation} present, a default widget will
- * be displayed in the dialog (see {@link DefaultNodeSettings} for details). In case the default widget is not desired,
- * an additional specialized widget-annotation (e.g. {@link TextInputWidget}) can be used to customize it.
- *
- * @author Marc Bux, KNIME GmbH, Berlin, Germany
+ * @author Paul Bärnreuther
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-@Inherited
-public @interface Widget {
+public non-sealed class Or implements Operator {
+
+    private final Predicate[] m_children;
 
     /**
-     * @return the title / label of the field
+     * @param children the predicates which are combined using an or operation
      */
-    String title();
+    public Or(final Predicate... children) {
+        m_children = children;
+    }
 
     /**
-     * @return the description of the field (for tooltips or node descriptions)
+     * @return the predicates which are combined using an or operation
      */
-    String description();
+    public List<Predicate> getChildren() {
+        return Arrays.asList(m_children);
+    }
 
-    /**
-     * @return true if the annotated setting is advanced
-     */
-    boolean advanced() default false;
-
-    /**
-     * @return true if the title should be hidden from the dialog, but should still be available in the node
-     *         description.
-     */
-    boolean hideTitle() default false;
-
-    /**
-     * @return true if the flow variable button should be hidden
-     */
-    boolean hideFlowVariableButton() default false;
-
-    /**
-     * Add an effect annotation here as an alternative to putting it on the annotated field directly. if an effect
-     * annotation also exists on the field, an error is thrown.
-     *
-     * @return whether the widget should be disabled or hidden.
-     * @see Effect
-     *
-     */
-    Effect effect() default @Effect(predicate = PredicateProvider.class, type = EffectType.SHOW);
+    @Override
+    public <T> T accept(final PredicateVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 
 }

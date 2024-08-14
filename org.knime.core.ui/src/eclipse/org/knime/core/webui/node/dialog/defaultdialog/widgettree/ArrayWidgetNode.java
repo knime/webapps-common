@@ -54,13 +54,11 @@ import java.util.List;
 import java.util.function.Function;
 
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Signals;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LatentWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.internal.InternalArrayWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
 
@@ -80,8 +78,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRefere
 public final class ArrayWidgetNode extends WidgetTreeNode {
 
     private static final Collection<Class<? extends Annotation>> POSSIBLE_ANNOTATIONS =
-        List.of(LatentWidget.class, Widget.class, ArrayWidget.class, InternalArrayWidget.class, Signal.class,
-            Signals.class, Layout.class, Effect.class, ValueReference.class, ValueProvider.class);
+        List.of(LatentWidget.class, Widget.class, ArrayWidget.class, InternalArrayWidget.class, Layout.class,
+            Effect.class, ValueReference.class, ValueProvider.class);
 
     private final WidgetTree m_elementWidgetTree;
 

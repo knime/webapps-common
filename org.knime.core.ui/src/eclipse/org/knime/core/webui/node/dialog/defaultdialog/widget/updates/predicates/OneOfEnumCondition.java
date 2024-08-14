@@ -44,71 +44,25 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   4 Nov 2021 (Marc Bux, KNIME GmbH, Berlin, Germany): created
+ *   Apr 4, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect.EffectType;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.PredicateProvider;
+package org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates;
 
 /**
- * An annotation for a field indicating that its contributing to the dialog UI. And it allows one to control common
- * widget metadata of the field.
+ * Triggers if an enum has one of a specified subset of values.
  *
- * Depending on the type of the field being annotated and in case there is <b> no</b>
- * {@link org.knime.core.webui.node.dialog.defaultdialog.widget other widget annotation} present, a default widget will
- * be displayed in the dialog (see {@link DefaultNodeSettings} for details). In case the default widget is not desired,
- * an additional specialized widget-annotation (e.g. {@link TextInputWidget}) can be used to customize it.
- *
- * @author Marc Bux, KNIME GmbH, Berlin, Germany
+ * @author Paul Bärnreuther
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-@Inherited
-public @interface Widget {
+public interface OneOfEnumCondition<E extends Enum<E>> extends Condition {
+
+    @Override
+    default <T> T accept(final ConditionVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 
     /**
-     * @return the title / label of the field
+     * @return the values of the enum for which the condition should apply
      */
-    String title();
-
-    /**
-     * @return the description of the field (for tooltips or node descriptions)
-     */
-    String description();
-
-    /**
-     * @return true if the annotated setting is advanced
-     */
-    boolean advanced() default false;
-
-    /**
-     * @return true if the title should be hidden from the dialog, but should still be available in the node
-     *         description.
-     */
-    boolean hideTitle() default false;
-
-    /**
-     * @return true if the flow variable button should be hidden
-     */
-    boolean hideFlowVariableButton() default false;
-
-    /**
-     * Add an effect annotation here as an alternative to putting it on the annotated field directly. if an effect
-     * annotation also exists on the field, an error is thrown.
-     *
-     * @return whether the widget should be disabled or hidden.
-     * @see Effect
-     *
-     */
-    Effect effect() default @Effect(predicate = PredicateProvider.class, type = EffectType.SHOW);
+    E[] oneOf();
 
 }

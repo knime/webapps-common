@@ -49,31 +49,31 @@
 package org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection;
 
 import org.knime.core.data.DataValue;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.Condition;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.ConditionVisitor;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.Condition;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.ConditionVisitor;
 
 /**
  *
  * @author Paul Bärnreuther
  */
-public abstract class IsColumnOfTypeCondition implements Condition {
+public interface IsColumnOfTypeCondition extends Condition {
 
     /**
      * See {@link ColumnSelection#m_compatibleTypes}
      */
-    public static final String PROPERTY_NAME = "compatibleTypes";
+    String PROPERTY_NAME = "compatibleTypes";
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public <T> T accept(final ConditionVisitor<T> visitor) {
+    default <T> T accept(final ConditionVisitor<T> visitor) {
         return visitor.visit(this);
     }
 
     /**
      * @return the data type to check compatibility against
      */
-    public abstract Class<? extends DataValue> getDataValueClass();
+    Class<? extends DataValue> getDataValueClass();
 
 }

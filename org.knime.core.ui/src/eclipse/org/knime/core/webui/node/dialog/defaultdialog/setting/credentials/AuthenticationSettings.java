@@ -65,18 +65,17 @@ import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPe
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldBasedNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect.EffectType;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.impl.OneOfEnumCondition;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Signal;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.AuthenticationSettings.AuthenticationType.RequiresCredentialsCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.CredentialsWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Predicate;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.PredicateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect.EffectType;
 
 /**
  * A switch on the type of authentication that is to be used plus a {@link Credentials} widget that is shown
@@ -118,25 +117,22 @@ public final class AuthenticationSettings implements WidgetGroup, PersistableSet
 
         static final AuthenticationType[] REQUIRE_CREDENTIALS = new AuthenticationType[]{USER_PWD, PWD, USER};
 
-        static class RequiresCredentialsCondition extends OneOfEnumCondition<AuthenticationType> {
-
-            @Override
-            public AuthenticationType[] oneOf() {
-                return REQUIRE_CREDENTIALS;
-            }
-
-        }
-
     }
 
     static final class AuthenticationTypeRef implements Reference<AuthenticationType> {
+        static class RequiresCredentials implements PredicateProvider {
 
+            @Override
+            public Predicate init(final PredicateInitializer i) {
+                return i.getEnum(AuthenticationTypeRef.class).isOneOf(AuthenticationType.REQUIRE_CREDENTIALS);
+            }
+
+        }
     }
 
     @Widget(title = "Authentication type", description = "The type of the used authentication.")
     @ValueReference(AuthenticationTypeRef.class)
     @RadioButtonsWidget(horizontal = true)
-    @Signal(condition = AuthenticationType.RequiresCredentialsCondition.class)
     final AuthenticationType m_type;
 
     abstract static class AuthenticationTypeDependentProvider implements StateProvider<Boolean> {
@@ -170,7 +166,7 @@ public final class AuthenticationSettings implements WidgetGroup, PersistableSet
     }
 
     @Widget(title = "Credentials", description = "The credentials used for the authentication.")
-    @Effect(signals = RequiresCredentialsCondition.class, type = EffectType.SHOW)
+    @Effect(predicate = AuthenticationTypeRef.RequiresCredentials.class, type = EffectType.SHOW)
     @CredentialsWidget(hasPasswordProvider = RequiresPasswordProvider.class,
         hasUsernameProvider = RequiresUsernameProvider.class)
     final Credentials m_credentials;
