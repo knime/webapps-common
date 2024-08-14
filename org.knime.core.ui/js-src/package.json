@@ -50,7 +50,7 @@
     "@knime/components": "1.0.15",
     "@knime/rich-text-editor": "1.0.17",
     "@knime/knime-ui-table": "0.5.2",
-    "@knime/ui-extension-service": "0.35.0",
+    "@knime/ui-extension-service": "0.38.0",
     "@knime/styles": "1.0.3",
     "@tiptap/core": "2.1.10",
     "date-fns": "2.29.3",
