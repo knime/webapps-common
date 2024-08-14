@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { rendererProps } from "@jsonforms/vue";
 import { optionsMapper } from "../utils";
-import DropdownInput from "./DropdownInput.vue";
+import DropdownControl from "./DropdownControl.vue";
 import { useJsonFormsControlWithUpdate } from "../composables/components/useJsonFormsControlWithUpdate";
 
 const props = defineProps(rendererProps());
@@ -11,7 +11,7 @@ const asyncInitialOptions = Promise.resolve(options);
 </script>
 
 <template>
-  <DropdownInput
+  <DropdownControl
     v-bind="{ ...$attrs, ...$props }"
     :async-initial-options="asyncInitialOptions"
   />

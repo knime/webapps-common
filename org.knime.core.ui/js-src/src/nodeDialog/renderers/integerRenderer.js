@@ -1,5 +1,5 @@
 import { rankWith, isIntegerControl } from "@jsonforms/core";
-import IntegerInput from "../uiComponents/IntegerInput.vue";
+import IntegerControl from "../uiComponents/IntegerControl.vue";
 import { priorityRanks, inputFormats } from "../constants";
 
 export const integerTester = (uischema, schema) => {
@@ -8,6 +8,6 @@ export const integerTester = (uischema, schema) => {
 };
 
 export const integerRenderer = {
-  renderer: IntegerInput,
+  renderer: IntegerControl,
   tester: rankWith(priorityRanks.default, integerTester),
 };

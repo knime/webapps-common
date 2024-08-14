@@ -41,7 +41,7 @@ describe("ColumnSelect", () => {
       },
     };
 
-    expect(determineRenderer(uiSchema, schema)).toBe("TwinlistInput");
+    expect(determineRenderer(uiSchema, schema)).toBe("TwinlistControl");
   });
 
   it("determines SimpleTwinList renderer", () => {
@@ -53,6 +53,6 @@ describe("ColumnSelect", () => {
       },
     };
 
-    expect(determineRenderer(uiSchema, schema)).toBe("SimpleTwinlistInput");
+    expect(determineRenderer(uiSchema, schema)).toBe("SimpleTwinlistControl");
   });
 });

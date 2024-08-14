@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { determineRenderer } from "../rendererTestUtils";
 
-describe("SortListInput", () => {
+describe("SortListControl", () => {
   const schema = {
     type: "object",
     properties: {
@@ -20,6 +20,6 @@ describe("SortListInput", () => {
       },
     };
 
-    expect(determineRenderer(uiSchema, schema)).toBe("SortListInput");
+    expect(determineRenderer(uiSchema, schema)).toBe("SortListControl");
   });
 });

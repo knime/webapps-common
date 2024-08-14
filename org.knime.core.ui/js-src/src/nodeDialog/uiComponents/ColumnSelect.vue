@@ -4,7 +4,7 @@ import { rendererProps } from "@jsonforms/vue";
 import { computed, onMounted, watch, watchEffect } from "vue";
 import type { PossibleValue } from "../types/ChoicesUiSchema";
 import inject from "../utils/inject";
-import DropdownInput from "./DropdownInput.vue";
+import DropdownControl from "./DropdownControl.vue";
 import { isEqual } from "lodash-es";
 import useDialogControl from "../composables/components/useDialogControl";
 import useProvidedState from "../composables/components/useProvidedState";
@@ -85,7 +85,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <DropdownInput
+  <DropdownControl
     v-bind="{ ...$attrs, ...$props }"
     :async-initial-options="asyncInitialOptions"
     :json-forms-control="jsonFormsControl"

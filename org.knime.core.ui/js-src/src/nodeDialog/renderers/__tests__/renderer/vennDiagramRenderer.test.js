@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { determineRenderer } from "../rendererTestUtils";
 
-describe("TextInput", () => {
+describe("TextControl", () => {
   it("detects VennDiagram type", () => {
     const uiSchema = {
       type: "VennDiagram",

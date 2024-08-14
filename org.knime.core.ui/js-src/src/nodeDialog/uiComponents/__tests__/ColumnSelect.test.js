@@ -5,7 +5,7 @@ import {
   getControlBase,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import ColumnSelect from "../ColumnSelect.vue";
-import DropdownInput from "../DropdownInput.vue";
+import DropdownControl from "../DropdownControl.vue";
 import { Dropdown } from "@knime/components";
 import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
 import DialogLabel from "../label/DialogLabel.vue";
@@ -75,17 +75,17 @@ describe("ColumnSelect.vue", () => {
 
   it("renders", () => {
     expect(wrapper.getComponent(ColumnSelect).exists()).toBe(true);
-    expect(wrapper.getComponent(DropdownInput).exists()).toBe(true);
+    expect(wrapper.getComponent(DropdownControl).exists()).toBe(true);
   });
 
   it("passes default props", () => {
-    const dropdownProps = wrapper.getComponent(DropdownInput).props();
+    const dropdownProps = wrapper.getComponent(DropdownControl).props();
     expect(dropdownProps.optionsGenerator).toBe(wrapper.vm.optionsGenerator);
   });
 
   it("initializes jsonforms on pass-through component", () => {
     initializesJsonFormsControl({
-      wrapper: wrapper.getComponent(DropdownInput),
+      wrapper: wrapper.getComponent(DropdownControl),
       useJsonFormsControlSpy: component.useJsonFormsControlSpy,
     });
   });
@@ -99,8 +99,8 @@ describe("ColumnSelect.vue", () => {
     });
 
     it("updates compatible types on value change", () => {
-      const dropdownInput = wrapper.findComponent(DropdownInput);
-      const dropdown = dropdownInput.findComponent(Dropdown);
+      const dropdownControl = wrapper.findComponent(DropdownControl);
+      const dropdown = dropdownControl.findComponent(Dropdown);
       dropdown.vm.$emit("update:modelValue", "Universe_1_1");
       expect(handleChange).toHaveBeenNthCalledWith(2, path, {
         selected: "Universe_1_1",
@@ -109,8 +109,8 @@ describe("ColumnSelect.vue", () => {
     });
 
     it("sets empty compatible types on missing value", () => {
-      const dropdownInput = wrapper.findComponent(DropdownInput);
-      const dropdown = dropdownInput.findComponent(Dropdown);
+      const dropdownControl = wrapper.findComponent(DropdownControl);
+      const dropdown = dropdownControl.findComponent(Dropdown);
       dropdown.vm.$emit("update:modelValue", "I am Missing");
       expect(handleChange).toHaveBeenNthCalledWith(2, path, {
         selected: "I am Missing",
@@ -196,7 +196,7 @@ describe("ColumnSelect.vue", () => {
     );
   });
 
-  it("sets subConfigKeys for LabeledInput and computed flow settings with them", async () => {
+  it("sets subConfigKeys for LabeledControl and computed flow settings with them", async () => {
     const subConfigKey = "selected";
     const DialogLabelStub = {
       setup() {

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { determineRenderer } from "../rendererTestUtils";
 
-describe("NumberInput", () => {
+describe("NumberControl", () => {
   const uiSchema = {
     type: "Control",
     scope: "#/properties/number",
@@ -17,7 +17,7 @@ describe("NumberInput", () => {
         },
       },
     };
-    expect(determineRenderer(uiSchema, integerSchema)).toBe("IntegerInput");
+    expect(determineRenderer(uiSchema, integerSchema)).toBe("IntegerControl");
   });
 
   it("determines double renderer", () => {
@@ -29,6 +29,6 @@ describe("NumberInput", () => {
         },
       },
     };
-    expect(determineRenderer(uiSchema, schema)).toBe("NumberInput");
+    expect(determineRenderer(uiSchema, schema)).toBe("NumberControl");
   });
 });

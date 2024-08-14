@@ -1,6 +1,6 @@
 import { rankWith, isOneOfControl } from "@jsonforms/core";
 import { priorityRanks, inputFormats } from "../constants";
-import RadioInput from "../uiComponents/RadioInput.vue";
+import RadioControl from "../uiComponents/RadioControl.vue";
 
 export const radioTester = (uischema, schema) => {
   const isOneOf = isOneOfControl(uischema, schema);
@@ -8,6 +8,6 @@ export const radioTester = (uischema, schema) => {
 };
 
 export const radioRenderer = {
-  renderer: RadioInput,
+  renderer: RadioControl,
   tester: rankWith(priorityRanks.default, radioTester),
 };

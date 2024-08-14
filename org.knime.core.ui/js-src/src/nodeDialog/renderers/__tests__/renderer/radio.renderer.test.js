@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { determineRenderer } from "../rendererTestUtils";
 
-describe("RadioInput", () => {
+describe("RadioControl", () => {
   const schema = {
     type: "object",
     properties: {
@@ -21,7 +21,7 @@ describe("RadioInput", () => {
     },
   };
 
-  it("radioInput with options", () => {
+  it("radioControl with options", () => {
     const uiSchema = {
       type: "Control",
       scope: "#/properties/radio",
@@ -30,6 +30,6 @@ describe("RadioInput", () => {
       },
     };
 
-    expect(determineRenderer(uiSchema, schema)).toBe("RadioInput");
+    expect(determineRenderer(uiSchema, schema)).toBe("RadioControl");
   });
 });

@@ -7,7 +7,7 @@ import flushPromises from "flush-promises";
 import { cloneDeep } from "lodash-es";
 
 import { getOptions } from "@/nodeDialog/__tests__/utils";
-import SimpleButtonInput from "@/nodeDialog/uiComponents/SimpleButtonInput.vue";
+import SimpleButtonControl from "@/nodeDialog/uiComponents/SimpleButtonControl.vue";
 import { Button, Dropdown, Checkbox } from "@knime/components";
 import { mockRegisterSettings } from "@@/test-setup/utils/integration/dirtySettingState";
 import {
@@ -15,7 +15,7 @@ import {
   UpdateResult,
   ValueReference,
 } from "@/nodeDialog/types/Update";
-import TextInput from "@/nodeDialog/uiComponents/TextInput.vue";
+import TextControl from "@/nodeDialog/uiComponents/TextControl.vue";
 import { ref } from "vue";
 
 describe("updates in array layouts", () => {
@@ -153,13 +153,13 @@ describe("updates in array layouts", () => {
     },
   });
 
-  const addSimpleButtonInputToElements = (buttonId: string) => {
+  const addSimpleButtonControlToElements = (buttonId: string) => {
     initialDataJson[uiSchemaKey].elements[0].options.detail.push(
       getSimpleButtonUiSchema(buttonId),
     );
   };
 
-  const addSimpleButtonInputAfterArray = (buttonId: string) => {
+  const addSimpleButtonControlAfterArray = (buttonId: string) => {
     initialDataJson[uiSchemaKey].elements.push(
       getSimpleButtonUiSchema(buttonId),
     );
@@ -167,14 +167,14 @@ describe("updates in array layouts", () => {
 
   const addButtonToElements = () => {
     const buttonId = "myButtonRefId";
-    addSimpleButtonInputToElements(buttonId);
+    addSimpleButtonControlToElements(buttonId);
     const { addDependency } = registerButtonTriggerInGlobalUpdates(buttonId);
     return {
       addDependency,
       triggerNthButton: async (wrapper: Wrapper, n: number) => {
         wrapper
           .find(".array")
-          .findAllComponents(SimpleButtonInput as any)
+          .findAllComponents(SimpleButtonControl as any)
           .at(n)
           .findComponent(Button)
           .trigger("click");
@@ -185,13 +185,13 @@ describe("updates in array layouts", () => {
 
   const addButtonAfterArray = () => {
     const buttonId = "myButtonRefId";
-    addSimpleButtonInputAfterArray(buttonId);
+    addSimpleButtonControlAfterArray(buttonId);
     const { addDependency } = registerButtonTriggerInGlobalUpdates(buttonId);
     return {
       addDependency,
       triggerButton: async (wrapper: Wrapper) => {
         wrapper
-          .findComponent(SimpleButtonInput as any)
+          .findComponent(SimpleButtonControl as any)
           .findComponent(Button)
           .trigger("click");
         await flushPromises();
@@ -290,7 +290,7 @@ describe("updates in array layouts", () => {
       getNthTextValue: (wrapper: Wrapper, n: number) =>
         wrapper
           .find(".array")
-          .findAllComponents(TextInput as any)
+          .findAllComponents(TextControl as any)
           .at(n)
           .find("input").element.value,
       newValue,

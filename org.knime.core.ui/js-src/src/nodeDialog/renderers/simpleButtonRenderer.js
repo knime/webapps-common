@@ -1,11 +1,11 @@
 import { rankWith } from "@jsonforms/core";
 import { priorityRanks, inputFormats } from "../constants";
-import SimpleButtonInput from "../uiComponents/SimpleButtonInput.vue";
+import SimpleButtonControl from "../uiComponents/SimpleButtonControl.vue";
 
 export const simpleButtonTester = (uischema, _schema) =>
   uischema.options?.format === inputFormats.simpleButton;
 
 export const simpleButtonRenderer = {
-  renderer: SimpleButtonInput,
+  renderer: SimpleButtonControl,
   tester: rankWith(priorityRanks.default, simpleButtonTester),
 };

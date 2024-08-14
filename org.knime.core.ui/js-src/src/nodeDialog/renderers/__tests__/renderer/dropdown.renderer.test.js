@@ -24,7 +24,7 @@ describe("Dropdown", () => {
     },
   };
 
-  it("renders DropdownInput", () => {
+  it("renders DropdownControl", () => {
     const uiSchema = {
       type: "Control",
       scope: "#/properties/dropdown",
@@ -33,6 +33,6 @@ describe("Dropdown", () => {
       },
     };
 
-    expect(determineRenderer(uiSchema, schema)).toBe("DropdownInput");
+    expect(determineRenderer(uiSchema, schema)).toBe("DropdownControl");
   });
 });

@@ -5,7 +5,7 @@ import {
   getControlBase,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import AnyOfTwinlist from "../AnyOfTwinlist.vue";
-import SimpleTwinlistInput from "../SimpleTwinlistInput.vue";
+import SimpleTwinlistControl from "../SimpleTwinlistControl.vue";
 
 describe("AnyOfTwinlist.vue", () => {
   let wrapper, props, component;
@@ -53,17 +53,17 @@ describe("AnyOfTwinlist.vue", () => {
 
   it("renders", () => {
     expect(wrapper.getComponent(AnyOfTwinlist).exists()).toBe(true);
-    expect(wrapper.getComponent(SimpleTwinlistInput).exists()).toBe(true);
+    expect(wrapper.getComponent(SimpleTwinlistControl).exists()).toBe(true);
   });
 
   it("passes default props", () => {
-    const dropdownProps = wrapper.getComponent(SimpleTwinlistInput).props();
+    const dropdownProps = wrapper.getComponent(SimpleTwinlistControl).props();
     expect(dropdownProps.optionsGenerator).toBe(wrapper.vm.optionsGenerator);
   });
 
   it("initializes jsonforms on pass-through component", () => {
     initializesJsonFormsControl({
-      wrapper: wrapper.getComponent(SimpleTwinlistInput),
+      wrapper: wrapper.getComponent(SimpleTwinlistControl),
       useJsonFormsControlSpy: component.useJsonFormsControlSpy,
     });
   });

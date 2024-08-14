@@ -1,5 +1,5 @@
 import { rankWith, isBooleanControl } from "@jsonforms/core";
-import CheckboxInput from "../uiComponents/CheckboxInput.vue";
+import CheckboxControl from "../uiComponents/CheckboxControl.vue";
 import { priorityRanks, inputFormats } from "../constants";
 
 export const checkboxTester = (uischema, schema) => {
@@ -8,6 +8,6 @@ export const checkboxTester = (uischema, schema) => {
 };
 
 export const checkboxRenderer = {
-  renderer: CheckboxInput,
+  renderer: CheckboxControl,
   tester: rankWith(priorityRanks.default, checkboxTester),
 };

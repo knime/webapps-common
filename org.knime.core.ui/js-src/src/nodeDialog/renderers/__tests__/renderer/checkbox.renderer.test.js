@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { determineRenderer } from "../rendererTestUtils";
 
-describe("CheckboxInput", () => {
+describe("CheckboxControl", () => {
   const schema = {
     type: "object",
     properties: {
@@ -11,7 +11,7 @@ describe("CheckboxInput", () => {
     },
   };
 
-  it("checkboxInput config error", () => {
+  it("checkboxControl config error", () => {
     const uiSchema = {
       type: "Control",
       scope: "#/properties/checkbox",
@@ -20,10 +20,10 @@ describe("CheckboxInput", () => {
       },
     };
 
-    expect(determineRenderer(uiSchema, schema)).toBe("CheckboxInput");
+    expect(determineRenderer(uiSchema, schema)).toBe("CheckboxControl");
   });
 
-  it("checkboxInput with options", () => {
+  it("checkboxControl with options", () => {
     const uiSchema = {
       type: "Control",
       scope: "#/properties/checkbox",
@@ -32,15 +32,15 @@ describe("CheckboxInput", () => {
       },
     };
 
-    expect(determineRenderer(uiSchema, schema)).toBe("CheckboxInput");
+    expect(determineRenderer(uiSchema, schema)).toBe("CheckboxControl");
   });
 
-  it("checkboxInput without options", () => {
+  it("checkboxControl without options", () => {
     const uiSchema = {
       type: "Control",
       scope: "#/properties/checkbox",
     };
 
-    expect(determineRenderer(uiSchema, schema)).toBe("CheckboxInput");
+    expect(determineRenderer(uiSchema, schema)).toBe("CheckboxControl");
   });
 });

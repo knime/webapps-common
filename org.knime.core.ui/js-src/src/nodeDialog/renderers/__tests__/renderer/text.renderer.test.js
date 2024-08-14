@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { determineRenderer } from "../rendererTestUtils";
 
-describe("TextInput", () => {
+describe("TextControl", () => {
   const schema = {
     type: "object",
     properties: {
@@ -11,7 +11,7 @@ describe("TextInput", () => {
     },
   };
 
-  it("textInput config error", () => {
+  it("textControl config error", () => {
     const uiSchema = {
       type: "Controll",
       scope: "#/properties/text",
@@ -20,7 +20,7 @@ describe("TextInput", () => {
     expect(determineRenderer(uiSchema, schema)).toBeUndefined();
   });
 
-  it("textInput with options", () => {
+  it("textControl with options", () => {
     const uiSchema = {
       type: "Control",
       scope: "#/properties/text",
@@ -29,15 +29,15 @@ describe("TextInput", () => {
       },
     };
 
-    expect(determineRenderer(uiSchema, schema)).toBe("TextInput");
+    expect(determineRenderer(uiSchema, schema)).toBe("TextControl");
   });
 
-  it("textInput without options", () => {
+  it("textControl without options", () => {
     const uiSchema = {
       type: "Control",
       scope: "#/properties/text",
     };
 
-    expect(determineRenderer(uiSchema, schema)).toBe("TextInput");
+    expect(determineRenderer(uiSchema, schema)).toBe("TextControl");
   });
 });

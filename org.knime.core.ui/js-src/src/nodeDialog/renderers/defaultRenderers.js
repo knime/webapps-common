@@ -16,7 +16,7 @@ import { dropdownRenderer } from "./dropdownRenderer";
 import { integerRenderer } from "./integerRenderer";
 import { numberRenderer } from "./numberRenderer";
 import { radioRenderer } from "./radioRenderer";
-import { richTextInputRenderer } from "./richTextInputRenderer";
+import { richTextRenderer } from "./richTextRenderer";
 import { twinlistRenderer, simpleTwinlistRenderer } from "./twinlistRenderer";
 import { sortListRenderer } from "./sortListRenderer";
 import { valueSwitchRenderer } from "./valueSwitchRenderer";
@@ -52,7 +52,7 @@ export const defaultRenderers = [
   integerRenderer,
   numberRenderer,
   radioRenderer,
-  richTextInputRenderer,
+  richTextRenderer,
   simpleTwinlistRenderer,
   twinlistRenderer,
   sortListRenderer,

@@ -42,7 +42,7 @@ export default (
       "onUpdate:modelValue": onUpdate,
       disabled: unref(disabled),
       /**
-       * These styles grant that the checkbox aligns with the label when placed in a LabeledInput
+       * These styles grant that the checkbox aligns with the label when placed in a LabeledControl
        */
       style: {
         marginTop: "-3px",

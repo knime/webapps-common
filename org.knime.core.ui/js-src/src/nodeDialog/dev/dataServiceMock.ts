@@ -62,7 +62,8 @@ export default (rpcRequest: { method: string; params: any[] }) => {
         };
       }
       if (
-        rpcRequest.params[1] === "buttonTriggerId (from simpleButtonInput.json)"
+        rpcRequest.params[1] ===
+        "buttonTriggerId (from simpleButtonControl.json)"
       ) {
         window.alert("Button was clicked!");
         return { result: [] };

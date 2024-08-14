@@ -1,6 +1,6 @@
 import { rankWith, isOneOfControl } from "@jsonforms/core";
 import { priorityRanks, inputFormats } from "../constants";
-import ValueSwitchInput from "../uiComponents/ValueSwitchInput.vue";
+import ValueSwitchControl from "../uiComponents/ValueSwitchControl.vue";
 
 export const valueSwitchTester = (uischema, schema) => {
   const isOneOf = isOneOfControl(uischema, schema);
@@ -8,6 +8,6 @@ export const valueSwitchTester = (uischema, schema) => {
 };
 
 export const valueSwitchRenderer = {
-  renderer: ValueSwitchInput,
+  renderer: ValueSwitchControl,
   tester: rankWith(priorityRanks.default, valueSwitchTester),
 };

@@ -5,7 +5,7 @@ import {
   getControlBase,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import OneOfDropdown from "../OneOfDropdown.vue";
-import DropdownInput from "../DropdownInput.vue";
+import DropdownControl from "../DropdownControl.vue";
 
 describe("OneOfDropdown.vue", () => {
   let wrapper, props, component;
@@ -53,24 +53,24 @@ describe("OneOfDropdown.vue", () => {
 
   it("renders", () => {
     expect(wrapper.getComponent(OneOfDropdown).exists()).toBe(true);
-    expect(wrapper.getComponent(DropdownInput).exists()).toBe(true);
+    expect(wrapper.getComponent(DropdownControl).exists()).toBe(true);
   });
 
   it("passes default props", () => {
-    const dropdownProps = wrapper.getComponent(DropdownInput).props();
+    const dropdownProps = wrapper.getComponent(DropdownControl).props();
     expect(dropdownProps.optionsGenerator).toBe(wrapper.vm.optionsGenerator);
   });
 
   it("initializes jsonforms on pass-through component", () => {
     initializesJsonFormsControl({
-      wrapper: wrapper.getComponent(DropdownInput),
+      wrapper: wrapper.getComponent(DropdownControl),
       useJsonFormsControlSpy: component.useJsonFormsControlSpy,
     });
   });
 
   it("computed dropdown options from oneof options", async () => {
     expect(
-      await wrapper.getComponent(DropdownInput).props().asyncInitialOptions,
+      await wrapper.getComponent(DropdownControl).props().asyncInitialOptions,
     ).toEqual([
       {
         id: "Universe_0_0",

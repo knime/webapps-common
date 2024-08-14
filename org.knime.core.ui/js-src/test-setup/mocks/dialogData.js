@@ -530,23 +530,38 @@ export const dialogApplyData = {
 };
 
 export const expectedRenderers = [
-  { scope: "#/properties/view/properties/title", component: "TextInput" },
-  { scope: "#/properties/view/properties/yAxisScale", component: "RadioInput" },
-  { scope: "#/properties/view/properties/maxRows", component: "IntegerInput" },
-  { scope: "#/properties/view/properties/fraction", component: "NumberInput" },
+  { scope: "#/properties/view/properties/title", component: "TextControl" },
+  {
+    scope: "#/properties/view/properties/yAxisScale",
+    component: "RadioControl",
+  },
+  {
+    scope: "#/properties/view/properties/maxRows",
+    component: "IntegerControl",
+  },
+  {
+    scope: "#/properties/view/properties/fraction",
+    component: "NumberControl",
+  },
   {
     scope: "#/properties/view/properties/showTooltip",
-    component: "CheckboxInput",
+    component: "CheckboxControl",
   },
   {
     scope: "#/properties/view/properties/xAxisColumn",
     component: "ColumnSelect",
   },
-  { scope: "#/properties/view/properties/xAxisLabel", component: "TextInput" },
-  { scope: "#/properties/view/properties/yAxisLabel", component: "TextInput" },
+  {
+    scope: "#/properties/view/properties/xAxisLabel",
+    component: "TextControl",
+  },
+  {
+    scope: "#/properties/view/properties/yAxisLabel",
+    component: "TextControl",
+  },
   {
     scope: "#/properties/view/properties/comboBox",
-    component: "ComboBoxInput",
+    component: "ComboBoxControl",
   },
   {
     scope: "#/properties/view/properties/frequencyColumns",
@@ -554,7 +569,7 @@ export const expectedRenderers = [
   },
   {
     scope: "#/properties/view/properties/simpleTwinlist",
-    component: "SimpleTwinlistInput",
+    component: "SimpleTwinlistControl",
   },
   {
     scope: "#/properties/view/properties/referenceLines",

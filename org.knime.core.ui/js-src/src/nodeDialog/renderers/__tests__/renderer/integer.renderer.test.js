@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { determineRenderer } from "../rendererTestUtils";
 
-describe("IntegerInput", () => {
+describe("IntegerControl", () => {
   const schema = {
     type: "object",
     properties: {
@@ -12,7 +12,7 @@ describe("IntegerInput", () => {
     },
   };
 
-  it("integerInput config error", () => {
+  it("integerControl config error", () => {
     const uiSchema = {
       type: "Controll",
       scope: "#/properties/integer",
@@ -21,7 +21,7 @@ describe("IntegerInput", () => {
     expect(determineRenderer(uiSchema, schema)).toBeUndefined();
   });
 
-  it("integerInput with options", () => {
+  it("integerControl with options", () => {
     const uiSchema = {
       type: "Control",
       scope: "#/properties/integer",
@@ -30,15 +30,15 @@ describe("IntegerInput", () => {
       },
     };
 
-    expect(determineRenderer(uiSchema, schema)).toBe("IntegerInput");
+    expect(determineRenderer(uiSchema, schema)).toBe("IntegerControl");
   });
 
-  it("integerInput without options", () => {
+  it("integerControl without options", () => {
     const uiSchema = {
       type: "Control",
       scope: "#/properties/integer",
     };
 
-    expect(determineRenderer(uiSchema, schema)).toBe("IntegerInput");
+    expect(determineRenderer(uiSchema, schema)).toBe("IntegerControl");
   });
 });

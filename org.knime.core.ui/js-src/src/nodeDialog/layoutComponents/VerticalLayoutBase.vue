@@ -16,7 +16,7 @@ defineProps<{ elements: object[] }>();
   flex-direction: column;
   --vertical-padding: var(--space-16);
 
-  /* TODO: UIEXT-1061 workaround to make the last dialog element fill the remaining height, used in RichTextInput */
+  /* TODO: UIEXT-1061 workaround to make the last dialog element fill the remaining height, used in RichTextControl */
 
   &:last-child {
     flex: 1;

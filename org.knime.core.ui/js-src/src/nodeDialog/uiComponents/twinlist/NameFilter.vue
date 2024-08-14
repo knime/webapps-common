@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import TwinlistInput from "./TwinlistInput.vue";
+import TwinlistControl from "./TwinlistControl.vue";
 import { rendererProps } from "@jsonforms/vue";
 
 defineProps(rendererProps());
 </script>
 
 <template>
-  <TwinlistInput
+  <TwinlistControl
     v-bind="{ ...$props, ...$attrs }"
     unknown-values-text="Any unknown value"
     show-unknown-values

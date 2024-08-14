@@ -9,7 +9,7 @@ import { cloneDeep } from "lodash-es";
 import { getOptions } from "@/nodeDialog/__tests__/utils";
 import { mockRegisterSettings } from "@@/test-setup/utils/integration/dirtySettingState";
 import { Update, UpdateResult } from "@/nodeDialog/types/Update";
-import TextInput from "@/nodeDialog/uiComponents/TextInput.vue";
+import TextControl from "@/nodeDialog/uiComponents/TextControl.vue";
 import EditResetButton from "@/nodeDialog/layoutComponents/arrayLayout/EditResetButton.vue";
 
 import { FunctionButton } from "@knime/components";
@@ -133,7 +133,7 @@ describe("edit/reset button in array layouts", () => {
   const getNthTextValue = (wrapper: Wrapper, n: number) =>
     wrapper
       .find(".array")
-      .findAllComponents(TextInput as any)
+      .findAllComponents(TextControl as any)
       .at(n)
       .find("input").element.value;
 

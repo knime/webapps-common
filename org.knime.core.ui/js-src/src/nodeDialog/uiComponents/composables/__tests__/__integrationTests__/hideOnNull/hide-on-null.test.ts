@@ -6,7 +6,7 @@ import NodeDialog from "@/nodeDialog/NodeDialog.vue";
 import flushPromises from "flush-promises";
 
 import { getOptions } from "@/nodeDialog/__tests__/utils";
-import TextInput from "@/nodeDialog/uiComponents/TextInput.vue";
+import TextControl from "@/nodeDialog/uiComponents/TextControl.vue";
 import { Checkbox, InputField } from "@knime/components";
 import { mockRegisterSettings } from "@@/test-setup/utils/integration/dirtySettingState";
 
@@ -23,7 +23,7 @@ describe("hide on null", () => {
   let wrapper: Wrapper;
 
   const findCheckbox = (wrapper: Wrapper) => {
-    const textInput = wrapper.findComponent(TextInput);
+    const textInput = wrapper.findComponent(TextControl);
     return textInput.findComponent(Checkbox);
   };
 

@@ -1,5 +1,5 @@
 import { ref, watch, type Ref } from "vue";
-import { TwinlistData } from "./TwinlistInput.vue";
+import { TwinlistData } from "./TwinlistControl.vue";
 import { getValuesInSet, getValuesNotInSet } from "@/nodeDialog/utils";
 
 interface PreviousAndNext {
@@ -34,7 +34,7 @@ export default ({
   possibleValueIds,
 }: {
   /**
-   * The jsonforms data of the TwinlistInput
+   * The jsonforms data of the TwinlistControl
    */
   data: Ref<TwinlistData>;
   /**

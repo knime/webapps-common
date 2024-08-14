@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { determineRenderer } from "../rendererTestUtils";
 
-describe("DateTimeInput", () => {
+describe("DateTimeControl", () => {
   const schema = {
     type: "object",
     properties: {
@@ -13,7 +13,7 @@ describe("DateTimeInput", () => {
     },
   };
 
-  it("dateTimeInput config error", () => {
+  it("dateTimeControl config error", () => {
     const uiSchema = {
       type: "Controll",
       scope: "#/properties/dateTime",
@@ -22,7 +22,7 @@ describe("DateTimeInput", () => {
     expect(determineRenderer(uiSchema, schema)).toBeUndefined();
   });
 
-  it("textInput with options", () => {
+  it("textControl with options", () => {
     const uiSchema = {
       type: "Control",
       scope: "#/properties/dateTime",
@@ -31,15 +31,15 @@ describe("DateTimeInput", () => {
       },
     };
 
-    expect(determineRenderer(uiSchema, schema)).toBe("DateTimeInput");
+    expect(determineRenderer(uiSchema, schema)).toBe("DateTimeControl");
   });
 
-  it("textInput without options", () => {
+  it("textControl without options", () => {
     const uiSchema = {
       type: "Control",
       scope: "#/properties/dateTime",
     };
 
-    expect(determineRenderer(uiSchema, schema)).toBe("DateTimeInput");
+    expect(determineRenderer(uiSchema, schema)).toBe("DateTimeControl");
   });
 });

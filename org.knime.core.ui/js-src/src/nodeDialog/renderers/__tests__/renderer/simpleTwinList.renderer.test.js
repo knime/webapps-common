@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { determineRenderer } from "../rendererTestUtils";
 
-describe("SimpleTwinlistInput", () => {
+describe("SimpleTwinlistControl", () => {
   const schema = {
     type: "object",
     properties: {
@@ -20,6 +20,6 @@ describe("SimpleTwinlistInput", () => {
       },
     };
 
-    expect(determineRenderer(uiSchema, schema)).toBe("SimpleTwinlistInput");
+    expect(determineRenderer(uiSchema, schema)).toBe("SimpleTwinlistControl");
   });
 });

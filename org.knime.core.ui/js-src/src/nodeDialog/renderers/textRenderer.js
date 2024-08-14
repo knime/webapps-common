@@ -1,10 +1,10 @@
 import { rankWith, isStringControl } from "@jsonforms/core";
 import { priorityRanks } from "../constants";
-import TextInput from "../uiComponents/TextInput.vue";
+import TextControl from "../uiComponents/TextControl.vue";
 
 export const textTester = isStringControl;
 
 export const textRenderer = {
-  renderer: TextInput,
+  renderer: TextControl,
   tester: rankWith(priorityRanks.default, textTester),
 };

@@ -30,7 +30,7 @@ describe("controls with an oneOf schema", () => {
       },
     };
 
-    expect(determineRenderer(uiSchema, schema)).toBe("ValueSwitchInput");
+    expect(determineRenderer(uiSchema, schema)).toBe("ValueSwitchControl");
   });
 
   it("creates radio buttons if requested", () => {
@@ -42,7 +42,7 @@ describe("controls with an oneOf schema", () => {
       },
     };
 
-    expect(determineRenderer(uiSchema, schema)).toBe("RadioInput");
+    expect(determineRenderer(uiSchema, schema)).toBe("RadioControl");
   });
 
   it("falls back to dropdown without format", () => {

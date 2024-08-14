@@ -5,7 +5,7 @@ import {
   getControlBase,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import NameFilter from "../NameFilter.vue";
-import TwinlistInput from "../TwinlistInput.vue";
+import TwinlistControl from "../TwinlistControl.vue";
 import { Twinlist } from "@knime/components";
 
 describe("NameFilter.vue", () => {
@@ -123,7 +123,7 @@ describe("NameFilter.vue", () => {
 
   it("renders", () => {
     expect(wrapper.getComponent(NameFilter).exists()).toBe(true);
-    expect(wrapper.getComponent(TwinlistInput).exists()).toBe(true);
+    expect(wrapper.getComponent(TwinlistControl).exists()).toBe(true);
     expect(wrapper.getComponent(Twinlist).exists()).toBe(true);
   });
 
@@ -140,7 +140,7 @@ describe("NameFilter.vue", () => {
 
   it("initializes jsonforms on pass-through component", () => {
     initializesJsonFormsControl({
-      wrapper: wrapper.getComponent(TwinlistInput),
+      wrapper: wrapper.getComponent(TwinlistControl),
       useJsonFormsControlSpy: component.useJsonFormsControlSpy,
     });
   });

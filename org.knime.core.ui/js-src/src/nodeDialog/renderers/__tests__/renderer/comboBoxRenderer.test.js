@@ -22,6 +22,6 @@ describe("ColumnSelect", () => {
         format: "comboBox",
       },
     };
-    expect(determineRenderer(uiSchema, schema)).toBe("ComboBoxInput");
+    expect(determineRenderer(uiSchema, schema)).toBe("ComboBoxControl");
   });
 });

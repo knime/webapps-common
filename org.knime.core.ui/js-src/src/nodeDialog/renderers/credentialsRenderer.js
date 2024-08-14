@@ -1,12 +1,12 @@
 import { rankWith } from "@jsonforms/core";
 import { priorityRanks, inputFormats } from "../constants";
-import CredentialsInput from "../uiComponents/credentials/CredentialsInput.vue";
+import CredentialsControl from "../uiComponents/credentials/CredentialsControl.vue";
 
 export const credentialsTester = (uischema, _schema) => {
   return uischema.options?.format === inputFormats.credentials;
 };
 
 export const credentialsRenderer = {
-  renderer: CredentialsInput,
+  renderer: CredentialsControl,
   tester: rankWith(priorityRanks.default, credentialsTester),
 };

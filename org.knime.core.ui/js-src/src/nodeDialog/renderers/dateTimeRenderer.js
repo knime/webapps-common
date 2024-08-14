@@ -1,8 +1,8 @@
 import { rankWith, isDateTimeControl } from "@jsonforms/core";
 import { priorityRanks } from "../constants";
-import DateTimeInput from "../uiComponents/DateTimeInput.vue";
+import DateTimeControl from "../uiComponents/DateTimeControl.vue";
 
 export const dateTimeRenderer = {
-  renderer: DateTimeInput,
+  renderer: DateTimeControl,
   tester: rankWith(priorityRanks.default, isDateTimeControl),
 };

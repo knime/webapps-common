@@ -2,7 +2,7 @@
 import { rendererProps } from "@jsonforms/vue";
 import Control from "@/nodeDialog/types/Control";
 import { optionsMapper } from "@/nodeDialog/utils";
-import SimpleTwinlistInput from "./SimpleTwinlistInput.vue";
+import SimpleTwinlistControl from "./SimpleTwinlistControl.vue";
 
 defineProps(rendererProps());
 const optionsGenerator = (control: Control) => {
@@ -11,5 +11,8 @@ const optionsGenerator = (control: Control) => {
 </script>
 
 <template>
-  <SimpleTwinlistInput v-bind="$props" :options-generator="optionsGenerator" />
+  <SimpleTwinlistControl
+    v-bind="$props"
+    :options-generator="optionsGenerator"
+  />
 </template>

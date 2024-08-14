@@ -5,7 +5,7 @@ import {
   getControlBase,
 } from "@@/test-setup/utils/jsonFormsTestUtils";
 import ColumnFilter from "../ColumnFilter.vue";
-import TwinlistInput from "../TwinlistInput.vue";
+import TwinlistControl from "../TwinlistControl.vue";
 
 describe("ColumnFilter.vue", () => {
   const defaultProps = {
@@ -143,18 +143,18 @@ describe("ColumnFilter.vue", () => {
 
   it("renders", () => {
     expect(wrapper.getComponent(ColumnFilter).exists()).toBe(true);
-    expect(wrapper.getComponent(TwinlistInput).exists()).toBe(true);
+    expect(wrapper.getComponent(TwinlistControl).exists()).toBe(true);
   });
 
   it("passes default props", () => {
-    const twinListProps = wrapper.getComponent(TwinlistInput).props();
+    const twinListProps = wrapper.getComponent(TwinlistControl).props();
     expect(twinListProps.twinlistLeftLabel).toBe("Excludes");
     expect(twinListProps.twinlistRightLabel).toBe("Includes");
   });
 
   it("initializes jsonforms on pass-through component", () => {
     initializesJsonFormsControl({
-      wrapper: wrapper.getComponent(TwinlistInput),
+      wrapper: wrapper.getComponent(TwinlistControl),
       useJsonFormsControlSpy: component.useJsonFormsControlSpy,
     });
   });
