@@ -1,5 +1,11 @@
 # @knime/rich-text-editor
 
+## 1.0.17
+
+### Patch Changes
+
+- Fixed missing hotkeyFormatter function in CustomToolbar slot
+
 ## 1.0.16
 
 ### Patch Changes
