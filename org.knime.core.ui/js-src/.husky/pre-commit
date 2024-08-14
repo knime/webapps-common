@@ -1,3 +1,1 @@
-#!/usr/bin/env bash
-. "$(dirname -- "$0")/_/husky.sh"
 cd org.knime.core.ui/js-src && npx lint-staged
