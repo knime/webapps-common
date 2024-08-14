@@ -1,5 +1,13 @@
 # demo
 
+## 1.0.17
+
+### Patch Changes
+
+- Updated dependencies [fed323e]
+  - @knime/components@1.0.15
+  - @knime/rich-text-editor@1.0.16
+
 ## 1.0.16
 
 ### Patch Changes

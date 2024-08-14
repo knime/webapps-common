@@ -1,5 +1,13 @@
 # @knime/ui-extensions-renderer
 
+## 1.0.17
+
+### Patch Changes
+
+- fed323e: Add 'name' property to all components utilizing Options API. This is necessary to properly stub components in unit tests using Vue Test Utils.
+- Updated dependencies [fed323e]
+  - @knime/components@1.0.15
+
 ## 1.0.16
 
 ### Patch Changes
