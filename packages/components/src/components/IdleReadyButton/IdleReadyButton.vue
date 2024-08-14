@@ -4,6 +4,7 @@ import Button from "../Buttons/Button.vue";
 import { resolveClientOnlyComponent } from "../nuxtComponentResolver";
 
 export default {
+  name: "IdleReadyButton",
   components: {
     Button,
     DownIcon,

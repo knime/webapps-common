@@ -8,6 +8,7 @@ const scrollThreshold = 5; // to prevent clicks not being bubbled to child by ac
 let startX: number, scrollLeft: number, slider: HTMLDivElement;
 
 export default defineComponent({
+  name: "Carousel",
   props: {
     tabindex: {
       type: Number,

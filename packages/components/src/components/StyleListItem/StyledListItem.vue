@@ -1,5 +1,6 @@
 <script>
 export default {
+  name: "StyledListItem",
   props: {
     text: {
       type: String,

@@ -34,6 +34,7 @@ const placementMap: Record<Orientation, Placement> = {
  * It offers an orientation where the menu appears (top, left, right)
  */
 export default {
+  name: "SubMenu",
   components: {
     FunctionButton,
     MenuItems,

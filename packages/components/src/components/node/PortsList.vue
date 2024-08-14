@@ -9,6 +9,7 @@ import PortGroup from "./PortGroup.vue";
  * and one PortGroup per dynamic in/out-port, listing all possible types for said port
  */
 export default {
+  name: "PortsList",
   components: {
     PortGroup,
   },

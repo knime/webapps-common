@@ -14,6 +14,7 @@ let labelForId = 0;
  * as the input's `id`.
  */
 export default {
+  name: "Label",
   inject: {
     largeLabels: {
       // provided e.g. by Fieldset.vue

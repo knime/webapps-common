@@ -6,6 +6,7 @@ import NodeTorsoNormal from "./NodeTorsoNormal.vue";
  * SVG icon preview for a node or component, generated from its attributes
  */
 export default {
+  name: "NodePreview",
   components: {
     PortIcon,
     NodeTorsoNormal,

@@ -28,6 +28,7 @@ const allModes = {
 };
 
 export default {
+  name: "MultiModeTwinlist",
   components: {
     Label,
     FilterIcon,

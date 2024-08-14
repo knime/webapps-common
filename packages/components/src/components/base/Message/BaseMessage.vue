@@ -3,6 +3,7 @@
  * Base Message banner component
  */
 export default {
+  name: "BaseMessage",
   props: {
     /**
      * One of 'info', 'error', 'success', 'warn'. Defaults to 'info'.

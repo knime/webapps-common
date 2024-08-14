@@ -5,6 +5,7 @@ import Carousel from "../Carousel/Carousel.vue";
  * A radio button group that looks like a tab bar
  */
 export default {
+  name: "TabBar",
   components: {
     Carousel,
   },

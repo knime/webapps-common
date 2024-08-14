@@ -7,6 +7,7 @@ import MessageLink from "./MessageLink.vue";
  * Displays multiple stacked messages. If a message is added or removed (e.g. dismissed), a smooth animation is shown.
  */
 export default {
+  name: "Messages",
   components: {
     BaseMessage,
     Message,

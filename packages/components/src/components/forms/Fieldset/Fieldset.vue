@@ -3,6 +3,7 @@
  * Fieldset for elements that contain more than one input field
  */
 export default {
+  name: "Fieldset",
   provide: {
     largeLabels: false,
   },

@@ -28,6 +28,7 @@ const KEY_ENTER = "Enter";
 const TYPING_TIMEOUT = 1000; // in ms
 
 export default {
+  name: "Dropdown",
   components: {
     DropdownIcon,
     OnClickOutside,

@@ -9,6 +9,7 @@ import CopyIcon from "@knime/styles/img/icons/copy.svg";
  * Message banner component with close button
  */
 export default {
+  name: "Message",
   components: {
     BaseMessage,
     MessageTitle,

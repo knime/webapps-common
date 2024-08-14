@@ -3,6 +3,7 @@ import ReloadIcon from "@knime/styles/img/icons/reload.svg";
 import svgWithTitle from "../SvgWithTitle/svgWithTitle";
 
 export default {
+  name: "LoadingIcon",
   components: {
     ReloadIcon: svgWithTitle(ReloadIcon, "Loading…"),
   },

@@ -8,6 +8,7 @@ import CloseIcon from "@knime/styles/img/icons/close.svg";
  * See demo for documentation
  */
 export default defineComponent({
+  name: "Modal",
   components: {
     BaseModal,
     CloseIcon,

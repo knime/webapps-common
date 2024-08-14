@@ -7,6 +7,7 @@ import Description from "../Description/Description.vue";
  * Displays all dialog options of a component or node
  */
 export default {
+  name: "DialogOptions",
   components: {
     Collapser,
     Description,

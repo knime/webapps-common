@@ -4,6 +4,7 @@ import BaseButton from "../base/Button/BaseButton.vue";
 import ExpandTransition from "../transitions/ExpandTransition.vue";
 
 export default {
+  name: "Collapser",
   components: {
     DropdownIcon,
     BaseButton,

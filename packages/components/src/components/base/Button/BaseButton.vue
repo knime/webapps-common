@@ -3,6 +3,7 @@ import { defineComponent } from "vue";
 import { resolveNuxtLinkComponent } from "../../nuxtComponentResolver";
 
 export default defineComponent({
+  name: "BaseButton",
   props: {
     /**
      * If set, the button renders an <a> element instead of a <button> element

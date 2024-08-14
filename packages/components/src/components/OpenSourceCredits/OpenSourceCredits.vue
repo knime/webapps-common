@@ -14,6 +14,7 @@ import ArrowNextIcon from "@knime/styles/img/icons/arrow-next.svg";
  * also present during development time.
  */
 export default {
+  name: "OpenSourceCredits",
   components: {
     Description,
     ArrowNextIcon,

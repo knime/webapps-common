@@ -30,6 +30,7 @@ interface ComponentData {
 type MultiselectRef = InstanceType<typeof Multiselect>;
 
 export default defineComponent({
+  name: "ComboBox",
   components: {
     Multiselect,
     FunctionButton,

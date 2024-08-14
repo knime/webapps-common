@@ -22,6 +22,7 @@ function isNativeHTMLElement(
 }
 
 export default {
+  name: "BaseMenuItems",
   components: { BaseMenuItem },
   props: {
     items: {

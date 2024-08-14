@@ -28,6 +28,7 @@ import "../variables.css";
  * Uses DatePicker from v-calendar. See: https://vcalendar.io/
  */
 export default {
+  name: "DateTimeInput",
   components: {
     CalendarIcon,
     TimePartInput,

@@ -2,6 +2,7 @@
 import BaseRadioButtons from "./BaseRadioButtons.vue";
 
 export default {
+  name: "RadioButtons",
   components: {
     BaseRadioButtons,
   },

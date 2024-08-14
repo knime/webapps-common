@@ -6,6 +6,7 @@
  */
 
 export default {
+  name: "Error",
   props: {
     /**
      * Status code to be shown in the svg.

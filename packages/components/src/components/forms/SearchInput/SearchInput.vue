@@ -18,6 +18,7 @@ const defaultTooltips = {
  * Implements the v-model pattern.
  */
 export default {
+  name: "SearchInput",
   components: {
     InputField,
     FunctionButton,

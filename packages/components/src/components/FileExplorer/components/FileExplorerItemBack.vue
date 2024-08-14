@@ -6,6 +6,7 @@ import ArrowIcon from "@knime/styles/img/icons/arrow-back.svg";
 import FileExplorerItemBase from "./FileExplorerItemBase.vue";
 
 export default defineComponent({
+  name: "FileExplorerItemBack",
   components: {
     ArrowIcon,
     FileExplorerItemBase,

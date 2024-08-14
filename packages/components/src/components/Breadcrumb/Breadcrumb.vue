@@ -3,6 +3,7 @@ import ArrowNext from "@knime/styles/img/icons/arrow-next.svg";
 import { resolveNuxtLinkComponent } from "../nuxtComponentResolver";
 
 export default {
+  name: "Breadcrumb",
   components: {
     ArrowNext,
   },

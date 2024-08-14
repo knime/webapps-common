@@ -1,5 +1,6 @@
 <script>
 export default {
+  name: "Description",
   props: {
     /**
      * the text to be shown

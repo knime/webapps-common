@@ -7,6 +7,7 @@ import Description from "../Description/Description.vue";
  *  Examples are "Input ports", "Output ports"
  */
 export default {
+  name: "PortGroup",
   components: {
     Description,
     PortIcon,

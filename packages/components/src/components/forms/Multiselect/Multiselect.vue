@@ -10,6 +10,7 @@ const BOXES_HEIGHT = 28.5; // 22.5px for the checkbox label and 2 * 3px for vert
 const OPTIONS_WRAPPER_VERT_PAD = 8;
 
 export default {
+  name: "Multiselect",
   components: {
     Checkbox,
     DropdownIcon,

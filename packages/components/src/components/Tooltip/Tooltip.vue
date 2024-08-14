@@ -1,5 +1,6 @@
 <script>
 export default {
+  name: "Tooltip",
   props: {
     text: {
       type: String,

@@ -5,6 +5,7 @@
  */
 // TODO add to demo page
 export default {
+  name: "LegacyBrowserWarning",
   props: {
     text: {
       type: String,

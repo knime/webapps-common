@@ -16,8 +16,8 @@ const MIN_LIST_SIZE = 5;
 const DEF_PIX_SIZE = 28;
 
 export default {
+  name: "SearchableCheckboxes",
   components: { Label, SearchInput, Checkboxes },
-
   props: {
     /**
      *  selected value (which is a list of ids of entries)

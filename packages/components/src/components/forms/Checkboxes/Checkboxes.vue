@@ -2,6 +2,7 @@
 import Checkbox from "../Checkbox/Checkbox.vue";
 
 export default {
+  name: "Checkboxes",
   components: {
     Checkbox,
   },

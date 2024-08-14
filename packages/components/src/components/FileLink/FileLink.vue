@@ -3,6 +3,7 @@ import { partial } from "filesize";
 import { icons } from "@knime/utils";
 
 export default {
+  name: "FileLink",
   components: {
     ...icons,
   },

@@ -1,6 +1,7 @@
 <script>
 import "../variables.css";
 export default {
+  name: "InputField",
   props: {
     modelValue: {
       default: "",

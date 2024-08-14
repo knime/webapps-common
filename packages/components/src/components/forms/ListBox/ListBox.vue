@@ -6,6 +6,7 @@ const KEY_HOME = 36;
 const KEY_END = 35;
 
 export default {
+  name: "ListBox",
   props: {
     id: {
       type: String,

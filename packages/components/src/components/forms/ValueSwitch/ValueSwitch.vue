@@ -9,6 +9,7 @@ import BaseRadioButtons, {
 export type ValueSwitchItem = BaseRadioButtonItem;
 
 export default defineComponent({
+  name: "ValueSwitch",
   components: {
     BaseRadioButtons,
   },

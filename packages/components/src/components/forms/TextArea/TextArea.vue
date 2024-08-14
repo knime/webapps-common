@@ -1,5 +1,6 @@
 <script>
 export default {
+  name: "TextArea",
   props: {
     modelValue: {
       default: "",

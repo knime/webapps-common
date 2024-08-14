@@ -3,6 +3,7 @@ import Button from "../Buttons/Button.vue";
 import CloseIcon from "@knime/styles/img/icons/close.svg";
 
 export default {
+  name: "MessageTitle",
   components: {
     Button,
     CloseIcon,

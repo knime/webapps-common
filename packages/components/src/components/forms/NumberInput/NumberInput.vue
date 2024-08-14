@@ -9,6 +9,7 @@ const DEFAULT_STEP_SIZE_DOUBLE = 0.1;
 const DEFAULT_STEP_SIZE_INTEGER = 1;
 
 export default {
+  name: "NumberInput",
   components: {
     ArrowIcon,
   },

@@ -12,6 +12,7 @@ import { FocusTrap } from "focus-trap-vue";
  * Note that the widget width can be set vial the `--modal-width` CSS property, which defaults to `550px`.
  */
 export default defineComponent({
+  name: "BaseModal",
   components: {
     FocusTrap,
   },

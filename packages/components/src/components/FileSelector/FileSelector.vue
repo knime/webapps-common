@@ -4,6 +4,7 @@ import Button from "../Buttons/Button.vue";
 import LensIcon from "@knime/styles/img/icons/lens.svg";
 
 export default {
+  name: "FileSelector",
   components: {
     Button,
     LensIcon,

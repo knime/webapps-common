@@ -5,6 +5,7 @@ import Tooltip from "../Tooltip/Tooltip.vue";
 import PlusIcon from "@knime/styles/img/icons/plus-small.svg";
 
 export default defineComponent({
+  name: "PlusButton",
   components: {
     Button,
     Tooltip,

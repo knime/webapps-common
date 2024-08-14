@@ -16,6 +16,7 @@ import {
 const MIN_LIST_SIZE = 5;
 
 export default {
+  name: "SearchableList",
   components: {
     MultiselectListBox,
     Label,

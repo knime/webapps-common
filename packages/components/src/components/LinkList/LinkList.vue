@@ -16,6 +16,7 @@ interface LinkItem {
  * -> KNIME Hub
  */
 export default defineComponent({
+  name: "LinkList",
   components: {
     ArrowIcon,
   },

@@ -124,6 +124,7 @@ const useTwinlistModelValue = (modelValue: Ref<TwinlistModelValue>) => {
 export { type TwinlistModelValue, useTwinlistModelValue };
 
 export default {
+  name: "Twinlist",
   components: {
     ArrowNextDoubleIcon,
     ArrowNextIcon,

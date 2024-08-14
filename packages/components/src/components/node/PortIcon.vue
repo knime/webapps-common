@@ -6,6 +6,7 @@ const strokeWidth = 1.4; // 1.4px
 
 /** Draws a Node's port. Either a triangle, circle or square */
 export default {
+  name: "PortIcon",
   props: {
     /**
      * Distinguish between 'table', 'flowVariable' and other types of ports

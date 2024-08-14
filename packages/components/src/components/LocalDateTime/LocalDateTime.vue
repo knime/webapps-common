@@ -2,6 +2,7 @@
 import { formatDateTimeString, formatLocalDateTimeString } from "@knime/utils";
 
 export default {
+  name: "LocalDateTime",
   props: {
     date: {
       type: String,

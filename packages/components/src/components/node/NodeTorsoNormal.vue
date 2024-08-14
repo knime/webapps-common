@@ -27,6 +27,7 @@ export const componentBackgroundPortion = 0.75;
  * This Component only draws regular Nodes/Components, no Metanodes, no Unknown nor Missing Nodes
  */
 export default {
+  name: "NodeTorsoNormal",
   props: {
     /**
      * Node type, e.g. "Learner", "Visualizer"

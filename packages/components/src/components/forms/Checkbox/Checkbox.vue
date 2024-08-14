@@ -1,5 +1,6 @@
 <script>
 export default {
+  name: "Checkbox",
   props: {
     id: {
       type: String,

@@ -9,6 +9,7 @@
  * content; allowing the parent component to minimize or remove the popover as needed.
  */
 export default {
+  name: "Popover",
   props: {
     /**
      * Controls the locality of the popover. `global` creates a sticky, fullscreen popover for the entire

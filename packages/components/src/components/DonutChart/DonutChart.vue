@@ -5,6 +5,7 @@ const DEFAULT_PRIMARY_COLOR = Yellow;
 const DEFAULT_SECONDARY_COLOR = AquamarineDark;
 
 export default {
+  name: "DonutChart",
   props: {
     /** The value of the wedge to be displayed, can exceed the maximum value */
     value: {

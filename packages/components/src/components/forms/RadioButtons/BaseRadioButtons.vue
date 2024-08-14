@@ -11,6 +11,7 @@ export type BaseRadioButtonItem = {
 };
 
 export default defineComponent({
+  name: "BaseRadioButtons",
   props: {
     id: {
       type: String,

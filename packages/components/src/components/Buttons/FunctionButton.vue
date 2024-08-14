@@ -5,6 +5,7 @@ import BaseButton from "../base/Button/BaseButton.vue";
  * Works with an icon & text combination or a single icon.
  */
 export default {
+  name: "FunctionButton",
   components: {
     BaseButton,
   },

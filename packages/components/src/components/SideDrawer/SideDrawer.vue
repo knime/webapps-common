@@ -4,6 +4,7 @@
  */
 
 export default {
+  name: "SideDrawer",
   props: {
     isExpanded: {
       type: Boolean,

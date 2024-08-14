@@ -6,6 +6,7 @@ import { resolveNuxtLinkComponent } from "../nuxtComponentResolver";
  * of the message, in the details or provided via slot.
  */
 export default {
+  name: "MessageLink",
   props: {
     /**
      * Link configuration object. Can either be a nuxt-link (with the `to` property) or an

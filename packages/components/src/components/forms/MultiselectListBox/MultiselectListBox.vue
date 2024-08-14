@@ -10,6 +10,7 @@ let count = 0;
 const CLICK_META_KEY_TIMEOUT = 250; // ms
 
 export default {
+  name: "MultiselectListBox",
   components: { StyledListItem },
   props: {
     id: {

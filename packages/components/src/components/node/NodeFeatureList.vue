@@ -8,6 +8,7 @@ import ViewsList from "./ViewsList.vue";
 import DialogOptions from "./DialogOptions.vue";
 
 export default {
+  name: "NodeFeatureList",
   components: {
     TabBar,
     DialogOptions,

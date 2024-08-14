@@ -3,6 +3,7 @@ import { defineComponent } from "vue";
 import BaseButton from "../base/Button/BaseButton.vue";
 
 export default defineComponent({
+  name: "Button",
   components: {
     BaseButton,
   },

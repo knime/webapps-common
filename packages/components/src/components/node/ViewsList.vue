@@ -8,6 +8,7 @@ import InteractiveIcon from "@knime/styles/img/icons/interactive.svg";
  * Displays a list of views a component or node can produce
  */
 export default {
+  name: "ViewsList",
   components: {
     Description,
     StandardIcon,

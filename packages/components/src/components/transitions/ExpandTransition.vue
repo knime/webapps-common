@@ -1,5 +1,6 @@
 <script>
 export default {
+  name: "ExpandTransition",
   props: {
     isExpanded: {
       type: Boolean,
