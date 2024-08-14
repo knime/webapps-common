@@ -10,7 +10,7 @@ import {
   expect,
   it,
   vi,
-  type Mock,
+  type MockInstance,
 } from "vitest";
 import flushPromises from "flush-promises";
 
@@ -19,7 +19,9 @@ import type DialogPopoverProps from "../types/DialogPopoverProps";
 
 import { unref } from "vue";
 
-const useClickOutsideMock = useClickOutside as Mock<any[], any>;
+const useClickOutsideMock = useClickOutside as any as MockInstance<
+  typeof useClickOutside
+>;
 
 vi.mock("@knime/components", async (importOriginal) => {
   const actual = (await importOriginal()) as object;

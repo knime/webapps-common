@@ -10,7 +10,7 @@ import { Button, FunctionButton, SideDrawer } from "@knime/components";
 
 describe("SettingsSubPanel", () => {
   let props: TestComponentProps,
-    onApply: Mock<[], Promise<void>>,
+    onApply: Mock<() => Promise<void>>,
     setSubPanelExpanded: () => void;
 
   beforeEach(() => {

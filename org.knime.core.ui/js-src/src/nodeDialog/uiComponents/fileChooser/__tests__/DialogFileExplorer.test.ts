@@ -115,7 +115,7 @@ describe("DialogFileExplorer.vue", () => {
   it("reloads initial file path on backend change", async () => {
     const wrapper = shallowMountFileChooser();
     expect(dataServiceSpy).toHaveBeenCalledTimes(1);
-    const newBackendType = "notLocalAnymore";
+    const newBackendType = "notLocalAnymore" as any;
     await wrapper.setProps({
       backendType: newBackendType,
     });

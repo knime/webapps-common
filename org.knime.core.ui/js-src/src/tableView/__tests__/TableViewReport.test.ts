@@ -1,4 +1,11 @@
-import { describe, vi, beforeEach, it, expect, type Mock } from "vitest";
+import {
+  describe,
+  vi,
+  beforeEach,
+  it,
+  expect,
+  type MockInstance,
+} from "vitest";
 import { JsonDataService } from "@knime/ui-extension-service";
 import { shallowMount } from "@vue/test-utils";
 import TableViewReport from "../TableViewReport.vue";
@@ -19,7 +26,7 @@ describe("TableViewReport.vue", () => {
       dataTypes: Record<string, DataType>;
       settings: any;
     },
-    getData: Mock<[], Promise<any>>;
+    getData: MockInstance<() => Promise<any>>;
 
   beforeEach(() => {
     getData = vi.fn();

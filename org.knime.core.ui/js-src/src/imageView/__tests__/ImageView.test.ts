@@ -25,7 +25,7 @@ describe("ImageView.vue", () => {
       initialData: Mock<any>;
     },
     sharedDataServiceMock: {
-      addSharedDataListener: Mock<any, any>;
+      addSharedDataListener: Mock<any>;
     };
 
   const defaultImagePath = "defaultImagePath";

@@ -126,7 +126,7 @@ describe("FlowVariableExposer", () => {
     await wrapper.findComponent(InputField).vm.$emit("update:model-value", " ");
     const errorMessage = wrapper.findComponent(ErrorMessage);
     expect(errorMessage.exists()).toBeTruthy();
-    expect(errorMessage.props().errors[0].message).toBe(
+    expect(errorMessage.props().errors![0].message).toBe(
       "Flow variable name must not be blank.",
     );
     expect(wrapper.findComponent(InputField).props().isValid).toBe(false);

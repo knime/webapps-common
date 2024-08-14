@@ -108,7 +108,7 @@ describe("generatePossibleValues", () => {
         Result<PossibleValue[]>
       > = vi.fn(() =>
         Promise.resolve({
-          state: "SUCCESS",
+          state: "SUCCESS" as const,
           result: successResultChoices,
           message: [],
         }),

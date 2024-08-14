@@ -9,6 +9,7 @@ import {
   it,
   vi,
   type Mock,
+  MockInstance,
 } from "vitest";
 import flushPromises from "flush-promises";
 import FlowVariableSelector from "../FlowVariableSelector.vue";
@@ -19,7 +20,7 @@ import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables
 import { injectionKey as flowVarMapKey } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
 
 type MockedMethods<T extends Record<string, (...args: any[]) => any>> = {
-  [K in keyof T]?: Mock<Parameters<T[K]>, ReturnType<T[K]>>;
+  [K in keyof T]?: MockInstance<T[K]>;
 };
 
 describe("FlowVariableSelector.vue", () => {
