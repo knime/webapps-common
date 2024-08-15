@@ -38,6 +38,9 @@ const getDefaultData = () => {
     path: "",
     timeout: 10000,
     fsCategory: validCategories.value[0],
+    context: {
+      fsSpecifier: browseOptions.value.fileSystemSpecifier,
+    },
   };
 };
 
@@ -68,6 +71,7 @@ watch(
 const { onFsCategoryUpdate } = useFileChooserStateChange(
   computed(() => control.value.data.path),
   onChange,
+  browseOptions,
 );
 
 /**
@@ -109,6 +113,7 @@ const onApply = () => {
         :disabled="disabled"
         :is-local="browseOptions.isLocal"
         :port-index="browseOptions.portIndex"
+        :file-system-specifier="browseOptions.fileSystemSpecifier"
         @update:model-value="onChange"
       />
       <SettingsSubPanel @apply="onApply">

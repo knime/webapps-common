@@ -21,12 +21,14 @@ const props = withDefaults(defineProps<FileChooserProps>(), {
 });
 const emit = defineEmits(["update:modelValue"]);
 
+const options = toRef(props, "options");
 const { onFsCategoryUpdate, onPathUpdate, onTimeoutUpdate } =
   useFileChooserStateChange(
     toRef(props, "modelValue"),
     (value: FileChooserValue) => {
       emit("update:modelValue", value);
     },
+    options,
   );
 const {
   filteredExtensions,
@@ -39,7 +41,7 @@ const {
   isConnected,
   portFileSystemName,
   portIndex,
-} = useFileChooserBrowseOptions(toRef(props, "options"));
+} = useFileChooserBrowseOptions(options);
 
 type TabSpec = {
   value: keyof typeof FSCategory;
@@ -86,7 +88,7 @@ const backendType = computed<BackendType>(() =>
   getBackendType(props.modelValue.fsCategory, portIndex.value),
 );
 
-const toDoWhat: Record<
+const browseAction: Record<
   Exclude<keyof typeof FSCategory, "CONNECTED">,
   string
 > = {
@@ -106,7 +108,7 @@ const toDoWhat: Record<
     <div class="flex-grow">
       <ConnectionPreventsTab
         v-if="isConnected && modelValue.fsCategory !== 'CONNECTED'"
-        :to-do-what="toDoWhat[modelValue.fsCategory]"
+        :browse-action="browseAction[modelValue.fsCategory]"
       />
       <UrlTab
         v-else-if="modelValue.fsCategory === 'CUSTOM_URL'"

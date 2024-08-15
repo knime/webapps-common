@@ -142,6 +142,9 @@ describe("FileChooserControl.vue", () => {
           path: "",
           fsCategory,
           timeout: 10000,
+          context: {
+            fsSpecifier: undefined,
+          },
         },
       });
     },

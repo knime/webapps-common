@@ -173,7 +173,8 @@ public class FileChooserTest {
             Arguments.of(new FSLocation(FSCategory.MOUNTPOINT, "mountpointSpecifier", "myPath")), //
             Arguments.of(new FSLocation(FSCategory.RELATIVE, RelativeTo.SPACE.getSettingsValue(), "myPath")), //
             Arguments.of(new FSLocation(FSCategory.HUB_SPACE, "myPath")), //
-            Arguments.of(new FSLocation(FSCategory.CONNECTED, "myPath")));
+            Arguments.of(new FSLocation(FSCategory.CONNECTED, "myPath")),
+            Arguments.of(new FSLocation(FSCategory.CONNECTED, "google-drive", "myPath")));
     }
 
     @ParameterizedTest

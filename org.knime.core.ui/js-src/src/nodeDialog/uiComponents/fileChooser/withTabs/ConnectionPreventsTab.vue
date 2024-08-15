@@ -1,6 +1,6 @@
 <script setup lang="ts">
 defineProps<{
-  toDoWhat: string;
+  browseAction: string;
 }>();
 
 import PluginIcon from "@knime/styles/img/icons/plugin.svg";
@@ -9,7 +9,9 @@ import PluginIcon from "@knime/styles/img/icons/plugin.svg";
 <template>
   <div class="vertical">
     <PluginIcon class="icon" />
-    <span>Remove the file system input port in order to {{ toDoWhat }}.</span>
+    <span
+      >Remove the file system input port in order to {{ browseAction }}.</span
+    >
   </div>
 </template>
 

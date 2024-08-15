@@ -13,6 +13,7 @@ export interface FileChooserValue {
   fsCategory: keyof typeof FSCategory;
   context?: {
     fsToString: string;
+    fsSpecifier?: string;
   };
 }
 

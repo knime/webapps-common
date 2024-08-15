@@ -79,7 +79,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.concurrent.Callable;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.knime.core.node.NodeLogger;
@@ -105,7 +107,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ComboBoxWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileReaderWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.FileReaderWidget.FileSystemPortIndexSupplier;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileReaderWidget;
@@ -267,10 +268,7 @@ final class UiSchemaOptionsGenerator {
         if (annotatedWidgets.contains(FileReaderWidget.class)) {
             final var fileReaderWidget = m_node.getAnnotation(FileReaderWidget.class).orElseThrow();
             resolveFileExtensions(options, fileReaderWidget.fileExtensions());
-            final var fileSystemPortIndexSupplier = fileReaderWidget.fileSystemPortIndexSupplier();
-            if (!FileReaderWidget.FileSystemPortIndexSupplier.class.equals(fileSystemPortIndexSupplier)) {
-                addFileSystemInformation(options, fileSystemPortIndexSupplier);
-            }
+            addFileSystemInformation(options);
         }
         if (annotatedWidgets.contains(FileWriterWidget.class)) {
             options.put(TAG_IS_WRITER, true);
@@ -488,12 +486,16 @@ final class UiSchemaOptionsGenerator {
         }
     }
 
-    private void addFileSystemInformation(final ObjectNode options,
-        final Class<? extends FileSystemPortIndexSupplier> fileSystemPortIndexSupplier) {
-        InstantiationUtil.createInstance(fileSystemPortIndexSupplier)
-            .getFileSystemPortIndex(m_defaultNodeSettingsContext).ifPresent(portIndex -> {
-                addFileSystemInformation(options, portIndex);
-            });
+    private void addFileSystemInformation(final ObjectNode options) {
+        getFirstFileSystemPortIndex(m_defaultNodeSettingsContext)
+            .ifPresent(portIndex -> addFileSystemInformation(options, portIndex));
+    }
+
+    private static OptionalInt getFirstFileSystemPortIndex(final DefaultNodeSettingsContext context) {
+        final var inPortTypes = context.getInPortTypes();
+        return IntStream.range(0, inPortTypes.length)
+            .filter(i -> FileSystemPortObjectSpec.class.equals(inPortTypes[i].getPortObjectSpecClass())).findAny();
+
     }
 
     private void addFileSystemInformation(final ObjectNode options, final int portIndex) {
@@ -502,6 +504,8 @@ final class UiSchemaOptionsGenerator {
             .map(spec -> toFileSystemPortObjectSpec(spec, portIndex));
         portObjectSpec.ifPresent(spec -> {
             options.put("fileSystemType", spec.getFileSystemType());
+            spec.getFSLocationSpec().getFileSystemSpecifier()
+                .ifPresent(fileSystemSpecifier -> options.put("fileSystemSpecifier", fileSystemSpecifier));
         });
         if (portObjectSpec.flatMap(FileSystemPortObjectSpec::getFileSystemConnection).isEmpty()) {
             options.put("fileSystemConnectionMissing", true);

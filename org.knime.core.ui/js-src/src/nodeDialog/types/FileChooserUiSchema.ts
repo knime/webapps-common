@@ -3,6 +3,7 @@ export interface FileChooserOptions {
   isLocal?: boolean;
   portIndex?: number;
   fileSystemType?: string;
+  fileSystemSpecifier?: string;
   /**
    * true whenever there exists a portIndex but a connection could not be established
    */

@@ -123,7 +123,7 @@ public class FSLocationJsonSerializationUtil {
         private static void writeContext(final JsonGenerator gen, final FSLocation fsLocation, final String fsCategory)
             throws IOException {
             gen.writeObjectFieldStart(CONTEXT_KEY);
-            if (!isSupportedByFrontend(fsCategory)) {
+            if (useFileSystemSpecifierIfPresent(fsCategory)) {
                 final var fsSpecifier = fsLocation.getFileSystemSpecifier();
                 if (fsSpecifier.isPresent()) {
                     gen.writeStringField(FS_SPECIFIER_KEY, fsSpecifier.get());
@@ -142,7 +142,7 @@ public class FSLocationJsonSerializationUtil {
             final var node = (JsonNode)p.getCodec().readTree(p);
             final var fsCategory = extractString(node, CATEGORY_KEY);
             final var path = extractString(node, PATH_KEY);
-            if (!isSupportedByFrontend(fsCategory)) {
+            if (useFileSystemSpecifierIfPresent(fsCategory)) {
                 final var fsSpecifier = extractString(node.get(CONTEXT_KEY), FS_SPECIFIER_KEY);
                 return new FSLocation(fsCategory, fsSpecifier, path);
             }
@@ -182,9 +182,8 @@ public class FSLocationJsonSerializationUtil {
             .filter(specifier -> specifier.equals(RelativeTo.SPACE.getSettingsValue())).isPresent();
     }
 
-    static boolean isSupportedByFrontend(final String fsCategory) {
-        return isConnected(fsCategory) || isLocal(fsCategory) || isCustomURL(fsCategory)
-            || fsCategory.equals(RELATIVE_TO_CURRENT_HUBSPACE);
+    static boolean useFileSystemSpecifierIfPresent(final String fsCategory) {
+        return !isLocal(fsCategory) && !isCustomURL(fsCategory) && !fsCategory.equals(RELATIVE_TO_CURRENT_HUBSPACE);
     }
 
 }

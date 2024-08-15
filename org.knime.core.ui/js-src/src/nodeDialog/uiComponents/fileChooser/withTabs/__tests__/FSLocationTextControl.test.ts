@@ -216,19 +216,49 @@ describe("FSLocationTextControl.vue", () => {
     ]);
   });
 
-  it("emits CONNECTED FS location on text input in case a portIndex is present", async () => {
-    props.portIndex = 1;
-    const wrapper = await mountFsLocationTextInput();
-    const path = "foo";
-    wrapper.findComponent(InputField).vm.$emit("update:model-value", path);
-    expect(wrapper.emitted("update:modelValue")).toStrictEqual([
-      [
-        {
-          fsCategory: "CONNECTED",
-          path,
-          timeout: wrapper.props().modelValue.timeout,
-        },
-      ],
-    ]);
+  describe("connected via port", () => {
+    beforeEach(() => {
+      props.portIndex = 1;
+    });
+
+    it("emits CONNECTED FS location on text input", async () => {
+      const wrapper = await mountFsLocationTextInput();
+      const path = "foo";
+      wrapper.findComponent(InputField).vm.$emit("update:model-value", path);
+      expect(wrapper.emitted("update:modelValue")).toStrictEqual([
+        [
+          {
+            fsCategory: "CONNECTED",
+            path,
+            timeout: wrapper.props().modelValue.timeout,
+            context: {
+              fsToString: "",
+              fsSpecifier: undefined,
+            },
+          },
+        ],
+      ]);
+    });
+
+    it("adds fileSystemSpecifier if present", async () => {
+      const fsSpecifier = "mySpecifier";
+      props.fileSystemSpecifier = fsSpecifier;
+      const wrapper = await mountFsLocationTextInput();
+      const path = "foo";
+      wrapper.findComponent(InputField).vm.$emit("update:model-value", path);
+      expect(wrapper.emitted("update:modelValue")).toStrictEqual([
+        [
+          {
+            fsCategory: "CONNECTED",
+            path,
+            timeout: wrapper.props().modelValue.timeout,
+            context: {
+              fsToString: "",
+              fsSpecifier,
+            },
+          },
+        ],
+      ]);
+    });
   });
 });

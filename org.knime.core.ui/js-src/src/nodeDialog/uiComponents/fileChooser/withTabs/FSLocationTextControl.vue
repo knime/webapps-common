@@ -5,6 +5,7 @@ interface Props {
   disabled: boolean;
   isLocal?: boolean;
   portIndex?: number;
+  fileSystemSpecifier?: string;
 }
 export { Props };
 
@@ -93,6 +94,10 @@ const textToFsLocation = (text: string): FileChooserValue => {
       fsCategory: "CONNECTED",
       path: text,
       timeout: props.modelValue.timeout,
+      context: {
+        fsToString: "", // won't be used in case of isConnected = true
+        fsSpecifier: props.fileSystemSpecifier,
+      },
     };
   }
   for (const [fsCategory, prefix] of prefixes) {

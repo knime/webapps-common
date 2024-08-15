@@ -118,6 +118,13 @@ describe("SideDrawerContent.vue", () => {
     });
 
     it("renders CONNECTED tab", async () => {
+      const fsSpecifier = "myFileSystemSpecifier";
+      await wrapper.setProps({
+        options: {
+          ...wrapper.props().options,
+          fileSystemSpecifier: fsSpecifier,
+        },
+      });
       await wrapper
         .findComponent(TabBar)
         .vm.$emit("update:model-value", "CONNECTED");
@@ -130,6 +137,9 @@ describe("SideDrawerContent.vue", () => {
         path: updatedPath,
         timeout: props.initialValue.timeout,
         fsCategory: "CONNECTED",
+        context: {
+          fsSpecifier,
+        },
       });
     });
 

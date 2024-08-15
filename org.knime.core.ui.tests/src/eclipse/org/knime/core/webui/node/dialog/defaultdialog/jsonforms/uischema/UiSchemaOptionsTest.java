@@ -56,9 +56,11 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.knime.core.node.port.PortType;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
@@ -66,8 +68,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.JsonFormsSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.TestButtonActionHandler.TestStates;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect;
-import org.knime.core.webui.node.dialog.defaultdialog.rule.Effect.EffectType;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.NameFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
@@ -103,11 +103,13 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandl
 import org.knime.core.webui.node.dialog.defaultdialog.widget.internal.InternalArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonReference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect.EffectType;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect.EffectType;
 import org.knime.filehandling.core.connections.FSConnection;
+import org.knime.filehandling.core.connections.FSLocation;
+import org.knime.filehandling.core.port.FileSystemPortObject;
 import org.knime.filehandling.core.port.FileSystemPortObjectSpec;
 import org.mockito.Mockito;
 
@@ -1121,49 +1123,27 @@ class UiSchemaOptionsTest {
             @FileReaderWidget(fileExtensions = {"txt", "csv"})
             FileChooser m_fileReader;
 
-            static final class MyPortIndexSupplier implements FileReaderWidget.FileSystemPortIndexSupplier {
-
-                @Override
-                public OptionalInt getFileSystemPortIndex(final DefaultNodeSettingsContext context) {
-                    return OptionalInt.of(0);
-                }
-
-            }
-
-            @Widget(title = "", description = "")
-            @FileReaderWidget(fileSystemPortIndexSupplier = MyPortIndexSupplier.class)
-            FileChooser m_fileReaderWithConnection;
-
-            static final class MyEmptyPortIndexSupplier implements FileReaderWidget.FileSystemPortIndexSupplier {
-
-                @Override
-                public OptionalInt getFileSystemPortIndex(final DefaultNodeSettingsContext context) {
-                    return OptionalInt.empty();
-                }
-
-            }
-
-            @Widget(title = "", description = "")
-            @FileReaderWidget(fileSystemPortIndexSupplier = MyEmptyPortIndexSupplier.class)
-            FileChooser m_fileReaderWithoutConnection;
-
         }
         final var fileSystemType = "myFileSystemType";
+        final var fileSystemSpecifier = "fileSystemSpecifier";
         final var context = Mockito.mock(DefaultNodeSettingsContext.class);
         final var spec = Mockito.mock(FileSystemPortObjectSpec.class);
+        final var location = Mockito.mock(FSLocation.class);
+        Mockito.when(location.getFileSystemSpecifier()).thenReturn(Optional.of(fileSystemSpecifier));
         Mockito.when(spec.getFileSystemType()).thenReturn(fileSystemType);
+        Mockito.when(spec.getFSLocationSpec()).thenReturn(location);
         Mockito.when(spec.getFileSystemConnection()).thenReturn(Optional.of(Mockito.mock(FSConnection.class)));
         Mockito.when(context.getPortObjectSpec(0)).thenReturn(Optional.of(spec));
+        Mockito.when(context.getInPortTypes()).thenReturn(new PortType[]{FileSystemPortObject.TYPE});
         var response = buildTestUiSchema(FileWriterWidgetTestSettings.class, context);
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("fileReader");
         assertThatJson(response).inPath("$.elements[0].options.fileExtensions").isArray().containsExactly("txt", "csv");
-        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("fileReaderWithConnection");
-        assertThatJson(response).inPath("$.elements[1].options.portIndex").isNumber().isZero();
-        assertThatJson(response).inPath("$.elements[1].options.fileSystemType").isString().isEqualTo(fileSystemType);
-        assertThatJson(response).inPath("$.elements[1].options").isObject()
+        assertThatJson(response).inPath("$.elements[0].options.portIndex").isNumber().isZero();
+        assertThatJson(response).inPath("$.elements[0].options.fileSystemType").isString().isEqualTo(fileSystemType);
+        assertThatJson(response).inPath("$.elements[0].options.fileSystemSpecifier").isString()
+            .isEqualTo(fileSystemSpecifier);
+        assertThatJson(response).inPath("$.elements[0].options").isObject()
             .doesNotContainKey("fileSystemConnectionMissing");
-        assertThatJson(response).inPath("$.elements[2].scope").isString().contains("fileReaderWithoutConnection");
-        assertThatJson(response).inPath("$.elements[2].options").isObject().doesNotContainKey("portIndex");
     }
 
     static final class TestStringProvider implements StateProvider<String> {
