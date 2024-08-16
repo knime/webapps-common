@@ -12,6 +12,7 @@ import { ColorServiceAPILayer } from "./types/serviceApiLayers";
 
 // TODO: UIEXT-858 Provide this default color via color model
 const lightGray = "#D3D3D3";
+const darkGray = "#404040";
 
 abstract class AbstractColorHandler<Model> {
   private colorModel: Model;
@@ -20,7 +21,7 @@ abstract class AbstractColorHandler<Model> {
     this.colorModel = model;
   }
 
-  public abstract getColor(value: string | number): string;
+  public abstract getColor(value: string | number | null): string;
 
   public getColorModel(): Model {
     return this.colorModel;
@@ -67,8 +68,8 @@ export class NumericColorHandler extends AbstractColorHandler<NumericColorModel>
 export class NominalColorHandler extends AbstractColorHandler<
   Record<string, string>
 > {
-  public getColor(value: string): string {
-    return this.getColorModel()[value] || lightGray;
+  public getColor(value: string | null): string {
+    return value === null ? darkGray : this.getColorModel()[value] || lightGray;
   }
 }
 

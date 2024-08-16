@@ -56,6 +56,7 @@ describe("ColorService", () => {
   });
 
   const defaultColor = "#D3D3D3";
+  const missingValueColor = "#404040";
 
   describe("getColorCallback", () => {
     it("returns null and sets a warning if the column does not have a color handler", () => {
@@ -77,6 +78,7 @@ describe("ColorService", () => {
       expect(colorHandler.getColor("green")).toBe("#00FF00");
       expect(colorHandler.getColor("blue")).toBe("#0000FF");
       expect(colorHandler.getColor("other")).toBe(defaultColor);
+      expect(colorHandler.getColor(null)).toBe(missingValueColor);
     });
 
     it("returns a function for numeric color model", () => {
