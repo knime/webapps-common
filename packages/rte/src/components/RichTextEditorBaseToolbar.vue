@@ -14,6 +14,7 @@ import BlockquoteIcon from "@knime/styles/img/icons/blockquote.svg";
 import CodeIcon from "@knime/styles/img/icons/code-html.svg";
 import StrikeThroughIcon from "@knime/styles/img/icons/strikethrough.svg";
 import DividerIcon from "@knime/styles/img/icons/divider.svg";
+import LinkIcon from "@knime/styles/img/icons/link.svg";
 
 import getParagraphTextStyleChildTools, {
   type ParagraphTextStyleId,
@@ -24,6 +25,8 @@ import type {
   EditorTools,
   EditorToolItem,
 } from "../types";
+import { useLinkTool } from "../composables/use-link-tool";
+import { ref } from "vue";
 
 interface Props {
   editor: Editor;
@@ -53,6 +56,23 @@ const isToolRegistered = (toolName: keyof BaseExtensionsConfig) => {
 
 const isListActive = () =>
   props.editor.isActive("orderedList") || props.editor.isActive("bulletList");
+
+const linkTool = isToolRegistered("link")
+  ? useLinkTool({
+      editor: props.editor,
+    })
+  : {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      onLinkToolClick: () => {},
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      addLink: (_text: string, _urlText: string) => {},
+      cancelAddLink: () => {},
+      removeLink: () => {},
+      showCreateLinkModal: ref(false),
+      isReplacingText: ref(false),
+      text: ref(""),
+      url: ref(""),
+    };
 
 const editorTools: EditorTools = [
   ...registerTool("bold", {
@@ -147,6 +167,15 @@ const editorTools: EditorTools = [
     disabled: () => isListActive(),
   }),
 
+  ...registerTool("link", {
+    id: "link",
+    icon: LinkIcon,
+    name: "Link",
+    hotkey: ["Ctrl", "K"],
+    active: () => props.editor.isActive("link"),
+    onClick: () => linkTool.onLinkToolClick(),
+  }),
+
   ...registerTool("paragraphTextStyle", {
     id: "paragraphTextStyle",
     icon: ParagraphIcon,
@@ -197,4 +226,5 @@ const editorTools: EditorTools = [
 
 <template>
   <slot :tools="editorTools" />
+  <slot :link-tool="linkTool" name="linkModal" />
 </template>

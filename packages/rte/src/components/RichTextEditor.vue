@@ -12,6 +12,7 @@ import { CustomTextAlign } from "../utils/custom-text-align";
 import { SmallText } from "../utils/paragraphTextStyle/extension";
 import { CustomHardBreak } from "../utils/custom-hard-break";
 import { CustomLink, validateURL } from "../utils/custom-link";
+import CreateLinkModal from "./CreateLinkModal.vue";
 
 type BaseExtensions =
   | BaseExtensionsConfig
@@ -247,6 +248,20 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length);
                 :editor="editor"
                 :tools="tools"
                 :hotkey-formatter="hotkeyFormatter"
+              />
+            </slot>
+          </template>
+          <template #linkModal="{ linkTool }">
+            <slot name="linkModal" :link-tool="linkTool">
+              <CreateLinkModal
+                v-if="isToolEnabled('link')"
+                :is-active="linkTool.showCreateLinkModal.value"
+                :text="linkTool.text.value"
+                :url="linkTool.url.value"
+                :is-edit="linkTool.url.value !== ''"
+                @add-link="linkTool.addLink"
+                @cancel-add-link="linkTool.cancelAddLink"
+                @remove-link="linkTool.removeLink"
               />
             </slot>
           </template>

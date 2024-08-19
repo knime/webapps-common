@@ -6,7 +6,7 @@ import RichTextEditorToolbar from "../RichTextEditorToolbar.vue";
 import { type MenuItem, SubMenu } from "@knime/components";
 
 describe("RichTextEditorToolbar.vue", () => {
-  it("displays seconda", () => {
+  it("displays secondary tools", () => {
     const toolName = "Tool name";
     const toolId = "toolId";
     const toolWithChildren: EditorToolItem<any> = {

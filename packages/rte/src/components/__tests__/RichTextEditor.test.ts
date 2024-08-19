@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import {
   describe,
   expect,
@@ -15,6 +16,15 @@ import { useEditor } from "@tiptap/vue-3";
 import { FunctionButton, SubMenu } from "@knime/components";
 
 import RichTextEditor from "../RichTextEditor.vue";
+import CreateLinkModal from "../CreateLinkModal.vue";
+import { useLinkTool } from "../../composables/use-link-tool";
+import { ref } from "vue";
+
+const { useLinkToolMock } = vi.hoisted(() => ({ useLinkToolMock: vi.fn() }));
+
+vi.mock("../../composables/use-link-tool", () => ({
+  useLinkTool: useLinkToolMock,
+}));
 
 // mock for editor's isActive function. declared separately due to mock hoisting via vi.mock
 const mockEditorIsActive = vi.fn();
@@ -101,11 +111,25 @@ describe("RichTextEditor.vue", () => {
     props = {},
     slots = {
       customToolbar: null,
+      linkModal: null,
     },
   } = {}) => {
     const _slots = {
       ...(slots.customToolbar ? { customToolbar: slots.customToolbar } : {}),
+      ...(slots.linkModal ? { linkModal: slots.linkModal } : {}),
     } as Record<string, Slot>;
+
+    const linkToolMock = {
+      onLinkToolClick: vi.fn(),
+      addLink: vi.fn(),
+      cancelAddLink: vi.fn(),
+      removeLink: vi.fn(),
+      showCreateLinkModal: ref(false),
+      isReplacingText: ref(false),
+      text: ref(""),
+      url: ref(""),
+    };
+    useLinkToolMock.mockReturnValue(linkToolMock);
 
     const wrapper = mount(RichTextEditor, {
       props: { ...defaultProps, ...props },
@@ -117,7 +141,7 @@ describe("RichTextEditor.vue", () => {
       slots: _slots,
     });
 
-    return { wrapper };
+    return { wrapper, linkToolMock };
   };
 
   it("should initialize the editor correctly", () => {
@@ -333,7 +357,7 @@ describe("RichTextEditor.vue", () => {
     it("should render all tools", () => {
       const { wrapper } = doMount({ props: { baseExtensions: { all: true } } });
 
-      expect(wrapper.findAll(".tool").length).toBe(8);
+      expect(wrapper.findAll(".tool").length).toBe(9);
       const secondaryItemsMenu = wrapper.findComponent(SubMenu);
       expect(secondaryItemsMenu.exists()).toBeTruthy();
       expect(secondaryItemsMenu.props().items.length).toBe(5);
@@ -465,6 +489,31 @@ describe("RichTextEditor.vue", () => {
         },
       );
 
+      it("sets up link tool", () => {
+        const { wrapper, linkToolMock } = doMount({
+          props: {
+            baseExtensions: { link: true },
+          },
+        });
+        expect(useLinkTool).toHaveBeenCalledWith({ editor: mockEditor.value });
+        const linkModal = wrapper.findComponent(CreateLinkModal);
+        linkModal.vm.$emit("addLink");
+        expect(linkToolMock.addLink).toHaveBeenCalled();
+        linkModal.vm.$emit("removeLink");
+        expect(linkToolMock.removeLink).toHaveBeenCalled();
+        linkModal.vm.$emit("cancelAddLink");
+        expect(linkToolMock.cancelAddLink).toHaveBeenCalled();
+      });
+
+      it("does not set up link tool if deactivated", () => {
+        doMount({
+          props: {
+            baseExtensions: { bold: true },
+          },
+        });
+        expect(useLinkTool).not.toHaveBeenCalled();
+      });
+
       // eslint-disable-next-line vitest/max-nested-describe
       describe("paragraphTextStyle", () => {
         let wrapper: VueWrapper<any>;
@@ -528,7 +577,7 @@ describe("RichTextEditor.vue", () => {
     });
   });
 
-  describe("customToolbar slot", () => {
+  describe("slots", () => {
     const componentInSlot = `<div
         id="slotted-component"
         v-bind="scope"
@@ -559,33 +608,68 @@ describe("RichTextEditor.vue", () => {
       return getSlottedChildComponent(wrapper).props("scope")[propName];
     };
 
-    it("should render custom toolbar", () => {
-      const hotkeyFormatter = vi.fn();
-      const customToolbar = (props: any) =>
-        h(getScopedComponent, { scope: props });
+    describe("custom toolbar", () => {
+      it("should render custom toolbar", () => {
+        const hotkeyFormatter = vi.fn();
+        const customToolbar = (props: any) =>
+          h(getScopedComponent, { scope: props });
 
-      const { wrapper } = doMount({
-        // @ts-ignore
-        slots: { customToolbar },
-        props: {
-          baseExtensions: { all: true },
-          hotkeyFormatter,
-        },
+        const { wrapper } = doMount({
+          // @ts-ignore
+          slots: { customToolbar },
+          props: {
+            baseExtensions: { all: true },
+            hotkeyFormatter,
+          },
+        });
+
+        expect(getSlottedStubProp({ wrapper, propName: "editor" })).toEqual(
+          mockEditor.value,
+        );
+
+        expect(getSlottedStubProp({ wrapper, propName: "tools" })).toEqual(
+          expect.any(Array),
+        );
+
+        expect(
+          getSlottedStubProp({ wrapper, propName: "hotkeyFormatter" }),
+        ).toBe(hotkeyFormatter);
+
+        // TODO to check if we have the right properties in the slot. And check if the RichTextEditorToolbar is rendered
+      });
+    });
+
+    describe("link modal", () => {
+      it("should render custom link modal", () => {
+        const linkModal = (props: any) =>
+          h(getScopedComponent, { scope: props });
+        const { wrapper } = doMount({
+          // @ts-ignore
+          slots: { linkModal },
+          props: {
+            baseExtensions: { link: true },
+          },
+        });
+        expect(wrapper.findComponent(CreateLinkModal).exists()).toBe(false);
+        expect(
+          getSlottedStubProp({ wrapper, propName: "linkTool" }),
+        ).toMatchObject({
+          onLinkToolClick: expect.any(Function),
+          addLink: expect.any(Function),
+          cancelAddLink: expect.any(Function),
+          removeLink: expect.any(Function),
+        });
       });
 
-      expect(getSlottedStubProp({ wrapper, propName: "editor" })).toEqual(
-        mockEditor.value,
-      );
-
-      expect(getSlottedStubProp({ wrapper, propName: "tools" })).toEqual(
-        expect.any(Array),
-      );
-
-      expect(getSlottedStubProp({ wrapper, propName: "hotkeyFormatter" })).toBe(
-        hotkeyFormatter,
-      );
-
-      // TODO to check if we have the right properties in the slot. And check if the RichTextEditorToolbar is rendered
+      it("should render default link modal", () => {
+        const { wrapper } = doMount({
+          // @ts-ignore
+          props: {
+            baseExtensions: { link: true },
+          },
+        });
+        expect(wrapper.findComponent(CreateLinkModal).exists()).toBe(true);
+      });
     });
   });
 });
