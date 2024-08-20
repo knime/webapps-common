@@ -19,6 +19,7 @@ import RichTextEditor from "../RichTextEditor.vue";
 import CreateLinkModal from "../CreateLinkModal.vue";
 import { useLinkTool } from "../../composables/use-link-tool";
 import { ref } from "vue";
+import { defaultLinkToolOptions } from "../../utils/custom-link";
 
 const { useLinkToolMock } = vi.hoisted(() => ({ useLinkToolMock: vi.fn() }));
 
@@ -495,7 +496,10 @@ describe("RichTextEditor.vue", () => {
             baseExtensions: { link: true },
           },
         });
-        expect(useLinkTool).toHaveBeenCalledWith({ editor: mockEditor.value });
+        expect(useLinkTool).toHaveBeenCalledWith({
+          editor: mockEditor.value,
+          sanitizeUrlText: defaultLinkToolOptions.sanitizeUrlText,
+        });
         const linkModal = wrapper.findComponent(CreateLinkModal);
         linkModal.vm.$emit("addLink");
         expect(linkToolMock.addLink).toHaveBeenCalled();

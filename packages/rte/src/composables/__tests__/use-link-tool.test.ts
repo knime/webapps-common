@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { useLinkTool } from "../use-link-tool";
+import { defaultLinkToolOptions } from "../../utils/custom-link";
 
 // simplified editor mock that allows chaining methods
 const createEditorMock = () => {
@@ -27,6 +28,7 @@ describe("useLinkTool", () => {
     selection = { from: 1, to: 2 },
     textBetween = "",
     currentLink = "",
+    sanitizeUrlText = defaultLinkToolOptions.sanitizeUrlText,
   } = {}) => {
     const editorMock = createEditorMock();
     editorMock.view = { state: { selection } };
@@ -36,7 +38,11 @@ describe("useLinkTool", () => {
     editorMock.getAttributes.mockReturnValue({ href: currentLink });
     editorMock.commands = { setTextSelection: editorMock.setTextSelection };
 
-    const runComposable = () => useLinkTool({ editor: editorMock as any });
+    const runComposable = () =>
+      useLinkTool({
+        editor: editorMock as any,
+        sanitizeUrlText,
+      });
 
     return {
       runComposable,
@@ -196,7 +202,7 @@ describe("useLinkTool", () => {
       expect(isReplacingText.value).toBe(false);
     });
 
-    it("adds https to url if omitted", () => {
+    it("adds https to url if omitted when default sanitizer is used", () => {
       const { runComposable, editorMock } = setupMocks({
         selection: { from: 1, to: 10 },
       });
@@ -208,6 +214,24 @@ describe("useLinkTool", () => {
       // sets new link
       expect(editorMock.setLink).toHaveBeenCalledWith({
         href: "https://knime.com",
+      });
+    });
+
+    it("sanitizes url according to custom sanitizer", () => {
+      const { runComposable, editorMock } = setupMocks({
+        selection: { from: 1, to: 10 },
+        sanitizeUrlText: (urlText: string) => {
+          return `abc-${urlText}-def`;
+        },
+      });
+      const { addLink, isReplacingText } = runComposable();
+      isReplacingText.value = false;
+
+      addLink("Link text", "knime.com");
+
+      // sets new link
+      expect(editorMock.setLink).toHaveBeenCalledWith({
+        href: "abc-knime.com-def",
       });
     });
   });

@@ -11,7 +11,12 @@ import type { BaseExtensionsConfig } from "../types";
 import { CustomTextAlign } from "../utils/custom-text-align";
 import { SmallText } from "../utils/paragraphTextStyle/extension";
 import { CustomHardBreak } from "../utils/custom-hard-break";
-import { CustomLink, validateURL } from "../utils/custom-link";
+import {
+  CustomLink,
+  defaultLinkToolOptions,
+  validateURL,
+  type LinkToolOptions,
+} from "../utils/custom-link";
 import CreateLinkModal from "./CreateLinkModal.vue";
 
 type BaseExtensions =
@@ -60,6 +65,11 @@ interface Props {
    * react to changes of the editable prop.
    */
   disabled?: boolean;
+  /**
+   * Only used if the link tool is enabled. If not set, the url will not be checked.
+   * @param url
+   */
+  linkToolOptions?: LinkToolOptions;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -88,6 +98,7 @@ const props = withDefaults(defineProps<Props>(), {
   autofocus: false,
   withBorder: true,
   disabled: false,
+  linkToolOptions: () => defaultLinkToolOptions,
 });
 
 const slots = useSlots();
@@ -236,6 +247,7 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length);
         <RichTextEditorBaseToolbar
           :editor="editor"
           :base-extensions="baseExtensions"
+          :link-tool-options="linkToolOptions"
         >
           <template #default="{ tools }">
             <slot
@@ -259,6 +271,7 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length);
                 :text="linkTool.text.value"
                 :url="linkTool.url.value"
                 :is-edit="linkTool.url.value !== ''"
+                :url-validator="linkToolOptions.urlValidator"
                 @add-link="linkTool.addLink"
                 @cancel-add-link="linkTool.cancelAddLink"
                 @remove-link="linkTool.removeLink"

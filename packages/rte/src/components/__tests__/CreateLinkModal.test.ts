@@ -5,6 +5,8 @@ import { mount } from "@vue/test-utils";
 import { InputField } from "@knime/components";
 
 import CreateLinkModal from "../CreateLinkModal.vue";
+import { defaultLinkToolOptions } from "../../utils/custom-link";
+import { nextTick } from "vue";
 
 describe("CreateWorkflowModal.vue", () => {
   const doMount = ({
@@ -12,6 +14,7 @@ describe("CreateWorkflowModal.vue", () => {
     text = "mock url",
     isActive = true,
     isEdit = false,
+    urlValidator = defaultLinkToolOptions.urlValidator,
   } = {}) => {
     const wrapper = mount(CreateLinkModal, {
       props: {
@@ -19,6 +22,7 @@ describe("CreateWorkflowModal.vue", () => {
         text,
         isActive,
         isEdit,
+        urlValidator,
       },
       global: {
         stubs: { BaseModal: true },
@@ -52,6 +56,29 @@ describe("CreateWorkflowModal.vue", () => {
 
       const errorMessage = wrapper.find(".item-error");
       expect(errorMessage.text()).toMatch("Invalid URL");
+    });
+
+    it("should respect custom url validator", async () => {
+      let { wrapper } = await doMount();
+
+      let input = wrapper.findAll("input").at(1)!;
+      input.element.value = "ftp://invalid.url";
+      input.trigger("input");
+      await nextTick();
+
+      const errorMessage = wrapper.find(".item-error");
+      expect(errorMessage.text()).toMatch("Invalid URL");
+
+      ({ wrapper } = await doMount({
+        urlValidator: (url: string) => url === "ftp://invalid.url",
+      }));
+
+      input = wrapper.findAll("input").at(1)!;
+      input.element.value = "ftp://invalid.url";
+      input.trigger("input");
+      await nextTick();
+
+      expect(wrapper.find(".item-error").exists()).toBe(false);
     });
 
     it("should focus the input", async () => {

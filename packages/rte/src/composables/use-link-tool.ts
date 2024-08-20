@@ -1,7 +1,13 @@
 import type { Editor } from "@tiptap/vue-3";
 import { ref } from "vue";
 
-export const useLinkTool = ({ editor }: { editor: Editor }) => {
+export const useLinkTool = ({
+  editor,
+  sanitizeUrlText,
+}: {
+  editor: Editor;
+  sanitizeUrlText: (url: string) => string;
+}) => {
   const showCreateLinkModal = ref(false);
   const text = ref("");
   const url = ref("");
@@ -95,10 +101,7 @@ export const useLinkTool = ({ editor }: { editor: Editor }) => {
     editor.chain().focus().extendMarkRange("link").unsetLink().run();
 
     if (urlText) {
-      const containsHttp = ["http://", "https://"].some((protocol) =>
-        urlText.includes(protocol),
-      );
-      const url = containsHttp ? urlText : `https://${urlText}`;
+      const url = sanitizeUrlText?.(urlText) ?? urlText;
 
       addCustomLink({
         isEditing: isReplacingText.value,

@@ -3,15 +3,12 @@ import { computed, ref, watch } from "vue";
 
 import { Modal, Button, InputField, Label } from "@knime/components";
 
-import { buildUrlRegex } from "../utils/regex";
-
-const URL_REGEX = buildUrlRegex();
-
 interface Props {
   text: string;
   url: string;
   isActive: boolean;
   isEdit: boolean;
+  urlValidator: (url: string) => boolean;
 }
 
 const props = defineProps<Props>();
@@ -49,7 +46,7 @@ const onSubmit = () => {
 };
 
 const validateUrl = () => {
-  const validScheme = URL_REGEX.test(editedUrl.value);
+  const validScheme = props.urlValidator(editedUrl.value);
 
   return !editedUrl.value || validScheme;
 };
@@ -79,9 +76,10 @@ const onkeyup = (keyupEvent: KeyboardEvent) => {
     @cancel="closeModal"
   >
     <template #confirmation>
-      <Label text="Text" compact class="text-input">
+      <Label #default="{ labelForId }" text="Text" compact class="text-input">
         <div>
           <InputField
+            :id="labelForId"
             ref="inputRef"
             v-model="editedText"
             type="text"
@@ -91,9 +89,10 @@ const onkeyup = (keyupEvent: KeyboardEvent) => {
         </div>
       </Label>
 
-      <Label text="URL" compact>
+      <Label #default="{ labelForId }" text="URL" compact>
         <div>
           <InputField
+            :id="labelForId"
             v-model="editedUrl"
             type="text"
             title="URL"

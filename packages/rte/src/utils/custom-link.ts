@@ -17,6 +17,29 @@ const URL_REGEX = buildUrlRegex();
 
 export const validateURL = (href: string) => URL_REGEX.test(href);
 
+export type LinkToolOptions = {
+  /**
+   * Custom function that can be supplied to validate urls added with the link tool
+   * @param url The url of the link to be added
+   */
+  urlValidator: (url: string) => boolean;
+  /**
+   * Custom function that can, e.g., be used to append a protocol like https:// to a url if not present
+   * @param url The url of the link to be added
+   */
+  sanitizeUrlText: (url: string) => string;
+};
+
+export const defaultLinkToolOptions: LinkToolOptions = {
+  urlValidator: validateURL,
+  sanitizeUrlText: (urlText: string) => {
+    const containsHttp = ["http://", "https://"].some((protocol) =>
+      urlText.includes(protocol),
+    );
+    return containsHttp ? urlText : `https://${urlText}`;
+  },
+};
+
 export const CustomLink = Link.extend({
   addOptions() {
     return {

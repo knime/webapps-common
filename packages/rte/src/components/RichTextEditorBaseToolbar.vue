@@ -27,10 +27,12 @@ import type {
 } from "../types";
 import { useLinkTool } from "../composables/use-link-tool";
 import { ref } from "vue";
+import type { LinkToolOptions } from "../utils/custom-link";
 
 interface Props {
   editor: Editor;
   baseExtensions: BaseExtensionsConfig | { all: true };
+  linkToolOptions: LinkToolOptions;
 }
 
 const props = defineProps<Props>();
@@ -60,6 +62,7 @@ const isListActive = () =>
 const linkTool = isToolRegistered("link")
   ? useLinkTool({
       editor: props.editor,
+      sanitizeUrlText: props.linkToolOptions.sanitizeUrlText,
     })
   : {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
