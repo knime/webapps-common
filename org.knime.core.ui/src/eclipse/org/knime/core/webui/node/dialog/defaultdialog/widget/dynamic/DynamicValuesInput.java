@@ -804,7 +804,7 @@ public final class DynamicValuesInput implements PersistableSettings {
         final var targetType = templateValue.m_type;
         final var currentValueCell = value.m_value;
         if (currentValueCell.isMissing()) {
-            return Optional.of(new DynamicValue(targetType));
+            return Optional.empty();
         }
         if (currentValueCell.getType().equals(targetType)
                 && !(value.m_caseMatching == null ^ templateValue.m_caseMatching == null)) {
@@ -817,6 +817,11 @@ public final class DynamicValuesInput implements PersistableSettings {
             final var stringValue = currentValueCell instanceof StringCell sc ? sc.getStringValue()
                 : DynamicValue.getStringFromDataCell(currentValueCell);
             final var convertedCell = DynamicValue.readDataCellFromStringSafe(targetType, stringValue);
+            if (convertedCell.isMissing()) {
+                // if the non-null input did not convert to a useful cell,
+                // i.e. non-missing, we see the conversion as failed
+                return Optional.empty();
+            }
             return Optional.of(new DynamicValue(targetType, convertedCell, caseMatching));
         } catch (final ConverterException e) { // NOSONAR best effort input conversion expected to fail quite often
             return Optional.empty();
