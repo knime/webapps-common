@@ -1,5 +1,13 @@
 # demo
 
+## 1.0.20
+
+### Patch Changes
+
+- ce4baf6: add link tool to RTE demo
+- Updated dependencies [44dd52e]
+  - @knime/rich-text-editor@1.1.0
+
 ## 1.0.19
 
 ### Patch Changes

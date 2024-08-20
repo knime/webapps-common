@@ -1,5 +1,11 @@
 # @knime/rich-text-editor
 
+## 1.1.0
+
+### Minor Changes
+
+- 44dd52e: add link tool to rich text editor toolbar, expose link tool options for customization of validation and sanitization settings
+
 ## 1.0.18
 
 ### Patch Changes
