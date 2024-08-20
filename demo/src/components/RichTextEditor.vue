@@ -1,7 +1,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import CodeExample from "./demo/CodeExample.vue";
-import { Checkbox, FunctionButton } from "@knime/components";
+import { Checkbox, FunctionButton, Modal } from "@knime/components";
 import { RichTextEditor } from "@knime/rich-text-editor";
 // import code from "webapps-common/ui/components/forms/RichTextEditor/RichTextEditor.vue?raw";
 const code = "";
@@ -58,13 +58,14 @@ export default defineComponent({
     CodeExample,
     RichTextEditor,
     FunctionButton,
+    Modal,
   },
   data() {
     return {
       editable: true,
       disabled: false,
       value:
-        '<h5>A Heading</h5><p><strong>Hello</strong> World</p><p class="small-text">Some <u>small</u> text.</p> <br /><u>Underlined</u><blockquote><p>Some famous quote here</p></blockquote>',
+        '<h5>A Heading</h5><p><strong>Hello</strong> World</p><p class="small-text">Some <u>small</u> text.</p><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://knime.com" draggable="false" title="Use &quot;⌘ click&quot; to follow link">This is a link</a></p><br /><u>Underlined</u><blockquote><p>Some famous quote here</p></blockquote>',
       minHeight: 150,
       maxHeight: 300,
       code,
@@ -108,7 +109,7 @@ export default defineComponent({
               :disabled="disabled"
               :min-height="minHeight"
               :max-height="maxHeight"
-              :base-extensions="{ bold: true, italic: true }"
+              :base-extensions="{ bold: true, italic: true, link: true }"
             >
               <template #customToolbar="{ tools }">
                 <div class="custom-toolbar">
@@ -122,6 +123,18 @@ export default defineComponent({
                     <Component :is="tool.icon" />
                   </FunctionButton>
                 </div>
+              </template>
+              <template #linkModal="{ linkTool }">
+                <Modal
+                  :active="linkTool.showCreateLinkModal.value"
+                  :title="'Here you could add your custom link modal'"
+                  @cancel="linkTool.showCreateLinkModal.value = false"
+                >
+                  <template #notice>
+                    <div>Text: {{ linkTool.text.value || "empty" }}</div>
+                    <div>Url: {{ linkTool.url.value || "empty" }}</div>
+                  </template>
+                </Modal>
               </template>
             </RichTextEditor>
           </div>
