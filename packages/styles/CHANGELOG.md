@@ -1,5 +1,11 @@
 # @knime/styles
 
+## 1.0.4
+
+### Patch Changes
+
+- 63f2b55: updated reddit icon
+
 ## 1.0.3
 
 ### Patch Changes
