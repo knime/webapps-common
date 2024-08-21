@@ -296,6 +296,11 @@ public final class JsonFormsConsts {
         public static final String TAG_ARRAY_LAYOUT_HAS_FIXED_SIZE = "hasFixedSize";
 
         /**
+         * The id by which default values for array layout elements can be accessed
+         */
+        public static final String TAG_ARRAY_LAYOUT_ELEMENT_DEFAULT_VALUE_PROVIDER = "elementDefaultValueProvider";
+
+        /**
          * Rules to show/hide/enable/disable an ui element in the ui-schema
          */
         public static final String TAG_RULE = "rule";

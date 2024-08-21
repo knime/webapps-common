@@ -350,78 +350,121 @@ class UiSchemaOptionsTest {
         assertThrows(UiSchemaGenerationException.class, () -> buildTestUiSchema(NonApplicableStyleSettings.class));
     }
 
+    @Test
+    void testShowSortButtonsTest() {
+        @SuppressWarnings("unused")
+        class ArrayElement implements WidgetGroup {
+            String m_field1;
+
+            int m_field2;
+        }
+
+        class ShowSortButtonsTestSettings implements DefaultNodeSettings {
+            @Widget(title = "", description = "")
+            @ArrayWidget
+            ArrayElement[] m_arrayElementNoSortButtons;
+
+            @Widget(title = "", description = "")
+            @ArrayWidget(showSortButtons = true)
+            ArrayElement[] m_arrayElementWithSortButtons;
+        }
+
+        var response = buildTestUiSchema(ShowSortButtonsTestSettings.class);
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("arrayElementNoSortButtons");
+        assertThatJson(response).inPath("$.elements[0].options").isObject().doesNotContainKey("showSortButtons");
+        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("arrayElementWithSortButtons");
+        assertThatJson(response).inPath("$.elements[1].options").isObject().containsKey("showSortButtons");
+        assertThatJson(response).inPath("$.elements[1].options.showSortButtons").isBoolean().isTrue();
+    }
+
+    @Test
+    void testHideTitle() {
+        class HideTitleSettings implements DefaultNodeSettings {
+            @Widget(title = "foo1", description = "")
+            String m_foo1;
+
+            @Widget(title = "foo2", description = "", hideTitle = true)
+            String m_foo2;
+        }
+
+        var response = buildTestUiSchema(HideTitleSettings.class);
+        assertThatJson(response).inPath("$.elements[0]").isObject().doesNotContainKey("label");
+        assertThatJson(response).inPath("$.elements[1]").isObject().containsKey("label");
+        assertThatJson(response).inPath("$.elements[1].label").isString().isEqualTo("");
+    }
+
+    @Test
+    void testHasFixedSizeTest() {
+        @SuppressWarnings("unused")
+        class ArrayElement implements WidgetGroup {
+            String m_field1;
+
+            int m_field2;
+        }
+
+        class HasFixedSizeTestSettings implements DefaultNodeSettings {
+            @Widget(title = "", description = "")
+            @ArrayWidget
+            ArrayElement[] m_arrayElementVariableSize;
+
+            @Widget(title = "", description = "")
+            @ArrayWidget(hasFixedSize = true)
+            ArrayElement[] m_arrayElementFixedSize;
+        }
+
+        var response = buildTestUiSchema(HasFixedSizeTestSettings.class);
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("arrayElementVariableSize");
+        assertThatJson(response).inPath("$.elements[0].options").isObject().doesNotContainKey("hasFixedSize");
+        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("arrayElementFixedSize");
+        assertThatJson(response).inPath("$.elements[1].options").isObject().containsKey("hasFixedSize");
+        assertThatJson(response).inPath("$.elements[1].options.hasFixedSize").isBoolean().isTrue();
+    }
+
+    @Test
+    void testElementDefaultValueProvider() {
+        @SuppressWarnings("unused")
+        class ArrayElement implements WidgetGroup {
+            String m_field1;
+
+            int m_field2;
+        }
+
+        class ElementDefaultValueProvider implements StateProvider<ArrayElement> {
+
+            @Override
+            public void init(final StateProviderInitializer initializer) {
+                throw new IllegalStateException();
+
+            }
+
+            @Override
+            public ArrayElement computeState(final DefaultNodeSettingsContext context) {
+                throw new IllegalStateException();
+            }
+
+        }
+
+        class ElementDefaultValueProviderTestSettings implements DefaultNodeSettings {
+            @Widget(title = "", description = "")
+            @ArrayWidget
+            ArrayElement[] m_arrayElementWithoutDefaultProvider;
+
+            @Widget(title = "", description = "")
+            @ArrayWidget(elementDefaultValueProvider = ElementDefaultValueProvider.class)
+            ArrayElement[] m_arrayElementWithDefaultProvider;
+        }
+
+        var response = buildTestUiSchema(ElementDefaultValueProviderTestSettings.class);
+        assertThatJson(response).inPath("$.elements[0].scope").isString()
+            .contains("arrayElementWithoutDefaultProvider");
+        assertThatJson(response).inPath("$.elements[0].options").isObject().doesNotContainKey("hasFixedSize");
+        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("arrayElementWithDefaultProvider");
+        assertThatJson(response).inPath("$.elements[1].options.elementDefaultValueProvider").isString()
+            .isEqualTo(ElementDefaultValueProvider.class.getName());
+    }
+
     @Nested
     class ButtonWidgetOptionsTest {
-
-        @Test
-        void testShowSortButtonsTest() {
-            @SuppressWarnings("unused")
-            class ArrayElement implements WidgetGroup {
-                String m_field1;
-
-                int m_field2;
-            }
-
-            class ShowSortButtonsTestSettings implements DefaultNodeSettings {
-                @Widget(title = "", description = "")
-                @ArrayWidget
-                ArrayElement[] m_arrayElementNoSortButtons;
-
-                @Widget(title = "", description = "")
-                @ArrayWidget(showSortButtons = true)
-                ArrayElement[] m_arrayElementWithSortButtons;
-            }
-
-            var response = buildTestUiSchema(ShowSortButtonsTestSettings.class);
-            assertThatJson(response).inPath("$.elements[0].scope").isString().contains("arrayElementNoSortButtons");
-            assertThatJson(response).inPath("$.elements[0].options").isObject().doesNotContainKey("showSortButtons");
-            assertThatJson(response).inPath("$.elements[1].scope").isString().contains("arrayElementWithSortButtons");
-            assertThatJson(response).inPath("$.elements[1].options").isObject().containsKey("showSortButtons");
-            assertThatJson(response).inPath("$.elements[1].options.showSortButtons").isBoolean().isTrue();
-        }
-
-        @Test
-        void testHideTitle() {
-            class HideTitleSettings implements DefaultNodeSettings {
-                @Widget(title = "foo1", description = "")
-                String m_foo1;
-
-                @Widget(title = "foo2", description = "", hideTitle = true)
-                String m_foo2;
-            }
-
-            var response = buildTestUiSchema(HideTitleSettings.class);
-            assertThatJson(response).inPath("$.elements[0]").isObject().doesNotContainKey("label");
-            assertThatJson(response).inPath("$.elements[1]").isObject().containsKey("label");
-            assertThatJson(response).inPath("$.elements[1].label").isString().isEqualTo("");
-        }
-
-        @Test
-        void testHasFixedSizeTest() {
-            @SuppressWarnings("unused")
-            class ArrayElement implements WidgetGroup {
-                String m_field1;
-
-                int m_field2;
-            }
-
-            class HasFixedSizeTestSettings implements DefaultNodeSettings {
-                @Widget(title = "", description = "")
-                @ArrayWidget
-                ArrayElement[] m_arrayElementVariableSize;
-
-                @Widget(title = "", description = "")
-                @ArrayWidget(hasFixedSize = true)
-                ArrayElement[] m_arrayElementFixedSize;
-            }
-
-            var response = buildTestUiSchema(HasFixedSizeTestSettings.class);
-            assertThatJson(response).inPath("$.elements[0].scope").isString().contains("arrayElementVariableSize");
-            assertThatJson(response).inPath("$.elements[0].options").isObject().doesNotContainKey("hasFixedSize");
-            assertThatJson(response).inPath("$.elements[1].scope").isString().contains("arrayElementFixedSize");
-            assertThatJson(response).inPath("$.elements[1].options").isObject().containsKey("hasFixedSize");
-            assertThatJson(response).inPath("$.elements[1].options.hasFixedSize").isBoolean().isTrue();
-        }
 
         static class EmptyButtonTestSettings {
 

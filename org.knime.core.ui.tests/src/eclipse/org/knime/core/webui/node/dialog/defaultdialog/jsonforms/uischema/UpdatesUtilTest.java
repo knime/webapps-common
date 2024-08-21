@@ -72,6 +72,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FileChooser;
 import org.knime.core.webui.node.dialog.defaultdialog.util.MapValuesUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesStateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
@@ -113,7 +114,6 @@ class UpdatesUtilTest {
     @Test
     void testValueUpdates() {
 
-        @SuppressWarnings("unused")
         class TestSettings implements DefaultNodeSettings {
 
             public TestSettings() {
@@ -210,7 +210,6 @@ class UpdatesUtilTest {
     @Test
     void testThrowsRuntimeExceptionOnWrongTypeForValueRef() {
 
-        @SuppressWarnings("unused")
         class WrongTypeReferenceSettings implements DefaultNodeSettings {
             WrongTypeReferenceSettings() {
 
@@ -254,7 +253,6 @@ class UpdatesUtilTest {
     @Test
     void testThrowsRuntimeExceptionOnWrongTypeForValueProvider() {
 
-        @SuppressWarnings("unused")
         class WrongTypeReferenceSettings implements DefaultNodeSettings {
             WrongTypeReferenceSettings() {
 
@@ -298,7 +296,6 @@ class UpdatesUtilTest {
     @Test
     void testThrowsRuntimeExceptionOnDanglingReference() {
 
-        @SuppressWarnings("unused")
         class DanglingReferenceSettings implements DefaultNodeSettings {
 
             DanglingReferenceSettings() {
@@ -635,6 +632,42 @@ class UpdatesUtilTest {
 
                 @TextInputWidget(placeholderProvider = MyStringProvider.class)
                 String m_textInput;
+
+            }
+
+            final Map<SettingsType, WidgetGroup> settings = Map.of(SettingsType.MODEL, new TestSettings());
+
+            final var response = buildUpdates(settings);
+
+            assertThatJson(response).inPath("$.globalUpdates").isArray().hasSize(1);
+
+        }
+
+        @Test
+        void testArrayWidgetElementDefaultValueProvider() {
+
+            class TestSettings implements DefaultNodeSettings {
+
+                static class ElementSettings implements WidgetGroup {
+
+                }
+
+                static final class MyElementDefaultValueProvider implements StateProvider<ElementSettings> {
+
+                    @Override
+                    public void init(final StateProviderInitializer initializer) {
+                        initializer.computeAfterOpenDialog();
+                    }
+
+                    @Override
+                    public ElementSettings computeState(final DefaultNodeSettingsContext context) {
+                        return null;
+                    }
+
+                }
+
+                @ArrayWidget(elementDefaultValueProvider = MyElementDefaultValueProvider.class)
+                ElementSettings[] m_array;
 
             }
 

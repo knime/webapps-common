@@ -157,6 +157,14 @@ describe("ArrayLayout.vue", () => {
     initializesJsonFormsArrayControl(wrapper);
   });
 
+  const schemaDefaultValue = {
+    borderStyle: "DASHED",
+    color: "blue",
+    label: undefined,
+    size: 1,
+    value: "0",
+  };
+
   it("renders an add button", () => {
     const { wrapper } = mountJsonFormsComponent(ArrayLayout, {
       props: { control },
@@ -164,16 +172,52 @@ describe("ArrayLayout.vue", () => {
     const addButton = wrapper.find(".array > button");
     expect(addButton.text()).toBe("New");
     addButton.element.click();
-    const expectedDefaultValue = {
+
+    expect(wrapper.vm.addItem).toHaveBeenCalledWith(
+      control.path,
+      schemaDefaultValue,
+    );
+  });
+
+  it("uses provided default value if present", () => {
+    const elementDefaultValueProvider = "myElementDefaultValueProvider";
+    control.uischema.options.elementDefaultValueProvider =
+      elementDefaultValueProvider;
+
+    let provideDefault;
+    const addStateProviderListenerMock = vi.fn((_id, callback) => {
+      provideDefault = callback;
+    });
+    const { wrapper } = mountJsonFormsComponent(ArrayLayout, {
+      props: { control },
+      provide: { addStateProviderListenerMock },
+    });
+    expect(addStateProviderListenerMock).toHaveBeenCalledWith(
+      { id: elementDefaultValueProvider },
+      expect.anything(),
+    );
+    const providedDefault = {
       borderStyle: "DASHED",
-      color: "blue",
-      label: undefined,
+      color: "red",
+      label: "My default Label",
       size: 1,
       value: "0",
     };
-    expect(wrapper.vm.addItem).toHaveBeenCalledWith(
+    const button = wrapper.find(".array > button").element;
+
+    button.click();
+    provideDefault(providedDefault);
+    button.click();
+    expect(wrapper.vm.addItem).toHaveBeenNthCalledWith(
+      1,
       control.path,
-      expectedDefaultValue,
+      schemaDefaultValue,
+    );
+
+    expect(wrapper.vm.addItem).toHaveBeenNthCalledWith(
+      2,
+      control.path,
+      providedDefault,
     );
   });
 

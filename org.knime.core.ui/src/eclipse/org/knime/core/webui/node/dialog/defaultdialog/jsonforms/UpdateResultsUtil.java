@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerInvocationHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerInvocationHandler.TriggerResult;
 
@@ -81,7 +82,10 @@ public final class UpdateResultsUtil {
         }
 
         private static UpdateResult forId(final String id, final Object value) {
-            return new UpdateResult(null, id, value);
+            // value can be a record here, leading to a failure, since the JsonFormsDataUtil mapper does not serialize
+            // getters, leading to empty serialized records
+            return new UpdateResult(null, id,
+                value instanceof WidgetGroup ? JsonFormsDataUtil.getMapper().valueToTree(value) : value);
         }
 
         @Override

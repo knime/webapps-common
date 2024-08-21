@@ -63,6 +63,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchem
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.WidgetGroupTraverser.Configuration;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesStateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
@@ -177,6 +178,11 @@ final class SettingsClassesToValueRefsAndStateProviders {
                 InternalArrayWidget.class, //
                 InternalArrayWidget::subTitleProvider, //
                 NoopStringProvider.class //
+            ), //
+            new UiStateProviderSpec<>( //
+                ArrayWidget.class, //
+                ArrayWidget::elementDefaultValueProvider, //
+                StateProvider.class //
             ));
 
     private void addUiStateProviderForNode(final WidgetTreeNode node) {

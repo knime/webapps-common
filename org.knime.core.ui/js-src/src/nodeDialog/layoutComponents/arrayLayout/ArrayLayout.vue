@@ -13,6 +13,7 @@ import DialogComponentWrapper from "@/nodeDialog/uiComponents/DialogComponentWra
 import ArrayLayoutItemControls from "./ArrayLayoutItemControls.vue";
 import ArrayLayoutItem from "./ArrayLayoutItem.vue";
 import { useDirtySetting } from "@/nodeDialog/composables/components/useDirtySetting";
+import useProvidedState from "@/nodeDialog/composables/components/useProvidedState";
 import { v4 as uuidv4 } from "uuid";
 import {
   setIndex,
@@ -38,6 +39,10 @@ const ArrayLayout = defineComponent({
     const { handleChange, control } = useJsonFormsControlWithUpdate(props);
     const numElements = computed(() => control.value.data?.length ?? 0);
     const cleanArrayLength = ref(numElements.value);
+    const providedElementDefaultValue = useProvidedState(
+      control.value.uischema.options?.elementDefaultValueProvider,
+      null,
+    );
     useDirtySetting({
       dataPath: control.value.path,
       value: numElements,
@@ -94,6 +99,7 @@ const ArrayLayout = defineComponent({
       handleChange,
       signedData: dataWithId,
       idsRecord,
+      providedElementDefaultValue,
     };
   },
   data() {
@@ -149,6 +155,9 @@ const ArrayLayout = defineComponent({
   },
   methods: {
     createDefaultValue(schema) {
+      if (this.providedElementDefaultValue !== null) {
+        return this.providedElementDefaultValue;
+      }
       const defaultObject = {};
       Object.keys(schema.properties).forEach((ele) => {
         defaultObject[ele] = schema.properties[ele].default;
