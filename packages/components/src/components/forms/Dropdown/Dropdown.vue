@@ -172,6 +172,9 @@ export default {
         (value) => value.slotData && !isEmpty(value.slotData),
       );
     },
+    selectedOption() {
+      return this.possibleValues.find((value) => value.id === this.modelValue);
+    },
   },
 
   methods: {
@@ -359,17 +362,31 @@ export default {
         role="button"
         tabindex="0"
         aria-haspopup="listbox"
-        :class="{ placeholder: showPlaceholder, missing: isMissing }"
+        :class="{
+          placeholder: showPlaceholder,
+          missing: isMissing,
+          'has-option-template': hasOptionTemplate,
+        }"
         :aria-label="ariaLabel"
         :aria-labelledby="generateId('button')"
         :aria-expanded="isExpanded"
         @click="toggleExpanded"
         @keydown="handleKeyDownButton"
       >
-        {{ displayText }}
-        <div v-if="hasRightIcon" class="loading-icon">
-          <slot name="icon-right" />
-        </div>
+        <template v-if="hasOptionTemplate">
+          <slot
+            name="option"
+            :slot-data="selectedOption?.slotData"
+            :is-missing="isMissing"
+            :selected-value="modelValue"
+          />
+        </template>
+        <template v-else>
+          {{ displayText }}
+          <div v-if="hasRightIcon" class="loading-icon">
+            <slot name="icon-right" />
+          </div>
+        </template>
         <!-- @vue-ignore -->
         <DropdownIcon class="icon" />
       </div>
@@ -450,6 +467,12 @@ export default {
 
   & .missing {
     color: var(--theme-color-error);
+    stroke: var(--theme-color-error);
+  }
+
+  & :deep(.missing) {
+    color: var(--theme-color-error);
+    stroke: var(--theme-color-error);
   }
 
   &.invalid::after {
@@ -474,7 +497,6 @@ export default {
     border: var(--form-border-width) solid var(--knime-stone-gray);
     padding: 0 38px 0 10px;
     font-size: 13px;
-    height: var(--single-line-form-height);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -485,6 +507,10 @@ export default {
     &:focus {
       outline: none;
     }
+  }
+
+  & [role="button"]:not(.has-option-template) {
+    height: var(--single-line-form-height);
   }
 
   &:not(.collapsed) [role="button"] {

@@ -104,8 +104,9 @@ const POSSIBLE_VALUES_WITH_GROUPS_MOCK = [
   },
 ];
 const OPTION_SLOT_CONTENT_MOCK = `
-  <template #option="{ slotData: { a, b, c } } = { slotData: {}, }">
-    {{ a }} {{ b }} {{ c }}
+  <template #option="{ slotData, isMissing, selectedValue }">
+    <div v-if="isMissing">(MISSING) slotted {{selectedValue}}</div>
+    <div v-else>{{ slotData.a }} {{ slotData.b }} {{ slotData.c }}</div>
   </template>
 `;
 const ICON_SLOT_CONTENT_MOCK = "<div>Right</div>";
@@ -256,6 +257,17 @@ describe("Dropdown.vue", () => {
     expect(button.text()).toBe(`(MISSING) ${modelValue}`);
   });
 
+  it("renders invalid slotted value if value is invalid", () => {
+    const modelValue = "no";
+    const { wrapper } = doMount({
+      modelValue,
+      possibleValues: POSSIBLE_SLOTTED_VALUES_MOCK,
+      slots: { option: OPTION_SLOT_CONTENT_MOCK },
+    });
+    let button = wrapper.find("[role=button]");
+    expect(button.text()).toBe(`(MISSING) slotted ${modelValue}`);
+  });
+
   it("detects that there is a missing value", () => {
     const modelValue = "why no value?";
     const { wrapper } = doMount({ modelValue });
@@ -314,6 +326,7 @@ describe("Dropdown.vue", () => {
   ])("keyboard navigation", ({ possibleValues, slots, type }) => {
     it(`opens and closes the listbox on enter/esc for a ${type}`, async () => {
       const { wrapper } = doMount({
+        modelValue: possibleValues[0].id,
         possibleValues,
         slots,
         attachTo: document.body,
@@ -450,9 +463,14 @@ describe("Dropdown.vue", () => {
       // use a single value to make look-up easier
       const possibleValues = [cloneDeep(POSSIBLE_SLOTTED_VALUES_MOCK[0])];
       const { wrapper } = doMount({
+        modelValue: possibleValues[0].id,
         possibleValues,
         slots: { option: OPTION_SLOT_CONTENT_MOCK },
       });
+      const selectedValue = wrapper.find("[role=button]");
+      expect(selectedValue.text()).toBe(
+        `${possibleValues[0].slotData.a} ${possibleValues[0].slotData.b} ${possibleValues[0].slotData.c}`,
+      );
 
       const option = wrapper.find("li");
       expect(option.classes()).toContain("has-option-template");
@@ -468,9 +486,13 @@ describe("Dropdown.vue", () => {
       const possibleValues = [cloneDeep(POSSIBLE_SLOTTED_VALUES_MOCK[0])];
       delete possibleValues[0].slotData;
       const { wrapper } = doMount({
+        modelValue: possibleValues[0].id,
         possibleValues,
         slots: { option: OPTION_SLOT_CONTENT_MOCK },
       });
+
+      const selectedValue = wrapper.find("[role=button]");
+      expect(selectedValue.text()).toBe(possibleValues[0].text);
       const option = wrapper.find("li");
       expect(option.classes()).not.toContain("slotted");
       expect(option.text()).toBe(possibleValues[0].text);
