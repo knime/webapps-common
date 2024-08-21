@@ -170,18 +170,31 @@ public final class RowHeightPersistorUtil {
 
     }
 
+    static final LegacyLoadResult LEGACY_COMPACT =
+        new LegacyLoadResult(RowHeightMode.CUSTOM, VerticalPaddingMode.COMPACT, LEGACY_CUSTOM_ROW_HEIGHT_COMPACT);
+
+    static final LegacyLoadResult LEGACY_DEFAULT = new LegacyLoadResult(RowHeightMode.AUTO, VerticalPaddingMode.DEFAULT,
+        TableViewViewSettings.DEFAULT_CUSTOM_ROW_HEIGHT);
+
+    static final LegacyLoadResult LEGACY_CUSTOM =
+        new LegacyLoadResult(RowHeightMode.CUSTOM, VerticalPaddingMode.DEFAULT);
+
     static Optional<LegacyLoadResult> getLoadResultFromLegacySettings(final NodeSettingsRO settings)
         throws InvalidSettingsException {
         if (hasTrueLegacyCompactMode(settings) || hasCompactLegacyRowHeightMode(settings)) {
-            return Optional.of(new LegacyLoadResult(RowHeightMode.CUSTOM, VerticalPaddingMode.COMPACT,
-                LEGACY_CUSTOM_ROW_HEIGHT_COMPACT));
+            return Optional.of(LEGACY_COMPACT);
         }
         if (hasFalseLegacyCompactMode(settings) || hasDefaultLegacyRowHeightMode(settings)) {
-            return Optional.of(new LegacyLoadResult(RowHeightMode.AUTO, VerticalPaddingMode.DEFAULT,
-                TableViewViewSettings.DEFAULT_CUSTOM_ROW_HEIGHT));
+            return Optional.of(LEGACY_DEFAULT);
         }
         if (hasCustomLegacyRowHeightMode(settings)) {
-            return Optional.of(new LegacyLoadResult(RowHeightMode.CUSTOM, VerticalPaddingMode.DEFAULT));
+            return Optional.of(LEGACY_CUSTOM);
+        }
+        /*
+         * Only possible for the very first version of the table view given the if conditions above.
+         */
+        if (!settings.containsKey(TableViewViewSettings.CURRENT_ROW_HEIGHT_MODE_CFG_KEY)) {
+            return Optional.of(LEGACY_DEFAULT);
         }
         return Optional.empty();
     }

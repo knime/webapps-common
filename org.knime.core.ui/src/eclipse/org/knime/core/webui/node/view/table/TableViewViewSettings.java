@@ -255,13 +255,15 @@ public class TableViewViewSettings implements DefaultNodeSettings {
         }
     }
 
+    static final String CURRENT_ROW_HEIGHT_MODE_CFG_KEY = "rowHeightModeV2";
+
     /**
      * The mode of the row height. Either a compact small height, a default height or a custom larger height.
      */
     @Widget(title = "Row height", description = "Set the initial height of the rows.")
     @ValueSwitchWidget
     @Layout(ViewSection.class)
-    @Persist(configKey = "rowHeightModeV2", customPersistor = CompactModeAndLegacyRowHeightModePersistor.class)
+    @Persist(configKey = CURRENT_ROW_HEIGHT_MODE_CFG_KEY, customPersistor = CompactModeAndLegacyRowHeightModePersistor.class)
     @Signal(condition = RowHeightIsCustom.class)
     public RowHeightMode m_rowHeightMode = RowHeightMode.AUTO;
 
