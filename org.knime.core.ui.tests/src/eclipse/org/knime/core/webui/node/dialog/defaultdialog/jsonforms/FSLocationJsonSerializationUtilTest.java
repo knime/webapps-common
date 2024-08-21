@@ -46,55 +46,39 @@
  * History
  *   Nov 3, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser;
+package org.knime.core.webui.node.dialog.defaultdialog.jsonforms;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FileChooser;
 import org.knime.filehandling.core.connections.FSCategory;
 import org.knime.filehandling.core.connections.FSLocation;
 import org.knime.filehandling.core.connections.RelativeTo;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
 /**
  * @author Paul Bärnreuther
  */
 @SuppressWarnings({"unused", "java:S2698"}) // we accept assertions without messages
-public class FileChooserTest {
+public class FSLocationJsonSerializationUtilTest {
 
-    ObjectMapper objectMapper;
-
-    @BeforeEach
-    void createObjectMapper() {
-        objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new Jdk8Module());
-        objectMapper.setSerializationInclusion(Include.NON_NULL);
-        objectMapper.setVisibility(PropertyAccessor.ALL, Visibility.NON_PRIVATE);
-        final var module = new SimpleModule();
-        FSLocationJsonSerializationUtil.addSerializerAndDeserializer(module);
-        objectMapper.registerModule(module);
-    }
+    static ObjectMapper MAPPER = JsonFormsDataUtil.getMapper();
 
     @Test
     void testSerializeLocal() {
         class TestSettings {
             FileChooser fileChooser = new FileChooser();
         }
-        final var result = objectMapper.valueToTree(new TestSettings());
+        final var result = MAPPER.valueToTree(new TestSettings());
         assertThatJson(result).inPath("fileChooser.path.path").isString().isEqualTo("");//
         assertThatJson(result).inPath("fileChooser.path.fsCategory").isString().isEqualTo("LOCAL");
         assertThatJson(result).inPath("fileChooser.path.timeout").isIntegralNumber().isEqualTo(10000);
@@ -107,7 +91,7 @@ public class FileChooserTest {
         class TestSettings {
             FileChooser fileChooser = new FileChooser(new FSLocation(FSCategory.CUSTOM_URL, "1", "myPath"));
         }
-        final var result = objectMapper.valueToTree(new TestSettings());
+        final var result = MAPPER.valueToTree(new TestSettings());
         assertThatJson(result).inPath("fileChooser.path.path").isString().isEqualTo("myPath");//
         assertThatJson(result).inPath("fileChooser.path.fsCategory").isString().isEqualTo("CUSTOM_URL");
         assertThatJson(result).inPath("fileChooser.path.timeout").isIntegralNumber().isEqualTo(1);
@@ -122,7 +106,7 @@ public class FileChooserTest {
             FileChooser fileChooser =
                 new FileChooser(new FSLocation(FSCategory.RELATIVE, RelativeTo.SPACE.getSettingsValue(), "myPath"));
         }
-        final var result = objectMapper.valueToTree(new TestSettings());
+        final var result = MAPPER.valueToTree(new TestSettings());
         assertThatJson(result).inPath("fileChooser.path.path").isString().isEqualTo("myPath");//
         assertThatJson(result).inPath("fileChooser.path.fsCategory").isString()
             .isEqualTo("relative-to-current-hubspace");
@@ -137,7 +121,7 @@ public class FileChooserTest {
         class TestSettings {
             FileChooser fileChooser = new FileChooser(new FSLocation(FSCategory.MOUNTPOINT, "specifier", "myPath"));
         }
-        final var result = objectMapper.valueToTree(new TestSettings());
+        final var result = MAPPER.valueToTree(new TestSettings());
         assertThatJson(result).inPath("fileChooser.path.path").isString().isEqualTo("myPath");//
         assertThatJson(result).inPath("fileChooser.path.fsCategory").isString().isEqualTo("MOUNTPOINT");
         assertThatJson(result).inPath("fileChooser.path.context.fsSpecifier").isString().isEqualTo("specifier");
@@ -160,8 +144,8 @@ public class FileChooserTest {
     @Test
     void testDeserializeDefault() throws JsonProcessingException, IllegalArgumentException {
         final var testSettings = new DeserializationTestSettings();
-        final var result = objectMapper.valueToTree(new DeserializationTestSettings());
-        final var deserialized = objectMapper.treeToValue(result, DeserializationTestSettings.class);
+        final var result = MAPPER.valueToTree(new DeserializationTestSettings());
+        final var deserialized = MAPPER.treeToValue(result, DeserializationTestSettings.class);
         assertThat(testSettings.fileChooser).isEqualTo(deserialized.fileChooser);
 
     }
@@ -182,8 +166,8 @@ public class FileChooserTest {
     void testDeserializeCustomFSLocation(final FSLocation fsLocation)
         throws JsonProcessingException, IllegalArgumentException {
         final var testSettings = new DeserializationTestSettings(fsLocation);
-        final var result = objectMapper.valueToTree(testSettings);
-        final var deserialized = objectMapper.treeToValue(result, DeserializationTestSettings.class);
+        final var result = MAPPER.valueToTree(testSettings);
+        final var deserialized = MAPPER.treeToValue(result, DeserializationTestSettings.class);
         assertThat(testSettings.fileChooser).isEqualTo(deserialized.fileChooser);
 
     }

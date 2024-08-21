@@ -46,16 +46,16 @@
  * History
  *   Nov 15, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser;
+package org.knime.core.webui.node.dialog.defaultdialog.jsonforms;
 
 import java.io.IOException;
 
+import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FileChooser;
 import org.knime.filehandling.core.connections.FSCategory;
 import org.knime.filehandling.core.connections.FSLocation;
 import org.knime.filehandling.core.connections.RelativeTo;
 import org.knime.filehandling.core.connections.config.URIFSConnectionConfig;
 
-import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -65,11 +65,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
-/**
- *
- * @author Paul Bärnreuther
- */
-public class FSLocationJsonSerializationUtil {
+final class FSLocationJsonSerializationUtil {
 
     private FSLocationJsonSerializationUtil() {
         // utility
@@ -112,7 +108,7 @@ public class FSLocationJsonSerializationUtil {
             gen.writeStringField(CATEGORY_KEY, fsCategory);
             gen.writeStringField(PATH_KEY, fsLocation.getPath());
             final var timeout = fsLocation.getFileSystemSpecifier() //
-                .filter(_specifier -> isCustomURL(fsCategory)) //
+                .filter(specifier -> isCustomURL(fsCategory)) //
                 .map(Integer::valueOf) //
                 .orElse(DEFAULT_TIMEOUT);
             gen.writeNumberField(TIMEOUT_KEY, timeout);
@@ -137,8 +133,7 @@ public class FSLocationJsonSerializationUtil {
     static final class FSLocationDeserializer extends JsonDeserializer<FSLocation> {
 
         @Override
-        public FSLocation deserialize(final JsonParser p, final DeserializationContext ctxt)
-            throws IOException, JacksonException {
+        public FSLocation deserialize(final JsonParser p, final DeserializationContext ctxt) throws IOException {
             final var node = (JsonNode)p.getCodec().readTree(p);
             final var fsCategory = extractString(node, CATEGORY_KEY);
             final var path = extractString(node, PATH_KEY);

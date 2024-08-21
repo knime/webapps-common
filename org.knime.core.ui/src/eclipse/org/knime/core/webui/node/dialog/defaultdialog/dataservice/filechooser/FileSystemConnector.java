@@ -53,6 +53,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.knime.core.webui.data.DataServiceContext;
 import org.knime.filehandling.core.port.FileSystemPortObjectSpec;
@@ -82,6 +83,8 @@ final class FileSystemConnector {
         return m_fileChooserBackends.computeIfAbsent(fileSystemId, FileSystemConnector::createFileChooserBackend);
     }
 
+    private static final Pattern PORT_PATTERN = Pattern.compile("connected(\\d+)");
+
     private static FileChooserBackend createFileChooserBackend(final String fileSystemId) {
         if (fileSystemId.equals("local")) {
             return new LocalFileChooserBackend();
@@ -89,8 +92,9 @@ final class FileSystemConnector {
         if (fileSystemId.equals("relativeToCurrentHubSpace")) {
             return new HubFileChooserBackend();
         }
-        if (fileSystemId.startsWith("connected")) {
-            final var portIndex = Integer.valueOf(fileSystemId.split("connected")[1]);
+        final var matcher = PORT_PATTERN.matcher(fileSystemId);
+        if (matcher.matches()) {
+            final var portIndex = Integer.parseInt(matcher.group(1));
             final var portObjectSpec = (FileSystemPortObjectSpec)DataServiceContext.get().getInputSpecs()[portIndex];
             return new ConnectedFileChooserBackend(portObjectSpec);
         }
