@@ -61,6 +61,10 @@ export const CustomLink = Link.extend({
       title: {
         default: `Use "${modifier} click" to follow link`,
       },
+
+      rel: {
+        default: "ugc noopener noreferrer nofollow",
+      },
     };
   },
 

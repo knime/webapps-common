@@ -67,6 +67,7 @@ export const createMockEditor = (params: any) => {
 
   return shallowRef({
     isActive: mockEditorIsActive,
+    isFocused: false,
     chain: () => ({
       focus: () => ({
         ...actions,
@@ -516,6 +517,41 @@ describe("RichTextEditor.vue", () => {
           },
         });
         expect(useLinkTool).not.toHaveBeenCalled();
+      });
+
+      it("opens link tool with custom shortcut", () => {
+        const { linkToolMock } = doMount({
+          props: {
+            baseExtensions: { link: true },
+          },
+        });
+        mockEditor.value.isFocused = true;
+
+        const event = new KeyboardEvent("keydown", {
+          key: "k",
+          ctrlKey: true,
+        });
+        window.dispatchEvent(event);
+
+        expect(linkToolMock.onLinkToolClick).toHaveBeenCalled();
+        mockEditor.value.isFocused = false;
+      });
+
+      it("does not open link tool with custom shortcut if editor is not focused", () => {
+        const { linkToolMock } = doMount({
+          props: {
+            baseExtensions: { link: true },
+          },
+        });
+        mockEditor.value.isFocused = false;
+
+        const event = new KeyboardEvent("keydown", {
+          key: "k",
+          ctrlKey: true,
+        });
+        window.dispatchEvent(event);
+
+        expect(linkToolMock.onLinkToolClick).not.toHaveBeenCalled();
       });
 
       // eslint-disable-next-line vitest/max-nested-describe

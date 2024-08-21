@@ -26,8 +26,9 @@ import type {
   EditorToolItem,
 } from "../types";
 import { useLinkTool } from "../composables/use-link-tool";
-import { ref } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import type { LinkToolOptions } from "../utils/custom-link";
+import { navigatorUtils } from "@knime/utils";
 
 interface Props {
   editor: Editor;
@@ -65,7 +66,6 @@ const linkTool = isToolRegistered("link")
       sanitizeUrlText: props.linkToolOptions.sanitizeUrlText,
     })
   : {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       onLinkToolClick: () => {},
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       addLink: (_text: string, _urlText: string) => {},
@@ -76,6 +76,28 @@ const linkTool = isToolRegistered("link")
       text: ref(""),
       url: ref(""),
     };
+
+if (isToolRegistered("link")) {
+  /**
+   * Handles custom hotkeys for link tool that are not supported by tiptap.
+   */
+  const onKeyDown = (event: KeyboardEvent) => {
+    if (!props.editor?.isFocused) {
+      return;
+    }
+    const ctrlPressed = event[navigatorUtils.getMetaOrCtrlKey()];
+    if (ctrlPressed && event.key === "k") {
+      linkTool.onLinkToolClick();
+    }
+  };
+  onMounted(() => {
+    window.addEventListener("keydown", onKeyDown);
+  });
+
+  onUnmounted(() => {
+    window.removeEventListener("keydown", onKeyDown);
+  });
+}
 
 const editorTools: EditorTools = [
   ...registerTool("bold", {

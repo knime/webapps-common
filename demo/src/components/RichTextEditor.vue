@@ -65,7 +65,7 @@ export default defineComponent({
       editable: true,
       disabled: false,
       value:
-        '<h5>A Heading</h5><p><strong>Hello</strong> World</p><p class="small-text">Some <u>small</u> text.</p><p><a target="_blank" rel="noopener noreferrer nofollow" href="https://knime.com" draggable="false" title="Use &quot;⌘ click&quot; to follow link">This is a link</a></p><br /><u>Underlined</u><blockquote><p>Some famous quote here</p></blockquote>',
+        '<h5>A Heading</h5><p><strong>Hello</strong> World</p><p class="small-text">Some <u>small</u> text.</p><p><a target="_blank" rel="ugc noopener noreferrer nofollow" href="https://knime.com" draggable="false" title="Use &quot;⌘ click&quot; to follow link">This is a link</a></p><br /><u>Underlined</u><blockquote><p>Some famous quote here</p></blockquote>',
       minHeight: 150,
       maxHeight: 300,
       code,
