@@ -312,6 +312,7 @@ const onCopySelection = ({
         :key="index"
         #[`cellContent-${index}`]="{
           data: { cell, width, height, paddingTopBottom },
+          usedForAutoSizeCalculation,
         }"
       >
         <ImageRenderer
@@ -333,6 +334,7 @@ const onCopySelection = ({
           v-else-if="getContentType(index) === 'html'"
           :content="cell"
           :padding-top-bottom="paddingTopBottom"
+          :used-for-auto-size-calculation="usedForAutoSizeCalculation"
         />
         <MultiLineTextRenderer
           v-else-if="getContentType(index) === 'multi_line_txt'"
