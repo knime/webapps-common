@@ -67,7 +67,11 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 public class ColumnFilter implements PersistableSettings {
 
     /**
-     * The setting representing the selected columns
+     * The setting representing the selected columns. This field is usually null and only needs to be set when
+     * serializing the default node settings to be used within a view which expects the same json object as initial data
+     * as it gets from the default node dialog. There, a field with key "selected" is added depending on the given
+     * possible values whenever the configuration changes in the dialog. So setting this field has to be repeated (using
+     * {@link #getSelected}) when creating these initial view data.
      */
     @Persist(hidden = true, optional = true)
     public String[] m_selected;
@@ -155,8 +159,8 @@ public class ColumnFilter implements PersistableSettings {
     }
 
     /**
-     * Get selected columns, including columns that were selected but are not in the provided column list.
-     * You likely want to use {@link #getSelected(String[], DataTableSpec)} instead.
+     * Get selected columns, including columns that were selected but are not in the provided column list. You likely
+     * want to use {@link #getSelected(String[], DataTableSpec)} instead.
      *
      * @see #getSelected(String[], DataTableSpec)
      * @param choices the non-null list of all possible column names
