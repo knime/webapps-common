@@ -53,7 +53,11 @@ export type TableViewDialogSettings = GenericTableViewViewSettings<
 export default TableViewViewSettings;
 
 /**
- * TODO: Remove statistics logic from knime-core-ui. This could be achieved with UIEXT-1882.
+ * It is not ideal that we have to handel statistics view settings here.
+ * The reason for the change in type is that the statistics view dialog uses a Twinlist,
+ * while the Table View dialog uses a MultiModeTwinlist (enabling e.g. column type selection).
+ * The alternative would be to make the statistics view have its own view which wraps
+ * the TableView, which is not as feasible as this workaround here.
  */
 export type StatisticsViewDialogSettings = Omit<
   TableViewViewSettings,
