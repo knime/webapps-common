@@ -130,7 +130,7 @@ describe("updates in array layouts", () => {
                   scopes: getScopes(
                     updates[options[1] as keyof typeof triggers],
                   ),
-                  value: "Updated",
+                  values: [{ indices: [], value: "Updated" }],
                   id: null,
                 },
               ] satisfies UpdateResult[],

@@ -545,7 +545,7 @@ describe("NodeDialog.vue", () => {
         result: [
           {
             scopes: ["#/properties/model/properties/secondSetting"],
-            value: updatedValue,
+            values: [{ indices: [], value: updatedValue }],
           },
         ],
         message: ["Success message."],
@@ -554,7 +554,11 @@ describe("NodeDialog.vue", () => {
       await wrapper.vm.updateData("view.firstSetting");
       expect(dataServiceSpy).toHaveBeenCalledWith({
         method: "settings.update2",
-        options: [null, triggerId, { [dependencyId]: "secondSetting" }],
+        options: [
+          null,
+          triggerId,
+          { [dependencyId]: [{ indices: [], value: "secondSetting" }] },
+        ],
       });
       expect(wrapper.vm.getData().data.model).toStrictEqual({
         secondSetting: updatedValue,
@@ -586,7 +590,7 @@ describe("NodeDialog.vue", () => {
         result: [
           {
             scopes: ["#/properties/model/properties/secondSetting"],
-            value: updatedValue,
+            values: [{ indices: [], value: updatedValue }],
           },
         ],
         message: ["Success message."],
@@ -595,7 +599,11 @@ describe("NodeDialog.vue", () => {
       await wrapper.vm.trigger({ id: triggerId });
       expect(dataServiceSpy).toHaveBeenCalledWith({
         method: "settings.update2",
-        options: [null, triggerId, { [dependencyId]: "secondSetting" }],
+        options: [
+          null,
+          triggerId,
+          { [dependencyId]: [{ indices: [], value: "secondSetting" }] },
+        ],
       });
       expect(wrapper.vm.getCurrentData()).toStrictEqual({
         view: {
@@ -639,7 +647,7 @@ describe("NodeDialog.vue", () => {
         result: [
           {
             id: stateProviderId,
-            value: updatedValue,
+            values: [{ indices: [], value: updatedValue }],
           },
         ],
         message: ["Success message."],
@@ -647,7 +655,11 @@ describe("NodeDialog.vue", () => {
       await wrapper.vm.trigger({ id: triggerId });
       expect(dataServiceSpy).toHaveBeenCalledWith({
         method: "settings.update2",
-        options: [null, triggerId, { [dependencyId]: "secondSetting" }],
+        options: [
+          null,
+          triggerId,
+          { [dependencyId]: [{ indices: [], value: "secondSetting" }] },
+        ],
       });
 
       expect(stateProviderListener).toHaveBeenCalledWith(updatedValue);
@@ -690,7 +702,7 @@ describe("NodeDialog.vue", () => {
       initialUpdates = [
         {
           scopes: ["#/properties/model/properties/secondSetting"],
-          value: updatedValue,
+          values: [{ indices: [], value: updatedValue }],
         },
       ];
 
@@ -726,7 +738,7 @@ describe("NodeDialog.vue", () => {
         result: [
           {
             scopes: ["#/properties/model/properties/secondSetting"],
-            value: updatedValue,
+            values: [{ indices: [], value: updatedValue }],
           },
         ],
         message: ["Success message."],

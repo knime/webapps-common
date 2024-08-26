@@ -21,6 +21,7 @@ import {
 } from "@/nodeDialog/composables/nodeDialog/useArrayIds";
 import inject from "@/nodeDialog/utils/inject";
 import { editResetButtonFormat } from "@/nodeDialog/renderers/editResetButtonRenderer";
+import useIsEdited from "./composables/useIsEdited";
 
 const ArrayLayout = defineComponent({
   name: "ArrayLayout",
@@ -87,6 +88,11 @@ const ArrayLayout = defineComponent({
       { immediate: true },
     );
 
+    const { isEdited, isEditedIsLoading } = useIsEdited(
+      control.value.uischema.options.withEditAndReset,
+      ids,
+    );
+
     watch(
       () => hash(ids.value),
       () => handleChange(control.value.path, dataWithId.value),
@@ -100,6 +106,8 @@ const ArrayLayout = defineComponent({
       signedData: dataWithId,
       idsRecord,
       providedElementDefaultValue,
+      isEdited,
+      isEditedIsLoading,
     };
   },
   data() {
@@ -239,6 +247,8 @@ export default ArrayLayout;
                     },
                   }"
                   :path="`${control.path}.${objIndex}`"
+                  :initial-is-edited="isEdited.get(obj._id) ? '' : undefined"
+                  :is-loading="isEditedIsLoading ? '' : undefined"
                 />
               </template>
             </ArrayLayoutItemControls>

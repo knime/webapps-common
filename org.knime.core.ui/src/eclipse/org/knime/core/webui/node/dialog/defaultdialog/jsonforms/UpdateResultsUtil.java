@@ -49,10 +49,12 @@
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms;
 
 import java.util.List;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.IndexedValue;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerInvocationHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerInvocationHandler.TriggerResult;
 
@@ -71,25 +73,47 @@ public final class UpdateResultsUtil {
     /**
      * An instruction for an update. Either a value update defined by a path or a ui state update defined by an id
      *
+     * @param <I> the type of the keys of the resulting values in case of nested scopes (either by index or by indexId)
+     *
      * @param scopes to the field in case of a value update
      * @param id of the state provider in other cases
-     * @param value
+     * @param values the list of to be updated values. Usually this is a one-element list with an element with empty
+     *            indices. Other cases only occur when this update yields different results in each element of an array
+     *            widget.
      */
-    public record UpdateResult(List<String> scopes, String id, Object value) implements Comparable<UpdateResult> {
+    public record UpdateResult<I>(List<String> scopes, String id, List<IndexedValue<I>> values)
+        implements Comparable<UpdateResult<I>> {
 
-        private static UpdateResult forScopes(final List<String> path, final Object value) {
-            return new UpdateResult(path, null, JsonFormsDataUtil.getMapper().valueToTree(value));
+        private static <I> UpdateResult<I> forScopes(final List<String> path, final List<IndexedValue<I>> values) {
+            UnaryOperator<Object> serialize = v -> JsonFormsDataUtil.getMapper().valueToTree(v);
+            return new UpdateResult<>(path, null, sortByIndices(serializeValues(values, serialize)));
         }
 
-        private static UpdateResult forId(final String id, final Object value) {
+        private static <I> UpdateResult<I> forId(final String id, final List<IndexedValue<I>> values) {
             // value can be a record here, leading to a failure, since the JsonFormsDataUtil mapper does not serialize
             // getters, leading to empty serialized records
-            return new UpdateResult(null, id,
-                value instanceof WidgetGroup ? JsonFormsDataUtil.getMapper().valueToTree(value) : value);
+            UnaryOperator<Object> serialize =
+                v -> v instanceof WidgetGroup ? JsonFormsDataUtil.getMapper().valueToTree(v) : v;
+            return new UpdateResult<>(null, id, sortByIndices(serializeValues(values, serialize)));
+        }
+
+        private static <I> List<IndexedValue<I>> sortByIndices(final List<IndexedValue<I>> serializeValues) {
+            return serializeValues.stream().sorted((v1, v2) -> toIndicesString(v1).compareTo(toIndicesString(v2)))
+                .toList();
+        }
+
+        private static <I> String toIndicesString(final IndexedValue<I> v1) {
+            return String.join(",", v1.indices().stream().map(Object::toString).toArray(String[]::new));
+        }
+
+        private static <I> List<IndexedValue<I>> serializeValues(final List<IndexedValue<I>> values,
+            final UnaryOperator<Object> serialize) {
+            return values.stream().map(value -> new IndexedValue<I>(value.indices(), serialize.apply(value.value())))
+                .toList();
         }
 
         @Override
-        public int compareTo(final UpdateResult other) {
+        public int compareTo(final UpdateResult<I> other) {
             return internalId().compareTo(other.internalId());
         }
 
@@ -106,7 +130,7 @@ public final class UpdateResultsUtil {
      * @param triggerResult
      * @return the list of resulting instructions
      */
-    public static List<UpdateResult> toUpdateResults(final TriggerResult triggerResult) {
+    public static <I> List<UpdateResult<I>> toUpdateResults(final TriggerResult<I> triggerResult) {
         final var valueUpdates =
             triggerResult
                 .valueUpdates().entrySet().stream().map(entry -> UpdateResult

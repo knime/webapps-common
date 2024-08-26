@@ -1,9 +1,9 @@
 import Result from "@/nodeDialog/api/types/Result";
 import { DialogSettingsObject } from "./useUpdates";
-
+export type IndexedIsActive = { indices: string[]; isActive: boolean };
 export type IsActiveCallback = (
   indexIds: string[],
-) => (settings: DialogSettingsObject) => Promise<Result<boolean>>;
+) => (settings: DialogSettingsObject) => Promise<Result<IndexedIsActive[]>>;
 
 export type TriggerCallback = (
   indexIds: string[],

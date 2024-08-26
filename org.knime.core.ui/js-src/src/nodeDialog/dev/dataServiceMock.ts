@@ -79,7 +79,7 @@ export default (rpcRequest: { method: string; params: any[] }) => {
             {
               scopes: ["#/properties/view/properties/updatedByUpdatedByA"],
               id: null,
-              value: dependencies.UpdatedByA,
+              values: [{ indices: [], value: dependencies.UpdatedByA }],
             },
           ],
         } satisfies Result<UpdateResult[]>;
@@ -91,7 +91,7 @@ export default (rpcRequest: { method: string; params: any[] }) => {
             {
               scopes: ["#/properties/view/properties/updatedByUpdatedByB"],
               id: null,
-              value: dependencies.UpdatedByB,
+              values: [{ indices: [], value: dependencies.UpdatedByB }],
             },
           ],
         } satisfies Result<UpdateResult[]>;
@@ -103,17 +103,17 @@ export default (rpcRequest: { method: string; params: any[] }) => {
             {
               scopes: ["#/properties/view/properties/sum"],
               id: null,
-              value: dependencies.A + dependencies.B,
+              values: [{ indices: [], value: dependencies.A + dependencies.B }],
             },
             {
               scopes: ["#/properties/view/properties/product"],
               id: null,
-              value: dependencies.A * dependencies.B,
+              values: [{ indices: [], value: dependencies.A * dependencies.B }],
             },
             {
               scopes: ["#/properties/view/properties/updatedByA"],
               id: null,
-              value: dependencies.A,
+              values: [{ indices: [], value: dependencies.A }],
             },
           ],
         } satisfies Result<UpdateResult[]>;
@@ -124,7 +124,7 @@ export default (rpcRequest: { method: string; params: any[] }) => {
             {
               scopes: ["#/properties/view/properties/updatedByB"],
               id: null,
-              value: dependencies.B,
+              values: [{ indices: [], value: dependencies.B }],
             },
           ],
         } satisfies Result<UpdateResult[]>;
@@ -141,7 +141,12 @@ export default (rpcRequest: { method: string; params: any[] }) => {
                 "#/properties/sum",
               ],
               id: null,
-              value: dependencies.A_nested + dependencies.B_nested,
+              values: [
+                {
+                  indices: [],
+                  value: dependencies.A_nested + dependencies.B_nested,
+                },
+              ],
             },
             {
               scopes: [
@@ -149,25 +154,39 @@ export default (rpcRequest: { method: string; params: any[] }) => {
                 "#/properties/product",
               ],
               id: null,
-              value: `A * B ${dependencies.A_nested * dependencies.B_nested}`,
+              values: [
+                {
+                  indices: [],
+                  value: `A * B ${
+                    dependencies.A_nested * dependencies.B_nested
+                  }`,
+                },
+              ],
             },
             {
               id: "myChoicesProvider",
               scopes: null,
-              value: [
+              values: [
                 {
-                  id: `A ${dependencies.A_nested}`,
-                  text: `A (${dependencies.A_nested})`,
-                },
-                {
-                  id: `B ${dependencies.B_nested}`,
-                  text: `B (${dependencies.B_nested})`,
-                },
-                {
-                  id: `A * B ${dependencies.A_nested * dependencies.B_nested}`,
-                  text: `A * B (${
-                    dependencies.A_nested * dependencies.B_nested
-                  })`,
+                  indices: [],
+                  value: [
+                    {
+                      id: `A ${dependencies.A_nested}`,
+                      text: `A (${dependencies.A_nested})`,
+                    },
+                    {
+                      id: `B ${dependencies.B_nested}`,
+                      text: `B (${dependencies.B_nested})`,
+                    },
+                    {
+                      id: `A * B ${
+                        dependencies.A_nested * dependencies.B_nested
+                      }`,
+                      text: `A * B (${
+                        dependencies.A_nested * dependencies.B_nested
+                      })`,
+                    },
+                  ],
                 },
               ],
             },
@@ -209,8 +228,13 @@ export default (rpcRequest: { method: string; params: any[] }) => {
                 "#/properties/sum",
               ],
               id: null,
-              value:
-                dependencies.A_nested_nested + dependencies.B_nested_nested,
+              values: [
+                {
+                  indices: [],
+                  value:
+                    dependencies.A_nested_nested + dependencies.B_nested_nested,
+                },
+              ],
             },
             {
               scopes: [
@@ -219,29 +243,41 @@ export default (rpcRequest: { method: string; params: any[] }) => {
                 "#/properties/product",
               ],
               id: null,
-              value: `A * B ${
-                dependencies.A_nested_nested * dependencies.B_nested_nested
-              }`,
+              values: [
+                {
+                  indices: [],
+                  value: `A * B ${
+                    dependencies.A_nested_nested * dependencies.B_nested_nested
+                  }`,
+                },
+              ],
             },
             {
               id: "myNestedChoicesProvider",
               scopes: null,
-              value: [
+              values: [
                 {
-                  id: `A ${dependencies.A_nested_nested}`,
-                  text: `A (${dependencies.A_nested_nested})`,
-                },
-                {
-                  id: `B ${dependencies.B_nested_nested}`,
-                  text: `B (${dependencies.B_nested_nested})`,
-                },
-                {
-                  id: `A * B ${
-                    dependencies.A_nested_nested * dependencies.B_nested_nested
-                  }`,
-                  text: `A * B (${
-                    dependencies.A_nested_nested * dependencies.B_nested_nested
-                  })`,
+                  indices: [],
+                  value: [
+                    {
+                      id: `A ${dependencies.A_nested_nested}`,
+                      text: `A (${dependencies.A_nested_nested})`,
+                    },
+                    {
+                      id: `B ${dependencies.B_nested_nested}`,
+                      text: `B (${dependencies.B_nested_nested})`,
+                    },
+                    {
+                      id: `A * B ${
+                        dependencies.A_nested_nested *
+                        dependencies.B_nested_nested
+                      }`,
+                      text: `A * B (${
+                        dependencies.A_nested_nested *
+                        dependencies.B_nested_nested
+                      })`,
+                    },
+                  ],
                 },
               ],
             },

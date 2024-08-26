@@ -55,13 +55,15 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.knime.core.node.util.CheckUtils;
+import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.ConvertValueUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaGenerationException;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 
@@ -116,7 +118,7 @@ public class TriggerAndDependencies {
      * @param context the current {@link DefaultNodeSettingsContext}
      * @return a mapping to the values of the required dependencies
      */
-    public Map<Class<? extends Reference>, Object> extractDependencyValues(
+    public Map<Class<? extends Reference>, List<IndexedValue<Integer>>> extractDependencyValues(
         final Map<SettingsType, WidgetGroup> settings, final DefaultNodeSettingsContext context) {
         final var mapper = JsonFormsDataUtil.getMapper();
         final Map<SettingsType, JsonNode> jsonNodes = getDependencySettingsTypes().stream().collect(
@@ -124,32 +126,43 @@ public class TriggerAndDependencies {
         return createDependenciesValuesMap(context, jsonNodes);
     }
 
-    private Map<Class<? extends Reference>, Object> createDependenciesValuesMap(
+    private Map<Class<? extends Reference>, List<IndexedValue<Integer>>> createDependenciesValuesMap(
         final DefaultNodeSettingsContext context, final Map<SettingsType, JsonNode> jsonNodes) {
-        final Map<Class<? extends Reference>, Object> dependencyValues = new HashMap<>();
+        final Map<Class<? extends Reference>, List<IndexedValue<Integer>>> dependencyValues = new HashMap<>();
         for (var vertex : m_dependencyVertices) {
-            dependencyValues.put(vertex.getValueRef(), extractValue(vertex, jsonNodes, context));
+            dependencyValues.put(vertex.getValueRef(), extractValues(vertex, jsonNodes, context));
         }
         return dependencyValues;
     }
 
-    private static Object extractValue(final DependencyVertex vertex, final Map<SettingsType, JsonNode> jsonNodes,
-        final DefaultNodeSettingsContext context) {
+    private static List<IndexedValue<Integer>> extractValues(final DependencyVertex vertex,
+        final Map<SettingsType, JsonNode> jsonNodes, final DefaultNodeSettingsContext context) {
         var groupJsonNode = jsonNodes.get(vertex.getFieldLocation().settingsType());
-        var fieldJsonNode = groupJsonNode.at(toJsonPointer(vertex.getFieldLocation().paths()));
-        return ConvertValueUtil.convertValueRef(fieldJsonNode, vertex.getValueRef(), context);
+
+        final var paths = vertex.getFieldLocation().paths();
+        var indexedFieldValues = getIndexedFieldValues(groupJsonNode, paths);
+        return indexedFieldValues.stream().map(pair -> new IndexedValue<Integer>(pair.getFirst(),
+            ConvertValueUtil.convertValueRef(pair.getSecond(), vertex.getValueRef(), context))).toList();
     }
 
-    private static String toJsonPointer(final List<List<String>> paths) {
+    private static List<Pair<List<Integer>, JsonNode>> getIndexedFieldValues(final JsonNode jsonNode,
+        final List<List<String>> paths) {
+        final var atFirstPath = jsonNode.at(toJsonPointer(paths.get(0)));
+        if (paths.size() == 1) {
+            return List.of(new Pair<>(List.of(), atFirstPath));
+        }
+        CheckUtils.checkState(atFirstPath.isArray(), "Json node at field with nested path should be an array.");
+        final var restPaths = paths.subList(1, paths.size());
+        return IntStream.range(0, atFirstPath.size()).mapToObj(i -> i)
+            .flatMap(i -> getIndexedFieldValues(atFirstPath.get(i), restPaths).stream().map(pair -> {
+                final var indices = Stream.concat(Stream.of(i), pair.getFirst().stream()).toList();
+                return new Pair<>(indices, pair.getSecond());
+            })).toList();
 
-        /**
-         * TODO: UIEXT-1841 remove this and treat the case of multiple paths here.
-         */
-        CheckUtils.check(paths.size() == 1, UiSchemaGenerationException::new,
-            () -> String
-                .format("There exists an initially triggered state provider with dependencies inside an array layout "
-                    + "(with paths %s). This is not yet supported.", paths));
-        return "/" + String.join("/", paths.get(0));
+    }
+
+    private static String toJsonPointer(final List<String> path) {
+        return "/" + String.join("/", path);
     }
 
     private Collection<SettingsType> getDependencySettingsTypes() {

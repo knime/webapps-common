@@ -9,6 +9,7 @@
  *  * when receiving an answer from the backend
  *      * ui states: Just use the ids to find the correct state provider (which now register to ids)
  *      * value updates: Look up the current indices for the given ids at the moment we receive the answer from the backend (2)
+ * There is one exception where we still use actual indices: On initial updates before the dialog is opened.
  */
 
 const idToIndex = new Map<string, number>();
@@ -43,32 +44,35 @@ export interface IdsRecord {
 const globalArrayRecord: ArrayRecord = {};
 export const getArrayIdsRecord = () => globalArrayRecord;
 
-const createObjectAtKey = (
-  obj: Record<string, Record<string, unknown>>,
+/**
+ * @returns a function to add a field to an object and
+ * a function to add a callback that is called when the field is added
+ */
+const addField = <
+  S extends Record<string, unknown>,
+  T extends Record<string, S>,
+>(
+  obj: T,
   key: string,
 ) => {
-  const created = {};
-  obj[key] = created;
+  const created = {} as S;
+  (obj as Record<string, S>)[key] = created;
   return created;
 };
 
-export const createArrayAtPath: (obj: ArrayRecord, path: string) => IdsRecord =
-  createObjectAtKey;
-
-export const createForArrayItem: (obj: IdsRecord, id: string) => ArrayRecord =
-  createObjectAtKey;
-
+export const createArrayAtPath = addField<ArrayRecord, IdsRecord>;
+export const createForArrayItem = addField<IdsRecord, ArrayRecord>;
 export const deleteArrayItem = (obj: IdsRecord, id: string) => delete obj[id];
 
 export const toIndexIds = (
   indices: number[],
-  dependency: string[],
+  dataPaths: string[],
   arrayRecord: ArrayRecord = globalArrayRecord,
 ): string[] => {
+  const idsRecord = arrayRecord[dataPaths[0]];
   if (indices.length === 0) {
     return [];
   }
-  const idsRecord = arrayRecord[dependency[0]];
   if (typeof idsRecord === "undefined") {
     throw Error(
       "No array layout found on value update. This should not happen.",
@@ -82,8 +86,10 @@ export const toIndexIds = (
       "No array layout element id found on value update. This should not happen.",
     );
   }
-  return [
-    indexId,
-    ...toIndexIds(indices.slice(1), dependency.slice(1), idsRecord[indexId]),
-  ];
+  const indexIds = toIndexIds(
+    indices.slice(1),
+    dataPaths.slice(1),
+    idsRecord[indexId],
+  );
+  return [indexId, ...indexIds];
 };

@@ -4,6 +4,7 @@ import { toDataPath } from "@jsonforms/core";
 import { ref } from "vue";
 import { DialogSettings } from "@knime/ui-extension-service";
 import { toIndexIds } from "./useArrayIds";
+import { getIndicesFromDataPaths } from "./utils/dataPaths";
 export type TransformSettings = (newSettings: DialogSettings & object) => void;
 
 export type RegisterWatcherTransformSettings = (
@@ -15,85 +16,6 @@ type RegisteredWatcher = {
   id: string;
   dataPaths: string[][];
   transformSettings: RegisterWatcherTransformSettings;
-};
-
-/**
- * E.g.
- *  removeFromStart(["A", "B"], ["A"]) === ["B"]
- *  removeFromStart(["A"], ["A", "B"]) === []
- *  removeFromStart(["C", "B"], ["A"]) === null
- */
-const removeFromStart = (segments: string[], startingSegments: string[]) => {
-  const lengthMin = Math.min(segments.length, startingSegments.length);
-  for (let i = 0; i < lengthMin; i++) {
-    if (segments[i] !== startingSegments[i]) {
-      return null;
-    }
-  }
-  return segments.slice(startingSegments.length);
-};
-
-/**
- * This method checks whether the given path segments can be obtained by combining the dataPathSegments with
- * intermediate numbers. If so, these numbers are returned. If not, the result is null.
- */
-const testMatchesAndGetIndices = (
-  segments: string[],
-  dataPathSegments: string[][],
-): null | number[] => {
-  if (segments.length === 0) {
-    return dataPathSegments.length > 1 ? null : [];
-  }
-  const segmentsWithoutFirstDataPath = removeFromStart(
-    segments,
-    dataPathSegments[0],
-  );
-  if (segmentsWithoutFirstDataPath === null) {
-    return null;
-  }
-  if (dataPathSegments.length === 1) {
-    return [];
-  }
-  if (segmentsWithoutFirstDataPath.length === 0) {
-    return null;
-  }
-  const [needsToBeANumber, ...rest] = segmentsWithoutFirstDataPath;
-  const nextNumber = parseInt(needsToBeANumber, 10);
-  if (isNaN(nextNumber)) {
-    return null;
-  }
-  const restMatchingIndices = testMatchesAndGetIndices(
-    rest,
-    dataPathSegments.slice(1),
-  );
-  return restMatchingIndices === null
-    ? null
-    : [nextNumber, ...restMatchingIndices];
-};
-
-const splitBy = (splitter: string) => (str: string) => str.split(splitter);
-
-/**
- * Exported for tests
- */
-export const getIndicesFromDataPaths = (
-  dataPaths: RegisteredWatcher["dataPaths"],
-  pathSegments: string[],
-) => {
-  let result: null | { dataPath: string[]; indices: number[] } = null;
-  const isMoreSpecificMatch = (newIndices: number[]) => {
-    return result === null || newIndices.length > result.indices.length;
-  };
-  for (const dependency of dataPaths) {
-    const indices = testMatchesAndGetIndices(
-      pathSegments,
-      dependency.map(splitBy(".")),
-    );
-    if (indices && isMoreSpecificMatch(indices)) {
-      result = { indices, dataPath: dependency };
-    }
-  }
-  return result;
 };
 
 const ongoingUpdateIds = new Map<string, string>();
@@ -125,21 +47,17 @@ const getKey = (item: {
 export default () => {
   const registeredWatchers = ref<RegisteredWatcher[]>([]);
 
-  /**
-   * A method called on every settings update before the to be handled change is committed to jsonforms
-   * It is used to possible perform updates of other settings or ui states before doing so.
-   */
-  const updateData = async (
-    /**
-     * The path of the setting that is changed
-     */
-    path: string,
-    currentData: SettingsData,
-  ) => {
-    const triggeredWatchers: {
-      registeredWatcher: RegisteredWatcher;
-      indexIds: string[];
-    }[] = [];
+  type TriggeredWatcher = {
+    registeredWatcher: RegisteredWatcher;
+    indexIds: string[];
+  };
+
+  const triggeredWatcherEquals = (a: TriggeredWatcher, b: TriggeredWatcher) =>
+    a.registeredWatcher.id === b.registeredWatcher.id &&
+    a.indexIds.join(".") === b.indexIds.join(".");
+
+  const getTriggeredWatchers = (path: string) => {
+    const triggeredWatchers: TriggeredWatcher[] = [];
 
     const pathSegments = path.split(".");
     for (const registeredWatcher of registeredWatchers.value) {
@@ -158,7 +76,24 @@ export default () => {
         });
       }
     }
+    return triggeredWatchers;
+  };
 
+  const updateDataMultiplePaths = async (
+    /**
+     * The path of the setting that is changed
+     */
+    paths: string[],
+    currentData: SettingsData,
+  ) => {
+    const triggeredWatchers = paths.flatMap(getTriggeredWatchers).reduce(
+      // deduplicate so that each watcher is only triggered once
+      (acc: TriggeredWatcher[], item: TriggeredWatcher) =>
+        acc.some((accItem) => triggeredWatcherEquals(accItem, item))
+          ? acc
+          : [...acc, item],
+      [] satisfies TriggeredWatcher[],
+    );
     const transformations = [];
     const withIsToBeAppliedTester = triggeredWatchers.map((item) => ({
       ...item,
@@ -217,8 +152,21 @@ export default () => {
     };
   };
 
+  /**
+   * A method called on every settings update before the to be handled change is committed to jsonforms
+   * It is used to possible perform updates of other settings or ui states before doing so.
+   */
+  const updateData = (
+    /**
+     * The path of the setting that is changed
+     */
+    path: string,
+    currentData: SettingsData,
+  ) => updateDataMultiplePaths([path], currentData);
+
   return {
     updateData,
+    updateDataMultiplePaths,
     registerWatcher,
     /**
      * Exposed only for tests

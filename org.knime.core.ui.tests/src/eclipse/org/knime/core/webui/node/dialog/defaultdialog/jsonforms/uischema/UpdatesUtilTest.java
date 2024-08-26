@@ -52,6 +52,7 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -448,11 +449,11 @@ class UpdatesUtilTest {
         assertThatJson(response).inPath("$.initialUpdates").isArray().hasSize(2);
         assertThatJson(response).inPath("$.initialUpdates[0].scopes").isArray()
             .isEqualTo(List.of("#/properties/model/properties/valueUpdateSetting"));
-        assertThatJson(response).inPath("$.initialUpdates[0].value").isObject().containsEntry("value",
+        assertThatJson(response).inPath("$.initialUpdates[0].values[0].value").isObject().containsEntry("value",
             TestSettings.MyValueProvider.RESULT);
         assertThatJson(response).inPath("$.initialUpdates[1].id").isString()
             .isEqualTo(TestSettings.MyInitialFileExtensionProvider.class.getName());
-        assertThatJson(response).inPath("$.initialUpdates[1].value").isString()
+        assertThatJson(response).inPath("$.initialUpdates[1].values[0].value").isString()
             .isEqualTo(TestSettings.MyInitialFileExtensionProvider.RESULT);
     }
 
@@ -507,7 +508,8 @@ class UpdatesUtilTest {
         assertThatJson(response).inPath("$.initialUpdates").isArray().hasSize(1);
         assertThatJson(response).inPath("$.initialUpdates[0].scopes").isArray()
             .isEqualTo(List.of("#/properties/model/properties/valueUpdateSetting"));
-        assertThatJson(response).inPath("$.initialUpdates[0].value").isString().isEqualTo("{self:null,other:foo}");
+        assertThatJson(response).inPath("$.initialUpdates[0].values[0].value").isString()
+            .isEqualTo("{self:null,other:foo}");
 
     }
 
@@ -727,12 +729,12 @@ class UpdatesUtilTest {
             assertThatJson(response).inPath("$.initialUpdates").isArray().hasSize(1);
             assertThatJson(response).inPath("$.initialUpdates[0].id").isString()
                 .isEqualTo(TestStringChoicesProvider.class.getName());
-            assertThatJson(response).inPath("$.initialUpdates[0].value").isArray().hasSize(3);
+            assertThatJson(response).inPath("$.initialUpdates[0].values[0].value").isArray().hasSize(3);
             List.of(0, 1, 2).forEach(i -> {
-                assertThatJson(response).inPath(String.format("$.initialUpdates[0].value[%s].id", i)).isString()
-                    .isEqualTo(TestStringChoicesProvider.RESULT[i]);
-                assertThatJson(response).inPath(String.format("$.initialUpdates[0].value[%s].text", i)).isString()
-                    .isEqualTo(TestStringChoicesProvider.RESULT[i]);
+                assertThatJson(response).inPath(String.format("$.initialUpdates[0].values[0].value[%s].id", i))
+                    .isString().isEqualTo(TestStringChoicesProvider.RESULT[i]);
+                assertThatJson(response).inPath(String.format("$.initialUpdates[0].values[0].value[%s].text", i))
+                    .isString().isEqualTo(TestStringChoicesProvider.RESULT[i]);
             });
 
         }
@@ -761,14 +763,15 @@ class UpdatesUtilTest {
             assertThatJson(response).inPath("$.initialUpdates").isArray().hasSize(1);
             assertThatJson(response).inPath("$.initialUpdates[0].id").isString()
                 .isEqualTo(TestColumnChoicesProvider.class.getName());
-            assertThatJson(response).inPath("$.initialUpdates[0].value").isArray().hasSize(1);
-            assertThatJson(response).inPath("$.initialUpdates[0].value[0].id").isString().isEqualTo("A");
-            assertThatJson(response).inPath("$.initialUpdates[0].value[0].text").isString().isEqualTo("A");
-            assertThatJson(response).inPath("$.initialUpdates[0].value[0].type.id").isString()
+            assertThatJson(response).inPath("$.initialUpdates[0].values[0].value").isArray().hasSize(1);
+            assertThatJson(response).inPath("$.initialUpdates[0].values[0].value[0].id").isString().isEqualTo("A");
+            assertThatJson(response).inPath("$.initialUpdates[0].values[0].value[0].text").isString().isEqualTo("A");
+            assertThatJson(response).inPath("$.initialUpdates[0].values[0].value[0].type.id").isString()
                 .isEqualTo(StringCell.TYPE.getPreferredValueClass().getName());
-            assertThatJson(response).inPath("$.initialUpdates[0].value[0].type.text").isString()
+            assertThatJson(response).inPath("$.initialUpdates[0].values[0].value[0].type.text").isString()
                 .isEqualTo(StringCell.TYPE.getName());
-            assertThatJson(response).inPath("$.initialUpdates[0].value[0].compatibleTypes").isArray().hasSize(3);
+            assertThatJson(response).inPath("$.initialUpdates[0].values[0].value[0].compatibleTypes").isArray()
+                .hasSize(3);
         }
     }
 
@@ -842,7 +845,7 @@ class UpdatesUtilTest {
         }
 
         @Test
-        void testThrowsOnInitialTriggerWithDependencyInsideArray() {
+        void testInitialTriggerWithDependencyInsideArray() {
 
             class TestSettings implements DefaultNodeSettings {
 
@@ -850,21 +853,27 @@ class UpdatesUtilTest {
                     static final class DependencyInsideArray implements Reference<String> {
                     }
 
+                    ElementSettings(final String dependency) {
+                        m_dependencyInsideArray = dependency;
+                    }
+
                     @ValueReference(DependencyInsideArray.class)
                     String m_dependencyInsideArray;
 
                     static final class MyProvider implements StateProvider<String> {
 
+                        private Supplier<String> m_valueSupplier;
+
                         @Override
                         public void init(final StateProviderInitializer initializer) {
                             initializer.computeBeforeOpenDialog();
-                            initializer.getValueSupplier(DependencyInsideArray.class);
+                            m_valueSupplier = initializer.getValueSupplier(DependencyInsideArray.class);
 
                         }
 
                         @Override
                         public String computeState(final DefaultNodeSettingsContext context) {
-                            throw new IllegalStateException("Should not be called in this test");
+                            return m_valueSupplier.get();
                         }
 
                     }
@@ -875,14 +884,20 @@ class UpdatesUtilTest {
                 }
 
                 @SuppressWarnings("unused")
-                ElementSettings[] m_array;
+                ElementSettings[] m_array =
+                    new ElementSettings[]{new ElementSettings("foo"), new ElementSettings("bar")};
 
             }
 
             final Map<SettingsType, WidgetGroup> settings = Map.of(SettingsType.MODEL, new TestSettings());
-            assertThat(assertThrows(UiSchemaGenerationException.class, () -> buildUpdates(settings)).getMessage())
-                .isEqualTo("There exists an initially triggered state provider with dependencies inside an "
-                    + "array layout (with paths [[array], [dependencyInsideArray]]). This is not yet supported.");
+            final var response = buildUpdates(settings);
+            assertThatJson(response).inPath("$.initialUpdates").isArray().hasSize(1);
+            assertThatJson(response).inPath("$.initialUpdates[0].values").isArray().hasSize(2);
+            assertThatJson(response).inPath("$.initialUpdates[0].values[0].indices[0]").isNumber().isZero();
+            assertThatJson(response).inPath("$.initialUpdates[0].values[0].value").isString().isEqualTo("foo");
+            assertThatJson(response).inPath("$.initialUpdates[0].values[1].indices[0]").isNumber()
+                .isEqualTo(new BigDecimal(1));
+            assertThatJson(response).inPath("$.initialUpdates[0].values[1].value").isString().isEqualTo("bar");
 
         }
 

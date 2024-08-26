@@ -8,7 +8,11 @@ import { cloneDeep } from "lodash-es";
 
 import { getOptions } from "@/nodeDialog/__tests__/utils";
 import { mockRegisterSettings } from "@@/test-setup/utils/integration/dirtySettingState";
-import { Update, UpdateResult } from "@/nodeDialog/types/Update";
+import {
+  IndexIdsValuePairs,
+  Update,
+  UpdateResult,
+} from "@/nodeDialog/types/Update";
 import TextControl from "@/nodeDialog/uiComponents/TextControl.vue";
 import EditResetButton from "@/nodeDialog/layoutComponents/arrayLayout/EditResetButton.vue";
 
@@ -84,7 +88,15 @@ describe("edit/reset button in array layouts", () => {
             id: "ElementResetButton",
             scopes: undefined,
           },
-          dependencies: [],
+          dependencies: [
+            {
+              scopes: [
+                "#/properties/model/properties/values",
+                "#/properties/value",
+              ],
+              id: "dependencyId",
+            },
+          ],
         },
       ] as Update[],
       initialUpdates: [] as UpdateResult[],
@@ -112,19 +124,27 @@ describe("edit/reset button in array layouts", () => {
     return wrapper;
   };
 
-  const mockRPCResult = (getResult: () => UpdateResult[]) =>
-    vi.spyOn(JsonDataService.prototype, "data").mockImplementation(() =>
-      Promise.resolve({
+  const mockRPCResult = (
+    getResult: (
+      dependencies: Record<string, IndexIdsValuePairs>,
+    ) => UpdateResult[],
+  ) =>
+    vi.spyOn(JsonDataService.prototype, "data").mockImplementation((param) => {
+      const result = getResult(param!.options![2]);
+      return Promise.resolve({
         state: "SUCCESS",
-        result: getResult(),
-      }),
-    );
+        result,
+      });
+    });
 
   const mockRPCResultToResetElementTextValue = () => {
-    mockRPCResult(() => [
+    mockRPCResult((dependencies) => [
       {
         id: null,
-        value: defaultTextValue,
+        values: dependencies.dependencyId.map(({ indices }) => ({
+          indices,
+          value: defaultTextValue,
+        })),
         scopes: ["#/properties/model/properties/values", "#/properties/value"],
       },
     ]);

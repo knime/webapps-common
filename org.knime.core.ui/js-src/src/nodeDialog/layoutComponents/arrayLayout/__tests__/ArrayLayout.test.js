@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable no-undefined */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
@@ -464,11 +465,11 @@ describe("ArrayLayout.vue", () => {
       provide: { addStateProviderListenerMock },
     });
     expect(addStateProviderListenerMock).toHaveBeenCalledWith(
-      { id: titleProvider, indexIds: expect.anything() },
+      { id: titleProvider, indexIds: expect.anything(), indices: [0] },
       expect.anything(),
     );
     expect(addStateProviderListenerMock).toHaveBeenCalledWith(
-      { id: subTitleProvider, indexIds: expect.anything() },
+      { id: subTitleProvider, indexIds: expect.anything(), indices: [0] },
       expect.anything(),
     );
     const providedState = "provided";
@@ -477,5 +478,65 @@ describe("ArrayLayout.vue", () => {
     expect(wrapper.find(".item-header").text()).toBe(
       providedState + providedState,
     );
+  });
+
+  describe("edit/reset buttons initial state", () => {
+    let resolveIsActivePromise = () => {};
+
+    beforeEach(() => {
+      vi.useFakeTimers();
+      const newControl = {
+        ...control,
+        uischema: {
+          ...control.uischema,
+          options: {
+            ...control.uischema.options,
+            withEditAndReset: true,
+          },
+        },
+      };
+      const component = mountJsonFormsComponent(ArrayLayout, {
+        props: { control: newControl },
+        provide: {
+          isTriggerActiveMock: vi.fn().mockReturnValue(
+            new Promise((resolve) => {
+              resolveIsActivePromise = resolve;
+            }),
+          ),
+        },
+      });
+
+      wrapper = component.wrapper;
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it("shows loading icon while loading", async () => {
+      const ids = wrapper.vm.signedData.map(({ _id }) => _id);
+      const editResetButtons = wrapper
+        .findAllComponents(DispatchRenderer)
+        .filter((c) => c.props("schema").properties?._edit?.type === "boolean");
+      expect(editResetButtons.length).toBe(3);
+      expect(editResetButtons[0].attributes("is-loading")).toBeUndefined();
+      vi.runAllTimers();
+      await wrapper.vm.$nextTick();
+      expect(editResetButtons[0].attributes("is-loading")).toBe("");
+      resolveIsActivePromise({
+        state: "SUCCESS",
+        result: ids.map((id, index) => ({
+          indices: [id],
+          isActive: index === 0,
+        })),
+      });
+      await flushPromises();
+      await wrapper.vm.$nextTick();
+      expect(editResetButtons[0].attributes("is-loading")).toBeUndefined();
+      expect(editResetButtons[0].attributes("initial-is-edited")).toBe("");
+      expect(
+        editResetButtons[1].attributes("initial-is-edited"),
+      ).toBeUndefined();
+    });
   });
 });

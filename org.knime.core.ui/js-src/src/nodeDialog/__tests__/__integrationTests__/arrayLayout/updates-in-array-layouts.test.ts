@@ -1,6 +1,8 @@
+/* eslint-disable vitest/max-nested-describe */
+/* eslint-disable max-lines */
 import { describe, it, vi, beforeEach, expect } from "vitest";
 import { mount, VueWrapper } from "@vue/test-utils";
-import { AlertingService, JsonDataService } from "@knime/ui-extension-service";
+import { JsonDataService } from "@knime/ui-extension-service";
 
 import NodeDialog from "@/nodeDialog/NodeDialog.vue";
 import flushPromises from "flush-promises";
@@ -34,7 +36,7 @@ describe("updates in array layouts", () => {
 
   const uiSchemaKey = "ui_schema";
 
-  const getInitialText = (index: number) => `${index}`;
+  const getInitialText = (index: number) => `Initial text ${index}`;
 
   const arrayIndices = Array.from({ length: 3 }, (_v, i) => i);
 
@@ -260,7 +262,7 @@ describe("updates in array layouts", () => {
     mockRPCResult(() => [
       {
         id: choicesProviderId,
-        value: possibleValues.value,
+        values: [{ indices: [], value: possibleValues.value }],
         scopes: null,
       },
     ]);
@@ -282,7 +284,7 @@ describe("updates in array layouts", () => {
     mockRPCResult(() => [
       {
         id: null,
-        value: newValue,
+        values: [{ indices: [], value: newValue }],
         scopes: ["#/properties/model/properties/values", "#/properties/value"],
       },
     ]);
@@ -497,34 +499,202 @@ describe("updates in array layouts", () => {
             null,
             expect.anything(),
             {
-              [dependencyId]: getInitialText(index),
+              [dependencyId]: [{ indices: [], value: getInitialText(index) }],
             },
           ],
         });
       },
     );
 
-    const prepareUpdateByButtonOutsideWithDependencyWithin = async () => {
-      const { triggerButton, addDependency } = addButtonAfterArray();
-      const dependencyId = "myDependencyId";
-      addDependency(createTextDependency(dependencyId));
-      const rpcDataSpy = mockRPCResult(() => []);
+    describe("updates from outside the array layout with dependencies within", () => {
+      const prepareUpdateByButtonOutsideWithDependencyWithin = async () => {
+        const { triggerButton, addDependency } = addButtonAfterArray();
+        const dependencyId = "myDependencyId";
+        addDependency(createTextDependency(dependencyId));
+        const rpcDataSpy = mockRPCResult(() => []);
 
-      const wrapper = await mountNodeDialog();
-      return { wrapper, rpcDataSpy, dependencyId, triggerButton };
-    };
+        const wrapper = await mountNodeDialog();
+        return { wrapper, rpcDataSpy, dependencyId, triggerButton };
+      };
 
-    /**
-     * TODO: UIEXT-1841 Reformulate this test to a happy path
-     */
-    it("logs error on update triggered outside array with dependencies from within array", async () => {
-      const sendAlert = vi.spyOn(AlertingService.prototype, "sendAlert");
-      const { wrapper, triggerButton } =
-        await prepareUpdateByButtonOutsideWithDependencyWithin();
-      // @ts-expect-error
-      window.isTest = true;
-      await triggerButton(wrapper);
-      expect(sendAlert).toHaveBeenCalled();
+      it("allows updates triggered outside array with dependencies from within array", async () => {
+        const { wrapper, rpcDataSpy, dependencyId, triggerButton } =
+          await prepareUpdateByButtonOutsideWithDependencyWithin();
+
+        await triggerButton(wrapper);
+
+        expect(rpcDataSpy).toHaveBeenCalledWith({
+          method: "settings.update2",
+          options: [
+            null,
+            expect.anything(),
+            {
+              [dependencyId]: expect.anything(),
+            },
+          ],
+        });
+      });
+
+      describe.each([
+        [
+          "computeBeforeOpenDialog",
+          (updateResult: UpdateResult) => {
+            initialDataJson[uiSchemaKey].initialUpdates = [updateResult];
+            return { expectAfterMount: () => {} };
+          },
+        ],
+        [
+          "computeAfterOpenDialog",
+          (updateResult: UpdateResult) => {
+            initialDataJson[uiSchemaKey].globalUpdates = [
+              {
+                trigger: {
+                  id: "afterOpenDialog",
+                  scopes: undefined,
+                  triggerInitially: true,
+                },
+                dependencies: [
+                  {
+                    id: "dependencyId",
+                    scopes: [
+                      "#/properties/model/properties/values",
+                      "#/properties/value",
+                    ],
+                  },
+                ],
+              },
+            ];
+            const rpcDataSpy = mockRPCResult(() => [updateResult]);
+            return {
+              expectAfterMount: () =>
+                expect(rpcDataSpy).toHaveBeenCalledWith({
+                  method: "settings.update2",
+                  options: [
+                    null,
+                    expect.anything(),
+                    {
+                      dependencyId: arrayIndices.map((i) =>
+                        expect.objectContaining({
+                          indices: [expect.any(String)],
+                          value: getInitialText(i),
+                        }),
+                      ),
+                    },
+                  ],
+                }),
+            };
+          },
+        ],
+      ])("initialUpdates (%s)", (type, mockInitialUpdate) => {
+        const getInitialUpdateValues = <T>(initialUpdateValues: T[]) =>
+          arrayIndices.map((i) => ({
+            indices: [i],
+            value: initialUpdateValues[i],
+          }));
+
+        const defineInitialValueUpdates = () => {
+          const initialUpdateValues = arrayIndices.map(
+            (i) => `Initially updated value ${i}`,
+          );
+          const { expectAfterMount } = mockInitialUpdate({
+            id: null,
+            values: getInitialUpdateValues(initialUpdateValues),
+            scopes: [
+              "#/properties/model/properties/values",
+              "#/properties/value",
+            ],
+          });
+
+          return {
+            getNthTextValue: (wrapper: Wrapper, n: number) =>
+              wrapper
+                .find(".array")
+                .findAllComponents(TextControl as any)
+                .at(n)
+                .find("input").element.value,
+            initialUpdateValues,
+            expectAfterMount,
+          };
+        };
+
+        const prepareInitialValueUpdatesForEachArrayElement = async () => {
+          const { initialUpdateValues, getNthTextValue, expectAfterMount } =
+            defineInitialValueUpdates();
+          const wrapper = await mountNodeDialog();
+          expectAfterMount();
+          return {
+            wrapper,
+            initialUpdateValues,
+            getNthTextValue,
+            expectAfterMount,
+          };
+        };
+
+        it("allows initial value updates triggered outside array with different updates within array", async () => {
+          const { wrapper, initialUpdateValues, getNthTextValue } =
+            await prepareInitialValueUpdatesForEachArrayElement();
+
+          arrayIndices.forEach((index) =>
+            expect(getNthTextValue(wrapper, index)).toBe(
+              initialUpdateValues[index],
+            ),
+          );
+        });
+
+        const defineInitialDropdownUpdates = () => {
+          const choicesProviderId = "myChoicesProvider";
+          makeTextDropdownWithChoicesProvider(choicesProviderId);
+          const initialUpdateChoices = arrayIndices.map((i) => [
+            { id: `initialChoice${i}`, text: `Initial choice ${i}` },
+          ]);
+          const { expectAfterMount } = mockInitialUpdate({
+            id: choicesProviderId,
+            values: initialUpdateChoices.map((choices, i) => ({
+              indices: [i],
+              value: choices,
+            })),
+            scopes: null,
+          });
+
+          return {
+            getNthDropdownChoices: (wrapper: Wrapper, n: number) =>
+              wrapper
+                .find(".array")
+                .findAllComponents(Dropdown as any)
+                .at(n)
+                .props().possibleValues,
+            initialUpdateChoices,
+            expectAfterMount,
+          };
+        };
+
+        const prepareInitialDropdownChoicesUpdatesForEachArrayElement =
+          async () => {
+            const {
+              getNthDropdownChoices,
+              initialUpdateChoices,
+              expectAfterMount,
+            } = defineInitialDropdownUpdates();
+            const wrapper = await mountNodeDialog();
+            expectAfterMount();
+            return {
+              wrapper,
+              initialUpdateChoices,
+              getNthDropdownChoices,
+            };
+          };
+
+        it("allows initial ui state updates triggered outside array with different updates within array", async () => {
+          const { wrapper, initialUpdateChoices, getNthDropdownChoices } =
+            await prepareInitialDropdownChoicesUpdatesForEachArrayElement();
+
+          arrayIndices.forEach((index) =>
+            expect(getNthDropdownChoices(wrapper, index)).toStrictEqual(
+              initialUpdateChoices[index],
+            ),
+          );
+        });
+      });
     });
   });
 });

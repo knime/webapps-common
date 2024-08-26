@@ -50,6 +50,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -61,8 +62,11 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 
 /**
  * @author Paul Bärnreuther
+ * @param <I> the type of the keys of the dependencies and resulting values in case of nested scopes (either by index or
+ *            by indexId)
+ *
  */
-public class TriggerInvocationHandler {
+public class TriggerInvocationHandler<I> {
 
     private final Collection<TriggerVertex> m_triggers;
 
@@ -78,9 +82,12 @@ public class TriggerInvocationHandler {
      *
      * @param valueUpdates keys here are the path locations of fields whose value is updated
      * @param otherUpdates keys here are the ids (the names) of the state providers
+     *
+     * @param <I> the type of the keys of the resulting values in case of nested scopes (either by index or by indexId)
+     *
      */
-    public record TriggerResult(Map<PathsWithSettingsType, Object> valueUpdates, Map<String, Object> otherUpdates) {
-
+    public record TriggerResult<I>(Map<PathsWithSettingsType, List<IndexedValue<I>>> valueUpdates,
+        Map<String, List<IndexedValue<I>>> otherUpdates) {
     }
 
     /**
@@ -90,15 +97,15 @@ public class TriggerInvocationHandler {
      * @param context provided to the triggered state providers
      * @return a mapping from identifiers of fields to their updated value
      */
-    public TriggerResult invokeTrigger(final String triggerId,
-        final Function<Class<? extends Reference>, Object> dependencyProvider,
+    public TriggerResult<I> invokeTrigger(final String triggerId,
+        final Function<Class<? extends Reference>, List<IndexedValue<I>>> dependencyProvider,
         final DefaultNodeSettingsContext context) {
         final var trigger = m_triggers.stream().filter(t -> t.getId().equals(triggerId)).findAny().orElseThrow();
-        final var resultPerUpdateHandler = new InvokeTrigger(dependencyProvider, context).invokeTrigger(trigger);
+        final var resultPerUpdateHandler = new InvokeTrigger<>(dependencyProvider, context).invokeTrigger(trigger);
         final var partitionedResult = resultPerUpdateHandler.entrySet().stream()
             .collect(Collectors.partitioningBy(e -> e.getKey().getFieldLocation().isPresent()));
 
-        final Map<PathsWithSettingsType, Object> valueUpdates = new HashMap<>();
+        final Map<PathsWithSettingsType, List<IndexedValue<I>>> valueUpdates = new HashMap<>();
         for (var entry : partitionedResult.get(true)) {
             valueUpdates.put(//
                 entry.getKey().getFieldLocation().get(), // NOSONAR isPresent() is checked during partitioning
@@ -106,12 +113,12 @@ public class TriggerInvocationHandler {
             );
         }
 
-        final Map<String, Object> otherUpdates = new HashMap<>();
+        final Map<String, List<IndexedValue<I>>> otherUpdates = new HashMap<>();
         for (var entry : partitionedResult.get(false)) {
             otherUpdates.put(entry.getKey().getStateProviderClass().getName(), entry.getValue());
         }
 
-        return new TriggerResult(valueUpdates, otherUpdates);
+        return new TriggerResult<>(valueUpdates, otherUpdates);
     }
 
 }

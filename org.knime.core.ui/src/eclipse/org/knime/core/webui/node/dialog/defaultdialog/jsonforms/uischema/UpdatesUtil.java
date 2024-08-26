@@ -116,7 +116,7 @@ public final class UpdatesUtil {
         final TriggerAndDependencies triggerWithDependencies,
         final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses,
         final Map<SettingsType, WidgetGroup> settings, final DefaultNodeSettingsContext context) {
-        final var invocationHandler = new TriggerInvocationHandler(settingsClasses);
+        final var invocationHandler = new TriggerInvocationHandler<Integer>(settingsClasses);
         final var dependencyValues = triggerWithDependencies.extractDependencyValues(settings, context);
         final var triggerResult =
             invocationHandler.invokeTrigger(triggerWithDependencies.getTriggerId(), dependencyValues::get, context);
@@ -126,7 +126,7 @@ public final class UpdatesUtil {
         updateResults.forEach(updateResult -> addInitialUpdate(updateResult, initialUpdates));
     }
 
-    private static void addInitialUpdate(final UpdateResult updateResult, final ArrayNode initialUpdates) {
+    private static void addInitialUpdate(final UpdateResult<Integer> updateResult, final ArrayNode initialUpdates) {
         initialUpdates.add(JsonFormsUiSchemaUtil.getMapper().valueToTree(updateResult));
     }
 

@@ -52,6 +52,7 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.ConvertVa
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.ConvertValueUtil.convertValue;
 
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -61,6 +62,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.IndexedValue;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.UpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesGetter;
@@ -161,13 +163,12 @@ public final class DefaultNodeDialogDataServiceImpl implements DefaultNodeDialog
 
     @Override
     public Result<?> update2(final String widgetId, final String triggerClass,
-        final Map<String, Object> rawDependencies) throws InterruptedException, ExecutionException {
-
+        final Map<String, List<IndexedValue<String>>> rawDependenciesUnparsed)
+        throws InterruptedException, ExecutionException {
         ErrorHandlingSingleton.reset();
-
         final var context = createContext();
         return m_requestHandler.handleRequest(widgetId,
-            () -> m_triggerInvocationHandler.trigger(triggerClass, rawDependencies, context));
+            () -> m_triggerInvocationHandler.trigger(triggerClass, rawDependenciesUnparsed, context));
     }
 
     @Override

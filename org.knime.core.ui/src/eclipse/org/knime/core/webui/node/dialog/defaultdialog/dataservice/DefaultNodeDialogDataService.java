@@ -48,16 +48,18 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialog;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.IndexedValue;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.UpdateHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 
 /**
  * This is the interface for the rpc data service of the {@link DefaultNodeDialog}. Its use enables e.g. lazyloaded data
@@ -112,18 +114,23 @@ interface DefaultNodeDialogDataService {
         throws InterruptedException, ExecutionException;
 
     /**
-     * Update method for the new updating mechanism using {@link Reference} and {@link StateProvider}. This will eventually
-     * replace the {@link #update} method.
+     * Update method for the new updating mechanism using {@link Reference} and {@link StateProvider}. This will
+     * eventually replace the {@link #update} method.
      *
      * @param widgetId identifying which pending requests came from the same widget and thus have to be canceled
      * @param triggerClass
-     * @param rawDependencies a map from a {@link Reference} class names to objects which need to be converted to the
-     *            correct type defined by the generic of the {@link Reference} using a mapper
-     * @return A list of instructions on what is to be updated.
+     * @param rawDependencies a map from a {@link Reference} class names to a list of values. This list of values is
+     *            usually a one-element list with an indexed value without indices. Only if the dependency is nested
+     *            within an array layout element while the trigger is not, a list of dependency values indexed by unique
+     *            ids for each element in an array is supplied. Note that these are "raw" dependencies, since the
+     *            objects within the indexed values need to be converted to the correct type defined by the generic of
+     *            the {@link Reference} using a mapper
+     * @return A list of instructions on what is to be updated. In case of indexed dependencies, the updates are also
+     *         indexed by the same indices.
      * @throws InterruptedException
      * @throws ExecutionException
      */
-    Result<?> update2(String widgetId, String triggerClass, Map<String, Object> rawDependencies)
+    Result<?> update2(String widgetId, String triggerClass, Map<String, List<IndexedValue<String>>> rawDependencies)
         throws InterruptedException, ExecutionException;
 
     /**

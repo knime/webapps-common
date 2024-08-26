@@ -44,49 +44,25 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Feb 7, 2024 (Paul Bärnreuther): created
+ *   Aug 29, 2024 (paul): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
+package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 
-import org.knime.core.webui.node.dialog.SettingsType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.ConvertValueUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.UpdateResultsUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.IndexedValue;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerInvocationHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
+import org.knime.core.webui.node.dialog.defaultdialog.dataservice.DefaultNodeDialogDataServiceImpl;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.UpdateResultsUtil.UpdateResult;
 
 /**
- * Used to convert triggers to a list of resulting updates given a map of dependencies.
+ * To reference values (either within an {@link UpdateResult} or values of dependencies within
+ * {@link DefaultNodeDialogDataServiceImpl#update2}), we need to account for locations nested in array layouts. We
+ * describe which value is meant by additional indices which can either be the actual index or index ids.
  *
  * @author Paul Bärnreuther
+ * @param <I> the type of the indices. Either Integer for indices or String for indexIds.
+ * @param indices defining the location of the value relative to the location of the trigger
+ * @param value
  */
-final class DataServiceTriggerInvocationHandler {
-
-    private TriggerInvocationHandler<String> m_triggerInvocationHandler;
-
-    DataServiceTriggerInvocationHandler(final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses) {
-        m_triggerInvocationHandler = new TriggerInvocationHandler<>(settingsClasses);
-    }
-
-    List<UpdateResultsUtil.UpdateResult<String>> trigger(final String triggerId,
-        final Map<String, List<IndexedValue<String>>> rawDependencies, final DefaultNodeSettingsContext context) {
-        final Function<Class<? extends Reference>, List<IndexedValue<String>>> dependencyProvider =
-            valueRef -> rawDependencies.get(valueRef.getName()).stream()
-                .map(raw -> new IndexedValue<>(raw.indices(), parseValue(raw.value(), valueRef, context))).toList();
-
-        final var triggerResult = m_triggerInvocationHandler.invokeTrigger(triggerId, dependencyProvider, context);
-        return UpdateResultsUtil.toUpdateResults(triggerResult);
-    }
-
-    private static Object parseValue(final Object rawDependencyObject, final Class<? extends Reference> valueRef,
-        final DefaultNodeSettingsContext context) {
-        return ConvertValueUtil.convertValueRef(rawDependencyObject, valueRef, context);
-    }
+public record IndexedValue<I>(List<I> indices, Object value) {
 
 }

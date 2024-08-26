@@ -1,7 +1,13 @@
-import { Update, UpdateResult, ValueReference } from "../../types/Update";
+import {
+  IndexIdsValuePairs,
+  Pairs,
+  Update,
+  UpdateResult,
+  ValueReference,
+} from "../../types/Update";
 import { set, get } from "lodash-es";
 import { composePaths, toDataPath } from "@jsonforms/core";
-import { inject } from "vue";
+import { inject, nextTick } from "vue";
 import {
   CreateAlertParams,
   DialogSettings,
@@ -10,63 +16,95 @@ import {
 } from "@knime/ui-extension-service";
 import Result from "@/nodeDialog/api/types/Result";
 import { getIndex } from "./useArrayIds";
-import { IsActiveCallback, TriggerCallback } from "./useTriggers";
+import {
+  IndexedIsActive,
+  IsActiveCallback,
+  TriggerCallback,
+} from "./useTriggers";
+import {
+  isIndexIdsAndValuePairs,
+  toIndicesValuePairs,
+} from "./utils/updateResults";
+import { getDependencyValues } from "./utils/dependencyExtraction";
+import { combineScopesWithIndices } from "./utils/dataPaths";
 
 const resolveToIndices = (ids: string[] | undefined) =>
   (ids ?? []).map((id) => getIndex(id));
 
 export type DialogSettingsObject = DialogSettings & object;
 
-/**
- * @returns an array of paths. If there are multiple, all but the first one lead to an array in
- * which every index is to be adjusted.
- */
-const combineScopesWithIndices = (scopes: string[], indices: number[]) => {
-  return scopes.map(toDataPath).reduce((segments, dataPath, i) => {
-    if (i === 0) {
-      segments[0] = dataPath;
-    } else if (i <= indices.length) {
-      segments[0] = `${segments[0]}.${indices[i - 1]}.${dataPath}`;
-    } else {
-      segments.push(dataPath);
-    }
-    return segments;
-  }, [] as string[]);
-};
-
 const indicesAreDefined = (indices: (number | null)[]): indices is number[] =>
   !indices.includes(null);
 
 const getToBeAdjustedSegments = (
   scopes: string[],
+  /**
+   * Indices starting from the root applied to all targets
+   */
   indices: number[] | undefined,
+  /**
+   * Mapping further indices to the respective values
+   */
+  values: [number[], unknown][],
   newSettings: DialogSettingsObject,
 ) => {
   const pathSegments = combineScopesWithIndices(scopes, indices ?? []);
 
-  type SettingsWithPathGetter = {
+  type SettingsWithPath = {
     settings: object;
     /**
      * @param subPath a sub path within the settings object
      * @returns the total absolute path
      */
     path: string;
+    /**
+     * The values that are to be adjusted at the remaining paths
+     * once the algorithm reaches the last path segment, this is a one-element array with empty numbers
+     */
+    values: [number[], unknown][];
   };
 
   const toBeAdjustedByLastPathSegment = pathSegments
     .slice(0, pathSegments.length - 1)
     .reduce(
       (arrayOfSettings, dataPath) =>
-        arrayOfSettings.flatMap(({ settings, path }) =>
+        arrayOfSettings.flatMap(({ settings, path, values }) => {
           // accessing the settings at the current non-leaf dataPath, i.e. this has to be an array
-          (get(settings, dataPath) as object[]).map(
-            (subSettings, index): SettingsWithPathGetter => ({
-              settings: subSettings,
-              path: composePaths(composePaths(path, dataPath), `${index}`),
-            }),
-          ),
-        ),
-      [{ settings: newSettings, path: "" }] as SettingsWithPathGetter[],
+          const arraySettings = get(settings, dataPath) as object[];
+          const firstKey = values[0][0];
+          if (!firstKey) {
+            throw Error("Should not happen");
+          }
+          // no further specific indices are provided, so we have to adjust all indices
+          if (firstKey.length === 0) {
+            return arraySettings.map(
+              (subSettings, index): SettingsWithPath => ({
+                settings: subSettings,
+                path: composePaths(composePaths(path, dataPath), `${index}`),
+                values,
+              }),
+            );
+          } else {
+            // group by first index of keys
+            const groupedValues = values.reduce((grouped, [key, value]) => {
+              const firstIndex = key[0];
+              if (!grouped.has(firstIndex)) {
+                grouped.set(firstIndex, []);
+              }
+              grouped.get(firstIndex)!.push([key.slice(1), value]);
+              return grouped;
+            }, new Map<number, [number[], unknown][]>());
+            return [...groupedValues.entries()].map(([index, valueMap]) => {
+              const subSettings = arraySettings[index];
+              return {
+                settings: subSettings,
+                path: composePaths(composePaths(path, dataPath), `${index}`),
+                values: valueMap,
+              };
+            });
+          }
+        }),
+      [{ settings: newSettings, path: "", values }] as SettingsWithPath[],
     );
   return {
     toBeAdjustedByLastPathSegment,
@@ -76,6 +114,7 @@ const getToBeAdjustedSegments = (
 
 export default ({
   callStateProviderListener,
+  callStateProviderListenerByIndices,
   registerWatcher,
   registerTrigger,
   updateData,
@@ -86,6 +125,10 @@ export default ({
     location: { id: string; indexIds?: string[] },
     value: unknown,
   ) => void;
+  callStateProviderListenerByIndices: (
+    location: { id: string; indices: number[] },
+    value: unknown,
+  ) => void;
   registerWatcher: (params: {
     dependencies: string[][];
     transformSettings: TriggerCallback;
@@ -93,7 +136,7 @@ export default ({
   /**
    * Used to trigger a new update depending on value update results (i.e. transitive updates)
    */
-  updateData: (path: string, currentSettings: DialogSettingsObject) => void;
+  updateData: (paths: string[]) => void;
   registerTrigger: (
     id: string,
     isActive: IsActiveCallback,
@@ -105,51 +148,76 @@ export default ({
   const baseService = inject<() => UIExtensionService>("getKnimeService")!();
   const jsonDataService = new JsonDataService(baseService);
 
-  const getSingleDataPathOrThrow = (scopes: string[], indices: number[]) => {
-    const combined = combineScopesWithIndices(scopes, indices);
-    if (combined.length > 1) {
-      const message =
-        "Having dependencies within array layout elements for an update that is not triggered within " +
-        "the array layout is not yet supported";
-      sendAlert({
-        message,
-      });
-      // @ts-expect-errors
-      if (!window.isTest) {
-        throw Error(message);
-      }
-    }
-    return combined[0];
-  };
-
   const resolveUpdateResult =
-    ({ scopes, value, id }: UpdateResult, indexIds?: string[]) =>
+    (
+      { scopes, values, id }: UpdateResult,
+      onValueUpdate: (path: string) => void,
+      indexIds: string[],
+    ) =>
     (newSettings: DialogSettingsObject) => {
+      const indices = resolveToIndices(indexIds);
+
+      if (!indicesAreDefined(indices)) {
+        return;
+      }
+
       if (scopes) {
-        const currentIndices = resolveToIndices(indexIds);
-        if (indicesAreDefined(currentIndices)) {
-          const { toBeAdjustedByLastPathSegment, lastPathSegment } =
-            getToBeAdjustedSegments(scopes, currentIndices, newSettings);
-          toBeAdjustedByLastPathSegment.forEach(({ settings, path }) => {
+        const indicesValuePairs = isIndexIdsAndValuePairs(values)
+          ? toIndicesValuePairs(values, getIndex)
+          : values;
+        const { toBeAdjustedByLastPathSegment, lastPathSegment } =
+          getToBeAdjustedSegments(
+            scopes,
+            indices,
+            indicesValuePairs.map(({ indices, value }) => [indices, value]),
+            newSettings,
+          );
+        toBeAdjustedByLastPathSegment.forEach(
+          ({ settings, path, values: [[, value]] }) => {
             set(settings, lastPathSegment, value);
-            updateData(composePaths(path, lastPathSegment), newSettings);
-          });
-          publishSettings();
-        }
+            onValueUpdate(composePaths(path, lastPathSegment));
+          },
+        );
+        publishSettings();
       } else if (id) {
-        callStateProviderListener({ id, indexIds }, value);
+        if (isIndexIdsAndValuePairs(values)) {
+          values.forEach(({ indices: valueIndexIds, value }) =>
+            callStateProviderListener(
+              { id, indexIds: [...indexIds, ...valueIndexIds] },
+              value,
+            ),
+          );
+        } else {
+          values.forEach(({ indices: valueIndices, value }) =>
+            callStateProviderListenerByIndices(
+              { id, indices: [...indices, ...valueIndices] },
+              value,
+            ),
+          );
+        }
       }
     };
 
   const resolveUpdateResults = (
     initialUpdates: UpdateResult[],
     currentSettings: DialogSettingsObject,
-  ) =>
+    indexIds: string[] = [],
+  ) => {
+    const updatedPaths: string[] = [];
     initialUpdates
-      .map((updateResult) => resolveUpdateResult(updateResult))
+      .map((updateResult) =>
+        resolveUpdateResult(
+          updateResult,
+          (path) => updatedPaths.push(path),
+          indexIds,
+        ),
+      )
       .forEach((transform) => {
         transform(currentSettings);
       });
+    // we have to wait one tick to ensure that array element ids are set correctly
+    nextTick(() => updateData(updatedPaths));
+  };
 
   const setValueTrigger = (scope: string[], callback: TriggerCallback) => {
     registerWatcher({
@@ -179,21 +247,20 @@ export default ({
     dependencies: ValueReference[],
     newSettings: object,
     indices: number[],
-  ) => {
-    return Object.fromEntries(
+  ) =>
+    Object.fromEntries<Pairs>(
       dependencies.map((dep) => [
         dep.id,
-        get(newSettings, getSingleDataPathOrThrow(dep.scopes, indices)),
+        getDependencyValues(newSettings, dep.scopes.map(toDataPath), indices),
       ]),
     );
-  };
 
   const callDataServiceUpdate2 = ({
     triggerId,
     currentDependencies,
   }: {
     triggerId: string;
-    currentDependencies: Record<string, any>;
+    currentDependencies: Record<string, Pairs>;
   }): Promise<Result<UpdateResult[]>> =>
     jsonDataService.data({
       method: "settings.update2",
@@ -229,6 +296,51 @@ export default ({
       });
     };
 
+  const getOrCreateIndicesEntry = (
+    indexIds: string[],
+    acc: IndexedIsActive[],
+  ) => {
+    let existing = acc.find(
+      ({ indices }) => JSON.stringify(indices) === JSON.stringify(indexIds),
+    );
+    if (!existing) {
+      existing = { indices: indexIds, isActive: false };
+      acc.push(existing);
+    }
+    return existing;
+  };
+
+  const isUpdateAtIndicesNecessary = ({
+    scopes,
+    currentIndices,
+    indexIds,
+    value,
+    settings,
+  }: {
+    scopes: string[];
+    currentIndices: number[];
+    indexIds: string[];
+    value: unknown;
+    settings: object;
+  }) => {
+    const indices = indexIds.map(getIndex);
+    if (!indicesAreDefined(indices)) {
+      return false;
+    }
+    const { toBeAdjustedByLastPathSegment, lastPathSegment } =
+      getToBeAdjustedSegments(
+        scopes,
+        currentIndices,
+        [[indices, value]],
+        settings,
+      );
+    return Boolean(
+      toBeAdjustedByLastPathSegment.find(({ settings: s, values: [[, v]] }) => {
+        return get(s, lastPathSegment) !== v;
+      }),
+    );
+  };
+
   const isUpdateNecessary = ({
     updateResult,
     settings,
@@ -238,36 +350,39 @@ export default ({
     settings: DialogSettingsObject;
     indexIds: string[];
   }) =>
-    Boolean(
-      updateResult.find(({ id, scopes, value }) => {
+    updateResult.reduce((acc: IndexedIsActive[], { id, scopes, values }) => {
+      const currentIndices = resolveToIndices(indexIds);
+      if (!indicesAreDefined(currentIndices)) {
+        return acc;
+      }
+      (values as IndexIdsValuePairs).forEach(({ indices: indexIds, value }) => {
+        const existing = getOrCreateIndicesEntry(indexIds, acc);
         if (id) {
           // for simplicity, if an ui state is provided, the update is seen as necessary
-          return true;
-        }
-        if (scopes) {
-          const currentIndices = resolveToIndices(indexIds);
-          if (indicesAreDefined(currentIndices)) {
-            const { toBeAdjustedByLastPathSegment, lastPathSegment } =
-              getToBeAdjustedSegments(scopes, currentIndices, settings);
-            if (
-              toBeAdjustedByLastPathSegment.find(
-                ({ settings: s }) => get(s, lastPathSegment) !== value,
-              )
-            ) {
-              return true;
-            }
+          existing.isActive = true;
+        } else if (scopes) {
+          if (
+            isUpdateAtIndicesNecessary({
+              scopes,
+              currentIndices,
+              indexIds,
+              value,
+              settings,
+            })
+          ) {
+            existing.isActive = true;
           }
         }
-        return false;
-      }),
-    );
+      });
+      return acc;
+    }, [] satisfies IndexedIsActive[]);
 
   const getIsUpdateNecessary =
     ({ dependencies, trigger }: Update) =>
     (indexIds: string[]) =>
     async (
       dependencySettings: DialogSettingsObject,
-    ): Promise<Result<boolean>> => {
+    ): Promise<Result<IndexedIsActive[]>> => {
       const response = await getUpdateResults({ dependencies, trigger })(
         indexIds,
       )(dependencySettings);
@@ -298,9 +413,7 @@ export default ({
           sendAlerts(response.message);
         }
         if (response.state === "SUCCESS") {
-          (response.result ?? []).forEach((updateResult: UpdateResult) => {
-            resolveUpdateResult(updateResult, indexIds)(newSettings);
-          });
+          resolveUpdateResults(response.result ?? [], newSettings, indexIds);
         }
       };
     };

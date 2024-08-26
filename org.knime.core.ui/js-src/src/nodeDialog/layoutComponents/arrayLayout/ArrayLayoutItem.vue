@@ -30,7 +30,7 @@ if (props.hasBeenAdded) {
   provideForAddedArrayLayoutElements();
 }
 
-addIndexToStateProviders(props.id);
+addIndexToStateProviders(props.id, props.index);
 addIndexToTriggers(props.id);
 const childPaths = createForArrayItem(props.idsRecord, props.id);
 provide("createArrayAtPath", (path: string) =>

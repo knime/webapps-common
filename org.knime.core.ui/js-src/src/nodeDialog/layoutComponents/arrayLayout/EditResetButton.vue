@@ -1,3 +1,8 @@
+<script lang="ts">
+// (see the respective @InternalButtonReferenceId annotation in the backend)
+export const ELEMENT_RESET_BUTTON_ID = "ElementResetButton";
+</script>
+
 <script setup lang="ts">
 import { LoadingIcon, FunctionButton } from "@knime/components";
 import EditIcon from "@knime/styles/img/icons/pencil.svg";
@@ -5,14 +10,21 @@ import ResetIcon from "@knime/styles/img/icons/reset-all.svg";
 import { rendererProps } from "@jsonforms/vue";
 import { useJsonFormsControlWithUpdate } from "@/nodeDialog/composables/components/useJsonFormsControlWithUpdate";
 import inject from "@/nodeDialog/utils/inject";
-import { onMounted, ref } from "vue";
+import { watch } from "vue";
 
-const props = defineProps(rendererProps());
+const props = defineProps({
+  ...rendererProps(),
+  initialIsEdited: {
+    type: Boolean,
+    default: false,
+  },
+  isLoading: {
+    type: Boolean,
+    default: false,
+  },
+});
 
-const isTriggerActive = inject("isTriggerActive");
 const trigger = inject("trigger");
-
-const ELEMENT_RESET_BUTTON_ID = "ElementResetButton"; // (see the respective @InternalButtonReferenceId annotation in the backend)
 
 const { control, handleChange } = useJsonFormsControlWithUpdate(props);
 const setEditing = () => handleChange(control.value.path, true);
@@ -21,23 +33,14 @@ const reset = async () => {
   trigger({ id: ELEMENT_RESET_BUTTON_ID });
 };
 
-const isLoading = ref(false);
-const MILLISECONDS_UNTIL_LOADING = 200;
-
-onMounted(async () => {
-  let resultAvailable = false;
-  setTimeout(() => {
-    if (!resultAvailable) {
-      isLoading.value = true;
+watch(
+  () => props.initialIsEdited,
+  (initialIsEdited) => {
+    if (initialIsEdited && !control.value.data) {
+      setEditing();
     }
-  }, MILLISECONDS_UNTIL_LOADING);
-  const resetPossible = await isTriggerActive({ id: ELEMENT_RESET_BUTTON_ID });
-  if (resetPossible.state !== "SUCCESS" || resetPossible.result) {
-    setEditing();
-  }
-  resultAvailable = true;
-  isLoading.value = false;
-});
+  },
+);
 </script>
 
 <template>

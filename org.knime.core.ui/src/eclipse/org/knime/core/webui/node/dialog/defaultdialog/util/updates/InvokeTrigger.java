@@ -49,7 +49,9 @@
 package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -57,23 +59,25 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.Vertex.VertexVisitor;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonReference;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider.StateProviderInitializer;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 
 /**
  * This class is used to convert a trigger to a map indexed by its triggered updates.
  *
+ * @param <I> the type by which dependencies and results are indexed.
  * @author Paul Bärnreuther
  */
-final class InvokeTrigger {
+final class InvokeTrigger<I> {
 
-    private Map<Vertex, Object> m_cache = new HashMap<>();
+    private Map<Vertex, ValuesWithLevelOfNesting<I>> m_cache = new HashMap<>();
 
-    private final Function<Class<? extends Reference>, Object> m_dependencyProvider;
+    private final Function<Class<? extends Reference>, List<IndexedValue<I>>> m_dependencyProvider;
 
     private final DefaultNodeSettingsContext m_context;
 
@@ -83,7 +87,7 @@ final class InvokeTrigger {
      *            providers will depend on.
      * @param context the context provided to triggered state providers
      */
-    InvokeTrigger(final Function<Class<? extends Reference>, Object> dependencyProvider,
+    InvokeTrigger(final Function<Class<? extends Reference>, List<IndexedValue<I>>> dependencyProvider,
         final DefaultNodeSettingsContext context) {
         m_dependencyProvider = dependencyProvider;
         m_context = context;
@@ -95,13 +99,12 @@ final class InvokeTrigger {
      * @param trigger
      * @return a mapping from updated vertex to its associated state
      */
-    public Map<UpdateVertex, Object> invokeTrigger(final TriggerVertex trigger) {
-        final var updateVertices = trigger.visit(new GetTriggeredUpdatesVisitor());
-        final Map<UpdateVertex, Object> updateVertexToValue = new HashMap<>();
-        for (var updateVertex : updateVertices) {
-            updateVertexToValue.put(updateVertex, updateVertex.visit(new ComputeVisitor()));
-        }
-        return updateVertexToValue;
+    public Map<UpdateVertex, List<IndexedValue<I>>> invokeTrigger(final TriggerVertex trigger) {
+        return trigger.visit(new GetTriggeredUpdatesVisitor()).stream().collect(//
+            Collectors.toMap(Function.identity(),
+                updateVertex -> updateVertex.visit(new ComputeVisitor()).indexedValues)//
+        );
+
     }
 
     private static final class GetTriggeredUpdatesVisitor implements VertexVisitor<Collection<UpdateVertex>> {
@@ -149,7 +152,20 @@ final class InvokeTrigger {
             .filter(Objects::nonNull).findAny().orElseThrow();
     }
 
-    private final class ComputeVisitor implements VertexVisitor<Object> {
+    private static record ValuesWithLevelOfNesting<I>(List<IndexedValue<I>> indexedValues, int levelsOfNesting) {
+
+        static <I> ValuesWithLevelOfNesting<I> from(final List<IndexedValue<I>> values) {
+            final var levelsOfNesting =
+                values.stream().map(IndexedValue::indices).findAny().map(Collection::size).orElse(0);
+            return new ValuesWithLevelOfNesting<>(values, levelsOfNesting);
+        }
+
+        static <I> ValuesWithLevelOfNesting<I> empty() {
+            return new ValuesWithLevelOfNesting<>(List.of(new IndexedValue<I>(List.of(), null)), 0);
+        }
+    }
+
+    private final class ComputeVisitor implements VertexVisitor<ValuesWithLevelOfNesting<I>> {
 
         /**
          * The initializer handed into a state provider for invocation
@@ -160,11 +176,16 @@ final class InvokeTrigger {
 
             private final StateVertex m_stateVertex;
 
+            private final Function<Vertex, Object> m_getParentValue;
+
             /**
              * @param stateVertex the vertex whose state provider is to be initialized
+             * @param getParentValue a function to construct the suppliers from
              */
-            private StateProviderInvocationInitializer(final StateVertex stateVertex) {
+            private StateProviderInvocationInitializer(final StateVertex stateVertex,
+                final Function<Vertex, Object> getParentValue) {
                 m_stateVertex = stateVertex;
+                m_getParentValue = getParentValue;
             }
 
             @Override
@@ -207,35 +228,73 @@ final class InvokeTrigger {
 
             @SuppressWarnings("unchecked")
             private <T> Supplier<T> vertexToSupplier(final Vertex vertex) {
-                return () -> (T)vertex.visit(new ComputeVisitor());
+                return () -> (T)m_getParentValue.apply(vertex);
             }
         }
 
         @Override
-        public Object accept(final StateVertex stateVertex) {
-            if (!m_cache.containsKey(stateVertex)) {
-                m_cache.put(stateVertex, this.computeState(stateVertex));
-            }
-            return m_cache.get(stateVertex);
-
+        public ValuesWithLevelOfNesting<I> accept(final StateVertex stateVertex) {
+            return cached(stateVertex, () -> computeStateVertexState(stateVertex));
         }
 
-        private Object computeState(final StateVertex stateVertex) {
-            final var initializer = new StateProviderInvocationInitializer(stateVertex);
+        private ValuesWithLevelOfNesting<I> computeStateVertexState(final StateVertex stateVertex) {
+            final var parentValues = stateVertex.getParents().stream().map(v -> new Pair<>(v, v.visit(this)))
+                .filter(pair -> pair.getSecond() != null).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
+            final var maximalParent =
+                parentValues.values().stream().max(Comparator.comparing(ValuesWithLevelOfNesting::levelsOfNesting))
+                    .orElse(ValuesWithLevelOfNesting.empty());
+
+            return new ValuesWithLevelOfNesting<>(maximalParent.indexedValues.stream().map(IndexedValue::indices)
+                .map(computeIndexedValue(stateVertex, parentValues)).toList(), maximalParent.levelsOfNesting);
+        }
+
+        private Function<List<I>, IndexedValue<I>> computeIndexedValue(final StateVertex stateVertex,
+            final Map<Vertex, ValuesWithLevelOfNesting<I>> parentValues) {
+            return indices -> {
+                final var value = computeIndexedValue(indices, stateVertex, parentValues);
+                return new IndexedValue<>(indices, value);
+            };
+        }
+
+        private Object computeIndexedValue(final List<I> indices, final StateVertex stateVertex,
+            final Map<Vertex, ValuesWithLevelOfNesting<I>> parentValues) {
+            final Function<Vertex, Object> getParentValue =
+                vertex -> extractParentObject(parentValues.get(vertex), indices);
+            final var initializer = new StateProviderInvocationInitializer(stateVertex, getParentValue);
             final var stateProvider = stateVertex.createStateProvider();
             stateProvider.init(initializer);
             return stateProvider.computeState(m_context);
         }
 
-        @Override
-        public Object accept(final DependencyVertex dependencyVertex) {
-            return m_cache.computeIfAbsent(dependencyVertex,
-                v -> m_dependencyProvider.apply(dependencyVertex.getValueRef()));
+        /**
+         * Assumption: For every entry of the maximalParent, any parent contains an entry with the same indices but
+         * reduced to the respective level of nesting.
+         */
+        private static <I> Object extractParentObject(final ValuesWithLevelOfNesting<I> valuesWithLevelOfNesting,
+            final List<I> indices) {
+            final var reducedIndices = indices.subList(0, valuesWithLevelOfNesting.levelsOfNesting);
+            return valuesWithLevelOfNesting.indexedValues.stream()
+                .filter(indexedValue -> indexedValue.indices().equals(reducedIndices)).map(IndexedValue::value).toList()
+                .get(0);
         }
 
         @Override
-        public Object accept(final UpdateVertex updateVertex) {
+        public ValuesWithLevelOfNesting<I> accept(final DependencyVertex dependencyVertex) {
+            return cached(dependencyVertex,
+                () -> ValuesWithLevelOfNesting.from(m_dependencyProvider.apply(dependencyVertex.getValueRef())));
+        }
+
+        @Override
+        public ValuesWithLevelOfNesting<I> accept(final UpdateVertex updateVertex) {
             return getParentStateVertex(updateVertex, updateVertex.getStateProviderClass()).visit(this);
+        }
+
+        private ValuesWithLevelOfNesting<I> cached(final Vertex key,
+            final Supplier<ValuesWithLevelOfNesting<I>> getValue) {
+            if (!m_cache.containsKey(key)) {
+                m_cache.put(key, getValue.get());
+            }
+            return m_cache.get(key);
         }
 
     }

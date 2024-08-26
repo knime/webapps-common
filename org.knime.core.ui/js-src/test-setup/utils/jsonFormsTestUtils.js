@@ -49,8 +49,7 @@ export const mountJsonFormsComponent = (
   const sendAlert = sendAlertMock ?? vi.fn();
   const trigger = triggerMock ?? vi.fn();
   const isTriggerActive =
-    isTriggerActiveMock ??
-    vi.fn().mockResolvedValue({ state: "SUCCESS", result: true });
+    isTriggerActiveMock ?? vi.fn().mockResolvedValue({ state: "FAIL" });
   const asyncChoicesProvider = asyncChoicesProviderMock ?? vi.fn();
   const addStateProviderListener = addStateProviderListenerMock ?? vi.fn();
   const createArrayAtPath = createArrayAtPathMock ?? vi.fn(() => ({}));

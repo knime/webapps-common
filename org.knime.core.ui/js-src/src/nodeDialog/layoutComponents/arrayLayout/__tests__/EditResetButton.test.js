@@ -66,67 +66,19 @@ describe("EditResetButton.vue", () => {
   });
 
   describe("initially active reset button", () => {
-    let resolveIsActivePromise, handleChange;
-
-    beforeEach(() => {
-      vi.useFakeTimers();
-      const component = mountJsonFormsComponent(EditResetButton, {
-        props: defaultProps,
-        provide: {
-          isTriggerActiveMock: vi.fn().mockReturnValue(
-            new Promise((resolve) => {
-              resolveIsActivePromise = resolve;
-            }),
-          ),
-        },
-      });
-
-      wrapper = component.wrapper;
-      handleChange = component.handleChange;
-    });
-
-    afterEach(() => {
-      vi.useRealTimers();
-    });
-
-    it("shows loading icon after timeout while querying whether the reset is active", async () => {
-      vi.runAllTimers();
-      await wrapper.vm.$nextTick();
+    it("shows loading icon while loading", async () => {
+      expect(wrapper.findComponent(LoadingIcon).exists()).toBe(false);
+      await wrapper.setProps({ isLoading: true });
       expect(wrapper.findComponent(LoadingIcon).exists()).toBe(true);
-      resolveIsActivePromise({ state: "SUCCESS", result: false });
-      await flushPromises();
-      expect(wrapper.findComponent(LoadingIcon).exists()).toBe(false);
     });
 
-    it("does not show the loading icon within a timeout while querying whether the reset is active", () => {
-      expect(wrapper.findComponent(LoadingIcon).exists()).toBe(false);
-      resolveIsActivePromise({ state: "SUCCESS", result: false });
-      vi.runAllTimers();
-      expect(wrapper.findComponent(LoadingIcon).exists()).toBe(false);
-    });
-
-    it("shows reset button initially if its trigger is active", async () => {
-      resolveIsActivePromise({ state: "SUCCESS", result: true });
+    it("shows reset button initially if desired", async () => {
+      await wrapper.setProps({ initialIsEdited: true });
       await flushPromises();
-      expect(handleChange).toHaveBeenCalledWith(
+      expect(component.handleChange).toHaveBeenCalledWith(
         defaultProps.control.path,
         true,
       );
-    });
-
-    it("shows reset button initially if querying whether it is active was not successful", async () => {
-      resolveIsActivePromise({ state: "FAIL" });
-      await flushPromises();
-      expect(handleChange).toHaveBeenCalledWith(
-        defaultProps.control.path,
-        true,
-      );
-    });
-
-    it("shows edit button initially if its trigger is inactive", async () => {
-      resolveIsActivePromise({ state: "SUCCESS", result: false });
-      await flushPromises();
-      expect(handleChange).not.toHaveBeenCalled();
     });
   });
 });

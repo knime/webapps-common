@@ -79,6 +79,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.UpdateResultsUtil.UpdateResult;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.IndexedValue;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ColumnChoicesProvider;
@@ -183,12 +184,14 @@ class DefaultNodeDialogDataServiceImplTest {
             }
 
             final String testDepenenciesFooValue = "custom value";
+            final var testDependencyFoo = List.of(new IndexedValue<String>(List.of(), testDepenenciesFooValue));
             final var dataService = getDataService(UpdateSettings.class);
             final var resultWrapper = dataService.update2("widgetId", MyValueRef.class.getName(),
-                Map.of(MyValueRef.class.getName(), testDepenenciesFooValue));
-            final var result = (List<UpdateResult>)(resultWrapper.result());
+                Map.of(MyValueRef.class.getName(), testDependencyFoo));
+            final var result = (List<UpdateResult<String>>)(resultWrapper.result());
             assertThat(result).hasSize(1);
-            assertThat(((TextNode)result.get(0).value()).textValue()).isEqualTo(testDepenenciesFooValue);
+            assertThat(((TextNode)result.get(0).values().get(0).value()).textValue())
+                .isEqualTo(testDepenenciesFooValue);
             assertThat(result.get(0).scopes()).isEqualTo(List.of("#/properties/model/properties/updatedWidget"));
         }
 
@@ -224,12 +227,14 @@ class DefaultNodeDialogDataServiceImplTest {
             }
 
             final String testDepenencyValue = "custom value";
+            final var testDependency = List.of(new IndexedValue<String>(List.of(), testDepenencyValue));
+
             final var dataService = getDataService(UpdateSettings.class);
             final var resultWrapper = dataService.update2("widgetId", MyValueRef.class.getName(),
-                Map.of(MyValueRef.class.getName(), testDepenencyValue));
-            final var result = (List<UpdateResult>)(resultWrapper.result());
+                Map.of(MyValueRef.class.getName(), testDependency));
+            final var result = (List<UpdateResult<String>>)(resultWrapper.result());
             assertThat(result).hasSize(1);
-            assertThat(result.get(0).value()).isEqualTo(testDepenencyValue);
+            assertThat(result.get(0).values().get(0).value()).isEqualTo(testDepenencyValue);
             assertThat(result.get(0).scopes()).isNull();
             assertThat(result.get(0).id()).isEqualTo(UpdateSettings.MyFileExtensionProvider.class.getName());
         }
@@ -322,20 +327,24 @@ class DefaultNodeDialogDataServiceImplTest {
 
             }
 
-            final String testDepenenciesFooValue = "custom value 1";
-
+            final String testDependenciesFooValue = "custom value 1";
+            final var testDependenciesFoo = List.of(new IndexedValue<String>(List.of(), testDependenciesFooValue));
             final String testDepenenciesBarValue = "custom value 2";
+            final var testDepenenciesBar = List.of(new IndexedValue<String>(List.of(), testDepenenciesBarValue));
+
             final var dataService = getDataService(UpdateSettings.class);
             final var resultWrapper =
                 dataService.update2("widgetId", MyFirstValueRef.class.getName(), Map.of(MyFirstValueRef.class.getName(),
-                    testDepenenciesFooValue, MySecondValueRef.class.getName(), testDepenenciesBarValue));
-            final var result = (List<UpdateResult>)(resultWrapper.result());
+                    testDependenciesFoo, MySecondValueRef.class.getName(), testDepenenciesBar));
+            final var result = (List<UpdateResult<String>>)(resultWrapper.result());
             assertThat(result).hasSize(2);
             final var first = result.get(0);
-            assertThat(((TextNode)first.value()).textValue()).isEqualTo(testDepenenciesFooValue + "_first");
+            assertThat(((TextNode)first.values().get(0).value()).textValue())
+                .isEqualTo(testDependenciesFooValue + "_first");
             assertThat(first.scopes()).isEqualTo(List.of("#/properties/model/properties/firstUpdatedWidget"));
             final var second = result.get(1);
-            assertThat(((TextNode)second.value()).textValue()).isEqualTo(testDepenenciesBarValue + "_second");
+            assertThat(((TextNode)second.values().get(0).value()).textValue())
+                .isEqualTo(testDepenenciesBarValue + "_second");
             assertThat(second.scopes()).isEqualTo(List.of("#/properties/model/properties/secondUpdatedWidget"));
         }
     }

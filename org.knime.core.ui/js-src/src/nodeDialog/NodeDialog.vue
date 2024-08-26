@@ -14,7 +14,7 @@ import {
   hasAdvancedOptions,
 } from "../nodeDialog/utils";
 import { cloneDeep } from "lodash-es";
-import { inject, markRaw, ref } from "vue";
+import { inject, markRaw, nextTick, ref } from "vue";
 import type ProvidedMethods from "./types/provided";
 import type { ProvidedForFlowVariables } from "./types/provided";
 import type SettingsData from "./types/SettingsData";
@@ -100,11 +100,15 @@ export default {
 
     const sendAlert = (params: CreateAlertParams) =>
       alertingService.sendAlert(params, true);
-    const { addStateProviderListener, callStateProviderListener } =
-      useStateProviders();
+    const {
+      addStateProviderListener,
+      callStateProviderListener,
+      callStateProviderListenerByIndices,
+    } = useStateProviders();
     const {
       registerWatcher: registerWatcherInternal,
       updateData: updateDataInternal,
+      updateDataMultiplePaths: updateDataMultiplePathsInternal,
       registeredWatchers,
     } = useGlobalWatchers();
 
@@ -131,6 +135,8 @@ export default {
     };
     const updateData = (path: string) =>
       updateDataInternal(path, getCurrentData());
+    const updateDataMultiplePaths = (paths: string[]) =>
+      updateDataMultiplePathsInternal(paths, getCurrentData());
 
     // TRIGGERS
     const { registerTrigger, getTriggerCallback, getTriggerIsActiveCallback } =
@@ -152,18 +158,22 @@ export default {
     // UPDATES
     const { registerUpdates, resolveUpdateResults } = useUpdates({
       callStateProviderListener,
+      callStateProviderListenerByIndices,
       registerTrigger,
       registerWatcher: registerWatcherInternal,
-      updateData,
+      updateData: updateDataMultiplePaths,
       sendAlert,
       publishSettings,
     });
     const resolveInitialUpdates = (initialUpdates: UpdateResult[]) =>
       resolveUpdateResults(initialUpdates, getCurrentData());
-    const registerGlobalUpdates = async (globalUpdates: Update[]) => {
+    const registerGlobalUpdates = (globalUpdates: Update[]) => {
       const initialTransformation = registerUpdates(globalUpdates);
       if (initialTransformation) {
-        await runWithDependencies(initialTransformation);
+        // we need to wait for the next tick to ensure that array items are already rendered and have an _id
+        nextTick(() => {
+          runWithDependencies(initialTransformation);
+        });
       }
     };
 
