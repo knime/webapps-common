@@ -1,5 +1,18 @@
 # @knime/components
 
+## 1.1.0
+
+### Minor Changes
+
+- 7b8c18f: When the dropdown is used with slotted content the slotted content will also be used for the selected value.
+
+### Patch Changes
+
+- 0d185ea: address issue in subdependency
+- Updated dependencies [0d185ea]
+  - @knime/styles@1.0.5
+  - @knime/utils@1.0.10
+
 ## 1.0.16
 
 ### Patch Changes

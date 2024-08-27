@@ -1,5 +1,13 @@
 # @knime/utils
 
+## 1.0.10
+
+### Patch Changes
+
+- 0d185ea: address issue in subdependency
+- Updated dependencies [0d185ea]
+  - @knime/styles@1.0.5
+
 ## 1.0.9
 
 ### Patch Changes

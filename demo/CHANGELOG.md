@@ -1,5 +1,17 @@
 # demo
 
+## 1.0.21
+
+### Patch Changes
+
+- 0d185ea: address issue in subdependency
+- Updated dependencies [7b8c18f]
+- Updated dependencies [0d185ea]
+  - @knime/components@1.1.0
+  - @knime/styles@1.0.5
+  - @knime/utils@1.0.10
+  - @knime/rich-text-editor@1.1.1
+
 ## 1.0.20
 
 ### Patch Changes
