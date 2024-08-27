@@ -1,5 +1,12 @@
 # demo
 
+## 1.0.23
+
+### Patch Changes
+
+- Updated dependencies [2fd734b]
+  - @knime/rich-text-editor@1.1.2
+
 ## 1.0.22
 
 ### Patch Changes

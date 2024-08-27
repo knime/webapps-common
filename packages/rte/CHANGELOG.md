@@ -1,5 +1,11 @@
 # @knime/rich-text-editor
 
+## 1.1.2
+
+### Patch Changes
+
+- 2fd734b: Added shortcut handler for link tool in RTE, added rel attributes to links, export default link modal
+
 ## 1.1.1
 
 ### Patch Changes
