@@ -1,5 +1,11 @@
 # demo
 
+## 1.0.22
+
+### Patch Changes
+
+- adjust demo for changes to dropdown
+
 ## 1.0.21
 
 ### Patch Changes
