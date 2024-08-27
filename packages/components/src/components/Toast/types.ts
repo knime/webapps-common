@@ -1,4 +1,9 @@
-import type { ComputedRef, FunctionalComponent, SVGAttributes } from "vue";
+import type {
+  ComputedRef,
+  FunctionalComponent,
+  SVGAttributes,
+  VNode,
+} from "vue";
 
 type BaseToastButton = {
   /**
@@ -52,6 +57,7 @@ export interface Toast {
   headline?: string;
   message?: string;
   buttons?: ToastButton[];
+  component?: VNode | null;
   /**
    * If set to true, the toast will have an animated progress bar indicating time before
    * being automatically dismissed.
@@ -62,6 +68,7 @@ export interface Toast {
   key?: string;
   meta?: any;
   stackId?: string;
+  width?: number;
 }
 
 export interface ToastService {

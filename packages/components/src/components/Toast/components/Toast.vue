@@ -24,10 +24,12 @@ const props = withDefaults(defineProps<Toast>(), {
   type: "info",
   headline: "",
   message: "",
+  component: null,
   autoRemove: true,
   active: true,
   buttons: () => [],
   stackId: "default",
+  width: 350,
 });
 
 const availableHeadline = computed(() => {
@@ -144,7 +146,11 @@ watch(toRef(props, "active"), (active) => {
 </script>
 
 <template>
-  <div ref="toastRef" :class="['toast', type]">
+  <div
+    ref="toastRef"
+    :class="['toast', type]"
+    :style="{ '--toast-width': `${width}px` }"
+  >
     <div
       v-show="active"
       class="container"
@@ -155,12 +161,15 @@ watch(toRef(props, "active"), (active) => {
       </div>
       <div class="content">
         <div class="headline">{{ availableHeadline }}</div>
-        <div class="message">
+        <div v-if="message" class="message">
           <template v-if="isTruncated">
             {{ truncatedMessage }}
             <button class="show-more" @click="showMore">show more</button>
           </template>
           <template v-else>{{ message }}</template>
+        </div>
+        <div v-else-if="props.component" class="message">
+          <component :is="props.component" />
         </div>
 
         <div v-if="buttons.length" class="buttons">
@@ -197,7 +206,7 @@ watch(toRef(props, "active"), (active) => {
   overflow: hidden;
   background-color: var(--knime-white);
   color: var(--knime-masala);
-  width: 350px;
+  width: var(--toast-width, 350px);
   min-height: 75px;
   transition: all 0.3s;
   display: flex;

@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import CodeExample from "./demo/CodeExample.vue";
-import { Button } from "@knime/components";
+import { ApiErrorTemplate, Button } from "@knime/components";
 import Interactive from "@knime/styles/img/icons/interactive.svg";
 // @ts-ignore
 import { useToasts, type Toast } from "@knime/components";
+import { h } from "vue";
 
 // import toastServiceCode from "@knime/components/toastService?raw";
 // import typesCode from "@knime/components/types?raw";
@@ -325,6 +326,26 @@ const callbackToast: Toast = {
     },
   ],
 };
+
+const apiError = h(ApiErrorTemplate, {
+  title:
+    "Could not load the workflow from the deployment. Check if the workflow version for this deployment is still available.",
+  details: [
+    'Could not load workflow "/Users/some team/some space/workflowname" for deployment "cdf0fc54a-fasd123123-asd1234123-adfa123"',
+    'Something else happend with workflow "/Users/some team/some space/workflowname" for deployment "cdf0fc54a-fasd123123-asd1234123-adfa123"',
+  ],
+  status: 123,
+  date: new Date(),
+  requestId: "134123212413412321241341",
+  errorId: "abcdefg",
+});
+
+const apiErrorToast: Toast = {
+  type: "error",
+  headline: "Deployment could not be created",
+  component: apiError,
+  width: 400,
+};
 </script>
 
 <template>
@@ -436,6 +457,9 @@ const callbackToast: Toast = {
               >
               <Button with-border compact @click="show(callbackToast)"
                 >Toast with a callback</Button
+              >
+              <Button with-border compact @click="show(apiErrorToast)"
+                >Toast with an api error</Button
               >
             </div>
           </div>

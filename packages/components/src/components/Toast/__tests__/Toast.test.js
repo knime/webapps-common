@@ -2,6 +2,7 @@ import { mount, shallowMount } from "@vue/test-utils";
 import { describe, expect, it, beforeEach, afterEach, vi } from "vitest";
 
 import Toast from "../components/Toast.vue";
+import { defineComponent, h } from "vue";
 
 describe("Toast.vue", () => {
   const MAX_LENGTH = 160;
@@ -122,6 +123,35 @@ describe("Toast.vue", () => {
       const wrapper = shallowMount(Toast);
       wrapper.find(".close-button").trigger("click");
       expect(wrapper.emitted().remove).toBeTruthy();
+    });
+  });
+
+  describe("custom component", () => {
+    const dummyComponent = defineComponent({
+      template: "<div class='dummy-component'>My custom toast</div>",
+    });
+
+    it("renders custom component if provided", () => {
+      const wrapper = mount(Toast, {
+        props: {
+          type: "info",
+          component: h(dummyComponent),
+        },
+      });
+
+      expect(wrapper.find(".dummy-component").exists()).toBeTruthy();
+    });
+
+    it("does not render custom component if message is provided", () => {
+      const wrapper = mount(Toast, {
+        props: {
+          type: "info",
+          message: "I want to break free",
+          component: h(dummyComponent),
+        },
+      });
+
+      expect(wrapper.find(".dummy-component").exists()).toBeFalsy();
     });
   });
 });
