@@ -553,17 +553,22 @@ export default {
             :possible-values="slottedExamplePossibleValue"
           >
             <template
-              #option="{ slotData: { icon, title, subtitle, year } } = {
+              #option="{ slotData, isMissing, selectedValue } = {
                 slotData: {},
               }"
             >
-              <div class="slot-option">
-                <component :is="icon" />
+              <div v-if="isMissing" class="slot-option">
                 <div class="description">
-                  <div class="title">{{ title }}</div>
-                  <div class="subtitle">{{ subtitle }}</div>
+                  <div class="title">(MISSING) {{ selectedValue }}</div>
                 </div>
-                <div class="year">{{ year }}</div>
+              </div>
+              <div v-else class="slot-option">
+                <component :is="slotData.icon" />
+                <div class="description">
+                  <div class="title">{{ slotData.title }}</div>
+                  <div class="subtitle">{{ slotData.subtitle }}</div>
+                </div>
+                <div class="year">{{ slotData.year }}</div>
               </div>
             </template>
           </Dropdown>
@@ -574,7 +579,7 @@ export default {
       <div class="grid-container">
         <div class="grid-item-5">
           <Dropdown
-            v-model="withSlotsSelected"
+            v-model="slottedSelected"
             placeholder="In compact mode"
             aria-label="A limited list"
             size="3"
@@ -582,17 +587,22 @@ export default {
             :possible-values="slottedExamplePossibleValue"
           >
             <template
-              #option="{ slotData: { icon, title, subtitle, year } } = {
+              #option="{ slotData, isMissing, selectedValue } = {
                 slotData: {},
               }"
             >
-              <div class="slot-option">
-                <component :is="icon" />
+              <div v-if="isMissing" class="slot-option">
                 <div class="description">
-                  <div class="title">{{ title }}</div>
-                  <div class="subtitle">{{ subtitle }}</div>
+                  <div class="title">(MISSING) {{ selectedValue }}</div>
                 </div>
-                <div class="year">{{ year }}</div>
+              </div>
+              <div v-else class="slot-option">
+                <component :is="slotData.icon" />
+                <div class="description">
+                  <div class="title">{{ slotData.title }}</div>
+                  <div class="subtitle">{{ slotData.subtitle }}</div>
+                </div>
+                <div class="year">{{ slotData.year }}</div>
               </div>
             </template>
           </Dropdown>
