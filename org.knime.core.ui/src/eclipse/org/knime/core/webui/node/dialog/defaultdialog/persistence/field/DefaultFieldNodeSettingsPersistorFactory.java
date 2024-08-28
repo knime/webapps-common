@@ -263,7 +263,7 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
 
         <T> PersistorImpl(final Class<T> type, final FieldLoader<T> loader, final FieldSaver<T> saver) {
             m_type = type;
-            m_fieldPersistor = new FieldPersistorLoaderSaverAdapter<>(loader, saver);
+            m_fieldPersistor = new FieldPersistorLoaderSaverAdapter<>(loader, saver, null);
         }
 
         Class<?> getFieldType() {

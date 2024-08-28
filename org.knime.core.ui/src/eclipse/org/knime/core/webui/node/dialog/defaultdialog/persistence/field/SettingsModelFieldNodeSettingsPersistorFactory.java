@@ -105,7 +105,8 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
             return createEnumPersistor(fieldType, configKey);
         } else if (IMPL_TABLE.contains(fieldType, settingsModelType)) {
             var impl = IMPL_TABLE.get(fieldType, settingsModelType);
-            return new DefaultFieldNodeSettingsPersistor<>(configKey, (FieldPersistor<T>)impl);
+            return new DefaultFieldNodeSettingsPersistor<>(configKey, impl.getSubConfigKeysWithoutJsonEquivalent(),
+                (FieldPersistor<T>)impl);
         }
         throw new IllegalArgumentException(
             String.format("There is no persistor registered for the type '%s' and the SettingModel type '%s'.",
@@ -130,9 +131,9 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
             BOOLEAN(boolean.class, SettingsModelBoolean.class, SettingsModelFieldPersistor::loadBoolean,
                 SettingsModelFieldPersistor::saveBoolean),
             COLUMN_NAME(String.class, SettingsModelColumnName.class, SettingsModelFieldPersistor::loadColumnName,
-                SettingsModelFieldPersistor::saveColumnName),
+                SettingsModelFieldPersistor::saveColumnName, new String[]{"columnName", "useRowID"}),
             COLUMN_FILTER2(ColumnFilter.class, SettingsModelColumnFilter2.class, LegacyColumnFilterPersistor::load,
-                LegacyColumnFilterPersistor::save),
+                LegacyColumnFilterPersistor::save, LegacyColumnFilterPersistor.joinedSubConfigKeys()),
             READER_FILE_CHOOSER(FileChooser.class, SettingsModelReaderFileChooser.class,
                 LegacyReaderFilerChooserPersistor::load, LegacyReaderFilerChooserPersistor::save),
             AUTHENTICATION(AuthenticationSettings.class, SettingsModelAuthentication.class,
@@ -149,9 +150,16 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
         <T> SettingsModelFieldPersistor(final Class<T> fieldType,
             final Class<? extends SettingsModel> settingsModelType, final FieldLoader<T> loader,
             final FieldSaver<T> saver) {
+            this(fieldType, settingsModelType, loader, saver, null);
+        }
+
+        <T> SettingsModelFieldPersistor(final Class<T> fieldType,
+            final Class<? extends SettingsModel> settingsModelType, final FieldLoader<T> loader,
+            final FieldSaver<T> saver, final String[] subConfigKeysWithoutJsonEquivalent) {
             m_fieldType = fieldType;
             m_settingsModelType = settingsModelType;
-            m_fieldPersistor = new FieldPersistorLoaderSaverAdapter<>(loader, saver);
+            m_fieldPersistor =
+                new FieldPersistorLoaderSaverAdapter<>(loader, saver, subConfigKeysWithoutJsonEquivalent);
         }
 
         <T> SettingsModelFieldPersistor(final Class<T> fieldType,
@@ -273,6 +281,11 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
         @Override
         public ConfigsDeprecation[] getDeprecatedConfigs(final String configKey) {
             return createPersistorInstance(configKey).getConfigsDeprecations();
+        }
+
+        @Override
+        public String[] getSubConfigKeysWithoutJsonEquivalent() {
+            return null;
         }
 
     }

@@ -63,11 +63,16 @@ class LegacyPatternFilterPersistorUtil {
         // Utility
     }
 
-
     /**
      * See PatternFilterConfiguration.CFG_TYPE
      */
-    private static final String PATTERN_FILTER_TYPE = "type";
+    static final String PATTERN_FILTER_TYPE = "type";
+
+    static final String PATTERN_FILTER_PATTERN = "pattern";
+
+    static final String PATTERN_FILTER_CASESENSITIVE = "caseSensitive";
+
+    static final String PATTERN_FILTER_EXCLUDEMATCHING = "excludeMatching";
 
     /**
      * See PatternFilterConfiguration.PatternFilterType.Regex
@@ -78,7 +83,6 @@ class LegacyPatternFilterPersistorUtil {
      * See PatternFilterConfiguration.PatternFilterType.Wildcard
      */
     private static final String PATTERN_FILTER_WILDCARD = "Wildcard";
-
 
     static PatternMode loadPatternMode(final NodeSettingsRO patternMatchingSettings) throws InvalidSettingsException {
         var patternMatchingType = patternMatchingSettings.getString(PATTERN_FILTER_TYPE);
@@ -94,11 +98,11 @@ class LegacyPatternFilterPersistorUtil {
     static PatternFilter loadPatternMatching(final NodeSettingsRO patternMatchingSettings)
         throws InvalidSettingsException {
         var patternFilter = new PatternFilter();
-        patternFilter.m_pattern = patternMatchingSettings.getString("pattern");
-        patternFilter.m_isCaseSensitive = patternMatchingSettings.getBoolean("caseSensitive");
+        patternFilter.m_pattern = patternMatchingSettings.getString(PATTERN_FILTER_PATTERN);
+        patternFilter.m_isCaseSensitive = patternMatchingSettings.getBoolean(PATTERN_FILTER_CASESENSITIVE);
         // In some very old workflows this field might not have existed, yet, and we default to 'false'
         // see, e.g., knime://Testflows/Testflows%20(master)/knime-base/Loops/test_LoopEnd_Bug4029
-        patternFilter.m_isInverted = patternMatchingSettings.getBoolean("excludeMatching", false);
+        patternFilter.m_isInverted = patternMatchingSettings.getBoolean(PATTERN_FILTER_EXCLUDEMATCHING, false);
         return patternFilter;
     }
 

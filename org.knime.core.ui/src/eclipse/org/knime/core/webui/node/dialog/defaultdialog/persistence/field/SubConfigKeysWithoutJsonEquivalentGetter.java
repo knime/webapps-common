@@ -44,66 +44,17 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Dec 5, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
+ *   Aug 28, 2024 (paul): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 
-import java.util.Arrays;
-
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
-
 /**
- * {@link NodeSettingsPersistor} for fields that composes the config key with the implementation of the persistor.
+ * Temporary interface only used to backport subConfigKeys to release
  *
- * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
+ * @author Paul Bärnreuther
  */
-final class DefaultFieldNodeSettingsPersistor<T> implements FieldNodeSettingsPersistor<T> {
-    private final String m_configKey;
+interface SubConfigKeysWithoutJsonEquivalentGetter {
 
-    private final FieldPersistor<T> m_impl;
-
-    private final String[] m_subConfigKeysWithoutJsonEquivalent;
-
-    DefaultFieldNodeSettingsPersistor(final String configKey, final FieldPersistor<T> impl) {
-        this(configKey, null, impl);
-    }
-
-    DefaultFieldNodeSettingsPersistor(final String configKey, final String[] subConfigKeysWithoutJsonEquivalent,
-        final FieldPersistor<T> impl) {
-        m_configKey = configKey;
-        m_subConfigKeysWithoutJsonEquivalent = subConfigKeysWithoutJsonEquivalent;
-        m_impl = impl;
-    }
-
-    @Override
-    public void save(final T obj, final NodeSettingsWO settings) {
-        m_impl.save(obj, settings, m_configKey);
-    }
-
-    @Override
-    public T load(final NodeSettingsRO settings) throws InvalidSettingsException {
-        return m_impl.load(settings, m_configKey);
-    }
-
-    @Override
-    public String[] getConfigKeys() {
-        if (m_subConfigKeysWithoutJsonEquivalent == null) {
-            return new String[]{m_configKey};
-        }
-        /**
-         * TODO: UIEXT-2127 Remove this workaround again.
-         */
-        return Arrays.stream(m_subConfigKeysWithoutJsonEquivalent)
-            .map(subKey -> String.format("%s.%s", m_configKey, subKey)).toArray(String[]::new);
-    }
-
-    @Override
-    public ConfigsDeprecation[] getConfigsDeprecations() {
-        return m_impl.getDeprecatedConfigs(m_configKey);
-    }
+    public String[] getSubConfigKeysWithoutJsonEquivalent();
 
 }

@@ -64,17 +64,17 @@ public class LegacyManualFilterPersistorUtil {
     /**
      * See NameFilterConfiguration.KEY_ENFORCE_OPTION
      */
-    private static final String KEY_ENFORCE_OPTION = "enforce_option";
+    static final String KEY_ENFORCE_OPTION = "enforce_option";
 
     /**
      * See NameFilterConfiguration.KEY_EXCLUDED_NAMES
      */
-    private static final String OLD_EXCLUDED_NAMES = "excluded_names";
+    static final String OLD_EXCLUDED_NAMES = "excluded_names";
 
     /**
      * See NameFilterConfiguration.KEY_INCLUDED_NAMES
      */
-    private static final String KEY_INCLUDED_NAMES = "included_names";
+    static final String KEY_INCLUDED_NAMES = "included_names";
 
 
     private LegacyManualFilterPersistorUtil() {

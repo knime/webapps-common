@@ -57,9 +57,13 @@ final class FieldPersistorLoaderSaverAdapter<T> implements FieldPersistor<T> {
 
     private final FieldSaver<T> m_saver;
 
-    FieldPersistorLoaderSaverAdapter(final FieldLoader<T> loader, final FieldSaver<T> saver) {
+    private final String[] m_subConfigKeysWithoutJsonEquivalent;
+
+    FieldPersistorLoaderSaverAdapter(final FieldLoader<T> loader, final FieldSaver<T> saver,
+        final String[] subConfigKeysWithoutJsonEquivalent) {
         m_loader = loader;
         m_saver = saver;
+        m_subConfigKeysWithoutJsonEquivalent = subConfigKeysWithoutJsonEquivalent;
     }
 
     @Override
@@ -70,6 +74,11 @@ final class FieldPersistorLoaderSaverAdapter<T> implements FieldPersistor<T> {
     @Override
     public void save(final T obj, final NodeSettingsWO settings, final String configKey) {
         m_saver.save(obj, settings, configKey);
+    }
+
+    @Override
+    public String[] getSubConfigKeysWithoutJsonEquivalent() {
+        return m_subConfigKeysWithoutJsonEquivalent;
     }
 
 }
