@@ -49,6 +49,7 @@
 package org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -214,9 +215,29 @@ public final class LegacyColumnFilterPersistor extends NodeSettingsPersistorWith
         save(obj, settings, getConfigKey());
     }
 
+    /**
+     * TODO UIEXT-2127 remove when reworking config key handling
+     *
+     * @return e.g. ["filter_type", ..., "name_pattern.pattern", ...]
+     */
+    @Override
+    public String[] getConfigKeys() {
+        return Arrays.stream(joinedSubConfigKeys()).map(subKey -> String.format("%s.%s", getConfigKey(), subKey))
+            .toArray(String[]::new);
+    }
+
+    /**
+     * TODO UIEXT-2127 remove when reworking config key handling
+     *
+     * @return e.g. ["filter_type", ..., "name_pattern.pattern", ...]
+     */
+    public static String[] joinedSubConfigKeys() {
+        return Arrays.stream(subConfigKeys()).map(subKeys -> String.join(".", subKeys)).toArray(String[]::new);
+    }
+
     @Override
     public String[][] getSubConfigKeys() {
-        return subConfigKeys();
+        return new String[0][];
     }
 
     /**

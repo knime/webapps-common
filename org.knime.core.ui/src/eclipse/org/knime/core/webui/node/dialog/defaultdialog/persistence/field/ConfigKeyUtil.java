@@ -82,13 +82,14 @@ public final class ConfigKeyUtil {
         } else {
             var configKey = getConfigKey(field);
             var customPersistor = persist.customPersistor();
-            if (customPersistor.equals(FieldNodeSettingsPersistor.class)) {
+            var settingsModel = persist.settingsModel();
+            if (customPersistor.equals(FieldNodeSettingsPersistor.class) && settingsModel.equals(SettingsModel.class)) {
                 // No custom persistor is set -> just use the config key
                 return new String[]{configKey};
             } else {
                 // Custom persistor -> get the config keys from it
-                return FieldNodeSettingsPersistor.createInstance(customPersistor, field.getType(), configKey)
-                    .getConfigKeys();
+                return extractFieldNodeSettingsPersistor(field).map(FieldNodeSettingsPersistor::getConfigKeys)
+                    .orElse(new String[]{configKey});
             }
         }
     }

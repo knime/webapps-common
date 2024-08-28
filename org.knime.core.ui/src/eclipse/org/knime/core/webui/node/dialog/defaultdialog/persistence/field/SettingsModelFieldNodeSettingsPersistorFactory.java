@@ -105,8 +105,8 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
             return createEnumPersistor(fieldType, configKey);
         } else if (IMPL_TABLE.contains(fieldType, settingsModelType)) {
             var impl = IMPL_TABLE.get(fieldType, settingsModelType);
-            return new DefaultFieldNodeSettingsPersistor<>(configKey, impl.getSubConfigKeys(),
-                (FieldPersistor<T>)impl.getFieldPersistor());
+            return new DefaultFieldNodeSettingsPersistor<>(configKey, impl.getSubConfigKeysWithoutJsonEquivalent(),
+                impl.getSubConfigKeys(), (FieldPersistor<T>)impl.getFieldPersistor());
         }
         throw new IllegalArgumentException(
             String.format("There is no persistor registered for the type '%s' and the SettingModel type '%s'.",
@@ -131,9 +131,9 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
             BOOLEAN(boolean.class, SettingsModelBoolean.class, SettingsModelFieldPersistor::loadBoolean,
                 SettingsModelFieldPersistor::saveBoolean),
             COLUMN_NAME(String.class, SettingsModelColumnName.class, SettingsModelFieldPersistor::loadColumnName,
-                SettingsModelFieldPersistor::saveColumnName),
+                SettingsModelFieldPersistor::saveColumnName, new String[]{"columnName", "useRowID"}),
             COLUMN_FILTER2(ColumnFilter.class, SettingsModelColumnFilter2.class, LegacyColumnFilterPersistor::load,
-                LegacyColumnFilterPersistor::save, LegacyColumnFilterPersistor.subConfigKeys()),
+                LegacyColumnFilterPersistor::save, LegacyColumnFilterPersistor.joinedSubConfigKeys(), new String[0][]),
             READER_FILE_CHOOSER(FileChooser.class, SettingsModelReaderFileChooser.class,
                 LegacyReaderFilerChooserPersistor::load, LegacyReaderFilerChooserPersistor::save),
             AUTHENTICATION(AuthenticationSettings.class, SettingsModelAuthentication.class,
@@ -149,6 +149,8 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
 
         private final String[][] m_subConfigKeys;
 
+        private final String[] m_subConfigKeysWithoutJsonEquivalent;
+
         <T> SettingsModelFieldPersistor(final Class<T> fieldType,
             final Class<? extends SettingsModel> settingsModelType, final FieldLoader<T> loader,
             final FieldSaver<T> saver) {
@@ -157,11 +159,19 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
 
         <T> SettingsModelFieldPersistor(final Class<T> fieldType,
             final Class<? extends SettingsModel> settingsModelType, final FieldLoader<T> loader,
-            final FieldSaver<T> saver, final String[][] subConfigKeys) {
+            final FieldSaver<T> saver, final String[] subConfigKeysWithoutJsonEquivalent,
+            final String[][] subConfigKeys) {
             m_fieldType = fieldType;
             m_settingsModelType = settingsModelType;
             m_fieldPersistor = new FieldPersistorLoaderSaverAdapter<>(loader, saver);
+            m_subConfigKeysWithoutJsonEquivalent = subConfigKeysWithoutJsonEquivalent;
             m_subConfigKeys = subConfigKeys;
+        }
+
+        <T> SettingsModelFieldPersistor(final Class<T> fieldType,
+            final Class<? extends SettingsModel> settingsModelType, final FieldLoader<T> loader,
+            final FieldSaver<T> saver, final String[] configKeys) {
+            this(fieldType, settingsModelType, loader, saver, configKeys, null);
         }
 
         <T> SettingsModelFieldPersistor(final Class<T> fieldType,
@@ -171,6 +181,7 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
             m_settingsModelType = settingsModelType;
             m_fieldPersistor =
                 new FieldPersistorNodeSettingsPersistorAdapter<>(fieldNodeSettingsPersistorClass, fieldType);
+            m_subConfigKeysWithoutJsonEquivalent = null;
             m_subConfigKeys = null;
         }
 
@@ -188,6 +199,15 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
 
         String[][] getSubConfigKeys() {
             return m_subConfigKeys;
+        }
+
+        /**
+         * TODO: UIEXT-2127 Remove when reworking config key management.
+         *
+         * @return Config keys that get added to the root config key via dot notation
+         */
+        String[] getSubConfigKeysWithoutJsonEquivalent() {
+            return m_subConfigKeysWithoutJsonEquivalent;
         }
 
         private static int loadInt(final NodeSettingsRO settings, final String configKey)

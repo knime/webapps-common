@@ -264,7 +264,10 @@ describe("paths", () => {
         properties: {
           model: {
             type: "object",
-            configKeys: ["model_1", "model_2"],
+            /**
+             * TODO: UIEXT-2127 Remove the ".sub" again
+             */
+            configKeys: ["model_1", "model_2.sub"],
             properties: {
               mySetting: schema,
             },
@@ -279,8 +282,8 @@ describe("paths", () => {
         [
           "model_1.mySetting_1.subConfigKey",
           "model_1.mySetting_2.subConfigKey",
-          "model_2.mySetting_1.subConfigKey",
-          "model_2.mySetting_2.subConfigKey",
+          "model_2.sub.mySetting_1.subConfigKey",
+          "model_2.sub.mySetting_2.subConfigKey",
         ].map((configPath) => ({ configPath, deprecatedConfigPaths: [] })),
       );
     });
