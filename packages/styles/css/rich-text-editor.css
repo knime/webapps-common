@@ -145,20 +145,6 @@
     color: var(--theme-text-link-foreground-color);
     text-decoration-style: underline;
 
-    &[href^="http"]::after {
-      content: "";
-      mask: url("../img/icons/link-external.svg?url") no-repeat 50% 50%;
-      mask-size: cover;
-      background: var(
-        --theme-text-link-foreground-color
-      ); /* defines icon color */
-      width: 0.8em;
-      height: 0.8em;
-      display: inline-block;
-      margin-left: 0.125em;
-      vertical-align: -2px;
-    }
-
     &:hover {
       text-decoration-style: solid;
       background: var(--theme-text-link-background-color-hover);
