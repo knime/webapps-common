@@ -108,13 +108,13 @@ class LegacyPatternFilterPersistorUtil {
 
     static void savePatternMatching(final PatternFilter patternFilter, final PatternMode mode,
         final NodeSettingsWO patternMatchingSettings) {
-        patternMatchingSettings.addString("pattern", patternFilter.m_pattern);
+        patternMatchingSettings.addString(PATTERN_FILTER_PATTERN, patternFilter.m_pattern);
         // not entirely backwards compatible because we don't persist the pattern type if pattern matching
         // is not the current mode but we accept that
         patternMatchingSettings.addString("type",
             mode == PatternMode.REGEX ? PATTERN_FILTER_REGEX : PATTERN_FILTER_WILDCARD);
-        patternMatchingSettings.addBoolean("caseSensitive", patternFilter.m_isCaseSensitive);
-        patternMatchingSettings.addBoolean("excludeMatching", patternFilter.m_isInverted);
+        patternMatchingSettings.addBoolean(PATTERN_FILTER_CASESENSITIVE, patternFilter.m_isCaseSensitive);
+        patternMatchingSettings.addBoolean(PATTERN_FILTER_EXCLUDEMATCHING, patternFilter.m_isInverted);
     }
 
 }

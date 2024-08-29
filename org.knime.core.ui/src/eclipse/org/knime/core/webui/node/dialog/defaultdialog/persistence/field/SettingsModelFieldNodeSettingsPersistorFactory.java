@@ -285,7 +285,7 @@ final class SettingsModelFieldNodeSettingsPersistorFactory {
 
         @Override
         public String[] getSubConfigKeysWithoutJsonEquivalent() {
-            return null;
+            return null; // NOSONAR
         }
 
     }

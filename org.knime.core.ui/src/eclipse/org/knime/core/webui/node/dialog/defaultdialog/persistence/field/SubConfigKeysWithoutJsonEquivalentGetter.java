@@ -55,6 +55,6 @@ package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
  */
 interface SubConfigKeysWithoutJsonEquivalentGetter {
 
-    public String[] getSubConfigKeysWithoutJsonEquivalent();
+    String[] getSubConfigKeysWithoutJsonEquivalent();
 
 }
