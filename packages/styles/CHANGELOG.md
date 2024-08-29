@@ -1,5 +1,11 @@
 # @knime/styles
 
+## 1.0.6
+
+### Patch Changes
+
+- 1bec85f: remove external link icon from RTE styles mixin
+
 ## 1.0.5
 
 ### Patch Changes
