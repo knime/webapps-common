@@ -1,6 +1,8 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { useLinkTool } from "../use-link-tool";
 import { defaultLinkToolOptions } from "../../utils/custom-link";
+import { defineComponent, h, ref, type Ref } from "vue";
+import { mount } from "@vue/test-utils";
 
 // simplified editor mock that allows chaining methods
 const createEditorMock = () => {
@@ -28,7 +30,8 @@ describe("useLinkTool", () => {
     selection = { from: 1, to: 2 },
     textBetween = "",
     currentLink = "",
-    sanitizeUrlText = defaultLinkToolOptions.sanitizeUrlText,
+    linkToolOptions = defaultLinkToolOptions,
+    isRegistered = true,
   } = {}) => {
     const editorMock = createEditorMock();
     editorMock.view = { state: { selection } };
@@ -41,7 +44,8 @@ describe("useLinkTool", () => {
     const runComposable = () =>
       useLinkTool({
         editor: editorMock as any,
-        sanitizeUrlText,
+        isRegistered,
+        linkToolOptions,
       });
 
     return {
@@ -49,6 +53,49 @@ describe("useLinkTool", () => {
       editorMock,
     };
   };
+
+  beforeAll(() => {
+    // supress warnings that occur when running composable with mounted hooks in tests
+    global.console.warn = vi.fn();
+  });
+
+  afterAll(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("returns null if link tool is not registered", () => {
+    const { runComposable } = setupMocks({ isRegistered: false });
+    expect(runComposable()).toBeNull();
+  });
+
+  const getDummyComponent = (
+    runComposable: () => any,
+    composableResult: Ref<any>,
+  ) =>
+    defineComponent({
+      setup: () => {
+        composableResult.value = runComposable();
+      },
+      render: () => h("div"),
+    });
+
+  it("sets keyboard shortcut event listener", () => {
+    const { runComposable } = setupMocks();
+    const addEventListenerSpy = vi.spyOn(window, "addEventListener");
+    const removeEventListenerSpy = vi.spyOn(window, "removeEventListener");
+
+    const wrapper = mount(getDummyComponent(runComposable, ref({})));
+
+    expect(addEventListenerSpy).toHaveBeenCalledWith(
+      "keydown",
+      expect.any(Function),
+    );
+    wrapper.unmount();
+    expect(removeEventListenerSpy).toHaveBeenCalledWith(
+      "keydown",
+      expect.any(Function),
+    );
+  });
 
   describe("link tool click handler", () => {
     it("no selection, cursor position is not at link", () => {
@@ -59,16 +106,12 @@ describe("useLinkTool", () => {
       editorMock.getAttributes.mockReturnValue({ href: null });
       const {
         onLinkToolClick,
-        isReplacingText,
-        showCreateLinkModal,
-        text,
-        url,
-      } = runComposable();
+        props: { isActive, text, url },
+      } = runComposable()!;
 
       onLinkToolClick();
 
-      expect(isReplacingText.value).toBe(false);
-      expect(showCreateLinkModal.value).toBe(true);
+      expect(isActive.value).toBe(true);
       expect(text.value).toBe("");
       expect(url.value).toBe("");
     });
@@ -86,16 +129,12 @@ describe("useLinkTool", () => {
       });
       const {
         onLinkToolClick,
-        isReplacingText,
-        showCreateLinkModal,
-        text,
-        url,
-      } = runComposable();
+        props: { isActive, text, url },
+      } = runComposable()!;
 
       onLinkToolClick();
 
-      expect(isReplacingText.value).toBe(true);
-      expect(showCreateLinkModal.value).toBe(true);
+      expect(isActive.value).toBe(true);
       expect(text.value).toBe("abcdef");
       expect(url.value).toBe("https://knime.com");
     });
@@ -108,16 +147,12 @@ describe("useLinkTool", () => {
       editorMock.getAttributes.mockReturnValue({ href: null });
       const {
         onLinkToolClick,
-        isReplacingText,
-        showCreateLinkModal,
-        text,
-        url,
-      } = runComposable();
+        props: { isActive, text, url },
+      } = runComposable()!;
 
       onLinkToolClick();
 
-      expect(isReplacingText.value).toBe(true);
-      expect(showCreateLinkModal.value).toBe(true);
+      expect(isActive.value).toBe(true);
       expect(text.value).toBe("abc");
       expect(url.value).toBe("");
     });
@@ -135,18 +170,14 @@ describe("useLinkTool", () => {
       editorMock.getAttributes.mockReturnValue({ href: "https://knime.com" });
       const {
         onLinkToolClick,
-        isReplacingText,
-        showCreateLinkModal,
-        text,
-        url,
-      } = runComposable();
+        props: { isActive, text, url },
+      } = runComposable()!;
 
       onLinkToolClick();
 
-      expect(isReplacingText.value).toBe(true);
       expect(editorMock.setTextSelection).toHaveBeenCalledWith(2);
       expect(editorMock.run).toHaveBeenCalled();
-      expect(showCreateLinkModal.value).toBe(true);
+      expect(isActive.value).toBe(true);
       expect(text.value).toBe("abcdef");
       expect(url.value).toBe("https://knime.com");
     });
@@ -155,10 +186,12 @@ describe("useLinkTool", () => {
   describe("add link", () => {
     it("when editing existing text", () => {
       const { runComposable, editorMock } = setupMocks();
-      const { addLink, isReplacingText, showCreateLinkModal } = runComposable();
-      isReplacingText.value = true;
+      const {
+        props: { isActive },
+        events: { addLink: onAddLink },
+      } = runComposable()!;
 
-      addLink("Link text", "https://knime.com");
+      onAddLink("Link text", "https://knime.com");
 
       // unsets previous link if it exists
       expect(editorMock.unsetLink).toHaveBeenCalled();
@@ -171,18 +204,19 @@ describe("useLinkTool", () => {
       expect(editorMock.run).toHaveBeenCalled();
 
       // resets state
-      expect(showCreateLinkModal.value).toBe(false);
-      expect(isReplacingText.value).toBe(false);
+      expect(isActive.value).toBe(false);
     });
 
     it("inserting link with new text", () => {
       const { runComposable, editorMock } = setupMocks({
         selection: { from: 1, to: 10 },
       });
-      const { addLink, isReplacingText, showCreateLinkModal } = runComposable();
-      isReplacingText.value = false;
+      const {
+        props: { isActive },
+        events: { addLink: onAddLink },
+      } = runComposable()!;
 
-      addLink("Link text", "https://knime.com");
+      onAddLink("Link text", "https://knime.com");
 
       // unsets previous link if it exists
       expect(editorMock.unsetLink).toHaveBeenCalled();
@@ -198,18 +232,18 @@ describe("useLinkTool", () => {
       });
 
       // resets state
-      expect(showCreateLinkModal.value).toBe(false);
-      expect(isReplacingText.value).toBe(false);
+      expect(isActive.value).toBe(false);
     });
 
     it("adds https to url if omitted when default sanitizer is used", () => {
       const { runComposable, editorMock } = setupMocks({
         selection: { from: 1, to: 10 },
       });
-      const { addLink, isReplacingText } = runComposable();
-      isReplacingText.value = false;
+      const {
+        events: { addLink: onAddLink },
+      } = runComposable()!;
 
-      addLink("Link text", "knime.com");
+      onAddLink("Link text", "knime.com");
 
       // sets new link
       expect(editorMock.setLink).toHaveBeenCalledWith({
@@ -220,14 +254,18 @@ describe("useLinkTool", () => {
     it("sanitizes url according to custom sanitizer", () => {
       const { runComposable, editorMock } = setupMocks({
         selection: { from: 1, to: 10 },
-        sanitizeUrlText: (urlText: string) => {
-          return `abc-${urlText}-def`;
+        linkToolOptions: {
+          urlValidator: defaultLinkToolOptions.urlValidator,
+          sanitizeUrlText: (urlText: string) => {
+            return `abc-${urlText}-def`;
+          },
         },
       });
-      const { addLink, isReplacingText } = runComposable();
-      isReplacingText.value = false;
+      const {
+        events: { addLink: onAddLink },
+      } = runComposable()!;
 
-      addLink("Link text", "knime.com");
+      onAddLink("Link text", "knime.com");
 
       // sets new link
       expect(editorMock.setLink).toHaveBeenCalledWith({
@@ -238,28 +276,30 @@ describe("useLinkTool", () => {
 
   it("remove link", () => {
     const { runComposable, editorMock } = setupMocks();
-    const { removeLink, isReplacingText, showCreateLinkModal } =
-      runComposable();
-    removeLink();
+    const {
+      events: { removeLink: onRemoveLink },
+      props: { isActive },
+    } = runComposable()!;
+    onRemoveLink();
     expect(editorMock.unsetLink).toHaveBeenCalled();
     expect(editorMock.run).toHaveBeenCalled();
 
     // resets state
-    expect(showCreateLinkModal.value).toBe(false);
-    expect(isReplacingText.value).toBe(false);
+    expect(isActive.value).toBe(false);
   });
 
   it("cancel adding link", () => {
     const { runComposable, editorMock } = setupMocks();
-    const { cancelAddLink, isReplacingText, showCreateLinkModal } =
-      runComposable();
-    cancelAddLink();
+    const {
+      events: { cancelAddLink: onCancelAddLink },
+      props: { isActive },
+    } = runComposable()!;
+    onCancelAddLink();
 
     expect(editorMock.setLink).not.toHaveBeenCalled();
     expect(editorMock.unsetLink).not.toHaveBeenCalled();
 
     // resets state
-    expect(showCreateLinkModal.value).toBe(false);
-    expect(isReplacingText.value).toBe(false);
+    expect(isActive.value).toBe(false);
   });
 });

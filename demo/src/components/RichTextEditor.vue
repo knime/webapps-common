@@ -126,13 +126,14 @@ export default defineComponent({
               </template>
               <template #linkModal="{ linkTool }">
                 <Modal
-                  :active="linkTool.showCreateLinkModal.value"
+                  v-if="linkTool"
+                  :active="linkTool.props.isActive.value"
                   :title="'Here you could add your custom link modal'"
-                  @cancel="linkTool.showCreateLinkModal.value = false"
+                  @cancel="linkTool.props.isActive.value = false"
                 >
                   <template #notice>
-                    <div>Text: {{ linkTool.text.value || "empty" }}</div>
-                    <div>Url: {{ linkTool.url.value || "empty" }}</div>
+                    <div>Text: {{ linkTool.props.text.value || "empty" }}</div>
+                    <div>Url: {{ linkTool.props.url.value || "empty" }}</div>
                   </template>
                 </Modal>
               </template>

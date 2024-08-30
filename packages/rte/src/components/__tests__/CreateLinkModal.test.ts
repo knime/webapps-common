@@ -6,14 +6,14 @@ import { InputField } from "@knime/components";
 
 import CreateLinkModal from "../CreateLinkModal.vue";
 import { defaultLinkToolOptions } from "../../utils/custom-link";
-import { nextTick } from "vue";
+import { nextTick, ref } from "vue";
 
 describe("CreateWorkflowModal.vue", () => {
   const doMount = ({
-    url = "https://mock.url",
-    text = "mock url",
-    isActive = true,
-    isEdit = false,
+    url = ref("https://mock.url"),
+    text = ref("mock url"),
+    isActive = ref(true),
+    isEdit = ref(false),
     urlValidator = defaultLinkToolOptions.urlValidator,
   } = {}) => {
     const wrapper = mount(CreateLinkModal, {
@@ -83,12 +83,14 @@ describe("CreateWorkflowModal.vue", () => {
 
     it("should focus the input", async () => {
       vi.useFakeTimers();
-      const { wrapper } = await doMount();
+      const text = ref("some text");
+      const { wrapper } = await doMount({ text });
 
       const input = wrapper.findAll("input").at(0)!;
       const focusSpy = vi.spyOn(input.element, "focus");
 
-      await wrapper.setProps({ text: "new text" });
+      text.value = "new text";
+      await nextTick();
 
       vi.runAllTimers();
 

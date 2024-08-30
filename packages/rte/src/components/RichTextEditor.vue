@@ -266,15 +266,9 @@ const hasTools = computed(() => Object.keys(props.baseExtensions).length);
           <template #linkModal="{ linkTool }">
             <slot name="linkModal" :link-tool="linkTool">
               <CreateLinkModal
-                v-if="isToolEnabled('link')"
-                :is-active="linkTool.showCreateLinkModal.value"
-                :text="linkTool.text.value"
-                :url="linkTool.url.value"
-                :is-edit="linkTool.url.value !== ''"
-                :url-validator="linkToolOptions.urlValidator"
-                @add-link="linkTool.addLink"
-                @cancel-add-link="linkTool.cancelAddLink"
-                @remove-link="linkTool.removeLink"
+                v-if="isToolEnabled('link') && linkTool"
+                v-bind="linkTool.props"
+                v-on="linkTool.events"
               />
             </slot>
           </template>
