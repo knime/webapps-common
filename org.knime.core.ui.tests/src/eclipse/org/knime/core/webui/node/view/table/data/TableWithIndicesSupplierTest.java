@@ -51,12 +51,9 @@ package org.knime.core.webui.node.view.table.data;
 import static org.knime.testing.util.TableTestUtil.assertTableResults;
 import static org.knime.testing.util.TableTestUtil.getExec;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.knime.core.data.def.IntCell;
 import org.knime.core.data.def.StringCell;
-import org.knime.core.webui.data.DataServiceContextTest;
 import org.knime.testing.util.TableTestUtil;
 import org.knime.testing.util.TableTestUtil.ObjectColumn;
 
@@ -66,16 +63,6 @@ import org.knime.testing.util.TableTestUtil.ObjectColumn;
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
 class TableWithIndicesSupplierTest {
-
-    @BeforeEach
-    void initDataServiceContext() {
-        DataServiceContextTest.initDataServiceContext(() -> getExec(), null);
-    }
-
-    @AfterEach
-    void removeDataServiceContext() {
-        DataServiceContextTest.removeDataServiceContext();
-    }
 
     @Test
     void testIndicesAreAppended() throws Exception {
@@ -88,7 +75,7 @@ class TableWithIndicesSupplierTest {
 
         var tableWithIndicesSupplier = new TableWithIndicesSupplier(() -> inputTable);
 
-        assertTableResults(tableWithIndicesSupplier.get(), new String[]{"Long", "String", "Integer"},
+        assertTableResults(tableWithIndicesSupplier.apply(getExec()), new String[]{"Long", "String", "Integer"},
             new Object[][]{{1l, 2l}, stringColumnContent, intColumnContent});
     }
 
@@ -103,7 +90,7 @@ class TableWithIndicesSupplierTest {
 
         var tableWithIndicesSupplier = new TableWithIndicesSupplier(() -> inputTable);
 
-        assertTableResults(tableWithIndicesSupplier.get(), new String[]{"Long", "String", "Integer"},
+        assertTableResults(tableWithIndicesSupplier.apply(getExec()), new String[]{"Long", "String", "Integer"},
             new Object[][]{{1l, 2l}, stringColumnContent, intColumnContent});
     }
 

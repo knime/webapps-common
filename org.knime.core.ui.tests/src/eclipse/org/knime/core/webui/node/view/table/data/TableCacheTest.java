@@ -70,31 +70,33 @@ public class TableCacheTest {
         var keyValueVariants = successivelyModifiedKeyValues();
         var tablesToCache = new BufferedDataTable[keyValueVariants.length];
 
+        var exec = TableTestUtil.getExec();
+
         // make sure the cache is updated whenever a 'key-value' changes
         for (var i = 0; i < tablesToCache.length; i++) {
             tablesToCache[i] = TableTestUtil.createDefaultTestTable(1).get();
             final var final_i = i;
-            tableCache.conditionallyUpdateCachedTable(() -> tablesToCache[final_i], false, keyValueVariants[i]);
+            tableCache.conditionallyUpdateCachedTable(e -> tablesToCache[final_i], exec, false, keyValueVariants[i]);
             assertThat(tableCache.getCachedTable().orElse(null) == tablesToCache[i]).isTrue();
             assertThat(tableCache.wasUpdated()).isTrue();
         }
 
         // make sure the cache is NOT updated when no key-value changes
-        tableCache.conditionallyUpdateCachedTable(() -> tablesToCache[0], false,
+        tableCache.conditionallyUpdateCachedTable(e -> tablesToCache[0], exec, false,
             keyValueVariants[tablesToCache.length - 1]);
         assertThat(tableCache.getCachedTable().orElse(null) == tablesToCache[0]).isFalse();
         assertThat(tableCache.wasUpdated()).isFalse();
 
         // make sure the table cache is cleared
-        tableCache.conditionallyUpdateCachedTable(null, true, null);
+        tableCache.conditionallyUpdateCachedTable(null, exec, true, null);
         assertThat(tableCache.wasUpdated()).isTrue();
         assertThat(tableCache.getCachedTable()).isEmpty();
 
         // make sure the table cache is cleared if the clear-method is called directly)
-        tableCache.conditionallyUpdateCachedTable(() -> tablesToCache[0], false, keyValueVariants[0]);
+        tableCache.conditionallyUpdateCachedTable(e -> tablesToCache[0], exec, false, keyValueVariants[0]);
         assertThat(tableCache.wasUpdated()).isTrue();
         assertThat(tableCache.getCachedTable().orElse(null) == tablesToCache[0]).isTrue();
-        tableCache.clear();
+        tableCache.clear(exec);
         assertThat(tableCache.wasUpdated()).isTrue();
         assertThat(tableCache.getCachedTable()).isEmpty();
 

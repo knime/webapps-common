@@ -58,6 +58,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -76,6 +77,7 @@ import org.knime.core.data.sort.BufferedDataTableSorter;
 import org.knime.core.data.sort.RowComparator;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
+import org.knime.core.node.ExecutionContext;
 import org.knime.core.webui.data.DataServiceContext;
 import org.knime.core.webui.data.DataServiceException;
 import org.knime.core.webui.node.view.table.data.render.DataCellContentType;
@@ -113,6 +115,10 @@ public class TableViewDataServiceImpl implements TableViewDataService {
     private final String m_tableId;
 
     private final Supplier<Set<RowKey>> m_selectionSupplier;
+
+    // Execution context reference is being kept until the data service is deactivated (view not visible anymore)
+    // or disposed (workflow closed, node removed). It is cleared via 'clearCache'.
+    private ExecutionContext m_executionContext;
 
     /**
      * @param tableSupplier supplier for the table from which to obtain data
@@ -175,20 +181,24 @@ public class TableViewDataServiceImpl implements TableViewDataService {
             return createEmptyTable();
         }
 
+        if (m_executionContext == null) {
+            m_executionContext = DataServiceContext.get().getExecutionContext();
+        }
+
         final var allDisplayedColumns =
             updateDisplayedColumns ? filterInvalids(columns, bufferedDataTable.getSpec()) : columns;
         final var numDisplayedColumns = allDisplayedColumns.length;
         final String[] displayedColumns =
             trimColumns ? getTrimmedColumns(numDisplayedColumns, allDisplayedColumns) : allDisplayedColumns;
 
-        var currentSelection = getCurrentSelection();
+        var currentSelection = getCurrentSelection(m_selectionSupplier);
 
         /**
          * we sort first (even though it is more expensive) because filtering happens more frequently and therefore we
          * do not have to re-sort every time we filter
          */
         m_sortedTableCache.conditionallyUpdateCachedTable(
-            () -> sortTable(m_tableWithIndicesSupplier.get(), sortColumn, sortAscending),
+            e -> sortTable(m_tableWithIndicesSupplier.apply(e), sortColumn, sortAscending), m_executionContext,
             sortColumn == null || bufferedDataTable.size() <= 1, sortColumn, sortAscending);
         // updates m_filteredAndSortedTableCache
         filterSortedTableConditionally(columns, sortColumn, sortAscending, globalSearchTerm, columnFilterValue,
@@ -331,28 +341,29 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         final boolean sortAscending, final String globalSearchTerm, final String[][] columnFilterValue,
         final boolean filterRowKeys, final boolean showOnlySelectedRows, final Set<RowKey> currentSelection) {
         final Optional<BufferedDataTable> cachedSortedTable = m_sortedTableCache.getCachedTable();
-        final Supplier<BufferedDataTable> sortedTableSupplier =
-            cachedSortedTable.isPresent() ? cachedSortedTable::get : m_tableWithIndicesSupplier;
+        final Function<ExecutionContext, BufferedDataTable> sortedTableSupplier =
+            cachedSortedTable.isPresent() ? (e -> cachedSortedTable.get()) : m_tableWithIndicesSupplier;
         /** Keys are only interesting if showOnlySelected is true otherwise we don't want to reset the cache */
         final var currentSelectedKeys = showOnlySelectedRows ? currentSelection : Set.of();
         m_filteredAndSortedTableCache.conditionallyUpdateCachedTable(
-            () -> filterTable(sortedTableSupplier.get(), columns, globalSearchTerm, columnFilterValue, filterRowKeys,
-                showOnlySelectedRows),
-            (globalSearchTerm == null && columnFilterValue == null) && !showOnlySelectedRows, globalSearchTerm,
-            columnFilterValue, columns, sortColumn, sortAscending, showOnlySelectedRows, currentSelectedKeys);
+            e -> filterTable(sortedTableSupplier.apply(e), columns, globalSearchTerm, columnFilterValue, filterRowKeys,
+                showOnlySelectedRows, m_executionContext, m_selectionSupplier),
+            m_executionContext, (globalSearchTerm == null && columnFilterValue == null) && !showOnlySelectedRows,
+            globalSearchTerm, columnFilterValue, columns, sortColumn, sortAscending, showOnlySelectedRows,
+            currentSelectedKeys);
     }
 
-    private BufferedDataTable filterTable(final BufferedDataTable table, final String[] columns,
+    private static BufferedDataTable filterTable(final BufferedDataTable table, final String[] columns,
         final String globalSearchTerm, final String[][] columnFilterValue, final boolean filterRowKeys,
-        final boolean showOnlySelectedRows) {
+        final boolean showOnlySelectedRows, final ExecutionContext exec,
+        final Supplier<Set<RowKey>> selectionSupplier) {
         final var spec = table.getDataTableSpec();
-        var exec = DataServiceContext.get().getExecutionContext();
         var resultContainer = exec.createDataContainer(spec);
         try (final var iterator = table.iterator()) {
             while (iterator.hasNext()) {
                 final var row = iterator.next();
                 if (filtersMatch(row, spec, globalSearchTerm, columnFilterValue, columns, filterRowKeys,
-                    showOnlySelectedRows)) {
+                    showOnlySelectedRows, selectionSupplier)) {
                     resultContainer.addRowToTable(row);
                 }
             }
@@ -362,11 +373,11 @@ public class TableViewDataServiceImpl implements TableViewDataService {
     }
 
     @SuppressWarnings("java:S107") // accept the large number of parameters
-    private boolean filtersMatch(final DataRow row, final DataTableSpec spec, final String globalSearchTerm,
+    private static boolean filtersMatch(final DataRow row, final DataTableSpec spec, final String globalSearchTerm,
         final String[][] columnFilterValue, final String[] columns, final boolean filterRowKeys,
-        final boolean showOnlySelectedRows) {
+        final boolean showOnlySelectedRows, final Supplier<Set<RowKey>> selectionSupplier) {
 
-        if (showOnlySelectedRows && !isSelected(row)) {
+        if (showOnlySelectedRows && !isSelected(row, selectionSupplier)) {
             return false;
         }
 
@@ -405,8 +416,8 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         return globalSearchTermMatch;
     }
 
-    private boolean isSelected(final DataRow row) {
-        return getCurrentSelection().contains(row.getKey());
+    private static boolean isSelected(final DataRow row, final Supplier<Set<RowKey>> selectionSupplier) {
+        return getCurrentSelection(selectionSupplier).contains(row.getKey());
     }
 
     private static boolean matchesColumnFilter(final String cellStringValue, final String[][] columnFilters,
@@ -483,18 +494,22 @@ public class TableViewDataServiceImpl implements TableViewDataService {
     @Override
     public Long getTotalSelected() {
         var filteredTable = m_filteredAndSortedTableCache.getCachedTable().orElse(null);
-        var currentSelection = getCurrentSelection();
+        var currentSelection = getCurrentSelection(m_selectionSupplier);
         return filteredTable == null ? currentSelection.size() : countSelectedRows(filteredTable, currentSelection);
     }
 
-    private Set<RowKey> getCurrentSelection() {
-        return m_selectionSupplier == null ? Set.of() : m_selectionSupplier.get();
+    private static Set<RowKey> getCurrentSelection(final Supplier<Set<RowKey>> selectionSupplier) {
+        return selectionSupplier == null ? Set.of() : selectionSupplier.get();
     }
 
     @Override
     public void clearCache() {
-        m_sortedTableCache.clear();
-        m_filteredAndSortedTableCache.clear();
+        if (m_executionContext != null) {
+            m_sortedTableCache.clear(m_executionContext);
+            m_filteredAndSortedTableCache.clear(m_executionContext);
+            m_tableWithIndicesSupplier.clear(m_executionContext);
+            m_executionContext = null;
+        }
     }
 
     /**

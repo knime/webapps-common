@@ -50,9 +50,10 @@ package org.knime.core.webui.node.view.table.data;
 
 import java.util.Arrays;
 import java.util.Optional;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.ExecutionContext;
 
 /**
  * Helper class to cache a table and update the cache.
@@ -70,22 +71,23 @@ class TableCache {
     /**
      * @param tableSupplier supplies the new table to be cached in case the cached table needs to be updated (or no
      *            table has been cached so far)
+     * @param exec the execution context used to properly clear the cached table
      * @param shallClearCache if {@code true} the cached table will be removed and this table cache won't reference any
      *            table anymore
      * @param keyValues the cache's key values; i.e. if those change, the cached table will be updated/replaced;
      *            otherwise the originally cached table will be kept
      */
-    void conditionallyUpdateCachedTable(final Supplier<BufferedDataTable> tableSupplier, final boolean shallClearCache,
-        final Object... keyValues) {
+    void conditionallyUpdateCachedTable(final Function<ExecutionContext, BufferedDataTable> tableSupplier,
+        final ExecutionContext exec, final boolean shallClearCache, final Object... keyValues) {
         if (shallClearCache) {
             m_wasUpdated = m_cachedTable != null;
-            clear();
+            clear(exec);
             return;
         }
         if (m_cachedTable == null || !Arrays.deepEquals(m_previousKeyValues, keyValues)) {
             // update the cache
             m_previousKeyValues = keyValues;
-            m_cachedTable = tableSupplier.get();
+            m_cachedTable = tableSupplier.apply(exec);
             m_wasUpdated = true;
         } else {
             m_wasUpdated = false;
@@ -106,8 +108,9 @@ class TableCache {
         return Optional.ofNullable(m_cachedTable);
     }
 
-    void clear() {
+    void clear(final ExecutionContext exec) {
         if (m_cachedTable != null) {
+            exec.clearTable(m_cachedTable);
             m_cachedTable = null;
             m_previousKeyValues = null;
         }
