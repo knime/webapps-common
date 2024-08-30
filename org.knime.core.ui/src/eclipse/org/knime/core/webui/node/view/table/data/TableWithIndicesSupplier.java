@@ -48,6 +48,7 @@
  */
 package org.knime.core.webui.node.view.table.data;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.knime.core.data.DataColumnSpecCreator;
@@ -60,7 +61,6 @@ import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.InternalTableAPI;
-import org.knime.core.webui.data.DataServiceContext;
 
 /**
  * Wraps another {@link BufferedDataTable}-supplier and preprends a index column to it. It also caches the newly created
@@ -69,7 +69,7 @@ import org.knime.core.webui.data.DataServiceContext;
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-class TableWithIndicesSupplier implements Supplier<BufferedDataTable> {
+class TableWithIndicesSupplier implements Function<ExecutionContext, BufferedDataTable> {
 
     private final Supplier<BufferedDataTable> m_originalSupplier;
 
@@ -82,12 +82,11 @@ class TableWithIndicesSupplier implements Supplier<BufferedDataTable> {
     }
 
     @Override
-    public BufferedDataTable get() {
+    public BufferedDataTable apply(final ExecutionContext exec) {
         final var originalTable = m_originalSupplier.get();
         if (m_originalTable != originalTable) {
             final var appendConfig = AppendConfig.rowIDsFromTable(1);
             final var indexColumnName = determineIndexColumnName(originalTable.getSpec());
-            var exec = DataServiceContext.get().getExecutionContext();
             try {
                 final var indices = createIndexColumn(originalTable.size(), indexColumnName, exec);
                 m_tableWithIndices = InternalTableAPI.append(exec, appendConfig, indices, originalTable);
@@ -116,9 +115,12 @@ class TableWithIndicesSupplier implements Supplier<BufferedDataTable> {
         return container.getTable();
     }
 
-    void clear() {
+    void clear(final ExecutionContext exec) {
         m_originalTable = null;
-        m_tableWithIndices = null;
+        if (m_tableWithIndices != null) {
+            exec.clearTable(m_tableWithIndices);
+            m_tableWithIndices = null;
+        }
     }
 
 }
