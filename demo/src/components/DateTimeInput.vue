@@ -28,6 +28,7 @@ export default {
       dateMilliseconds: new Date(),
       dateBounds: new Date(),
       dateTwoLines: new Date(),
+      dateWithTimezone: new Date(),
     };
   },
   computed: {
@@ -80,6 +81,9 @@ export default {
               :show-milliseconds="true"
             />
           </Label>
+          <Label text="Show Timezone" large>
+            <DateTimeInput v-model="dateWithTimezone" :show-timezone="true" />
+          </Label>
           <Label text="With bounds on date" large>
             <DateTimeInput
               v-model="dateBounds"
@@ -117,6 +121,7 @@ export default {
           <p>Default (and disabled): {{ dateDefault }}</p>
           <p>Date only: {{ dateOnlyDate }}</p>
           <p>Date with milliseconds: {{ dateMilliseconds }}</p>
+          <p>Date with timezone: {{ dateWithTimezone }}</p>
           <p>Date with bounds: {{ dateBounds }}</p>
           <p>Date on two lines: {{ dateTwoLines }}</p>
         </div>

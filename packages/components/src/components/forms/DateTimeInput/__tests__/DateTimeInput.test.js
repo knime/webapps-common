@@ -14,6 +14,7 @@ import {
   getMonth,
   getYear,
 } from "date-fns";
+import Dropdown from "../../Dropdown/Dropdown.vue";
 
 // TODO fix test
 describe("DateTimeInput.vue", () => {
@@ -63,6 +64,26 @@ describe("DateTimeInput.vue", () => {
       ).toBeTruthy();
       // eslint-disable-next-line no-magic-numbers
       expect(wrapper.findAllComponents(TimePartInput).length).toBe(4);
+      expect(wrapper.findComponent(Dropdown).exists()).toBe(false);
+    });
+
+    it("renders with datepicker and time and timezone", () => {
+      const localProps = {
+        ...props,
+        showTimezone: true,
+      };
+      let wrapper = mount(DateTimeInput, {
+        ...context,
+        props: localProps,
+      });
+      expect(wrapper.html()).toBeTruthy();
+      expect(wrapper.isVisible()).toBeTruthy();
+      expect(
+        wrapper.findComponent({ ref: "datePicker" }).isVisible(),
+      ).toBeTruthy();
+      // eslint-disable-next-line no-magic-numbers
+      expect(wrapper.findAllComponents(TimePartInput).length).toBe(4);
+      expect(wrapper.findComponent(Dropdown).exists()).toBe(true);
     });
 
     it("renders without time", () => {
@@ -115,7 +136,7 @@ describe("DateTimeInput.vue", () => {
       ).toBeTruthy();
     });
 
-    it.skip("renders disabled state", () => {
+    it.todo("renders disabled state", () => {
       // TODO add test for disabled state
     });
   });
@@ -266,6 +287,28 @@ describe("DateTimeInput.vue", () => {
       expect(
         getDayOfYear(wrapper.emitted("update:modelValue")[0][0]),
       ).toStrictEqual(getDayOfYear(props.modelValue));
+    });
+
+    it("updates date if selected timezone changes", async () => {
+      const modelValue = new Date("2020-05-03T10:00:00.000Z");
+      const localProps = {
+        ...props,
+        showTimezone: true,
+        timezone: "Europe/Berlin", // +1 hour
+        modelValue,
+      };
+      const newTimeZone = "Europe/Tallinn"; // +2 hour
+      const wrapper = mount(DateTimeInput, {
+        ...context,
+        props: localProps,
+      });
+      await wrapper
+        .findComponent(Dropdown)
+        .vm.$emit("update:modelValue", newTimeZone);
+
+      expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual(
+        new Date("2020-05-03T09:00:00.000Z"),
+      );
     });
   });
 

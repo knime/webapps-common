@@ -1,26 +1,26 @@
 <script>
 import {
-  parse,
   isValid,
+  parse,
   setHours,
+  setMilliseconds,
   setMinutes,
   setSeconds,
-  setMilliseconds,
 } from "date-fns";
 import { format, utcToZonedTime, zonedTimeToUtc } from "date-fns-tz";
-
 import { DatePicker } from "v-calendar";
 import {
-  updateDate,
-  isBeforeMinDate,
-  isAfterMaxDate,
   getLocalTimeZone,
+  isAfterMaxDate,
+  isBeforeMinDate,
+  updateDate,
 } from "@knime/utils";
-
 import CalendarIcon from "@knime/styles/img/icons/calendar.svg";
 import TimePartInput from "../TimePartInput/TimePartInput.vue";
 import { resolveClientOnlyComponent } from "../../nuxtComponentResolver";
 import "../variables.css";
+import Dropdown from "../Dropdown/Dropdown.vue";
+import { map } from "lodash-es";
 
 /**
  * DateTime component shows input field with a button and a popover calendar to choose the date. Time is represented
@@ -30,6 +30,7 @@ import "../variables.css";
 export default {
   name: "DateTimeInput",
   components: {
+    Dropdown,
     CalendarIcon,
     TimePartInput,
     DatePicker,
@@ -96,6 +97,10 @@ export default {
       default: true,
       type: Boolean,
     },
+    showTimezone: {
+      default: false,
+      type: Boolean,
+    },
     /**
      * If true, the time input fields (if present) are displayed in a separate row
      */
@@ -136,6 +141,11 @@ export default {
       // internal value guarded by watcher to prevent invalid values (min/max, null etc.)
       // time in the given timezone (default: browser local) for correct display
       localValue: new Date(""),
+      selectedTimezone: getLocalTimeZone(),
+      timezones: map(Intl.supportedValuesOf("timeZone"), (timezone) => ({
+        id: timezone,
+        text: timezone,
+      })),
     };
   },
   computed: {
@@ -168,10 +178,15 @@ export default {
         this.checkMinMax(newValue);
         if (this.checkIsValid(newValue)) {
           // convert to zoned time
-          this.localValue = utcToZonedTime(newValue, this.timezone);
+          this.localValue = utcToZonedTime(newValue, this.selectedTimezone);
         }
       },
       immediate: true,
+    },
+    timezone: {
+      handler(newValue) {
+        this.selectedTimezone = newValue;
+      },
     },
   },
   methods: {
@@ -189,8 +204,9 @@ export default {
     },
     emitInput(value) {
       // check min/max
-      this.checkMinMax(value);
-      this.$emit("update:modelValue", zonedTimeToUtc(value, this.timezone));
+      const utcValue = zonedTimeToUtc(value, this.selectedTimezone);
+      this.checkMinMax(utcValue);
+      this.$emit("update:modelValue", utcValue);
     },
     onDatePickerInput(date) {
       this.emitInput(updateDate(this.localValue, date));
@@ -309,6 +325,10 @@ export default {
       }
       this.emitInput(date);
     },
+    onTimeZoneChange(timezone) {
+      this.selectedTimezone = timezone;
+      this.emitInput(this.localValue);
+    },
     validate() {
       let isValid = true;
       let errorMessage;
@@ -382,7 +402,10 @@ export default {
       </Component>
       <span v-if="!isValid" class="invalid-marker" />
     </div>
-    <div v-if="showTime" :class="['time', { 'two-lines': twoLines, compact }]">
+    <div
+      v-if="showTime"
+      :class="['time', { 'two-lines': twoLines || showTimezone, compact }]"
+    >
       <TimePartInput
         ref="hours"
         class="time-part"
@@ -440,6 +463,17 @@ export default {
         @bounds="onTimeMillisecondsBounds"
         @update:model-value="onTimeMillisecondsChange"
       />
+      <span v-if="showTimezone" class="time-colon" />
+      <Dropdown
+        v-if="showTimezone"
+        class="timezone"
+        :model-value="selectedTimezone"
+        aria-label="Timezone"
+        :disabled="disabled"
+        :possible-values="timezones"
+        :compact="compact"
+        @update:model-value="onTimeZoneChange"
+      />
     </div>
   </div>
 </template>
@@ -461,7 +495,7 @@ export default {
     width: auto;
     flex-wrap: wrap;
     align-items: center;
-    gap: 1px 0;
+    gap: 10px 0;
 
     & .time-part {
       width: 5rem;
@@ -479,6 +513,10 @@ export default {
       display: flex;
       width: auto;
       flex-wrap: nowrap;
+    }
+
+    & .timezone {
+      flex: 0 1 260px;
     }
   }
 

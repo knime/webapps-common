@@ -182,7 +182,7 @@ export default {
       return this.modelValue === candidate;
     },
     setSelected(id: Id) {
-      consola.trace("ListBox setSelected on", id);
+      consola.trace("Dropdown setSelected on", id);
 
       /**
        * Fired when the selection changes.
