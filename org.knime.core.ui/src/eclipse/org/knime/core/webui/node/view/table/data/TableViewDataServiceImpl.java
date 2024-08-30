@@ -49,7 +49,6 @@
 package org.knime.core.webui.node.view.table.data;
 
 import java.io.IOException;
-import java.lang.ref.Cleaner;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -107,8 +106,6 @@ public class TableViewDataServiceImpl implements TableViewDataService {
 
     private final TableCache m_filteredAndSortedTableCache = new TableCache();
 
-    private static final Cleaner CLEANER = Cleaner.create();
-
     private final DataValueImageRendererRegistry m_rendererRegistry;
 
     private final DataValueRendererFactory m_rendererFactory;
@@ -135,12 +132,6 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         m_rendererFactory = rendererFactory;
         m_rendererRegistry = rendererRegistry;
         m_selectionSupplier = null;
-        CLEANER.register(this, () -> { // NOSONAR exposing a partially constructed instance is no problem here
-            /** because it's not really used (just to determine whether 'this' is phantom-reachable) */
-            m_sortedTableCache.clear();
-            m_filteredAndSortedTableCache.clear();
-            m_tableWithIndicesSupplier.clear();
-        });
     }
 
     /**
@@ -163,12 +154,6 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         m_tableId = tableId;
         m_rendererFactory = rendererFactory;
         m_rendererRegistry = rendererRegistry;
-        CLEANER.register(this, () -> { // NOSONAR exposing a partially constructed instance is no problem here
-            /** because it's not really used (just to determine whether 'this' is phantom-reachable) */
-            m_sortedTableCache.clear();
-            m_filteredAndSortedTableCache.clear();
-            m_tableWithIndicesSupplier.clear();
-        });
     }
 
     @Override
