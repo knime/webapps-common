@@ -25,7 +25,7 @@ import type {
   EditorTools,
   EditorToolItem,
 } from "../types";
-import { useLinkTool } from "../composables/use-link-tool";
+import { useLinkTool } from "../composables/useLinkTool";
 import type { LinkToolOptions } from "../utils/custom-link";
 
 interface Props {

@@ -17,13 +17,13 @@ import { FunctionButton, SubMenu } from "@knime/components";
 
 import RichTextEditor from "../RichTextEditor.vue";
 import CreateLinkModal from "../CreateLinkModal.vue";
-import { useLinkTool } from "../../composables/use-link-tool";
+import { useLinkTool } from "../../composables/useLinkTool";
 import { ref } from "vue";
 import { defaultLinkToolOptions } from "../../utils/custom-link";
 
 const { useLinkToolMock } = vi.hoisted(() => ({ useLinkToolMock: vi.fn() }));
 
-vi.mock("../../composables/use-link-tool", () => ({
+vi.mock("../../composables/useLinkTool", () => ({
   useLinkTool: useLinkToolMock,
 }));
 

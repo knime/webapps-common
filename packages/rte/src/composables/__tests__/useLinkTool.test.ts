@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
-import { useLinkTool } from "../use-link-tool";
+import { useLinkTool } from "../useLinkTool";
 import { defaultLinkToolOptions } from "../../utils/custom-link";
 import { defineComponent, h, ref, type Ref } from "vue";
 import { mount } from "@vue/test-utils";

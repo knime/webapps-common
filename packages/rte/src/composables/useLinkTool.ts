@@ -12,7 +12,6 @@ export const useLinkTool = ({
   isRegistered: boolean;
   linkToolOptions: LinkToolOptions;
 }) => {
-  // if tool is not registered, return placeholder
   if (!isRegistered) {
     return null;
   }
