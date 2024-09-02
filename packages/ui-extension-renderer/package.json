@@ -1,5 +1,5 @@
 {
-  "name": "@knime/ui-extensions-renderer",
+  "name": "@knime/ui-extension-renderer",
   "version": "1.0.20",
   "description": "Internal shared components and utilities to render UI-Extensions. Used in other consuming `@knime` packages.",
   "homepage": "https://knime.github.io/webapps-common/",

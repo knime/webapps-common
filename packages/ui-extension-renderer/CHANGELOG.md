@@ -1,4 +1,4 @@
-# @knime/ui-extensions-renderer
+# @knime/ui-extension-renderer
 
 ## 1.0.20
 
