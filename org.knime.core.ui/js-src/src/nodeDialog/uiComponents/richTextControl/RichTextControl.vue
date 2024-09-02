@@ -3,10 +3,11 @@ import {
   RichTextEditor,
   createOnEscapeExtension,
 } from "@knime/rich-text-editor";
-import useDialogControl from "../composables/components/useDialogControl";
+import useDialogControl from "../../composables/components/useDialogControl";
 import { rendererProps } from "@jsonforms/vue";
-import LabeledControl from "./label/LabeledControl.vue";
+import LabeledControl from "../label/LabeledControl.vue";
 import { ref } from "vue";
+import DialogLinkModal from "./DialogLinkModal.vue";
 const props = defineProps(rendererProps());
 const { control, onChange, disabled } = useDialogControl<string>({ props });
 
@@ -54,7 +55,13 @@ const CloseDialogOnEscape = createOnEscapeExtension(() => {
       }"
       :custom-extensions="[CloseDialogOnEscape]"
       @update:model-value="onChange"
-    />
+    >
+      <template #linkModal="{ linkTool }">
+        <temlate v-if="linkTool">
+          <DialogLinkModal :link-tool="linkTool" />
+        </temlate>
+      </template>
+    </RichTextEditor>
   </LabeledControl>
 </template>
 

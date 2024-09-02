@@ -7,7 +7,7 @@ import {
 import { RichTextEditor } from "@knime/rich-text-editor";
 import RichTextControl from "../RichTextControl.vue";
 import { inputFormats } from "@/nodeDialog/constants";
-import DialogLabel from "../label/DialogLabel.vue";
+import DialogLabel from "../../label/DialogLabel.vue";
 
 describe("RichTextControl.vue", () => {
   let props, wrapper, component, stubs;
