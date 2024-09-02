@@ -1,5 +1,13 @@
 # demo
 
+## 1.0.25
+
+### Patch Changes
+
+- 2fe8153: restructure link tool composable and modal
+- Updated dependencies [2fe8153]
+  - @knime/rich-text-editor@1.2.0
+
 ## 1.0.24
 
 ### Patch Changes
