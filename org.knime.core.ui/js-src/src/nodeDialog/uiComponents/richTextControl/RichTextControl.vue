@@ -82,14 +82,13 @@ const linkToolOptions = computed<typeof defaultLinkToolOptions>(() =>
       @update:model-value="onChange"
     >
       <template #linkModal="{ linkTool }">
-        <temlate v-if="linkTool">
-          <DialogLinkModal
-            :link-tool="linkTool"
-            :use-flow-var-templates="
-              control.uischema.options?.useFlowVarTemplates
-            "
-          />
-        </temlate>
+        <DialogLinkModal
+          v-if="linkTool"
+          :link-tool="linkTool"
+          :use-flow-var-templates="
+            control.uischema.options?.useFlowVarTemplates
+          "
+        />
       </template>
     </RichTextEditor>
   </LabeledControl>

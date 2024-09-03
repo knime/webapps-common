@@ -60,6 +60,10 @@ export default {
           `$$[&#34;${key}&#34;]`,
           value,
         );
+        newRichTextContent = newRichTextContent.replaceAll(
+          `$$[&quot;${key}&quot;]`,
+          value,
+        );
       });
       return newRichTextContent;
     },
