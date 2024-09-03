@@ -575,40 +575,6 @@ export default {
         </div>
         <div class="grid-item-2">selected id: {{ slottedSelected }}</div>
       </div>
-      <br />
-      <div class="grid-container">
-        <div class="grid-item-5">
-          <Dropdown
-            v-model="slottedSelected"
-            placeholder="In compact mode"
-            aria-label="A limited list"
-            size="3"
-            compact
-            :possible-values="slottedExamplePossibleValue"
-          >
-            <template
-              #option="{ slotData, isMissing, selectedValue } = {
-                slotData: {},
-              }"
-            >
-              <div v-if="isMissing" class="slot-option">
-                <div class="description">
-                  <div class="title">(MISSING) {{ selectedValue }}</div>
-                </div>
-              </div>
-              <div v-else class="slot-option">
-                <component :is="slotData.icon" />
-                <div class="description">
-                  <div class="title">{{ slotData.title }}</div>
-                  <div class="subtitle">{{ slotData.subtitle }}</div>
-                </div>
-                <div class="year">{{ slotData.year }}</div>
-              </div>
-            </template>
-          </Dropdown>
-        </div>
-        <div class="grid-item-2">selected id: {{ slottedSelected }}</div>
-      </div>
     </section>
     <section>
       <div class="grid-container">
