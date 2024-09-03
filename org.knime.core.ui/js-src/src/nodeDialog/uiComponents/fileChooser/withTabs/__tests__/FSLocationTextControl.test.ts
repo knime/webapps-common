@@ -9,6 +9,7 @@ import { InputField } from "@knime/components";
 
 describe("FSLocationTextControl.vue", () => {
   const currentSpacePrefix = "knime://knime.space/";
+  const embeddedDataPrefix = "knime://knime.workflow.data/";
   let props: FSLocationTextInputProps;
 
   beforeEach(() => {
@@ -68,6 +69,19 @@ describe("FSLocationTextControl.vue", () => {
     ).toBe(currentSpacePrefix + path);
   });
 
+  it("shows relative-to-embedded-data path", async () => {
+    const path = "foo";
+    props.modelValue = {
+      path,
+      timeout: 1000,
+      fsCategory: "relative-to-embedded-data",
+    };
+    expect(
+      (await mountFsLocationTextInput()).findComponent(InputField).props()
+        .modelValue,
+    ).toBe(embeddedDataPrefix + path);
+  });
+
   it("shows CUSTOM_URL path", async () => {
     const path = "foo://bar";
     props.modelValue = {
@@ -114,7 +128,12 @@ describe("FSLocationTextControl.vue", () => {
     ).toBe(fsToString);
   });
 
-  it.each(["LOCAL", "relative-to-current-hubspace", "CUSTOM_URL"] as const)(
+  it.each([
+    "LOCAL",
+    "relative-to-current-hubspace",
+    "relative-to-embedded-data",
+    "CUSTOM_URL",
+  ] as const)(
     "shows %s as non-supported when portIndex is present",
     async (fsCategory) => {
       const fsToString = "myFsPathString";

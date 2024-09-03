@@ -5,6 +5,7 @@ export enum FSCategory {
   CUSTOM_URL,
   CONNECTED,
   "relative-to-current-hubspace",
+  "relative-to-embedded-data",
 }
 
 export interface FileChooserValue {

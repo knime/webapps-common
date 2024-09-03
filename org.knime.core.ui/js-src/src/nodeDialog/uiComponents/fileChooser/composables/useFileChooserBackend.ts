@@ -117,5 +117,8 @@ export const getBackendType = (
   if (fsCategory === "CONNECTED") {
     return `connected${portIndex ?? -1}`;
   }
+  if (fsCategory === "relative-to-embedded-data") {
+    return "embedded";
+  }
   return "relativeToCurrentHubSpace";
 };

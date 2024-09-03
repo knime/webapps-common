@@ -30,4 +30,5 @@ export type PathAndError =
 export type BackendType =
   | "local"
   | "relativeToCurrentHubSpace"
+  | "embedded"
   | `connected${number}`;

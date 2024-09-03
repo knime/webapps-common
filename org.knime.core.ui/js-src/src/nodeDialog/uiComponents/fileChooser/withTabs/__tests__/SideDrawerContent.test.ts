@@ -54,6 +54,11 @@ describe("SideDrawerContent.vue", () => {
         icon: expect.anything(),
       },
       {
+        value: "relative-to-embedded-data",
+        label: "Embedded Data",
+        icon: expect.anything(),
+      },
+      {
         value: "CUSTOM_URL",
         label: "URL",
         icon: expect.anything(),
@@ -89,6 +94,16 @@ describe("SideDrawerContent.vue", () => {
     expect(fileExplorerTab.props().backendType).toBe(
       "relativeToCurrentHubSpace",
     );
+  });
+
+  it("renders embedded data tab", async () => {
+    const wrapper = mountSideDrawerContent();
+    await wrapper
+      .findComponent(TabBar)
+      .vm.$emit("update:model-value", "relative-to-embedded-data");
+    const fileExplorerTab = wrapper.findComponent(FileExplorerTab);
+    expect(fileExplorerTab.exists()).toBeTruthy();
+    expect(fileExplorerTab.props().backendType).toBe("embedded");
   });
 
   it("renders URL tab", async () => {

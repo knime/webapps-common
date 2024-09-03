@@ -44,78 +44,28 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Oct 26, 2023 (Paul Bärnreuther): created
+ *   Sep 3, 2024 (Paul Bärrneuther): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.dataservice.filechooser;
 
-import java.io.IOException;
-import java.nio.file.FileSystem;
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Pattern;
-
-import org.knime.core.webui.data.DataServiceContext;
-import org.knime.filehandling.core.port.FileSystemPortObjectSpec;
+import org.knime.filehandling.core.connections.DefaultFSConnectionFactory;
+import org.knime.filehandling.core.connections.FSConnection;
+import org.knime.filehandling.core.connections.RelativeTo;
 
 /**
- * An instance of this class manages the open file connections of the {@link FileChooserDataService} and provides the
- * respective functionality depending on a String id per file system.
  *
+ * @author Paul Bärrneuther
  */
-final class FileSystemConnector {
+public class DataAreaFileChooserBackend extends SimpleFileChooserBackend {
 
-    final Map<String, FileChooserBackend> m_fileChooserBackends = new HashMap<>();
-
-    interface FileChooserBackend {
-        FileSystem getFileSystem();
-
-        Object pathToObject(Path path);
-
-        default boolean isAbsoluteFileSystem() {
-            return true;
-        }
-
-        void close() throws IOException;
+    @Override
+    FSConnection createFSConnection() {
+        return DefaultFSConnectionFactory.createRelativeToConnection(RelativeTo.WORKFLOW_DATA);
     }
 
-    FileChooserBackend getFileChooserBackend(final String fileSystemId) {
-        return m_fileChooserBackends.computeIfAbsent(fileSystemId, FileSystemConnector::createFileChooserBackend);
-    }
-
-    private static final Pattern PORT_PATTERN = Pattern.compile("connected(\\d+)");
-
-    private static FileChooserBackend createFileChooserBackend(final String fileSystemId) {
-        if (fileSystemId.equals("local")) {
-            return new LocalFileChooserBackend();
-        }
-        if (fileSystemId.equals("relativeToCurrentHubSpace")) {
-            return new HubFileChooserBackend();
-        }
-        if (fileSystemId.equals("embedded")) {
-            return new DataAreaFileChooserBackend();
-        }
-        final var matcher = PORT_PATTERN.matcher(fileSystemId);
-        if (matcher.matches()) {
-            final var portIndex = Integer.parseInt(matcher.group(1));
-            final var portObjectSpec = (FileSystemPortObjectSpec)DataServiceContext.get().getInputSpecs()[portIndex];
-            return new ConnectedFileChooserBackend(portObjectSpec);
-        }
-        throw new IllegalArgumentException(String.format("%s is not a valid file system id", fileSystemId));
-    }
-
-    /**
-     * Closes all connections and clears the state.
-     */
-    public void clear() {
-        for (final var backend : m_fileChooserBackends.values()) {
-            try {
-                backend.close();
-            } catch (IOException ex) {
-                throw new IllegalStateException(ex);
-            }
-        }
-        m_fileChooserBackends.clear();
+    @Override
+    public boolean isAbsoluteFileSystem() {
+        return false;
     }
 
 }

@@ -5,6 +5,7 @@ import FileExplorerTab from "./FileExplorerTab.vue";
 import UrlTab from "./UrlTab.vue";
 import { TabBar } from "@knime/components";
 import LinkIcon from "@knime/styles/img/icons/link.svg";
+import FolderIcon from "@knime/styles/img/icons/folder.svg";
 import LocalSpaceIcon from "@knime/styles/img/icons/local-space.svg";
 import ComputerDesktopIcon from "@knime/styles/img/icons/computer-desktop.svg";
 import PluginInputIcon from "@knime/styles/img/icons/plugin-input.svg";
@@ -78,6 +79,11 @@ const possibleCategories: TabSpec[] = [
     icon: isLocal.value ? LocalSpaceIcon : KnimeIcon,
   },
   {
+    value: "relative-to-embedded-data",
+    label: "Embedded Data",
+    icon: FolderIcon,
+  },
+  {
     value: "CUSTOM_URL",
     label: "URL",
     icon: LinkIcon,
@@ -93,6 +99,7 @@ const browseAction: Record<
   string
 > = {
   "relative-to-current-hubspace": "browse the current space",
+  "relative-to-embedded-data": "browse the embedded data",
   CUSTOM_URL: "use a URL to read files",
   LOCAL: "browse the local file system",
 };

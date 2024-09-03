@@ -154,6 +154,7 @@ public final class FileChooserDataService {
      *            <ul>
      *            <li>"local": For the local file system</li>
      *            <li>"relativeToCurrentHubSpace": For the current space</li>
+     *            <li>"embedded": For the current workflow data area</li>
      *            <li>"connected${portIndex}": For the file system connected at portIndex.</li>
      *            </ul>
      * @param path the current path or null to reference the root level.

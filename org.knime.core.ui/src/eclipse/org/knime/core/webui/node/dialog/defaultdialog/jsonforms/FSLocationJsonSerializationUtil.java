@@ -97,14 +97,15 @@ final class FSLocationJsonSerializationUtil {
 
     private static final String RELATIVE_TO_CURRENT_HUBSPACE = "relative-to-current-hubspace";
 
+    private static final String RELATIVE_TO_EMBEDDED_DATA = "relative-to-embedded-data";
+
     static final class FSLocationSerializer extends JsonSerializer<FSLocation> {
 
         @Override
         public void serialize(final FSLocation fsLocation, final JsonGenerator gen,
             final SerializerProvider serializers) throws IOException {
             gen.writeStartObject();
-            final var fsCategory =
-                isCurrentHubSpace(fsLocation) ? RELATIVE_TO_CURRENT_HUBSPACE : fsLocation.getFileSystemCategory();
+            final var fsCategory = toFrontendFsCategory(fsLocation);
             gen.writeStringField(CATEGORY_KEY, fsCategory);
             gen.writeStringField(PATH_KEY, fsLocation.getPath());
             final var timeout = fsLocation.getFileSystemSpecifier() //
@@ -114,6 +115,16 @@ final class FSLocationJsonSerializationUtil {
             gen.writeNumberField(TIMEOUT_KEY, timeout);
             writeContext(gen, fsLocation, fsCategory);
             gen.writeEndObject();
+        }
+
+        private static String toFrontendFsCategory(final FSLocation fsLocation) {
+            if (isCurrentHubSpace(fsLocation)) {
+                return RELATIVE_TO_CURRENT_HUBSPACE;
+            }
+            if (isEmbeddedData(fsLocation)) {
+                return RELATIVE_TO_EMBEDDED_DATA;
+            }
+            return fsLocation.getFileSystemCategory();
         }
 
         private static void writeContext(final JsonGenerator gen, final FSLocation fsLocation, final String fsCategory)
@@ -148,6 +159,9 @@ final class FSLocationJsonSerializationUtil {
             if (fsCategory.equals(RELATIVE_TO_CURRENT_HUBSPACE)) {
                 return new FSLocation(FSCategory.RELATIVE, RelativeTo.SPACE.getSettingsValue(), path);
             }
+            if (fsCategory.equals(RELATIVE_TO_EMBEDDED_DATA)) {
+                return new FSLocation(FSCategory.RELATIVE, RelativeTo.WORKFLOW_DATA.getSettingsValue(), path);
+            }
             return new FSLocation(fsCategory, path);
         }
 
@@ -173,12 +187,21 @@ final class FSLocationJsonSerializationUtil {
     }
 
     static boolean isCurrentHubSpace(final FSLocation fsLocation) {
+        return isRelativeTo(fsLocation, RelativeTo.SPACE);
+    }
+
+    static boolean isEmbeddedData(final FSLocation fsLocation) {
+        return isRelativeTo(fsLocation, RelativeTo.WORKFLOW_DATA);
+    }
+
+    static boolean isRelativeTo(final FSLocation fsLocation, final RelativeTo relativeTo) {
         return fsLocation.getFSCategory() == FSCategory.RELATIVE && fsLocation.getFileSystemSpecifier()
-            .filter(specifier -> specifier.equals(RelativeTo.SPACE.getSettingsValue())).isPresent();
+            .filter(specifier -> specifier.equals(relativeTo.getSettingsValue())).isPresent();
     }
 
     static boolean useFileSystemSpecifierIfPresent(final String fsCategory) {
-        return !isLocal(fsCategory) && !isCustomURL(fsCategory) && !fsCategory.equals(RELATIVE_TO_CURRENT_HUBSPACE);
+        return !isLocal(fsCategory) && !isCustomURL(fsCategory) && !fsCategory.equals(RELATIVE_TO_CURRENT_HUBSPACE)
+            && !fsCategory.equals(RELATIVE_TO_EMBEDDED_DATA);
     }
 
 }

@@ -10,8 +10,10 @@ interface Props {
 export { Props };
 
 const currentSpacePrefix = "knime://knime.space/";
+const embeddedDataPrefix = "knime://knime.workflow.data/";
 export const prefixes: [keyof typeof FSCategory, string][] = [
   ["relative-to-current-hubspace", currentSpacePrefix],
+  ["relative-to-embedded-data", embeddedDataPrefix],
 ];
 </script>
 
@@ -47,6 +49,12 @@ const fsLocationToText = async (fsLocation: FileChooserValue) => {
     fsLocation.fsCategory === "relative-to-current-hubspace"
   ) {
     return currentSpacePrefix + fsLocation.path;
+  }
+  if (
+    !isConnected.value &&
+    fsLocation.fsCategory === "relative-to-embedded-data"
+  ) {
+    return embeddedDataPrefix + fsLocation.path;
   }
   if (!isConnected.value && fsLocation.fsCategory === "CUSTOM_URL") {
     return fsLocation.path;
