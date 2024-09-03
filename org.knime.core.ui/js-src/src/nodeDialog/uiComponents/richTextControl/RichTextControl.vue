@@ -2,11 +2,12 @@
 import {
   RichTextEditor,
   createOnEscapeExtension,
+  defaultLinkToolOptions,
 } from "@knime/rich-text-editor";
 import useDialogControl from "../../composables/components/useDialogControl";
 import { rendererProps } from "@jsonforms/vue";
 import LabeledControl from "../label/LabeledControl.vue";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import DialogLinkModal from "./DialogLinkModal.vue";
 const props = defineProps(rendererProps());
 const { control, onChange, disabled } = useDialogControl<string>({ props });
@@ -19,6 +20,28 @@ const CloseDialogOnEscape = createOnEscapeExtension(() => {
   richTextEditorElement.value!.$el.focus();
   return true;
 });
+
+const isFlowVarTemplate = (url: string) =>
+  url.startsWith('$$["') && url.endsWith('"]');
+
+const linkToolOptions = computed<typeof defaultLinkToolOptions>(() =>
+  control.value.uischema.options?.useFlowVarTemplates
+    ? {
+        urlValidator: (url: string) => {
+          if (isFlowVarTemplate(url)) {
+            return true;
+          }
+          return defaultLinkToolOptions.urlValidator(url);
+        },
+        sanitizeUrlText: (url: string) => {
+          if (isFlowVarTemplate(url)) {
+            return url;
+          }
+          return defaultLinkToolOptions.sanitizeUrlText(url);
+        },
+      }
+    : defaultLinkToolOptions,
+);
 </script>
 
 <template>
@@ -52,13 +75,20 @@ const CloseDialogOnEscape = createOnEscapeExtension(() => {
         horizontalRule: true,
         strike: true,
         paragraphTextStyle: true,
+        link: true,
       }"
+      :link-tool-options="linkToolOptions"
       :custom-extensions="[CloseDialogOnEscape]"
       @update:model-value="onChange"
     >
       <template #linkModal="{ linkTool }">
         <temlate v-if="linkTool">
-          <DialogLinkModal :link-tool="linkTool" />
+          <DialogLinkModal
+            :link-tool="linkTool"
+            :use-flow-var-templates="
+              control.uischema.options?.useFlowVarTemplates
+            "
+          />
         </temlate>
       </template>
     </RichTextEditor>

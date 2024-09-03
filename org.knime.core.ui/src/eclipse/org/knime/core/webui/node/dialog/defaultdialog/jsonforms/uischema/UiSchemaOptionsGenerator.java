@@ -71,6 +71,7 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_IS_WRITER;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_LABEL;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_OPTIONS;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_USE_FLOW_VAR_TEMPLATES;
 import static org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.getApplicableDefaults;
 import static org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.partitionWidgetAnnotationsByApplicability;
 
@@ -263,6 +264,10 @@ final class UiSchemaOptionsGenerator {
 
         if (annotatedWidgets.contains(RichTextInputWidget.class)) {
             options.put(TAG_FORMAT, Format.RICH_TEXT_INPUT);
+            final var richTextInputWidget = m_node.getAnnotation(RichTextInputWidget.class).orElseThrow();
+            if (richTextInputWidget.useFlowVarTemplates()) {
+                options.put(TAG_USE_FLOW_VAR_TEMPLATES, true);
+            }
         }
 
         if (annotatedWidgets.contains(FileReaderWidget.class)) {

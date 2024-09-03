@@ -1,29 +1,17 @@
 import { shallowMount } from "@vue/test-utils";
-import {
-  afterEach,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  type Mock,
-  vi,
-} from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import DialogLinkModal, { type Props } from "../DialogLinkModal.vue";
 import { ref, nextTick } from "vue";
 import { CreateLinkModal } from "@knime/rich-text-editor";
 
 describe("DialogLinkModal", () => {
-  let props: Props,
-    showModalSpy: () => void,
-    closeSpy: () => void,
-    propsUrlValidator: Mock<() => boolean>;
+  let props: Props, showModalSpy: () => void, closeSpy: () => void;
 
   const shallowMountModal = () => shallowMount(DialogLinkModal, { props });
 
   let wrapper: ReturnType<typeof shallowMountModal>;
 
   beforeEach(() => {
-    propsUrlValidator = vi.fn();
     props = {
       linkTool: {
         props: {
@@ -31,7 +19,7 @@ describe("DialogLinkModal", () => {
           url: ref("url"),
           isActive: ref(false),
           isEdit: ref(false),
-          urlValidator: propsUrlValidator,
+          urlValidator: vi.fn(),
         },
         events: {
           addLink: vi.fn(),
@@ -88,27 +76,5 @@ describe("DialogLinkModal", () => {
     );
     vi.runAllTimers();
     expect(closeSpy).toHaveBeenCalled();
-  });
-
-  describe("flow variable urls", () => {
-    let urlValidator: (url: string) => boolean;
-
-    beforeEach(() => {
-      urlValidator = wrapper
-        .findComponent(CreateLinkModal)
-        .props("urlValidator");
-    });
-
-    it("allows flow variable urls", () => {
-      expect(urlValidator('$$["myFlowVariable"]')).toBe(true);
-    });
-
-    it.each([
-      ["", true],
-      ["dis", false],
-    ])("%sallows same urls as per default", (_, allowed) => {
-      propsUrlValidator.mockReturnValueOnce(allowed);
-      expect(urlValidator("maybeAUrl")).toBe(allowed);
-    });
   });
 });

@@ -201,6 +201,11 @@ public final class JsonFormsConsts {
         public static final String TAG_FILE_EXTENSION_PROVIDER = "fileExtensionProvider";
 
         /**
+         * Used for rich text to adjust validations to incorporate the $$["flowVarName"] - Syntax
+         */
+        public static final String TAG_USE_FLOW_VAR_TEMPLATES = "useFlowVarTemplates";
+
+        /**
          * Several formats which are written to the options of the ui-schema of an ui element
          *
          * @author Paul Bärnreuther

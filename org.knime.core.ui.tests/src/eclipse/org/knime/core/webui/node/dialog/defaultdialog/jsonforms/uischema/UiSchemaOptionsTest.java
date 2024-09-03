@@ -853,12 +853,20 @@ class UiSchemaOptionsTest {
             @Widget(title = "", description = "")
             @RichTextInputWidget
             String m_richTextContent;
+
+            @Widget(title = "", description = "")
+            @RichTextInputWidget(useFlowVarTemplates = true)
+            String m_richTextContentWithTemplates;
         }
 
         var response = buildTestUiSchema(RichTextInputWidgetSettings.class);
         assertThatJson(response).inPath("$.elements[0]").isObject().containsKey("options");
-        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("richTextInput");
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("richTextContent");
+        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("richTextInput");
+        assertThatJson(response).inPath("$.elements[0].options").isObject().doesNotContainKey("useFlowVarTemplates");
+        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("richTextContentWithTemplates");
+        assertThatJson(response).inPath("$.elements[1].options.format").isString().isEqualTo("richTextInput");
+        assertThatJson(response).inPath("$.elements[1].options.useFlowVarTemplates").isBoolean().isTrue();
     }
 
     static final class MyHasPasswordProvider implements StateProvider<Boolean> {

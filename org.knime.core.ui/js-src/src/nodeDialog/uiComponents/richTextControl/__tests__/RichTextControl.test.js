@@ -106,4 +106,18 @@ describe("RichTextControl.vue", () => {
     const editorComponent = localWrapper.findComponent(RichTextEditor);
     expect(editorComponent.vm.editable).toBeFalsy();
   });
+
+  it("allows flow variable templates as urls if desired", async () => {
+    props.control.uischema.options.useFlowVarTemplates = true;
+    let { wrapper } = await mountJsonFormsComponent(RichTextControl, {
+      props,
+      withControllingFlowVariable: true,
+    });
+    const { urlValidator, sanitizeUrlText } = wrapper
+      .findComponent(RichTextEditor)
+      .props("linkToolOptions");
+    const flowVarTemplate = '$$["myFlowVariable"]';
+    expect(urlValidator(flowVarTemplate)).toBe(true);
+    expect(sanitizeUrlText(flowVarTemplate)).toBe(flowVarTemplate);
+  });
 });

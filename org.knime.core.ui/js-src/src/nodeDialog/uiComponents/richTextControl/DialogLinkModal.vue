@@ -22,6 +22,7 @@ export type Props = {
       cancelAddLink: () => void;
     };
   };
+  useFlowVarTemplates?: boolean;
 };
 </script>
 
@@ -34,12 +35,6 @@ const linkDialog = ref<HTMLDialogElement | null>(null);
 
 const modalPropsOverwrite = {
   isActive: ref(false),
-  urlValidator: (url: string) => {
-    if (url.startsWith('$$["') && url.endsWith('"]')) {
-      return true;
-    }
-    return props.linkTool.props.urlValidator(url);
-  },
 };
 
 /**
