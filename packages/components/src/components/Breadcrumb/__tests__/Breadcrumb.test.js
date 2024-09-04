@@ -63,15 +63,19 @@ describe("Breadcrumb.vue", () => {
     /* eslint-enable no-magic-numbers */
   });
 
-  it("renders grey focus and hover style", () => {
+  it.each([
+    ["greyStyle", "grey-style"],
+    ["noWrap", "no-wrap"],
+    ["compact", "compact"],
+  ])("renders %s", (prop, cls) => {
     let wrapper = mount(Breadcrumb, {
       props: {
         items: [{ text: "foo" }],
-        greyStyle: true,
+        [prop]: true,
       },
     });
 
-    expect(wrapper.find(".grey-style").exists()).toBe(true);
+    expect(wrapper.find(`.${cls}`).exists()).toBe(true);
   });
 
   it("renders clickable breadcrumbs", () => {

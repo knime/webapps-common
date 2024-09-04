@@ -37,6 +37,23 @@ export default {
       type: Boolean,
       default: false,
     },
+    /**
+     * Set to true to prevent line breaks in the breadcrumb
+     * If elements are too wide, the first and the last two elements are shown preferentially.
+     * Elements are shown in full on hover or focus.
+     * On overflow, no scrollbar will be shown, but the breadcrumb will be scrollable
+     */
+    noWrap: {
+      type: Boolean,
+      default: false,
+    },
+    /**
+     * Set to true to reduce the space between the breadcrumb items
+     */
+    compact: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ["click-item"],
   computed: {
@@ -44,8 +61,19 @@ export default {
     linkComponent() {
       return resolveNuxtLinkComponent();
     },
-    reversedItems() {
-      return this.items.slice().reverse();
+    /**
+     * Whether the items are rendered in reverse order from right to left
+     * With that we achieve that the right-most elements
+     * (which are the most important) stay visible initially on overflow
+     */
+    reverseItems() {
+      return this.noWrap;
+    },
+    breadcrumbItems() {
+      return this.reverseItems ? this.items.slice().reverse() : this.items;
+    },
+    rightMostItemIndex() {
+      return this.reverseItems ? 0 : this.items.length - 1;
     },
   },
 };
@@ -53,11 +81,22 @@ export default {
 
 <template>
   <nav
-    v-if="items && items.length"
-    :class="['breadcrumb', { 'grey-style': greyStyle }]"
+    v-if="breadcrumbItems && breadcrumbItems.length"
+    :class="[
+      'breadcrumb',
+      { 'grey-style': greyStyle, compact, 'no-wrap': noWrap },
+    ]"
   >
     <ul>
-      <li v-for="(breadcrumbItem, i) in reversedItems" :key="i">
+      <li
+        v-for="(breadcrumbItem, i) in breadcrumbItems"
+        :key="i"
+        :style="
+          !breadcrumbItem.icon && breadcrumbItem.text?.length < 3
+            ? { minWidth: 'fit-content' }
+            : {}
+        "
+      >
         <Component
           :is="linkComponent"
           v-if="breadcrumbItem.href"
@@ -90,7 +129,7 @@ export default {
           />
           {{ breadcrumbItem.text }} </span
         ><!-- no whitespace
-        --><ArrowNext v-if="i !== 0" class="arrow" />
+        --><ArrowNext v-if="i !== rightMostItemIndex" class="arrow" />
       </li>
     </ul>
   </nav>
@@ -107,58 +146,16 @@ export default {
   font-weight: 500;
   margin: 0;
   list-style-type: none;
-  justify-content: center;
-  display: flex;
-
-  /* needed to correctly size the toolbar */
-
-  /* width: 100%; */
 
   & ul,
   & li {
-    display: inline-flex;
+    display: inline-block;
     margin: 0;
-  }
-
-  & ul {
     padding: 0;
-    width: 100%;
-    max-width: fit-content;
-    flex-direction: row-reverse;
-
-    /* flex-basis: content; */
-    white-space: nowrap;
-    overflow-x: auto; /* Scroll with hidden scrollbar in ... */
-    -ms-overflow-style: none; /* ... Edge */
-    scrollbar-width: none; /* ... Firefox */
-    &::-webkit-scrollbar {
-      display: none; /* ... Chrome, Safari and Opera */
-    }
-  }
-
-  & ul > :nth-child(1),
-  & ul > :nth-child(2),
-  & ul > :nth-last-child(1) {
-    flex-shrink: 0;
   }
 
   & li {
     position: relative;
-    margin: 0;
-    max-width: min(400px, 30%);
-
-    /* > :first-child {
-      min-width: 30px;
-    } */
-    min-width: 0;
-    align-items: center;
-    flex-shrink: 1;
-    transition: flex-shrink 0.1s;
-
-    &:hover {
-      max-width: 100%;
-      flex-shrink: 0;
-    }
   }
 
   & span,
@@ -174,6 +171,7 @@ export default {
     vertical-align: middle;
   }
 
+  /* stylelint-disable no-descending-specificity */
   & svg {
     position: relative;
     vertical-align: top;
@@ -200,18 +198,12 @@ export default {
 
   /* Unlinked breadcrumb item */
   & span {
-    color: var(--theme-text-bold-color);
-
     &:focus {
       outline: none;
     }
 
     &:focus-visible {
       @mixin focus-outline;
-    }
-
-    & svg {
-      stroke: var(--theme-text-bold-color);
     }
   }
 
@@ -220,11 +212,19 @@ export default {
     cursor: pointer;
   }
 
+  & span:not(.clickable) {
+    color: var(--theme-text-bold-color);
+  }
+
+  & span:not(.clickable) svg {
+    stroke: var(--theme-text-bold-color);
+  }
+
   /* Linked breadcrumb item */
-  & a {
+  & a,
+  & span.clickable {
     &:hover,
     &:focus {
-      outline: none;
       color: var(--theme-text-bold-color);
 
       & svg {
@@ -233,15 +233,77 @@ export default {
     }
   }
 
+  & a {
+    &:hover,
+    &:focus {
+      outline: none;
+    }
+  }
+
+  &.compact {
+    & .breadcrumb-icon,
+    & .arrow {
+      margin: 0;
+    }
+
+    & span,
+    & a {
+      padding-right: 2px;
+      padding-left: 2px;
+    }
+  }
+
   &.grey-style {
     color: var(--theme-text-bold-color);
 
     /* Linked breadcrumb item */
-    & a:hover,
-    & a:focus {
-      outline: none;
-      background-color: var(--knime-silver-sand-semi);
+    & a,
+    & span.clickable {
+      &:hover,
+      &:focus {
+        background-color: var(--knime-silver-sand-semi);
+      }
     }
+  }
+
+  &.no-wrap {
+    display: flex; /** Otherwise the ul within will not shrink */
+    & ul {
+      display: inline-flex;
+      flex-direction: row-reverse; /* See this.reverseItems for explanation */
+      white-space: nowrap;
+      overflow-x: auto; /* Scroll with hidden scrollbar in ... */
+      -ms-overflow-style: none; /* ... Edge */
+      scrollbar-width: none; /* ... Firefox */
+      &::-webkit-scrollbar {
+        display: none; /* ... Chrome, Safari and Opera */
+      }
+    }
+
+    & li {
+      display: inline-flex;
+      align-items: center;
+      transition: flex-shrink 0.1s;
+      flex: 1 1 min(400px, 30%);
+      max-width: fit-content;
+      min-width: 45px;
+
+      &:hover,
+      &:focus {
+        flex-basis: unset;
+        flex-shrink: 0;
+      }
+
+      &:nth-child(1),
+      &:nth-child(2),
+      &:nth-last-child(1) {
+        flex-shrink: 0;
+      }
+    }
+  }
+
+  &.no-wrap.compact li {
+    min-width: 30px;
   }
 }
 </style>

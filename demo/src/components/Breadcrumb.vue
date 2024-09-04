@@ -31,11 +31,12 @@ export default {
         { text: "KNIME Hub", href: "/" },
         { text: "John Doe", href: "/john.doe" },
         { text: "Public Space", href: "/john.doe/space", icon: FolderIconRef },
+        { title: "only an icon with no text but a title", icon: FolderIcon },
         { text: "Examples (clickable)", icon: FolderIconRef, clickable: true },
         { text: "Sentiment Prediction via REST" },
-        { title: "only an icon with no text but a title", icon: FolderIcon },
       ],
       codeExample,
+      containerWidth: 200,
     };
   },
   methods: {
@@ -54,10 +55,26 @@ export default {
           Breadcrumbs can have different focus/hover styles, these can be
           toggled via the "greyStyle"-property
         </p>
-        <span>Default style:</span>
+        <h6>Default style:</h6>
         <Breadcrumb :items="breadcrumbItems" @click-item="onItemClicked" />
-        <span>"greyStyle" enabled:</span>
+        <h6>"greyStyle" enabled:</h6>
         <Breadcrumb :items="breadcrumbItems" grey-style />
+        <h6>"noWrap" enabled:</h6>
+        Width of container:
+        <input
+          v-model="containerWidth"
+          type="range"
+          min="20"
+          max="1000"
+          step="10"
+        />
+        <div
+          :style="{ width: `${containerWidth}px`, border: '1px solid black' }"
+        >
+          <Breadcrumb :items="breadcrumbItems" no-wrap />
+        </div>
+        <h6>"compact" enabled:</h6>
+        <Breadcrumb :items="breadcrumbItems" compact />
         <CodeExample summary="Show usage example">{{
           codeExample
         }}</CodeExample>
