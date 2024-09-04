@@ -3,9 +3,14 @@ import { describe, expect, it, vi, beforeEach, MockInstance } from "vitest";
 import flushPromises from "flush-promises";
 import type { Folder, PathAndError } from "../types";
 import { toFileExplorerItem } from "../utils";
-
+import HouseIcon from "@knime/styles/img/icons/house.svg";
 import DialogFileExplorer, { type Props } from "../DialogFileExplorer.vue";
-import { FileExplorer, InputField, LoadingIcon } from "@knime/components";
+import {
+  Breadcrumb,
+  FileExplorer,
+  InputField,
+  LoadingIcon,
+} from "@knime/components";
 
 describe("DialogFileExplorer.vue", () => {
   let dataServiceSpy: MockInstance, props: Props;
@@ -21,6 +26,7 @@ describe("DialogFileExplorer.vue", () => {
       { isDirectory: false, name: fileName },
     ],
     path: null,
+    parentFolders: [],
   });
 
   let getFilePathResult: PathAndError, folderFromBackend: Folder;
@@ -82,10 +88,11 @@ describe("DialogFileExplorer.vue", () => {
       method: "fileChooser.listItems",
       options: ["local", null, "", { extensions: [], isWriter: false }],
     });
+    expect(wrapper.findComponent(Breadcrumb).exists()).toBeFalsy();
     expect(wrapper.findComponent(FileExplorer).exists()).toBeFalsy();
     expect(wrapper.findComponent(LoadingIcon).exists()).toBeTruthy();
     await flushPromises();
-    expect(wrapper.find("span").text()).toBe("");
+    expect(wrapper.findComponent(Breadcrumb).exists()).toBeTruthy();
     expect(wrapper.findComponent(FileExplorer).exists()).toBeTruthy();
     const explorerProps = wrapper.findComponent(FileExplorer).props();
     expect(explorerProps.items).toStrictEqual(
@@ -94,22 +101,117 @@ describe("DialogFileExplorer.vue", () => {
     expect(explorerProps.isRootFolder).toBeTruthy();
   });
 
-  it("loads initial file path", async () => {
-    const initialFilePath = "myPath";
-    folderFromBackend.path = "currentPath";
-    props.initialFilePath = initialFilePath;
-    const wrapper = shallowMountFileChooser();
-    expect(dataServiceSpy).toHaveBeenCalledWith({
-      method: "fileChooser.listItems",
-      options: [
-        "local",
-        null,
-        initialFilePath,
-        { extensions: [], isWriter: false },
-      ],
+  describe("breadcrumbs", () => {
+    it.each([
+      {
+        parentFolders: [
+          {
+            name: null,
+            path: null,
+          },
+        ],
+        breadcrumbItems: [
+          {
+            icon: HouseIcon,
+            clickable: false,
+            title: "Root",
+            path: null,
+          },
+        ],
+      },
+      {
+        parentFolders: [
+          {
+            name: null,
+            path: "/",
+          },
+          {
+            name: "parent",
+            path: "/parent",
+          },
+          {
+            name: "folder",
+            path: "/parent/folder",
+          },
+        ],
+        breadcrumbItems: [
+          {
+            text: "/",
+            clickable: true,
+            title: "/",
+            path: "/",
+          },
+          {
+            text: "parent",
+            clickable: true,
+            title: "parent",
+            path: "/parent",
+          },
+          {
+            text: "folder",
+            clickable: false,
+            title: "folder",
+            path: "/parent/folder",
+          },
+        ],
+      },
+    ])(
+      "shows parent folders as breadcrumbs",
+      async ({ parentFolders, breadcrumbItems }) => {
+        const initialFilePath = "myPath";
+        folderFromBackend.path = "currentPath";
+        folderFromBackend.parentFolders = parentFolders;
+        props.initialFilePath = initialFilePath;
+        const wrapper = shallowMountFileChooser();
+        expect(dataServiceSpy).toHaveBeenCalledWith({
+          method: "fileChooser.listItems",
+          options: [
+            "local",
+            null,
+            initialFilePath,
+            { extensions: [], isWriter: false },
+          ],
+        });
+        await flushPromises();
+        expect(wrapper.findComponent(Breadcrumb).props().items).toStrictEqual(
+          breadcrumbItems,
+        );
+      },
+    );
+
+    it("shows breadcrumbRoot as root path of breadcrumb", async () => {
+      const breadcrumbRoot = "/mySpace";
+      props.breadcrumbRoot = breadcrumbRoot;
+      folderFromBackend.parentFolders = [{ path: null, name: null }];
+      const wrapper = shallowMountFileChooser();
+      await flushPromises();
+      expect(wrapper.findComponent(Breadcrumb).props().items).toStrictEqual([
+        {
+          text: breadcrumbRoot,
+          clickable: false,
+          title: breadcrumbRoot,
+          path: null,
+        },
+      ]);
     });
-    await flushPromises();
-    expect(wrapper.find("span").text()).toBe(folderFromBackend.path);
+
+    it("navigates to parent folder on breadcrumb click", async () => {
+      const wrapper = shallowMountFileChooser();
+      await flushPromises();
+      const parentFolderPath = "/parent";
+      wrapper
+        .findComponent(Breadcrumb)
+        .vm.$emit("click-item", { path: parentFolderPath });
+      expect(dataServiceSpy).toHaveBeenCalledWith({
+        method: "fileChooser.listItems",
+        options: [
+          expect.any(String),
+          parentFolderPath,
+          null,
+          expect.any(Object),
+        ],
+      });
+    });
   });
 
   it("reloads initial file path on backend change", async () => {

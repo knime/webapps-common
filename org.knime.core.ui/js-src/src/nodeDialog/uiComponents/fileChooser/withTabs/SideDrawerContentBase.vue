@@ -94,6 +94,16 @@ const backendType = computed<BackendType>(() =>
   getBackendType(props.modelValue.fsCategory, portIndex.value),
 );
 
+const breadcrumbRoot = computed(() => {
+  if (props.modelValue.fsCategory === "relative-to-current-hubspace") {
+    return spacePath.value;
+  }
+  if (props.modelValue.fsCategory === "relative-to-embedded-data") {
+    return "Data";
+  }
+  return null;
+});
+
 const browseAction: Record<
   Exclude<keyof typeof FSCategory, "CONNECTED">,
   string
@@ -133,7 +143,7 @@ const browseAction: Record<
         :is-writer="isWriter"
         :backend-type="backendType"
         :initial-file-path="modelValue.path"
-        :space-path="spacePath"
+        :breadcrumb-root="breadcrumbRoot"
         @choose-file="onPathUpdate"
       />
     </div>

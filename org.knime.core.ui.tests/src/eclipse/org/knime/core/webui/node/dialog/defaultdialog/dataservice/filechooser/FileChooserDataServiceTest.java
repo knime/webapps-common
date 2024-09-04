@@ -265,6 +265,25 @@ class FileChooserDataServiceTest {
             verify(fileChooserBackend).pathToObject(eq(subDirectory));
             assertThat(result.errorMessage()).isEmpty();
             assertThat(result.folder().items()).hasSize(1);
+            final var parentFolders = result.folder().parentFolders();
+            assertThat(parentFolders).hasSizeGreaterThan(1);
+            assertThat(parentFolders.get(parentFolders.size() - 2).name())
+                .isEqualTo(m_subFolder.getFileName().toString());
+            assertThat(parentFolders.get(parentFolders.size() - 1).name())
+                .isEqualTo(directory.getFileName().toString());
+        }
+
+        @Test
+        void testGetItemsWithoutFolder() throws IOException {
+            final var directory = Files.createTempDirectory(m_subFolder, "aDirectory");
+            final var subDirectory = Files.createTempDirectory(directory, "aSubDirectory");
+            final var path = relativizeIfNecessary(m_subFolder).toString();
+            when(m_fileSystem.getPath(eq(path))).thenReturn(relativizeIfNecessary(directory));
+            final var result = new PerformListItemsBuilder().withPath(path).build().performListItems();
+            final var fileChooserBackend = fileChooserBackendMock.constructed().get(0);
+            verify(fileChooserBackend).pathToObject(eq(subDirectory));
+            assertThat(result.errorMessage()).isEmpty();
+            assertThat(result.folder().items()).hasSize(1);
         }
 
         @Test

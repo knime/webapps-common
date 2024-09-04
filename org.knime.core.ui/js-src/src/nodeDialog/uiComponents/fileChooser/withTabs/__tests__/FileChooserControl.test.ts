@@ -152,7 +152,7 @@ describe("FileChooserControl.vue", () => {
 
   describe("switches to valid values when mounted", () => {
     it("does not switch to the first valid category if the current category is valid", async () => {
-      props.control.data.fsCategory = "relative-to-embedded-data";
+      props.control.data.path.fsCategory = "relative-to-embedded-data";
       const { handleChange } = await mountJsonFormsComponent(
         FileChooserControl,
         {

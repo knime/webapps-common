@@ -64,6 +64,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.knime.core.webui.node.dialog.defaultdialog.dataservice.filechooser.FileSystemConnector.FileChooserBackend;
@@ -92,18 +93,34 @@ public final class FileChooserDataService {
         m_fsConnector.clear();
     }
 
-    record Folder(List<Object> items, String path) {
+    record ParentFolder(String path, String name) {
+
+    }
+
+    record Folder(List<Object> items, String path, List<ParentFolder> parentFolders) {
 
         static FolderAndError asRootFolder(final List<Object> items, final String errorMessage,
             final String inputPath) {
-            return new FolderAndError(new Folder(items, null), Optional.ofNullable(errorMessage), inputPath);
+            return new FolderAndError(new Folder(items, null, getParentFolders(null)),
+                Optional.ofNullable(errorMessage), inputPath);
         }
 
         static FolderAndError asNonRootFolder(final Path path, final List<Object> items, final String errorMessage,
             final Path inputPath) {
-            final var folder = new Folder(items, path.toString());
+            final var folder = new Folder(items, path.toString(), getParentFolders(path));
             String relativePath = getFilePathRelativeToFolder(path, inputPath);
             return new FolderAndError(folder, Optional.ofNullable(errorMessage), relativePath);
+        }
+
+        static List<ParentFolder> getParentFolders(final Path path) {
+            if (path == null) {
+                return List.of(new ParentFolder(null, null));
+            }
+            return Stream.concat(//
+                getParentFolders(path.getParent()).stream(), //
+                Stream.of(new ParentFolder(path.toString(),
+                    path.getFileName() == null ? null : path.getFileName().toString()))//
+            ).toList();
         }
     }
 
@@ -286,6 +303,9 @@ public final class FileChooserDataService {
         throws InvalidPathException {
         if (path == null) {
             return nextFolder == null ? null : fileSystem.getPath(nextFolder);
+        }
+        if (nextFolder == null) {
+            return fileSystem.getPath(path);
         }
         if (nextFolder.equals("..")) {
             return fileSystem.getPath(path).getParent();

@@ -21,6 +21,7 @@ describe("FileChooserWithButtons.vue", () => {
       { isDirectory: false, name: fileName },
     ],
     path: null,
+    parentFolders: [],
   });
 
   let getFilePathResult: PathAndError, folderFromBackend: Folder;

@@ -69,7 +69,7 @@ watch(
 );
 
 const { onFsCategoryUpdate } = useFileChooserStateChange(
-  computed(() => control.value.data.path),
+  computed(() => control.value.data?.path),
   onChange,
   browseOptions,
 );
@@ -82,7 +82,7 @@ const { onFsCategoryUpdate } = useFileChooserStateChange(
 onMounted(() => {
   if (
     !isOverwritten.value &&
-    !validCategories.value.includes(control.value.data.path.fsCategory)
+    !validCategories.value.includes(control.value.data?.path.fsCategory)
   ) {
     onFsCategoryUpdate(validCategories.value[0]);
   }

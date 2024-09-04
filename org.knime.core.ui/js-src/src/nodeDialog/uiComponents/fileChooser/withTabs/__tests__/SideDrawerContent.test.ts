@@ -81,9 +81,12 @@ describe("SideDrawerContent.vue", () => {
       ...props.initialValue,
       path: updatedPath,
     });
+    expect(fileExplorerTab.props().breadcrumbRoot).toBeNull();
   });
 
   it("renders current hub space tab", async () => {
+    const spacePath = "mySpacePath";
+    props.options!.spacePath = spacePath;
     const wrapper = mountSideDrawerContent();
     expect(wrapper.findComponent(TabBar).props().modelValue).toBe(
       "relative-to-current-hubspace",
@@ -94,6 +97,7 @@ describe("SideDrawerContent.vue", () => {
     expect(fileExplorerTab.props().backendType).toBe(
       "relativeToCurrentHubSpace",
     );
+    expect(fileExplorerTab.props().breadcrumbRoot).toBe(spacePath);
   });
 
   it("renders embedded data tab", async () => {
@@ -104,6 +108,7 @@ describe("SideDrawerContent.vue", () => {
     const fileExplorerTab = wrapper.findComponent(FileExplorerTab);
     expect(fileExplorerTab.exists()).toBeTruthy();
     expect(fileExplorerTab.props().backendType).toBe("embedded");
+    expect(fileExplorerTab.props().breadcrumbRoot).toBe("Data");
   });
 
   it("renders URL tab", async () => {

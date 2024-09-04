@@ -354,6 +354,28 @@ export default (rpcRequest: { method: string; params: any[] }) => {
             },
           ],
           path: "/path/to/folder",
+          parentFolders: [
+            {
+              path: null,
+              name: null,
+            },
+            {
+              path: "/",
+              name: null,
+            },
+            {
+              path: "/path",
+              name: "path",
+            },
+            {
+              path: "/path/to",
+              name: "to",
+            },
+            {
+              path: "/path/to/folder",
+              name: "folder",
+            },
+          ],
         },
         ...(rpcRequest.params[2] === errorFolder
           ? { errorMessage: "I am an error message" }

@@ -6,9 +6,21 @@ export interface Item {
   name: string;
 }
 
+export type ParentFolder =
+  | {
+      name: string | null; // can be null in case of root directory
+      path: string;
+    }
+  // dummy directory containing all roots
+  | {
+      name: null;
+      path: null;
+    };
+
 export interface Folder {
   items: Item[];
   path: string | null;
+  parentFolders: ParentFolder[];
 }
 
 export type FolderAndError = {

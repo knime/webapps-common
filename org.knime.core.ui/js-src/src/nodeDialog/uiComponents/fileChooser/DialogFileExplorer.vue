@@ -1,5 +1,10 @@
 <script lang="ts">
-import type { BackendType, Folder, FolderAndError } from "./types";
+import type {
+  BackendType,
+  Folder,
+  FolderAndError,
+  ParentFolder,
+} from "./types";
 interface Props {
   initialFilePath?: string;
   isWriter?: boolean;
@@ -8,7 +13,7 @@ interface Props {
   backendType: BackendType;
   clickOutsideException?: null | HTMLElement;
   openFileByExplorer?: boolean;
-  spacePath?: string;
+  breadcrumbRoot?: string | null;
 }
 export { Props };
 </script>
@@ -16,6 +21,7 @@ export { Props };
 <script setup lang="ts">
 import { ref, computed, toRefs, watch } from "vue";
 import {
+  Breadcrumb,
   FileExplorer,
   InputField,
   LoadingIcon,
@@ -23,9 +29,10 @@ import {
 } from "@knime/components";
 import useFileChooserBackend from "./composables/useFileChooserBackend";
 import { toFileExplorerItem } from "./utils";
-import FolderIcon from "@knime/styles/img/icons/folder.svg";
+import HouseIcon from "@knime/styles/img/icons/house.svg";
 
 const currentPath = ref<string | null>(null);
+const currentParents = ref<ParentFolder[]>([]);
 
 const items = ref<FileExplorerItem[]>([]);
 const props = withDefaults(defineProps<Props>(), {
@@ -35,18 +42,33 @@ const props = withDefaults(defineProps<Props>(), {
   appendedExtension: null,
   clickOutsideException: null,
   openFileByExplorer: false,
-  spacePath: "",
+  breadcrumbRoot: null,
 });
 
-const currentPathDisplay = computed(() => {
-  if (currentPath.value && props.spacePath) {
-    return `${props.spacePath}/${currentPath.value}`;
-  }
-  if (currentPath.value) {
-    return currentPath.value;
-  }
-  return props.spacePath ?? "";
-});
+const breadcrumbItems = computed(() =>
+  currentParents.value.map((parent, index) => {
+    let text = parent.name;
+    let icon = null;
+    if (typeof text !== "string") {
+      if (parent.path === null) {
+        if (props.breadcrumbRoot === null) {
+          icon = HouseIcon;
+        } else {
+          text = props.breadcrumbRoot;
+        }
+      } else {
+        text = parent.path;
+      }
+    }
+    return {
+      ...(text === null ? {} : { text }),
+      title: text ?? "Root",
+      path: parent.path,
+      clickable: index !== currentParents.value.length - 1,
+      ...(icon ? { icon } : {}),
+    };
+  }),
+);
 
 const emit = defineEmits<{
   fileIsSelected: [boolean];
@@ -63,6 +85,7 @@ const isLoading = ref(true);
 const setNextItems = (folder: Folder) => {
   isLoading.value = false;
   currentPath.value = folder.path;
+  currentParents.value = folder.parentFolders;
   items.value = folder.items.map(toFileExplorerItem);
 };
 
@@ -108,12 +131,21 @@ watch(
 
 const selectedDirectoryName = ref("");
 
-const changeDirectory = (nextFolder: string) => {
+const loadNewFolder = (
+  path: string | null,
+  folderName: string | null = null,
+) => {
   selectedDirectoryName.value = "";
   selectedFileName.value = "";
   isLoading.value = true;
-  listItems(currentPath.value, nextFolder).then(handleListItemsResult);
+  listItems(path, folderName).then(handleListItemsResult);
 };
+
+const changeDirectory = (nextFolder: string) =>
+  loadNewFolder(currentPath.value, nextFolder);
+
+const onBreadcrumbItemClick = ({ path }: { path?: string | null }) =>
+  loadNewFolder(path ?? null);
 
 const onOpenFile = async (name: string) => {
   const { path, errorMessage } = await getFilePath(currentPath.value, name);
@@ -155,8 +187,13 @@ const onChangeSelectedItemIds = (itemIds: string[]) => {
   </div>
   <template v-else>
     <div class="current-path">
-      <FolderIcon />
-      <span :title="currentPathDisplay"> {{ currentPathDisplay }}</span>
+      <Breadcrumb
+        class="breadcrumb"
+        :items="breadcrumbItems"
+        no-wrap
+        compact
+        @click-item="onBreadcrumbItemClick as any"
+      />
       <span v-if="displayedError !== null" class="error"
         >({{ displayedError }})</span
       >
@@ -198,13 +235,12 @@ const onChangeSelectedItemIds = (itemIds: string[]) => {
 .current-path {
   font-size: 13px;
   display: flex;
-  gap: 10px;
-  align-items: center;
   margin: 5px;
+  flex-direction: column;
 
-  & svg {
-    width: 15px;
-    height: 15px;
+  & .breadcrumb {
+    width: 100%;
+    user-select: none;
   }
 
   & span.error {
