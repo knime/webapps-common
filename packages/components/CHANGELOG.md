@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.1.2
+
+### Patch Changes
+
+- 6b380fb: DateTimeInput: add support for time zone selection
+
 ## 1.1.1
 
 ### Patch Changes

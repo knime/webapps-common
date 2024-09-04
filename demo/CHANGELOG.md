@@ -1,5 +1,14 @@
 # demo
 
+## 1.0.26
+
+### Patch Changes
+
+- 6b380fb: DateTimeInput: add support for time zone selection
+- Updated dependencies [6b380fb]
+  - @knime/components@1.1.2
+  - @knime/rich-text-editor@1.2.1
+
 ## 1.0.25
 
 ### Patch Changes
