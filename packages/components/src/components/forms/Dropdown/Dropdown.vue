@@ -153,6 +153,7 @@ export default {
       candidate: this.modelValue,
       emptyState: "Nothing found",
       optionRefs: new Map(),
+      slotContainerHeight: 0,
     };
   },
   computed: {
@@ -211,10 +212,10 @@ export default {
       return this.$slots["icon-right"]?.().length;
     },
     hasOptionTemplate() {
-      if (this.flatOrderedValues.length === 0) {
+      if (this.possibleValues.length === 0) {
         return false;
       }
-      return this.flatOrderedValues.every(
+      return this.possibleValues.every(
         (value) => value.slotData && !isEmpty(value.slotData),
       );
     },
@@ -356,6 +357,10 @@ export default {
         return;
       }
       this.searchValue = this.displayTextMap[this.modelValue];
+      if (this.hasOptionTemplate) {
+        this.slotContainerHeight =
+          (this.$refs.slotContainer as HTMLElement)?.clientHeight ?? 0;
+      }
       this.isExpanded = true;
       this.selectFirst();
       this.$nextTick(() => {
@@ -454,6 +459,13 @@ export default {
             missing: isMissing && !isExpanded,
             'has-option-template': hasOptionTemplate && !isExpanded,
           }"
+          :style="{
+            ...(isExpanded &&
+              hasOptionTemplate && {
+                height: `calc(${slotContainerHeight}px + 0 * var(--form-border-width))`,
+                boxSizing: 'content-box',
+              }),
+          }"
           :aria-label="ariaLabel"
           :aria-labelledby="generateId('button')"
           :aria-expanded="isExpanded"
@@ -471,14 +483,14 @@ export default {
             @click.stop
             @input="(e) => handleSearch((e.target as HTMLInputElement).value)"
           />
-          <template v-else-if="hasOptionTemplate">
+          <div v-else-if="hasOptionTemplate" ref="slotContainer">
             <slot
               name="option"
               :slot-data="selectedOption?.slotData"
               :is-missing="isMissing"
               :selected-value="modelValue"
             />
-          </template>
+          </div>
           <span v-else ref="span">{{ displayText }}</span>
           <div class="right">
             <div v-if="hasRightIcon" class="loading-icon">

@@ -565,6 +565,21 @@ describe("Dropdown.vue", () => {
       expect(option.classes()).not.toContain("slotted");
       expect(option.text()).toBe(possibleValues[0].text);
     });
+
+    it("keeps the height of the slot content when expanding and showing the search", async () => {
+      const possibleValues = [cloneDeep(POSSIBLE_SLOTTED_VALUES_MOCK[0])];
+      const { wrapper } = doMount({
+        modelValue: possibleValues[0].id,
+        possibleValues,
+        slots: { option: OPTION_SLOT_CONTENT_MOCK },
+      });
+      Object.defineProperty(wrapper.vm.$refs.slotContainer, "clientHeight", {
+        value: 40,
+      });
+      const button = wrapper.find("[role=button]");
+      await button.trigger("click");
+      expect(wrapper.vm.slotContainerHeight).toBe(40);
+    });
   });
 
   describe("dropdown with options groups", () => {
