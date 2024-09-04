@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, type Ref } from "vue";
 
 import { Modal, Button, InputField, Label } from "@knime/components";
 
 interface Props {
-  text: string;
-  url: string;
-  isActive: boolean;
-  isEdit: boolean;
+  text: Ref<string>;
+  url: Ref<string>;
+  isActive: Ref<boolean>;
+  isEdit: Ref<boolean>;
   urlValidator: (url: string) => boolean;
 }
 
@@ -15,14 +15,14 @@ const props = defineProps<Props>();
 
 const inputRef = ref<HTMLInputElement | null>(null);
 
-const editedText = ref(props.text);
-const editedUrl = ref(props.url);
+const editedText = ref(props.text.value);
+const editedUrl = ref(props.url.value);
 
 watch(
   props,
   () => {
-    editedText.value = props.text;
-    editedUrl.value = props.url;
+    editedText.value = props.text.value;
+    editedUrl.value = props.url.value;
     setTimeout(() => {
       inputRef.value?.focus();
       // eslint-disable-next-line no-magic-numbers
@@ -52,8 +52,8 @@ const validateUrl = () => {
 };
 
 const isValid = computed(() => {
-  const textChanged = editedText.value !== props.text;
-  const urlChanged = editedUrl.value !== props.url;
+  const textChanged = editedText.value !== props.text.value;
+  const urlChanged = editedUrl.value !== props.url.value;
   const urlNotEmpty = editedUrl.value !== "";
 
   return (textChanged || urlChanged) && validateUrl() && urlNotEmpty;
@@ -68,9 +68,9 @@ const onkeyup = (keyupEvent: KeyboardEvent) => {
 
 <template>
   <Modal
-    v-show="isActive"
-    :active="isActive"
-    :title="isEdit ? 'Edit link' : 'Add a link'"
+    v-show="isActive.value"
+    :active="isActive.value"
+    :title="isEdit.value ? 'Edit link' : 'Add a link'"
     style-type="info"
     class="modal"
     @cancel="closeModal"
@@ -109,11 +109,16 @@ const onkeyup = (keyupEvent: KeyboardEvent) => {
         <strong>Cancel</strong>
       </Button>
       <div class="controls-apply-group">
-        <Button v-if="isEdit" compact with-border @click="emit('removeLink')">
+        <Button
+          v-if="isEdit.value"
+          compact
+          with-border
+          @click="emit('removeLink')"
+        >
           <strong>Remove URL</strong>
         </Button>
         <Button compact primary :disabled="!isValid" @click="onSubmit">
-          <strong>{{ isEdit ? "Apply" : "Add link" }}</strong>
+          <strong>{{ isEdit.value ? "Apply" : "Add link" }}</strong>
         </Button>
       </div>
     </template>

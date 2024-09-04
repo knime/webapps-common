@@ -1,5 +1,11 @@
 # @knime/rich-text-editor
 
+## 1.2.0
+
+### Minor Changes
+
+- 2fe8153: restructure link tool composable and modal
+
 ## 1.1.3
 
 ### Patch Changes

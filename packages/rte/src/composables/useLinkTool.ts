@@ -1,16 +1,25 @@
 import type { Editor } from "@tiptap/vue-3";
-import { ref } from "vue";
+import { navigatorUtils } from "@knime/utils";
+import { computed, onMounted, onUnmounted, ref } from "vue";
+import type { LinkToolOptions } from "../utils/custom-link";
 
 export const useLinkTool = ({
   editor,
-  sanitizeUrlText,
+  isRegistered,
+  linkToolOptions,
 }: {
   editor: Editor;
-  sanitizeUrlText: (url: string) => string;
+  isRegistered: boolean;
+  linkToolOptions: LinkToolOptions;
 }) => {
-  const showCreateLinkModal = ref(false);
+  if (!isRegistered) {
+    return null;
+  }
+
+  const isActive = ref(false);
   const text = ref("");
   const url = ref("");
+  const isEdit = computed(() => url.value !== "");
   const isReplacingText = ref(false);
 
   const onLinkToolClick = () => {
@@ -38,13 +47,13 @@ export const useLinkTool = ({
     }
 
     isReplacingText.value = Boolean(currentLink || text.value);
-    showCreateLinkModal.value = true;
+    isActive.value = true;
   };
 
-  const removeLink = () => {
+  const onRemoveLink = () => {
     editor.chain().focus().extendMarkRange("link").unsetLink().run();
 
-    showCreateLinkModal.value = false;
+    isActive.value = false;
     isReplacingText.value = false;
   };
 
@@ -97,11 +106,11 @@ export const useLinkTool = ({
     }
   };
 
-  const addLink = (text: string, urlText: string) => {
+  const onAddLink = (text: string, urlText: string) => {
     editor.chain().focus().extendMarkRange("link").unsetLink().run();
 
     if (urlText) {
-      const url = sanitizeUrlText?.(urlText) ?? urlText;
+      const url = linkToolOptions.sanitizeUrlText?.(urlText) ?? urlText;
 
       addCustomLink({
         isEditing: isReplacingText.value,
@@ -111,23 +120,48 @@ export const useLinkTool = ({
       });
     }
 
-    showCreateLinkModal.value = false;
+    isActive.value = false;
     isReplacingText.value = false;
   };
 
-  const cancelAddLink = () => {
-    showCreateLinkModal.value = false;
+  const onCancelAddLink = () => {
+    isActive.value = false;
     isReplacingText.value = false;
   };
+
+  /**
+   * Handle custom hotkeys for link tool that are not supported by tiptap.
+   */
+  const onKeyDown = (event: KeyboardEvent) => {
+    if (!editor?.isFocused) {
+      return;
+    }
+    const ctrlPressed = event[navigatorUtils.getMetaOrCtrlKey()];
+    if (ctrlPressed && event.key === "k") {
+      onLinkToolClick();
+    }
+  };
+  onMounted(() => {
+    window.addEventListener("keydown", onKeyDown);
+  });
+
+  onUnmounted(() => {
+    window.removeEventListener("keydown", onKeyDown);
+  });
 
   return {
     onLinkToolClick,
-    addLink,
-    removeLink,
-    cancelAddLink,
-    showCreateLinkModal,
-    isReplacingText,
-    url,
-    text,
+    props: {
+      url,
+      text,
+      isActive,
+      isEdit,
+      urlValidator: linkToolOptions.urlValidator,
+    },
+    events: {
+      addLink: onAddLink,
+      removeLink: onRemoveLink,
+      cancelAddLink: onCancelAddLink,
+    },
   };
 };

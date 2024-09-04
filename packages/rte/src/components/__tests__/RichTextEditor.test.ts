@@ -17,13 +17,13 @@ import { FunctionButton, SubMenu } from "@knime/components";
 
 import RichTextEditor from "../RichTextEditor.vue";
 import CreateLinkModal from "../CreateLinkModal.vue";
-import { useLinkTool } from "../../composables/use-link-tool";
+import { useLinkTool } from "../../composables/useLinkTool";
 import { ref } from "vue";
 import { defaultLinkToolOptions } from "../../utils/custom-link";
 
 const { useLinkToolMock } = vi.hoisted(() => ({ useLinkToolMock: vi.fn() }));
 
-vi.mock("../../composables/use-link-tool", () => ({
+vi.mock("../../composables/useLinkTool", () => ({
   useLinkTool: useLinkToolMock,
 }));
 
@@ -123,13 +123,18 @@ describe("RichTextEditor.vue", () => {
 
     const linkToolMock = {
       onLinkToolClick: vi.fn(),
-      addLink: vi.fn(),
-      cancelAddLink: vi.fn(),
-      removeLink: vi.fn(),
-      showCreateLinkModal: ref(false),
-      isReplacingText: ref(false),
-      text: ref(""),
-      url: ref(""),
+      props: {
+        isActive: ref(false),
+        isEdit: ref(false),
+        text: ref(""),
+        url: ref(""),
+        urlValidator: vi.fn(),
+      },
+      events: {
+        addLink: vi.fn(),
+        cancelAddLink: vi.fn(),
+        removeLink: vi.fn(),
+      },
     };
     useLinkToolMock.mockReturnValue(linkToolMock);
 
@@ -499,42 +504,16 @@ describe("RichTextEditor.vue", () => {
         });
         expect(useLinkTool).toHaveBeenCalledWith({
           editor: mockEditor.value,
-          sanitizeUrlText: defaultLinkToolOptions.sanitizeUrlText,
+          isRegistered: true,
+          linkToolOptions: defaultLinkToolOptions,
         });
         const linkModal = wrapper.findComponent(CreateLinkModal);
         linkModal.vm.$emit("addLink");
-        expect(linkToolMock.addLink).toHaveBeenCalled();
+        expect(linkToolMock.events.addLink).toHaveBeenCalled();
         linkModal.vm.$emit("removeLink");
-        expect(linkToolMock.removeLink).toHaveBeenCalled();
+        expect(linkToolMock.events.removeLink).toHaveBeenCalled();
         linkModal.vm.$emit("cancelAddLink");
-        expect(linkToolMock.cancelAddLink).toHaveBeenCalled();
-      });
-
-      it("does not set up link tool if deactivated", () => {
-        doMount({
-          props: {
-            baseExtensions: { bold: true },
-          },
-        });
-        expect(useLinkTool).not.toHaveBeenCalled();
-      });
-
-      it("opens link tool with custom shortcut", () => {
-        const { linkToolMock } = doMount({
-          props: {
-            baseExtensions: { link: true },
-          },
-        });
-        mockEditor.value.isFocused = true;
-
-        const event = new KeyboardEvent("keydown", {
-          key: "k",
-          ctrlKey: true,
-        });
-        window.dispatchEvent(event);
-
-        expect(linkToolMock.onLinkToolClick).toHaveBeenCalled();
-        mockEditor.value.isFocused = false;
+        expect(linkToolMock.events.cancelAddLink).toHaveBeenCalled();
       });
 
       it("does not open link tool with custom shortcut if editor is not focused", () => {
@@ -695,9 +674,18 @@ describe("RichTextEditor.vue", () => {
           getSlottedStubProp({ wrapper, propName: "linkTool" }),
         ).toMatchObject({
           onLinkToolClick: expect.any(Function),
-          addLink: expect.any(Function),
-          cancelAddLink: expect.any(Function),
-          removeLink: expect.any(Function),
+          props: expect.objectContaining({
+            text: expect.anything(),
+            url: expect.anything(),
+            isActive: expect.anything(),
+            isEdit: expect.anything(),
+            urlValidator: expect.any(Function),
+          }),
+          events: expect.objectContaining({
+            addLink: expect.any(Function),
+            cancelAddLink: expect.any(Function),
+            removeLink: expect.any(Function),
+          }),
         });
       });
 

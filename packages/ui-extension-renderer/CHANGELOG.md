@@ -1,4 +1,10 @@
-# @knime/ui-extensions-renderer
+# @knime/ui-extension-renderer
+
+## 1.1.0
+
+### Minor Changes
+
+- Rename package from @knime/ui-extensions-renderer to @knime/ui-extension-renderer
 
 ## 1.0.20
 
