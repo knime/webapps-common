@@ -32,10 +32,14 @@ const useKeyPressedUntilMouseClick = (keys: Array<string> = defaultKeys) => {
   };
 
   onMounted(() => {
-    document.addEventListener("keydown", turnKeyboardUsageOn);
+    document.addEventListener("keydown", turnKeyboardUsageOn, {
+      capture: true,
+    });
     // use pointerdown because it comes before mousedown and that might lead to timing issues,                                                                                                               │
     // where the 'click' did not yet reset state
-    document.addEventListener("pointerdown", turnKeyboardUsageOff);
+    document.addEventListener("pointerdown", turnKeyboardUsageOff, {
+      capture: true,
+    });
   });
 
   onUnmounted(() => {

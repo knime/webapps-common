@@ -24,6 +24,7 @@
     "@knime/components": "workspace:*",
     "@knime/licenses": "workspace:*",
     "@knime/rich-text-editor": "workspace:*",
+    "@knime/virtual-tree": "workspace:*",
     "@knime/styles": "workspace:*",
     "@knime/utils": "workspace:*",
     "@vueuse/core": "10.4.1",

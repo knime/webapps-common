@@ -70,6 +70,7 @@ const demoComponents = {
     ),
     SubMenu: defineAsyncComponent(() => import("./components/SubMenu.vue")),
     Tooltip: defineAsyncComponent(() => import("./components/Tooltip.vue")),
+    Tree: defineAsyncComponent(() => import("./components/Tree.vue")),
     TabBar: defineAsyncComponent(() => import("./components/TabBar.vue")),
     TagList: defineAsyncComponent(() => import("./components/TagList.vue")),
     LoadingIcon: defineAsyncComponent(

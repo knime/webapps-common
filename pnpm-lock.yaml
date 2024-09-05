@@ -85,6 +85,9 @@ importers:
       '@knime/utils':
         specifier: workspace:*
         version: link:../packages/utils
+      '@knime/virtual-tree':
+        specifier: workspace:*
+        version: link:../packages/virtual-tree
       '@vueuse/core':
         specifier: 10.4.1
         version: 10.4.1(vue@3.4.27(typescript@5.4.5))
@@ -464,6 +467,55 @@ importers:
       flush-promises:
         specifier: ^1.0.2
         version: 1.0.2
+
+  packages/virtual-tree:
+    dependencies:
+      '@knime/components':
+        specifier: workspace:*
+        version: link:../components
+      '@knime/styles':
+        specifier: workspace:*
+        version: link:../styles
+      '@knime/utils':
+        specifier: workspace:*
+        version: link:../utils
+      '@ysx-libs/vue-virtual-tree':
+        specifier: ^0.0.13
+        version: link:../../../ysx-library/projects/VirtualTree
+      consola:
+        specifier: 3.2.3
+        version: 3.2.3
+      vue:
+        specifier: 3.x
+        version: 3.4.27(typescript@5.4.5)
+    devDependencies:
+      '@vitejs/plugin-vue':
+        specifier: ^5.0.5
+        version: 5.0.5(vite@5.2.12(@types/node@20.14.12)(sugarss@4.0.1(postcss@8.4.38)))(vue@3.4.27(typescript@5.4.5))
+      '@vitest/coverage-v8':
+        specifier: 1.2.1
+        version: 1.2.1(vitest@1.4.0(@types/node@20.14.12)(jsdom@24.1.0)(sugarss@4.0.1(postcss@8.4.38)))
+      '@vue/test-utils':
+        specifier: 2.4.4
+        version: 2.4.4(@vue/server-renderer@3.4.27(vue@3.4.27(typescript@5.4.5)))(vue@3.4.27(typescript@5.4.5))
+      typescript:
+        specifier: ^5.4.5
+        version: 5.4.5
+      vite:
+        specifier: ^5.2.12
+        version: 5.2.12(@types/node@20.14.12)(sugarss@4.0.1(postcss@8.4.38))
+      vite-plugin-css-injected-by-js:
+        specifier: ^3.5.1
+        version: 3.5.1(vite@5.2.12(@types/node@20.14.12)(sugarss@4.0.1(postcss@8.4.38)))
+      vite-plugin-dts:
+        specifier: ^3.9.1
+        version: 3.9.1(@types/node@20.14.12)(rollup@4.18.0)(typescript@5.4.5)(vite@5.2.12(@types/node@20.14.12)(sugarss@4.0.1(postcss@8.4.38)))
+      vite-svg-loader:
+        specifier: 4.0.0
+        version: 4.0.0
+      vue-tsc:
+        specifier: ^2.0.19
+        version: 2.0.28(typescript@5.4.5)
 
 packages:
 
