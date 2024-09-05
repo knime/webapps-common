@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.1.4
+
+### Patch Changes
+
+- 0dfd63d: UIEXT-872: added search input to dropdowns
+
 ## 1.1.3
 
 ### Patch Changes
