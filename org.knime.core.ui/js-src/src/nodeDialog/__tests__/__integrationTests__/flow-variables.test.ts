@@ -156,7 +156,7 @@ describe("flow variables", () => {
       registeredSettingState.addControllingFlowVariable,
     ).toHaveBeenCalledTimes(1);
     // Click on "flowVar1"
-    listItems.at(1)?.trigger("click");
+    await listItems.at(1)?.trigger("click");
     // Data service is called to get the value of the flow variable
     expect(dataServiceSpy).toHaveBeenNthCalledWith(2, {
       method: "flowVariables.getFlowVariableOverrideValue",
@@ -173,7 +173,9 @@ describe("flow variables", () => {
     expect(controllingFlowVariableState.set).toHaveBeenCalledWith(
       flowVar1.name,
     );
-    expect(dropdownButton.text()).toBe(flowVar1.name);
+    expect(flowVarButton.findComponent(Dropdown).props("modelValue")).toBe(
+      flowVar1.name,
+    );
     expect(flowVariablesMap).toStrictEqual({
       "model.customConfigKey": {
         controllingFlowVariableName: flowVar1.name,
