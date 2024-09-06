@@ -1,5 +1,11 @@
 # @knime/rich-text-editor
 
+## 1.2.5
+
+### Patch Changes
+
+- cc9ae28: bugfix: clicking links in RTE
+
 ## 1.2.4
 
 ### Patch Changes
