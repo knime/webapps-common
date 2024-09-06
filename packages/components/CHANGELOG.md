@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.1.5
+
+### Patch Changes
+
+- 0703852: Adjust keyboard navigation that was altered with the previous bump to @knime/components@1.1.4
+
 ## 1.1.4
 
 ### Patch Changes
