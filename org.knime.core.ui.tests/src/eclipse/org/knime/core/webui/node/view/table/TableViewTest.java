@@ -52,6 +52,7 @@ package org.knime.core.webui.node.view.table;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
+import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.knime.core.webui.data.RpcDataService.jsonRpcRequest;
@@ -101,7 +102,6 @@ import org.knime.core.node.config.ConfigWO;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.workflow.NativeNodeContainer;
-import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.node.workflow.virtual.DefaultVirtualPortObjectInNodeFactory;
 import org.knime.core.node.workflow.virtual.DefaultVirtualPortObjectInNodeModel;
 import org.knime.core.node.workflow.virtual.VirtualNodeInput;
@@ -232,8 +232,8 @@ class TableViewTest {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var tableId = "test_table_id";
         var nnc =
-            WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(nodeModel -> new TableNodeView(tableId,
-                () -> nodeModel.getInternalTables()[0], NodeContext.getContext().getNodeContainer(), 0)));
+            WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(
+                nodeModel -> new TableNodeView(tableId, () -> nodeModel.getInternalTables()[0], 0)));
         ((NodeViewNodeModel)nnc.getNodeModel())
             .setInternalTables(new BufferedDataTable[]{createDefaultTestTable(2).get()});
 
@@ -297,15 +297,20 @@ class TableViewTest {
     void testTableViewNodeFactoryRendererRegistryCleanUp() throws Exception {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var tableId = "test_table_id";
+        var tableId2 = "test_table_id2";
         var nnc = WorkflowManagerUtil.createAndAddNode(wfm,
-            new NodeViewNodeFactory(1, 0, nodeModel -> new TableNodeView(tableId,
-                () -> nodeModel.getInternalTables()[0], NodeContext.getContext().getNodeContainer(), 0)));
+            new NodeViewNodeFactory(1, 0,
+                nodeModel -> new TableNodeView(tableId, () -> nodeModel.getInternalTables()[0], 0)));
+        var nnc2 = WorkflowManagerUtil.createAndAddNode(wfm,
+            new NodeViewNodeFactory(1, 0,
+                nodeModel -> new TableNodeView(tableId2, () -> nodeModel.getInternalTables()[0], 0)));
         final var sourceNodeFactory = new DefaultVirtualPortObjectInNodeFactory(new PortType[]{BufferedDataTable.TYPE});
         final var sourceNode = WorkflowManagerUtil.createAndAddNode(wfm, sourceNodeFactory);
         var testTable = createDefaultTestTable(2).get();
         ((DefaultVirtualPortObjectInNodeModel)sourceNode.getNodeModel())
             .setVirtualNodeInput(new VirtualNodeInput(new PortObject[]{testTable}, Collections.emptyList()));
         wfm.addConnection(sourceNode.getID(), 1, nnc.getID(), 1);
+        wfm.addConnection(sourceNode.getID(), 1, nnc2.getID(), 1);
 
         wfm.executeAllAndWaitUntilDone();
         var tables = new BufferedDataTable[]{testTable};
@@ -317,16 +322,9 @@ class TableViewTest {
         callDataServiceToRegisterRenderes(nnc, nodeViewManager);
         assertThat(TableViewUtil.RENDERER_REGISTRY.numRegisteredRenderers(tableId)).isEqualTo(2);
 
-        // must clear the registry for the given 'table id' (i.e. node id here)
-        wfm.resetAndConfigureNode(nnc.getID());
-        assertThat(TableViewUtil.RENDERER_REGISTRY.numRegisteredRenderers(tableId)).isZero();
-
-        // make sure that the a 2nd node state change still clears the registry
-        wfm.executeAllAndWaitUntilDone();
-        ((NodeViewNodeModel)nnc.getNodeModel()).setInternalTables(tables);
-        callDataServiceToRegisterRenderes(nnc, nodeViewManager);
-        assertThat(TableViewUtil.RENDERER_REGISTRY.numRegisteredRenderers(tableId)).isEqualTo(2);
-        wfm.resetAndConfigureNode(nnc.getID());
+        // must clear the registry for the given 'table id' (i.e. node id here) when
+        // deactivating the data services
+        nodeViewManager.getDataServiceManager().deactivateDataServices(NodeWrapper.of(nnc));
         assertThat(TableViewUtil.RENDERER_REGISTRY.numRegisteredRenderers(tableId)).isZero();
 
         // assert that registry is cleared on delete
@@ -334,7 +332,16 @@ class TableViewTest {
         callDataServiceToRegisterRenderes(nnc, nodeViewManager);
         assertThat(TableViewUtil.RENDERER_REGISTRY.numRegisteredRenderers(tableId)).isEqualTo(2);
         wfm.removeNode(nnc.getID());
-        assertThat(TableViewUtil.RENDERER_REGISTRY.numRegisteredRenderers(tableId)).isZero();
+        await()
+            .untilAsserted(() -> assertThat(TableViewUtil.RENDERER_REGISTRY.numRegisteredRenderers(tableId)).isZero());
+
+        // assert that registry is cleared when workflow is disposed
+        ((NodeViewNodeModel)nnc2.getNodeModel()).setInternalTables(tables);
+        callDataServiceToRegisterRenderes(nnc2, nodeViewManager);
+        assertThat(TableViewUtil.RENDERER_REGISTRY.numRegisteredRenderers(tableId2)).isEqualTo(2);
+        WorkflowManagerUtil.disposeWorkflow(wfm);
+        await()
+            .untilAsserted(() -> assertThat(TableViewUtil.RENDERER_REGISTRY.numRegisteredRenderers(tableId2)).isZero());
     }
 
     private static void callDataServiceToRegisterRenderes(final NativeNodeContainer nnc,
@@ -630,8 +637,8 @@ class TableViewTest {
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var tableId = "test_table_id";
         var nnc =
-            WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(nodeModel -> new TableNodeView(tableId,
-                () -> nodeModel.getInternalTables()[0], NodeContext.getContext().getNodeContainer(), 0)));
+            WorkflowManagerUtil.createAndAddNode(wfm, new NodeViewNodeFactory(
+                nodeModel -> new TableNodeView(tableId, () -> nodeModel.getInternalTables()[0], 0)));
         ((NodeViewNodeModel)nnc.getNodeModel())
             .setInternalTables(new BufferedDataTable[]{createDefaultTestTable(2).get()});
 

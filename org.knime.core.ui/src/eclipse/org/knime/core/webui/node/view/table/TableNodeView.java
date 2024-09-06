@@ -96,7 +96,7 @@ public final class TableNodeView implements NodeTableView {
      */
     public TableNodeView(final Supplier<BufferedDataTable> tableSupplier, final Supplier<Set<RowKey>> selectionSupplier,
         final NodeContainer nc, final int inputPortIndex) {
-        this(TableViewUtil.toTableId(nc.getID()), tableSupplier, selectionSupplier, nc, inputPortIndex);
+        this(TableViewUtil.toTableId(nc.getID()), tableSupplier, selectionSupplier, inputPortIndex);
     }
 
     /**
@@ -111,18 +111,16 @@ public final class TableNodeView implements NodeTableView {
         this(tableSupplier, null, nc, inputPortIndex);
     }
 
-    TableNodeView(final String tableId, final Supplier<BufferedDataTable> tableSupplier, final NodeContainer nc,
-        final int inputPortIndex) {
-        this(tableId, tableSupplier, null, nc, inputPortIndex);
+    TableNodeView(final String tableId, final Supplier<BufferedDataTable> tableSupplier, final int inputPortIndex) {
+        this(tableId, tableSupplier, null, inputPortIndex);
     }
 
     TableNodeView(final String tableId, final Supplier<BufferedDataTable> tableSupplier,
-        final Supplier<Set<RowKey>> selectionSupplier, final NodeContainer nc, final int inputPortIndex) {
+        final Supplier<Set<RowKey>> selectionSupplier, final int inputPortIndex) {
         m_tableId = tableId;
         m_tableSupplier = tableSupplier;
         m_selectionSupplier = selectionSupplier;
         m_inputPortIndex = inputPortIndex;
-        TableViewUtil.registerRendererRegistryCleanup(tableId, nc);
     }
 
     @Override

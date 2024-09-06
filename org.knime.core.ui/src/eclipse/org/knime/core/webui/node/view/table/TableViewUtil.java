@@ -56,13 +56,11 @@ import java.util.function.Supplier;
 
 import org.knime.core.data.RowKey;
 import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeID;
 import org.knime.core.util.Pair;
 import org.knime.core.webui.data.InitialDataService;
 import org.knime.core.webui.data.RpcDataService;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettingsSerializer;
-import org.knime.core.webui.node.util.NodeCleanUpCallback;
 import org.knime.core.webui.node.view.table.data.TableViewDataService;
 import org.knime.core.webui.node.view.table.data.TableViewDataServiceImpl;
 import org.knime.core.webui.node.view.table.data.TableViewInitialData;
@@ -268,19 +266,6 @@ public final class TableViewUtil {
             }) //
             .serializer(new DefaultNodeSettingsSerializer<>()) //
             .build();
-    }
-
-    /**
-     * Method that is to be called when creating a {@link TableNodeView} and that registers the to-be-visualized table's
-     * unique id with the global {@link DataValueImageRendererRegistry}.
-     *
-     * @param tableId a globally unique id to be able to uniquely identify the images belonging to the table used here
-     * @param nc the node where the clean-up callback is being registered
-     */
-    public static void registerRendererRegistryCleanup(final String tableId, final NodeContainer nc) {
-        NodeCleanUpCallback.builder(nc, () -> RENDERER_REGISTRY.clearImageDataCache(tableId)) //
-            .cleanUpOnNodeStateChange(true) //
-            .deactivateOnNodeStateChange(false).build();
     }
 
     /**
