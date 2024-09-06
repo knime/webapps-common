@@ -29,6 +29,8 @@ const KEY_END = "End";
 const KEY_ESC = "Escape";
 const KEY_ENTER = "Enter";
 
+const expandKeys = [KEY_DOWN, KEY_UP, KEY_HOME, KEY_END, KEY_ENTER];
+
 export default {
   name: "Dropdown",
   components: {
@@ -254,14 +256,6 @@ export default {
     isCurrentValue(candidate: Id) {
       return this.candidate === candidate;
     },
-    setSelected(id: Id) {
-      consola.trace("Dropdown setSelected on", id);
-
-      /**
-       * Fired when the selection changes.
-       */
-      this.updateCandidate(id);
-    },
     getButtonRef() {
       return this.$refs.button as HTMLElement;
     },
@@ -303,7 +297,7 @@ export default {
         return;
       }
       const nextId = this.flatOrderedValues[next].id;
-      this.setSelected(nextId);
+      this.updateCandidate(nextId);
       this.scrollTo(nextId);
     },
     onArrowUp() {
@@ -312,14 +306,10 @@ export default {
         return;
       }
       const nextId = this.flatOrderedValues[next].id;
-      this.setSelected(nextId);
+      this.updateCandidate(nextId);
       this.scrollTo(nextId);
     },
     onEnter() {
-      if (!this.isExpanded) {
-        this.toggleExpanded();
-        return;
-      }
       if (
         this.hasNoFilteredPossibleValues ||
         typeof this.candidate === "undefined"
@@ -330,20 +320,14 @@ export default {
     },
     onEndKey() {
       let next = this.flatOrderedValues.length - 1;
-      this.setSelected(this.flatOrderedValues[next].id);
+      this.updateCandidate(this.flatOrderedValues[next].id);
       const listBoxNode = this.getListBoxNodeRef();
       listBoxNode.scrollTop = listBoxNode.scrollHeight;
     },
     onHomeKey() {
       let next = 0;
-      this.setSelected(this.flatOrderedValues[next].id);
+      this.updateCandidate(this.flatOrderedValues[next].id);
       this.getListBoxNodeRef().scrollTop = 0;
-    },
-    selectFirst() {
-      const { id } = this.flatOrderedValues[0];
-      this.setSelected(id);
-      this.getListBoxNodeRef().scrollTop = 0;
-      this.candidate = id;
     },
     toggleExpanded() {
       if (this.isExpanded) {
@@ -362,18 +346,34 @@ export default {
           (this.$refs.slotContainer as HTMLElement)?.clientHeight ?? 0;
       }
       this.isExpanded = true;
-      this.selectFirst();
+      if (
+        this.candidate === this.modelValue &&
+        (this.isMissing || this.showPlaceholder)
+      ) {
+        this.updateCandidate(this.currentPossibleValues[0]?.id);
+      }
       this.$nextTick(() => {
         this.getSearchInput().focus();
         this.getSearchInput().select();
+        if (this.candidate) {
+          this.scrollTo(this.candidate);
+        }
       });
     },
     collapse() {
       this.isExpanded = false;
       this.getButtonRef().focus();
     },
+    /* NOTE: we use a single keyDown method because @keydown.up bindings are not testable. */
     handleKeyDownButton(e: KeyboardEvent) {
-      /* NOTE: we use a single keyDown method because @keydown.up bindings are not testable. */
+      if (this.isExpanded) {
+        this.handleKeyDownOnExpanded(e);
+      } else if (expandKeys.includes(e.key)) {
+        this.expand();
+        e.preventDefault();
+      }
+    },
+    handleKeyDownOnExpanded(e: KeyboardEvent) {
       if (e.key === KEY_DOWN) {
         this.onArrowDown();
         e.preventDefault();
@@ -387,7 +387,7 @@ export default {
         e.preventDefault();
       }
       if (e.key === KEY_HOME) {
-        this.selectFirst();
+        this.onHomeKey();
         e.preventDefault();
       }
       if (e.key === KEY_ESC) {
@@ -552,7 +552,7 @@ export default {
               'has-option-template': hasOptionTemplate,
             }"
             :aria-selected="isCurrentValue(item.id)"
-            @mouseenter="setSelected(item.id)"
+            @mouseenter="updateCandidate(item.id)"
             @click="emitAndClose(item.id)"
           >
             <template v-if="hasOptionTemplate">

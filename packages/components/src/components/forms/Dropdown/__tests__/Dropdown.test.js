@@ -436,18 +436,32 @@ describe("Dropdown.vue", () => {
       wrapper.unmount();
     });
 
-    it(`sets the values on keydown navigation for a ${type}`, () => {
+    it.each(["ArrowDown", "ArrowUp", "Home", "End"])(
+      `opens the listbox on %s for a ${type}`,
+      async (key) => {
+        const modelValue = possibleValues[1].id; // defines start point
+        const { wrapper } = doMount({ possibleValues, modelValue, slots });
+        let listbox = wrapper.find("[role=listbox]");
+
+        await wrapper.find("[role=button]").trigger("keydown", { key });
+        expect(listbox.isVisible()).toBe(true);
+      },
+    );
+
+    it(`sets the values on keydown navigation for a ${type}`, async () => {
       const modelValue = possibleValues[1].id; // defines start point
       const { wrapper } = doMount({ possibleValues, modelValue, slots });
       const button = wrapper.find("[role=button]");
+      await button.trigger("keydown", { key: "Enter" });
       button.trigger("keydown", { key: "ArrowDown" });
       expect(wrapper.vm.candidate).toBe(possibleValues[2].id);
     });
 
-    it(`sets the values on keyup navigation for a ${type}`, () => {
+    it(`sets the values on keyup navigation for a ${type}`, async () => {
       const modelValue = possibleValues[1].id; // defines start point
       const { wrapper } = doMount({ possibleValues, modelValue, slots });
       const button = wrapper.find("[role=button]");
+      await button.trigger("keydown", { key: "Enter" });
       button.trigger("keydown", { key: "ArrowUp" });
       expect(wrapper.vm.candidate).toBe(possibleValues[0].id);
     });
@@ -470,39 +484,40 @@ describe("Dropdown.vue", () => {
       );
     });
 
-    it(`sets the values to the first value on home key for a ${type}`, () => {
+    it(`sets the values to the first value on home key for a ${type}`, async () => {
       const modelValue = possibleValues[2].id; // defines start point
       const { wrapper } = doMount({ possibleValues, modelValue, slots });
       const button = wrapper.find("[role=button]");
+      await button.trigger("keydown", { key: "Enter" });
       button.trigger("keydown", { key: "Home" });
       expect(wrapper.vm.candidate).toBe(possibleValues[0].id);
     });
 
-    it(`sets the values to the last value on end key for a ${type}`, () => {
+    it(`sets the values to the last value on end key for a ${type}`, async () => {
       const modelValue = possibleValues[2].id; // defines start point
       const { wrapper } = doMount({ possibleValues, modelValue, slots });
       const button = wrapper.find("[role=button]");
+      await button.trigger("keydown", { key: "Enter" });
       button.trigger("keydown", { key: "End" });
       expect(wrapper.vm.candidate).toBe(
         possibleValues[possibleValues.length - 1].id,
       );
     });
 
-    it(`sets the candidate to the first value and applies the candidate on enter for a ${type}`, async () => {
+    it(`sets the candidate to the modelValue and applies the candidate on enter for a ${type}`, async () => {
       const modelValue = possibleValues[1].id; // defines start point
       const { wrapper } = doMount({ possibleValues, modelValue, slots });
       const button = wrapper.find("[role=button]");
 
       await button.trigger("keydown", { key: "Enter" });
-      // sets to the first value when opened
-      expect(wrapper.vm.candidate).toBe(possibleValues[0].id);
+      expect(wrapper.vm.candidate).toBe(modelValue);
 
       button.trigger("keydown", { key: "ArrowDown" });
-      expect(wrapper.vm.candidate).toBe(possibleValues[1].id);
+      expect(wrapper.vm.candidate).toBe(possibleValues[2].id);
 
       await button.trigger("keydown", { key: "Enter" });
       expect(wrapper.emitted("update:modelValue")[0][0]).toBe(
-        possibleValues[1].id,
+        possibleValues[2].id,
       );
 
       let listbox = wrapper.find("[role=listbox]");
@@ -515,11 +530,10 @@ describe("Dropdown.vue", () => {
       const button = wrapper.find("[role=button]");
 
       await button.trigger("keydown", { key: "Enter" });
-      // sets to the first value when opened
-      expect(wrapper.vm.candidate).toBe(possibleValues[0].id);
+      expect(wrapper.vm.candidate).toBe(modelValue);
 
       button.trigger("keydown", { key: "ArrowDown" });
-      expect(wrapper.vm.candidate).toBe(possibleValues[1].id);
+      expect(wrapper.vm.candidate).toBe(possibleValues[2].id);
 
       await button.trigger("keydown", { key: "Escape" });
       expect(wrapper.emitted("update:modelValue")).toBeUndefined();
