@@ -82,11 +82,10 @@ export const CustomLink = Link.extend({
 
           if (metaOrCtrlKeyPressed && link && attrs.href) {
             window.open(attrs.href, attrs.target);
-
-            return true;
           }
-
-          return false;
+          // always return true, otherwise the cursor disappears, which causes some unexpected bugs
+          // see: https://knime-com.atlassian.net/browse/HUB-8669
+          return true;
         },
       },
     });
