@@ -285,7 +285,12 @@ export default {
         this.$router.replace({ query });
       }
     },
-    activeTab(newTabVal, oldTabVal) {
+    async activeTab(newTabVal, oldTabVal) {
+      // do not update tab if we have a query otherwise the query would be lost
+      await this.$router.isReady();
+      if (this.$route.query.q) {
+        return;
+      }
       if (newTabVal !== oldTabVal) {
         const query = {};
         if (newTabVal) {
