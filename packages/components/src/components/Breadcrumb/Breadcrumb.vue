@@ -1,6 +1,16 @@
-<script>
+<script lang="ts">
 import ArrowNext from "@knime/styles/img/icons/arrow-next.svg";
 import { resolveNuxtLinkComponent } from "../nuxtComponentResolver";
+import type { FunctionalComponent, PropType, SVGAttributes } from "vue";
+
+type BreadcrumbItem = {
+  text?: string;
+  href?: string;
+  icon?: FunctionalComponent<SVGAttributes>;
+  clickable?: boolean;
+  title?: string;
+  [key: string]: any;
+};
 
 export default {
   name: "Breadcrumb",
@@ -25,7 +35,7 @@ export default {
      * ]
      */
     items: {
-      type: Array,
+      type: Array as PropType<null | BreadcrumbItem[]>,
       default: () => [],
     },
     /**
@@ -55,7 +65,10 @@ export default {
       default: false,
     },
   },
-  emits: ["click-item"],
+  emits: {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    "click-item": (_item: BreadcrumbItem) => true,
+  },
   computed: {
     // TODO: Can be made into a composition function
     linkComponent() {
@@ -70,10 +83,10 @@ export default {
       return this.noWrap;
     },
     breadcrumbItems() {
-      return this.reverseItems ? this.items.slice().reverse() : this.items;
+      return this.reverseItems ? this.items?.toReversed() : this.items;
     },
     rightMostItemIndex() {
-      return this.reverseItems ? 0 : this.items.length - 1;
+      return this.reverseItems ? 0 : (this.items?.length ?? 0) - 1;
     },
   },
 };
@@ -92,7 +105,7 @@ export default {
         v-for="(breadcrumbItem, i) in breadcrumbItems"
         :key="i"
         :style="
-          !breadcrumbItem.icon && breadcrumbItem.text?.length < 3
+          !breadcrumbItem.icon && (breadcrumbItem.text?.length ?? 0) < 3
             ? { minWidth: 'fit-content' }
             : {}
         "
@@ -112,9 +125,9 @@ export default {
         <span
           v-else
           :class="{ clickable: breadcrumbItem.clickable }"
-          :role="breadcrumbItem.clickable ? 'button' : null"
+          :role="breadcrumbItem.clickable ? 'button' : undefined"
           :title="breadcrumbItem.title"
-          :tabindex="breadcrumbItem.clickable ? 0 : null"
+          :tabindex="breadcrumbItem.clickable ? 0 : undefined"
           @keydown.enter.stop.prevent="
             breadcrumbItem.clickable && $emit('click-item', breadcrumbItem)
           "

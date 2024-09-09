@@ -4,6 +4,7 @@
   "exclude": ["**/__tests__/*"],
   "compilerOptions": {
     "composite": true,
+    "lib": ["ES2022", "ES2023.Array", "DOM"],
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "baseUrl": ".",
     "allowJs": true,
