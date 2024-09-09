@@ -163,7 +163,7 @@ describe("ImageView.vue", () => {
     Object.defineProperty(image.element, "naturalHeight", { value: 100 });
     image.element.onload!(new Event("load"));
     await wrapper.vm.$nextTick();
-    expect(image.element.style.maxHeight).toBe("100px");
+    expect(image.attributes("style")).toBe("--natural-image-height: 100px;");
   });
 
   it("renders image view when reporting enabled", async () => {
