@@ -535,6 +535,56 @@ describe("updates in array layouts", () => {
         });
       });
 
+      const wrapArrayInHiddenSection = () => {
+        initialDataJson[uiSchemaKey].elements[0] = {
+          type: "Section",
+          elements: initialDataJson[uiSchemaKey].elements[0],
+          rule: {
+            effect: "HIDE",
+            condition: {
+              scope: "#/properties/model/properties/hideValues",
+              schema: {
+                const: true,
+              },
+            },
+          },
+        };
+      };
+
+      const prepareUpdateByButtonOutsideWithDependencyWithinHiddenArray =
+        async () => {
+          const { triggerButton, addDependency } = addButtonAfterArray();
+          const dependencyId = "myDependencyId";
+          addDependency(createTextDependency(dependencyId));
+          const rpcDataSpy = mockRPCResult(() => []);
+          wrapArrayInHiddenSection();
+
+          const wrapper = await mountNodeDialog();
+          return {
+            wrapper,
+            rpcDataSpy,
+            dependencyId,
+            triggerButton,
+          };
+        };
+
+      it("allows initial ui state updates triggered outside array with different updates within hidden array", async () => {
+        const { wrapper, rpcDataSpy, dependencyId, triggerButton } =
+          await prepareUpdateByButtonOutsideWithDependencyWithinHiddenArray();
+        await triggerButton(wrapper);
+
+        expect(rpcDataSpy).toHaveBeenCalledWith({
+          method: "settings.update2",
+          options: [
+            null,
+            expect.anything(),
+            {
+              [dependencyId]: expect.anything(),
+            },
+          ],
+        });
+      });
+
       describe.each([
         [
           "computeBeforeOpenDialog",

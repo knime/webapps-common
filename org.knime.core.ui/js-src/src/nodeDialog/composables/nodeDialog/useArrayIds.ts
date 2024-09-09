@@ -12,6 +12,8 @@
  * There is one exception where we still use actual indices: On initial updates before the dialog is opened.
  */
 
+import { v4 as uuidv4 } from "uuid";
+
 const idToIndex = new Map<string, number>();
 
 export const setIndex = (id: string, index: number) => idToIndex.set(id, index);
@@ -43,6 +45,8 @@ export interface IdsRecord {
  */
 const globalArrayRecord: ArrayRecord = {};
 export const getArrayIdsRecord = () => globalArrayRecord;
+
+export const createNewId = () => uuidv4();
 
 /**
  * @returns a function to add a field to an object and
@@ -92,4 +96,45 @@ export const toIndexIds = (
     idsRecord[indexId],
   );
   return [indexId, ...indexIds];
+};
+
+export const getOrCreateIdForIndex = (
+  arrayRecord: ArrayRecord,
+  dataPath: string,
+  index: number,
+) => {
+  const idsRecord =
+    arrayRecord[dataPath] ?? createArrayAtPath(arrayRecord, dataPath);
+  const indexId = Object.keys(idsRecord).find((id) => getIndex(id) === index);
+  if (typeof indexId === "undefined") {
+    const newId = createNewId();
+    setIndex(newId, index);
+    return {
+      indexId: newId,
+      arrayRecord: createForArrayItem(idsRecord, newId),
+    };
+  }
+  return { indexId, arrayRecord: idsRecord[indexId] };
+};
+
+export const getOrCreateNestedArrayRecord = (
+  dataPaths: string[],
+  indices: number[],
+  arrayRecord: ArrayRecord,
+): ArrayRecord => {
+  if (indices.length === 0) {
+    return arrayRecord;
+  }
+  const [index, ...restIndices] = indices;
+  const [dataPath, ...restDataPaths] = dataPaths;
+  const { arrayRecord: nestedArrayRecord } = getOrCreateIdForIndex(
+    arrayRecord,
+    dataPath,
+    index,
+  );
+  return getOrCreateNestedArrayRecord(
+    restDataPaths,
+    restIndices,
+    nestedArrayRecord,
+  );
 };

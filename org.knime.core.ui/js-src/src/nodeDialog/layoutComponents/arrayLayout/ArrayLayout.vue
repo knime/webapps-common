@@ -14,10 +14,10 @@ import ArrayLayoutItemControls from "./ArrayLayoutItemControls.vue";
 import ArrayLayoutItem from "./ArrayLayoutItem.vue";
 import { useDirtySetting } from "@/nodeDialog/composables/components/useDirtySetting";
 import useProvidedState from "@/nodeDialog/composables/components/useProvidedState";
-import { v4 as uuidv4 } from "uuid";
 import {
   setIndex,
   deleteId,
+  createNewId,
 } from "@/nodeDialog/composables/nodeDialog/useArrayIds";
 import inject from "@/nodeDialog/utils/inject";
 import { editResetButtonFormat } from "@/nodeDialog/renderers/editResetButtonRenderer";
@@ -64,7 +64,7 @@ const ArrayLayout = defineComponent({
           ? item
           : {
               ...item,
-              _id: uuidv4(),
+              _id: createNewId(),
             },
       ),
     );
