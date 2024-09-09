@@ -25,6 +25,7 @@ figure {
   margin: 0;
 
   &.scale {
+    flex: 1;
     display: flex;
     flex-direction: column;
     min-height: 0;

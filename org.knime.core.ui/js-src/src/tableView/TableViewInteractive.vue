@@ -1278,7 +1278,10 @@ export default {
 
 <style lang="postcss" scoped>
 .table-view-display {
-  height: 100%;
+  @media screen {
+    /* height 100% does not mix well with flex-box on print (https://issues.chromium.org/issues/365922171) */
+    height: 100%;
+  }
 
   & :deep(.row) img {
     object-fit: contain;

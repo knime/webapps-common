@@ -3,6 +3,14 @@ import createShadowRootApp from "../createShadowRootApp";
 import { defineComponent } from "vue";
 import { UIExtensionService } from "@knime/ui-extension-service";
 
+const heightCSS = `<style>
+      @media screen {
+        #holder {
+          height: 100%;
+        }
+      }
+    </style>`;
+
 vi.stubGlobal("__INLINE_CSS_CODE__", ".someCssCode { color: red; }");
 
 const mountApp = (initialData: any = null) => {
@@ -31,7 +39,7 @@ describe("createShadowRootApp", () => {
   it("create shadow root app", () => {
     const { app, shadowRoot } = mountApp();
     expect(shadowRoot.innerHTML).toBe(
-      '<style>.someCssCode { color: red; }</style><div style="height: 100%" data-v-app=""><div>The App</div></div>',
+      `${heightCSS}<style>.someCssCode { color: red; }</style><div id="holder" data-v-app=""><div>The App</div></div>`,
     );
 
     expect(app.teardown).toBeInstanceOf(Function);
@@ -40,7 +48,7 @@ describe("createShadowRootApp", () => {
   it("passes initialData if given", () => {
     const { app, shadowRoot } = mountApp({ someData: 3 });
     expect(shadowRoot.innerHTML).toBe(
-      '<style>.someCssCode { color: red; }</style><div style="height: 100%" data-v-app="">' +
+      `${heightCSS}<style>.someCssCode { color: red; }</style><div id="holder" data-v-app="">` +
         '<div initialdata="{&quot;someData&quot;:3}">The App</div></div>',
     );
 

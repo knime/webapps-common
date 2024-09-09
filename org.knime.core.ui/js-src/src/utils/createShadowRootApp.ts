@@ -9,8 +9,20 @@ export default (component: Component, withInitialData = false) => {
   ) => {
     // create a app holder in the shadow root
     const holder = document.createElement("div");
-    // the table requires all wrappers to have height 100%;
-    holder.setAttribute("style", "height: 100%");
+
+    // the table requires all wrappers to have 100% height to enlarge itself
+    // since 100% does not mix well with flex-box, it is only set on media screen
+    // (https://issues.chromium.org/issues/365922171)
+    holder.setAttribute("id", "holder");
+    const fitContentStyle = document.createElement("style");
+    fitContentStyle.innerHTML = `
+      @media screen {
+        #holder {
+          height: 100%;
+        }
+      }
+    `;
+    shadowRoot.appendChild(fitContentStyle);
 
     // inject styles in the shadow root
     const style = document.createElement("style");

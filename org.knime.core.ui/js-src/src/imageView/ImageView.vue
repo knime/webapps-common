@@ -96,7 +96,11 @@ const scale = toRef(viewSettings, "shrinkToFit");
             :id="id"
             ref="image"
             :class="[{ scale }]"
-            :style="naturalHeight ? { maxHeight: `${naturalHeight}px` } : {}"
+            :style="
+              naturalHeight
+                ? { '--natural-image-height': `${naturalHeight}px` }
+                : {}
+            "
             :src="imgSrc"
             :alt="viewSettings.altText"
           />
@@ -112,7 +116,14 @@ const scale = toRef(viewSettings, "shrinkToFit");
  * knime-js-pagebuilder that sets overflow to hidden
  */
 div.scroll-container {
-  overflow: auto;
+  @media screen {
+    overflow: auto;
+  }
+
+  @media print {
+    overflow: hidden;
+  }
+
   height: 100%;
 
   &.scale {
@@ -134,6 +145,24 @@ img {
   &.scale {
     min-height: 0;
     object-fit: scale-down;
+  }
+
+  @media screen {
+    max-height: var(--natural-image-height, unset);
+  }
+
+  @media print {
+    /** 
+    * We limit the height of any image in a report to 100vh to avoid page breaks within an image
+    * Page breaks within images within a flex box container lead to 
+    * erroneous print behavior in chrome (https://issues.chromium.org/issues/365957545)
+    */
+    max-height: min(100vh, var(--natural-image-height, 100vh));
+
+    &:not(.scale) {
+      object-fit: cover;
+      object-position: top;
+    }
   }
 }
 </style>
