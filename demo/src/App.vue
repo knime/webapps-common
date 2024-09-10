@@ -37,6 +37,9 @@ const demoComponents = {
     Breadcrumb: defineAsyncComponent(
       () => import("./components/Breadcrumb.vue"),
     ),
+    ProgressBar: defineAsyncComponent(
+      () => import("./components/ProgressBar.vue"),
+    ),
     LinkList: defineAsyncComponent(() => import("./components/LinkList.vue")),
     Button: defineAsyncComponent(() => import("./components/Button.vue")),
     FunctionButton: defineAsyncComponent(
