@@ -115,6 +115,7 @@ const placeholder = computed(() => {
     :model-value="availableVariablesLoaded ? controllingFlowVariableName : ''"
     :placeholder="placeholder"
     :disabled="!availableVariablesLoaded || noOptionsPresent"
+    compact
     @update:model-value="selectValue"
   />
 </template>

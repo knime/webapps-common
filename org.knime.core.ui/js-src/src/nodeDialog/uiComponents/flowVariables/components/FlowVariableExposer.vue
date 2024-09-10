@@ -42,6 +42,7 @@ const ariaLabel = computed(
     :model-value="modelValue"
     :is-valid="isValid"
     placeholder="No flow variable set"
+    compact
     @update:model-value="onUpdate"
   />
   <ErrorMessage
