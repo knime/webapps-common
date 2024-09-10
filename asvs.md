@@ -324,17 +324,40 @@ This is a placeholder for future architectural requirements.
 
 | # | Description | Last Checked | N/A |
 | :---: | :--- | :---: | :---:|
-| **5.2.1** | Verify that all untrusted HTML input from WYSIWYG editors or similar is properly sanitized with an HTML sanitizer library or framework feature. ([C5](https://owasp.org/www-project-proactive-controls/#div-numbering)) | [^5.2.1] | |
-| **5.2.2** | Verify that unstructured data is sanitized to enforce safety measures such as allowed characters and length. | | |
-| **5.2.3** | Verify that the application sanitizes user input before passing to mail systems to protect against SMTP or IMAP injection. | | |
-| **5.2.4** | Verify that the application avoids the use of eval() or other dynamic code execution features. Where there is no alternative, any user input being included must be sanitized or sandboxed before being executed.<br>_Scripting nodes in workflows are exempted because we don't have control over the output._ | [^5.2.4] | |
-| **5.2.5** | Verify that the application protects against template injection attacks by ensuring that any user input being included is sanitized or sandboxed. | | |
-| **5.2.6** | Verify that the application protects against SSRF attacks, by validating or sanitizing untrusted data or HTTP file metadata, such as filenames and URL input fields, and uses allow lists of protocols, domains, paths and ports. | | |
-| **5.2.7** | Verify that the application sanitizes, disables, or sandboxes user-supplied Scalable Vector Graphics (SVG) scriptable content, especially as they relate to XSS resulting from inline scripts, and foreignObject. | | |
-| **5.2.8** | Verify that the application sanitizes, disables, or sandboxes user-supplied scriptable or expression template language content, such as Markdown, CSS or XSL stylesheets, BBCode, or similar. | | |
+| **5.2.1** | Verify that all untrusted HTML input from WYSIWYG editors or similar is properly sanitized with an HTML sanitizer library or framework feature. ([C5](https://owasp.org/www-project-proactive-controls/#div-numbering)) | 2024-09-10 [^5.2.1] | |
+| **5.2.2** | Verify that unstructured data is sanitized to enforce safety measures such as allowed characters and length. | 2024-09-10 [^5.2.2] | |
+| **5.2.3** | Verify that the application sanitizes user input before passing to mail systems to protect against SMTP or IMAP injection. | 2024-09-10 [^5.2.3] | |
+| **5.2.4** | Verify that the application avoids the use of eval() or other dynamic code execution features. Where there is no alternative, any user input being included must be sanitized or sandboxed before being executed.<br>_Scripting nodes in workflows are exempted because we don't have control over the output._ | 2024-09-10 [^5.2.4] | |
+| **5.2.5** | Verify that the application protects against template injection attacks by ensuring that any user input being included is sanitized or sandboxed. | 2024-09-10 [^5.2.5] | |
+| **5.2.6** | Verify that the application protects against SSRF attacks, by validating or sanitizing untrusted data or HTTP file metadata, such as filenames and URL input fields, and uses allow lists of protocols, domains, paths and ports. | 2024-09-10 [^5.2.6] | |
+| **5.2.7** | Verify that the application sanitizes, disables, or sandboxes user-supplied Scalable Vector Graphics (SVG) scriptable content, especially as they relate to XSS resulting from inline scripts, and foreignObject. | 2024-09-10 [^5.2.7]  | |
+| **5.2.8** | Verify that the application sanitizes, disables, or sandboxes user-supplied scriptable or expression template language content, such as Markdown, CSS or XSL stylesheets, BBCode, or similar. | 2024-09-10 [^5.2.8] | |
 
-[^5.2.1]: Checked by Sonar rule [S5696](https://rules.sonarsource.com/javascript/RSPEC-5696/) for JavaScript and [S6299](https://rules.sonarsource.com/javascript/RSPEC-6299/) for Vue.
-[^5.2.4]: Checked by Sonar rule [S5334](https://rules.sonarsource.com/java/RSPEC-5334/) for Java programs and [S1523](https://rules.sonarsource.com/javascript/RSPEC-1523/) for JavaScript.
+[^5.2.1]: Checked by Sonar rule [S5696](https://rules.sonarsource.com/javascript/RSPEC-5696/) for JavaScript and [S6299](https://rules.sonarsource.com/javascript/RSPEC-6299/) for Vue. There are checked exceptions: 
+    * TextView: Content is sanitized initially and on preview update.
+    * TableView HTML content in cells: We assume that data cell renderers with type HTML only output sanitized HTML (in accordance with 5.3.1).
+
+[^5.2.2]: The used com.fasterxml.jackson ObjectMapper instances allow a maximum string length of 20.000.000.
+
+[^5.2.3]: Does not apply here, since there is not direct communication with any mail server (e.g., SMTP or IMAP).
+
+[^5.2.4]: Checked by Sonar rule [S5334](https://rules.sonarsource.com/java/RSPEC-5334/) for Java programs and [S1523](https://rules.sonarsource.com/javascript/RSPEC-1523/) for JavaScript. There are checked exceptions:
+    * GenericEchartsView: Both view and dialog are sandboxed within an iframe.
+
+[^5.2.5]: 
+    * TextView: Sanitization takes place after flow variable template replacement.
+
+[^5.2.6]: 
+    * RichTextControl: TextView sanitization allows only http, https and mailto protocol. Apart from that it is the workflow builders responsibility to ensure safe usage of URLs.
+    * FileChooserControl: Any url is allowed. Responsiblity of knime-filehandling to protect against SSRF attacks.
+
+[^5.2.7]: 
+    * ImageView: Secure by restrictions on SVG content when it's being used as an image: 
+        * Javascript is disabled
+        * external resources cannot be loaded.
+    * GenericEchartsView: Sandboxed within an iframe
+
+[^5.2.8]: Does not apply here. No user-supplied scriptable or expression template language used.
 
 ## V5.3 Output Encoding and Injection Prevention
 
