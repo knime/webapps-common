@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.1.6
+
+### Patch Changes
+
+- 24fe1ac: Fix compact mode in Dropdown
+
 ## 1.1.5
 
 ### Patch Changes
