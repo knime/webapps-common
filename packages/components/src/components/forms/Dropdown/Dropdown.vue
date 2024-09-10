@@ -632,6 +632,7 @@ export default {
 
   /* stylelint-disable-next-line no-descending-specificity */
   & [role="button"] {
+    height: var(--single-line-form-height);
     margin: 0;
     border: var(--form-border-width) solid var(--knime-stone-gray);
     padding: 0 6px 0 10px;
@@ -668,8 +669,8 @@ export default {
     }
   }
 
-  & [role="button"]:not(.has-option-template) {
-    height: var(--single-line-form-height);
+  &:not(.compact) [role="button"].has-option-template {
+    height: unset;
   }
 
   &:not(.disabled).collapsed:hover {
