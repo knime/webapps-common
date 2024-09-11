@@ -157,7 +157,7 @@ public class DataServiceContextTest {
      */
     public static void initDataServiceContext(final Supplier<ExecutionContext> execSupplier,
         final Supplier<PortObjectSpec[]> inputSpecsSupplier) {
-        DataServiceContext.init(execSupplier == null ? null : new CachingSupplier<>(execSupplier),
+        DataServiceContext.initForTesting(execSupplier == null ? null : new CachingSupplier<>(execSupplier),
             inputSpecsSupplier == null ? null : new CachingSupplier<>(inputSpecsSupplier));
     }
 

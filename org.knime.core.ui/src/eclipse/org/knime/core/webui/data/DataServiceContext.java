@@ -73,6 +73,8 @@ public final class DataServiceContext {
 
     private static final ThreadLocal<DataServiceContext> CONTEXT = new ThreadLocal<>();
 
+    private static boolean allowOverwrite = true;
+
     /**
      * @return the {@link DataServiceContext} for the current thread, potentially creating a new one in the process.
      */
@@ -98,6 +100,22 @@ public final class DataServiceContext {
 
     static void init(final CachingSupplier<ExecutionContext> execSupplier,
         final CachingSupplier<PortObjectSpec[]> specsSupplier) {
+        if (CONTEXT.get() != null && !allowOverwrite) {
+            return;
+        }
+        CONTEXT.set(new DataServiceContext(execSupplier, specsSupplier));
+    }
+
+    /**
+     * Inits the context state and fixes it until it's this method is called again (i.e. not other init-call except this
+     * one will overwrite the context state (for the respective thread local) or it's cleared ({@link #remove()}.
+     *
+     * @param execSupplier
+     * @param specsSupplier
+     */
+    static void initForTesting(final CachingSupplier<ExecutionContext> execSupplier,
+        final CachingSupplier<PortObjectSpec[]> specsSupplier) {
+        allowOverwrite = false;
         CONTEXT.set(new DataServiceContext(execSupplier, specsSupplier));
     }
 
@@ -162,6 +180,7 @@ public final class DataServiceContext {
      */
     static void remove() {
         CONTEXT.remove();
+        allowOverwrite = true;
     }
 
 }

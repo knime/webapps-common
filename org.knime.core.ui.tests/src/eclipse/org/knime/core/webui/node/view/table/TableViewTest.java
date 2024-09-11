@@ -60,6 +60,10 @@ import static org.knime.testing.util.TableTestUtil.createDefaultTestTable;
 import static org.knime.testing.util.TableTestUtil.createTableFromColumns;
 import static org.knime.testing.util.TableTestUtil.getDefaultTestSpec;
 import static org.knime.testing.util.TableTestUtil.getExec;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.awt.Color;
 import java.io.IOException;
@@ -91,6 +95,7 @@ import org.knime.core.data.RowKey;
 import org.knime.core.data.def.DoubleCell;
 import org.knime.core.data.def.IntCell;
 import org.knime.core.data.def.StringCell;
+import org.knime.core.data.filestore.internal.NotInWorkflowDataRepository;
 import org.knime.core.data.property.ColorAttr;
 import org.knime.core.data.property.ColorHandler;
 import org.knime.core.data.property.ColorModelNominal;
@@ -98,10 +103,13 @@ import org.knime.core.data.property.ColorModelRange;
 import org.knime.core.data.property.ValueFormatHandler;
 import org.knime.core.data.property.ValueFormatModel;
 import org.knime.core.node.BufferedDataTable;
+import org.knime.core.node.DefaultNodeProgressMonitor;
+import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.config.ConfigWO;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.workflow.NativeNodeContainer;
+import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.virtual.DefaultVirtualPortObjectInNodeFactory;
 import org.knime.core.node.workflow.virtual.DefaultVirtualPortObjectInNodeModel;
 import org.knime.core.node.workflow.virtual.VirtualNodeInput;
@@ -127,6 +135,7 @@ import org.knime.testing.util.TableTestUtil;
 import org.knime.testing.util.TableTestUtil.ObjectColumn;
 import org.knime.testing.util.TableTestUtil.TableBuilder;
 import org.knime.testing.util.WorkflowManagerUtil;
+import org.mockito.Mockito;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -288,13 +297,15 @@ class TableViewTest {
     }
 
     /**
-     * Makes sure that the renderes registered with {@link DataValueImageRendererRegistry} are properly cleaned up,
-     * e.g., on node state change.
+     * Makes sure that the renderers registered with {@link DataValueImageRendererRegistry} and the cached tables (by
+     * the {@link TableViewDataServiceImpl}) are properly cleaned up, when the data services are deactived, the
+     * respective node deleted or the entire workflow disposed.
      *
      * @throws Exception
      */
     @Test
-    void testTableViewNodeFactoryRendererRegistryCleanUp() throws Exception {
+    void testTableViewNodeFactoryRendererRegistryAndCachedTablesCleanUp() throws Exception {
+
         var wfm = WorkflowManagerUtil.createEmptyWorkflow();
         var tableId = "test_table_id";
         var tableId2 = "test_table_id2";
@@ -306,7 +317,11 @@ class TableViewTest {
                 nodeModel -> new TableNodeView(tableId2, () -> nodeModel.getInternalTables()[0], 0)));
         final var sourceNodeFactory = new DefaultVirtualPortObjectInNodeFactory(new PortType[]{BufferedDataTable.TYPE});
         final var sourceNode = WorkflowManagerUtil.createAndAddNode(wfm, sourceNodeFactory);
-        var testTable = createDefaultTestTable(2).get();
+
+        var exec = new ExecutionContext(new DefaultNodeProgressMonitor(), nnc.getNode(),
+            SingleNodeContainer.MemoryPolicy.CacheSmallInMemory, NotInWorkflowDataRepository.newInstance());
+
+        var testTable = createDefaultTestTable(2, idx -> idx, exec).get();
         ((DefaultVirtualPortObjectInNodeModel)sourceNode.getNodeModel())
             .setVirtualNodeInput(new VirtualNodeInput(new PortObject[]{testTable}, Collections.emptyList()));
         wfm.addConnection(sourceNode.getID(), 1, nnc.getID(), 1);
@@ -317,37 +332,64 @@ class TableViewTest {
         ((NodeViewNodeModel)nnc.getNodeModel()).setInternalTables(tables);
 
         var nodeViewManager = NodeViewManager.getInstance();
+        var execSpy = Mockito.spy(exec);
 
-        // call data service to register renderers
-        callDataServiceToRegisterRenderes(nnc, nodeViewManager);
+        // call data service to register renderers and sort table
+        callDataServiceToRegisterRenderes(nnc, nodeViewManager, execSpy);
         assertThat(TableViewUtil.RENDERER_REGISTRY.numRegisteredRenderers(tableId)).isEqualTo(2);
+        callDataServiceToSortTable(nnc, nodeViewManager, execSpy);
+        verify(execSpy).createDataContainer(any(), eq(false));
 
-        // must clear the registry for the given 'table id' (i.e. node id here) when
+        // must clear the registry for the given 'table id' (i.e. node id here) and cached tables when
         // deactivating the data services
         nodeViewManager.getDataServiceManager().deactivateDataServices(NodeWrapper.of(nnc));
         assertThat(TableViewUtil.RENDERER_REGISTRY.numRegisteredRenderers(tableId)).isZero();
+        // called 3 times for each temporary table being used (see TableViewDataServiceImpl.clearCache)
+        verify(execSpy, times(3)).clearTable(any());
 
-        // assert that registry is cleared on delete
+        // assert that registry and cached tables are cleared on delete
         ((NodeViewNodeModel)nnc.getNodeModel()).setInternalTables(tables);
-        callDataServiceToRegisterRenderes(nnc, nodeViewManager);
+        callDataServiceToRegisterRenderes(nnc, nodeViewManager, execSpy);
         assertThat(TableViewUtil.RENDERER_REGISTRY.numRegisteredRenderers(tableId)).isEqualTo(2);
+        callDataServiceToSortTable(nnc, nodeViewManager, execSpy);
+        verify(execSpy, times(2)).createDataContainer(any(), eq(false));
         wfm.removeNode(nnc.getID());
         await()
             .untilAsserted(() -> assertThat(TableViewUtil.RENDERER_REGISTRY.numRegisteredRenderers(tableId)).isZero());
+        await().untilAsserted(() -> verify(execSpy, times(6)).clearTable(any()));
 
-        // assert that registry is cleared when workflow is disposed
-        ((NodeViewNodeModel)nnc2.getNodeModel()).setInternalTables(tables);
-        callDataServiceToRegisterRenderes(nnc2, nodeViewManager);
+        // assert that registry and cached tables are cleared when workflow is disposed
+        var exec2 = new ExecutionContext(new DefaultNodeProgressMonitor(), nnc2.getNode(),
+            SingleNodeContainer.MemoryPolicy.CacheSmallInMemory, NotInWorkflowDataRepository.newInstance());
+        var execSpy2 = Mockito.spy(exec2);
+        var testTable2 = createDefaultTestTable(2, idx -> idx, exec2).get();
+        ((NodeViewNodeModel)nnc2.getNodeModel()).setInternalTables(new BufferedDataTable[]{testTable2});
+        callDataServiceToRegisterRenderes(nnc2, nodeViewManager, execSpy2);
         assertThat(TableViewUtil.RENDERER_REGISTRY.numRegisteredRenderers(tableId2)).isEqualTo(2);
+        callDataServiceToSortTable(nnc2, nodeViewManager, execSpy2);
         WorkflowManagerUtil.disposeWorkflow(wfm);
         await()
             .untilAsserted(() -> assertThat(TableViewUtil.RENDERER_REGISTRY.numRegisteredRenderers(tableId2)).isZero());
+        await().untilAsserted(() -> verify(execSpy2, times(3)).clearTable(any()));
     }
 
     private static void callDataServiceToRegisterRenderes(final NativeNodeContainer nnc,
-        final NodeViewManager nodeViewManager) {
+        final NodeViewManager nodeViewManager, final ExecutionContext exec) {
+        DataServiceContextTest.removeDataServiceContext();
+        DataServiceContextTest.initDataServiceContext(() -> exec, null);
         nodeViewManager.getDataServiceManager().callRpcDataService(NodeWrapper.of(nnc),
             jsonRpcRequest("getTable", "image", "0", "2", "", "true", "true", "false", "false"));
+        DataServiceContextTest.removeDataServiceContext();
+    }
+
+    private static void callDataServiceToSortTable(final NativeNodeContainer nnc, final NodeViewManager nodeViewManager,
+        final ExecutionContext exec) {
+        DataServiceContextTest.removeDataServiceContext();
+        DataServiceContextTest.initDataServiceContext(() -> exec, null);
+        nodeViewManager.getDataServiceManager().callRpcDataService(NodeWrapper.of(nnc),
+            jsonRpcRequest("getFilteredAndSortedTable", "string", "0", "2", "string", "true", "", "[[\"\"],[\"\"]]",
+                "true", "", "false", "false", "false", "true", "false"));
+        DataServiceContextTest.removeDataServiceContext();
     }
 
     @Test
