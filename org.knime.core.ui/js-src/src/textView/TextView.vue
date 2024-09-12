@@ -11,6 +11,7 @@ export default {
     return {
       richTextContent: "",
       flowVariablesMap: null,
+      jsonDataService: null,
     };
   },
   computed: {
@@ -19,14 +20,13 @@ export default {
     },
   },
   async mounted() {
-    const jsonDataService = new JsonDataService(this.knimeService);
+    this.jsonDataService = new JsonDataService(this.knimeService);
     const sharedDataService = new SharedDataService(this.knimeService);
     sharedDataService.addSharedDataListener(
       this.onViewSettingsChange.bind(this),
     );
-    const { content, flowVariablesMap } = await jsonDataService.initialData();
-    this.flowVariablesMap = flowVariablesMap;
-    this.richTextContent = this.replaceFlowVariablesInContent(content);
+    const { content } = await this.jsonDataService.initialData();
+    this.richTextContent = content;
     const reportingService = new ReportingService(this.knimeService);
     const isReport = reportingService.isReportingActive();
     await this.$nextTick();
@@ -35,33 +35,11 @@ export default {
     }
   },
   methods: {
-    onViewSettingsChange(payload) {
-      // TODO: Can be removed once we have frontend sanitization
-      if (
-        payload.flowVariableSettings["view.richTextContent"]
-          ?.controllingFlowVariableAvailable
-      ) {
-        return;
-      }
-      this.richTextContent = this.replaceFlowVariablesInContent(
-        payload.data.view.richTextContent,
-      );
-    },
-    replaceFlowVariablesInContent(newRichTextContent) {
-      if (this.flowVariablesMap === null) {
-        return newRichTextContent;
-      }
-      Object.entries(this.flowVariablesMap).forEach(([key, value]) => {
-        newRichTextContent = newRichTextContent.replaceAll(
-          `$$["${key}"]`,
-          value,
-        );
-        newRichTextContent = newRichTextContent.replaceAll(
-          `$$[&#34;${key}&#34;]`,
-          value,
-        );
+    async onViewSettingsChange(payload) {
+      this.richTextContent = await this.jsonDataService.data({
+        method: "getContent",
+        options: [payload.data.view.richTextContent],
       });
-      return newRichTextContent;
     },
   },
 };
