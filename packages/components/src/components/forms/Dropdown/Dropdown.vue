@@ -779,7 +779,7 @@ export default {
       color: var(--theme-dropdown-foreground-color-hover);
 
       & :slotted(svg) {
-        stroke: var(--theme-dropdown-foreground-color-selected);
+        stroke: var(--theme-dropdown-foreground-color-hover);
       }
     }
   }
@@ -797,6 +797,10 @@ export default {
     &.empty {
       white-space: pre-wrap;
     }
+  }
+
+  & [role="option"]:has(.slot-option) {
+    border-bottom: 1px solid var(--knime-porcelain);
   }
 
   & .noselect {
