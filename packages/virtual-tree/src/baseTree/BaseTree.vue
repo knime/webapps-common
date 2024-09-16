@@ -243,7 +243,7 @@ watch(
   (newVal) => {
     const newSelectedNode = key2TreeNode.value?.[newVal];
     if (newSelectedNode) {
-      selectChange(newSelectedNode, false);
+      selectChange(newSelectedNode, false, false);
     }
   },
   {
@@ -337,7 +337,11 @@ function handleKeyboardNavigation(event: KeyboardEvent) {
   emit("keydown", { event, node: currentFocusedNode });
 }
 
-function selectChange(node: BaseTreeNode, deselect: boolean = true) {
+function selectChange(
+  node: BaseTreeNode,
+  deselect: boolean = true,
+  updateFocus: boolean = false,
+) {
   const preSelectedNode =
     key2TreeNode.value[Array.from(selectedKeys.value.values())[0]];
   let currentNode: TypeWithUndefined<BaseTreeNode>;
@@ -349,7 +353,9 @@ function selectChange(node: BaseTreeNode, deselect: boolean = true) {
     currentNode = node;
   }
   emit("selectChange", { preSelectedNode, node: currentNode });
-  focusChange(node);
+  if (updateFocus) {
+    focusChange(node);
+  }
 }
 
 function checkChange(node: BaseTreeNode) {

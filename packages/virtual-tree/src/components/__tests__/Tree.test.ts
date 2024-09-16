@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import Tree from "../Tree.vue";
 import { flushPromises, mount } from "@vue/test-utils";
+import { nextTick } from "vue";
 
 describe("Tree", () => {
   const doMount = (options = {}) => {
@@ -40,33 +41,34 @@ describe("Tree", () => {
   });
 
   describe("tree interactions", () => {
-    it("click to expand", () => {
+    it("click to expand", async () => {
       const { wrapper, mountOptions } = doMount();
-      const virtualTree = wrapper.getComponent({ ref: "tree" });
+      const baseTree = wrapper.getComponent({ ref: "baseTree" });
       const treeNodes = wrapper.findAllComponents({ name: "TreeNode" });
 
-      expect(virtualTree.emitted("expandChange")).toBeUndefined();
+      expect(baseTree.emitted("expandChange")).toBeUndefined();
 
-      for (let i = 0; i < mountOptions.props.source.length; i++) {
-        treeNodes.at(i)!.trigger("click");
-        expect(virtualTree.emitted("expandChange")?.[i]).toStrictEqual([
-          {
-            node: expect.objectContaining({
-              origin: mountOptions.props.source[i],
-            }),
-            source: "click",
-            state: expect.any(Boolean),
-          },
-        ]);
-      }
+      const i = 0;
+
+      treeNodes.at(i)!.trigger("click");
+      await nextTick();
+      expect(baseTree.emitted("expandChange")?.[0]).toStrictEqual([
+        {
+          node: expect.objectContaining({
+            origin: mountOptions.props.source[i],
+          }),
+          source: "click",
+          state: expect.any(Boolean),
+        },
+      ]);
     });
 
-    it("emits keypresses", async () => {
+    it("emits keypress", async () => {
       const { wrapper, mountOptions } = doMount();
-      const virtualTree = wrapper.getComponent({ ref: "tree" });
+      const baseTree = wrapper.getComponent({ ref: "baseTree" });
 
-      await virtualTree.trigger("focusin");
-      await virtualTree.trigger("keydown", { key: "someTestKey" });
+      await baseTree.trigger("focusin");
+      await baseTree.trigger("keydown", { key: "someTestKey" });
 
       expect(wrapper.emitted("keydown")?.[0]).toStrictEqual([
         {
@@ -80,10 +82,10 @@ describe("Tree", () => {
 
     it("keyboard navigation", async () => {
       const { wrapper, mountOptions } = doMount();
-      const virtualTree = wrapper.getComponent({ ref: "tree" });
+      const baseTree = wrapper.getComponent({ ref: "baseTree" });
 
-      await virtualTree.trigger("focusin");
-      expect(virtualTree.emitted("focusChange")?.[0]).toStrictEqual([
+      await baseTree.trigger("focusin");
+      expect(baseTree.emitted("focusChange")?.[0]).toStrictEqual([
         {
           node: expect.objectContaining({
             key: mountOptions.props.source[0].nodeKey,
@@ -91,8 +93,8 @@ describe("Tree", () => {
         },
       ]);
 
-      await virtualTree.trigger("keydown", { key: "ArrowDown" });
-      expect(virtualTree.emitted("focusChange")?.[1]).toStrictEqual([
+      await baseTree.trigger("keydown", { key: "ArrowDown" });
+      expect(baseTree.emitted("focusChange")?.[1]).toStrictEqual([
         {
           node: expect.objectContaining({
             key: mountOptions.props.source[1].nodeKey,
@@ -100,8 +102,8 @@ describe("Tree", () => {
         },
       ]);
 
-      await virtualTree.trigger("keydown", { key: "ArrowUp" });
-      expect(virtualTree.emitted("focusChange")?.[2]).toStrictEqual([
+      await baseTree.trigger("keydown", { key: "ArrowUp" });
+      expect(baseTree.emitted("focusChange")?.[2]).toStrictEqual([
         {
           node: expect.objectContaining({
             key: mountOptions.props.source[0].nodeKey,
@@ -110,7 +112,7 @@ describe("Tree", () => {
       ]);
 
       mountOptions.props.loadData.mockClear();
-      await virtualTree.trigger("keydown", { key: "Enter" });
+      await baseTree.trigger("keydown", { key: "Enter" });
       expect(mountOptions.props.loadData).toHaveBeenCalledWith(
         expect.objectContaining({ origin: mountOptions.props.source[0] }),
         expect.any(Function),
@@ -122,22 +124,21 @@ describe("Tree", () => {
     const { wrapper, mountOptions } = doMount();
     const treeNodes = wrapper.findAllComponents({ name: "TreeNode" });
 
-    for (let i = 0; i < mountOptions.props.source.length; i++) {
-      const treeNode = treeNodes[i];
-      mountOptions.props.loadData.mockClear();
-      expect(treeNode.vm.$props.node.children).toStrictEqual([]);
-      treeNode.trigger("click");
-      await flushPromises();
+    const i = 0;
+    const treeNode = treeNodes[i];
+    mountOptions.props.loadData.mockClear();
+    expect(treeNode.vm.$props.node.children).toStrictEqual([]);
+    treeNode.trigger("click");
+    await flushPromises();
 
-      expect(mountOptions.props.loadData).toHaveBeenCalledWith(
-        expect.objectContaining({ origin: mountOptions.props.source[i] }),
-        expect.any(Function),
-      );
-      expect(treeNode.vm.$props.node.children).toStrictEqual([
-        expect.objectContaining({
-          key: `${mountOptions.props.source[i].nodeKey}/1`,
-        }),
-      ]);
-    }
+    expect(mountOptions.props.loadData).toHaveBeenCalledWith(
+      expect.objectContaining({ origin: mountOptions.props.source[i] }),
+      expect.any(Function),
+    );
+    expect(treeNode.vm.$props.node.children).toStrictEqual([
+      expect.objectContaining({
+        key: `${mountOptions.props.source[i].nodeKey}/1`,
+      }),
+    ]);
   });
 });

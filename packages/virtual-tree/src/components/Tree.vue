@@ -41,13 +41,13 @@ const emit = defineEmits<{
   selectChange: [value: SelectEventParams];
 }>();
 
-const tree = ref<InstanceType<typeof VirtualTree>>();
+const baseTree = ref<InstanceType<typeof VirtualTree>>();
 
 const focusedNodeKey = ref<NodeKey | null>();
 
 const isTreeNodeSelected = (treeNode: BaseTreeNode) => {
   return (
-    props.selectable && tree.value?.getSelectedNode()?.key === treeNode.key
+    props.selectable && baseTree.value?.getSelectedNode()?.key === treeNode.key
   );
 };
 
@@ -68,7 +68,7 @@ const onFocusChange = async ({ node }: { node: BaseTreeNode | null }) => {
     return;
   }
   await nextTick();
-  const element = tree.value?.$el.querySelector(".tree-node-wrapper.focus");
+  const element = baseTree.value?.$el.querySelector(".tree-node-wrapper.focus");
   element?.scrollIntoView({
     behavior: "smooth",
     block: "nearest",
@@ -82,7 +82,7 @@ const onTreeKeydown = ({ event, node }: KeydownEvent) => {
     event.stopPropagation();
     event.preventDefault();
     if (node.origin.hasChildren) {
-      tree.value!.toggleExpand(node.key);
+      baseTree.value!.toggleExpand(node.key);
     }
   };
 
@@ -104,7 +104,7 @@ const hasFocus = (treeNode: BaseTreeNode) => {
 };
 
 const onExpandableClick = (node: BaseTreeNode) => {
-  tree.value?.toggleExpand(node.key);
+  baseTree.value?.toggleExpand(node.key);
 };
 
 const isTreeNodeExpandable = (node: BaseTreeNode) => {
@@ -121,18 +121,18 @@ const onSelectChange = ({ node, preSelectedNode }: SelectEventParams) => {
 };
 
 defineExpose({
-  getExpandedKeys: () => tree.value?.getExpandedKeys(),
+  getExpandedKeys: () => baseTree.value?.getExpandedKeys(),
   toggleExpand: (nodeKey: NodeKey, state?: boolean) =>
-    tree.value?.toggleExpand(nodeKey, state),
+    baseTree.value?.toggleExpand(nodeKey, state),
   getSelectedTreeNode: () =>
     // eslint-disable-next-line no-undefined
-    props.selectable ? tree.value?.getSelectedNode() : undefined,
+    props.selectable ? baseTree.value?.getSelectedNode() : undefined,
 });
 </script>
 
 <template>
   <VirtualTree
-    ref="tree"
+    ref="baseTree"
     class="virtual-tree"
     :source="source"
     :load-data="loadData"
