@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.1.7
+
+### Patch Changes
+
+- bb78d4a: Add separator for slotted dropdown, and fix icon color for focused state
+
 ## 1.1.6
 
 ### Patch Changes
