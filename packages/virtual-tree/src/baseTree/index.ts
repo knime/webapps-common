@@ -1,3 +1,3 @@
-import Tree from "./tree.vue";
+import BaseTree from "./BaseTree.vue";
 export * from "./types";
-export default Tree;
+export default BaseTree;

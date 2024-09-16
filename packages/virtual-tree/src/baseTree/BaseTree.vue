@@ -36,7 +36,7 @@ import type {
   TreeNodeOptions,
   VirtualConfig,
 } from "./types";
-import TreeNode from "./node.vue";
+import TreeNode from "./TreeNode.vue";
 import { updateCheckedState, useCheckState } from "./hooks/useCheckState";
 import { addOrDelete } from "./utils";
 import type { TypeWithUndefined } from "./utils/types";

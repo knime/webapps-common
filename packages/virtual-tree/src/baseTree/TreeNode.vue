@@ -1,7 +1,7 @@
 <!-- eslint-disable no-undefined -->
 <script setup lang="ts">
 import { type PropType, computed, inject } from "vue";
-import VirCheckBox from "./checkbox.vue";
+import VirCheckBox from "./TreeNodeCheckbox.vue";
 import RenderNode from "./renderNode";
 import renderIcon from "./renderIcon";
 import { BaseTreeNode } from "./baseTreeNode";
@@ -103,13 +103,6 @@ const arrowClick = (event: MouseEvent) => {
   event.stopPropagation();
   handleExpand();
 };
-</script>
-
-<script lang="ts">
-import { defineComponent } from "vue";
-export default defineComponent({
-  name: "TreeNode",
-});
 </script>
 
 <template>
