@@ -96,10 +96,9 @@ const checkLicenses = (knimePackages) => {
 
     // keep only the needed props
     allPackages = allPackages.map((pkg) => ({
-      // TODO: WEBP-243 handle licenses with missing text or similar licenses
       name: pkg.name,
-      repository: pkg.repository,
-      licenseText: pkg.licenseText,
+      repository: pkg.repository ?? "",
+      licenseText: pkg.licenseText ?? "",
     }));
 
     let allUniquePackages = [];
