@@ -103,7 +103,7 @@ function updateUpwards(options: {
   const { node, checkedKeys, halfCheckedKeys, key2TreeNode } = options;
   const update = (node: BaseTreeNode) => {
     if (node.parentKey) {
-      // 说明是子节点
+      // Indicates a child node
       const parentNode = key2TreeNode[node.parentKey];
       const { key: parentKey, children } = parentNode;
       const { checked, indeterminate } = getStateFromNodes({
@@ -111,12 +111,11 @@ function updateUpwards(options: {
         checkedKeys,
         halfCheckedKeys,
       });
-      // console.log('indeterminate :>> ', indeterminate, checked, checkedKeys.has(parentKey));
       if (
         checked !== checkedKeys.has(parentKey) ||
         indeterminate !== halfCheckedKeys.has(parentKey)
       ) {
-        // 父节点变了的话，就还要继续向上更新
+        // If the parent node changes, you have to update it upwards.
         // this.checkedNodeKeys.value.toggle(parentKey);
 
         checkedKeys[addOrDelete(checked)](parentKey);

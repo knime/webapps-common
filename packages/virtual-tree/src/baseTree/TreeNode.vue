@@ -50,7 +50,6 @@ const showCheckbox = computed(() => {
   }
   return props.showCheckbox;
 });
-// console.log('showCheckbox', showCheckbox.value);
 
 const emit = defineEmits<{
   (e: "selectChange", value: BaseTreeNode): void;
@@ -90,7 +89,6 @@ const handleCheckChange = () => {
 };
 
 const handleExpand = () => {
-  // console.log('handleExpand', showArrow)
   if (showArrow.value) {
     emit("toggleExpand", {
       state: !treeContext.expandedKeys.has(props.node.key),

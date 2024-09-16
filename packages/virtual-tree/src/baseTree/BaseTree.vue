@@ -12,7 +12,6 @@ import {
   toRaw,
   useSlots,
   watch,
-  watchEffect,
 } from "vue";
 // @ts-ignore
 import { RecycleScroller } from "vue-virtual-scroller";
@@ -99,9 +98,7 @@ const key2TreeNode = ref<KeyNodeMap>({});
 watch(
   () => props.source,
   (newVal) => {
-    // console.log('wat source :>> ', newVal); // todo reset states
     const result = useTreeData(newVal);
-    // console.log('result', result);
     flattenTreeData.value = result.flattenTreeData;
     key2TreeNode.value = result.key2TreeNode;
   },
@@ -128,25 +125,18 @@ const halfCheckedKeys = ref(new Set<NodeKey>());
 watch(
   () => props.defaultCheckedKeys,
   (newVal) => {
-    // console.log('wat defaultCheckedKeys :>> ', newVal);
-    // todo: 懒加载会改变key2TreeNode，重新调用useCheckState
+    // todo: Lazy loading changes the key2TreeNode and re-calls the useCheckState
     useCheckState(newVal, {
       checkedKeys: checkedKeys.value,
       halfCheckedKeys: halfCheckedKeys.value,
       checkStrictly: props.checkStrictly,
       key2TreeNode: key2TreeNode.value,
     });
-    // console.log('checkedKeys :>> ', checkedKeys);
   },
   {
     immediate: true,
   },
 );
-
-watchEffect(() => {
-  // 只会调用一次
-  // console.log('watchEffect :>> ', props.defaultCheckedKeys, props.source);
-});
 
 const expandedKeys = ref(new Set<NodeKey>());
 
@@ -180,16 +170,13 @@ watch(
 
 const loading = ref(false);
 
-// state: 点击后的展开状态
 // eslint-disable-next-line func-style
 function toggleExpand({ state, node, source }: EventParams) {
   if (loading.value) {
     return;
   }
   expandedKeys.value[addOrDelete(state)](node.key);
-  // service.expandedKeys.value.toggle(node.nodeKey);
   if (state && !node.children.length && props.loadData) {
-    // console.log('loadData :>> ');
     node.loading = true;
     loading.value = true;
     props.loadData(node, (children) => {
@@ -215,7 +202,6 @@ function toggleExpand({ state, node, source }: EventParams) {
 
 // eslint-disable-next-line func-style
 function lazyLoad(node: BaseTreeNode, children: TreeNodeOptions[]) {
-  // console.log('lazyLoad :>> ', node, children);
   const indexInFlattenData = flattenTreeData.value.findIndex(
     (item) => item.key === node.key,
   );
@@ -381,7 +367,7 @@ const context = shallowReactive({
   getCheckedNodes: () =>
     Array.from(checkedKeys.value)
       .map((key) => key2TreeNode.value[key])
-      .filter(Boolean), // 懒加载的情况下未必能拿到node
+      .filter(Boolean), // Lazy loading may not necessarily get the node
   getHalfCheckedNodes: () =>
     Array.from(halfCheckedKeys.value).map((key) => key2TreeNode.value[key]),
   toggleExpand: (nodeKey: NodeKey, state?: boolean) =>
