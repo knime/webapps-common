@@ -24,8 +24,8 @@
     "@knime/components": "workspace:*",
     "@knime/styles": "workspace:*",
     "@knime/utils": "workspace:*",
-    "@ysx-libs/vue-virtual-tree": "^0.0.13",
-    "consola": "3.2.3"
+    "consola": "3.2.3",
+    "vue-virtual-scroller": "2.0.0-beta.8"
   },
   "peerDependencies": {
     "vue": "3.x"

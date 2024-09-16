@@ -9,7 +9,7 @@ import {
   type EventParams,
   type FocusEventParams,
   type KeydownEvent,
-} from "@ysx-libs/vue-virtual-tree";
+} from "./baseTree";
 
 export {
   type LoadDataFunc,

@@ -3,7 +3,7 @@
  * Thin wrapper around the tree library with added KNIME styles and UX.
  */
 import { ref, nextTick } from "vue";
-import VirtualTree from "@ysx-libs/vue-virtual-tree";
+import VirtualTree from "../baseTree";
 
 import {
   type LoadDataFunc,
@@ -104,7 +104,7 @@ const hasFocus = (treeNode: BaseTreeNode) => {
 };
 
 const onExpandableClick = (node: BaseTreeNode) => {
-  tree.value.toggleExpand(node.key);
+  tree.value?.toggleExpand(node.key);
 };
 
 const isTreeNodeExpandable = (node: BaseTreeNode) => {
@@ -149,13 +149,7 @@ defineExpose({
         :id="domNodeId(node.key)"
         :class="['tree-node-wrapper', { focus: hasFocus(node) }]"
       >
-        <slot
-          v-if="isTreeNodeExpandable(node)"
-          name="expandable"
-          :tree-node="node"
-          :is-selected="isTreeNodeSelected(node)"
-          :has-focus="hasFocus(node)"
-        >
+        <template v-if="isTreeNodeExpandable(node)">
           <span
             :class="[
               'tree-node',
@@ -166,29 +160,21 @@ defineExpose({
               },
             ]"
             @click="() => onExpandableClick(node)"
-            ><slot name="expandable-inner" :tree-node="node">{{
+            ><slot name="expandable" :tree-node="node">{{
               node.name
             }}</slot></span
           >
-        </slot>
-        <slot
-          v-else
-          name="leaf"
-          :tree-node="node"
-          :is-selected="isTreeNodeSelected(node)"
-          :has-focus="hasFocus(node)"
-        >
+        </template>
+        <template v-else>
           <span
             :class="[
               'tree-node',
               'leaf',
               { selected: isTreeNodeSelected(node), focus: hasFocus(node) },
             ]"
-            ><slot name="leaf-inner" :tree-node="node">{{
-              node.name
-            }}</slot></span
+            ><slot name="leaf" :tree-node="node">{{ node.name }}</slot></span
           >
-        </slot>
+        </template>
       </span>
     </template>
     <template #icon="slotProps">

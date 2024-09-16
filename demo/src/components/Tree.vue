@@ -47,7 +47,7 @@ const loadData = (treeNode: BaseTreeNode, callback: (children: TreeNodeOptions[]
   ]"
   :load-data="loadData"
 >
-  <template #leaf-inner="{ treeNode }">
+  <template #leaf="{ treeNode }">
     <div @dblclick="console.log(treeNode)">
       {{ treeNode.name }}
     </div>
@@ -164,7 +164,7 @@ const loadData = async (
             ]"
             :load-data="loadData"
           >
-            <template #leaf-inner="{ treeNode }">
+            <template #leaf="{ treeNode }">
               <div @dblclick="doubleClickedItem = treeNode">
                 {{ treeNode.name }}
               </div>
