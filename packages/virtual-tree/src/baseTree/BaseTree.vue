@@ -170,7 +170,6 @@ watch(
 
 const loading = ref(false);
 
-// eslint-disable-next-line func-style
 function toggleExpand({ state, node, source }: EventParams) {
   if (loading.value) {
     return;
@@ -200,7 +199,6 @@ function toggleExpand({ state, node, source }: EventParams) {
   emit("expandChange", { state, node, source: source || "click" });
 }
 
-// eslint-disable-next-line func-style
 function lazyLoad(node: BaseTreeNode, children: TreeNodeOptions[]) {
   const indexInFlattenData = flattenTreeData.value.findIndex(
     (item) => item.key === node.key,

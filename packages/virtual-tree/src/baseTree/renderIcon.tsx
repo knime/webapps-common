@@ -37,9 +37,9 @@ export default defineComponent({
       ) : (
         <div class="def-arrow">
           {loading.value ? (
-            <i class="iconfont iconloading ico-loading" />
+            <i class="icon loading" />
           ) : (
-            <i class="iconfont iconExpand"></i>
+            <i class="icon expand" />
           )}
         </div>
       );

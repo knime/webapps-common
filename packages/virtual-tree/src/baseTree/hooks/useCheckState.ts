@@ -20,7 +20,6 @@ function useCheckState(
   defaultCheckedKeys.forEach((key) => {
     if (!checkedKeys.has(key)) {
       const node = key2TreeNode[key];
-      // console.log('node :>> ', node);
       if (node) {
         updateCheckedState({
           node,
@@ -35,7 +34,6 @@ function useCheckState(
       }
     }
   });
-  // console.log('halfCheckedKeys :>> ', halfCheckedKeys);
 }
 
 function updateCheckedState(options: {

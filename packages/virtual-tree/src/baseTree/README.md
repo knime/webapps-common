@@ -1,6 +1,6 @@
 # Virtual Tree library
 
-This is "forked" from lycHub/ysx-library (github). Some style modifications and other improvements for our
+This is "forked" from <https://github.com/lycHub/ysx-library/>. Some style modifications and other improvements for our
 use case has been integrated.
 
 Notable changes:
