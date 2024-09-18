@@ -62,6 +62,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFor
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UpdatesUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.util.RawValue;
@@ -92,9 +93,11 @@ public final class JsonFormsSettingsImpl implements JsonFormsSettings {
 
     private final DefaultNodeSettingsContext m_context;
 
+    private final Map<SettingsType, WidgetTree> m_widgetTrees;
+
     /**
      * @param settings the POJOs from which to derive the schema, data and uiSchema
-     * @param context the current {@link SettingsCreatingContext} with access to input ports
+     * @param context the current {@link DefaultNodeSettingsContext} with access to input ports
      */
     public JsonFormsSettingsImpl(final Map<SettingsType, DefaultNodeSettings> settings,
         final DefaultNodeSettingsContext context) {
@@ -102,13 +105,18 @@ public final class JsonFormsSettingsImpl implements JsonFormsSettings {
         m_modelSettingsClass = m_modelSettings == null ? null : m_modelSettings.getClass();
         m_viewSettings = settings.get(SettingsType.VIEW);
         m_viewSettingsClass = m_viewSettings == null ? null : m_viewSettings.getClass();
+        m_widgetTrees = createSettingsTypeMap(//
+            m_modelSettingsClass == null ? null : new WidgetTree(m_modelSettingsClass, SettingsType.MODEL), //
+            m_viewSettings == null ? null : new WidgetTree(m_viewSettingsClass, SettingsType.VIEW)//
+        );
         m_context = context;
     }
 
     @Override
     public JsonNode getSchema() {
         var settingsClasses = createSettingsTypeMap(m_modelSettingsClass, m_viewSettingsClass);
-        return JsonFormsSchemaUtil.buildCombinedSchema(settingsClasses, m_context, JsonFormsDataUtil.getMapper());
+        return JsonFormsSchemaUtil.buildCombinedSchema(settingsClasses, m_widgetTrees, m_context,
+            JsonFormsDataUtil.getMapper());
     }
 
     @Override
@@ -126,12 +134,9 @@ public final class JsonFormsSettingsImpl implements JsonFormsSettings {
     }
 
     private RawValue generateUiSchema(final AsyncChoicesHolder asyncChoicesHolder) {
-        final var settingsClasses = JsonFormsSettingsImpl
-            .<Class<? extends WidgetGroup>> createSettingsTypeMap(m_modelSettingsClass, m_viewSettingsClass);
         final var settings = JsonFormsSettingsImpl.<WidgetGroup> createSettingsTypeMap(m_modelSettings, m_viewSettings);
-
-        final var uiSchema = JsonFormsUiSchemaUtil.buildUISchema(settingsClasses, m_context, asyncChoicesHolder);
-        UpdatesUtil.addUpdates(uiSchema, settingsClasses, settings, m_context);
+        final var uiSchema = JsonFormsUiSchemaUtil.buildUISchema(m_widgetTrees.values(), m_context, asyncChoicesHolder);
+        UpdatesUtil.addUpdates(uiSchema, m_widgetTrees.values(), settings, m_context);
         return new RawValue(uiSchema.toString());
     }
 

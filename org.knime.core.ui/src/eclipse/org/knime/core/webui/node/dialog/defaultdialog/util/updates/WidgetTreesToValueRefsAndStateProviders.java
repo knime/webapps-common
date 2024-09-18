@@ -52,15 +52,12 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.knime.core.node.util.CheckUtils;
-import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaGenerationException;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.WidgetGroupTraverser.Configuration;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
@@ -81,7 +78,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widgettree.ArrayWidgetNode
 import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
 import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
 
-final class SettingsClassesToValueRefsAndStateProviders {
+final class WidgetTreesToValueRefsAndStateProviders {
 
     record ValueRefWrapper(Class<? extends Reference> valueRef, PathsWithSettingsType fieldLocation) {
     }
@@ -105,12 +102,10 @@ final class SettingsClassesToValueRefsAndStateProviders {
     private final Collection<Class<? extends StateProvider>> m_uiStateProviders = new ArrayList<>();
 
     /**
-     * @param settingsClasses a map of settings classes to collect annotated fields from
+     * @param widgetTrees a collection of widget trees derived from settings classes to collect annotated fields from
      * @return the valueRef and updates annotations
      */
-    ValueRefsAndStateProviders settingsClassesToValueRefsAndStateProviders(
-        final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses) {
-        final var widgetTrees = settingsClasses.entrySet().stream().map(e -> new WidgetTree(e.getValue(), e.getKey()));
+    ValueRefsAndStateProviders widgetTreesToValueRefsAndStateProviders(final Collection<WidgetTree> widgetTrees) {
         widgetTrees.forEach(this::traverseWidgetTree);
         return new ValueRefsAndStateProviders(m_valueRefs, m_valueProviders, m_uiStateProviders);
 

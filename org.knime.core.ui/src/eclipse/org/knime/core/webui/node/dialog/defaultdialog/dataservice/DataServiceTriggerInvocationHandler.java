@@ -60,6 +60,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.IndexedValue;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerInvocationHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
 
 /**
  * Used to convert triggers to a list of resulting updates given a map of dependencies.
@@ -71,7 +72,9 @@ final class DataServiceTriggerInvocationHandler {
     private TriggerInvocationHandler<String> m_triggerInvocationHandler;
 
     DataServiceTriggerInvocationHandler(final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses) {
-        m_triggerInvocationHandler = new TriggerInvocationHandler<>(settingsClasses);
+        final var widgetTrees =
+            settingsClasses.entrySet().stream().map(entry -> new WidgetTree(entry.getValue(), entry.getKey())).toList();
+        m_triggerInvocationHandler = new TriggerInvocationHandler<>(widgetTrees);
     }
 
     List<UpdateResultsUtil.UpdateResult<String>> trigger(final String triggerId,

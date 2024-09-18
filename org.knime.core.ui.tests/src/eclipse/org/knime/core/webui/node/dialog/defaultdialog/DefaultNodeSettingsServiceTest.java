@@ -76,6 +76,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -154,7 +155,8 @@ class DefaultNodeSettingsServiceTest {
         // assert that returned ui schema is equal to json object created via JsonFormsUiSchemaUtil
         final Map<SettingsType, Class<? extends WidgetGroup>> testSettingsMap =
             Map.of(SettingsType.VIEW, TestSettings.class);
-        final var uiSchema = JsonFormsUiSchemaUtil.buildUISchema(testSettingsMap,
+        final var uiSchema = JsonFormsUiSchemaUtil.buildUISchema(
+            testSettingsMap.entrySet().stream().map(e -> new WidgetTree(e.getValue(), e.getKey())).toList(),
             DefaultNodeSettings.createDefaultNodeSettingsContext(specs), new AsyncChoicesHolder());
         assertThatJson(initialData.get("ui_schema")).isEqualTo(uiSchema);
     }

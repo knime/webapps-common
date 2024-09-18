@@ -108,7 +108,17 @@ public final class JsonFormsUiSchemaUtil {
      * Call this method to build the uischema of sub layouts which are independent from the parent layout apart from
      * having access to the parentFields
      *
-     * @param widgetTree to derive the uischema from
+     * @param context
+     * @param asyncChoicesAdder
+     * @param widgetTrees to derive the uischema from
+     * @return the uischema
+     */
+    public static ObjectNode buildUISchema(final Collection<WidgetTree> widgetTrees,
+        final DefaultNodeSettingsContext context, final AsyncChoicesAdder asyncChoicesAdder) {
+        return buildUISchema(widgetTrees, List.of(), context, asyncChoicesAdder);
+    }
+
+    /**
      * @param parentWidgetTrees of the fields of the "outside" layout. With UIEXT-1673 This can be removed again
      */
     static ObjectNode buildUISchema(final Collection<WidgetTree> widgetTrees,
@@ -116,18 +126,6 @@ public final class JsonFormsUiSchemaUtil {
         final AsyncChoicesAdder asyncChoicesAdder) {
         final var layoutSkeleton = resolveLayout(widgetTrees, parentWidgetTrees);
         return new LayoutNodesGenerator(layoutSkeleton, context, asyncChoicesAdder).build();
-    }
-
-    /**
-     * @param settingsClasses
-     * @param context
-     * @param asyncChoicesAdder
-     * @return the ui schema resolved by the mapper from the given settings
-     */
-    public static ObjectNode buildUISchema(final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses,
-        final DefaultNodeSettingsContext context, final AsyncChoicesAdder asyncChoicesAdder) {
-        final var widgetTrees = constructWidgetTrees(settingsClasses);
-        return buildUISchema(widgetTrees, List.of(), context, asyncChoicesAdder);
     }
 
     private static List<WidgetTree>

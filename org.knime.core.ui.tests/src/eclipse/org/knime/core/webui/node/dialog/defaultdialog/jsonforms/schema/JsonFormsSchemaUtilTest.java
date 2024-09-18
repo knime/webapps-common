@@ -103,7 +103,7 @@ class JsonFormsSchemaUtilTest {
 
     private static final ObjectMapper MAPPER = JsonFormsDataUtil.getMapper();
 
-    private static class PropertyNameOverrideTestSetting {
+    private static class PropertyNameOverrideTestSetting implements WidgetGroup {
         private static String SNAPSHOT = "{\"test\":{\"type\":\"integer\",\"format\":\"int32\",\"default\":0}}";
 
         int m_test;
@@ -114,7 +114,7 @@ class JsonFormsSchemaUtilTest {
         testSettings(PropertyNameOverrideTestSetting.class);
     }
 
-    private static class TitleTestSetting {
+    private static class TitleTestSetting implements WidgetGroup {
         private static String SNAPSHOT =
             "{\"test\":{\"type\":\"integer\",\"format\":\"int32\",\"title\":\"some title\",\"default\":0}}";
 
@@ -127,7 +127,7 @@ class JsonFormsSchemaUtilTest {
         testSettings(TitleTestSetting.class);
     }
 
-    private static class DescriptionSetting {
+    private static class DescriptionSetting implements WidgetGroup {
         private static String SNAPSHOT =
             "{\"test\":{\"type\":\"integer\",\"format\":\"int32\",\"default\":0,\"description\":\"some description\"}}";
 
@@ -152,7 +152,7 @@ class JsonFormsSchemaUtilTest {
     }
 
     @WidgetModification(ChangeDescription.class)
-    private static class ModifiedDescriptionSettings {
+    private static class ModifiedDescriptionSettings implements WidgetGroup {
         /**
          * containing the modified description from {@link ChangeDescription}.
          */
@@ -169,7 +169,7 @@ class JsonFormsSchemaUtilTest {
         testSettings(ModifiedDescriptionSettings.class);
     }
 
-    private static class ModifiedDescriptionWithinWidgetGroupSettings {
+    private static class ModifiedDescriptionWithinWidgetGroupSettings implements WidgetGroup {
         /**
          * containing the modified description from {@link ChangeDescription}.
          */
@@ -198,7 +198,7 @@ class JsonFormsSchemaUtilTest {
         testSettings(ModifiedDescriptionWithinWidgetGroupSettings.class);
     }
 
-    private static class ModifiedDescriptionWithinArraySettings {
+    private static class ModifiedDescriptionWithinArraySettings implements WidgetGroup {
         /**
          * containing the modified description from {@link ChangeDescription}.
          */
@@ -230,7 +230,7 @@ class JsonFormsSchemaUtilTest {
 
     @Test
     void testEnum() throws JsonProcessingException {
-        class EnumTestSetting {
+        class EnumTestSetting implements WidgetGroup {
             private static String SNAPSHOT = "{\"testEnum\":{\"oneOf\":["//
                 + "{\"const\":\"SOME_CHOICE\",\"title\":\"Some choice\"},"//
                 + "{\"const\":\"SOME_OTHER_CHOICE\",\"title\":\"second choice\"}"//
@@ -250,7 +250,7 @@ class JsonFormsSchemaUtilTest {
     @Test
     void testEnumThrowsWhenUsingWidgetAnnotation() throws JsonProcessingException {
 
-        class EnumTestSettingWidgetAnnotation {
+        class EnumTestSettingWidgetAnnotation implements WidgetGroup {
             enum TestEnum {
                     SOME_CHOICE, //
                     @Widget(title = "second choice", description = "")
@@ -265,7 +265,7 @@ class JsonFormsSchemaUtilTest {
     @Test
     void testEnumConstantDescriptionsAdded() throws JsonProcessingException {
 
-        class EnumTestSettingDescription {
+        class EnumTestSettingDescription implements WidgetGroup {
             private static String SNAPSHOT =
                 "{\"testEnum\":{" + "\"description\": \"An enum to test if the constants are added automatically."
                     + "\\n<ul>\\n<li><b>First choice</b>: The first choice.</li>"
@@ -291,7 +291,7 @@ class JsonFormsSchemaUtilTest {
     @Test
     void testEnumConstantDescriptionsOnlyAddedIfAtLeastOneIsDefined() throws JsonProcessingException {
 
-        class EnumTestSettingDescription {
+        class EnumTestSettingDescription implements WidgetGroup {
             private static String SNAPSHOT = "{\"testEnum\":{"
                 + "\"description\": \"An enum to test if the constants are added if any constant is described."
                 + "\\n<ul>" + "\\n<li><b>First choice</b>: The first choice.</li>" + "\\n<li><b>Second choice</b></li>"
@@ -315,7 +315,7 @@ class JsonFormsSchemaUtilTest {
         testSettings(EnumTestSettingDescription.class);
     }
 
-    private static class MinMaxSetting {
+    private static class MinMaxSetting implements WidgetGroup {
         private static String SNAPSHOT = "{"//
             + "\"testMin\":{\"type\":\"integer\",\"format\":\"int32\",\"default\":0,\"minimum\":0.0},"//
             + "\"testMax\":{\"type\":\"integer\",\"format\":\"int32\",\"default\":0,\"maximum\":100.0},"//
@@ -341,7 +341,7 @@ class JsonFormsSchemaUtilTest {
         testSettings(MinMaxSetting.class);
     }
 
-    private static final class MinMaxProviderSetting {
+    private static final class MinMaxProviderSetting implements WidgetGroup {
 
         private static final String SNAPSHOT = "{"//
             + "\"testMin\":{\"type\":\"integer\",\"format\":\"int32\",\"default\":0,\"minimum\":42.0},"//
@@ -377,7 +377,7 @@ class JsonFormsSchemaUtilTest {
         testSettings(MinMaxProviderSetting.class);
     }
 
-    private static class ValidatedStringSetting {
+    private static class ValidatedStringSetting implements WidgetGroup {
         private static String SNAPSHOT = "{"//
             + "\"testMinLength\":{\"type\":\"string\",\"minLength\":0},"//
             + "\"testMaxLength\":{\"type\":\"string\",\"maxLength\":100},"//
@@ -403,7 +403,7 @@ class JsonFormsSchemaUtilTest {
         testSettings(ValidatedStringSetting.class);
     }
 
-    private static class ContainerSetting {
+    private static class ContainerSetting implements WidgetGroup {
         private static String SNAPSHOT = "{\"testIntArray\":{"//
             + "\"type\":\"array\","//
             + "\"title\":\"foo\","//
@@ -419,7 +419,7 @@ class JsonFormsSchemaUtilTest {
         testSettings(ContainerSetting.class);
     }
 
-    private static class DefaultSetting {
+    private static class DefaultSetting implements WidgetGroup {
         private static String SNAPSHOT = "{"//
             + "\"testDouble\":{\"type\":\"number\",\"format\":\"double\",\"default\":0.0},"//
             + "\"testFloat\":{\"type\":\"number\",\"format\":\"float\",\"default\":0.0},"//
@@ -459,7 +459,7 @@ class JsonFormsSchemaUtilTest {
         testSettings(DefaultSetting.class);
     }
 
-    private static class IgnoreSetting {
+    private static class IgnoreSetting implements WidgetGroup {
         private static String SNAPSHOT = "{\"testInt\":{\"type\":\"integer\",\"format\":\"int32\",\"default\":0}}";
 
         public int testInt;
@@ -484,7 +484,7 @@ class JsonFormsSchemaUtilTest {
         testSettings(IgnoreSetting.class);
     }
 
-    private static class SettingWithConfigKeyInPersistAnnotation {
+    private static class SettingWithConfigKeyInPersistAnnotation implements WidgetGroup {
 
         private static String SNAPSHOT = "{\"test\":{" //
             + "\"type\":\"integer\"," //
@@ -527,7 +527,7 @@ class JsonFormsSchemaUtilTest {
         }
     }
 
-    private static class SettingWithCustomPersistor {
+    private static class SettingWithCustomPersistor implements WidgetGroup {
 
         private static String SNAPSHOT = "{\"test\":{" //
             + "\"type\":\"integer\"," //
@@ -583,7 +583,7 @@ class JsonFormsSchemaUtilTest {
         testSettingsWithoutContext(SettingWithCustomPersistor.class);
     }
 
-    private static class SettingWithCustomPersistorWithDeprecatedConfigs {
+    private static class SettingWithCustomPersistorWithDeprecatedConfigs implements WidgetGroup {
 
         private static String SNAPSHOT = "{\"test\":{" //
             + "\"type\":\"integer\"," //
@@ -625,7 +625,7 @@ class JsonFormsSchemaUtilTest {
 
     }
 
-    private static class SettingWithCustomType {
+    private static class SettingWithCustomType implements WidgetGroup {
 
         private static String SNAPSHOT = "{\"test\":{" //
             + "\"type\":\"object\"," //
@@ -646,7 +646,7 @@ class JsonFormsSchemaUtilTest {
         testSettingsWithoutContext(SettingWithCustomType.class);
     }
 
-    private static class SettingWithJavaTime {
+    private static class SettingWithJavaTime implements WidgetGroup {
 
         private static String SNAPSHOT = "{" + "\"duration\": {"
             + "    \"default\": 42.0, \"format\": \"int32\", \"type\": \"integer\"" + "}," + "\"year\": {"
@@ -709,12 +709,12 @@ class JsonFormsSchemaUtilTest {
         testSettingsWithoutContext(SettingWithJavaTime.class);
     }
 
-    private static void testSettings(final Class<?> settingsClass, final PortObjectSpec... specs)
+    private static void testSettings(final Class<? extends WidgetGroup> settingsClass, final PortObjectSpec... specs)
         throws JsonMappingException, JsonProcessingException {
         assertJSONAgainstSnapshot(getProperties(settingsClass, specs), settingsClass);
     }
 
-    private static void testSettingsWithoutContext(final Class<?> settingsClass)
+    private static void testSettingsWithoutContext(final Class<? extends WidgetGroup> settingsClass)
         throws JsonMappingException, JsonProcessingException {
         assertJSONAgainstSnapshot(getPropertiesWithoutContext(settingsClass), settingsClass);
     }
@@ -736,12 +736,12 @@ class JsonFormsSchemaUtilTest {
         }
     }
 
-    private static JsonNode getProperties(final Class<?> clazz, final PortObjectSpec... specs) {
+    private static JsonNode getProperties(final Class<? extends WidgetGroup> clazz, final PortObjectSpec... specs) {
         return JsonFormsSchemaUtil.buildSchema(clazz, DefaultNodeSettings.createDefaultNodeSettingsContext(specs),
             JsonFormsDataUtil.getMapper()).get("properties");
     }
 
-    private static JsonNode getPropertiesWithoutContext(final Class<?> clazz) {
+    private static JsonNode getPropertiesWithoutContext(final Class<? extends WidgetGroup> clazz) {
         return JsonFormsSchemaUtil.buildIncompleteSchema(clazz, JsonFormsDataUtil.getMapper()).get("properties");
     }
 

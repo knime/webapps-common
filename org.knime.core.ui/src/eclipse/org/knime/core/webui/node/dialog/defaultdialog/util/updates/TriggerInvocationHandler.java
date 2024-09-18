@@ -55,10 +55,9 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
 
 /**
  * @author Paul Bärnreuther
@@ -71,10 +70,10 @@ public class TriggerInvocationHandler<I> {
     private final Collection<TriggerVertex> m_triggers;
 
     /**
-     * @param settingsClasses the settings classes to collect annotations from
+     * @param widgetTrees derived from settings classes to collect annotations from
      */
-    public TriggerInvocationHandler(final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses) {
-        m_triggers = SettingsClassesToDependencyTreeUtil.settingsToDependencyTree(settingsClasses);
+    public TriggerInvocationHandler(final Collection<WidgetTree> widgetTrees) {
+        m_triggers = WidgetTreesToDependencyTreeUtil.widgetTreesToDependencyTree(widgetTrees);
     }
 
     /**

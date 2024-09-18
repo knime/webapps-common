@@ -50,39 +50,35 @@ package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
-import org.knime.core.webui.node.dialog.SettingsType;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
 
 /**
  * A utility class for parsing all update interactions between different widgets from given settings classes.
  *
  * @author Paul Bärnreuther
  */
-public final class SettingsClassesToDependencyTreeUtil {
+public final class WidgetTreesToDependencyTreeUtil {
 
-    private SettingsClassesToDependencyTreeUtil() {
+    private WidgetTreesToDependencyTreeUtil() {
         // Utility
     }
 
-    static Collection<TriggerVertex>
-        settingsToDependencyTree(final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses) {
-        final var valueRefsAndStateProviders = new SettingsClassesToValueRefsAndStateProviders()
-            .settingsClassesToValueRefsAndStateProviders(settingsClasses);
+    static Collection<TriggerVertex> widgetTreesToDependencyTree(final Collection<WidgetTree> widgetTrees) {
+        final var valueRefsAndStateProviders =
+            new WidgetTreesToValueRefsAndStateProviders().widgetTreesToValueRefsAndStateProviders(widgetTrees);
         return ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree
             .valueRefsAndStateProvidersToDependencyTree(valueRefsAndStateProviders);
     }
 
     /**
      *
-     * @param settingsClasses
-     * @return a list of all triggers and their associated dependencies to be used for an intial declaration for the
+     * @param widgetTrees
+     * @return a list of all triggers and their associated dependencies to be used for an initial declaration for the
      *         frontend
      */
-    public static List<TriggerAndDependencies>
-        getTriggersWithDependencies(final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses) {
-        final var triggers = SettingsClassesToDependencyTreeUtil.settingsToDependencyTree(settingsClasses);
+    public static List<TriggerAndDependencies> getTriggersWithDependencies(final Collection<WidgetTree> widgetTrees) {
+        final var triggers = WidgetTreesToDependencyTreeUtil.widgetTreesToDependencyTree(widgetTrees);
         final var triggerToDependencies = new TriggerToDependencies();
         return triggers.stream()
             .map(trigger -> new TriggerAndDependencies(trigger, triggerToDependencies.triggerToDependencies(trigger)))

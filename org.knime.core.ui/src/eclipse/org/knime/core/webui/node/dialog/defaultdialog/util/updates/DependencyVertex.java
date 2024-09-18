@@ -48,7 +48,7 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueRefsAndStateProviders.ValueRefWrapper;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.WidgetTreesToValueRefsAndStateProviders.ValueRefWrapper;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 
 /**

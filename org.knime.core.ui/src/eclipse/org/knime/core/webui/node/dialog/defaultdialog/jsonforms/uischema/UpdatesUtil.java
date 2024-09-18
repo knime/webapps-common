@@ -48,6 +48,7 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -61,10 +62,11 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.UpdateResultsUti
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.UpdateResultsUtil.UpdateResult;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.PathsWithSettingsType;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToDependencyTreeUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerAndDependencies;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerInvocationHandler;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.WidgetTreesToDependencyTreeUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -85,38 +87,34 @@ public final class UpdatesUtil {
      * any are present.
      *
      * @param rootNode
-     * @param settingsClasses
+     * @param widgetTrees
      * @param settings
      * @param context
      */
-    public static void addUpdates(final ObjectNode rootNode,
-        final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses,
+    public static void addUpdates(final ObjectNode rootNode, final Collection<WidgetTree> widgetTrees,
         final Map<SettingsType, WidgetGroup> settings, final DefaultNodeSettingsContext context) {
-        final var triggersWithDependencies =
-            SettingsClassesToDependencyTreeUtil.getTriggersWithDependencies(settingsClasses);
+        final var triggersWithDependencies = WidgetTreesToDependencyTreeUtil.getTriggersWithDependencies(widgetTrees);
         final var partitioned = triggersWithDependencies.stream()
             .collect(Collectors.partitioningBy(TriggerAndDependencies::isBeforeOpenDialogTrigger));
 
-        addInitialUpdates(rootNode, settingsClasses, settings, partitioned.get(true), context);
+        addInitialUpdates(rootNode, widgetTrees, settings, partitioned.get(true), context);
         addGlobalUpdates(rootNode, partitioned.get(false));
     }
 
-    private static void addInitialUpdates(final ObjectNode rootNode,
-        final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses,
+    private static void addInitialUpdates(final ObjectNode rootNode, final Collection<WidgetTree> widgetTrees,
         final Map<SettingsType, WidgetGroup> settings,
         final List<TriggerAndDependencies> initialTriggersWithDependencies, final DefaultNodeSettingsContext context) {
         if (!initialTriggersWithDependencies.isEmpty()) {
             CheckUtils.check(initialTriggersWithDependencies.size() == 1, IllegalStateException::new,
                 () -> "There should not exist more than one initial trigger.");
-            addInitialUpdates(rootNode, initialTriggersWithDependencies.get(0), settingsClasses, settings, context);
+            addInitialUpdates(rootNode, initialTriggersWithDependencies.get(0), widgetTrees, settings, context);
         }
     }
 
     private static void addInitialUpdates(final ObjectNode rootNode,
-        final TriggerAndDependencies triggerWithDependencies,
-        final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses,
+        final TriggerAndDependencies triggerWithDependencies, final Collection<WidgetTree> widgetTrees,
         final Map<SettingsType, WidgetGroup> settings, final DefaultNodeSettingsContext context) {
-        final var invocationHandler = new TriggerInvocationHandler<Integer>(settingsClasses);
+        final var invocationHandler = new TriggerInvocationHandler<Integer>(widgetTrees);
         final var dependencyValues = triggerWithDependencies.extractDependencyValues(settings, context);
         final var triggerResult =
             invocationHandler.invokeTrigger(triggerWithDependencies.getTriggerId(), dependencyValues::get, context);

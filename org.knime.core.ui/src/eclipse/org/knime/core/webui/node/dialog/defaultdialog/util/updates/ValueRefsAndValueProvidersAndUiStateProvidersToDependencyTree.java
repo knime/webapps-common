@@ -60,9 +60,9 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.knime.core.node.util.CheckUtils;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueRefsAndStateProviders.ValueProviderWrapper;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueRefsAndStateProviders.ValueRefWrapper;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.SettingsClassesToValueRefsAndStateProviders.ValueRefsAndStateProviders;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.WidgetTreesToValueRefsAndStateProviders.ValueProviderWrapper;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.WidgetTreesToValueRefsAndStateProviders.ValueRefWrapper;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.WidgetTreesToValueRefsAndStateProviders.ValueRefsAndStateProviders;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.Vertex.VertexVisitor;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonReference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;

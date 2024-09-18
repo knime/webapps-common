@@ -93,6 +93,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.WidgetModification;
 import org.knime.core.webui.node.dialog.defaultdialog.widgettree.ArrayWidgetNode;
 import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
 
 import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -138,19 +139,22 @@ public final class JsonFormsSchemaUtil {
 
     /**
      * @param settingsClasses the classes
+     * @param widgetTrees from which annotations are taken into account
      * @param context the creation context with access to the input ports
      * @param mapper the object mapper to be used
      * @return a schema representation
      */
     public static JsonNode buildCombinedSchema(
         final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses,
-        final DefaultNodeSettingsContext context, final ObjectMapper mapper) {
+        final Map<SettingsType, WidgetTree> widgetTrees, final DefaultNodeSettingsContext context,
+        final ObjectMapper mapper) {
         final var root = mapper.createObjectNode();
         root.put(TAG_TYPE, TYPE_OBJECT);
         final var properties = root.putObject(TAG_PROPERTIES);
         settingsClasses.entrySet().stream() //
             .sorted(Comparator.comparing(Entry::getKey)) //
-            .forEachOrdered(e -> properties.set(e.getKey().getConfigKey(), buildSchema(e.getValue(), context, mapper)));
+            .forEachOrdered(e -> properties.set(e.getKey().getConfigKey(),
+                buildSchema(e.getValue(), widgetTrees.get(e.getKey()), context, mapper)));
         return root;
     }
 
@@ -162,14 +166,15 @@ public final class JsonFormsSchemaUtil {
      * @param mapper to be used to map to json
      * @return a schema representation of settingsClass
      */
-    public static ObjectNode buildIncompleteSchema(final Class<?> settingsClass, final ObjectMapper mapper) {
+    static ObjectNode buildIncompleteSchema(final Class<? extends WidgetGroup> settingsClass,
+        final ObjectMapper mapper) {
         return buildSchema(settingsClass, null, mapper);
     }
 
-    @SuppressWarnings("javadoc")
-    public static ObjectNode buildSchema(final Class<?> settingsClass, final DefaultNodeSettingsContext context,
-        final ObjectMapper mapper) {
-        final var widgetTree = new WidgetTree((Class<? extends WidgetGroup>)settingsClass, SettingsType.MODEL /*TODO*/);
+    @SuppressWarnings("javadoc") // public for test purposes
+    public static ObjectNode buildSchema(final Class<? extends WidgetGroup> settingsClass,
+        final DefaultNodeSettingsContext context, final ObjectMapper mapper) {
+        final var widgetTree = new WidgetTree(settingsClass, SettingsType.MODEL);
         return buildSchema(settingsClass, widgetTree, context, mapper);
     }
 
@@ -196,28 +201,9 @@ public final class JsonFormsSchemaUtil {
             }
             Function<WidgetTree, CustomPropertyDefinition> useWidgetTreeForNestedFields =
                 wt -> new CustomPropertyDefinition(buildSchema(fieldScope.getType(), wt, context, mapper));
-            final var widgetTreeNode = widgetTree.getChildByName(fieldScope.getName());
-            if (widgetTreeNode instanceof WidgetTree wt) {
-                /**
-                 * If the node is another widgetTree, we use it for the traversal of the nested fields.
-                 */
-                return useWidgetTreeForNestedFields.apply(wt);
-            } else if (widgetTreeNode instanceof ArrayWidgetNode awn) {
-                /**
-                 * If the node is an array widget node, the next fields are those if the element widget tree.
-                 */
-                return useWidgetTreeForNestedFields.apply(awn.getElementWidgetTree());
-            } else {
-                final var enumDefinition =
-                    new EnumDefinitionProvider().provideCustomSchemaDefinition(fieldScope, generationContext);
-                if (enumDefinition != null) {
-                    return enumDefinition;
-                }
-                /**
-                 * Here we leave the widget tree to traverse nested fields of widget nodes further.
-                 */
-                return useWidgetTreeForNestedFields.apply(null);
-            }
+
+            final var fieldNode = widgetTree.getChildByName(fieldScope.getName());
+            return getPropertyDefinition(fieldNode, fieldScope, generationContext, useWidgetTreeForNestedFields);
         });
 
         builder.forFields()
@@ -233,13 +219,13 @@ public final class JsonFormsSchemaUtil {
         builder.forFields().withDescriptionResolver(field -> resolveDescription(field, widgetTree));
 
         builder.forFields()
-            .withNumberInclusiveMinimumResolver(field -> retrieveAnnotation(field, NumberInputWidget.class, widgetTree)//
-                .filter(numberInput -> !field.isFakeContainerItemScope())//
+            .withNumberInclusiveMinimumResolver(field -> retrieveAnnotation(field, NumberInputWidget.class, widgetTree)
+                .filter(numberInput -> !field.isFakeContainerItemScope())
                 .map(numberInput -> resolveDouble(context, numberInput.minProvider(), numberInput.min()))//
                 .orElse(null));
 
         builder.forFields()
-            .withNumberInclusiveMaximumResolver(field -> retrieveAnnotation(field, NumberInputWidget.class, widgetTree)//
+            .withNumberInclusiveMaximumResolver(field -> retrieveAnnotation(field, NumberInputWidget.class, widgetTree)
                 .filter(numberInput -> !field.isFakeContainerItemScope())//
                 .map(numberInput -> resolveDouble(context, numberInput.maxProvider(), numberInput.max()))//
                 .orElse(null));
@@ -273,6 +259,32 @@ public final class JsonFormsSchemaUtil {
         builder.forFields().withTargetTypeOverridesResolver(JsonFormsSchemaUtil::overrideClass);
 
         return new SchemaGenerator(builder.build()).generateSchema(settingsClass);
+    }
+
+    private static CustomPropertyDefinition getPropertyDefinition(final WidgetTreeNode fieldNode,
+        final FieldScope fieldScope, final SchemaGenerationContext generationContext,
+        final Function<WidgetTree, CustomPropertyDefinition> useWidgetTreeForNestedFields) {
+        if (fieldNode instanceof WidgetTree wt) {
+            /**
+             * If the node is another widgetTree, we use it for the traversal of the nested fields.
+             */
+            return useWidgetTreeForNestedFields.apply(wt);
+        } else if (fieldNode instanceof ArrayWidgetNode awn) {
+            /**
+             * If the node is an array widget node, the next fields are those if the element widget tree.
+             */
+            return useWidgetTreeForNestedFields.apply(awn.getElementWidgetTree());
+        } else {
+            final var enumDefinition =
+                new EnumDefinitionProvider().provideCustomSchemaDefinition(fieldScope, generationContext);
+            if (enumDefinition != null) {
+                return enumDefinition;
+            }
+            /**
+             * Here we leave the widget tree to traverse nested fields of widget nodes further.
+             */
+            return useWidgetTreeForNestedFields.apply(null);
+        }
     }
 
     /**
