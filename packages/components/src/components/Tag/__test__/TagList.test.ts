@@ -126,4 +126,20 @@ describe("TagList.vue", () => {
       expect(tag.props("active")).toBe(expected.at(index));
     });
   });
+
+  it("hide active tags if they exceed numberOfInitialTags", () => {
+    const wrapper = shallowMount(TagList, {
+      props: {
+        tags: sevenTags,
+        sortByActive: true, // this brings them in front of the others
+        numberOfInitialTags: 2,
+        activeTags: ["tagMaster", "moarTags", "bestTagEver", "tag1"],
+      },
+    });
+    const tags = wrapper
+      .findAllComponents(Tag)
+      .filter((x) => !x.classes().includes("more-tags"));
+
+    expect(tags.length).toBe(2);
+  });
 });

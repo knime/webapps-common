@@ -57,26 +57,30 @@ watch(toRef(props, "showAll"), (showAll) => {
   displayAll.value = showAll;
 });
 
-const tagsToDisplay = computed(() => {
-  let displayTags = props.tags;
-  if (!displayAll.value) {
-    displayTags = props.tags.slice(0, props.numberOfInitialTags);
-  }
+const mappedTags = computed(() => {
+  const { tags, sortByActive, activeTags } = props;
 
-  if (props.sortByActive) {
+  if (sortByActive) {
     return [
-      ...props.activeTags.map((tag) => ({ name: tag, isActive: true })),
-      ...difference(displayTags, props.activeTags).map((tag) => ({
+      ...activeTags.map((tag) => ({ name: tag, isActive: true })),
+      ...difference(tags, activeTags).map((tag) => ({
         name: tag,
         isActive: false,
       })),
     ];
   }
-  return displayTags.map((tag) => ({
-    isActive: props.activeTags.includes(tag),
+
+  return tags.map((tag) => ({
+    isActive: activeTags.includes(tag),
     name: tag,
   }));
 });
+
+const tagsToDisplay = computed(() =>
+  displayAll.value
+    ? mappedTags.value
+    : mappedTags.value.slice(0, props.numberOfInitialTags),
+);
 
 const hasMoreTags = computed(() => {
   return !displayAll.value && props.tags.length > props.numberOfInitialTags;

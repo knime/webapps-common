@@ -39,6 +39,7 @@ withDefaults(defineProps<Props>(), {
   align-items: center;
   font-weight: 500;
   color: var(--knime-dove-gray);
+  height: 24px;
 
   &:focus-visible {
     @mixin focus-outline 2, 3;
