@@ -82,7 +82,7 @@ const { onFsCategoryUpdate } = useFileChooserStateChange(
 onMounted(() => {
   if (
     !isOverwritten.value &&
-    !validCategories.value.includes(control.value.data.path)
+    !validCategories.value.includes(control.value.data.path.fsCategory)
   ) {
     onFsCategoryUpdate(validCategories.value[0]);
   }

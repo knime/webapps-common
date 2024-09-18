@@ -16,6 +16,7 @@ export const useFileChooserFileSystemsOptions = (
       : [
           ...(isLocal.value ? ["LOCAL" as const] : []),
           "relative-to-current-hubspace",
+          "relative-to-embedded-data",
           "CUSTOM_URL",
         ],
   );
