@@ -62,9 +62,13 @@ import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LatentWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.WidgetModification;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
+
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 
 /**
  * An instance of this class is either a root (i.e. a global root of all settings of one {@link SettingsType} or a root
@@ -80,13 +84,16 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRefere
 public final class WidgetTree extends WidgetTreeNode {
 
     private static final Collection<Class<? extends Annotation>> POSSIBLE_ANNOTATIONS =
-        List.of(LatentWidget.class, Layout.class, Effect.class, ValueReference.class, ValueProvider.class);
+        List.of(LatentWidget.class, Layout.class, Effect.class, ValueReference.class, ValueProvider.class,
+            WidgetModification.class, WidgetModification.WidgetReference.class);
 
     ArrayWidgetNode m_arrayWidgetNodeParent;
 
     private final Collection<WidgetTreeNode> m_children = new ArrayList<>();
 
-    private final Map<WidgetTreeNode, String> m_childNames = new HashMap<>();
+    private final BiMap<WidgetTreeNode, String> m_childNames = HashBiMap.create();
+
+    private final Map<String, WidgetTreeNode> m_nameToChild = new HashMap<>();
 
     private final Class<? extends WidgetGroup> m_widgetGroupClass;
 
@@ -97,6 +104,7 @@ public final class WidgetTree extends WidgetTreeNode {
     public WidgetTree(final Class<? extends WidgetGroup> rootClass, final SettingsType settingsType) {
         this(null, settingsType, rootClass, rootClass::getAnnotation);
         propagateAnnotationsToChildren();
+        resolveWidgetModifications();
     }
 
     WidgetTree(final WidgetTree parent, final SettingsType settingsType,
@@ -115,6 +123,19 @@ public final class WidgetTree extends WidgetTreeNode {
                 }
             }
             getWidgetTreeFrom(child).ifPresent(WidgetTree::propagateAnnotationsToChildren);
+        });
+    }
+
+    void resolveWidgetModifications() {
+        getAnnotation(WidgetModification.class).ifPresent(
+            widgetModification -> WidgetModificationUtil.resolveWidgetModification(this, widgetModification));
+        getChildren().forEach(child -> {
+            if (child instanceof WidgetTree wt) {
+                wt.resolveWidgetModifications();
+            }
+            if (child instanceof ArrayWidgetNode awn) {
+                awn.resolveWidgetModifications();
+            }
         });
     }
 
@@ -150,10 +171,19 @@ public final class WidgetTree extends WidgetTreeNode {
     void addChild(final String name, final WidgetTreeNode child) {
         m_children.add(child);
         m_childNames.put(child, name);
+        m_nameToChild.put(name, child);
     }
 
     String getChildName(final WidgetTreeNode child) {
         return m_childNames.get(child);
+    }
+
+    /**
+     * @param name of the child
+     * @return the child with the given name or null if no such child exists
+     */
+    public WidgetTreeNode getChildByName(final String name) {
+        return m_childNames.inverse().get(name);
     }
 
     @Override

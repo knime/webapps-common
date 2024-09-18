@@ -77,12 +77,15 @@ import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation.Builder
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.WidgetModification;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -135,6 +138,94 @@ class JsonFormsSchemaUtilTest {
     @Test
     void testDescription() throws JsonProcessingException {
         testSettings(DescriptionSetting.class);
+    }
+
+    static final class ChangeDescription implements WidgetModification.ImperativeWidgetModification {
+        static final class FieldReference implements WidgetModification.Reference {
+        }
+
+        @Override
+        public void modify(final WidgetGroupModifier group) {
+            group.find(FieldReference.class).modifyAnnotation(Widget.class)
+                .withProperty("description", "modified description").build();
+        }
+    }
+
+    @WidgetModification(ChangeDescription.class)
+    private static class ModifiedDescriptionSettings {
+        /**
+         * containing the modified description from {@link ChangeDescription}.
+         */
+        private static String SNAPSHOT =
+            "{\"test\":{\"type\":\"integer\",\"format\":\"int32\",\"default\":0,\"description\":\"modified description\"}}";
+
+        @Widget(title = "", description = "some description")
+        @WidgetModification.WidgetReference(ChangeDescription.FieldReference.class)
+        int test;
+    }
+
+    @Test
+    void testModifiedDescription() throws JsonProcessingException {
+        testSettings(ModifiedDescriptionSettings.class);
+    }
+
+    private static class ModifiedDescriptionWithinWidgetGroupSettings {
+        /**
+         * containing the modified description from {@link ChangeDescription}.
+         */
+        private static String SNAPSHOT = "{\"widgetGroup\":{\"type\":\"object\",\"properties\":"
+            + "{\"test\":{\"type\":\"integer\",\"format\":\"int32\",\"default\":0,\"description\":\"modified description\"}}"
+            + "}}";
+
+        static final class FieldReference implements Reference<String> {
+
+        }
+
+        static final class WidgetGroupSettings implements WidgetGroup {
+
+            @Widget(title = "", description = "some description")
+            @WidgetModification.WidgetReference(ChangeDescription.FieldReference.class)
+            int test;
+        }
+
+        @WidgetModification(ChangeDescription.class)
+        WidgetGroupSettings m_widgetGroup;
+
+    }
+
+    @Test
+    void testModifiedDescriptionWithinWidgetGroup() throws JsonProcessingException {
+        testSettings(ModifiedDescriptionWithinWidgetGroupSettings.class);
+    }
+
+    private static class ModifiedDescriptionWithinArraySettings {
+        /**
+         * containing the modified description from {@link ChangeDescription}.
+         */
+        private static String SNAPSHOT = "{\"widgetGroup\":{\"type\":\"array\",\"items\":" //
+            + "{\"type\":\"object\",\"properties\":" //
+            + "{\"test\":{\"type\":\"integer\",\"format\":\"int32\",\"default\":0,\"description\":\"modified description\"}" //
+            + "}}}}";
+
+        static final class FieldReference implements Reference<String> {
+
+        }
+
+        static final class WidgetGroupSettings implements WidgetGroup {
+
+            @Widget(title = "", description = "some description")
+            @WidgetModification.WidgetReference(ChangeDescription.FieldReference.class)
+            int test;
+        }
+
+        @WidgetModification(ChangeDescription.class)
+        WidgetGroupSettings[] m_widgetGroup;
+
+    }
+
+    @Test
+    void testModifiedDescriptionWithinArray() throws JsonProcessingException {
+        testSettings(ModifiedDescriptionWithinArraySettings.class);
     }
 
     @Test

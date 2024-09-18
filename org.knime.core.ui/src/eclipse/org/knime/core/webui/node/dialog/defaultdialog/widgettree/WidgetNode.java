@@ -64,12 +64,14 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LatentWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileReaderWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RichTextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.SortListWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.WidgetModification;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SimpleButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.CredentialsWidget;
@@ -89,13 +91,14 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRefere
  */
 public final class WidgetNode extends WidgetTreeNode {
 
-    private static final Collection<Class<? extends Annotation>> POSSIBLE_ANNOTATIONS =
-        List.of(LatentWidget.class, Layout.class, Widget.class, RadioButtonsWidget.class, ValueSwitchWidget.class,
-            ChoicesWidget.class, ComboBoxWidget.class, SortListWidget.class, ButtonWidget.class,
-            SimpleButtonWidget.class, DateTimeWidget.class, DateWidget.class, RichTextInputWidget.class,
-            CredentialsWidget.class, PasswordWidget.class, UsernameWidget.class, FileReaderWidget.class,
-            FileWriterWidget.class, LocalFileReaderWidget.class, LocalFileWriterWidget.class, TextInputWidget.class,
-            Effect.class, ValueReference.class, ValueProvider.class, InternalArrayWidget.ElementCheckboxWidget.class);
+    private static final Collection<Class<? extends Annotation>> POSSIBLE_ANNOTATIONS = List.of(LatentWidget.class,
+        Layout.class, Widget.class, NumberInputWidget.class, RadioButtonsWidget.class, ValueSwitchWidget.class,
+        ChoicesWidget.class, ComboBoxWidget.class, SortListWidget.class, ButtonWidget.class, SimpleButtonWidget.class,
+        DateTimeWidget.class, DateWidget.class, RichTextInputWidget.class, CredentialsWidget.class,
+        PasswordWidget.class, UsernameWidget.class, FileReaderWidget.class, FileWriterWidget.class,
+        LocalFileReaderWidget.class, LocalFileWriterWidget.class, TextInputWidget.class, Effect.class,
+        ValueReference.class, ValueProvider.class, InternalArrayWidget.ElementCheckboxWidget.class,
+        WidgetModification.WidgetReference.class);
 
     private final Class<?> m_contentType;
 

@@ -60,6 +60,7 @@ import java.util.stream.Stream;
 
 import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.WidgetModification;
 
 /**
  * These are the nodes within a {@link WidgetTree}. Next to the branching {@link WidgetTree} node, there are two kinds
@@ -173,6 +174,20 @@ public sealed class WidgetTreeNode permits WidgetNode, WidgetTree, ArrayWidgetNo
     }
 
     /**
+     * Used only for resolving {@link WidgetModification}s.
+     */
+    void addOrReplaceAnnotation(final Class<? extends Annotation> key, final Annotation value) {
+        m_annotations.put(key, value);
+    }
+
+    /**
+     * @param annotationClass
+     */
+    public void removeAnnotation(final Class<? extends Annotation> annotationClass) {
+        m_annotations.remove(annotationClass);
+    }
+
+    /**
      * @param annotationClass
      * @param <T>
      * @return the annotation if present (or added via {@link WidgetTree#addAnnotation(Class, Annotation)})
@@ -206,4 +221,5 @@ public sealed class WidgetTreeNode permits WidgetNode, WidgetTree, ArrayWidgetNo
     public Class<?> getType() {
         return m_type;
     }
+
 }

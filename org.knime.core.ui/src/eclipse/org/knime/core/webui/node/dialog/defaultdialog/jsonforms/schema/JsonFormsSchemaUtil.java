@@ -53,6 +53,8 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.Schema.TAG_TYPE;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.Schema.TYPE_OBJECT;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.MonthDay;
@@ -69,6 +71,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -79,6 +82,7 @@ import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.ConfigKeyUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DescriptionUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
@@ -86,12 +90,16 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget.DoubleProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.WidgetModification;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.ArrayWidgetNode;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
 
 import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.victools.jsonschema.generator.CustomPropertyDefinition;
 import com.github.victools.jsonschema.generator.FieldScope;
 import com.github.victools.jsonschema.generator.Option;
 import com.github.victools.jsonschema.generator.OptionPreset;
@@ -161,6 +169,12 @@ public final class JsonFormsSchemaUtil {
     @SuppressWarnings("javadoc")
     public static ObjectNode buildSchema(final Class<?> settingsClass, final DefaultNodeSettingsContext context,
         final ObjectMapper mapper) {
+        final var widgetTree = new WidgetTree((Class<? extends WidgetGroup>)settingsClass, SettingsType.MODEL /*TODO*/);
+        return buildSchema(settingsClass, widgetTree, context, mapper);
+    }
+
+    private static ObjectNode buildSchema(final Type settingsClass, final WidgetTree widgetTree,
+        final DefaultNodeSettingsContext context, final ObjectMapper mapper) {
         final var builder = new SchemaGeneratorConfigBuilder(mapper, VERSION, new OptionPreset(//
             Option.ADDITIONAL_FIXED_TYPES, //
             Option.EXTRA_OPEN_API_FORMAT_VALUES, //
@@ -172,6 +186,40 @@ public final class JsonFormsSchemaUtil {
             Option.INLINE_ALL_SCHEMAS, //
             Option.ALLOF_CLEANUP_AT_THE_END));
 
+        /**
+         * This custom definition provider ensures that the widgetTree parameter in this method, if present, is always
+         * the widgetTree containing the next traversed fields.
+         */
+        builder.forFields().withCustomDefinitionProvider((fieldScope, generationContext) -> {
+            if (widgetTree == null) {
+                return null;
+            }
+            Function<WidgetTree, CustomPropertyDefinition> useWidgetTreeForNestedFields =
+                wt -> new CustomPropertyDefinition(buildSchema(fieldScope.getType(), wt, context, mapper));
+            final var widgetTreeNode = widgetTree.getChildByName(fieldScope.getName());
+            if (widgetTreeNode instanceof WidgetTree wt) {
+                /**
+                 * If the node is another widgetTree, we use it for the traversal of the nested fields.
+                 */
+                return useWidgetTreeForNestedFields.apply(wt);
+            } else if (widgetTreeNode instanceof ArrayWidgetNode awn) {
+                /**
+                 * If the node is an array widget node, the next fields are those if the element widget tree.
+                 */
+                return useWidgetTreeForNestedFields.apply(awn.getElementWidgetTree());
+            } else {
+                final var enumDefinition =
+                    new EnumDefinitionProvider().provideCustomSchemaDefinition(fieldScope, generationContext);
+                if (enumDefinition != null) {
+                    return enumDefinition;
+                }
+                /**
+                 * Here we leave the widget tree to traverse nested fields of widget nodes further.
+                 */
+                return useWidgetTreeForNestedFields.apply(null);
+            }
+        });
+
         builder.forFields()
             .withIgnoreCheck(f -> f.isPrivate() || PROHIBITED_TYPES.contains(f.getType().getErasedType()));
 
@@ -179,40 +227,39 @@ public final class JsonFormsSchemaUtil {
 
         builder.forFields().withDefaultResolver(new DefaultResolver(context));
 
+        builder.forFields().withTitleResolver(field -> retrieveAnnotation(field, Widget.class, widgetTree)
+            .map(Widget::title).filter(l -> !field.isFakeContainerItemScope() && !l.isEmpty()).orElse(null));
+
+        builder.forFields().withDescriptionResolver(field -> resolveDescription(field, widgetTree));
+
         builder.forFields()
-            .withTitleResolver(field -> Optional.ofNullable(field.getAnnotationConsideringFieldAndGetter(Widget.class))
-                .map(Widget::title).filter(l -> !field.isFakeContainerItemScope() && !l.isEmpty()).orElse(null));
-
-        builder.forFields().withDescriptionResolver(JsonFormsSchemaUtil::resolveDescription);
-
-        builder.forFields().withNumberInclusiveMinimumResolver(
-            field -> Optional.ofNullable(field.getAnnotationConsideringFieldAndGetter(NumberInputWidget.class))//
+            .withNumberInclusiveMinimumResolver(field -> retrieveAnnotation(field, NumberInputWidget.class, widgetTree)//
                 .filter(numberInput -> !field.isFakeContainerItemScope())//
                 .map(numberInput -> resolveDouble(context, numberInput.minProvider(), numberInput.min()))//
                 .orElse(null));
 
-        builder.forFields().withNumberInclusiveMaximumResolver(
-            field -> Optional.ofNullable(field.getAnnotationConsideringFieldAndGetter(NumberInputWidget.class))//
+        builder.forFields()
+            .withNumberInclusiveMaximumResolver(field -> retrieveAnnotation(field, NumberInputWidget.class, widgetTree)//
                 .filter(numberInput -> !field.isFakeContainerItemScope())//
                 .map(numberInput -> resolveDouble(context, numberInput.maxProvider(), numberInput.max()))//
                 .orElse(null));
 
-        builder.forFields().withStringMinLengthResolver(
-            field -> Optional.ofNullable(field.getAnnotationConsideringFieldAndGetter(TextInputWidget.class))//
+        builder.forFields()
+            .withStringMinLengthResolver(field -> retrieveAnnotation(field, TextInputWidget.class, widgetTree)//
                 .filter(textInput -> !field.isFakeContainerItemScope())//
                 .map(textInput -> textInput.minLength())//
                 .filter(length -> length >= 0)//
                 .orElse(null));
 
-        builder.forFields().withStringMaxLengthResolver(
-            field -> Optional.ofNullable(field.getAnnotationConsideringFieldAndGetter(TextInputWidget.class))//
+        builder.forFields()
+            .withStringMaxLengthResolver(field -> retrieveAnnotation(field, TextInputWidget.class, widgetTree)//
                 .filter(textInput -> !field.isFakeContainerItemScope())//
                 .map(textInput -> textInput.maxLength())//
                 .filter(length -> length >= 0)//
                 .orElse(null));
 
-        builder.forFields().withStringPatternResolver(
-            field -> Optional.ofNullable(field.getAnnotationConsideringFieldAndGetter(TextInputWidget.class))//
+        builder.forFields()
+            .withStringPatternResolver(field -> retrieveAnnotation(field, TextInputWidget.class, widgetTree)//
                 .filter(textInput -> !field.isFakeContainerItemScope())//
                 .map(textInput -> textInput.pattern())//
                 .filter(pattern -> !pattern.isEmpty())//
@@ -228,9 +275,28 @@ public final class JsonFormsSchemaUtil {
         return new SchemaGenerator(builder.build()).generateSchema(settingsClass);
     }
 
-    private static String resolveDescription(final FieldScope fieldScope) {
+    /**
+     * We use the widget tree to retrieve annotation whenever it is possible, since the annotations are pre-processed
+     * (e.g. {@link WidgetModification}s are resolved there).
+     */
+    private static <T extends Annotation> Optional<T> retrieveAnnotation(final FieldScope fieldScope,
+        final Class<T> annotationClass, final WidgetTree widgetTree) {
+        if (widgetTree != null) {
+            final var widgetTreeNode = widgetTree.getChildByName(fieldScope.getName());
+            if (widgetTreeNode != null) {
+                if (widgetTreeNode.getPossibleAnnotations().contains(annotationClass)) {
+                    return widgetTreeNode.getAnnotation(annotationClass);
+                } else {
+                    return Optional.empty();
+                }
+            }
+        }
+        return Optional.ofNullable(fieldScope.getAnnotationConsideringFieldAndGetter(annotationClass));
+    }
+
+    private static String resolveDescription(final FieldScope fieldScope, final WidgetTree widgetTree) {
         var type = fieldScope.getType().getErasedType();
-        return Optional.ofNullable(fieldScope.getAnnotationConsideringFieldAndGetter(Widget.class))//
+        return retrieveAnnotation(fieldScope, Widget.class, widgetTree)//
             .filter(w -> !fieldScope.isFakeContainerItemScope())//
             .flatMap(w -> resolveDescription(w, type))//
             .orElse(null);
