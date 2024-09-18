@@ -48,7 +48,6 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -60,11 +59,9 @@ import org.junit.jupiter.api.Test;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.defaultnodesettings.SettingsModelAuthentication;
 import org.knime.core.webui.node.dialog.configmapping.ConfigPath;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation.Builder;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.AuthenticationSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
@@ -129,18 +126,15 @@ class ConfigKeyUtilTest {
         @Widget(title = "", description = "")
         int setting5;
 
-        @Persist(settingsModel = SettingsModelAuthentication.class)
-        AuthenticationSettings setting6;
-
         // field with special default persistor which alters the default subConfigKeys
-        Credentials setting7;
+        Credentials setting6;
 
         static final class NonPersitableSettings {
 
         }
 
         // Might be part of a parent perstiable settings which defined its persist behavior from outside
-        NonPersitableSettings setting8;
+        NonPersitableSettings setting7;
     }
 
     @Test
@@ -217,13 +211,13 @@ class ConfigKeyUtilTest {
 
     @Test
     void testSubConfigKeysUsedWithSpecialDefaultPersistor() throws NoSuchFieldException {
-        assertArrayEquals(new String[0][], usedSubConfigKeysFor("setting7"),
+        assertArrayEquals(new String[0][], usedSubConfigKeysFor("setting6"),
             "subConfigKeys should come from the default persistor");
     }
 
     @Test
     void testSubConfigKeysForNonPersistableSettings() throws NoSuchFieldException {
-        assertArrayEquals(null, usedSubConfigKeysFor("setting8"),
+        assertArrayEquals(null, usedSubConfigKeysFor("setting7"),
             "should not fail for non-persistable settings");
     }
 
@@ -239,12 +233,6 @@ class ConfigKeyUtilTest {
 
     private static String[] getFirstPathAsArray(final Collection<ConfigPath> configPaths) {
         return configPaths.stream().findFirst().orElseThrow().path().toArray(String[]::new);
-    }
-
-    @Test
-    void testDeprecatedConfigKeysFromSettingsModelPersistor() throws NoSuchFieldException {
-        final var deprecatedConfigKeys = deprecatedConfigKeysFor("setting6");
-        assertThat(deprecatedConfigKeys).hasSize(2);
     }
 
     private static String[] usedConfigKeysFor(final String fieldName) throws NoSuchFieldException {

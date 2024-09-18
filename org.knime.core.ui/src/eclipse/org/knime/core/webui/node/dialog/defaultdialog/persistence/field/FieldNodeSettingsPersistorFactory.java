@@ -65,7 +65,6 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.webui.node.dialog.configmapping.ConfigMappings;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
@@ -151,10 +150,6 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
             if (!customPersistorClass.equals(FieldNodeSettingsPersistor.class)) {
                 return createCustomPersistor(customPersistorClass, type, configKey);
             }
-            var settingsModelClass = persist.settingsModel();
-            if (!settingsModelClass.equals(SettingsModel.class)) {
-                return createSettingsModelPersistor(settingsModelClass, type, configKey);
-            }
         }
         return createDefaultPersistor(type, configKey);
 
@@ -162,11 +157,6 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
 
     private static NodeSettingsPersistor<?> createDefaultPersistor(final Class<?> type, final String configKey) {
         return DefaultFieldNodeSettingsPersistorFactory.createDefaultPersistor(type, configKey);
-    }
-
-    private static FieldNodeSettingsPersistor<?> createSettingsModelPersistor(
-        final Class<? extends SettingsModel> settingsModelClass, final Class<?> type, final String configKey) {
-        return SettingsModelFieldNodeSettingsPersistorFactory.createPersistor(type, settingsModelClass, configKey);
     }
 
     @SuppressWarnings("rawtypes")

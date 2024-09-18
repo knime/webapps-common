@@ -82,8 +82,7 @@ public final class ConfigKeyUtil {
         } else {
             var configKey = getConfigKey(field);
             var customPersistor = persist.customPersistor();
-            var settingsModel = persist.settingsModel();
-            if (customPersistor.equals(FieldNodeSettingsPersistor.class) && settingsModel.equals(SettingsModel.class)) {
+            if (customPersistor.equals(FieldNodeSettingsPersistor.class)) {
                 // No custom persistor is set -> just use the config key
                 return new String[]{configKey};
             } else {

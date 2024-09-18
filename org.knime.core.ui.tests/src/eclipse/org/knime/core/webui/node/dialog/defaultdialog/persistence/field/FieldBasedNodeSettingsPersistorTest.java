@@ -60,11 +60,6 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
-import org.knime.core.node.defaultnodesettings.SettingsModelDouble;
-import org.knime.core.node.defaultnodesettings.SettingsModelInteger;
-import org.knime.core.node.defaultnodesettings.SettingsModelLong;
-import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.Persistor;
@@ -95,18 +90,6 @@ class FieldBasedNodeSettingsPersistorTest {
         obj.m_longSetting = 32;
         obj.m_doubleSetting = 13.37;
         obj.m_stringSetting = "bar";
-
-        testSaveLoad(obj);
-    }
-
-    @Test
-    void testFlatSettingsModelPersistance() throws InvalidSettingsException {
-        var obj = new FlatSettingsModelSettingsObject();
-        obj.m_booleanSetting = true;
-        obj.m_stringSetting = "baz";
-        obj.m_enumSetting = TestEnum.BAZ;
-        obj.m_intSetting = 42;
-        obj.m_doubleSetting = 13.37;
 
         testSaveLoad(obj);
     }
@@ -345,55 +328,6 @@ class FieldBasedNodeSettingsPersistorTest {
 
     enum TestEnum {
             FOO, BAR, BAZ;
-    }
-
-    static final class FlatSettingsModelSettingsObject
-        extends AbstractTestNodeSettings<FlatSettingsModelSettingsObject> {
-
-        // no config key provided to test correct extraction of the settings name
-        @Persist(settingsModel = SettingsModelBoolean.class)
-        boolean m_booleanSetting;
-
-        @Persist(configKey = "my_string_setting", settingsModel = SettingsModelString.class)
-        String m_stringSetting;
-
-        @Persist(configKey = "my_enum_setting", settingsModel = SettingsModelString.class)
-        TestEnum m_enumSetting;
-
-        @Persist(configKey = "my_int_setting", settingsModel = SettingsModelInteger.class)
-        int m_intSetting;
-
-        @Persist(configKey = "my_double_setting", settingsModel = SettingsModelDouble.class)
-        double m_doubleSetting;
-
-        @Persist(configKey = "my_long_setting", settingsModel = SettingsModelLong.class)
-        long m_longSetting;
-
-        @Override
-        public void saveExpected(final NodeSettingsWO settings) {
-            new SettingsModelBoolean("booleanSetting", m_booleanSetting).saveSettingsTo(settings);
-            new SettingsModelString("my_string_setting", m_stringSetting).saveSettingsTo(settings);
-            new SettingsModelString("my_enum_setting", m_enumSetting.name()).saveSettingsTo(settings);
-            new SettingsModelInteger("my_int_setting", m_intSetting).saveSettingsTo(settings);
-            new SettingsModelDouble("my_double_setting", m_doubleSetting).saveSettingsTo(settings);
-            new SettingsModelLong("my_long_setting", m_longSetting).saveSettingsTo(settings);
-        }
-
-        @Override
-        protected int computeHashCode() {
-            return Objects.hash(m_booleanSetting, m_stringSetting, m_enumSetting, m_intSetting, m_doubleSetting,
-                m_longSetting);
-        }
-
-        @Override
-        protected boolean equalSettings(final FlatSettingsModelSettingsObject settings) {
-            return m_booleanSetting == settings.m_booleanSetting
-                && Objects.equals(m_stringSetting, settings.m_stringSetting)
-                && Objects.equals(m_enumSetting, settings.m_enumSetting) && m_intSetting == settings.m_intSetting//
-                && m_doubleSetting == settings.m_doubleSetting//
-                && m_longSetting == settings.m_longSetting;
-        }
-
     }
 
     private static final class SettingsWithCustomFieldPersistor

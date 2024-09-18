@@ -54,7 +54,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
 
 /**
@@ -84,16 +83,6 @@ public @interface Persist {
      */
     @SuppressWarnings("rawtypes") // annotations and generics don't mix well
     Class<? extends FieldNodeSettingsPersistor> customPersistor() default FieldNodeSettingsPersistor.class;
-
-    /**
-     * Optional argument for nodes that previously used SettingsModels for persistence. Provide the class of the
-     * {@link SettingsModel} used previously in order to get an equivalent persistor.
-     *
-     * @return the type of SettingsModel previously used for persistence
-     * @throws IllegalArgumentException if there is no equivalent persistor available for the combination of field type
-     *             and SettingsModel
-     */
-    Class<? extends SettingsModel> settingsModel() default SettingsModel.class;
 
     /**
      * Optional argument that allows to hide a setting in the flow variable tab.

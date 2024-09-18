@@ -49,7 +49,6 @@
 package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
@@ -61,16 +60,16 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
-import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.node.defaultnodesettings.SettingsModelAuthentication;
-import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
-import org.knime.core.node.defaultnodesettings.SettingsModelDouble;
-import org.knime.core.node.defaultnodesettings.SettingsModelInteger;
-import org.knime.core.node.defaultnodesettings.SettingsModelLong;
-import org.knime.core.node.defaultnodesettings.SettingsModelString;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.settingsmodel.EnumSettingsModelStringPersistor;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.settingsmodel.SettingsModelBooleanPersistor;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.settingsmodel.SettingsModelDoublePersistor;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.settingsmodel.SettingsModelIntegerPersistor;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.settingsmodel.SettingsModelLongPersistor;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.settingsmodel.SettingsModelStringPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.AuthenticationSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.AuthenticationSettings.AuthenticationType;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.AuthenticationSettings.SettingsModelAuthenticationPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 
 /**
@@ -78,27 +77,31 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Creden
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  */
 @SuppressWarnings("java:S2698") // We allow assertions without messages
-class SettingsModelFieldNodeSettingsPersistorFactoryTest {
+class SettingsModelPersistorTest {
 
     private static final String CFG_KEY = "test";
 
-    @Test
-    void testUnsupportedFieldSettingsModelTypeCombination() throws Exception {
-        assertThrows(IllegalArgumentException.class, () -> SettingsModelFieldNodeSettingsPersistorFactory
-            .createPersistor(TestEnum.class, SettingsModelInteger.class, CFG_KEY));
+    static final class TestEnumSettingsModelStringPersistor extends EnumSettingsModelStringPersistor<TestEnum> {
+
+        @Override
+        protected Class<TestEnum> enumType() {
+            return TestEnum.class;
+        }
     }
 
     @Test
     void testEnumSettingsModelString() throws Exception {
-        testSaveLoad(TestEnum.class, SettingsModelString.class, TestEnum.B);
-        testSaveLoad(TestEnum.class, SettingsModelString.class, null);
+        testSaveLoad(TestEnum.class, TestEnumSettingsModelStringPersistor.class, TestEnum.B);
+        testSaveLoad(TestEnum.class, TestEnumSettingsModelStringPersistor.class, null);
     }
 
     @Test
     void testSettingsModelAuthenticationSaveLoad() throws Exception {
-        testSaveLoad(AuthenticationSettings.class, SettingsModelAuthentication.class, new AuthenticationSettings());
-        testSaveLoad(AuthenticationSettings.class, SettingsModelAuthentication.class, new AuthenticationSettings(
-            AuthenticationSettings.AuthenticationType.USER_PWD, new Credentials("myUsername", "myPassword")));
+        testSaveLoad(AuthenticationSettings.class, SettingsModelAuthenticationPersistor.class,
+            new AuthenticationSettings());
+        testSaveLoad(AuthenticationSettings.class, SettingsModelAuthenticationPersistor.class,
+            new AuthenticationSettings(AuthenticationSettings.AuthenticationType.USER_PWD,
+                new Credentials("myUsername", "myPassword")));
     }
 
     static Stream<Arguments> settingsModelAuthenticationLoadSource() {
@@ -116,7 +119,8 @@ class SettingsModelFieldNodeSettingsPersistorFactoryTest {
     void testSettingsModelAuthenticationLoadLegacy(final SettingsModelAuthentication.AuthenticationType oldType,
         final AuthenticationType newType, final String password, final String username)
         throws InvalidSettingsException {
-        final var persistor = createPersistor(AuthenticationSettings.class, SettingsModelAuthentication.class);
+        var persistor = FieldNodeSettingsPersistor.createInstance(SettingsModelAuthenticationPersistor.class,
+            AuthenticationSettings.class, CFG_KEY);
         final var savedSettings = new NodeSettings("node_settings");
         new SettingsModelAuthentication(CFG_KEY, oldType, username, password, null).saveSettingsTo(savedSettings);
         var loaded = persistor.load(savedSettings);
@@ -126,48 +130,44 @@ class SettingsModelFieldNodeSettingsPersistorFactoryTest {
 
     @Test
     void testSettingsModelInteger() throws Exception {
-        testSaveLoad(int.class, SettingsModelInteger.class, 42);
+        testSaveLoad(int.class, SettingsModelIntegerPersistor.class, 42);
     }
 
     @Test
     void testSettingsModelString() throws InvalidSettingsException {
-        testSaveLoad(String.class, SettingsModelString.class, "foobar");
-        testSaveLoad(String.class, SettingsModelString.class, null);
+        testSaveLoad(String.class, SettingsModelStringPersistor.class, "foobar");
+        testSaveLoad(String.class, SettingsModelStringPersistor.class, null);
     }
 
     @Test
     void testSettingsModelLong() throws Exception {
-        testSaveLoad(long.class, SettingsModelLong.class, Long.MAX_VALUE);
+        testSaveLoad(long.class, SettingsModelLongPersistor.class, Long.MAX_VALUE);
     }
 
     @Test
     void testSettingsModelDouble() throws Exception {
-        testSaveLoad(double.class, SettingsModelDouble.class, 13.37);
+        testSaveLoad(double.class, SettingsModelDoublePersistor.class, 13.37);
     }
 
     @Test
     void testSettingsModelBoolean() throws Exception {
-        testSaveLoad(boolean.class, SettingsModelBoolean.class, true);
-        testSaveLoad(boolean.class, SettingsModelBoolean.class, false);
+        testSaveLoad(boolean.class, SettingsModelBooleanPersistor.class, true);
+        testSaveLoad(boolean.class, SettingsModelBooleanPersistor.class, false);
     }
 
     private static <T> void testSaveLoad(final Class<T> fieldType,
-        final Class<? extends SettingsModel> settingsModelType, final T value) throws InvalidSettingsException {
-        testSaveLoad(fieldType, settingsModelType, value, Assertions::assertEquals);
-    }
-
-    private static <T> void testSaveLoad(final Class<T> fieldType,
-        final Class<? extends SettingsModel> settingsModelType, final T value, final BiConsumer<T, T> assertFn)
+        final Class<? extends FieldNodeSettingsPersistor<T>> persistorClass, final T value)
         throws InvalidSettingsException {
-        var persistor = createPersistor(fieldType, settingsModelType);
+        testSaveLoad(fieldType, persistorClass, value, Assertions::assertEquals);
+    }
+
+    private static <T> void testSaveLoad(final Class<T> fieldType,
+        final Class<? extends FieldNodeSettingsPersistor<T>> persistorClass, final T value,
+        final BiConsumer<T, T> assertFn) throws InvalidSettingsException {
+        var persistor = FieldNodeSettingsPersistor.createInstance(persistorClass, fieldType, CFG_KEY);
         var nodeSettings = new NodeSettings(CFG_KEY);
         persistor.save(value, nodeSettings);
         assertFn.accept(value, persistor.load(nodeSettings));
-    }
-
-    private static <T> NodeSettingsPersistor<T> createPersistor(final Class<T> fieldType,
-        final Class<? extends SettingsModel> settingsModelType) {
-        return SettingsModelFieldNodeSettingsPersistorFactory.createPersistor(fieldType, settingsModelType, CFG_KEY);
     }
 
     private enum TestEnum {
