@@ -53,6 +53,16 @@
     "vitest": "1.6.0"
   },
   "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./internal": {
+      "import": "./dist/index2.js",
+      "types": "./dist/internal.d.ts"
+    }
+  },
   "types": "dist/index.d.ts",
   "files": [
     "dist"

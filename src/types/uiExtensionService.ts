@@ -80,6 +80,21 @@ export enum ViewState {
 
 export type APILayerDirtyState = { apply: ApplyState; view: ViewState };
 
+export interface DataValueViewConfig {
+  rowIndex: number;
+  colIndex: number;
+  anchor: {
+    x: number;
+    y: number;
+    top: number;
+    left: number;
+    bottom: number;
+    right: number;
+    width: number;
+    height: number;
+  };
+}
+
 type SomeKnimeUiApiResponse = {
   isSome: true;
   result: any;
@@ -141,6 +156,10 @@ export type UIExtensionServiceAPILayer = {
   sendAlert: (alert: Alert) => void;
 
   getConfig: () => UIExtensionServiceConfig;
+
+  showDataValueView: (config: DataValueViewConfig) => void;
+
+  closeDataValueView: () => void;
 };
 
 export type UIExtensionService<APILayer = UIExtensionServiceAPILayer> =

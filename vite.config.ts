@@ -55,7 +55,16 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       lib: {
-        entry: fileURLToPath(new URL("src/index.ts", import.meta.url)),
+        entry: {
+          index: fileURLToPath(new URL("src/index.ts", import.meta.url)),
+          ...(mode === "es"
+            ? {
+                internal: fileURLToPath(
+                  new URL("src/internal/index.ts", import.meta.url),
+                ),
+              }
+            : {}),
+        },
         name: "KnimeUIExtensionService",
         fileName: () => {
           return mode === "es"
