@@ -11,6 +11,7 @@ export { SharedDataService } from "./SharedDataService";
 export { AlertingService } from "./AlertingService";
 export { ResourceService } from "./ResourceService";
 export { ImageGenerationService } from "./ImageGenerationService";
+export { DataValueViewService } from "./DataValueViewService";
 export {
   ColorService,
   NumericColorHandler,
