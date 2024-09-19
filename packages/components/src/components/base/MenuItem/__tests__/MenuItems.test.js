@@ -229,5 +229,33 @@ describe("MenuItems.vue", () => {
         .trigger("keydown", { code: "ArrowLeft" });
       expect(wrapper.findAllComponents(MenuItems).length).toBe(0);
     });
+
+    it("close level via esc key", async () => {
+      const wrapper = mount(MenuItems, {
+        props: {
+          registerKeydown: true,
+          menuAriaLabel: "submenu",
+          items: [
+            {
+              text: "Item 1",
+              children: [{ text: "sub 1" }, { text: "sub 2" }],
+            },
+          ],
+        },
+      });
+      expect(wrapper.findAllComponents(MenuItems).length).toBe(0);
+      expect(wrapper.find(".sub-menu-indicator").exists()).toBe(true);
+      // fake keyboard selection/focus
+      dropdownNavigation.currentIndex.value = 0;
+      // open
+      await wrapper
+        .findAll(".list-item")
+        .at(0)
+        .trigger("keydown", { code: "ArrowRight" });
+      expect(wrapper.findAllComponents(MenuItems).length).toBe(1);
+      // close - emit event directly as useDropdownNavigation is mocked
+      await wrapper.findAllComponents(MenuItems).at(0).vm.$emit("close");
+      expect(wrapper.findAllComponents(MenuItems).length).toBe(0);
+    });
   });
 });

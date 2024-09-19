@@ -255,6 +255,7 @@ const hasSelectedChildItem = (item: MenuItem) => {
               :position-relative-to-element="itemElement"
               :clipping-boundary="clippingBoundary"
               register-keydown
+              @close="openSubmenuItemIndex = -1"
               @close-submenu="openSubmenuItemIndex = -1"
               @item-click="
                 (...args: Emits['item-click']) => $emit('item-click', ...args)
