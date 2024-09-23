@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.1.9
+
+### Patch Changes
+
+- 2f39d7f: MenuItems: close submenu on esc key by registering @close event
+
 ## 1.1.8
 
 ### Patch Changes
