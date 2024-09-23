@@ -1,5 +1,12 @@
 # @knime/components
 
+## 1.1.8
+
+### Patch Changes
+
+- 4c5b04f: - Fix bug in TagList where the activeTags was always visible regardless of numberOfInitialTags.
+  - Set height of Tag component to 24px to avoid different sizes for active and non active ones.
+
 ## 1.1.7
 
 ### Patch Changes
