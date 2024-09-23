@@ -82,9 +82,10 @@ final class WidgetModificationUtil {
      * children inside the given widgetTree.
      */
     static void resolveWidgetModification(final WidgetTree widgetTree, final WidgetModification widgetModification) {
-        final var imperativeWidgetModification = widgetModification.value();
         final var widgetTreeModifier = new WidgetTreeModifier(widgetTree);
-        InstantiationUtil.createInstance(imperativeWidgetModification).modify(widgetTreeModifier);
+        for (final var modifier : widgetModification.value()) {
+            InstantiationUtil.createInstance(modifier).modify(widgetTreeModifier);
+        }
     }
 
     /**

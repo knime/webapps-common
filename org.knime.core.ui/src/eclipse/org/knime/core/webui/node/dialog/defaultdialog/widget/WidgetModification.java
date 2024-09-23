@@ -206,8 +206,9 @@ public @interface WidgetModification {
     }
 
     /**
-     * @return a method with imperative instructions on how to modify, add or remove annotations on child widgets.
+     * @return one or multiple modifiers defining instructions on how to modify, add or remove annotations on child
+     *         annotations.
      */
-    Class<? extends Modifier> value();
+    Class<? extends Modifier>[] value();
 
 }
