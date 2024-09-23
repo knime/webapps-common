@@ -61,6 +61,9 @@ const demoComponents = {
       () => import("./components/IdleReadyButton.vue"),
     ),
     Modal: defineAsyncComponent(() => import("./components/Modal.vue")),
+    InlineMessage: defineAsyncComponent(
+      () => import("./components/InlineMessage.vue"),
+    ),
     MenuItems: defineAsyncComponent(() => import("./components/MenuItems.vue")),
     SideDrawer: defineAsyncComponent(
       () => import("./components/SideDrawer.vue"),

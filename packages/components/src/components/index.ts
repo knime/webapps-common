@@ -25,6 +25,7 @@ import Message from "./Messages/Message.vue";
 import MessageLink from "./Messages/MessageLink.vue";
 import Messages from "./Messages/Messages.vue";
 import MessageTitle from "./Messages/MessageTitle.vue";
+import InlineMessage from "./InlineMessage/InlineMessage.vue";
 import Modal from "./Modal/Modal.vue";
 import NodeFeatureList from "./node/NodeFeatureList.vue";
 import NodePreview from "./node/NodePreview.vue";
@@ -76,6 +77,7 @@ export {
   MessageLink,
   Messages,
   MessageTitle,
+  InlineMessage,
   Modal,
   NodeFeatureList,
   NodePreview,
