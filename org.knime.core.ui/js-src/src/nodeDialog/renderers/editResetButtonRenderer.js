@@ -7,7 +7,6 @@ export const editResetButtonTester = (uischema, _schema) =>
   uischema.options?.format === editResetButtonFormat;
 
 export const editResetButtonRenderer = {
-  name: "EditResetButtonControl",
   renderer: EditResetButton,
   tester: rankWith(priorityRanks.default, editResetButtonTester),
 };

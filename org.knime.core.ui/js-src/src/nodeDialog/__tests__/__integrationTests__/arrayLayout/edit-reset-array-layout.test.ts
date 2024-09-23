@@ -121,6 +121,7 @@ describe("edit/reset button in array layouts", () => {
     mockInitialData();
     const wrapper = mount(NodeDialog as any, getOptions()) as Wrapper;
     await flushPromises();
+    await vi.dynamicImportSettled();
     return wrapper;
   };
 

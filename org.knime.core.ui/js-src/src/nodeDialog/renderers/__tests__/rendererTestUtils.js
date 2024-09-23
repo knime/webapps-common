@@ -29,8 +29,15 @@ const findRenderer = (uiSchema, schema) => {
   }
 };
 
+const getComponentName = (renderer) => renderer?.name ?? renderer?.__name;
 export const determineRenderer = (uiSchema, schema) => {
   const renderer = findRenderer(uiSchema, schema);
-
-  return renderer?.name ?? renderer?.__name;
+  const componentName = getComponentName(renderer);
+  if (componentName === "AsyncComponentWrapper") {
+    if (typeof renderer.name === "undefined") {
+      throw Error("Async renderers require a name.");
+    }
+    return renderer.name;
+  }
+  return componentName;
 };

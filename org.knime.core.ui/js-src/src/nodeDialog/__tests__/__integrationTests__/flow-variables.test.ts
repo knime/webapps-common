@@ -61,6 +61,7 @@ describe("flow variables", () => {
   const mountNodeDialog = async () => {
     wrapper = mount(NodeDialog as any, getOptions()) as Wrapper;
     await flushPromises();
+    await vi.dynamicImportSettled();
     flowVariablesMap = wrapper.vm.providedFlowVariablesMap;
   };
 

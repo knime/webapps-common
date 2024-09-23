@@ -7,7 +7,6 @@ export const elementCheckboxTester = (uischema, _schema) =>
   uischema.options?.format === elementCheckboxFormat;
 
 export const elementCheckboxRenderer = {
-  name: "ElementCheckboxControl",
   renderer: ArrayLayoutItemCheckbox,
   tester: rankWith(priorityRanks.default, elementCheckboxTester),
 };

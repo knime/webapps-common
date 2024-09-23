@@ -115,6 +115,7 @@ describe("dirty array layout", () => {
     mockInitialData();
     wrapper = mount(NodeDialog as any, getOptions()) as Wrapper;
     await flushPromises();
+    await vi.dynamicImportSettled();
   });
 
   const getCurrentValues = () => dirtyStates.map(({ getValue }) => getValue());
