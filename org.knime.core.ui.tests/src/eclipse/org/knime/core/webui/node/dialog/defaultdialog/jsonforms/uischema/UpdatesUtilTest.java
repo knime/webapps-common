@@ -80,6 +80,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.StringChoicesStateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.TextMessage;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.TextMessage.MessageType;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SimpleButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.internal.InternalArrayWidget;
@@ -646,6 +648,43 @@ class UpdatesUtilTest {
 
             assertThatJson(response).inPath("$.globalUpdates").isArray().hasSize(1);
 
+        }
+
+        @Test
+        void testTextMessageProvider() {
+            class TestSettings implements DefaultNodeSettings {
+
+                static final class MyTextMessageProvider implements TextMessage.SimpleTextMessageProvider {
+
+                    @Override
+                    public boolean showMessage(final DefaultNodeSettingsContext context) {
+                        return true;
+                    }
+
+                    @Override
+                    public String title() {
+                        return "My message";
+                    }
+
+                    @Override
+                    public String description() {
+                        return "My description";
+                    }
+
+                    @Override
+                    public MessageType type() {
+                        return MessageType.INFO;
+                    }
+
+                }
+
+                @TextMessage(MyTextMessageProvider.class)
+                Void m_textMessage;
+            }
+
+            final Map<SettingsType, WidgetGroup> settings = Map.of(SettingsType.MODEL, new TestSettings());
+            final var response = buildUpdates(settings);
+            assertThatJson(response).inPath("$.initialUpdates").isArray().hasSize(1);
         }
 
         @Test

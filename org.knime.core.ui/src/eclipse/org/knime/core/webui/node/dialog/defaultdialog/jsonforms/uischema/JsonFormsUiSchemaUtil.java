@@ -48,9 +48,11 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
+import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.knime.core.webui.node.dialog.SettingsType;
@@ -59,6 +61,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LatentWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.TextMessage;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesAdder;
 import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
@@ -66,6 +69,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
 /**
  * Class for creating ui schema content from a settings POJO class.
@@ -101,7 +105,12 @@ public final class JsonFormsUiSchemaUtil {
     }
 
     private static ObjectMapper createMapper() {
-        return new ObjectMapper();
+        final var mapper = new ObjectMapper();
+        /**
+         * Added for resolving jdk8 dependent state providers
+         */
+        mapper.registerModule(new Jdk8Module());
+        return mapper;
     }
 
     /**
@@ -162,8 +171,12 @@ public final class JsonFormsUiSchemaUtil {
         return new LayoutTree(layoutPartsToWidgets, widgetsWithoutLayout).getRootNode();
     }
 
+    private static final List<Class<? extends Annotation>> VISIBLE_WITHOUT_WIDGET_ANNOTATION =
+        List.of(TextMessage.class);
+
     private static boolean isHiddenOrLatent(final WidgetTreeNode node) {
-        final var isHidden = node.getAnnotation(Widget.class).isEmpty();
+        final var isHidden = node.getAnnotation(Widget.class).isEmpty()
+            && VISIBLE_WITHOUT_WIDGET_ANNOTATION.stream().map(node::getAnnotation).allMatch(Optional::isEmpty);
         final var isLatent = node.getAnnotation(LatentWidget.class).isPresent();
         return isHidden || isLatent;
     }

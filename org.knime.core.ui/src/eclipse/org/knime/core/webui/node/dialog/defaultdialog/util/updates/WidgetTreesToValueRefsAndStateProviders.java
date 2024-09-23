@@ -66,6 +66,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.FileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LocalFileWriterWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.TextMessage;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.CredentialsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.internal.InternalArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.NoopBooleanProvider;
@@ -164,6 +165,11 @@ final class WidgetTreesToValueRefsAndStateProviders {
                 TextInputWidget::placeholderProvider, //
                 NoopStringProvider.class //
             ), //
+            new UiStateProviderSpec<>(//
+                TextMessage.class, //
+                TextMessage::value, //
+                null //
+            ), //
             new UiStateProviderSpec<>( //
                 InternalArrayWidget.class, //
                 InternalArrayWidget::titleProvider, //
@@ -196,7 +202,7 @@ final class WidgetTreesToValueRefsAndStateProviders {
             return Optional.empty();
         }
         final var stateProvider = spec.getProviderParameter().apply(annotation.get());
-        if (stateProvider.equals(spec.ignoredDefaultParameter())) {
+        if (spec.ignoredDefaultParameter != null && stateProvider.equals(spec.ignoredDefaultParameter())) {
             return Optional.empty();
         }
         return Optional.of(stateProvider);

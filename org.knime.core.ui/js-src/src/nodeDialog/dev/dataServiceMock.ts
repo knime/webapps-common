@@ -33,6 +33,35 @@ export default (rpcRequest: { method: string; params: any[] }) => {
         NUMBER: [{ name: "numberVariable", value: "100", abbreviated: false }],
       };
     case "settings.update2": {
+      if (rpcRequest.params[1] === "textMessage.json") {
+        const {
+          title: [{ value: title }],
+          description: [{ value: description }],
+          type: [{ value: type }],
+          show: [{ value: show }],
+        } = rpcRequest.params[2];
+        return {
+          state: "SUCCESS",
+          result: [
+            {
+              id: "textMessageProvider",
+              values: [
+                {
+                  indices: [],
+                  value: show
+                    ? {
+                        type,
+                        title,
+                        description,
+                      }
+                    : null,
+                },
+              ],
+              scopes: null,
+            },
+          ],
+        };
+      }
       if (rpcRequest.params[1] === "ElementResetButton") {
         return {
           state: "SUCCESS",

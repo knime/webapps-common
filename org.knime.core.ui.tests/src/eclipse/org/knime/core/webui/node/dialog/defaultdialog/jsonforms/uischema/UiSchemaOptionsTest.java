@@ -88,6 +88,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RichTextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.SortListWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.TextMessage;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.TextMessage.MessageType;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonChange;
@@ -1230,4 +1232,43 @@ class UiSchemaOptionsTest {
 
     }
 
+    @Test
+    void testTextMessage() {
+        class TestSettings implements DefaultNodeSettings {
+
+            static final class MyTextMessageProvider implements TextMessage.SimpleTextMessageProvider {
+
+                @Override
+                public boolean showMessage(final DefaultNodeSettingsContext context) {
+                    return true;
+                }
+
+                @Override
+                public String title() {
+                    return "My message";
+                }
+
+                @Override
+                public String description() {
+                    return "My description";
+                }
+
+                @Override
+                public MessageType type() {
+                    return MessageType.INFO;
+                }
+
+            }
+
+            @TextMessage(MyTextMessageProvider.class)
+            Void m_textMessage;
+        }
+
+        var response = buildTestUiSchema(TestSettings.class);
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("textMessage");
+        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("textMessage");
+        assertThatJson(response).inPath("$.elements[0].options.messageProvider").isString()
+            .isEqualTo(TestSettings.MyTextMessageProvider.class.getName());
+
+    }
 }

@@ -100,9 +100,11 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RichTextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.SortListWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.TextMessage;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SimpleButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.CredentialsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.PasswordWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.UsernameWidget;
@@ -227,6 +229,12 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect;
  * {@link FileWriterWidget}</td>
  * </tr>
  * <tr>
+ * <tr>
+ * <td>Void (i.e. this is not a setting but only something that is displayed)</td>
+ * <td></td>
+ * <td>{@link SimpleButtonWidget} (button with backend-side action handler)<br>
+ * {@link TextMessage}</td>
+ * </tr>
  * <td>Any type</td>
  * <td></td>
  * <td>{@link ButtonWidget} (button with backend-side action handler)</td>

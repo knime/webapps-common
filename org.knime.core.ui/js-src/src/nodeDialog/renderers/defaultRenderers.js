@@ -29,6 +29,7 @@ import { vennDiagramLayoutRenderer } from "./vennDiagramRenderer";
 import { dynamicValueRenderer } from "./dynamicValueRenderer";
 import { editResetButtonRenderer } from "./editResetButtonRenderer";
 import { elementCheckboxRenderer } from "./elementCheckboxRenderer";
+import { textMessageRenderer } from "./textMessageRenderer";
 
 export const defaultRenderers = [
   /* layout renderers */
@@ -63,6 +64,7 @@ export const defaultRenderers = [
   localFileChooserRenderer,
   fileChooserRenderer,
   dynamicValueRenderer,
+  textMessageRenderer,
   /**
    * Internal renderers
    */

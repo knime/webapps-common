@@ -116,6 +116,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RichTextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.SortListWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.TextMessage;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
@@ -235,15 +236,23 @@ final class UiSchemaOptionsGenerator {
             }
         }
 
-        final var widget = m_node.getAnnotation(Widget.class).orElseThrow();
-        if (widget.advanced()) {
-            options.put(OPTIONS_IS_ADVANCED, true);
+        if (annotatedWidgets.contains(Widget.class)) {
+            final var widget = m_node.getAnnotation(Widget.class).orElseThrow();
+            if (widget.advanced()) {
+                options.put(OPTIONS_IS_ADVANCED, true);
+            }
+            if (widget.hideTitle()) {
+                control.put(TAG_LABEL, "");
+            }
+            if (widget.hideFlowVariableButton()) {
+                options.put(OPTIONS_HIDE_FLOW_VARIABLE_BUTTON, true);
+            }
         }
-        if (widget.hideTitle()) {
-            control.put(TAG_LABEL, "");
-        }
-        if (widget.hideFlowVariableButton()) {
-            options.put(OPTIONS_HIDE_FLOW_VARIABLE_BUTTON, true);
+
+        if (annotatedWidgets.contains(TextMessage.class)) {
+            final var textMessageProvider = m_node.getAnnotation(TextMessage.class).orElseThrow().value();
+            options.put(TAG_FORMAT, Format.TEXT_MESSAGE);
+            options.put("messageProvider", textMessageProvider.getName());
         }
 
         if (annotatedWidgets.contains(DateTimeWidget.class)) {
