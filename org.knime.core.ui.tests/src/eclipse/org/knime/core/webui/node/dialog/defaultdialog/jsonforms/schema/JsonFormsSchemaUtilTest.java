@@ -140,7 +140,7 @@ class JsonFormsSchemaUtilTest {
         testSettings(DescriptionSetting.class);
     }
 
-    static final class ChangeDescription implements WidgetModification.ImperativeWidgetModification {
+    static final class ChangeDescription implements WidgetModification.Modifier {
         static final class FieldReference implements WidgetModification.Reference {
         }
 

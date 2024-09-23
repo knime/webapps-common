@@ -56,7 +56,8 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.knime.core.webui.node.dialog.defaultdialog.widget.WidgetModification.ImperativeWidgetModification.WidgetGroupModifier;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.WidgetModification.Modifier.WidgetGroupModifier;
 
 /**
  * Put this annotation on a widget group in order to modify one of its contained widgets. This is only useful if the
@@ -88,7 +89,7 @@ public @interface WidgetModification {
      *
      * @author Paul Bärnreuther
      */
-    interface ImperativeWidgetModification {
+    interface Modifier {
 
         /**
          * This annotation builder is used to add or modify a specific annotation. Use {@link #withProperty} to set the
@@ -111,10 +112,27 @@ public @interface WidgetModification {
              */
             <T> AnnotationBuilder withProperty(String key, T value);
 
+            /**
+             * Set the value property of the annotation.
+             *
+             * @param <T> the type of the value property
+             * @param value the value property of the annotation
+             * @return this builder
+             */
+            default <T> AnnotationBuilder withValue(final T value) {
+                return withProperty("value", value);
+            }
+
+            /**
+             * Commit the changes.
+             */
             void build();
 
         }
 
+        /**
+         * Associated to one (possibly nested) field within a {@link WidgetGroup}.
+         */
         interface WidgetModifier {
 
             /**
@@ -142,6 +160,9 @@ public @interface WidgetModification {
 
         }
 
+        /**
+         * Associated to one {@link WidgetGroup}.
+         */
         interface WidgetGroupModifier {
 
             /**
@@ -187,6 +208,6 @@ public @interface WidgetModification {
     /**
      * @return a method with imperative instructions on how to modify, add or remove annotations on child widgets.
      */
-    Class<? extends ImperativeWidgetModification> value();
+    Class<? extends Modifier> value();
 
 }

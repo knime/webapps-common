@@ -83,7 +83,7 @@ class UiSchemaWidgetModificationTest {
                 String m_field;
             }
 
-            static final class ModifyFieldTitle implements WidgetModification.ImperativeWidgetModification {
+            static final class ModifyFieldTitle implements WidgetModification.Modifier {
 
                 @Override
                 public void modify(final WidgetGroupModifier group) {
@@ -121,7 +121,7 @@ class UiSchemaWidgetModificationTest {
                 String m_field;
             }
 
-            static final class ModifyPlaceholder implements WidgetModification.ImperativeWidgetModification {
+            static final class ModifyPlaceholder implements WidgetModification.Modifier {
 
                 @Override
                 public void modify(final WidgetGroupModifier group) {
@@ -155,7 +155,7 @@ class UiSchemaWidgetModificationTest {
                 String m_field;
             }
 
-            static final class AddPlaceholder implements WidgetModification.ImperativeWidgetModification {
+            static final class AddPlaceholder implements WidgetModification.Modifier {
 
                 @Override
                 public void modify(final WidgetGroupModifier group) {
@@ -189,7 +189,7 @@ class UiSchemaWidgetModificationTest {
                 String m_field;
             }
 
-            static final class RemoveTextInputWidget implements WidgetModification.ImperativeWidgetModification {
+            static final class RemoveTextInputWidget implements WidgetModification.Modifier {
 
                 @Override
                 public void modify(final WidgetGroupModifier group) {
@@ -223,7 +223,7 @@ class UiSchemaWidgetModificationTest {
                 String m_field;
             }
 
-            static final class RemoveTextInputWidget implements WidgetModification.ImperativeWidgetModification {
+            static final class RemoveTextInputWidget implements WidgetModification.Modifier {
 
                 @Override
                 public void modify(final WidgetGroupModifier group) {
@@ -255,7 +255,7 @@ class UiSchemaWidgetModificationTest {
                 String m_field;
             }
 
-            static final class ModifyTextInputWidget implements WidgetModification.ImperativeWidgetModification {
+            static final class ModifyTextInputWidget implements WidgetModification.Modifier {
 
                 @Override
                 public void modify(final WidgetGroupModifier group) {
@@ -290,7 +290,7 @@ class UiSchemaWidgetModificationTest {
                 String m_field;
             }
 
-            static final class AddTextInputWidget implements WidgetModification.ImperativeWidgetModification {
+            static final class AddTextInputWidget implements WidgetModification.Modifier {
 
                 @Override
                 public void modify(final WidgetGroupModifier group) {
@@ -323,7 +323,7 @@ class UiSchemaWidgetModificationTest {
                 String m_field;
             }
 
-            static final class ModifyTextInputWidget implements WidgetModification.ImperativeWidgetModification {
+            static final class ModifyTextInputWidget implements WidgetModification.Modifier {
 
                 @Override
                 public void modify(final WidgetGroupModifier group) {
@@ -357,7 +357,7 @@ class UiSchemaWidgetModificationTest {
                 String m_field;
             }
 
-            static final class ModifyTextInputWidget implements WidgetModification.ImperativeWidgetModification {
+            static final class ModifyTextInputWidget implements WidgetModification.Modifier {
 
                 @Override
                 public void modify(final WidgetGroupModifier group) {
@@ -391,7 +391,7 @@ class UiSchemaWidgetModificationTest {
                 String m_field;
             }
 
-            static final class AddTextInputWidget implements WidgetModification.ImperativeWidgetModification {
+            static final class AddTextInputWidget implements WidgetModification.Modifier {
 
                 static final class MyPredicateProvider implements PredicateProvider {
 
@@ -432,7 +432,7 @@ class UiSchemaWidgetModificationTest {
                 String m_field;
             }
 
-            static final class AddTextInputWidget implements WidgetModification.ImperativeWidgetModification {
+            static final class AddTextInputWidget implements WidgetModification.Modifier {
 
                 @Override
                 public void modify(final WidgetGroupModifier group) {
@@ -473,7 +473,7 @@ class UiSchemaWidgetModificationTest {
             }
 
             static final class WidgetModificationWithDuplicateReferences
-                implements WidgetModification.ImperativeWidgetModification {
+                implements WidgetModification.Modifier {
 
                 @Override
                 public void modify(final WidgetGroupModifier group) {
@@ -509,7 +509,7 @@ class UiSchemaWidgetModificationTest {
             }
 
             static final class WidgetModificationWithMissingReferences
-                implements WidgetModification.ImperativeWidgetModification {
+                implements WidgetModification.Modifier {
 
                 @Override
                 public void modify(final WidgetGroupModifier group) {

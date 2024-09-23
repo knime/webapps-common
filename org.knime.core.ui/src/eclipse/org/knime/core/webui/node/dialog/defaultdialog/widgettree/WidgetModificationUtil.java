@@ -61,9 +61,9 @@ import java.util.stream.Stream;
 
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.WidgetModification;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.WidgetModification.ImperativeWidgetModification.AnnotationBuilder;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.WidgetModification.ImperativeWidgetModification.WidgetGroupModifier;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.WidgetModification.ImperativeWidgetModification.WidgetModifier;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.WidgetModification.Modifier.AnnotationBuilder;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.WidgetModification.Modifier.WidgetGroupModifier;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.WidgetModification.Modifier.WidgetModifier;
 
 /**
  * Resolves {@link WidgetModification} annotations for {@link WidgetTree}s and {@link ArrayWidgetNode}s
