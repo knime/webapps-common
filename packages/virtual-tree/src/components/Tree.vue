@@ -10,7 +10,6 @@ import {
   type TreeNodeOptions,
   type BaseTreeNode,
   type NodeKey,
-  type VirtualConfig,
   type KeydownEvent,
   type SelectEventParams,
 } from "../types";
@@ -22,7 +21,6 @@ import { useKeyPressedUntilMouseClick } from "@knime/components";
 interface Props {
   source: TreeNodeOptions[];
   loadData?: LoadDataFunc;
-  virtual?: VirtualConfig;
   selectable?: boolean;
   idPrefix?: string;
 }
@@ -30,8 +28,6 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   // eslint-disable-next-line no-undefined
   loadData: undefined,
-  // eslint-disable-next-line no-undefined
-  virtual: undefined,
   selectable: true,
   idPrefix: "tree",
 });
@@ -136,7 +132,6 @@ defineExpose({
     class="virtual-tree"
     :source="source"
     :load-data="loadData"
-    :virtual="virtual"
     disable-deselect
     :default-selected-key="selectedKey"
     :aria-activedescendant="domNodeId(focusedNodeKey)"
