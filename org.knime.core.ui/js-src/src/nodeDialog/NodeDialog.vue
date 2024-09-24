@@ -37,12 +37,14 @@ import {
 import useProvidedFlowVariablesMap from "./composables/components/useProvidedFlowVariablesMap";
 import useCurrentData from "./composables/nodeDialog/useCurrentData";
 import useServices from "./composables/nodeDialog/useServices";
+import LoadingDialog from "./loading/LoadingDialog.vue";
 
 const renderers = [...fallbackRenderers, ...defaultRenderers];
 
 export default {
   components: {
     JsonForms,
+    LoadingDialog,
     Form,
   },
   inject: ["getKnimeService"],
@@ -355,10 +357,9 @@ export default {
 <template>
   <div class="dialog">
     <div ref="subPanels" />
-    <Form>
-      <div ref="dialogPopoverTeleportDest" class="popover-container" />
-      <Suspense v-if="ready">
-        <!-- component with nested async dependencies -->
+    <Suspense v-if="ready">
+      <Form>
+        <div ref="dialogPopoverTeleportDest" class="popover-container" />
         <JsonForms
           ref="jsonforms"
           :data="getCurrentData()"
@@ -367,17 +368,16 @@ export default {
           :renderers="renderers"
           @change="onSettingsChanged"
         />
-        <!-- loading state via #fallback slot -->
-        <template #fallback><div class="loading">Loading...</div></template>
-      </Suspense>
-      <a
-        v-if="hasAdvancedOptions()"
-        class="advanced-options"
-        @click="changeAdvancedSettings"
-      >
-        {{ schema.showAdvancedSettings ? "Hide" : "Show" }} advanced settings
-      </a>
-    </Form>
+        <a
+          v-if="hasAdvancedOptions()"
+          class="advanced-options"
+          @click="changeAdvancedSettings"
+        >
+          {{ schema.showAdvancedSettings ? "Hide" : "Show" }} advanced settings
+        </a>
+      </Form>
+      <template #fallback><LoadingDialog /></template>
+    </Suspense>
   </div>
 </template>
 
@@ -398,11 +398,6 @@ export default {
   & .popover-container {
     position: relative;
     width: 100%;
-  }
-
-  & .loading {
-    margin-top: var(--space-32);
-    height: 100%;
   }
 
   & .advanced-options {
