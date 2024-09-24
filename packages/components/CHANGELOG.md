@@ -1,5 +1,14 @@
 # @knime/components
 
+## 1.1.10
+
+### Patch Changes
+
+- 89e6afa: Introduce opt-in features for making breadcrumbs usable without line breaks
+- Updated dependencies [3e2c166]
+  - @knime/styles@1.0.8
+  - @knime/utils@1.0.13
+
 ## 1.1.9
 
 ### Patch Changes

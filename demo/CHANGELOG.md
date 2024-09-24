@@ -1,5 +1,17 @@
 # demo
 
+## 1.0.35
+
+### Patch Changes
+
+- 89e6afa: Introduce opt-in features for making breadcrumbs usable without line breaks
+- Updated dependencies [3e2c166]
+- Updated dependencies [89e6afa]
+  - @knime/styles@1.0.8
+  - @knime/components@1.1.10
+  - @knime/rich-text-editor@1.2.10
+  - @knime/utils@1.0.13
+
 ## 1.0.34
 
 ### Patch Changes

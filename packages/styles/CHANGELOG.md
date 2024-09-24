@@ -1,5 +1,11 @@
 # @knime/styles
 
+## 1.0.8
+
+### Patch Changes
+
+- 3e2c166: Added a default file icon
+
 ## 1.0.7
 
 ### Patch Changes
