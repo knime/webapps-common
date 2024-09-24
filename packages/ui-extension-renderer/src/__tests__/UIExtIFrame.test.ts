@@ -5,7 +5,7 @@ import {
   afterEach,
   it,
   vi,
-  type SpyInstance,
+  type MockInstance,
 } from "vitest";
 import { shallowMount } from "@vue/test-utils";
 import UIExtIFrame from "../UIExtIFrame.vue";
@@ -25,7 +25,7 @@ describe("UIExtIFrame.vue", () => {
   };
 
   let wrapper: ReturnType<typeof shallowMount>,
-    setUpIframeEmbedderServiceSpy: SpyInstance;
+    setUpIframeEmbedderServiceSpy: MockInstance;
 
   beforeAll(() => {
     setUpIframeEmbedderServiceSpy = vi

@@ -95,3 +95,6 @@ buildtools/opensourcecredits/used-packages.json
 .history/
 /.idea/**
 used-packages.json
+
+# Common system files
+.DS_Store

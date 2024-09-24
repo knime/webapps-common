@@ -6,6 +6,7 @@ export default defineConfig({
     coverage: {
       all: true,
       exclude: [
+        "**/.DS_Store",
         "demo/",
         "packages/lint/",
         "packages/licenses/",

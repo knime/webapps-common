@@ -1,4 +1,11 @@
-import { describe, expect, it, vi, type SpyInstance, beforeEach } from "vitest";
+import {
+  describe,
+  expect,
+  it,
+  vi,
+  type MockInstance,
+  beforeEach,
+} from "vitest";
 import { isMac, getMetaOrCtrlKey } from "../navigator";
 
 const SAMPLE_OUTPUT_USER_AGENT_MAC =
@@ -9,7 +16,7 @@ const SAMPLE_OUTPUT_USER_AGENT_WINDOWS =
 
 describe("navigator", () => {
   describe("mac os", () => {
-    let userAgentGetter: SpyInstance;
+    let userAgentGetter: MockInstance;
 
     beforeEach(() => {
       userAgentGetter = vi
@@ -29,7 +36,7 @@ describe("navigator", () => {
   });
 
   describe("windows/linux", () => {
-    let userAgentGetter: SpyInstance;
+    let userAgentGetter: MockInstance;
 
     beforeEach(() => {
       userAgentGetter = vi

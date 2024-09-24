@@ -57,7 +57,7 @@ export const createMockEditor = (params: any) => {
 
   type Actions = Record<
     (typeof actionNames)[number],
-    Mock<any[], { run: () => void }>
+    Mock<() => { run: () => void }>
   >;
 
   const actions: Actions = actionNames.reduce((acc, action) => {

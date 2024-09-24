@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.5",
-    "@vitest/coverage-v8": "1.2.1",
+    "@vitest/coverage-v8": "2.1.1",
     "@vue/test-utils": "2.4.4",
     "typescript": "^5.4.5",
     "vite": "^5.2.12",
