@@ -37,12 +37,29 @@ export default {
       type: Boolean,
       default: false,
     },
+    /**
+     * DragEvents that contain data of this type will be accepted/forwarded.
+     */
+    dropType: {
+      type: String,
+      default: null,
+    },
   },
-  emits: ["click-item"],
+  emits: ["click-item", "drop-item"],
   computed: {
     // TODO: Can be made into a composition function
     linkComponent() {
       return resolveNuxtLinkComponent();
+    },
+  },
+  methods: {
+    isAllowedDrop(e) {
+      if (e.dataTransfer.types.includes(this.dropType.toLowerCase())) {
+        e.preventDefault();
+        return true;
+      } else {
+        return false;
+      }
     },
   },
 };
@@ -78,6 +95,19 @@ export default {
           "
           @click="
             breadcrumbItem.clickable && $emit('click-item', breadcrumbItem)
+          "
+          @dragenter="
+            isAllowedDrop($event) &&
+              $event.target.classList.add('dragging-over')
+          "
+          @dragleave="$event.target.classList.remove('dragging-over')"
+          @dragover="isAllowedDrop"
+          @drop="
+            $emit('drop-item', {
+              item: breadcrumbItem,
+              event: $event,
+              onComplete: () => $event.target.classList.remove('dragging-over'),
+            })
           "
         >
           <Component
@@ -147,6 +177,7 @@ export default {
     height: 18px;
     margin-right: 2px;
     stroke-width: calc((32px / 18) * 0.8);
+    pointer-events: none;
   }
 
   & .arrow {
@@ -202,6 +233,12 @@ export default {
       outline: none;
       background-color: var(--knime-silver-sand-semi);
     }
+  }
+
+  & .dragging-over {
+    background: var(--knime-gray-ultra-light);
+    outline: 1px solid var(--knime-dove-gray);
+    outline-offset: -1px;
   }
 }
 </style>

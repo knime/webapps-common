@@ -1,4 +1,4 @@
-import { computed, ref, watch, type Ref } from "vue";
+import { computed, nextTick, ref, watch, type Ref } from "vue";
 
 import type { UseMultiSelectionReturn } from "../../../composables/multiSelection/useMultiSelection";
 import { createDragGhosts } from "../utils/dragGhostHelpers";
@@ -66,6 +66,14 @@ export const useItemDragging = (options: UseItemDraggingOptions) => {
   const onDragStart = (event: DragEvent, index: number) => {
     isDragging.value = true;
     startDragItemIndex.value = index;
+
+    nextTick(() => {
+      // If the item wasn't selected before clicking, the computed values need to update
+      event.dataTransfer?.setData(
+        "knime/fileExplorer/selectedItemIds",
+        JSON.stringify(selectedItemIds.value),
+      );
+    });
 
     // remove native drag image for custom animation modes
     if (
