@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.2.0
+
+### Minor Changes
+
+- 0fd52b2: add component prop to Toast interface to enable custom formatted toast content, update demo
+
 ## 1.1.10
 
 ### Patch Changes

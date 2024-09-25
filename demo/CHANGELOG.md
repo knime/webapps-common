@@ -1,5 +1,14 @@
 # demo
 
+## 1.0.36
+
+### Patch Changes
+
+- 0fd52b2: add component prop to Toast interface to enable custom formatted toast content, update demo
+- Updated dependencies [0fd52b2]
+  - @knime/components@1.2.0
+  - @knime/rich-text-editor@1.2.11
+
 ## 1.0.35
 
 ### Patch Changes
