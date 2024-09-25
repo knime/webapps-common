@@ -83,8 +83,17 @@ export default {
 </template>
 
 <style lang="postcss" scoped>
+@import url("@knime/styles/css/mixins.css");
+
 .function-button {
-  display: flex;
+  --size-compact: 24px;
+  --size-default: 30px;
+  --size: var(--size-default);
+
+  --icon-size-default: 18;
+  --icon-size-compact: 16;
+  --icon-size: var(--icon-size-default);
+
   text-align: center;
   font-weight: 500;
   font-size: 13px;
@@ -115,18 +124,27 @@ export default {
 
   &.single {
     padding: 6px;
-  }
-
-  &.compact {
-    padding: 3px;
+    width: var(--size);
+    height: var(--size);
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   & :deep(svg) {
     vertical-align: top;
     stroke: var(--theme-button-function-foreground-color);
-    width: 18px;
-    height: 18px;
-    stroke-width: calc(32px / 18);
+
+    @mixin svg-icon-size var(--icon-size);
+  }
+
+  &.compact {
+    padding: 3px;
+    --size: var(--size-compact);
+
+    & :deep(svg) {
+      --icon-size: var(--icon-size-compact);
+    }
   }
 
   & :deep(svg) path[fill]:not([fill=""], [fill="none"]) {
