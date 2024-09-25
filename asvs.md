@@ -341,8 +341,7 @@ This is a placeholder for future architectural requirements.
 
 [^5.2.3]: Does not apply here, since there is not direct communication with any mail server (e.g., SMTP or IMAP).
 
-[^5.2.4]: Checked by Sonar rule [S5334](https://rules.sonarsource.com/java/RSPEC-5334/) for Java programs and [S1523](https://rules.sonarsource.com/javascript/RSPEC-1523/) for JavaScript. There are checked exceptions:
-    * GenericEchartsView: Both view and dialog are sandboxed within an iframe.
+[^5.2.4]: Checked by Sonar rule [S5334](https://rules.sonarsource.com/java/RSPEC-5334/) for Java programs and [S1523](https://rules.sonarsource.com/javascript/RSPEC-1523/) for JavaScript.
 
 [^5.2.5]: 
     * TextView: Sanitization takes place after flow variable template replacement.
@@ -355,7 +354,6 @@ This is a placeholder for future architectural requirements.
     * ImageView: Secure by restrictions on SVG content when it's being used as an image: 
         * Javascript is disabled
         * external resources cannot be loaded.
-    * GenericEchartsView: Sandboxed within an iframe
 
 [^5.2.8]: Does not apply here. No user-supplied scriptable or expression template language used.
 
