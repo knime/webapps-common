@@ -51,9 +51,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.widgettree;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -61,8 +59,8 @@ import java.util.stream.Stream;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup.Modification;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LatentWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.WidgetModification;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
@@ -85,15 +83,13 @@ public final class WidgetTree extends WidgetTreeNode {
 
     private static final Collection<Class<? extends Annotation>> POSSIBLE_ANNOTATIONS =
         List.of(LatentWidget.class, Layout.class, Effect.class, ValueReference.class, ValueProvider.class,
-            WidgetModification.class, WidgetModification.WidgetReference.class);
+            Modification.class, Modification.WidgetReference.class);
 
     ArrayWidgetNode m_arrayWidgetNodeParent;
 
     private final Collection<WidgetTreeNode> m_children = new ArrayList<>();
 
     private final BiMap<WidgetTreeNode, String> m_childNames = HashBiMap.create();
-
-    private final Map<String, WidgetTreeNode> m_nameToChild = new HashMap<>();
 
     private final Class<? extends WidgetGroup> m_widgetGroupClass;
 
@@ -127,7 +123,7 @@ public final class WidgetTree extends WidgetTreeNode {
     }
 
     void resolveWidgetModifications() {
-        getAnnotation(WidgetModification.class).ifPresent(
+        getAnnotation(Modification.class).ifPresent(
             widgetModification -> WidgetModificationUtil.resolveWidgetModification(this, widgetModification));
         getChildren().forEach(child -> {
             if (child instanceof WidgetTree wt) {
@@ -171,7 +167,6 @@ public final class WidgetTree extends WidgetTreeNode {
     void addChild(final String name, final WidgetTreeNode child) {
         m_children.add(child);
         m_childNames.put(child, name);
-        m_nameToChild.put(name, child);
     }
 
     String getChildName(final WidgetTreeNode child) {

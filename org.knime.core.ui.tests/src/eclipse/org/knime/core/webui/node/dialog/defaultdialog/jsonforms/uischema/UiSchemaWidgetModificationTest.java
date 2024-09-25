@@ -58,7 +58,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.WidgetModification;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Predicate;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.PredicateProvider;
@@ -73,28 +72,28 @@ class UiSchemaWidgetModificationTest {
 
             final class WidgetGroupSettings implements WidgetGroup {
 
-                static final class FieldReference implements WidgetModification.Reference {
+                static final class FieldReference implements Modification.Reference {
 
                 }
 
                 @Widget(title = "", description = "")
                 @TextInputWidget(placeholder = "some placeholder")
-                @WidgetModification.WidgetReference(FieldReference.class)
+                @Modification.WidgetReference(FieldReference.class)
                 String m_field;
             }
 
-            static final class ModifyFieldTitle implements WidgetModification.Modifier {
+            static final class ModifyFieldTitle implements Modifier {
 
                 @Override
                 public void modify(final WidgetGroupModifier group) {
                     group.find(TestSettings.WidgetGroupSettings.FieldReference.class)
                         .modifyAnnotation(TextInputWidget.class).withProperty("placeholder", "modified placeholder")
-                        .build();
+                        .modify();
                 }
 
             }
 
-            @WidgetModification(ModifyFieldTitle.class)
+            @Modification(ModifyFieldTitle.class)
             WidgetGroupSettings m_widgetGroup;
         }
 
@@ -108,26 +107,26 @@ class UiSchemaWidgetModificationTest {
 
         final class TestSettings implements DefaultNodeSettings {
 
-            @WidgetModification(ModifyPlaceholder.class)
+            @Modification(ModifyPlaceholder.class)
             final class WidgetGroupSettings implements WidgetGroup {
 
-                static final class FieldReference implements WidgetModification.Reference {
+                static final class FieldReference implements Modification.Reference {
 
                 }
 
                 @Widget(title = "", description = "")
                 @TextInputWidget(placeholder = "some placeholder")
-                @WidgetModification.WidgetReference(FieldReference.class)
+                @Modification.WidgetReference(FieldReference.class)
                 String m_field;
             }
 
-            static final class ModifyPlaceholder implements WidgetModification.Modifier {
+            static final class ModifyPlaceholder implements Modifier {
 
                 @Override
                 public void modify(final WidgetGroupModifier group) {
                     group.find(TestSettings.WidgetGroupSettings.FieldReference.class)
                         .modifyAnnotation(TextInputWidget.class).withProperty("placeholder", "modified placeholder")
-                        .build();
+                        .modify();
                 }
 
             }
@@ -146,26 +145,26 @@ class UiSchemaWidgetModificationTest {
 
             final class WidgetGroupSettings implements WidgetGroup {
 
-                static final class FieldReference implements WidgetModification.Reference {
+                static final class FieldReference implements Modification.Reference {
 
                 }
 
                 @Widget(title = "", description = "")
-                @WidgetModification.WidgetReference(FieldReference.class)
+                @Modification.WidgetReference(FieldReference.class)
                 String m_field;
             }
 
-            static final class AddPlaceholder implements WidgetModification.Modifier {
+            static final class AddPlaceholder implements Modifier {
 
                 @Override
                 public void modify(final WidgetGroupModifier group) {
                     group.find(TestSettings.WidgetGroupSettings.FieldReference.class)
-                        .addAnnotation(TextInputWidget.class).withProperty("placeholder", "added placeholder").build();
+                        .addAnnotation(TextInputWidget.class).withProperty("placeholder", "added placeholder").modify();
                 }
 
             }
 
-            @WidgetModification(AddPlaceholder.class)
+            @Modification(AddPlaceholder.class)
             WidgetGroupSettings m_widgetGroup;
         }
 
@@ -179,17 +178,17 @@ class UiSchemaWidgetModificationTest {
 
             final class WidgetGroupSettings implements WidgetGroup {
 
-                static final class FieldReference implements WidgetModification.Reference {
+                static final class FieldReference implements Modification.Reference {
 
                 }
 
                 @Widget(title = "", description = "")
                 @TextInputWidget(placeholder = "some placeholder")
-                @WidgetModification.WidgetReference(FieldReference.class)
+                @Modification.WidgetReference(FieldReference.class)
                 String m_field;
             }
 
-            static final class RemoveTextInputWidget implements WidgetModification.Modifier {
+            static final class RemoveTextInputWidget implements Modifier {
 
                 @Override
                 public void modify(final WidgetGroupModifier group) {
@@ -199,7 +198,7 @@ class UiSchemaWidgetModificationTest {
 
             }
 
-            @WidgetModification(RemoveTextInputWidget.class)
+            @Modification(RemoveTextInputWidget.class)
             WidgetGroupSettings m_widgetGroup;
         }
 
@@ -214,16 +213,16 @@ class UiSchemaWidgetModificationTest {
 
             final class WidgetGroupSettings implements WidgetGroup {
 
-                static final class FieldReference implements WidgetModification.Reference {
+                static final class FieldReference implements Modification.Reference {
 
                 }
 
                 @Widget(title = "", description = "")
-                @WidgetModification.WidgetReference(FieldReference.class)
+                @Modification.WidgetReference(FieldReference.class)
                 String m_field;
             }
 
-            static final class RemoveTextInputWidget implements WidgetModification.Modifier {
+            static final class RemoveTextInputWidget implements Modifier {
 
                 @Override
                 public void modify(final WidgetGroupModifier group) {
@@ -233,7 +232,7 @@ class UiSchemaWidgetModificationTest {
 
             }
 
-            @WidgetModification(RemoveTextInputWidget.class)
+            @Modification(RemoveTextInputWidget.class)
             WidgetGroupSettings m_widgetGroup;
         }
         assertThat(assertThrows(IllegalStateException.class, () -> buildTestUiSchema(TestSettings.class)).getMessage())
@@ -246,27 +245,27 @@ class UiSchemaWidgetModificationTest {
 
             final class WidgetGroupSettings implements WidgetGroup {
 
-                static final class FieldReference implements WidgetModification.Reference {
+                static final class FieldReference implements Modification.Reference {
 
                 }
 
                 @Widget(title = "", description = "")
-                @WidgetModification.WidgetReference(FieldReference.class)
+                @Modification.WidgetReference(FieldReference.class)
                 String m_field;
             }
 
-            static final class ModifyTextInputWidget implements WidgetModification.Modifier {
+            static final class ModifyTextInputWidget implements Modifier {
 
                 @Override
                 public void modify(final WidgetGroupModifier group) {
                     group.find(TestSettings.WidgetGroupSettings.FieldReference.class)
                         .modifyAnnotation(TextInputWidget.class).withProperty("placeholder", "modified placeholder")
-                        .build();
+                        .modify();
                 }
 
             }
 
-            @WidgetModification(ModifyTextInputWidget.class)
+            @Modification(ModifyTextInputWidget.class)
             WidgetGroupSettings m_widgetGroup;
         }
         assertThat(assertThrows(IllegalStateException.class, () -> buildTestUiSchema(TestSettings.class)).getMessage())
@@ -280,27 +279,27 @@ class UiSchemaWidgetModificationTest {
 
             final class WidgetGroupSettings implements WidgetGroup {
 
-                static final class FieldReference implements WidgetModification.Reference {
+                static final class FieldReference implements Modification.Reference {
 
                 }
 
                 @Widget(title = "", description = "")
                 @TextInputWidget(placeholder = "some placeholder")
-                @WidgetModification.WidgetReference(FieldReference.class)
+                @Modification.WidgetReference(FieldReference.class)
                 String m_field;
             }
 
-            static final class AddTextInputWidget implements WidgetModification.Modifier {
+            static final class AddTextInputWidget implements Modifier {
 
                 @Override
                 public void modify(final WidgetGroupModifier group) {
                     group.find(TestSettings.WidgetGroupSettings.FieldReference.class)
-                        .addAnnotation(TextInputWidget.class).withProperty("placeholder", "added placeholder").build();
+                        .addAnnotation(TextInputWidget.class).withProperty("placeholder", "added placeholder").modify();
                 }
 
             }
 
-            @WidgetModification(AddTextInputWidget.class)
+            @Modification(AddTextInputWidget.class)
             WidgetGroupSettings m_widgetGroup;
         }
         assertThat(assertThrows(IllegalStateException.class, () -> buildTestUiSchema(TestSettings.class)).getMessage())
@@ -313,27 +312,27 @@ class UiSchemaWidgetModificationTest {
 
             final class WidgetGroupSettings implements WidgetGroup {
 
-                static final class FieldReference implements WidgetModification.Reference {
+                static final class FieldReference implements Modification.Reference {
 
                 }
 
                 @Widget(title = "", description = "")
                 @TextInputWidget(placeholder = "some placeholder")
-                @WidgetModification.WidgetReference(FieldReference.class)
+                @Modification.WidgetReference(FieldReference.class)
                 String m_field;
             }
 
-            static final class ModifyTextInputWidget implements WidgetModification.Modifier {
+            static final class ModifyTextInputWidget implements Modifier {
 
                 @Override
                 public void modify(final WidgetGroupModifier group) {
                     group.find(TestSettings.WidgetGroupSettings.FieldReference.class)
-                        .modifyAnnotation(TextInputWidget.class).withProperty("invalidParameter", "some value").build();
+                        .modifyAnnotation(TextInputWidget.class).withProperty("invalidParameter", "some value").modify();
                 }
 
             }
 
-            @WidgetModification(ModifyTextInputWidget.class)
+            @Modification(ModifyTextInputWidget.class)
             WidgetGroupSettings m_widgetGroup;
         }
         assertThat(
@@ -347,27 +346,27 @@ class UiSchemaWidgetModificationTest {
 
             final class WidgetGroupSettings implements WidgetGroup {
 
-                static final class FieldReference implements WidgetModification.Reference {
+                static final class FieldReference implements Modification.Reference {
 
                 }
 
                 @Widget(title = "", description = "")
                 @TextInputWidget(placeholder = "some placeholder")
-                @WidgetModification.WidgetReference(FieldReference.class)
+                @Modification.WidgetReference(FieldReference.class)
                 String m_field;
             }
 
-            static final class ModifyTextInputWidget implements WidgetModification.Modifier {
+            static final class ModifyTextInputWidget implements Modifier {
 
                 @Override
                 public void modify(final WidgetGroupModifier group) {
                     group.find(TestSettings.WidgetGroupSettings.FieldReference.class)
-                        .modifyAnnotation(TextInputWidget.class).withProperty("placeholder", 42).build();
+                        .modifyAnnotation(TextInputWidget.class).withProperty("placeholder", 42).modify();
                 }
 
             }
 
-            @WidgetModification(ModifyTextInputWidget.class)
+            @Modification(ModifyTextInputWidget.class)
             WidgetGroupSettings m_widgetGroup;
         }
         assertThat(
@@ -382,16 +381,16 @@ class UiSchemaWidgetModificationTest {
 
             final class WidgetGroupSettings implements WidgetGroup {
 
-                static final class FieldReference implements WidgetModification.Reference {
+                static final class FieldReference implements Modification.Reference {
 
                 }
 
                 @Widget(title = "", description = "")
-                @WidgetModification.WidgetReference(FieldReference.class)
+                @Modification.WidgetReference(FieldReference.class)
                 String m_field;
             }
 
-            static final class AddTextInputWidget implements WidgetModification.Modifier {
+            static final class AddTextInputWidget implements Modifier {
 
                 static final class MyPredicateProvider implements PredicateProvider {
 
@@ -406,12 +405,12 @@ class UiSchemaWidgetModificationTest {
                 public void modify(final WidgetGroupModifier group) {
                     group.find(NoEffectTypeTestSettings.WidgetGroupSettings.FieldReference.class)
                         .addAnnotation(Effect.class).withProperty("predicate", MyPredicateProvider.class)// No effectType
-                        .build();
+                        .modify();
                 }
 
             }
 
-            @WidgetModification(AddTextInputWidget.class)
+            @Modification(AddTextInputWidget.class)
             WidgetGroupSettings m_widgetGroup;
 
         }
@@ -423,26 +422,26 @@ class UiSchemaWidgetModificationTest {
 
             final class WidgetGroupSettings implements WidgetGroup {
 
-                static final class FieldReference implements WidgetModification.Reference {
+                static final class FieldReference implements Modification.Reference {
 
                 }
 
                 @Widget(title = "", description = "")
-                @WidgetModification.WidgetReference(FieldReference.class)
+                @Modification.WidgetReference(FieldReference.class)
                 String m_field;
             }
 
-            static final class AddTextInputWidget implements WidgetModification.Modifier {
+            static final class AddTextInputWidget implements Modifier {
 
                 @Override
                 public void modify(final WidgetGroupModifier group) {
                     group.find(NoValueReferenceTestSettings.WidgetGroupSettings.FieldReference.class)
-                        .addAnnotation(ValueReference.class).build();
+                        .addAnnotation(ValueReference.class).modify();
                 }
 
             }
 
-            @WidgetModification(AddTextInputWidget.class)
+            @Modification(AddTextInputWidget.class)
             WidgetGroupSettings m_widgetGroup;
 
         }
@@ -459,21 +458,20 @@ class UiSchemaWidgetModificationTest {
 
             final class WidgetGroupSettings implements WidgetGroup {
 
-                static final class DuplicateMissingReference implements WidgetModification.Reference {
+                static final class DuplicateMissingReference implements Modification.Reference {
 
                 }
 
                 @Widget(title = "", description = "")
-                @WidgetModification.WidgetReference(DuplicateMissingReference.class)
+                @Modification.WidgetReference(DuplicateMissingReference.class)
                 String m_field1;
 
                 @Widget(title = "", description = "")
-                @WidgetModification.WidgetReference(DuplicateMissingReference.class)
+                @Modification.WidgetReference(DuplicateMissingReference.class)
                 String m_field2;
             }
 
-            static final class WidgetModificationWithDuplicateReferences
-                implements WidgetModification.Modifier {
+            static final class WidgetModificationWithDuplicateReferences implements Modifier {
 
                 @Override
                 public void modify(final WidgetGroupModifier group) {
@@ -482,7 +480,7 @@ class UiSchemaWidgetModificationTest {
 
             }
 
-            @WidgetModification(WidgetModificationWithDuplicateReferences.class)
+            @Modification(WidgetModificationWithDuplicateReferences.class)
             WidgetGroupSettings m_widgetGroup;
 
         }
@@ -499,7 +497,7 @@ class UiSchemaWidgetModificationTest {
 
             final class WidgetGroupSettings implements WidgetGroup {
 
-                static final class MissingReference implements WidgetModification.Reference {
+                static final class MissingReference implements Modification.Reference {
 
                 }
 
@@ -508,8 +506,7 @@ class UiSchemaWidgetModificationTest {
                 String m_field;
             }
 
-            static final class WidgetModificationWithMissingReferences
-                implements WidgetModification.Modifier {
+            static final class WidgetModificationWithMissingReferences implements Modifier {
 
                 @Override
                 public void modify(final WidgetGroupModifier group) {
@@ -518,7 +515,7 @@ class UiSchemaWidgetModificationTest {
 
             }
 
-            @WidgetModification(WidgetModificationWithMissingReferences.class)
+            @Modification(WidgetModificationWithMissingReferences.class)
             WidgetGroupSettings m_widgetGroup;
 
         }

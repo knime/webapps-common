@@ -55,6 +55,7 @@ import java.util.function.Function;
 
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup.Modification;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ComboBoxWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
@@ -71,7 +72,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.SortListWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ValueSwitchWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.WidgetModification;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SimpleButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.CredentialsWidget;
@@ -98,7 +98,7 @@ public final class WidgetNode extends WidgetTreeNode {
         PasswordWidget.class, UsernameWidget.class, FileReaderWidget.class, FileWriterWidget.class,
         LocalFileReaderWidget.class, LocalFileWriterWidget.class, TextInputWidget.class, Effect.class,
         ValueReference.class, ValueProvider.class, InternalArrayWidget.ElementCheckboxWidget.class,
-        WidgetModification.WidgetReference.class);
+        Modification.WidgetReference.class);
 
     private final Class<?> m_contentType;
 

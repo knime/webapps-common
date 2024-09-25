@@ -59,14 +59,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup.AnnotationModifier;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup.Modification;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup.WidgetGroupModifier;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup.WidgetModifier;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.WidgetModification;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.WidgetModification.Modifier.AnnotationBuilder;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.WidgetModification.Modifier.WidgetGroupModifier;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.WidgetModification.Modifier.WidgetModifier;
 
 /**
- * Resolves {@link WidgetModification} annotations for {@link WidgetTree}s and {@link ArrayWidgetNode}s
+ * Resolves {@link Modification} annotations for {@link WidgetTree}s and {@link ArrayWidgetNode}s
  *
  * @author Paul Bärnreuther
  */
@@ -81,7 +81,7 @@ final class WidgetModificationUtil {
      * Resolves and executes the imperative instructions given by the widgetModification by altering the annotations of
      * children inside the given widgetTree.
      */
-    static void resolveWidgetModification(final WidgetTree widgetTree, final WidgetModification widgetModification) {
+    static void resolveWidgetModification(final WidgetTree widgetTree, final Modification widgetModification) {
         final var widgetTreeModifier = new WidgetTreeModifier(widgetTree);
         for (final var modifier : widgetModification.value()) {
             InstantiationUtil.createInstance(modifier).modify(widgetTreeModifier);
@@ -100,19 +100,19 @@ final class WidgetModificationUtil {
         }
 
         @Override
-        public WidgetModifier find(final Class<? extends WidgetModification.Reference> reference) {
+        public WidgetModifier find(final Class<? extends Modification.Reference> reference) {
             return new WidgetTreeNodeModifier(findWidgetTreeNodeByReference(m_widgetTree, reference));
         }
 
         private static WidgetTreeNode findWidgetTreeNodeByReference(final WidgetTree widgetTree,
-            final Class<? extends WidgetModification.Reference> reference) {
+            final Class<? extends Modification.Reference> reference) {
             final var candidates =
                 widgetTree.getWidgetAndWidgetTreeNodes().flatMap(WidgetTreeModifier::traverseAlsoIntoElementWidgetTrees)
                     .filter(node -> hasReference(node, reference)).toList();
             return getSingleCandidate(reference, candidates);
         }
 
-        private static WidgetTreeNode getSingleCandidate(final Class<? extends WidgetModification.Reference> reference,
+        private static WidgetTreeNode getSingleCandidate(final Class<? extends Modification.Reference> reference,
             final List<WidgetTreeNode> candidates) {
             if (candidates.size() > 1) {
                 throw new IllegalStateException("Multiple nodes with the same reference found: " + String.join(", ",
@@ -125,8 +125,8 @@ final class WidgetModificationUtil {
         }
 
         private static boolean hasReference(final WidgetTreeNode node,
-            final Class<? extends WidgetModification.Reference> reference) {
-            final var widgetReference = node.getAnnotation(WidgetModification.WidgetReference.class);
+            final Class<? extends Modification.Reference> reference) {
+            final var widgetReference = node.getAnnotation(Modification.WidgetReference.class);
             return widgetReference.isPresent() && widgetReference.get().value().equals(reference);
         }
 
@@ -152,7 +152,7 @@ final class WidgetModificationUtil {
         }
 
         @Override
-        public <T extends Annotation> AnnotationBuilder modifyAnnotation(final Class<T> annotationClass) {
+        public <T extends Annotation> AnnotationModifier modifyAnnotation(final Class<T> annotationClass) {
             final var existingAnnotation =
                 m_widgetTreeNode.getAnnotation(annotationClass).orElseThrow(() -> new IllegalStateException(
                     "Annotation cannot be modified because it is not present: " + annotationClass.getSimpleName()));
@@ -160,7 +160,7 @@ final class WidgetModificationUtil {
         }
 
         @Override
-        public <T extends Annotation> AnnotationBuilder addAnnotation(final Class<T> annotationClass) {
+        public <T extends Annotation> AnnotationModifier addAnnotation(final Class<T> annotationClass) {
             if (m_widgetTreeNode.getAnnotation(annotationClass).isPresent()) {
                 throw new IllegalStateException(
                     "Annotation cannot be added because it is already present: " + annotationClass.getSimpleName());
@@ -177,7 +177,7 @@ final class WidgetModificationUtil {
             m_widgetTreeNode.removeAnnotation(annotationClass);
         }
 
-        private final class WidgetTreeNodeAnnotationBuilder<T extends Annotation> implements AnnotationBuilder {
+        private final class WidgetTreeNodeAnnotationBuilder<T extends Annotation> implements AnnotationModifier {
 
             private final Map<String, Object> m_properties = new HashMap<>();
 
@@ -191,13 +191,13 @@ final class WidgetModificationUtil {
             }
 
             @Override
-            public <S> AnnotationBuilder withProperty(final String key, final S value) {
+            public <S> AnnotationModifier withProperty(final String key, final S value) {
                 m_properties.put(key, value);
                 return this;
             }
 
             @Override
-            public void build() {
+            public void modify() {
                 final T newAnnotation = createProxy(m_annotationClass, m_properties, m_existingAnnotation);
                 m_widgetTreeNode.addOrReplaceAnnotation(m_annotationClass, newAnnotation);
             }
@@ -208,9 +208,9 @@ final class WidgetModificationUtil {
 
                 assertValidParameterReplacements(annotation, replacements);
 
-                InvocationHandler handler = (proxy, method, args) -> {
-                    return useReplacementsOrDelegateOrDefault(annotation, replacements, delegate, method, args);
-                };
+                InvocationHandler handler = (proxy, method, args) -> useReplacementsOrDelegateOrDefault(annotation,
+                    replacements, delegate, method, args);
+
                 return (T)newProxyInstance(WidgetModificationUtil.class.getClassLoader(), new Class<?>[]{annotation},
                     handler);
             }

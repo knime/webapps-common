@@ -54,10 +54,10 @@ import java.util.List;
 import java.util.function.Function;
 
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup.Modification;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LatentWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.WidgetModification;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.internal.InternalArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueProvider;
@@ -80,7 +80,7 @@ public final class ArrayWidgetNode extends WidgetTreeNode {
 
     private static final Collection<Class<? extends Annotation>> POSSIBLE_ANNOTATIONS = List.of(LatentWidget.class,
         Widget.class, ArrayWidget.class, InternalArrayWidget.class, Layout.class, Effect.class, ValueReference.class,
-        ValueProvider.class, WidgetModification.class, WidgetModification.WidgetReference.class);
+        ValueProvider.class, Modification.class, Modification.WidgetReference.class);
 
     private final WidgetTree m_elementWidgetTree;
 
@@ -99,10 +99,10 @@ public final class ArrayWidgetNode extends WidgetTreeNode {
     }
 
     /**
-     * Resolves the {@link WidgetModification} annotation of this node and its element tree.
+     * Resolves the {@link Modification} annotation of this node and its element tree.
      */
     void resolveWidgetModifications() {
-        getAnnotation(WidgetModification.class).ifPresent(widgetModification -> WidgetModificationUtil
+        getAnnotation(Modification.class).ifPresent(widgetModification -> WidgetModificationUtil
             .resolveWidgetModification(getElementWidgetTree(), widgetModification));
         getElementWidgetTree().resolveWidgetModifications();
     }

@@ -60,7 +60,7 @@ import java.util.stream.Stream;
 
 import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.SettingsType;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.WidgetModification;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup.Modification;
 
 /**
  * These are the nodes within a {@link WidgetTree}. Next to the branching {@link WidgetTree} node, there are two kinds
@@ -174,7 +174,7 @@ public sealed class WidgetTreeNode permits WidgetNode, WidgetTree, ArrayWidgetNo
     }
 
     /**
-     * Used only for resolving {@link WidgetModification}s.
+     * Used only for resolving {@link Modification}s.
      */
     void addOrReplaceAnnotation(final Class<? extends Annotation> key, final Annotation value) {
         m_annotations.put(key, value);

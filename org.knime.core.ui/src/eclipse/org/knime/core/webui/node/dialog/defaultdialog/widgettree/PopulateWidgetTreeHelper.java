@@ -59,9 +59,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaGenerationException;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup.Modification;
 import org.knime.core.webui.node.dialog.defaultdialog.util.ArrayLayoutUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.WidgetModification;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.PredicateProvider;
 
@@ -243,7 +243,7 @@ final class PopulateWidgetTreeHelper {
         }
 
         static final Collection<Class<? extends Annotation>> POSSIBLE_CLASS_ANNOTATIONS =
-            List.of(Layout.class, Effect.class, WidgetModification.class);
+            List.of(Layout.class, Effect.class, Modification.class);
 
         private Annotation getAnnotationFromFieldOrClass(final Class<? extends WidgetGroup> type,
             final Class<? extends Annotation> annotationClass) {

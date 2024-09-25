@@ -78,13 +78,14 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup.Modification;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup.WidgetGroupModifier;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.WidgetModification;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -140,18 +141,18 @@ class JsonFormsSchemaUtilTest {
         testSettings(DescriptionSetting.class);
     }
 
-    static final class ChangeDescription implements WidgetModification.Modifier {
-        static final class FieldReference implements WidgetModification.Reference {
+    static final class ChangeDescription implements WidgetGroup.Modifier {
+        static final class FieldReference implements Modification.Reference {
         }
 
         @Override
         public void modify(final WidgetGroupModifier group) {
             group.find(FieldReference.class).modifyAnnotation(Widget.class)
-                .withProperty("description", "modified description").build();
+                .withProperty("description", "modified description").modify();
         }
     }
 
-    @WidgetModification(ChangeDescription.class)
+    @Modification(ChangeDescription.class)
     private static class ModifiedDescriptionSettings implements WidgetGroup {
         /**
          * containing the modified description from {@link ChangeDescription}.
@@ -160,7 +161,7 @@ class JsonFormsSchemaUtilTest {
             "{\"test\":{\"type\":\"integer\",\"format\":\"int32\",\"default\":0,\"description\":\"modified description\"}}";
 
         @Widget(title = "", description = "some description")
-        @WidgetModification.WidgetReference(ChangeDescription.FieldReference.class)
+        @Modification.WidgetReference(ChangeDescription.FieldReference.class)
         int test;
     }
 
@@ -184,11 +185,11 @@ class JsonFormsSchemaUtilTest {
         static final class WidgetGroupSettings implements WidgetGroup {
 
             @Widget(title = "", description = "some description")
-            @WidgetModification.WidgetReference(ChangeDescription.FieldReference.class)
+            @Modification.WidgetReference(ChangeDescription.FieldReference.class)
             int test;
         }
 
-        @WidgetModification(ChangeDescription.class)
+        @Modification(ChangeDescription.class)
         WidgetGroupSettings m_widgetGroup;
 
     }
@@ -214,11 +215,11 @@ class JsonFormsSchemaUtilTest {
         static final class WidgetGroupSettings implements WidgetGroup {
 
             @Widget(title = "", description = "some description")
-            @WidgetModification.WidgetReference(ChangeDescription.FieldReference.class)
+            @Modification.WidgetReference(ChangeDescription.FieldReference.class)
             int test;
         }
 
-        @WidgetModification(ChangeDescription.class)
+        @Modification(ChangeDescription.class)
         WidgetGroupSettings[] m_widgetGroup;
 
     }
