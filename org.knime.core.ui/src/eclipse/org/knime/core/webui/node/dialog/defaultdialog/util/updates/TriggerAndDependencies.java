@@ -65,7 +65,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.Defaul
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.ConvertValueUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -118,7 +117,7 @@ public class TriggerAndDependencies {
      * @param context the current {@link DefaultNodeSettingsContext}
      * @return a mapping to the values of the required dependencies
      */
-    public Map<Class<? extends Reference>, List<IndexedValue<Integer>>> extractDependencyValues(
+    public Map<ValueAndTypeReference, List<IndexedValue<Integer>>> extractDependencyValues(
         final Map<SettingsType, WidgetGroup> settings, final DefaultNodeSettingsContext context) {
         final var mapper = JsonFormsDataUtil.getMapper();
         final Map<SettingsType, JsonNode> jsonNodes = getDependencySettingsTypes().stream().collect(
@@ -126,11 +125,11 @@ public class TriggerAndDependencies {
         return createDependenciesValuesMap(context, jsonNodes);
     }
 
-    private Map<Class<? extends Reference>, List<IndexedValue<Integer>>> createDependenciesValuesMap(
+    private Map<ValueAndTypeReference, List<IndexedValue<Integer>>> createDependenciesValuesMap(
         final DefaultNodeSettingsContext context, final Map<SettingsType, JsonNode> jsonNodes) {
-        final Map<Class<? extends Reference>, List<IndexedValue<Integer>>> dependencyValues = new HashMap<>();
+        final Map<ValueAndTypeReference, List<IndexedValue<Integer>>> dependencyValues = new HashMap<>();
         for (var vertex : m_dependencyVertices) {
-            dependencyValues.put(vertex.getValueRef(), extractValues(vertex, jsonNodes, context));
+            dependencyValues.put(vertex, extractValues(vertex, jsonNodes, context));
         }
         return dependencyValues;
     }
@@ -142,7 +141,7 @@ public class TriggerAndDependencies {
         final var paths = vertex.getFieldLocation().paths();
         var indexedFieldValues = getIndexedFieldValues(groupJsonNode, paths);
         return indexedFieldValues.stream().map(pair -> new IndexedValue<Integer>(pair.getFirst(),
-            ConvertValueUtil.convertValueRef(pair.getSecond(), vertex.getValueRef(), context))).toList();
+            ConvertValueUtil.convertValueRef(pair.getSecond(), vertex, context))).toList();
     }
 
     private static List<Pair<List<Integer>, JsonNode>> getIndexedFieldValues(final JsonNode jsonNode,

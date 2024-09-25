@@ -60,13 +60,15 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.knime.core.node.util.CheckUtils;
+import org.knime.core.util.Pair;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.Vertex.VertexVisitor;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.WidgetTreesToValueRefsAndStateProviders.ValueProviderWrapper;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.WidgetTreesToValueRefsAndStateProviders.ValueRefWrapper;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.WidgetTreesToValueRefsAndStateProviders.ValueRefsAndStateProviders;
-import org.knime.core.webui.node.dialog.defaultdialog.util.updates.Vertex.VertexVisitor;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonReference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider.TypeReference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
 
 final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
@@ -171,6 +173,13 @@ final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
                 return m_dependencyVertices.computeIfAbsent(valueRef, v -> new DependencyVertex(valueRefWrapper));
             }
 
+            DependencyVertex getDependencyVertex(final Class<? extends Reference> valueRef,
+                final StateProvider.TypeReference typeReference) {
+                final var valueRefWrapper = findValueRefWrapper(valueRef);
+                return m_dependencyVertices.computeIfAbsent(valueRef,
+                    v -> new DependencyVertex(valueRefWrapper, typeReference));
+            }
+
             private ValueRefWrapper findValueRefWrapper(final Class<? extends Reference> valueRef) {
                 return m_valueRefs.stream().filter(wrapper -> wrapper.valueRef().equals(valueRef)).findAny()
                     .orElseThrow(() -> new RuntimeException(String.format(
@@ -209,6 +218,8 @@ final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
                     .map(this::getButtonTriggerVertex).toList());
                 parentVertices.addAll(
                     stateProviderDependencyReceiver.getDependencies().stream().map(this::getDependencyVertex).toList());
+                parentVertices.addAll(stateProviderDependencyReceiver.getTypedDependencies().stream()
+                    .map(pair -> getDependencyVertex(pair.getFirst(), pair.getSecond())).toList());
                 if (stateProviderDependencyReceiver.m_computeBeforeOpenDialog) {
                     parentVertices.add(getBeforeOpenDialogVertex());
                 }
@@ -242,6 +253,8 @@ final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
 
         private final Collection<Class<? extends StateProvider>> m_stateProviders = new HashSet<>();
 
+        private final Collection<Pair<Class<? extends Reference>, TypeReference>> m_typedDependencies = new HashSet<>();
+
         boolean m_computeBeforeOpenDialog;
 
         boolean m_computeAfterOpenDialog;
@@ -256,6 +269,13 @@ final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
         @Override
         public <T> Supplier<T> getValueSupplier(final Class<? extends Reference<T>> id) {
             getDependencies().add(id);
+            return null;
+        }
+
+        @Override
+        public <T> Supplier<T> getValueSupplier(final Class<? extends Reference<?>> ref,
+            final TypeReference<T> typeRef) {
+            getTypedDependencies().add(new Pair<>(ref, typeRef));
             return null;
         }
 
@@ -296,6 +316,10 @@ final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
 
         Collection<Class<? extends Reference>> getDependencies() {
             return m_dependencies;
+        }
+
+        Collection<Pair<Class<? extends Reference>, StateProvider.TypeReference>> getTypedDependencies() {
+            return m_typedDependencies;
         }
 
         Collection<Class<? extends StateProvider>> getStateProviders() {

@@ -56,6 +56,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import org.knime.core.node.util.CheckUtils;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
@@ -65,6 +66,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
 
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
@@ -98,17 +101,19 @@ public final class WidgetTree extends WidgetTreeNode {
      * @param settingsType "view" or "model" or null for element widget trees of array widgets
      */
     public WidgetTree(final Class<? extends WidgetGroup> rootClass, final SettingsType settingsType) {
-        this(null, settingsType, rootClass, rootClass::getAnnotation);
+        this(null, settingsType, new ObjectMapper().constructType(rootClass), rootClass::getAnnotation);
         propagateAnnotationsToChildren();
         resolveWidgetModifications();
     }
 
-    WidgetTree(final WidgetTree parent, final SettingsType settingsType,
-        final Class<? extends WidgetGroup> widgetGroupClass,
+    @SuppressWarnings("unchecked") // checked by CheckUtils
+    WidgetTree(final WidgetTree parent, final SettingsType settingsType, final JavaType javaType,
         final Function<Class<? extends Annotation>, Annotation> annotations) {
-        super(parent, settingsType, widgetGroupClass, annotations, POSSIBLE_ANNOTATIONS);
-        m_widgetGroupClass = widgetGroupClass;
-        PopulateWidgetTreeHelper.populateWidgetTree(this, widgetGroupClass); // NOSONAR doesn't need to be thread-safe
+        super(parent, settingsType, javaType.getRawClass(), annotations, POSSIBLE_ANNOTATIONS);
+        CheckUtils.checkArgument(WidgetGroup.class.isAssignableFrom(javaType.getRawClass()),
+            "The given type must be a subclass of WidgetGroup.");
+        m_widgetGroupClass = (Class<? extends WidgetGroup>)javaType.getRawClass();
+        PopulateWidgetTreeHelper.populateWidgetTree(this, javaType); // NOSONAR doesn't need to be thread-safe
     }
 
     void propagateAnnotationsToChildren() {

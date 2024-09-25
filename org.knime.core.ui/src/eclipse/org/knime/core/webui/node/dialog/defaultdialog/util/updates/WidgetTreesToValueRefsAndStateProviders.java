@@ -49,6 +49,7 @@
 package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -236,12 +237,24 @@ final class WidgetTreesToValueRefsAndStateProviders {
 
     private static <T> void validateAgainstType(final Class<?> fieldType, final Class<? extends T> implementingClass,
         final Class<T> genericInterface) {
+
         final var genericType = GenericTypeFinderUtil.getFirstGenericType(implementingClass, genericInterface);
-        CheckUtils.check(ClassUtils.primitiveToWrapper(fieldType).isAssignableFrom(genericType),
+        if (genericType instanceof Class genericTypeClass) {
+            validateAgainstClass(fieldType, implementingClass, genericInterface, genericTypeClass);
+        } else if (genericType instanceof ParameterizedType parameterizedType) {
+            validateAgainstClass(fieldType, implementingClass, genericInterface,
+                (Class<?>)parameterizedType.getRawType());
+        }
+        // No validation for more complex types
+    }
+
+    private static <T> void validateAgainstClass(final Class<?> fieldType, final Class<? extends T> implementingClass,
+        final Class<T> genericInterface, final Class<?> genericTypeClass) {
+        CheckUtils.check(ClassUtils.primitiveToWrapper(fieldType).isAssignableFrom(genericTypeClass),
             UiSchemaGenerationException::new,
             () -> String.format(
                 "The generic type \"%s\" of the %s \"%s\" does not match the type \"%s\" of the annotated field",
-                genericType.getSimpleName(), genericInterface.getSimpleName(), implementingClass.getSimpleName(),
+                genericTypeClass.getSimpleName(), genericInterface.getSimpleName(), implementingClass.getSimpleName(),
                 fieldType.getSimpleName()));
     }
 

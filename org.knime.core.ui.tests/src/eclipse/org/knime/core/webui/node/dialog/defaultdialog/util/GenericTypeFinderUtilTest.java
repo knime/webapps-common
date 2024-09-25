@@ -51,6 +51,9 @@ package org.knime.core.webui.node.dialog.defaultdialog.util;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.lang.reflect.ParameterizedType;
+import java.util.List;
+
 import org.apache.commons.math3.exception.OutOfRangeException;
 import org.junit.jupiter.api.Test;
 
@@ -66,7 +69,7 @@ class GenericTypeFinderUtilTest {
 
     static Class<?> getNthTypeInterface(@SuppressWarnings("rawtypes") final Class<? extends GenericInterface> clazz,
         final int n) {
-        return GenericTypeFinderUtil.getNthGenericType(clazz, GenericInterface.class, n);
+        return (Class<?>)GenericTypeFinderUtil.getNthGenericType(clazz, GenericInterface.class, n);
     }
 
     @Test
@@ -163,7 +166,7 @@ class GenericTypeFinderUtilTest {
 
     static Class<?> getNthTypeClass(@SuppressWarnings("rawtypes") final Class<? extends GenericSuperClass> clazz,
         final int n) {
-        return GenericTypeFinderUtil.getNthGenericType(clazz, GenericSuperClass.class, n);
+        return (Class<?>)GenericTypeFinderUtil.getNthGenericType(clazz, GenericSuperClass.class, n);
     }
 
     @Test
@@ -182,6 +185,19 @@ class GenericTypeFinderUtilTest {
         assertThat(first).isEqualTo(String.class);
         assertThat(second).isEqualTo(Integer.class);
         assertThat(third).isEqualTo(Boolean.class);
+    }
+
+    @Test
+    void testFindsGenericParameterizedTypes() {
+
+        class SimpleImplementation extends GenericSuperClass<List<String>, Integer, Boolean> {
+
+        }
+        final var first =
+            GenericTypeFinderUtil.getFirstGenericType(SimpleImplementation.class, GenericSuperClass.class);
+
+        assertThat(first).isInstanceOf(ParameterizedType.class);
+        assertThat(((ParameterizedType)first).getRawType()).isEqualTo(List.class);
     }
 
     @Test

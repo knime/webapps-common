@@ -70,8 +70,7 @@ public class GenericTypeFinderUtil {
      * @param genericSuperInterface the interface of clazz from which to take the generic types from
      * @return the class of the first generic type of clazz with respect to the super interface
      */
-    public static <T> Class<?> getFirstGenericType(final Class<? extends T> clazz,
-        final Class<T> genericSuperInterface) {
+    public static <T> Type getFirstGenericType(final Class<? extends T> clazz, final Class<T> genericSuperInterface) {
         return getNthGenericType(clazz, genericSuperInterface, 0);
     }
 
@@ -81,14 +80,15 @@ public class GenericTypeFinderUtil {
      * @param index the index of the generic type
      * @return the class of the index'th generic type of clazz with respect to the super interface
      */
-    public static <T> Class<?> getNthGenericType(final Class<? extends T> clazz, final Class<T> genericSuperInterface,
+    public static <T> Type getNthGenericType(final Class<? extends T> clazz, final Class<T> genericSuperInterface,
         final int index) {
 
         final var genericTypes = getGenericTypes(clazz, genericSuperInterface);
         if (index < 0 || index + 1 > genericTypes.length) {
             throw new OutOfRangeException(index, 0, genericTypes.length);
         }
-        return (Class<?>)genericTypes[index];
+        return genericTypes[index];
+
     }
 
     private static Type[] getGenericTypes(final Class<?> clazz, final Class<?> goalType) {

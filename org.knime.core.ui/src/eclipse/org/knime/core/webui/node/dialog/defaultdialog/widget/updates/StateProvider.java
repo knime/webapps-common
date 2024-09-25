@@ -104,6 +104,22 @@ public interface StateProvider<S> {
         <T> Supplier<T> getValueSupplier(Class<? extends Reference<T>> ref);
 
         /**
+         * Similar to {@link #getValueSupplier(Class)} but with a type reference to define the used generic type of the
+         * reference. I.e., this method is only needed if the generic type of the reference contains a wildcard.
+         *
+         * @param <T> the type of the dependency
+         * @param ref used for {@link ValueReference} of a field. The generic type of the reference should contain a
+         *            wildcard. Otherwise, use {@link #getValueSupplier(Class)} instead.
+         * @param typeRef the type reference whose generic type is used to define the generic type of the reference.
+         * @return a supplier to be used during {@link #computeState}.
+         */
+        default <T> Supplier<T> getValueSupplier(final Class<? extends Reference<?>> ref,
+            final TypeReference<T> typeRef) {
+            getValueSupplier(ref);
+            return () -> null;
+        }
+
+        /**
          * Sets value ref as <b>Trigger</b> and not as <b>Dependency</b>, i.e.:
          *
          * Refer to a {@link Widget} with this method to recompute the provided state on every change of that setting.
@@ -161,5 +177,15 @@ public interface StateProvider<S> {
      *         for another {@link StateProvider}.
      */
     S computeState(DefaultNodeSettingsContext context);
+
+    /**
+     * Use within {@link StateProviderInitializer#getValueSupplier} to define the actual type of a referenced field.
+     * This is only necessary when the used reference contains a wildcard.
+     *
+     * @param <T> the type of the referenced field as it should be obtained in the {@link StateProvider}
+     */
+    interface TypeReference<T> {
+
+    }
 
 }

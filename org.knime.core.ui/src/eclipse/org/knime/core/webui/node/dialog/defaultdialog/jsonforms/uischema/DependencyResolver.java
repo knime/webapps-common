@@ -98,7 +98,7 @@ final class DependencyResolver {
     void addDependencyScopes(final Class<? extends DependencyHandler<?>> dependencyHandlerClass,
         final Consumer<String> addDependency) {
         final var dependencyClass =
-            GenericTypeFinderUtil.getFirstGenericType(dependencyHandlerClass, DependencyHandler.class);
+            (Class<?>)GenericTypeFinderUtil.getFirstGenericType(dependencyHandlerClass, DependencyHandler.class);
         final var traverser = new WidgetGroupTraverser(dependencyClass);
         final Consumer<TraversedField> addNewDependency = getAddNewDependencyCallback(addDependency);
         traverser.traverse(addNewDependency, List.of(DeclaringDefaultNodeSettings.class));

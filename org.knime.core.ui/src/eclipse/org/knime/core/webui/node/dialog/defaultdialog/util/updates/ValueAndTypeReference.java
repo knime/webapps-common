@@ -44,66 +44,28 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Jul 10, 2023 (Paul Bärnreuther): created
+ *   Sep 24, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.dataservice;
+package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
-import java.util.Collection;
-import java.util.Optional;
-
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.util.WidgetGroupTraverser.TraversedField;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonActionHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.button.ButtonWidget;
-
-import com.fasterxml.jackson.databind.ser.PropertyWriter;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 
 /**
- * The holder of all {@link ButtonWidget#actionHandler}s.
  *
  * @author Paul Bärnreuther
  */
-class ButtonWidgetActionHandlerHolder extends HandlerHolder<ButtonActionHandler<?, ?, ?>> {
+public interface ValueAndTypeReference {
 
     /**
-     * @param settingsClasses
+     * @return the value reference
      */
-    ButtonWidgetActionHandlerHolder(final Collection<Class<? extends WidgetGroup>> settingsClasses) {
-        super(settingsClasses);
-    }
+    Class<? extends Reference> getValueRef();
 
-    @Override
-    Optional<Class<? extends ButtonActionHandler<?, ?, ?>>> getHandlerClass(final TraversedField field) {
-        final var buttonWidget = field.propertyWriter().getAnnotation(ButtonWidget.class);
-        if (buttonWidget == null) {
-            return Optional.empty();
-
-        }
-        final var actionHandlerClass = buttonWidget.actionHandler();
-        validate(field.propertyWriter(), actionHandlerClass);
-        return Optional.of(actionHandlerClass);
-
-    }
-
-    private static void validate(final PropertyWriter field,
-        final Class<? extends ButtonActionHandler<?, ?, ?>> actionHandlerClass) {
-        if (!isValidReturnType(field, actionHandlerClass)) {
-            throw new IllegalArgumentException(
-                String.format("Return type of action handler %s is not assignable to the type of the field %s.",
-                    actionHandlerClass.getSimpleName(), field.getFullName()));
-        }
-    }
-
-    private static boolean isValidReturnType(final PropertyWriter field,
-        final Class<? extends ButtonActionHandler<?, ?, ?>> handlerClass) {
-        final var returnType = GenericTypeFinderUtil.getFirstGenericType(handlerClass, ButtonActionHandler.class);
-        final var fieldType = field.getType();
-        if (returnType instanceof Class clazz) {
-            return fieldType.getRawClass().isAssignableFrom(clazz);
-        }
-        return JsonFormsDataUtil.getMapper().constructType(returnType).equals(fieldType);
-    }
-
+    /**
+     *
+     * @see StateProvider.TypeReference
+     * @return the optional type reference
+     */
+    StateProvider.TypeReference getTypeReference();
 }

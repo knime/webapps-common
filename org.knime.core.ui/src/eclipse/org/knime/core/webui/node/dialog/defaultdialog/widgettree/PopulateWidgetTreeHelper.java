@@ -68,6 +68,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.PredicatePr
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -123,37 +124,33 @@ final class PopulateWidgetTreeHelper {
         return serializerProvider;
     }
 
-    private static Iterator<PropertyWriter> getSerializableProperties(final Class<?> clazz) {
+    private static Iterator<PropertyWriter> getSerializableProperties(final JavaType type) {
         try {
-            final var settingsSerializer = getSerializerProvider().findValueSerializer(clazz);
+            final var settingsSerializer = getSerializerProvider().findValueSerializer(type);
             return settingsSerializer.properties();
         } catch (JsonMappingException ex) {
             throw new UiSchemaGenerationException(
-                String.format("Error while obtaining serializer for class %s.", clazz.getSimpleName()), ex);
+                String.format("Error while obtaining serializer for type %s.", type.toCanonical()), ex);
         }
     }
 
-    static void populateWidgetTree(final WidgetTree widgetTree, final Class<? extends WidgetGroup> rootClass) {
-        getSerializableProperties(rootClass).forEachRemaining(field -> addField(widgetTree, field, rootClass));
+    static void populateWidgetTree(final WidgetTree widgetTree, final JavaType javaType) {
+        getSerializableProperties(javaType)
+            .forEachRemaining(field -> addField(widgetTree, field, javaType.getRawClass()));
     }
 
     private static void addField(final WidgetTree widgetTree, final PropertyWriter field,
-        final Class<? extends WidgetGroup> populatingRootClass) {
+        final Class<?> populatingRootClass) {
         final var childBuilder = getNextChildBuilder(widgetTree)//
             .withName(field.getName()) //
             .withFieldAnnotations(getAnnotationsForField(field, populatingRootClass));
-        final var type = field.getType().getRawClass();
-
-        if (WidgetGroup.class.isAssignableFrom(type)) {
-            @SuppressWarnings("unchecked") // checked by the if condition above
-            final var widgetGroupType = (Class<? extends WidgetGroup>)type;
-            childBuilder.buildGroup(widgetGroupType);
+        final var type = field.getType();
+        if (WidgetGroup.class.isAssignableFrom(type.getRawClass())) {
+            childBuilder.buildGroup(type);
         } else if (ArrayLayoutUtil.isArrayLayoutField(field.getType())) {
-            @SuppressWarnings("unchecked") // checked by {@link ArrayLayoutUtil.isArrayLayoutField}
-            final var elementWidgetGroupType =
-                (Class<? extends WidgetGroup>)field.getType().getContentType().getRawClass();
+            final var elementWidgetGroupType = field.getType().getContentType();
             final var elementWidgetTree =
-                new WidgetTree(null, null, elementWidgetGroupType, elementWidgetGroupType::getAnnotation);
+                new WidgetTree(null, null, elementWidgetGroupType, elementWidgetGroupType.getRawClass()::getAnnotation);
             childBuilder.buildArray(type, elementWidgetTree);
         } else {
             Class<?> contentType = null;
@@ -169,7 +166,7 @@ final class PopulateWidgetTreeHelper {
      * {@link WidgetGroup} that is populated.
      */
     private static Function<Class<? extends Annotation>, Annotation> getAnnotationsForField(final PropertyWriter field,
-        final Class<? extends WidgetGroup> populatingRootClass) {
+        final Class<?> populatingRootClass) {
         final var declaringClass = field.getMember().getDeclaringClass();
         if (declaringClass.equals(populatingRootClass)) {
             return annotationClass -> getAnnotationFromField(field, annotationClass);
@@ -227,25 +224,24 @@ final class PopulateWidgetTreeHelper {
             return this;
         }
 
-        WidgetNode build(final Class<?> type, final Class<?> contentType) {
-            return addedToParent(m_name, new WidgetNode(m_parent, type, contentType, m_fieldAnnotations));
+        WidgetNode build(final JavaType type, final Class<?> contentType) {
+            return addedToParent(m_name, new WidgetNode(m_parent, type.getRawClass(), contentType, m_fieldAnnotations));
         }
 
-        WidgetTree buildGroup(final Class<? extends WidgetGroup> type) {
+        WidgetTree buildGroup(final JavaType type) {
             return addedToParent(m_name, createIntermediateWidgetTree(m_parent, type,
-                annotationClass -> getAnnotationFromFieldOrClass(type, annotationClass)));
+                annotationClass -> getAnnotationFromFieldOrClass(type.getRawClass(), annotationClass)));
         }
 
-        private static WidgetTree createIntermediateWidgetTree(final WidgetTree parent,
-            final Class<? extends WidgetGroup> widgetGroupClass,
+        private static WidgetTree createIntermediateWidgetTree(final WidgetTree parent, final JavaType type,
             final Function<Class<? extends Annotation>, Annotation> annotations) {
-            return new WidgetTree(parent, parent.getSettingsType(), widgetGroupClass, annotations);
+            return new WidgetTree(parent, parent.getSettingsType(), type, annotations);
         }
 
         static final Collection<Class<? extends Annotation>> POSSIBLE_CLASS_ANNOTATIONS =
             List.of(Layout.class, Effect.class, Modification.class);
 
-        private Annotation getAnnotationFromFieldOrClass(final Class<? extends WidgetGroup> type,
+        private Annotation getAnnotationFromFieldOrClass(final Class<?> type,
             final Class<? extends Annotation> annotationClass) {
             final var fieldAnnotation = m_fieldAnnotations.apply(annotationClass);
             if (POSSIBLE_CLASS_ANNOTATIONS.contains(annotationClass)) {
@@ -258,9 +254,8 @@ final class PopulateWidgetTreeHelper {
             return fieldAnnotation;
         }
 
-        private void validateAnnotations(final Class<? extends WidgetGroup> type,
-            final Class<? extends Annotation> annotationClass, final Annotation fieldAnnotation,
-            final Annotation typeAnnotation) {
+        private void validateAnnotations(final Class<?> type, final Class<? extends Annotation> annotationClass,
+            final Annotation fieldAnnotation, final Annotation typeAnnotation) {
             if (typeAnnotation != null && fieldAnnotation != null) {
                 throw new IllegalStateException(String.format(
                     "The annotation %s for field %s collides with the an annotation of the field type class %s.",
@@ -269,8 +264,9 @@ final class PopulateWidgetTreeHelper {
             }
         }
 
-        ArrayWidgetNode buildArray(final Class<?> type, final WidgetTree elementWidgetTree) {
-            return addedToParent(m_name, new ArrayWidgetNode(m_parent, elementWidgetTree, type, m_fieldAnnotations));
+        ArrayWidgetNode buildArray(final JavaType type, final WidgetTree elementWidgetTree) {
+            return addedToParent(m_name,
+                new ArrayWidgetNode(m_parent, elementWidgetTree, type.getRawClass(), m_fieldAnnotations));
         }
 
         private <T extends WidgetTreeNode> T addedToParent(final String name, final T node) {

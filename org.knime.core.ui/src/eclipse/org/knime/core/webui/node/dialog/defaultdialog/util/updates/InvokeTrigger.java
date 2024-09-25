@@ -77,7 +77,7 @@ final class InvokeTrigger<I> {
 
     private Map<Vertex, ValuesWithLevelOfNesting<I>> m_cache = new HashMap<>();
 
-    private final Function<Class<? extends Reference>, List<IndexedValue<I>>> m_dependencyProvider;
+    private final Function<ValueAndTypeReference, List<IndexedValue<I>>> m_dependencyProvider;
 
     private final DefaultNodeSettingsContext m_context;
 
@@ -87,7 +87,7 @@ final class InvokeTrigger<I> {
      *            providers will depend on.
      * @param context the context provided to triggered state providers
      */
-    InvokeTrigger(final Function<Class<? extends Reference>, List<IndexedValue<I>>> dependencyProvider,
+    InvokeTrigger(final Function<ValueAndTypeReference, List<IndexedValue<I>>> dependencyProvider,
         final DefaultNodeSettingsContext context) {
         m_dependencyProvider = dependencyProvider;
         m_context = context;
@@ -216,6 +216,12 @@ final class InvokeTrigger<I> {
             }
 
             @Override
+            public <T> Supplier<T> getValueSupplier(final Class<? extends Reference<?>> id,
+                final StateProvider.TypeReference<T> typeRef) {
+                return vertexToSupplier(getParentDependencyVertex(m_stateVertex, id));
+            }
+
+            @Override
             public <T> Supplier<T> computeFromValueSupplier(final Class<? extends Reference<T>> id) {
                 return vertexToSupplier(getParentDependencyVertex(m_stateVertex, id));
             }
@@ -281,7 +287,7 @@ final class InvokeTrigger<I> {
         @Override
         public ValuesWithLevelOfNesting<I> accept(final DependencyVertex dependencyVertex) {
             return cached(dependencyVertex,
-                () -> ValuesWithLevelOfNesting.from(m_dependencyProvider.apply(dependencyVertex.getValueRef())));
+                () -> ValuesWithLevelOfNesting.from(m_dependencyProvider.apply(dependencyVertex)));
         }
 
         @Override

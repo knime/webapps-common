@@ -93,28 +93,30 @@ public final class UpdatesUtil {
      */
     public static void addUpdates(final ObjectNode rootNode, final Collection<WidgetTree> widgetTrees,
         final Map<SettingsType, WidgetGroup> settings, final DefaultNodeSettingsContext context) {
-        final var triggersWithDependencies = WidgetTreesToDependencyTreeUtil.getTriggersWithDependencies(widgetTrees);
+        final var pair =
+            WidgetTreesToDependencyTreeUtil.<Integer> widgetTreesToTriggersAndInvocationHandler(widgetTrees);
+        final var triggersWithDependencies = pair.getFirst();
+        final var invocationHandler = pair.getSecond();
         final var partitioned = triggersWithDependencies.stream()
             .collect(Collectors.partitioningBy(TriggerAndDependencies::isBeforeOpenDialogTrigger));
 
-        addInitialUpdates(rootNode, widgetTrees, settings, partitioned.get(true), context);
+        addInitialUpdates(rootNode, invocationHandler, settings, partitioned.get(true), context);
         addGlobalUpdates(rootNode, partitioned.get(false));
     }
 
-    private static void addInitialUpdates(final ObjectNode rootNode, final Collection<WidgetTree> widgetTrees,
-        final Map<SettingsType, WidgetGroup> settings,
+    private static void addInitialUpdates(final ObjectNode rootNode,
+        final TriggerInvocationHandler<Integer> invocationHandler, final Map<SettingsType, WidgetGroup> settings,
         final List<TriggerAndDependencies> initialTriggersWithDependencies, final DefaultNodeSettingsContext context) {
         if (!initialTriggersWithDependencies.isEmpty()) {
             CheckUtils.check(initialTriggersWithDependencies.size() == 1, IllegalStateException::new,
                 () -> "There should not exist more than one initial trigger.");
-            addInitialUpdates(rootNode, initialTriggersWithDependencies.get(0), widgetTrees, settings, context);
+            addInitialUpdates(rootNode, initialTriggersWithDependencies.get(0), invocationHandler, settings, context);
         }
     }
 
     private static void addInitialUpdates(final ObjectNode rootNode,
-        final TriggerAndDependencies triggerWithDependencies, final Collection<WidgetTree> widgetTrees,
+        final TriggerAndDependencies triggerWithDependencies, final TriggerInvocationHandler<Integer> invocationHandler,
         final Map<SettingsType, WidgetGroup> settings, final DefaultNodeSettingsContext context) {
-        final var invocationHandler = new TriggerInvocationHandler<Integer>(widgetTrees);
         final var dependencyValues = triggerWithDependencies.extractDependencyValues(settings, context);
         final var triggerResult =
             invocationHandler.invokeTrigger(triggerWithDependencies.getTriggerId(), dependencyValues::get, context);

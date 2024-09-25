@@ -59,7 +59,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.UpdateResultsUti
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.IndexedValue;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerInvocationHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
+import org.knime.core.webui.node.dialog.defaultdialog.util.updates.ValueAndTypeReference;
 import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
 
 /**
@@ -74,22 +74,23 @@ final class DataServiceTriggerInvocationHandler {
     DataServiceTriggerInvocationHandler(final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses) {
         final var widgetTrees =
             settingsClasses.entrySet().stream().map(entry -> new WidgetTree(entry.getValue(), entry.getKey())).toList();
-        m_triggerInvocationHandler = new TriggerInvocationHandler<>(widgetTrees);
+        m_triggerInvocationHandler = TriggerInvocationHandler.fromWidgetTrees(widgetTrees);
     }
 
     List<UpdateResultsUtil.UpdateResult<String>> trigger(final String triggerId,
         final Map<String, List<IndexedValue<String>>> rawDependencies, final DefaultNodeSettingsContext context) {
-        final Function<Class<? extends Reference>, List<IndexedValue<String>>> dependencyProvider =
-            valueRef -> rawDependencies.get(valueRef.getName()).stream()
-                .map(raw -> new IndexedValue<>(raw.indices(), parseValue(raw.value(), valueRef, context))).toList();
+        final Function<ValueAndTypeReference, List<IndexedValue<String>>> dependencyProvider =
+            valueAndTypeRef -> rawDependencies.get(valueAndTypeRef.getValueRef().getName()).stream()
+                .map(raw -> new IndexedValue<>(raw.indices(), parseValue(raw.value(), valueAndTypeRef, context)))
+                .toList();
 
         final var triggerResult = m_triggerInvocationHandler.invokeTrigger(triggerId, dependencyProvider, context);
         return UpdateResultsUtil.toUpdateResults(triggerResult);
     }
 
-    private static Object parseValue(final Object rawDependencyObject, final Class<? extends Reference> valueRef,
+    private static Object parseValue(final Object rawDependencyObject, final ValueAndTypeReference valueAndTypeRef,
         final DefaultNodeSettingsContext context) {
-        return ConvertValueUtil.convertValueRef(rawDependencyObject, valueRef, context);
+        return ConvertValueUtil.convertValueRef(rawDependencyObject, valueAndTypeRef, context);
     }
 
 }

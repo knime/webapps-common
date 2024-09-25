@@ -51,6 +51,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 import java.util.Collection;
 import java.util.List;
 
+import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
 
 /**
@@ -72,15 +73,26 @@ public final class WidgetTreesToDependencyTreeUtil {
     }
 
     /**
-     *
+     * @param <T>
      * @param widgetTrees
+     * @return a list of all triggers and their associated dependencies and an associated invocation handler.
+     */
+    public static <T> Pair<List<TriggerAndDependencies>, TriggerInvocationHandler<T>>
+        widgetTreesToTriggersAndInvocationHandler(final Collection<WidgetTree> widgetTrees) {
+        final var dependencyTree = widgetTreesToDependencyTree(widgetTrees);
+        final var listOfTriggers = getTriggersWithDependencies(dependencyTree);
+        return new Pair<>(listOfTriggers, new TriggerInvocationHandler<>(dependencyTree));
+    }
+
+    /**
+     *
+     * @param dependencyTree
      * @return a list of all triggers and their associated dependencies to be used for an initial declaration for the
      *         frontend
      */
-    public static List<TriggerAndDependencies> getTriggersWithDependencies(final Collection<WidgetTree> widgetTrees) {
-        final var triggers = WidgetTreesToDependencyTreeUtil.widgetTreesToDependencyTree(widgetTrees);
+    static List<TriggerAndDependencies> getTriggersWithDependencies(final Collection<TriggerVertex> dependencyTree) {
         final var triggerToDependencies = new TriggerToDependencies();
-        return triggers.stream()
+        return dependencyTree.stream()
             .map(trigger -> new TriggerAndDependencies(trigger, triggerToDependencies.triggerToDependencies(trigger)))
             .toList();
     }

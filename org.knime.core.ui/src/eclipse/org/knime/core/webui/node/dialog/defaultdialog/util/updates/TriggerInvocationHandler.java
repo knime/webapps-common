@@ -56,7 +56,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
 
 /**
@@ -69,11 +68,18 @@ public class TriggerInvocationHandler<I> {
 
     private final Collection<TriggerVertex> m_triggers;
 
+    TriggerInvocationHandler(final Collection<TriggerVertex> triggers) {
+        m_triggers = triggers;
+    }
+
     /**
-     * @param widgetTrees derived from settings classes to collect annotations from
+     * @param <T> the type of the keys of the dependencies and resulting values in case of nested scopes (either by
+     *            index by indexId)
+     * @param widgetTrees
+     * @return a invocation handler for updates within the supplied widget trees
      */
-    public TriggerInvocationHandler(final Collection<WidgetTree> widgetTrees) {
-        m_triggers = WidgetTreesToDependencyTreeUtil.widgetTreesToDependencyTree(widgetTrees);
+    public static <T> TriggerInvocationHandler<T> fromWidgetTrees(final Collection<WidgetTree> widgetTrees) {
+        return new TriggerInvocationHandler<>(WidgetTreesToDependencyTreeUtil.widgetTreesToDependencyTree(widgetTrees));
     }
 
     /**
@@ -97,7 +103,7 @@ public class TriggerInvocationHandler<I> {
      * @return a mapping from identifiers of fields to their updated value
      */
     public TriggerResult<I> invokeTrigger(final String triggerId,
-        final Function<Class<? extends Reference>, List<IndexedValue<I>>> dependencyProvider,
+        final Function<ValueAndTypeReference, List<IndexedValue<I>>> dependencyProvider,
         final DefaultNodeSettingsContext context) {
         final var trigger = m_triggers.stream().filter(t -> t.getId().equals(triggerId)).findAny().orElseThrow();
         final var resultPerUpdateHandler = new InvokeTrigger<>(dependencyProvider, context).invokeTrigger(trigger);

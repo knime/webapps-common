@@ -50,20 +50,29 @@ package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.WidgetTreesToValueRefsAndStateProviders.ValueRefWrapper;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider.TypeReference;
 
 /**
  * An object representing a reference to a value of a widget
  *
  * @author Paul Bärnreuther
  */
-final class DependencyVertex extends Vertex {
+final class DependencyVertex extends Vertex implements ValueAndTypeReference {
 
     private final Class<? extends Reference> m_ref;
 
     private final PathsWithSettingsType m_fieldLocation;
 
+    private final TypeReference m_typeReference;
+
     DependencyVertex(final ValueRefWrapper valueRefWrapper) {
+        this(valueRefWrapper, null);
+    }
+
+    DependencyVertex(final ValueRefWrapper valueRefWrapper, final StateProvider.TypeReference typeReference) {
         m_ref = valueRefWrapper.valueRef();
+        m_typeReference = typeReference;
         m_fieldLocation = valueRefWrapper.fieldLocation();
     }
 
@@ -72,8 +81,14 @@ final class DependencyVertex extends Vertex {
         return visitor.accept(this);
     }
 
-    Class<? extends Reference> getValueRef() {
+    @Override
+    public Class<? extends Reference> getValueRef() {
         return m_ref;
+    }
+
+    @Override
+    public StateProvider.TypeReference getTypeReference() {
+        return m_typeReference;
     }
 
     /**
