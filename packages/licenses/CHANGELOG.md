@@ -1,5 +1,11 @@
 # @knime/licenses
 
+## 1.0.6
+
+### Patch Changes
+
+- 3884dd2: handle packages without repository or license text
+
 ## 1.0.5
 
 ### Patch Changes

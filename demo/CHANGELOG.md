@@ -1,5 +1,12 @@
 # demo
 
+## 1.0.37
+
+### Patch Changes
+
+- Updated dependencies [3884dd2]
+  - @knime/licenses@1.0.6
+
 ## 1.0.36
 
 ### Patch Changes
