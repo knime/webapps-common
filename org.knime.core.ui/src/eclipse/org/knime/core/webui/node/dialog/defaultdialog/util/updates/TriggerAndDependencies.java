@@ -48,6 +48,7 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -115,43 +116,52 @@ public class TriggerAndDependencies {
     /**
      * @param settings
      * @param context the current {@link DefaultNodeSettingsContext}
+     * @param triggerIndices the indices indicating the triggers location if it triggering from within an array layout
      * @return a mapping to the values of the required dependencies
      */
     public Map<ValueAndTypeReference, List<IndexedValue<Integer>>> extractDependencyValues(
-        final Map<SettingsType, WidgetGroup> settings, final DefaultNodeSettingsContext context) {
+        final Map<SettingsType, WidgetGroup> settings, final DefaultNodeSettingsContext context,
+        final int... triggerIndices) {
         final var mapper = JsonFormsDataUtil.getMapper();
         final Map<SettingsType, JsonNode> jsonNodes = getDependencySettingsTypes().stream().collect(
             Collectors.toMap(Function.identity(), settingsType -> mapper.valueToTree(settings.get(settingsType))));
-        return createDependenciesValuesMap(context, jsonNodes);
+        return createDependenciesValuesMap(context, jsonNodes, triggerIndices);
     }
 
     private Map<ValueAndTypeReference, List<IndexedValue<Integer>>> createDependenciesValuesMap(
-        final DefaultNodeSettingsContext context, final Map<SettingsType, JsonNode> jsonNodes) {
+        final DefaultNodeSettingsContext context, final Map<SettingsType, JsonNode> jsonNodes,
+        final int[] triggerIndices) {
         final Map<ValueAndTypeReference, List<IndexedValue<Integer>>> dependencyValues = new HashMap<>();
         for (var vertex : m_dependencyVertices) {
-            dependencyValues.put(vertex, extractValues(vertex, jsonNodes, context));
+            dependencyValues.put(vertex, extractValues(vertex, jsonNodes, context, triggerIndices));
         }
         return dependencyValues;
     }
 
     private static List<IndexedValue<Integer>> extractValues(final DependencyVertex vertex,
-        final Map<SettingsType, JsonNode> jsonNodes, final DefaultNodeSettingsContext context) {
+        final Map<SettingsType, JsonNode> jsonNodes, final DefaultNodeSettingsContext context,
+        final int[] triggerIndices) {
         var groupJsonNode = jsonNodes.get(vertex.getFieldLocation().settingsType());
 
         final var paths = vertex.getFieldLocation().paths();
-        var indexedFieldValues = getIndexedFieldValues(groupJsonNode, paths);
+        var indexedFieldValues = getIndexedFieldValues(groupJsonNode, paths, triggerIndices);
         return indexedFieldValues.stream().map(pair -> new IndexedValue<Integer>(pair.getFirst(),
             ConvertValueUtil.convertValueRef(pair.getSecond(), vertex, context))).toList();
     }
 
     private static List<Pair<List<Integer>, JsonNode>> getIndexedFieldValues(final JsonNode jsonNode,
-        final List<List<String>> paths) {
+        final List<List<String>> paths, final int... triggerIndices) {
         final var atFirstPath = jsonNode.at(toJsonPointer(paths.get(0)));
         if (paths.size() == 1) {
             return List.of(new Pair<>(List.of(), atFirstPath));
         }
         CheckUtils.checkState(atFirstPath.isArray(), "Json node at field with nested path should be an array.");
         final var restPaths = paths.subList(1, paths.size());
+        final var nestLength = triggerIndices.length;
+        if (nestLength > 0) {
+            return getIndexedFieldValues(atFirstPath.get(triggerIndices[0]), restPaths,
+                Arrays.copyOfRange(triggerIndices, 1, nestLength));
+        }
         return IntStream.range(0, atFirstPath.size()).mapToObj(i -> i)
             .flatMap(i -> getIndexedFieldValues(atFirstPath.get(i), restPaths).stream().map(pair -> {
                 final var indices = Stream.concat(Stream.of(i), pair.getFirst().stream()).toList();

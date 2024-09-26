@@ -49,6 +49,7 @@
 package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.knime.core.webui.node.dialog.SettingsType;
@@ -73,6 +74,26 @@ public record PathsWithSettingsType(List<List<String>> paths, SettingsType setti
         final var settingsKey = listOfFields.get(0).getSettingsType();
         final var listOfPaths = listOfFields.stream().map(WidgetTreeNode::getPath).toList();
         return new PathsWithSettingsType(listOfPaths, settingsKey);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (obj instanceof PathsWithSettingsType other) {
+            return other.paths.equals(paths) && other.settingsType.equals(settingsType);
+        }
+        return false;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(paths, settingsType);
     }
 
 }

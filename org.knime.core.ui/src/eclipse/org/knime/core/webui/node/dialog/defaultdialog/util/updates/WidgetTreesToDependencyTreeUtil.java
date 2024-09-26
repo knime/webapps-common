@@ -50,8 +50,11 @@ package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.knime.core.util.Pair;
+import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
 
 /**
@@ -70,6 +73,19 @@ public final class WidgetTreesToDependencyTreeUtil {
             new WidgetTreesToValueRefsAndStateProviders().widgetTreesToValueRefsAndStateProviders(widgetTrees);
         return ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree
             .valueRefsAndStateProvidersToDependencyTree(valueRefsAndStateProviders);
+    }
+
+    /**
+     * Only for tests (since WidgetTree is not exposed to testing)
+     *
+     * @param settingsClasses
+     * @return the triggers building the dependency tree and the invocation handler for these triggers
+     */
+    public static Pair<List<TriggerAndDependencies>, TriggerInvocationHandler<Integer>>
+        settingsToTriggersAndInvocationHandler(final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses) {
+        final var widgetTrees =
+            settingsClasses.entrySet().stream().map(entry -> new WidgetTree(entry.getValue(), entry.getKey())).toList();
+        return widgetTreesToTriggersAndInvocationHandler(widgetTrees);
     }
 
     /**

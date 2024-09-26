@@ -12,6 +12,7 @@ Bundle-ClassPath: knime-core-ui-testing.jar,
 Bundle-Vendor: KNIME AG, Zurich, Switzerland
 Export-Package: org.knime.testing.node,
  org.knime.testing.node.dialog,
+ org.knime.testing.node.dialog.updates,
  org.knime.testing.node.ui,
  org.knime.testing.node.view,
  org.xmlunit.builder,

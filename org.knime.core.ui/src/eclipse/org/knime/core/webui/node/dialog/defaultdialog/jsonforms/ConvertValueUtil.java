@@ -119,7 +119,7 @@ public final class ConvertValueUtil {
      */
     public static <T> T convertValue(final Object objectSettings, final Type settingsType,
         final DefaultNodeSettingsContext context) {
-        PasswordHolder.setCredentialsProvider(context.getCredentialsProvider().orElse(null));
+        PasswordHolder.setCredentialsProvider(context == null ? null : context.getCredentialsProvider().orElse(null));
         final var mapper = JsonFormsDataUtil.getMapper();
         try {
             return mapper.convertValue(objectSettings, mapper.constructType(settingsType));
