@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.2.3
+
+### Patch Changes
+
+- e63edc9: adjust size of FunctionButton on compact mode
+
 ## 1.2.2
 
 ### Patch Changes
