@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.2.2
+
+### Patch Changes
+
+- 7fe461f: make ApiErrorTemplate style scoped
+
 ## 1.2.1
 
 ### Patch Changes
