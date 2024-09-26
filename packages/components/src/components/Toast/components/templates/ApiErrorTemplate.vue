@@ -94,7 +94,7 @@ const copyToClipboard = () => {
   </div>
 </template>
 
-<style lang="postcss">
+<style lang="postcss" scoped>
 .wrapper {
   display: flex;
   flex-direction: column;
