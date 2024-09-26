@@ -93,7 +93,18 @@ module.exports = {
     "no-proto": "error",
     "no-prototype-builtins": "off",
     "no-restricted-globals": ["error", "event", "fdescribe"],
-    "no-restricted-imports": ["error", "lodash"], // please use lodash-es
+    "no-restricted-imports": [
+      "error",
+      {
+        patterns: [
+          {
+            group: ["lodash*", "!lodash-es"],
+            message:
+              "Please try using native functions (see https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore). If lodash is really needed, use 'lodash-es' package.",
+          },
+        ],
+      },
+    ],
     "no-restricted-syntax": ["warn", "WithStatement", "SequenceExpression"],
     "no-return-assign": "error",
     "no-return-await": "error",
