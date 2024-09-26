@@ -1,5 +1,11 @@
 # @knime/styles
 
+## 1.0.9
+
+### Patch Changes
+
+- e114a57: Add InlineMessage component
+
 ## 1.0.8
 
 ### Patch Changes

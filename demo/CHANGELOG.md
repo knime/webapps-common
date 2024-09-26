@@ -1,5 +1,15 @@
 # demo
 
+## 1.0.38
+
+### Patch Changes
+
+- Updated dependencies [e114a57]
+  - @knime/components@1.2.1
+  - @knime/styles@1.0.9
+  - @knime/rich-text-editor@1.2.12
+  - @knime/utils@1.0.14
+
 ## 1.0.37
 
 ### Patch Changes

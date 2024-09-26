@@ -1,5 +1,14 @@
 # @knime/components
 
+## 1.2.1
+
+### Patch Changes
+
+- e114a57: Add InlineMessage component
+- Updated dependencies [e114a57]
+  - @knime/styles@1.0.9
+  - @knime/utils@1.0.14
+
 ## 1.2.0
 
 ### Minor Changes
