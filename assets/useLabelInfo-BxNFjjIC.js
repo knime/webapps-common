@@ -1,0 +1,1 @@
+import{a1 as o}from"./index-u0LOjndN.js";const i=(r,u,n)=>{const v=o(()=>!r.value||r.value.length===0?0:r.value.length),g=o(()=>!(n!=null&&n.value)||(n==null?void 0:n.value.length)===0?0:n.value.length);return((m,a,b)=>{let t=`${m} of ${a} entries`;return n&&(t+=` [ ${b} selected ]`),t})(v.value,u,g.value)};export{i as u};
