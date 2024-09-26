@@ -3,8 +3,7 @@
 ## Shared files for KNIME® web projects with JS, Vue and/or Nuxt
 
 This project is a monorepo that packages shared config files, Vue components, CSS files, utilities, etc. that can be used for the frontend
-of all KNIME web projects. It also includes an internal NPM package, knime-build-tools, which contains scripts and functionality
-commonly used in KNIME web projects.
+of all KNIME web projects.
 
 ## Demo
 
@@ -41,10 +40,6 @@ When committing your changes, a couple of commit hooks will run via [husky].
 ---
 
 Please navigate to the [`packages/`](packages) folder to access the relevant files and directories.
-
-# knime-build-tools
-
-A helper module for build specific utilities. For more details, see `/buildtools/README.md`.
 
 # Join the Community!
 
