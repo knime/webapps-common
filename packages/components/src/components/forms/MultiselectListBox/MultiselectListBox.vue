@@ -78,6 +78,10 @@ export default {
         return value >= 0;
       },
     },
+    minSize: {
+      type: Number,
+      default: 1,
+    },
     isValid: {
       default: true,
       type: Boolean,
@@ -164,13 +168,19 @@ export default {
       shiftStartIndex: -1,
       draggingStartIndex: -1,
       draggingInverseMode: false,
+      resizeHeight: 0,
     };
   },
   computed: {
     cssStyleSize() {
-      // add two pixel to prevent scrollbar bugs
-      const pxSize = `${this.size * this.optionLineHeight + 2}px`;
+      if (this.resizeHeight !== 0) {
+        return { height: `${this.resizeHeight}px` };
+      }
+      const pxSize = `${this.computeBoxHeight(this.size)}px`;
       return this.size > 0 ? { height: pxSize } : {};
+    },
+    minResizeHeight() {
+      return this.computeBoxHeight(this.minSize);
     },
     possibleValuesWithBottom() {
       return [
@@ -563,6 +573,22 @@ export default {
       }
       this.setSelected([]);
     },
+    computeBoxHeight(size: number) {
+      return size * this.optionLineHeight;
+    },
+    initResizeHeight() {
+      this.resizeHeight = this.computeBoxHeight(
+        this.size || this.possibleValues.length,
+      );
+    },
+    onResizeMove(deltaY: number) {
+      this.resizeHeight += deltaY;
+      this.resizeHeight = Math.max(this.minResizeHeight, this.resizeHeight);
+    },
+    onResizeEnd() {
+      const numberOfItems = this.resizeHeight / this.optionLineHeight;
+      this.resizeHeight = this.computeBoxHeight(Math.round(numberOfItems));
+    },
   },
 };
 </script>
@@ -667,6 +693,7 @@ export default {
     font-size: 14px;
     min-height: 22px;
     border: 1px solid var(--knime-stone-gray);
+    box-sizing: content-box;
 
     &:has(:focus:not(.disabled)) {
       border-color: var(--knime-masala);

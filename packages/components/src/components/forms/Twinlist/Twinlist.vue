@@ -15,11 +15,23 @@ import {
 import Label from "../Label/Label.vue";
 import SearchInput from "../SearchInput/SearchInput.vue";
 import MultiselectListBox from "../MultiselectListBox/MultiselectListBox.vue";
+import ResizeHandle from "../../ResizeHandle/ResizeHandle.vue";
 
 import useSearch from "../../../composables/useSearch";
 
 const KEY_ENTER = "Enter";
 const MIN_LIST_SIZE = 5;
+const BUTTON_WIDTH = 30;
+const BUTTON_HEIGHT = 24;
+const NUMBER_OF_BUTTONS = 4;
+const BUTTONS_MARGIN_TOP = 56;
+const LIST_BOX_REFS = ["left", "right"] as const;
+const MAX_HEIGHT_BUTTONS_CENTER_ALIGNMENT =
+  NUMBER_OF_BUTTONS * BUTTON_HEIGHT + 2 * BUTTONS_MARGIN_TOP;
+
+// Two resize handles are used, one below each box, which should take up 1/3 width each of each box => 1/6 of the total
+// width of the boxes, which is the width of the whole twinlist minus the button gap between the two lists
+const RESIZE_HANDLE_WIDTH = `calc((100% - ${BUTTON_WIDTH}px) * 1 / 6)`;
 
 interface TransformOnMovePayload {
   /**
@@ -134,6 +146,7 @@ export default {
     MultiselectListBox,
     Label,
     SearchInput,
+    ResizeHandle,
   },
   props: {
     modelValue: {
@@ -223,6 +236,10 @@ export default {
       validator(value: number) {
         return value >= 0;
       },
+    },
+    showResizeHandle: {
+      type: Boolean,
+      default: false,
     },
     isValid: {
       default: true,
@@ -410,6 +427,13 @@ export default {
       rightSelected: [] as Id[],
       leftSelected: [] as Id[],
       unknownValuesId: Symbol("Unknown values"),
+      constants: Object.freeze({
+        MIN_LIST_SIZE,
+        BUTTON_HEIGHT,
+        BUTTON_WIDTH,
+        RESIZE_HANDLE_WIDTH,
+        MAX_HEIGHT_BUTTONS_CENTER_ALIGNMENT,
+      }),
     };
   },
   computed: {
@@ -454,6 +478,11 @@ export default {
       }
     },
   },
+  mounted() {
+    if (this.showResizeHandle) {
+      this.getListBoxes().forEach((listBox) => listBox.initResizeHeight());
+    }
+  },
   methods: {
     getIndex(id: Id) {
       return this.possibleValueMap[id]?.index ?? -1;
@@ -462,8 +491,7 @@ export default {
       return this.getIndex(a) - this.getIndex(b);
     },
     clearSelections() {
-      (this.$refs.right as any).clearSelection();
-      (this.$refs.left as any).clearSelection();
+      this.getListBoxes().forEach((listBox) => listBox.clearSelection());
     },
     moveItems(
       items: Id[],
@@ -641,6 +669,18 @@ export default {
           : "One or more of the selected items is invalid.",
       };
     },
+    getListBoxes() {
+      return LIST_BOX_REFS.map(
+        (refName) =>
+          this.$refs[refName] as InstanceType<typeof MultiselectListBox>,
+      );
+    },
+    onResizeMove(deltaY: number) {
+      this.getListBoxes().forEach((listBox) => listBox.onResizeMove(deltaY));
+    },
+    onResizeEnd() {
+      this.getListBoxes().forEach((listBox) => listBox.onResizeEnd());
+    },
   },
 };
 </script>
@@ -698,6 +738,7 @@ export default {
         :empty-state-label="emptyStateLabel"
         :empty-state-component="emptyStateComponent"
         :size="listSize"
+        :min-size="constants.MIN_LIST_SIZE"
         class="list-box"
         :model-value="leftSelected"
         :with-bottom-value="showUnknownExcludedValues"
@@ -767,6 +808,7 @@ export default {
         :empty-state-component="emptyStateComponent"
         :possible-values="filteredIncludedItems"
         :size="listSize"
+        :min-size="constants.MIN_LIST_SIZE"
         :ariaLabel="rightLabel"
         :disabled="disabled"
         @double-click-on-item="onRightListBoxDoubleClick"
@@ -776,6 +818,16 @@ export default {
       />
       <!--  eslint-enable vue/attribute-hyphenation -->
     </div>
+    <ResizeHandle
+      v-if="showResizeHandle"
+      :number-of-handles="2"
+      :handle-width="constants.RESIZE_HANDLE_WIDTH"
+      connect-handles-on-resize
+      :multiple-handles-handle-gap="`${constants.BUTTON_WIDTH}px`"
+      :disabled="disabled"
+      @resize-move="onResizeMove"
+      @resize-end="onResizeEnd"
+    />
   </div>
 </template>
 
@@ -784,7 +836,7 @@ export default {
   display: flex;
   align-items: stretch;
   flex-direction: column;
-  --button-bar-width: 30px;
+  --button-bar-width: v-bind(`${constants.BUTTON_WIDTH}px`);
 
   & .title {
     line-height: 18px;
@@ -844,17 +896,24 @@ export default {
   }
 
   & .buttons {
-    flex: 0 0 30px;
+    --button-bar-max-height: v-bind(
+      `${constants.MAX_HEIGHT_BUTTONS_CENTER_ALIGNMENT}px`
+    );
+
+    flex: 0 0 var(--button-bar-width);
     align-items: center;
     justify-content: center;
     display: flex;
     flex-direction: column;
+    max-height: var(--button-bar-max-height);
   }
 
   & [role="button"] {
+    --button-height: v-bind(`${constants.BUTTON_HEIGHT}px`);
+
     cursor: pointer;
-    width: 30px;
-    height: 24px;
+    width: var(--button-bar-width);
+    height: var(--button-height);
     display: flex;
     align-items: center;
     justify-content: center;

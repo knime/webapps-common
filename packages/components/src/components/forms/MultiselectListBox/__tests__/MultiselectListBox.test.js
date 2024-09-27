@@ -951,4 +951,49 @@ describe("MultiselectListBox.vue", () => {
       });
     });
   });
+
+  describe("resize", () => {
+    let propsData, wrapper;
+
+    beforeEach(() => {
+      propsData = {
+        possibleValues,
+        value: [],
+        size: 0,
+        ariaLabel: "A Label",
+        minSize: 2,
+      };
+
+      wrapper = mount(MultiselectListBox, { propsData });
+      wrapper.vm.initResizeHeight();
+    });
+
+    it("uses the resizeHeight as height once it got initialized", () => {
+      expect(wrapper.vm.resizeHeight).toBe(88);
+      expect(wrapper.vm.cssStyleSize).toStrictEqual({ height: "88px" });
+    });
+
+    it("adjusts the resizeHeight by the given delta", () => {
+      expect(wrapper.vm.resizeHeight).toBe(88);
+      wrapper.vm.onResizeMove(10);
+      expect(wrapper.vm.resizeHeight).toBe(98);
+    });
+
+    it("does not allow a height less than the min resize height given by the delta on move", () => {
+      expect(wrapper.vm.minResizeHeight).toBe(44);
+      expect(wrapper.vm.resizeHeight).toBe(88);
+      wrapper.vm.onResizeMove(-80);
+      expect(wrapper.vm.resizeHeight).toBe(44);
+    });
+
+    it("rounds to the next closest size after calling onResizeEnd", () => {
+      expect(wrapper.vm.resizeHeight).toBe(88);
+      wrapper.vm.onResizeMove(10);
+      wrapper.vm.onResizeEnd();
+      expect(wrapper.vm.resizeHeight).toBe(88);
+      wrapper.vm.onResizeMove(12);
+      wrapper.vm.onResizeEnd();
+      expect(wrapper.vm.resizeHeight).toBe(110);
+    });
+  });
 });

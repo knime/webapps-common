@@ -39,6 +39,7 @@ const codeExample = `<Twinlist
     id: 'baz',
     text: 'Baz'
   }]"
+/>
 <Twinlist
   v-model="selectedSearchLabel"
   show-search
@@ -57,7 +58,6 @@ const codeExample = `<Twinlist
     id: 'baz',
     text: 'Baz'
   }]"
-/>
 />`;
 
 export default {
@@ -334,6 +334,25 @@ export default {
           />
         </div>
         <div class="grid-item-6">selected ids: {{ selectedSearchLabel }}</div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-6">
+          <p>Resizable Twinlist</p>
+        </div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-6">
+          <Twinlist
+            v-model="selected2"
+            :size="7"
+            left-label="Select from the visible items"
+            right-label="The selected stuff"
+            :possible-values="demoValues"
+            compact
+            show-resize-handle
+          />
+        </div>
+        <div class="grid-item-6">selected ids: {{ selected2 }}</div>
       </div>
     </section>
     <section>

@@ -11,6 +11,7 @@ import Twinlist from "../../Twinlist/Twinlist.vue";
 import ValueSwitch from "../../ValueSwitch/ValueSwitch.vue";
 import Checkboxes from "../../Checkboxes/Checkboxes.vue";
 import Label from "../../Label/Label.vue";
+import ResizeHandle from "../../../ResizeHandle/ResizeHandle.vue";
 
 describe("MultiModeMultiModeTwinlist.vue", () => {
   let defaultPossibleValues;
@@ -71,6 +72,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
       leftLabel: "Choose",
       rightLabel: "The value",
       size: 3,
+      showResizeHandle: true,
     };
     const wrapper = mount(MultiModeTwinlist, {
       props,
@@ -89,6 +91,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
         .findAllComponents(MultiselectListBox)
         .at(1).vm.$props.possibleValues,
     ).toStrictEqual([defaultPossibleValues[2]]);
+    expect(wrapper.findComponent(ResizeHandle).exists()).toBeTruthy();
   });
 
   it("renders with null initial manually selected", async () => {

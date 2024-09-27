@@ -7,6 +7,7 @@ import { nextTick } from "vue";
 import SearchInput from "../../SearchInput/SearchInput.vue";
 import Twinlist from "../Twinlist.vue";
 import MultiselectListBox from "../../MultiselectListBox/MultiselectListBox.vue";
+import ResizeHandle from "../../../ResizeHandle/ResizeHandle.vue";
 
 describe("Twinlist.vue", () => {
   let defaultPossibleValues;
@@ -55,6 +56,9 @@ describe("Twinlist.vue", () => {
     expect(
       wrapper.findAllComponents(MultiselectListBox)[1].props("possibleValues"),
     ).toStrictEqual([defaultPossibleValues[2]]);
+    expect(
+      wrapper.findAllComponents(MultiselectListBox)[0].props().minSize,
+    ).toBe(5);
   });
 
   it("renders with null modelValue", () => {
@@ -1339,6 +1343,62 @@ describe("Twinlist.vue", () => {
       const wrapper = mount(Twinlist, { props });
       let right = wrapper.findAllComponents(MultiselectListBox)[1];
       expect(right.find(".empty-state").exists()).toBeFalsy();
+    });
+  });
+
+  describe("resizable twinlist", () => {
+    let props;
+
+    beforeEach(() => {
+      props = {
+        possibleValues: defaultPossibleValues,
+        modelValue: [],
+        leftLabel: "Choose",
+        rightLabel: "The value",
+        size: 5,
+        showSearch: true,
+        showResizeHandle: true,
+      };
+    });
+
+    it("renders and initializes the resize height", () => {
+      const initResizeHeightSpy = vi.spyOn(
+        MultiselectListBox.methods,
+        "initResizeHeight",
+      );
+      const wrapper = mount(Twinlist, {
+        props,
+      });
+      expect(wrapper.findComponent(ResizeHandle).exists()).toBeTruthy();
+      expect(initResizeHeightSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it("passes the resize move delta from the handle to the MultiselectListBox", () => {
+      const resizeMoveDelta = 5;
+      const onResizeMoveSpy = vi.spyOn(
+        MultiselectListBox.methods,
+        "onResizeMove",
+      );
+      const wrapper = mount(Twinlist, {
+        props,
+      });
+      const resizeHandle = wrapper.findComponent(ResizeHandle);
+      resizeHandle.vm.$emit("resize-move", resizeMoveDelta);
+      expect(onResizeMoveSpy).toHaveBeenCalledTimes(2);
+      expect(onResizeMoveSpy).toHaveBeenCalledWith(resizeMoveDelta);
+    });
+
+    it("calls onResizeEnd on the MultiselectListBox when the ResizeHandle fires the same event", () => {
+      const onResizeEndSpy = vi.spyOn(
+        MultiselectListBox.methods,
+        "onResizeEnd",
+      );
+      const wrapper = mount(Twinlist, {
+        props,
+      });
+      const resizeHandle = wrapper.findComponent(ResizeHandle);
+      resizeHandle.vm.$emit("resize-end");
+      expect(onResizeEndSpy).toHaveBeenCalledTimes(2);
     });
   });
 });
