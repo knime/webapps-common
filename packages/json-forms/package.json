@@ -22,7 +22,8 @@
     "@knime/ui-extension-service": "0.39.0",
     "focus-trap-vue": "4.0.3",
     "tabbable": "6.2.0",
-    "uuid": "10.0.0"
+    "uuid": "10.0.0",
+    "@knime/rich-text-editor": "workspace:*"
   },
   "peerDependencies": {
     "vue": "3.x"
