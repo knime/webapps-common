@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Ref, nextTick, onMounted, ref } from "vue";
+import { type Ref, nextTick, onMounted, ref } from "vue";
 import FlowVariableButton from "../flowVariables/components/FlowVariableButton.vue";
 import DescriptionPopover from "../description/DescriptionPopover.vue";
 import ErrorMessage from "../ErrorMessage.vue";
