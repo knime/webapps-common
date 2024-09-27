@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {
-  RichTextEditor,
+  type RichTextEditor,
   createOnEscapeExtension,
   defaultLinkToolOptions,
 } from "@knime/rich-text-editor";
