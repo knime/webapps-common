@@ -1,7 +1,7 @@
 const parentRules = require("./base").rules;
 
 module.exports = {
-  plugins: ["vue", "import"],
+  plugins: ["vue"],
   extends: [
     "./base.js",
     "plugin:vue/recommended",

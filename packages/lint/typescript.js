@@ -4,7 +4,7 @@ module.exports = {
       extends: ["./base.js", "./prettierOverwrites.js"],
       files: ["**/*.ts"],
       parser: "@typescript-eslint/parser",
-      plugins: ["@typescript-eslint", "import"],
+      plugins: ["@typescript-eslint"],
       rules: {
         "no-duplicate-imports": "off",
         "import/no-duplicates": "error",

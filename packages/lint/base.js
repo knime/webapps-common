@@ -8,7 +8,7 @@ let parserOptions = {
 module.exports = {
   root: true,
   extends: ["eslint:recommended", "./prettierOverwrites.js"],
-  plugins: ["unused-imports"],
+  plugins: ["unused-imports", "import"],
   parserOptions,
   env: {
     browser: false,
@@ -169,6 +169,43 @@ module.exports = {
         args: "after-used",
         argsIgnorePattern: "^_",
         ignoreRestSiblings: true,
+      },
+    ],
+    "import/order": [
+      "error",
+      {
+        groups: [
+          "builtin",
+          "external",
+          "internal",
+          ["parent", "sibling", "index", "object", "type"],
+        ],
+        pathGroups: [
+          {
+            pattern: "*(@)+(vue|nuxt|vite|vitejs|vitest)",
+            group: "external",
+            position: "before",
+          },
+          {
+            pattern: "*(@)+(vue|nuxt|vite|vitejs|vitest)/**",
+            group: "external",
+            position: "before",
+          },
+          {
+            pattern: "@knime/**",
+            group: "internal",
+            position: "before",
+          },
+          {
+            pattern: "+(@|~)/**",
+            group: "parent",
+            position: "before",
+          },
+        ],
+        "newlines-between": "always",
+        alphabetize: {
+          order: "asc",
+        },
       },
     ],
   },
