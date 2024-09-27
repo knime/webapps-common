@@ -1,3 +1,1 @@
-type FlowVariableIconProps = { show: boolean };
-
-export default FlowVariableIconProps;
+export type FlowVariableIconProps = { show: boolean };

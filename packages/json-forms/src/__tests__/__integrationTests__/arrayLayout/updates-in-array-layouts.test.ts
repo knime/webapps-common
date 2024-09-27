@@ -4,20 +4,20 @@ import { describe, it, vi, beforeEach, expect } from "vitest";
 import { mount, VueWrapper } from "@vue/test-utils";
 import { JsonDataService } from "@knime/ui-extension-service";
 
-import NodeDialog from "@/nodeDialog/NodeDialog.vue";
+import NodeDialog from "../../../NodeDialog.vue";
 import flushPromises from "flush-promises";
 import { cloneDeep } from "lodash-es";
 
-import { getOptions } from "@/nodeDialog/__tests__/utils";
-import SimpleButtonControl from "@/nodeDialog/uiComponents/SimpleButtonControl.vue";
+import { getOptions } from "../../utils";
+import SimpleButtonControl from "../../../uiComponents/SimpleButtonControl.vue";
 import { Button, Dropdown, Checkbox } from "@knime/components";
-import { mockRegisterSettings } from "@@/test-setup/utils/integration/dirtySettingState";
-import {
+import { mockRegisterSettings } from "../../../../test-setup/utils/integration/dirtySettingState";
+import type {
   Update,
   UpdateResult,
   ValueReference,
-} from "@/nodeDialog/types/Update";
-import TextControl from "@/nodeDialog/uiComponents/TextControl.vue";
+} from "../../../types/Update";
+import TextControl from "../../../uiComponents/TextControl.vue";
 import { ref } from "vue";
 
 describe("updates in array layouts", () => {

@@ -46,9 +46,11 @@ const TwinlistLoadingInfoRaw = markRaw(TwinlistLoadingInfo) as any;
 
 if (!choicesProvider.value) {
   if (props.optionsGenerator === null) {
-    getPossibleValuesFromUiSchema(control.value).then((result) => {
-      possibleValues.value = result;
-    });
+    getPossibleValuesFromUiSchema(control.value).then(
+      (result: IdAndText[] | null) => {
+        possibleValues.value = result;
+      },
+    );
   } else {
     possibleValues.value = props.optionsGenerator(control.value);
   }

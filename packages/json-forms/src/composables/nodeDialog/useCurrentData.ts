@@ -1,4 +1,4 @@
-import type SettingsData from "../../types/SettingsData";
+import type { SettingsData } from "../../types/SettingsData";
 import { ref } from "vue";
 
 /**

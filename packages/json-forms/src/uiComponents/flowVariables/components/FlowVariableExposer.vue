@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { InputField } from "@knime/components";
 import { computed, ref, watchEffect } from "vue";
-import type FlowVariableExposerProps from "../types/FlowVariableExposerProps";
+import type { FlowVariableExposerProps } from "../types/FlowVariableExposerProps";
 import ErrorMessage from "../../ErrorMessage.vue";
 import useExposedFlowVariable from "../composables/useExposedFlowVariable";
 

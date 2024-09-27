@@ -3,7 +3,7 @@ import DialogFileExplorer from "../../DialogFileExplorer.vue";
 import { type Ref, ref } from "vue";
 import { shallowMount } from "@vue/test-utils";
 import FileExplorerTab, { type Props } from "../FileExplorerTab.vue";
-import { applyButtonInjectionKey } from "@/nodeDialog/layoutComponents/settingsSubPanel";
+import { applyButtonInjectionKey } from "../../../../layoutComponents/settingsSubPanel";
 
 describe("FileExplorerTab.vue", () => {
   let props: Props,

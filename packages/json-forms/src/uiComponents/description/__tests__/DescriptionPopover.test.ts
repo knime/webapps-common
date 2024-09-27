@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import DialogPopover from "@/nodeDialog/popover/DialogPopover.vue";
+import DialogPopover from "../../../popover/DialogPopover.vue";
 import { Description, FunctionButton } from "@knime/components";
 import DescriptionIcon from "@knime/styles/img/icons/circle-help.svg";
 
@@ -8,7 +8,7 @@ import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";
 import flushPromises from "flush-promises";
 
 import DescriptionPopover from "../DescriptionPopover.vue";
-import type DescriptionPopoverProps from "../types/DescriptionPopoverProps";
+import type { DescriptionPopoverProps } from "../types/DescriptionPopoverProps";
 
 describe("DescriptionPopover.vue", () => {
   let props: DescriptionPopoverProps;

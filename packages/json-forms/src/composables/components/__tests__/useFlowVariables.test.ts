@@ -3,7 +3,7 @@ import type { FlowSettings } from "../../../api/types";
 import { mount } from "@vue/test-utils";
 import UseFlowVariablesTestComponent from "./UseFlowVariablesTestComponent.vue";
 import { getFlowVariableSettingsProvidedByControl } from "../useFlowVariables";
-import type Control from "../../../types/Control";
+import type { Control } from "../../../types/Control";
 import { type Ref, defineComponent, ref } from "vue";
 import type { SettingStateWrapper } from "../../nodeDialog/useDirtySettings";
 import { injectionKey as flowVarMapKey } from "../useProvidedFlowVariablesMap";

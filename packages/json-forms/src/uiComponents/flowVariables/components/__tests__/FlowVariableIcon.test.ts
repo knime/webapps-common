@@ -8,10 +8,10 @@ import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";
 
 import FlowVariableIcon from "../FlowVariableIcon.vue";
 
-import type FlowVariableIconProps from "../../types/FlowVariableIconProps";
-import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
-import { Ref, ref } from "vue";
-import { FlowSettings } from "@/nodeDialog/api/types";
+import type { FlowVariableIconProps } from "../../types/FlowVariableIconProps";
+import { injectionKey as providedByComponentKey } from "../../../../composables/components/useFlowVariables";
+import { type Ref, ref } from "vue";
+import type { FlowSettings } from "../../../../api/types";
 
 describe("FlowVariableIcon.vue", () => {
   let props: FlowVariableIconProps, flowSettings: Ref<FlowSettings | undefined>;

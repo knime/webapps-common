@@ -1,5 +1,5 @@
 <script lang="ts">
-import {
+import type {
   UIExtensionService,
   CreateAlertParams,
 } from "@knime/ui-extension-service";
@@ -12,7 +12,6 @@ import { fallbackRenderers, defaultRenderers } from "./renderers";
 import { getPossibleValuesFromUiSchema, hasAdvancedOptions } from "./utils";
 import { cloneDeep } from "lodash-es";
 import { inject, markRaw, nextTick, ref } from "vue";
-import type ProvidedMethods from "./types/provided";
 import type { ProvidedForFlowVariables } from "./types/provided";
 import type { SettingsData } from "./types/SettingsData";
 import type { Update, UpdateResult } from "./types/Update";

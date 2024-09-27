@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import useDialogControl from "@/nodeDialog/composables/components/useDialogControl";
+import useDialogControl from "../../composables/components/useDialogControl";
 import { rendererProps } from "@jsonforms/vue";
 import CredentialsControlBase from "./CredentialsControlBase.vue";
-import type Credentials from "./types/Credentials";
+import type { Credentials } from "./types/Credentials";
 
 const props = defineProps(rendererProps());
 const { control, onChange, disabled, flowSettings } =

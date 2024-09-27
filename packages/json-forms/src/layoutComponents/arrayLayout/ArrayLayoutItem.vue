@@ -4,7 +4,7 @@ import { provideForAddedArrayLayoutElements } from "../../composables/components
 import { addIndexToStateProviders, addIndexToTriggers } from "./composables";
 import { composePaths } from "@jsonforms/core";
 import {
-  IdsRecord,
+  type IdsRecord,
   createArrayAtPath,
   createForArrayItem,
   deleteArrayItem,
@@ -12,7 +12,9 @@ import {
 import inject from "../../utils/inject";
 import { AlertType } from "@knime/ui-extension-service";
 import { elementCheckboxFormat } from "../../renderers/elementCheckboxRenderer";
-import ArrayLayoutItemLabel, { TitleConfig } from "./ArrayLayoutItemLabel.vue";
+import ArrayLayoutItemLabel, {
+  type TitleConfig,
+} from "./ArrayLayoutItemLabel.vue";
 
 const props = defineProps<{
   elements: [string, any][];

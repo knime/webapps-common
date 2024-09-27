@@ -1,6 +1,6 @@
 import type { Ref } from "vue";
 import type { BackendType, FolderAndError, PathAndError } from "../types";
-import inject from "@/nodeDialog/utils/inject";
+import inject from "../../../utils/inject";
 import { FSCategory } from "../types/FileChooserProps";
 
 interface ListItemsConfig {

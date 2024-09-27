@@ -14,7 +14,7 @@ import {
   JsonDataService,
   type UIExtensionService,
 } from "@knime/ui-extension-service";
-import type Result from "../../api/types/Result";
+import type { Result } from "../../api/types/Result";
 import { getIndex } from "./useArrayIds";
 import type {
   IndexedIsActive,

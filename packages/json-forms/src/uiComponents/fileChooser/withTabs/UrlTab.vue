@@ -1,14 +1,13 @@
 <script lang="ts">
-interface Props {
+export interface Props {
   modelValue: { path: string; timeout: number };
-  id: string | null;
+  id?: string;
 }
-export { Props };
 </script>
 
 <script setup lang="ts">
 import CustomUrlFileChooser from "../CustomUrlFileChooser.vue";
-import { useApplyButton } from "@/nodeDialog/layoutComponents/settingsSubPanel";
+import { useApplyButton } from "../../../layoutComponents/settingsSubPanel";
 import { computed, onMounted, watch } from "vue";
 import { startsWithSchemeRegex } from "./urlUtil";
 

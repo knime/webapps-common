@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import useDialogControl from "@/nodeDialog/composables/components/useDialogControl";
+import useDialogControl from "../../../composables/components/useDialogControl";
 import StringFileChooserControlWithExplorer from "./StringFileChooserControlWithExplorer.vue";
-import LabeledControl from "@/nodeDialog/uiComponents/label/LabeledControl.vue";
+import LabeledControl from "../../label/LabeledControl.vue";
 import { rendererProps } from "@jsonforms/vue";
-import { FileChooserOptions } from "@/nodeDialog/types/FileChooserUiSchema";
+import type { FileChooserOptions } from "../../../types/FileChooserUiSchema";
 const props = defineProps(rendererProps());
 const { control, onChange, disabled } = useDialogControl<string>({ props });
 const uiSchemaOptions = computed(

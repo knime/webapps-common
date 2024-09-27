@@ -5,11 +5,11 @@ import FlowVariablePopover from "../FlowVariablePopover.vue";
 import FlowVariableSelector from "../FlowVariableSelector.vue";
 import FlowVariableExposer from "../FlowVariableExposer.vue";
 import DifferingNumbersOfConfigAndDataKeys from "../DifferingNumbersOfConfigAndDataKeys.vue";
-import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
+import { injectionKey as providedByComponentKey } from "../../../../composables/components/useFlowVariables";
 import { type Ref, ref } from "vue";
-import { FlowSettings } from "@/nodeDialog/api/types";
+import type { FlowSettings } from "../../../../api/types";
 import DeprecatedFlowVariables from "../DeprecatedFlowVariables.vue";
-import { injectionKey as flowVarMapKey } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
+import { injectionKey as flowVarMapKey } from "../../../../composables/components/useProvidedFlowVariablesMap";
 
 describe("FlowVariablePopover", () => {
   let configPaths: Ref<

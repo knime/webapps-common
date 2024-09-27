@@ -18,12 +18,13 @@
     "@jsonforms/vue": "3.4.0",
     "@jsonforms/vue-vanilla": "3.4.0",
     "@knime/components": "workspace:*",
+    "@knime/rich-text-editor": "workspace:*",
     "@knime/styles": "workspace:*",
     "@knime/ui-extension-service": "0.39.0",
     "focus-trap-vue": "4.0.3",
     "tabbable": "6.2.0",
     "uuid": "10.0.0",
-    "@knime/rich-text-editor": "workspace:*"
+    "vue": "3.5.9"
   },
   "peerDependencies": {
     "vue": "3.x"

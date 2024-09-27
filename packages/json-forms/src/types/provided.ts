@@ -5,7 +5,7 @@ import type {
 import type { PossibleFlowVariable } from "../api/types";
 import type { getPossibleValuesFromUiSchema } from "../utils";
 import type { Control } from "./Control";
-import type SettingsData from "./SettingsData";
+import type { SettingsData } from "./SettingsData";
 import type { IdsRecord } from "../composables/nodeDialog/useArrayIds";
 import type { Result } from "../api/types/Result";
 import type { IndexedIsActive } from "../composables/nodeDialog/useTriggers";
@@ -32,7 +32,7 @@ type getData = (
 ) => Promise<any>;
 type sendAlert = (params: CreateAlertParams) => void;
 
-interface Provided {
+export interface Provided {
   getPossibleValuesFromUiSchema: getPossibleValuesFromUiSchema;
   addStateProviderListener: addStateProviderListener<any>;
   registerWatcher: registerWatcher;
@@ -50,7 +50,7 @@ interface Provided {
   getDialogPopoverTeleportDest: () => null | HTMLElement;
 }
 
-type ProvidedFlowVariablesApi = {
+export type ProvidedFlowVariablesApi = {
   getAvailableFlowVariables: (
     persistPath: string,
   ) => Promise<Record<string, PossibleFlowVariable[]>>;
@@ -61,10 +61,6 @@ type ProvidedFlowVariablesApi = {
   clearControllingFlowVariable: (persistPath: string) => void;
 };
 
-export default Provided;
-
-interface ProvidedForFlowVariables {
+export interface ProvidedForFlowVariables {
   flowVariablesApi: ProvidedFlowVariablesApi;
 }
-
-export { ProvidedForFlowVariables };

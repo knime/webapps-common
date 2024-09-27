@@ -2,12 +2,12 @@ import { describe, it, vi, beforeEach, expect } from "vitest";
 import { mount, VueWrapper } from "@vue/test-utils";
 import { JsonDataService } from "@knime/ui-extension-service";
 
-import NodeDialog from "@/nodeDialog/NodeDialog.vue";
+import NodeDialog from "../../../NodeDialog.vue";
 import flushPromises from "flush-promises";
 import { cloneDeep } from "lodash-es";
 
-import { getOptions } from "@/nodeDialog/__tests__/utils";
-import { mockRegisterSettings } from "@@/test-setup/utils/integration/dirtySettingState";
+import { getOptions } from "../../utils";
+import { mockRegisterSettings } from "../../../../test-setup/utils/integration/dirtySettingState";
 import { Checkbox } from "@knime/components";
 
 describe("edit/reset button in array layouts", () => {

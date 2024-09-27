@@ -1,11 +1,10 @@
 <!-- Wrapper component holding the state of the side drawer changes which is exposes to be applied
    on button click -->
 <script lang="ts">
-import type FileChooserProps from "../types/FileChooserProps";
-type Props = Omit<FileChooserProps, "modelValue"> & {
+import type { FileChooserProps } from "../types/FileChooserProps";
+export type Props = Omit<FileChooserProps, "modelValue"> & {
   initialValue: FileChooserProps["modelValue"];
 };
-export { Props };
 </script>
 
 <script setup lang="ts">

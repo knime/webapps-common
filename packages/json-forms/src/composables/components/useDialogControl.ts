@@ -3,7 +3,7 @@ import { useJsonFormsControlWithUpdate } from "./useJsonFormsControlWithUpdate";
 import { type Ref, computed, type ExtractPropTypes } from "vue";
 import { isModelSettingAndHasNodeView } from "../../utils";
 import { useFlowSettings } from "./useFlowVariables";
-import type Control from "../../types/Control";
+import type { Control } from "../../types/Control";
 import type { SettingComparator } from "@knime/ui-extension-service";
 import type { Stringifyable } from "./JsonSettingsComparator";
 import { useDirtySetting } from "./useDirtySetting";

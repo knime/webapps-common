@@ -3,13 +3,13 @@ import { FunctionButton } from "@knime/components";
 import FlowVariableIcon from "../FlowVariableIcon.vue";
 import FlowVariablePopover from "../FlowVariablePopover.vue";
 
-import DialogPopover from "@/nodeDialog/popover/DialogPopover.vue";
+import DialogPopover from "../../../../popover/DialogPopover.vue";
 
 import { mount } from "@vue/test-utils";
 import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";
 import flushPromises from "flush-promises";
 import FlowVariableButton from "../FlowVariableButton.vue";
-import type FlowVariableButtonProps from "../../types/FlowVariableButtonProps";
+import type { FlowVariableButtonProps } from "../../types/FlowVariableButtonProps";
 
 describe("FlowVariableButton.vue", () => {
   let props: FlowVariableButtonProps;

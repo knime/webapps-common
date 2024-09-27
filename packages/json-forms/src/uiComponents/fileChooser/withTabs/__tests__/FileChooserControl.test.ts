@@ -3,12 +3,12 @@ import {
   mountJsonFormsComponent,
   getControlBase,
   initializesJsonFormsControl,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
+} from "../../../../../test-setup/utils/jsonFormsTestUtils";
 import FileChooserControl from "../FileChooserControl.vue";
 import { VueWrapper } from "@vue/test-utils";
-import SettingsSubPanel from "@/nodeDialog/layoutComponents/settingsSubPanel/SettingsSubPanel.vue";
-import LabeledControl from "@/nodeDialog/uiComponents/label/LabeledControl.vue";
-import DialogLabel from "@/nodeDialog/uiComponents/label/DialogLabel.vue";
+import SettingsSubPanel from "../../../../layoutComponents/settingsSubPanel/SettingsSubPanel.vue";
+import LabeledControl from "../../../label/LabeledControl.vue";
+import DialogLabel from "../../../label/DialogLabel.vue";
 import { SideDrawer, FunctionButton } from "@knime/components";
 import FolderLenseIcon from "@knime/styles/img/icons/folder-lense.svg";
 import SideDrawerContent from "../SideDrawerContent.vue";

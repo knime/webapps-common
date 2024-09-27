@@ -1,4 +1,11 @@
-import { MockInstance, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  type MockInstance,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 import { DOMWrapper, mount, VueWrapper } from "@vue/test-utils";
 import { Dropdown, InputField } from "@knime/components";
 
@@ -7,19 +14,16 @@ import { JsonDataService } from "@knime/ui-extension-service";
 import NodeDialog from "../../NodeDialog.vue";
 import flushPromises from "flush-promises";
 
-import FlowVariableButton from "@/nodeDialog/uiComponents/flowVariables/components/FlowVariableButton.vue";
+import FlowVariableButton from "../../uiComponents/flowVariables/components/FlowVariableButton.vue";
 import { getOptions } from "../utils";
 import {
   mockRegisterSettings,
   registeredSettingState,
   controllingFlowVariableState,
   exposedFlowVariableState,
-} from "@@/test-setup/utils/integration/dirtySettingState";
+} from "../../../test-setup/utils/integration/dirtySettingState";
 
-import type {
-  FlowSettings,
-  PossibleFlowVariable,
-} from "@/nodeDialog/api/types";
+import type { FlowSettings, PossibleFlowVariable } from "../../api/types";
 
 describe("flow variables", () => {
   const flowVar1 = {

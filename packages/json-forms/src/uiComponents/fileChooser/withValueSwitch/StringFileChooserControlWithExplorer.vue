@@ -1,7 +1,7 @@
 <script lang="ts">
-import { BackendType } from "../types";
+import type { BackendType } from "../types";
 
-interface StringFileChooserInputWithExplorerProps {
+export interface StringFileChooserInputWithExplorerProps {
   modelValue: string;
   disabled: boolean;
   options?: {
@@ -12,11 +12,9 @@ interface StringFileChooserInputWithExplorerProps {
     fileExtensionProvider?: string;
     currentSpaceName?: string;
   };
-  id: string | null;
+  id?: string;
   backendType: BackendType;
 }
-
-export { StringFileChooserInputWithExplorerProps };
 </script>
 
 <script setup lang="ts">

@@ -207,7 +207,7 @@ const getPreviouslySelectedTypes = () => {
   const selectedTypesToDisplayedText = typeDisplaysToMap(
     typeFilter.typeDisplays,
   );
-  return selectedTypesIds.map((id) => ({
+  return selectedTypesIds.map((id: string) => ({
     id,
     text: selectedTypesToDisplayedText[id] || id,
   }));
@@ -216,9 +216,11 @@ const getPreviouslySelectedTypes = () => {
 previouslySelectedTypes.value = getPreviouslySelectedTypes();
 
 if (!choicesProvider.value) {
-  inject("getPossibleValuesFromUiSchema")(control.value).then((result) => {
-    possibleValues.value = result;
-  });
+  inject("getPossibleValuesFromUiSchema")(control.value).then(
+    (result: IdAndText[] | null) => {
+      possibleValues.value = result;
+    },
+  );
 }
 
 // Hiding controls

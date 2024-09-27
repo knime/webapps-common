@@ -3,12 +3,15 @@ import { computed, onMounted, ref, watch } from "vue";
 import SideDrawerContent from "./SideDrawerContent.vue";
 import useDialogControl from "../../../composables/components/useDialogControl";
 import LabeledControl from "../../label/LabeledControl.vue";
-import SettingsSubPanel from "@/nodeDialog/layoutComponents/settingsSubPanel/SettingsSubPanel.vue";
+import SettingsSubPanel from "../../../layoutComponents/settingsSubPanel/SettingsSubPanel.vue";
 import { rendererProps } from "@jsonforms/vue";
-import { FileChooserOptions } from "@/nodeDialog/types/FileChooserUiSchema";
+import type { FileChooserOptions } from "../../../types/FileChooserUiSchema";
 import { FunctionButton } from "@knime/components";
 import FolderLenseIcon from "@knime/styles/img/icons/folder-lense.svg";
-import FileChooserProps, { FileChooserValue } from "../types/FileChooserProps";
+import type {
+  FileChooserProps,
+  FileChooserValue,
+} from "../types/FileChooserProps";
 import FSLocationTextControl from "./FSLocationTextControl.vue";
 import { useFileChooserFileSystemsOptions } from "../composables/useFileChooserBrowseOptions";
 import useFileChooserStateChange from "../composables/useFileChooserStateChange";

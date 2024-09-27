@@ -1,4 +1,4 @@
-interface Credentials {
+export interface Credentials {
   username: string;
   password: string;
   secondFactor: string;
@@ -6,5 +6,3 @@ interface Credentials {
   isHiddenSecondFactor?: boolean;
   flowVariableName?: string | null;
 }
-
-export default Credentials;

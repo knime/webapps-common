@@ -3,10 +3,10 @@ import {
   mountJsonFormsComponent,
   initializesJsonFormsControl,
   getControlBase,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
+} from "../../../../test-setup/utils/jsonFormsTestUtils";
 import LabeledControl from "../../label/LabeledControl.vue";
 import DialogLabel from "../../label/DialogLabel.vue";
-import { inputFormats } from "@/nodeDialog/constants";
+import { inputFormats } from "../../../constants";
 import flushPromises from "flush-promises";
 import LegacyCredentialsControl from "../LegacyCredentialsControl.vue";
 import CredentialsControlBase from "../CredentialsControlBase.vue";

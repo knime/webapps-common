@@ -11,7 +11,7 @@ import * as UseJsonFormsControlWithUpdateModule from "../useJsonFormsControlWith
 import * as UseFlowVariablesModule from "../useFlowVariables";
 import { type Ref, ref } from "vue";
 import type { FlowSettings } from "../../../api/types";
-import type Control from "../../../types/Control";
+import type { Control } from "../../../types/Control";
 import UseDialogControlTestComponent from "./UseDialogControlTestComponent.vue";
 import { mount } from "@vue/test-utils";
 import { injectionKey as injectionKeyFromUseDirtySettings } from "../../nodeDialog/useDirtySettings";

@@ -3,12 +3,12 @@ import {
   mountJsonFormsComponent,
   initializesJsonFormsControl,
   getControlBase,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
+} from "../../../../test-setup/utils/jsonFormsTestUtils";
 import CredentialsControl from "../CredentialsControl.vue";
 import LabeledControl from "../../label/LabeledControl.vue";
 import DialogLabel from "../../label/DialogLabel.vue";
 import { InputField } from "@knime/components";
-import { inputFormats } from "@/nodeDialog/constants";
+import { inputFormats } from "../../../constants";
 import flushPromises from "flush-promises";
 
 describe("CredentialsControl.vue", () => {

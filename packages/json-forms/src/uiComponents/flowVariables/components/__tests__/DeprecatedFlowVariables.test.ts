@@ -1,11 +1,11 @@
 import { shallowMount } from "@vue/test-utils";
 import { beforeEach, describe, expect, it } from "vitest";
-import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
+import { injectionKey as providedByComponentKey } from "../../../../composables/components/useFlowVariables";
 import { type Ref, ref } from "vue";
-import { FlowSettings } from "@/nodeDialog/api/types";
+import type { FlowSettings } from "../../../../api/types";
 import DeprecatedFlowVariables from "../DeprecatedFlowVariables.vue";
 import { Button } from "@knime/components";
-import { injectionKey as flowVarMapKey } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
+import { injectionKey as flowVarMapKey } from "../../../../composables/components/useProvidedFlowVariablesMap";
 
 describe("FlowVariablePopover", () => {
   let configPaths: Ref<

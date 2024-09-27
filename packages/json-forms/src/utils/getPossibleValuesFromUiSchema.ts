@@ -99,7 +99,6 @@ export const withSpecialChoices = <T extends PossibleValue[] | null>(
   watch(
     () => choicesRef.value,
     () => {
-      // @ts-expect-error
       withSpecialColumns.value =
         choicesRef.value === null
           ? null

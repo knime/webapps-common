@@ -5,7 +5,7 @@ import type {
   FolderAndError,
   ParentFolder,
 } from "./types";
-interface Props {
+export interface Props {
   initialFilePath?: string;
   isWriter?: boolean;
   filteredExtensions?: string[];
@@ -15,7 +15,6 @@ interface Props {
   openFileByExplorer?: boolean;
   breadcrumbRoot?: string | null;
 }
-export { Props };
 </script>
 
 <script setup lang="ts">

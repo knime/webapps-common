@@ -1,4 +1,4 @@
-import type Provided from "../../../types/provided";
+import type { Provided } from "../../../types/provided";
 import inject from "../../../utils/inject";
 import { provide } from "vue";
 

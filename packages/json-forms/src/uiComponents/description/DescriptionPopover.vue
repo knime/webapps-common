@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { Description } from "@knime/components";
 import DescriptionIcon from "@knime/styles/img/icons/circle-help.svg";
-import DialogPopover from "@/nodeDialog/popover/DialogPopover.vue";
-import type DescriptionPopoverProps from "./types/DescriptionPopoverProps";
+import DialogPopover from "../../popover/DialogPopover.vue";
+import type { DescriptionPopoverProps } from "./types/DescriptionPopoverProps";
 
 withDefaults(defineProps<DescriptionPopoverProps>(), {
   hover: false,

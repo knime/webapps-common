@@ -1,7 +1,7 @@
 import { type InjectionKey, type Ref, computed, inject, provide } from "vue";
 import { getConfigPaths, getDataPaths } from "../../utils/paths";
 import type { FlowSettings } from "../../api/types";
-import type Control from "../../types/Control";
+import type { Control } from "../../types/Control";
 import type { SettingStateWrapper } from "../nodeDialog/useDirtySettings";
 import { getFlowVariablesMap } from "./useProvidedFlowVariablesMap";
 

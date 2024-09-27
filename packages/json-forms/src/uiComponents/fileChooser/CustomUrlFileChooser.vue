@@ -6,7 +6,7 @@ withDefaults(
   defineProps<{
     disabled?: boolean;
     modelValue: { path: string; timeout: number };
-    id: string | null;
+    id?: string;
     urlErrorMessage?: string | null;
   }>(),
   {

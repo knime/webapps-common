@@ -1,4 +1,4 @@
-import type Result from "../../api/types/Result";
+import type { Result } from "../../api/types/Result";
 import type { DialogSettingsObject } from "./useUpdates";
 export type IndexedIsActive = { indices: string[]; isActive: boolean };
 export type IsActiveCallback = (

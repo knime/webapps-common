@@ -1,13 +1,12 @@
 <script lang="ts">
-import { FileChooserValue, FSCategory } from "../types/FileChooserProps";
-interface Props {
+import { type FileChooserValue, FSCategory } from "../types/FileChooserProps";
+export interface Props {
   modelValue: FileChooserValue;
   disabled: boolean;
   isLocal?: boolean;
   portIndex?: number;
   fileSystemSpecifier?: string;
 }
-export { Props };
 
 const currentSpacePrefix = "knime://knime.space/";
 const embeddedDataPrefix = "knime://knime.workflow.data/";
@@ -19,7 +18,7 @@ export const prefixes: [keyof typeof FSCategory, string][] = [
 
 <script setup lang="ts">
 import { computed, ref, watch, onMounted } from "vue";
-import getDeepActiveElement from "@/utils/getDeepActiveElement";
+import getDeepActiveElement from "../../../utils/getDeepActiveElement";
 import { InputField } from "@knime/components";
 import { startsWithSchemeRegex } from "./urlUtil";
 import useFileChooserBackend, {
