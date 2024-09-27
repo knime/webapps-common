@@ -57,6 +57,7 @@ describe("useDialogControl", () => {
         hasNodeView: true,
       } as any,
       id: "",
+      i18nKeyPrefix: "",
       description: "",
       label: "",
       errors: "",

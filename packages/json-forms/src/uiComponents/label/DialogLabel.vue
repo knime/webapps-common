@@ -26,7 +26,7 @@ defineEmits<{
 const hover = ref(false);
 const labeledElement: Ref<null | HTMLElement> = ref(null);
 const wrapper: Ref<null | HTMLElement> = ref(null);
-const labelForId: Ref<null | string> = ref(null);
+const labelForId: Ref<string | undefined> = ref();
 
 onMounted(() => {
   // Wait one tick for the labelForId to be applied to the control element

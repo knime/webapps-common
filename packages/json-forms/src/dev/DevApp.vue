@@ -1,5 +1,6 @@
 <script lang="ts">
 /* eslint-disable no-console */
+import { defineComponent } from "vue";
 import {
   ExtensionTypes,
   UIExtensionPushEvents,
@@ -10,7 +11,8 @@ import {
 import NodeDialog from "../NodeDialog.vue";
 import dataServiceMock from "./dataServiceMock";
 
-export default {
+const devApp = defineComponent({
+  name: "DevApp",
   components: {
     NodeDialog,
   },
@@ -157,7 +159,9 @@ export default {
       console.log(message);
     },
   },
-};
+});
+
+export default devApp;
 </script>
 
 <template>

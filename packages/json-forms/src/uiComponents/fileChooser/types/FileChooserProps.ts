@@ -21,6 +21,6 @@ export interface FileChooserValue {
 export interface FileChooserProps {
   modelValue: FileChooserValue;
   disabled: boolean;
-  id: string | null;
+  id?: string;
   options?: FileChooserOptions;
 }

@@ -29,7 +29,9 @@ export const isObjectSchema = (schema: any): schema is ObjectSchema<Schema> => {
   return schema.type === "object";
 };
 
-export type Control = ReturnType<typeof useJsonFormsControl>["control"] & {
+export type Control = ReturnType<
+  typeof useJsonFormsControl
+>["control"]["value"] & {
   rootSchema: {
     hasNodeView?: boolean;
     flowVariablesMap?: Record<string, FlowSettings>;
