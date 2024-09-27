@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   mountJsonFormsComponent,
   getControlBase,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
+} from "../../../test-setup/utils/jsonFormsTestUtils";
 import RadioControl from "../RadioControl.vue";
 import RadioControlBase from "../RadioControlBase.vue";
 import LabeledControl from "../label/LabeledControl.vue";

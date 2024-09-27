@@ -3,7 +3,7 @@ import {
   mountJsonFormsComponent,
   initializesJsonFormsControl,
   getControlBase,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
+} from "../../../test-setup/utils/jsonFormsTestUtils";
 import CheckboxControl from "../CheckboxControl.vue";
 import ErrorMessage from "../ErrorMessage.vue";
 import DescriptionPopover from "../description/DescriptionPopover.vue";

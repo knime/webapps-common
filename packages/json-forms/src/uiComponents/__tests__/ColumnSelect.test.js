@@ -3,11 +3,11 @@ import {
   initializesJsonFormsControl,
   mountJsonFormsComponent,
   getControlBase,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
+} from "../../../test-setup/utils/jsonFormsTestUtils";
 import ColumnSelect from "../ColumnSelect.vue";
 import DropdownControl from "../DropdownControl.vue";
 import { Dropdown } from "@knime/components";
-import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
+import { injectionKey as providedByComponentKey } from "../../composables/components/useFlowVariables";
 import DialogLabel from "../label/DialogLabel.vue";
 import { inject } from "vue";
 

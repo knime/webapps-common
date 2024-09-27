@@ -3,7 +3,7 @@ import {
   initializesJsonFormsControl,
   mountJsonFormsComponent,
   getControlBase,
-} from "@@/test-setup/utils/jsonFormsTestUtils";
+} from "../../../test-setup/utils/jsonFormsTestUtils";
 import ButtonControl from "../ButtonControl.vue";
 import DialogComponentWrapper from "../DialogComponentWrapper.vue";
 import { FunctionButton, LoadingIcon, Label } from "@knime/components";
