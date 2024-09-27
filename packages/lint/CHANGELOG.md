@@ -1,5 +1,11 @@
 # @knime/eslint-config
 
+## 8.1.1
+
+### Patch Changes
+
+- f0b93ea: Rule to prevent lodash now includes lodash.\* packages and displays a useful error message
+
 ## 8.1.0
 
 ### Minor Changes

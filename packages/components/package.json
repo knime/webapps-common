@@ -52,7 +52,6 @@
     "vue": "3.x"
   },
   "devDependencies": {
-    "@knime/eslint-config": "workspace:*",
     "@types/lodash-es": "4.17.12",
     "@vitejs/plugin-vue": "^5.1.4",
     "@vitest/coverage-v8": "2.1.1",
