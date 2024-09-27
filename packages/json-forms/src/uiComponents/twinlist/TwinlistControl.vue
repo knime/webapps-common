@@ -2,7 +2,7 @@
 import type {
   IdAndText,
   PossibleValue,
-} from "@/nodeDialog//types/ChoicesUiSchema";
+} from "../../../src/types/ChoicesUiSchema";
 import type { TwinlistModelValue } from "@knime/components";
 export type TwinlistData = {
   mode: string;
@@ -29,18 +29,18 @@ export type TwinlistData = {
 <script setup lang="ts">
 import { markRaw, type Ref, ref, computed } from "vue";
 import { rendererProps } from "@jsonforms/vue";
-import { mergeDeep } from "@/nodeDialog/utils";
+import { mergeDeep } from "../../utils";
 import { MultiModeTwinList } from "@knime/components";
-import inject from "@/nodeDialog/utils/inject";
+import inject from "../../utils/inject";
 
-import type Control from "@/nodeDialog/types/Control";
+import type { Control } from "../../types/Control";
 import type { PartialDeep } from "type-fest";
 import TwinlistLoadingInfo from "../loading/TwinlistLoadingInfo.vue";
-import useDialogControl from "@/nodeDialog/composables/components/useDialogControl";
+import useDialogControl from "../../composables/components/useDialogControl";
 import LabeledControl from "../label/LabeledControl.vue";
-import useProvidedState from "@/nodeDialog/composables/components/useProvidedState";
+import useProvidedState from "../../composables/components/useProvidedState";
 import { DefaultSettingComparator } from "@knime/ui-extension-service";
-import { withSpecialChoices } from "@/nodeDialog/utils/getPossibleValuesFromUiSchema";
+import { withSpecialChoices } from "../../utils/getPossibleValuesFromUiSchema";
 import useUnknownValuesInTwinlist from "./useUnknownValuesInTwinlist";
 
 type ControlWithTwinlistData = {

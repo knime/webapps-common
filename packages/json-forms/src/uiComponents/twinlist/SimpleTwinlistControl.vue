@@ -2,12 +2,12 @@
 import { computed, markRaw } from "vue";
 import { rendererProps } from "@jsonforms/vue";
 import { Twinlist } from "@knime/components";
-import inject from "@/nodeDialog/utils/inject";
+import inject from "../../utils/inject";
 import TwinlistLoadingInfo from "../loading/TwinlistLoadingInfo.vue";
-import type { IdAndText } from "@/nodeDialog/types/ChoicesUiSchema";
-import useDialogControl from "@/nodeDialog/composables/components/useDialogControl";
+import type { IdAndText } from "../../types/ChoicesUiSchema";
+import useDialogControl from "../../composables/components/useDialogControl";
 import LabeledControl from "../label/LabeledControl.vue";
-import useProvidedState from "@/nodeDialog/composables/components/useProvidedState";
+import useProvidedState from "../../composables/components/useProvidedState";
 
 const props = defineProps({
   ...rendererProps(),

@@ -9,7 +9,7 @@ import getFlattenedSettings from "../utils/getFlattenedSettings";
 import type { SettingsData } from "../types/SettingsData";
 import { rendererProps } from "@jsonforms/vue";
 import type { Stringifyable } from "../composables/components/JsonSettingsComparator";
-import type { Result as ResultOfType } from "../../src/api/types/Result";
+import type { Result } from "../../src/api/types/Result";
 
 type Id = string; // NOSONAR intended type alias
 interface State {
@@ -26,7 +26,7 @@ interface ButtonChange {
   buttonState: Id;
 }
 
-type Result = ResultOfType<ButtonChange>;
+type ResultButtonChange = Result<ButtonChange>;
 
 const registerWatcher = inject("registerWatcher");
 const getData = inject("getData");
@@ -70,7 +70,7 @@ const setNextState = (dataServiceResult: ButtonChange) => {
 };
 
 const handleDataServiceResult = (
-  receivedData: Result,
+  receivedData: ResultButtonChange,
   resetCallback = () => {},
 ) => {
   const { state } = receivedData;
