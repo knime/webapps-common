@@ -14,9 +14,9 @@ import { cloneDeep } from "lodash-es";
 import { inject, markRaw, nextTick, ref } from "vue";
 import type ProvidedMethods from "./types/provided";
 import type { ProvidedForFlowVariables } from "./types/provided";
-import type SettingsData from "./types/SettingsData";
+import type { SettingsData } from "./types/SettingsData";
 import type { Update, UpdateResult } from "./types/Update";
-import type Control from "./types/Control";
+import type { Control } from "./types/Control";
 import getChoices from "./api/getChoices";
 import * as flowVariablesApi from "./api/flowVariables";
 import type { FlowSettings } from "./api/types";
@@ -24,7 +24,7 @@ import type { FlowSettings } from "./api/types";
 import useStateProviders from "./composables/nodeDialog/useStateProviders";
 import useUpdates from "./composables/nodeDialog/useUpdates";
 import useTriggers, {
-  TriggerCallback,
+  type TriggerCallback,
 } from "./composables/nodeDialog/useTriggers";
 import useGlobalWatchers from "./composables/nodeDialog/useGlobalWatchers";
 import { provideAndGetSetupMethod } from "./composables/nodeDialog/useDirtySettings";
