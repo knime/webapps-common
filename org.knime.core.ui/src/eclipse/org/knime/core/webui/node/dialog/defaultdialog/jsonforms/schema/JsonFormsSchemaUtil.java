@@ -355,6 +355,9 @@ public final class JsonFormsSchemaUtil {
     /** Add a "configKeys" array to the field if a custom persistor is used */
     private static void addConfigKeys(final ObjectNode node, final FieldScope field,
         final SchemaGenerationContext context) {
+        if (field.isFakeContainerItemScope()) {
+            return;
+        }
         var configKeys = ConfigKeyUtil.getConfigKeysUsedByField(field.getRawMember());
         if (configKeys.length > 0) {
             var configKeysNode = node.putArray("configKeys");

@@ -80,6 +80,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUti
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup.Modification;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup.WidgetGroupModifier;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
@@ -153,7 +154,7 @@ class JsonFormsSchemaUtilTest {
     }
 
     @Modification(ChangeDescription.class)
-    private static class ModifiedDescriptionSettings implements WidgetGroup {
+    private static class ModifiedDescriptionSettings implements WidgetGroup , PersistableSettings {
         /**
          * containing the modified description from {@link ChangeDescription}.
          */
@@ -227,6 +228,39 @@ class JsonFormsSchemaUtilTest {
     @Test
     void testModifiedDescriptionWithinArray() throws JsonProcessingException {
         testSettings(ModifiedDescriptionWithinArraySettings.class);
+    }
+
+    private static class ArrayWidgetWithConfigKeysTest implements WidgetGroup {
+        /**
+         * containing the modified description from {@link ChangeDescription}.
+         */
+        private static String SNAPSHOT = "{\"widgetGroup\":{\"type\":\"array\","
+            + "\"configKeys\":[\"configKey\"],"
+            + "\"items\":" //
+            + "{\"type\":\"object\",\"properties\":" //
+            + "{\"test\":{\"type\":\"integer\",\"format\":\"int32\",\"default\":0,\"description\":\"modified description\"}" //
+            + "}}}}";
+
+        static final class FieldReference implements Reference<String> {
+
+        }
+
+        static final class WidgetGroupSettings implements WidgetGroup {
+
+            @Widget(title = "", description = "some description")
+            @Modification.WidgetReference(ChangeDescription.FieldReference.class)
+            int test;
+        }
+
+        @Modification(ChangeDescription.class)
+        WidgetGroupSettings[] m_configKey;
+
+    }
+
+
+    @Test
+    void testArrayWidgetWithConfigKeys() throws JsonProcessingException {
+
     }
 
     @Test
