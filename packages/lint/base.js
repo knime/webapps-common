@@ -208,6 +208,14 @@ module.exports = {
         },
       },
     ],
+    // This rule forces named imports to be sorted alphabetically
+    "sort-imports": [
+      "error",
+      {
+        ignoreDeclarationSort: true, // Prevents conflict with import/order
+        ignoreCase: false, // Case-sensitive sorting
+      },
+    ],
   },
   overrides: [
     {
