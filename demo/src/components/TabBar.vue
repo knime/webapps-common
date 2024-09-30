@@ -1,11 +1,12 @@
 <script>
-import CodeExample from "./demo/CodeExample.vue";
 import { TabBar } from "@knime/components";
-// import tabbarCode from "webapps-common/ui/components/TabBar.vue?raw";
-const tabbarCode = "";
 import BulbIcon from "@knime/styles/img/icons/bulb.svg";
 import HelpIcon from "@knime/styles/img/icons/circle-help.svg";
 import StarIcon from "@knime/styles/img/icons/star.svg";
+
+import CodeExample from "./demo/CodeExample.vue";
+// import tabbarCode from "webapps-common/ui/components/TabBar.vue?raw";
+const tabbarCode = "";
 
 const codeExampleStandalone = `<script>
 import TabBar from '~/webapps-common/ui/components/TabBar.vue';

@@ -1,13 +1,13 @@
 <script lang="ts">
-import { type PropType, nextTick } from "vue";
 import { OnClickOutside } from "@vueuse/components";
 import { isEmpty } from "lodash-es";
+import { type PropType } from "vue";
 import { computed, ref, toRefs, watch } from "vue";
-
 import DropdownIcon from "@knime/styles/img/icons/arrow-dropdown.svg";
+import CloseIcon from "@knime/styles/img/icons/close.svg";
+
 import "../variables.css";
 import useSearch from "../../../composables/useSearch";
-import CloseIcon from "@knime/styles/img/icons/close.svg";
 import FunctionButton from "../../Buttons/FunctionButton.vue";
 
 type Id = string | number;

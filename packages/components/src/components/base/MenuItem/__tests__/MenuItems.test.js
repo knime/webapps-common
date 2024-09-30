@@ -1,10 +1,10 @@
+import { mount, shallowMount } from "@vue/test-utils";
 import { describe, it, expect, vi, beforeEach, beforeAll } from "vitest";
 import { defineComponent, ref } from "vue";
-import { mount, shallowMount } from "@vue/test-utils";
 
-import MenuItems from "../MenuItems.vue";
-
+import useDropdownNavigation from "../../../../composables/useDropdownNavigation";
 import BaseMenuItems from "../BaseMenuItems.vue";
+import MenuItems from "../MenuItems.vue";
 
 const dropdownNavigation = {
   currentIndex: ref(1),
@@ -14,7 +14,6 @@ const dropdownNavigation = {
 vi.mock("../../../../composables/useDropdownNavigation", () => ({
   default: vi.fn(() => dropdownNavigation),
 }));
-import useDropdownNavigation from "../../../../composables/useDropdownNavigation";
 
 describe("MenuItems.vue", () => {
   it("passes down all props", () => {

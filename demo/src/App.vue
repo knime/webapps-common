@@ -1,5 +1,4 @@
 <script>
-import { defineAsyncComponent, h as createElement } from "vue";
 import "./assets/index.css";
 
 import {
@@ -8,15 +7,16 @@ import {
   ToastStack,
   ToastServiceProvider,
 } from "@knime/components";
-import ImageIcon from "@knime/styles/img/icons/media-image.svg";
-import InteractiveIcon from "@knime/styles/img/icons/interactive.svg";
-import PaletteIcon from "@knime/styles/img/icons/color-palette.svg";
 import CheckboxIcon from "@knime/styles/img/icons/checkboxes.svg";
-import ViewListIcon from "@knime/styles/img/icons/view-list.svg";
+import PaletteIcon from "@knime/styles/img/icons/color-palette.svg";
 import UnknownIcon from "@knime/styles/img/icons/file-question.svg";
+import InteractiveIcon from "@knime/styles/img/icons/interactive.svg";
 import ListThumbs from "@knime/styles/img/icons/list-thumbs.svg";
-import HeadlineWithAnchorLink from "./components/demo/HeadlineWithAnchorLink.vue";
+import ImageIcon from "@knime/styles/img/icons/media-image.svg";
+import ViewListIcon from "@knime/styles/img/icons/view-list.svg";
+import { defineAsyncComponent, h as createElement } from "vue";
 
+import HeadlineWithAnchorLink from "./components/demo/HeadlineWithAnchorLink.vue";
 import NpmLink from "./components/demo/NpmLink.vue";
 
 const demoComponents = {

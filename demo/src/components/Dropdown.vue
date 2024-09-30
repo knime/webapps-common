@@ -1,13 +1,14 @@
 <!-- eslint-disable max-lines -->
 <script>
-import CodeExample from "./demo/CodeExample.vue";
 import { Dropdown, LoadingIcon } from "@knime/components";
-// import code from "webapps-common/ui/components/forms/Dropdown.vue?raw";
-const code = "";
-import DisconnectIcon from "@knime/styles/img/icons/nodes-disconnect.svg";
-import RocketIcon from "@knime/styles/img/icons/rocket.svg";
 import DiamondIcon from "@knime/styles/img/icons/diamond.svg";
 import EarlyBirdIcon from "@knime/styles/img/icons/early-bird.svg";
+import DisconnectIcon from "@knime/styles/img/icons/nodes-disconnect.svg";
+import RocketIcon from "@knime/styles/img/icons/rocket.svg";
+
+import CodeExample from "./demo/CodeExample.vue";
+// import code from "webapps-common/ui/components/forms/Dropdown.vue?raw";
+const code = "";
 
 const codeExample = `<Dropdown
   v-model="selected"

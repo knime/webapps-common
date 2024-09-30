@@ -1,4 +1,11 @@
 <script>
+import CalendarIcon from "@knime/styles/img/icons/calendar.svg";
+import {
+  getLocalTimeZone,
+  isAfterMaxDate,
+  isBeforeMinDate,
+  updateDate,
+} from "@knime/utils";
 import {
   isValid,
   parse,
@@ -8,19 +15,13 @@ import {
   setSeconds,
 } from "date-fns";
 import { format, utcToZonedTime, zonedTimeToUtc } from "date-fns-tz";
-import { DatePicker } from "v-calendar";
-import {
-  getLocalTimeZone,
-  isAfterMaxDate,
-  isBeforeMinDate,
-  updateDate,
-} from "@knime/utils";
-import CalendarIcon from "@knime/styles/img/icons/calendar.svg";
-import TimePartInput from "../TimePartInput/TimePartInput.vue";
-import { resolveClientOnlyComponent } from "../../nuxtComponentResolver";
-import "../variables.css";
-import Dropdown from "../Dropdown/Dropdown.vue";
 import { map } from "lodash-es";
+import { DatePicker } from "v-calendar";
+
+import { resolveClientOnlyComponent } from "../../nuxtComponentResolver";
+import Dropdown from "../Dropdown/Dropdown.vue";
+import TimePartInput from "../TimePartInput/TimePartInput.vue";
+import "../variables.css";
 
 /**
  * DateTime component shows input field with a button and a popover calendar to choose the date. Time is represented

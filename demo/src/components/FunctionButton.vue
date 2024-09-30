@@ -1,13 +1,14 @@
 <script>
-import CodeExample from "./demo/CodeExample.vue";
 import { FunctionButton } from "@knime/components";
+import SorterIcon from "@knime/styles/img/icons/arrows-order.svg";
+import LensIcon from "@knime/styles/img/icons/lens.svg";
+import MenuOptionsIcon from "@knime/styles/img/icons/menu-options.svg";
+
+import CodeExample from "./demo/CodeExample.vue";
 // import functionButtonCode from "webapps-common/ui/components/FunctionButton.vue?raw";
 const functionButtonCode = "";
 // import baseButtonCode from "webapps-common/ui/components/BaseButton.vue?raw";
 const baseButtonCode = "";
-import MenuOptionsIcon from "@knime/styles/img/icons/menu-options.svg";
-import LensIcon from "@knime/styles/img/icons/lens.svg";
-import SorterIcon from "@knime/styles/img/icons/arrows-order.svg";
 
 const codeExample = `
   <FunctionButton :active="active1">
