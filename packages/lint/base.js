@@ -171,6 +171,7 @@ module.exports = {
         ignoreRestSiblings: true,
       },
     ],
+    // Force imports to be grouped and sorted alphabetically
     "import/order": [
       "error",
       {
@@ -178,22 +179,28 @@ module.exports = {
           "builtin",
           "external",
           "internal",
-          ["parent", "sibling", "index", "object", "type"],
+          "parent",
+          ["index", "sibling"],
         ],
         pathGroups: [
           {
-            pattern: "*(@)+(vue|nuxt|vite|vitejs|vitest)",
+            pattern: "*(@)+(vue|vueuse|nuxt|vite|vitejs|vitest|#*)", // # used in Nuxt
             group: "external",
             position: "before",
           },
           {
-            pattern: "*(@)+(vue|nuxt|vite|vitejs|vitest)/**",
+            pattern: "*(@)+(vue|vueuse|nuxt|vite|vitejs|vitest|#*)/**",
             group: "external",
             position: "before",
           },
           {
             pattern: "@knime/**",
             group: "internal",
+            position: "before",
+          },
+          {
+            pattern: "@api",
+            group: "parent",
             position: "before",
           },
           {
@@ -206,14 +213,15 @@ module.exports = {
         alphabetize: {
           order: "asc",
         },
+        pathGroupsExcludedImportTypes: ["builtin"],
+        distinctGroup: false,
       },
     ],
-    // This rule forces named imports to be sorted alphabetically
+    // Force named imports to be sorted alphabetically
     "sort-imports": [
       "error",
       {
-        ignoreDeclarationSort: true, // Prevents conflict with import/order
-        ignoreCase: false, // Case-sensitive sorting
+        ignoreDeclarationSort: true, // prevents conflict with import/order
       },
     ],
   },
