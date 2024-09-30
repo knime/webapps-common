@@ -175,8 +175,8 @@ public final class JsonFormsUiSchemaUtil {
         List.of(TextMessage.class);
 
     private static boolean isHiddenOrLatent(final WidgetTreeNode node) {
-        final var isHidden = node.getAnnotation(Widget.class).isEmpty()
-            && VISIBLE_WITHOUT_WIDGET_ANNOTATION.stream().map(node::getAnnotation).allMatch(Optional::isEmpty);
+        final var isHidden = node.getAnnotation(Widget.class).isEmpty() && VISIBLE_WITHOUT_WIDGET_ANNOTATION.stream()
+            .filter(node.getPossibleAnnotations()::contains).map(node::getAnnotation).allMatch(Optional::isEmpty);
         final var isLatent = node.getAnnotation(LatentWidget.class).isPresent();
         return isHidden || isLatent;
     }
