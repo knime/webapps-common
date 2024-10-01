@@ -199,7 +199,7 @@ module.exports = {
             position: "before",
           },
           {
-            pattern: "@api",
+            pattern: "@@/**",
             group: "parent",
             position: "before",
           },
