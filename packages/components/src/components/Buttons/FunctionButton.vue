@@ -94,6 +94,7 @@ export default {
   --icon-size-compact: 16;
   --icon-size: var(--icon-size-default);
 
+  display: flex;
   text-align: center;
   font-weight: 500;
   font-size: 13px;
@@ -126,9 +127,9 @@ export default {
     padding: 6px;
     width: var(--size);
     height: var(--size);
-    display: flex;
     align-items: center;
     justify-content: center;
+    align-self: center;
   }
 
   & :deep(svg) {

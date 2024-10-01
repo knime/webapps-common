@@ -96,9 +96,15 @@ export default {
             <span>Function</span>
             <SorterIcon />
           </FunctionButton>
+
           <FunctionButton primary>
             <MenuOptionsIcon />
           </FunctionButton>
+
+          <FunctionButton primary compact>
+            <MenuOptionsIcon />
+          </FunctionButton>
+
           <FunctionButton disabled>
             <span>Disabled Function</span>
             <SorterIcon />
