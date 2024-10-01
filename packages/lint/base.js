@@ -171,6 +171,7 @@ module.exports = {
         ignoreRestSiblings: true,
       },
     ],
+    "import/newline-after-import": "error",
     // Force imports to be grouped and sorted alphabetically
     "import/order": [
       "error",
