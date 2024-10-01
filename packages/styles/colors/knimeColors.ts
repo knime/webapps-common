@@ -57,9 +57,11 @@ export const MasalaSemi = "hsla(12, 4.2%, 23.3%, 0.5)"; /* #3E3A3980 */
 export const GrayDarkSemi = "hsla(195, 1.6%, 51.8%, 0.4)"; /* #82858680 */
 export const SilverSandSemi = "hsla(200, 5%, 76.5%, 0.5)"; /* #C0C4C680 */
 export const GrayLightSemi = "hsla(200, 10%, 94%, 0.4)"; /* #EFF1F266 */
-export const MessageInfoLight = "hsl(206, 47%, 97%)"; /* #F4F8FB */
-export const MessageWarningLight = "hsl(30, 100%, 98%)"; /* #FFFAF5 */
-export const MessageErrorDark = "hsl(357, 72%, 45%)"; /* #C72128 */
-export const MessageErrorLight = "hsl(0, 57%, 97%)"; /* #FCF4F4 */
-export const MessageSuccessLight = "hsl(130, 43%, 97%)"; /* #F5FBF6 */
-export const MessagePromotionLight = "hsl(51, 100%, 97%)"; /* #FFFDF2 */
+
+/* different shades of the secondary colors, names will be changed */
+export const CornflowerUltraLight = "hsl(206, 47%, 97%)"; /* #F4F8FB */
+export const CarrotUltraLight = "hsl(30, 100%, 98%)"; /* #FFFAF5 */
+export const ErrorRed = "hsl(357.5, 71.6%, 45.5%)"; /* #C72128 */
+export const ErrorRedUltraLight = "hsl(0, 57%, 97%)"; /* #FCF4F4 */
+export const MeadowUltraLight = "hsl(130, 43%, 97%)"; /* #F5FBF6 */
+export const YellowUltraLight = "hsl(51, 100%, 97%)"; /* #FFFDF2 */

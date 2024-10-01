@@ -65,7 +65,7 @@ defineProps<{
 
   &.info {
     border-color: var(--knime-cornflower);
-    background-color: var(--knime-message-info-light);
+    background-color: var(--knime-cornflower-ultra-light);
 
     & .icon {
       stroke: var(--knime-cornflower);
@@ -74,7 +74,7 @@ defineProps<{
 
   &.warning {
     border-color: var(--knime-carrot);
-    background-color: var(--knime-message-warning-light);
+    background-color: var(--knime-carrot-ultra-light);
 
     & .icon {
       stroke: var(--knime-carrot);
@@ -82,26 +82,26 @@ defineProps<{
   }
 
   &.error {
-    border-color: var(--knime-message-error-dark);
-    background-color: var(--knime-message-error-light);
+    border-color: var(--knime-error-red);
+    background-color: var(--knime-error-red-ultra-light);
 
     & .icon {
-      stroke: var(--knime-message-error-dark);
+      stroke: var(--knime-error-red);
     }
   }
 
   &.success {
-    border-color: var(--knime-meadow);
-    background-color: var(--knime-message-success-light);
+    border-color: var(--knime-meadow-dark);
+    background-color: var(--knime-meadow-ultra-light);
 
     & .icon {
-      stroke: var(--knime-meadow);
+      stroke: var(--knime-meadow-dark);
     }
   }
 
   &.promotion {
     border-color: var(--knime-yellow);
-    background-color: var(--knime-message-promotion-light);
+    background-color: var(--knime-yellow-ultra-light);
 
     & .icon {
       stroke: var(--knime-yellow);
