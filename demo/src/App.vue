@@ -153,6 +153,9 @@ const demoComponents = {
     RichTextEditor: defineAsyncComponent(
       () => import("./components/RichTextEditor.vue"),
     ),
+    FileUpload: defineAsyncComponent(
+      () => import("./components/FileUpload.vue"),
+    ),
   },
   misc: {
     NodePreview: defineAsyncComponent(

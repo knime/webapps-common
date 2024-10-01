@@ -41,6 +41,9 @@ import TabBar from "./TabBar/TabBar.vue";
 import Tag from "./Tag/Tag.vue";
 import TagList from "./Tag/TagList.vue";
 import Tooltip from "./Tooltip/Tooltip.vue";
+import ProgressBar from "./ProgressBar/ProgressBar.vue";
+import ProgressItem from "./ProgressItem/ProgressItem.vue";
+import StatusPill from "./StatusPill/StatusPill.vue";
 
 import svgWithTitle from "./SvgWithTitle/svgWithTitle";
 
@@ -94,4 +97,7 @@ export {
   TagList,
   Tooltip,
   svgWithTitle,
+  ProgressBar,
+  ProgressItem,
+  StatusPill,
 };

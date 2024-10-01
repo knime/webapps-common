@@ -22,6 +22,8 @@ import TimePartInput from "./TimePartInput/TimePartInput.vue";
 import ToggleSwitch from "./ToggleSwitch/ToggleSwitch.vue";
 import Twinlist from "./Twinlist/Twinlist.vue";
 import ValueSwitch from "./ValueSwitch/ValueSwitch.vue";
+import FileUpload from "./FileUpload/FileUpload.vue";
+import ProgressList from "./ProgressList/ProgressList.vue";
 
 export {
   Checkbox,
@@ -48,4 +50,6 @@ export {
   ToggleSwitch,
   Twinlist,
   ValueSwitch,
+  FileUpload,
+  ProgressList,
 };
