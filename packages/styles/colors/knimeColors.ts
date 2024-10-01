@@ -11,8 +11,6 @@ export const SilverSand = "hsl(200, 5%, 76.5%)"; /* #C0C4C6 */
 export const Porcelain = "hsl(200, 10.33%, 94.3%)"; /* #EFF1F2 */
 export const White = "hsl(0, 0%, 100%)"; /* #FFFFFF */
 
-export const LightWarningStatusPill = "hsl(30, 100%, 98%)"; /* #FFFAF5 */
-
 /* secondary colors from the corporate styleguide */
 export const Aquamarine = "hsl(188, 63%, 71.4%)"; /* #88d8e4 */
 export const AquamarineDark = "hsl(193, 60.9%, 43.1%)"; /* #2b94b1 */

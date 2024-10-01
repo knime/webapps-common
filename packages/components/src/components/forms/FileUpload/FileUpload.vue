@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref, computed } from "vue";
 import ProgressLists from "../ProgressList/ProgressList.vue";
-import File from "@knime/styles/img/icons/file.svg";
+import File from "@knime/styles/img/icons/file-plus.svg";
 import Label from "../Label/Label.vue";
 import Button from "../../../components/Buttons/Button.vue";
 

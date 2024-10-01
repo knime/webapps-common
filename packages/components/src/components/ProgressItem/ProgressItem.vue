@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import ProgressBar from "../ProgressBar/ProgressBar.vue";
 import StatusPill from "../StatusPill/StatusPill.vue";
-import filePlus from "@knime/styles/img/icons/file-plus.svg";
+import filePlus from "@knime/styles/img/icons/file.svg";
 import Close from "@knime/styles/img/icons/close.svg";
 import CircleClose from "@knime/styles/img/icons/circle-close.svg";
 import Trash from "@knime/styles/img/icons/trash.svg";
