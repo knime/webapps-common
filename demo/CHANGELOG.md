@@ -1,5 +1,15 @@
 # demo
 
+## 1.0.41
+
+### Patch Changes
+
+- 7762ab2: minor improvements for api error template
+- Updated dependencies [7762ab2]
+  - @knime/components@1.2.4
+  - @knime/rich-text-editor@1.2.15
+  - @knime/virtual-tree@1.0.1
+
 ## 1.0.40
 
 ### Patch Changes

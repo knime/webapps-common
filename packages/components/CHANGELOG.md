@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.2.4
+
+### Patch Changes
+
+- 7762ab2: minor improvements for api error template
+
 ## 1.2.3
 
 ### Patch Changes
