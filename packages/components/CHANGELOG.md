@@ -1,5 +1,14 @@
 # @knime/components
 
+## 1.2.5
+
+### Patch Changes
+
+- bdc6195: Adjust color names to default color naming scheme
+- Updated dependencies [bdc6195]
+  - @knime/styles@1.0.10
+  - @knime/utils@1.0.15
+
 ## 1.2.4
 
 ### Patch Changes

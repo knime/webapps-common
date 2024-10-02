@@ -1,5 +1,16 @@
 # demo
 
+## 1.0.42
+
+### Patch Changes
+
+- Updated dependencies [bdc6195]
+  - @knime/components@1.2.5
+  - @knime/styles@1.0.10
+  - @knime/rich-text-editor@1.2.16
+  - @knime/virtual-tree@1.0.2
+  - @knime/utils@1.0.15
+
 ## 1.0.41
 
 ### Patch Changes

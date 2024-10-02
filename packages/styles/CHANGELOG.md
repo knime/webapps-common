@@ -1,5 +1,11 @@
 # @knime/styles
 
+## 1.0.10
+
+### Patch Changes
+
+- bdc6195: Adjust color names to default color naming scheme
+
 ## 1.0.9
 
 ### Patch Changes
