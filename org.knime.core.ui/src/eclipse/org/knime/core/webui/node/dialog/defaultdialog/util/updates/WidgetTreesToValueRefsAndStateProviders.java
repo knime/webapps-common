@@ -54,6 +54,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.ClassUtils;
@@ -222,7 +223,8 @@ final class WidgetTreesToValueRefsAndStateProviders {
     private void addValueRef(final Class<? extends Reference> valueRef, final Class<?> type,
         final PathsWithSettingsType pathWithSettingsKey) {
         if (!valueRef.equals(Reference.class)) {
-            validateAgainstType(type, valueRef, Reference.class);
+            validateAgainstType(type, valueRef, Reference.class,
+                (field, annotationValue) -> annotationValue.isAssignableFrom(field));
             m_valueRefs.add(new ValueRefWrapper(valueRef, pathWithSettingsKey));
         }
     }
@@ -230,27 +232,31 @@ final class WidgetTreesToValueRefsAndStateProviders {
     private void addValueProvider(final Class<? extends StateProvider> valueProviderClass, final Class<?> fieldType,
         final PathsWithSettingsType pathWithSettingsKey) {
         if (!valueProviderClass.equals(StateProvider.class)) {
-            validateAgainstType(fieldType, valueProviderClass, StateProvider.class);
+            validateAgainstType(fieldType, valueProviderClass, StateProvider.class,
+                (field, annotationValue) -> field.isAssignableFrom(annotationValue));
             m_valueProviders.add(new ValueProviderWrapper(valueProviderClass, pathWithSettingsKey));
         }
     }
 
     private static <T> void validateAgainstType(final Class<?> fieldType, final Class<? extends T> implementingClass,
-        final Class<T> genericInterface) {
+        final Class<T> genericInterface, final BiPredicate<Class<?>, Class<?>> testFieldAgainstAnnotationGeneric) {
 
         final var genericType = GenericTypeFinderUtil.getFirstGenericType(implementingClass, genericInterface);
         if (genericType instanceof Class<?> genericTypeClass) {
-            validateAgainstClass(fieldType, implementingClass, genericInterface, genericTypeClass);
+            validateAgainstClass(fieldType, implementingClass, genericInterface, genericTypeClass,
+                testFieldAgainstAnnotationGeneric);
         } else if (genericType instanceof ParameterizedType parameterizedType) {
             validateAgainstClass(fieldType, implementingClass, genericInterface,
-                (Class<?>)parameterizedType.getRawType());
+                (Class<?>)parameterizedType.getRawType(), testFieldAgainstAnnotationGeneric);
         }
         // No validation for more complex types
     }
 
     private static <T> void validateAgainstClass(final Class<?> fieldType, final Class<? extends T> implementingClass,
-        final Class<T> genericInterface, final Class<?> genericTypeClass) {
-        CheckUtils.check(ClassUtils.primitiveToWrapper(fieldType).isAssignableFrom(genericTypeClass),
+        final Class<T> genericInterface, final Class<?> genericTypeClass,
+        final BiPredicate<Class<?>, Class<?>> testFieldAgainstAnnotationGeneric) {
+        CheckUtils.check(
+            testFieldAgainstAnnotationGeneric.test(ClassUtils.primitiveToWrapper(fieldType), genericTypeClass),
             UiSchemaGenerationException::new,
             () -> String.format(
                 "The generic type \"%s\" of the %s \"%s\" does not match the type \"%s\" of the annotated field",
