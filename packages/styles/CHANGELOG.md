@@ -1,5 +1,11 @@
 # @knime/styles
 
+## 1.0.11
+
+### Patch Changes
+
+- fixed sizing on local-space and execution-context-shared icons
+
 ## 1.0.10
 
 ### Patch Changes
