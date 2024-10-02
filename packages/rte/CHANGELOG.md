@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- Updated dependencies [bdc6195]
+- Updated dependencies [337e26b]
   - @knime/components@1.2.5
   - @knime/styles@1.0.10
   - @knime/utils@1.0.15

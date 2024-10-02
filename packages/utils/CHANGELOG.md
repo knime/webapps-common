@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- Updated dependencies [bdc6195]
+- Updated dependencies [337e26b]
   - @knime/styles@1.0.10
 
 ## 1.0.14

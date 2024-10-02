@@ -4,8 +4,8 @@
 
 ### Patch Changes
 
-- bdc6195: Adjust color names to default color naming scheme
-- Updated dependencies [bdc6195]
+- 337e26b: Adjust color names to default color naming scheme
+- Updated dependencies [337e26b]
   - @knime/styles@1.0.10
   - @knime/utils@1.0.15
 
