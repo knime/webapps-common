@@ -117,6 +117,8 @@ const copyToClipboard = () => {
 
   & .details-list {
     padding-left: 25px;
+    margin-top: 6px;
+    margin-bottom: 6px;
   }
 }
 
@@ -136,6 +138,7 @@ const copyToClipboard = () => {
   & .button {
     font-size: 13px;
     padding: 0;
+    margin-top: 10px;
 
     & svg {
       margin-top: 2px;
