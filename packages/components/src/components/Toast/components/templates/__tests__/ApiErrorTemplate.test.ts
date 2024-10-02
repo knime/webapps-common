@@ -13,6 +13,7 @@ vi.mock("@vueuse/core", () => ({
 
 describe("ApiErrorTemplate", () => {
   const defaultProps = {
+    headline: "Toast headline",
     title: "There was an error",
     details: ["Here", "are", "the", "deets"],
     status: 500,
@@ -37,8 +38,20 @@ describe("ApiErrorTemplate", () => {
     };
   };
 
-  it("renders relevant information", () => {
+  it("is collapsed initially", () => {
     const { wrapper } = doMount();
+    expect(wrapper.find(".title").text()).toBe(defaultProps.title);
+    expect(wrapper.text()).toContain("Show details");
+    expect(wrapper.text()).not.toContain("Status: 500");
+    expect(wrapper.text()).not.toContain("Date: Dec 12, 2012, 12:00:00 AM");
+    expect(wrapper.text()).not.toContain(
+      `Request id: ${defaultProps.requestId}`,
+    );
+  });
+
+  it("renders relevant information", async () => {
+    const { wrapper } = doMount();
+    await wrapper.find("button").trigger("click");
     expect(wrapper.find(".title").text()).toBe(defaultProps.title);
     const details = wrapper.find(".details").text();
     defaultProps.details.forEach((item) => {
@@ -49,11 +62,12 @@ describe("ApiErrorTemplate", () => {
     expect(wrapper.text()).toContain(`Request id: ${defaultProps.requestId}`);
   });
 
-  it("renders optional errorId", () => {
+  it("renders optional errorId", async () => {
     const { wrapper } = doMount({
       ...defaultProps,
       errorId: "extremely-fatal-error",
     } as any);
+    await wrapper.find("button").trigger("click");
     expect(wrapper.text()).toContain("extremely-fatal-error");
   });
 
@@ -63,7 +77,8 @@ describe("ApiErrorTemplate", () => {
       errorId: "extremely-fatal-error",
     } as any);
     expect(useClipboardMock).toHaveBeenCalled();
-    await wrapper.find("button").trigger("click");
+    await wrapper.find("button").trigger("click"); // first show details
+    await wrapper.find("button").trigger("click"); // then the clipboard button
     expect(copyMock).toHaveBeenCalled();
     // @ts-ignore
     const copiedText = copyMock.mock.calls[0][0];
@@ -79,6 +94,7 @@ describe("ApiErrorTemplate", () => {
 
   it("updates button text on copy", async () => {
     const { wrapper } = doMount();
+    await wrapper.find("button").trigger("click");
     expect(wrapper.find("button").text()).toBe("Copy error to clipboard");
     await wrapper.find("button").trigger("click");
     expect(wrapper.find("button").text()).toBe("Error was copied");

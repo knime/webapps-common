@@ -2,10 +2,11 @@
 import { Button } from "@knime/components";
 import CopyIcon from "@knime/styles/img/icons/copy.svg";
 import { useClipboard } from "@vueuse/core";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 
 // see https://www.rfc-editor.org/rfc/rfc9457 for api error specification
 interface ApiErrorTemplateProps {
+  headline: string; // toast headline, will not be displayed here but needed when copying to clipboard
   title: string;
   details?: string[];
   status: number;
@@ -19,6 +20,8 @@ const props = defineProps<ApiErrorTemplateProps>();
 const { copy, copied } = useClipboard({
   copiedDuring: 3000,
 });
+
+const showDetails = ref(false);
 
 const dateFormatOptions = {
   year: "numeric",
@@ -48,7 +51,8 @@ const errorForClipboard = computed(() => {
       details = props.details[0];
     }
   }
-  let errorText = `${props.title}\n\n`;
+  let errorText = `${props.headline}\n\n`;
+  errorText += `${props.title}\n\n`;
   errorText += details ? `Details: ${details}\n\n` : "";
 
   errorText += `Status: ${props.status}\n`;
@@ -73,23 +77,30 @@ const copyToClipboard = () => {
     <div class="title">
       {{ props.title }}
     </div>
-    <div v-if="props.details?.length" class="details">
-      <strong>Details:</strong>
-      <template v-if="props.details.length == 1">
-        {{ props.details[0] }}
-      </template>
-      <template v-else>
-        <ul>
-          <li v-for="(item, index) in details" :key="index">{{ item }}</li>
-        </ul>
-      </template>
-    </div>
-    <div><strong>Status: </strong>{{ status }}</div>
-    <div><strong>Date: </strong>{{ formattedDate }}</div>
-    <div><strong>Request id: </strong>{{ requestId }}</div>
-    <div v-if="errorId"><strong>Error id: </strong>{{ errorId }}</div>
-    <div class="copy-button-wrapper">
-      <Button @click="copyToClipboard"><CopyIcon />{{ copyButtonText }}</Button>
+    <button v-if="!showDetails" class="show-more" @click="showDetails = true">
+      Show details
+    </button>
+    <div v-if="showDetails" class="additional-info">
+      <div v-if="props.details?.length" class="details">
+        <strong>Details:</strong>
+        <template v-if="props.details.length == 1">
+          {{ props.details[0] }}
+        </template>
+        <template v-else>
+          <ul class="details-list">
+            <li v-for="(item, index) in details" :key="index">{{ item }}</li>
+          </ul>
+        </template>
+      </div>
+      <div><strong>Status: </strong>{{ status }}</div>
+      <div><strong>Date: </strong>{{ formattedDate }}</div>
+      <div><strong>Request id: </strong>{{ requestId }}</div>
+      <div v-if="errorId"><strong>Error id: </strong>{{ errorId }}</div>
+      <div class="copy-button-wrapper">
+        <Button @click="copyToClipboard"
+          ><CopyIcon />{{ copyButtonText }}</Button
+        >
+      </div>
     </div>
   </div>
 </template>
@@ -103,6 +114,22 @@ const copyToClipboard = () => {
 
 .details {
   margin: 12px 0;
+
+  & .details-list {
+    padding-left: 25px;
+  }
+}
+
+.show-more {
+  all: unset;
+  cursor: pointer;
+  font-weight: 500;
+  white-space: nowrap;
+
+  &:active,
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .copy-button-wrapper {

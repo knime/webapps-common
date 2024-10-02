@@ -29,7 +29,6 @@ const props = withDefaults(defineProps<Toast>(), {
   active: true,
   buttons: () => [],
   stackId: "default",
-  width: 350,
 });
 
 const availableHeadline = computed(() => {
@@ -146,11 +145,7 @@ watch(toRef(props, "active"), (active) => {
 </script>
 
 <template>
-  <div
-    ref="toastRef"
-    :class="['toast', type]"
-    :style="{ '--toast-width': `${width}px` }"
-  >
+  <div ref="toastRef" :class="['toast', type]">
     <div
       v-show="active"
       class="container"

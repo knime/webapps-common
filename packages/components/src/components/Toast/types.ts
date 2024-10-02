@@ -68,7 +68,6 @@ export interface Toast {
   key?: string;
   meta?: any;
   stackId?: string;
-  width?: number;
 }
 
 export interface ToastService {

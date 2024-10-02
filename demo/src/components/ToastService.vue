@@ -328,6 +328,7 @@ const callbackToast: Toast = {
 };
 
 const apiError = h(ApiErrorTemplate, {
+  headline: "Deployment could not be created",
   title:
     "Could not load the workflow from the deployment. Check if the workflow version for this deployment is still available.",
   details: [
@@ -343,8 +344,8 @@ const apiError = h(ApiErrorTemplate, {
 const apiErrorToast: Toast = {
   type: "error",
   headline: "Deployment could not be created",
+  autoRemove: false,
   component: apiError,
-  width: 400,
 };
 </script>
 
