@@ -3,7 +3,7 @@
  * Thin wrapper around the tree library with added KNIME styles and UX.
  */
 import { ref, nextTick } from "vue";
-import VirtualTree from "../baseTree";
+import BaseTree, { type EventParams } from "../baseTree";
 
 import {
   type LoadDataFunc,
@@ -22,6 +22,7 @@ interface Props {
   source: TreeNodeOptions[];
   loadData?: LoadDataFunc;
   selectable?: boolean;
+  expandedKeys?: string[];
   idPrefix?: string;
 }
 
@@ -29,15 +30,17 @@ const props = withDefaults(defineProps<Props>(), {
   // eslint-disable-next-line no-undefined
   loadData: undefined,
   selectable: true,
+  expandedKeys: () => [],
   idPrefix: "tree",
 });
 
 const emit = defineEmits<{
   keydown: [value: KeydownEvent];
   selectChange: [value: SelectEventParams];
+  expandChange: [value: EventParams];
 }>();
 
-const baseTree = ref<InstanceType<typeof VirtualTree>>();
+const baseTree = ref<InstanceType<typeof BaseTree>>();
 
 const focusedNodeKey = ref<NodeKey | null>();
 
@@ -127,17 +130,19 @@ defineExpose({
 </script>
 
 <template>
-  <VirtualTree
+  <BaseTree
     ref="baseTree"
     class="virtual-tree"
     :source="source"
     :load-data="loadData"
     disable-deselect
     :default-selected-key="selectedKey"
+    :default-expanded-keys="expandedKeys"
     :aria-activedescendant="domNodeId(focusedNodeKey)"
     @keydown="onTreeKeydown"
     @focus-change="onFocusChange"
     @select-change="onSelectChange"
+    @expand-change="$emit('expandChange', $event)"
   >
     <template #node="{ node }: { node: BaseTreeNode }">
       <span
@@ -178,7 +183,7 @@ defineExpose({
         <ArrowNextIcon v-else class="icon" />
       </slot>
     </template>
-  </VirtualTree>
+  </BaseTree>
 </template>
 
 <style lang="postcss" scoped>

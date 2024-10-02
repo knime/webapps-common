@@ -90,8 +90,9 @@ const handleCheckChange = () => {
 
 const handleExpand = () => {
   if (showArrow.value) {
+    const state = !treeContext.getExpandedKeys().includes(props.node.key);
     emit("toggleExpand", {
-      state: !treeContext.expandedKeys.has(props.node.key),
+      state,
       node: props.node,
     });
   }
