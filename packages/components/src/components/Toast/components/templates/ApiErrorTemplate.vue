@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Button } from "@knime/components";
 import CopyIcon from "@knime/styles/img/icons/copy.svg";
+import CheckIcon from "@knime/styles/img/icons/check.svg";
 import { useClipboard } from "@vueuse/core";
 import { computed, ref } from "vue";
 
@@ -63,10 +64,6 @@ const errorForClipboard = computed(() => {
   return errorText;
 });
 
-const copyButtonText = computed(() => {
-  return copied.value ? "Error was copied" : "Copy error to clipboard";
-});
-
 const copyToClipboard = () => {
   copy(errorForClipboard.value);
 };
@@ -97,9 +94,14 @@ const copyToClipboard = () => {
       <div><strong>Request id: </strong>{{ requestId }}</div>
       <div v-if="errorId"><strong>Error id: </strong>{{ errorId }}</div>
       <div class="copy-button-wrapper">
-        <Button @click="copyToClipboard"
-          ><CopyIcon />{{ copyButtonText }}</Button
-        >
+        <Button @click="copyToClipboard">
+          <template v-if="copied"
+            ><CheckIcon class="check-icon" />Error was copied</template
+          >
+          <template v-else
+            ><CopyIcon class="copy-icon" />Copy error to clipboard
+          </template>
+        </Button>
       </div>
     </div>
   </div>
@@ -139,11 +141,19 @@ const copyToClipboard = () => {
     font-size: 13px;
     padding: 0;
     margin-top: 10px;
+  }
+}
 
-    & svg {
-      margin-top: 2px;
-      width: 12px;
-    }
+.copy-icon {
+  &svg {
+    margin-top: 2px;
+    width: 12px;
+  }
+}
+
+.check-icon {
+  &svg {
+    width: 12px;
   }
 }
 </style>
