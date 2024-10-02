@@ -50,7 +50,6 @@ package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.WidgetTreesToValueRefsAndStateProviders.ValueRefWrapper;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider.TypeReference;
 
 /**
@@ -64,13 +63,13 @@ final class DependencyVertex extends Vertex implements ValueAndTypeReference {
 
     private final PathsWithSettingsType m_fieldLocation;
 
-    private final TypeReference m_typeReference;
+    private final TypeReference<?> m_typeReference;
 
     DependencyVertex(final ValueRefWrapper valueRefWrapper) {
         this(valueRefWrapper, null);
     }
 
-    DependencyVertex(final ValueRefWrapper valueRefWrapper, final StateProvider.TypeReference typeReference) {
+    DependencyVertex(final ValueRefWrapper valueRefWrapper, final TypeReference<?> typeReference) {
         m_ref = valueRefWrapper.valueRef();
         m_typeReference = typeReference;
         m_fieldLocation = valueRefWrapper.fieldLocation();
@@ -87,7 +86,7 @@ final class DependencyVertex extends Vertex implements ValueAndTypeReference {
     }
 
     @Override
-    public StateProvider.TypeReference getTypeReference() {
+    public TypeReference getTypeReference() {
         return m_typeReference;
     }
 

@@ -49,7 +49,7 @@
 package org.knime.core.webui.node.dialog.defaultdialog.util.updates;
 
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider.TypeReference;
 
 /**
  *
@@ -64,8 +64,8 @@ public interface ValueAndTypeReference {
 
     /**
      *
-     * @see StateProvider.TypeReference
+     * @see TypeReference
      * @return the optional type reference
      */
-    StateProvider.TypeReference getTypeReference();
+    TypeReference<?> getTypeReference();
 }

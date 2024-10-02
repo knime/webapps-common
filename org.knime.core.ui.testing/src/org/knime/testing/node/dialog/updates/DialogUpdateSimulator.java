@@ -111,7 +111,8 @@ public class DialogUpdateSimulator implements UpdateSimulator {
     }
 
     private TriggerResult<Integer> getTriggerResult(final String triggerId, final int... indices) {
-        final var trigger = m_listOfTriggers.stream().filter(t -> t.getTriggerId().equals(triggerId)).findFirst().get();
+        final var trigger = m_listOfTriggers.stream().filter(t -> t.getTriggerId().equals(triggerId)).findFirst()
+            .orElseThrow(() -> new IllegalArgumentException(String.format("No trigger of id %s found.", triggerId)));
         final var dependencyValues = trigger.extractDependencyValues(m_settings, m_context, indices);
         return m_triggerInvocationHandler.invokeTrigger(trigger.getTriggerId(), dependencyValues::get, m_context);
     }

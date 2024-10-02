@@ -239,7 +239,7 @@ final class WidgetTreesToValueRefsAndStateProviders {
         final Class<T> genericInterface) {
 
         final var genericType = GenericTypeFinderUtil.getFirstGenericType(implementingClass, genericInterface);
-        if (genericType instanceof Class genericTypeClass) {
+        if (genericType instanceof Class<?> genericTypeClass) {
             validateAgainstClass(fieldType, implementingClass, genericInterface, genericTypeClass);
         } else if (genericType instanceof ParameterizedType parameterizedType) {
             validateAgainstClass(fieldType, implementingClass, genericInterface,

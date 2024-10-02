@@ -100,7 +100,7 @@ class ButtonWidgetActionHandlerHolder extends HandlerHolder<ButtonActionHandler<
         final Class<? extends ButtonActionHandler<?, ?, ?>> handlerClass) {
         final var returnType = GenericTypeFinderUtil.getFirstGenericType(handlerClass, ButtonActionHandler.class);
         final var fieldType = field.getType();
-        if (returnType instanceof Class clazz) {
+        if (returnType instanceof Class<?> clazz) {
             return fieldType.getRawClass().isAssignableFrom(clazz);
         }
         return JsonFormsDataUtil.getMapper().constructType(returnType).equals(fieldType);

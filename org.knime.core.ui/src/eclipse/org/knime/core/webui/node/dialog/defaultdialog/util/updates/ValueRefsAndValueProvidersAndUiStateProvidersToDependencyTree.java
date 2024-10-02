@@ -174,7 +174,7 @@ final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
             }
 
             DependencyVertex getDependencyVertex(final Class<? extends Reference> valueRef,
-                final StateProvider.TypeReference typeReference) {
+                final TypeReference<?> typeReference) {
                 final var valueRefWrapper = findValueRefWrapper(valueRef);
                 return m_dependencyVertices.computeIfAbsent(valueRef,
                     v -> new DependencyVertex(valueRefWrapper, typeReference));
@@ -253,7 +253,8 @@ final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
 
         private final Collection<Class<? extends StateProvider>> m_stateProviders = new HashSet<>();
 
-        private final Collection<Pair<Class<? extends Reference>, TypeReference>> m_typedDependencies = new HashSet<>();
+        private final Collection<Pair<Class<? extends Reference>, TypeReference<?>>> m_typedDependencies =
+            new HashSet<>();
 
         boolean m_computeBeforeOpenDialog;
 
@@ -318,7 +319,7 @@ final class ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree {
             return m_dependencies;
         }
 
-        Collection<Pair<Class<? extends Reference>, StateProvider.TypeReference>> getTypedDependencies() {
+        Collection<Pair<Class<? extends Reference>, TypeReference<?>>> getTypedDependencies() {
             return m_typedDependencies;
         }
 

@@ -55,6 +55,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.util.updates.IndexedValue;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ButtonReference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider.StateProviderInitializer;
 
 /**
  *
@@ -69,7 +70,7 @@ public interface UpdateSimulator {
      *
      * @author Paul Bärnreuther
      */
-    public interface UpdateSimulatorResult {
+    interface UpdateSimulatorResult {
 
         /**
          * Use only for model settings. For view settings, use {@link #getValueUpdateAt(SettingsType, String...)}.
@@ -91,8 +92,7 @@ public interface UpdateSimulator {
         }
 
         /**
-         * Use only for model settings. For view settings, use {@link #getValueUpdatesInArrayAt(SettingsType,
-         * List<List<String>>)}.
+         * Use only for model settings. For view settings, use {@link #getValueUpdatesInArrayAt(SettingsType, List)}.
          *
          * @param paths to the field
          * @return the updated value
@@ -113,9 +113,9 @@ public interface UpdateSimulator {
         }
 
         /**
-         * Use only for model settings. For view settings, use {@link #getMultiValueUpdatesInArrayAt(SettingsType,
-         * List<List<String>>)}. Only to be used when the value of one field in multiple array layout elements is
-         * updated simultaneously.
+         * Use only for model settings. For view settings, use
+         * {@link #getMultiValueUpdatesInArrayAt(SettingsType, List)}. Only to be used when the value of one field in
+         * multiple array layout elements is updated simultaneously.
          *
          * @param paths to the field
          * @return a list of this field of all simultaneous in all array layout elements
@@ -169,15 +169,13 @@ public interface UpdateSimulator {
     UpdateSimulatorResult simulateButtonClick(Class<? extends ButtonReference> buttonReference, int... indices);
 
     /**
-     * @return triggers all state providers using
-     *         {@link org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider.StateProviderInitializer#computeBeforeOpenDialog()
+     * @return triggers all state providers using {@link StateProviderInitializer#computeBeforeOpenDialog()
      *         computeBeforeOpenDialog}
      */
     UpdateSimulatorResult simulateBeforeOpenDialog();
 
     /**
-     * @return triggers all state providers using
-     *         {@link org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider.StateProviderInitializer#computeAfterOpenDialog()
+     * @return triggers all state providers using {@link StateProviderInitializer#computeAfterOpenDialog()
      *         computeAfterOpenDialog}
      */
     UpdateSimulatorResult simulateAfterOpenDialog();

@@ -85,7 +85,7 @@ public record PathsWithSettingsType(List<List<String>> paths, SettingsType setti
             return false;
         }
         if (obj instanceof PathsWithSettingsType other) {
-            return other.paths.equals(paths) && other.settingsType.equals(settingsType);
+            return other.paths.equals(paths) && other.settingsType == settingsType;
         }
         return false;
 

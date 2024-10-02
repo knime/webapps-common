@@ -184,7 +184,7 @@ public interface StateProvider<S> {
      *
      * @param <T> the type of the referenced field as it should be obtained in the {@link StateProvider}
      */
-    interface TypeReference<T> {
+    interface TypeReference<T> { // NOSONAR
 
     }
 

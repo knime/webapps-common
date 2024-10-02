@@ -94,7 +94,7 @@ public final class ConvertValueUtil {
         return GenericTypeFinderUtil.getFirstGenericType(valueRef, Reference.class);
     }
 
-    private static Type getSettingsType(final TypeReference typeRef) {
+    private static Type getSettingsType(final TypeReference<?> typeRef) {
         return GenericTypeFinderUtil.getFirstGenericType(typeRef.getClass(), TypeReference.class);
     }
 
