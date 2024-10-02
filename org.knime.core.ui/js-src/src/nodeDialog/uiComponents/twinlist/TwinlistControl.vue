@@ -272,6 +272,7 @@ const rightLabel = computed(
       :left-label="leftLabel"
       :right-label="rightLabel"
       compact
+      show-resize-handle
       @update:selected="onSelectedChange"
       @update:manual-selection="onManualSelectionChange"
       @update:pattern="onPatternChange"
