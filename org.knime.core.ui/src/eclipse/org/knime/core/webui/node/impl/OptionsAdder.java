@@ -63,11 +63,11 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.JsonForms
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.LayoutTreeNode;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.ArrayParentNode;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeNode;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DescriptionUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DescriptionUtil.TitleAndDescription;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.ArrayWidgetNode;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
 import org.w3c.dom.Element;
 
 import com.fasterxml.jackson.databind.ser.PropertyWriter;
@@ -94,7 +94,7 @@ final class OptionsAdder {
     }
 
     private static void addOptions(final Class<? extends DefaultNodeSettings> modelSettingsClass,
-        final Class<? extends DefaultNodeSettings> viewSettingsClass, final Consumer<WidgetTreeNode> addField) {
+        final Class<? extends DefaultNodeSettings> viewSettingsClass, final Consumer<TreeNode<WidgetGroup>> addField) {
         final Map<SettingsType, Class<? extends WidgetGroup>> settings = new EnumMap<>(SettingsType.class);
         if (modelSettingsClass != null) {
             settings.put(SettingsType.MODEL, modelSettingsClass);
@@ -105,18 +105,19 @@ final class OptionsAdder {
         addOptions(addField, settings);
     }
 
-    private static void addOptions(final Consumer<WidgetTreeNode> addField,
+    private static void addOptions(final Consumer<TreeNode<WidgetGroup>> addField,
         final Map<SettingsType, Class<? extends WidgetGroup>> settings) {
         final var layoutTree = JsonFormsUiSchemaUtil.resolveLayout(settings).layoutTreeRoot();
         applyToAllLeaves(layoutTree, addField);
     }
 
-    private static void applyToAllLeaves(final LayoutTreeNode layoutTree, final Consumer<WidgetTreeNode> addField) {
+    private static void applyToAllLeaves(final LayoutTreeNode layoutTree,
+        final Consumer<TreeNode<WidgetGroup>> addField) {
         layoutTree.getControls().stream().forEach(addField);
         layoutTree.getChildren().forEach(childNode -> applyToAllLeaves(childNode, addField));
     }
 
-    private static void createOption(final WidgetTreeNode field, final Element tab,
+    private static void createOption(final TreeNode<WidgetGroup> field, final Element tab,
         final BiFunction<String, String, Element> optionCreator) {
         getTitleAndDescription(field).ifPresent(titleAndDescription -> {
             var option = optionCreator.apply(titleAndDescription.title(), titleAndDescription.description());
@@ -125,15 +126,14 @@ final class OptionsAdder {
         });
     }
 
-    private static Optional<TitleAndDescription> getTitleAndDescription(final WidgetTreeNode field) {
+    private static Optional<TitleAndDescription> getTitleAndDescription(final TreeNode<WidgetGroup> field) {
 
         final var widgetAnnotation = field.getAnnotation(Widget.class);
         if (widgetAnnotation.isPresent()) {
             final var widget = widgetAnnotation.get();
             var description = JsonFormsSchemaUtil.resolveDescription(widget, field.getType()).orElse("");
-            if (field instanceof ArrayWidgetNode arrayField) {
-                description =
-                    getDescriptionPlusChildDescriptions(description, arrayField.getElementWidgetTree().getType());
+            if (field instanceof ArrayParentNode<WidgetGroup> arrayField) {
+                description = getDescriptionPlusChildDescriptions(description, arrayField.getElementTree().getType());
             }
             return Optional.of(new TitleAndDescription(widget.title(), description));
         }

@@ -95,9 +95,14 @@ import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.Format;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsScopeUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.NameFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.ArrayParentNode;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.LeafNode;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.Tree;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeNode;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.AsyncChoicesProvider;
@@ -137,10 +142,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.NoopBoolean
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.NoopStringProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.util.WidgetImplementationUtil.WidgetAnnotation;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.ArrayWidgetNode;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetNode;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
 import org.knime.filehandling.core.port.FileSystemPortObjectSpec;
 import org.knime.filehandling.core.util.WorkflowContextUtil;
 
@@ -153,7 +154,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 final class UiSchemaOptionsGenerator {
 
-    private final WidgetTreeNode m_node;
+    private final TreeNode<WidgetGroup> m_node;
 
     private final Class<?> m_fieldClass;
 
@@ -163,7 +164,7 @@ final class UiSchemaOptionsGenerator {
 
     private final AsyncChoicesAdder m_asyncChoicesAdder;
 
-    private final Collection<WidgetTree> m_widgetTrees;
+    private final Collection<Tree<WidgetGroup>> m_widgetTrees;
 
     private static final int ASYNC_CHOICES_THRESHOLD = 100;
 
@@ -177,8 +178,9 @@ final class UiSchemaOptionsGenerator {
      *            {@link ChoicesWidget}s.
      * @param widgetTrees the widgetTrees to resolve dependencies from. With UIEXT-1673 This can be removed again
      */
-    UiSchemaOptionsGenerator(final WidgetTreeNode node, final DefaultNodeSettingsContext context, final String scope,
-        final AsyncChoicesAdder asyncChoicesAdder, final Collection<WidgetTree> widgetTrees) {
+    UiSchemaOptionsGenerator(final TreeNode<WidgetGroup> node, final DefaultNodeSettingsContext context,
+        final String scope, final AsyncChoicesAdder asyncChoicesAdder,
+        final Collection<Tree<WidgetGroup>> widgetTrees) {
         m_node = node;
         m_asyncChoicesAdder = asyncChoicesAdder;
         m_fieldClass = node.getType();
@@ -195,7 +197,8 @@ final class UiSchemaOptionsGenerator {
     void addOptionsTo(final ObjectNode control) {
         final var defaultWidgets = getApplicableDefaults(m_fieldClass);
         final var annotatedWidgets = getAnnotatedWidgets();
-        if (defaultWidgets.isEmpty() && annotatedWidgets.isEmpty() && !(m_node instanceof ArrayWidgetNode)) {
+        if (defaultWidgets.isEmpty() && annotatedWidgets.isEmpty()
+            && !(m_node instanceof ArrayParentNode<WidgetGroup>)) {
             return;
         }
         final var options = control.putObject(TAG_OPTIONS);
@@ -491,8 +494,8 @@ final class UiSchemaOptionsGenerator {
             }
         }
 
-        if (m_node instanceof ArrayWidgetNode arrayWidgetNode) {
-            applyArrayLayoutOptions(options, arrayWidgetNode.getElementWidgetTree());
+        if (m_node instanceof ArrayParentNode<WidgetGroup> arrayWidgetNode) {
+            applyArrayLayoutOptions(options, arrayWidgetNode.getElementTree());
         }
 
         if (options.isEmpty()) {
@@ -680,7 +683,7 @@ final class UiSchemaOptionsGenerator {
      */
     private String getChoicesComponentFormat() {
         String format = Format.DROP_DOWN;
-        if (m_node instanceof WidgetNode leafNode && String.class.equals(leafNode.getContentType())) {
+        if (m_node instanceof LeafNode leafNode && String.class.equals(leafNode.getContentType())) {
             format = Format.TWIN_LIST;
         }
         return format;
@@ -701,7 +704,7 @@ final class UiSchemaOptionsGenerator {
         return partitionedWidgetAnnotations.get(true).stream().map(WidgetAnnotation::widgetAnnotation).toList();
     }
 
-    private void applyArrayLayoutOptions(final ObjectNode options, final WidgetTree elementTree) {
+    private void applyArrayLayoutOptions(final ObjectNode options, final Tree<WidgetGroup> elementTree) {
         /**
          * We need a persistent async choices adder in case of settings nested inside an array layout, since the
          * frontend fetches the choices for every element in it individually and one can add more than initially
@@ -743,7 +746,7 @@ final class UiSchemaOptionsGenerator {
     }
 
     private static void addInternalArrayLayoutOptions(final InternalArrayWidget internalArrayWidget,
-        final ObjectNode options, final WidgetTree elementWidgetTree) {
+        final ObjectNode options, final Tree<WidgetGroup> elementWidgetTree) {
 
         if (internalArrayWidget.withEditAndReset()) {
             options.put(TAG_ARRAY_LAYOUT_WITH_EDIT_AND_RESET, true);
@@ -764,7 +767,7 @@ final class UiSchemaOptionsGenerator {
         }
     }
 
-    private static String findElementCheckboxScope(final WidgetTree elementWidgetTree) {
+    private static String findElementCheckboxScope(final Tree<WidgetGroup> elementWidgetTree) {
         final var elementCheckboxField = elementWidgetTree.getWidgetNodes()
             .filter(UiSchemaOptionsGenerator::hasElementCheckboxWidgetAnnotation).findFirst().orElseThrow(
                 () -> new UiSchemaGenerationException("No field with a @ElementCheckboxWidget annotation found "
@@ -772,7 +775,7 @@ final class UiSchemaOptionsGenerator {
         return JsonFormsScopeUtil.toScope(elementCheckboxField);
     }
 
-    static boolean hasElementCheckboxWidgetAnnotation(final WidgetTreeNode field) {
+    static boolean hasElementCheckboxWidgetAnnotation(final TreeNode<WidgetGroup> field) {
         return field.getPossibleAnnotations().contains(InternalArrayWidget.ElementCheckboxWidget.class)
             && field.getAnnotation(InternalArrayWidget.ElementCheckboxWidget.class).isPresent();
     }

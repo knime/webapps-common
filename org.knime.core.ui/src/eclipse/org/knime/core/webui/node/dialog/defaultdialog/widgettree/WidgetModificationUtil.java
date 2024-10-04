@@ -59,14 +59,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.function.TriConsumer;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup.AnnotationModifier;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup.Modification;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup.WidgetGroupModifier;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup.WidgetModifier;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.ArrayParentNode;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.Tree;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeNode;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 
 /**
- * Resolves {@link Modification} annotations for {@link WidgetTree}s and {@link ArrayWidgetNode}s
+ * Resolves {@link Modification} annotations for {@link Tree<WidgetGroup>} and {@link ArrayParentNode<WidgetGroup>}
  *
  * @author Paul Bärnreuther
  */
@@ -81,8 +86,9 @@ final class WidgetModificationUtil {
      * Resolves and executes the imperative instructions given by the widgetModification by altering the annotations of
      * children inside the given widgetTree.
      */
-    static void resolveWidgetModification(final WidgetTree widgetTree, final Modification widgetModification) {
-        final var widgetTreeModifier = new WidgetTreeModifier(widgetTree);
+    static void resolveWidgetModification(final Tree<WidgetGroup> tree, final Modification widgetModification,
+        final TriConsumer<TreeNode<WidgetGroup>, Class<? extends Annotation>, Annotation> addOrReplaceAnnotation) {
+        final var widgetTreeModifier = new WidgetTreeModifier(tree, addOrReplaceAnnotation);
         for (final var modifier : widgetModification.value()) {
             InstantiationUtil.createInstance(modifier).modify(widgetTreeModifier);
         }
@@ -93,18 +99,23 @@ final class WidgetModificationUtil {
      */
     static final class WidgetTreeModifier implements WidgetGroupModifier {
 
-        private final WidgetTree m_widgetTree;
+        private final Tree<WidgetGroup> m_widgetTree;
 
-        WidgetTreeModifier(final WidgetTree widgetTree) {
+        private final TriConsumer<TreeNode<WidgetGroup>, Class<? extends Annotation>, Annotation> m_addOrReplaceAnnotation;
+
+        WidgetTreeModifier(final Tree<WidgetGroup> widgetTree,
+            final TriConsumer<TreeNode<WidgetGroup>, Class<? extends Annotation>, Annotation> addOrReplaceAnnotation) {
             m_widgetTree = widgetTree;
+            m_addOrReplaceAnnotation = addOrReplaceAnnotation;
         }
 
         @Override
         public WidgetModifier find(final Class<? extends Modification.Reference> reference) {
-            return new WidgetTreeNodeModifier(findWidgetTreeNodeByReference(m_widgetTree, reference));
+            return new WidgetTreeNodeModifier(findWidgetTreeNodeByReference(m_widgetTree, reference),
+                m_addOrReplaceAnnotation);
         }
 
-        private static WidgetTreeNode findWidgetTreeNodeByReference(final WidgetTree widgetTree,
+        private static TreeNode<WidgetGroup> findWidgetTreeNodeByReference(final Tree<WidgetGroup> widgetTree,
             final Class<? extends Modification.Reference> reference) {
             final var candidates =
                 widgetTree.getWidgetAndWidgetTreeNodes().flatMap(WidgetTreeModifier::traverseAlsoIntoElementWidgetTrees)
@@ -112,11 +123,11 @@ final class WidgetModificationUtil {
             return getSingleCandidate(reference, candidates);
         }
 
-        private static WidgetTreeNode getSingleCandidate(final Class<? extends Modification.Reference> reference,
-            final List<WidgetTreeNode> candidates) {
+        private static TreeNode<WidgetGroup> getSingleCandidate(final Class<? extends Modification.Reference> reference,
+            final List<TreeNode<WidgetGroup>> candidates) {
             if (candidates.size() > 1) {
                 throw new IllegalStateException("Multiple nodes with the same reference found: " + String.join(", ",
-                    candidates.stream().map(WidgetTreeNode::getPath).map(l -> String.join(".", l)).toList()));
+                    candidates.stream().map(TreeNode<WidgetGroup>::getPath).map(l -> String.join(".", l)).toList()));
             } else if (candidates.isEmpty()) {
                 throw new IllegalStateException("No node with the reference found: " + reference.getSimpleName());
             } else {
@@ -124,16 +135,16 @@ final class WidgetModificationUtil {
             }
         }
 
-        private static boolean hasReference(final WidgetTreeNode node,
+        private static boolean hasReference(final TreeNode<WidgetGroup> node,
             final Class<? extends Modification.Reference> reference) {
             final var widgetReference = node.getAnnotation(Modification.WidgetReference.class);
             return widgetReference.isPresent() && widgetReference.get().value().equals(reference);
         }
 
-        private static Stream<WidgetTreeNode> traverseAlsoIntoElementWidgetTrees(final WidgetTreeNode node) {
-            if (node instanceof ArrayWidgetNode arrayWidgetNode) {
-                return Stream.concat(Stream.of(node),
-                    arrayWidgetNode.getElementWidgetTree().getWidgetAndWidgetTreeNodes());
+        private static Stream<TreeNode<WidgetGroup>>
+            traverseAlsoIntoElementWidgetTrees(final TreeNode<WidgetGroup> node) {
+            if (node instanceof ArrayParentNode<WidgetGroup> arrayWidgetNode) {
+                return Stream.concat(Stream.of(node), arrayWidgetNode.getElementTree().getWidgetAndWidgetTreeNodes());
             }
             return Stream.of(node);
         }
@@ -145,10 +156,14 @@ final class WidgetModificationUtil {
      */
     static final class WidgetTreeNodeModifier implements WidgetModifier {
 
-        private final WidgetTreeNode m_widgetTreeNode;
+        private final TreeNode<WidgetGroup> m_widgetTreeNode;
 
-        public WidgetTreeNodeModifier(final WidgetTreeNode widgetTreeNode) {
+        private final TriConsumer<TreeNode<WidgetGroup>, Class<? extends Annotation>, Annotation> m_addOrReplaceAnnotation;
+
+        public WidgetTreeNodeModifier(final TreeNode<WidgetGroup> widgetTreeNode,
+            final TriConsumer<TreeNode<WidgetGroup>, Class<? extends Annotation>, Annotation> addOrReplaceAnnotation) {
             m_widgetTreeNode = widgetTreeNode;
+            m_addOrReplaceAnnotation = addOrReplaceAnnotation;
         }
 
         @Override
@@ -199,7 +214,7 @@ final class WidgetModificationUtil {
             @Override
             public void modify() {
                 final T newAnnotation = createProxy(m_annotationClass, m_properties, m_existingAnnotation);
-                m_widgetTreeNode.addOrReplaceAnnotation(m_annotationClass, newAnnotation);
+                m_addOrReplaceAnnotation.accept(m_widgetTreeNode, m_annotationClass, newAnnotation);
             }
 
             @SuppressWarnings("unchecked") // proxy instance is of the type of the annotation

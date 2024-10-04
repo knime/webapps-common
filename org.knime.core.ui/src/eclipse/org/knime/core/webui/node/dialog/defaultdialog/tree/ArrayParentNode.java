@@ -44,25 +44,49 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 4, 2023 (Paul Bärnreuther): created
+ *   Aug 5, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates;
+package org.knime.core.webui.node.dialog.defaultdialog.tree;
+
+import java.lang.annotation.Annotation;
+import java.util.Collection;
+import java.util.function.Function;
 
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeNode;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Predicate;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 
 /**
- * The atomic predicate that is used for json forms implementation
+ * An instance of this class corresponds to an array widget, i.e. a widget whose subwidgets are repeated n times.
+ *
+ * <p>
+ * It is a leaf of the containing {@link Tree}, i.e. with it has no further sub-nodes.
+ * </p>
+ *
+ * But it also gives rise to a new tree retrieved via {@link #getElementTree}, which is to be interpreted as an
+ * independent tree corresponding to the type of an elements of this array widget.
+ * </p>
+ *
+ * @param <S> the type of the [S]ettings. Either {@link PersistableSettings} or {@link WidgetGroup}
  *
  * @author Paul Bärnreuther
- * @param node of the widget tree that this expcession is scoped to
- * @param condition
  */
-public record ScopedPredicate(TreeNode<WidgetGroup> node, Condition condition) implements Predicate {
+public final class ArrayParentNode<S> extends TreeNode<S> {
 
-    @Override
-    public <T> T accept(final PredicateVisitor<T> visitor) {
-        return visitor.visit(this);
+    private final Tree<S> m_elementTree;
+
+    ArrayParentNode(final Tree<S> parent, final Tree<S> elementWidgetTree, final Class<?> type,
+        final Function<Class<? extends Annotation>, Annotation> annotations,
+        final Collection<Class<? extends Annotation>> possibleAnnotations) {
+        super(parent, parent.getSettingsType(), type, annotations, possibleAnnotations);
+        m_elementTree = elementWidgetTree;
+        m_elementTree.m_arrayWidgetNodeParent = this; // NOSONAR doesn't need to be thread-safe
     }
+
+    /**
+     * @return the elementWidgetTree
+     */
+    public Tree<S> getElementTree() {
+        return m_elementTree;
+    }
+
 }

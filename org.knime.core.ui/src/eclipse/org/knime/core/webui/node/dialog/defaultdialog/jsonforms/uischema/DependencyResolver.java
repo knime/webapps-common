@@ -57,14 +57,14 @@ import java.util.stream.Stream;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsScopeUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.ArrayParentNode;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.Tree;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeNode;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.WidgetGroupTraverser;
 import org.knime.core.webui.node.dialog.defaultdialog.util.WidgetGroupTraverser.TraversedField;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DeclaringDefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.DependencyHandler;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.ArrayWidgetNode;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
 
 /**
  *
@@ -76,11 +76,12 @@ final class DependencyResolver {
 
     private final String m_scope;
 
-    DependencyResolver(final WidgetTreeNode node, final Collection<WidgetTree> rootWidgetTrees, final String scope) {
+    DependencyResolver(final TreeNode<WidgetGroup> node, final Collection<Tree<WidgetGroup>> rootWidgetTrees,
+        final String scope) {
 
         m_fields = Stream
             .concat(rootWidgetTrees.stream(),
-                node.getContainingArrayWidgetNodes().stream().map(ArrayWidgetNode::getElementWidgetTree))
+                node.getContainingArrayWidgetNodes().stream().map(ArrayParentNode<WidgetGroup>::getElementTree))
             .flatMap(widgetTree -> widgetTree.getWidgetNodes()
                 .map(n -> new WidgetTreeNodeWithRootClass(n, widgetTree.getType())))
             .collect(Collectors.toSet());
@@ -88,7 +89,7 @@ final class DependencyResolver {
         m_scope = scope;
     }
 
-    record WidgetTreeNodeWithRootClass(WidgetTreeNode node, Class<? extends WidgetGroup> rootClass) {
+    record WidgetTreeNodeWithRootClass(TreeNode<WidgetGroup> node, Class<? extends WidgetGroup> rootClass) {
 
         private String getScope() {
             return JsonFormsScopeUtil.toScope(node);

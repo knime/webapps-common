@@ -60,12 +60,13 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.Defaul
 import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.Tree;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeNode;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LatentWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextMessage;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesAdder;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -122,7 +123,7 @@ public final class JsonFormsUiSchemaUtil {
      * @param widgetTrees to derive the uischema from
      * @return the uischema
      */
-    public static ObjectNode buildUISchema(final Collection<WidgetTree> widgetTrees,
+    public static ObjectNode buildUISchema(final Collection<Tree<WidgetGroup>> widgetTrees,
         final DefaultNodeSettingsContext context, final AsyncChoicesAdder asyncChoicesAdder) {
         return buildUISchema(widgetTrees, List.of(), context, asyncChoicesAdder);
     }
@@ -130,16 +131,18 @@ public final class JsonFormsUiSchemaUtil {
     /**
      * @param parentWidgetTrees of the fields of the "outside" layout. With UIEXT-1673 This can be removed again
      */
-    static ObjectNode buildUISchema(final Collection<WidgetTree> widgetTrees,
-        final Collection<WidgetTree> parentWidgetTrees, final DefaultNodeSettingsContext context,
+    static ObjectNode buildUISchema(final Collection<Tree<WidgetGroup>> widgetTrees,
+        final Collection<Tree<WidgetGroup>> parentWidgetTrees, final DefaultNodeSettingsContext context,
         final AsyncChoicesAdder asyncChoicesAdder) {
         final var layoutSkeleton = resolveLayout(widgetTrees, parentWidgetTrees);
         return new LayoutNodesGenerator(layoutSkeleton, context, asyncChoicesAdder).build();
     }
 
-    private static List<WidgetTree>
+    private static List<Tree<WidgetGroup>>
         constructWidgetTrees(final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses) {
-        return settingsClasses.entrySet().stream().map(e -> new WidgetTree(e.getValue(), e.getKey())).toList();
+        final var widgetTreeFactory = new WidgetTreeFactory();
+        return settingsClasses.entrySet().stream().map(e -> widgetTreeFactory.createTree(e.getValue(), e.getKey()))
+            .toList();
     }
 
     /**
@@ -153,18 +156,18 @@ public final class JsonFormsUiSchemaUtil {
         return resolveLayout(widgetTrees, List.of());
     }
 
-    static LayoutSkeleton resolveLayout(final Collection<WidgetTree> widgetTrees,
-        final Collection<WidgetTree> parentWidgetTrees) {
+    static LayoutSkeleton resolveLayout(final Collection<Tree<WidgetGroup>> widgetTrees,
+        final Collection<Tree<WidgetGroup>> parentWidgetTrees) {
         final var layoutTreeRoot = widgetTreesToLayoutTreeRoot(widgetTrees);
         return new LayoutSkeleton(layoutTreeRoot, widgetTrees, parentWidgetTrees);
     }
 
-    private static LayoutTreeNode widgetTreesToLayoutTreeRoot(final Collection<WidgetTree> widgetTrees) {
-        final Map<Boolean, List<WidgetTreeNode>> hasLayoutToWidgets =
-            widgetTrees.stream().flatMap(WidgetTree::getWidgetNodes).filter(node -> !isHiddenOrLatent(node))
+    private static LayoutTreeNode widgetTreesToLayoutTreeRoot(final Collection<Tree<WidgetGroup>> widgetTrees) {
+        final Map<Boolean, List<TreeNode<WidgetGroup>>> hasLayoutToWidgets =
+            widgetTrees.stream().flatMap(Tree<WidgetGroup>::getWidgetNodes).filter(node -> !isHiddenOrLatent(node))
                 .collect(Collectors.partitioningBy(node -> node.getAnnotation(Layout.class).isPresent()));
 
-        final Map<Class<?>, List<WidgetTreeNode>> layoutPartsToWidgets = hasLayoutToWidgets.get(true).stream()
+        final Map<Class<?>, List<TreeNode<WidgetGroup>>> layoutPartsToWidgets = hasLayoutToWidgets.get(true).stream()
             .collect(Collectors.groupingBy(node -> node.getAnnotation(Layout.class).orElseThrow().value()));
 
         final var widgetsWithoutLayout = hasLayoutToWidgets.get(false);
@@ -174,7 +177,7 @@ public final class JsonFormsUiSchemaUtil {
     private static final List<Class<? extends Annotation>> VISIBLE_WITHOUT_WIDGET_ANNOTATION =
         List.of(TextMessage.class);
 
-    private static boolean isHiddenOrLatent(final WidgetTreeNode node) {
+    private static boolean isHiddenOrLatent(final TreeNode<WidgetGroup> node) {
         final var isHidden = node.getAnnotation(Widget.class).isEmpty() && VISIBLE_WITHOUT_WIDGET_ANNOTATION.stream()
             .filter(node.getPossibleAnnotations()::contains).map(node::getAnnotation).allMatch(Optional::isEmpty);
         final var isLatent = node.getAnnotation(LatentWidget.class).isPresent();
@@ -187,7 +190,7 @@ public final class JsonFormsUiSchemaUtil {
      * @param widgetTrees one ore multiple widget trees given by the annotated {@link WidgetGroup WidgetGroups}
      * @param parentWidgetTrees of the fields of the "outside" layout. With UIEXT-1673 This can be removed again
      */
-    public static record LayoutSkeleton(LayoutTreeNode layoutTreeRoot, Collection<WidgetTree> widgetTrees,
-        Collection<WidgetTree> parentWidgetTrees) {
+    public static record LayoutSkeleton(LayoutTreeNode layoutTreeRoot, Collection<Tree<WidgetGroup>> widgetTrees,
+        Collection<Tree<WidgetGroup>> parentWidgetTrees) {
     }
 }

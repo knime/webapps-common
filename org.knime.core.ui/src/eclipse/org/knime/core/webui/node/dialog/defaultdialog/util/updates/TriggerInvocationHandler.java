@@ -56,7 +56,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.Tree;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 
 /**
  * @author Paul Bärnreuther
@@ -78,7 +80,7 @@ public class TriggerInvocationHandler<I> {
      * @param widgetTrees
      * @return a invocation handler for updates within the supplied widget trees
      */
-    public static <T> TriggerInvocationHandler<T> fromWidgetTrees(final Collection<WidgetTree> widgetTrees) {
+    public static <T> TriggerInvocationHandler<T> fromWidgetTrees(final Collection<Tree<WidgetGroup>> widgetTrees) {
         return new TriggerInvocationHandler<>(WidgetTreesToDependencyTreeUtil.widgetTreesToDependencyTree(widgetTrees));
     }
 

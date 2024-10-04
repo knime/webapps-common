@@ -54,12 +54,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.Tree;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeNode;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Predicate;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.PredicateProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.PredicateProvider.PredicateInitializer;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
 
 /**
  * Extracts references from widget trees to enable creating predicates from predicate providers.
@@ -76,7 +77,7 @@ final class PredicateExtractor {
      * @param widgetTrees to extract references from
      * @param context the node's context (inputs, flow vars)
      */
-    PredicateExtractor(final Collection<WidgetTree> widgetTrees, final DefaultNodeSettingsContext context) {
+    PredicateExtractor(final Collection<Tree<WidgetGroup>> widgetTrees, final DefaultNodeSettingsContext context) {
         m_context = context;
         m_predicateInitializer = getPredicateInitializer(widgetTrees);
     }
@@ -85,22 +86,23 @@ final class PredicateExtractor {
      * @param widgetTree to extract references from
      * @param context the node's context (inputs, flow vars)
      */
-    PredicateExtractor(final WidgetTree widgetTree, final DefaultNodeSettingsContext context) {
+    PredicateExtractor(final Tree<WidgetGroup> widgetTree, final DefaultNodeSettingsContext context) {
         this(List.of(widgetTree), context);
     }
 
-    private PredicateInitializer getPredicateInitializer(final Collection<WidgetTree> widgetTrees) {
+    private PredicateInitializer getPredicateInitializer(final Collection<Tree<WidgetGroup>> widgetTrees) {
         return new DefaultPredicateInitializer(getReferences(widgetTrees)::get, m_context);
     }
 
-    private static Map<Class<?>, WidgetTreeNode> getReferences(final Collection<WidgetTree> widgetTrees) {
-        final Map<Class<?>, WidgetTreeNode> references = new HashMap<>();
-        widgetTrees.stream().flatMap(WidgetTree::getWidgetAndWidgetTreeNodes)
+    private static Map<Class<?>, TreeNode<WidgetGroup>> getReferences(final Collection<Tree<WidgetGroup>> widgetTrees) {
+        final Map<Class<?>, TreeNode<WidgetGroup>> references = new HashMap<>();
+        widgetTrees.stream().flatMap(Tree<WidgetGroup>::getWidgetAndWidgetTreeNodes)
             .forEach(node -> addReference(references, node));
         return references;
     }
 
-    private static void addReference(final Map<Class<?>, WidgetTreeNode> references, final WidgetTreeNode node) {
+    private static void addReference(final Map<Class<?>, TreeNode<WidgetGroup>> references,
+        final TreeNode<WidgetGroup> node) {
         node.getAnnotation(ValueReference.class).map(ValueReference::value)
             .ifPresent(referenceClass -> references.put(referenceClass, node));
     }

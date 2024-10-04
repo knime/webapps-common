@@ -61,8 +61,11 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.JsonForms
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UpdatesUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.persisttree.PersistTreeFactory;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.Tree;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.util.RawValue;
@@ -93,7 +96,9 @@ public final class JsonFormsSettingsImpl implements JsonFormsSettings {
 
     private final DefaultNodeSettingsContext m_context;
 
-    private final Map<SettingsType, WidgetTree> m_widgetTrees;
+    private final Map<SettingsType, Tree<WidgetGroup>> m_widgetTrees;
+
+    private final Map<SettingsType, Tree<PersistableSettings>> m_persistTrees;
 
     /**
      * @param settings the POJOs from which to derive the schema, data and uiSchema
@@ -105,9 +110,17 @@ public final class JsonFormsSettingsImpl implements JsonFormsSettings {
         m_modelSettingsClass = m_modelSettings == null ? null : m_modelSettings.getClass();
         m_viewSettings = settings.get(SettingsType.VIEW);
         m_viewSettingsClass = m_viewSettings == null ? null : m_viewSettings.getClass();
+        final var widgetTreeFactory = new WidgetTreeFactory();
+        final var persistTreeFactory = new PersistTreeFactory();
         m_widgetTrees = createSettingsTypeMap(//
-            m_modelSettingsClass == null ? null : new WidgetTree(m_modelSettingsClass, SettingsType.MODEL), //
-            m_viewSettings == null ? null : new WidgetTree(m_viewSettingsClass, SettingsType.VIEW)//
+            m_modelSettingsClass == null ? null
+                : widgetTreeFactory.createTree(m_modelSettingsClass, SettingsType.MODEL), //
+            m_viewSettings == null ? null : widgetTreeFactory.createTree(m_viewSettingsClass, SettingsType.VIEW)//
+        );
+        m_persistTrees = createSettingsTypeMap(//
+            m_modelSettingsClass == null ? null
+                : persistTreeFactory.createTree(m_modelSettingsClass, SettingsType.MODEL), //
+            m_viewSettings == null ? null : persistTreeFactory.createTree(m_viewSettingsClass, SettingsType.VIEW)//
         );
         m_context = context;
     }
@@ -137,6 +150,7 @@ public final class JsonFormsSettingsImpl implements JsonFormsSettings {
         final var settings = JsonFormsSettingsImpl.<WidgetGroup> createSettingsTypeMap(m_modelSettings, m_viewSettings);
         final var uiSchema = JsonFormsUiSchemaUtil.buildUISchema(m_widgetTrees.values(), m_context, asyncChoicesHolder);
         UpdatesUtil.addUpdates(uiSchema, m_widgetTrees.values(), settings, m_context);
+        PersistUtil.addPersist(uiSchema, m_persistTrees);
         return new RawValue(uiSchema.toString());
     }
 

@@ -59,10 +59,11 @@ import java.util.stream.Stream;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsScopeUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil.LayoutSkeleton;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.Tree;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeNode;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesAdder;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -79,7 +80,7 @@ final class LayoutNodesGenerator {
 
     private final AsyncChoicesAdder m_asyncChoicesAdder;
 
-    private final Collection<WidgetTree> m_allWidgetTrees;
+    private final Collection<Tree<WidgetGroup>> m_allWidgetTrees;
 
     private final UiSchemaRulesGenerator m_rulesGenerator;
 
@@ -98,7 +99,7 @@ final class LayoutNodesGenerator {
         m_asyncChoicesAdder = asyncChoicesAdder;
     }
 
-    private static String getScope(final WidgetTreeNode node) {
+    private static String getScope(final TreeNode<WidgetGroup> node) {
         return JsonFormsScopeUtil.toScope(node);
     }
 
@@ -115,7 +116,7 @@ final class LayoutNodesGenerator {
         rootNode.getChildren().forEach(childLayoutNode -> buildLayout(childLayoutNode, layoutNode));
     }
 
-    private void addControlElement(final ArrayNode root, final WidgetTreeNode node) {
+    private void addControlElement(final ArrayNode root, final TreeNode<WidgetGroup> node) {
         /**
          * Rendering the element checkbox widget of array layout elements is handled via the framework.
          */
@@ -128,7 +129,7 @@ final class LayoutNodesGenerator {
         addRule(node, control);
     }
 
-    private void addOptions(final WidgetTreeNode node, final ObjectNode control) {
+    private void addOptions(final TreeNode<WidgetGroup> node, final ObjectNode control) {
         final var scope = getScope(node);
         try {
             new UiSchemaOptionsGenerator(node, m_defaultNodeSettingsContext, scope, m_asyncChoicesAdder,
@@ -139,7 +140,7 @@ final class LayoutNodesGenerator {
         }
     }
 
-    private void addRule(final WidgetTreeNode node, final ObjectNode control) {
+    private void addRule(final TreeNode<WidgetGroup> node, final ObjectNode control) {
         try {
             final var effectAnnotation = node.getAnnotation(Effect.class);
             if (effectAnnotation.isPresent()) {

@@ -564,6 +564,146 @@
           "format" : "checkbox"
         }
       } ]
-    } ]
+    } ],
+    "persist" : {
+      "view" : {
+        "type" : "object",
+        "properties" : {
+          "displayedColumns" : {
+            "type" : "object",
+            "configKeys" : [ "displayedColumns" ],
+            "properties" : {
+              "selected" : {
+                "type" : "not an object, not an array",
+                "configKeys" : [ "selected_Internals" ]
+              },
+              "mode" : {
+                "type" : "not an object, not an array"
+              },
+              "patternFilter" : {
+                "type" : "object",
+                "properties" : {
+                  "pattern" : {
+                    "type" : "not an object, not an array"
+                  },
+                  "isCaseSensitive" : {
+                    "type" : "not an object, not an array"
+                  },
+                  "isInverted" : {
+                    "type" : "not an object, not an array"
+                  }
+                }
+              },
+              "manualFilter" : {
+                "type" : "object",
+                "properties" : {
+                  "manuallySelected" : {
+                    "type" : "not an object, not an array"
+                  },
+                  "manuallyDeselected" : {
+                    "type" : "not an object, not an array"
+                  },
+                  "includeUnknownColumns" : {
+                    "type" : "not an object, not an array"
+                  }
+                }
+              },
+              "typeFilter" : {
+                "type" : "object",
+                "properties" : {
+                  "selectedTypes" : {
+                    "type" : "not an object, not an array"
+                  },
+                  "typeDisplays" : {
+                    "type" : "not an object, not an array",
+                    "configKeys" : [ "typeDisplays" ]
+                  }
+                }
+              }
+            }
+          },
+          "showRowIndices" : {
+            "type" : "not an object, not an array",
+            "configKeys" : [ "showRowIndices" ]
+          },
+          "showRowKeys" : {
+            "type" : "not an object, not an array",
+            "configKeys" : [ "showRowKeys" ]
+          },
+          "title" : {
+            "type" : "not an object, not an array",
+            "configKeys" : [ "title" ]
+          },
+          "showTableSize" : {
+            "type" : "not an object, not an array",
+            "configKeys" : [ "showTableSize" ]
+          },
+          "showColumnDataType" : {
+            "type" : "not an object, not an array",
+            "configKeys" : [ "showColumnDataType" ]
+          },
+          "enablePagination" : {
+            "type" : "not an object, not an array",
+            "configKeys" : [ "enablePagination" ]
+          },
+          "pageSize" : {
+            "type" : "not an object, not an array",
+            "configKeys" : [ "pageSize" ]
+          },
+          "autoSizeColumnsToContent" : {
+            "type" : "not an object, not an array",
+            "configKeys" : [ "autoSizeColumnsToContent" ]
+          },
+          "rowHeightMode" : {
+            "type" : "not an object, not an array",
+            "configKeys" : [ "rowHeightModeV2" ]
+          },
+          "customRowHeight" : {
+            "type" : "not an object, not an array",
+            "configKeys" : [ "customRowHeight" ]
+          },
+          "verticalPaddingMode" : {
+            "type" : "not an object, not an array",
+            "configKeys" : [ "verticalPaddingMode" ]
+          },
+          "enableGlobalSearch" : {
+            "type" : "not an object, not an array",
+            "configKeys" : [ "enableGlobalSearch" ]
+          },
+          "enableColumnSearch" : {
+            "type" : "not an object, not an array",
+            "configKeys" : [ "enableColumnSearch" ]
+          },
+          "enableSortingByHeader" : {
+            "type" : "not an object, not an array",
+            "configKeys" : [ "enableSortingByHeader" ]
+          },
+          "enableRendererSelection" : {
+            "type" : "not an object, not an array",
+            "configKeys" : [ "enableRendererSelection" ]
+          },
+          "enableCellCopying" : {
+            "type" : "not an object, not an array",
+            "configKeys" : [ "enableCellCopying" ]
+          },
+          "selectionMode" : {
+            "type" : "not an object, not an array",
+            "configKeys" : [ "selectionMode" ]
+          },
+          "showOnlySelectedRows" : {
+            "type" : "not an object, not an array",
+            "configKeys" : [ "showOnlySelectedRows" ]
+          },
+          "showOnlySelectedRowsConfigurable" : {
+            "type" : "not an object, not an array",
+            "configKeys" : [ "showOnlySelectedRowsConfigurable" ]
+          },
+          "skipRemainingColumns" : {
+            "type" : "not an object, not an array",
+            "configKeys" : [ "skipRemainingColumns_Internals" ]
+          }
+        }
+      }
+    }
   }
 }

@@ -85,15 +85,16 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUti
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup.Modification;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.ConfigKeyUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.ArrayParentNode;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.Tree;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeNode;
 import org.knime.core.webui.node.dialog.defaultdialog.util.DescriptionUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget.DoubleProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.ArrayWidgetNode;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeFactory;
 
 import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -146,7 +147,7 @@ public final class JsonFormsSchemaUtil {
      */
     public static JsonNode buildCombinedSchema(
         final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses,
-        final Map<SettingsType, WidgetTree> widgetTrees, final DefaultNodeSettingsContext context,
+        final Map<SettingsType, Tree<WidgetGroup>> widgetTrees, final DefaultNodeSettingsContext context,
         final ObjectMapper mapper) {
         final var root = mapper.createObjectNode();
         root.put(TAG_TYPE, TYPE_OBJECT);
@@ -174,11 +175,11 @@ public final class JsonFormsSchemaUtil {
     @SuppressWarnings("javadoc") // public for test purposes
     public static ObjectNode buildSchema(final Class<? extends WidgetGroup> settingsClass,
         final DefaultNodeSettingsContext context, final ObjectMapper mapper) {
-        final var widgetTree = new WidgetTree(settingsClass, SettingsType.MODEL);
+        final var widgetTree = new WidgetTreeFactory().createTree(settingsClass, SettingsType.MODEL);
         return buildSchema(settingsClass, widgetTree, context, mapper);
     }
 
-    private static ObjectNode buildSchema(final Type settingsClass, final WidgetTree widgetTree,
+    private static ObjectNode buildSchema(final Type settingsClass, final Tree<WidgetGroup> widgetTree,
         final DefaultNodeSettingsContext context, final ObjectMapper mapper) {
         final var builder = new SchemaGeneratorConfigBuilder(mapper, VERSION, new OptionPreset(//
             Option.ADDITIONAL_FIXED_TYPES, //
@@ -199,7 +200,7 @@ public final class JsonFormsSchemaUtil {
             if (widgetTree == null) {
                 return null;
             }
-            Function<WidgetTree, CustomPropertyDefinition> useWidgetTreeForNestedFields =
+            Function<Tree<WidgetGroup>, CustomPropertyDefinition> useWidgetTreeForNestedFields =
                 wt -> new CustomPropertyDefinition(buildSchema(fieldScope.getType(), wt, context, mapper));
 
             final var fieldNode = widgetTree.getChildByName(fieldScope.getName());
@@ -261,19 +262,19 @@ public final class JsonFormsSchemaUtil {
         return new SchemaGenerator(builder.build()).generateSchema(settingsClass);
     }
 
-    private static CustomPropertyDefinition getPropertyDefinition(final WidgetTreeNode fieldNode,
+    private static CustomPropertyDefinition getPropertyDefinition(final TreeNode<WidgetGroup> fieldNode,
         final FieldScope fieldScope, final SchemaGenerationContext generationContext,
-        final Function<WidgetTree, CustomPropertyDefinition> useWidgetTreeForNestedFields) {
-        if (fieldNode instanceof WidgetTree wt) {
+        final Function<Tree<WidgetGroup>, CustomPropertyDefinition> useWidgetTreeForNestedFields) {
+        if (fieldNode instanceof Tree<WidgetGroup> wt) {
             /**
              * If the node is another widgetTree, we use it for the traversal of the nested fields.
              */
             return useWidgetTreeForNestedFields.apply(wt);
-        } else if (fieldNode instanceof ArrayWidgetNode awn) {
+        } else if (fieldNode instanceof ArrayParentNode<WidgetGroup> awn) {
             /**
              * If the node is an array widget node, the next fields are those if the element widget tree.
              */
-            return useWidgetTreeForNestedFields.apply(awn.getElementWidgetTree());
+            return useWidgetTreeForNestedFields.apply(awn.getElementTree());
         } else {
             final var enumDefinition =
                 new EnumDefinitionProvider().provideCustomSchemaDefinition(fieldScope, generationContext);
@@ -292,7 +293,7 @@ public final class JsonFormsSchemaUtil {
      * (e.g. {@link Modification}s are resolved there).
      */
     private static <T extends Annotation> Optional<T> retrieveAnnotation(final FieldScope fieldScope,
-        final Class<T> annotationClass, final WidgetTree widgetTree) {
+        final Class<T> annotationClass, final Tree<WidgetGroup> widgetTree) {
         if (widgetTree != null) {
             final var widgetTreeNode = widgetTree.getChildByName(fieldScope.getName());
             if (widgetTreeNode != null) {
@@ -306,7 +307,7 @@ public final class JsonFormsSchemaUtil {
         return Optional.ofNullable(fieldScope.getAnnotationConsideringFieldAndGetter(annotationClass));
     }
 
-    private static String resolveDescription(final FieldScope fieldScope, final WidgetTree widgetTree) {
+    private static String resolveDescription(final FieldScope fieldScope, final Tree<WidgetGroup> widgetTree) {
         var type = fieldScope.getType().getErasedType();
         return retrieveAnnotation(fieldScope, Widget.class, widgetTree)//
             .filter(w -> !fieldScope.isFakeContainerItemScope())//

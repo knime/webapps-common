@@ -46,7 +46,7 @@
  * History
  *   Aug 5, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widgettree;
+package org.knime.core.webui.node.dialog.defaultdialog.tree;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -60,28 +60,32 @@ import java.util.stream.Stream;
 
 import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.SettingsType;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup.Modification;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 
 /**
- * These are the nodes within a {@link WidgetTree}. Next to the branching {@link WidgetTree} node, there are two kinds
- * of leafs: {@link WidgetNode}s with no further child widgets and {@link ArrayWidgetNode}s with an attached separate
- * {@link WidgetTree} for elements.
+ * These are the nodes within a {@link Tree}. Next to the branching {@link Tree} node, there are two kinds of leafs:
+ * {@link LeafNode}s with no further child widgets and {@link ArrayParentNode}s with an attached separate {@link Tree} for
+ * elements.
+ *
+ * @param <S> the type of the [S]ettings. Either {@link PersistableSettings} or {@link WidgetGroup}
  *
  * @author Paul Bärnreuther
  */
-public sealed class WidgetTreeNode permits WidgetNode, WidgetTree, ArrayWidgetNode {
+public sealed class TreeNode<S> permits LeafNode, Tree, ArrayParentNode {
 
-    private final WidgetTree m_parent;
+    private final Tree<S> m_parent;
 
     private List<String> m_path;
 
-    private Optional<ArrayWidgetNode> m_containingArrayWidgetNode;
+    private Optional<ArrayParentNode<S>> m_containingArrayWidgetNode;
 
     private final Class<?> m_type;
 
     private final SettingsType m_settingsType;
 
-    protected final Map<Class<? extends Annotation>, Annotation> m_annotations;
+    final Map<Class<? extends Annotation>, Annotation> m_annotations;
 
     private final Collection<Class<? extends Annotation>> m_possibleAnnotations;
 
@@ -93,7 +97,7 @@ public sealed class WidgetTreeNode permits WidgetNode, WidgetTree, ArrayWidgetNo
      *            {@code null} if there is none
      * @param possibleAnnotations all allowed annotations
      */
-    protected WidgetTreeNode(final WidgetTree parent, final SettingsType settingsType, final Class<?> type,
+    protected TreeNode(final Tree<S> parent, final SettingsType settingsType, final Class<?> type,
         final Function<Class<? extends Annotation>, Annotation> annotations,
         final Collection<Class<? extends Annotation>> possibleAnnotations) {
         m_parent = parent;
@@ -109,21 +113,30 @@ public sealed class WidgetTreeNode permits WidgetNode, WidgetTree, ArrayWidgetNo
     }
 
     /**
-     * @return "view" or "model" or null in case of element widget trees of array widgets.
+     * @return "view" or "model" or null in case of element trees of array widgets.
      */
     public SettingsType getSettingsType() {
         return m_settingsType;
     }
 
     /**
-     * @return the path to the current node starting from the root widgetTree (which can be an element widget tree of an
-     *         {@link ArrayWidgetNode})
+     * @return the path to the current node starting from the root tree (which can be an element widget tree of an
+     *         {@link ArrayParentNode})
      */
     public List<String> getPath() {
         if (m_path == null) {
             m_path = getPathUsingParents();
         }
         return m_path;
+    }
+
+    /**
+     * @return the name of this node. It is empty in case of a root tree node (which can be an element widget tree of an
+     *         {@link ArrayParentNode})
+     */
+    public Optional<String> getName() {
+        final var path = getPath();
+        return path.isEmpty() ? Optional.empty() : Optional.of(path.get(path.size() - 1));
     }
 
     private List<String> getPathUsingParents() {
@@ -137,9 +150,9 @@ public sealed class WidgetTreeNode permits WidgetNode, WidgetTree, ArrayWidgetNo
     }
 
     /**
-     * @return the next parent {@link ArrayWidgetNode} if any
+     * @return the next parent {@link ArrayParentNode} if any
      */
-    Optional<ArrayWidgetNode> getContainingArrayWidgetNode() {
+    Optional<ArrayParentNode<S>> getContainingArrayWidgetNode() {
         if (m_containingArrayWidgetNode == null) { // NOSONAR
             m_containingArrayWidgetNode = getContainingArrayWidgetNodeUsingParents();
         }
@@ -147,10 +160,10 @@ public sealed class WidgetTreeNode permits WidgetNode, WidgetTree, ArrayWidgetNo
     }
 
     /**
-     * @return a collection of all containing {@link ArrayWidgetNode}s starting with the most outer one.
+     * @return a collection of all containing {@link ArrayParentNode}s starting with the most outer one.
      */
-    public List<ArrayWidgetNode> getContainingArrayWidgetNodes() {
-        final List<ArrayWidgetNode> containingArrayWidgetNodes = new ArrayList<>();
+    public List<ArrayParentNode<S>> getContainingArrayWidgetNodes() {
+        final List<ArrayParentNode<S>> containingArrayWidgetNodes = new ArrayList<>();
         getContainingArrayWidgetNode().ifPresent(containingNode -> {
             containingArrayWidgetNodes.addAll(containingNode.getContainingArrayWidgetNodes());
             containingArrayWidgetNodes.add(containingNode);
@@ -159,9 +172,9 @@ public sealed class WidgetTreeNode permits WidgetNode, WidgetTree, ArrayWidgetNo
     }
 
     /**
-     * @return the first ancestor {@link ArrayWidgetNode} of this node if there are any.
+     * @return the first ancestor {@link ArrayParentNode} of this node if there are any.
      */
-    protected Optional<ArrayWidgetNode> getContainingArrayWidgetNodeUsingParents() {
+    protected Optional<ArrayParentNode<S>> getContainingArrayWidgetNodeUsingParents() {
         return getParent().getContainingArrayWidgetNodeUsingParents();
     }
 
@@ -189,8 +202,8 @@ public sealed class WidgetTreeNode permits WidgetNode, WidgetTree, ArrayWidgetNo
 
     /**
      * @param annotationClass
-     * @param <T>
-     * @return the annotation if present (or added via {@link WidgetTree#addAnnotation(Class, Annotation)})
+     * @param <T> the type of the annotation
+     * @return the annotation if present (or added via #addAnnotation(Class, Annotation))
      */
     @SuppressWarnings("unchecked") // The m_annotations map is constructed as required
     public <T extends Annotation> Optional<T> getAnnotation(final Class<T> annotationClass) {
@@ -211,7 +224,7 @@ public sealed class WidgetTreeNode permits WidgetNode, WidgetTree, ArrayWidgetNo
     /**
      * @return the parent
      */
-    WidgetTree getParent() {
+    Tree<S> getParent() {
         return m_parent;
     }
 

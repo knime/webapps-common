@@ -70,6 +70,7 @@ import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.ReflectionUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeNode;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LatentWidget;
 
 /**
@@ -133,6 +134,19 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
     }
 
     /**
+    *
+    * @param field
+    * @return the persistor inherent to the given field if it is persistable
+    */
+   static Optional<NodeSettingsPersistor<?>> getCustomOrDefaultPersistorIfPresent(final TreeNode<PersistableSettings> node) {
+       try {
+           return Optional.of(getCustomOrDefaultPersistor(node));
+       } catch (IllegalArgumentException ex) { // NOSONAR
+           return Optional.empty();
+       }
+   }
+
+    /**
      * @throws IllegalArgumentException if there is no persistor available for the provided field
      */
     @SuppressWarnings({"unchecked"}) // annotations and generics don't mix well
@@ -147,6 +161,30 @@ final class FieldNodeSettingsPersistorFactory<S extends PersistableSettings> {
         var persist = field.getAnnotation(Persist.class);
         if (persist != null) {
             final var customPersistorClass = persist.customPersistor();
+            if (!customPersistorClass.equals(FieldNodeSettingsPersistor.class)) {
+                return createCustomPersistor(customPersistorClass, type, configKey);
+            }
+        }
+        return createDefaultPersistor(type, configKey);
+
+    }
+
+
+    /**
+     * @throws IllegalArgumentException if there is no persistor available for the provided field
+     */
+    @SuppressWarnings({"unchecked"}) // annotations and generics don't mix well
+    private static NodeSettingsPersistor<?> getCustomOrDefaultPersistor(final TreeNode<PersistableSettings> node ) {
+        var isLatentWidget = node.getAnnotation(LatentWidget.class).isPresent();
+        if (isLatentWidget) {
+            return new LatentWidgetPersistor<>();
+        }
+
+        var type = node.getType();
+        var configKey = ConfigKeyUtil.getConfigKey(node);
+        var persist = node.getAnnotation(Persist.class);
+        if (persist.isEmpty()) {
+            final var customPersistorClass = persist.get().customPersistor();
             if (!customPersistorClass.equals(FieldNodeSettingsPersistor.class)) {
                 return createCustomPersistor(customPersistorClass, type, configKey);
             }

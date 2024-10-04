@@ -54,7 +54,7 @@ import java.util.stream.Stream;
 
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeNode;
 
 /**
  *
@@ -69,10 +69,10 @@ public record PathsWithSettingsType(List<List<String>> paths, SettingsType setti
      * @param node
      * @return the paths leading to that node in its tree together with the settingsKey of the root
      */
-    static PathsWithSettingsType fromWidgetTreeNode(final WidgetTreeNode node) {
+    static <S> PathsWithSettingsType fromTreeNode(final TreeNode<S> node) {
         final var listOfFields = Stream.concat(node.getContainingArrayWidgetNodes().stream(), Stream.of(node)).toList();
         final var settingsKey = listOfFields.get(0).getSettingsType();
-        final var listOfPaths = listOfFields.stream().map(WidgetTreeNode::getPath).toList();
+        final var listOfPaths = listOfFields.stream().map(TreeNode<S>::getPath).toList();
         return new PathsWithSettingsType(listOfPaths, settingsKey);
     }
 

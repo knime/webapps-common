@@ -57,9 +57,12 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil.getMapper;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.IsColumnOfTypeCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.IsSpecificColumnCondition;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.ArrayParentNode;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeNode;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.ArrayContainsCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.ConditionVisitor;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.FalseCondition;
@@ -68,8 +71,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.OneOfEnumCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.PatternCondition;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.TrueCondition;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.ArrayWidgetNode;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -79,11 +80,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 class JsonFormsConditionResolver implements ConditionVisitor<ObjectNode> {
 
-    private final WidgetTreeNode m_widgetTreeNode;
+    private final TreeNode<WidgetGroup> m_widgetTreeNode;
 
     private final DefaultNodeSettingsContext m_context;
 
-    JsonFormsConditionResolver(final WidgetTreeNode node, final DefaultNodeSettingsContext context) {
+    JsonFormsConditionResolver(final TreeNode<WidgetGroup> node, final DefaultNodeSettingsContext context) {
         m_widgetTreeNode = node;
         m_context = context;
     }
@@ -150,8 +151,8 @@ class JsonFormsConditionResolver implements ConditionVisitor<ObjectNode> {
 
     @Override
     public ObjectNode visit(final ArrayContainsCondition arrayContainsCondition) {
-        if (m_widgetTreeNode instanceof ArrayWidgetNode arrayWidgetNode) {
-            final var elementPredicate = new PredicateExtractor(arrayWidgetNode.getElementWidgetTree(), m_context)
+        if (m_widgetTreeNode instanceof ArrayParentNode<WidgetGroup> arrayWidgetNode) {
+            final var elementPredicate = new PredicateExtractor(arrayWidgetNode.getElementTree(), m_context)
                 .createPredicate(arrayContainsCondition.getElementPredicate());
             final var containsCondition = elementPredicate.accept(new SchemaInternalPredicateVisitor(m_context));
 

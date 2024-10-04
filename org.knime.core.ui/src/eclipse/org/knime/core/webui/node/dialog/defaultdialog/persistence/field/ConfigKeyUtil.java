@@ -53,6 +53,8 @@ import java.util.Optional;
 
 import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeNode;
 
 /**
  * Utilities for getting the used config keys from a {@link Field} with a {@link Persist} annotation.
@@ -93,6 +95,24 @@ public final class ConfigKeyUtil {
         }
     }
 
+    public static String[] getConfigKeysUsedByPersistNode(final TreeNode<PersistableSettings> node) {
+        var persist = node.getAnnotation(Persist.class);
+        if (persist.isEmpty()) {
+            return new String[]{};
+        } else {
+            var configKey = getConfigKey(node);
+            var customPersistor = persist.get().customPersistor();
+            if (customPersistor.equals(FieldNodeSettingsPersistor.class)) {
+                // No custom persistor is set -> just use the config key
+                return new String[]{configKey};
+            } else {
+                // Custom persistor -> get the config keys from it
+                return extractFieldNodeSettingsPersistor(node).map(FieldNodeSettingsPersistor::getConfigKeys)
+                    .orElse(new String[]{configKey});
+            }
+        }
+    }
+
     /**
      * Get the sub config keys (i.e., keys of subsettings under this setting that don't have their own control) that are
      * used by the given field if it is annotated with a {@link Persist} annotation and if the annotation defines a
@@ -104,6 +124,19 @@ public final class ConfigKeyUtil {
      */
     public static String[][] getSubConfigKeysUsedByField(final Field field) {
         return extractFieldNodeSettingsPersistor(field).map(FieldNodeSettingsPersistor::getSubConfigKeys).orElse(null);
+    }
+
+    /**
+     * Get the sub config keys (i.e., keys of subsettings under this setting that don't have their own control) that are
+     * used by the given field if it is annotated with a {@link Persist} annotation and if the annotation defines a
+     * {@link Persist#customPersistor()} that overrides {@link FieldNodeSettingsPersistor#getSubConfigKeys()}.
+     *
+     * @param field
+     * @return the sub config keys used by the persistor or null, if the sub config keys are to be inferred from the
+     *         schema by the frontend
+     */
+    public static String[][] getSubConfigKeysUsedByField(final TreeNode<PersistableSettings> node) {
+        return extractFieldNodeSettingsPersistor(node).map(FieldNodeSettingsPersistor::getSubConfigKeys).orElse(null);
     }
 
     /**
@@ -123,12 +156,44 @@ public final class ConfigKeyUtil {
             .orElse(new ConfigsDeprecation[]{});
     }
 
+    /**
+     * Get the collection of {@link ConfigsDeprecation} that are used by the given field if it is annotated with a
+     * {@link Persist} annotation.
+     *
+     * @param field
+     * @return the deprecated configs defined by the {@link Persist#customPersistor} or an empty array none exists.
+     */
+    public static ConfigsDeprecation[] getDeprecatedConfigsUsedByField(final TreeNode<PersistableSettings> node) {
+        var persist = node.getAnnotation(Persist.class);
+        if (persist.isEmpty()) {
+            return new ConfigsDeprecation[]{};
+        }
+
+        return extractFieldNodeSettingsPersistor(node).map(FieldNodeSettingsPersistor::getConfigsDeprecations)
+            .orElse(new ConfigsDeprecation[]{});
+    }
+
     private static Optional<FieldNodeSettingsPersistor<?>> extractFieldNodeSettingsPersistor(final Field field) {
         /**
          * There might not exist a persistor in some cases where the persistence is defined on a parent level class or
          * field.
          */
         return FieldNodeSettingsPersistorFactory.getCustomOrDefaultPersistorIfPresent(field).flatMap(persistor -> {
+            if (persistor instanceof FieldNodeSettingsPersistor<?> fieldNodeSettingsPersistor) {
+                return Optional.of(fieldNodeSettingsPersistor);
+            }
+            return Optional.empty();
+        });
+
+    }
+
+    private static Optional<FieldNodeSettingsPersistor<?>>
+        extractFieldNodeSettingsPersistor(final TreeNode<PersistableSettings> node) {
+        /**
+         * There might not exist a persistor in some cases where the persistence is defined on a parent level class or
+         * field.
+         */
+        return FieldNodeSettingsPersistorFactory.getCustomOrDefaultPersistorIfPresent(node).flatMap(persistor -> {
             if (persistor instanceof FieldNodeSettingsPersistor<?> fieldNodeSettingsPersistor) {
                 return Optional.of(fieldNodeSettingsPersistor);
             }
@@ -149,6 +214,27 @@ public final class ConfigKeyUtil {
             var configKey = persist.configKey();
             if (!hasConfigKeySet(configKey)) {
                 configKey = extractConfigKeyFromFieldName(field.getName());
+            }
+            if (persist.hidden()) {
+                configKey += SettingsModel.CFGKEY_INTERNAL;
+            }
+            return configKey;
+        }
+    }
+
+    /**
+     * Get the configKey defined by the {@link Persist} annotation on the given field. If the field is not annotated or
+     * the {@link Persist#configKey()} option is not set, a default key is extracted from the field name.
+     */
+    static String getConfigKey(final TreeNode<PersistableSettings> node) {
+        var persist = node.getAnnotation(Persist.class).orElseThrow();
+        final var fieldName = node.getName().orElseThrow(); //TODO
+        if (persist == null) {
+            return extractConfigKeyFromFieldName(fieldName);
+        } else {
+            var configKey = persist.configKey();
+            if (!hasConfigKeySet(configKey)) {
+                configKey = extractConfigKeyFromFieldName(fieldName);
             }
             if (persist.hidden()) {
                 configKey += SettingsModel.CFGKEY_INTERNAL;

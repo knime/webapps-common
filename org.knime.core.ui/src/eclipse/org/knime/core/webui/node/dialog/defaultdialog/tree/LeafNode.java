@@ -46,65 +46,39 @@
  * History
  *   Aug 5, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widgettree;
+package org.knime.core.webui.node.dialog.defaultdialog.tree;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Function;
 
-import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
-import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup.Modification;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.LatentWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.internal.InternalArrayWidget;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 
 /**
- * An instance of this class corresponds to an array widget, i.e. a widget whose subwidgets are repeated n times.
  *
- * <p>
- * It is a leaf of the containing {@link WidgetTree}, i.e. with it has no further sub-nodes.
- * </p>
+ * A node representing a final leaf of the {@link Tree}, i.e. it corresponds to a field within a
+ * {@link PersistableSettings} and its type is neither another {@link PersistableSettings} nor an array of such.
  *
- * But it also gives rise to a new tree retrieved via {@link #getElementWidgetTree}, which is to be interpreted as an
- * independent tree corresponding to the type of an elements of this array widget.
- * </p>
- *
+ * @param <S> the type of the [S]ettings. Either {@link PersistableSettings} or {@link WidgetGroup}
  * @author Paul Bärnreuther
  */
-public final class ArrayWidgetNode extends WidgetTreeNode {
+public final class LeafNode<S> extends TreeNode<S> {
 
-    private static final Collection<Class<? extends Annotation>> POSSIBLE_ANNOTATIONS = List.of(LatentWidget.class,
-        Widget.class, ArrayWidget.class, InternalArrayWidget.class, Layout.class, Effect.class, ValueReference.class,
-        ValueProvider.class, Modification.class, Modification.WidgetReference.class);
+    private final Class<?> m_contentType;
 
-    private final WidgetTree m_elementWidgetTree;
-
-    ArrayWidgetNode(final WidgetTree parent, final WidgetTree elementWidgetTree, final Class<?> type,
-        final Function<Class<? extends Annotation>, Annotation> annotations) {
-        super(parent, parent.getSettingsType(), type, annotations, POSSIBLE_ANNOTATIONS);
-        m_elementWidgetTree = elementWidgetTree;
-        m_elementWidgetTree.m_arrayWidgetNodeParent = this; // NOSONAR doesn't need to be thread-safe
+    LeafNode(final Tree<S> parent, final Class<?> type, final Class<?> contentType,
+        final Function<Class<? extends Annotation>, Annotation> annotations,
+        final Collection<Class<? extends Annotation>> possibleAnnotations) {
+        super(parent, parent.getSettingsType(), type, annotations, possibleAnnotations);
+        m_contentType = contentType;
     }
 
     /**
-     * @return the elementWidgetTree
+     * @return the contentType if the type is an array/collection type or null if not
      */
-    public WidgetTree getElementWidgetTree() {
-        return m_elementWidgetTree;
-    }
-
-    /**
-     * Resolves the {@link Modification} annotation of this node and its element tree.
-     */
-    void resolveWidgetModifications() {
-        getAnnotation(Modification.class).ifPresent(widgetModification -> WidgetModificationUtil
-            .resolveWidgetModification(getElementWidgetTree(), widgetModification));
-        getElementWidgetTree().resolveWidgetModifications();
+    public Class<?> getContentType() {
+        return m_contentType;
     }
 
 }

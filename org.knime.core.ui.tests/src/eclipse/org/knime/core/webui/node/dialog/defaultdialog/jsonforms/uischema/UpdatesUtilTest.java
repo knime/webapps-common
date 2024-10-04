@@ -90,7 +90,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -111,9 +111,10 @@ class UpdatesUtilTest {
         final var objectNode = new ObjectMapper().createObjectNode();
         final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses =
             MapValuesUtil.mapValues(settings, WidgetGroup::getClass);
-        UpdatesUtil.addUpdates(objectNode,
-            settingsClasses.entrySet().stream().map(e -> new WidgetTree(e.getValue(), e.getKey())).toList(), settings,
-            createDefaultNodeSettingsContext());
+        UpdatesUtil.addUpdates(
+            objectNode, settingsClasses.entrySet().stream()
+                .map(e -> new WidgetTreeFactory().createTree(e.getValue(), e.getKey())).toList(),
+            settings, createDefaultNodeSettingsContext());
         return objectNode;
     }
 

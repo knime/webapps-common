@@ -60,6 +60,10 @@ import java.util.function.Function;
 import org.apache.commons.lang3.ClassUtils;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaGenerationException;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.ArrayParentNode;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.Tree;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeNode;
 import org.knime.core.webui.node.dialog.defaultdialog.util.GenericTypeFinderUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.util.WidgetGroupTraverser.Configuration;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
@@ -77,9 +81,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.ArrayWidgetNode;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
 
 final class WidgetTreesToValueRefsAndStateProviders {
 
@@ -108,23 +109,24 @@ final class WidgetTreesToValueRefsAndStateProviders {
      * @param widgetTrees a collection of widget trees derived from settings classes to collect annotated fields from
      * @return the valueRef and updates annotations
      */
-    ValueRefsAndStateProviders widgetTreesToValueRefsAndStateProviders(final Collection<WidgetTree> widgetTrees) {
+    ValueRefsAndStateProviders
+        widgetTreesToValueRefsAndStateProviders(final Collection<Tree<WidgetGroup>> widgetTrees) {
         widgetTrees.forEach(this::traverseWidgetTree);
         return new ValueRefsAndStateProviders(m_valueRefs, m_valueProviders, m_uiStateProviders);
 
     }
 
-    private void traverseWidgetTree(final WidgetTree tree) {
+    private void traverseWidgetTree(final Tree<WidgetGroup> tree) {
         tree.getChildren().forEach(this::traverseWidgetTreeNode);
     }
 
-    private void traverseWidgetTreeNode(final WidgetTreeNode node) {
+    private void traverseWidgetTreeNode(final TreeNode<WidgetGroup> node) {
         addWidgetValueAnnotationValueRefAndValueProviderForNode(node);
         addUiStateProviderForNode(node);
-        if (node instanceof WidgetTree widgetTree) {
+        if (node instanceof Tree<WidgetGroup> widgetTree) {
             traverseWidgetTree(widgetTree);
-        } else if (node instanceof ArrayWidgetNode arrayWidgetNode) {
-            traverseWidgetTree(arrayWidgetNode.getElementWidgetTree());
+        } else if (node instanceof ArrayParentNode<WidgetGroup> arrayWidgetNode) {
+            traverseWidgetTree(arrayWidgetNode.getElementTree());
         }
     }
 
@@ -188,13 +190,13 @@ final class WidgetTreesToValueRefsAndStateProviders {
                 StateProvider.class //
             ));
 
-    private void addUiStateProviderForNode(final WidgetTreeNode node) {
+    private void addUiStateProviderForNode(final TreeNode<WidgetGroup> node) {
         uiStateProviderSpecs.stream().forEach(
             spec -> getUiStateProviderForNodeAndSpecificAnnotation(node, spec).ifPresent(m_uiStateProviders::add));
     }
 
     private static <T extends Annotation, S extends StateProvider> Optional<Class<? extends S>>
-        getUiStateProviderForNodeAndSpecificAnnotation(final WidgetTreeNode node,
+        getUiStateProviderForNodeAndSpecificAnnotation(final TreeNode<WidgetGroup> node,
             final UiStateProviderSpec<T, S> spec) {
         if (!node.getPossibleAnnotations().contains(spec.annotationClass())) {
             return Optional.empty();
@@ -211,8 +213,8 @@ final class WidgetTreesToValueRefsAndStateProviders {
 
     }
 
-    private void addWidgetValueAnnotationValueRefAndValueProviderForNode(final WidgetTreeNode node) {
-        final var pathsWithSettingsKey = PathsWithSettingsType.fromWidgetTreeNode(node);
+    private void addWidgetValueAnnotationValueRefAndValueProviderForNode(final TreeNode<WidgetGroup> node) {
+        final var pathsWithSettingsKey = PathsWithSettingsType.fromTreeNode(node);
         final var type = node.getType();
         node.getAnnotation(ValueReference.class)
             .ifPresent(valueReference -> addValueRef(valueReference.value(), type, pathsWithSettingsKey));

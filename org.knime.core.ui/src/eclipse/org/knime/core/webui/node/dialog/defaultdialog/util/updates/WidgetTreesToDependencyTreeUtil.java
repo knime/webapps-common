@@ -52,10 +52,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.Tree;
 import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
 
 /**
  * A utility class for parsing all update interactions between different widgets from given settings classes.
@@ -68,7 +69,7 @@ public final class WidgetTreesToDependencyTreeUtil {
         // Utility
     }
 
-    static Collection<TriggerVertex> widgetTreesToDependencyTree(final Collection<WidgetTree> widgetTrees) {
+    static Collection<TriggerVertex> widgetTreesToDependencyTree(final Collection<Tree<WidgetGroup>> widgetTrees) {
         final var valueRefsAndStateProviders =
             new WidgetTreesToValueRefsAndStateProviders().widgetTreesToValueRefsAndStateProviders(widgetTrees);
         return ValueRefsAndValueProvidersAndUiStateProvidersToDependencyTree

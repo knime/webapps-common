@@ -61,7 +61,8 @@ import java.util.stream.Collectors;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Before;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Inside;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeNode;
 
 /**
  * A representation of a layout part class which is used in {@link LayoutTree} to determine the structure between all
@@ -140,7 +141,7 @@ public final class LayoutTreeNode {
 
     }
 
-    private final List<WidgetTreeNode> m_controls = new ArrayList<>(0);
+    private final List<TreeNode<WidgetGroup>> m_controls = new ArrayList<>(0);
 
     private Collection<LayoutTreeNode> m_children;
 
@@ -168,13 +169,13 @@ public final class LayoutTreeNode {
     }
 
     /**
-     * @return the {@link WidgetTreeNode}s that are associated with this layout part
+     * @return the {@link TreeNode<WidgetGroup>}s that are associated with this layout part
      */
-    public List<WidgetTreeNode> getControls() {
+    public List<TreeNode<WidgetGroup>> getControls() {
         return m_controls;
     }
 
-    void addControls(final List<WidgetTreeNode> controls) {
+    void addControls(final List<TreeNode<WidgetGroup>> controls) {
         m_controls.addAll(controls);
     }
 
@@ -378,7 +379,7 @@ public final class LayoutTreeNode {
                     e.getValue().stream().map(LayoutTreeNode::getValue).map(Class::getSimpleName).toList()));
             }
         });
-        getControls().stream().map(WidgetTreeNode::getPath)
+        getControls().stream().map(TreeNode<WidgetGroup>::getPath)
             .map(path -> String.format("%s| -> %s", indent, String.join(".", path))).forEach(lines::add); // NOSONAR
         getChildren().stream().map(child -> child.toString(childIndent)).forEach(lines::add); // NOSONAR
 

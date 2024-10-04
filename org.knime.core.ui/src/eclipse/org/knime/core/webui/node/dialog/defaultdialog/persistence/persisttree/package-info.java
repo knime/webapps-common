@@ -42,27 +42,12 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
- *
- * History
- *   Apr 4, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates;
-
-import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeNode;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Predicate;
-
 /**
- * The atomic predicate that is used for json forms implementation
+ *
+ * This package entails parsing {@link PersistableSettings} to a tree structure as an intermediate step to serializing
+ * the structure.
  *
  * @author Paul Bärnreuther
- * @param node of the widget tree that this expcession is scoped to
- * @param condition
  */
-public record ScopedPredicate(TreeNode<WidgetGroup> node, Condition condition) implements Predicate {
-
-    @Override
-    public <T> T accept(final PredicateVisitor<T> visitor) {
-        return visitor.visit(this);
-    }
-}
+package org.knime.core.webui.node.dialog.defaultdialog.persistence.persisttree;

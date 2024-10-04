@@ -74,7 +74,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -92,8 +92,8 @@ class JsonFormsUiSchemaUtilTest {
 
     static ObjectNode buildUiSchema(final Map<SettingsType, Class<? extends WidgetGroup>> settings,
         final DefaultNodeSettingsContext context, final AsyncChoicesHolder asyncChoicesHolder) {
-        return JsonFormsUiSchemaUtil.buildUISchema(
-            settings.entrySet().stream().map(e -> new WidgetTree(e.getValue(), e.getKey())).toList(), context,
+        return JsonFormsUiSchemaUtil.buildUISchema(settings.entrySet().stream()
+            .map(e -> new WidgetTreeFactory().createTree(e.getValue(), e.getKey())).toList(), context,
             asyncChoicesHolder);
     }
 

@@ -61,12 +61,12 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsScopeUt
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.UpdateResultsUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.UpdateResultsUtil.UpdateResult;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.Tree;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.PathsWithSettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerAndDependencies;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.TriggerInvocationHandler;
 import org.knime.core.webui.node.dialog.defaultdialog.util.updates.WidgetTreesToDependencyTreeUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTree;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -91,7 +91,7 @@ public final class UpdatesUtil {
      * @param settings
      * @param context
      */
-    public static void addUpdates(final ObjectNode rootNode, final Collection<WidgetTree> widgetTrees,
+    public static void addUpdates(final ObjectNode rootNode, final Collection<Tree<WidgetGroup>> widgetTrees,
         final Map<SettingsType, WidgetGroup> settings, final DefaultNodeSettingsContext context) {
         final var pair =
             WidgetTreesToDependencyTreeUtil.<Integer> widgetTreesToTriggersAndInvocationHandler(widgetTrees);

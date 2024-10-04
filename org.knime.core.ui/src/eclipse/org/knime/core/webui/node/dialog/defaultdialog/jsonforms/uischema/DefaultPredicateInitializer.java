@@ -49,7 +49,9 @@
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeNode;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Predicate;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.PredicateProvider;
@@ -61,7 +63,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.FrameworkPredicate;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.FrameworkPredicateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates.ScopedPredicate;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
 
 class DefaultPredicateInitializer implements PredicateInitializer {
 
@@ -75,7 +76,7 @@ class DefaultPredicateInitializer implements PredicateInitializer {
          * @param reference
          * @return the node with the reference. Return null if no such node exists.
          */
-        WidgetTreeNode getScope(Class<?> reference);
+        TreeNode<WidgetGroup> getScope(Class<?> reference);
 
     }
 

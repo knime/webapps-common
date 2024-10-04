@@ -44,25 +44,11 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 4, 2023 (Paul Bärnreuther): created
+ *   Okt 7, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates;
-
-import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeNode;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Predicate;
-
 /**
- * The atomic predicate that is used for json forms implementation
+ * This package contains the tree structure that is used to build the dialog from {@link DefaultNodeSettings}.
  *
  * @author Paul Bärnreuther
- * @param node of the widget tree that this expcession is scoped to
- * @param condition
  */
-public record ScopedPredicate(TreeNode<WidgetGroup> node, Condition condition) implements Predicate {
-
-    @Override
-    public <T> T accept(final PredicateVisitor<T> visitor) {
-        return visitor.visit(this);
-    }
-}
+package org.knime.core.webui.node.dialog.defaultdialog.tree;

@@ -44,25 +44,43 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Apr 4, 2023 (Paul Bärnreuther): created
+ *   Aug 5, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.widget.updates.predicates;
+package org.knime.core.webui.node.dialog.defaultdialog.persistence.persisttree;
 
-import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeNode;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Predicate;
+import java.lang.annotation.Annotation;
+import java.util.Collection;
+import java.util.List;
+
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.Persistor;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeFactory;
 
 /**
- * The atomic predicate that is used for json forms implementation
+ * For creating a persist tree from a {@link PersistableSettings} class.
  *
  * @author Paul Bärnreuther
- * @param node of the widget tree that this expcession is scoped to
- * @param condition
  */
-public record ScopedPredicate(TreeNode<WidgetGroup> node, Condition condition) implements Predicate {
+public final class PersistTreeFactory extends TreeFactory<PersistableSettings> {
+
+    private static final Collection<Class<? extends Annotation>> PERSIST_AND_PERSISTOR =
+        List.of(Persist.class, Persistor.class);
+
+    static final Collection<Class<? extends Annotation>> PERSISTOR = List.of(Persistor.class);
+
+    private static final Collection<Class<? extends Annotation>> PERSIST = List.of(Persist.class);
+
+    /**
+     * Create a new factory
+     */
+    public PersistTreeFactory() {
+        super(PERSIST_AND_PERSISTOR, PERSISTOR, PERSIST, PERSIST);
+    }
 
     @Override
-    public <T> T accept(final PredicateVisitor<T> visitor) {
-        return visitor.visit(this);
+    protected Class<? extends PersistableSettings> getTreeSettingsClass() {
+        return PersistableSettings.class;
     }
+
 }

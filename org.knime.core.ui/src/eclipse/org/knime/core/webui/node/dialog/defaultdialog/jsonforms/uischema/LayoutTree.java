@@ -60,7 +60,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.After;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Before;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Inside;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
-import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeNode;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeNode;
 
 /**
  * A tree of layout parts. The tree has the structure that is needed to build a JSON Forms UI Schema from it. Its nodes
@@ -85,8 +86,8 @@ final class LayoutTree {
      * @param layoutClassesToControls mapping the values of {@link Layout} annotations to their widget nodes
      * @param nodesWithoutLayout i.e. nodes without a designated {@link Layout} annotation
      */
-    public LayoutTree(final Map<Class<?>, List<WidgetTreeNode>> layoutClassesToControls,
-        final List<WidgetTreeNode> nodesWithoutLayout) {
+    public LayoutTree(final Map<Class<?>, List<TreeNode<WidgetGroup>>> layoutClassesToControls,
+        final List<TreeNode<WidgetGroup>> nodesWithoutLayout) {
 
         buildTreeFromContentMap(layoutClassesToControls);
 
@@ -115,7 +116,7 @@ final class LayoutTree {
         return roots.stream().findFirst().orElse(new LayoutTreeNode(null));
     }
 
-    private void buildTreeFromContentMap(final Map<Class<?>, List<WidgetTreeNode>> layoutClassesToControls) {
+    private void buildTreeFromContentMap(final Map<Class<?>, List<TreeNode<WidgetGroup>>> layoutClassesToControls) {
         layoutClassesToControls.entrySet().stream().forEach(e -> constructNodeFromEntry(e.getKey(), e.getValue()));
 
     }
@@ -126,7 +127,7 @@ final class LayoutTree {
      * @param entry
      * @return
      */
-    private LayoutTreeNode constructNodeFromEntry(final Class<?> clazz, final List<WidgetTreeNode> widgetTreeNodes) {
+    private LayoutTreeNode constructNodeFromEntry(final Class<?> clazz, final List<TreeNode<WidgetGroup>> widgetTreeNodes) {
         var node = getOrConstructNode(clazz);
         node.addControls(widgetTreeNodes);
         return node;
