@@ -387,13 +387,16 @@ _(not applicable to KNIME)_
 
 | # | Description | Last Checked | N/A |
 | :---: | :--- | :---: | :---:|
-| **5.5.1** | Verify that serialized objects use integrity checks or are encrypted to prevent hostile object creation or data tampering. ([C5](https://owasp.org/www-project-proactive-controls/#div-numbering)) | | |
-| **5.5.2** | Verify that the application correctly restricts XML parsers to only use the most restrictive configuration possible and to ensure that unsafe features such as resolving external entities are disabled to prevent XML eXternal Entity (XXE) attacks. | [^5.5.2] | |
-| **5.5.3** | Verify that deserialization of untrusted data is avoided or is protected in both custom code and third-party libraries (such as JSON, XML and YAML parsers). | [^5.5.3] | |
-| **5.5.4** | Verify that when parsing JSON in browsers or JavaScript-based backends, JSON.parse is used to parse the JSON document. Do not use eval() to parse JSON. | | |
+| **5.5.1** | Verify that serialized objects use integrity checks or are encrypted to prevent hostile object creation or data tampering. ([C5](https://owasp.org/www-project-proactive-controls/#div-numbering)) | 04.10.2024 | |
+| **5.5.2** | Verify that the application correctly restricts XML parsers to only use the most restrictive configuration possible and to ensure that unsafe features such as resolving external entities are disabled to prevent XML eXternal Entity (XXE) attacks. | 04.10.2024 [^5.5.2] | |
+| **5.5.3** | Verify that deserialization of untrusted data is avoided or is protected in both custom code and third-party libraries (such as JSON, XML and YAML parsers). | 04.10.2024 [^5.5.3] | |
+| **5.5.4** | Verify that when parsing JSON in browsers or JavaScript-based backends, JSON.parse is used to parse the JSON document. Do not use eval() to parse JSON. | 04.10.2024 [^5.5.4] | |
 
 [^5.5.2]: Checked by Sonar rules [S2755](https://rules.sonarsource.com/java/RSPEC-2755/) and [S6374](https://rules.sonarsource.com/java/RSPEC-6374/) for Java programs.
+
 [^5.5.3]: Checked by Sonar rule [S5135](https://rules.sonarsource.com/java/RSPEC-5135/) for Java programs.
+
+[^5.5.4]: Does not apply here: No use of eval() to parse JSON.
 
 # V6 Stored Cryptography
 
