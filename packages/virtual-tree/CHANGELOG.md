@@ -1,5 +1,13 @@
 # @knime/virtual-tree
 
+## 1.0.4
+
+### Patch Changes
+
+- a25aaa7: - Expose expanded-keys as prop.
+  - Expose @expandChange event.
+  - Bug: Fix close on arrow click.
+
 ## 1.0.3
 
 ### Patch Changes

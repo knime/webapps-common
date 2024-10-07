@@ -1,5 +1,12 @@
 # demo
 
+## 1.0.44
+
+### Patch Changes
+
+- Updated dependencies [a25aaa7]
+  - @knime/virtual-tree@1.0.4
+
 ## 1.0.43
 
 ### Patch Changes
