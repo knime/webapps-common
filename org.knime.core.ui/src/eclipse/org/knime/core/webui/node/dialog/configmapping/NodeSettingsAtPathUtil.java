@@ -86,15 +86,16 @@ final class NodeSettingsAtPathUtil {
      *            <li>settings does not contain the path: In this case we leave out the parts of the path which are not
      *            present.</li>
      *            <li>other does not contain the path: In this case we do nothing.</li>
+     *            <li>settings and other do contain the path but the types of the entries differ: In this case we do
+     *            nothing</li>
      *            </ul>
      *            </p>
      */
-    static void replaceAtPathIfPresent(final NodeSettings settings, final ConfigPath path,
-        final NodeSettingsRO other) {
+    static void replaceAtPathIfPresent(final NodeSettings settings, final ConfigPath path, final NodeSettingsRO other) {
         var subSettings = settings;
-        var subSettingsPrev = other;
+        var subSettingsOther = other;
         for (var key : path.withoutLastKey().path()) {
-            final var subSettingsPrevCandidate = getNodeSettingsROAtKey(subSettingsPrev, key);
+            final var subSettingsPrevCandidate = getNodeSettingsROAtKey(subSettingsOther, key);
             if (subSettingsPrevCandidate.isEmpty()) {
                 return;
             }
@@ -104,11 +105,15 @@ final class NodeSettingsAtPathUtil {
                 return;
             }
             subSettings = subSettingsCandidate.get();
-            subSettingsPrev = subSettingsPrevCandidate.get();
+            subSettingsOther = subSettingsPrevCandidate.get();
         }
-        final var entry = getSettingsChildByKey(subSettingsPrev, path.lastKey());
-        if (entry != null) {
-            subSettings.addEntry(entry);
+        final var finalEntryOther = getSettingsChildByKey(subSettingsOther, path.lastKey());
+        if (finalEntryOther != null) {
+            final var finalEntry = getSettingsChildByKey(subSettings, path.lastKey());
+            if (finalEntry != null && finalEntryOther.getType() != finalEntry.getType()) {
+                return;
+            }
+            subSettings.addEntry(finalEntryOther);
         }
     }
 
@@ -120,8 +125,7 @@ final class NodeSettingsAtPathUtil {
      * @param path
      */
     static void deletePath(final NodeSettings settings, final ConfigPath path) {
-        getNodeSettingsAtPath(settings, path.withoutLastKey())
-            .ifPresent(atPath -> atPath.removeConfig(path.lastKey()));
+        getNodeSettingsAtPath(settings, path.withoutLastKey()).ifPresent(atPath -> atPath.removeConfig(path.lastKey()));
     }
 
     private static Optional<NodeSettings> getNodeSettingsAtKey(final NodeSettings nodeSettings, final String key) {

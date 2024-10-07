@@ -74,6 +74,21 @@ public final class NodeSettingsCorrectionUtil {
     }
 
     /**
+     * Use this method to align settings which were extracted without paying attention to flow variables. If there exist
+     * controlling flow variables for saved configs, this method reverts the settings at these configs to the previous
+     * settings.
+     *
+     * @param toBeCorrectedSettings
+     * @param previousSettings
+     * @param variableSettings
+     */
+    public static void correctNodeSettingsRespectingFlowVariables(final NodeSettings toBeCorrectedSettings,
+        final NodeSettingsRO previousSettings, final VariableSettingsRO variableSettings) {
+        correctNodeSettingsRespectingFlowVariables(new ConfigMappings(List.of()), toBeCorrectedSettings,
+            previousSettings, variableSettings);
+    }
+
+    /**
      * Use this method to align settings which were extracted without paying attention to flow variables. The following
      * transformations can be necessary:
      * <ul>
