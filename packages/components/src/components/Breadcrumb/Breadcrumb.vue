@@ -3,7 +3,7 @@ import ArrowNext from "@knime/styles/img/icons/arrow-next.svg";
 import { resolveNuxtLinkComponent } from "../nuxtComponentResolver";
 import type { FunctionalComponent, PropType, SVGAttributes } from "vue";
 
-type BreadcrumbItem = {
+export type BreadcrumbItem = {
   text?: string;
   href?: string;
   icon?: FunctionalComponent<SVGAttributes>;
