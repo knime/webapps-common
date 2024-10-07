@@ -1,5 +1,12 @@
 # @knime/components
 
+## 1.2.7
+
+### Patch Changes
+
+- 5beafff: Fix positioning/sizing of the FunctionButton. It caused a css glitch when
+  the button was used inside the SplitButton component
+
 ## 1.2.6
 
 ### Patch Changes

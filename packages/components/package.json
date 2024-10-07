@@ -1,6 +1,6 @@
 {
   "name": "@knime/components",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "description": "Vue components & composables, that can be used for the frontend of all KNIME web projects.",
   "homepage": "https://knime.github.io/webapps-common/",
   "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE the file LICENSE)",
