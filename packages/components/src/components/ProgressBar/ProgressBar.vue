@@ -22,12 +22,14 @@ type Props = {
    */
   toolTip?: string;
 };
+
 const props = withDefaults(defineProps<Props>(), {
   percentage: 0,
   indeterminate: false,
   compact: false,
   toolTip: "",
 });
+
 const progressValue = computed(() => {
   const percentage = props.percentage ?? 0;
   if (isNaN(percentage) || percentage < 1) {
@@ -38,8 +40,9 @@ const progressValue = computed(() => {
     return `${percentage}`;
   }
 });
+
 const toolTip = computed(() => {
-  return props.toolTip || `Progress:${props.percentage ?? 0}%`;
+  return props.toolTip || `Progress:${progressValue.value}%`;
 });
 </script>
 
@@ -47,6 +50,7 @@ const toolTip = computed(() => {
   <div :class="['progress-bar-wrapper', { compact: props.compact }]">
     <progress
       :title="toolTip"
+      class="progress"
       v-bind="!props.indeterminate && { value: progressValue, max: 100 }"
     />
   </div>
@@ -57,80 +61,74 @@ const toolTip = computed(() => {
   --loading-bar-background-color: var(--knime-silver-sand);
   --loading-bar-foreground-color: var(--theme-slider-background-color);
   --progress-bar-height: var(--space-16);
-  --progress-bar-height-compact: var(--space-4);
   --progress-bar-radius: calc(var(--progress-bar-height) - 0.5px);
 
   width: 100%;
   height: var(--progress-bar-height);
   border-radius: var(--progress-bar-radius);
+  position: relative;
 
-  & progress[value] {
-    display: block;
-    width: 100%;
-    height: var(--progress-bar-height);
-    border-radius: var(--progress-bar-radius);
-    overflow: hidden;
+  & .progress {
     appearance: none;
-  }
-
-  & progress[value]::-webkit-progress-bar {
+    border: none;
     border-radius: var(--progress-bar-radius);
-    background: var(--loading-bar-background-color);
-  }
-
-  & progress[value]::-webkit-progress-value {
-    border-radius: var(--progress-bar-radius);
-    background: var(--loading-bar-foreground-color);
-    transition: width 0.3s ease-in-out;
-  }
-
-  & progress:not([value]) {
     display: block;
-    border-radius: var(--progress-bar-radius);
-    width: 100%;
     height: var(--progress-bar-height);
-    position: relative;
     overflow: hidden;
-  }
+    padding: 0;
+    width: 100%;
 
-  & progress:not([value])::-webkit-progress-bar {
-    border-radius: var(--progress-bar-radius);
-    background: var(--loading-bar-background-color);
-  }
-
-  & progress:not([value])::after {
-    content: "";
-    border-radius: var(--progress-bar-radius);
-    position: absolute;
-    inset: 0;
-    background-color: var(--loading-bar-foreground-color);
-    z-index: 1;
-    animation: loading 1.5s linear infinite;
+    /* Firefox sets the background of the bar from here  */
+    background-color: var(--loading-bar-background-color);
   }
 
   &.compact {
     --progress-bar-height: var(--space-4);
+  }
 
-    & progress {
-      height: var(--progress-bar-height);
-      border-radius: var(--progress-bar-radius);
-    }
+  & .progress::-webkit-progress-bar {
+    background-color: var(--loading-bar-background-color);
+  }
 
-    & progress:not([value])::after {
-      border-radius: var(--progress-bar-radius);
-    }
+  & .progress::-webkit-progress-value {
+    border-radius: var(--progress-bar-radius);
+    background-color: var(--loading-bar-foreground-color);
+  }
+
+  /* Firefox uses this to target the bar that represents the value of the progress element */
+  & .progress::-moz-progress-bar {
+    background-color: var(--loading-bar-foreground-color);
+  }
+
+  & .progress:indeterminate {
+    animation-duration: 1.5s;
+    animation-iteration-count: infinite;
+    animation-name: move-indeterminate;
+    animation-timing-function: linear;
+    background-color: var(--loading-bar-background-color);
+    background-image: linear-gradient(
+      to right,
+      var(--loading-bar-foreground-color) 30%,
+      var(--loading-bar-background-color) 30%
+    );
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    background-size: 150% 150%;
+  }
+
+  & .progress:indeterminate::-webkit-progress-bar,
+  & .progress:indeterminate::-moz-progress-bar {
+    background-color: transparent;
   }
 }
 
-@keyframes loading {
+@keyframes move-indeterminate {
   0% {
-    left: -50%;
-    right: 100%;
+    background-position: 200% 0;
   }
 
   100% {
-    left: 100%;
-    right: -50%;
+    background-position: -200% 0;
   }
 }
 </style>
