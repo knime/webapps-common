@@ -79,7 +79,7 @@ const copyToClipboard = () => {
     </button>
     <div v-if="showDetails" class="additional-info">
       <div v-if="props.details?.length" class="details">
-        <strong>Details:</strong>
+        <strong>Details: </strong>
         <template v-if="props.details.length == 1">
           {{ props.details[0] }}
         </template>
