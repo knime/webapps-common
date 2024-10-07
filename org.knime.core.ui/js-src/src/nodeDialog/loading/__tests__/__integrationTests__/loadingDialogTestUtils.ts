@@ -44,6 +44,12 @@ export const dialogWithTextInputData = {
         scope: "#/properties/text",
       },
     ],
+    persist: {
+      type: "object",
+      properties: {
+        text: {},
+      },
+    },
   },
   flowVariableSettings: {},
 };

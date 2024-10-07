@@ -49,6 +49,7 @@
 package org.knime.core.webui.node.dialog.defaultdialog.tree;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.function.Function;
 
@@ -76,8 +77,8 @@ public final class ArrayParentNode<S> extends TreeNode<S> {
 
     ArrayParentNode(final Tree<S> parent, final Tree<S> elementWidgetTree, final Class<?> type,
         final Function<Class<? extends Annotation>, Annotation> annotations,
-        final Collection<Class<? extends Annotation>> possibleAnnotations) {
-        super(parent, parent.getSettingsType(), type, annotations, possibleAnnotations);
+        final Collection<Class<? extends Annotation>> possibleAnnotations, final Field underlyingField) {
+        super(parent, parent.getSettingsType(), type, annotations, possibleAnnotations, underlyingField);
         m_elementTree = elementWidgetTree;
         m_elementTree.m_arrayWidgetNodeParent = this; // NOSONAR doesn't need to be thread-safe
     }

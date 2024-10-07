@@ -56,6 +56,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSet
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.Persistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeFactory;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.LatentWidget;
 
 /**
  * For creating a persist tree from a {@link PersistableSettings} class.
@@ -64,18 +65,22 @@ import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeFactory;
  */
 public final class PersistTreeFactory extends TreeFactory<PersistableSettings> {
 
-    private static final Collection<Class<? extends Annotation>> PERSIST_AND_PERSISTOR =
-        List.of(Persist.class, Persistor.class);
+    private static final Collection<Class<? extends Annotation>> POSSIBLE_TREE_ANNOTATIONS =
+        List.of(Persist.class, Persistor.class, LatentWidget.class);
 
-    static final Collection<Class<? extends Annotation>> PERSISTOR = List.of(Persistor.class);
+    static final Collection<Class<? extends Annotation>> POSSIBLE_TREE_CLASS_ANNOTATIONS = List.of(Persistor.class);
 
-    private static final Collection<Class<? extends Annotation>> PERSIST = List.of(Persist.class);
+    private static final Collection<Class<? extends Annotation>> POSSIBLE_LEAF_ANNOTATIONS =
+        List.of(Persist.class, LatentWidget.class);
+
+    private static final Collection<Class<? extends Annotation>> POSSIBLE_ARRAY_ANNOTATIONS = POSSIBLE_LEAF_ANNOTATIONS;
 
     /**
      * Create a new factory
      */
     public PersistTreeFactory() {
-        super(PERSIST_AND_PERSISTOR, PERSISTOR, PERSIST, PERSIST);
+        super(POSSIBLE_TREE_ANNOTATIONS, POSSIBLE_TREE_CLASS_ANNOTATIONS, POSSIBLE_LEAF_ANNOTATIONS,
+            POSSIBLE_ARRAY_ANNOTATIONS);
     }
 
     @Override

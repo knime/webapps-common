@@ -16,6 +16,7 @@ import {
 } from "@knime/components";
 import { mergeDeep } from "@/nodeDialog/utils";
 import flushPromises from "flush-promises";
+import { createPersistSchema } from "@@/test-setup/utils/createPersistSchema";
 
 describe("TwinlistControl.vue", () => {
   let props;
@@ -495,6 +496,12 @@ describe("TwinlistControl.vue", () => {
     const oneOfTheSubKeys = "manualFilter.manuallySelected";
     const { wrapper } = mountJsonFormsComponent(TwinlistControl, {
       props,
+      provide: {
+        persistSchemaMock: createPersistSchema({
+          path: props.control.path,
+          leaf: props.control.schema,
+        }),
+      },
       withControllingFlowVariable: `${props.control.path}.${oneOfTheSubKeys}`,
     });
     expect(

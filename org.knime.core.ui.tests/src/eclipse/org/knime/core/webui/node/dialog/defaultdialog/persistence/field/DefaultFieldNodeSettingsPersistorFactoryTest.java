@@ -239,7 +239,7 @@ class DefaultFieldNodeSettingsPersistorFactoryTest {
     }
 
     private static <T> NodeSettingsPersistor<T> createPersistor(final Class<T> type) {
-        return DefaultFieldNodeSettingsPersistorFactory.createDefaultPersistor(type, KEY);
+        return DefaultFieldNodeSettingsPersistorFactory.createPersistor(type, KEY);
     }
 
     private static final class UnsupportedType {

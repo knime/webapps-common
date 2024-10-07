@@ -38,6 +38,7 @@ import useProvidedFlowVariablesMap from "./composables/components/useProvidedFlo
 import useCurrentData from "./composables/nodeDialog/useCurrentData";
 import useServices from "./composables/nodeDialog/useServices";
 import LoadingDialog from "./loading/LoadingDialog.vue";
+import { PersistSchema } from "./types/Persist";
 
 const renderers = [...fallbackRenderers, ...defaultRenderers];
 
@@ -63,6 +64,7 @@ export default {
         getFlowVariableOverrideValue: this.getFlowVariableOverrideValue,
         clearControllingFlowVariable: this.clearControllingFlowVariable,
       },
+      getPersistSchema: this.getPersistSchema,
       createArrayAtPath: (path: string) =>
         createArrayAtPath(getArrayIdsRecord(), path),
       setSubPanelExpanded: this.setSubPanelExpanded,
@@ -223,6 +225,10 @@ export default {
          * Data defining values that have been computed while opening the dialog
          */
         initialUpdates?: UpdateResult[];
+        /**
+         * Information on the persist structure used to map flow variables to controls.
+         */
+        persist: PersistSchema;
       },
       ready: false,
       isMetaKeyPressed: false,
@@ -251,6 +257,9 @@ export default {
       this.dialogService?.setControlsVisibility({
         shouldBeVisible: !isExpanded,
       });
+    },
+    getPersistSchema() {
+      return this.uischema.persist;
     },
     callDataService({
       method,

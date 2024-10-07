@@ -56,6 +56,7 @@ import org.junit.jupiter.api.Test;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -96,7 +97,7 @@ class DefaultNodeSettingsToJsonFormsTest {
 
     }
 
-    static class NestedSettings implements WidgetGroup {
+    static class NestedSettings implements WidgetGroup, PersistableSettings {
 
         @Widget(title = "", description = "")
         String nestedField = "nested field";
@@ -193,24 +194,45 @@ class DefaultNodeSettingsToJsonFormsTest {
         var uiSchemaJson = mapper.readTree(uiSchema.rawValue().toString());
         assertThatJson(uiSchemaJson).isEqualTo("""
                 {
-                    "elements": [
-                        {
-                            "type": "Control",
-                            "scope": "#/properties/model/properties/field"
-                        },
-                        {
-                            "type": "Control",
-                            "scope": "#/properties/model/properties/fieldWithPrefix"
-                        },
-                        {
-                            "type": "Control",
-                            "scope": "#/properties/model/properties/fieldWithNullValue"
-                        },
-                        {
-                            "type": "Control",
-                            "scope": "#/properties/model/properties/nestedSettings/properties/nestedField"
+                  "elements": [
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/model/properties/field"
+                    },
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/model/properties/fieldWithPrefix"
+                    },
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/model/properties/fieldWithNullValue"
+                    },
+                    {
+                      "type": "Control",
+                      "scope": "#/properties/model/properties/nestedSettings/properties/nestedField"
+                    }
+                  ],
+                  "persist": {
+                    "type": "object",
+                    "properties": {
+                      "model": {
+                        "type": "object",
+                        "properties": {
+                          "field": {},
+                          "fieldWithPrefix": {},
+                          "fieldWithNullValue": {},
+                          "fieldWithoutAnnotation": {},
+                          "nestedSettings": {
+                            "type": "object",
+                            "properties": {
+                              "nestedField": {},
+                              "nestedFieldWithoutAnnotation": {}
+                            }
+                          }
                         }
-                    ]
+                      }
+                    }
+                  }
                 }
                 """);
     }

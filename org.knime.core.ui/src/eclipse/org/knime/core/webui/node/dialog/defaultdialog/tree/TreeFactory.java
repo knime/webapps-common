@@ -49,6 +49,7 @@
 package org.knime.core.webui.node.dialog.defaultdialog.tree;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Optional;
@@ -113,15 +114,24 @@ public abstract class TreeFactory<S> {
         return createTree(rootClass, null);
     }
 
+    private Tree<S> createTree(final JavaType rootType) {
+        return createTree(rootType, null);
+    }
+
     /**
      * @param rootClass implementing {@link WidgetGroup}.
      * @param settingsType "view" or "model" or null for element trees of array widgets
      * @return the full tree
      */
     public Tree<S> createTree(final Class<? extends S> rootClass, final SettingsType settingsType) {
-        final var tree =
-            new Tree<S>(null, settingsType, rootClass, rootClass::getAnnotation, m_possibleTreeAnnotations);
-        populateTree(tree, rootClass);
+        return createTree(new ObjectMapper().constructType(rootClass), settingsType);
+    }
+
+    private Tree<S> createTree(final JavaType rootType, final SettingsType settingsType) {
+        @SuppressWarnings("unchecked")
+        final var tree = new Tree<S>(null, settingsType, (Class<? extends S>)rootType.getRawClass(),
+            rootType.getRawClass()::getAnnotation, m_possibleTreeAnnotations, null);
+        populateTree(tree, rootType);
         return tree;
     }
 
@@ -185,17 +195,16 @@ public abstract class TreeFactory<S> {
         getSerializableProperties(treeType).forEachRemaining(field -> addField(tree, field, treeType.getRawClass()));
     }
 
-    private void addField(final Tree<S> widgetTree, final PropertyWriter field,
-        final Class<?> populatingRootClass) {
+    private void addField(final Tree<S> widgetTree, final PropertyWriter field, final Class<?> populatingRootClass) {
         final var childBuilder = getNextChildBuilder(widgetTree)//
             .withName(field.getName()) //
+            .withAccessors(field) //
             .withFieldAnnotations(getAnnotationsForField(field, populatingRootClass));
         final var type = field.getType();
         if (getTreeSettingsClass().isAssignableFrom(type.getRawClass())) {
-            childBuilder.buildGroup(type);
+            childBuilder.buildTree(type);
         } else if (isArrayField(field.getType())) {
-            final var elementTreeType =
-                field.getType().getContentType();
+            final var elementTreeType = field.getType().getContentType();
             childBuilder.buildArray(type, createTree(elementTreeType));
         } else {
             Class<?> contentType = null;
@@ -223,7 +232,7 @@ public abstract class TreeFactory<S> {
      * We need to extract annotations also from the declaring class in case it is not the same as the one that is
      * populated.
      */
-    private static Function<Class<? extends Annotation>, Annotation> getAnnotationsForField(final PropertyWriter field,
+    private Function<Class<? extends Annotation>, Annotation> getAnnotationsForField(final PropertyWriter field,
         final Class<?> populatingRootClass) {
         final var declaringClass = field.getMember().getDeclaringClass();
         if (declaringClass.equals(populatingRootClass)) {
@@ -253,6 +262,8 @@ public abstract class TreeFactory<S> {
 
         String m_name;
 
+        Field m_underlyingField;
+
         Function<Class<? extends Annotation>, Annotation> m_fieldAnnotations;
 
         TreeNodeBuilder(final Tree<S> parent) {
@@ -264,14 +275,21 @@ public abstract class TreeFactory<S> {
             return this;
         }
 
+        TreeNodeBuilder withAccessors(final PropertyWriter field) {
+            final var underlyingField = (Field)field.getMember().getAnnotated();
+            underlyingField.setAccessible(true);
+            m_underlyingField = underlyingField;
+            return this;
+        }
+
         TreeNodeBuilder withFieldAnnotations(final Function<Class<? extends Annotation>, Annotation> annotations) {
             m_fieldAnnotations = annotations;
             return this;
         }
 
         LeafNode<S> buildLeaf(final JavaType type, final Class<?> contentType) {
-            return addedToParent(m_name,
-                new LeafNode<>(m_parent, type.getRawClass(), contentType, m_fieldAnnotations, m_possibleLeafNodeAnnotations));
+            return addedToParent(m_name, new LeafNode<>(m_parent, type.getRawClass(), contentType, m_fieldAnnotations,
+                m_possibleLeafNodeAnnotations, m_underlyingField));
         }
 
         Tree<S> buildTree(final JavaType type) {
@@ -281,9 +299,10 @@ public abstract class TreeFactory<S> {
 
         private Tree<S> createIntermediateTree(final Tree<S> parent, final JavaType treeType,
             final Function<Class<? extends Annotation>, Annotation> annotations) {
-            final var tree =
-                new Tree<>(parent, parent.getSettingsType(), treeType, annotations, m_possibleTreeAnnotations);
-            populateTree(tree, treeClass);
+            @SuppressWarnings("unchecked")
+            final var tree = new Tree<>(parent, parent.getSettingsType(), (Class<? extends S>)treeType.getRawClass(),
+                annotations, m_possibleTreeAnnotations, m_underlyingField);
+            populateTree(tree, treeType);
             return tree;
         }
 
@@ -300,9 +319,8 @@ public abstract class TreeFactory<S> {
             return fieldAnnotation;
         }
 
-        private void validateAnnotations(final Class<?> type,
-            final Class<? extends Annotation> annotationClass, final Annotation fieldAnnotation,
-            final Annotation typeAnnotation) {
+        private void validateAnnotations(final Class<?> type, final Class<? extends Annotation> annotationClass,
+            final Annotation fieldAnnotation, final Annotation typeAnnotation) {
             if (typeAnnotation != null && fieldAnnotation != null) {
                 throw new IllegalStateException(String.format(
                     "The annotation %s for field %s collides with the an annotation of the field type class %s.",
@@ -312,8 +330,8 @@ public abstract class TreeFactory<S> {
         }
 
         ArrayParentNode<S> buildArray(final JavaType type, final Tree<S> elementWidgetTree) {
-            return addedToParent(m_name, new ArrayParentNode<>(m_parent, elementWidgetTree, type.getRawClass(), m_fieldAnnotations,
-                m_possibleArrayNodeAnnotations));
+            return addedToParent(m_name, new ArrayParentNode<>(m_parent, elementWidgetTree, type.getRawClass(),
+                m_fieldAnnotations, m_possibleArrayNodeAnnotations, m_underlyingField));
         }
 
         private <T extends TreeNode<S>> T addedToParent(final String name, final T node) {

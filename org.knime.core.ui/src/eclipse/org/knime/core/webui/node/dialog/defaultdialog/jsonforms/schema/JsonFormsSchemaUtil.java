@@ -62,7 +62,6 @@ import java.time.Period;
 import java.time.Year;
 import java.time.YearMonth;
 import java.time.ZoneOffset;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -77,14 +76,11 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.knime.core.webui.node.dialog.SettingsType;
-import org.knime.core.webui.node.dialog.configmapping.ConfigPath;
-import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup.Modification;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.ConfigKeyUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.tree.ArrayParentNode;
 import org.knime.core.webui.node.dialog.defaultdialog.tree.Tree;
 import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeNode;
@@ -99,7 +95,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeFacto
 import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.victools.jsonschema.generator.CustomPropertyDefinition;
 import com.github.victools.jsonschema.generator.FieldScope;
@@ -254,9 +249,6 @@ public final class JsonFormsSchemaUtil {
 
         builder.forFields().withPropertyNameOverrideResolver(field -> StringUtils.removeStart(field.getName(), "m_"));
 
-        // TODO NOSONAR Will be moved out of the schema in UIEXT-2032
-        builder.forFields().withInstanceAttributeOverride(JsonFormsSchemaUtil::addConfigKeys);
-
         builder.forFields().withTargetTypeOverridesResolver(JsonFormsSchemaUtil::overrideClass);
 
         return new SchemaGenerator(builder.build()).generateSchema(settingsClass);
@@ -351,51 +343,6 @@ public final class JsonFormsSchemaUtil {
             return BigDecimal.valueOf(value);
         }
         return null;
-    }
-
-    /** Add a "configKeys" array to the field if a custom persistor is used */
-    private static void addConfigKeys(final ObjectNode node, final FieldScope field,
-        final SchemaGenerationContext context) {
-        if (field.isFakeContainerItemScope()) {
-            return;
-        }
-        var configKeys = ConfigKeyUtil.getConfigKeysUsedByField(field.getRawMember());
-        if (configKeys.length > 0) {
-            var configKeysNode = node.putArray("configKeys");
-            Arrays.stream(configKeys).forEach(configKeysNode::add);
-        }
-        var subConfigKeys = ConfigKeyUtil.getSubConfigKeysUsedByField(field.getRawMember());
-        if (subConfigKeys != null) {
-            var subConfigKeysNode = node.putArray("subConfigKeys");
-            for (var subConfigKey : subConfigKeys) {
-                var subConfigKeyNode = subConfigKeysNode.addArray();
-                Arrays.stream(subConfigKey).forEach(subConfigKeyNode::add);
-            }
-        }
-        var deprecatedConfigsArray = ConfigKeyUtil.getDeprecatedConfigsUsedByField(field.getRawMember());
-        if (deprecatedConfigsArray.length > 0) {
-            final var deprecatedConfigsNode = node.putArray("deprecatedConfigKeys");
-            Arrays.stream(deprecatedConfigsArray)
-                .forEach(deprecatedConfigs -> putDeprecatedConfig(deprecatedConfigsNode, deprecatedConfigs));
-        }
-    }
-
-    private static void putDeprecatedConfig(final ArrayNode deprecatedConfigsNode,
-        final ConfigsDeprecation configsDeprecation) {
-        final var nextDeprecatedConfigs = deprecatedConfigsNode.addObject();
-        add2DStingArray(nextDeprecatedConfigs, "new",
-            configsDeprecation.getNewConfigPaths().stream().map(ConfigPath::path).toList());
-        add2DStingArray(nextDeprecatedConfigs, "deprecated",
-            configsDeprecation.getDeprecatedConfigPaths().stream().map(ConfigPath::path).toList());
-    }
-
-    private static void add2DStingArray(final ObjectNode node, final String key,
-        final List<List<String>> twoDimensionalArray) {
-        final var parentArrayNode = node.putArray(key);
-        twoDimensionalArray.forEach(oneDimensionalArray -> {
-            final var childArray = parentArrayNode.addArray();
-            oneDimensionalArray.forEach(childArray::add);
-        });
     }
 
     private static List<ResolvedType> overrideClass(final FieldScope field) {

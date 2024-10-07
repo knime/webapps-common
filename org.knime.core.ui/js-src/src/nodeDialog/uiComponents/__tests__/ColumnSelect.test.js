@@ -10,6 +10,7 @@ import { Dropdown } from "@knime/components";
 import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
 import DialogLabel from "../label/DialogLabel.vue";
 import { inject } from "vue";
+import { createPersistSchema } from "@@/test-setup/utils/createPersistSchema";
 
 describe("ColumnSelect.vue", () => {
   let wrapper, props, path, component, handleChange;
@@ -205,8 +206,21 @@ describe("ColumnSelect.vue", () => {
       template: "<div/>",
     };
     const totalPath = `${path}.${subConfigKey}`;
+
+    const persistSchemaMock = createPersistSchema({
+      path,
+      leaf: {
+        type: "object",
+        properties: {
+          selected: {},
+        },
+      },
+    });
     const { wrapper } = await mountJsonFormsComponent(ColumnSelect, {
       props,
+      provide: {
+        persistSchemaMock,
+      },
       withControllingFlowVariable: totalPath,
       stubs: { DialogLabel: DialogLabelStub },
     });

@@ -9,6 +9,7 @@ import type SettingsData from "./SettingsData";
 import { IdsRecord } from "../composables/nodeDialog/useArrayIds";
 import Result from "../api/types/Result";
 import { IndexedIsActive } from "../composables/nodeDialog/useTriggers";
+import { PersistSchema } from "./Persist";
 
 type getPossibleValuesFromUiSchema = (
   control: Control,
@@ -65,6 +66,7 @@ export default Provided;
 
 interface ProvidedForFlowVariables {
   flowVariablesApi: ProvidedFlowVariablesApi;
+  getPersistSchema: () => PersistSchema;
 }
 
 export { ProvidedForFlowVariables };

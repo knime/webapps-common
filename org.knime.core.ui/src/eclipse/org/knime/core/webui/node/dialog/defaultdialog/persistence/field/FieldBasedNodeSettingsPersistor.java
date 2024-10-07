@@ -48,7 +48,6 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +59,9 @@ import org.knime.core.webui.node.dialog.configmapping.ConfigMappings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.ReflectionUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.persisttree.PersistTreeFactory;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.Tree;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeNode;
 
 /**
  * Performs persistence of DefaultNodeSettings on a per-field basis. The persistence of individual fields can be
@@ -71,24 +73,33 @@ import org.knime.core.webui.node.dialog.defaultdialog.persistence.ReflectionUtil
 public class FieldBasedNodeSettingsPersistor<S extends PersistableSettings> implements NodeSettingsPersistor<S> {
 
     @SuppressWarnings("javadoc")
-    protected Map<String, NodeSettingsPersistor<?>> m_persistors;
+    protected Map<TreeNode<PersistableSettings>, NodeSettingsPersistor<?>> m_persistors;
 
-    private final Class<S> m_settingsClass;
+    private Tree<PersistableSettings> m_settingsTree;
 
     /**
      * Constructor.
      *
-     * @param settingsClass the class of settings to persist
+     * @param settingsTree of the class of settings to persist
      */
-    public FieldBasedNodeSettingsPersistor(final Class<S> settingsClass) {
-        m_persistors = new FieldNodeSettingsPersistorFactory<>(settingsClass).createPersistors();
-        m_settingsClass = settingsClass;
+    public FieldBasedNodeSettingsPersistor(final Class<S> settingsTree) {
+        this(new PersistTreeFactory().createTree(settingsTree));
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param settingsTree of the class of settings to persist
+     */
+    public FieldBasedNodeSettingsPersistor(final Tree<PersistableSettings> settingsTree) {
+        m_persistors = new FieldNodeSettingsPersistorFactory(settingsTree).createPersistors();
+        m_settingsTree = settingsTree;
     }
 
     @Override
     public void save(final S obj, final NodeSettingsWO settings) {
         try {
-            useBlackMagicToAccessFields((persistor, field) -> uncheckedSave(persistor, field.get(obj), settings));
+            callForAllFields((persistor, node) -> uncheckedSave(persistor, node.getFromParentValue(obj), settings));
         } catch (InvalidSettingsException ex) {//NOSONAR
             // because the origin of the InvalidSettingsException would be our PersistorConsumer which does not
             // throw such an exception
@@ -100,8 +111,8 @@ public class FieldBasedNodeSettingsPersistor<S extends PersistableSettings> impl
     public ConfigMappings getConfigMappings(final S obj) {
         List<ConfigMappings> configMappingsForFields = new ArrayList<>(m_persistors.size());
         try {
-            useBlackMagicToAccessFields((persistor, field) -> configMappingsForFields
-                .add(uncheckedGetModifications(persistor, field.get(obj))));
+            callForAllFields((persistor, node) -> configMappingsForFields
+                .add(uncheckedGetModifications(persistor, node.getFromParentValue(obj))));
         } catch (InvalidSettingsException ex) {//NOSONAR
             // because the origin of the InvalidSettingsException would be our PersistorConsumer which does not
             // throw such an exception
@@ -124,38 +135,30 @@ public class FieldBasedNodeSettingsPersistor<S extends PersistableSettings> impl
 
     @FunctionalInterface
     private interface PersistorConsumer {
-        void accept(final NodeSettingsPersistor<?> persistor, final Field field)
+        void accept(final NodeSettingsPersistor<?> persistor, final TreeNode<PersistableSettings> node)
             throws InvalidSettingsException, IllegalAccessException;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public S load(final NodeSettingsRO settings) throws InvalidSettingsException {
+        final var settingsClass = m_settingsTree.getType();
         final var loaded =
-            ReflectionUtil.createInstance(m_settingsClass).orElseThrow(() -> new IllegalArgumentException(String
-                .format("The provided PersistableSettings '%s' don't provide an empty constructor.", m_settingsClass)));
-        useBlackMagicToAccessFields((persistor, field) -> field.set(loaded, persistor.load(settings)));//NOSONAR
+            (S)ReflectionUtil.createInstance(settingsClass).orElseThrow(() -> new IllegalArgumentException(String
+                .format("The provided PersistableSettings '%s' don't provide an empty constructor.", settingsClass)));
+        callForAllFields((persistor, node) -> node.setInParentValue(loaded, persistor.load(settings)));//NOSONAR
         return loaded;
     }
 
-    private void useBlackMagicToAccessFields(final PersistorConsumer consumer) throws InvalidSettingsException {
-        for (var entry : m_persistors.entrySet()) {
-            var fieldName = entry.getKey();
+    private void callForAllFields(final PersistorConsumer consumer) throws InvalidSettingsException {
+        for (var treeNode : m_settingsTree.getChildren()) {
             try {
-                var field = getFromAllFields(m_settingsClass, entry.getKey());
-                field.setAccessible(true);//NOSONAR
-                var persistor = entry.getValue();
-                consumer.accept(persistor, field);
+                consumer.accept(m_persistors.get(treeNode), treeNode);
             } catch (IllegalAccessException ex) {
                 // because we use black magic (Field#setAccessible) to make the field accessible
-                throw new IllegalStateException(
-                    String.format("Could not access the field '%s' although reflection was used to make it accessible.",
-                        fieldName),
-                    ex);
-            } catch (NoSuchFieldException ex) {
-                throw new IllegalStateException(String
-                    .format("The field '%s' no longer exists in class '%s' although it existed during creation of the"
-                        + " persistor. Most likely an implementation error.", fieldName, m_settingsClass),
-                    ex);
+                throw new IllegalStateException(String.format(
+                    "Could not access the field at path '%s' although reflection was used to make it accessible.",
+                    treeNode.getPath()), ex);
             } catch (SecurityException ex) {
                 throw new IllegalStateException(
                     "Security exception while accessing field although it was possible to access it during creation of"
@@ -164,19 +167,6 @@ public class FieldBasedNodeSettingsPersistor<S extends PersistableSettings> impl
             }
         }
 
-    }
-
-    private static Field getFromAllFields(final Class<?> clazz, final String key)
-        throws NoSuchFieldException, SecurityException {
-        for (Class<?> c = clazz; c != null; c = c.getSuperclass()) {
-            try {
-                return c.getDeclaredField(key);
-            } catch (NoSuchFieldException ex) { //NOSONAR
-            } catch (SecurityException ex) {
-                throw ex;
-            }
-        }
-        throw new NoSuchFieldException(key);
     }
 
 }

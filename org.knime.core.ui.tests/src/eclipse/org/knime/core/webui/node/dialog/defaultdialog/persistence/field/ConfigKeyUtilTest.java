@@ -52,9 +52,9 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import java.lang.reflect.Field;
 import java.util.Collection;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
@@ -62,7 +62,11 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.configmapping.ConfigPath;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation.Builder;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.persisttree.PersistTreeFactory;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.Tree;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeNode;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 
 /**
@@ -102,7 +106,7 @@ class ConfigKeyUtilTest {
 
     }
 
-    private static class Settings {
+    private static class Settings implements PersistableSettings {
 
         @Widget(title = "", description = "")
         int setting0;
@@ -144,8 +148,7 @@ class ConfigKeyUtilTest {
 
     @Test
     void testConfigKeyFromFieldNameRemovePrefix() throws NoSuchFieldException, SecurityException {
-        assertEquals("setting1", configKeyFor("m_setting1"),
-            "should remove 'm_' prefix from field name for config key");
+        assertEquals("setting1", configKeyFor("setting1"), "should remove 'm_' prefix from field name for config key");
     }
 
     @Test
@@ -217,8 +220,7 @@ class ConfigKeyUtilTest {
 
     @Test
     void testSubConfigKeysForNonPersistableSettings() throws NoSuchFieldException {
-        assertArrayEquals(null, usedSubConfigKeysFor("setting7"),
-            "should not fail for non-persistable settings");
+        assertArrayEquals(null, usedSubConfigKeysFor("setting7"), "should not fail for non-persistable settings");
     }
 
     @Test
@@ -247,7 +249,14 @@ class ConfigKeyUtilTest {
         return ConfigKeyUtil.getDeprecatedConfigsUsedByField(getField(fieldName));
     }
 
-    private static Field getField(final String fieldName) throws NoSuchFieldException {
-        return Settings.class.getDeclaredField(fieldName);
+    private static Tree<PersistableSettings> SETTINGS_TREE;
+
+    @BeforeAll
+    static void createSettingsTree() {
+        SETTINGS_TREE = new PersistTreeFactory().createTree(Settings.class);
+    }
+
+    private static TreeNode<PersistableSettings> getField(final String fieldName) throws NoSuchFieldException {
+        return SETTINGS_TREE.getChildByName(fieldName);
     }
 }

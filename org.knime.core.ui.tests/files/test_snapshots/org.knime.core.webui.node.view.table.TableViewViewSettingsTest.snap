@@ -61,8 +61,7 @@
             } ],
             "title" : "Column width",
             "description" : "Set the width of the individual columns:\n<ul>\n<li><b>Fixed</b>: the column sizing is fixed</li>\n<li><b>Fit content</b>: the columns are sized according to the largest element in the column within the first 11 rows or within the current page when the page size is smaller than 11.</li>\n<li><b>Fit content and header</b>: the content and the headers are considered for the size calculation of the columns.</li>\n</ul>",
-            "default" : "FIXED",
-            "configKeys" : [ "autoSizeColumnsToContent" ]
+            "default" : "FIXED"
           },
           "customRowHeight" : {
             "type" : "integer",
@@ -71,18 +70,7 @@
             "description" : "Set the initial height of the rows.",
             "default" : 80,
             "minimum" : 24.0,
-            "maximum" : 1000000.0,
-            "configKeys" : [ "customRowHeight" ],
-            "deprecatedConfigKeys" : [ {
-              "new" : [ [ "customRowHeight" ] ],
-              "deprecated" : [ ]
-            }, {
-              "new" : [ [ "customRowHeight" ] ],
-              "deprecated" : [ [ "compactMode" ] ]
-            }, {
-              "new" : [ [ "customRowHeight" ] ],
-              "deprecated" : [ [ "rowHeightMode" ] ]
-            } ]
+            "maximum" : 1000000.0
           },
           "displayedColumns" : {
             "type" : "object",
@@ -153,7 +141,6 @@
               },
               "selected" : {
                 "default" : [ ],
-                "configKeys" : [ "selected_Internals" ],
                 "type" : "array",
                 "items" : {
                   "type" : "string"
@@ -171,7 +158,6 @@
                   },
                   "typeDisplays" : {
                     "default" : [ ],
-                    "subConfigKeys" : [ ],
                     "type" : "array",
                     "items" : {
                       "type" : "object",
@@ -211,22 +197,19 @@
                 "selectedTypes" : [ ],
                 "typeDisplays" : [ ]
               }
-            },
-            "configKeys" : [ "displayedColumns" ]
+            }
           },
           "enableCellCopying" : {
             "type" : "boolean",
             "title" : "Enable copying cells",
             "description" : "When checked, the cells of the table are selectable and can be copied. Click on a cell to select it. To select a range, select a cell, then click another cell with shift pressed or with the left mouse button pressed, drag over other cells.",
-            "default" : true,
-            "configKeys" : [ "enableCellCopying" ]
+            "default" : true
           },
           "enableColumnSearch" : {
             "type" : "boolean",
             "title" : "Enable column search",
             "description" : "Enables or disables the ability to perform a column search inside the table.",
-            "default" : true,
-            "configKeys" : [ "enableColumnSearch" ]
+            "default" : true
           },
           "enableDataValueViews" : {
             "type" : "boolean",
@@ -237,29 +220,25 @@
             "type" : "boolean",
             "title" : "Enable global search",
             "description" : "Enables or disables the ability to perform a global search inside the table.",
-            "default" : true,
-            "configKeys" : [ "enableGlobalSearch" ]
+            "default" : true
           },
           "enablePagination" : {
             "type" : "boolean",
             "title" : "Pagination",
             "description" : "Enables or disables the ability to only show a certain number of rows. Enabling pagination hides the option “Show table size”.",
-            "default" : false,
-            "configKeys" : [ "enablePagination" ]
+            "default" : false
           },
           "enableRendererSelection" : {
             "type" : "boolean",
             "title" : "Enable selection of column renderer",
             "description" : "Whether to enable the selection of a column renderer in the header or not",
-            "default" : true,
-            "configKeys" : [ "enableRendererSelection" ]
+            "default" : true
           },
           "enableSortingByHeader" : {
             "type" : "boolean",
             "title" : "Enable sorting by header",
             "description" : "Enables or disables the ability to sort the table by clicking on the column headers",
-            "default" : true,
-            "configKeys" : [ "enableSortingByHeader" ]
+            "default" : true
           },
           "pageSize" : {
             "type" : "integer",
@@ -267,8 +246,7 @@
             "title" : "Page size",
             "description" : "Select the amount of rows shown per page",
             "default" : 10,
-            "minimum" : 1.0,
-            "configKeys" : [ "pageSize" ]
+            "minimum" : 1.0
           },
           "rowHeightMode" : {
             "oneOf" : [ {
@@ -280,18 +258,7 @@
             } ],
             "title" : "Row height",
             "description" : "Set the initial height of the rows.\n<ul>\n<li><b>Auto</b>: the rows are sized according to the largest element across all columns and rows within the first 11 rows or within the current page when the page size is smaller than 11. In case of reporting each row will be as high as its content.</li>\n<li><b>Custom</b>: shows as much as you need. For instance, shows images at a size that enables to grasp their gist.</li>\n</ul>",
-            "default" : "AUTO",
-            "configKeys" : [ "rowHeightModeV2" ],
-            "deprecatedConfigKeys" : [ {
-              "new" : [ [ "rowHeightModeV2" ] ],
-              "deprecated" : [ ]
-            }, {
-              "new" : [ [ "rowHeightModeV2" ] ],
-              "deprecated" : [ [ "compactMode" ] ]
-            }, {
-              "new" : [ [ "rowHeightModeV2" ] ],
-              "deprecated" : [ [ "rowHeightMode" ] ]
-            } ]
+            "default" : "AUTO"
           },
           "selectionMode" : {
             "oneOf" : [ {
@@ -306,62 +273,53 @@
             } ],
             "title" : "Selection",
             "description" : "“Show” makes this view receive notifications about changes of the selection. “Edit” also allows you to change the selection and propagate any changes you make here to other views that show the selection.",
-            "default" : "EDIT",
-            "configKeys" : [ "selectionMode" ]
+            "default" : "EDIT"
           },
           "showColumnDataType" : {
             "type" : "boolean",
             "title" : "Show column data types in header",
             "description" : "Whether to display the data type of the columns in the header or not",
-            "default" : true,
-            "configKeys" : [ "showColumnDataType" ]
+            "default" : true
           },
           "showOnlySelectedRows" : {
             "type" : "boolean",
             "title" : "Show only selected rows",
             "description" : "When checked, only the selected rows are shown in the table view.",
-            "default" : false,
-            "configKeys" : [ "showOnlySelectedRows" ]
+            "default" : false
           },
           "showOnlySelectedRowsConfigurable" : {
             "type" : "boolean",
             "title" : "Enable toggle 'Show only selected rows'",
             "description" : "When checked, it is possible to configure from within the view whether only the selected rows are shown.",
-            "default" : true,
-            "configKeys" : [ "showOnlySelectedRowsConfigurable" ]
+            "default" : true
           },
           "showRowIndices" : {
             "type" : "boolean",
             "title" : "Show row numbers",
             "description" : "Whether to display the row numbers or not",
-            "default" : false,
-            "configKeys" : [ "showRowIndices" ]
+            "default" : false
           },
           "showRowKeys" : {
             "type" : "boolean",
             "title" : "Show RowIDs",
             "description" : "Whether to display the RowIDs or not",
-            "default" : true,
-            "configKeys" : [ "showRowKeys" ]
+            "default" : true
           },
           "showTableSize" : {
             "type" : "boolean",
             "title" : "Show table size",
             "description" : "Whether to display the number of rows and columns above the table or not.",
-            "default" : true,
-            "configKeys" : [ "showTableSize" ]
+            "default" : true
           },
           "skipRemainingColumns" : {
             "type" : "boolean",
-            "default" : false,
-            "configKeys" : [ "skipRemainingColumns_Internals" ]
+            "default" : false
           },
           "title" : {
             "type" : "string",
             "title" : "Title",
             "description" : "The title of the table shown above the generated image. If left blank, no title will be shown.",
-            "default" : "Table View",
-            "configKeys" : [ "title" ]
+            "default" : "Table View"
           },
           "verticalPaddingMode" : {
             "oneOf" : [ {
@@ -373,18 +331,7 @@
             } ],
             "title" : "Row padding",
             "description" : "Set the vertical white space of the rows:\n<ul>\n<li><b>Default</b>: sets the default amount of white space to increase the differentiation of the rows.</li>\n<li><b>Compact</b>: reduces white space around rows to a minimum. Choose this option to show as many rows as possible in given space.</li>\n</ul>",
-            "default" : "DEFAULT",
-            "configKeys" : [ "verticalPaddingMode" ],
-            "deprecatedConfigKeys" : [ {
-              "new" : [ [ "verticalPaddingMode" ] ],
-              "deprecated" : [ ]
-            }, {
-              "new" : [ [ "verticalPaddingMode" ] ],
-              "deprecated" : [ [ "compactMode" ] ]
-            }, {
-              "new" : [ [ "verticalPaddingMode" ] ],
-              "deprecated" : [ [ "rowHeightMode" ] ]
-            } ]
+            "default" : "DEFAULT"
           }
         }
       }
@@ -566,141 +513,144 @@
       } ]
     } ],
     "persist" : {
-      "view" : {
-        "type" : "object",
-        "properties" : {
-          "displayedColumns" : {
-            "type" : "object",
-            "configKeys" : [ "displayedColumns" ],
-            "properties" : {
-              "selected" : {
-                "type" : "not an object, not an array",
-                "configKeys" : [ "selected_Internals" ]
-              },
-              "mode" : {
-                "type" : "not an object, not an array"
-              },
-              "patternFilter" : {
-                "type" : "object",
-                "properties" : {
-                  "pattern" : {
-                    "type" : "not an object, not an array"
-                  },
-                  "isCaseSensitive" : {
-                    "type" : "not an object, not an array"
-                  },
-                  "isInverted" : {
-                    "type" : "not an object, not an array"
+      "type" : "object",
+      "properties" : {
+        "view" : {
+          "type" : "object",
+          "properties" : {
+            "displayedColumns" : {
+              "configKeys" : [ "displayedColumns" ],
+              "type" : "object",
+              "properties" : {
+                "selected" : {
+                  "configKeys" : [ "selected_Internals" ]
+                },
+                "mode" : { },
+                "patternFilter" : {
+                  "type" : "object",
+                  "properties" : {
+                    "pattern" : { },
+                    "isCaseSensitive" : { },
+                    "isInverted" : { }
                   }
-                }
-              },
-              "manualFilter" : {
-                "type" : "object",
-                "properties" : {
-                  "manuallySelected" : {
-                    "type" : "not an object, not an array"
-                  },
-                  "manuallyDeselected" : {
-                    "type" : "not an object, not an array"
-                  },
-                  "includeUnknownColumns" : {
-                    "type" : "not an object, not an array"
+                },
+                "manualFilter" : {
+                  "type" : "object",
+                  "properties" : {
+                    "manuallySelected" : { },
+                    "manuallyDeselected" : { },
+                    "includeUnknownColumns" : { }
                   }
-                }
-              },
-              "typeFilter" : {
-                "type" : "object",
-                "properties" : {
-                  "selectedTypes" : {
-                    "type" : "not an object, not an array"
-                  },
-                  "typeDisplays" : {
-                    "type" : "not an object, not an array",
-                    "configKeys" : [ "typeDisplays" ]
+                },
+                "typeFilter" : {
+                  "type" : "object",
+                  "properties" : {
+                    "selectedTypes" : { },
+                    "typeDisplays" : {
+                      "type" : "array",
+                      "subConfigKeys" : [ ],
+                      "items" : {
+                        "type" : "object",
+                        "properties" : {
+                          "id" : { },
+                          "text" : { }
+                        }
+                      }
+                    }
                   }
                 }
               }
+            },
+            "showRowIndices" : {
+              "configKeys" : [ "showRowIndices" ]
+            },
+            "showRowKeys" : {
+              "configKeys" : [ "showRowKeys" ]
+            },
+            "title" : {
+              "configKeys" : [ "title" ]
+            },
+            "showTableSize" : {
+              "configKeys" : [ "showTableSize" ]
+            },
+            "showColumnDataType" : {
+              "configKeys" : [ "showColumnDataType" ]
+            },
+            "enablePagination" : {
+              "configKeys" : [ "enablePagination" ]
+            },
+            "pageSize" : {
+              "configKeys" : [ "pageSize" ]
+            },
+            "autoSizeColumnsToContent" : {
+              "configKeys" : [ "autoSizeColumnsToContent" ]
+            },
+            "rowHeightMode" : {
+              "configKeys" : [ "rowHeightModeV2" ],
+              "deprecatedConfigKeys" : [ {
+                "new" : [ [ "rowHeightModeV2" ] ],
+                "deprecated" : [ ]
+              }, {
+                "new" : [ [ "rowHeightModeV2" ] ],
+                "deprecated" : [ [ "compactMode" ] ]
+              }, {
+                "new" : [ [ "rowHeightModeV2" ] ],
+                "deprecated" : [ [ "rowHeightMode" ] ]
+              } ]
+            },
+            "customRowHeight" : {
+              "configKeys" : [ "customRowHeight" ],
+              "deprecatedConfigKeys" : [ {
+                "new" : [ [ "customRowHeight" ] ],
+                "deprecated" : [ ]
+              }, {
+                "new" : [ [ "customRowHeight" ] ],
+                "deprecated" : [ [ "compactMode" ] ]
+              }, {
+                "new" : [ [ "customRowHeight" ] ],
+                "deprecated" : [ [ "rowHeightMode" ] ]
+              } ]
+            },
+            "verticalPaddingMode" : {
+              "configKeys" : [ "verticalPaddingMode" ],
+              "deprecatedConfigKeys" : [ {
+                "new" : [ [ "verticalPaddingMode" ] ],
+                "deprecated" : [ ]
+              }, {
+                "new" : [ [ "verticalPaddingMode" ] ],
+                "deprecated" : [ [ "compactMode" ] ]
+              }, {
+                "new" : [ [ "verticalPaddingMode" ] ],
+                "deprecated" : [ [ "rowHeightMode" ] ]
+              } ]
+            },
+            "enableGlobalSearch" : {
+              "configKeys" : [ "enableGlobalSearch" ]
+            },
+            "enableColumnSearch" : {
+              "configKeys" : [ "enableColumnSearch" ]
+            },
+            "enableSortingByHeader" : {
+              "configKeys" : [ "enableSortingByHeader" ]
+            },
+            "enableRendererSelection" : {
+              "configKeys" : [ "enableRendererSelection" ]
+            },
+            "enableCellCopying" : {
+              "configKeys" : [ "enableCellCopying" ]
+            },
+            "selectionMode" : {
+              "configKeys" : [ "selectionMode" ]
+            },
+            "showOnlySelectedRows" : {
+              "configKeys" : [ "showOnlySelectedRows" ]
+            },
+            "showOnlySelectedRowsConfigurable" : {
+              "configKeys" : [ "showOnlySelectedRowsConfigurable" ]
+            },
+            "skipRemainingColumns" : {
+              "configKeys" : [ "skipRemainingColumns_Internals" ]
             }
-          },
-          "showRowIndices" : {
-            "type" : "not an object, not an array",
-            "configKeys" : [ "showRowIndices" ]
-          },
-          "showRowKeys" : {
-            "type" : "not an object, not an array",
-            "configKeys" : [ "showRowKeys" ]
-          },
-          "title" : {
-            "type" : "not an object, not an array",
-            "configKeys" : [ "title" ]
-          },
-          "showTableSize" : {
-            "type" : "not an object, not an array",
-            "configKeys" : [ "showTableSize" ]
-          },
-          "showColumnDataType" : {
-            "type" : "not an object, not an array",
-            "configKeys" : [ "showColumnDataType" ]
-          },
-          "enablePagination" : {
-            "type" : "not an object, not an array",
-            "configKeys" : [ "enablePagination" ]
-          },
-          "pageSize" : {
-            "type" : "not an object, not an array",
-            "configKeys" : [ "pageSize" ]
-          },
-          "autoSizeColumnsToContent" : {
-            "type" : "not an object, not an array",
-            "configKeys" : [ "autoSizeColumnsToContent" ]
-          },
-          "rowHeightMode" : {
-            "type" : "not an object, not an array",
-            "configKeys" : [ "rowHeightModeV2" ]
-          },
-          "customRowHeight" : {
-            "type" : "not an object, not an array",
-            "configKeys" : [ "customRowHeight" ]
-          },
-          "verticalPaddingMode" : {
-            "type" : "not an object, not an array",
-            "configKeys" : [ "verticalPaddingMode" ]
-          },
-          "enableGlobalSearch" : {
-            "type" : "not an object, not an array",
-            "configKeys" : [ "enableGlobalSearch" ]
-          },
-          "enableColumnSearch" : {
-            "type" : "not an object, not an array",
-            "configKeys" : [ "enableColumnSearch" ]
-          },
-          "enableSortingByHeader" : {
-            "type" : "not an object, not an array",
-            "configKeys" : [ "enableSortingByHeader" ]
-          },
-          "enableRendererSelection" : {
-            "type" : "not an object, not an array",
-            "configKeys" : [ "enableRendererSelection" ]
-          },
-          "enableCellCopying" : {
-            "type" : "not an object, not an array",
-            "configKeys" : [ "enableCellCopying" ]
-          },
-          "selectionMode" : {
-            "type" : "not an object, not an array",
-            "configKeys" : [ "selectionMode" ]
-          },
-          "showOnlySelectedRows" : {
-            "type" : "not an object, not an array",
-            "configKeys" : [ "showOnlySelectedRows" ]
-          },
-          "showOnlySelectedRowsConfigurable" : {
-            "type" : "not an object, not an array",
-            "configKeys" : [ "showOnlySelectedRowsConfigurable" ]
-          },
-          "skipRemainingColumns" : {
-            "type" : "not an object, not an array",
-            "configKeys" : [ "skipRemainingColumns_Internals" ]
           }
         }
       }

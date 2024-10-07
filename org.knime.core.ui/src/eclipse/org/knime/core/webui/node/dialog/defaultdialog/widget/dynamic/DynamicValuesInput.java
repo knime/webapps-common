@@ -90,9 +90,9 @@ import org.knime.core.node.message.Message;
 import org.knime.core.node.util.CheckUtils;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorFactory;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.Persistor;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DefaultFieldNodeSettingsPersistorFactory;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -291,7 +291,7 @@ public final class DynamicValuesInput implements PersistableSettings {
         private DataType m_type;
 
         /**
-         * Non-{@code null} stored value. Usualy of {@link #m_type}'s {@code DataType}, but in case type-mapping fails,
+         * Non-{@code null} stored value. Usually of {@link #m_type}'s {@code DataType}, but in case type-mapping fails,
          * will be of type {@link StringCell#TYPE} containing the user-entered string value.
          */
         private DataCell m_value;
@@ -683,8 +683,10 @@ public final class DynamicValuesInput implements PersistableSettings {
             }
             final var dataType = settings.getDataType(TYPE_ID_KEY);
 
-            final var caseMatching = settings.containsKey(MATCHING_KEY) ? DefaultFieldNodeSettingsPersistorFactory
-                .createDefaultPersistor(StringCaseMatchingSettings.class, MATCHING_KEY).load(settings) : null;
+            final var caseMatching = settings.containsKey(MATCHING_KEY) ?
+                NodeSettingsPersistorFactory.getPersistor(StringCaseMatchingSettings.class).load(
+                 settings.getNodeSettings(MATCHING_KEY))
+                        : null;
 
             if (settings.containsKey(VALUE_KEY)) {
                 final var dataCell = DynamicValue.<InvalidSettingsException> readDataCell(dataType, //
@@ -704,9 +706,10 @@ public final class DynamicValuesInput implements PersistableSettings {
             settings.addDataType(TYPE_ID_KEY, obj.m_type);
             final var caseMatching = obj.m_caseMatching;
             if (caseMatching != null) {
-                DefaultFieldNodeSettingsPersistorFactory
-                    .createDefaultPersistor(StringCaseMatchingSettings.class, MATCHING_KEY)
-                    .save(caseMatching, settings);
+
+
+                NodeSettingsPersistorFactory.getPersistor(StringCaseMatchingSettings.class)
+                    .save(caseMatching, settings.addNodeSettings(MATCHING_KEY) );
             }
             final var cell = obj.m_value;
             if (!cell.isMissing()) {

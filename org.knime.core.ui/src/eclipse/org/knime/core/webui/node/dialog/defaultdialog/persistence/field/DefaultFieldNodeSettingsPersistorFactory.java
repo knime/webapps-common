@@ -71,6 +71,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPe
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.ArrayParentNode;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.Tree;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeNode;
 import org.knime.filehandling.core.connections.FSLocation;
 
 /**
@@ -86,58 +89,57 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
      * persistors either for arrays or {@link PersistableSettings} or settings that store values directly in
      * NodeSettings.
      *
-     * @param <T> the type of field
-     * @param fieldType the type of field the created persistor should persist
+     * @param node the node associated to the field the created persistor should persist
      * @param configKey the key to use for storing and retrieving the value to and from the NodeSettings
      * @return a new persistor
      * @throws IllegalArgumentException if there is no persistor available for the provided fieldType
      */
-    @SuppressWarnings("unchecked")
-    public static <T> NodeSettingsPersistor<T> createDefaultPersistor(final Class<T> type, final String configKey) {
-        if (type.isArray() && PersistableSettings.class.isAssignableFrom(type.getComponentType())) {
-            return (NodeSettingsPersistor<T>)createDefaultArrayPersistor(type.getComponentType(), configKey);
-        } else if (PersistableSettings.class.isAssignableFrom(type)) {
-            return (NodeSettingsPersistor<T>)new NestedFieldBasedNodeSettingsPersistor<>(configKey,
-                type.asSubclass(PersistableSettings.class));
+    public static NodeSettingsPersistor<?> createDefaultPersistor(final TreeNode<PersistableSettings> node,
+        final String configKey) {
+        if (node instanceof ArrayParentNode<PersistableSettings> array) {
+            return createDefaultArrayPersistor(array.getElementTree(), configKey);
+        } else if (node instanceof Tree<PersistableSettings> tree) {
+            return createNestedFieldBasedPersistor(configKey, tree);
+
         } else {
-            return DefaultFieldNodeSettingsPersistorFactory.createPersistor(type, configKey);
+            return createPersistor(node.getType(), configKey);
         }
     }
 
-    @SuppressWarnings("unchecked")
     private static <S extends PersistableSettings> NodeSettingsPersistor<S[]>
-        createDefaultArrayPersistor(final Class<?> elementType, final String configKey) {
-        return new ArrayFieldPersistor<>((Class<S>)elementType, configKey);
+        createDefaultArrayPersistor(final Tree<PersistableSettings> elementTree, final String configKey) {
+        return new ArrayFieldPersistor<>(elementTree, configKey);
     }
 
-    static final class NestedFieldBasedNodeSettingsPersistor<S extends PersistableSettings>
-        implements NodeSettingsPersistor<S> {
+    private static NodeSettingsPersistor<?> createNestedFieldBasedPersistor(final String configKey,
+        final Tree<PersistableSettings> tree) {
+        return new NestedPersistor<>(configKey, NodeSettingsPersistorFactory.createPersistor(tree));
+    }
+
+    static final class NestedPersistor<S extends PersistableSettings> implements NodeSettingsPersistor<S> {
 
         private final String m_configKey;
 
-        private final NodeSettingsPersistor<S> m_persistor;
+        private final NodeSettingsPersistor<S> m_delegate;
 
-        NestedFieldBasedNodeSettingsPersistor(final String configKey, final Class<S> settingsClass) {
+        NestedPersistor(final String configKey, final NodeSettingsPersistor<S> delegate) {
             m_configKey = configKey;
-            m_persistor = NodeSettingsPersistorFactory.createPersistor(settingsClass);
+            m_delegate = delegate;
         }
 
         @Override
         public S load(final NodeSettingsRO settings) throws InvalidSettingsException {
-            return m_persistor.load(settings.getNodeSettings(m_configKey));
+            return m_delegate.load(settings.getNodeSettings(m_configKey));
         }
 
         @Override
         public void save(final S obj, final NodeSettingsWO settings) {
-            m_persistor.save(obj, settings.addNodeSettings(m_configKey));
+            m_delegate.save(obj, settings.addNodeSettings(m_configKey));
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public ConfigMappings getConfigMappings(final S obj) {
-            return new ConfigMappings(m_configKey, List.of(m_persistor.getConfigMappings(obj)));
+            return new ConfigMappings(m_configKey, List.of(m_delegate.getConfigMappings(obj)));
         }
 
     }
@@ -146,15 +148,15 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
 
         private final String m_configKey;
 
-        private final Class<S> m_elementType;
+        private final Tree<PersistableSettings> m_elementTree;
 
         private final List<NodeSettingsPersistor<S>> m_persistors = new ArrayList<>();
 
         private static final Pattern IS_DIGIT = Pattern.compile("^\\d+$");
 
-        ArrayFieldPersistor(final Class<S> elementType, final String configKey) {
+        ArrayFieldPersistor(final Tree<PersistableSettings> elementTree, final String configKey) {
             m_configKey = configKey;
-            m_elementType = elementType;
+            m_elementTree = elementTree;
         }
 
         @Override
@@ -163,7 +165,7 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
             int size = (int)arraySettings.keySet().stream().filter(s -> IS_DIGIT.matcher(s).matches()).count();
             ensureEnoughPersistors(size);
             @SuppressWarnings("unchecked")
-            var values = (S[])Array.newInstance(m_elementType, size);
+            var values = (S[])Array.newInstance(m_elementTree.getType(), size);
             for (int i = 0; i < size; i++) {//NOSONAR
                 values[i] = m_persistors.get(i).load(arraySettings);
             }
@@ -172,7 +174,8 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
 
         private synchronized void ensureEnoughPersistors(final int numPersistors) {
             for (int i = m_persistors.size(); i < numPersistors; i++) {
-                m_persistors.add(new NestedFieldBasedNodeSettingsPersistor<>(Integer.toString(i), m_elementType));
+                m_persistors
+                    .add((NodeSettingsPersistor<S>)createNestedFieldBasedPersistor(Integer.toString(i), m_elementTree));
             }
         }
 
@@ -206,7 +209,7 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
      * @return a new persistor
      * @throws IllegalArgumentException if there is no persistor available for the provided fieldType
      */
-    private static <T> FieldNodeSettingsPersistor<T> createPersistor(final Class<T> fieldType, final String configKey) {
+    public static <T> FieldNodeSettingsPersistor<T> createPersistor(final Class<T> fieldType, final String configKey) {
         @SuppressWarnings("unchecked") // Type-save since IMPL_MAP maps Class<T> to FieldPersistor<T>
         var impl = (FieldPersistor<T>)IMPL_MAP.get(fieldType);
         return createPersistorFromImpl(fieldType, configKey, impl);

@@ -160,7 +160,7 @@ class DefaultNodeSettingsServiceTest {
                 testSettingsMap.entrySet().stream()
                     .map(e -> new WidgetTreeFactory().createTree(e.getValue(), e.getKey())).toList(),
                 DefaultNodeSettings.createDefaultNodeSettingsContext(specs), new AsyncChoicesHolder());
-        assertThatJson(initialData.get("ui_schema")).isEqualTo(uiSchema);
+        assertThatJson(initialData.get("ui_schema").get("elements")).isEqualTo(uiSchema.get("elements"));
     }
 
     @Test

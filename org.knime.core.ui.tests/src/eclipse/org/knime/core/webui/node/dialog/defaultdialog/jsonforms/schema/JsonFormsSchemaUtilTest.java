@@ -68,12 +68,7 @@ import java.time.ZonedDateTime;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObjectSpec;
-import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
-import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation.Builder;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
@@ -81,8 +76,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup.Modification;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup.WidgetGroupModifier;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistor;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.NumberInputWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.TextInputWidget;
@@ -519,132 +512,7 @@ class JsonFormsSchemaUtilTest {
         testSettings(IgnoreSetting.class);
     }
 
-    private static class SettingWithConfigKeyInPersistAnnotation implements WidgetGroup {
 
-        private static String SNAPSHOT = "{\"test\":{" //
-            + "\"type\":\"integer\"," //
-            + "\"format\":\"int32\"," //
-            + "\"title\":\"my_title\"," //
-            + "\"default\":0," //
-            + "\"configKeys\":[\"my_config_key\"]" //
-            + "}}";
-
-        @Persist(configKey = "my_config_key")
-        @Widget(title = "my_title", description = "")
-        public int test;
-    }
-
-    @Test
-    void testConfigKeyFromPersistAnnotation() throws JsonProcessingException {
-        testSettingsWithoutContext(SettingWithConfigKeyInPersistAnnotation.class);
-    }
-
-    private static class CustomPersistor implements FieldNodeSettingsPersistor<Integer> {
-
-        @Override
-        public Integer load(final NodeSettingsRO settings) throws InvalidSettingsException {
-            throw new UnsupportedOperationException("should not be called by this test");
-        }
-
-        @Override
-        public void save(final Integer obj, final NodeSettingsWO settings) {
-            throw new UnsupportedOperationException("should not be called by this test");
-        }
-
-        @Override
-        public String[] getConfigKeys() {
-            return new String[]{"config_key_from_persistor_1", "config_key_from_persistor_2"};
-        }
-
-        @Override
-        public String[][] getSubConfigKeys() {
-            return new String[][]{{"custom", "sub", "config"}, {"keys", "from", "persistor"}};
-        }
-    }
-
-    private static class SettingWithCustomPersistor implements WidgetGroup {
-
-        private static String SNAPSHOT = "{\"test\":{" //
-            + "\"type\":\"integer\"," //
-            + "\"format\":\"int32\"," //
-            + "\"title\":\"my_title\"," //
-            + "\"default\":0," //
-            + "\"configKeys\":[\"config_key_from_persistor_1\",\"config_key_from_persistor_2\"]," //
-            + "\"subConfigKeys\":[[\"custom\",\"sub\",\"config\"],[\"keys\",\"from\",\"persistor\"]]" //
-            + "}}";
-
-        @Persist(customPersistor = CustomPersistor.class)
-        @Widget(title = "my_title", description = "")
-        public int test;
-    }
-
-    private static class CustomPersistorWithDeprecatedConfigs implements FieldNodeSettingsPersistor<Integer> {
-
-        @Override
-        public Integer load(final NodeSettingsRO settings) throws InvalidSettingsException {
-            throw new UnsupportedOperationException("should not be called by this test");
-        }
-
-        @Override
-        public void save(final Integer obj, final NodeSettingsWO settings) {
-            throw new UnsupportedOperationException("should not be called by this test");
-        }
-
-        @Override
-        public String[] getConfigKeys() {
-            return new String[0];
-        }
-
-        @Override
-        public ConfigsDeprecation[] getConfigsDeprecations() {
-            return new ConfigsDeprecation[]{//
-                new Builder()//
-                    .forDeprecatedConfigPath("A", "B")//
-                    .forDeprecatedConfigPath("C")//
-                    .forNewConfigPath("D", "E")//
-                    .forNewConfigPath("F")//
-                    .build(), //
-                new Builder()//
-                    .forNewConfigPath("I", "J")//
-                    .forDeprecatedConfigPath("G", "H")//
-                    .build()//
-            };
-        }
-
-    }
-
-    @Test
-    void testConfigKeyAndSubConfigKeysFromCustomPersistor() throws JsonProcessingException {
-        testSettingsWithoutContext(SettingWithCustomPersistor.class);
-    }
-
-    private static class SettingWithCustomPersistorWithDeprecatedConfigs implements WidgetGroup {
-
-        private static String SNAPSHOT = "{\"test\":{" //
-            + "\"type\":\"integer\"," //
-            + "\"format\":\"int32\"," //
-            + "\"title\":\"my_title\"," //
-            + "\"default\":0," //
-            + "\"deprecatedConfigKeys\":[" //
-            + "{" //
-            + "\"deprecated\": [[\"A\", \"B\"], [\"C\"]]," //
-            + "\"new\": [[\"D\", \"E\"], [\"F\"]]" //
-            + "}, {" //
-            + "\"deprecated\": [[\"G\", \"H\"]]," //
-            + "\"new\": [[\"I\", \"J\"]]" //
-            + "}" //
-            + "]" //
-            + "}}";
-
-        @Persist(customPersistor = CustomPersistorWithDeprecatedConfigs.class)
-        @Widget(title = "my_title", description = "")
-        public int test;
-    }
-
-    @Test
-    void testConfigKeyFromCustomPersistorWithDeprecatedConfigs() throws JsonProcessingException {
-        testSettingsWithoutContext(SettingWithCustomPersistorWithDeprecatedConfigs.class);
-    }
 
     private record MyStringWrapper(String m_test) {
 

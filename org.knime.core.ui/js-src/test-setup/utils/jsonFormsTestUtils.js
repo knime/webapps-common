@@ -14,6 +14,7 @@ import * as jsonformsVueModule from "@jsonforms/vue";
 
 import { getPossibleValuesFromUiSchema } from "@/nodeDialog/utils";
 import { reactive, ref } from "vue";
+import { createPersistSchema } from "./createPersistSchema";
 
 export const mountJsonFormsComponent = (
   component,
@@ -38,6 +39,7 @@ export const mountJsonFormsComponent = (
     asyncChoicesProviderMock,
     addStateProviderListenerMock,
     flowVariablesApiMock,
+    persistSchemaMock,
     settingStateControllingGetMock,
     settingStateExposedGetMock,
     getPanelsContainerMock,
@@ -72,11 +74,13 @@ export const mountJsonFormsComponent = (
       : {},
   );
   let handleChange = vi.fn();
+  let defaultPersistSchema = null;
   if (props.control) {
     vi.spyOn(jsonformsVueModule, "useJsonFormsControl").mockReturnValue({
       handleChange,
       control: ref(props.control),
     });
+    defaultPersistSchema = createPersistSchema({ path: props.control.path });
   }
   if (props.layout) {
     vi.spyOn(jsonformsVueModule, "useJsonFormsLayout").mockReturnValue({
@@ -135,6 +139,9 @@ export const mountJsonFormsComponent = (
         isTriggerActive,
         flowVariablesApi,
         [flowVarMapKey]: flowVariablesMap,
+        getPersistSchema: vi.fn(
+          () => persistSchemaMock ?? defaultPersistSchema,
+        ),
         getPanelsContainer,
         createArrayAtPath,
         getDialogPopoverTeleportDest,

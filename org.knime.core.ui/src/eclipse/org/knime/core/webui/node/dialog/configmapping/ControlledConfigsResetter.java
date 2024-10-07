@@ -79,7 +79,6 @@ class ControlledConfigsResetter implements ConfigsResetter {
     @Override
     public void resetAtPath(final ConfigPath path) {
         replaceAtPathIfPresent(m_nodeSettings, path, m_previousNodeSettings);
-
     }
 
 }

@@ -49,6 +49,7 @@
 package org.knime.core.webui.node.dialog.defaultdialog.tree;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -66,8 +67,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSet
 
 /**
  * These are the nodes within a {@link Tree}. Next to the branching {@link Tree} node, there are two kinds of leafs:
- * {@link LeafNode}s with no further child widgets and {@link ArrayParentNode}s with an attached separate {@link Tree} for
- * elements.
+ * {@link LeafNode}s with no further child widgets and {@link ArrayParentNode}s with an attached separate {@link Tree}
+ * for elements.
  *
  * @param <S> the type of the [S]ettings. Either {@link PersistableSettings} or {@link WidgetGroup}
  *
@@ -89,6 +90,8 @@ public sealed class TreeNode<S> permits LeafNode, Tree, ArrayParentNode {
 
     private final Collection<Class<? extends Annotation>> m_possibleAnnotations;
 
+    private final Field m_underlyingField;
+
     /**
      * @param parent the parent widget tree or {@code null} if it's the root
      * @param settingsType
@@ -96,15 +99,17 @@ public sealed class TreeNode<S> permits LeafNode, Tree, ArrayParentNode {
      * @param annotations function to get get the 'annotation instance' for an annotation class; function returns
      *            {@code null} if there is none
      * @param possibleAnnotations all allowed annotations
+     * @param underlyingField used to get or set parent values
      */
     protected TreeNode(final Tree<S> parent, final SettingsType settingsType, final Class<?> type,
         final Function<Class<? extends Annotation>, Annotation> annotations,
-        final Collection<Class<? extends Annotation>> possibleAnnotations) {
+        final Collection<Class<? extends Annotation>> possibleAnnotations, final Field underlyingField) {
         m_parent = parent;
         m_type = type;
         m_settingsType = settingsType;
         m_annotations = toMap(annotations, possibleAnnotations);
         m_possibleAnnotations = possibleAnnotations;
+        m_underlyingField = underlyingField;
     }
 
     private static <K, V> Map<K, V> toMap(final Function<K, V> function, final Collection<K> keys) {
@@ -147,6 +152,44 @@ public sealed class TreeNode<S> permits LeafNode, Tree, ArrayParentNode {
         final var name = parentTree.getChildName(this);
         return Stream.concat(parentTree.getPath().stream(), Stream.of(name)).toList();
 
+    }
+
+    /**
+     * This method can be used similar to {@link Field#set} to set the value of this node within a parents value. I.e.
+     * this method can only be used when the node has a parent.
+     *
+     * @param parentValue a value of {@link #getType()} of the parent node.
+     * @param value the value to set
+     * @throws IllegalArgumentException
+     *
+     * @throws IllegalAccessException
+     */
+    public void setInParentValue(final Object parentValue, final Object value)
+        throws IllegalArgumentException, IllegalAccessException {
+        checkParentValue(parentValue);
+        m_underlyingField.set(parentValue, value);
+    }
+
+    /**
+     * This method can be used similar to {@link Field#get} to get the value of this node from the parents value. I.e.
+     * this method can only be used when the node has a parent.
+     *
+     * @param parentValue a value of {@link #getType()} of the parent node.
+     *
+     * @return the value of this node given the parent value
+     * @throws IllegalAccessException
+     */
+    public Object getFromParentValue(final Object parentValue) throws IllegalAccessException {
+        assert getParent() != null : "This method can only be used when the node has a parent.";
+        assert getParent().getType()
+            .isAssignableFrom(parentValue.getClass()) : "The parent value must be of the parent type.";
+        return m_underlyingField.get(parentValue);
+    }
+
+    private void checkParentValue(final Object parentValue) {
+        assert getParent() != null : "This method can only be used when the node has a parent.";
+        assert getParent().getType()
+            .isAssignableFrom(parentValue.getClass()) : "The parent value must be of the parent type.";
     }
 
     /**

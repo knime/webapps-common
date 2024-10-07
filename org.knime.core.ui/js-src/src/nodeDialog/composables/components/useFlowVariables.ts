@@ -1,9 +1,9 @@
 import { InjectionKey, Ref, computed, inject, provide } from "vue";
-import { getConfigPaths, getDataPaths } from "@/nodeDialog/utils/paths";
+import { getDataAndConfigPaths } from "@/nodeDialog/utils/paths";
 import { FlowSettings } from "@/nodeDialog/api/types";
-import Control from "@/nodeDialog/types/Control";
 import { SettingStateWrapper } from "../nodeDialog/useDirtySettings";
 import { getFlowVariablesMap } from "./useProvidedFlowVariablesMap";
+import { injectForFlowVariables } from "@/nodeDialog/utils/inject";
 
 export interface FlowVariableSettingsProvidedByControl {
   flowSettings: Ref<FlowSettings | null>;
@@ -91,7 +91,7 @@ const getProvidedSettingStateFlowVariables = (
 };
 
 export interface UseFlowSettingsProps {
-  control: Ref<Control>;
+  path: Ref<string>;
   settingState: { settingState: SettingStateWrapper; isNew: boolean };
   hideFlowVariableButton?: true;
 }
@@ -102,15 +102,14 @@ export const useFlowSettings = (
   flowSettings: Ref<FlowSettings | null>;
   disabledByFlowVariables: Ref<boolean>;
 } => {
-  const { control, settingState, hideFlowVariableButton } = params;
+  const { path, settingState, hideFlowVariableButton } = params;
   const flowVariablesMap = getFlowVariablesMap();
-  const path = computed(() => control.value.path);
-  const configPaths = computed(() =>
-    getConfigPaths({ control: control.value, path: path.value }),
+  const persistSchema = injectForFlowVariables("getPersistSchema")();
+  const configAndDataPaths = computed(() =>
+    getDataAndConfigPaths({ persistSchema, path: path.value }),
   );
-  const dataPaths = computed(() =>
-    getDataPaths({ control: control.value, path: path.value }),
-  );
+  const configPaths = computed(() => configAndDataPaths.value.configPaths);
+  const dataPaths = computed(() => configAndDataPaths.value.dataPaths);
   const flowSettings = computed(() => {
     return toFlowSetting(flowVariablesMap, configPaths.value);
   });

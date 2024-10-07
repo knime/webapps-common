@@ -59,9 +59,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 
 /**
  * Annotates a class with a persistor that is used to save and load objects of the class to and from NodeSettings. If no
- * persistence is provided, we fall back to the previous JSON based persistence. For most use-cases
- * {@link FieldBasedNodeSettingsPersistor} is a good choice. It performs persistence of all fields independently and
- * allows further customization on a per field basis via the {@link Persist} annotation. <br>
+ * persistence is provided, we fall back to the {@link FieldBasedNodeSettingsPersistor}. This default performs
+ * persistence of all fields independently and allows further customization on a per field basis via the {@link Persist}
+ * annotation. <br>
  * <br>
  * If you find the FieldBasedNodeSettingsPersistor to be insufficient for your needs, you can also implement your own
  * {@link NodeSettingsPersistor} and provide it here.

@@ -3,10 +3,11 @@ import { FlowSettings } from "@/nodeDialog/api/types";
 import { mount } from "@vue/test-utils";
 import UseFlowVariablesTestComponent from "./UseFlowVariablesTestComponent.vue";
 import { getFlowVariableSettingsProvidedByControl } from "../useFlowVariables";
-import Control from "@/nodeDialog/types/Control";
-import { Ref, defineComponent, ref } from "vue";
+import { defineComponent, ref } from "vue";
 import { SettingStateWrapper } from "../../nodeDialog/useDirtySettings";
 import { injectionKey as flowVarMapKey } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
+import { PersistSchema } from "@/nodeDialog/types/Persist";
+import { createPersistSchema } from "@@/test-setup/utils/createPersistSchema";
 
 let flowVariablesMap: Record<string, FlowSettings>;
 
@@ -15,10 +16,8 @@ vi.mock("../../utils/inject", () => ({
 }));
 
 type Props = {
-  control: Ref<{
-    path: string;
-    rootSchema: Control["rootSchema"];
-  }>;
+  path: string;
+  persistSchema: PersistSchema;
   subConfigKeys?: string[];
   isNew?: boolean;
 };
@@ -48,36 +47,18 @@ describe("useFlowVariables", () => {
     };
   });
 
-  const createControl = ({
-    path,
-    configKeys,
-    subConfigKeys,
-  }: {
+  const createProps = (params: {
     path: string;
     configKeys?: string[];
     subConfigKeys?: string[][];
-  }) => {
-    const rootSchema: Control["rootSchema"] = {};
-    let schema: any = rootSchema;
-    for (const segment of path.split(".")) {
-      const nextSchema = {};
-      schema.type = "object";
-      schema.properties = { [segment]: nextSchema };
-      schema = nextSchema;
-    }
-    if (configKeys) {
-      schema.configKeys = configKeys;
-    }
-    if (subConfigKeys) {
-      schema.subConfigKeys = subConfigKeys;
-    }
-    return ref({ path, rootSchema, schema });
+  }): Props => {
+    return { path: params.path, persistSchema: createPersistSchema(params) };
   };
 
   const mountTestComponent = (props: Props) => {
     return mount(UseFlowVariablesTestComponent, {
       props: {
-        control: props.control as any,
+        path: ref(props.path),
         settingState: {
           isNew: props.isNew ?? false,
           settingState: {
@@ -92,6 +73,7 @@ describe("useFlowVariables", () => {
       global: {
         provide: {
           [flowVarMapKey as symbol]: flowVariablesMap,
+          getPersistSchema: () => props.persistSchema,
         },
       },
     });
@@ -107,7 +89,7 @@ describe("useFlowVariables", () => {
     const configKeys = [configKey];
     const subConfigKeys = [[subConfigKey]];
     return mountTestComponent({
-      control: createControl({
+      ...createProps({
         path,
         configKeys,
         subConfigKeys,
@@ -208,9 +190,7 @@ describe("useFlowVariables", () => {
     );
 
     it("returns null for an missing flowVariablesMap", () => {
-      expect(
-        getFlowSettings({ control: createControl({ path: "otherPath" }) }),
-      ).toBeNull();
+      expect(getFlowSettings(createProps({ path: "otherPath" }))).toBeNull();
     });
 
     it("returns undefined for missing flow setting for path", () => {
@@ -218,25 +198,27 @@ describe("useFlowVariables", () => {
         "path.to.my_setting": CONTROLLING_FLOW_SETTINGS,
       };
       expect(
-        getFlowSettings({
-          control: createControl({ path: "path.to.another_setting" }),
-        }),
+        getFlowSettings(
+          createProps({
+            path: "path.to.another_setting",
+          }),
+        ),
       ).toBeNull();
 
       expect(
-        getFlowSettings({
-          control: createControl({
+        getFlowSettings(
+          createProps({
             path: "path.to.another_setting",
             configKeys: ["also_another_setting"],
           }),
-        }),
+        ),
       ).toBeNull();
     });
 
     it("uses path if configKeys is undefined", () => {
       const path = "path.to.my_setting";
       flowVariablesMap = { [path]: CONTROLLING_FLOW_SETTINGS };
-      expect(getFlowSettings({ control: createControl({ path }) })).toEqual(
+      expect(getFlowSettings(createProps({ path }))).toEqual(
         CONTROLLING_FLOW_SETTINGS,
       );
     });
@@ -246,12 +228,12 @@ describe("useFlowVariables", () => {
         "path.to.my_real_setting_name": CONTROLLING_FLOW_SETTINGS,
       };
       expect(
-        getFlowSettings({
-          control: createControl({
+        getFlowSettings(
+          createProps({
             path: "path.to.my_setting",
             configKeys: ["my_real_setting_name"],
           }),
-        }),
+        ),
       ).toEqual(CONTROLLING_FLOW_SETTINGS);
     });
 
@@ -261,12 +243,12 @@ describe("useFlowVariables", () => {
         "path.to.setting_2": CONTROLLING_FLOW_SETTINGS,
       };
       expect(
-        getFlowSettings({
-          control: createControl({
+        getFlowSettings(
+          createProps({
             path: "path.to.my_setting",
             configKeys: ["setting_1", "setting_2", "not_overwritten_setting"],
           }),
-        }),
+        ),
       ).toEqual(MERGED_FLOW_SETTINGS);
 
       flowVariablesMap = {
@@ -275,8 +257,8 @@ describe("useFlowVariables", () => {
         "path.to.setting_3": EXPOSING_FLOW_SETTINGS,
       };
       expect(
-        getFlowSettings({
-          control: createControl({
+        getFlowSettings(
+          createProps({
             path: "path.to.my_setting",
             configKeys: [
               "setting_1",
@@ -285,7 +267,7 @@ describe("useFlowVariables", () => {
               "not_overwritten_setting",
             ],
           }),
-        }),
+        ),
       ).toEqual(MERGED_FLOW_SETTINGS);
     });
   });

@@ -53,6 +53,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldBasedNodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.persisttree.PersistTreeFactory;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.Tree;
 
 /**
  * Creates and caches NodeSettingsPersistors for DefaultNodeSettings.
@@ -100,7 +102,8 @@ public final class NodeSettingsPersistorFactory {
         var persistence = settingsClass.getAnnotation(Persistor.class);
         if (persistence == null) {
             // no annotation means we use field based persistence
-            return new FieldBasedNodeSettingsPersistor<>(settingsClass);
+            final var persistTree = new PersistTreeFactory().createTree(settingsClass);
+            return new FieldBasedNodeSettingsPersistor<>(persistTree);
         } else {
             var persistorClass = persistence.value();
             @SuppressWarnings("unchecked")
@@ -108,4 +111,19 @@ public final class NodeSettingsPersistorFactory {
             return persistor;
         }
     }
+
+    public static <S extends PersistableSettings> NodeSettingsPersistor<S>
+        createPersistor(final Tree<PersistableSettings> tree) {
+        var persistence = tree.getAnnotation(Persistor.class);
+        if (persistence.isEmpty()) {
+            return new FieldBasedNodeSettingsPersistor<S>(tree);
+        } else {
+            var persistorClass = persistence.get().value();
+            @SuppressWarnings("unchecked")
+            NodeSettingsPersistor<S> persistor = NodeSettingsPersistor.createInstance(persistorClass, tree.getType());
+            return persistor;
+        }
+
+    }
+
 }

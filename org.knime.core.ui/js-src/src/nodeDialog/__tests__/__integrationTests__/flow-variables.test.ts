@@ -89,7 +89,7 @@ describe("flow variables", () => {
           model: {
             type: "object",
             properties: {
-              value: { type: "string", configKeys: ["customConfigKey"] },
+              value: { type: "string" },
             },
           },
         },
@@ -101,6 +101,17 @@ describe("flow variables", () => {
             type: "Control",
           },
         ],
+        persist: {
+          type: "object",
+          properties: {
+            model: {
+              type: "object",
+              properties: {
+                value: { configKeys: ["customConfigKey"] },
+              },
+            },
+          },
+        },
       },
       flowVariableSettings: {},
     });
@@ -273,6 +284,25 @@ describe("flow variables", () => {
               },
             },
           ],
+          persist: {
+            type: "object",
+            properties: {
+              model: {
+                type: "object",
+                properties: {
+                  value: {
+                    type: "object",
+                    properties: {
+                      username: {},
+                      password: {},
+                      isHiddenPassword: {},
+                      flowVariableName: {},
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
         flowVariableSettings: {},
       });

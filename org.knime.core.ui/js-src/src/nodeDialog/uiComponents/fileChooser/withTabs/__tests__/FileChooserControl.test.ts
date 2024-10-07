@@ -15,6 +15,7 @@ import SideDrawerContent from "../SideDrawerContent.vue";
 import SideDrawerContentBase from "../SideDrawerContentBase.vue";
 import flushPromises from "flush-promises";
 import FSLocationTextControl from "../FSLocationTextControl.vue";
+import { createPersistSchema } from "@@/test-setup/utils/createPersistSchema";
 
 describe("FileChooserControl.vue", () => {
   let props: any, wrapper: VueWrapper<any, any>, component: any;
@@ -109,9 +110,21 @@ describe("FileChooserControl.vue", () => {
     });
   });
 
+  const createPersistSchemaMock = () =>
+    createPersistSchema({
+      path: props.control.path,
+      leaf: {
+        type: "object",
+        properties: {
+          path: {},
+        },
+      },
+    });
+
   it("disables input when controlled by a flow variable", () => {
     const { wrapper } = mountJsonFormsComponent(FileChooserControl, {
       props,
+      provide: { persistSchemaMock: createPersistSchemaMock() },
       withControllingFlowVariable: `${props.control.path}.path` as any,
     });
     expect(findFolderLenseButton(wrapper).props().disabled).toBe(true);
@@ -129,6 +142,7 @@ describe("FileChooserControl.vue", () => {
       const { flowVariablesMap, wrapper, handleChange } =
         await mountJsonFormsComponent(FileChooserControl, {
           props,
+          provide: { persistSchemaMock: createPersistSchemaMock() },
           withControllingFlowVariable: `${props.control.path}.path` as any,
         });
       flowVariablesMap[

@@ -52,6 +52,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorFactory;
 
 /**
  *
@@ -63,7 +64,7 @@ final class FieldNodeSettingsPersistorFactoryTest {
     @Test
     void testFailsOnContractViolation() {
         assertThrows(IllegalArgumentException.class,
-            () -> new FieldNodeSettingsPersistorFactory<>(ContractViolatingSettings.class));
+            () -> NodeSettingsPersistorFactory.createPersistor(ContractViolatingSettings.class));
     }
 
     private static final class ContractViolatingSettings implements DefaultNodeSettings {

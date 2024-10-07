@@ -4,7 +4,7 @@
       "title" : "",
       "altText" : "",
       "caption" : "",
-      "shrinkToFit" :  true
+      "shrinkToFit" : true
     }
   },
   "schema" : {
@@ -57,6 +57,20 @@
       "options" : {
         "format" : "checkbox"
       }
-    } ]
+    } ],
+    "persist" : {
+      "type" : "object",
+      "properties" : {
+        "view" : {
+          "type" : "object",
+          "properties" : {
+            "title" : { },
+            "altText" : { },
+            "caption" : { },
+            "shrinkToFit" : { }
+          }
+        }
+      }
+    }
   }
 }

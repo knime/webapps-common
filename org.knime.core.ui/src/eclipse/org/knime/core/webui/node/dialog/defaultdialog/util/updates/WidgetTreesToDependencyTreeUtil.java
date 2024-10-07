@@ -52,11 +52,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.tree.Tree;
 import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.Tree;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeFactory;
 
 /**
  * A utility class for parsing all update interactions between different widgets from given settings classes.
@@ -84,8 +84,9 @@ public final class WidgetTreesToDependencyTreeUtil {
      */
     public static Pair<List<TriggerAndDependencies>, TriggerInvocationHandler<Integer>>
         settingsToTriggersAndInvocationHandler(final Map<SettingsType, Class<? extends WidgetGroup>> settingsClasses) {
-        final var widgetTrees =
-            settingsClasses.entrySet().stream().map(entry -> new WidgetTree(entry.getValue(), entry.getKey())).toList();
+        final var widgetTreeFactory = new WidgetTreeFactory();
+        final var widgetTrees = settingsClasses.entrySet().stream()
+            .map(entry -> widgetTreeFactory.createTree(entry.getValue(), entry.getKey())).toList();
         return widgetTreesToTriggersAndInvocationHandler(widgetTrees);
     }
 
@@ -95,7 +96,7 @@ public final class WidgetTreesToDependencyTreeUtil {
      * @return a list of all triggers and their associated dependencies and an associated invocation handler.
      */
     public static <T> Pair<List<TriggerAndDependencies>, TriggerInvocationHandler<T>>
-        widgetTreesToTriggersAndInvocationHandler(final Collection<WidgetTree> widgetTrees) {
+        widgetTreesToTriggersAndInvocationHandler(final Collection<Tree<WidgetGroup>> widgetTrees) {
         final var dependencyTree = widgetTreesToDependencyTree(widgetTrees);
         final var listOfTriggers = getTriggersWithDependencies(dependencyTree);
         return new Pair<>(listOfTriggers, new TriggerInvocationHandler<>(dependencyTree));

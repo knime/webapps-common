@@ -49,6 +49,7 @@
 package org.knime.core.webui.node.dialog.defaultdialog.tree;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.function.Function;
 
@@ -69,8 +70,8 @@ public final class LeafNode<S> extends TreeNode<S> {
 
     LeafNode(final Tree<S> parent, final Class<?> type, final Class<?> contentType,
         final Function<Class<? extends Annotation>, Annotation> annotations,
-        final Collection<Class<? extends Annotation>> possibleAnnotations) {
-        super(parent, parent.getSettingsType(), type, annotations, possibleAnnotations);
+        final Collection<Class<? extends Annotation>> possibleAnnotations, final Field underlyingField) {
+        super(parent, parent.getSettingsType(), type, annotations, possibleAnnotations, underlyingField);
         m_contentType = contentType;
     }
 

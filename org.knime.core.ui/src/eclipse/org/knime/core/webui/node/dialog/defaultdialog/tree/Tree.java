@@ -49,6 +49,7 @@
 package org.knime.core.webui.node.dialog.defaultdialog.tree;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
@@ -85,8 +86,8 @@ public final class Tree<S> extends TreeNode<S> {
 
     Tree(final Tree<S> parent, final SettingsType settingsType, final Class<? extends S> treeClass,
         final Function<Class<? extends Annotation>, Annotation> annotations,
-        final Collection<Class<? extends Annotation>> possibleAnnotations) {
-        super(parent, settingsType, treeClass, annotations, possibleAnnotations);
+        final Collection<Class<? extends Annotation>> possibleAnnotations, final Field underlyingField) {
+        super(parent, settingsType, treeClass, annotations, possibleAnnotations, underlyingField);
         m_treeClass = treeClass;
     }
 
@@ -139,12 +140,12 @@ public final class Tree<S> extends TreeNode<S> {
     }
 
     /**
-     * Flatten the tree without traversing into element trees of {@link ArrayParentNode ArrayWidgetNodes}. Hereby intermediate
-     * {@link Tree} nodes are not included in the output.
+     * Flatten the tree without traversing into element trees of {@link ArrayParentNode ArrayWidgetNodes}. Hereby
+     * intermediate {@link Tree} nodes are not included in the output.
      *
-     * @return the union of all {@link LeafNode WidgetNodes} and {@link ArrayParentNode ArrayWidgetNodes} that are reached by
-     *         traversing the tree from the root without traversing into the element trees of {@link ArrayParentNode
-     *         ArrayWidgetNodes}
+     * @return the union of all {@link LeafNode WidgetNodes} and {@link ArrayParentNode ArrayWidgetNodes} that are
+     *         reached by traversing the tree from the root without traversing into the element trees of
+     *         {@link ArrayParentNode ArrayWidgetNodes}
      */
     public Stream<TreeNode<S>> getWidgetNodes() {
         return getChildren().stream().flatMap(Tree::getWidgetNodes);
@@ -158,8 +159,8 @@ public final class Tree<S> extends TreeNode<S> {
     }
 
     /**
-     * Flatten the tree without traversing into element trees of {@link ArrayParentNode ArrayWidgetNodes}. Also intermediate
-     * {@link Tree} nodes are included in the output.
+     * Flatten the tree without traversing into element trees of {@link ArrayParentNode ArrayWidgetNodes}. Also
+     * intermediate {@link Tree} nodes are included in the output.
      *
      * @return the union of all {@link TreeNode WidgetTreeNodes} that are reached by traversing the tree from the root
      *         without traversing into the element trees of {@link ArrayParentNode ArrayWidgetNodes}
