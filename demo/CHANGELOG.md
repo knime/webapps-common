@@ -1,5 +1,14 @@
 # demo
 
+## 1.0.46
+
+### Patch Changes
+
+- Updated dependencies [fad6298]
+  - @knime/components@1.3.0
+  - @knime/rich-text-editor@1.2.19
+  - @knime/virtual-tree@1.0.6
+
 ## 1.0.45
 
 ### Patch Changes
