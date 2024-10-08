@@ -58,8 +58,8 @@ const toolTip = computed(() => {
 
 <style scoped lang="postcss">
 .progress-bar-wrapper {
-  --loading-bar-background-color: var(--knime-silver-sand);
-  --loading-bar-foreground-color: var(--theme-slider-background-color);
+  --progress-bar-background-color: var(--knime-silver-sand);
+  --progress-bar-foreground-color: var(--knime-yellow);
   --progress-bar-height: var(--space-16);
   --progress-bar-radius: calc(var(--progress-bar-height) - 0.5px);
 
@@ -79,7 +79,7 @@ const toolTip = computed(() => {
     width: 100%;
 
     /* Firefox sets the background of the bar from here  */
-    background-color: var(--loading-bar-background-color);
+    background-color: var(--progress-bar-background-color);
   }
 
   &.compact {
@@ -87,17 +87,17 @@ const toolTip = computed(() => {
   }
 
   & .progress::-webkit-progress-bar {
-    background-color: var(--loading-bar-background-color);
+    background-color: var(--progress-bar-background-color);
   }
 
   & .progress::-webkit-progress-value {
     border-radius: var(--progress-bar-radius);
-    background-color: var(--loading-bar-foreground-color);
+    background-color: var(--progress-bar-foreground-color);
   }
 
   /* Firefox uses this to target the bar that represents the value of the progress element */
   & .progress::-moz-progress-bar {
-    background-color: var(--loading-bar-foreground-color);
+    background-color: var(--progress-bar-foreground-color);
   }
 
   & .progress:indeterminate {
@@ -105,18 +105,22 @@ const toolTip = computed(() => {
     animation-iteration-count: infinite;
     animation-name: move-indeterminate;
     animation-timing-function: linear;
-    background-color: var(--loading-bar-background-color);
+    background-color: var(--progress-bar-background-color);
     background-image: linear-gradient(
       to right,
-      var(--loading-bar-foreground-color) 30%,
-      var(--loading-bar-background-color) 30%
+      var(--progress-bar-foreground-color) 30%,
+      var(--progress-bar-background-color) 30%
     );
     background-position: 0 0;
     background-repeat: no-repeat;
     background-size: 150% 150%;
   }
 
-  & .progress:indeterminate::-webkit-progress-bar,
+  /* the following two rules need to stay separate, as otherwise it causes it not to be applied in Chrome correctly */
+  & .progress:indeterminate::-webkit-progress-bar {
+    background-color: transparent;
+  }
+
   & .progress:indeterminate::-moz-progress-bar {
     background-color: transparent;
   }
