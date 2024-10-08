@@ -1,5 +1,12 @@
 # @knime/components
 
+## 1.3.1
+
+### Patch Changes
+
+- c642514: Fix styling of indeterminate state of progress bar
+- c642514: Export BreadcrumbItem type
+
 ## 1.3.0
 
 ### Minor Changes
