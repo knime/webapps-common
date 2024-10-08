@@ -125,7 +125,7 @@ export const getDataAndConfigPaths = ({
       configPaths = configPaths.map((p) => composePaths(p, segment));
       schema = schema.items;
     } else if (schema.type === "object") {
-      schema = schema.properties[segment];
+      schema = schema.properties[segment] ?? {};
 
       (schema.deprecatedConfigKeys ?? []).forEach((part) =>
         deprecatedConfigPathsCandidates.push(

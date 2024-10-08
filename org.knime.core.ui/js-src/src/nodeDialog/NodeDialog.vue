@@ -228,7 +228,7 @@ export default {
         /**
          * Information on the persist structure used to map flow variables to controls.
          */
-        persist: PersistSchema;
+        persist?: PersistSchema;
       },
       ready: false,
       isMetaKeyPressed: false,
@@ -259,7 +259,7 @@ export default {
       });
     },
     getPersistSchema() {
-      return this.uischema.persist;
+      return this.uischema.persist ?? {};
     },
     callDataService({
       method,

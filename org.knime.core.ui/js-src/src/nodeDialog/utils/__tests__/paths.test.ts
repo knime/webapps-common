@@ -203,6 +203,23 @@ describe("paths", () => {
       ]);
     });
 
+    it("returns given path if persist schema ends early", () => {
+      const path = "model.mySetting";
+      const persistSchema: PersistSchema = {
+        type: "object",
+        properties: {
+          model: {
+            type: "object",
+            properties: {},
+          },
+        },
+      };
+      const configPaths = getConfigPaths(path, persistSchema);
+      expect(configPaths).toStrictEqual([
+        { configPath: path, deprecatedConfigPaths: [] },
+      ]);
+    });
+
     it("appends subConfigKeys", () => {
       const path = "model.mySetting";
       const persistSchema: PersistSchema = {
