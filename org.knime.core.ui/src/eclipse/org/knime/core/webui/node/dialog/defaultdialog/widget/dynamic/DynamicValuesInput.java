@@ -247,8 +247,11 @@ public final class DynamicValuesInput implements PersistableSettings {
         }
     }
 
-    /** Checks if values are not missing and can be converted to their expected type.
-     * @throws InvalidSettingsException ...  */
+    /**
+     * Checks if values are not missing and can be converted to their expected type.
+     *
+     * @throws InvalidSettingsException ...
+     */
     public void checkParseError() throws InvalidSettingsException {
         for (final var value : m_values) {
             value.checkParseError();
@@ -339,7 +342,7 @@ public final class DynamicValuesInput implements PersistableSettings {
          */
         @SuppressWarnings("unchecked")
         private DynamicValue(final DataType columnType, final DataCell initial,
-                final StringCaseMatchingSettings caseMatchingSettings) {
+            final StringCaseMatchingSettings caseMatchingSettings) {
             m_value = Objects.requireNonNull(initial);
             if (columnType.equals(DataType.getMissingCell().getType())) {
                 throw new IllegalArgumentException("DynamicValue must not be of \"MissingCell\" type");
@@ -415,8 +418,11 @@ public final class DynamicValuesInput implements PersistableSettings {
             }
         }
 
-        /** Checks if the value is not missing and can be converted to the expected type.
-         * @throws InvalidSettingsException ...  */
+        /**
+         * Checks if the value is not missing and can be converted to the expected type.
+         *
+         * @throws InvalidSettingsException ...
+         */
         private void checkParseError() throws InvalidSettingsException {
             CheckUtils.checkSetting(!m_value.isMissing(), "The comparison value is missing.");
             // validate that the current value is not an "error value"
@@ -445,15 +451,15 @@ public final class DynamicValuesInput implements PersistableSettings {
                         .formatted(stringValue, type));
             } catch (final ConverterException e) { // NOSONAR we unwrap our own exception
                 final var msgBuilder = Message.builder() //
-                        .withSummary(e.getMessage());
+                    .withSummary(e.getMessage());
                 final var cause = e.getCause();
                 final var causeMsg = cause != null ? cause.getMessage() : null;
                 if (causeMsg != null && !StringUtils.isEmpty(stringValue)) {
                     msgBuilder.addTextIssue(causeMsg);
                 }
                 return msgBuilder.build() //
-                        .orElseThrow() // we set a summary
-                        .toInvalidSettingsException();
+                    .orElseThrow() // we set a summary
+                    .toInvalidSettingsException();
             }
         }
 
@@ -589,8 +595,8 @@ public final class DynamicValuesInput implements PersistableSettings {
     static class DynamicValueSerializer extends JsonSerializer<DynamicValue> {
 
         @Override
-        public void serialize(final DynamicValue value, final JsonGenerator gen,
-            final SerializerProvider serializers) throws IOException {
+        public void serialize(final DynamicValue value, final JsonGenerator gen, final SerializerProvider serializers)
+            throws IOException {
 
             gen.writeStartObject();
             gen.writeFieldName(VALUE_KEY);
@@ -638,13 +644,12 @@ public final class DynamicValuesInput implements PersistableSettings {
     static class DynamicValueDeserializer extends JsonDeserializer<DynamicValue> {
 
         @Override
-        public DynamicValue deserialize(final JsonParser parser, final DeserializationContext ctx)
-            throws IOException {
+        public DynamicValue deserialize(final JsonParser parser, final DeserializationContext ctx) throws IOException {
             final var node = (JsonNode)parser.getCodec().readTree(parser);
 
             final var dataTypeNode = node.get(DATA_TYPE_CONFIG_FIELD_NAME);
-            final var config = JSONConfig.readJSON(new NodeSettings(DATA_TYPE_CONFIG_KEY),
-                new StringReader(dataTypeNode.asText()));
+            final var config =
+                JSONConfig.readJSON(new NodeSettings(DATA_TYPE_CONFIG_KEY), new StringReader(dataTypeNode.asText()));
             DataType dataType;
             try {
                 dataType = config.getDataType(DATA_TYPE_KEY);
@@ -683,10 +688,8 @@ public final class DynamicValuesInput implements PersistableSettings {
             }
             final var dataType = settings.getDataType(TYPE_ID_KEY);
 
-            final var caseMatching = settings.containsKey(MATCHING_KEY) ?
-                NodeSettingsPersistorFactory.getPersistor(StringCaseMatchingSettings.class).load(
-                 settings.getNodeSettings(MATCHING_KEY))
-                        : null;
+            final var caseMatching = settings.containsKey(MATCHING_KEY) ? NodeSettingsPersistorFactory
+                .getPersistor(StringCaseMatchingSettings.class).load(settings.getNodeSettings(MATCHING_KEY)) : null;
 
             if (settings.containsKey(VALUE_KEY)) {
                 final var dataCell = DynamicValue.<InvalidSettingsException> readDataCell(dataType, //
@@ -707,9 +710,8 @@ public final class DynamicValuesInput implements PersistableSettings {
             final var caseMatching = obj.m_caseMatching;
             if (caseMatching != null) {
 
-
-                NodeSettingsPersistorFactory.getPersistor(StringCaseMatchingSettings.class)
-                    .save(caseMatching, settings.addNodeSettings(MATCHING_KEY) );
+                NodeSettingsPersistorFactory.getPersistor(StringCaseMatchingSettings.class).save(caseMatching,
+                    settings.addNodeSettings(MATCHING_KEY));
             }
             final var cell = obj.m_value;
             if (!cell.isMissing()) {
@@ -722,8 +724,8 @@ public final class DynamicValuesInput implements PersistableSettings {
                         b -> settings.addBoolean(VALUE_KEY, b), //
                         s -> settings.addString(VALUE_KEY, s));
                 } catch (final ConverterException e) {
-                    throw new RuntimeException(
-                        String.format("Could not persist data cell value: %s.", e.getMessage()), e);
+                    throw new RuntimeException(String.format("Could not persist data cell value: %s.", e.getMessage()),
+                        e);
                 }
             }
         }
@@ -804,17 +806,16 @@ public final class DynamicValuesInput implements PersistableSettings {
 
     /**
      * Converts this input to the given template type, if possible. If a conversion to the target type is not possible
-     * since the given value cannot be expressed in the target type by going through its string representation,
-     * the string representation will be stored. If the given value has no string representation an empty optional will
-     * be returned.
+     * since the given value cannot be expressed in the target type by going through its string representation, the
+     * string representation will be stored. If the given value has no string representation an empty optional will be
+     * returned.
      *
      * The actual parse error can be checked by validating the input.
      *
      * @param template input arity, type information, and default value
-     * @return non-empty input with values converted to types according to given template,
-     *   string value if the input does not represent a valid value in the target type,
-     *   or {@link Optional#empty()} if conversion is not possible due to arity mismatch, input kind mismatch,
-     *   or missing string representation of source value
+     * @return non-empty input with values converted to types according to given template, string value if the input
+     *         does not represent a valid value in the target type, or {@link Optional#empty()} if conversion is not
+     *         possible due to arity mismatch, input kind mismatch, or missing string representation of source value
      */
     public Optional<DynamicValuesInput> convertToType(final DynamicValuesInput template) {
         if (m_values.length != template.m_values.length || m_inputKind != template.m_inputKind) {
@@ -831,17 +832,16 @@ public final class DynamicValuesInput implements PersistableSettings {
         return Optional.of(new DynamicValuesInput(convertedValues, m_inputKind));
     }
 
-
     /**
      * Tries to convert the given value into the template's type. If a conversion to the target type is not possible
-     * since the given value cannot be expressed in the target type by going through its string representation,
-     * the string representation will be stored. If the given value has no string representation an empty optional will
-     * be returned.
+     * since the given value cannot be expressed in the target type by going through its string representation, the
+     * string representation will be stored. If the given value has no string representation an empty optional will be
+     * returned.
      *
      * @param currentValue value to convert
      * @param templateValue template to convert to
      * @return converted value or string value if conversion is not possible, empty optional if source value has no
-     *   string representation
+     *         string representation
      */
     private static Optional<DynamicValue> convert(final DynamicValue value, final DynamicValue templateValue) {
         final var currentValueCell = value.m_value;
@@ -850,7 +850,7 @@ public final class DynamicValuesInput implements PersistableSettings {
         }
         final var targetType = templateValue.m_type;
         if (currentValueCell.getType().equals(targetType)
-                && !(value.m_caseMatching == null ^ templateValue.m_caseMatching == null)) {
+            && !(value.m_caseMatching == null ^ templateValue.m_caseMatching == null)) {
             // we can use the provided value as-is (we cannot use DynamicValue#equals, since the template's value and
             // case matching setting can be different)
             return Optional.of(value);
@@ -878,8 +878,8 @@ public final class DynamicValuesInput implements PersistableSettings {
      * @param currentValue value to copy in case it is present
      * @return
      */
-    private static StringCaseMatchingSettings getCaseMatching(
-        final StringCaseMatchingSettings templateCaseMatching, final StringCaseMatchingSettings currentCaseMatching) {
+    private static StringCaseMatchingSettings getCaseMatching(final StringCaseMatchingSettings templateCaseMatching,
+        final StringCaseMatchingSettings currentCaseMatching) {
         if (templateCaseMatching == null) {
             return null;
         }
@@ -893,7 +893,7 @@ public final class DynamicValuesInput implements PersistableSettings {
             new DynamicValue(DoubleCell.TYPE), //
             new DynamicValue(IntCell.TYPE), //
             new DynamicValue(BooleanCell.TYPE),//
-            //new DynamicValue(IntervalCell.TYPE)// currently breaks things, since we have no validation on dialog close
+                //new DynamicValue(IntervalCell.TYPE)// currently breaks things, since we have no validation on dialog close
         }, InputKind.SINGLE);
     }
 
@@ -914,26 +914,27 @@ public final class DynamicValuesInput implements PersistableSettings {
         // reverse-lookup types and get the converter for one of those, fitting our target type
         // e.g. targetType = SmilesAdapterCell, super type will be SmilesCell for which a converter exists
         return getSuperTypes(targetType) //
-                .flatMap(type -> TO_DATACELL.getConverterFactories(String.class, type).stream()) //
-                .findFirst();
+            .flatMap(type -> TO_DATACELL.getConverterFactories(String.class, type).stream()) //
+            .findFirst();
     }
 
     /**
      * Tries to get a converter from the source type to String, including support for types that the given source type
      * can adapt to.
+     *
      * @param registry converter registry to use
      * @param srcType source type
      * @return serializing converter
      */
-    private static Optional<DataCellToJavaConverterFactory<? extends DataValue, String>> // NOSONAR
-            converterFromDataCell(final DataType srcType) {
+    private static Optional<DataCellToJavaConverterFactory<? extends DataValue, String>>
+        converterFromDataCell(final DataType srcType) {
         final var direct = FROM_DATACELL.getConverterFactories(srcType, String.class);
         if (!direct.isEmpty()) {
             return Optional.of(direct.iterator().next());
         }
         return getSuperTypes(srcType) //
-                .flatMap(type -> FROM_DATACELL.getConverterFactories(type, String.class).stream()) //
-                .findFirst();
+            .flatMap(type -> FROM_DATACELL.getConverterFactories(type, String.class).stream()) //
+            .findFirst();
     }
 
     /**
