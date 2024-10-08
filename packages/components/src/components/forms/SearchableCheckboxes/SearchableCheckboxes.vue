@@ -339,7 +339,7 @@ export default {
       ref="form"
       :empty-state-label="emptyStateLabel"
       :empty-state-component="emptyStateComponent"
-      :model-value="modelValue"
+      :model-value="modelValue as Id[]"
       :alignment="alignment"
       :possible-values="concatenatedItems"
       :is-valid="isValid"

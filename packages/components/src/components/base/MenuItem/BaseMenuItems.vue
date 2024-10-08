@@ -1,6 +1,16 @@
+// TODO: Once this file is converted to composition API, a lot of the type casts
+// needed here (e.g. var as Function) can be removed.
+
 <script lang="ts">
-import type { PropType, StyleValue } from "vue";
-import { onBeforeUpdate, ref, toRef } from "vue";
+import {
+  type PropType,
+  type StyleValue,
+  defineComponent,
+  type DefineComponent,
+  onBeforeUpdate,
+  ref,
+  toRef,
+} from "vue";
 import { uniqueId } from "lodash-es";
 import BaseMenuItem from "./BaseMenuItem.vue";
 import type { MenuItem } from "./MenuItems.vue";
@@ -14,6 +24,12 @@ import {
 
 type ElementTemplateRef = HTMLElement | { $el: HTMLElement };
 
+export interface EnabledListItem {
+  element: HTMLElement;
+  index: number;
+  onClick: () => void;
+}
+
 // eslint-disable-next-line func-style
 function isNativeHTMLElement(
   element: ElementTemplateRef,
@@ -21,7 +37,7 @@ function isNativeHTMLElement(
   return !("$el" in element);
 }
 
-export default {
+export default defineComponent({
   name: "BaseMenuItems",
   components: { BaseMenuItem },
   props: {
@@ -35,7 +51,7 @@ export default {
       default: null,
     },
     menuAriaLabel: {
-      type: String,
+      type: String as PropType<String>,
       required: true,
     },
     /**
@@ -44,13 +60,13 @@ export default {
      */
     id: {
       default: () => `__BaseMenuItems-${uniqueId()}__`,
-      type: String,
+      type: String as PropType<String>,
     },
     /**
      * Maximum width in px of the menu
      */
     maxMenuWidth: {
-      type: Number,
+      type: Number as PropType<number | null>,
       default: null,
     },
     positionRelativeToElement: {
@@ -69,7 +85,7 @@ export default {
     },
   },
   emits: ["item-click", "item-focused", "item-hovered"],
-  setup(props) {
+  setup(props: any) {
     // use composition api refs to be able to sync the index between props.items and the refs to the HTMLElement
     const listItems = ref<ElementTemplateRef[]>([]);
     const positionRelativeToElement = toRef(props, "positionRelativeToElement");
@@ -104,24 +120,24 @@ export default {
     useMaxMenuWidth() {
       return Boolean(this.maxMenuWidth);
     },
-    enabledItemsIndices() {
-      return this.items
-        .map((item, index) => ({ item, index }))
-        .filter(({ item }) => !item.disabled)
-        .map(({ index }) => index);
+    enabledItemsIndices(): number[] {
+      return (this.items as MenuItem[])
+        .map((item: MenuItem, index: number) => ({ item, index }))
+        .filter(({ item }: { item: MenuItem }) => !item.disabled)
+        .map(({ index }: { index: number }) => index);
     },
   },
   watch: {
     focusedItemIndex: {
       immediate: true,
       handler() {
-        this.emitItemFocused();
+        (this.emitItemFocused as Function)();
       },
     },
     items: {
       deep: true,
       handler() {
-        this.emitItemFocused();
+        (this.emitItemFocused as Function)();
       },
     },
   },
@@ -130,7 +146,7 @@ export default {
     updateItem(el: HTMLElement, index: number) {
       this.listItems[index] = el;
     },
-    getEnabledListItems() {
+    getEnabledListItems(): EnabledListItem[] {
       const listItems = this.listItems as Array<HTMLLIElement>;
 
       return listItems
@@ -145,7 +161,9 @@ export default {
               : () => firstChild.$el.click(),
           };
         })
-        .filter(({ index }) => this.enabledItemsIndices.includes(index));
+        .filter(({ index }) =>
+          (this.enabledItemsIndices as number[]).includes(index),
+        );
     },
     scrollTo(element: HTMLLIElement) {
       const listContainer = this.$refs.listContainer as HTMLUListElement;
@@ -200,10 +218,14 @@ export default {
         return;
       }
       const index = this.focusedItemIndex as number;
-      this.$emit("item-focused", this.menuItemId(index), this.items[index]);
+      this.$emit(
+        "item-focused",
+        (this.menuItemId as Function)(index),
+        this.items[index],
+      );
     },
   },
-};
+}) as DefineComponent;
 </script>
 
 <template>
@@ -217,15 +239,15 @@ export default {
     @pointerleave="$emit('item-hovered', null, id)"
   >
     <li
-      v-for="(item, index) in items"
+      v-for="(item, index) in items as Array<MenuItem>"
       :key="index"
-      :ref="(el: any) => updateItem(el, index)"
+      :ref="(el: any) => (updateItem as Function)(el, index)"
       :data-index="index"
       :class="[{ separator: item.separator }]"
       :style="useMaxMenuWidth ? { 'max-width': `${maxMenuWidth}px` } : {}"
       :title="item.title"
-      @click="onItemClick($event, item, id)"
-      @pointerenter="onPointerEnter($event, item, index)"
+      @click="(onItemClick as Function)($event, item, id)"
+      @pointerenter="(onPointerEnter as Function)($event, item, index)"
     >
       <slot
         name="item"
@@ -237,7 +259,7 @@ export default {
         :focused-item-index="focusedItemIndex"
       >
         <BaseMenuItem
-          :id="menuItemId(index)"
+          :id="(menuItemId as Function)(index)"
           :item="item"
           :index="index"
           :use-max-menu-width="Boolean(maxMenuWidth)"

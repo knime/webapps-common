@@ -12,7 +12,7 @@ import { fallbackRenderers, defaultRenderers } from "./renderers";
 import { getPossibleValuesFromUiSchema, hasAdvancedOptions } from "./utils";
 import { cloneDeep } from "lodash-es";
 import { inject, markRaw, nextTick, ref } from "vue";
-import type { ProvidedForFlowVariables } from "./types/provided";
+import type { Provided, ProvidedForFlowVariables } from "./types/provided";
 import type { SettingsData } from "./types/SettingsData";
 import type { Update, UpdateResult } from "./types/Update";
 import type { Control } from "./types/Control";
@@ -67,7 +67,7 @@ export default {
       setSubPanelExpanded: this.setSubPanelExpanded,
       getPanelsContainer: () => this.subPanels,
       getDialogPopoverTeleportDest: () => this.dialogPopoverTeleportDest,
-    } satisfies ProvidedMethods & ProvidedForFlowVariables;
+    } satisfies Provided & ProvidedForFlowVariables;
   },
   setup() {
     const { setCurrentData, getCurrentData } = useCurrentData();
@@ -113,7 +113,7 @@ export default {
       transformSettings,
       init,
       dependencies,
-    }: Parameters<ProvidedMethods["registerWatcher"]>[0]) => {
+    }: Parameters<Provided["registerWatcher"]>[0]) => {
       const removeWatcher = registerWatcherInternal({
         transformSettings: () => async (dependencyData) => {
           const settingsConsumer = await transformSettings(dependencyData);
@@ -251,10 +251,7 @@ export default {
         shouldBeVisible: !isExpanded,
       });
     },
-    callDataService({
-      method,
-      options,
-    }: Parameters<ProvidedMethods["getData"]>[0]) {
+    callDataService({ method, options }: Parameters<Provided["getData"]>[0]) {
       return this.jsonDataService?.data({ method, options })!;
     },
     getPossibleValuesFromUiSchema(control: Control) {

@@ -96,7 +96,7 @@ export class ToastServiceProvider {
    * toastServiceProvider.useToastService({ serviceSymbol: Symbol("customToastService") });
    */
   useToastService = ({
-    serviceSymbol = defaultToastServiceSymbol as Symbol,
+    serviceSymbol = defaultToastServiceSymbol as symbol,
   }: ToastServiceComposableOptions = {}): void => {
     provide(serviceSymbol, this.toastServiceObject);
   };
@@ -129,7 +129,7 @@ export class ToastServiceProvider {
   };
 }
 
-const useToastsFromSymbol = (serviceSymbol: Symbol): ToastService => {
+const useToastsFromSymbol = (serviceSymbol: symbol): ToastService => {
   const toastService = inject<ToastService | null>(serviceSymbol, null);
 
   if (!toastService) {

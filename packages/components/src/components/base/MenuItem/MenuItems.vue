@@ -41,7 +41,7 @@ import type { Boundary } from "@floating-ui/vue";
 
 import useDropdownNavigation from "../../../composables/useDropdownNavigation";
 import { getWrappedAroundIndex } from "@knime/utils";
-import BaseMenuItems from "./BaseMenuItems.vue";
+import BaseMenuItems, { type EnabledListItem } from "./BaseMenuItems.vue";
 import BaseMenuItem from "./BaseMenuItem.vue";
 import ArrowNextIcon from "@knime/styles/img/icons/arrow-next.svg";
 
@@ -120,9 +120,11 @@ const getNextElement = (current: number | null, direction: 1 | -1) => {
     };
   }
 
-  const listItems = baseMenuItems.value.getEnabledListItems();
+  const listItems = (
+    baseMenuItems.value.getEnabledListItems as () => EnabledListItem[]
+  )();
   let currentIndexInEnabled = listItems
-    .map<number | null>(({ index }) => index)
+    .map<number | null>(({ index }: { index: number }) => index)
     .indexOf(current);
 
   if (currentIndexInEnabled === -1 && direction === -1) {
@@ -134,7 +136,7 @@ const getNextElement = (current: number | null, direction: 1 | -1) => {
   );
 
   const { element, index, onClick } = listItems[nextIndex];
-  baseMenuItems.value.scrollTo(element);
+  (baseMenuItems.value.scrollTo as Function)(element);
 
   return { index, onClick };
 };
