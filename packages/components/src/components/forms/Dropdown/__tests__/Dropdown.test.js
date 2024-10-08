@@ -108,9 +108,10 @@ const POSSIBLE_VALUES_WITH_GROUPS_MOCK = [
   },
 ];
 const OPTION_SLOT_CONTENT_MOCK = `
-  <template #option="{ slotData, isMissing, selectedValue }">
+  <template #option="{ slotData, isMissing, selectedValue, expanded }">
     <div v-if="isMissing">(MISSING) slotted {{selectedValue}}</div>
     <div v-else>{{ slotData.a }} {{ slotData.b }} {{ slotData.c }}</div>
+    <div v-if="expanded"> Expanded </div>
   </template>
 `;
 const ICON_SLOT_CONTENT_MOCK = "<div>Right</div>";
@@ -552,17 +553,19 @@ describe("Dropdown.vue", () => {
         slots: { option: OPTION_SLOT_CONTENT_MOCK },
       });
       const selectedValue = wrapper.find("[role=button]");
-      expect(selectedValue.text()).toBe(
+      expect(selectedValue.text()).toContain(
         `${possibleValues[0].slotData.a} ${possibleValues[0].slotData.b} ${possibleValues[0].slotData.c}`,
       );
+      expect(selectedValue.text()).not.toContain("Expanded");
 
       const option = wrapper.find("li");
       expect(option.classes()).toContain("has-option-template");
       expect(option.text()).not.toBe(possibleValues[0].text);
 
-      expect(option.text()).toBe(
+      expect(option.text()).toContain(
         `${possibleValues[0].slotData.a} ${possibleValues[0].slotData.b} ${possibleValues[0].slotData.c}`,
       );
+      expect(option.text()).toContain("Expanded");
     });
 
     it("render text slots if slotData is not given", () => {

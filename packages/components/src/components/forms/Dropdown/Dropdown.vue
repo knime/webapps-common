@@ -488,6 +488,7 @@ export default {
               :slot-data="selectedOption?.slotData"
               :is-missing="isMissing"
               :selected-value="modelValue"
+              :expanded="false"
             />
           </div>
           <span v-else ref="span">{{ displayText }}</span>
@@ -555,7 +556,7 @@ export default {
             @click="emitAndClose(item.id)"
           >
             <template v-if="hasOptionTemplate">
-              <slot name="option" :slot-data="item.slotData" />
+              <slot name="option" :slot-data="item.slotData" :expanded="true" />
             </template>
             <template v-else>
               {{ item.text }}
@@ -783,7 +784,7 @@ export default {
     }
   }
 
-  & [role="option"]:not(.slotted) {
+  & [role="option"]:not(.slot-option) {
     display: block;
     width: 100%;
     padding: 0 10px;
