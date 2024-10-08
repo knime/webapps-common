@@ -1,12 +1,11 @@
 import { expect, describe, it, vi } from "vitest";
-import * as Vue from "vue";
 import { mount } from "@vue/test-utils";
+import { nextTick, ref } from "vue";
 
 import { InputField } from "@knime/components";
 
 import CreateLinkModal from "../CreateLinkModal.vue";
 import { defaultLinkToolOptions } from "../../utils/custom-link";
-import { nextTick, ref } from "vue";
 
 describe("CreateWorkflowModal.vue", () => {
   const doMount = ({
@@ -40,7 +39,7 @@ describe("CreateWorkflowModal.vue", () => {
       const input = wrapper.findAll("input").at(0)!;
       input.element.value = newName;
       input.trigger("input");
-      await Vue.nextTick();
+      await nextTick();
 
       await wrapper.findAll("button").at(-1)!.trigger("click");
       expect(wrapper.emitted("addLink")).toBeTruthy();
@@ -52,7 +51,7 @@ describe("CreateWorkflowModal.vue", () => {
       const input = wrapper.findAll("input").at(1)!;
       input.element.value = "ftp://invalid.url";
       input.trigger("input");
-      await Vue.nextTick();
+      await nextTick();
 
       const errorMessage = wrapper.find(".item-error");
       expect(errorMessage.text()).toMatch("Invalid URL");
@@ -105,7 +104,7 @@ describe("CreateWorkflowModal.vue", () => {
         const input = wrapper.findAll("input").at(0)!;
         input.element.value = newName;
         input.trigger("input");
-        await Vue.nextTick();
+        await nextTick();
 
         const inputField = wrapper.findAllComponents(InputField).at(0)!;
         await inputField.vm.$emit("keyup", { key: "Enter" });

@@ -2,6 +2,7 @@
 /* eslint-disable max-lines */
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
+import { nextTick } from "vue";
 
 import SearchInput from "../../SearchInput/SearchInput.vue";
 import Twinlist from "../Twinlist.vue";
@@ -286,7 +287,7 @@ describe("Twinlist.vue", () => {
       let left = boxes[0];
       let right = boxes[1];
       left.vm.$emit("doubleClickOnItem", "test2", 1);
-      await wrapper.vm.$nextTick();
+      await nextTick();
       await expectEmittedModelValueAndSetAsProp(wrapper, ["test2", "test3"]);
       expect(right.vm.$props.possibleValues).toStrictEqual([
         props.possibleValues[1],
@@ -303,7 +304,7 @@ describe("Twinlist.vue", () => {
       let left = boxes[0];
       let right = boxes[1];
       left.vm.$emit("doubleClickShift", ["test1", "test2"]);
-      await wrapper.vm.$nextTick();
+      await nextTick();
       await expectEmittedModelValueAndSetAsProp(wrapper, [
         "test1",
         "test2",
@@ -326,7 +327,7 @@ describe("Twinlist.vue", () => {
       let left = boxes[0];
       let right = boxes[1];
       right.vm.$emit("doubleClickOnItem", "test2", 1);
-      await wrapper.vm.$nextTick();
+      await nextTick();
       await expectEmittedModelValueAndSetAsProp(wrapper, ["test3"]);
       expect(left.vm.$props.possibleValues).toStrictEqual([
         props.possibleValues[0],
@@ -344,7 +345,7 @@ describe("Twinlist.vue", () => {
       let left = boxes[0];
       let right = boxes[1];
       right.vm.$emit("doubleClickShift", ["test1", "test2"]);
-      await wrapper.vm.$nextTick();
+      await nextTick();
       await expectEmittedModelValueAndSetAsProp(wrapper, ["test3"]);
       expect(left.vm.$props.possibleValues).toStrictEqual([
         props.possibleValues[0],
@@ -369,7 +370,7 @@ describe("Twinlist.vue", () => {
     let right = boxes[1];
     left.vm.setSelected(["test2", "test3"]);
     left.vm.$emit("keyArrowRight");
-    await wrapper.vm.$nextTick();
+    await nextTick();
     await expectEmittedModelValueAndSetAsProp(wrapper, ["test2", "test3"]);
     expect(right.vm.$props.possibleValues).toStrictEqual([
       props.possibleValues[1],
@@ -393,7 +394,7 @@ describe("Twinlist.vue", () => {
     let right = boxes[1];
     right.vm.setSelected(["test2", "test3"]);
     right.vm.$emit("keyArrowLeft");
-    await wrapper.vm.$nextTick();
+    await nextTick();
     await expectEmittedModelValueAndSetAsProp(wrapper, []);
     expect(left.vm.$props.possibleValues).toStrictEqual(props.possibleValues);
   });
@@ -415,7 +416,7 @@ describe("Twinlist.vue", () => {
       let right = boxes[1];
       left.vm.setSelected(["test2", "test3"]);
       wrapper.find({ ref: "moveRight" }).trigger("click");
-      await wrapper.vm.$nextTick();
+      await nextTick();
       await expectEmittedModelValueAndSetAsProp(wrapper, ["test2", "test3"]);
       expect(right.vm.$props.possibleValues).toStrictEqual([
         props.possibleValues[1],
@@ -439,7 +440,7 @@ describe("Twinlist.vue", () => {
       let right = boxes[1];
       right.vm.setSelected(["test2", "test3"]);
       wrapper.find({ ref: "moveLeft" }).trigger("click");
-      await wrapper.vm.$nextTick();
+      await nextTick();
       await expectEmittedModelValueAndSetAsProp(wrapper, []);
       expect(left.vm.$props.possibleValues).toStrictEqual(props.possibleValues);
     });
@@ -458,7 +459,7 @@ describe("Twinlist.vue", () => {
       let boxes = wrapper.findAllComponents(MultiselectListBox);
       let right = boxes[1];
       wrapper.find({ ref: "moveAllRight" }).trigger("click");
-      await wrapper.vm.$nextTick();
+      await nextTick();
       await expectEmittedModelValueAndSetAsProp(wrapper, [
         "test1",
         "test2",
@@ -509,7 +510,7 @@ describe("Twinlist.vue", () => {
       let boxes = wrapper.findAllComponents(MultiselectListBox);
       let left = boxes[0];
       wrapper.find({ ref: "moveAllLeft" }).trigger("click");
-      await wrapper.vm.$nextTick();
+      await nextTick();
       await expectEmittedModelValueAndSetAsProp(wrapper, []);
       expect(left.vm.$props.possibleValues).toStrictEqual(props.possibleValues);
     });
@@ -536,7 +537,7 @@ describe("Twinlist.vue", () => {
         .trigger("keydown", { key: "Enter", stopPropagation, preventDefault });
       expect(stopPropagation).toHaveBeenCalled();
       expect(preventDefault).toHaveBeenCalled();
-      await wrapper.vm.$nextTick();
+      await nextTick();
       await expectEmittedModelValueAndSetAsProp(wrapper, ["test2", "test3"]);
       expect(right.vm.$props.possibleValues).toStrictEqual([
         props.possibleValues[1],
@@ -617,7 +618,7 @@ describe("Twinlist.vue", () => {
         .trigger("keydown", { key: "Enter", stopPropagation, preventDefault });
       expect(stopPropagation).toHaveBeenCalled();
       expect(preventDefault).toHaveBeenCalled();
-      await wrapper.vm.$nextTick();
+      await nextTick();
       await expectEmittedModelValueAndSetAsProp(wrapper, []);
       expect(left.vm.$props.possibleValues).toStrictEqual(props.possibleValues);
     });
@@ -642,7 +643,7 @@ describe("Twinlist.vue", () => {
         .trigger("keydown", { key: "Enter", stopPropagation, preventDefault });
       expect(stopPropagation).toHaveBeenCalled();
       expect(preventDefault).toHaveBeenCalled();
-      await wrapper.vm.$nextTick();
+      await nextTick();
       await expectEmittedModelValueAndSetAsProp(wrapper, [
         "test1",
         "test2",
@@ -673,7 +674,7 @@ describe("Twinlist.vue", () => {
         .trigger("keydown", { key: "Enter", stopPropagation, preventDefault });
       expect(stopPropagation).toHaveBeenCalled();
       expect(preventDefault).toHaveBeenCalled();
-      await wrapper.vm.$nextTick();
+      await nextTick();
       await expectEmittedModelValueAndSetAsProp(wrapper, []);
       expect(left.vm.$props.possibleValues).toStrictEqual(props.possibleValues);
     });

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { type PropType } from "vue";
+import { type PropType, nextTick } from "vue";
 import { OnClickOutside } from "@vueuse/components";
 import { isEmpty } from "lodash-es";
 import { computed, ref, toRefs, watch } from "vue";
@@ -336,7 +336,7 @@ export default {
         this.expand();
       }
     },
-    expand() {
+    async expand() {
       if (this.isDisabled) {
         return;
       }
@@ -352,13 +352,12 @@ export default {
       ) {
         this.updateCandidate(this.currentPossibleValues[0]?.id);
       }
-      this.$nextTick(() => {
-        this.getSearchInput().focus();
-        this.getSearchInput().select();
-        if (this.candidate) {
-          this.scrollTo(this.candidate);
-        }
-      });
+      await nextTick();
+      this.getSearchInput().focus();
+      this.getSearchInput().select();
+      if (this.candidate) {
+        this.scrollTo(this.candidate);
+      }
     },
     collapse() {
       this.isExpanded = false;

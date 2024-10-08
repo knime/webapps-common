@@ -1,4 +1,5 @@
 <script>
+import { nextTick } from "vue";
 import CloseIcon from "@knime/styles/img/icons/close.svg";
 import LensIcon from "@knime/styles/img/icons/lens.svg";
 import InverseSearchIcon from "@knime/styles/img/icons/arrows-order-left-right.svg";
@@ -120,7 +121,7 @@ export default {
   expose: ["focus"],
   async mounted() {
     if (this.focusOnMount) {
-      await this.$nextTick();
+      await nextTick();
       this.focus();
     }
   },

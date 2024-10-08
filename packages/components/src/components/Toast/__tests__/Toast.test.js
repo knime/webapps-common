@@ -2,7 +2,7 @@ import { mount, shallowMount } from "@vue/test-utils";
 import { describe, expect, it, beforeEach, afterEach, vi } from "vitest";
 
 import Toast from "../components/Toast.vue";
-import { defineComponent, h } from "vue";
+import { defineComponent, h, nextTick } from "vue";
 
 describe("Toast.vue", () => {
   const MAX_LENGTH = 160;
@@ -113,7 +113,7 @@ describe("Toast.vue", () => {
       });
 
       await wrapper.find(".show-more").trigger("click");
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(wrapper.find(".message").text()).toBe(message);
     });
   });

@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable no-magic-numbers */
-import { computed, markRaw, ref } from "vue";
+import { computed, markRaw, ref, nextTick } from "vue";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { mount } from "@vue/test-utils";
 
@@ -437,7 +437,7 @@ describe("MultiselectListBox.vue", () => {
         .trigger("keydown.down", { shiftKey: true });
       wrapper.find("[role=listbox]").trigger("keydown.a", { ctrlKey: true });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(wrapper.props("modelValue")).toStrictEqual([]);
     });
   });
@@ -568,7 +568,7 @@ describe("MultiselectListBox.vue", () => {
       });
       wrapper.findAll("[role=option]")[1].trigger("mousedown");
       wrapper.findAll("[role=option]")[3].trigger("mousemove");
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
         "test2",
@@ -593,7 +593,7 @@ describe("MultiselectListBox.vue", () => {
         .findAll("[role=option]")[3]
         .trigger("mousemove", { ctrlKey: true });
       wrapper.vm.onStopDrag();
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
         "test1",
@@ -616,7 +616,7 @@ describe("MultiselectListBox.vue", () => {
         .findAll("[role=option]")[3]
         .trigger("mousemove", { metaKey: true });
       wrapper.vm.onStopDrag();
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
         "test1",
@@ -638,7 +638,7 @@ describe("MultiselectListBox.vue", () => {
       wrapper
         .findAll("[role=option]")[3]
         .trigger("mousemove", { shiftKey: true });
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(wrapper.emitted("update:modelValue")).toBeUndefined();
     });
@@ -654,7 +654,7 @@ describe("MultiselectListBox.vue", () => {
       });
       wrapper.findAll("[role=option]")[1].trigger("mousedown");
       wrapper.findAll("[role=option]")[3].trigger("mousemove");
-      await wrapper.vm.$nextTick();
+      await nextTick();
 
       expect(wrapper.props("modelValue")).toStrictEqual([]);
     });
@@ -781,7 +781,7 @@ describe("MultiselectListBox.vue", () => {
       const wrapper = mount(MultiselectListBox, { propsData });
 
       wrapper.findAll("[role=option]").at(2).trigger("click");
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
         "test3",
       ]);
@@ -801,7 +801,7 @@ describe("MultiselectListBox.vue", () => {
         .findAll("[role=option]")
         .at(3)
         .trigger("click", { shiftKey: true });
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(wrapper.emitted("update:modelValue")[3][0]).toStrictEqual([
         "test4",
         bottomValue.id,
@@ -813,7 +813,7 @@ describe("MultiselectListBox.vue", () => {
       const wrapper = mount(MultiselectListBox, { propsData });
 
       wrapper.findAll("[role=option]").at(2).trigger("click");
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
         "test3",
       ]);
@@ -839,7 +839,7 @@ describe("MultiselectListBox.vue", () => {
     it("bottom value gets selected on ctrl a", async () => {
       const wrapper = mount(MultiselectListBox, { propsData });
       wrapper.find("[role=listbox]").trigger("keydown.a", { ctrlKey: true });
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
         "test1",
         "test2",
@@ -854,12 +854,12 @@ describe("MultiselectListBox.vue", () => {
       it("bottom is reachable with keydown.down", async () => {
         const wrapper = mount(MultiselectListBox, { propsData });
         wrapper.findAll("[role=option]").at(3).trigger("click");
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
           "test4",
         ]);
         wrapper.find("[role=listbox]").trigger("keydown.down");
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(wrapper.emitted("update:modelValue")[1][0]).toStrictEqual([
           bottomValue.id,
         ]);
@@ -870,12 +870,12 @@ describe("MultiselectListBox.vue", () => {
         getBottomValueOption(wrapper).trigger("click", {
           preventDefault: () => {},
         });
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
           bottomValue.id,
         ]);
         wrapper.find("[role=listbox]").trigger("keydown.up");
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(wrapper.emitted("update:modelValue")[1][0]).toStrictEqual([
           "test4",
         ]);
@@ -884,14 +884,14 @@ describe("MultiselectListBox.vue", () => {
       it("bottom is reachable with shift + keydown.down", async () => {
         const wrapper = mount(MultiselectListBox, { propsData });
         wrapper.findAll("[role=option]").at(3).trigger("click");
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
           "test4",
         ]);
         wrapper
           .find("[role=listbox]")
           .trigger("keydown.down", { shiftKey: true });
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(wrapper.emitted("update:modelValue")[1][0]).toStrictEqual([
           "test4",
           bottomValue.id,
@@ -903,14 +903,14 @@ describe("MultiselectListBox.vue", () => {
         getBottomValueOption(wrapper).trigger("click", {
           preventDefault: () => {},
         });
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
           bottomValue.id,
         ]);
         wrapper
           .find("[role=listbox]")
           .trigger("keydown.up", { shiftKey: true });
-        await wrapper.vm.$nextTick();
+        await nextTick();
         expect(wrapper.emitted("update:modelValue")[1][0]).toStrictEqual([
           "test4",
           bottomValue.id,
@@ -926,7 +926,7 @@ describe("MultiselectListBox.vue", () => {
           ctrlKey: false,
         });
         wrapper.findAll("[role=option]").at(1).trigger("mousemove");
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
           "test2",
@@ -940,7 +940,7 @@ describe("MultiselectListBox.vue", () => {
         const wrapper = mount(MultiselectListBox, { propsData });
         wrapper.findAll("[role=option]").at(1).trigger("mousedown");
         getBottomValueOption(wrapper).trigger("mousemove");
-        await wrapper.vm.$nextTick();
+        await nextTick();
 
         expect(wrapper.emitted("update:modelValue")[0][0]).toStrictEqual([
           "test2",

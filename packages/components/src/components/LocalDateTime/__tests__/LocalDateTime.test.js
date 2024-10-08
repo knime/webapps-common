@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { shallowMount } from "@vue/test-utils";
+import { nextTick } from "vue";
 
 import LocalDateTime from "../LocalDateTime.vue";
 import { formatLocalDateTimeString } from "@knime/utils";
@@ -15,7 +16,7 @@ describe("LocalDateTime.vue", () => {
         showTime: false,
       },
     });
-    await wrapper.vm.$nextTick();
+    await nextTick();
     expect(wrapper.find("time").text()).toBe(
       formatLocalDateTimeString(dateOffset),
     );
@@ -40,7 +41,7 @@ describe("LocalDateTime.vue", () => {
         showTime: false,
       },
     });
-    await wrapper.vm.$nextTick();
+    await nextTick();
     expect(wrapper.find("time").text()).toBe(
       formatLocalDateTimeString(dateUTC),
     );

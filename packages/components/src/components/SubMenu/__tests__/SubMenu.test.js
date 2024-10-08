@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import { mount, shallowMount } from "@vue/test-utils";
+import { nextTick, ref, unref } from "vue";
 
 import MenuItems from "../../base/MenuItem/MenuItems.vue";
 import SubMenu from "../SubMenu.vue";
 import FunctionButton from "../../Buttons/FunctionButton.vue";
-import { ref, unref } from "vue";
 import { useFloating } from "@floating-ui/vue";
 import { useClickOutside } from "../../../composables";
 
@@ -178,7 +178,7 @@ describe("SubMenu.vue", () => {
 
     expect(wrapper.findComponent(MenuItems).exists()).toBeTruthy();
     callback();
-    await wrapper.vm.$nextTick();
+    await nextTick();
     expect(wrapper.findComponent(MenuItems).exists()).toBeFalsy();
 
     expect(unref(active)).toBe(false);
@@ -299,7 +299,7 @@ describe("SubMenu.vue", () => {
       expect(typeof callback).toBe("function");
       expect(wrapper.findComponent(MenuItems).exists()).toBeTruthy();
       callback();
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(wrapper.findComponent(MenuItems).exists()).toBeFalsy();
     });
   });

@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import * as Vue from "vue";
+import { nextTick } from "vue";
 import { expect, describe, beforeEach, it, vi, beforeAll } from "vitest";
 import { DOMWrapper, mount, VueWrapper } from "@vue/test-utils";
 
@@ -361,7 +361,7 @@ describe("FileExplorer.vue", () => {
       const { wrapper } = doMount();
       wrapper.find("table").trigger("keydown", { key: "ArrowDown" });
       wrapper.find("table").trigger("keydown", { key: "ArrowUp" });
-      await Vue.nextTick();
+      await nextTick();
       expect(getRenderedItems(wrapper).at(0)?.classes()).toContain("selected");
       expect(wrapper.emitted("update:selectedItemIds")?.[0][0]).toStrictEqual([
         "0",
@@ -376,7 +376,7 @@ describe("FileExplorer.vue", () => {
 
       // select item
       allItems.at(renamedItemIndex)?.trigger("click");
-      await Vue.nextTick();
+      await nextTick();
 
       // rename with keyboard
       allItems.at(renamedItemIndex)?.trigger("keydown.f2");
@@ -385,7 +385,7 @@ describe("FileExplorer.vue", () => {
         .findAllComponents(FileExplorerItemComp)
         .at(renamedItemIndex)!;
 
-      await Vue.nextTick();
+      await nextTick();
 
       expect(firstItemComponent.props("isRenameActive")).toBe(true);
     });
@@ -400,7 +400,7 @@ describe("FileExplorer.vue", () => {
         .findAllComponents(FileExplorerItemComp)
         .at(renamedItemIndex)!;
 
-      await Vue.nextTick();
+      await nextTick();
 
       expect(firstItemComponent.props("isRenameActive")).toBe(false);
     });
@@ -421,7 +421,7 @@ describe("FileExplorer.vue", () => {
       const allItems = getRenderedItems(wrapper);
       allItems.at(renamedItemIndex)?.trigger("keydown.delete");
 
-      await Vue.nextTick();
+      await nextTick();
 
       const event = wrapper.emitted("deleteItems")?.[0][0] as {
         items: Array<FileExplorerItem>;
@@ -455,7 +455,7 @@ describe("FileExplorer.vue", () => {
       const allItems = getRenderedItems(wrapper);
       allItems.at(renamedItemIndex)?.trigger("keydown.delete");
 
-      await Vue.nextTick();
+      await nextTick();
 
       expect(wrapper.emitted("deleteItems")).toBeUndefined();
     });
@@ -611,7 +611,7 @@ describe("FileExplorer.vue", () => {
       // mimic callback being triggered from outside listener
       onComplete(true);
 
-      await Vue.nextTick();
+      await nextTick();
 
       // ghosts are removed
       expect(
@@ -806,7 +806,7 @@ describe("FileExplorer.vue", () => {
 
     const closeContextMenu = (_wrapper: VueWrapper<any>) => {
       _wrapper.findComponent(FileExplorerContextMenu).vm.$emit("close");
-      return Vue.nextTick();
+      return nextTick();
     };
 
     it("should open menu", async () => {

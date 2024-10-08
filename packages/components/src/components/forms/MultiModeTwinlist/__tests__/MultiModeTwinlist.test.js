@@ -1,6 +1,7 @@
 /* eslint-disable max-lines */
 import { describe, it, expect, beforeEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
+import { nextTick } from "vue";
 
 import FilterIcon from "@knime/styles/img/icons/filter.svg";
 import SearchInput from "../../SearchInput/SearchInput.vue";
@@ -170,7 +171,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
 
     // change back to manual
     await wrapper.setProps({ mode: "manual" });
-    await wrapper.vm.$nextTick();
+    await nextTick();
     expectTwinlistIncludes(wrapper, ["Text 2", "Text 3"], ["Text 1"]);
   });
 
@@ -299,7 +300,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
         },
       });
       wrapper.findComponent(ValueSwitch).vm.$emit("update:modelValue", "regex");
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(wrapper.emitted("update:mode")[0][0]).toBe("regex");
     });
   });
@@ -332,7 +333,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
       const wrapper = mount(MultiModeTwinlist, { props });
 
       wrapper.findComponent(SearchInput).vm.$emit("update:modelValue", ".*1");
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(wrapper.emitted("update:pattern")[0][0]).toBe(".*1");
       await wrapper.setProps({ pattern: ".*1" });
       expect(wrapper.emitted("update:selected")[0][0]).toStrictEqual(["test1"]);
@@ -350,7 +351,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
       const wrapper = mount(MultiModeTwinlist, { props });
 
       wrapper.findComponent(SearchInput).vm.$emit("update:modelValue", "t*");
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(wrapper.emitted("update:pattern")[0][0]).toBe("t*");
       await wrapper.setProps({ pattern: "t*" });
       expect(wrapper.emitted("update:selected")[0][0]).toStrictEqual([
@@ -522,7 +523,7 @@ describe("MultiModeMultiModeTwinlist.vue", () => {
       wrapper
         .findComponent(Checkboxes)
         .vm.$emit("update:modelValue", ["StringValue"]);
-      await wrapper.vm.$nextTick();
+      await nextTick();
       expect(wrapper.emitted("update:selectedTypes")[0][0]).toStrictEqual([
         "StringValue",
       ]);

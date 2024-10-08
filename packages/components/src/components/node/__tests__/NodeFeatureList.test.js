@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { shallowMount } from "@vue/test-utils";
+import { nextTick } from "vue";
 
 import NodeFeatureList from "../NodeFeatureList.vue";
 import TabBar from "../../TabBar/TabBar.vue";
@@ -48,7 +49,7 @@ describe("NodeFeatureList.vue", () => {
         },
       },
     });
-    await wrapper.vm.$nextTick(); // to make sure TabBar.created() was called
+    await nextTick(); // to make sure TabBar.created() was called
     expect(wrapper.findComponent(TabBar).props("modelValue")).toBe("ports");
     expect(wrapper.findComponent(PortsList).props("inPorts")).toEqual([
       { dummy: "inPort" },
@@ -109,7 +110,7 @@ describe("NodeFeatureList.vue", () => {
         },
       },
     });
-    await wrapper.vm.$nextTick(); // to make sure TabBar.created() was called
+    await nextTick(); // to make sure TabBar.created() was called
 
     expect(wrapper.findComponent(TabBar).props("modelValue")).toBe(
       "node-dialog-options",

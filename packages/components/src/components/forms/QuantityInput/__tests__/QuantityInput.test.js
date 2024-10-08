@@ -1,5 +1,6 @@
 import { shallowMount } from "@vue/test-utils";
 import { describe, expect, it, vi } from "vitest";
+import { nextTick } from "vue";
 import QuantityInput from "../QuantityInput.vue";
 import FunctionButton from "../../../Buttons/FunctionButton.vue";
 
@@ -82,12 +83,12 @@ describe("QuantityInput.vue", () => {
 
     // decrease
     buttons.at(0).vm.$emit("click");
-    await wrapper.vm.$nextTick();
+    await nextTick();
     expect(wrapper.vm.$refs.numberField.stepDown).toHaveBeenCalled();
 
     // increase
     buttons.at(1).vm.$emit("click");
-    await wrapper.vm.$nextTick();
+    await nextTick();
     expect(wrapper.vm.$refs.numberField.stepUp).toHaveBeenCalled();
   });
 

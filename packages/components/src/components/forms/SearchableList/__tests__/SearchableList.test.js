@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { mount } from "@vue/test-utils";
+import { nextTick } from "vue";
 import SearchInput from "../../SearchInput/SearchInput.vue";
 import SearchableList from "../SearchableList.vue";
 import MultiselectListBox from "../../MultiselectListBox/MultiselectListBox.vue";
@@ -216,7 +217,7 @@ describe("SearchableList.vue", () => {
         props,
       });
 
-      await wrapper.vm.$nextTick();
+      await nextTick();
       wrapper.vm.$emit("update:modelValue", "test3");
 
       expect(wrapper.emitted("update:modelValue")).toStrictEqual([["test3"]]);
