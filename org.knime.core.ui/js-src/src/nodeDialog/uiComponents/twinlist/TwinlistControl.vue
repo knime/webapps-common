@@ -52,7 +52,7 @@ const props = defineProps({
   twinlistSize: {
     type: Number,
     required: false,
-    default: 7,
+    default: 10,
   },
   twinlistLeftLabel: {
     type: String,
