@@ -1,5 +1,11 @@
 # @knime/eslint-config
 
+## 8.2.0
+
+### Minor Changes
+
+- 2b0b0ee: auto-sort all imports
+
 ## 8.1.1
 
 ### Patch Changes
