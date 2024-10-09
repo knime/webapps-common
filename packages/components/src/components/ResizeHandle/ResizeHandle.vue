@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { throttle } from "lodash-es";
 import { computed, ref } from "vue";
+import { throttle } from "lodash-es";
 
 const ON_POINTER_MOVE_THROTTLE = 10;
 const HANDLE_PADDING = "2px";
