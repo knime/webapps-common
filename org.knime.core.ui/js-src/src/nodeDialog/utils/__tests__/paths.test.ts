@@ -13,24 +13,6 @@ describe("paths", () => {
     getDataAndConfigPaths({ path, persistSchema }).configPaths;
 
   describe("sub config keys", () => {
-    it("returns empty sub config keys if provided", () => {
-      const persistSchema = {
-        subConfigKeys: [],
-      };
-      expect(getSubConfigKeys(persistSchema)).toStrictEqual(
-        persistSchema.subConfigKeys,
-      );
-    });
-
-    it("returns non-empty sub config keys if provided", () => {
-      const persistSchema = {
-        subConfigKeys: [["first"], ["second", "third"]],
-      };
-      expect(getSubConfigKeys(persistSchema)).toStrictEqual(
-        persistSchema.subConfigKeys,
-      );
-    });
-
     it("infers sub config keys from atomic schema if no sub config keys provided", () => {
       const persistSchema = {};
       expect(getSubConfigKeys(persistSchema)).toStrictEqual([]);
@@ -95,6 +77,28 @@ describe("paths", () => {
       ]);
     });
 
+    it("respects empty config keys when inferring sub config keys", () => {
+      const persistSchema: PersistSchema = {
+        type: "object",
+        properties: {
+          a: {
+            type: "object",
+            configKeys: [],
+            properties: {
+              d: {
+                type: "object",
+                properties: {
+                  e: {},
+                  f: {},
+                },
+              },
+            },
+          },
+        },
+      };
+      expect(getSubConfigKeys(persistSchema)).toStrictEqual([]);
+    });
+
     it("ignores hidden settings when inferring sub config keys", () => {
       const persistSchema: PersistSchema = {
         type: "object",
@@ -109,47 +113,18 @@ describe("paths", () => {
       };
       expect(getSubConfigKeys(persistSchema)).toStrictEqual([["b"], ["d"]]);
     });
-
-    it("respects overridden sub config keys when inferring sub config keys", () => {
-      const persistSchema: PersistSchema = {
-        type: "object",
-        properties: {
-          a: {
-            type: "object",
-            configKeys: ["b", "c"],
-            subConfigKeys: [["d"], ["e"]],
-            properties: {
-              f: {
-                type: "object",
-                properties: {
-                  g: {},
-                  h: {},
-                },
-              },
-            },
-          },
-        },
-      };
-      expect(getSubConfigKeys(persistSchema)).toStrictEqual([
-        ["b", "d"],
-        ["b", "e"],
-        ["c", "d"],
-        ["c", "e"],
-      ]);
-    });
   });
 
   describe("data paths", () => {
-    it("returns given path if subConfigKeys are empty", () => {
+    it("returns given path if sub persist schema are empty", () => {
       const path = "model.mySetting";
       const persistSchema: PersistSchema = {
         type: "object",
         properties: {
           model: {
             type: "object",
-            subConfigKeys: [],
             properties: {
-              mySetting: { type: "leaf" },
+              mySetting: {},
             },
           },
         },
@@ -159,17 +134,20 @@ describe("paths", () => {
       expect(dataPaths).toStrictEqual([path]);
     });
 
-    it("appends subConfigKeys", () => {
+    it("appends keys from sub persist schema", () => {
       const path = "model.mySetting";
       const persistSchema: PersistSchema = {
         type: "object",
         properties: {
           model: {
             type: "object",
-
             properties: {
               mySetting: {
-                subConfigKeys: [["first"], ["second"]],
+                type: "object",
+                properties: {
+                  first: {},
+                  second: {},
+                },
               },
             },
           },
@@ -184,7 +162,7 @@ describe("paths", () => {
   });
 
   describe("config paths", () => {
-    it("returns given path if no configKeys and no subConfigKeys are given", () => {
+    it("returns given path if no configKeys and no sub persist schema are given", () => {
       const path = "model.mySetting";
       const persistSchema: PersistSchema = {
         type: "object",
@@ -220,7 +198,7 @@ describe("paths", () => {
       ]);
     });
 
-    it("appends subConfigKeys", () => {
+    it("appends keys from sub persist schema", () => {
       const path = "model.mySetting";
       const persistSchema: PersistSchema = {
         type: "object",
@@ -228,7 +206,10 @@ describe("paths", () => {
           model: {
             type: "object",
             properties: {
-              mySetting: { subConfigKeys: [["first"], ["second"]] },
+              mySetting: {
+                type: "object",
+                properties: { first: {}, second: {} },
+              },
             },
           },
         },
@@ -255,7 +236,10 @@ describe("paths", () => {
             properties: {
               mySetting: {
                 configKeys: ["mySetting_1", "mySetting_2"],
-                subConfigKeys: [["subConfigKey"]],
+                type: "object",
+                properties: {
+                  subConfigKey: {},
+                },
               },
             },
           },
@@ -285,7 +269,10 @@ describe("paths", () => {
               properties: {
                 mySetting: {
                   configKeys: ["mySetting_1", "mySetting_2"],
-                  subConfigKeys: [["subConfigKey"]],
+                  type: "object",
+                  properties: {
+                    subConfigKey: {},
+                  },
                 },
               },
               configKeys: ["ignored"],
@@ -337,7 +324,10 @@ describe("paths", () => {
                   },
                 ],
                 configKeys: ["mySetting_1", "mySetting_2"],
-                subConfigKeys: [["subConfigKey"]],
+                type: "object",
+                properties: {
+                  subConfigKey: {},
+                },
               },
             },
           },
@@ -401,7 +391,7 @@ describe("paths", () => {
       expect(prefix).toBe("model.mySetting");
     });
 
-    it("determines longest common prefix with subConfigKeys", () => {
+    it("determines longest common prefix with keys from sub persist schema", () => {
       const path = "model.mySetting";
       const persistSchema: PersistSchema = {
         type: "object",
@@ -410,10 +400,16 @@ describe("paths", () => {
             type: "object",
             properties: {
               mySetting: {
-                subConfigKeys: [
-                  ["one", "two"],
-                  ["one", "three"],
-                ],
+                type: "object",
+                properties: {
+                  one: {
+                    type: "object",
+                    properties: {
+                      two: {},
+                      three: {},
+                    },
+                  },
+                },
               },
             },
           },

@@ -173,11 +173,6 @@ public final class LegacyNameFilterPersistor extends NodeSettingsPersistorWithCo
         return Arrays.stream(subConfigKeys()).map(subKeys -> String.join(".", subKeys)).toArray(String[]::new);
     }
 
-    @Override
-    public String[][] getSubConfigKeys() {
-        return new String[0][];
-    }
-
     /**
      * @return the array of all sub config keys overridden by this persistor
      */

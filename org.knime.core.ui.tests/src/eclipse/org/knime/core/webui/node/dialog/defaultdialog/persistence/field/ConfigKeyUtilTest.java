@@ -50,7 +50,6 @@ package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Collection;
 
@@ -64,7 +63,6 @@ import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation.Builder;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.persisttree.PersistTreeFactory;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 import org.knime.core.webui.node.dialog.defaultdialog.tree.Tree;
 import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeNode;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
@@ -91,11 +89,6 @@ class ConfigKeyUtilTest {
         @Override
         public String[] getConfigKeys() {
             return new String[]{"custom_key0", "custom_key1"};
-        }
-
-        @Override
-        public String[][] getSubConfigKeys() {
-            return new String[][]{{"foo"}, {"bar", "baz"}};
         }
 
         @Override
@@ -130,15 +123,6 @@ class ConfigKeyUtilTest {
         @Widget(title = "", description = "")
         int setting5;
 
-        // field with special default persistor which alters the default subConfigKeys
-        Credentials setting6;
-
-        static final class NonPersitableSettings {
-
-        }
-
-        // Might be part of a parent perstiable settings which defined its persist behavior from outside
-        NonPersitableSettings setting7;
     }
 
     @Test
@@ -173,7 +157,7 @@ class ConfigKeyUtilTest {
 
     @Test
     void testConfigKeysUsedWithoutPersist() throws NoSuchFieldException {
-        assertArrayEquals(new String[]{}, usedConfigKeysFor("setting0"),
+        assertArrayEquals(new String[]{"setting0"}, usedConfigKeysFor("setting0"),
             "configKeys should be emtpy for settings without annotation");
     }
 
@@ -196,34 +180,6 @@ class ConfigKeyUtilTest {
     }
 
     @Test
-    void testSubConfigKeysUsedWithoutPersist() throws NoSuchFieldException {
-        assertNull(usedSubConfigKeysFor("setting0"), "subConfigKeys should be null for settings without annotation");
-    }
-
-    @Test
-    void testSubConfigKeysUsedWithOnlyPersist() throws NoSuchFieldException {
-        assertNull(usedSubConfigKeysFor("setting2"),
-            "subConfigKeys should be null for settings without custom key or persistor");
-    }
-
-    @Test
-    void testSubConfigKeysUsedWithCustomPersistor() throws NoSuchFieldException {
-        assertArrayEquals(new String[][]{{"foo"}, {"bar", "baz"}}, usedSubConfigKeysFor("setting5"),
-            "subConfigKeys should come from the custom persistor");
-    }
-
-    @Test
-    void testSubConfigKeysUsedWithSpecialDefaultPersistor() throws NoSuchFieldException {
-        assertArrayEquals(new String[0][], usedSubConfigKeysFor("setting6"),
-            "subConfigKeys should come from the default persistor");
-    }
-
-    @Test
-    void testSubConfigKeysForNonPersistableSettings() throws NoSuchFieldException {
-        assertArrayEquals(null, usedSubConfigKeysFor("setting7"), "should not fail for non-persistable settings");
-    }
-
-    @Test
     void testDeprecatedConfigKeysFromCustomPersistor() throws NoSuchFieldException {
         final var deprecatedConfigKeys = deprecatedConfigKeysFor("setting5");
         assertArrayEquals(new String[]{"custom_key0"}, getFirstPathAsArray(deprecatedConfigKeys[0].getNewConfigPaths()),
@@ -239,10 +195,6 @@ class ConfigKeyUtilTest {
 
     private static String[] usedConfigKeysFor(final String fieldName) throws NoSuchFieldException {
         return ConfigKeyUtil.getConfigKeysUsedByField(getField(fieldName));
-    }
-
-    private static String[][] usedSubConfigKeysFor(final String fieldName) throws NoSuchFieldException {
-        return ConfigKeyUtil.getSubConfigKeysUsedByField(getField(fieldName));
     }
 
     private static ConfigsDeprecation[] deprecatedConfigKeysFor(final String fieldName) throws NoSuchFieldException {

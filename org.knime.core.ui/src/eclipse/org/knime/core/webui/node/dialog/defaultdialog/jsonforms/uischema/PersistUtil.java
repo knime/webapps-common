@@ -136,17 +136,9 @@ public final class PersistUtil {
     /** Add a "configKeys" array to the field if a custom persistor is used */
     private static void addConfigKeys(final ObjectNode node, final TreeNode<PersistableSettings> field) {
         var configKeys = ConfigKeyUtil.getConfigKeysUsedByField(field);
-        if (configKeys.length > 0 && !isFieldName(field, configKeys)) {
+        if (!isFieldName(field, configKeys)) {
             var configKeysNode = node.putArray("configKeys");
             Arrays.stream(configKeys).forEach(configKeysNode::add);
-        }
-        var subConfigKeys = ConfigKeyUtil.getSubConfigKeysUsedByField(field);
-        if (subConfigKeys != null) {
-            var subConfigKeysNode = node.putArray("subConfigKeys");
-            for (var subConfigKey : subConfigKeys) {
-                var subConfigKeyNode = subConfigKeysNode.addArray();
-                Arrays.stream(subConfigKey).forEach(subConfigKeyNode::add);
-            }
         }
         var deprecatedConfigsArray = ConfigKeyUtil.getDeprecatedConfigsUsedByField(field);
         if (deprecatedConfigsArray.length > 0) {

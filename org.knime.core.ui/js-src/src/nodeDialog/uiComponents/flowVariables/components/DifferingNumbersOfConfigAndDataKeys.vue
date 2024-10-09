@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineProps<{ configPaths: string[]; subConfigKeys?: string[] }>();
+defineProps<{ configPaths: string[] }>();
 </script>
 
 <template>

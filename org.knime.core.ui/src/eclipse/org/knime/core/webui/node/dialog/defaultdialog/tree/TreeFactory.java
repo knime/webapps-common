@@ -216,7 +216,13 @@ public abstract class TreeFactory<S> {
         }
     }
 
-    void populateTree(final Tree<S> tree, final JavaType treeType) {
+    /**
+     * This method can be overwritten in order to prevent population of certain trees.
+     *
+     * @param tree a fresh tree without any children yet
+     * @param treeType
+     */
+    protected void populateTree(final Tree<S> tree, final JavaType treeType) {
         getSerializableProperties(treeType).forEachRemaining(field -> addField(tree, field, treeType.getRawClass()));
     }
 
@@ -228,13 +234,13 @@ public abstract class TreeFactory<S> {
         final var type = field.getType();
         if (getTreeSettingsClass().isAssignableFrom(type.getRawClass())) {
             childBuilder.buildTree(type);
-        } else if (isArrayField(field.getType())) {
-            final var elementTreeType = field.getType().getContentType();
+        } else if (isArrayField(type)) {
+            final var elementTreeType = type.getContentType();
             childBuilder.buildArray(type, createTree(elementTreeType));
         } else {
             Class<?> contentType = null;
-            if (field.getType().isArrayType()) {
-                contentType = field.getType().getContentType().getRawClass();
+            if (type.isArrayType()) {
+                contentType = type.getContentType().getRawClass();
             }
             childBuilder.buildLeaf(type, contentType);
         }

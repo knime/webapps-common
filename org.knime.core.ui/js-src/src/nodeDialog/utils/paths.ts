@@ -21,7 +21,7 @@ const getNextConfigPathSegments = ({
   segment: string;
 }) => {
   const configKeys = schema.configKeys;
-  if (typeof configKeys === "undefined" || !configKeys.length) {
+  if (typeof configKeys === "undefined") {
     return [segment];
   }
   return configKeys;
@@ -35,20 +35,13 @@ const getSubConfigKeysRecursive = (
     return [];
   }
 
-  if (schema.subConfigKeys) {
-    return schema.subConfigKeys.map((subConfigKey) => [
-      ...prefix,
-      ...subConfigKey,
-    ]);
-  }
-
   if (schema.type === "array") {
     return getSubConfigKeysRecursive(schema.items, prefix);
   } else if (schema.type === "object") {
     const subConfigKeys: string[][] = [];
-    for (const key of Object.keys(schema.properties)) {
+    Object.entries(schema.properties).forEach(([key, subscheam]) => {
       const configKeys = getNextConfigPathSegments({
-        schema: schema.properties[key],
+        schema: subscheam,
         segment: key,
       });
       configKeys
@@ -61,7 +54,7 @@ const getSubConfigKeysRecursive = (
             ]),
           ),
         );
-    }
+    });
     return subConfigKeys;
   }
   return prefix.length ? [prefix] : [];

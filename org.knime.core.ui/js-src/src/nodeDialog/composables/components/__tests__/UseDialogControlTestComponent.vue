@@ -2,7 +2,6 @@
 import useDialogControl from "../useDialogControl";
 const props = defineProps<{
   props: any;
-  subConfigKeys?: string[];
 }>();
 defineExpose(useDialogControl(props));
 </script>

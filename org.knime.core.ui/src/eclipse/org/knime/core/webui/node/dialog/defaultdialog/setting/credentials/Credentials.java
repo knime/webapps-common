@@ -325,12 +325,6 @@ public final class Credentials {
             return new String[]{m_configKey};
         }
 
-        @Override
-        public String[][] getSubConfigKeys() {
-            /** There are no subConfigKeys here, only one config controllable by a credentials flow variable */
-            return new String[0][];
-        }
-
     }
 
 }

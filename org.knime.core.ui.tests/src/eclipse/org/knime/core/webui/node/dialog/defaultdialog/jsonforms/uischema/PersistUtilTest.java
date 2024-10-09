@@ -88,7 +88,8 @@ class PersistUtilTest {
     @Test
     void testConfigKeyFromPersistAnnotation() throws JsonProcessingException {
         final var result = getPersistSchema(SettingWithConfigKeyInPersistAnnotation.class);
-        assertThatJson(result).inPath("$.properties.model.properties.test.configKeys").isArray().isEqualTo(new String[]{"my_config_key"});
+        assertThatJson(result).inPath("$.properties.model.properties.test.configKeys").isArray()
+            .isEqualTo(new String[]{"my_config_key"});
     }
 
     private static class CustomPersistor implements FieldNodeSettingsPersistor<Integer> {
@@ -108,10 +109,6 @@ class PersistUtilTest {
             return new String[]{"config_key_from_persistor_1", "config_key_from_persistor_2"};
         }
 
-        @Override
-        public String[][] getSubConfigKeys() {
-            return new String[][]{{"custom", "sub", "config"}, {"keys", "from", "persistor"}};
-        }
     }
 
     private static class SettingWithCustomPersistor implements PersistableSettings {
@@ -122,13 +119,94 @@ class PersistUtilTest {
     }
 
     @Test
-    void testConfigKeyAndSubConfigKeysFromCustomPersistor() throws JsonProcessingException {
+    void testConfigKeyFromCustomPersistor() throws JsonProcessingException {
         final var result = getPersistSchema(SettingWithCustomPersistor.class);
         assertThatJson(result).inPath("$.properties.model.properties.test.configKeys").isArray()
             .isEqualTo(new String[]{"config_key_from_persistor_1", "config_key_from_persistor_2"});
-        assertThatJson(result).inPath("$.properties.model.properties.test.subConfigKeys").isArray()
-            .isEqualTo(new String[][]{{"custom", "sub", "config"}, {"keys", "from", "persistor"}});
 
+    }
+
+    private static class SettingsWithCustomPersistorOnPersistableSettings implements PersistableSettings {
+
+        static final class NestedSettings implements PersistableSettings {
+            @SuppressWarnings("unused")
+            public int nested;
+        }
+
+        static final class MyCustomPersistor implements FieldNodeSettingsPersistor<NestedSettings> {
+
+            @Override
+            public NestedSettings load(final NodeSettingsRO settings) throws InvalidSettingsException {
+                throw new IllegalAccessError("Should not be called within this test");
+
+            }
+
+            @Override
+            public void save(final NestedSettings obj, final NodeSettingsWO settings) {
+                throw new IllegalAccessError("Should not be called within this test");
+            }
+
+            @Override
+            public String[] getConfigKeys() {
+                return new String[]{"some_config_key"};
+            }
+        }
+
+        @Persist(customPersistor = MyCustomPersistor.class)
+        public NestedSettings nestedSettings;
+
+    }
+
+    @Test
+    void testSkipsChildrenOfPersistableSettingsWithCustomPersistor() throws JsonProcessingException {
+        final var result = getPersistSchema(SettingsWithCustomPersistorOnPersistableSettings.class);
+        assertThatJson(result).inPath("$.properties.model.properties.nestedSettings.properties").isObject()
+            .doesNotContainKey("nested");
+    }
+
+    private static class SettingsWithCustomPersistorOnPersistableSettingsUsingDefaultSave
+        implements PersistableSettings {
+
+        static final class NestedSettings implements PersistableSettings {
+            @SuppressWarnings("unused")
+            public int nested;
+        }
+
+        static final class MyCustomPersistor implements FieldNodeSettingsPersistor<NestedSettings> {
+
+            @Override
+            public NestedSettings load(final NodeSettingsRO settings) throws InvalidSettingsException {
+                throw new IllegalAccessError("Should not be called within this test");
+
+            }
+
+            @Override
+            public void save(final NestedSettings obj, final NodeSettingsWO settings) {
+                throw new IllegalAccessError("Should not be called within this test");
+            }
+
+            @Override
+            public String[] getConfigKeys() {
+                return new String[]{"some_config_key"};
+            }
+
+            @Override
+            public boolean usesDefaultPersistorOnSave() {
+                return true;
+            }
+        }
+
+        @Persist(customPersistor = MyCustomPersistor.class)
+        public NestedSettings nestedSettings;
+
+    }
+
+    @Test
+    void testDoesNotSkipChildrenOfPersistableSettingsWithCustomPersistorUsingDefaultSave()
+        throws JsonProcessingException {
+        final var result = getPersistSchema(SettingsWithCustomPersistorOnPersistableSettingsUsingDefaultSave.class);
+        assertThatJson(result).inPath("$.properties.model.properties.nestedSettings.properties").isObject()
+            .containsKey("nested");
     }
 
     private static class CustomPersistorWithDeprecatedConfigs implements FieldNodeSettingsPersistor<Integer> {

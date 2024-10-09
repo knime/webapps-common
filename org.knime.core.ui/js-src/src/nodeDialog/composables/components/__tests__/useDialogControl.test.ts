@@ -119,7 +119,6 @@ describe("useDialogControl", () => {
     expect(useJsonFormsControlWithUpdateSpy).toHaveBeenCalledWith(props);
     const flowSettingsParams = useFlowSettingsSpy.mock.calls[0][0];
     expect(flowSettingsParams.path.value).toStrictEqual(control.value.path);
-    expect(flowSettingsParams.subConfigKeys).toBeUndefined();
     expect(result.control).toBe(control.value);
     expect(result.flowSettings).toBe(flowSettings.value);
   });

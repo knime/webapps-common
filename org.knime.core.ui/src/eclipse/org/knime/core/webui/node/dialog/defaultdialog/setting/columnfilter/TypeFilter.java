@@ -149,9 +149,5 @@ class TypeFilter implements PersistableSettings {
             return new String[0];
         }
 
-        @Override
-        public String[][] getSubConfigKeys() {
-            return new String[][]{};
-        }
     }
 }

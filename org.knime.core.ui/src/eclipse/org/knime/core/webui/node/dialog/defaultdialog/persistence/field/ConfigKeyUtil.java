@@ -73,34 +73,16 @@ public final class ConfigKeyUtil {
      * @return the config key used by the persistor or the default key if none is set
      */
     public static String[] getConfigKeysUsedByField(final TreeNode<PersistableSettings> node) {
+        var configKey = getConfigKey(node);
         var persist = node.getAnnotation(Persist.class);
-        if (persist.isEmpty()) {
-            return new String[]{};
-        } else {
-            var configKey = getConfigKey(node);
+        if (persist.isPresent()) {
             var customPersistor = persist.get().customPersistor();
-            if (customPersistor.equals(FieldNodeSettingsPersistor.class)) {
-                // No custom persistor is set -> just use the config key
-                return new String[]{configKey};
-            } else {
-                // Custom persistor -> get the config keys from it
+            if (!customPersistor.equals(FieldNodeSettingsPersistor.class)) {
                 return extractFieldNodeSettingsPersistor(node).map(FieldNodeSettingsPersistor::getConfigKeys)
                     .orElse(new String[]{configKey});
             }
         }
-    }
-
-    /**
-     * Get the sub config keys (i.e., keys of subsettings under this setting that don't have their own control) that are
-     * used by the given field if it is annotated with a {@link Persist} annotation and if the annotation defines a
-     * {@link Persist#customPersistor()} that overrides {@link FieldNodeSettingsPersistor#getSubConfigKeys()}.
-     *
-     * @param node
-     * @return the sub config keys used by the persistor or null, if the sub config keys are to be inferred from the
-     *         schema by the frontend
-     */
-    public static String[][] getSubConfigKeysUsedByField(final TreeNode<PersistableSettings> node) {
-        return extractFieldNodeSettingsPersistor(node).map(FieldNodeSettingsPersistor::getSubConfigKeys).orElse(null);
+        return new String[]{configKey};
     }
 
     /**

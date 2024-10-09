@@ -18,7 +18,6 @@ vi.mock("../../utils/inject", () => ({
 type Props = {
   path: string;
   persistSchema: PersistSchema;
-  subConfigKeys?: string[];
   isNew?: boolean;
 };
 
@@ -50,7 +49,7 @@ describe("useFlowVariables", () => {
   const createProps = (params: {
     path: string;
     configKeys?: string[];
-    subConfigKeys?: string[][];
+    leaf?: PersistSchema;
   }): Props => {
     return { path: params.path, persistSchema: createPersistSchema(params) };
   };
@@ -87,12 +86,17 @@ describe("useFlowVariables", () => {
     const configKey = "configKey";
     const subConfigKey = "subConfigKey";
     const configKeys = [configKey];
-    const subConfigKeys = [[subConfigKey]];
+    const leaf: PersistSchema = {
+      type: "object",
+      properties: {
+        [subConfigKey]: {},
+      },
+    };
     return mountTestComponent({
       ...createProps({
         path,
         configKeys,
-        subConfigKeys,
+        leaf,
       }),
       ...params,
     });

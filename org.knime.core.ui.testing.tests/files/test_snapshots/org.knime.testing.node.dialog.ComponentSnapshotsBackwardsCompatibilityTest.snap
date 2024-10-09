@@ -375,9 +375,7 @@
                 "path" : { }
               }
             },
-            "credentials" : {
-              "subConfigKeys" : [ ]
-            },
+            "credentials" : { },
             "dynamicValuesInput" : {
               "type" : "object",
               "properties" : {
@@ -429,7 +427,7 @@
                     "selectedTypes" : { },
                     "typeDisplays" : {
                       "type" : "array",
-                      "subConfigKeys" : [ ],
+                      "configKeys" : [ ],
                       "items" : {
                         "type" : "object",
                         "properties" : {
@@ -464,9 +462,7 @@
                 "deprecated" : [ [ "deprecatedConfigKey" ] ]
               } ],
               "type" : "object",
-              "properties" : {
-                "nestedString" : { }
-              }
+              "properties" : { }
             }
           }
         }

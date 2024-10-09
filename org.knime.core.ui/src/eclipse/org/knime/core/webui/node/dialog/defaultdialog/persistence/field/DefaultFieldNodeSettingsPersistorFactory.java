@@ -100,7 +100,6 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
             return createDefaultArrayPersistor(array.getElementTree(), configKey);
         } else if (node instanceof Tree<PersistableSettings> tree) {
             return createNestedFieldBasedPersistor(configKey, tree);
-
         } else {
             return createPersistor(node.getType(), configKey);
         }
