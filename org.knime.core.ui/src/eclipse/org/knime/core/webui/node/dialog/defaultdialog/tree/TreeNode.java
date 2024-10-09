@@ -186,6 +186,7 @@ public sealed class TreeNode<S> permits LeafNode, Tree, ArrayParentNode {
      *
      * @return the value of this node given the parent value
      * @throws IllegalAccessException
+     * @throws NullPointerException if the parent value is null
      */
     public Object getFromParentValue(final Object parentValue) throws IllegalAccessException {
         checkParentValue(parentValue);
