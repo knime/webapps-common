@@ -1,6 +1,8 @@
-import { computed, ref, type ComputedRef, type Ref } from "vue";
-import * as multiSelectionService from "./multiSelectionStateService";
+import { type ComputedRef, type Ref, computed, ref } from "vue";
+
 import { navigatorUtils } from "@knime/utils";
+
+import * as multiSelectionService from "./multiSelectionStateService";
 
 export type UseMultiSelectionOptions = {
   singleSelectionOnly: Ref<boolean>;

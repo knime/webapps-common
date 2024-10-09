@@ -1,9 +1,11 @@
-import { expect, afterEach, vi, describe, it } from "vitest";
-import { shallowMount, flushPromises } from "@vue/test-utils";
-import UIExtShadowApp from "../UIExtShadowApp.vue";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { createApp, defineComponent } from "vue";
+import { flushPromises, shallowMount } from "@vue/test-utils";
+
 import type { UIExtensionServiceAPILayer } from "@knime/ui-extension-service";
 import * as ExtensionServiceModule from "@knime/ui-extension-service";
-import { createApp, defineComponent } from "vue";
+
+import UIExtShadowApp from "../UIExtShadowApp.vue";
 
 vi.mock("@knime/ui-extension-service", async () => {
   const actual = await vi.importActual("@knime/ui-extension-service");

@@ -1,11 +1,11 @@
-import { expect, describe, it, vi } from "vitest";
-import { mount } from "@vue/test-utils";
+import { describe, expect, it, vi } from "vitest";
 import { nextTick, ref } from "vue";
+import { mount } from "@vue/test-utils";
 
 import { InputField } from "@knime/components";
 
-import CreateLinkModal from "../CreateLinkModal.vue";
 import { defaultLinkToolOptions } from "../../utils/custom-link";
+import CreateLinkModal from "../CreateLinkModal.vue";
 
 describe("CreateWorkflowModal.vue", () => {
   const doMount = ({

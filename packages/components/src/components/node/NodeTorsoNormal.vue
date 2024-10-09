@@ -1,6 +1,6 @@
 <script>
-import * as nodeBackgroundColors from "@knime/styles/colors/nodeColors";
 import { HibiscusDark as colorHibiscusDark } from "@knime/styles/colors/knimeColors";
+import * as nodeBackgroundColors from "@knime/styles/colors/nodeColors";
 
 const nodeSize = 32;
 const backgroundPaths = {

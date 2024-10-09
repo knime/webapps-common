@@ -1,6 +1,7 @@
 <script>
-import CodeExample from "./demo/CodeExample.vue";
 import { LocalDateTime } from "@knime/components";
+
+import CodeExample from "./demo/CodeExample.vue";
 // import code from "webapps-common/ui/components/LocalDateTime.vue?raw";
 const code = "";
 

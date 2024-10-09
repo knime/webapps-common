@@ -1,17 +1,18 @@
 /* eslint-disable max-lines */
-import { describe, it, expect, beforeEach } from "vitest";
-import { mount, flushPromises } from "@vue/test-utils";
+import { beforeEach, describe, expect, it } from "vitest";
 import { nextTick } from "vue";
+import { flushPromises, mount } from "@vue/test-utils";
 
 import FilterIcon from "@knime/styles/img/icons/filter.svg";
-import SearchInput from "../../SearchInput/SearchInput.vue";
-import MultiModeTwinlist from "../MultiModeTwinlist.vue";
-import MultiselectListBox from "../../MultiselectListBox/MultiselectListBox.vue";
-import Twinlist from "../../Twinlist/Twinlist.vue";
-import ValueSwitch from "../../ValueSwitch/ValueSwitch.vue";
+
+import ResizeHandle from "../../../ResizeHandle/ResizeHandle.vue";
 import Checkboxes from "../../Checkboxes/Checkboxes.vue";
 import Label from "../../Label/Label.vue";
-import ResizeHandle from "../../../ResizeHandle/ResizeHandle.vue";
+import MultiselectListBox from "../../MultiselectListBox/MultiselectListBox.vue";
+import SearchInput from "../../SearchInput/SearchInput.vue";
+import Twinlist from "../../Twinlist/Twinlist.vue";
+import ValueSwitch from "../../ValueSwitch/ValueSwitch.vue";
+import MultiModeTwinlist from "../MultiModeTwinlist.vue";
 
 describe("MultiModeMultiModeTwinlist.vue", () => {
   let defaultPossibleValues;

@@ -1,4 +1,4 @@
-import { expect, describe, beforeAll, afterAll, it, vi } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import flushPromises from "flush-promises";
 
 import sleep from "../sleep";

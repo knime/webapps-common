@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import CodeExample from "./demo/CodeExample.vue";
 import { Pill } from "@knime/components";
 import ActivityIcon from "@knime/styles/img/icons/activity.svg";
+
+import CodeExample from "./demo/CodeExample.vue";
 // import pillComponentCode from "webapps-common/ui/components/Pill.vue?raw";
 const pillComponentCode = "";
 

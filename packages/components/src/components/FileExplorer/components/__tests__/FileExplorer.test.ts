@@ -1,19 +1,19 @@
 /* eslint-disable max-lines */
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { nextTick } from "vue";
-import { expect, describe, beforeEach, it, vi, beforeAll } from "vitest";
-import { DOMWrapper, mount, VueWrapper } from "@vue/test-utils";
+import { DOMWrapper, VueWrapper, mount } from "@vue/test-utils";
 
 import FileTextIcon from "@knime/styles/img/icons/file-text.svg";
 import FolderIcon from "@knime/styles/img/icons/folder.svg";
 
-import FileExplorer from "../FileExplorer.vue";
-import FileExplorerItemComp from "../FileExplorerItem.vue";
-import FileExplorerContextMenu from "../FileExplorerContextMenu.vue";
-import type { FileExplorerItem } from "../../types";
 import {
   MockIntersectionObserver,
   createSlottedChildComponent,
 } from "../../composables/useTestUtils";
+import type { FileExplorerItem } from "../../types";
+import FileExplorer from "../FileExplorer.vue";
+import FileExplorerContextMenu from "../FileExplorerContextMenu.vue";
+import FileExplorerItemComp from "../FileExplorerItem.vue";
 
 vi.mock("gsap", () => ({
   gsap: {

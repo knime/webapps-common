@@ -1,8 +1,8 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { mount } from "@vue/test-utils";
 
-import ValueSwitch from "../ValueSwitch.vue";
 import BaseRadioButtons from "../../RadioButtons/BaseRadioButtons.vue";
+import ValueSwitch from "../ValueSwitch.vue";
 
 describe("ValueSwitch.vue", () => {
   const possibleValues = new Array(3).fill(0).map((_, index) => ({

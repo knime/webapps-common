@@ -1,5 +1,6 @@
 <script>
 import BaseMessage from "../base/Message/BaseMessage.vue";
+
 import Message from "./Message.vue";
 import MessageLink from "./MessageLink.vue";
 

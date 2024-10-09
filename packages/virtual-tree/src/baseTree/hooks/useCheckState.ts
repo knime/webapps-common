@@ -1,7 +1,7 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable func-style */
-import type { KeyNodeMap, NodeKey } from "../types";
 import { BaseTreeNode } from "../baseTreeNode";
+import type { KeyNodeMap, NodeKey } from "../types";
 import { addOrDelete } from "../utils";
 
 interface CurrentState {

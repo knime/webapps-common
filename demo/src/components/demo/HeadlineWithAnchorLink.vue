@@ -1,8 +1,9 @@
 <script>
 import { useClipboard } from "@vueuse/core";
+
 import { FunctionButton, Tooltip } from "@knime/components";
-import LinkIcon from "@knime/styles/img/icons/link.svg";
 import CheckIcon from "@knime/styles/img/icons/check.svg";
+import LinkIcon from "@knime/styles/img/icons/link.svg";
 
 export default {
   components: {

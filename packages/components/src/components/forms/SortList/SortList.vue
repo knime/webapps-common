@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from "vue";
-import { partition, indexOf, keyBy } from "lodash-es";
+import { indexOf, keyBy, partition } from "lodash-es";
 
-import { hotkeys, type HotkeysNS } from "@knime/utils";
 import ArrowDownIcon from "@knime/styles/img/icons/arrow-down.svg";
-import ArrowUpIcon from "@knime/styles/img/icons/arrow-up.svg";
 import ArrowDownloadIcon from "@knime/styles/img/icons/arrow-download.svg";
+import ArrowUpIcon from "@knime/styles/img/icons/arrow-up.svg";
+import { type HotkeysNS, hotkeys } from "@knime/utils";
+
 import FunctionButton from "../../Buttons/FunctionButton.vue";
 import MultiselectListBox from "../MultiselectListBox/MultiselectListBox.vue";
-import { createMissingItem, type PossibleValue } from "../possibleValues";
+import { type PossibleValue, createMissingItem } from "../possibleValues";
 
 export interface Props {
   modelValue: string[];

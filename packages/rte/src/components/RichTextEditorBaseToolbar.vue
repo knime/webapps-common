@@ -1,32 +1,31 @@
 <script setup lang="ts">
 import type { Editor } from "@tiptap/vue-3";
 
+import AlignCenterIcon from "@knime/styles/img/icons/align-center.svg";
+import AlignLeftIcon from "@knime/styles/img/icons/align-left.svg";
+import AlignRightIcon from "@knime/styles/img/icons/align-right.svg";
+import BlockquoteIcon from "@knime/styles/img/icons/blockquote.svg";
 import BoldIcon from "@knime/styles/img/icons/bold.svg";
+import CodeIcon from "@knime/styles/img/icons/code-html.svg";
+import DividerIcon from "@knime/styles/img/icons/divider.svg";
 import ItalicIcon from "@knime/styles/img/icons/italic.svg";
+import LinkIcon from "@knime/styles/img/icons/link.svg";
+import OrderedListIcon from "@knime/styles/img/icons/ordered-list.svg";
+import StrikeThroughIcon from "@knime/styles/img/icons/strikethrough.svg";
+import ParagraphIcon from "@knime/styles/img/icons/text-style.svg";
 import UnderlineIcon from "@knime/styles/img/icons/underline.svg";
 import BulletListIcon from "@knime/styles/img/icons/unordered-list.svg";
-import OrderedListIcon from "@knime/styles/img/icons/ordered-list.svg";
-import AlignLeftIcon from "@knime/styles/img/icons/align-left.svg";
-import AlignCenterIcon from "@knime/styles/img/icons/align-center.svg";
-import AlignRightIcon from "@knime/styles/img/icons/align-right.svg";
-import ParagraphIcon from "@knime/styles/img/icons/text-style.svg";
-import BlockquoteIcon from "@knime/styles/img/icons/blockquote.svg";
-import CodeIcon from "@knime/styles/img/icons/code-html.svg";
-import StrikeThroughIcon from "@knime/styles/img/icons/strikethrough.svg";
-import DividerIcon from "@knime/styles/img/icons/divider.svg";
-import LinkIcon from "@knime/styles/img/icons/link.svg";
 
+import { useLinkTool } from "../composables/useLinkTool";
+import type {
+  BaseExtensionsConfig,
+  EditorToolItem,
+  EditorTools,
+} from "../types";
+import type { LinkToolOptions } from "../utils/custom-link";
 import getParagraphTextStyleChildTools, {
   type ParagraphTextStyleId,
 } from "../utils/paragraphTextStyle";
-
-import type {
-  BaseExtensionsConfig,
-  EditorTools,
-  EditorToolItem,
-} from "../types";
-import { useLinkTool } from "../composables/useLinkTool";
-import type { LinkToolOptions } from "../utils/custom-link";
 
 interface Props {
   editor: Editor;

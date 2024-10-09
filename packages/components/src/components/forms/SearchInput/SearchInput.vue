@@ -1,12 +1,13 @@
 <script>
 import { nextTick } from "vue";
+
+import InverseSearchIcon from "@knime/styles/img/icons/arrows-order-left-right.svg";
 import CloseIcon from "@knime/styles/img/icons/close.svg";
 import LensIcon from "@knime/styles/img/icons/lens.svg";
-import InverseSearchIcon from "@knime/styles/img/icons/arrows-order-left-right.svg";
 import UpperLowerCaseIcon from "@knime/styles/img/icons/upper-lower-case.svg";
 
-import InputField from "../InputField/InputField.vue";
 import FunctionButton from "../../Buttons/FunctionButton.vue";
+import InputField from "../InputField/InputField.vue";
 
 const defaultTooltips = {
   clear: "Clear",

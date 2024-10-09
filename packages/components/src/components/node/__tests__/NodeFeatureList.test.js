@@ -1,11 +1,11 @@
-import { describe, it, expect } from "vitest";
-import { shallowMount } from "@vue/test-utils";
+import { describe, expect, it } from "vitest";
 import { nextTick } from "vue";
+import { shallowMount } from "@vue/test-utils";
 
-import NodeFeatureList from "../NodeFeatureList.vue";
 import TabBar from "../../TabBar/TabBar.vue";
-import PortsList from "../PortsList.vue";
 import DialogOptions from "../DialogOptions.vue";
+import NodeFeatureList from "../NodeFeatureList.vue";
+import PortsList from "../PortsList.vue";
 import ViewsList from "../ViewsList.vue";
 
 describe("NodeFeatureList.vue", () => {

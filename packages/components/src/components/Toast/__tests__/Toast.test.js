@@ -1,8 +1,8 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { defineComponent, h, nextTick } from "vue";
 import { mount, shallowMount } from "@vue/test-utils";
-import { describe, expect, it, beforeEach, afterEach, vi } from "vitest";
 
 import Toast from "../components/Toast.vue";
-import { defineComponent, h, nextTick } from "vue";
 
 describe("Toast.vue", () => {
   const MAX_LENGTH = 160;

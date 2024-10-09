@@ -1,6 +1,7 @@
-import type { Editor } from "@tiptap/vue-3";
-import type { EditorToolItem } from "../../types";
 import type { Level } from "@tiptap/extension-heading";
+import type { Editor } from "@tiptap/vue-3";
+
+import type { EditorToolItem } from "../../types";
 
 export type ParagraphTextStyleId = Level | "small" | "standard";
 

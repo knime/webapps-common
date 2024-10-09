@@ -1,6 +1,7 @@
 <script>
-import CodeExample from "./demo/CodeExample.vue";
 import { TextArea } from "@knime/components";
+
+import CodeExample from "./demo/CodeExample.vue";
 // import code from "webapps-common/ui/components/forms/TextArea.vue?raw";
 const code = "";
 

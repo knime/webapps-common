@@ -1,5 +1,6 @@
 <script lang="ts">
-import type { PropType, InputHTMLAttributes } from "vue";
+import type { InputHTMLAttributes, PropType } from "vue";
+
 import ArrowIcon from "@knime/styles/img/icons/arrow-dropdown.svg";
 import "../variables.css";
 

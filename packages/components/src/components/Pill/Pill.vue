@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
+
 // @ts-ignore
 import * as $colors from "@knime/styles/colors/knimeColors";
 

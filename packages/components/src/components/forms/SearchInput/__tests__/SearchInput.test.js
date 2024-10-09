@@ -1,12 +1,12 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { mount } from "@vue/test-utils";
 
+import InverseSearchIcon from "@knime/styles/img/icons/arrows-order-left-right.svg";
 import CloseIcon from "@knime/styles/img/icons/close.svg";
 import LensIcon from "@knime/styles/img/icons/lens.svg";
-import InverseSearchIcon from "@knime/styles/img/icons/arrows-order-left-right.svg";
 import UpperLowerCaseIcon from "@knime/styles/img/icons/upper-lower-case.svg";
-import FunctionButton from "../../../Buttons/FunctionButton.vue";
 
+import FunctionButton from "../../../Buttons/FunctionButton.vue";
 import InputField from "../../InputField/InputField.vue";
 import SearchInput from "../SearchInput.vue";
 

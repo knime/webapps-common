@@ -1,6 +1,7 @@
 <script>
-import CodeExample from "./demo/CodeExample.vue";
 import { Checkboxes } from "@knime/components";
+
+import CodeExample from "./demo/CodeExample.vue";
 // import code from "webapps-common/ui/components/forms/Checkboxes.vue?raw";
 const code = "";
 

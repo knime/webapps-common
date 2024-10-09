@@ -1,7 +1,8 @@
 <script>
-import Description from "../Description/Description.vue";
 import StandardIcon from "@knime/styles/img/icons/eye.svg";
 import InteractiveIcon from "@knime/styles/img/icons/interactive.svg";
+
+import Description from "../Description/Description.vue";
 
 /**
  * ViewsList are part of the NodeFeaureList

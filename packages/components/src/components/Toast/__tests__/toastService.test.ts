@@ -1,16 +1,15 @@
 /* eslint-disable vue/one-component-per-file */
+import { beforeEach, describe, expect, it } from "vitest";
 import { createApp, inject, provide } from "vue";
-import { describe, it, beforeEach, expect } from "vitest";
 import { mount } from "@vue/test-utils";
 
 import {
-  ToastServiceProvider,
-  useToasts,
-  defaultToastServiceSymbol,
-  defaultGlobalPropertyName,
   ToastServiceError,
+  ToastServiceProvider,
+  defaultGlobalPropertyName,
+  defaultToastServiceSymbol,
+  useToasts,
 } from "../toastService";
-
 import type { Toast, ToastService } from "../types";
 
 describe("test-service.ts", () => {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, ref, watch, type Ref } from "vue";
+import { type Ref, computed, ref, watch } from "vue";
 
-import { Modal, Button, InputField, Label } from "@knime/components";
+import { Button, InputField, Label, Modal } from "@knime/components";
 
 interface Props {
   text: Ref<string>;

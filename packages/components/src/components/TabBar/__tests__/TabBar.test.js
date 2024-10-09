@@ -1,11 +1,12 @@
-import { describe, it, expect } from "vitest";
-import { shallowMount } from "@vue/test-utils";
+import { describe, expect, it } from "vitest";
 import { markRaw } from "vue";
+import { shallowMount } from "@vue/test-utils";
 
-import TabBar from "../TabBar.vue";
-import WorkflowIcon from "@knime/styles/img/icons/workflow.svg";
 import NodeIcon from "@knime/styles/img/icons/node.svg";
+import WorkflowIcon from "@knime/styles/img/icons/workflow.svg";
+
 import Carousel from "../../Carousel/Carousel.vue";
+import TabBar from "../TabBar.vue";
 
 describe("TabBar.vue", () => {
   let possibleValues = [

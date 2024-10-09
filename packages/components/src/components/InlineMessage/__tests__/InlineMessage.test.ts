@@ -1,12 +1,13 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { mount } from "@vue/test-utils";
 
-import InlineMessage from "../InlineMessage.vue";
-import CircleInfoIcon from "@knime/styles/img/icons/circle-info.svg";
-import SignWarningIcon from "@knime/styles/img/icons/sign-warning.svg";
-import CircleCloseIcon from "@knime/styles/img/icons/circle-close.svg";
 import CircleCheckIcon from "@knime/styles/img/icons/circle-check.svg";
+import CircleCloseIcon from "@knime/styles/img/icons/circle-close.svg";
+import CircleInfoIcon from "@knime/styles/img/icons/circle-info.svg";
 import RocketIcon from "@knime/styles/img/icons/rocket.svg";
+import SignWarningIcon from "@knime/styles/img/icons/sign-warning.svg";
+
+import InlineMessage from "../InlineMessage.vue";
 
 describe("Message.vue", () => {
   let wrapper;

@@ -1,6 +1,7 @@
 <script>
-import Description from "../Description/Description.vue";
 import ArrowNextIcon from "@knime/styles/img/icons/arrow-next.svg";
+
+import Description from "../Description/Description.vue";
 
 /**
  * This component displays a list of npm packages to be used on a credits/licenses

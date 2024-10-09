@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { Button } from "@knime/components";
-import CopyIcon from "@knime/styles/img/icons/copy.svg";
-import CheckIcon from "@knime/styles/img/icons/check.svg";
-import { useClipboard } from "@vueuse/core";
 import { computed, ref } from "vue";
+import { useClipboard } from "@vueuse/core";
+
+import { Button } from "@knime/components";
+import CheckIcon from "@knime/styles/img/icons/check.svg";
+import CopyIcon from "@knime/styles/img/icons/copy.svg";
 
 // see https://www.rfc-editor.org/rfc/rfc9457 for api error specification
 interface ApiErrorTemplateProps {

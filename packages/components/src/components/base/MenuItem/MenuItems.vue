@@ -32,18 +32,20 @@
  */
 import {
   type FunctionalComponent,
-  nextTick,
-  ref,
   type Ref,
   type SVGAttributes,
+  nextTick,
+  ref,
 } from "vue";
 import type { Boundary } from "@floating-ui/vue";
 
-import useDropdownNavigation from "../../../composables/useDropdownNavigation";
-import { getWrappedAroundIndex } from "@knime/utils";
-import BaseMenuItems from "./BaseMenuItems.vue";
-import BaseMenuItem from "./BaseMenuItem.vue";
 import ArrowNextIcon from "@knime/styles/img/icons/arrow-next.svg";
+import { getWrappedAroundIndex } from "@knime/utils";
+
+import useDropdownNavigation from "../../../composables/useDropdownNavigation";
+
+import BaseMenuItem from "./BaseMenuItem.vue";
+import BaseMenuItems from "./BaseMenuItems.vue";
 
 export interface MenuItem<TMetadata = any, TChildrenMetadata = TMetadata> {
   text: string;

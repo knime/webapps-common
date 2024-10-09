@@ -1,8 +1,10 @@
-import { describe, vi, it, expect } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { mount } from "@vue/test-utils";
-import FileSelector from "../FileSelector.vue";
-import Button from "../../Buttons/Button.vue";
+
 import LensIcon from "@knime/styles/img/icons/lens.svg";
+
+import Button from "../../Buttons/Button.vue";
+import FileSelector from "../FileSelector.vue";
 
 describe("FileSelector.vue", () => {
   it("renders correctly with no selected file", () => {

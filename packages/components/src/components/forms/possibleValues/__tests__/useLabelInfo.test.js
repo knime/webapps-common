@@ -1,5 +1,6 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { ref } from "vue";
+
 import { useLabelInfo } from "../useLabelInfo";
 
 describe("useLabelInfo.ts", () => {

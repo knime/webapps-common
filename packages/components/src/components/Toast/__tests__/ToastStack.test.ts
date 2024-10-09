@@ -1,13 +1,13 @@
-import { VueWrapper, shallowMount } from "@vue/test-utils";
 import {
+  type Mock,
+  afterEach,
+  beforeEach,
   describe,
   expect,
   it,
   vi,
-  afterEach,
-  beforeEach,
-  type Mock,
 } from "vitest";
+import { VueWrapper, shallowMount } from "@vue/test-utils";
 
 import ToastStack from "../components/ToastStack.vue";
 import { useToasts } from "../toastService";

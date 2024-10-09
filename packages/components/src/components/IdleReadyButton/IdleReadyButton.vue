@@ -1,5 +1,6 @@
 <script>
 import DownIcon from "@knime/styles/img/icons/circle-arrow-down.svg";
+
 import Button from "../Buttons/Button.vue";
 import { resolveClientOnlyComponent } from "../nuxtComponentResolver";
 

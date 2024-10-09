@@ -1,7 +1,7 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable func-style */
-import type { KeyNodeMap, TreeNodeOptions } from "../types";
 import { BaseTreeNode } from "../baseTreeNode";
+import type { KeyNodeMap, TreeNodeOptions } from "../types";
 
 function useTreeData(source: TreeNodeOptions[]) {
   const treeData = coerceTreeNodes(source);

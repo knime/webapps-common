@@ -1,14 +1,16 @@
 <script lang="ts" setup>
+import { type StyleValue, markRaw, onMounted, ref } from "vue";
+
 import {
-  type UIExtensionServiceAPILayer,
+  JsonDataService,
   type UIExtensionPushEvents,
   type UIExtensionService,
+  type UIExtensionServiceAPILayer,
   setUpEmbedderService,
-  JsonDataService,
 } from "@knime/ui-extension-service";
 
-import { markRaw, onMounted, ref, type StyleValue } from "vue";
 import { useDynamicImport } from "./useDynamicImport";
+
 const { dynamicImport } = useDynamicImport();
 
 interface Props {

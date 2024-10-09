@@ -1,6 +1,6 @@
-import { mount, shallowMount } from "@vue/test-utils";
-import { describe, it, expect, vi, beforeEach, beforeAll } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { defineComponent, ref } from "vue";
+import { mount, shallowMount } from "@vue/test-utils";
 
 import useDropdownNavigation from "../../../../composables/useDropdownNavigation";
 import BaseMenuItems from "../BaseMenuItems.vue";

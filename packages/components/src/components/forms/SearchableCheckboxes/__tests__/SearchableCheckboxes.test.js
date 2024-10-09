@@ -1,9 +1,10 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { mount } from "@vue/test-utils";
+import { beforeEach, describe, expect, it } from "vitest";
 import { nextTick } from "vue";
+import { mount } from "@vue/test-utils";
+
+import Checkboxes from "../../Checkboxes/Checkboxes.vue";
 import SearchInput from "../../SearchInput/SearchInput.vue";
 import SearchableCheckboxes from "../SearchableCheckboxes.vue";
-import Checkboxes from "../../Checkboxes/Checkboxes.vue";
 
 describe("SearchableCheckboxes.vue", () => {
   let defaultPossibleValues;

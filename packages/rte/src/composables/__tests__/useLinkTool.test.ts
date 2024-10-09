@@ -1,8 +1,9 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
-import { useLinkTool } from "../useLinkTool";
-import { defaultLinkToolOptions } from "../../utils/custom-link";
-import { defineComponent, h, ref, type Ref } from "vue";
+import { type Ref, defineComponent, h, ref } from "vue";
 import { mount } from "@vue/test-utils";
+
+import { defaultLinkToolOptions } from "../../utils/custom-link";
+import { useLinkTool } from "../useLinkTool";
 
 // simplified editor mock that allows chaining methods
 const createEditorMock = () => {

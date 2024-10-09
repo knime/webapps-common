@@ -1,6 +1,7 @@
+import { toRaw } from "vue";
+
 import type { NodeKey, TreeNodeOptions } from "./types";
 import type { TypeWithUndefined } from "./utils/types";
-import { toRaw } from "vue";
 
 export class BaseTreeNode {
   readonly key: NodeKey;

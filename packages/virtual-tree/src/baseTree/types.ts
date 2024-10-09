@@ -1,7 +1,8 @@
 import type { Slots } from "vue";
+import type { JSX } from "vue/jsx-runtime";
+
 import type { BaseTreeNode } from "./baseTreeNode";
 import type { TypeWithNull, TypeWithUndefined } from "./utils/types";
-import type { JSX } from "vue/jsx-runtime";
 
 type NodeKey = string | number;
 

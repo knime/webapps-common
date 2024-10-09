@@ -1,20 +1,19 @@
-import { describe, it, expect, beforeEach, beforeAll, vi } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { mount } from "@vue/test-utils";
-
-import TimePartInput from "../../TimePartInput/TimePartInput.vue";
-import DateTimeInput from "../DateTimeInput.vue";
-
 import {
+  getDate,
   getDayOfYear,
   getHours,
-  getMinutes,
-  getSeconds,
   getMilliseconds,
-  getDate,
+  getMinutes,
   getMonth,
+  getSeconds,
   getYear,
 } from "date-fns";
+
 import Dropdown from "../../Dropdown/Dropdown.vue";
+import TimePartInput from "../../TimePartInput/TimePartInput.vue";
+import DateTimeInput from "../DateTimeInput.vue";
 
 // TODO fix test
 describe("DateTimeInput.vue", () => {

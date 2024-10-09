@@ -1,25 +1,24 @@
 /* eslint-disable max-lines */
 import {
+  type Mock,
+  afterEach,
+  beforeEach,
   describe,
   expect,
   it,
   vi,
-  type Mock,
-  afterEach,
-  beforeEach,
 } from "vitest";
-import { mount, VueWrapper } from "@vue/test-utils";
-import { h, shallowRef, type Slot } from "vue";
-
+import { type Slot, h, shallowRef } from "vue";
+import { ref } from "vue";
+import { VueWrapper, mount } from "@vue/test-utils";
 import { useEditor } from "@tiptap/vue-3";
 
 import { FunctionButton, SubMenu } from "@knime/components";
 
-import RichTextEditor from "../RichTextEditor.vue";
-import CreateLinkModal from "../CreateLinkModal.vue";
 import { useLinkTool } from "../../composables/useLinkTool";
-import { ref } from "vue";
 import { defaultLinkToolOptions } from "../../utils/custom-link";
+import CreateLinkModal from "../CreateLinkModal.vue";
+import RichTextEditor from "../RichTextEditor.vue";
 
 const { useLinkToolMock } = vi.hoisted(() => ({ useLinkToolMock: vi.fn() }));
 

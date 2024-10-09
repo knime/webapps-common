@@ -1,8 +1,10 @@
 <script>
 import "../variables.css";
-import Checkbox from "../Checkbox/Checkbox.vue";
-import DropdownIcon from "@knime/styles/img/icons/arrow-dropdown.svg";
 import { useActiveElement } from "@vueuse/core";
+
+import DropdownIcon from "@knime/styles/img/icons/arrow-dropdown.svg";
+
+import Checkbox from "../Checkbox/Checkbox.vue";
 
 const BLUR_TIMEOUT = 1;
 const BOXES_HEIGHT = 28.5; // 22.5px for the checkbox label and 2 * 3px for vertical padding of a single option

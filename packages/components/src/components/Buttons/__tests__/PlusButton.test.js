@@ -1,10 +1,11 @@
-import { describe, it, expect, vi } from "vitest";
-import { shallowMount, mount } from "@vue/test-utils";
+import { describe, expect, it, vi } from "vitest";
+import { mount, shallowMount } from "@vue/test-utils";
 
-import PlusButton from "../PlusButton.vue";
-import Button from "../Button.vue";
-import Tooltip from "../../Tooltip/Tooltip.vue";
 import PlusIcon from "@knime/styles/img/icons/plus-small.svg";
+
+import Tooltip from "../../Tooltip/Tooltip.vue";
+import Button from "../Button.vue";
+import PlusButton from "../PlusButton.vue";
 
 describe("PlusButton.vue", () => {
   it("renders plus button", () => {

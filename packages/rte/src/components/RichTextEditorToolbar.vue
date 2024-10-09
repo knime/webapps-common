@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import type { Editor } from "@tiptap/vue-3";
-import MoreActionsIcon from "@knime/styles/img/icons/menu-options.svg";
+
 import { FunctionButton, type MenuItem, SubMenu } from "@knime/components";
+import MoreActionsIcon from "@knime/styles/img/icons/menu-options.svg";
+
 import type { EditorTools } from "../types";
 
 interface Props {

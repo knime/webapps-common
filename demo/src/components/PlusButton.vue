@@ -1,6 +1,7 @@
 <script>
-import CodeExample from "./demo/CodeExample.vue";
 import { PlusButton } from "@knime/components";
+
+import CodeExample from "./demo/CodeExample.vue";
 // import PlusButtonCode from "webapps-common/ui/components/PlusButton.vue?raw";
 const PlusButtonCode = "";
 // import buttonCode from "webapps-common/ui/components/Button.vue?raw";

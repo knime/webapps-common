@@ -1,19 +1,22 @@
-import { expect, describe, afterEach, it, vi, beforeEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { shallowMount } from "@vue/test-utils";
-import UIExtension from "../UIExtension.vue";
-import UIExtShadowApp from "../UIExtShadowApp.vue";
-import UIExtIFrame from "../UIExtIFrame.vue";
 
-import {
-  iFrameExtensionConfig,
-  componentExtensionConfig,
-} from "./extensionConfig";
-import type { ExtensionConfig } from "../types/ExtensionConfig";
-import type { UIExtensionAPILayer } from "../types/UIExtensionAPILayer";
 import {
   AlertType,
   type UIExtensionServiceAPILayer,
 } from "@knime/ui-extension-service";
+
+import UIExtIFrame from "../UIExtIFrame.vue";
+import UIExtShadowApp from "../UIExtShadowApp.vue";
+import UIExtension from "../UIExtension.vue";
+import type { ExtensionConfig } from "../types/ExtensionConfig";
+import type { UIExtensionAPILayer } from "../types/UIExtensionAPILayer";
+
+import {
+  componentExtensionConfig,
+  iFrameExtensionConfig,
+} from "./extensionConfig";
+
 vi.mock("@knime/ui-extension-service");
 
 describe("UIExtension.vue", () => {

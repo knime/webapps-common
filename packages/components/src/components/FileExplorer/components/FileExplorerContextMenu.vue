@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, toRefs, watch } from "vue";
-
-import type { MenuItem as BaseMenuItem } from "../../types";
-import MenuItems from "../../base/MenuItem/MenuItems.vue";
-import { useFloating, autoUpdate, offset } from "@floating-ui/vue";
-
-import type { FileExplorerItem, FileExplorerContextMenu } from "../types";
 import { onClickOutside } from "@vueuse/core";
+import { autoUpdate, offset, useFloating } from "@floating-ui/vue";
+
+import MenuItems from "../../base/MenuItem/MenuItems.vue";
+import type { MenuItem as BaseMenuItem } from "../../types";
+import type { FileExplorerContextMenu, FileExplorerItem } from "../types";
 
 interface Props {
   position: { x: number; y: number };

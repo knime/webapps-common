@@ -1,6 +1,7 @@
 <script lang="ts">
-import CodeExample from "./demo/CodeExample.vue";
 import { MultiModeTwinList } from "@knime/components";
+
+import CodeExample from "./demo/CodeExample.vue";
 // import code from "webapps-common/ui/components/forms/MultiModeTwinList.vue?raw";
 const code = "";
 

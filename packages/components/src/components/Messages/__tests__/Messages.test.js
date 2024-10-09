@@ -1,11 +1,12 @@
-import { describe, it, expect } from "vitest";
-import { shallowMount, mount, RouterLinkStub } from "@vue/test-utils";
+import { describe, expect, it } from "vitest";
 import { markRaw } from "vue";
+import { RouterLinkStub, mount, shallowMount } from "@vue/test-utils";
 
-import Messages from "../Messages.vue";
-import MessageLink from "../MessageLink.vue";
-import Message from "../Message.vue";
 import SuccessIcon from "@knime/styles/img/icons/circle-check.svg";
+
+import Message from "../Message.vue";
+import MessageLink from "../MessageLink.vue";
+import Messages from "../Messages.vue";
 
 // TODO add test case for message.content prop
 

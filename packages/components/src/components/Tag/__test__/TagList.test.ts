@@ -1,8 +1,8 @@
-import { describe, it, expect } from "vitest";
-import { shallowMount, VueWrapper } from "@vue/test-utils";
+import { describe, expect, it } from "vitest";
+import { VueWrapper, shallowMount } from "@vue/test-utils";
 
-import TagList from "../TagList.vue";
 import Tag from "../Tag.vue";
+import TagList from "../TagList.vue";
 
 const sevenTags = [
   "tag1",

@@ -1,10 +1,11 @@
 import {
-  defineComponent,
   type PropType,
-  toRefs,
-  renderSlot,
   computed,
+  defineComponent,
+  renderSlot,
+  toRefs,
 } from "vue";
+
 import { BaseTreeNode } from "./baseTreeNode";
 import type { TreeContext } from "./types";
 

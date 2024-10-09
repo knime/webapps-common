@@ -1,21 +1,21 @@
 <script lang="ts">
+import { type PropType, toRef } from "vue";
+
+import FilterIcon from "@knime/styles/img/icons/filter.svg";
+import { filters } from "@knime/utils";
+
+import Checkboxes from "../Checkboxes/Checkboxes.vue";
 import Label from "../Label/Label.vue";
 import SearchInput from "../SearchInput/SearchInput.vue";
-import Checkboxes from "../Checkboxes/Checkboxes.vue";
-import ValueSwitch from "../ValueSwitch/ValueSwitch.vue";
-
 import Twinlist, {
   type TwinlistModelValue,
   useTwinlistModelValue,
 } from "../Twinlist/Twinlist.vue";
-
+import ValueSwitch from "../ValueSwitch/ValueSwitch.vue";
 import {
-  type PossibleValue as TwinlistPossibleValue,
   type Id,
+  type PossibleValue as TwinlistPossibleValue,
 } from "../possibleValues";
-import FilterIcon from "@knime/styles/img/icons/filter.svg";
-import { filters } from "@knime/utils";
-import { toRef, type PropType } from "vue";
 
 type PossibleType = { id: string; text: string };
 type PossibleValue = TwinlistPossibleValue & { type?: PossibleType };

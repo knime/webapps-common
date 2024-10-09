@@ -1,12 +1,14 @@
 <script>
 import { markRaw } from "vue";
-import CodeExample from "./demo/CodeExample.vue";
+
 import { SubMenu } from "@knime/components";
 import HelpIcon from "@knime/styles/img/icons/circle-help.svg";
-import StarIcon from "@knime/styles/img/icons/star.svg";
-import LeaveIcon from "@knime/styles/img/icons/leave.svg";
 import HeartIcon from "@knime/styles/img/icons/heart.svg";
+import LeaveIcon from "@knime/styles/img/icons/leave.svg";
 import MenuIcon from "@knime/styles/img/icons/menu-options.svg";
+import StarIcon from "@knime/styles/img/icons/star.svg";
+
+import CodeExample from "./demo/CodeExample.vue";
 // import code from "webapps-common/ui/components/SubMenu.vue?raw";
 const code = "";
 

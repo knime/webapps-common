@@ -1,12 +1,13 @@
 <script lang="ts">
-import { defineComponent, type PropType } from "vue";
+import { type PropType, defineComponent } from "vue";
 
 import CloseIcon from "@knime/styles/img/icons/close.svg";
-import Multiselect from "../Multiselect/Multiselect.vue";
+
 import FunctionButton from "../../Buttons/FunctionButton.vue";
+import Multiselect from "../Multiselect/Multiselect.vue";
 import {
-  type PossibleValue,
   type Id,
+  type PossibleValue,
   createMissingItem,
 } from "../possibleValues";
 

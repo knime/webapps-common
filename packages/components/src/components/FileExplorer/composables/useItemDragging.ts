@@ -1,8 +1,8 @@
-import { computed, ref, watch, type Ref } from "vue";
+import { type Ref, computed, ref, watch } from "vue";
 
 import type { UseMultiSelectionReturn } from "../../../composables/multiSelection/useMultiSelection";
-import { createDragGhosts } from "../utils/dragGhostHelpers";
 import type { FileExplorerItem } from "../types";
+import { createDragGhosts } from "../utils/dragGhostHelpers";
 
 type UseItemDraggingOptions = {
   items: Ref<Array<FileExplorerItem>>;

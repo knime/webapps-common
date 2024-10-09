@@ -1,9 +1,10 @@
 <script>
-import CodeExample from "./demo/CodeExample.vue";
-import { InputField, FunctionButton } from "@knime/components";
-import MailIcon from "@knime/styles/img/icons/mail.svg";
+import { FunctionButton, InputField } from "@knime/components";
 import CircleCheckIcon from "@knime/styles/img/icons/circle-check.svg";
 import CloseIcon from "@knime/styles/img/icons/close.svg";
+import MailIcon from "@knime/styles/img/icons/mail.svg";
+
+import CodeExample from "./demo/CodeExample.vue";
 // import code from "webapps-common/ui/components/forms/InputField.vue?raw";
 const code = "";
 

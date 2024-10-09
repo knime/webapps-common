@@ -1,16 +1,18 @@
 import {
-  expect,
-  describe,
-  beforeAll,
+  type MockInstance,
   afterEach,
+  beforeAll,
+  describe,
+  expect,
   it,
   vi,
-  type MockInstance,
 } from "vitest";
 import { shallowMount } from "@vue/test-utils";
-import UIExtIFrame from "../UIExtIFrame.vue";
+
 import type { UIExtensionServiceAPILayer } from "@knime/ui-extension-service";
 import * as ExtensionServiceModule from "@knime/ui-extension-service";
+
+import UIExtIFrame from "../UIExtIFrame.vue";
 
 vi.mock("@knime/ui-extension-service", async () => {
   const actual = await vi.importActual("@knime/ui-extension-service");

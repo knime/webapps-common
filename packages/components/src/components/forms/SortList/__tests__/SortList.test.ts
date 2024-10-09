@@ -1,15 +1,15 @@
 /* eslint-disable vitest/max-nested-describe */
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { FunctionalComponent } from "vue";
 import { flushPromises, shallowMount } from "@vue/test-utils";
-import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import ArrowDownIcon from "@knime/styles/img/icons/arrow-down.svg";
-import ArrowUpIcon from "@knime/styles/img/icons/arrow-up.svg";
 import ArrowDownloadIcon from "@knime/styles/img/icons/arrow-download.svg";
+import ArrowUpIcon from "@knime/styles/img/icons/arrow-up.svg";
 
-import SortList, { type Props } from "../SortList.vue";
-import MultiselectListBox from "../../MultiselectListBox/MultiselectListBox.vue";
 import FunctionButton from "../../../Buttons/FunctionButton.vue";
+import MultiselectListBox from "../../MultiselectListBox/MultiselectListBox.vue";
+import SortList, { type Props } from "../SortList.vue";
 
 describe("SortList.vue", () => {
   let props: Props;

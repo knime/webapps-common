@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
-import Tree from "../Tree.vue";
-import { flushPromises, mount } from "@vue/test-utils";
 import { nextTick } from "vue";
+import { flushPromises, mount } from "@vue/test-utils";
+
+import Tree from "../Tree.vue";
 
 describe("Tree", () => {
   const doMount = (options = {}) => {

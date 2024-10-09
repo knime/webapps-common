@@ -2,21 +2,21 @@
 /**
  * Thin wrapper around the tree library with added KNIME styles and UX.
  */
-import { ref, nextTick } from "vue";
-import BaseTree, { type EventParams } from "../baseTree";
+import { nextTick, ref } from "vue";
 
-import {
-  type LoadDataFunc,
-  type TreeNodeOptions,
-  type BaseTreeNode,
-  type NodeKey,
-  type KeydownEvent,
-  type SelectEventParams,
-} from "../types";
-
-import ReloadIcon from "@knime/styles/img/icons/reload.svg";
-import ArrowNextIcon from "@knime/styles/img/icons/arrow-next.svg";
 import { useKeyPressedUntilMouseClick } from "@knime/components";
+import ArrowNextIcon from "@knime/styles/img/icons/arrow-next.svg";
+import ReloadIcon from "@knime/styles/img/icons/reload.svg";
+
+import BaseTree, { type EventParams } from "../baseTree";
+import {
+  type BaseTreeNode,
+  type KeydownEvent,
+  type LoadDataFunc,
+  type NodeKey,
+  type SelectEventParams,
+  type TreeNodeOptions,
+} from "../types";
 
 interface Props {
   source: TreeNodeOptions[];

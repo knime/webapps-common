@@ -1,5 +1,5 @@
 /* eslint-disable no-magic-numbers */
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { shallowMount } from "@vue/test-utils";
 
 import NumberInput from "../NumberInput.vue";

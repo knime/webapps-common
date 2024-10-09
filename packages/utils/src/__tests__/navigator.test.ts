@@ -1,12 +1,13 @@
 import {
+  type MockInstance,
+  beforeEach,
   describe,
   expect,
   it,
   vi,
-  type MockInstance,
-  beforeEach,
 } from "vitest";
-import { isMac, getMetaOrCtrlKey } from "../navigator";
+
+import { getMetaOrCtrlKey, isMac } from "../navigator";
 
 const SAMPLE_OUTPUT_USER_AGENT_MAC =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/109.0";

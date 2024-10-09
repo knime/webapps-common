@@ -3,11 +3,11 @@
 <!-- eslint-disable func-style -->
 <script setup lang="ts">
 import {
-  ref,
+  type PropType,
   computed,
   nextTick,
-  type PropType,
   provide,
+  ref,
   shallowReactive,
   toRaw,
   useSlots,
@@ -15,19 +15,23 @@ import {
 } from "vue";
 // @ts-ignore
 import { RecycleScroller } from "vue-virtual-scroller";
+
+import TreeNode from "./TreeNode.vue";
+import { BaseTreeNode } from "./baseTreeNode";
+import { TreeInjectionKey } from "./context";
+import { updateCheckedState, useCheckState } from "./hooks/useCheckState";
 import {
   coerceTreeNodes,
   getFlattenTreeData,
   getKey2TreeNode,
   useTreeData,
 } from "./hooks/useTreeData";
-import { BaseTreeNode } from "./baseTreeNode";
 import type {
   EventParams,
   FocusEventParams,
   KeyNodeMap,
-  LoadDataFunc,
   KeydownEvent,
+  LoadDataFunc,
   NodeKey,
   RenderIconFunc,
   RenderNodeFunc,
@@ -35,11 +39,8 @@ import type {
   TreeNodeOptions,
   VirtualConfig,
 } from "./types";
-import TreeNode from "./TreeNode.vue";
-import { updateCheckedState, useCheckState } from "./hooks/useCheckState";
 import { addOrDelete } from "./utils";
 import type { TypeWithUndefined } from "./utils/types";
-import { TreeInjectionKey } from "./context";
 
 const props = defineProps({
   source: {

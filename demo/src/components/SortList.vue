@@ -1,6 +1,7 @@
 <script lang="ts">
-import CodeExample from "./demo/CodeExample.vue";
 import { SortList } from "@knime/components";
+
+import CodeExample from "./demo/CodeExample.vue";
 
 const code = "";
 

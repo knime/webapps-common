@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import Toast from "./Toast.vue";
-import { useToasts } from "../toastService";
 
+import { useToasts } from "../toastService";
 import type { ToastStack } from "../types";
+
+import Toast from "./Toast.vue";
 
 const MAX_TOAST_COUNT = 5;
 const OFFSET = 4;

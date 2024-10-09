@@ -1,6 +1,7 @@
 <script>
-import CodeExample from "./demo/CodeExample.vue";
 import { ListBox } from "@knime/components";
+
+import CodeExample from "./demo/CodeExample.vue";
 // import code from "webapps-common/ui/components/forms/ListBox.vue?raw";
 const code = "";
 

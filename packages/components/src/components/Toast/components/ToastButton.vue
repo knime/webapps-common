@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import BaseButton from "../../base/Button/BaseButton.vue";
+
 import LinkExternal from "@knime/styles/img/icons/link-external.svg";
 
+import BaseButton from "../../base/Button/BaseButton.vue";
 import type { ToastButton } from "../types";
 
 const props = defineProps<ToastButton>();

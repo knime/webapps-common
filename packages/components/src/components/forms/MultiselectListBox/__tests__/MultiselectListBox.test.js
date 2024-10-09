@@ -1,11 +1,11 @@
 /* eslint-disable max-lines */
 /* eslint-disable no-magic-numbers */
-import { computed, markRaw, ref, nextTick } from "vue";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { computed, markRaw, nextTick, ref } from "vue";
 import { mount } from "@vue/test-utils";
 
-import MultiselectListBox from "../MultiselectListBox.vue";
 import LoadingIcon from "../../../LoadingIcon/LoadingIcon.vue";
+import MultiselectListBox from "../MultiselectListBox.vue";
 
 vi.useFakeTimers();
 

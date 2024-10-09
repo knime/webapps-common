@@ -1,8 +1,10 @@
 <script lang="ts">
 import { defineComponent } from "vue";
-import CodeExample from "./demo/CodeExample.vue";
+
 import { Checkbox, FunctionButton, Modal } from "@knime/components";
 import { RichTextEditor } from "@knime/rich-text-editor";
+
+import CodeExample from "./demo/CodeExample.vue";
 // import code from "webapps-common/ui/components/forms/RichTextEditor/RichTextEditor.vue?raw";
 const code = "";
 

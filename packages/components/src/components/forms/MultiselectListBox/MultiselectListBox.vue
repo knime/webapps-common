@@ -1,10 +1,12 @@
 <!-- eslint-disable max-lines -->
 <script lang="ts">
-import { toRef, watch, type PropType } from "vue";
+import { type PropType, toRef, watch } from "vue";
 import { useVirtualList } from "@vueuse/core";
+
 import { debounce } from "@knime/utils";
+
 import StyledListItem from "../../StyleListItem/StyledListItem.vue";
-import type { Id, PossibleValue, BottomValue } from "../possibleValues";
+import type { BottomValue, Id, PossibleValue } from "../possibleValues";
 
 let count = 0;
 const CLICK_META_KEY_TIMEOUT = 250; // ms

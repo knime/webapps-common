@@ -1,9 +1,11 @@
-import { describe, expect, vi, it } from "vitest";
-import BoldIcon from "@knime/styles/img/icons/bold.svg";
-import type { EditorToolItem } from "../../types";
+import { describe, expect, it, vi } from "vitest";
 import { shallowMount } from "@vue/test-utils";
-import RichTextEditorToolbar from "../RichTextEditorToolbar.vue";
+
 import { type MenuItem, SubMenu } from "@knime/components";
+import BoldIcon from "@knime/styles/img/icons/bold.svg";
+
+import type { EditorToolItem } from "../../types";
+import RichTextEditorToolbar from "../RichTextEditorToolbar.vue";
 
 describe("RichTextEditorToolbar.vue", () => {
   it("displays secondary tools", () => {

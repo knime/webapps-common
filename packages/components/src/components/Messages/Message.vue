@@ -1,9 +1,11 @@
 <script>
-import BaseMessage from "../base/Message/BaseMessage.vue";
-import MessageTitle from "./MessageTitle.vue";
-import Collapser from "../Collapser/Collapser.vue";
-import MessageLink from "./MessageLink.vue";
 import CopyIcon from "@knime/styles/img/icons/copy.svg";
+
+import Collapser from "../Collapser/Collapser.vue";
+import BaseMessage from "../base/Message/BaseMessage.vue";
+
+import MessageLink from "./MessageLink.vue";
+import MessageTitle from "./MessageTitle.vue";
 
 /**
  * Message banner component with close button

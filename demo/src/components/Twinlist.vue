@@ -1,7 +1,9 @@
 <script>
 import { markRaw } from "vue";
+
+import { LoadingIcon, Twinlist } from "@knime/components";
+
 import CodeExample from "./demo/CodeExample.vue";
-import { Twinlist, LoadingIcon } from "@knime/components";
 // import code from "webapps-common/ui/components/forms/Twinlist.vue?raw";
 const code = "";
 

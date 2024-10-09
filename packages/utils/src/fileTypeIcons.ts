@@ -8,13 +8,13 @@ import odtIcon from "@knime/styles/img/icons/file-odt.svg";
 import pdfIcon from "@knime/styles/img/icons/file-pdf.svg";
 import pptxIcon from "@knime/styles/img/icons/file-pptx.svg";
 import psIcon from "@knime/styles/img/icons/file-ps.svg";
+import fileIcon from "@knime/styles/img/icons/file-question.svg";
+import txtIcon from "@knime/styles/img/icons/file-text.svg";
 import xlsIcon from "@knime/styles/img/icons/file-xls.svg";
 import xlsxIcon from "@knime/styles/img/icons/file-xlsx.svg";
 import xmlIcon from "@knime/styles/img/icons/file-xml.svg";
-import zipIcon from "@knime/styles/img/icons/file-zip.svg";
 import exeIcon from "@knime/styles/img/icons/file-zip-exe.svg";
-import txtIcon from "@knime/styles/img/icons/file-text.svg";
-import fileIcon from "@knime/styles/img/icons/file-question.svg";
+import zipIcon from "@knime/styles/img/icons/file-zip.svg";
 
 export const icons = {
   csvIcon,

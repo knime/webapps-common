@@ -1,9 +1,12 @@
 <script>
-import CodeExample from "./demo/CodeExample.vue";
 import { OpenSourceCredits } from "@knime/components";
+
+import usedPackages from "../../licenses/used-packages.json";
+
+import CodeExample from "./demo/CodeExample.vue";
+
 // import code from "webapps-common/ui/components/OpenSourceCredits.vue?raw";
 const code = "";
-import usedPackages from "../../licenses/used-packages.json";
 
 export default {
   components: {

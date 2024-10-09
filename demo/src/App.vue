@@ -1,11 +1,13 @@
 <script>
 import "./assets/index.css";
 
+import { h as createElement, defineAsyncComponent } from "vue";
+
 import {
-  TabBar as TabBarComponent,
   SearchInput as SearchInputComponent,
-  ToastStack,
+  TabBar as TabBarComponent,
   ToastServiceProvider,
+  ToastStack,
 } from "@knime/components";
 import CheckboxIcon from "@knime/styles/img/icons/checkboxes.svg";
 import PaletteIcon from "@knime/styles/img/icons/color-palette.svg";
@@ -14,7 +16,6 @@ import InteractiveIcon from "@knime/styles/img/icons/interactive.svg";
 import ListThumbs from "@knime/styles/img/icons/list-thumbs.svg";
 import ImageIcon from "@knime/styles/img/icons/media-image.svg";
 import ViewListIcon from "@knime/styles/img/icons/view-list.svg";
-import { defineAsyncComponent, h as createElement } from "vue";
 
 import HeadlineWithAnchorLink from "./components/demo/HeadlineWithAnchorLink.vue";
 import NpmLink from "./components/demo/NpmLink.vue";

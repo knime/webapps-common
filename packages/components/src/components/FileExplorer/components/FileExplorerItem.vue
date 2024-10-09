@@ -1,16 +1,15 @@
 <script setup lang="ts">
-import { toRefs, ref, watch, nextTick, type Ref } from "vue";
+import { type Ref, nextTick, ref, toRefs, watch } from "vue";
+import { OnClickOutside } from "@vueuse/components";
 
-import FolderIcon from "@knime/styles/img/icons/folder.svg";
 import FileTextIcon from "@knime/styles/img/icons/file-text.svg";
-import InputField from "../../forms/InputField/InputField.vue";
+import FolderIcon from "@knime/styles/img/icons/folder.svg";
 
 import { useNameValidator } from "../../../composables";
-
-import FileExplorerItemBase from "./FileExplorerItemBase.vue";
+import InputField from "../../forms/InputField/InputField.vue";
 import type { FileExplorerItem, ItemIconRenderer } from "../types";
 
-import { OnClickOutside } from "@vueuse/components";
+import FileExplorerItemBase from "./FileExplorerItemBase.vue";
 
 interface Props {
   blacklistedNames: Array<string>;

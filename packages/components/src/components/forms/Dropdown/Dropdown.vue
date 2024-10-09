@@ -1,8 +1,9 @@
 <script lang="ts">
-import { OnClickOutside } from "@vueuse/components";
-import { isEmpty } from "lodash-es";
 import { type PropType } from "vue";
 import { computed, ref, toRefs, watch } from "vue";
+import { OnClickOutside } from "@vueuse/components";
+import { isEmpty } from "lodash-es";
+
 import DropdownIcon from "@knime/styles/img/icons/arrow-dropdown.svg";
 import CloseIcon from "@knime/styles/img/icons/close.svg";
 

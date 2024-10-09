@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { toRefs } from "@vueuse/shared";
 import { ref } from "vue";
+import { toRefs } from "@vueuse/shared";
+
 import useClickOutside from "../useClickOutside";
 
 const props = withDefaults(

@@ -1,8 +1,9 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { mount } from "@vue/test-utils";
 
-import Multiselect from "./Multiselect.vue";
 import Checkbox from "../Checkbox/Checkbox.vue";
+
+import Multiselect from "./Multiselect.vue";
 
 const doMount = (options, dynamicProps) => {
   const wrapper = mount(Multiselect, {

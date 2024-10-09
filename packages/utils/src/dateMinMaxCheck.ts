@@ -1,6 +1,7 @@
 import { isAfter, isBefore } from "date-fns";
-import updateTime from "./updateTime";
+
 import updateDate from "./updateDate";
+import updateTime from "./updateTime";
 
 /**
  * Check if date is before min.

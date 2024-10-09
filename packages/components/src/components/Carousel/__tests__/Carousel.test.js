@@ -1,8 +1,8 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import { nextTick } from "vue";
 import { shallowMount } from "@vue/test-utils";
 
 import Carousel from "../Carousel.vue";
-import { nextTick } from "vue";
 
 describe("Carousel.vue", () => {
   it("renders default", () => {

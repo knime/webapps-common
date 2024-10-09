@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable no-magic-numbers */
+import { describe, expect, it, vi } from "vitest";
 import { mount } from "@vue/test-utils";
-import { describe, it, expect, vi } from "vitest";
 
 import StyledListItem from "../StyledListItem.vue";
 

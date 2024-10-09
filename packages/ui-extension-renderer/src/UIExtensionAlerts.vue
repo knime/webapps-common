@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Alert } from "@knime/ui-extension-service";
+
 import UIExtensionErrorOverlay from "./UIExtensionErrorOverlay.vue";
 import UIExtensionWarningButton from "./UIExtensionWarningButton.vue";
 

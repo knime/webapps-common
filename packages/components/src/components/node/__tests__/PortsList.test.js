@@ -1,8 +1,8 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { shallowMount } from "@vue/test-utils";
 
-import PortsList from "../PortsList.vue";
 import PortGroup from "../PortGroup.vue";
+import PortsList from "../PortsList.vue";
 
 describe("PortsList.vue", () => {
   it("renders", () => {

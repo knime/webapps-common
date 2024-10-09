@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import Tag from "./Tag.vue";
+import { computed, nextTick, ref, toRef, watch } from "vue";
 import { difference } from "lodash-es";
-import { nextTick, ref, computed, toRef, watch } from "vue";
+
+import Tag from "./Tag.vue";
 
 const defaultInitialTagCount = 5;
 

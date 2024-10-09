@@ -1,24 +1,24 @@
 <script setup lang="ts">
 import {
+  type StyleValue,
   computed,
+  onMounted,
   onUnmounted,
   ref,
   toRaw,
-  type StyleValue,
-  watch,
   toRef,
-  onMounted,
+  watch,
 } from "vue";
 
-import UIExtShadowApp from "./UIExtShadowApp.vue";
-import UIExtIFrame from "./UIExtIFrame.vue";
-
-import type { UIExtensionAPILayer } from "./types/UIExtensionAPILayer";
-import type { ExtensionConfig } from "./types/ExtensionConfig";
 import {
   AlertType,
   type UIExtensionPushEvents,
 } from "@knime/ui-extension-service";
+
+import UIExtIFrame from "./UIExtIFrame.vue";
+import UIExtShadowApp from "./UIExtShadowApp.vue";
+import type { ExtensionConfig } from "./types/ExtensionConfig";
+import type { UIExtensionAPILayer } from "./types/UIExtensionAPILayer";
 
 /**
  * Wrapper for all UIExtensions. Determines the type of component to render (either native/Vue-based or iframe-based).

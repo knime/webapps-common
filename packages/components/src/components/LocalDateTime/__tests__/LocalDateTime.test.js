@@ -1,9 +1,10 @@
-import { describe, it, expect } from "vitest";
-import { shallowMount } from "@vue/test-utils";
+import { describe, expect, it } from "vitest";
 import { nextTick } from "vue";
+import { shallowMount } from "@vue/test-utils";
+
+import { formatLocalDateTimeString } from "@knime/utils";
 
 import LocalDateTime from "../LocalDateTime.vue";
-import { formatLocalDateTimeString } from "@knime/utils";
 
 const dateOffset = "2023-01-23T09:15:28+00:00";
 const dateUTC = "2023-01-23T09:15:28.000Z";

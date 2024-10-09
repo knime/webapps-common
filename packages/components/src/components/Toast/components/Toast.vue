@@ -1,22 +1,20 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, toRef } from "vue";
-import { useMouseInElement, useWindowFocus, useEventBus } from "@vueuse/core";
+import { computed, onMounted, ref, toRef, watch } from "vue";
+import type { Ref } from "vue";
+import { useEventBus, useMouseInElement, useWindowFocus } from "@vueuse/core";
 
-import FunctionButton from "../../Buttons/FunctionButton.vue";
-
-import CloseIcon from "@knime/styles/img/icons/close.svg";
-import InfoIcon from "@knime/styles/img/icons/circle-info.svg";
-import ErrorIcon from "@knime/styles/img/icons/circle-close.svg";
 import SuccessIcon from "@knime/styles/img/icons/circle-check.svg";
+import ErrorIcon from "@knime/styles/img/icons/circle-close.svg";
+import InfoIcon from "@knime/styles/img/icons/circle-info.svg";
+import CloseIcon from "@knime/styles/img/icons/close.svg";
 import WarnIcon from "@knime/styles/img/icons/sign-warning.svg";
-
 import { capitalize, truncateString } from "@knime/utils";
 
-import ToastButton from "./ToastButton.vue";
+import FunctionButton from "../../Buttons/FunctionButton.vue";
+import type { Toast } from "../types";
 import useAnimation from "../useAnimation";
 
-import type { Toast } from "../types";
-import type { Ref } from "vue";
+import ToastButton from "./ToastButton.vue";
 
 const MAX_MESSAGE_LENGTH = 160;
 

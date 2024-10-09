@@ -1,9 +1,10 @@
-import { describe, it, expect, vi } from "vitest";
-import { shallowMount, mount } from "@vue/test-utils";
+import { describe, expect, it, vi } from "vitest";
+import { mount, shallowMount } from "@vue/test-utils";
 
-import Message from "../Message.vue";
-import Button from "../../Buttons/Button.vue";
 import WarnIcon from "@knime/styles/img/icons/sign-warning.svg";
+
+import Button from "../../Buttons/Button.vue";
+import Message from "../Message.vue";
 
 // import { copyText } from "@knime/utils";
 // vi.mock("@knime/utils", () => ({

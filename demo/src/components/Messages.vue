@@ -1,7 +1,9 @@
 <script>
 import { markRaw } from "vue";
+
 import { Messages } from "@knime/components";
 import BulbIcon from "@knime/styles/img/icons/bulb.svg";
+
 import CodeExample from "./demo/CodeExample.vue";
 // import code from "webapps-common/ui/components/Messages.vue?raw";
 const code = "";

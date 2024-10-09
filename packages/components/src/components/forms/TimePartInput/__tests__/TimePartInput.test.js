@@ -1,6 +1,6 @@
 /* eslint-disable no-magic-numbers */
-import { describe, it, expect, beforeEach, vi } from "vitest";
-import { shallowMount, mount } from "@vue/test-utils";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { mount, shallowMount } from "@vue/test-utils";
 
 import TimePartInput from "../TimePartInput.vue";
 

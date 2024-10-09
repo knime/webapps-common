@@ -1,5 +1,6 @@
-import { expect, describe, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { gsap } from "gsap";
+
 import { createDragGhosts } from "../dragGhostHelpers";
 
 vi.mock("gsap", () => ({

@@ -1,8 +1,8 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { mount } from "@vue/test-utils";
 
-import ComboBox from "../ComboBox.vue";
 import Multiselect from "../../Multiselect/Multiselect.vue";
+import ComboBox from "../ComboBox.vue";
 
 const possibleValues = [
   {

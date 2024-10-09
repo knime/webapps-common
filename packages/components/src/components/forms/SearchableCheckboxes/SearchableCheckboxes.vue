@@ -1,17 +1,17 @@
 <script lang="ts">
-import { ref, computed, toRef } from "vue";
+import { computed, ref, toRef } from "vue";
 import type { PropType, Ref } from "vue";
 
+import useSearch from "../../../composables/useSearch";
+import Checkboxes from "../Checkboxes/Checkboxes.vue";
 import Label from "../Label/Label.vue";
 import SearchInput from "../SearchInput/SearchInput.vue";
-import Checkboxes from "../Checkboxes/Checkboxes.vue";
 import {
-  useLabelInfo,
   type Id,
   type PossibleValue,
   createMissingItem,
+  useLabelInfo,
 } from "../possibleValues";
-import useSearch from "../../../composables/useSearch";
 
 const MIN_LIST_SIZE = 5;
 const DEF_PIX_SIZE = 28;

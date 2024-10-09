@@ -1,9 +1,10 @@
 <script>
-import ImagePreviews from "./demo/ImagePreviews.vue";
-import CodeExample from "./demo/CodeExample.vue";
-import ListNumbersIcon from "@knime/styles/img/icons/list-numbers.svg";
-import FolderIcon from "@knime/styles/img/icons/folder.svg";
 import { InputField, svgWithTitle } from "@knime/components";
+import FolderIcon from "@knime/styles/img/icons/folder.svg";
+import ListNumbersIcon from "@knime/styles/img/icons/list-numbers.svg";
+
+import CodeExample from "./demo/CodeExample.vue";
+import ImagePreviews from "./demo/ImagePreviews.vue";
 
 const codeExample1 = `<script>
 import FolderIcon from '~/@knime/styles/img/icons/folder.svg';

@@ -1,6 +1,7 @@
 <script>
-import { Modal, Button, Checkbox } from "@knime/components";
+import { Button, Checkbox, Modal } from "@knime/components";
 import PlayIcon from "@knime/styles/img/icons/circle-play.svg";
+
 import CodeExample from "./demo/CodeExample.vue";
 
 // import code from "webapps-common/ui/components/Modal.vue?raw";

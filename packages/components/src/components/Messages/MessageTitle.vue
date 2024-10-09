@@ -1,6 +1,7 @@
 <script>
-import Button from "../Buttons/Button.vue";
 import CloseIcon from "@knime/styles/img/icons/close.svg";
+
+import Button from "../Buttons/Button.vue";
 
 export default {
   name: "MessageTitle",

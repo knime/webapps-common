@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import type { Alert } from "@knime/ui-extension-service";
-import SignWarningIcon from "@knime/styles/img/icons/sign-warning.svg";
+
 import { FunctionButton } from "@knime/components";
+import SignWarningIcon from "@knime/styles/img/icons/sign-warning.svg";
+import type { Alert } from "@knime/ui-extension-service";
 
 type Props = {
   alert?: Alert | null;

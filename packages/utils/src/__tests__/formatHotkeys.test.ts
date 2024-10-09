@@ -1,7 +1,9 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { afterEach } from "node:test";
+
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { formatHotkeys } from "../formatHotkeys";
 import type { Hotkey } from "../formatHotkeys";
-import { afterEach } from "node:test";
 import * as navigator from "../navigator";
 
 describe("formatHotkey", () => {

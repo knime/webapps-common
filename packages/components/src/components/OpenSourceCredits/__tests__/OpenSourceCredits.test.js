@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { mount } from "@vue/test-utils";
 
-import OpenSourceCredits from "../OpenSourceCredits.vue";
 import Description from "../../Description/Description.vue";
+import OpenSourceCredits from "../OpenSourceCredits.vue";
 
 const samplePackages = [
   {

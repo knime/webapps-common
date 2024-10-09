@@ -1,6 +1,7 @@
 <script>
-import PortIcon from "./PortIcon.vue";
 import Description from "../Description/Description.vue";
+
+import PortIcon from "./PortIcon.vue";
 
 /** PortGroups are part of the NodeFeaureList
  *  A PortGroup is one section that contains several ports and their metadata.

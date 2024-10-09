@@ -1,11 +1,13 @@
 <script>
-import PortIcon from "@knime/styles/img/icons/plugin.svg";
 import ViewsIcon from "@knime/styles/img/icons/eye.svg";
+import PortIcon from "@knime/styles/img/icons/plugin.svg";
 import OptionsIcon from "@knime/styles/img/icons/settings.svg";
+
 import TabBar from "../TabBar/TabBar.vue";
+
+import DialogOptions from "./DialogOptions.vue";
 import PortsList from "./PortsList.vue";
 import ViewsList from "./ViewsList.vue";
-import DialogOptions from "./DialogOptions.vue";
 
 export default {
   name: "NodeFeatureList",

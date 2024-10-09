@@ -1,11 +1,13 @@
 <script setup lang="ts">
+import { ref } from "vue";
+
 import {
-  Tree,
   type BaseTreeNode,
+  Tree,
   type TreeNodeOptions,
 } from "@knime/virtual-tree";
+
 import CodeExample from "./demo/CodeExample.vue";
-import { ref } from "vue";
 
 const code = "";
 

@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { mount } from "@vue/test-utils";
 
-import RadioButtons from "../RadioButtons.vue";
 import BaseRadioButtons from "../BaseRadioButtons.vue";
+import RadioButtons from "../RadioButtons.vue";
 
 describe("RadioButtons.vue", () => {
   let possibleValues;

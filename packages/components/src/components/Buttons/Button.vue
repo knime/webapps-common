@@ -1,5 +1,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
+
 import BaseButton from "../base/Button/BaseButton.vue";
 
 export default defineComponent({

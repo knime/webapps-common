@@ -1,6 +1,8 @@
-import type { Editor } from "@tiptap/vue-3";
-import { navigatorUtils } from "@knime/utils";
 import { computed, onMounted, onUnmounted, ref } from "vue";
+import type { Editor } from "@tiptap/vue-3";
+
+import { navigatorUtils } from "@knime/utils";
+
 import type { LinkToolOptions } from "../utils/custom-link";
 
 export const useLinkTool = ({

@@ -1,10 +1,12 @@
-import {
-  type UseMultiSelectionReturn,
-  type UseMultiSelectionOptions,
-} from "./useMultiSelection";
-import * as multiSelectionService from "./multiSelectionStateService";
-import { computed, ref, type Ref } from "vue";
+import { type Ref, computed, ref } from "vue";
+
 import { navigatorUtils } from "@knime/utils";
+
+import * as multiSelectionService from "./multiSelectionStateService";
+import {
+  type UseMultiSelectionOptions,
+  type UseMultiSelectionReturn,
+} from "./useMultiSelection";
 
 const PAGE_SIZE = 15;
 const INVALID_INDEX = -Infinity;

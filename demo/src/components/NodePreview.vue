@@ -1,6 +1,7 @@
 <script>
-import CodeExample from "./demo/CodeExample.vue";
 import { NodePreview } from "@knime/components";
+
+import CodeExample from "./demo/CodeExample.vue";
 // import sourceCode from "webapps-common/ui/components/node/NodePreview.vue?raw";
 const sourceCode = "";
 

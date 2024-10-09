@@ -1,5 +1,5 @@
-import consola from "consola";
 import { config } from "@vue/test-utils";
+import consola from "consola";
 
 // @ts-ignore
 window.global.consola = consola;

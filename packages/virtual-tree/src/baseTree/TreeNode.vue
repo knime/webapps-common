@@ -1,12 +1,13 @@
 <!-- eslint-disable no-undefined -->
 <script setup lang="ts">
 import { type PropType, computed, inject } from "vue";
+
 import VirCheckBox from "./TreeNodeCheckbox.vue";
-import RenderNode from "./renderNode";
-import renderIcon from "./renderIcon";
 import { BaseTreeNode } from "./baseTreeNode";
-import type { EventParams, NodeKey } from "./types";
 import { TreeInjectionKey } from "./context";
+import renderIcon from "./renderIcon";
+import RenderNode from "./renderNode";
+import type { EventParams, NodeKey } from "./types";
 
 const props = defineProps({
   node: {

@@ -1,9 +1,11 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { flushPromises, mount } from "@vue/test-utils";
-import Dropdown from "../Dropdown.vue";
-import { isUndefined, cloneDeep } from "lodash-es";
-import FunctionButton from "../../../Buttons/FunctionButton.vue";
+import { cloneDeep, isUndefined } from "lodash-es";
+
 import DropdownIcon from "@knime/styles/img/icons/arrow-dropdown.svg";
+
+import FunctionButton from "../../../Buttons/FunctionButton.vue";
+import Dropdown from "../Dropdown.vue";
 
 vi.useFakeTimers();
 

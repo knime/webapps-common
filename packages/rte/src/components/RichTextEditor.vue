@@ -1,23 +1,25 @@
 <script setup lang="ts">
-import { computed, onMounted, toRefs, useSlots, watch, nextTick } from "vue";
-import { EditorContent, useEditor, type AnyExtension } from "@tiptap/vue-3";
+import { computed, nextTick, onMounted, toRefs, useSlots, watch } from "vue";
 import UnderLine from "@tiptap/extension-underline";
 import StarterKit from "@tiptap/starter-kit";
+import { type AnyExtension, EditorContent, useEditor } from "@tiptap/vue-3";
 
 import { navigatorUtils } from "@knime/utils";
-import RichTextEditorBaseToolbar from "./RichTextEditorBaseToolbar.vue";
-import RichTextEditorToolbar from "./RichTextEditorToolbar.vue";
+
 import type { BaseExtensionsConfig } from "../types";
-import { CustomTextAlign } from "../utils/custom-text-align";
-import { SmallText } from "../utils/paragraphTextStyle/extension";
 import { CustomHardBreak } from "../utils/custom-hard-break";
 import {
   CustomLink,
+  type LinkToolOptions,
   defaultLinkToolOptions,
   validateURL,
-  type LinkToolOptions,
 } from "../utils/custom-link";
+import { CustomTextAlign } from "../utils/custom-text-align";
+import { SmallText } from "../utils/paragraphTextStyle/extension";
+
 import CreateLinkModal from "./CreateLinkModal.vue";
+import RichTextEditorBaseToolbar from "./RichTextEditorBaseToolbar.vue";
+import RichTextEditorToolbar from "./RichTextEditorToolbar.vue";
 
 type BaseExtensions =
   | BaseExtensionsConfig

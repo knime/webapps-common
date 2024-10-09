@@ -1,8 +1,8 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { mount, shallowMount } from "@vue/test-utils";
 
-import DialogOptions from "../DialogOptions.vue";
 import Collapser from "../../Collapser/Collapser.vue";
+import DialogOptions from "../DialogOptions.vue";
 
 describe("DialogOptions.vue", () => {
   it("renders", () => {

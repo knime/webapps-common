@@ -1,5 +1,5 @@
 /* eslint-disable vue/one-component-per-file */
-import { h, defineComponent, getCurrentInstance, useSlots } from "vue";
+import { defineComponent, getCurrentInstance, h, useSlots } from "vue";
 
 const getAppInstance = () => {
   const currentInstance = getCurrentInstance();

@@ -1,19 +1,18 @@
 <script lang="ts">
-import { ref, computed, toRef } from "vue";
+import { computed, ref, toRef } from "vue";
 import type { PropType, Ref } from "vue";
 
-import MultiselectListBox from "../MultiselectListBox/MultiselectListBox.vue";
+import useSearch from "../../../composables/useSearch";
 import Label from "../Label/Label.vue";
+import MultiselectListBox from "../MultiselectListBox/MultiselectListBox.vue";
 import SearchInput from "../SearchInput/SearchInput.vue";
 import {
-  useLabelInfo,
-  createMissingItem,
+  type BottomValue,
   type Id,
   type PossibleValue,
-  type BottomValue,
+  createMissingItem,
+  useLabelInfo,
 } from "../possibleValues";
-
-import useSearch from "../../../composables/useSearch";
 
 const MIN_LIST_SIZE = 5;
 

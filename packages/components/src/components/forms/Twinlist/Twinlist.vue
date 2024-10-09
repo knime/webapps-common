@@ -1,23 +1,23 @@
 <!-- eslint-disable max-lines -->
 <script lang="ts">
-import { computed, ref, toRef, type PropType, type Ref } from "vue";
+import { type PropType, type Ref, computed, ref, toRef } from "vue";
 
-import ArrowNextIcon from "@knime/styles/img/icons/arrow-next.svg";
 import ArrowNextDoubleIcon from "@knime/styles/img/icons/arrow-next-double.svg";
-import ArrowPrevIcon from "@knime/styles/img/icons/arrow-prev.svg";
+import ArrowNextIcon from "@knime/styles/img/icons/arrow-next.svg";
 import ArrowPrevDoubleIcon from "@knime/styles/img/icons/arrow-prev-double.svg";
-import {
-  useLabelInfo,
-  createMissingItem,
-  type Id,
-  type PossibleValue,
-} from "../possibleValues";
-import Label from "../Label/Label.vue";
-import SearchInput from "../SearchInput/SearchInput.vue";
-import MultiselectListBox from "../MultiselectListBox/MultiselectListBox.vue";
-import ResizeHandle from "../../ResizeHandle/ResizeHandle.vue";
+import ArrowPrevIcon from "@knime/styles/img/icons/arrow-prev.svg";
 
 import useSearch from "../../../composables/useSearch";
+import ResizeHandle from "../../ResizeHandle/ResizeHandle.vue";
+import Label from "../Label/Label.vue";
+import MultiselectListBox from "../MultiselectListBox/MultiselectListBox.vue";
+import SearchInput from "../SearchInput/SearchInput.vue";
+import {
+  type Id,
+  type PossibleValue,
+  createMissingItem,
+  useLabelInfo,
+} from "../possibleValues";
 
 const KEY_ENTER = "Enter";
 const MIN_LIST_SIZE = 5;

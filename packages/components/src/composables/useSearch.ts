@@ -1,4 +1,5 @@
-import { computed, unref, type MaybeRef, type Ref } from "vue";
+import { type MaybeRef, type Ref, computed, unref } from "vue";
+
 import { filters } from "../../../utils/src/filters";
 
 export default <T extends { text: string }>(

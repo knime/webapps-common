@@ -3,13 +3,16 @@
 /* eslint-disable no-console */
 const fs = require("fs");
 const path = require("path");
-const semver = require("semver");
-const pkgUp = require("pkg-up");
+
 const chalk = require("chalk");
-const licensechecker = require("license-checker");
 const { Command } = require("commander");
-const read = require("./read-packages");
+const licensechecker = require("license-checker");
+const pkgUp = require("pkg-up");
+const semver = require("semver");
+
 const config = require("../config/license.config");
+
+const read = require("./read-packages");
 
 const program = new Command();
 const basePath = process.cwd();

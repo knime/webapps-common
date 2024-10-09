@@ -1,8 +1,10 @@
 <script lang="ts">
-import { defineComponent, type PropType } from "vue";
-import BaseModal from "../base/Modal/BaseModal.vue";
-import FunctionButton from "../Buttons/FunctionButton.vue";
+import { type PropType, defineComponent } from "vue";
+
 import CloseIcon from "@knime/styles/img/icons/close.svg";
+
+import FunctionButton from "../Buttons/FunctionButton.vue";
+import BaseModal from "../base/Modal/BaseModal.vue";
 
 /**
  * See demo for documentation

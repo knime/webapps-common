@@ -1,8 +1,9 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { shallowMount } from "@vue/test-utils";
 
-import LoadingIcon from "../LoadingIcon.vue";
 import ReloadIcon from "@knime/styles/img/icons/reload.svg";
+
+import LoadingIcon from "../LoadingIcon.vue";
 
 describe("LoadingIcon.vue", () => {
   it("renders", () => {

@@ -1,9 +1,10 @@
-import { describe, it, expect, vi, type Mock } from "vitest";
+import { type Mock, describe, expect, it, vi } from "vitest";
+
 import {
   formatDateString,
   formatDateTimeString,
-  formatTimeString,
   formatLocalDateTimeString,
+  formatTimeString,
 } from "../format";
 import getLocalTimeZone from "../localTimezone";
 

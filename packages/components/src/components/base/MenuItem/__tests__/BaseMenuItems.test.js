@@ -1,6 +1,6 @@
 /* eslint-disable max-nested-callbacks */
-import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
-import { mount, RouterLinkStub } from "@vue/test-utils";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { RouterLinkStub, mount } from "@vue/test-utils";
 
 import BaseMenuItems from "../BaseMenuItems.vue";
 

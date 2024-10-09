@@ -1,5 +1,6 @@
 <script lang="ts">
-import { defineComponent, type PropType } from "vue";
+import { type PropType, defineComponent } from "vue";
+
 import BaseRadioButtons, {
   type BaseRadioButtonItem,
 } from "../RadioButtons/BaseRadioButtons.vue";

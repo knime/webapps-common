@@ -1,8 +1,11 @@
 <script lang="ts">
 import { defineComponent } from "vue";
-import Button from "./Button.vue";
-import Tooltip from "../Tooltip/Tooltip.vue";
+
 import PlusIcon from "@knime/styles/img/icons/plus-small.svg";
+
+import Tooltip from "../Tooltip/Tooltip.vue";
+
+import Button from "./Button.vue";
 
 export default defineComponent({
   name: "PlusButton",

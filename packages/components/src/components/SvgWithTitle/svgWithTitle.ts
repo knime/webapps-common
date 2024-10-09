@@ -1,4 +1,4 @@
-import { h as createElement, type ComponentInstance } from "vue";
+import { type ComponentInstance, h as createElement } from "vue";
 
 /**
  * Higher order component that decorates a SVG component (loaded with vue-svg-loader) with a `<title>` element

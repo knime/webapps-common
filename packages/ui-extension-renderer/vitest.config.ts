@@ -1,9 +1,10 @@
 import { fileURLToPath } from "url";
 
-import { svgoConfig } from "@knime/styles/config/svgo.config";
 import vue from "@vitejs/plugin-vue";
-import svgLoader from "vite-svg-loader";
 import { defineProject } from "vitest/config";
+import svgLoader from "vite-svg-loader";
+
+import { svgoConfig } from "@knime/styles/config/svgo.config";
 
 export default defineProject({
   // @ts-ignore

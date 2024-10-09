@@ -1,7 +1,6 @@
-import { ref, onMounted } from "vue";
-import { merge } from "lodash-es";
-
+import { onMounted, ref } from "vue";
 import type { Ref } from "vue";
+import { merge } from "lodash-es";
 
 export default function useAnimation(
   targetRef: Ref<HTMLElement | null>,

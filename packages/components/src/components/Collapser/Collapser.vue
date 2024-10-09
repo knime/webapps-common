@@ -1,5 +1,6 @@
 <script>
 import DropdownIcon from "@knime/styles/img/icons/arrow-dropdown.svg";
+
 import BaseButton from "../base/Button/BaseButton.vue";
 import ExpandTransition from "../transitions/ExpandTransition.vue";
 

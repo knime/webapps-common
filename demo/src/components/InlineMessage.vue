@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import CodeExample from "./demo/CodeExample.vue";
 import { InlineMessage } from "@knime/components";
+
+import CodeExample from "./demo/CodeExample.vue";
 
 const code = "";
 

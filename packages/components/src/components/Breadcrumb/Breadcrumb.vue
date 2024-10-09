@@ -1,7 +1,9 @@
 <script lang="ts">
-import ArrowNext from "@knime/styles/img/icons/arrow-next.svg";
-import { resolveNuxtLinkComponent } from "../nuxtComponentResolver";
 import type { FunctionalComponent, PropType, SVGAttributes } from "vue";
+
+import ArrowNext from "@knime/styles/img/icons/arrow-next.svg";
+
+import { resolveNuxtLinkComponent } from "../nuxtComponentResolver";
 
 export type BreadcrumbItem = {
   text?: string;

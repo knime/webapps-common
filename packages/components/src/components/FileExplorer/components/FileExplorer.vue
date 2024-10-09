@@ -1,18 +1,20 @@
 <script setup lang="ts">
-import { ref, toRefs, toRef, computed, watch, nextTick } from "vue";
+import { computed, nextTick, ref, toRef, toRefs, watch } from "vue";
 
-import { useItemDragging } from "../composables/useItemDragging";
+import { navigatorUtils } from "@knime/utils";
+
 import { useFocusableMultiSelection } from "../../../composables/multiSelection/useFocusableMultiSelection";
+import useClickOutside from "../../../composables/useClickOutside";
+import useKeyPressedUntilMouseClick from "../../../composables/useKeyPressedUntilMouseClick";
+import { useItemDragging } from "../composables/useItemDragging";
+import type {
+  FileExplorerContextMenu as FileExplorerContextMenuNamespace,
+  FileExplorerItem as FileExplorerItemType,
+} from "../types";
+
 import FileExplorerContextMenu from "./FileExplorerContextMenu.vue";
 import FileExplorerItem from "./FileExplorerItem.vue";
 import FileExplorerItemBack from "./FileExplorerItemBack.vue";
-import type {
-  FileExplorerItem as FileExplorerItemType,
-  FileExplorerContextMenu as FileExplorerContextMenuNamespace,
-} from "../types";
-import useClickOutside from "../../../composables/useClickOutside";
-import useKeyPressedUntilMouseClick from "../../../composables/useKeyPressedUntilMouseClick";
-import { navigatorUtils } from "@knime/utils";
 
 /**
  * Component that handles FileExplorer interactions.

@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import { type Ref, onMounted, ref } from "vue";
+
 import {
-  setUpIframeEmbedderService,
   UIExtensionPushEvents,
   type UIExtensionServiceAPILayer,
+  setUpIframeEmbedderService,
 } from "@knime/ui-extension-service";
-import { onMounted, ref, type Ref } from "vue";
 
 const props = defineProps<{
   resourceLocation: string;

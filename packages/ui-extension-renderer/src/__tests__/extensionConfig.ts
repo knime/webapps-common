@@ -1,4 +1,5 @@
 import { ExtensionTypes } from "@knime/ui-extension-service";
+
 import type { ExtensionConfig } from "../types/ExtensionConfig";
 import { ResourceTypes } from "../types/ResourceTypes";
 

@@ -1,4 +1,4 @@
-import { watch, unref, onUnmounted, type Ref, ref } from "vue";
+import { type Ref, onUnmounted, ref, unref, watch } from "vue";
 import { onClickOutside } from "@vueuse/core";
 
 type ClickOutsideParams = {

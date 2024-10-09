@@ -1,8 +1,9 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { shallowMount } from "@vue/test-utils";
 
-import PortIcon from "../PortIcon.vue";
 import * as portColors from "@knime/styles/colors/portColors";
+
+import PortIcon from "../PortIcon.vue";
 
 describe("PortIcon", () => {
   let wrapper;

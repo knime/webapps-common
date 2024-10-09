@@ -1,7 +1,9 @@
 <script>
 import { getCurrentInstance } from "vue";
-import Button from "../Buttons/Button.vue";
+
 import LensIcon from "@knime/styles/img/icons/lens.svg";
+
+import Button from "../Buttons/Button.vue";
 
 export default {
   name: "FileSelector",

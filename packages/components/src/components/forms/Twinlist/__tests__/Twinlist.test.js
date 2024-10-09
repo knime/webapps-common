@@ -1,13 +1,13 @@
 /* eslint-disable vitest/max-nested-describe */
 /* eslint-disable max-lines */
-import { describe, it, expect, beforeEach, vi } from "vitest";
-import { flushPromises, mount } from "@vue/test-utils";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { nextTick } from "vue";
+import { flushPromises, mount } from "@vue/test-utils";
 
+import ResizeHandle from "../../../ResizeHandle/ResizeHandle.vue";
+import MultiselectListBox from "../../MultiselectListBox/MultiselectListBox.vue";
 import SearchInput from "../../SearchInput/SearchInput.vue";
 import Twinlist from "../Twinlist.vue";
-import MultiselectListBox from "../../MultiselectListBox/MultiselectListBox.vue";
-import ResizeHandle from "../../../ResizeHandle/ResizeHandle.vue";
 
 describe("Twinlist.vue", () => {
   let defaultPossibleValues;

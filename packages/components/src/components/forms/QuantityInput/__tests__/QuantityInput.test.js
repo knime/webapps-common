@@ -1,8 +1,9 @@
-import { shallowMount } from "@vue/test-utils";
 import { describe, expect, it, vi } from "vitest";
 import { nextTick } from "vue";
-import QuantityInput from "../QuantityInput.vue";
+import { shallowMount } from "@vue/test-utils";
+
 import FunctionButton from "../../../Buttons/FunctionButton.vue";
+import QuantityInput from "../QuantityInput.vue";
 
 describe("QuantityInput.vue", () => {
   it("renders", () => {

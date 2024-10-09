@@ -1,6 +1,7 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import useSearch from "../useSearch";
+import { beforeEach, describe, expect, it } from "vitest";
 import { ref } from "vue";
+
+import useSearch from "../useSearch";
 
 describe("useSearch.ts", () => {
   let defaultPossibleValues;

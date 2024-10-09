@@ -1,11 +1,4 @@
 <script>
-import CalendarIcon from "@knime/styles/img/icons/calendar.svg";
-import {
-  getLocalTimeZone,
-  isAfterMaxDate,
-  isBeforeMinDate,
-  updateDate,
-} from "@knime/utils";
 import {
   isValid,
   parse,
@@ -17,6 +10,14 @@ import {
 import { format, utcToZonedTime, zonedTimeToUtc } from "date-fns-tz";
 import { map } from "lodash-es";
 import { DatePicker } from "v-calendar";
+
+import CalendarIcon from "@knime/styles/img/icons/calendar.svg";
+import {
+  getLocalTimeZone,
+  isAfterMaxDate,
+  isBeforeMinDate,
+  updateDate,
+} from "@knime/utils";
 
 import { resolveClientOnlyComponent } from "../../nuxtComponentResolver";
 import Dropdown from "../Dropdown/Dropdown.vue";

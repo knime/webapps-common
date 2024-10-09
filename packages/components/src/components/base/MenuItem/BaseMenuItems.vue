@@ -1,16 +1,17 @@
 <script lang="ts">
 import type { PropType, StyleValue } from "vue";
 import { onBeforeUpdate, ref, toRef } from "vue";
+import {
+  type Boundary,
+  autoUpdate,
+  flip,
+  shift,
+  useFloating,
+} from "@floating-ui/vue";
 import { uniqueId } from "lodash-es";
+
 import BaseMenuItem from "./BaseMenuItem.vue";
 import type { MenuItem } from "./MenuItems.vue";
-import {
-  useFloating,
-  shift,
-  flip,
-  autoUpdate,
-  type Boundary,
-} from "@floating-ui/vue";
 
 type ElementTemplateRef = HTMLElement | { $el: HTMLElement };
 

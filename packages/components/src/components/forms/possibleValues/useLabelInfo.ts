@@ -1,4 +1,5 @@
-import { computed, type Ref } from "vue";
+import { type Ref, computed } from "vue";
+
 import { type Id, type PossibleValue } from "./types";
 
 /**

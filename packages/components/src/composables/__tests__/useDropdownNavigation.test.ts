@@ -1,5 +1,7 @@
-import { describe, expect, it, vi, beforeEach, type Mock } from "vitest";
+import { type Mock, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { getWrappedAroundIndex } from "@knime/utils";
+
 import useDropdownNavigation, {
   type DropdownNavigationOptions,
 } from "../useDropdownNavigation";

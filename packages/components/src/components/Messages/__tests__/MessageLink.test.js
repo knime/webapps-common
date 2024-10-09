@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { shallowMount, RouterLinkStub } from "@vue/test-utils";
+import { describe, expect, it } from "vitest";
+import { RouterLinkStub, shallowMount } from "@vue/test-utils";
 
 import MessageLink from "../MessageLink.vue";
 

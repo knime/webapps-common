@@ -6,6 +6,7 @@ import {
   type LinkToolOptions,
   defaultLinkToolOptions,
 } from "./utils/custom-link";
+
 export {
   RichTextEditor,
   RichTextEditorToolbar,

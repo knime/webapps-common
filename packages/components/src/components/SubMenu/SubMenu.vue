@@ -1,23 +1,22 @@
 <script lang="ts">
-import { ref, inject, toRefs, computed } from "vue";
+import { computed, inject, ref, toRefs } from "vue";
+import type { PropType } from "vue";
 import {
-  useFloating,
-  type Strategy,
   type Placement,
-  shift,
-  flip,
+  type Strategy,
   autoUpdate,
+  flip,
+  shift,
+  useFloating,
 } from "@floating-ui/vue";
 
+import { useClickOutside } from "../../composables";
 import FunctionButton from "../Buttons/FunctionButton.vue";
 import MenuItems from "../base/MenuItem/MenuItems.vue";
-import { useClickOutside } from "../../composables";
-
 import type {
   MenuItem,
   Props as MenuItemsProps,
 } from "../base/MenuItem/MenuItems.vue";
-import type { PropType } from "vue";
 
 const orientations = ["right", "top", "left"] as const;
 

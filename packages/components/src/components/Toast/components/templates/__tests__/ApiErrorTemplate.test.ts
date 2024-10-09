@@ -1,7 +1,8 @@
-import { mount } from "@vue/test-utils";
 import { describe, expect, it, vi } from "vitest";
-import ApiErrorTemplate from "../ApiErrorTemplate.vue";
 import { ref } from "vue";
+import { mount } from "@vue/test-utils";
+
+import ApiErrorTemplate from "../ApiErrorTemplate.vue";
 
 const { useClipboardMock } = vi.hoisted(() => ({
   useClipboardMock: vi.fn(),

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import CircleInfoIcon from "@knime/styles/img/icons/circle-info.svg";
-import SignWarningIcon from "@knime/styles/img/icons/sign-warning.svg";
-import CircleCloseIcon from "@knime/styles/img/icons/circle-close.svg";
 import CircleCheckIcon from "@knime/styles/img/icons/circle-check.svg";
+import CircleCloseIcon from "@knime/styles/img/icons/circle-close.svg";
+import CircleInfoIcon from "@knime/styles/img/icons/circle-info.svg";
 import RocketIcon from "@knime/styles/img/icons/rocket.svg";
+import SignWarningIcon from "@knime/styles/img/icons/sign-warning.svg";
 
 type InlineMessageType = "info" | "warning" | "error" | "success" | "promotion";
 

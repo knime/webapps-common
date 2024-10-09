@@ -1,8 +1,9 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { mount, shallowMount } from "@vue/test-utils";
 
-import Checkboxes from "./Checkboxes.vue";
 import Checkbox from "../Checkbox/Checkbox.vue";
+
+import Checkboxes from "./Checkboxes.vue";
 
 describe("Checkboxes.vue", () => {
   let props;

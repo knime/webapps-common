@@ -1,4 +1,5 @@
 import { type UIExtensionServiceConfig } from "@knime/ui-extension-service";
+
 import { type ResourceInfo } from "./ResourceInfo";
 
 /**

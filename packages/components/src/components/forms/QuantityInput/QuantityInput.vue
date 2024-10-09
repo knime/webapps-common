@@ -1,7 +1,9 @@
 <script lang="ts" setup>
-import { computed, ref, type WritableComputedRef } from "vue";
-import PlusSmall from "@knime/styles/img/icons/plus-small.svg";
+import { type WritableComputedRef, computed, ref } from "vue";
+
 import MinusSmall from "@knime/styles/img/icons/minus-small.svg";
+import PlusSmall from "@knime/styles/img/icons/plus-small.svg";
+
 import FunctionButton from "../../Buttons/FunctionButton.vue";
 
 type Props = {

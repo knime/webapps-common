@@ -1,7 +1,8 @@
 <script>
-import CodeExample from "./demo/CodeExample.vue";
 import { Label } from "@knime/components";
 import { DateTimeInput } from "@knime/components/date-time-input";
+
+import CodeExample from "./demo/CodeExample.vue";
 // import code from "webapps-common/ui/components/forms/DateTimeInput.vue?raw";
 const code = "";
 

@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import CodeExample from "./demo/CodeExample.vue";
-import { ApiErrorTemplate, Button } from "@knime/components";
-import Interactive from "@knime/styles/img/icons/interactive.svg";
-// @ts-ignore
-import { useToasts, type Toast } from "@knime/components";
 import { h } from "vue";
+
+import { ApiErrorTemplate, Button } from "@knime/components";
+import { type Toast, useToasts } from "@knime/components";
+import Interactive from "@knime/styles/img/icons/interactive.svg";
+
+import CodeExample from "./demo/CodeExample.vue";
+// @ts-ignore
 
 // import toastServiceCode from "@knime/components/toastService?raw";
 // import typesCode from "@knime/components/types?raw";

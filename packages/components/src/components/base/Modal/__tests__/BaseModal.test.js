@@ -1,6 +1,5 @@
-import { describe, it, expect, beforeAll, vi } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import { shallowMount } from "@vue/test-utils";
-
 import { FocusTrap } from "focus-trap-vue";
 
 import BaseModal from "../BaseModal.vue";
