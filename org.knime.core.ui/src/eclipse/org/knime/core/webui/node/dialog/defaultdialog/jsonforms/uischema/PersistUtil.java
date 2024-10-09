@@ -55,8 +55,10 @@ import java.util.Map;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.configmapping.ConfigPath;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.ConfigKeyUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.tree.ArrayParentNode;
 import org.knime.core.webui.node.dialog.defaultdialog.tree.LeafNode;
 import org.knime.core.webui.node.dialog.defaultdialog.tree.Tree;
@@ -76,6 +78,14 @@ public final class PersistUtil {
         // Utility
     }
 
+    /**
+     * Adds the information necessary for the frontend to adapt flow variable handling to custom persisting given by
+     * {@link Persist @Persist} annotations and deviations of the {@link PersistableSettings} structure from the
+     * {@link WidgetGroup} structure.
+     *
+     * @param uiSchema the parent object node to add to
+     * @param persistTrees the persist trees to parse
+     */
     public static void addPersist(final ObjectNode uiSchema,
         final Map<SettingsType, Tree<PersistableSettings>> persistTrees) {
         final var persist = uiSchema.putObject("persist");
@@ -85,48 +95,48 @@ public final class PersistUtil {
     }
 
     private static void addPersist(final ObjectNode objectNode, final Tree<PersistableSettings> persistTree) {
-        addConfigKeys(objectNode, persistTree);
+        if (!persistTree.isRoot()) {
+            addConfigKeys(objectNode, persistTree);
+        }
         final var properties = getObjectProperties(objectNode);
-        persistTree.getChildrenByName().entrySet().forEach(entry -> {
-            final var childObjectNode = properties.putObject(entry.getKey());
-            final var childTreeNode = entry.getValue();
-            if (childTreeNode instanceof Tree<PersistableSettings> t) {
-                addPersist(childObjectNode, t);
-            }
-            if (childTreeNode instanceof ArrayParentNode<PersistableSettings> apn) {
-                addPersist(childObjectNode, apn);
-            }
-            if (childTreeNode instanceof LeafNode<PersistableSettings> l) {
-                addPersist(childObjectNode, l);
-            }
-        });
+        persistTree.getChildrenByName().forEach((name, child) -> addPersist(properties, name, child));
+    }
+
+    private static void addPersist(final ObjectNode properties, final String name,
+        final TreeNode<PersistableSettings> childTreeNode) {
+        final var childObjectNode = properties.putObject(name);
+        if (childTreeNode instanceof Tree<PersistableSettings> t) {
+            addPersist(childObjectNode, t);
+        }
+        if (childTreeNode instanceof ArrayParentNode<PersistableSettings> apn) {
+            addPersist(childObjectNode, apn);
+        }
+        if (childTreeNode instanceof LeafNode<PersistableSettings> l) {
+            addPersist(childObjectNode, l);
+        }
+    }
+
+    private static void addPersist(final ObjectNode objectNode, final LeafNode<PersistableSettings> leafNode) {
+        addConfigKeys(objectNode, leafNode);
+    }
+
+    private static void addPersist(final ObjectNode objectNode,
+        final ArrayParentNode<PersistableSettings> arrayParentNode) {
+        objectNode.put("type", "array");
+        addConfigKeys(objectNode, arrayParentNode);
+        final var items = objectNode.putObject("items");
+        addPersist(items, arrayParentNode.getElementTree());
     }
 
     private static ObjectNode getObjectProperties(final ObjectNode objectNode) {
         objectNode.put("type", "object");
-        final var properties = objectNode.putObject("properties");
-        return properties;
-    }
-
-    private static void addPersist(final ObjectNode childObjectNode, final LeafNode<PersistableSettings> leafNode) {
-        addConfigKeys(childObjectNode, leafNode);
-    }
-
-    private static void addPersist(final ObjectNode childObjectNode,
-        final ArrayParentNode<PersistableSettings> arrayParentNode) {
-        childObjectNode.put("type", "array");
-        addConfigKeys(childObjectNode, arrayParentNode);
-        final var items = childObjectNode.putObject("items");
-        addPersist(items, arrayParentNode.getElementTree());
+        return objectNode.putObject("properties");
     }
 
     /** Add a "configKeys" array to the field if a custom persistor is used */
     private static void addConfigKeys(final ObjectNode node, final TreeNode<PersistableSettings> field) {
-        if (field.getName().isEmpty()) { // TODO
-            return;
-        }
         var configKeys = ConfigKeyUtil.getConfigKeysUsedByField(field);
-        if (configKeys.length > 0) {
+        if (configKeys.length > 0 && !isFieldName(field, configKeys)) {
             var configKeysNode = node.putArray("configKeys");
             Arrays.stream(configKeys).forEach(configKeysNode::add);
         }
@@ -144,6 +154,10 @@ public final class PersistUtil {
             Arrays.stream(deprecatedConfigsArray)
                 .forEach(deprecatedConfigs -> putDeprecatedConfig(deprecatedConfigsNode, deprecatedConfigs));
         }
+    }
+
+    private static boolean isFieldName(final TreeNode<PersistableSettings> field, final String[] configKeys) {
+        return configKeys.length == 1 && configKeys[0].equals(field.getName().orElse(null));
     }
 
     private static void putDeprecatedConfig(final ArrayNode deprecatedConfigsNode,

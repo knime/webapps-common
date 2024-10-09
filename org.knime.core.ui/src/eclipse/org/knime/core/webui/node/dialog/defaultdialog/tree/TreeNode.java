@@ -59,6 +59,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.knime.core.node.util.CheckUtils;
 import org.knime.core.util.Pair;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
@@ -136,6 +137,13 @@ public sealed class TreeNode<S> permits LeafNode, Tree, ArrayParentNode {
     }
 
     /**
+     * @return whether the current node has a parent. This is true for the global root as well as for the
+     */
+    public boolean isRoot() {
+        return m_parent == null;
+    }
+
+    /**
      * @return the name of this node. It is empty in case of a root tree node (which can be an element widget tree of an
      *         {@link ArrayParentNode})
      */
@@ -180,16 +188,14 @@ public sealed class TreeNode<S> permits LeafNode, Tree, ArrayParentNode {
      * @throws IllegalAccessException
      */
     public Object getFromParentValue(final Object parentValue) throws IllegalAccessException {
-        assert getParent() != null : "This method can only be used when the node has a parent.";
-        assert getParent().getType()
-            .isAssignableFrom(parentValue.getClass()) : "The parent value must be of the parent type.";
+        checkParentValue(parentValue);
         return m_underlyingField.get(parentValue);
     }
 
     private void checkParentValue(final Object parentValue) {
-        assert getParent() != null : "This method can only be used when the node has a parent.";
-        assert getParent().getType()
-            .isAssignableFrom(parentValue.getClass()) : "The parent value must be of the parent type.";
+        CheckUtils.checkArgument(getParent() != null, "This method can only be used when the node has a parent.");
+        CheckUtils.checkArgument(getParent().getType().isAssignableFrom(parentValue.getClass()),
+            "The parent value must be of the parent type.");
     }
 
     /**

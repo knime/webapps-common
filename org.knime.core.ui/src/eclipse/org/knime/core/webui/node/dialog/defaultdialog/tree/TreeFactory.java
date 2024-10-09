@@ -91,6 +91,15 @@ public abstract class TreeFactory<S> {
 
     private final Collection<Class<? extends Annotation>> m_possibleArrayNodeAnnotations;
 
+    /**
+     * @param possibleTreeAnnotations the annotations that are possible for tree nodes, i.e. either on the field or on
+     *            the class of type S
+     * @param possibleTreeClassAnnotations the sub collection of possibleTreeAnnotations that are only allowed on the
+     *            class of type S
+     * @param possibleLeafNodeAnnotations the annotations that are possible on fields which are not of type S or arrays
+     *            of S
+     * @param possibleArrayNodeAnnotations the annotations that are possible on fields which are arrays of S
+     */
     protected TreeFactory(final Collection<Class<? extends Annotation>> possibleTreeAnnotations,
         final Collection<Class<? extends Annotation>> possibleTreeClassAnnotations,
         final Collection<Class<? extends Annotation>> possibleLeafNodeAnnotations,
@@ -135,25 +144,41 @@ public abstract class TreeFactory<S> {
         return tree;
     }
 
+    /**
+     *
+     * Make {@link TreeNode#addAnnotation} accessible to subclasses
+     *
+     * @param node the node to add an annotation to
+     * @param key the annotation class
+     * @param value the annotation
+     */
     protected final void performAddAnnotation(final TreeNode<S> node, final Class<? extends Annotation> key,
         final Annotation value) {
         node.addAnnotation(key, value);
     }
 
+    /**
+     *
+     * Make {@link TreeNode#addOrReplaceAnnotation} accessible to subclasses
+     *
+     * @param node the node to add an annotation to
+     * @param key the annotation class
+     * @param value the annotation
+     */
     protected final void performAddOrReplaceAnnotation(final TreeNode<S> node, final Class<? extends Annotation> key,
         final Annotation value) {
         node.addOrReplaceAnnotation(key, value);
     }
 
-    private static ObjectMapper MAPPER;
+    private static ObjectMapper mapper;
 
-    private static SerializerProvider SERIALIZER_PROVIDER;
+    private static SerializerProvider serializerProvider;
 
     private static ObjectMapper getMapper() {
-        if (MAPPER == null) {
-            MAPPER = createMapper();
+        if (mapper == null) {
+            mapper = createMapper();
         }
-        return MAPPER;
+        return mapper;
     }
 
     private static ObjectMapper createMapper() {
@@ -175,10 +200,10 @@ public abstract class TreeFactory<S> {
     }
 
     private static SerializerProvider getSerializerProvider() {
-        if (SERIALIZER_PROVIDER == null) {
-            SERIALIZER_PROVIDER = getMapper().getSerializerProviderInstance();
+        if (serializerProvider == null) {
+            serializerProvider = getMapper().getSerializerProviderInstance();
         }
-        return SERIALIZER_PROVIDER;
+        return serializerProvider;
     }
 
     private static Iterator<PropertyWriter> getSerializableProperties(final JavaType type) {
@@ -247,6 +272,15 @@ public abstract class TreeFactory<S> {
             .orElse(declaringClass.getAnnotation(annotationClass));
     }
 
+    /**
+     * Overwrite this method to extract annotations from the field in a non-standard way (e.g. from parameters of other
+     * annotations)
+     *
+     * @param <T> the type of the annotation
+     * @param field the field to extract the annotation from
+     * @param annotationClass the class of the annotation
+     * @return the annotation of the given class that is present on the field
+     */
     protected <T extends Annotation> T getAnnotationFromField(final PropertyWriter field,
         final Class<T> annotationClass) {
         return field.getAnnotation(annotationClass);
@@ -277,7 +311,7 @@ public abstract class TreeFactory<S> {
 
         TreeNodeBuilder withAccessors(final PropertyWriter field) {
             final var underlyingField = (Field)field.getMember().getAnnotated();
-            underlyingField.setAccessible(true);
+            underlyingField.setAccessible(true); // NOSONAR
             m_underlyingField = underlyingField;
             return this;
         }

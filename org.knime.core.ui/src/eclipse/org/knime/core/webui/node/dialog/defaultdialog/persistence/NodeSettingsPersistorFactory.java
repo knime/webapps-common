@@ -112,11 +112,15 @@ public final class NodeSettingsPersistorFactory {
         }
     }
 
+    /**
+     * @noreference This method is not intended to be referenced by clients.
+     */
+    @SuppressWarnings("javadoc")
     public static <S extends PersistableSettings> NodeSettingsPersistor<S>
         createPersistor(final Tree<PersistableSettings> tree) {
         var persistence = tree.getAnnotation(Persistor.class);
         if (persistence.isEmpty()) {
-            return new FieldBasedNodeSettingsPersistor<S>(tree);
+            return new FieldBasedNodeSettingsPersistor<>(tree);
         } else {
             var persistorClass = persistence.get().value();
             @SuppressWarnings("unchecked")

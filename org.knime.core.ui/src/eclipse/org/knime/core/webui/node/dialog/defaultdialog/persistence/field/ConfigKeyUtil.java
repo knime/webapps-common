@@ -141,7 +141,7 @@ public final class ConfigKeyUtil {
      */
     static String getConfigKey(final TreeNode<PersistableSettings> node) {
         var persist = node.getAnnotation(Persist.class);
-        final var fieldName = node.getName().orElseThrow(); //TODO
+        final var fieldName = node.getName().orElse(null); // should never be null
         if (persist.isEmpty()) {
             return fieldName;
         } else {

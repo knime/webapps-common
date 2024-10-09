@@ -683,7 +683,7 @@ final class UiSchemaOptionsGenerator {
      */
     private String getChoicesComponentFormat() {
         String format = Format.DROP_DOWN;
-        if (m_node instanceof LeafNode leafNode && String.class.equals(leafNode.getContentType())) {
+        if (m_node instanceof LeafNode<WidgetGroup> leafNode && String.class.equals(leafNode.getContentType())) {
             format = Format.TWIN_LIST;
         }
         return format;

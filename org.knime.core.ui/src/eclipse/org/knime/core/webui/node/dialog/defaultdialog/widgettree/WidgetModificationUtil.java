@@ -71,7 +71,8 @@ import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeNode;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 
 /**
- * Resolves {@link Modification} annotations for {@link Tree<WidgetGroup>} and {@link ArrayParentNode<WidgetGroup>}
+ * Resolves {@link Modification} annotations for {@link Tree}<{@link WidgetGroup}> and
+ * {@link ArrayParentNode}<{@link WidgetGroup}>
  *
  * @author Paul Bärnreuther
  */

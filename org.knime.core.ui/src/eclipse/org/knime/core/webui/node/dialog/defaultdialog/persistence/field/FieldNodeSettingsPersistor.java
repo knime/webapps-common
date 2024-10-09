@@ -127,7 +127,6 @@ public interface FieldNodeSettingsPersistor<T> extends NodeSettingsPersistor<T> 
      * @throws IllegalStateException if the class does not have an empty constructor, is abstract, or the constructor
      *             raises an exception
      */
-    @SuppressWarnings("rawtypes")
     static <S, P extends FieldNodeSettingsPersistor<S>> P createInstance(final Class<P> persistorClass,
         final Class<S> persistedObjectClass, final String configKey) {
         final var customPersistor = NodeSettingsPersistor.createInstance(persistorClass, persistedObjectClass);

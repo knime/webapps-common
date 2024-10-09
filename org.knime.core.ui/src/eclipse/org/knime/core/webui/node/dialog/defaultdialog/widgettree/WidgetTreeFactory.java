@@ -93,6 +93,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueRefere
 import com.fasterxml.jackson.databind.ser.PropertyWriter;
 
 /**
+ * A factory for creating {@link Tree}s from {@link WidgetGroup}s.
  *
  * @author Paul Bärnreuther
  */
@@ -118,6 +119,10 @@ public class WidgetTreeFactory extends TreeFactory<WidgetGroup> {
         LatentWidget.class, Widget.class, ArrayWidget.class, InternalArrayWidget.class, Layout.class, Effect.class,
         ValueReference.class, ValueProvider.class, Modification.class, Modification.WidgetReference.class);
 
+    /**
+     * Create a new factory. This factory is non-static since it implements an abstract factory, but it does not hold
+     * any state.
+     */
     public WidgetTreeFactory() {
         super(POSSIBLE_TREE_ANNOTATIONS, POSSIBLE_TREE_CLASS_ANNOTATIONS, POSSIBLE_LEAF_ANNOTATIONS,
             POSSIBLE_ARRAY_ANNOTATIONS);

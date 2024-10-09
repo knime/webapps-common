@@ -154,7 +154,7 @@ final class FieldNodeSettingsPersistorFactory {
     private <F> NodeSettingsPersistor<F> createOptionalPersistor(final TreeNode<PersistableSettings> node,
         final NodeSettingsPersistor<F> delegate) {
         var persist = node.getAnnotation(Persist.class);
-        if (persist.isEmpty() || !isOptional(persist.get(), node.getName().get())) {
+        if (persist.isEmpty() || !isOptional(persist.get(), node)) {
             return delegate;
         }
         var configKey = ConfigKeyUtil.getConfigKey(node);
@@ -162,14 +162,14 @@ final class FieldNodeSettingsPersistorFactory {
         return new OptionalFieldPersistor<>(defaultValue, configKey, delegate);
     }
 
-    private boolean isOptional(final Persist persist, final String fieldName) {
+    private boolean isOptional(final Persist persist, final TreeNode<PersistableSettings> node) {
         boolean isOptional = persist.optional();
         boolean hasDefaultProvider = !DefaultProvider.class.equals(persist.defaultProvider());
         if (isOptional && hasDefaultProvider) {
             LOGGER.codingWithFormat(
                 "The optional parameter of the Persist annotation of field '%s' of PersistableSettings class '%s' "
                     + "is ignored in favor of the defaultProvider parameter.",
-                fieldName, m_settingsTree.getType());
+                node.getName().orElse(null), m_settingsTree.getType());
         }
         return isOptional || hasDefaultProvider;
     }
@@ -195,7 +195,7 @@ final class FieldNodeSettingsPersistorFactory {
         } catch (IllegalAccessException ex) {
             // not reachable
             throw new IllegalArgumentException(
-                String.format("Can't access field '%s' of PersistableSettings class '%s'.", node.getName(),
+                String.format("Can't access field '%s' of PersistableSettings class '%s'.", node.getName().orElse(null),
                     m_defaultSettings.getClass().getName()),
                 ex);
         }

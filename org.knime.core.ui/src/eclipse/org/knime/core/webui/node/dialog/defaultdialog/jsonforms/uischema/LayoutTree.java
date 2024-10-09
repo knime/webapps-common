@@ -127,7 +127,8 @@ final class LayoutTree {
      * @param entry
      * @return
      */
-    private LayoutTreeNode constructNodeFromEntry(final Class<?> clazz, final List<TreeNode<WidgetGroup>> widgetTreeNodes) {
+    private LayoutTreeNode constructNodeFromEntry(final Class<?> clazz,
+        final List<TreeNode<WidgetGroup>> widgetTreeNodes) {
         var node = getOrConstructNode(clazz);
         node.addControls(widgetTreeNodes);
         return node;

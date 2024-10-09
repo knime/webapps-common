@@ -94,7 +94,7 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
      * @return a new persistor
      * @throws IllegalArgumentException if there is no persistor available for the provided fieldType
      */
-    public static NodeSettingsPersistor<?> createDefaultPersistor(final TreeNode<PersistableSettings> node,
+    static NodeSettingsPersistor<?> createDefaultPersistor(final TreeNode<PersistableSettings> node,
         final String configKey) {
         if (node instanceof ArrayParentNode<PersistableSettings> array) {
             return createDefaultArrayPersistor(array.getElementTree(), configKey);

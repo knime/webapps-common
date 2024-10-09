@@ -76,7 +76,8 @@ public final class PersistTreeFactory extends TreeFactory<PersistableSettings> {
     private static final Collection<Class<? extends Annotation>> POSSIBLE_ARRAY_ANNOTATIONS = POSSIBLE_LEAF_ANNOTATIONS;
 
     /**
-     * Create a new factory
+     * Create a new factory. This factory is non-static since it implements an abstract factory, but it does not hold
+     * any state.
      */
     public PersistTreeFactory() {
         super(POSSIBLE_TREE_ANNOTATIONS, POSSIBLE_TREE_CLASS_ANNOTATIONS, POSSIBLE_LEAF_ANNOTATIONS,
