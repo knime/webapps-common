@@ -22,5 +22,18 @@ describe("Pill.vue", () => {
     const { wrapper } = doMount({ content: "Hello world" });
 
     expect(wrapper.text()).toMatch("Hello world");
+    expect(wrapper.classes()).toContain("default");
+  });
+
+  it("should be reactive", async () => {
+    const { wrapper } = doMount({
+      props: { variant: "default" },
+    });
+
+    expect(wrapper.classes()).toContain("default");
+
+    await wrapper.setProps({ variant: "success" });
+
+    expect(wrapper.classes()).toContain("success");
   });
 });

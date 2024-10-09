@@ -5,7 +5,12 @@ import CircleInfoIcon from "@knime/styles/img/icons/circle-info.svg";
 import RocketIcon from "@knime/styles/img/icons/rocket.svg";
 import SignWarningIcon from "@knime/styles/img/icons/sign-warning.svg";
 
-type InlineMessageType = "info" | "warning" | "error" | "success" | "promotion";
+export type InlineMessageVariant =
+  | "info"
+  | "warning"
+  | "error"
+  | "success"
+  | "promotion";
 
 const TYPE_ICON_MAP = {
   info: CircleInfoIcon,
@@ -16,15 +21,15 @@ const TYPE_ICON_MAP = {
 };
 
 defineProps<{
-  type: InlineMessageType;
+  variant: InlineMessageVariant;
   title: string;
   description: string;
 }>();
 </script>
 
 <template>
-  <div :class="['inline-message', type]">
-    <component :is="TYPE_ICON_MAP[type]" class="icon" />
+  <div :class="['inline-message', variant]">
+    <component :is="TYPE_ICON_MAP[variant]" class="icon" />
     <span class="title">{{ title }}</span>
     <span class="description">{{ description }}</span>
   </div>

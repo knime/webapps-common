@@ -7,53 +7,53 @@ import CircleInfoIcon from "@knime/styles/img/icons/circle-info.svg";
 import RocketIcon from "@knime/styles/img/icons/rocket.svg";
 import SignWarningIcon from "@knime/styles/img/icons/sign-warning.svg";
 
-import InlineMessage from "../InlineMessage.vue";
+import InlineMessage, { type InlineMessageVariant } from "../InlineMessage.vue";
 
 describe("Message.vue", () => {
   let wrapper;
 
   it.each([
     [
-      "info" as const,
+      "info" as InlineMessageVariant,
       "Info",
       "Here is a message that informs the user",
       CircleInfoIcon,
     ],
     [
-      "warning" as const,
+      "warning" as InlineMessageVariant,
       "Warning",
       "Here is a message that warns the user",
       SignWarningIcon,
     ],
     [
-      "error" as const,
+      "error" as InlineMessageVariant,
       "Error",
       "Here is a message that tells user about error and what to do",
       CircleCloseIcon,
     ],
     [
-      "success" as const,
+      "success" as InlineMessageVariant,
       "Success",
       "Here is a message that informs the user about success",
       CircleCheckIcon,
     ],
     [
-      "promotion" as const,
+      "promotion" as InlineMessageVariant,
       "Promotion",
       "Here is a message that informs the user about KNIME news",
       RocketIcon,
     ],
-  ])("renders a(n) %s inline message", (type, title, description, icon) => {
+  ])("renders a(n) %s inline message", (variant, title, description, icon) => {
     wrapper = mount(InlineMessage, {
       props: {
-        type,
+        variant,
         title,
         description,
       },
     });
 
     expect(wrapper.findComponent(icon).exists()).toBeTruthy();
-    expect(wrapper.find(".inline-message").classes()).toContain(type);
+    expect(wrapper.find(".inline-message").classes()).toContain(variant);
     expect(wrapper.find(".title").text()).toBe(title);
     expect(wrapper.find(".description").text()).toBe(description);
   });
