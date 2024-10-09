@@ -63,7 +63,6 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.commons.lang3.function.FailableConsumer;
 import org.apache.commons.lang3.function.FailableSupplier;
 import org.knime.core.data.DataCell;
-import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataType;
 import org.knime.core.data.DataTypeRegistry;
 import org.knime.core.data.DataValue;
@@ -139,9 +138,13 @@ public final class DynamicValuesInput implements PersistableSettings {
      *
      * @param dataType target data type
      * @param initialValue data type and initial value
+     * @param useStringCaseMatchingSetting {@code true} to show the case matching setting for strings,
+     *            {@code false} to disable the setting regardless of data type
      */
-    DynamicValuesInput(final DataType dataType, final DataCell initialValue) {
-        this(new DynamicValue[]{new DynamicValue(dataType, initialValue)}, InputKind.SINGLE);
+    DynamicValuesInput(final DataType dataType, final DataCell initialValue,
+        final boolean useStringCaseMatchingSetting) {
+        this(new DynamicValue[]{new DynamicValue(dataType, initialValue, useStringCaseMatchingSetting)},
+            InputKind.SINGLE);
     }
 
     /**
@@ -163,7 +166,7 @@ public final class DynamicValuesInput implements PersistableSettings {
      * @return dynamic widget
      */
     public static DynamicValuesInput singleValueWithCaseMatchingForStringWithDefault(final DataType dataType) {
-            final DataCell defaultValue;
+        final DataCell defaultValue;
         // we need to provide some default value such that correct types show up int the settings XML and the
         // flow variable popup can infer which flow variables to show
         if (IntCell.TYPE.equals(dataType)) {
@@ -177,7 +180,29 @@ public final class DynamicValuesInput implements PersistableSettings {
         } else {
             defaultValue = DynamicValue.readDataCellFromStringSafe(dataType, "");
         }
-        return new DynamicValuesInput(dataType, defaultValue);
+        return new DynamicValuesInput(dataType, defaultValue, true);
+    }
+
+    /**
+     * @return a dynamic values input for a single value of RowID.
+     */
+    public static DynamicValuesInput forRowID() {
+        return new DynamicValuesInput(StringCell.TYPE, new StringCell(""), true);
+    }
+
+    /**
+     * @param dataType data type to offer widget for Row number comparisons,
+     *                 must be {@link StringCell#TYPE} or {@link LongCell#TYPE}
+     * @return a dynamic values input for a single value of Row Number.
+     */
+    public static DynamicValuesInput forRowNumber(final DataType dataType) {
+        if (StringCell.TYPE.equals(dataType)) {
+            return new DynamicValuesInput(dataType, new StringCell("1"), false);
+        } else if (LongCell.TYPE.equals(dataType)) {
+            return new DynamicValuesInput(LongCell.TYPE, new LongCell(1), true);
+        }
+        throw new IllegalArgumentException(
+            "Data type must be either String or Long type, was \"%s\"".formatted(dataType));
     }
 
     private enum InputKind {
@@ -212,12 +237,13 @@ public final class DynamicValuesInput implements PersistableSettings {
     /**
      * Validates input values.
      *
-     * @param colSpec current column spec
+     * @param name name of the input to compare against, e.g. column name, "Row Number", etc.
+     * @param type current type to validate against
      * @throws InvalidSettingsException
      */
-    public void validate(final DataColumnSpec colSpec) throws InvalidSettingsException {
+    public void validate(final String name, final DataType type) throws InvalidSettingsException {
         for (final var value : m_values) {
-            value.validate(colSpec);
+            value.validate(name, type);
         }
     }
 
@@ -285,7 +311,7 @@ public final class DynamicValuesInput implements PersistableSettings {
          * @param columnType type of the content
          */
         private DynamicValue(final DataType columnType) {
-            this(columnType, DataType.getMissingCell());
+            this(columnType, DataType.getMissingCell(), true);
         }
 
         /**
@@ -293,9 +319,13 @@ public final class DynamicValuesInput implements PersistableSettings {
          *
          * @param columnType type of the content
          * @param initialValue initial value or {@link DataType#getMissingCell()} if it should be supplied by dialog
+         * @param useStringCaseMatchingSetting {@code true} to show the case matching setting for strings,
+         *            {@code false} to disable the setting regardless of data type
          */
-        private DynamicValue(final DataType columnType, final DataCell initialValue) {
-            this(columnType, initialValue, columnType == StringCell.TYPE ? new StringCaseMatchingSettings() : null);
+        private DynamicValue(final DataType columnType, final DataCell initialValue,
+            final boolean useStringCaseMatchingSetting) {
+            this(columnType, initialValue, useStringCaseMatchingSetting && columnType == StringCell.TYPE
+                ? new StringCaseMatchingSettings() : null);
         }
 
         private DynamicValue(final DataType columnType, final StringCaseMatchingSettings caseMatchingSettings) {
@@ -361,27 +391,26 @@ public final class DynamicValuesInput implements PersistableSettings {
         }
 
         /**
-         * Validates the input field against the given data column spec, e.g. from a connected input table.
+         * Validates the input field against the given data type, e.g. from a connected input table.
          *
-         * @param colSpec spec to validate against
+         * @param name name that identifies the input, e.g. column name, or special such as "Row Number"
+         * @param type comparison's lhs type
          * @throws InvalidSettingsException if settings are invalid given spec
          */
-        private void validate(final DataColumnSpec colSpec) throws InvalidSettingsException {
+        private void validate(final String name, final DataType referenceType) throws InvalidSettingsException {
             checkParseError();
 
             // all OK if the "runtime" input column type is more specific than the type at configuration time
-            final var columnType = colSpec.getType();
-            if (!m_type.isASuperTypeOf(columnType)) {
-                final var colName = colSpec.getName();
+            if (!m_type.isASuperTypeOf(referenceType)) {
                 throw Message.builder()
                     .withSummary(
-                        "Type of input column \"%s\" is not compatible with comparison value".formatted(colName))
+                        "Type of input \"%s\" is not compatible with reference value".formatted(name))
                     .addTextIssue(
-                        "Input column \"%s\" has type \"%s\", but comparison value is of incompatible type \"%s\""
-                            .formatted(colName, columnType.toPrettyString(), m_type.toPrettyString()))
-                    .addResolutions("Reconfigure the node to supply a comparison value of type \"%s\"."
-                        .formatted(columnType.toPrettyString())) //
-                    .addResolutions("Change the input column type to \"%s\".".formatted(m_type.toPrettyString())) //
+                        "Input \"%s\" has type \"%s\", but reference value is of incompatible type \"%s\""
+                            .formatted(name, referenceType.toPrettyString(), m_type.toPrettyString()))
+                    .addResolutions("Reconfigure the node to supply a reference value of type \"%s\"."
+                        .formatted(referenceType.toPrettyString())) //
+                    .addResolutions("Change the input (column) type to \"%s\".".formatted(m_type.toPrettyString())) //
                     .build().orElseThrow().toInvalidSettingsException();
             }
         }
@@ -657,9 +686,6 @@ public final class DynamicValuesInput implements PersistableSettings {
             final var caseMatching = settings.containsKey(MATCHING_KEY) ? DefaultFieldNodeSettingsPersistorFactory
                 .createDefaultPersistor(StringCaseMatchingSettings.class, MATCHING_KEY).load(settings) : null;
 
-            CheckUtils.checkSetting(!dataType.equals(StringCell.TYPE) || caseMatching != null,
-                "Missing case-matching settings for String comparison");
-
             if (settings.containsKey(VALUE_KEY)) {
                 final var dataCell = DynamicValue.<InvalidSettingsException> readDataCell(dataType, //
                     () -> settings.getDouble(VALUE_KEY), //
@@ -744,15 +770,29 @@ public final class DynamicValuesInput implements PersistableSettings {
     }
 
     /**
-     * @param newValue starting value
-     * @return {@code true} whenever the current state can be obtained by configuring starting with newValue.
+     * Checks if the current input widget values can be reused in place of the given input values, i.e. it has the same
+     * number of input values, and for each pair of values it holds that
+     * <ol>
+     * <li>types equal,</li>
+     * <li>case matching settings are both used or not used.</li>
+     * </ol>
+     *
+     * @param newInput starting input values
+     * @return {@code true} if the current input values can be used in place of the given input values, {@code false}
+     *         otherwise
      */
-    public boolean isConfigurableFrom(final DynamicValuesInput newValue) {
-        if (newValue.m_values.length != m_values.length) {
+    public boolean isConfigurableFrom(final DynamicValuesInput newInput) {
+        if (newInput.m_values.length != m_values.length) {
             return false;
         }
-        for (int i = 0; i < newValue.m_values.length; i++) {
-            if (!newValue.m_values[i].m_type.equals(m_values[i].m_type)) {
+        for (var i = 0; i < newInput.m_values.length; i++) {
+            final var current = m_values[i];
+            final var newValues = newInput.m_values[i];
+            if (!newValues.m_type.equals(current.m_type)) {
+                return false;
+            }
+            if (!((newValues.m_caseMatching == null && current.m_caseMatching == null)
+                || (newValues.m_caseMatching != null && current.m_caseMatching != null))) {
                 return false;
             }
         }
@@ -801,11 +841,11 @@ public final class DynamicValuesInput implements PersistableSettings {
      *   string representation
      */
     private static Optional<DynamicValue> convert(final DynamicValue value, final DynamicValue templateValue) {
-        final var targetType = templateValue.m_type;
         final var currentValueCell = value.m_value;
         if (currentValueCell.isMissing()) {
             return Optional.empty();
         }
+        final var targetType = templateValue.m_type;
         if (currentValueCell.getType().equals(targetType)
                 && !(value.m_caseMatching == null ^ templateValue.m_caseMatching == null)) {
             // we can use the provided value as-is (we cannot use DynamicValue#equals, since the template's value and
@@ -852,20 +892,6 @@ public final class DynamicValuesInput implements PersistableSettings {
             new DynamicValue(BooleanCell.TYPE),//
             //new DynamicValue(IntervalCell.TYPE)// currently breaks things, since we have no validation on dialog close
         }, InputKind.SINGLE);
-    }
-
-    /**
-     * @return a dynamic values input for a single value of RowID.
-     */
-    public static DynamicValuesInput forRowID() {
-        return new DynamicValuesInput(StringCell.TYPE, new StringCell(""));
-    }
-
-    /**
-     * @return a dynamic values input for a single value of Row Number.
-     */
-    public static DynamicValuesInput forRowNumber() {
-        return new DynamicValuesInput(LongCell.TYPE, new LongCell(1));
     }
 
     /* == Lookup of type-mappers. == */
