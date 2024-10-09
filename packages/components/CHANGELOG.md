@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.3.3
+
+### Patch Changes
+
+- 80502ce: Add option to resize twinlist and the corresponding resize component
+
 ## 1.3.2
 
 ### Patch Changes

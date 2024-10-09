@@ -1,5 +1,15 @@
 # demo
 
+## 1.0.49
+
+### Patch Changes
+
+- 80502ce: Add option to resize twinlist and the corresponding resize component
+- Updated dependencies [80502ce]
+  - @knime/components@1.3.3
+  - @knime/rich-text-editor@1.2.22
+  - @knime/virtual-tree@1.0.9
+
 ## 1.0.48
 
 ### Patch Changes
