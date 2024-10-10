@@ -97,11 +97,6 @@ public @interface Widget {
     boolean hideTitle() default false;
 
     /**
-     * @return true if the flow variable button should be hidden
-     */
-    boolean hideFlowVariableButton() default false;
-
-    /**
      * Add an effect annotation here as an alternative to putting it on the annotated field directly. if an effect
      * annotation also exists on the field, an error is thrown.
      *

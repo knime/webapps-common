@@ -11,9 +11,7 @@ import { getFlowVariableSettingsProvidedByControl } from "@/nodeDialog/composabl
 
 defineProps<FlowVariableButtonProps>();
 const emit = defineEmits(["controllingFlowVariableSet"]);
-
-const hideFlowVariableButton =
-  getFlowVariableSettingsProvidedByControl()?.hideFlowVariableButton || false;
+const { configPaths } = getFlowVariableSettingsProvidedByControl();
 
 const tooltipPrefix = ref<string | null>(null);
 const setTooltipPrefix = (prefix: string) => {
@@ -30,7 +28,7 @@ const tooltip = computed(() => {
 
 <template>
   <DialogPopover
-    v-if="!hideFlowVariableButton"
+    v-if="configPaths.length"
     popover-width="380px"
     :tooltip="tooltip"
   >

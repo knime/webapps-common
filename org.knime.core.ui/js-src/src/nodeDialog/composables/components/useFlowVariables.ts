@@ -5,17 +5,16 @@ import { SettingStateWrapper } from "../nodeDialog/useDirtySettings";
 import { getFlowVariablesMap } from "./useProvidedFlowVariablesMap";
 import { injectForFlowVariables } from "@/nodeDialog/utils/inject";
 
+export interface ConfigPath {
+  configPath: string;
+  deprecatedConfigPaths: string[];
+}
+
 export interface FlowVariableSettingsProvidedByControl {
   flowSettings: Ref<FlowSettings | null>;
   dataPaths: Ref<string[]>;
-  configPaths: Ref<
-    {
-      configPath: string;
-      deprecatedConfigPaths: string[];
-    }[]
-  >;
+  configPaths: Ref<ConfigPath[]>;
   settingStateFlowVariables: SettingStateWrapper["flowVariables"];
-  hideFlowVariableButton?: true;
 }
 
 /** Exported only for tests */
@@ -93,7 +92,6 @@ const getProvidedSettingStateFlowVariables = (
 export interface UseFlowSettingsProps {
   path: Ref<string>;
   settingState: { settingState: SettingStateWrapper; isNew: boolean };
-  hideFlowVariableButton?: true;
 }
 
 export const useFlowSettings = (
@@ -102,7 +100,7 @@ export const useFlowSettings = (
   flowSettings: Ref<FlowSettings | null>;
   disabledByFlowVariables: Ref<boolean>;
 } => {
-  const { path, settingState, hideFlowVariableButton } = params;
+  const { path, settingState } = params;
   const flowVariablesMap = getFlowVariablesMap();
   const persistSchema = injectForFlowVariables("getPersistSchema")();
   const configAndDataPaths = computed(() =>
@@ -130,7 +128,6 @@ export const useFlowSettings = (
       allConfigPaths,
       flowVariablesMap,
     ),
-    hideFlowVariableButton,
   });
 
   const hasDeprecatedVariables = computed(

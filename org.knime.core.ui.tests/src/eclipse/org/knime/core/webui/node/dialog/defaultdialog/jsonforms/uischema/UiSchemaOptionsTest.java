@@ -269,23 +269,6 @@ class UiSchemaOptionsTest {
     }
 
     @Test
-    void testHideFlowVariableButton() {
-        class HideFlowVariableSettings implements DefaultNodeSettings {
-            @Widget(title = "", description = "")
-            String m_foo;
-
-            @Widget(title = "", description = "", hideFlowVariableButton = true)
-            String m_bar;
-        }
-
-        var response = buildTestUiSchema(HideFlowVariableSettings.class);
-        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("foo");
-        assertThatJson(response).inPath("$.elements[0]").isObject().doesNotContainKey("hideFlowVariableButton");
-        assertThatJson(response).inPath("$.elements[1].scope").isString().contains("bar");
-        assertThatJson(response).inPath("$.elements[1].options.hideFlowVariableButton").isBoolean().isTrue();
-    }
-
-    @Test
     void testRadioButtonWidget() {
         class RadioButtonsSettings implements DefaultNodeSettings {
 

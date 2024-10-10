@@ -10,6 +10,11 @@ import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";
 import flushPromises from "flush-promises";
 import FlowVariableButton from "../FlowVariableButton.vue";
 import type FlowVariableButtonProps from "../../types/FlowVariableButtonProps";
+import {
+  ConfigPath,
+  injectionKey as flowVariablesInjectionKey,
+} from "@/nodeDialog/composables/components/useFlowVariables";
+import { ref } from "vue";
 
 describe("FlowVariableButton.vue", () => {
   let props: FlowVariableButtonProps;
@@ -32,8 +37,10 @@ describe("FlowVariableButton.vue", () => {
 
   const mountFlowVariableButton = ({
     props,
+    configPaths,
   }: {
     props: FlowVariableButtonProps;
+    configPaths?: ConfigPath[];
   }) => {
     return mount(FlowVariableButton as any, {
       props,
@@ -44,6 +51,13 @@ describe("FlowVariableButton.vue", () => {
         },
         provide: {
           getDialogPopoverTeleportDest: () => null,
+          [flowVariablesInjectionKey as symbol]: {
+            configPaths: ref(
+              configPaths ?? [
+                { configPath: "configPath", deprecatedConfigPaths: [] },
+              ],
+            ),
+          },
         },
       },
     });
@@ -66,6 +80,11 @@ describe("FlowVariableButton.vue", () => {
     expect(wrapper.findComponent(FlowVariableIcon).props()).toStrictEqual({
       show: false,
     });
+  });
+
+  it("does not render when no dataPaths are provided", () => {
+    const wrapper = mountFlowVariableButton({ props, configPaths: [] });
+    expect(wrapper.isVisible()).toBeFalsy();
   });
 
   describe("show flow variable icon", () => {

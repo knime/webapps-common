@@ -36,12 +36,9 @@ export const useDialogControl = <ValueType extends Stringifyable = any>({
     valueComparator,
   });
 
-  const hideFlowVariableButton =
-    control.value.uischema.options?.hideFlowVariableButton;
   const { flowSettings, disabledByFlowVariables } = useFlowSettings({
     path: computed(() => control.value.path),
     settingState,
-    hideFlowVariableButton,
   });
 
   const onChange = (newValue: ValueType) => {
