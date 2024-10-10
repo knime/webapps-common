@@ -1,5 +1,11 @@
 # @knime/styles
 
+## 1.1.0
+
+### Minor Changes
+
+- df2caa5: Removed unused square filled colored icons
+
 ## 1.0.11
 
 ### Patch Changes

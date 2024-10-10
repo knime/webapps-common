@@ -1,5 +1,13 @@
 # @knime/components
 
+## 1.3.4
+
+### Patch Changes
+
+- Updated dependencies [df2caa5]
+  - @knime/styles@1.1.0
+  - @knime/utils@1.0.17
+
 ## 1.3.3
 
 ### Patch Changes

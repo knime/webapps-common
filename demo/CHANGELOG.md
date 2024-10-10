@@ -1,5 +1,16 @@
 # demo
 
+## 1.0.50
+
+### Patch Changes
+
+- Updated dependencies [df2caa5]
+  - @knime/styles@1.1.0
+  - @knime/components@1.3.4
+  - @knime/rich-text-editor@1.2.23
+  - @knime/utils@1.0.17
+  - @knime/virtual-tree@1.0.10
+
 ## 1.0.49
 
 ### Patch Changes
