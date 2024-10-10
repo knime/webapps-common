@@ -54,7 +54,11 @@ describe("FlowVariableButton.vue", () => {
           [flowVariablesInjectionKey as symbol]: {
             configPaths: ref(
               configPaths ?? [
-                { configPath: "configPath", deprecatedConfigPaths: [] },
+                {
+                  configPath: "configPath",
+                  dataPath: "dataPath",
+                  deprecatedConfigPaths: [],
+                },
               ],
             ),
           },

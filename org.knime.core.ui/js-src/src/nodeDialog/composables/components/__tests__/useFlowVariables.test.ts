@@ -110,13 +110,13 @@ describe("useFlowVariables", () => {
     expect(provided.configPaths.value).toEqual([
       {
         configPath: singlePathTestComponentConfigPath,
+        dataPath: singlePathTestComponentDataPath,
         deprecatedConfigPaths: [],
       },
     ]);
     expect(provided.settingStateFlowVariables).toStrictEqual(
       mockedFlowVariableStates,
     );
-    expect(provided.dataPaths.value).toEqual([singlePathTestComponentDataPath]);
   });
 
   it("does not creates new flow variable states on existing setting state", () => {

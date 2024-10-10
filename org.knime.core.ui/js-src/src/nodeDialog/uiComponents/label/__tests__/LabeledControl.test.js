@@ -36,7 +36,10 @@ describe("LabeledControl.vue", () => {
       props,
       global: {
         provide: {
-          [providedByComponentKey]: { flowSettings },
+          [providedByComponentKey]: {
+            flowSettings,
+            configPaths: [],
+          },
           getDialogPopoverTeleportDest: () => null,
         },
       },

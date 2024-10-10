@@ -8,8 +8,7 @@ import { getLongestCommonPrefix } from "@/nodeDialog/utils/paths";
 import { getFlowVariableSettingsProvidedByControl } from "../../../composables/components/useFlowVariables";
 import DeprecatedFlowVariables from "./DeprecatedFlowVariables.vue";
 import useDeprecatedConfigPaths from "../composables/useDeprecatedConfigPaths";
-import DifferingNumbersOfConfigAndDataKeys from "./DifferingNumbersOfConfigAndDataKeys.vue";
-const { dataPaths, configPaths } = getFlowVariableSettingsProvidedByControl();
+const { configPaths } = getFlowVariableSettingsProvidedByControl();
 
 const { deprecatedSetConfigPaths } = useDeprecatedConfigPaths();
 
@@ -24,11 +23,7 @@ const emit = defineEmits(["controllingFlowVariableSet"]);
 
 <template>
   <DeprecatedFlowVariables v-if="deprecatedSetConfigPaths.length" />
-  <template
-    v-else-if="
-      dataPaths.length === 1 || dataPaths.length === configPaths.length
-    "
-  >
+  <template v-else>
     <div class="popover">
       <template
         v-for="(configPath, i) in configPaths"
@@ -46,7 +41,7 @@ const emit = defineEmits(["controllingFlowVariableSet"]);
         >
           <FlowVariableSelector
             :id="labelForId"
-            :data-path="dataPaths.length === 1 ? dataPaths[0] : dataPaths[i]"
+            :data-path="configPath.dataPath"
             :persist-path="configPath.configPath"
             @controlling-flow-variable-set="
               emit('controllingFlowVariableSet', $event)
@@ -70,11 +65,6 @@ const emit = defineEmits(["controllingFlowVariableSet"]);
       </template>
     </div>
   </template>
-
-  <DifferingNumbersOfConfigAndDataKeys
-    v-else
-    :config-paths="configPaths.map(({ configPath }) => configPath)"
-  />
 </template>
 
 <style lang="postcss" scoped>

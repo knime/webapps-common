@@ -4,26 +4,30 @@ import { Label, Fieldset } from "@knime/components";
 import FlowVariablePopover from "../FlowVariablePopover.vue";
 import FlowVariableSelector from "../FlowVariableSelector.vue";
 import FlowVariableExposer from "../FlowVariableExposer.vue";
-import DifferingNumbersOfConfigAndDataKeys from "../DifferingNumbersOfConfigAndDataKeys.vue";
-import { injectionKey as providedByComponentKey } from "@/nodeDialog/composables/components/useFlowVariables";
+import {
+  type ConfigPath,
+  injectionKey as providedByComponentKey,
+} from "@/nodeDialog/composables/components/useFlowVariables";
 import { type Ref, ref } from "vue";
 import { FlowSettings } from "@/nodeDialog/api/types";
 import DeprecatedFlowVariables from "../DeprecatedFlowVariables.vue";
 import { injectionKey as flowVarMapKey } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
 
 describe("FlowVariablePopover", () => {
-  let configPaths: Ref<
-      { configPath: string; deprecatedConfigPaths: string[] }[]
-    >,
-    dataPaths: Ref<string[]>,
+  let configPaths: Ref<ConfigPath[]>,
     flowVariablesMap: Record<string, FlowSettings>;
 
   const path = "model.myPath";
 
   beforeEach(() => {
     flowVariablesMap = {};
-    configPaths = ref([{ configPath: path, deprecatedConfigPaths: [] }]);
-    dataPaths = ref(["firstDataPath"]);
+    configPaths = ref([
+      {
+        configPath: path,
+        dataPath: "firstDataPath",
+        deprecatedConfigPaths: [],
+      },
+    ]);
   });
 
   const mountFlowVariablePopover = () => {
@@ -31,12 +35,11 @@ describe("FlowVariablePopover", () => {
       global: {
         provide: {
           [providedByComponentKey as symbol]: {
-            dataPaths,
             configPaths,
           },
           [flowVarMapKey as symbol]: flowVariablesMap,
         },
-        stubs: { DifferingNumbersOfConfigAndDataKeys, Label, Fieldset },
+        stubs: { Label, Fieldset },
       },
     });
   };
@@ -67,8 +70,8 @@ describe("FlowVariablePopover", () => {
     configPaths.value = localConfigPaths.map((configPath) => ({
       configPath,
       deprecatedConfigPaths: [],
+      dataPath: "firstDataPath",
     }));
-    dataPaths.value = ["firstDataPath"];
     const wrapper = mountFlowVariablePopover();
 
     for (let i = 0; i < localConfigPaths.length; i++) {
@@ -96,11 +99,12 @@ describe("FlowVariablePopover", () => {
 
   it("renders selector in case of multiple config keys with corresponding data keys", () => {
     const localConfigPaths = ["firstConfigPath", "secondConfigPath"];
-    configPaths.value = localConfigPaths.map((configPath) => ({
+    const localDataPaths = ["firstDataPath", "secondDataPath"];
+    configPaths.value = localConfigPaths.map((configPath, i) => ({
       configPath,
+      dataPath: localDataPaths[i],
       deprecatedConfigPaths: [],
     }));
-    dataPaths.value = ["firstDataPath", "secondDataPath"];
     const wrapper = mountFlowVariablePopover();
 
     for (let i = 0; i < localConfigPaths.length; i++) {
@@ -126,21 +130,6 @@ describe("FlowVariablePopover", () => {
     }
   });
 
-  it("does not render selector in case of multiple config and data keys", () => {
-    const localConfigPaths = ["firstPath", "secondPath"];
-    configPaths.value = localConfigPaths.map((configPath) => ({
-      configPath,
-      deprecatedConfigPaths: [],
-    }));
-    dataPaths.value = ["firstPath", "secondPath", "thirdPath"];
-    const wrapper = mountFlowVariablePopover();
-    expect(wrapper.findComponent(FlowVariableSelector).exists()).toBeFalsy();
-    expect(
-      wrapper.findComponent(DifferingNumbersOfConfigAndDataKeys).exists(),
-    ).toBeTruthy();
-    localConfigPaths.forEach((key) => expect(wrapper.text()).toContain(key));
-  });
-
   it("sets persist path from single element config paths", () => {
     const wrapper = mountFlowVariablePopover();
     expect(
@@ -151,7 +140,7 @@ describe("FlowVariablePopover", () => {
   it("sets first data path as path", () => {
     const wrapper = mountFlowVariablePopover();
     expect(wrapper.findComponent(FlowVariableSelector).props().dataPath).toBe(
-      dataPaths.value[0],
+      configPaths.value[0].dataPath,
     );
   });
 
@@ -180,6 +169,7 @@ describe("FlowVariablePopover", () => {
     configPaths.value = [
       {
         configPath: path,
+        dataPath: "dataPath",
         deprecatedConfigPaths: [deprecatedPath, "some other deprecated path"],
       },
     ];

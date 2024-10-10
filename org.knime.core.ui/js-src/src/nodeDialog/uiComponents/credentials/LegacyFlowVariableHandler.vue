@@ -9,7 +9,7 @@ import { getFlowVariableSettingsProvidedByControl } from "@/nodeDialog/composabl
 import { injectForFlowVariables } from "@/nodeDialog/utils/inject";
 import type Credentials from "./types/Credentials";
 
-const { dataPaths, configPaths } = getFlowVariableSettingsProvidedByControl();
+const { configPaths } = getFlowVariableSettingsProvidedByControl();
 const { setControllingFlowVariable, invalidateSetFlowVariable } =
   useControllingFlowVariable(configPaths.value[0].configPath);
 const { getFlowVariableOverrideValue } =
@@ -25,8 +25,7 @@ const emit = defineEmits<{
 onMounted(async () => {
   const flowVariableName = props.flowVariableName;
   if (flowVariableName) {
-    const persistPath = configPaths.value[0].configPath;
-    const dataPath = dataPaths.value[0];
+    const { configPath: persistPath, dataPath } = configPaths.value[0];
     const setControllingVariableProps = {
       path: configPaths.value[0].configPath,
       flowVariableName,

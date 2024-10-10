@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  getDataAndConfigPaths,
+  getConfigPaths as getConfigAndDataPaths,
   getLongestCommonPrefix,
   getSubConfigKeys,
 } from "../paths";
@@ -8,9 +8,16 @@ import { PersistSchema } from "@/nodeDialog/types/Persist";
 
 describe("paths", () => {
   const getDataPaths = (path: string, persistSchema: PersistSchema) =>
-    getDataAndConfigPaths({ path, persistSchema }).dataPaths;
+    getConfigAndDataPaths({ path, persistSchema }).map(
+      ({ dataPath }) => dataPath,
+    );
   const getConfigPaths = (path: string, persistSchema: PersistSchema) =>
-    getDataAndConfigPaths({ path, persistSchema }).configPaths;
+    getConfigAndDataPaths({ path, persistSchema }).map(
+      ({ configPath, deprecatedConfigPaths }) => ({
+        configPath,
+        deprecatedConfigPaths,
+      }),
+    );
 
   describe("sub config keys", () => {
     it("infers sub config keys from atomic schema if no sub config keys provided", () => {
@@ -156,6 +163,27 @@ describe("paths", () => {
         "model.mySetting.first",
         "model.mySetting.second",
       ]);
+    });
+
+    it("repeats data path for multiple config keys", () => {
+      const path = "model.mySetting";
+      const persistSchema: PersistSchema = {
+        type: "object",
+        properties: {
+          model: {
+            type: "object",
+            properties: {
+              mySetting: {
+                type: "object",
+                configKeys: ["model_1", "model_2"],
+                properties: {},
+              },
+            },
+          },
+        },
+      };
+      const dataPaths = getDataPaths(path, persistSchema);
+      expect(dataPaths).toStrictEqual(["model.mySetting", "model.mySetting"]);
     });
   });
 

@@ -1,3 +1,4 @@
+import { ConfigPath } from "../composables/components/useFlowVariables";
 import { PersistSchema } from "../types/Persist";
 import {
   DeprecatedConfigPathsCandidate,
@@ -100,16 +101,13 @@ const composePathWithSubConfigKeys = (
  *
  * @see getSubConfigKeys for details on how subConfigKeys are determined.
  */
-export const getDataAndConfigPaths = ({
+export const getConfigPaths = ({
   path,
   persistSchema,
 }: {
   persistSchema: PersistSchema;
   path: string;
-}): {
-  configPaths: { configPath: string; deprecatedConfigPaths: string[] }[];
-  dataPaths: string[];
-} => {
+}): ConfigPath[] => {
   const segments = path.split(".");
   let configPaths = [""];
   let schema = persistSchema;
@@ -118,10 +116,7 @@ export const getDataAndConfigPaths = ({
   let deprecatedConfigPathsCandidates: DeprecatedConfigPathsCandidate[] = [];
   for (const segment of segments) {
     if (traversalIsAborted) {
-      return {
-        configPaths: [],
-        dataPaths: [],
-      };
+      return [];
     }
     if (schema.type === "array") {
       configPaths = configPaths.map((p) => composePaths(p, segment));
@@ -157,17 +152,22 @@ export const getDataAndConfigPaths = ({
     }
   }
 
-  const subConfigKeys = traversalIsAborted ? [] : getSubConfigKeys(schema);
-  configPaths = configPaths.flatMap((configPath) =>
-    composePathWithSubConfigKeys(configPath, subConfigKeys),
-  );
-  return {
-    configPaths: toConfigPathsWithDeprecatedConfigPaths(
-      configPaths,
-      deprecatedConfigPathsCandidates,
-    ),
-    dataPaths: composePathWithSubConfigKeys(path, subConfigKeys),
-  };
+  let dataPaths = [path];
+  if (!traversalIsAborted) {
+    const subConfigKeys = getSubConfigKeys(schema);
+    configPaths = configPaths.flatMap((configPath) =>
+      composePathWithSubConfigKeys(configPath, subConfigKeys),
+    );
+    dataPaths = composePathWithSubConfigKeys(path, subConfigKeys);
+  }
+  return toConfigPathsWithDeprecatedConfigPaths(
+    configPaths,
+    deprecatedConfigPathsCandidates,
+  ).map(({ configPath, deprecatedConfigPaths }, index) => ({
+    configPath,
+    dataPath: dataPaths.length === 1 ? dataPaths[0] : dataPaths[index],
+    deprecatedConfigPaths,
+  }));
 };
 
 /**
