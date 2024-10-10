@@ -54,14 +54,9 @@ import java.util.List;
 
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.Persistor;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldBasedNodeSettingsPersistor;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
-import org.knime.core.webui.node.dialog.defaultdialog.tree.Tree;
 import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeFactory;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LatentWidget;
-
-import com.fasterxml.jackson.databind.JavaType;
 
 /**
  * For creating a persist tree from a {@link PersistableSettings} class.
@@ -92,34 +87,6 @@ public final class PersistTreeFactory extends TreeFactory<PersistableSettings> {
     @Override
     protected Class<? extends PersistableSettings> getTreeSettingsClass() {
         return PersistableSettings.class;
-    }
-
-    @Override
-    protected void populateTree(final Tree<PersistableSettings> tree, final JavaType treeType) {
-        if (hasCustomPersitor(tree)) {
-            return;
-        }
-        super.populateTree(tree, treeType);
-    }
-
-    private static boolean hasCustomPersitor(final Tree<PersistableSettings> tree) {
-        final var persist = tree.getAnnotation(Persist.class);
-        if (persist.isPresent()) {
-            final var customPersistorClass = persist.get().customPersistor();
-            if (customPersistorClass != FieldNodeSettingsPersistor.class) {
-                @SuppressWarnings("unchecked")
-                final var customPersistor =
-                    FieldNodeSettingsPersistor.createInstance(customPersistorClass, tree.getType(), null);
-                /**
-                 * In case the default persistor is used on save, we still need the children in order to communicate the
-                 * sub configs to the frontend.
-                 */
-                return !customPersistor.usesDefaultPersistorOnSave();
-            }
-        }
-        final var persistor = tree.getAnnotation(Persistor.class);
-        return persistor.isPresent() && persistor.get().value() != FieldBasedNodeSettingsPersistor.class;
-
     }
 
 }

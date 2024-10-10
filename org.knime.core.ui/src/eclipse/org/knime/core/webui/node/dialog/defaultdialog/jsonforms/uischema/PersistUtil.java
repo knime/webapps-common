@@ -58,6 +58,7 @@ import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.ConfigKeyUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.tree.ArrayParentNode;
 import org.knime.core.webui.node.dialog.defaultdialog.tree.LeafNode;
@@ -133,23 +134,29 @@ public final class PersistUtil {
         return objectNode.putObject("properties");
     }
 
-    /** Add a "configKeys" array to the field if a custom persistor is used */
     private static void addConfigKeys(final ObjectNode node, final TreeNode<PersistableSettings> field) {
-        var configKeys = ConfigKeyUtil.getConfigKeysUsedByField(field);
-        if (!isFieldName(field, configKeys)) {
-            var configKeysNode = node.putArray("configKeys");
-            Arrays.stream(configKeys).forEach(configKeysNode::add);
+        final var persistor = ConfigKeyUtil.extractFieldNodeSettingsPersistor(field);
+        final var persist = field.getAnnotation(Persist.class);
+        final var configRename = persist.map(Persist::configKey).filter(key -> !key.isEmpty());
+        final var configKeys = persistor.map(FieldNodeSettingsPersistor::getConfigKeys);
+        final var isHidden = persist.map(Persist::hidden).orElse(false);
+
+        if (configKeys.isPresent()) {
+            final var configKeysNode = node.putArray("configKeys");
+            Arrays.stream(configKeys.get()).forEach(configKeysNode::add);
+        } else if (isHidden) {
+            node.putArray("configKeys");
+        } else if (configRename.isPresent()) {
+            node.put("configKey", configRename.get());
         }
-        var deprecatedConfigsArray = ConfigKeyUtil.getDeprecatedConfigsUsedByField(field);
+        var deprecatedConfigsArray =
+            persistor.map(FieldNodeSettingsPersistor::getConfigsDeprecations).orElse(new ConfigsDeprecation[0]);
         if (deprecatedConfigsArray.length > 0) {
             final var deprecatedConfigsNode = node.putArray("deprecatedConfigKeys");
             Arrays.stream(deprecatedConfigsArray)
                 .forEach(deprecatedConfigs -> putDeprecatedConfig(deprecatedConfigsNode, deprecatedConfigs));
         }
-    }
 
-    private static boolean isFieldName(final TreeNode<PersistableSettings> field, final String[] configKeys) {
-        return configKeys.length == 1 && configKeys[0].equals(field.getName().orElse(null));
     }
 
     private static void putDeprecatedConfig(final ArrayNode deprecatedConfigsNode,

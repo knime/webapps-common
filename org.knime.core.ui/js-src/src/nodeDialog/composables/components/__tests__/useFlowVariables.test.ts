@@ -49,6 +49,7 @@ describe("useFlowVariables", () => {
   const createProps = (params: {
     path: string;
     configKeys?: string[];
+    configKey?: string;
     leaf?: PersistSchema;
   }): Props => {
     return { path: params.path, persistSchema: createPersistSchema(params) };
@@ -85,7 +86,6 @@ describe("useFlowVariables", () => {
     const path = "path";
     const configKey = "configKey";
     const subConfigKey = "subConfigKey";
-    const configKeys = [configKey];
     const leaf: PersistSchema = {
       type: "object",
       properties: {
@@ -95,7 +95,7 @@ describe("useFlowVariables", () => {
     return mountTestComponent({
       ...createProps({
         path,
-        configKeys,
+        configKey,
         leaf,
       }),
       ...params,

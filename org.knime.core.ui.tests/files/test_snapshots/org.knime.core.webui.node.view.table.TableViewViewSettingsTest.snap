@@ -522,7 +522,7 @@
               "type" : "object",
               "properties" : {
                 "selected" : {
-                  "configKeys" : [ "selected_Internals" ]
+                  "configKeys" : [ ]
                 },
                 "mode" : { },
                 "patternFilter" : {
@@ -569,7 +569,7 @@
             "pageSize" : { },
             "autoSizeColumnsToContent" : { },
             "rowHeightMode" : {
-              "configKeys" : [ "rowHeightModeV2" ],
+              "configKey" : "rowHeightModeV2",
               "deprecatedConfigKeys" : [ {
                 "new" : [ [ "rowHeightModeV2" ] ],
                 "deprecated" : [ ]
@@ -614,7 +614,7 @@
             "showOnlySelectedRows" : { },
             "showOnlySelectedRowsConfigurable" : { },
             "skipRemainingColumns" : {
-              "configKeys" : [ "skipRemainingColumns_Internals" ]
+              "configKeys" : [ ]
             }
           }
         }

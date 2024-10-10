@@ -92,7 +92,7 @@ final class DefaultFieldNodeSettingsPersistor<T> implements FieldNodeSettingsPer
     @Override
     public String[] getConfigKeys() {
         if (m_subConfigKeysWithoutJsonEquivalent == null) {
-            return new String[]{m_configKey};
+            return null; 
         }
         /**
          * TODO: UIEXT-2127 Remove this workaround again.

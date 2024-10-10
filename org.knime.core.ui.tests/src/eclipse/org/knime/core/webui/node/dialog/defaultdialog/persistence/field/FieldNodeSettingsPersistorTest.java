@@ -48,6 +48,7 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
@@ -56,7 +57,6 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistor;
 
 /**
  * Contains unit tests for the {@link FieldNodeSettingsPersistor}.
@@ -80,8 +80,8 @@ class FieldNodeSettingsPersistorTest {
             "config_key_parameter");
         assertInstanceOf(CustomPersistorWithConfigKey.class, persistor,
             "should return an instance of the specified class");
-        assertArrayEquals(new String[]{"config_key_parameter"}, persistor.getConfigKeys(),
-            "should set configKeys automatically");
+        assertThat(persistor.getConfigKey()).as("should set configKeys automatically")
+            .isEqualTo("config_key_parameter");
     }
 
     private static class CustomPersistor implements FieldNodeSettingsPersistor<Integer> {
@@ -112,6 +112,11 @@ class FieldNodeSettingsPersistorTest {
         @Override
         public void save(final Integer obj, final NodeSettingsWO settings) {
             throw new UnsupportedOperationException("not used by tests");
+        }
+
+        @Override
+        public String getConfigKey() {
+            return super.getConfigKey();
         }
     }
 }

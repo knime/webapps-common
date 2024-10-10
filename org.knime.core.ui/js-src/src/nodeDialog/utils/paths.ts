@@ -19,12 +19,13 @@ const getNextConfigPathSegments = ({
 }: {
   schema: PersistSchema;
   segment: string;
-}) => {
+}): { configKeys: string[]; continueTraversal: boolean } => {
   const configKeys = schema.configKeys;
   if (typeof configKeys === "undefined") {
-    return [segment];
+    const configKey = schema.configKey ?? segment;
+    return { configKeys: [configKey], continueTraversal: true };
   }
-  return configKeys;
+  return { configKeys, continueTraversal: false };
 };
 
 const getSubConfigKeysRecursive = (
@@ -40,19 +41,19 @@ const getSubConfigKeysRecursive = (
   } else if (schema.type === "object") {
     const subConfigKeys: string[][] = [];
     Object.entries(schema.properties).forEach(([key, subscheam]) => {
-      const configKeys = getNextConfigPathSegments({
+      const { configKeys, continueTraversal } = getNextConfigPathSegments({
         schema: subscheam,
         segment: key,
       });
       configKeys
         .filter((configKey) => !configKey.endsWith("_Internals"))
-        .forEach((configKey) =>
-          subConfigKeys.push(
-            ...getSubConfigKeysRecursive(schema.properties[key], [
-              ...prefix,
-              configKey,
-            ]),
-          ),
+        .map((configKey) => [...prefix, configKey])
+        .forEach((newPrefix) =>
+          continueTraversal
+            ? subConfigKeys.push(
+                ...getSubConfigKeysRecursive(schema.properties[key], newPrefix),
+              )
+            : subConfigKeys.push(newPrefix),
         );
     });
     return subConfigKeys;
@@ -112,8 +113,16 @@ export const getDataAndConfigPaths = ({
   const segments = path.split(".");
   let configPaths = [""];
   let schema = persistSchema;
+
+  let traversalIsAborted = false;
   let deprecatedConfigPathsCandidates: DeprecatedConfigPathsCandidate[] = [];
   for (const segment of segments) {
+    if (traversalIsAborted) {
+      return {
+        configPaths: [],
+        dataPaths: [],
+      };
+    }
     if (schema.type === "array") {
       configPaths = configPaths.map((p) => composePaths(p, segment));
       schema = schema.items;
@@ -126,7 +135,10 @@ export const getDataAndConfigPaths = ({
         ),
       );
 
-      const nextPathSegments = getNextConfigPathSegments({ schema, segment });
+      const { configKeys: nextPathSegments, continueTraversal } =
+        getNextConfigPathSegments({ schema, segment });
+
+      traversalIsAborted = !continueTraversal;
 
       configPaths = configPaths.flatMap((parent) =>
         nextPathSegments.map((newSegment) => composePaths(parent, newSegment)),
@@ -145,7 +157,7 @@ export const getDataAndConfigPaths = ({
     }
   }
 
-  const subConfigKeys = getSubConfigKeys(schema);
+  const subConfigKeys = traversalIsAborted ? [] : getSubConfigKeys(schema);
   configPaths = configPaths.flatMap((configPath) =>
     composePathWithSubConfigKeys(configPath, subConfigKeys),
   );

@@ -82,9 +82,4 @@ public final class StringArrayToColumnFilterPersistor extends NodeSettingsPersis
         m_persistor.save(obj, settings.addNodeSettings(getConfigKey()));
     }
 
-    @Override
-    public boolean usesDefaultPersistorOnSave() {
-        return true;
-    }
-
 }

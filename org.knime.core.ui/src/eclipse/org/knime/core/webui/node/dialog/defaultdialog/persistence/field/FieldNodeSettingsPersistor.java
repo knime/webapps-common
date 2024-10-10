@@ -90,7 +90,8 @@ public interface FieldNodeSettingsPersistor<T> extends NodeSettingsPersistor<T> 
     }
 
     /**
-     * @return an array of all config keys that are used to save the setting to the node settings
+     * @return an array of all config keys that are used to save the setting to the node settings or null if config keys
+     *         should be inferred as if this persistor was not present.
      */
     String[] getConfigKeys();
 
@@ -100,16 +101,6 @@ public interface FieldNodeSettingsPersistor<T> extends NodeSettingsPersistor<T> 
      */
     default ConfigsDeprecation[] getConfigsDeprecations() {
         return new ConfigsDeprecation[0];
-    }
-
-    /**
-     * TODO: UIEXT-2188: Remove this method again. We use it to determine whether a persistor changes the persist
-     * structure of PersistableSettings.
-     *
-     * @return true if the persistor uses the default persistor on save
-     */
-    default boolean usesDefaultPersistorOnSave() {
-        return false;
     }
 
     /**

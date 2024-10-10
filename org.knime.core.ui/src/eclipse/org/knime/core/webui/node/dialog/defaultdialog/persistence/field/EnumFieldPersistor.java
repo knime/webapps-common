@@ -97,7 +97,7 @@ public final class EnumFieldPersistor<E extends Enum<E>> implements FieldNodeSet
 
     @Override
     public String[] getConfigKeys() {
-        return new String[]{m_configKey};
+        return null; 
     }
 
 }

@@ -5,6 +5,7 @@ export type PersistSchema = ConfigInfo &
 type DeprecatedConfigs = { new: string[][]; deprecated: string[][] };
 
 export interface ConfigInfo {
+  configKey?: string;
   configKeys?: string[];
   deprecatedConfigKeys?: DeprecatedConfigs[];
 }

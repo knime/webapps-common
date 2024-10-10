@@ -102,7 +102,7 @@ public final class ConfigKeyUtil {
             .orElse(new ConfigsDeprecation[]{});
     }
 
-    private static Optional<FieldNodeSettingsPersistor<?>>
+    public static Optional<FieldNodeSettingsPersistor<?>>
         extractFieldNodeSettingsPersistor(final TreeNode<PersistableSettings> node) {
         /**
          * There might not exist a persistor in some cases where the persistence is defined on a parent level class or

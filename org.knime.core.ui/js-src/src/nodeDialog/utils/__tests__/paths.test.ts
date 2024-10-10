@@ -50,19 +50,19 @@ describe("paths", () => {
       ]);
     });
 
-    it("respects overridden config keys when inferring sub config keys", () => {
+    it("respects overridden config key when inferring sub config keys", () => {
       const persistSchema: PersistSchema = {
         type: "object",
         properties: {
           a: {
             type: "object",
-            configKeys: ["b", "c"],
+            configKey: "b",
             properties: {
-              d: {
+              c: {
                 type: "object",
                 properties: {
+                  d: {},
                   e: {},
-                  f: {},
                 },
               },
             },
@@ -70,10 +70,8 @@ describe("paths", () => {
         },
       };
       expect(getSubConfigKeys(persistSchema)).toStrictEqual([
-        ["b", "d", "e"],
-        ["b", "d", "f"],
-        ["c", "d", "e"],
-        ["c", "d", "f"],
+        ["b", "c", "d"],
+        ["b", "c", "e"],
       ]);
     });
 
@@ -222,8 +220,36 @@ describe("paths", () => {
       );
     });
 
-    it("uses configKeys", () => {
+    it("uses configKey and continues traversal", () => {
       const path = "model.mySetting";
+      const persistSchema: PersistSchema = {
+        type: "object",
+        properties: {
+          model: {
+            type: "object",
+            configKey: "model_1",
+            properties: {
+              mySetting: {
+                type: "object",
+                properties: {
+                  subConfigKey: {},
+                },
+              },
+            },
+          },
+        },
+      };
+      const configPaths = getConfigPaths(path, persistSchema);
+      expect(configPaths).toStrictEqual([
+        {
+          configPath: "model_1.mySetting.subConfigKey",
+          deprecatedConfigPaths: [],
+        },
+      ]);
+    });
+
+    it("uses configKeys and stops traversal", () => {
+      const path = "model";
       const persistSchema: PersistSchema = {
         type: "object",
         properties: {
@@ -247,23 +273,43 @@ describe("paths", () => {
       };
       const configPaths = getConfigPaths(path, persistSchema);
       expect(configPaths).toStrictEqual(
-        [
-          "model_1.mySetting_1.subConfigKey",
-          "model_1.mySetting_2.subConfigKey",
-          "model_2.sub.mySetting_1.subConfigKey",
-          "model_2.sub.mySetting_2.subConfigKey",
-        ].map((configPath) => ({ configPath, deprecatedConfigPaths: [] })),
+        ["model_1", "model_2.sub"].map((configPath) => ({
+          configPath,
+          deprecatedConfigPaths: [],
+        })),
       );
     });
 
-    it("navigates to items and ignores config keys for array schema ", () => {
+    it("returns an empty result if traversal is aborted before the path ended", () => {
+      const path = "model.mySetting";
+      const persistSchema: PersistSchema = {
+        type: "object",
+        properties: {
+          model: {
+            type: "object",
+            configKeys: [],
+            properties: {
+              mySetting: {
+                type: "object",
+                properties: {
+                  subConfigKey: {},
+                },
+              },
+            },
+          },
+        },
+      };
+      const configPaths = getConfigPaths(path, persistSchema);
+      expect(configPaths).toStrictEqual([]);
+    });
+
+    it("navigates to items and ignores segments for array schema ", () => {
       const path = "model.3.mySetting";
       const persistSchema: PersistSchema = {
         type: "object",
         properties: {
           model: {
             type: "array",
-            configKeys: ["model_1", "model_2"],
             items: {
               type: "object",
               properties: {
@@ -282,12 +328,10 @@ describe("paths", () => {
       };
       const configPaths = getConfigPaths(path, persistSchema);
       expect(configPaths).toStrictEqual(
-        [
-          "model_1.3.mySetting_1.subConfigKey",
-          "model_1.3.mySetting_2.subConfigKey",
-          "model_2.3.mySetting_1.subConfigKey",
-          "model_2.3.mySetting_2.subConfigKey",
-        ].map((configPath) => ({ configPath, deprecatedConfigPaths: [] })),
+        ["model.3.mySetting_1", "model.3.mySetting_2"].map((configPath) => ({
+          configPath,
+          deprecatedConfigPaths: [],
+        })),
       );
     });
 
@@ -298,19 +342,18 @@ describe("paths", () => {
         properties: {
           model: {
             type: "object",
-            configKeys: ["model_1", "model_2"],
             deprecatedConfigKeys: [
               {
                 deprecated: [
                   ["deprecated", "1"],
                   ["deprecated", "2"],
                 ],
-                new: [["model_1"], ["model_1", "mySetting", "subSetting"]],
+                new: [["model"], ["model", "mySetting", "subSetting"]],
               },
               {
                 deprecated: [["deprecated", "3"]],
                 new: [
-                  ["model_2", "mySetting_2"],
+                  ["model", "mySetting_2"],
                   ["view", "otherSetting"],
                 ],
               },
@@ -340,28 +383,16 @@ describe("paths", () => {
       const configPaths = getConfigPaths(path, persistSchema);
       expect(configPaths).toStrictEqual([
         {
-          configPath: "model_1.mySetting_1.subConfigKey",
+          configPath: "model.mySetting_1",
           deprecatedConfigPaths: ["deprecated.1", "deprecated.2"],
         },
         {
-          configPath: "model_1.mySetting_2.subConfigKey",
+          configPath: "model.mySetting_2",
           deprecatedConfigPaths: [
             "deprecated.1",
             "deprecated.2",
-            "model_1.deprecated.4",
-            "model_2.deprecated.4",
-          ],
-        },
-        {
-          configPath: "model_2.mySetting_1.subConfigKey",
-          deprecatedConfigPaths: [],
-        },
-        {
-          configPath: "model_2.mySetting_2.subConfigKey",
-          deprecatedConfigPaths: [
             "deprecated.3",
-            "model_1.deprecated.4",
-            "model_2.deprecated.4",
+            "model.deprecated.4",
           ],
         },
       ]);

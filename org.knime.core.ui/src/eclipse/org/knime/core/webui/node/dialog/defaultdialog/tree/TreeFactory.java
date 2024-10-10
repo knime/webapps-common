@@ -217,12 +217,9 @@ public abstract class TreeFactory<S> {
     }
 
     /**
-     * This method can be overwritten in order to prevent population of certain trees.
-     *
      * @param tree a fresh tree without any children yet
-     * @param treeType
      */
-    protected void populateTree(final Tree<S> tree, final JavaType treeType) {
+    private void populateTree(final Tree<S> tree, final JavaType treeType) {
         getSerializableProperties(treeType).forEachRemaining(field -> addField(tree, field, treeType.getRawClass()));
     }
 
