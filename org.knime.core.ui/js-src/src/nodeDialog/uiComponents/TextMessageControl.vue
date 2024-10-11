@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { rendererProps } from "@jsonforms/vue";
 import useProvidedState from "../composables/components/useProvidedState";
-import { InlineMessage } from "@knime/components";
+import { InlineMessage, type InlineMessageVariant } from "@knime/components";
 interface Message {
   title: string;
   description: string;
@@ -18,7 +18,7 @@ const message = useProvidedState<Message | undefined | null>(
 <template>
   <InlineMessage
     v-if="message"
-    :type="message.type.toLowerCase() as any"
+    :variant="message.type.toLowerCase() as InlineMessageVariant"
     :title="message.title"
     :description="message.description"
   />

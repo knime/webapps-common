@@ -71,6 +71,6 @@ describe("TextMessageControl.vue", () => {
       description: "Here is a message that informs the user",
     });
     await flushPromises();
-    expect(wrapper.findComponent(InlineMessage).props("type")).toBe("info");
+    expect(wrapper.findComponent(InlineMessage).props("variant")).toBe("info");
   });
 });
