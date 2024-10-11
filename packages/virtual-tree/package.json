@@ -24,9 +24,9 @@
     "@knime/components": "workspace:*",
     "@knime/styles": "workspace:*",
     "@knime/utils": "workspace:*",
+    "@knime/vue-headless-virtual-scroller": "^0.1.2",
     "consola": "3.2.3",
-    "typescript": "^5.4.5",
-    "vue-virtual-scroller": "2.0.0-beta.8"
+    "typescript": "^5.4.5"
   },
   "peerDependencies": {
     "vue": "3.x"

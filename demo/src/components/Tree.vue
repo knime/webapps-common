@@ -56,8 +56,20 @@ const loadData = (treeNode: BaseTreeNode, callback: (children: TreeNodeOptions[]
   </template>
 </Tree>
 `;
+const codeExampleVirtual = `
+import { Tree } from "@knime/virtual-tree";
+const selectedItemVirtualTree = ref();
+
+<Tree
+  :style="{ height: '120px', overflowY: 'auto' }"
+  :source="hugeList"
+  virtual
+  @select-change="selectedItemVirtualTree = $event.node"
+/>
+`;
 
 const selectedItem = ref();
+const selectedItemVirtualTree = ref();
 const doubleClickedItem = ref();
 
 const loadData = async (
@@ -71,6 +83,29 @@ const loadData = async (
     { nodeKey: "more2", name: "another item" },
   ]);
 };
+
+// eslint-disable-next-line no-magic-numbers
+const recursion = (path = "0", level = 3, h = 15): TreeNodeOptions[] => {
+  const list = [];
+  for (let i = 0; i < h; i += 1) {
+    const nodeKey = `${path}-${i}`;
+    const treeNode: TreeNodeOptions = {
+      nodeKey,
+      name: `Item ${nodeKey}`,
+      children: [],
+      hasChildren: level > 0,
+    };
+
+    if (level > 0) {
+      treeNode.children = recursion(nodeKey, level - 1);
+    }
+    list.push(treeNode);
+  }
+  return list;
+};
+
+// eslint-disable-next-line no-magic-numbers
+const hugeList = ref(recursion("v", 2, 35));
 </script>
 
 <template>
@@ -122,7 +157,7 @@ const loadData = async (
               },
               {
                 nodeKey: 'dyn',
-                name: 'Dynamic Stuff',
+                name: 'Load async data',
                 hasChildren: true,
               },
             ]"
@@ -138,6 +173,35 @@ const loadData = async (
         <div class="grid-item-12">
           <CodeExample summary="Show usage example">{{
             codeExample
+          }}</CodeExample>
+        </div>
+      </div>
+    </section>
+    <section>
+      <div class="grid-container">
+        <div class="grid-item-12">
+          <h4>Virtual</h4>
+        </div>
+      </div>
+      <div class="grid-container">
+        <div class="grid-item-5">
+          <Tree
+            :style="{ height: '120px', overflowY: 'auto' }"
+            :source="hugeList"
+            virtual
+            @select-change="selectedItemVirtualTree = $event.node"
+          />
+        </div>
+        <div class="grid-item-5">
+          selected item: {{ selectedItemVirtualTree?.name }}
+        </div>
+      </div>
+    </section>
+    <section>
+      <div class="grid-container">
+        <div class="grid-item-12">
+          <CodeExample summary="Show usage example">{{
+            codeExampleVirtual
           }}</CodeExample>
         </div>
       </div>

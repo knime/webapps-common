@@ -10,11 +10,15 @@ import {
   ref,
   shallowReactive,
   toRaw,
+  toRef,
   useSlots,
   watch,
 } from "vue";
-// @ts-ignore
-import { RecycleScroller } from "vue-virtual-scroller";
+
+import {
+  SameSizeManager,
+  useVirtualLine,
+} from "@knime/vue-headless-virtual-scroller";
 
 import TreeNode from "./TreeNode.vue";
 import { BaseTreeNode } from "./baseTreeNode";
@@ -37,7 +41,6 @@ import type {
   RenderNodeFunc,
   SelectEventParams,
   TreeNodeOptions,
-  VirtualConfig,
 } from "./types";
 import { addOrDelete } from "./utils";
 import type { TypeWithUndefined } from "./utils/types";
@@ -75,14 +78,20 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  virtual: {
+    type: Boolean,
+    default: false,
+  },
+  virtualHeight: {
+    type: Number,
+    default: 24,
+  },
   // eslint-disable-next-line vue/require-default-prop
   renderNode: Function as PropType<RenderNodeFunc>,
   // eslint-disable-next-line vue/require-default-prop
   renderIcon: Function as PropType<RenderIconFunc>,
   // eslint-disable-next-line vue/require-default-prop
   loadData: Function as PropType<LoadDataFunc>,
-  // eslint-disable-next-line vue/require-default-prop
-  virtual: Object as PropType<VirtualConfig>,
 });
 
 const emit = defineEmits<{
@@ -151,12 +160,17 @@ const visibleList = computed(() => {
   });
 });
 
-const virtualHeight = computed(() => {
-  if (props.virtual) {
-    return Number(props.virtual.size * props.virtual.remain) || 0;
-  }
-  return 0;
-});
+// virtual handling
+const visibleListSize = computed(() => visibleList.value.length);
+const { containerProps, indices, scrolledAreaStyles } = useVirtualLine(
+  {
+    sizeManager: new SameSizeManager(
+      visibleListSize,
+      toRef(props, "virtualHeight"),
+    ),
+  },
+  "vertical",
+);
 
 watch(
   () => props.defaultExpandedKeys,
@@ -385,22 +399,21 @@ provide(TreeInjectionKey, context);
   <div
     class="vir-tree"
     tabindex="0"
+    v-bind="virtual ? containerProps : {}"
     @keydown="handleKeyboardNavigation"
     @focusin="onFocusIn"
     @focusout="onFocusOut"
   >
-    <RecycleScroller
-      v-if="virtualHeight"
-      #default="{ item }"
-      class="vir-tree-wrap"
-      :style="{ height: virtualHeight + 'px' }"
-      :items="visibleList"
-      :item-size="props.virtual?.size"
-      key-field="key"
+    <div
+      v-if="virtual"
+      class="vir-tree-wrap virtual"
+      :style="{ ...scrolledAreaStyles }"
     >
       <tree-node
-        :key="item.key"
-        :node="item"
+        v-for="index in indices.toArray()"
+        :key="visibleList[index].key"
+        :style="{ height: `${virtualHeight}px` }"
+        :node="visibleList[index]"
         :show-checkbox="showCheckbox"
         :selected-keys="selectedKeys"
         :disabled-keys="disabledKeys"
@@ -412,7 +425,7 @@ provide(TreeInjectionKey, context);
         @select-change="selectChange"
         @check-change="checkChange"
       />
-    </RecycleScroller>
+    </div>
 
     <div v-else class="vir-tree-wrap">
       <tree-node

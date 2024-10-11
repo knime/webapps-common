@@ -24,6 +24,7 @@ interface Props {
   selectable?: boolean;
   expandedKeys?: string[];
   idPrefix?: string;
+  virtual?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -32,6 +33,7 @@ const props = withDefaults(defineProps<Props>(), {
   selectable: true,
   expandedKeys: () => [],
   idPrefix: "tree",
+  virtual: false,
 });
 
 const emit = defineEmits<{
@@ -139,6 +141,7 @@ defineExpose({
     :default-selected-key="selectedKey"
     :default-expanded-keys="expandedKeys"
     :aria-activedescendant="domNodeId(focusedNodeKey)"
+    :virtual="virtual"
     @keydown="onTreeKeydown"
     @focus-change="onFocusChange"
     @select-change="onSelectChange"

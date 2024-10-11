@@ -66,11 +66,6 @@ type TreeContext = Readonly<{
   toggleExpand: (nodeKey: NodeKey, state?: boolean) => void;
 }>;
 
-interface VirtualConfig {
-  size: number;
-  remain: number;
-}
-
 export type {
   BaseTreeNode,
   TreeNodeOptions,
@@ -85,5 +80,4 @@ export type {
   LoadDataFunc,
   KeydownEvent,
   TreeContext,
-  VirtualConfig,
 };

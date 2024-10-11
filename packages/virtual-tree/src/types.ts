@@ -8,7 +8,6 @@ import {
   type SelectEventParams,
   type TreeContext,
   type TreeNodeOptions,
-  type VirtualConfig,
 } from "./baseTree";
 
 export {
@@ -17,7 +16,6 @@ export {
   type BaseTreeNode,
   type TreeContext,
   type NodeKey,
-  type VirtualConfig,
   type SelectEventParams,
   type EventParams,
   type FocusEventParams,
