@@ -18,27 +18,27 @@ const codeExample = `<InlineMessage
       <div class="grid-item-12">
         <div class="wrapper">
           <InlineMessage
-            type="info"
+            variant="info"
             title="Info"
             description="Here is a message that informs the user"
           />
           <InlineMessage
-            type="warning"
+            variant="warning"
             title="Warning"
             description="Here is a message that warns the user"
           />
           <InlineMessage
-            type="error"
+            variant="error"
             title="Error"
             description="Here is a message that tells user about error and what to do"
           />
           <InlineMessage
-            type="success"
+            variant="success"
             title="Success"
             description="Here is a message that informs the user about success"
           />
           <InlineMessage
-            type="promotion"
+            variant="promotion"
             title="Promotion"
             description="Here is a message that informs the user about KNIME news"
           />

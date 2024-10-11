@@ -30,7 +30,7 @@ const codeExample = `<Pill>Hello World</Pill>
           </div>
           <div class="white">
             <span>With white color variant</span>
-            <Pill variant="Muted">Hello White World</Pill>
+            <Pill variant="light">Hello White World</Pill>
           </div>
           <div class="default-wrapper">
             <span>The content can be whatever you need:</span>
@@ -40,29 +40,29 @@ const codeExample = `<Pill>Hello World</Pill>
           </div>
           <div class="default-wrapper">
             <span>Success variant</span>
-            <Pill variant="Success"><Success />Success</Pill>
+            <Pill variant="success"><Success />Success</Pill>
           </div>
           <div class="default-wrapper">
             <span>Info variant</span>
-            <Pill variant="Info"
+            <Pill variant="info"
               ><CircleWarning />
               <p>Info</p>
             </Pill>
           </div>
           <div class="default-wrapper">
             <span>Error variant</span>
-            <Pill variant="Error"
+            <Pill variant="error"
               ><Close />
               <p>Error</p>
             </Pill>
           </div>
           <div class="default-wrapper">
             <span>Warning variant</span>
-            <Pill variant="Warning"><Warning />Warning</Pill>
+            <Pill variant="warning"><Warning />Warning</Pill>
           </div>
           <div class="default-wrapper">
             <span>Promotion variant</span>
-            <Pill variant="Promotion"><Rocket />Promotion</Pill>
+            <Pill variant="promotion"><Rocket />Promotion</Pill>
           </div>
         </div>
 
