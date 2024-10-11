@@ -20,7 +20,7 @@
     "build:packages": "pnpm run build:styles",
     "build:styles": "pnpm --filter @knime/styles build",
     "build:demo": "pnpm --filter demo build",
-    "demo": "pnpm --filter demo dev",
+    "demo": "pnpm run build:packages && pnpm run --filter demo dev",
     "test:unit": "TZ='Europe/Berlin' vitest",
     "test:unit-components": "pnpm --filter @knime/components test:unit",
     "test:unit-ui-extensions-renderer": "pnpm --filter @knime/ui-extensions-renderer test:unit",

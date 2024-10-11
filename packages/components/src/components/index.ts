@@ -11,7 +11,9 @@ import Error from "./Error/Error.vue";
 import FileLink from "./FileLink/FileLink.vue";
 import FileSelector from "./FileSelector/FileSelector.vue";
 import IdleReadyButton from "./IdleReadyButton/IdleReadyButton.vue";
-import InlineMessage from "./InlineMessage/InlineMessage.vue";
+import InlineMessage, {
+  type InlineMessageVariant,
+} from "./InlineMessage/InlineMessage.vue";
 import LegacyBrowserWarning from "./LegacyBrowserWarning/LegacyBrowserWarning.vue";
 import LinkList from "./LinkList/LinkList.vue";
 import LoadingIcon from "./LoadingIcon/LoadingIcon.vue";
@@ -22,7 +24,7 @@ import MessageTitle from "./Messages/MessageTitle.vue";
 import Messages from "./Messages/Messages.vue";
 import Modal from "./Modal/Modal.vue";
 import OpenSourceCredits from "./OpenSourceCredits/OpenSourceCredits.vue";
-import Pill from "./Pill/Pill.vue";
+import Pill, { type PillVariant } from "./Pill/Pill.vue";
 import ProgressBar from "./ProgressBar/ProgressBar.vue";
 import SideDrawer from "./SideDrawer/SideDrawer.vue";
 import StyledListItem from "./StyleListItem/StyledListItem.vue";
@@ -96,3 +98,5 @@ export {
   svgWithTitle,
   ProgressBar,
 };
+
+export type { InlineMessageVariant, PillVariant };
