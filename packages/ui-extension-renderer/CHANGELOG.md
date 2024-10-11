@@ -1,5 +1,12 @@
 # @knime/ui-extension-renderer
 
+## 1.1.24
+
+### Patch Changes
+
+- Updated dependencies [36f4ccb]
+  - @knime/components@1.4.1
+
 ## 1.1.23
 
 ### Patch Changes

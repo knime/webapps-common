@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.4.1
+
+### Patch Changes
+
+- 36f4ccb: Export InlineMessageVariant and PillVariant types
+
 ## 1.4.0
 
 ### Minor Changes
