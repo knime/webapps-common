@@ -1,5 +1,11 @@
 # @knime/virtual-tree
 
+## 1.0.13
+
+### Patch Changes
+
+- 6b35a8d: Add virtual prop to make the tree actually render virtual. Now using @knime/vue-headless-virtual-scroller.
+
 ## 1.0.12
 
 ### Patch Changes
