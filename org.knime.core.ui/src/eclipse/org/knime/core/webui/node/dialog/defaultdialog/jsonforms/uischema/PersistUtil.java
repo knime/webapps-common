@@ -52,6 +52,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.configmapping.ConfigPath;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
@@ -143,7 +144,8 @@ public final class PersistUtil {
 
         if (configKeys.isPresent()) {
             final var configKeysNode = node.putArray("configKeys");
-            Arrays.stream(configKeys.get()).forEach(configKeysNode::add);
+            Arrays.stream(configKeys.get()).filter(key -> !key.endsWith(SettingsModel.CFGKEY_INTERNAL))
+                .forEach(configKeysNode::add);
         } else if (isHidden) {
             node.putArray("configKeys");
         } else if (configRename.isPresent()) {

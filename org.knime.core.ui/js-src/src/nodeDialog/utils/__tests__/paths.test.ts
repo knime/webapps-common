@@ -103,21 +103,6 @@ describe("paths", () => {
       };
       expect(getSubConfigKeys(persistSchema)).toStrictEqual([]);
     });
-
-    it("ignores hidden settings when inferring sub config keys", () => {
-      const persistSchema: PersistSchema = {
-        type: "object",
-        properties: {
-          a: {
-            configKeys: ["b", "c_Internals", "d"],
-          },
-          d: {
-            configKeys: ["e_Internals"],
-          },
-        },
-      };
-      expect(getSubConfigKeys(persistSchema)).toStrictEqual([["b"], ["d"]]);
-    });
   });
 
   describe("data paths", () => {

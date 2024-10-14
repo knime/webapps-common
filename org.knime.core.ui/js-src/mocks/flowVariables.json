@@ -167,11 +167,10 @@
                 },
                 "selected": {
                   "default": [],
-                  "configKeys": ["selected_Internals"],
+                  "configKeys": [],
                   "type": "array",
                   "items": {
-                    "type": "string",
-                    "configKeys": ["selected_Internals"]
+                    "type": "string"
                   }
                 },
                 "typeFilter": {
@@ -285,11 +284,10 @@
                 },
                 "selected": {
                   "default": [],
-                  "configKeys": ["selected_Internals"],
+                  "configKeys": [],
                   "type": "array",
                   "items": {
-                    "type": "string",
-                    "configKeys": ["selected_Internals"]
+                    "type": "string"
                   }
                 },
                 "typeFilter": {

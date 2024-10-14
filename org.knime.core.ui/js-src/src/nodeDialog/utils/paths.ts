@@ -47,7 +47,6 @@ const getSubConfigKeysRecursive = (
         segment: key,
       });
       configKeys
-        .filter((configKey) => !configKey.endsWith("_Internals"))
         .map((configKey) => [...prefix, configKey])
         .forEach((newPrefix) =>
           continueTraversal
@@ -65,8 +64,8 @@ const getSubConfigKeysRecursive = (
 /**
  * Unless custom sub config keys are found in the given schema, sub config keys are inferred by traversing the schema
  * depth-first, replacing encountered segments with config keys, if custom config keys are found in the schema (as in
- * @see getConfigPaths). Further traversal at any segment ends prematurely if, (i) custom sub config keys are found in
- * the segment's schema or (ii) the current segment's config key is hidden (i.e., suffixed with "_Internals").
+ * @see getConfigPaths). Further traversal at any segment ends prematurely if custom config keys are found in
+ * the segment's schema.
  */
 export const getSubConfigKeys = (schema: PersistSchema): string[][] => {
   return getSubConfigKeysRecursive(schema, []);

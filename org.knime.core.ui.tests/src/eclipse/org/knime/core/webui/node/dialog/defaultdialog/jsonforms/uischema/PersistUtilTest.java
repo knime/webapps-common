@@ -95,7 +95,7 @@ class PersistUtilTest {
 
         @Override
         public String[] getConfigKeys() {
-            return new String[]{"config_key_from_persistor_1", "config_key_from_persistor_2"};
+            return new String[]{"config_key_from_persistor_1", "config_key_from_persistor_2", "config_key_from_persistor_3_Internals"};
         }
 
     }

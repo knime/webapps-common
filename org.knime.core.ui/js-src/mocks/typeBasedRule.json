@@ -18,11 +18,10 @@
               "type": "object",
               "properties": {
                 "compatibleTypes": {
-                  "configKeys": ["compatibleTypes_Internals"],
+                  "configKeys": [],
                   "type": "array",
                   "items": {
-                    "type": "string",
-                    "configKeys": ["compatibleTypes_Internals"]
+                    "type": "string"
                   }
                 },
                 "selected": {
