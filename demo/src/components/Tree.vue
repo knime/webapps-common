@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { markRaw, ref } from "vue";
 
+import FileIcon from "@knime/styles/img/icons/file.svg";
+import AppleIcon from "@knime/styles/img/icons/os-apple.svg";
 import {
   type BaseTreeNode,
   Tree,
@@ -19,9 +21,21 @@ const loadData = (treeNode: BaseTreeNode, callback: (children: TreeNodeOptions[]
 };
 
 <Tree
-  :source="[
-    { nodeKey: 'root/1', name: 'rootNode1', children: [{ nodeKey: 'sub/1', name: 'sub1'}] },
-    { nodeKey: 'root/2', name: 'rootNode2' hasChildren: true },
+  :source="[{
+    nodeKey: 'fruit',
+    name: 'Fruits',
+    icon: markRaw(FileIcon),
+    children: [
+      {
+        nodeKey: 'apple',
+        name: 'Apples',
+        icon: markRaw(AppleIcon),
+        children: [
+          { nodeKey: 'apple1', name: 'Alamanka' }
+        ],
+      }
+    },
+    { nodeKey: 'root/2', name: 'Vegetables' hasChildren: true },
   ]"
   :load-data="loadData"
 />`;
@@ -129,10 +143,12 @@ const hugeList = ref(recursion("v", 2, 35));
               {
                 nodeKey: 'fruit',
                 name: 'Fruits',
+                icon: markRaw(FileIcon),
                 children: [
                   {
                     nodeKey: 'apple',
                     name: 'Apples',
+                    icon: markRaw(AppleIcon),
                     children: [
                       { nodeKey: 'apple1', name: 'Alamanka' },
                       { nodeKey: 'apple2', name: 'Albrechtapfel' },
@@ -142,6 +158,7 @@ const hugeList = ref(recursion("v", 2, 35));
                   {
                     nodeKey: 'oranges',
                     name: 'Oranges',
+                    icon: markRaw(FileIcon),
                     children: [
                       { nodeKey: 'orange1', name: 'Blood Orange ' },
                       { nodeKey: 'orange2', name: 'Kumquat' },
