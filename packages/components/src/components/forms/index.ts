@@ -4,6 +4,7 @@ import ComboBox from "./ComboBox/ComboBox.vue";
 // import DateTimeInput from "./DateTimeInput/DateTimeInput.vue";
 import Dropdown from "./Dropdown/Dropdown.vue";
 import Fieldset from "./Fieldset/Fieldset.vue";
+import FileUpload from "./FileUpload/FileUpload.vue";
 import InputField from "./InputField/InputField.vue";
 import Label from "./Label/Label.vue";
 import ListBox from "./ListBox/ListBox.vue";
@@ -48,4 +49,5 @@ export {
   ToggleSwitch,
   Twinlist,
   ValueSwitch,
+  FileUpload,
 };
