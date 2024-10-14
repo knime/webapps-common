@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.4.2
+
+### Patch Changes
+
+- 8433348: Extend dropdown: provide flag to slot in order to know if slot is rendered as selected value or within dropdown
+
 ## 1.4.1
 
 ### Patch Changes
