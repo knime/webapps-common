@@ -163,9 +163,10 @@ defineExpose({
               },
             ]"
             @click="() => onExpandableClick(node)"
-            ><slot name="expandable" :tree-node="node">{{
-              node.name
-            }}</slot></span
+            ><slot name="expandable" :tree-node="node"
+              ><Component :is="node.icon" v-if="node.icon" />
+              {{ node.name }}</slot
+            ></span
           >
         </template>
         <template v-else>
@@ -175,7 +176,10 @@ defineExpose({
               'leaf',
               { selected: isTreeNodeSelected(node), focus: hasFocus(node) },
             ]"
-            ><slot name="leaf" :tree-node="node">{{ node.name }}</slot></span
+            ><slot name="leaf" :tree-node="node"
+              ><Component :is="node.icon" v-if="node.icon" />
+              {{ node.name }}</slot
+            ></span
           >
         </template>
       </span>
@@ -190,18 +194,28 @@ defineExpose({
 </template>
 
 <style lang="postcss" scoped>
+@import url("@knime/styles/css/mixins.css");
+
 .tree-node-wrapper {
   display: block;
   width: 100%;
 }
 
 .tree-node {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: 100%;
+
+  & svg {
+    stroke: var(--knime-masala);
+
+    @mixin svg-icon-size 16;
+  }
 }
 
 .expandable {

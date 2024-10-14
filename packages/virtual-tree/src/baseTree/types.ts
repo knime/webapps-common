@@ -1,4 +1,4 @@
-import type { Slots } from "vue";
+import type { FunctionalComponent, SVGAttributes, Slots } from "vue";
 import type { JSX } from "vue/jsx-runtime";
 
 import type { BaseTreeNode } from "./baseTreeNode";
@@ -12,6 +12,7 @@ interface TreeNodeOptions {
   name: string;
   showCheckbox?: boolean;
   hasChildren?: boolean;
+  icon?: FunctionalComponent<SVGAttributes>;
   children?: TreeNodeOptions[];
   [key: string]: any;
 }
