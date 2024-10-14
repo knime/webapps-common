@@ -6,7 +6,7 @@ type DeprecatedConfigs = { new: string[][]; deprecated: string[][] };
 
 export interface ConfigInfo {
   configKey?: string;
-  configKeys?: string[];
+  configPaths?: string[][];
   deprecatedConfigKeys?: DeprecatedConfigs[];
 }
 

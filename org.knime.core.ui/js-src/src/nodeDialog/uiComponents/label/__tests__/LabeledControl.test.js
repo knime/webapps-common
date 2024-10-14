@@ -21,9 +21,7 @@ describe("LabeledControl.vue", () => {
       control: {
         visible: true,
         path: "path.to.setting",
-        schema: {
-          configKeys: ["myConfigKey"],
-        },
+        schema: {},
         label: "title",
         rootSchema: {},
         uischema: {},

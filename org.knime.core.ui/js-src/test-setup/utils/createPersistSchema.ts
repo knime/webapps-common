@@ -2,11 +2,11 @@ import { PersistSchema } from "@/nodeDialog/types/Persist";
 
 export const createPersistSchema = (params: {
   path: string;
-  configKeys?: string[];
+  configPaths?: string[][];
   configKey?: string;
   leaf?: PersistSchema;
 }): PersistSchema => {
-  const { path, configKeys, configKey, leaf } = params;
+  const { path, configPaths, configKey, leaf } = params;
   const persistSchema: any = {};
   let currentPersistSchema = persistSchema;
   const segments = path.split(".");
@@ -16,8 +16,8 @@ export const createPersistSchema = (params: {
     currentPersistSchema.properties = { [segments[i]]: nextSchema };
     currentPersistSchema = nextSchema;
   }
-  if (configKeys) {
-    currentPersistSchema.configKeys = configKeys;
+  if (configPaths) {
+    currentPersistSchema.configPaths = configPaths;
   }
   if (configKey) {
     currentPersistSchema.configKey = configKey;

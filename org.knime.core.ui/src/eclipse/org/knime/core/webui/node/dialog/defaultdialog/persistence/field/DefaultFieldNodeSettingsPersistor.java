@@ -48,8 +48,6 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 
-import java.util.Arrays;
-
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
@@ -66,16 +64,8 @@ final class DefaultFieldNodeSettingsPersistor<T> implements FieldNodeSettingsPer
 
     private final FieldPersistor<T> m_impl;
 
-    private final String[] m_subConfigKeysWithoutJsonEquivalent;
-
     DefaultFieldNodeSettingsPersistor(final String configKey, final FieldPersistor<T> impl) {
-        this(configKey, null, impl);
-    }
-
-    DefaultFieldNodeSettingsPersistor(final String configKey, final String[] subConfigKeysWithoutJsonEquivalent,
-        final FieldPersistor<T> impl) {
         m_configKey = configKey;
-        m_subConfigKeysWithoutJsonEquivalent = subConfigKeysWithoutJsonEquivalent;
         m_impl = impl;
     }
 
@@ -91,14 +81,7 @@ final class DefaultFieldNodeSettingsPersistor<T> implements FieldNodeSettingsPer
 
     @Override
     public String[] getConfigKeys() {
-        if (m_subConfigKeysWithoutJsonEquivalent == null) {
-            return null; 
-        }
-        /**
-         * TODO: UIEXT-2127 Remove this workaround again.
-         */
-        return Arrays.stream(m_subConfigKeysWithoutJsonEquivalent)
-            .map(subKey -> String.format("%s.%s", m_configKey, subKey)).toArray(String[]::new);
+        return null; // NOSONAR
     }
 
     @Override

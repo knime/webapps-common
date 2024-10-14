@@ -21,7 +21,6 @@
             "date": {
               "type": "string",
               "title": "Date",
-              "configKeys": ["date"],
               "description": "Example of date input"
             },
             "dateTime": {

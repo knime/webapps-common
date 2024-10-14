@@ -52,7 +52,6 @@ import java.lang.reflect.Field;
 import java.util.Optional;
 
 import org.knime.core.node.defaultnodesettings.SettingsModel;
-import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeNode;
 
@@ -70,38 +69,8 @@ public final class ConfigKeyUtil {
 
     /**
      * @param node
-     * @return the config key used by the persistor or the default key if none is set
+     * @return the persistor used for this node if inside a {@link FieldBasedNodeSettingsPersistor}.
      */
-    public static String[] getConfigKeysUsedByField(final TreeNode<PersistableSettings> node) {
-        var configKey = getConfigKey(node);
-        var persist = node.getAnnotation(Persist.class);
-        if (persist.isPresent()) {
-            var customPersistor = persist.get().customPersistor();
-            if (!customPersistor.equals(FieldNodeSettingsPersistor.class)) {
-                return extractFieldNodeSettingsPersistor(node).map(FieldNodeSettingsPersistor::getConfigKeys)
-                    .orElse(new String[]{configKey});
-            }
-        }
-        return new String[]{configKey};
-    }
-
-    /**
-     * Get the collection of {@link ConfigsDeprecation} that are used by the given field if it is annotated with a
-     * {@link Persist} annotation.
-     *
-     * @param node
-     * @return the deprecated configs defined by the {@link Persist#customPersistor} or an empty array none exists.
-     */
-    public static ConfigsDeprecation[] getDeprecatedConfigsUsedByField(final TreeNode<PersistableSettings> node) {
-        var persist = node.getAnnotation(Persist.class);
-        if (persist.isEmpty()) {
-            return new ConfigsDeprecation[]{};
-        }
-
-        return extractFieldNodeSettingsPersistor(node).map(FieldNodeSettingsPersistor::getConfigsDeprecations)
-            .orElse(new ConfigsDeprecation[]{});
-    }
-
     public static Optional<FieldNodeSettingsPersistor<?>>
         extractFieldNodeSettingsPersistor(final TreeNode<PersistableSettings> node) {
         /**

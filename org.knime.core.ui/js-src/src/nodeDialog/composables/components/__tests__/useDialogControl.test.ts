@@ -35,8 +35,6 @@ describe("useDialogControl", () => {
     getSettingState: Mock;
 
   const path = "path";
-  const configKeys = ["configKey1", "configKey2"];
-  const configPaths = configKeys.map((key) => `${path}.${key}`);
   const initialValue = "initial value";
 
   beforeEach(() => {
@@ -49,9 +47,7 @@ describe("useDialogControl", () => {
       cells: null as any,
       config: null,
       data: initialValue,
-      schema: {
-        configKeys,
-      } as any,
+      schema: {} as any,
       renderers: [],
       rootSchema: {
         hasNodeView: true,
@@ -101,7 +97,7 @@ describe("useDialogControl", () => {
             getSettingState,
           },
           [flowVarMapKey as symbol]: {
-            [configPaths[0]]: {
+            myConfigKey: {
               controllingFlowVariableName: "first",
               exposedFlowVariableName: "second",
             },

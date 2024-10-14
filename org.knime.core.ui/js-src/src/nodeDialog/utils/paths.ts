@@ -14,19 +14,22 @@ export const composePaths = (path1: string, path2: string) => {
   return `${path1}.${path2}`;
 };
 
+const composeMultiplePaths = (paths: string[]) =>
+  paths.reduce(composePaths, "");
+
 const getNextConfigPathSegments = ({
   schema,
   segment,
 }: {
   schema: PersistSchema;
   segment: string;
-}): { configKeys: string[]; continueTraversal: boolean } => {
-  const configKeys = schema.configKeys;
-  if (typeof configKeys === "undefined") {
+}): { configPaths: string[][]; continueTraversal: boolean } => {
+  const configPaths = schema.configPaths;
+  if (typeof configPaths === "undefined") {
     const configKey = schema.configKey ?? segment;
-    return { configKeys: [configKey], continueTraversal: true };
+    return { configPaths: [[configKey]], continueTraversal: true };
   }
-  return { configKeys, continueTraversal: false };
+  return { configPaths, continueTraversal: false };
 };
 
 const getSubConfigKeysRecursive = (
@@ -41,13 +44,13 @@ const getSubConfigKeysRecursive = (
     return getSubConfigKeysRecursive(schema.items, prefix);
   } else if (schema.type === "object") {
     const subConfigKeys: string[][] = [];
-    Object.entries(schema.properties).forEach(([key, subscheam]) => {
-      const { configKeys, continueTraversal } = getNextConfigPathSegments({
-        schema: subscheam,
+    Object.entries(schema.properties).forEach(([key, subschema]) => {
+      const { configPaths, continueTraversal } = getNextConfigPathSegments({
+        schema: subschema,
         segment: key,
       });
-      configKeys
-        .map((configKey) => [...prefix, configKey])
+      configPaths
+        .map((configPath) => [...prefix, ...configPath])
         .forEach((newPrefix) =>
           continueTraversal
             ? subConfigKeys.push(
@@ -77,13 +80,7 @@ const composePathWithSubConfigKeys = (
 ) => {
   return subConfigKeys.length
     ? subConfigKeys.map((subConfigKey) =>
-        composePaths(
-          path,
-          subConfigKey.reduce(
-            (prefix, suffix) => composePaths(prefix, suffix),
-            "",
-          ),
-        ),
+        composeMultiplePaths([path, ...subConfigKey]),
       )
     : [path];
 };
@@ -129,18 +126,21 @@ export const getConfigPaths = ({
         ),
       );
 
-      const { configKeys: nextPathSegments, continueTraversal } =
+      const { configPaths: nextPathSegments, continueTraversal } =
         getNextConfigPathSegments({ schema, segment });
-
+      const nextComposedPathSegments =
+        nextPathSegments.map(composeMultiplePaths);
       traversalIsAborted = !continueTraversal;
 
       configPaths = configPaths.flatMap((parent) =>
-        nextPathSegments.map((newSegment) => composePaths(parent, newSegment)),
+        nextComposedPathSegments.map((newSegment) =>
+          composePaths(parent, newSegment),
+        ),
       );
 
       deprecatedConfigPathsCandidates = updateCandidates(
         deprecatedConfigPathsCandidates,
-        new Set(nextPathSegments),
+        new Set(nextComposedPathSegments),
       );
     } else {
       configPaths = configPaths.map((parent) => composePaths(parent, segment));

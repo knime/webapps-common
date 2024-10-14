@@ -48,6 +48,8 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 
+import java.util.Arrays;
+
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettings;
@@ -93,7 +95,24 @@ public interface FieldNodeSettingsPersistor<T> extends NodeSettingsPersistor<T> 
      * @return an array of all config keys that are used to save the setting to the node settings or null if config keys
      *         should be inferred as if this persistor was not present.
      */
-    String[] getConfigKeys();
+    default String[] getConfigKeys() {
+        throw new UnsupportedOperationException("getConfigKeys or getConfigPaths must be implemented by the subclass");
+    }
+
+    /**
+     * Use this method instead of {@link #getConfigKeys()} if the used config keys are nested. Each element in the array
+     * contains a path on how to get to the final nested config from here. E.g. if this persistor saves to the config
+     * named "foo" with sub configs "bar" and "baz", the result here should be [["foo", "bar"], ["foo", baz"]].
+     *
+     * @return an array of all config paths that are used to save the settings to the node settings or null if those
+     *         should be inferred as if this persistor was not present.
+     */
+    default String[][] getConfigPaths() {
+        if (getConfigKeys() == null) {
+            return null; // NOSONAR
+        }
+        return Arrays.stream(getConfigKeys()).map(key -> new String[]{key}).toArray(String[][]::new);
+    }
 
     /**
      * @return an array of all pairs of collections of deprecated and accociated new configs (see

@@ -88,7 +88,7 @@ describe("paths", () => {
         properties: {
           a: {
             type: "object",
-            configKeys: [],
+            configPaths: [],
             properties: {
               d: {
                 type: "object",
@@ -160,7 +160,7 @@ describe("paths", () => {
             properties: {
               mySetting: {
                 type: "object",
-                configKeys: ["model_1", "model_2"],
+                configPaths: [["model_1"], ["model_2"]],
                 properties: {},
               },
             },
@@ -173,7 +173,7 @@ describe("paths", () => {
   });
 
   describe("config paths", () => {
-    it("returns given path if no configKeys and no sub persist schema are given", () => {
+    it("returns given path if no configPaths and no sub persist schema are given", () => {
       const path = "model.mySetting";
       const persistSchema: PersistSchema = {
         type: "object",
@@ -261,20 +261,17 @@ describe("paths", () => {
       ]);
     });
 
-    it("uses configKeys and stops traversal", () => {
+    it("uses configPaths and stops traversal", () => {
       const path = "model";
       const persistSchema: PersistSchema = {
         type: "object",
         properties: {
           model: {
             type: "object",
-            /**
-             * TODO: UIEXT-2127 Remove the ".sub" again
-             */
-            configKeys: ["model_1", "model_2.sub"],
+            configPaths: [["model_1"], ["model_2", "sub"]],
             properties: {
               mySetting: {
-                configKeys: ["mySetting_1", "mySetting_2"],
+                configPaths: [["mySetting_1"], ["mySetting_2"]],
                 type: "object",
                 properties: {
                   subConfigKey: {},
@@ -300,7 +297,7 @@ describe("paths", () => {
         properties: {
           model: {
             type: "object",
-            configKeys: [],
+            configPaths: [],
             properties: {
               mySetting: {
                 type: "object",
@@ -327,14 +324,14 @@ describe("paths", () => {
               type: "object",
               properties: {
                 mySetting: {
-                  configKeys: ["mySetting_1", "mySetting_2"],
+                  configPaths: [["mySetting_1"], ["mySetting_2"]],
                   type: "object",
                   properties: {
                     subConfigKey: {},
                   },
                 },
               },
-              configKeys: ["ignored"],
+              configPaths: [["ignored"]],
             } as any,
           },
         },
@@ -348,7 +345,7 @@ describe("paths", () => {
       );
     });
 
-    it("detects deprecated configKeys", () => {
+    it("detects deprecatedConfigKeys", () => {
       const path = "model.mySetting";
       const persistSchema: PersistSchema = {
         type: "object",
@@ -379,7 +376,7 @@ describe("paths", () => {
                     new: [["mySetting_2"]],
                   },
                 ],
-                configKeys: ["mySetting_1", "mySetting_2"],
+                configPaths: [["mySetting_1"], ["mySetting_2"]],
                 type: "object",
                 properties: {
                   subConfigKey: {},

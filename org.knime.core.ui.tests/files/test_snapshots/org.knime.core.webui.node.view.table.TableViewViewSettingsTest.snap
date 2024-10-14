@@ -522,7 +522,7 @@
               "type" : "object",
               "properties" : {
                 "selected" : {
-                  "configKeys" : [ ]
+                  "configPaths" : [ ]
                 },
                 "mode" : { },
                 "patternFilter" : {
@@ -547,7 +547,7 @@
                     "selectedTypes" : { },
                     "typeDisplays" : {
                       "type" : "array",
-                      "configKeys" : [ ],
+                      "configPaths" : [ ],
                       "items" : {
                         "type" : "object",
                         "properties" : {
@@ -614,7 +614,7 @@
             "showOnlySelectedRows" : { },
             "showOnlySelectedRowsConfigurable" : { },
             "skipRemainingColumns" : {
-              "configKeys" : [ ]
+              "configPaths" : [ ]
             }
           }
         }

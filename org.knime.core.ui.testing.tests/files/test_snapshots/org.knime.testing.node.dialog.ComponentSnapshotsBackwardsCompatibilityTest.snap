@@ -376,7 +376,7 @@
               }
             },
             "credentials" : {
-              "configKeys" : [ "credentials" ]
+              "configPaths" : [ [ "credentials" ] ]
             },
             "dynamicValuesInput" : {
               "type" : "object",
@@ -429,7 +429,7 @@
                     "selectedTypes" : { },
                     "typeDisplays" : {
                       "type" : "array",
-                      "configKeys" : [ ],
+                      "configPaths" : [ ],
                       "items" : {
                         "type" : "object",
                         "properties" : {
@@ -458,7 +458,7 @@
               }
             },
             "nestedSettingsWithCustomPersistor" : {
-              "configKeys" : [ "customConfigKeyForNestedSettings" ],
+              "configPaths" : [ [ "customConfigKeyForNestedSettings" ] ],
               "deprecatedConfigKeys" : [ {
                 "new" : [ [ "customConfigKeyForNestedSettings" ] ],
                 "deprecated" : [ [ "deprecatedConfigKey" ] ]

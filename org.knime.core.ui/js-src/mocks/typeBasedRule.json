@@ -18,7 +18,6 @@
               "type": "object",
               "properties": {
                 "compatibleTypes": {
-                  "configKeys": [],
                   "type": "array",
                   "items": {
                     "type": "string"
@@ -43,8 +42,7 @@
                   "org.knime.core.data.FuzzyIntervalValue",
                   "org.knime.core.data.BoundedValue"
                 ]
-              },
-              "configKeys": ["yAxisColumn"]
+              }
             }
           }
         }

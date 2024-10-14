@@ -33,15 +33,13 @@
               "type": "boolean",
               "title": "Sort in memory",
               "description": "TODO",
-              "default": false,
-              "configKeys": ["sortinmemory"]
+              "default": false
             },
             "sortMissingCellsToEndOfList": {
               "type": "boolean",
               "title": "Sort in memory",
               "description": "TODO",
-              "default": false,
-              "configKeys": ["missingToEnd"]
+              "default": false
             },
             "sortingCriterions": {
               "default": [
@@ -75,7 +73,6 @@
                     "type": "object",
                     "properties": {
                       "compatibleTypes": {
-                        "configKeys": [],
                         "type": "array",
                         "items": {
                           "type": "string"

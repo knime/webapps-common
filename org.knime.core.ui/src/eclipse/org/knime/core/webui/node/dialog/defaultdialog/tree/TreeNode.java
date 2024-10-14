@@ -81,7 +81,7 @@ public sealed class TreeNode<S> permits LeafNode, Tree, ArrayParentNode {
 
     private List<String> m_path;
 
-    private Optional<ArrayParentNode<S>> m_containingArrayWidgetNode;
+    private Optional<ArrayParentNode<S>> m_containingArrayNode;
 
     private final Class<?> m_type;
 
@@ -175,7 +175,7 @@ public sealed class TreeNode<S> permits LeafNode, Tree, ArrayParentNode {
     public void setInParentValue(final Object parentValue, final Object value)
         throws IllegalArgumentException, IllegalAccessException {
         checkParentValue(parentValue);
-        m_underlyingField.set(parentValue, value);
+        m_underlyingField.set(parentValue, value); // NOSONAR
     }
 
     /**
@@ -203,10 +203,10 @@ public sealed class TreeNode<S> permits LeafNode, Tree, ArrayParentNode {
      * @return the next parent {@link ArrayParentNode} if any
      */
     Optional<ArrayParentNode<S>> getContainingArrayWidgetNode() {
-        if (m_containingArrayWidgetNode == null) { // NOSONAR
-            m_containingArrayWidgetNode = getContainingArrayWidgetNodeUsingParents();
+        if (m_containingArrayNode == null) { // NOSONAR
+            m_containingArrayNode = getContainingArrayWidgetNodeUsingParents();
         }
-        return m_containingArrayWidgetNode;
+        return m_containingArrayNode;
     }
 
     /**

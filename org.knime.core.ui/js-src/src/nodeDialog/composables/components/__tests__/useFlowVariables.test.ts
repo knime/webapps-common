@@ -48,7 +48,7 @@ describe("useFlowVariables", () => {
 
   const createProps = (params: {
     path: string;
-    configKeys?: string[];
+    configPaths?: string[][];
     configKey?: string;
     leaf?: PersistSchema;
   }): Props => {
@@ -213,13 +213,13 @@ describe("useFlowVariables", () => {
         getFlowSettings(
           createProps({
             path: "path.to.another_setting",
-            configKeys: ["also_another_setting"],
+            configPaths: [["also_another_setting"]],
           }),
         ),
       ).toBeNull();
     });
 
-    it("uses path if configKeys is undefined", () => {
+    it("uses path if configPaths is undefined", () => {
       const path = "path.to.my_setting";
       flowVariablesMap = { [path]: CONTROLLING_FLOW_SETTINGS };
       expect(getFlowSettings(createProps({ path }))).toEqual(
@@ -227,7 +227,7 @@ describe("useFlowVariables", () => {
       );
     });
 
-    it("uses configKeys", () => {
+    it("uses configPaths", () => {
       flowVariablesMap = {
         "path.to.my_real_setting_name": CONTROLLING_FLOW_SETTINGS,
       };
@@ -235,13 +235,13 @@ describe("useFlowVariables", () => {
         getFlowSettings(
           createProps({
             path: "path.to.my_setting",
-            configKeys: ["my_real_setting_name"],
+            configPaths: [["my_real_setting_name"]],
           }),
         ),
       ).toEqual(CONTROLLING_FLOW_SETTINGS);
     });
 
-    it("merges flow settings for configKeys", () => {
+    it("merges flow settings for configPaths", () => {
       flowVariablesMap = {
         "path.to.setting_1": EXPOSING_FLOW_SETTINGS,
         "path.to.setting_2": CONTROLLING_FLOW_SETTINGS,
@@ -250,7 +250,11 @@ describe("useFlowVariables", () => {
         getFlowSettings(
           createProps({
             path: "path.to.my_setting",
-            configKeys: ["setting_1", "setting_2", "not_overwritten_setting"],
+            configPaths: [
+              ["setting_1"],
+              ["setting_2"],
+              ["not_overwritten_setting"],
+            ],
           }),
         ),
       ).toEqual(MERGED_FLOW_SETTINGS);
@@ -264,11 +268,11 @@ describe("useFlowVariables", () => {
         getFlowSettings(
           createProps({
             path: "path.to.my_setting",
-            configKeys: [
-              "setting_1",
-              "setting_2",
-              "setting_3",
-              "not_overwritten_setting",
+            configPaths: [
+              ["setting_1"],
+              ["setting_2"],
+              ["setting_3"],
+              ["not_overwritten_setting"],
             ],
           }),
         ),

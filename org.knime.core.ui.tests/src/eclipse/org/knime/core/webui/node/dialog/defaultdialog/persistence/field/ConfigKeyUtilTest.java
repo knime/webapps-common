@@ -157,25 +157,25 @@ class ConfigKeyUtilTest {
 
     @Test
     void testConfigKeysUsedWithoutPersist() throws NoSuchFieldException {
-        assertArrayEquals(new String[]{"setting0"}, usedConfigKeysFor("setting0"),
+        assertArrayEquals(new String[][]{{"setting0"}}, usedConfigPathsFor("setting0"),
             "configKeys should be emtpy for settings without annotation");
     }
 
     @Test
     void testConfigKeysUsedWithOnlyPersist() throws NoSuchFieldException {
-        assertArrayEquals(new String[]{"setting2"}, usedConfigKeysFor("setting2"),
+        assertArrayEquals(new String[][]{{"setting2"}}, usedConfigPathsFor("setting2"),
             "configKeys should be field name for settings without custom key or persistor");
     }
 
     @Test
     void testConfigKeysUsedWithCustomKey() throws NoSuchFieldException {
-        assertArrayEquals(new String[]{"foo"}, usedConfigKeysFor("setting3"),
+        assertArrayEquals(new String[][]{{"foo"}}, usedConfigPathsFor("setting3"),
             "configKeys should contain the custom key from the annotation");
     }
 
     @Test
     void testConfigKeysUsedWithCustomPersistor() throws NoSuchFieldException {
-        assertArrayEquals(new String[]{"custom_key0", "custom_key1"}, usedConfigKeysFor("setting5"),
+        assertArrayEquals(new String[][]{{"custom_key0"}, {"custom_key1"}}, usedConfigPathsFor("setting5"),
             "configKeys should come from the custom persistor");
     }
 
@@ -193,12 +193,46 @@ class ConfigKeyUtilTest {
         return configPaths.stream().findFirst().orElseThrow().path().toArray(String[]::new);
     }
 
-    private static String[] usedConfigKeysFor(final String fieldName) throws NoSuchFieldException {
-        return ConfigKeyUtil.getConfigKeysUsedByField(getField(fieldName));
+    private static String[][] usedConfigPathsFor(final String fieldName) throws NoSuchFieldException {
+        return getConfigPathsUsedByField(getField(fieldName));
     }
 
     private static ConfigsDeprecation[] deprecatedConfigKeysFor(final String fieldName) throws NoSuchFieldException {
-        return ConfigKeyUtil.getDeprecatedConfigsUsedByField(getField(fieldName));
+        return getDeprecatedConfigsUsedByField(getField(fieldName));
+    }
+
+    /**
+     * @param node
+     * @return the config key used by the persistor or the default key if none is set
+     */
+    static String[][] getConfigPathsUsedByField(final TreeNode<PersistableSettings> node) {
+        var configKey = ConfigKeyUtil.getConfigKey(node);
+        final var singleConfigKeyPath = new String[][]{{configKey}};
+        var persist = node.getAnnotation(Persist.class);
+        if (persist.isPresent()) {
+            var customPersistor = persist.get().customPersistor();
+            if (!customPersistor.equals(FieldNodeSettingsPersistor.class)) {
+                return ConfigKeyUtil.extractFieldNodeSettingsPersistor(node)
+                    .map(FieldNodeSettingsPersistor::getConfigPaths).orElse(singleConfigKeyPath);
+            }
+        }
+        return singleConfigKeyPath;
+    }
+
+    /**
+     * Get the collection of {@link ConfigsDeprecation} that are used by the given field if it is annotated with a
+     * {@link Persist} annotation.
+     *
+     * @param node
+     * @return the deprecated configs defined by the {@link Persist#customPersistor} or an empty array none exists.
+     */
+    static ConfigsDeprecation[] getDeprecatedConfigsUsedByField(final TreeNode<PersistableSettings> node) {
+        var persist = node.getAnnotation(Persist.class);
+        if (persist.isEmpty()) {
+            return new ConfigsDeprecation[]{};
+        }
+        return ConfigKeyUtil.extractFieldNodeSettingsPersistor(node)
+            .map(FieldNodeSettingsPersistor::getConfigsDeprecations).orElse(new ConfigsDeprecation[]{});
     }
 
     private static Tree<PersistableSettings> SETTINGS_TREE;

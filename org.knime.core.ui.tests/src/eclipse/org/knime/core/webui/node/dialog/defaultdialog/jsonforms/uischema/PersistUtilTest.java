@@ -49,6 +49,7 @@
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Map;
 
@@ -95,7 +96,8 @@ class PersistUtilTest {
 
         @Override
         public String[] getConfigKeys() {
-            return new String[]{"config_key_from_persistor_1", "config_key_from_persistor_2", "config_key_from_persistor_3_Internals"};
+            return new String[]{"config_key_from_persistor_1", "config_key_from_persistor_2",
+                "config_key_from_persistor_3_Internals"};
         }
 
     }
@@ -109,8 +111,56 @@ class PersistUtilTest {
     @Test
     void testConfigKeyFromCustomPersistor() throws JsonProcessingException {
         final var result = getPersistSchema(SettingWithCustomPersistor.class);
-        assertThatJson(result).inPath("$.properties.model.properties.test.configKeys").isArray()
-            .isEqualTo(new String[]{"config_key_from_persistor_1", "config_key_from_persistor_2"});
+        assertThatJson(result).inPath("$.properties.model.properties.test.configPaths").isArray()
+            .isEqualTo(new String[][]{{"config_key_from_persistor_1"}, {"config_key_from_persistor_2"}});
+
+    }
+
+    private static class CustomPersistorWithPaths implements TestPersistor<Integer> {
+
+        @Override
+        public String[][] getConfigPaths() {
+            return new String[][]{{"config_key_from_persistor_1", "config_key_from_persistor_2"},
+                {"config_key_from_persistor_3"}};
+        }
+
+    }
+
+    private static class SettingWithCustomPersistorWithPaths implements PersistableSettings {
+
+        @Persist(customPersistor = CustomPersistorWithPaths.class)
+        public int test;
+    }
+
+    @Test
+    void testConfigPathsFromCustomPersistor() throws JsonProcessingException {
+        final var result = getPersistSchema(SettingWithCustomPersistorWithPaths.class);
+        assertThatJson(result).inPath("$.properties.model.properties.test.configPaths").isArray()
+            .isEqualTo(new String[][]{{"config_key_from_persistor_1", "config_key_from_persistor_2"},
+                {"config_key_from_persistor_3"}});
+
+    }
+
+    private static class CustomPersistorWithKeysContainingDots implements TestPersistor<Integer> {
+
+        @Override
+        public String[] getConfigKeys() {
+            return new String[]{"config.key.from.persistor.1", "config.key.from.persistor.2"};
+        }
+
+    }
+
+    private static class SettingWithCustomPersistorWithKeysContainingDots implements PersistableSettings {
+
+        @Persist(customPersistor = CustomPersistorWithKeysContainingDots.class)
+        public int test;
+    }
+
+    @Test
+    void testThrowsOnCustomPersistorWithConfigKeysContainingDots() throws JsonProcessingException {
+
+        assertThrows(IllegalArgumentException.class,
+            () -> getPersistSchema(SettingWithCustomPersistorWithKeysContainingDots.class));
 
     }
 
@@ -132,8 +182,8 @@ class PersistUtilTest {
     @Test
     void testAddsEmpytArraysOnHiddenPersist() throws JsonProcessingException {
         final var result = getPersistSchema(SettingsWithHiddenPersist.class);
-        assertThatJson(result).inPath("$.properties.model.properties.nestedSettings.configKeys").isArray().isEmpty();
-        assertThatJson(result).inPath("$.properties.model.properties.test.configKeys").isArray().isEmpty();
+        assertThatJson(result).inPath("$.properties.model.properties.nestedSettings.configPaths").isArray().isEmpty();
+        assertThatJson(result).inPath("$.properties.model.properties.test.configPaths").isArray().isEmpty();
     }
 
     private static class SettingsWithConfigRename implements PersistableSettings {
@@ -176,14 +226,14 @@ class PersistUtilTest {
         assertThatJson(result).inPath("$.properties.model.properties.nestedSettings.configKey").isString()
             .isEqualTo("foo");
         assertThatJson(result).inPath("$.properties.model.properties.test.configKey").isString().isEqualTo("bar");
-        assertThatJson(result).inPath("$.properties.model.properties.withCustomPersistor.configKeys").isArray()
-            .isEqualTo(new String[]{"config_key_from_persistor_1", "config_key_from_persistor_2"});
+        assertThatJson(result).inPath("$.properties.model.properties.withCustomPersistor.configPaths").isArray()
+            .isEqualTo(new String[][]{{"config_key_from_persistor_1"}, {"config_key_from_persistor_2"}});
         assertThatJson(result).inPath("$.properties.model.properties.withCustomPersistor").isObject()
             .doesNotContainKey("configKey");
         assertThatJson(result).inPath("$.properties.model.properties.withCustomPersistorWithoutConfigKeys.configKey")
             .isString().isEqualTo("qux");
         assertThatJson(result).inPath("$.properties.model.properties.withCustomPersistorWithoutConfigKeys").isObject()
-            .doesNotContainKey("configKeys");
+            .doesNotContainKey("configPaths");
 
     }
 

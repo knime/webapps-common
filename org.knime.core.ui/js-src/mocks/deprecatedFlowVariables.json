@@ -14,7 +14,6 @@
           "type": "object",
           "properties": {
             "settingWithDeprecatedFlowVariables": {
-              "configKeys": [],
               "deprecatedConfigKeys": [
                 {
                   "new": [["settingWithDeprecatedFlowVariables"]],
@@ -33,7 +32,7 @@
               "type": "string",
               "title": "One data path, multiple persist paths",
               "description": "One data path, multiple persist paths which deviate from the data path.",
-              "configKeys": ["one", "two"],
+              "configPaths": [["one"], ["two"]],
               "deprecatedConfigKeys": [
                 {
                   "new": [["one"]],
@@ -65,7 +64,42 @@
             }
           ]
         }
-      ]
+      ],
+      "persist": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "object",
+            "properties": {
+              "settingWithDeprecatedFlowVariables": {
+                "deprecatedConfigKeys": [
+                  {
+                    "new": [["settingWithDeprecatedFlowVariables"]],
+                    "deprecated": [
+                      ["i", "am", "deprecated"],
+                      ["me", "too"],
+                      ["also", "me", "but", "i", "am", "not", "set"]
+                    ]
+                  }
+                ]
+              },
+              "settingWithMultipleDeprecatedFlowVariables": {
+                "configPaths": [["one"], ["two"]],
+                "deprecatedConfigKeys": [
+                  {
+                    "new": [["one"]],
+                    "deprecated": [["i", "am", "also", "deprecated"]]
+                  },
+                  {
+                    "new": [["two"]],
+                    "deprecated": [["and", "i", "am", "too"]]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
     },
     "flowVariableSettings": {
       "model.i.am.deprecated": {

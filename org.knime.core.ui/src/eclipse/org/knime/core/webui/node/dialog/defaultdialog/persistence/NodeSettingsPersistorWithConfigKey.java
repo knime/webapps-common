@@ -78,6 +78,6 @@ public abstract class NodeSettingsPersistorWithConfigKey<T> implements FieldNode
 
     @Override
     public String[] getConfigKeys() {
-        return null;
+        return null; // NOSONAR
     }
 }

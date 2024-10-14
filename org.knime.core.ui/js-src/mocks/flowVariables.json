@@ -89,7 +89,7 @@
               "type": "string",
               "title": "One data path, multiple persist paths",
               "description": "One data path, multiple persist paths which deviate from the data path.",
-              "configKeys": ["one", "two"]
+              "configPaths": [["one"], ["two"]]
             },
             "multipleDataAndPersistPaths": {
               "type": "object",
@@ -167,7 +167,7 @@
                 },
                 "selected": {
                   "default": [],
-                  "configKeys": [],
+                  "configPaths": [],
                   "type": "array",
                   "items": {
                     "type": "string"
@@ -206,7 +206,7 @@
                   }
                 }
               },
-              "configKeys": ["one"]
+              "configPaths": [["one"]]
             },
             "multipleDataAndPersistPathsWithCustomSubConfigKeys": {
               "type": "object",
@@ -284,7 +284,7 @@
                 },
                 "selected": {
                   "default": [],
-                  "configKeys": [],
+                  "configPaths": [],
                   "type": "array",
                   "items": {
                     "type": "string"
@@ -323,7 +323,7 @@
                   }
                 }
               },
-              "configKeys": ["one"],
+              "configPaths": [["one"]],
               "subConfigKeys": [
                 ["some", "sub", "config", "key"],
                 ["some", "other", "sub", "config", "key"]
@@ -465,7 +465,96 @@
             }
           ]
         }
-      ]
+      ],
+      "persist": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "object",
+            "properties": {
+              "noVariableSet": {},
+              "controlling": {},
+              "exposed": {},
+              "exposedAndControlling": {},
+              "missingFlowVariable": {},
+              "controlledByNonAvailable": {},
+              "oneDataPathMultiplePersistPaths": {
+                "configPaths": [["one"], ["two"]]
+              },
+              "multipleDataAndPersistPaths": {
+                "type": "object",
+                "properties": {
+                  "manualFilter": {
+                    "type": "object",
+                    "properties": {
+                      "includeUnknownColumns": {},
+                      "manuallyDeselected": {},
+                      "manuallySelected": {}
+                    }
+                  },
+                  "mode": {},
+                  "patternFilter": {
+                    "type": "object",
+                    "properties": {
+                      "isCaseSensitive": {},
+                      "isInverted": {},
+                      "pattern": {}
+                    }
+                  },
+                  "selected": {
+                    "configPaths": []
+                  },
+                  "typeFilter": {
+                    "type": "object",
+                    "properties": {
+                      "selectedTypes": {},
+                      "typeDisplays": {
+                        "configPaths": []
+                      }
+                    }
+                  }
+                },
+                "configKey": "one"
+              },
+              "multipleDataAndPersistPathsWithCustomSubConfigKeys": {
+                "properties": {
+                  "manualFilter": {
+                    "type": "object",
+                    "properties": {
+                      "includeUnknownColumns": {},
+                      "manuallyDeselected": {},
+                      "manuallySelected": {}
+                    }
+                  },
+                  "mode": {},
+                  "patternFilter": {
+                    "type": "object",
+                    "properties": {
+                      "isCaseSensitive": {},
+                      "isInverted": {},
+                      "pattern": {}
+                    }
+                  },
+                  "selected": {},
+                  "typeFilter": {
+                    "type": "object",
+                    "properties": {
+                      "selectedTypes": {},
+                      "typeDisplays": {
+                        "configPaths": []
+                      }
+                    }
+                  }
+                },
+                "configPaths": [
+                  ["some", "sub", "config", "key"],
+                  ["some", "other", "sub", "config", "key"]
+                ]
+              }
+            }
+          }
+        }
+      }
     },
     "flowVariableSettings": {
       "model.controlling": {

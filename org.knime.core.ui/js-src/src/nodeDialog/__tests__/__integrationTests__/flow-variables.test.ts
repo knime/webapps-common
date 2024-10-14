@@ -107,7 +107,7 @@ describe("flow variables", () => {
             model: {
               type: "object",
               properties: {
-                value: { configKeys: ["customConfigKey"] },
+                value: { configPaths: [["customConfigKey"]] },
               },
             },
           },

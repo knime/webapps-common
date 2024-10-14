@@ -139,15 +139,16 @@ public final class PersistUtil {
         final var persistor = ConfigKeyUtil.extractFieldNodeSettingsPersistor(field);
         final var persist = field.getAnnotation(Persist.class);
         final var configRename = persist.map(Persist::configKey).filter(key -> !key.isEmpty());
-        final var configKeys = persistor.map(FieldNodeSettingsPersistor::getConfigKeys);
-        final var isHidden = persist.map(Persist::hidden).orElse(false);
+        final var configPaths = persistor.map(FieldNodeSettingsPersistor::getConfigPaths);
+        final boolean isHidden = persist.map(Persist::hidden).orElse(false);
 
-        if (configKeys.isPresent()) {
-            final var configKeysNode = node.putArray("configKeys");
-            Arrays.stream(configKeys.get()).filter(key -> !key.endsWith(SettingsModel.CFGKEY_INTERNAL))
-                .forEach(configKeysNode::add);
+        if (configPaths.isPresent()) {
+            final var filteredValidatedConfigPaths = Arrays.stream(configPaths.get()).map(
+                path -> Arrays.stream(path).filter(PersistUtil::isNonInternal).map(PersistUtil::validateKey).toList())
+                .filter(path -> !path.isEmpty()).toList();
+            add2DStingArray(node, "configPaths", filteredValidatedConfigPaths);
         } else if (isHidden) {
-            node.putArray("configKeys");
+            node.putArray("configPaths");
         } else if (configRename.isPresent()) {
             node.put("configKey", configRename.get());
         }
@@ -159,6 +160,19 @@ public final class PersistUtil {
                 .forEach(deprecatedConfigs -> putDeprecatedConfig(deprecatedConfigsNode, deprecatedConfigs));
         }
 
+    }
+
+    private static boolean isNonInternal(final String key) {
+        return !key.endsWith(SettingsModel.CFGKEY_INTERNAL);
+    }
+
+    private static String validateKey(final String key) {
+        if (key.contains(".")) {
+            throw new IllegalArgumentException("Config key must not contain dots. "
+                + "If nested config keys are required, use getConfigPaths instead of getConfigKeys." + " Config key: "
+                + key);
+        }
+        return key;
     }
 
     private static void putDeprecatedConfig(final ArrayNode deprecatedConfigsNode,
