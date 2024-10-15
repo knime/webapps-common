@@ -72,6 +72,10 @@ const isTruncated = ref(isTruncatable);
 const showMore = () => {
   // TODO HUB-5698: animate toast and stack height when expanding truncated text
   isTruncated.value = false;
+  if (toastRef.value !== null) {
+    // reset height if it has been set in animateHeightTo
+    toastRef.value.style.height = "unset";
+  }
 };
 
 // Height transformations
@@ -162,7 +166,7 @@ watch(toRef(props, "active"), (active) => {
           <template v-else>{{ message }}</template>
         </div>
         <div v-else-if="props.component" class="message">
-          <component :is="props.component" />
+          <component :is="props.component" @show-more="showMore" />
         </div>
 
         <div v-if="buttons.length" class="buttons">

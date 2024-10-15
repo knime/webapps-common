@@ -18,6 +18,7 @@ interface ApiErrorTemplateProps {
 }
 
 const props = defineProps<ApiErrorTemplateProps>();
+const emits = defineEmits(["showMore"]);
 
 const { copy, copied } = useClipboard({
   copiedDuring: 3000,
@@ -68,6 +69,11 @@ const errorForClipboard = computed(() => {
 const copyToClipboard = () => {
   copy(errorForClipboard.value);
 };
+
+const onShowDetailsClicked = () => {
+  showDetails.value = true;
+  emits("showMore");
+};
 </script>
 
 <template>
@@ -75,7 +81,7 @@ const copyToClipboard = () => {
     <div class="title">
       {{ props.title }}
     </div>
-    <button v-if="!showDetails" class="show-more" @click="showDetails = true">
+    <button v-if="!showDetails" class="show-more" @click="onShowDetailsClicked">
       Show details
     </button>
     <div v-if="showDetails" class="additional-info">

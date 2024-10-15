@@ -100,4 +100,10 @@ describe("ApiErrorTemplate", () => {
     await wrapper.find("button").trigger("click");
     expect(wrapper.find("button").text()).toBe("Error was copied");
   });
+
+  it("emits showMore event", async () => {
+    const { wrapper } = doMount();
+    await wrapper.find("button").trigger("click");
+    expect(wrapper.emitted("showMore")).toBeDefined();
+  });
 });
