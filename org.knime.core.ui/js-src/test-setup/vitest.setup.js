@@ -7,6 +7,7 @@ window.Vue = Vue;
 window.alert = vi.fn();
 
 vi.mock("@knime/ui-extension-service");
+vi.mock("@knime/ui-extension-service/internal");
 vi.mock(
   "@jsonforms/vue",
   async () => {

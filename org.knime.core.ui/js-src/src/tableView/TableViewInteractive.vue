@@ -7,6 +7,10 @@ import {
   SelectionService,
   SharedDataService,
 } from "@knime/ui-extension-service";
+import {
+  DataValueViewService,
+  DataValueViewConfig,
+} from "@knime/ui-extension-service/internal";
 import TableViewDisplay from "./TableViewDisplay.vue";
 import { createDefaultFilterConfig, arrayEquals } from "@/tableView/utils";
 import TableViewViewSettings, {
@@ -102,6 +106,7 @@ export default {
       settings: {} as TableViewViewSettings,
       displayedColumns: [] as string[],
       columnCount: 0,
+      dataValueViewService: null as null | DataValueViewService,
       jsonDataService: null as null | JsonDataService,
       sharedDataService: null as null | SharedDataService,
       selectionService: null as null | SelectionService,
@@ -234,6 +239,7 @@ export default {
   },
   async mounted() {
     this.jsonDataService = new JsonDataService(this.knimeService);
+    this.dataValueViewService = new DataValueViewService(this.knimeService);
     this.sharedDataService = new SharedDataService(this.knimeService);
     this.sharedDataService.addSharedDataListener(
       this.onViewSettingsChange.bind(this),
@@ -392,7 +398,12 @@ export default {
         this.minScopeSize,
       );
     },
-
+    onDataValueView(config: DataValueViewConfig) {
+      this.dataValueViewService?.showDataValueView(config);
+    },
+    onCloseDataValueView() {
+      this.dataValueViewService?.closeDataValueView();
+    },
     async updateData(options: DataRequestOptions) {
       this.lastUpdateHash += 1;
       const updateHash = this.lastUpdateHash;
@@ -1258,11 +1269,14 @@ export default {
     :enable-cell-selection="
       enableCellSelection && Boolean(settings.enableCellCopying)
     "
+    :enable-data-value-views="true"
     :knime-service="knimeService"
     :force-hide-table-sizes="forceHideTableSizes"
     :first-row-image-dimensions="table.firstRowImageDimensions || {}"
     :settings-items="settingsItems"
     @page-change="onPageChange"
+    @data-value-view="onDataValueView"
+    @close-data-value-view="onCloseDataValueView"
     @column-sort="onColumnSort"
     @row-select="onRowSelect"
     @row-height-update="onRowHeightChange"

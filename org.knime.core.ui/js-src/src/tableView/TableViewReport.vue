@@ -101,6 +101,7 @@ watch(ready, () => ready.value && emit("rendered"));
       columnCount: table?.columnCount || 0,
     }"
     :enable-cell-selection="false"
+    :enable-data-value-views="false"
     :enable-virtual-scrolling="false"
     :enable-column-resizing="false"
     :enable-row-resizing="false"

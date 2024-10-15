@@ -39,6 +39,7 @@ export default ({
   enableVirtualScrolling,
   enableCellSelection,
   enableColumnResizing,
+  enableDataValueViews,
   forceHideTableSizes,
   settingsItems,
 }: {
@@ -52,6 +53,7 @@ export default ({
   enableVirtualScrolling: boolean;
   enableCellSelection: boolean;
   enableColumnResizing: boolean;
+  enableDataValueViews: boolean;
   forceHideTableSizes: boolean;
   settingsItems?: MenuItem[];
 }) => {
@@ -69,6 +71,7 @@ export default ({
     showSelection: selectionMode !== SelectionMode.OFF,
     disableSelection: selectionMode !== SelectionMode.EDIT,
     enableCellSelection,
+    enableDataValueViews,
     enableColumnResizing,
     showColumnFilters: enableColumnSearch || false,
     ...getPageConfig(

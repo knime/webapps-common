@@ -66,6 +66,7 @@ export interface TableViewDisplayProps {
   globalSearchQuery: string;
   enableVirtualScrolling: boolean;
   enableCellSelection: boolean;
+  enableDataValueViews: boolean;
   enableColumnResizing: boolean;
   enableRowResizing: boolean;
   currentRowHeight: number;

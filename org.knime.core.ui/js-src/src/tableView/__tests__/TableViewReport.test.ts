@@ -90,6 +90,7 @@ describe("TableViewReport.vue", () => {
       enableColumnResizing: false,
       enableRowResizing: false,
       enableCellSelection: false,
+      enableDataValueViews: false,
       globalSearchQuery: "",
       knimeService: knimeSeviceMock,
       enableVirtualScrolling: false,

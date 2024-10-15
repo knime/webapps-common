@@ -8,6 +8,7 @@ import {
   CachingSelectionService,
   SharedDataService,
 } from "@knime/ui-extension-service";
+import { DataValueViewService } from "@knime/ui-extension-service/internal";
 import {
   shallowMountInteractive,
   changeViewSetting,
@@ -183,6 +184,10 @@ describe("TableViewInteractive.vue", () => {
       }),
       knimeService: {},
     }));
+    DataValueViewService.mockImplementation(() => ({
+      showDataValueView: vi.fn(),
+      closeDataValueView: vi.fn(),
+    }));
     SharedDataService.mockImplementation(() => ({
       addSharedDataListener: vi.fn(),
       knimeService: {},
@@ -321,6 +326,7 @@ describe("TableViewInteractive.vue", () => {
           sortDirection: undefined,
         },
         enableCellSelection: true,
+        enableDataValueViews: true,
         enableVirtualScrolling: true,
         showSelection: true,
         disableSelection: false,
@@ -2599,6 +2605,31 @@ describe("TableViewInteractive.vue", () => {
           4999998,
         ],
       });
+    });
+  });
+
+  describe("data value views", () => {
+    let wrapper;
+
+    beforeEach(async () => {
+      wrapper = await shallowMountInteractive(context);
+    });
+
+    it("shows data value views", async () => {
+      const tableComponent = findTableComponent(wrapper);
+      const config = { rowIndex: 1, colIndex: 3, anchor: {} };
+      await tableComponent.vm.$emit("dataValueView", config);
+      expect(
+        (await wrapper).vm.dataValueViewService.showDataValueView,
+      ).toHaveBeenCalledWith(config);
+    });
+
+    it("closes data value view", async () => {
+      const tableComponent = findTableComponent(wrapper);
+      await tableComponent.vm.$emit("closeDataValueView");
+      expect(
+        (await wrapper).vm.dataValueViewService.closeDataValueView,
+      ).toHaveBeenCalled();
     });
   });
 

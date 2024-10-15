@@ -18,10 +18,13 @@ import { separateSpecialColumns } from "./utils/specialColumns";
 import { BORDER_BOTTOM_WIDTH } from "./constants";
 import { RowHeightMode } from "./types/ViewSettings";
 import { LoadingIcon } from "@knime/components";
+import { DataValueViewConfig } from "@knime/ui-extension-service";
 
 const emit = defineEmits<{
   pageChange: [pageNumberDiff: -1 | 1];
   columnSort: [colInd: number, columnId: string | symbol];
+  dataValueView: [config: DataValueViewConfig];
+  closeDataValueView: [];
   rowSelect: [
     selected: boolean,
     rowInd: number,
@@ -168,6 +171,7 @@ const tableConfig = computed(() =>
     enableVirtualScrolling: props.enableVirtualScrolling,
     enableCellSelection: props.enableCellSelection,
     enableColumnResizing: props.enableColumnResizing,
+    enableDataValueViews: props.enableDataValueViews,
     forceHideTableSizes: props.forceHideTableSizes || false,
     settingsItems: props.settingsItems,
   }),
@@ -248,6 +252,14 @@ const onCopySelection = ({
     isTop: id,
   });
 };
+
+const onDataValueView = (config: DataValueViewConfig) =>
+  emit("dataValueView", {
+    ...config,
+    colIndex: config.colIndex - numberOfDisplayedIdColumns.value,
+  });
+
+const onCloseDataValueView = () => emit("closeDataValueView");
 </script>
 
 <template>
@@ -306,6 +318,8 @@ const onCopySelection = ({
       @row-height-update="$emit('rowHeightUpdate', $event)"
       @ready="onTableIsReady"
       @copy-selection="onCopySelection"
+      @data-value-view="onDataValueView"
+      @close-data-value-view="onCloseDataValueView"
     >
       <template
         v-for="index in numberOfUsedColumns"
