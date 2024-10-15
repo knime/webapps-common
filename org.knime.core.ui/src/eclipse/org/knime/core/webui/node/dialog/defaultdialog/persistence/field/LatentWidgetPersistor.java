@@ -51,7 +51,6 @@ package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.LatentWidget;
 
 /**
@@ -59,7 +58,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.LatentWidget;
  *
  * @author Paul Bärnreuther
  */
-final class LatentWidgetPersistor<T> implements NodeSettingsPersistor<T> {
+final class LatentWidgetPersistor<T> implements FieldNodeSettingsPersistor<T> {
 
     @Override
     public T load(final NodeSettingsRO settings) throws InvalidSettingsException {
@@ -69,6 +68,11 @@ final class LatentWidgetPersistor<T> implements NodeSettingsPersistor<T> {
     @Override
     public void save(final T obj, final NodeSettingsWO settings) {
         // NOOP
+    }
+
+    @Override
+    public String[] getConfigKeys() {
+        return new String[0];
     }
 
 }

@@ -57,11 +57,10 @@ import java.util.function.Function;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
-import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.webui.node.dialog.configmapping.ConfigMappings;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
+import org.knime.core.webui.node.dialog.configmapping.NewAndDeprecatedConfigPaths;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.ReflectionUtil;
@@ -94,12 +93,12 @@ final class FieldNodeSettingsPersistorFactory {
                 settingsClass)));
     }
 
-    Map<TreeNode<PersistableSettings>, NodeSettingsPersistor<?>> createPersistors() {//NOSONAR
+    Map<TreeNode<PersistableSettings>, FieldNodeSettingsPersistor<?>> createPersistors() {//NOSONAR
         return m_settingsTree.getChildren().stream().collect(toMap(Function.identity(), this::createPersistorForNode));
 
     }
 
-    private NodeSettingsPersistor<?> createPersistorForNode(final TreeNode<PersistableSettings> node) {
+    private FieldNodeSettingsPersistor<?> createPersistorForNode(final TreeNode<PersistableSettings> node) {
         var customOrDefaultPersistor = getCustomOrDefaultPersistor(node);
         return createOptionalPersistor(node, customOrDefaultPersistor);
     }
@@ -121,7 +120,8 @@ final class FieldNodeSettingsPersistorFactory {
     /**
      * @throws IllegalArgumentException if there is no persistor available for the provided field
      */
-    private static NodeSettingsPersistor<?> getCustomOrDefaultPersistor(final TreeNode<PersistableSettings> node) {
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private static FieldNodeSettingsPersistor<?> getCustomOrDefaultPersistor(final TreeNode<PersistableSettings> node) {
         var isLatentWidget = node.getAnnotation(LatentWidget.class).isPresent();
         if (isLatentWidget) {
             return new LatentWidgetPersistor<>();
@@ -132,14 +132,19 @@ final class FieldNodeSettingsPersistorFactory {
         if (persist.isPresent()) {
             final var customPersistorClass = persist.get().customPersistor();
             if (!customPersistorClass.equals(FieldNodeSettingsPersistor.class)) {
-                return createCustomPersistor(customPersistorClass, node.getType(), configKey);
+                final var customPersistor = createCustomPersistor(customPersistorClass, node.getType(), configKey);
+                if (DefaultPersistorWithDeprecations.class.isAssignableFrom(customPersistorClass)) {
+                    return new DefaultPersistorWithDeprecationsWrapper(
+                        (DefaultPersistorWithDeprecations)customPersistor, createDefaultPersistor(node, configKey));
+                }
+                return customPersistor;
             }
         }
         return createDefaultPersistor(node, configKey);
 
     }
 
-    private static NodeSettingsPersistor<?> createDefaultPersistor(final TreeNode<PersistableSettings> node,
+    private static FieldNodeSettingsPersistor<?> createDefaultPersistor(final TreeNode<PersistableSettings> node,
         final String configKey) {
         return DefaultFieldNodeSettingsPersistorFactory.createDefaultPersistor(node, configKey);
     }
@@ -151,8 +156,8 @@ final class FieldNodeSettingsPersistorFactory {
         return FieldNodeSettingsPersistor.createInstance(customPersistorClass, type, configKey);
     }
 
-    private <F> NodeSettingsPersistor<F> createOptionalPersistor(final TreeNode<PersistableSettings> node,
-        final NodeSettingsPersistor<F> delegate) {
+    private <F> FieldNodeSettingsPersistor<F> createOptionalPersistor(final TreeNode<PersistableSettings> node,
+        final FieldNodeSettingsPersistor<F> delegate) {
         var persist = node.getAnnotation(Persist.class);
         if (persist.isEmpty() || !isOptional(persist.get(), node)) {
             return delegate;
@@ -201,15 +206,16 @@ final class FieldNodeSettingsPersistorFactory {
         }
     }
 
-    static final class OptionalFieldPersistor<S> implements NodeSettingsPersistor<S> {
+    static final class OptionalFieldPersistor<S> implements FieldNodeSettingsPersistor<S> {
 
         private final S m_default;
 
         private final String m_configKey;
 
-        private final NodeSettingsPersistor<S> m_delegate;
+        private final FieldNodeSettingsPersistor<S> m_delegate;
 
-        OptionalFieldPersistor(final S defaultValue, final String configKey, final NodeSettingsPersistor<S> delegate) {
+        OptionalFieldPersistor(final S defaultValue, final String configKey,
+            final FieldNodeSettingsPersistor<S> delegate) {
             m_default = defaultValue;
             m_configKey = configKey;
             m_delegate = delegate;
@@ -217,11 +223,7 @@ final class FieldNodeSettingsPersistorFactory {
 
         @Override
         public S load(final NodeSettingsRO settings) throws InvalidSettingsException {
-            if (settings.containsKey(m_configKey)) {
-                return m_delegate.load(settings);
-            } else {
-                return m_default;
-            }
+            return m_delegate.load(settings);
         }
 
         @Override
@@ -230,16 +232,16 @@ final class FieldNodeSettingsPersistorFactory {
         }
 
         @Override
-        public ConfigMappings getConfigMappings(final S obj) {
+        public String[][] getConfigPaths() {
+            return m_delegate.getConfigPaths();
+        }
 
-            final var defaultMapping =
-                new ConfigMappings(new ConfigsDeprecation.Builder().forNewConfigPath(m_configKey).build(), uprev -> {
-                    final var mapped = new NodeSettings("mappedSettings");
-                    save(m_default, mapped);
-                    return mapped;
-                });
-            final var delegateMappings = m_delegate.getConfigMappings(obj);
-            return new ConfigMappings(List.of(delegateMappings, defaultMapping));
+        @Override
+        public List<ConfigsDeprecation<S>> getConfigsDeprecations() {
+            return List.of(new ConfigsDeprecation.Builder<S>(settings -> m_default)
+                .linkingNewAndDeprecatedConfigPaths(
+                    new NewAndDeprecatedConfigPaths.Builder().withNewConfigPath(m_configKey).build())
+                .withMatcher(settings -> !settings.containsKey(m_configKey)).build());
         }
     }
 }

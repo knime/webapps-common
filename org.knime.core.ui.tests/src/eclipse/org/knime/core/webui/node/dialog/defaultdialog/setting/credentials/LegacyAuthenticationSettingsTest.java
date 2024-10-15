@@ -68,6 +68,7 @@ import org.knime.core.node.NodeSettings;
 import org.knime.core.node.defaultnodesettings.SettingsModelAuthentication;
 import org.knime.core.node.workflow.CredentialsProvider;
 import org.knime.core.node.workflow.ICredentials;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldBasedNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.AuthenticationSettings.AuthenticationType;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.LegacyAuthenticationSettings.AuthTypeCredentialsToPasswordPersistor;
@@ -172,7 +173,7 @@ class LegacyAuthenticationSettingsTest {
                 SettingsModelAuthentication.AuthenticationType.CREDENTIALS, null, null, FLOW_VAR_NAME);
             final var nodeSettings = createLegacyNodeSettings(model);
             final var persistor = createPersistor(persistorClass);
-            final var loadedSettings = persistor.load(nodeSettings);
+            final var loadedSettings = FieldBasedNodeSettingsPersistor.loadFromFieldPersistor(persistor, nodeSettings);
             final var expected = new AuthenticationSettings(expectedType, CREDENTIALS);
             assertEquals(expected, loadedSettings.toAuthenticationSettings(m_credentialsProvider));
         }
@@ -186,7 +187,7 @@ class LegacyAuthenticationSettingsTest {
                 SettingsModelAuthentication.AuthenticationType.USER_PWD, USERNAME, PASSWORD, null);
             final var nodeSettings = createLegacyNodeSettings(model);
             final var persistor = createPersistor(persistorClass);
-            final var loadedSettings = persistor.load(nodeSettings);
+            final var loadedSettings = FieldBasedNodeSettingsPersistor.loadFromFieldPersistor(persistor, nodeSettings);
             final var expected =
                 new AuthenticationSettings(AuthenticationType.USER_PWD, new Credentials(USERNAME, PASSWORD));
             assertEquals(expected, loadedSettings.toAuthenticationSettings(m_credentialsProvider));
@@ -212,7 +213,7 @@ class LegacyAuthenticationSettingsTest {
         void testDeprecatedConfigs(
             final Class<? extends FieldNodeSettingsPersistor<LegacyAuthenticationSettings>> persistorClass) {
             final var persistor = createPersistor(persistorClass);
-            assertThat(persistor.getConfigsDeprecations()).hasSize(2);
+            assertThat(persistor.getConfigsDeprecations()).hasSize(1);
         }
 
         private static FieldNodeSettingsPersistor<LegacyAuthenticationSettings> createPersistor(

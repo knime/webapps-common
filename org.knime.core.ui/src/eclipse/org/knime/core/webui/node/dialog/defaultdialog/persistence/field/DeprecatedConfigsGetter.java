@@ -48,6 +48,9 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
 
 /**
@@ -55,14 +58,14 @@ import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
  *
  * @author Paul Bärnreuther
  */
-interface DeprecatedConfigsGetter {
+interface DeprecatedConfigsGetter<T> {
     /**
      * @param configKey the config key used during save and load
      * @return an array of all pairs of collections of deprecated and accociated new configs (see
      *         {@link ConfigsDeprecation})
      */
-    default ConfigsDeprecation[] getDeprecatedConfigs(final String configKey) {
-        return new ConfigsDeprecation[0];
+    default List<ConfigsDeprecation<T>> getDeprecatedConfigs(final String configKey) {
+        return Collections.emptyList();
     }
 
 }

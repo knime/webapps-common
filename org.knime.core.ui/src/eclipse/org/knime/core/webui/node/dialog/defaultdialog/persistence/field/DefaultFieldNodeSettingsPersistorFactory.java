@@ -94,7 +94,7 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
      * @return a new persistor
      * @throws IllegalArgumentException if there is no persistor available for the provided fieldType
      */
-    static NodeSettingsPersistor<?> createDefaultPersistor(final TreeNode<PersistableSettings> node,
+    static FieldNodeSettingsPersistor<?> createDefaultPersistor(final TreeNode<PersistableSettings> node,
         final String configKey) {
         if (node instanceof ArrayParentNode<PersistableSettings> array) {
             return createDefaultArrayPersistor(array.getElementTree(), configKey);
@@ -105,17 +105,17 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
         }
     }
 
-    private static <S extends PersistableSettings> NodeSettingsPersistor<S[]>
+    private static <S extends PersistableSettings> FieldNodeSettingsPersistor<S[]>
         createDefaultArrayPersistor(final Tree<PersistableSettings> elementTree, final String configKey) {
         return new ArrayFieldPersistor<>(elementTree, configKey);
     }
 
-    private static NodeSettingsPersistor<?> createNestedFieldBasedPersistor(final String configKey,
+    private static FieldNodeSettingsPersistor<?> createNestedFieldBasedPersistor(final String configKey,
         final Tree<PersistableSettings> tree) {
         return new NestedPersistor<>(configKey, NodeSettingsPersistorFactory.createPersistor(tree));
     }
 
-    static final class NestedPersistor<S extends PersistableSettings> implements NodeSettingsPersistor<S> {
+    static final class NestedPersistor<S extends PersistableSettings> implements FieldNodeSettingsPersistor<S> {
 
         private final String m_configKey;
 
@@ -141,9 +141,14 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
             return new ConfigMappings(m_configKey, List.of(m_delegate.getConfigMappings(obj)));
         }
 
+        @Override
+        public String[] getConfigKeys() {
+            return null; // NOSONAR
+        }
+
     }
 
-    static final class ArrayFieldPersistor<S extends PersistableSettings> implements NodeSettingsPersistor<S[]> {
+    static final class ArrayFieldPersistor<S extends PersistableSettings> implements FieldNodeSettingsPersistor<S[]> {
 
         private final String m_configKey;
 
@@ -192,6 +197,11 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
             ensureEnoughPersistors(array.length);
             return new ConfigMappings(m_configKey, IntStream.range(0, array.length)
                 .mapToObj(i -> m_persistors.get(i).getConfigMappings(array[i])).toList());
+        }
+
+        @Override
+        public String[] getConfigKeys() {
+            return null; // NOSONAR
         }
 
     }

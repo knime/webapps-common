@@ -48,6 +48,8 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 
+import java.util.List;
+
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
@@ -85,7 +87,7 @@ final class DefaultFieldNodeSettingsPersistor<T> implements FieldNodeSettingsPer
     }
 
     @Override
-    public ConfigsDeprecation[] getConfigsDeprecations() {
+    public List<ConfigsDeprecation<T>> getConfigsDeprecations() {
         return m_impl.getDeprecatedConfigs(m_configKey);
     }
 

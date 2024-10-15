@@ -51,6 +51,7 @@ package org.knime.core.webui.node.dialog.defaultdialog;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -60,7 +61,7 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation.Builder;
-import org.knime.core.webui.node.dialog.defaultdialog.PersistUtil;
+import org.knime.core.webui.node.dialog.configmapping.NewAndDeprecatedConfigPaths;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistor;
@@ -246,19 +247,19 @@ class PersistUtilTest {
         }
 
         @Override
-        public ConfigsDeprecation[] getConfigsDeprecations() {
-            return new ConfigsDeprecation[]{//
-                new Builder()//
-                    .forDeprecatedConfigPath("A", "B")//
-                    .forDeprecatedConfigPath("C")//
-                    .forNewConfigPath("D", "E")//
-                    .forNewConfigPath("F")//
-                    .build(), //
-                new Builder()//
-                    .forNewConfigPath("I", "J")//
-                    .forDeprecatedConfigPath("G", "H")//
-                    .build()//
-            };
+        public List<ConfigsDeprecation<Integer>> getConfigsDeprecations() {
+            return List.of(new Builder<Integer>(settings -> {
+                throw new IllegalStateException("Should not be called within this test");
+            }).linkingNewAndDeprecatedConfigPaths(new NewAndDeprecatedConfigPaths.Builder() //
+                .withNewConfigPath("D", "E").withDeprecatedConfigPath("A", "B").build())
+                .linkingNewAndDeprecatedConfigPaths(new NewAndDeprecatedConfigPaths.Builder() //
+                    .withNewConfigPath("F").withDeprecatedConfigPath("C").build())
+                .build(), //
+                new Builder<Integer>(settings -> {
+                    throw new IllegalStateException("Should not be called within this test");
+                }).linkingNewAndDeprecatedConfigPaths(new NewAndDeprecatedConfigPaths.Builder()
+                    .withNewConfigPath("I", "J").withDeprecatedConfigPath("G", "H").build()).build() //
+            );
         }
 
     }

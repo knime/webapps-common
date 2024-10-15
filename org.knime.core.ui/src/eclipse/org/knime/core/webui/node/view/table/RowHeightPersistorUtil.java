@@ -48,13 +48,15 @@
  */
 package org.knime.core.webui.node.view.table;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation.Builder;
+import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation.DeprecationMatcher;
+import org.knime.core.webui.node.dialog.configmapping.NewAndDeprecatedConfigPaths;
 import org.knime.core.webui.node.view.table.TableViewViewSettings.RowHeightMode;
 import org.knime.core.webui.node.view.table.TableViewViewSettings.VerticalPaddingMode;
 
@@ -106,33 +108,6 @@ public final class RowHeightPersistorUtil {
         // Utility
     }
 
-    private static boolean hasTrueLegacyCompactMode(final NodeSettingsRO settings) throws InvalidSettingsException {
-        return settings.containsKey(COMPACT_MODE_LEGACY_CONFIG_KEY)
-            && settings.getBoolean(COMPACT_MODE_LEGACY_CONFIG_KEY);
-    }
-
-    private static boolean hasFalseLegacyCompactMode(final NodeSettingsRO settings) throws InvalidSettingsException {
-        return settings.containsKey(COMPACT_MODE_LEGACY_CONFIG_KEY)
-            && !settings.getBoolean(COMPACT_MODE_LEGACY_CONFIG_KEY);
-    }
-
-    private static boolean hasCompactLegacyRowHeightMode(final NodeSettingsRO settings)
-        throws InvalidSettingsException {
-        return settings.containsKey(ROW_HEIGHT_MODE_LEGACY_CONFIG_KEY)
-            && settings.getString(ROW_HEIGHT_MODE_LEGACY_CONFIG_KEY).equals(ROW_HEIGHT_MODE_COMPACT);
-    }
-
-    private static boolean hasDefaultLegacyRowHeightMode(final NodeSettingsRO settings)
-        throws InvalidSettingsException {
-        return settings.containsKey(ROW_HEIGHT_MODE_LEGACY_CONFIG_KEY)
-            && settings.getString(ROW_HEIGHT_MODE_LEGACY_CONFIG_KEY).equals(ROW_HEIGHT_MODE_DEFAULT);
-    }
-
-    private static boolean hasCustomLegacyRowHeightMode(final NodeSettingsRO settings) throws InvalidSettingsException {
-        return settings.containsKey(ROW_HEIGHT_MODE_LEGACY_CONFIG_KEY)
-            && settings.getString(ROW_HEIGHT_MODE_LEGACY_CONFIG_KEY).equals(ROW_HEIGHT_MODE_CUSTOM);
-    }
-
     static final class LegacyLoadResult {
 
         private final RowHeightMode m_rowHeightMode;
@@ -179,32 +154,59 @@ public final class RowHeightPersistorUtil {
     static final LegacyLoadResult LEGACY_CUSTOM =
         new LegacyLoadResult(RowHeightMode.CUSTOM, VerticalPaddingMode.DEFAULT);
 
-    static Optional<LegacyLoadResult> getLoadResultFromLegacySettings(final NodeSettingsRO settings)
+    static LegacyLoadResult getLoadResultFromLegacyCompactMode(final NodeSettingsRO settings)
         throws InvalidSettingsException {
-        if (hasTrueLegacyCompactMode(settings) || hasCompactLegacyRowHeightMode(settings)) {
-            return Optional.of(LEGACY_COMPACT);
-        }
-        if (hasFalseLegacyCompactMode(settings) || hasDefaultLegacyRowHeightMode(settings)) {
-            return Optional.of(LEGACY_DEFAULT);
-        }
-        if (hasCustomLegacyRowHeightMode(settings)) {
-            return Optional.of(LEGACY_CUSTOM);
-        }
-        /*
-         * Only possible for the very first version of the table view given the if conditions above.
-         */
-        if (!settings.containsKey(TableViewViewSettings.CURRENT_ROW_HEIGHT_MODE_CFG_KEY)) {
-            return Optional.of(LEGACY_DEFAULT);
-        }
-        return Optional.empty();
+        return settings.getBoolean(COMPACT_MODE_LEGACY_CONFIG_KEY) ? LEGACY_COMPACT : LEGACY_DEFAULT;
     }
 
-    static ConfigsDeprecation[] createDefaultConfigsDeprecations(final String configKey) {
-        Supplier<Builder> getBuilder = () -> new Builder().forNewConfigPath(configKey);
+    static LegacyLoadResult getLoadResultFromLegacyRowHeightMode(final NodeSettingsRO settings)
+        throws InvalidSettingsException {
+        final var legacyRowHeightMode = settings.getString(ROW_HEIGHT_MODE_LEGACY_CONFIG_KEY);
+        if (legacyRowHeightMode.equals(ROW_HEIGHT_MODE_COMPACT)) {
+            return LEGACY_COMPACT;
+        }
+        if (legacyRowHeightMode.equals(ROW_HEIGHT_MODE_DEFAULT)) {
+            return LEGACY_DEFAULT;
+        }
+        return LEGACY_CUSTOM;
+    }
 
-        return new ConfigsDeprecation[]{ //
-            getBuilder.get().build(), // accounting for a time where none of the settings existed
-            getBuilder.get().forDeprecatedConfigPath(COMPACT_MODE_LEGACY_CONFIG_KEY).build(),
-            getBuilder.get().forDeprecatedConfigPath(ROW_HEIGHT_MODE_LEGACY_CONFIG_KEY).build()};
+    static DeprecationMatcher getFirstTableVersionMatcher() {
+        // accounting for a time where none of the settings existed
+        return settings -> !settings.containsKey(COMPACT_MODE_LEGACY_CONFIG_KEY)
+            && !settings.containsKey(ROW_HEIGHT_MODE_LEGACY_CONFIG_KEY)
+            && !settings.containsKey(TableViewViewSettings.CURRENT_ROW_HEIGHT_MODE_CFG_KEY);
+    }
+
+    @FunctionalInterface
+    interface LegacyLoadResultExtractor<T> {
+        /**
+         * @param legacyLoadResult the load result from which to extract a certain property
+         * @param settings
+         * @return T the type of the property to extract
+         * @throws InvalidSettingsException
+         */
+        T apply(LegacyLoadResult legacyLoadResult, NodeSettingsRO settings) throws InvalidSettingsException;
+    }
+
+    static <T> List<ConfigsDeprecation<T>> createDefaultConfigsDeprecations(final String configKey,
+        final LegacyLoadResultExtractor<T> legacyLoadResultExtractor) {
+
+        return List.of( //
+            new Builder<T>(settings -> legacyLoadResultExtractor.apply(LEGACY_DEFAULT, settings))
+                .linkingNewAndDeprecatedConfigPaths(
+                    new NewAndDeprecatedConfigPaths.Builder().withNewConfigPath(configKey).build())
+                .withMatcher(getFirstTableVersionMatcher()).build(),
+            new Builder<T>(
+                settings -> legacyLoadResultExtractor.apply(getLoadResultFromLegacyCompactMode(settings), settings))
+                    .linkingNewAndDeprecatedConfigPaths(new NewAndDeprecatedConfigPaths.Builder()
+                        .withNewConfigPath(configKey).withDeprecatedConfigPath(COMPACT_MODE_LEGACY_CONFIG_KEY).build())
+                    .build(),
+            new Builder<T>(
+                settings -> legacyLoadResultExtractor.apply(getLoadResultFromLegacyRowHeightMode(settings), settings))
+                    .linkingNewAndDeprecatedConfigPaths(
+                        new NewAndDeprecatedConfigPaths.Builder().withNewConfigPath(configKey)
+                            .withDeprecatedConfigPath(ROW_HEIGHT_MODE_LEGACY_CONFIG_KEY).build())
+                    .build());
     }
 }

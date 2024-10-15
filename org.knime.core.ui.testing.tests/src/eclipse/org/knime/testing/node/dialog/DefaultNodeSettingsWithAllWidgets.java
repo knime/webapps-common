@@ -48,10 +48,13 @@
  */
 package org.knime.testing.node.dialog;
 
+import java.util.List;
+
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
+import org.knime.core.webui.node.dialog.configmapping.NewAndDeprecatedConfigPaths;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
@@ -143,12 +146,14 @@ class DefaultNodeSettingsWithAllWidgets implements DefaultNodeSettings {
         }
 
         @Override
-        public ConfigsDeprecation[] getConfigsDeprecations() {
-            return new ConfigsDeprecation[]{
-                new ConfigsDeprecation.Builder().forNewConfigPath("customConfigKeyForNestedSettings")
-                    .forDeprecatedConfigPath("deprecatedConfigKey").build()
+        public List<ConfigsDeprecation<NestedSettings>> getConfigsDeprecations() {
+            return List.of(new ConfigsDeprecation.Builder<NestedSettings>(settings -> {
+                throw new IllegalStateException("Should not be called within this test");
+            }).linkingNewAndDeprecatedConfigPaths(
+                new NewAndDeprecatedConfigPaths.Builder().withNewConfigPath("customConfigKeyForNestedSettings")
+                    .withDeprecatedConfigPath("deprecatedConfigKey").build())
+                .build());
 
-            };
         }
     }
 

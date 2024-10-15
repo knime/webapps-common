@@ -95,13 +95,20 @@ class SettingsModelPersistorTest {
         testSaveLoad(TestEnum.class, TestEnumSettingsModelStringPersistor.class, null);
     }
 
+    private static final FieldNodeSettingsPersistor<AuthenticationSettings> createAuthenticationSettingsPersistor() {
+        return new DefaultPersistorWithDeprecationsWrapper<AuthenticationSettings>(
+            FieldNodeSettingsPersistor.createInstance(SettingsModelAuthenticationPersistor.class,
+                AuthenticationSettings.class, CFG_KEY),
+            new FieldBasedNodeSettingsPersistor<AuthenticationSettings>(AuthenticationSettings.class));
+    }
+
     @Test
     void testSettingsModelAuthenticationSaveLoad() throws Exception {
-        testSaveLoad(AuthenticationSettings.class, SettingsModelAuthenticationPersistor.class,
-            new AuthenticationSettings());
-        testSaveLoad(AuthenticationSettings.class, SettingsModelAuthenticationPersistor.class,
-            new AuthenticationSettings(AuthenticationSettings.AuthenticationType.USER_PWD,
-                new Credentials("myUsername", "myPassword")));
+        final var persistor = createAuthenticationSettingsPersistor();
+
+        testSaveLoad(new AuthenticationSettings(), persistor);
+        testSaveLoad(new AuthenticationSettings(AuthenticationSettings.AuthenticationType.USER_PWD,
+            new Credentials("myUsername", "myPassword")), persistor);
     }
 
     static Stream<Arguments> settingsModelAuthenticationLoadSource() {
@@ -119,11 +126,13 @@ class SettingsModelPersistorTest {
     void testSettingsModelAuthenticationLoadLegacy(final SettingsModelAuthentication.AuthenticationType oldType,
         final AuthenticationType newType, final String password, final String username)
         throws InvalidSettingsException {
-        var persistor = FieldNodeSettingsPersistor.createInstance(SettingsModelAuthenticationPersistor.class,
-            AuthenticationSettings.class, CFG_KEY);
+        final var persistor = new DefaultPersistorWithDeprecationsWrapper<AuthenticationSettings>(
+            FieldNodeSettingsPersistor.createInstance(SettingsModelAuthenticationPersistor.class,
+                AuthenticationSettings.class, CFG_KEY),
+            new FieldBasedNodeSettingsPersistor<AuthenticationSettings>(AuthenticationSettings.class));
         final var savedSettings = new NodeSettings("node_settings");
         new SettingsModelAuthentication(CFG_KEY, oldType, username, password, null).saveSettingsTo(savedSettings);
-        var loaded = persistor.load(savedSettings);
+        final var loaded = FieldBasedNodeSettingsPersistor.loadFromFieldPersistor(persistor, savedSettings);
         final var expected = new AuthenticationSettings(newType, new Credentials(username, password));
         assertEquals(expected, loaded);
     }
@@ -158,13 +167,17 @@ class SettingsModelPersistorTest {
     private static <T> void testSaveLoad(final Class<T> fieldType,
         final Class<? extends FieldNodeSettingsPersistor<T>> persistorClass, final T value)
         throws InvalidSettingsException {
-        testSaveLoad(fieldType, persistorClass, value, Assertions::assertEquals);
+        final var persistor = FieldNodeSettingsPersistor.createInstance(persistorClass, fieldType, CFG_KEY);
+        testSaveLoad(persistor, value, Assertions::assertEquals);
     }
 
-    private static <T> void testSaveLoad(final Class<T> fieldType,
-        final Class<? extends FieldNodeSettingsPersistor<T>> persistorClass, final T value,
+    private static <T> void testSaveLoad(final T value, final FieldNodeSettingsPersistor<T> persistor)
+        throws InvalidSettingsException {
+        testSaveLoad(persistor, value, Assertions::assertEquals);
+    }
+
+    private static <T> void testSaveLoad(final FieldNodeSettingsPersistor<T> persistor, final T value,
         final BiConsumer<T, T> assertFn) throws InvalidSettingsException {
-        var persistor = FieldNodeSettingsPersistor.createInstance(persistorClass, fieldType, CFG_KEY);
         var nodeSettings = new NodeSettings(CFG_KEY);
         persistor.save(value, nodeSettings);
         assertFn.accept(value, persistor.load(nodeSettings));

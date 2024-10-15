@@ -168,8 +168,8 @@ public final class NodeSettingsCorrectionUtil {
         // depth first in order to have more specific mappings first
         configMappings.m_children.forEach(child -> toCollection(child, collection, currentPath));
 
-        if (configMappings.m_configsDeprecation != null) {
-            collection.add(new ConfigMapping(currentPath, configMappings.m_configsDeprecation,
+        if (configMappings.m_newAndDeprecatedConfigPaths != null) {
+            collection.add(new ConfigMapping(currentPath, configMappings.m_newAndDeprecatedConfigPaths,
                 configMappings.m_oldSettingsToNewSettings));
         }
 

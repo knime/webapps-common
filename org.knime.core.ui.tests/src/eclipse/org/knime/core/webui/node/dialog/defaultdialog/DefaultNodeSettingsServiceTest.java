@@ -52,6 +52,7 @@ import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.knime.core.webui.node.dialog.NodeDialogTest.createNodeAndVariableSettingsRO;
 
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -68,6 +69,8 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.webui.node.dialog.NodeDialogTest;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
+import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation.DeprecationLoader;
+import org.knime.core.webui.node.dialog.configmapping.NewAndDeprecatedConfigPaths;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonNodeSettingsMapperUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.JsonFormsSchemaUtil;
@@ -223,6 +226,16 @@ class DefaultNodeSettingsServiceTest {
         }
     }
 
+    private static final List<ConfigsDeprecation<String>>
+        createConfigsDeprecationsForMyLegacyPersistor(final String configKey, final DeprecationLoader<String> loader) {
+        return List.of(new ConfigsDeprecation.Builder<String>(loader)
+            .linkingNewAndDeprecatedConfigPaths(new NewAndDeprecatedConfigPaths.Builder().withNewConfigPath(configKey)
+                .withDeprecatedConfigPath("valueLegacy1").build())
+            .linkingNewAndDeprecatedConfigPaths(new NewAndDeprecatedConfigPaths.Builder().withNewConfigPath(configKey)
+                .withDeprecatedConfigPath("valueLegacy2").build())
+            .build());
+    }
+
     static class MigratedSettings implements DefaultNodeSettings {
 
         static class MyLegacyPersistor extends NodeSettingsPersistorWithConfigKey<String> {
@@ -239,9 +252,10 @@ class DefaultNodeSettingsServiceTest {
             }
 
             @Override
-            public ConfigsDeprecation[] getConfigsDeprecations() {
-                return new ConfigsDeprecation[]{new ConfigsDeprecation.Builder().forDeprecatedConfigPath("valueLegacy1")
-                    .forDeprecatedConfigPath("valueLegacy2").forNewConfigPath(getConfigKey()).build()};
+            public List<ConfigsDeprecation<String>> getConfigsDeprecations() {
+                return createConfigsDeprecationsForMyLegacyPersistor(getConfigKey(), settings -> {
+                    throw new IllegalStateException("Should not be called within this test");
+                });
             }
 
         }
@@ -293,11 +307,9 @@ class DefaultNodeSettingsServiceTest {
         static class MyLegacyPersistorWithLoad extends MigratedSettings.MyLegacyPersistor {
 
             @Override
-            public String load(final NodeSettingsRO settings) throws InvalidSettingsException {
-                if (settings.containsKey(getConfigKey())) {
-                    return settings.getString(getConfigKey());
-                }
-                return settings.getString("valueLegacy1") + settings.getString("valueLegacy2");
+            public List<ConfigsDeprecation<String>> getConfigsDeprecations() {
+                return createConfigsDeprecationsForMyLegacyPersistor(getConfigKey(),
+                    settings -> settings.getString("valueLegacy1") + settings.getString("valueLegacy2"));
             }
 
         }
@@ -347,13 +359,11 @@ class DefaultNodeSettingsServiceTest {
         static class MyLegacyPersistorWithFailingLoad extends MigratedSettings.MyLegacyPersistor {
 
             @Override
-            public String load(final NodeSettingsRO settings) throws InvalidSettingsException {
-                if (settings.containsKey(getConfigKey())) {
-                    return settings.getString(getConfigKey());
-                }
-                throw new InvalidSettingsException("Old configs");
+            public List<ConfigsDeprecation<String>> getConfigsDeprecations() {
+                return createConfigsDeprecationsForMyLegacyPersistor(getConfigKey(), settings -> {
+                    throw new InvalidSettingsException("Old configs");
+                });
             }
-
         }
 
         @Persist(customPersistor = MyLegacyPersistorWithFailingLoad.class)

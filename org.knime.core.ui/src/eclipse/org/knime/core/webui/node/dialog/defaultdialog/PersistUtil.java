@@ -49,13 +49,15 @@
 package org.knime.core.webui.node.dialog.defaultdialog;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.configmapping.ConfigPath;
-import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
+import org.knime.core.webui.node.dialog.configmapping.NewAndDeprecatedConfigPaths;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.ConfigKeyUtil;
@@ -168,12 +170,12 @@ public final class PersistUtil {
         } else if (configRename.isPresent()) {
             node.put("configKey", configRename.get());
         }
-        var deprecatedConfigsArray =
-            persistor.map(FieldNodeSettingsPersistor::getConfigsDeprecations).orElse(new ConfigsDeprecation[0]);
-        if (deprecatedConfigsArray.length > 0) {
+        var deprecatedConfigsList =
+            persistor.map(FieldNodeSettingsPersistor::getConfigsDeprecations).orElse(Collections.emptyList());
+        if (!deprecatedConfigsList.isEmpty()) {
             final var deprecatedConfigsNode = node.putArray("deprecatedConfigKeys");
-            Arrays.stream(deprecatedConfigsArray)
-                .forEach(deprecatedConfigs -> putDeprecatedConfig(deprecatedConfigsNode, deprecatedConfigs));
+            deprecatedConfigsList.stream().forEach(deprecatedConfigs -> putDeprecatedConfig(deprecatedConfigsNode,
+                deprecatedConfigs.getNewAndDeprecatedConfigPaths()));
         }
 
     }
@@ -192,12 +194,19 @@ public final class PersistUtil {
     }
 
     private static void putDeprecatedConfig(final ArrayNode deprecatedConfigsNode,
-        final ConfigsDeprecation configsDeprecation) {
+        final Collection<NewAndDeprecatedConfigPaths> newAndDeprecatedConfigPathsList) {
         final var nextDeprecatedConfigs = deprecatedConfigsNode.addObject();
-        add2DStingArray(nextDeprecatedConfigs, "new",
-            configsDeprecation.getNewConfigPaths().stream().map(ConfigPath::path).toList());
-        add2DStingArray(nextDeprecatedConfigs, "deprecated",
-            configsDeprecation.getDeprecatedConfigPaths().stream().map(ConfigPath::path).toList());
+
+        final List<List<String>> newConfigPaths =
+            newAndDeprecatedConfigPathsList.stream().flatMap(newAndDeprecatedConfigPaths -> newAndDeprecatedConfigPaths
+                .getNewConfigPaths().stream().map(ConfigPath::path)).toList();
+
+        final List<List<String>> deprecatedConfigPaths =
+            newAndDeprecatedConfigPathsList.stream().flatMap(newAndDeprecatedConfigPaths -> newAndDeprecatedConfigPaths
+                .getDeprecatedConfigPaths().stream().map(ConfigPath::path)).toList();
+
+        add2DStingArray(nextDeprecatedConfigs, "new", newConfigPaths);
+        add2DStingArray(nextDeprecatedConfigs, "deprecated", deprecatedConfigPaths);
     }
 
     private static void add2DStingArray(final ObjectNode node, final String key,

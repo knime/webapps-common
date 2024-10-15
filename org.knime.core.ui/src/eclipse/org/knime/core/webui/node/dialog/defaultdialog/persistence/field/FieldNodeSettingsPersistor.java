@@ -49,6 +49,8 @@
 package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
@@ -56,6 +58,7 @@ import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.webui.node.dialog.configmapping.ConfigMappings;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
+import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation.DeprecationLoader;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
 
@@ -72,17 +75,18 @@ public interface FieldNodeSettingsPersistor<T> extends NodeSettingsPersistor<T> 
 
     @Override
     default ConfigMappings getConfigMappings(final T obj) {
-        return new ConfigMappings(getConfigsDeprecations(), settings -> {
-            T fromPrevious = loadOrDefault(settings, obj);
-            final var newSettings = new NodeSettings("newSettings");
-            save(fromPrevious, newSettings);
-            return newSettings;
-        });
+        return new ConfigMappings(getConfigsDeprecations().stream().map(
+            configsDeprecation -> new ConfigMappings(configsDeprecation.getNewAndDeprecatedConfigPaths(), settings -> {
+                T fromPrevious = loadOrDefault(settings, configsDeprecation.getLoader(), obj);
+                final var newSettings = new NodeSettings("newSettings");
+                save(fromPrevious, newSettings);
+                return newSettings;
+            })).toList());
     }
 
-    private T loadOrDefault(final NodeSettingsRO settings, final T obj) {
+    private T loadOrDefault(final NodeSettingsRO settings, final DeprecationLoader<T> deprecationLoader, final T obj) {
         try {
-            return load(settings);
+            return deprecationLoader.apply(settings);
         } catch (InvalidSettingsException ex) {
             LOGGER
                 .warn(String.format("Error when trying to load from previous settings when modifying settings on save. "
@@ -90,6 +94,15 @@ public interface FieldNodeSettingsPersistor<T> extends NodeSettingsPersistor<T> 
             return obj;
         }
     }
+
+    /**
+     * {@inheritDoc} Instead of using the default load method of the {@link FieldBasedNodeSettingsPersistor}, calling
+     * load will result in firstly, searching for deprecated configs and loading it in case a deprecated config was
+     * found. The deprecated configs are specified by {@link #getConfigsDeprecations()}. In case no deprecated config is
+     * found, the default load method will be used.
+     */
+    @Override
+    T load(NodeSettingsRO settings) throws InvalidSettingsException;
 
     /**
      * @return an array of all config keys that are used to save the setting to the node settings or null if config keys
@@ -118,8 +131,8 @@ public interface FieldNodeSettingsPersistor<T> extends NodeSettingsPersistor<T> 
      * @return an array of all pairs of collections of deprecated and accociated new configs (see
      *         {@link ConfigsDeprecation})
      */
-    default ConfigsDeprecation[] getConfigsDeprecations() {
-        return new ConfigsDeprecation[0];
+    default List<ConfigsDeprecation<T>> getConfigsDeprecations() {
+        return Collections.emptyList();
     }
 
     /**

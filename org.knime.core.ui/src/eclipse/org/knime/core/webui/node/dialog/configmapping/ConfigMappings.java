@@ -48,10 +48,8 @@
  */
 package org.knime.core.webui.node.dialog.configmapping;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 import org.knime.core.node.NodeSettingsRO;
@@ -69,7 +67,7 @@ public final class ConfigMappings {
 
     final String m_key;
 
-    final ConfigsDeprecation m_configsDeprecation;
+    final Collection<NewAndDeprecatedConfigPaths> m_newAndDeprecatedConfigPaths;
 
     final UnaryOperator<NodeSettingsRO> m_oldSettingsToNewSettings;
 
@@ -78,7 +76,7 @@ public final class ConfigMappings {
      */
     public ConfigMappings(final Collection<ConfigMappings> children) {
         m_children = children;
-        this.m_configsDeprecation = null;
+        this.m_newAndDeprecatedConfigPaths = null;
         this.m_oldSettingsToNewSettings = null;
         this.m_key = null;
     }
@@ -89,29 +87,14 @@ public final class ConfigMappings {
      */
     public ConfigMappings(final String key, final Collection<ConfigMappings> children) {
         m_children = children;
-        this.m_configsDeprecation = null;
+        this.m_newAndDeprecatedConfigPaths = null;
         this.m_oldSettingsToNewSettings = null;
         this.m_key = key;
     }
 
     /**
-     * See {@link #ConfigMappings(ConfigsDeprecation[], UnaryOperator)}.
-     *
-     * @param configsDeprecation defining which config paths map to which
-     * @param oldSettingsToNewSettings the actual mapping method transforming setting with old config paths to new ones
-     */
-    public ConfigMappings(final ConfigsDeprecation configsDeprecation,
-        final UnaryOperator<NodeSettingsRO> oldSettingsToNewSettings) {
-        m_configsDeprecation = configsDeprecation;
-        m_oldSettingsToNewSettings = oldSettingsToNewSettings;
-        m_children = List.of();
-        this.m_key = null;
-
-    }
-
-    /**
-     * @param configsDeprecations the configs that possibly need to be corrected because of mismatches between settings
-     *            and flow variables because of deprecation of config keys
+     * @param newAndDeprecatedConfigPaths the configs that possibly need to be corrected because of mismatches between
+     *            settings and flow variables because of deprecation of config keys
      * @param oldSettingsToNewSettings a method that is able to transform the previous node settings to new node
      *            settings. It is used only when the previous value should be used but overwritten by a new flow
      *            variable, i.e. when the user de-selected a deprecated flow variable and selects a new one before
@@ -121,9 +104,11 @@ public final class ConfigMappings {
      *            instead if multiple deprecations with different node settings methods are desired.
      *            </p>
      */
-    public ConfigMappings(final ConfigsDeprecation[] configsDeprecations,
+    public ConfigMappings(final Collection<NewAndDeprecatedConfigPaths> newAndDeprecatedConfigPaths,
         final UnaryOperator<NodeSettingsRO> oldSettingsToNewSettings) {
-        this(Arrays.stream(configsDeprecations)
-            .map(configsDeprecation -> new ConfigMappings(configsDeprecation, oldSettingsToNewSettings)).toList());
+        m_newAndDeprecatedConfigPaths = newAndDeprecatedConfigPaths;
+        m_oldSettingsToNewSettings = oldSettingsToNewSettings;
+        m_children = List.of();
+        this.m_key = null;
     }
 }

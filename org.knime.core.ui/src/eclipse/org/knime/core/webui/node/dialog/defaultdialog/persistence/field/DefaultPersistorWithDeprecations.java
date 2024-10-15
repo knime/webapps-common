@@ -44,14 +44,42 @@
  * ---------------------------------------------------------------------
  *
  * History
- *   Dec 4, 2022 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
+ *   15 Oct 2024 (Robin Gerling): created
  */
 package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
+
 /**
- * Interface for the implementation of FieldPersistors that allows convenient implementation by an enum.
+ * A helper interface that simplifies loading of deprecated configs through the wrapper
+ * {@link DefaultPersistorWithDeprecationsWrapper}. Persistor classes can implement this interface in case they have at
+ * least one deprecated configs and use the defaults persistor load and save methods. Implementing classes should not
+ * override load and save, but should override {@link #getConfigsDeprecations()}.
  *
- * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
+ * @author Robin Gerling
+ * @param <T> the type of object loaded by the persistor
  */
-interface FieldPersistor<T> extends FieldLoader<T>, FieldSaver<T>, DeprecatedConfigsGetter<T> {
+public interface DefaultPersistorWithDeprecations<T> extends FieldNodeSettingsPersistor<T> {
+
+    @Override
+    default void save(final T obj, final NodeSettingsWO settings) {
+        throw new IllegalAccessError("This method should never be called");
+    }
+
+    @Override
+    default T load(final NodeSettingsRO settings) throws InvalidSettingsException {
+        throw new IllegalAccessError("This method should never be called");
+    }
+
+    @Override
+    default String[] getConfigKeys() {
+        throw new IllegalAccessError("This method should never be called");
+    }
+
+    @Override
+    default String[][] getConfigPaths() {
+        throw new IllegalAccessError("This method should never be called");
+    }
 }

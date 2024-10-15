@@ -56,6 +56,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.configmapping.ConfigMappings;
+import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.ReflectionUtil;
@@ -70,10 +71,10 @@ import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeNode;
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  * @param <S> The concrete {@link PersistableSettings} class
  */
-public class FieldBasedNodeSettingsPersistor<S extends PersistableSettings> implements NodeSettingsPersistor<S> {
+public class FieldBasedNodeSettingsPersistor<S extends PersistableSettings> implements FieldNodeSettingsPersistor<S> {
 
     @SuppressWarnings("javadoc")
-    protected Map<TreeNode<PersistableSettings>, NodeSettingsPersistor<?>> m_persistors;
+    protected Map<TreeNode<PersistableSettings>, FieldNodeSettingsPersistor<?>> m_persistors;
 
     private Tree<PersistableSettings> m_settingsTree;
 
@@ -135,8 +136,35 @@ public class FieldBasedNodeSettingsPersistor<S extends PersistableSettings> impl
 
     @FunctionalInterface
     private interface PersistorConsumer {
-        void accept(final NodeSettingsPersistor<?> persistor, final TreeNode<PersistableSettings> node)
+        void accept(final FieldNodeSettingsPersistor<?> persistor, final TreeNode<PersistableSettings> node)
             throws InvalidSettingsException, IllegalAccessException;
+    }
+
+    /**
+     * Adapts the loading mechanism of the settings of field not settings persistors. In case a persistor specifies
+     * deprecated configs by implementing {@link #FieldNodeSettingsPersistor.getConfigsDeprecations() }, the
+     * corresponding matchers are iterated by their order in the list of {@link ConfigsDeprecation ConfigsDeprecations}
+     * and the settings are loaded according to the loader of the first match. If no match was found the default load of
+     * the persistor is used.
+     *
+     * @param persistor the persistor of the current field
+     * @param settings
+     * @return S the setting with the type of the new config
+     * @throws InvalidSettingsException
+     */
+    public static <S> S loadFromFieldPersistor(final FieldNodeSettingsPersistor<S> persistor,
+        final NodeSettingsRO settings) throws InvalidSettingsException {
+        final var configDeprecations = persistor.getConfigsDeprecations();
+
+        for (final var configDeprecation : configDeprecations) {
+            final var matcher = configDeprecation.getMatcher();
+            final var loader = configDeprecation.getLoader();
+
+            if (matcher.test(settings)) {
+                return loader.apply(settings);
+            }
+        }
+        return persistor.load(settings);
     }
 
     @Override
@@ -146,7 +174,8 @@ public class FieldBasedNodeSettingsPersistor<S extends PersistableSettings> impl
         final var loaded =
             (S)ReflectionUtil.createInstance(settingsClass).orElseThrow(() -> new IllegalArgumentException(String
                 .format("The provided PersistableSettings '%s' don't provide an empty constructor.", settingsClass)));
-        callForAllFields((persistor, node) -> node.setInParentValue(loaded, persistor.load(settings)));//NOSONAR
+        callForAllFields(
+            (persistor, node) -> node.setInParentValue(loaded, loadFromFieldPersistor(persistor, settings)));//NOSONAR
         return loaded;
     }
 

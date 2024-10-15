@@ -54,28 +54,27 @@ import java.util.function.Supplier;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelAuthentication;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation.Builder;
+import org.knime.core.webui.node.dialog.configmapping.NewAndDeprecatedConfigPaths;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldBasedNodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DefaultPersistorWithDeprecations;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.credentials.CredentialsWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect;
+import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect.EffectType;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Predicate;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.PredicateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
-import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect.EffectType;
 
 /**
  * A switch on the type of authentication that is to be used plus a {@link Credentials} widget that is shown
@@ -194,7 +193,9 @@ public final class AuthenticationSettings implements WidgetGroup, PersistableSet
      * @author Paul Bärnreuther
      */
     public static final class SettingsModelAuthenticationPersistor
-        extends NodeSettingsPersistorWithConfigKey<AuthenticationSettings> {
+        extends NodeSettingsPersistorWithConfigKey<AuthenticationSettings>
+        implements DefaultPersistorWithDeprecations<AuthenticationSettings> {
+
         /**
          * The name of a field in {@link AuthenticationSettings}
          */
@@ -234,27 +235,6 @@ public final class AuthenticationSettings implements WidgetGroup, PersistableSet
             };
         }
 
-        private final NodeSettingsPersistor<AuthenticationSettings> m_defaultPersistor;
-
-        /**
-         *
-         */
-        public SettingsModelAuthenticationPersistor() {
-            m_defaultPersistor = new FieldBasedNodeSettingsPersistor<>(AuthenticationSettings.class);
-        }
-
-        @Override
-        public AuthenticationSettings load(final NodeSettingsRO settings) throws InvalidSettingsException {
-            if (isSavedWithNewConfigKeys(settings)) {
-                return loadFromNewConfigKeys(settings);
-            }
-            return loadFromModel(loadModelFromSettings(settings));
-        }
-
-        AuthenticationSettings loadFromNewConfigKeys(final NodeSettingsRO settings) throws InvalidSettingsException {
-            return m_defaultPersistor.load(settings.getNodeSettings(getConfigKey()));
-        }
-
         boolean isSavedWithNewConfigKeys(final NodeSettingsRO settings) throws InvalidSettingsException {
             return settings.getNodeSettings(getConfigKey()).containsKey(KEY_TYPE);
         }
@@ -278,23 +258,18 @@ public final class AuthenticationSettings implements WidgetGroup, PersistableSet
         }
 
         @Override
-        public void save(final AuthenticationSettings auth, final NodeSettingsWO settings) {
-            m_defaultPersistor.save(auth, settings.addNodeSettings(getConfigKey()));
-        }
-
-        @Override
-        public ConfigsDeprecation[] getConfigsDeprecations() {
-            return new ConfigsDeprecation[]{//
-                new Builder()//
-                    .forNewConfigPath(getConfigKey(), KEY_CREDENTIALS) //
-                    .forDeprecatedConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_CREDENTIAL)//
-                    .forDeprecatedConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_PASSWORD)//
-                    .forDeprecatedConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_USERNAME)//
-                    .build(), //
-                new Builder()//
-                    .forNewConfigPath(getConfigKey(), KEY_TYPE) //
-                    .forDeprecatedConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_TYPE)//
-                    .build()};
+        public List<ConfigsDeprecation<AuthenticationSettings>> getConfigsDeprecations() {
+            return List
+                .of(new Builder<AuthenticationSettings>(settings -> loadFromModel(loadModelFromSettings(settings)))
+                    .linkingNewAndDeprecatedConfigPaths(new NewAndDeprecatedConfigPaths.Builder()
+                        .withDeprecatedConfigPath(getConfigKey(), KEY_CREDENTIALS)
+                        .withNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_CREDENTIAL)
+                        .withNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_PASSWORD)
+                        .withNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_USERNAME).build())
+                    .linkingNewAndDeprecatedConfigPaths(new NewAndDeprecatedConfigPaths.Builder() //
+                        .withDeprecatedConfigPath(getConfigKey(), KEY_TYPE)
+                        .withNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_TYPE).build())//
+                    .withMatcher(settings -> !isSavedWithNewConfigKeys(settings)).build());
         }
 
     }

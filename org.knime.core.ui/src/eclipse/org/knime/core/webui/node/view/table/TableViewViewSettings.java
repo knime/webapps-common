@@ -49,19 +49,16 @@
 package org.knime.core.webui.node.view.table;
 
 import static org.knime.core.webui.node.view.table.RowHeightPersistorUtil.createDefaultConfigsDeprecations;
-import static org.knime.core.webui.node.view.table.RowHeightPersistorUtil.getLoadResultFromLegacySettings;
+
+import java.util.List;
 
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.EnumFieldPersistor;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DefaultPersistorWithDeprecations;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.StringArrayToColumnFilterPersistor;
@@ -80,7 +77,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Predicate;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.PredicateProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Reference;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueReference;
-import org.knime.core.webui.node.view.table.RowHeightPersistorUtil.LegacyLoadResult;
 import org.knime.core.webui.node.view.table.TableViewLayout.DataSection;
 import org.knime.core.webui.node.view.table.TableViewLayout.InteractivitySection;
 import org.knime.core.webui.node.view.table.TableViewLayout.ViewSection;
@@ -232,31 +228,13 @@ public class TableViewViewSettings implements DefaultNodeSettings {
         }
 
         static final class CompactModeAndLegacyRowHeightModePersistor
-            extends NodeSettingsPersistorWithConfigKey<RowHeightMode> {
-
-            private NodeSettingsPersistor<RowHeightMode> m_persistor;
-
-            @Override
-            public void setConfigKey(final String configKey) {
-                super.setConfigKey(configKey);
-                m_persistor = new EnumFieldPersistor<>(configKey, RowHeightMode.class);
-            }
+            extends NodeSettingsPersistorWithConfigKey<RowHeightMode>
+            implements DefaultPersistorWithDeprecations<RowHeightMode> {
 
             @Override
-            public RowHeightMode load(final NodeSettingsRO settings) throws InvalidSettingsException {
-                final var legacyLoadResult = getLoadResultFromLegacySettings(settings);
-                return legacyLoadResult.isPresent() ? legacyLoadResult.get().getRowHeightMode()
-                    : m_persistor.load(settings);
-            }
-
-            @Override
-            public void save(final RowHeightMode obj, final NodeSettingsWO settings) {
-                m_persistor.save(obj, settings);
-            }
-
-            @Override
-            public ConfigsDeprecation[] getConfigsDeprecations() {
-                return createDefaultConfigsDeprecations(getConfigKey());
+            public List<ConfigsDeprecation<RowHeightMode>> getConfigsDeprecations() {
+                return createDefaultConfigsDeprecations(getConfigKey(),
+                    (loadResult, settings) -> loadResult.getRowHeightMode());
             }
         }
     }
@@ -276,23 +254,18 @@ public class TableViewViewSettings implements DefaultNodeSettings {
 
     static final int DEFAULT_CUSTOM_ROW_HEIGHT = 80;
 
-    static final class CustomRowHeightPersistor extends NodeSettingsPersistorWithConfigKey<Integer> {
+    static final class CustomRowHeightPersistor extends NodeSettingsPersistorWithConfigKey<Integer>
+        implements DefaultPersistorWithDeprecations<Integer> {
 
         @Override
-        public Integer load(final NodeSettingsRO settings) throws InvalidSettingsException {
-            final var legacyCustomRowHeight =
-                getLoadResultFromLegacySettings(settings).flatMap(LegacyLoadResult::getCustomRowHeight);
-            return legacyCustomRowHeight.isPresent() ? legacyCustomRowHeight.get() : settings.getInt(getConfigKey());
-        }
-
-        @Override
-        public void save(final Integer customRowHeight, final NodeSettingsWO settings) {
-            settings.addInt(getConfigKey(), customRowHeight);
-        }
-
-        @Override
-        public ConfigsDeprecation[] getConfigsDeprecations() {
-            return createDefaultConfigsDeprecations(getConfigKey());
+        public List<ConfigsDeprecation<Integer>> getConfigsDeprecations() {
+            return createDefaultConfigsDeprecations(getConfigKey(), (loadResult, settings) -> {
+                final var customRowHeight = loadResult.getCustomRowHeight();
+                if (customRowHeight.isPresent()) {
+                    return customRowHeight.get();
+                }
+                return settings.getInt(getConfigKey());
+            });
         }
     }
 
@@ -316,32 +289,13 @@ public class TableViewViewSettings implements DefaultNodeSettings {
                     + " as possible in given space.")
             COMPACT;
 
-        static final class VerticalPaddingModePersistor
-            extends NodeSettingsPersistorWithConfigKey<VerticalPaddingMode> {
-
-            private NodeSettingsPersistor<VerticalPaddingMode> m_persistor;
+        static final class VerticalPaddingModePersistor extends NodeSettingsPersistorWithConfigKey<VerticalPaddingMode>
+            implements DefaultPersistorWithDeprecations<VerticalPaddingMode> {
 
             @Override
-            public void setConfigKey(final String configKey) {
-                super.setConfigKey(configKey);
-                m_persistor = new EnumFieldPersistor<>(configKey, VerticalPaddingMode.class);
-            }
-
-            @Override
-            public VerticalPaddingMode load(final NodeSettingsRO settings) throws InvalidSettingsException {
-                final var legacyLoadResult = getLoadResultFromLegacySettings(settings);
-                return legacyLoadResult.isPresent() ? legacyLoadResult.get().getVerticalPaddingMode()
-                    : m_persistor.load(settings);
-            }
-
-            @Override
-            public void save(final VerticalPaddingMode verticalPaddingMode, final NodeSettingsWO settings) {
-                m_persistor.save(verticalPaddingMode, settings);
-            }
-
-            @Override
-            public ConfigsDeprecation[] getConfigsDeprecations() {
-                return createDefaultConfigsDeprecations(getConfigKey());
+            public List<ConfigsDeprecation<VerticalPaddingMode>> getConfigsDeprecations() {
+                return createDefaultConfigsDeprecations(getConfigKey(),
+                    (loadResult, settings) -> loadResult.getVerticalPaddingMode());
             }
         }
     }

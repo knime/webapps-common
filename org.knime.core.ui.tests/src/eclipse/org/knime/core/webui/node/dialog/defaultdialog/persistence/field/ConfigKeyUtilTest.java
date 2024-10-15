@@ -52,6 +52,8 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -60,7 +62,7 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.configmapping.ConfigPath;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
-import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation.Builder;
+import org.knime.core.webui.node.dialog.configmapping.NewAndDeprecatedConfigPaths;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.persisttree.PersistTreeFactory;
 import org.knime.core.webui.node.dialog.defaultdialog.tree.Tree;
@@ -92,9 +94,11 @@ class ConfigKeyUtilTest {
         }
 
         @Override
-        public ConfigsDeprecation[] getConfigsDeprecations() {
-            return new ConfigsDeprecation[]{
-                new Builder().forNewConfigPath("custom_key0").forDeprecatedConfigPath("old_config_key").build()};
+        public List<ConfigsDeprecation<Integer>> getConfigsDeprecations() {
+            return List.of(new ConfigsDeprecation.Builder<Integer>(settings -> {
+                throw new IllegalStateException("Should not be called within this test");
+            }).linkingNewAndDeprecatedConfigPaths(new NewAndDeprecatedConfigPaths.Builder()
+                .withNewConfigPath("custom_key0").withDeprecatedConfigPath("old_config_key").build()).build());
         }
 
     }
@@ -182,10 +186,13 @@ class ConfigKeyUtilTest {
     @Test
     void testDeprecatedConfigKeysFromCustomPersistor() throws NoSuchFieldException {
         final var deprecatedConfigKeys = deprecatedConfigKeysFor("setting5");
-        assertArrayEquals(new String[]{"custom_key0"}, getFirstPathAsArray(deprecatedConfigKeys[0].getNewConfigPaths()),
+        assertArrayEquals(new String[]{"custom_key0"}, getFirstPathAsArray(deprecatedConfigKeys.get(0).stream()
+            .flatMap(newAndDeprecatedConfigPaths -> newAndDeprecatedConfigPaths.getNewConfigPaths().stream()).toList()),
             "newConfigPaths of deprecatedConfigs should be set from custom persistor");
         assertArrayEquals(new String[]{"old_config_key"},
-            getFirstPathAsArray(deprecatedConfigKeys[0].getDeprecatedConfigPaths()),
+            getFirstPathAsArray(deprecatedConfigKeys.get(0).stream()
+                .flatMap(newAndDeprecatedConfigPaths -> newAndDeprecatedConfigPaths.getDeprecatedConfigPaths().stream())
+                .toList()),
             "deprecatedConfigPaths of deprecatedConfigs should be set from custom persistor");
     }
 
@@ -197,7 +204,8 @@ class ConfigKeyUtilTest {
         return getConfigPathsUsedByField(getField(fieldName));
     }
 
-    private static ConfigsDeprecation[] deprecatedConfigKeysFor(final String fieldName) throws NoSuchFieldException {
+    private static List<Collection<NewAndDeprecatedConfigPaths>> deprecatedConfigKeysFor(final String fieldName)
+        throws NoSuchFieldException {
         return getDeprecatedConfigsUsedByField(getField(fieldName));
     }
 
@@ -226,13 +234,15 @@ class ConfigKeyUtilTest {
      * @param node
      * @return the deprecated configs defined by the {@link Persist#customPersistor} or an empty array none exists.
      */
-    static ConfigsDeprecation[] getDeprecatedConfigsUsedByField(final TreeNode<PersistableSettings> node) {
+    @SuppressWarnings("unchecked")
+    static List<Collection<NewAndDeprecatedConfigPaths>>
+        getDeprecatedConfigsUsedByField(final TreeNode<PersistableSettings> node) {
         var persist = node.getAnnotation(Persist.class);
         if (persist.isEmpty()) {
-            return new ConfigsDeprecation[]{};
+            return Collections.emptyList();
         }
-        return ConfigKeyUtil.extractFieldNodeSettingsPersistor(node)
-            .map(FieldNodeSettingsPersistor::getConfigsDeprecations).orElse(new ConfigsDeprecation[]{});
+        return ConfigKeyUtil.extractFieldNodeSettingsPersistor(node).map(persistor -> persistor.getConfigsDeprecations()
+            .stream().map(ConfigsDeprecation::getNewAndDeprecatedConfigPaths).toList()).orElse(Collections.emptyList());
     }
 
     private static Tree<PersistableSettings> SETTINGS_TREE;
