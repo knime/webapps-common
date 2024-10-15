@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.5.0
+
+### Minor Changes
+
+- 85ef378: make ProgressBar smoother by adding transition
+
 ## 1.4.2
 
 ### Patch Changes
