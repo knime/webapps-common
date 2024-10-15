@@ -50,7 +50,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.jsonforms;
 
 import java.io.IOException;
 
-import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FileChooser;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.fileselection.FileSelection;
 import org.knime.filehandling.core.connections.FSCategory;
 import org.knime.filehandling.core.connections.FSLocation;
 import org.knime.filehandling.core.connections.RelativeTo;
@@ -86,7 +86,7 @@ final class FSLocationJsonSerializationUtil {
     private static final String FS_TO_STRING_KEY = "fsToString";
 
     /**
-     * Adds serialization logic for the {@link FSLocation} within a {@link FileChooser}
+     * Adds serialization logic for the {@link FSLocation} within a {@link FileSelection}
      *
      * @param module
      */

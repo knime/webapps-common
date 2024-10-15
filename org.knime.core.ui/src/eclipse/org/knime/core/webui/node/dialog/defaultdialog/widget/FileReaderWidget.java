@@ -54,11 +54,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FileChooser;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.fileselection.FileSelection;
 import org.knime.filehandling.core.port.FileSystemPortObjectSpec;
 
 /**
- * Put this annotation on a {@link FileChooser} field in order to equip it with additional reader features.
+ * Put this annotation on a {@link FileSelection} field in order to equip it with additional reader features.
  *
  * One implicit effect that is enabled by using this annotation is that the first input port of type
  * {@link FileSystemPortObjectSpec} is used if available. This will enable browsing (only) the connected file system or

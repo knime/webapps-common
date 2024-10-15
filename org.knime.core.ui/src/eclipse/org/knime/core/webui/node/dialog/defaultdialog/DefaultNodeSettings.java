@@ -83,7 +83,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.Colum
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.NameFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FileChooser;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.fileselection.FileSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.util.InstantiationUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
@@ -223,7 +223,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect;
  * {@link UsernameWidget} (username only)</td>
  * </tr>
  * <tr>
- * <td>{@link FileChooser}</td>
+ * <td>{@link FileSelection}</td>
  * <td>Path file chooser (currently with options "Local File System" and "Custom/KNIME URL")</td>
  * <td>{@link FileReaderWidget}<br>
  * {@link FileWriterWidget}</td>

@@ -46,7 +46,7 @@
  * History
  *   Nov 3, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser;
+package org.knime.core.webui.node.dialog.defaultdialog.setting.fileselection;
 
 import java.util.Objects;
 
@@ -64,7 +64,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * @author Paul Bärnreuther
  */
-public final class FileChooser implements PersistableSettings {
+public final class FileSelection implements PersistableSettings {
 
     @JsonProperty("path")
     public FSLocation m_path;
@@ -72,14 +72,14 @@ public final class FileChooser implements PersistableSettings {
     /**
      * A local file chooser
      */
-    public FileChooser() {
+    public FileSelection() {
         this(new FSLocation(FSCategory.LOCAL, ""));
     }
 
     /**
      * @param fsLocation
      */
-    public FileChooser(final FSLocation fsLocation) {
+    public FileSelection(final FSLocation fsLocation) {
         m_path = fsLocation;
     }
 
@@ -102,7 +102,7 @@ public final class FileChooser implements PersistableSettings {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final var other = (FileChooser)obj;
+        final var other = (FileSelection)obj;
         return Objects.equals(m_path, other.m_path);
     }
 

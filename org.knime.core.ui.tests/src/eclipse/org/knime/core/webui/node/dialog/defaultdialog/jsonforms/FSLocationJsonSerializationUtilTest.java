@@ -57,7 +57,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FileChooser;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.fileselection.FileSelection;
 import org.knime.filehandling.core.connections.FSCategory;
 import org.knime.filehandling.core.connections.FSLocation;
 import org.knime.filehandling.core.connections.RelativeTo;
@@ -76,7 +76,7 @@ public class FSLocationJsonSerializationUtilTest {
     @Test
     void testSerializeLocal() {
         class TestSettings {
-            FileChooser fileChooser = new FileChooser();
+            FileSelection fileChooser = new FileSelection();
         }
         final var result = MAPPER.valueToTree(new TestSettings());
         assertThatJson(result).inPath("fileChooser.path.path").isString().isEqualTo("");//
@@ -89,7 +89,7 @@ public class FSLocationJsonSerializationUtilTest {
     @Test
     void testSerializeCustomURL() {
         class TestSettings {
-            FileChooser fileChooser = new FileChooser(new FSLocation(FSCategory.CUSTOM_URL, "1", "myPath"));
+            FileSelection fileChooser = new FileSelection(new FSLocation(FSCategory.CUSTOM_URL, "1", "myPath"));
         }
         final var result = MAPPER.valueToTree(new TestSettings());
         assertThatJson(result).inPath("fileChooser.path.path").isString().isEqualTo("myPath");//
@@ -103,8 +103,8 @@ public class FSLocationJsonSerializationUtilTest {
     @Test
     void testSerializeCurrentHubSpace() {
         class TestSettings {
-            FileChooser fileChooser =
-                new FileChooser(new FSLocation(FSCategory.RELATIVE, RelativeTo.SPACE.getSettingsValue(), "myPath"));
+            FileSelection fileChooser =
+                new FileSelection(new FSLocation(FSCategory.RELATIVE, RelativeTo.SPACE.getSettingsValue(), "myPath"));
         }
         final var result = MAPPER.valueToTree(new TestSettings());
         assertThatJson(result).inPath("fileChooser.path.path").isString().isEqualTo("myPath");//
@@ -119,7 +119,7 @@ public class FSLocationJsonSerializationUtilTest {
     @Test
     void testSerializeEmbeddedData() {
         class TestSettings {
-            FileChooser fileChooser = new FileChooser(
+            FileSelection fileChooser = new FileSelection(
                 new FSLocation(FSCategory.RELATIVE, RelativeTo.WORKFLOW_DATA.getSettingsValue(), "myPath"));
         }
         final var result = MAPPER.valueToTree(new TestSettings());
@@ -134,7 +134,7 @@ public class FSLocationJsonSerializationUtilTest {
     @Test
     void testSerializeNonSupportedFSLocation() {
         class TestSettings {
-            FileChooser fileChooser = new FileChooser(new FSLocation(FSCategory.MOUNTPOINT, "specifier", "myPath"));
+            FileSelection fileChooser = new FileSelection(new FSLocation(FSCategory.MOUNTPOINT, "specifier", "myPath"));
         }
         final var result = MAPPER.valueToTree(new TestSettings());
         assertThatJson(result).inPath("fileChooser.path.path").isString().isEqualTo("myPath");//
@@ -150,10 +150,10 @@ public class FSLocationJsonSerializationUtilTest {
         }
 
         DeserializationTestSettings(final FSLocation fsLocation) {
-            fileChooser = new FileChooser(fsLocation);
+            fileChooser = new FileSelection(fsLocation);
         }
 
-        FileChooser fileChooser = new FileChooser();
+        FileSelection fileChooser = new FileSelection();
     }
 
     @Test

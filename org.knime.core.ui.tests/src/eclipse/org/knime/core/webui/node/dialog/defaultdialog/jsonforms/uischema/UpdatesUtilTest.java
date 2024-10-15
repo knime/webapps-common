@@ -71,7 +71,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FileChooser;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.fileselection.FileSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.util.MapValuesUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
@@ -601,7 +601,7 @@ class UpdatesUtilTest {
             class TestSettings implements DefaultNodeSettings {
 
                 @FileWriterWidget(fileExtensionProvider = MyStringProvider.class)
-                FileChooser m_fileChooser;
+                FileSelection m_fileChooser;
 
             }
 

@@ -73,7 +73,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.NameF
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.LegacyCredentials;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FileChooser;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.fileselection.FileSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ArrayWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ComboBoxWidget;
@@ -160,7 +160,7 @@ class UiSchemaOptionsTest {
             LegacyCredentials m_legacyCredentials;
 
             @Widget(title = "", description = "")
-            FileChooser m_fileChooser;
+            FileSelection m_fileSelection;
 
             @Widget(title = "", description = "")
             NameFilter m_nameFilter;
@@ -185,7 +185,7 @@ class UiSchemaOptionsTest {
         assertThatJson(response).inPath("$.elements[6].options.format").isString().isEqualTo("credentials");
         assertThatJson(response).inPath("$.elements[7].scope").isString().contains("legacyCredentials");
         assertThatJson(response).inPath("$.elements[7].options.format").isString().isEqualTo("legacyCredentials");
-        assertThatJson(response).inPath("$.elements[8].scope").isString().contains("fileChooser");
+        assertThatJson(response).inPath("$.elements[8].scope").isString().contains("fileSelection");
         assertThatJson(response).inPath("$.elements[8].options.format").isString().isEqualTo("fileChooser");
         assertThatJson(response).inPath("$.elements[9].scope").isString().contains("nameFilter");
         assertThatJson(response).inPath("$.elements[9].options.format").isString().isEqualTo("nameFilter");
@@ -193,7 +193,6 @@ class UiSchemaOptionsTest {
 
     @Test
     void testHidableStringSetting() {
-        @SuppressWarnings("unused")
         class HidableStringSettings implements DefaultNodeSettings {
 
             @Widget(title = "", description = "")
@@ -211,7 +210,6 @@ class UiSchemaOptionsTest {
 
     @Test
     void testComboBoxFormat() {
-        @SuppressWarnings("unused")
         class ComboBoxFormatSettings implements DefaultNodeSettings {
 
             @Widget(title = "", description = "")
@@ -236,7 +234,6 @@ class UiSchemaOptionsTest {
 
     @Test
     void testSortListFormat() {
-        @SuppressWarnings("unused")
         class ComboBoxFormatSettings implements DefaultNodeSettings {
 
             @Widget(title = "", description = "")
@@ -1012,7 +1009,7 @@ class UiSchemaOptionsTest {
 
     @Test
     void testLocalFileReaderWidget() {
-        class LocalFileChooserWidgetTestSettings implements DefaultNodeSettings {
+        class LocalFileReaderWidgetTestSettings implements DefaultNodeSettings {
 
             @Widget(title = "", description = "")
             @LocalFileReaderWidget
@@ -1023,7 +1020,7 @@ class UiSchemaOptionsTest {
             String m_specialOptions;
 
         }
-        var response = buildTestUiSchema(LocalFileChooserWidgetTestSettings.class);
+        var response = buildTestUiSchema(LocalFileReaderWidgetTestSettings.class);
         assertThatJson(response).inPath("$.elements[0].scope").isString().contains("defaultOptions");
         assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("localFileChooser");
         assertThatJson(response).inPath("$.elements[0].options.placeholder").isString().isEqualTo("");
@@ -1093,15 +1090,15 @@ class UiSchemaOptionsTest {
 
             @Widget(title = "", description = "")
             @FileWriterWidget
-            FileChooser m_defaultOptions;
+            FileSelection m_defaultOptions;
 
             @Widget(title = "", description = "")
             @FileWriterWidget(fileExtension = "pdf")
-            FileChooser m_staticExtension;
+            FileSelection m_staticExtension;
 
             @Widget(title = "", description = "")
             @FileWriterWidget(fileExtensionProvider = MyFileExtensionProvider.class)
-            FileChooser m_providedExtension;
+            FileSelection m_providedExtension;
 
             @Widget(title = "", description = "")
             @ValueReference(MyValueRef.class)
@@ -1131,7 +1128,7 @@ class UiSchemaOptionsTest {
 
             @Widget(title = "", description = "")
             @FileReaderWidget(fileExtensions = {"txt", "csv"})
-            FileChooser m_fileReader;
+            FileSelection m_fileReader;
 
         }
         final var fileSystemType = "myFileSystemType";

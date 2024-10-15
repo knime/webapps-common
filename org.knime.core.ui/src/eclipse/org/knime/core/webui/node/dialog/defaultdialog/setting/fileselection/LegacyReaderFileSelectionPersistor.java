@@ -46,7 +46,7 @@
  * History
  *   Jan 13, 2023 (Adrian Nembach, KNIME GmbH, Konstanz, Germany): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser;
+package org.knime.core.webui.node.dialog.defaultdialog.setting.fileselection;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
@@ -59,30 +59,30 @@ import org.knime.filehandling.core.data.location.FSLocationSerializationUtils;
 import org.knime.filehandling.core.defaultnodesettings.filechooser.reader.SettingsModelReaderFileChooser;
 
 /**
- * {@link NodeSettingsPersistor} for {@link FileChooser} that persists it in a way compatible to
+ * {@link NodeSettingsPersistor} for {@link FileSelection} that persists it in a way compatible to
  * {@link SettingsModelReaderFileChooser}.
  *
  * @author Martin Horn, KNIME GmbH, Konstanz, Germany
  */
-public final class LegacyReaderFilerChooserPersistor extends NodeSettingsPersistorWithConfigKey<FileChooser> {
+public final class LegacyReaderFileSelectionPersistor extends NodeSettingsPersistorWithConfigKey<FileSelection> {
 
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(LegacyReaderFilerChooserPersistor.class);
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(LegacyReaderFileSelectionPersistor.class);
 
     @SuppressWarnings("javadoc")
-    public static FileChooser load(final NodeSettingsRO nodeSettings, final String configKey)
+    public static FileSelection load(final NodeSettingsRO nodeSettings, final String configKey)
         throws InvalidSettingsException {
         var fileChooserSettings = nodeSettings.getNodeSettings(configKey);
-        var fileChooser = new FileChooser();
+        var fileChooser = new FileSelection();
         fileChooser.m_path = FSLocationSerializationUtils.loadFSLocation(fileChooserSettings.getConfig("path"));
         return fileChooser;
     }
 
 
     @SuppressWarnings("javadoc")
-    public static void save(FileChooser fileChooser, final NodeSettingsWO settings, final String configKey) {
+    public static void save(FileSelection fileChooser, final NodeSettingsWO settings, final String configKey) {
         if (fileChooser == null) {
             LOGGER.coding(createFilterNullError(configKey));
-            fileChooser = new FileChooser();
+            fileChooser = new FileSelection();
         }
         var fileChooserSettings = settings.addNodeSettings(configKey);
         FSLocationSerializationUtils.saveFSLocation(fileChooser.getFSLocation(),
@@ -136,12 +136,12 @@ public final class LegacyReaderFilerChooserPersistor extends NodeSettingsPersist
     }
 
     @Override
-    public FileChooser load(final NodeSettingsRO settings) throws InvalidSettingsException {
+    public FileSelection load(final NodeSettingsRO settings) throws InvalidSettingsException {
         return load(settings, getConfigKey());
     }
 
     @Override
-    public void save(final FileChooser obj, final NodeSettingsWO settings) {
+    public void save(final FileSelection obj, final NodeSettingsWO settings) {
         save(obj, settings, getConfigKey());
     }
 }

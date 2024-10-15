@@ -54,12 +54,12 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FileChooser;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.fileselection.FileSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.NoopStringProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.StateProvider;
 
 /**
- * Put this annotation on a {@link FileChooser} field in order to equip it with additional writer features.
+ * Put this annotation on a {@link FileSelection} field in order to equip it with additional writer features.
  *
  * @author Paul Bärnreuther
  */

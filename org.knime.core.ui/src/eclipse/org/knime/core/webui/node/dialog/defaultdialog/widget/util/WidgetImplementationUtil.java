@@ -62,7 +62,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.NameF
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.LegacyCredentials;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FileChooser;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.fileselection.FileSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ChoicesWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.ComboBoxWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DateTimeWidget;
@@ -151,8 +151,8 @@ public final class WidgetImplementationUtil {
         new WidgetAnnotation(List.of(Credentials.class, LegacyCredentials.class), CredentialsWidget.class), //
         new WidgetAnnotation(List.of(Credentials.class, LegacyCredentials.class), PasswordWidget.class), //
         new WidgetAnnotation(List.of(Credentials.class, LegacyCredentials.class), UsernameWidget.class), //
-        new WidgetAnnotation(List.of(FileChooser.class), FileReaderWidget.class), //
-        new WidgetAnnotation(List.of(FileChooser.class), FileWriterWidget.class), //
+        new WidgetAnnotation(List.of(FileSelection.class), FileReaderWidget.class), //
+        new WidgetAnnotation(List.of(FileSelection.class), FileWriterWidget.class), //
         new WidgetAnnotation(List.of(String.class), LocalFileReaderWidget.class), //
         new WidgetAnnotation(List.of(String.class), LocalFileWriterWidget.class), //
         new WidgetAnnotation(List.of(String.class), TextInputWidget.class), //
@@ -174,7 +174,7 @@ public final class WidgetImplementationUtil {
         new DefaultWidget(List.of(String[].class), DefaultWidgetType.STRING_ARRAY), //
         new DefaultWidget(List.of(Credentials.class), DefaultWidgetType.CREDENTIALS), //
         new DefaultWidget(List.of(LegacyCredentials.class), DefaultWidgetType.LEGACY_CREDENTIALS), //
-        new DefaultWidget(List.of(FileChooser.class), DefaultWidgetType.FILE_CHOOSER), //
+        new DefaultWidget(List.of(FileSelection.class), DefaultWidgetType.FILE_CHOOSER), //
         new DefaultWidget(List.of(DynamicValuesInput.class), DefaultWidgetType.DYNAMIC_VALUE)//
     };
 
