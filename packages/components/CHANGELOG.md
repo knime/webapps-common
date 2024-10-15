@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.4.3
+
+### Patch Changes
+
+- 285389a: fix toasts not expanding after being in back of stack
+
 ## 1.4.2
 
 ### Patch Changes
