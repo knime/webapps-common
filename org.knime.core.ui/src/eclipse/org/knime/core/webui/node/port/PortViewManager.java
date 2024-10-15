@@ -78,7 +78,7 @@ public final class PortViewManager {
 
     private static PortViewManager instance;
 
-    private static final Map<String, PortViews> m_portViews = new HashMap<>();
+    private final Map<String, PortViews> m_portViews = new HashMap<>();
 
     private final Map<NodePortWrapper, PortView> m_portViewMap = new WeakHashMap<>();
 
@@ -124,6 +124,7 @@ public final class PortViewManager {
     /**
      *
      * Associate a {@link PortObject}-class-name with one or several {@link PortViewDescriptor}s.
+     *
      * @param portObjectClassName
      * @param viewDescriptors
      * @param configuredIndices
@@ -132,9 +133,9 @@ public final class PortViewManager {
     public static void registerPortViews(final String portObjectClassName,
         final List<PortViewDescriptor> viewDescriptors, final List<Integer> configuredIndices,
         final List<Integer> executedIndices) {
-        m_portViews.put(portObjectClassName, new PortViews(viewDescriptors, configuredIndices, executedIndices));
+        getInstance().m_portViews.put(portObjectClassName,
+            new PortViews(viewDescriptors, configuredIndices, executedIndices));
     }
-
 
     /**
      * Returns the singleton instance for this class.
@@ -175,7 +176,7 @@ public final class PortViewManager {
         return Stream
             .concat(Stream.of(portObjectClass.getName()),
                 Arrays.stream(portObjectClass.getInterfaces()).map(Class::getName))
-            .map(m_portViews::get).filter(Objects::nonNull).findFirst().orElse(null);
+            .map(getInstance().m_portViews::get).filter(Objects::nonNull).findFirst().orElse(null);
     }
 
     private PortViewManager() {

@@ -54,6 +54,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
+import org.knime.core.data.DataValue;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.util.Pair;
@@ -101,7 +102,11 @@ public final class PageResourceManager<N extends NodeWrapper> {
             /**
              * A port view.
              */
-            PORT;
+            PORT,
+            /**
+             * A view associated to a {@link DataValue}
+             */
+            DATA_VALUE;
 
         @Override
         public String toString() {

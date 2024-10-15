@@ -61,6 +61,7 @@ Export-Package: org.knime.core.ui;x-internal:=true,
  org.knime.core.webui.node.view.table;x-internal:=true,
  org.knime.core.webui.node.view.table.data;x-internal:=true,
  org.knime.core.webui.node.view.table.data.render;x-internal=true,
+ org.knime.core.webui.node.view.table.datavalue;x-internal=true,
  org.knime.core.webui.node.view.table.selection;x-internal:=true,
  org.knime.core.webui.node.view.text;x-internal:=true,
  org.knime.core.webui.page;x-internal:=true
