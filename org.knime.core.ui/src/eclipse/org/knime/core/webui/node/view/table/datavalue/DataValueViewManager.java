@@ -62,7 +62,9 @@ import org.knime.core.node.BufferedDataTable;
 import org.knime.core.webui.node.DataServiceManager;
 import org.knime.core.webui.node.DataValueWrapper;
 import org.knime.core.webui.node.PageResourceManager;
+import org.knime.core.webui.node.PageResourceManager.CreatedPage;
 import org.knime.core.webui.node.PageResourceManager.PageType;
+import org.knime.core.webui.node.util.NodeCleanUpCallback;
 
 /**
  * Singleton for registering factories for creating (@link DataValueView}s.
@@ -80,13 +82,22 @@ public final class DataValueViewManager {
     private final Map<Class<? extends DataValue>, DataValueViewFactory<? extends DataValue>> m_dataValueViewFactories =
         new HashMap<>();
 
-    private final Map<DataValueWrapper, DataValueView> m_dataValueViewMap = new WeakHashMap<>();
+    /**
+     * package scoped for testing {@link #getDataValueView(DataValueWrapper)}
+     */
+    record CreatedDataValueView(DataValueView view, Class<? extends DataValue> dataValueClass) {
+        CreatedPage toCreatedPage() {
+            return new CreatedPage(view.getPage(), dataValueClass.getName());
+        }
+    }
+
+    private final Map<DataValueWrapper, CreatedDataValueView> m_dataValueViewMap = new WeakHashMap<>();
 
     private final PageResourceManager<DataValueWrapper> m_pageResourceManager =
-        new PageResourceManager<>(PageType.DATA_VALUE, dvw -> getDataValueView(dvw).getPage(), null, null, true);
+        new PageResourceManager<>(PageType.DATA_VALUE, dvw -> getDataValueView(dvw).toCreatedPage(), null, null, true);
 
     private final DataServiceManager<DataValueWrapper> m_dataServiceManager =
-        new DataServiceManager<>(dvw -> getDataValueView(dvw));
+        new DataServiceManager<>(dvw -> getDataValueView(dvw).view());
 
     /**
      * @return a singleton instance of this class
@@ -111,16 +122,26 @@ public final class DataValueViewManager {
     }
 
     /**
+     * For testing purposes
+     *
+     * @param dataValueClass
+     */
+    public static void removeDataValueViewFactory(final Class<?> dataValueClass) {
+        getInstance().m_dataValueViewFactories.remove(dataValueClass);
+    }
+
+    /**
+     * Package scoped for tests
+     *
      * @param wrapper identifying a data value
      * @return the {@link DataValueView} for the given {@link DataValueWrapper}
      * @throws NoSuchElementException if no data value can be created
      * @throws NoSuchElementException if no data value view is available
      */
     @SuppressWarnings("unchecked")
-    public DataValueView getDataValueView(final DataValueWrapper wrapper) {
-        var dataValueView = m_dataValueViewMap.get(wrapper); // NOSONAR
-        if (dataValueView != null) {
-            return dataValueView;
+    CreatedDataValueView getDataValueView(final DataValueWrapper wrapper) {
+        if (m_dataValueViewMap.containsKey(wrapper)) {
+            return m_dataValueViewMap.get(wrapper);
         }
 
         var dataCell = extractDataCell(wrapper);
@@ -128,18 +149,16 @@ public final class DataValueViewManager {
         if (chosenValue.isPresent()) {
             @SuppressWarnings("rawtypes")
             DataValueViewFactory factory = m_dataValueViewFactories.get(chosenValue.get());
-            dataValueView = factory.createDataValueView(dataCell);
-            m_dataValueViewMap.put(wrapper, dataValueView);
-            return dataValueView;
+            final var dataValueView = factory.createDataValueView(dataCell);
+            final var createdDataValueView = new CreatedDataValueView(dataValueView, chosenValue.get());
+            m_dataValueViewMap.put(wrapper, createdDataValueView);
+            NodeCleanUpCallback.builder(wrapper.get(), () -> m_dataValueViewMap.remove(wrapper))
+                .cleanUpOnNodeStateChange(true).build();
+            return createdDataValueView;
         } else {
             throw new NoSuchElementException(
                 String.format("No data value view is available for data type %s", dataCell.getType()));
         }
-    }
-
-    public Optional<Class<? extends DataValue>> getChosenType(final DataValueWrapper wrapper) {
-        var dataCell = extractDataCell(wrapper);
-        return findCompatibleValue(dataCell);
     }
 
     private static DataCell extractDataCell(final DataValueWrapper wrapper) {
@@ -156,8 +175,7 @@ public final class DataValueViewManager {
         if (table == null) {
             throw new NoSuchElementException("No data table available at index " + portIdx);
         }
-        var dataCell = getDataCellAt(wrapper.getRowIdx(), wrapper.getColIdx(), table);
-        return dataCell;
+        return getDataCellAt(wrapper.getRowIdx(), wrapper.getColIdx(), table);
     }
 
     private Optional<Class<? extends DataValue>> findCompatibleValue(final DataCell cell) {
@@ -174,7 +192,7 @@ public final class DataValueViewManager {
     private static RowCursor createCursor(final int rowIdx, final int colIdx, final BufferedDataTable table) {
         var filter = new TableFilter.Builder() //
             .withFromRowIndex(rowIdx)//
-            .withToRowIndex(rowIdx + 1)//
+            .withToRowIndex(rowIdx + 1L)//
             .withMaterializeColumnIndices(colIdx)//
             .build();
         return table.cursor(filter);

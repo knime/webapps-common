@@ -59,7 +59,9 @@ import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.webui.node.DataServiceManager;
 import org.knime.core.webui.node.NodeWrapper;
+import org.knime.core.webui.node.PagePathSegments;
 import org.knime.core.webui.node.PageResourceManager;
+import org.knime.core.webui.node.PageResourceManager.CreatedPage;
 import org.knime.core.webui.node.PageResourceManager.PageType;
 import org.knime.core.webui.node.util.NodeCleanUpCallback;
 
@@ -76,8 +78,8 @@ public final class NodeDialogManager {
 
     private final Map<NodeContainer, NodeDialogAdapter> m_nodeDialogAdapterMap = new WeakHashMap<>();
 
-    private final PageResourceManager<NodeWrapper> m_pageResourceManager =
-        new PageResourceManager<>(PageType.DIALOG, nw -> getNodeDialog(nw.get()).getPage());
+    private final PageResourceManager<NodeWrapper> m_pageResourceManager = new PageResourceManager<>(PageType.DIALOG,
+        nw -> new CreatedPage(getNodeDialog(nw.get()).getPage(), PagePathSegments.getStaticPageId(nw.get())));
 
     private final DataServiceManager<NodeWrapper> m_dataServiceManager =
         new DataServiceManager<>(nw -> getNodeDialog(nw.get()));

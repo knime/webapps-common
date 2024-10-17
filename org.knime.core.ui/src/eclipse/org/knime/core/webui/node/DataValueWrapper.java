@@ -53,7 +53,6 @@ import java.util.function.Supplier;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.knime.core.data.DataValue;
 import org.knime.core.node.workflow.NodeContainer;
-import org.knime.core.webui.node.view.table.datavalue.DataValueViewManager;
 
 import com.google.common.base.Objects;
 
@@ -79,11 +78,6 @@ public interface DataValueWrapper extends NodeWrapper {
             @Override
             public NodeContainer get() {
                 return nc;
-            }
-
-            @Override
-            public String getNodeWrapperTypeId() {
-                return DataValueViewManager.getInstance().getChosenType(this).map(Class::getName).orElseThrow();
             }
 
             @Override

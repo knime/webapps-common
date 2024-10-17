@@ -52,6 +52,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.knime.core.webui.node.PageResourceManager.CreatedPage;
 import org.knime.core.webui.node.PageResourceManager.PageType;
 import org.knime.core.webui.node.util.NodeCleanUpCallback;
 import org.knime.core.webui.page.Page;
@@ -94,10 +95,10 @@ final class PageCache<N extends NodeWrapper> {
          * @param reusablePageId
          * @return the page-id
          */
-        String determinePageId(final NodeWrapper nw, final String reusablePageId) {
+        String determinePageId(final NodeWrapper nw, final String staticPageId, final String reusablePageId) {
             return switch (this) {
                 case STATIC_REUSABLE -> reusablePageId;
-                case STATIC -> nw.getNodeWrapperTypeId();
+                case STATIC -> staticPageId;
                 case NON_STATIC -> determineNonStaticPageId(nw);
             };
         }
@@ -108,14 +109,17 @@ final class PageCache<N extends NodeWrapper> {
             if (nw instanceof NodePortWrapper npw) {
                 pageId += "_" + npw.getPortIdx() + "_" + npw.getViewIdx();
             }
+            if (nw instanceof DataValueWrapper dvw) {
+                pageId += "_" + dvw.getPortIdx() + "_" + dvw.getRowIdx() + "_" + dvw.getColIdx();
+            }
             return pageId;
         }
 
     }
 
-    private final Map<String, PageIdType> m_nodeWrapperTypeToPageIdTypeMap = new HashMap<>();
+    private final Map<String, PageIdType> m_staticPageIdToPageIdTypeMap = new HashMap<>();
 
-    private final Map<String, String> m_nodeWrapperTypeToReusablePageIdMap = new HashMap<>();
+    private final Map<String, String> m_staticPageIdToReusablePageIdMap = new HashMap<>();
 
     private final Map<String, Page> m_pageIdToPageMap = new HashMap<>();
 
@@ -128,27 +132,29 @@ final class PageCache<N extends NodeWrapper> {
      * @param cleanUpPageOnNodeStateChange
      * @return the page-id
      */
-    String getOrCreatePageAndReturnPageId(final N nodeWrapper, final Function<N, Page> pageCreator,
+    String getOrCreatePageAndReturnPageId(final N nodeWrapper, final Function<N, CreatedPage> pageCreator,
         final boolean cleanUpPageOnNodeStateChange) {
-        var pageId = getPageIdForNodeWrapper(nodeWrapper);
+        final var staticPageId = pageCreator.apply(nodeWrapper).staticPageId();
+        var pageId = getPageIdForNodeWrapper(staticPageId, nodeWrapper);
         if (pageId == null || getPage(pageId) == null) {
             pageId = createPageAndDeterminePageId(nodeWrapper, pageCreator, cleanUpPageOnNodeStateChange);
         }
         return pageId;
     }
 
-    private String getPageIdForNodeWrapper(final N nodeWrapper) {
-        var nodeWrapperTypeId = nodeWrapper.getNodeWrapperTypeId();
-        var pageIdType = m_nodeWrapperTypeToPageIdTypeMap.get(nodeWrapperTypeId);
+    private String getPageIdForNodeWrapper(final String staticPageId, final N nodeWrapper) {
+        var pageIdType = m_staticPageIdToPageIdTypeMap.get(staticPageId);
         if (pageIdType == null) {
             return null;
         }
-        return pageIdType.determinePageId(nodeWrapper, m_nodeWrapperTypeToReusablePageIdMap.get(nodeWrapperTypeId));
+        return pageIdType.determinePageId(nodeWrapper, staticPageId,
+            m_staticPageIdToReusablePageIdMap.get(staticPageId));
     }
 
-    private String createPageAndDeterminePageId(final N nodeWrapper, final Function<N, Page> pageCreator,
+    private String createPageAndDeterminePageId(final N nodeWrapper, final Function<N, CreatedPage> pageCreator,
         final boolean cleanUpPageOnNodeStateChange) {
-        var page = pageCreator.apply(nodeWrapper);
+        var createdPage = pageCreator.apply(nodeWrapper);
+        var page = createdPage.page();
         var reusablePageId = page.getPageIdForReusablePage().orElse(null);
         var isStatic = page.isCompletelyStatic();
         final PageIdType pageIdType;
@@ -158,12 +164,12 @@ final class PageCache<N extends NodeWrapper> {
             pageIdType = isStatic ? PageIdType.STATIC : PageIdType.NON_STATIC;
         }
 
-        var nodeWrapperTypeId = nodeWrapper.getNodeWrapperTypeId();
-        m_nodeWrapperTypeToPageIdTypeMap.put(nodeWrapperTypeId, pageIdType);
-        var pageId = pageIdType.determinePageId(nodeWrapper, reusablePageId);
+        var staticPageId = createdPage.staticPageId();
+        m_staticPageIdToPageIdTypeMap.put(staticPageId, pageIdType);
+        var pageId = pageIdType.determinePageId(nodeWrapper, staticPageId, reusablePageId);
         m_pageIdToPageMap.put(pageId, page);
         if (pageIdType == PageIdType.STATIC_REUSABLE) {
-            m_nodeWrapperTypeToReusablePageIdMap.put(nodeWrapperTypeId, pageId);
+            m_staticPageIdToReusablePageIdMap.put(staticPageId, pageId);
         }
 
         if (pageIdType == PageIdType.NON_STATIC) {
@@ -187,8 +193,8 @@ final class PageCache<N extends NodeWrapper> {
     }
 
     void clear() {
-        m_nodeWrapperTypeToPageIdTypeMap.clear();
-        m_nodeWrapperTypeToReusablePageIdMap.clear();
+        m_staticPageIdToPageIdTypeMap.clear();
+        m_staticPageIdToReusablePageIdMap.clear();
         m_pageIdToPageMap.clear();
     }
 

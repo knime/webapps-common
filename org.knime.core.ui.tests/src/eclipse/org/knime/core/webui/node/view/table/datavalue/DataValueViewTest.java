@@ -410,7 +410,8 @@ final class DataValueViewTest {
     private static void assertDataValueView(final DataValueWrapper dataValueWrapper,
         final String expectedExtractedValue) {
         final var dataValueView = INSTANCE.getDataValueView(dataValueWrapper);
-        assertThat(dataValueView).isInstanceOf(TestStringValueView.class);
-        assertThat(((TestStringValueView)dataValueView).hasValue(expectedExtractedValue)).isTrue();
+        assertThat(dataValueView.dataValueClass()).isEqualTo(StringValue.class);
+        assertThat(dataValueView.view()).isInstanceOf(TestStringValueView.class);
+        assertThat(((TestStringValueView)(dataValueView.view())).hasValue(expectedExtractedValue)).isTrue();
     }
 }

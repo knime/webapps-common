@@ -63,6 +63,7 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.webui.node.DataServiceManager;
 import org.knime.core.webui.node.NodePortWrapper;
 import org.knime.core.webui.node.PageResourceManager;
+import org.knime.core.webui.node.PageResourceManager.CreatedPage;
 import org.knime.core.webui.node.PageResourceManager.PageType;
 import org.knime.core.webui.node.util.NodeCleanUpCallback;
 import org.knime.core.webui.node.view.table.TableView;
@@ -80,16 +81,21 @@ public final class PortViewManager {
 
     private final Map<String, PortViews> m_portViews = new HashMap<>();
 
-    private final Map<NodePortWrapper, PortView> m_portViewMap = new WeakHashMap<>();
+    private record CreatedPortView(PortView view, Class<? extends PortObject> portObjectClass) {
+        CreatedPage toCreatedPage() {
+            return new CreatedPage(view.getPage(), portObjectClass.getName());
+        }
+    }
+
+    private final Map<NodePortWrapper, CreatedPortView> m_portViewMap = new WeakHashMap<>();
 
     private final PageResourceManager<NodePortWrapper> m_pageResourceManager =
-        new PageResourceManager<>(PageType.PORT, nw -> getPortView(nw).getPage(), null, null, true);
+        new PageResourceManager<>(PageType.PORT, nw -> getPortView(nw).toCreatedPage(), null, null, true);
 
     private final DataServiceManager<NodePortWrapper> m_dataServiceManager =
-        new DataServiceManager<>(nw -> getPortView(nw), true);
+        new DataServiceManager<>(nw -> getPortView(nw).view(), true);
 
     private final TableViewManager<NodePortWrapper> m_tableViewManager = new TableViewManager<>(this::getTableView);
-
 
     /**
      * Associate a {@link PortType} with one or several {@link PortViewDescriptor}s.
@@ -197,8 +203,8 @@ public final class PortViewManager {
      * @return a (new) port view instance
      * @throws NoSuchElementException if there is no port view for the given node-port combination
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    PortView getPortView(final NodePortWrapper nodePortWrapper) {
+    @SuppressWarnings({"unchecked"})
+    CreatedPortView getPortView(final NodePortWrapper nodePortWrapper) {
         var portView = m_portViewMap.get(nodePortWrapper); // NOSONAR
         if (portView != null) {
             return portView;
@@ -225,25 +231,25 @@ public final class PortViewManager {
                 throw new NoSuchElementException("Port view factory is of unexpected type");
             }
 
-            m_portViewMap.put(nodePortWrapper, view);
+            final var createdPortView = new CreatedPortView(view, portType.getPortObjectClass());
+            m_portViewMap.put(nodePortWrapper, createdPortView);
 
-            NodeCleanUpCallback.builder(nc, () -> m_portViewMap.remove(nodePortWrapper))
-                    .cleanUpOnNodeStateChange(true).build();
-            return view;
+            NodeCleanUpCallback.builder(nc, () -> m_portViewMap.remove(nodePortWrapper)).cleanUpOnNodeStateChange(true)
+                .build();
+            return createdPortView;
         } finally {
             PortContext.removeLastContext();
         }
     }
 
     private TableView getTableView(final NodePortWrapper n) {
-        var nodeView = getPortView(n);
+        var nodeView = getPortView(n).view();
         if (nodeView instanceof TableView tv) {
             return tv;
         } else {
             return null;
         }
     }
-
 
     /**
      * @return the {@link DataServiceManager} instance

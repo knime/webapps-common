@@ -48,6 +48,10 @@
  */
 package org.knime.core.webui.node;
 
+import org.knime.core.node.workflow.NativeNodeContainer;
+import org.knime.core.node.workflow.NodeContainer;
+import org.knime.core.node.workflow.SubNodeContainer;
+import org.knime.core.webui.node.NodeWrapper.CustomNodeWrapperTypeIdProvider;
 import org.knime.core.webui.node.PageCache.PageIdType;
 import org.knime.core.webui.page.Page;
 
@@ -67,5 +71,24 @@ import org.knime.core.webui.page.Page;
  * @param relativePagePath the relative path to the actual page(-resource)
  */
 public record PagePathSegments(String pathPrefix, String pageId, String pageContentId, String relativePagePath) {
+
+    /**
+     * @param nodeContainer the node container for which to create the id.
+     * @return an id uniquely identifying the node container to be used as pageId in case of a static page.
+     */
+    public static String getStaticPageId(final NodeContainer nodeContainer) {
+        if (nodeContainer instanceof NativeNodeContainer nnc) {
+            var factory = nnc.getNode().getFactory();
+            if (factory instanceof CustomNodeWrapperTypeIdProvider p) {
+                return p.getNodeWrapperTypeId(nnc);
+            } else {
+                return factory.getClass().getName();
+            }
+        } else if (nodeContainer instanceof SubNodeContainer snc) {
+            return snc.getClass().getName();
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
 
 }

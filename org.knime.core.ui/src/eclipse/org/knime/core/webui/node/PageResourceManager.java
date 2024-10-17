@@ -130,7 +130,18 @@ public final class PageResourceManager<N extends NodeWrapper> {
 
     private final String m_nodeDebugUrlProp;
 
-    private final Function<N, Page> m_createPage;
+    /**
+     * Whenever we create a page, we additionally need an id to identify it. This id is used as a key for caching and
+     * also as part of the pages url in case of completely static non-reusable pages.
+     *
+     * @param page
+     * @param staticPageId used for caching and as page id in case the page is static and non-reusable
+     * @author Paul Bärnreuther
+     */
+    public record CreatedPage(Page page, String staticPageId) {
+    }
+
+    private final Function<N, CreatedPage> m_createPage;
 
     private final BiFunction<N, PagePathSegments, PagePathSegments> m_modifyPagePathSegments;
 
@@ -147,18 +158,19 @@ public final class PageResourceManager<N extends NodeWrapper> {
      * @param pageType
      * @param createPage function that creates a new page for a given node wrapper
      */
-    public PageResourceManager(final PageType pageType, final Function<N, Page> createPage) {
+    public PageResourceManager(final PageType pageType, final Function<N, CreatedPage> createPage) {
         this(pageType, createPage, null, null, false);
     }
 
     /**
      * @param pageType
-     * @param createPage
+     * @param createPage a method to create the page together with an id in case it is completely static and not marked
+     *            as reusable.
      * @param modifyPagePathSegments optional function to modify the {@link PagePathSegments}; can be {@code null}
      * @param decomposePagePath an optional function to decompose the {@link PagePathSegments}; can be {@code null}
      * @param shouldCleanUpPageOnNodeStateChange whether to remove the page from the cache on node state change
      */
-    public PageResourceManager(final PageType pageType, final Function<N, Page> createPage,
+    public PageResourceManager(final PageType pageType, final Function<N, CreatedPage> createPage,
         final BiFunction<N, PagePathSegments, PagePathSegments> modifyPagePathSegments,
         final BiFunction<String, PagePathSegments, PagePathSegments> decomposePagePath,
         final boolean shouldCleanUpPageOnNodeStateChange) {

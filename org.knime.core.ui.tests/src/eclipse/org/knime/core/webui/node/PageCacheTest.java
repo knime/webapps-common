@@ -59,6 +59,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.core.webui.node.PageResourceManager.CreatedPage;
 import org.knime.core.webui.page.Page;
 import org.knime.core.webui.page.PageTest;
 import org.knime.testing.node.view.NodeViewNodeFactory;
@@ -88,6 +89,10 @@ class PageCacheTest {
         WorkflowManagerUtil.disposeWorkflow(m_wfm);
     }
 
+    CreatedPage createPage(final Page page) {
+        return new CreatedPage(page, "static_page_id");
+    }
+
     @Test
     void testGetPageIdAndPage() throws IOException {
         var pageCache = new PageCache<NodeWrapper>();
@@ -95,16 +100,16 @@ class PageCacheTest {
         assertThat(pageCache.getPage("random_id")).isNull();
 
         var nodeWrapperMock = mock(NodeWrapper.class);
-        when(nodeWrapperMock.getNodeWrapperTypeId()).thenReturn("nodeWrapperTypeId");
         when(nodeWrapperMock.get()).thenReturn(m_nnc);
 
         /* non-static page checks */
 
         var nonStaticPage = Page.builder(() -> "test", "page.html").build();
-        var nonStaticPageId = pageCache.getOrCreatePageAndReturnPageId(nodeWrapperMock, nw -> nonStaticPage, true);
+        var nonStaticPageId =
+            pageCache.getOrCreatePageAndReturnPageId(nodeWrapperMock, nw -> createPage(nonStaticPage), true);
         assertThat(pageCache.getPage(nonStaticPageId)).isSameAs(nonStaticPage);
         pageCache.getOrCreatePageAndReturnPageId(nodeWrapperMock,
-            nw -> Page.builder(() -> "test2", "page2.html").build(), true);
+            nw -> createPage(Page.builder(() -> "test2", "page2.html").build()), true);
         assertThat(pageCache.getPage(nonStaticPageId)).as("original non-static page is still in cache")
             .isSameAs(nonStaticPage);
         assertThat(nonStaticPageId).isEqualTo(m_nnc.getID().toString().replace(":", "_"));
@@ -118,10 +123,11 @@ class PageCacheTest {
         pageCache.clear();
         var staticPageBuilder = Page.builder(PageTest.BUNDLE_ID, "files", "component.js");
         var staticPage = staticPageBuilder.build();
-        var staticPageId = pageCache.getOrCreatePageAndReturnPageId(nodeWrapperMock, nw -> staticPage, true);
-        assertThat(staticPageId).isEqualTo("nodeWrapperTypeId");
+        var staticPageId =
+            pageCache.getOrCreatePageAndReturnPageId(nodeWrapperMock, nw -> createPage(staticPage), true);
+        assertThat(staticPageId).isEqualTo("static_page_id");
         assertThat(pageCache.getPage(staticPageId)).isSameAs(staticPage);
-        pageCache.getOrCreatePageAndReturnPageId(nodeWrapperMock, nw -> staticPageBuilder.build(), true);
+        pageCache.getOrCreatePageAndReturnPageId(nodeWrapperMock, nw -> createPage(staticPageBuilder.build()), true);
         assertThat(pageCache.getPage(staticPageId)).as("original static page is still in cache").isSameAs(staticPage);
         m_wfm.executeAllAndWaitUntilDone();
         m_wfm.resetAndConfigureAll();
@@ -133,11 +139,11 @@ class PageCacheTest {
         pageCache.clear();
         var reusableStaticPage = staticPageBuilder.markAsReusable("reusable_page_id").build();
         var reusableStaticPageId =
-            pageCache.getOrCreatePageAndReturnPageId(nodeWrapperMock, nw -> reusableStaticPage, true);
+            pageCache.getOrCreatePageAndReturnPageId(nodeWrapperMock, nw -> createPage(reusableStaticPage), true);
         assertThat(reusableStaticPageId).isEqualTo("reusable_page_id");
         assertThat(pageCache.getPage(reusableStaticPageId)).isSameAs(reusableStaticPage);
         pageCache.getOrCreatePageAndReturnPageId(nodeWrapperMock,
-            nw -> staticPageBuilder.markAsReusable("reusable_page_id").build(), true);
+            nw -> createPage(staticPageBuilder.markAsReusable("reusable_page_id").build()), true);
         assertThat(pageCache.getPage(reusableStaticPageId)).as("original reusable static page is still in cache")
             .isSameAs(reusableStaticPage);
         m_wfm.executeAllAndWaitUntilDone();

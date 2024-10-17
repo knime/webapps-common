@@ -54,7 +54,6 @@ import org.knime.core.node.NodeFactory;
 import org.knime.core.node.workflow.NativeNodeContainer;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.NodeContext;
-import org.knime.core.node.workflow.SubNodeContainer;
 import org.knime.core.webui.node.port.PortContext;
 
 /**
@@ -74,14 +73,9 @@ public interface NodeWrapper {
     NodeContainer get();
 
     /**
-     * @return a id representing the type of the node wrapper (which is independent from the node wrapper-instance).
-     *         E.g. the node type (~'data generator') or the port type (~'table').
-     */
-    String getNodeWrapperTypeId();
-
-    /**
      * Runs an operation within the context 'compatible' with this node wrapper (e.g. {@link NodeContext} or
      * {@link PortContext})
+     *
      * @param <T>
      *
      * @param supplier the operation to run
@@ -101,22 +95,6 @@ public interface NodeWrapper {
             @Override
             public NodeContainer get() {
                 return nc;
-            }
-
-            @Override
-            public String getNodeWrapperTypeId() {
-                if (nc instanceof NativeNodeContainer nnc) {
-                    var factory = nnc.getNode().getFactory();
-                    if (factory instanceof CustomNodeWrapperTypeIdProvider p) {
-                        return p.getNodeWrapperTypeId(nnc);
-                    } else {
-                        return factory.getClass().getName();
-                    }
-                } else if (nc instanceof SubNodeContainer snc) {
-                    return snc.getClass().getName();
-                } else {
-                    throw new UnsupportedOperationException();
-                }
             }
 
             @Override
