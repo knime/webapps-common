@@ -15,6 +15,8 @@ type UIExtensionAPILayer = Pick<
   | "onApplied"
   | "setControlsVisibility"
   | "sendAlert"
+  | "showDataValueView"
+  | "closeDataValueView"
 > & {
   /**
    * @returns the respective deregistration method
