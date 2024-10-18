@@ -1,18 +1,12 @@
-<script>
+<script lang="ts" setup>
+import { svgWithTitle } from "@knime/components";
 import ReloadIcon from "@knime/styles/img/icons/reload.svg";
 
-import svgWithTitle from "../SvgWithTitle/svgWithTitle";
-
-export default {
-  name: "LoadingIcon",
-  components: {
-    ReloadIcon: svgWithTitle(ReloadIcon, "Loading…"),
-  },
-};
+const ReloadIconWithTitle = svgWithTitle(ReloadIcon, "Loading…");
 </script>
 
 <template>
-  <ReloadIcon />
+  <ReloadIconWithTitle />
 </template>
 
 <style type="postcss" scoped>
