@@ -39,21 +39,16 @@ describe("Utils", () => {
   // eslint-disable-next-line vitest/consistent-test-it
   test("isModelSettingsAndHasNodeView", () => {
     const control = {
-      rootSchema: {
-        hasNodeView: true,
-      },
       uischema: {
         scope: "#/properties/model/blub",
       },
     };
-    expect(isModelSettingAndHasNodeView(control)).toBeTruthy();
+    expect(isModelSettingAndHasNodeView(control, true)).toBeTruthy();
 
-    control.rootSchema.hasNodeView = false;
-    expect(isModelSettingAndHasNodeView(control)).toBeFalsy();
+    expect(isModelSettingAndHasNodeView(control, false)).toBeFalsy();
 
-    control.rootSchema.hasNodeView = true;
     control.uischema.scope = "#/properties/view/blub";
-    expect(isModelSettingAndHasNodeView(control)).toBeFalsy();
+    expect(isModelSettingAndHasNodeView(control, true)).toBeFalsy();
   });
 
   it("returns true on ui_schema with advanced settings", () => {

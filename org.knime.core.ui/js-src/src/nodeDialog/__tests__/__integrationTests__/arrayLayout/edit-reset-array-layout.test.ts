@@ -82,25 +82,25 @@ describe("edit/reset button in array layouts", () => {
           },
         } as any,
       ],
-      globalUpdates: [
-        {
-          trigger: {
-            id: "ElementResetButton",
-            scopes: undefined,
-          },
-          dependencies: [
-            {
-              scopes: [
-                "#/properties/model/properties/values",
-                "#/properties/value",
-              ],
-              id: "dependencyId",
-            },
-          ],
-        },
-      ] as Update[],
-      initialUpdates: [] as UpdateResult[],
     },
+    globalUpdates: [
+      {
+        trigger: {
+          id: "ElementResetButton",
+          scopes: undefined,
+        },
+        dependencies: [
+          {
+            scopes: [
+              "#/properties/model/properties/values",
+              "#/properties/value",
+            ],
+            id: "dependencyId",
+          },
+        ],
+      },
+    ] as Update[],
+    initialUpdates: [] as UpdateResult[],
     flowVariableSettings: {},
   };
 

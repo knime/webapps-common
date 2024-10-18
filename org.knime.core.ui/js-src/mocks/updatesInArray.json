@@ -154,115 +154,109 @@
             }
           ]
         }
-      ],
-      "globalUpdates": [
-        {
-          "trigger": {
-            "scopes": [
-              "#/properties/view/properties/myArray",
-              "#/properties/a"
-            ],
-            "id": "Trigger_A"
-          },
-          "dependencies": [
-            {
-              "scopes": [
-                "#/properties/view/properties/myArray",
-                "#/properties/a"
-              ],
-              "id": "A_nested"
-            },
-            {
-              "scopes": [
-                "#/properties/view/properties/myArray",
-                "#/properties/b"
-              ],
-              "id": "B_nested"
-            }
-          ]
-        },
-        {
-          "trigger": {
-            "scopes": [
-              "#/properties/view/properties/myArray",
-              "#/properties/b"
-            ],
-            "id": "Trigger_B"
-          },
-          "dependencies": [
-            {
-              "scopes": [
-                "#/properties/view/properties/myArray",
-                "#/properties/a"
-              ],
-              "id": "A_nested"
-            },
-            {
-              "scopes": [
-                "#/properties/view/properties/myArray",
-                "#/properties/b"
-              ],
-              "id": "B_nested"
-            }
-          ]
-        },
-        {
-          "trigger": {
-            "scopes": [
-              "#/properties/view/properties/myArray",
-              "#/properties/nestedArray",
-              "#/properties/a"
-            ],
-            "id": "Trigger_A_nested"
-          },
-          "dependencies": [
-            {
-              "scopes": [
-                "#/properties/view/properties/myArray",
-                "#/properties/nestedArray",
-                "#/properties/a"
-              ],
-              "id": "A_nested_nested"
-            },
-            {
-              "scopes": [
-                "#/properties/view/properties/myArray",
-                "#/properties/nestedArray",
-                "#/properties/b"
-              ],
-              "id": "B_nested_nested"
-            }
-          ]
-        },
-        {
-          "trigger": {
-            "scopes": [
-              "#/properties/view/properties/myArray",
-              "#/properties/nestedArray",
-              "#/properties/b"
-            ],
-            "id": "Trigger_B_nested"
-          },
-          "dependencies": [
-            {
-              "scopes": [
-                "#/properties/view/properties/myArray",
-                "#/properties/nestedArray",
-                "#/properties/a"
-              ],
-              "id": "A_nested_nested"
-            },
-            {
-              "scopes": [
-                "#/properties/view/properties/myArray",
-                "#/properties/nestedArray",
-                "#/properties/b"
-              ],
-              "id": "B_nested_nested"
-            }
-          ]
-        }
       ]
-    }
+    },
+    "globalUpdates": [
+      {
+        "trigger": {
+          "scopes": ["#/properties/view/properties/myArray", "#/properties/a"],
+          "id": "Trigger_A"
+        },
+        "dependencies": [
+          {
+            "scopes": [
+              "#/properties/view/properties/myArray",
+              "#/properties/a"
+            ],
+            "id": "A_nested"
+          },
+          {
+            "scopes": [
+              "#/properties/view/properties/myArray",
+              "#/properties/b"
+            ],
+            "id": "B_nested"
+          }
+        ]
+      },
+      {
+        "trigger": {
+          "scopes": ["#/properties/view/properties/myArray", "#/properties/b"],
+          "id": "Trigger_B"
+        },
+        "dependencies": [
+          {
+            "scopes": [
+              "#/properties/view/properties/myArray",
+              "#/properties/a"
+            ],
+            "id": "A_nested"
+          },
+          {
+            "scopes": [
+              "#/properties/view/properties/myArray",
+              "#/properties/b"
+            ],
+            "id": "B_nested"
+          }
+        ]
+      },
+      {
+        "trigger": {
+          "scopes": [
+            "#/properties/view/properties/myArray",
+            "#/properties/nestedArray",
+            "#/properties/a"
+          ],
+          "id": "Trigger_A_nested"
+        },
+        "dependencies": [
+          {
+            "scopes": [
+              "#/properties/view/properties/myArray",
+              "#/properties/nestedArray",
+              "#/properties/a"
+            ],
+            "id": "A_nested_nested"
+          },
+          {
+            "scopes": [
+              "#/properties/view/properties/myArray",
+              "#/properties/nestedArray",
+              "#/properties/b"
+            ],
+            "id": "B_nested_nested"
+          }
+        ]
+      },
+      {
+        "trigger": {
+          "scopes": [
+            "#/properties/view/properties/myArray",
+            "#/properties/nestedArray",
+            "#/properties/b"
+          ],
+          "id": "Trigger_B_nested"
+        },
+        "dependencies": [
+          {
+            "scopes": [
+              "#/properties/view/properties/myArray",
+              "#/properties/nestedArray",
+              "#/properties/a"
+            ],
+            "id": "A_nested_nested"
+          },
+          {
+            "scopes": [
+              "#/properties/view/properties/myArray",
+              "#/properties/nestedArray",
+              "#/properties/b"
+            ],
+            "id": "B_nested_nested"
+          }
+        ]
+      }
+    ]
   }
 }

@@ -511,111 +511,111 @@
           "format" : "checkbox"
         }
       } ]
-    } ],
-    "persist" : {
-      "type" : "object",
-      "properties" : {
-        "view" : {
-          "type" : "object",
-          "properties" : {
-            "displayedColumns" : {
-              "type" : "object",
-              "properties" : {
-                "selected" : {
-                  "configPaths" : [ ]
-                },
-                "mode" : { },
-                "patternFilter" : {
-                  "type" : "object",
-                  "properties" : {
-                    "pattern" : { },
-                    "isCaseSensitive" : { },
-                    "isInverted" : { }
-                  }
-                },
-                "manualFilter" : {
-                  "type" : "object",
-                  "properties" : {
-                    "manuallySelected" : { },
-                    "manuallyDeselected" : { },
-                    "includeUnknownColumns" : { }
-                  }
-                },
-                "typeFilter" : {
-                  "type" : "object",
-                  "properties" : {
-                    "selectedTypes" : { },
-                    "typeDisplays" : {
-                      "type" : "array",
-                      "configPaths" : [ ],
-                      "items" : {
-                        "type" : "object",
-                        "properties" : {
-                          "id" : { },
-                          "text" : { }
-                        }
+    } ]
+  },
+  "persist" : {
+    "type" : "object",
+    "properties" : {
+      "view" : {
+        "type" : "object",
+        "properties" : {
+          "displayedColumns" : {
+            "type" : "object",
+            "properties" : {
+              "selected" : {
+                "configPaths" : [ ]
+              },
+              "mode" : { },
+              "patternFilter" : {
+                "type" : "object",
+                "properties" : {
+                  "pattern" : { },
+                  "isCaseSensitive" : { },
+                  "isInverted" : { }
+                }
+              },
+              "manualFilter" : {
+                "type" : "object",
+                "properties" : {
+                  "manuallySelected" : { },
+                  "manuallyDeselected" : { },
+                  "includeUnknownColumns" : { }
+                }
+              },
+              "typeFilter" : {
+                "type" : "object",
+                "properties" : {
+                  "selectedTypes" : { },
+                  "typeDisplays" : {
+                    "type" : "array",
+                    "configPaths" : [ ],
+                    "items" : {
+                      "type" : "object",
+                      "properties" : {
+                        "id" : { },
+                        "text" : { }
                       }
                     }
                   }
                 }
               }
-            },
-            "showRowIndices" : { },
-            "showRowKeys" : { },
-            "title" : { },
-            "showTableSize" : { },
-            "showColumnDataType" : { },
-            "enablePagination" : { },
-            "pageSize" : { },
-            "autoSizeColumnsToContent" : { },
-            "rowHeightMode" : {
-              "configKey" : "rowHeightModeV2",
-              "deprecatedConfigKeys" : [ {
-                "new" : [ [ "rowHeightModeV2" ] ],
-                "deprecated" : [ ]
-              }, {
-                "new" : [ [ "rowHeightModeV2" ] ],
-                "deprecated" : [ [ "compactMode" ] ]
-              }, {
-                "new" : [ [ "rowHeightModeV2" ] ],
-                "deprecated" : [ [ "rowHeightMode" ] ]
-              } ]
-            },
-            "customRowHeight" : {
-              "deprecatedConfigKeys" : [ {
-                "new" : [ [ "customRowHeight" ] ],
-                "deprecated" : [ ]
-              }, {
-                "new" : [ [ "customRowHeight" ] ],
-                "deprecated" : [ [ "compactMode" ] ]
-              }, {
-                "new" : [ [ "customRowHeight" ] ],
-                "deprecated" : [ [ "rowHeightMode" ] ]
-              } ]
-            },
-            "verticalPaddingMode" : {
-              "deprecatedConfigKeys" : [ {
-                "new" : [ [ "verticalPaddingMode" ] ],
-                "deprecated" : [ ]
-              }, {
-                "new" : [ [ "verticalPaddingMode" ] ],
-                "deprecated" : [ [ "compactMode" ] ]
-              }, {
-                "new" : [ [ "verticalPaddingMode" ] ],
-                "deprecated" : [ [ "rowHeightMode" ] ]
-              } ]
-            },
-            "enableGlobalSearch" : { },
-            "enableColumnSearch" : { },
-            "enableSortingByHeader" : { },
-            "enableRendererSelection" : { },
-            "enableCellCopying" : { },
-            "selectionMode" : { },
-            "showOnlySelectedRows" : { },
-            "showOnlySelectedRowsConfigurable" : { },
-            "skipRemainingColumns" : {
-              "configPaths" : [ ]
             }
+          },
+          "showRowIndices" : { },
+          "showRowKeys" : { },
+          "title" : { },
+          "showTableSize" : { },
+          "showColumnDataType" : { },
+          "enablePagination" : { },
+          "pageSize" : { },
+          "autoSizeColumnsToContent" : { },
+          "rowHeightMode" : {
+            "configKey" : "rowHeightModeV2",
+            "deprecatedConfigKeys" : [ {
+              "new" : [ [ "rowHeightModeV2" ] ],
+              "deprecated" : [ ]
+            }, {
+              "new" : [ [ "rowHeightModeV2" ] ],
+              "deprecated" : [ [ "compactMode" ] ]
+            }, {
+              "new" : [ [ "rowHeightModeV2" ] ],
+              "deprecated" : [ [ "rowHeightMode" ] ]
+            } ]
+          },
+          "customRowHeight" : {
+            "deprecatedConfigKeys" : [ {
+              "new" : [ [ "customRowHeight" ] ],
+              "deprecated" : [ ]
+            }, {
+              "new" : [ [ "customRowHeight" ] ],
+              "deprecated" : [ [ "compactMode" ] ]
+            }, {
+              "new" : [ [ "customRowHeight" ] ],
+              "deprecated" : [ [ "rowHeightMode" ] ]
+            } ]
+          },
+          "verticalPaddingMode" : {
+            "deprecatedConfigKeys" : [ {
+              "new" : [ [ "verticalPaddingMode" ] ],
+              "deprecated" : [ ]
+            }, {
+              "new" : [ [ "verticalPaddingMode" ] ],
+              "deprecated" : [ [ "compactMode" ] ]
+            }, {
+              "new" : [ [ "verticalPaddingMode" ] ],
+              "deprecated" : [ [ "rowHeightMode" ] ]
+            } ]
+          },
+          "enableGlobalSearch" : { },
+          "enableColumnSearch" : { },
+          "enableSortingByHeader" : { },
+          "enableRendererSelection" : { },
+          "enableCellCopying" : { },
+          "selectionMode" : { },
+          "showOnlySelectedRows" : { },
+          "showOnlySelectedRowsConfigurable" : { },
+          "skipRemainingColumns" : {
+            "configPaths" : [ ]
           }
         }
       }

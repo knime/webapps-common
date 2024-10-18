@@ -59,7 +59,6 @@ import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsSettingsImpl;
 
 /**
  * This class can be used to transform {@link NodeSettings} first to {@link DefaultNodeSettings} and then further to
@@ -68,9 +67,9 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsSetting
  *
  * @author Paul Bärnreuther
  */
-public final class NodeSettingsToJsonFormsSettings {
+public final class NodeSettingsToDefaultNodeSettings {
 
-    private static final NodeLogger LOGGER = NodeLogger.getLogger(NodeSettingsToJsonFormsSettings.class);
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(NodeSettingsToDefaultNodeSettings.class);
 
     private final DefaultNodeSettingsContext m_context;
 
@@ -80,7 +79,7 @@ public final class NodeSettingsToJsonFormsSettings {
      * @param context
      * @param settingsClasses a map associating settings types with {@link DefaultNodeSettings}
      */
-    public NodeSettingsToJsonFormsSettings(final DefaultNodeSettingsContext context,
+    public NodeSettingsToDefaultNodeSettings(final DefaultNodeSettingsContext context,
         final Map<SettingsType, Class<? extends DefaultNodeSettings>> settingsClasses) {
         m_settingsClasses = settingsClasses;
         m_context = context;
@@ -94,10 +93,10 @@ public final class NodeSettingsToJsonFormsSettings {
      * @throws InvalidSettingsException if the intermediate transformation of the settings to
      *             {@link DefaultNodeSettings} failed.
      */
-    public JsonFormsSettings nodeSettingsToJsonFormsSettings(final Map<SettingsType, NodeSettingsRO> settings)
-        throws InvalidSettingsException {
+    public Map<SettingsType, DefaultNodeSettings> nodeSettingsToDefaultNodeSettings(
+        final Map<SettingsType, NodeSettingsRO> settings) throws InvalidSettingsException {
         try {
-            return allNodeSettingsToJsonFormsSettings(settings, this::fromNodeSettingsToDefaultNodeSettings);
+            return allNodeSettingsToDefaultNodeSettings(settings, this::fromNodeSettingsToDefaultNodeSettings);
         } catch (GetSettings.UncheckedExceptionCausedByInvalidSettings ex) { //NOSONAR
             throw ex.getInvalidSettingsException();
         }
@@ -110,20 +109,21 @@ public final class NodeSettingsToJsonFormsSettings {
      * @param settings
      * @return the JSON forms representation of the settings
      */
-    public JsonFormsSettings
-        nodeSettingsToJsonFormsSettingsOrDefault(final Map<SettingsType, NodeSettingsRO> settings) {
-        return allNodeSettingsToJsonFormsSettings(settings, this::fromNodeSettingsToDefaultNodeSettingsOrDefault);
+    public Map<SettingsType, DefaultNodeSettings>
+        nodeSettingsToDefaultNodeSettingsOrDefault(final Map<SettingsType, NodeSettingsRO> settings) {
+        return allNodeSettingsToDefaultNodeSettings(settings, this::fromNodeSettingsToDefaultNodeSettingsOrDefault);
     }
 
-    private JsonFormsSettings allNodeSettingsToJsonFormsSettings(final Map<SettingsType, NodeSettingsRO> settings,
-        final GetSettings getSettings) throws GetSettings.UncheckedExceptionCausedByInvalidSettings {
+    private static Map<SettingsType, DefaultNodeSettings> allNodeSettingsToDefaultNodeSettings(
+        final Map<SettingsType, NodeSettingsRO> settings, final GetSettings getSettings)
+        throws GetSettings.UncheckedExceptionCausedByInvalidSettings {
         final Map<SettingsType, DefaultNodeSettings> loadedSettings = new HashMap<>();
         for (var entry : settings.entrySet()) {
             final var type = entry.getKey();
             final var nodeSettings = entry.getValue();
             loadedSettings.put(type, getSettings.getDefaultNodeSettingsUnchecked(type, nodeSettings));
         }
-        return new JsonFormsSettingsImpl(loadedSettings, m_context);
+        return loadedSettings;
     }
 
     private DefaultNodeSettings fromNodeSettingsToDefaultNodeSettings(final SettingsType type,

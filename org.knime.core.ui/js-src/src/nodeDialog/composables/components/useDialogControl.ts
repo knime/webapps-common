@@ -8,9 +8,13 @@ import { SettingComparator } from "@knime/ui-extension-service";
 import { Stringifyable } from "./JsonSettingsComparator";
 import { useDirtySetting } from "./useDirtySetting";
 import { FlowSettings } from "@/nodeDialog/api/types";
+import { injectHasNodeView } from "./useHasNodeView";
 
 export const useTriggersReexecution = (control: Ref<Control>) => {
-  return computed(() => Boolean(isModelSettingAndHasNodeView(control.value)));
+  const hasNodeView = injectHasNodeView();
+  return computed(() =>
+    Boolean(isModelSettingAndHasNodeView(control.value, hasNodeView.value)),
+  );
 };
 
 export interface DialogControl<T = any> {

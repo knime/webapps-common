@@ -101,14 +101,14 @@ describe("flow variables", () => {
             type: "Control",
           },
         ],
-        persist: {
-          type: "object",
-          properties: {
-            model: {
-              type: "object",
-              properties: {
-                value: { configPaths: [["customConfigKey"]] },
-              },
+      },
+      persist: {
+        type: "object",
+        properties: {
+          model: {
+            type: "object",
+            properties: {
+              value: { configPaths: [["customConfigKey"]] },
             },
           },
         },

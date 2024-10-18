@@ -15,6 +15,7 @@ import * as jsonformsVueModule from "@jsonforms/vue";
 import { getPossibleValuesFromUiSchema } from "@/nodeDialog/utils";
 import { reactive, ref } from "vue";
 import { createPersistSchema } from "./createPersistSchema";
+import { injectionKey as hasNodeViewInjectionKey } from "@/nodeDialog/composables/components/useHasNodeView";
 
 export const mountJsonFormsComponent = (
   component,
@@ -139,6 +140,7 @@ export const mountJsonFormsComponent = (
         isTriggerActive,
         flowVariablesApi,
         [flowVarMapKey]: flowVariablesMap,
+        [hasNodeViewInjectionKey]: ref(true),
         getPersistSchema: vi.fn(
           () => persistSchemaMock ?? defaultPersistSchema,
         ),
@@ -221,7 +223,5 @@ export const getControlBase = (path) => ({
     properties: {
       [path]: {},
     },
-    hasNodeView: true,
-    flowVariablesMap: {},
   },
 });

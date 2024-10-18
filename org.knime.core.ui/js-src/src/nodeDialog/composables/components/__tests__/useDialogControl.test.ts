@@ -18,6 +18,7 @@ import { injectionKey as injectionKeyFromUseDirtySettings } from "@/nodeDialog/c
 import { injectionKey as injectionKeyAddedArrayLayoutElements } from "../useAddedArrayLayoutItem";
 import flushPromises from "flush-promises";
 import { injectionKey as flowVarMapKey } from "@/nodeDialog/composables/components/useProvidedFlowVariablesMap";
+import { injectionKey as injectionKeyHasNodeView } from "@/nodeDialog/composables/components/useHasNodeView";
 
 describe("useDialogControl", () => {
   const props: any = "foo";
@@ -49,9 +50,7 @@ describe("useDialogControl", () => {
       data: initialValue,
       schema: {} as any,
       renderers: [],
-      rootSchema: {
-        hasNodeView: true,
-      } as any,
+      rootSchema: {} as any,
       id: "",
       description: "",
       label: "",
@@ -92,6 +91,7 @@ describe("useDialogControl", () => {
       props: { props },
       global: {
         provide: {
+          [injectionKeyHasNodeView as symbol]: ref(true),
           [injectionKeyFromUseDirtySettings as symbol]: {
             constructSettingState,
             getSettingState,

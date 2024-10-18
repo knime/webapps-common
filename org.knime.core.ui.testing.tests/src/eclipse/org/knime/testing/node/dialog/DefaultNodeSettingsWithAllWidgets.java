@@ -58,7 +58,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.ColumnFilter;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
-import org.knime.core.webui.node.dialog.defaultdialog.setting.filechooser.FileChooser;
+import org.knime.core.webui.node.dialog.defaultdialog.setting.fileselection.FileSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.button.SimpleButtonWidget;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.dynamic.DynamicValuesInput;
@@ -75,7 +75,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.ValueProvid
 class DefaultNodeSettingsWithAllWidgets implements DefaultNodeSettings {
 
     @Widget(title = "File Chooser", description = "")
-    FileChooser m_fileChooser = new FileChooser();
+    FileSelection m_fileSelection = new FileSelection();
 
     @Widget(title = "Credentials", description = "")
     Credentials m_credentials;

@@ -57,18 +57,18 @@
       "options" : {
         "format" : "checkbox"
       }
-    } ],
-    "persist" : {
-      "type" : "object",
-      "properties" : {
-        "view" : {
-          "type" : "object",
-          "properties" : {
-            "title" : { },
-            "altText" : { },
-            "caption" : { },
-            "shrinkToFit" : { }
-          }
+    } ]
+  },
+  "persist" : {
+    "type" : "object",
+    "properties" : {
+      "view" : {
+        "type" : "object",
+        "properties" : {
+          "title" : { },
+          "altText" : { },
+          "caption" : { },
+          "shrinkToFit" : { }
         }
       }
     }

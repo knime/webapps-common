@@ -112,76 +112,76 @@
             }
           ]
         }
-      ],
-      "globalUpdates": [
-        {
-          "trigger": {
-            "scopes": ["#/properties/view/properties/a"],
-            "id": "Trigger_A"
-          },
-          "dependencies": [
-            {
-              "scopes": ["#/properties/view/properties/a"],
-              "id": "A"
-            },
-            {
-              "scopes": ["#/properties/view/properties/b"],
-              "id": "B"
-            }
-          ]
-        },
-        {
-          "trigger": {
-            "scopes": ["#/properties/view/properties/b"],
-            "id": "Trigger_B"
-          },
-          "dependencies": [
-            {
-              "scopes": ["#/properties/view/properties/a"],
-              "id": "A"
-            },
-            {
-              "scopes": ["#/properties/view/properties/b"],
-              "id": "B"
-            }
-          ]
-        },
-        {
-          "trigger": {
-            "scopes": ["#/properties/view/properties/updatedByA"],
-            "id": "Trigger_Updated_By_A"
-          },
-          "dependencies": [
-            {
-              "scopes": ["#/properties/view/properties/updatedByA"],
-              "id": "UpdatedByA"
-            }
-          ]
-        },
-        {
-          "trigger": {
-            "id": "Trigger_Button"
-          },
-          "dependencies": [
-            {
-              "scopes": ["#/properties/view/properties/b"],
-              "id": "B"
-            }
-          ]
-        },
-        {
-          "trigger": {
-            "scopes": ["#/properties/view/properties/updatedByB"],
-            "id": "Trigger_Updated_By_B"
-          },
-          "dependencies": [
-            {
-              "scopes": ["#/properties/view/properties/updatedByB"],
-              "id": "UpdatedByB"
-            }
-          ]
-        }
       ]
-    }
+    },
+    "globalUpdates": [
+      {
+        "trigger": {
+          "scopes": ["#/properties/view/properties/a"],
+          "id": "Trigger_A"
+        },
+        "dependencies": [
+          {
+            "scopes": ["#/properties/view/properties/a"],
+            "id": "A"
+          },
+          {
+            "scopes": ["#/properties/view/properties/b"],
+            "id": "B"
+          }
+        ]
+      },
+      {
+        "trigger": {
+          "scopes": ["#/properties/view/properties/b"],
+          "id": "Trigger_B"
+        },
+        "dependencies": [
+          {
+            "scopes": ["#/properties/view/properties/a"],
+            "id": "A"
+          },
+          {
+            "scopes": ["#/properties/view/properties/b"],
+            "id": "B"
+          }
+        ]
+      },
+      {
+        "trigger": {
+          "scopes": ["#/properties/view/properties/updatedByA"],
+          "id": "Trigger_Updated_By_A"
+        },
+        "dependencies": [
+          {
+            "scopes": ["#/properties/view/properties/updatedByA"],
+            "id": "UpdatedByA"
+          }
+        ]
+      },
+      {
+        "trigger": {
+          "id": "Trigger_Button"
+        },
+        "dependencies": [
+          {
+            "scopes": ["#/properties/view/properties/b"],
+            "id": "B"
+          }
+        ]
+      },
+      {
+        "trigger": {
+          "scopes": ["#/properties/view/properties/updatedByB"],
+          "id": "Trigger_Updated_By_B"
+        },
+        "dependencies": [
+          {
+            "scopes": ["#/properties/view/properties/updatedByB"],
+            "id": "UpdatedByB"
+          }
+        ]
+      }
+    ]
   }
 }

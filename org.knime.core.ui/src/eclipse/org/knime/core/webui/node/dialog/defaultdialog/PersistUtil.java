@@ -46,7 +46,7 @@
  * History
  *   Oct 4, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
+package org.knime.core.webui.node.dialog.defaultdialog;
 
 import java.util.Arrays;
 import java.util.List;
@@ -61,16 +61,18 @@ import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSet
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.ConfigKeyUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.persisttree.PersistTreeFactory;
 import org.knime.core.webui.node.dialog.defaultdialog.tree.ArrayParentNode;
 import org.knime.core.webui.node.dialog.defaultdialog.tree.LeafNode;
 import org.knime.core.webui.node.dialog.defaultdialog.tree.Tree;
 import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeNode;
+import org.knime.core.webui.node.dialog.defaultdialog.util.SettingsTypeMapUtil;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * For adding the "persist" object to the UI schema
+ * For adding a representation of the settings persist structure to an ObjectNode
  *
  * @author Paul Bärnreuther
  */
@@ -85,15 +87,29 @@ public final class PersistUtil {
      * {@link Persist @Persist} annotations and deviations of the {@link PersistableSettings} structure from the
      * {@link WidgetGroup} structure.
      *
-     * @param uiSchema the parent object node to add to
+     * @param parentNode the parent object node to add to
      * @param persistTrees the persist trees to parse
      */
-    public static void addPersist(final ObjectNode uiSchema,
+    static void addPersist(final ObjectNode parentNode,
         final Map<SettingsType, Tree<PersistableSettings>> persistTrees) {
-        final var persist = uiSchema.putObject("persist");
+        final var persist = parentNode.putObject("persist");
         final var properties = getObjectProperties(persist);
         persistTrees.entrySet()
             .forEach(entry -> addPersist(properties.putObject(entry.getKey().getConfigKey()), entry.getValue()));
+    }
+
+    /**
+     * public and only used for tests
+     *
+     * @param parentNode
+     * @param settings
+     */
+    public static void constructTreesAndAddPersist(final ObjectNode parentNode,
+        final Map<SettingsType, DefaultNodeSettings> settings) {
+        final var persistTreeFactory = new PersistTreeFactory();
+        final var persistTrees =
+            SettingsTypeMapUtil.map(settings, (type, s) -> persistTreeFactory.createTree(s.getClass(), type));
+        addPersist(parentNode, persistTrees);
     }
 
     private static void addPersist(final ObjectNode objectNode, final Tree<PersistableSettings> persistTree) {
@@ -168,9 +184,9 @@ public final class PersistUtil {
 
     private static String validateKey(final String key) {
         if (key.contains(".")) {
-            throw new IllegalArgumentException("Config key must not contain dots. "
-                + "If nested config keys are required, use getConfigPaths instead of getConfigKeys." + " Config key: "
-                + key);
+            throw new IllegalArgumentException(
+                "Config key must not contain dots. If nested config keys are required, use getConfigPaths instead "
+                    + "of getConfigKeys. Config key: " + key);
         }
         return key;
     }

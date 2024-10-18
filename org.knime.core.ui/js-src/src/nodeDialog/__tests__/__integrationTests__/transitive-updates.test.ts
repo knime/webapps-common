@@ -181,12 +181,12 @@ describe("updates in array layouts", () => {
         },
         [uiSchemaKey]: {
           elements: elementUiSchema,
-          globalUpdates: getGlobalUpdates({
-            getScopes,
-            withInitialTrigger: true,
-          }),
-          initialUpdates: [] as UpdateResult[],
         },
+        globalUpdates: getGlobalUpdates({
+          getScopes,
+          withInitialTrigger: true,
+        }),
+        initialUpdates: [] as UpdateResult[],
         flowVariableSettings: {},
       },
       getScopes,
@@ -256,12 +256,12 @@ describe("updates in array layouts", () => {
               },
             },
           ],
-          globalUpdates: getGlobalUpdates({
-            getScopes,
-            withInitialTrigger: false,
-          }),
-          initialUpdates: [] as UpdateResult[],
         },
+        globalUpdates: getGlobalUpdates({
+          getScopes,
+          withInitialTrigger: false,
+        }),
+        initialUpdates: [] as UpdateResult[],
         flowVariableSettings: {},
       },
       getScopes,

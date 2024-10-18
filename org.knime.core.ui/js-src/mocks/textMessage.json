@@ -67,122 +67,122 @@
             }
           ]
         }
-      ],
-      "initialUpdates": [
-        {
-          "id": "textMessageProvider",
-          "values": [
-            {
-              "indices": [],
-              "value": {
-                "type": "INFO",
-                "title": "Title",
-                "description": "Description"
-              }
-            }
-          ],
-          "scopes": null
-        }
-      ],
-      "globalUpdates": [
-        {
-          "trigger": {
-            "scopes": ["#/properties/title"],
-            "id": "textMessage.json"
-          },
-          "dependencies": [
-            {
-              "scopes": ["#/properties/title"],
-              "id": "title"
-            },
-            {
-              "scopes": ["#/properties/description"],
-              "id": "description"
-            },
-            {
-              "scopes": ["#/properties/type"],
-              "id": "type"
-            },
-            {
-              "scopes": ["#/properties/show"],
-              "id": "show"
-            }
-          ]
-        },
-        {
-          "trigger": {
-            "scopes": ["#/properties/description"],
-            "id": "textMessage.json"
-          },
-          "dependencies": [
-            {
-              "scopes": ["#/properties/title"],
-              "id": "title"
-            },
-            {
-              "scopes": ["#/properties/description"],
-              "id": "description"
-            },
-            {
-              "scopes": ["#/properties/type"],
-              "id": "type"
-            },
-            {
-              "scopes": ["#/properties/show"],
-              "id": "show"
-            }
-          ]
-        },
-        {
-          "trigger": {
-            "scopes": ["#/properties/type"],
-            "id": "textMessage.json"
-          },
-          "dependencies": [
-            {
-              "scopes": ["#/properties/title"],
-              "id": "title"
-            },
-            {
-              "scopes": ["#/properties/description"],
-              "id": "description"
-            },
-            {
-              "scopes": ["#/properties/type"],
-              "id": "type"
-            },
-            {
-              "scopes": ["#/properties/show"],
-              "id": "show"
-            }
-          ]
-        },
-        {
-          "trigger": {
-            "scopes": ["#/properties/show"],
-            "id": "textMessage.json"
-          },
-          "dependencies": [
-            {
-              "scopes": ["#/properties/title"],
-              "id": "title"
-            },
-            {
-              "scopes": ["#/properties/description"],
-              "id": "description"
-            },
-            {
-              "scopes": ["#/properties/type"],
-              "id": "type"
-            },
-            {
-              "scopes": ["#/properties/show"],
-              "id": "show"
-            }
-          ]
-        }
       ]
     },
+    "initialUpdates": [
+      {
+        "id": "textMessageProvider",
+        "values": [
+          {
+            "indices": [],
+            "value": {
+              "type": "INFO",
+              "title": "Title",
+              "description": "Description"
+            }
+          }
+        ],
+        "scopes": null
+      }
+    ],
+    "globalUpdates": [
+      {
+        "trigger": {
+          "scopes": ["#/properties/title"],
+          "id": "textMessage.json"
+        },
+        "dependencies": [
+          {
+            "scopes": ["#/properties/title"],
+            "id": "title"
+          },
+          {
+            "scopes": ["#/properties/description"],
+            "id": "description"
+          },
+          {
+            "scopes": ["#/properties/type"],
+            "id": "type"
+          },
+          {
+            "scopes": ["#/properties/show"],
+            "id": "show"
+          }
+        ]
+      },
+      {
+        "trigger": {
+          "scopes": ["#/properties/description"],
+          "id": "textMessage.json"
+        },
+        "dependencies": [
+          {
+            "scopes": ["#/properties/title"],
+            "id": "title"
+          },
+          {
+            "scopes": ["#/properties/description"],
+            "id": "description"
+          },
+          {
+            "scopes": ["#/properties/type"],
+            "id": "type"
+          },
+          {
+            "scopes": ["#/properties/show"],
+            "id": "show"
+          }
+        ]
+      },
+      {
+        "trigger": {
+          "scopes": ["#/properties/type"],
+          "id": "textMessage.json"
+        },
+        "dependencies": [
+          {
+            "scopes": ["#/properties/title"],
+            "id": "title"
+          },
+          {
+            "scopes": ["#/properties/description"],
+            "id": "description"
+          },
+          {
+            "scopes": ["#/properties/type"],
+            "id": "type"
+          },
+          {
+            "scopes": ["#/properties/show"],
+            "id": "show"
+          }
+        ]
+      },
+      {
+        "trigger": {
+          "scopes": ["#/properties/show"],
+          "id": "textMessage.json"
+        },
+        "dependencies": [
+          {
+            "scopes": ["#/properties/title"],
+            "id": "title"
+          },
+          {
+            "scopes": ["#/properties/description"],
+            "id": "description"
+          },
+          {
+            "scopes": ["#/properties/type"],
+            "id": "type"
+          },
+          {
+            "scopes": ["#/properties/show"],
+            "id": "show"
+          }
+        ]
+      }
+    ],
     "flowVariableSettings": {}
   }
 }

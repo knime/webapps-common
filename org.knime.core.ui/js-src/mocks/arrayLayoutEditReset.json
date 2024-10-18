@@ -159,15 +159,15 @@
             }
           ]
         }
-      ],
-      "globalUpdates": [
-        {
-          "trigger": {
-            "id": "ElementResetButton"
-          },
-          "dependencies": []
-        }
       ]
-    }
+    },
+    "globalUpdates": [
+      {
+        "trigger": {
+          "id": "ElementResetButton"
+        },
+        "dependencies": []
+      }
+    ]
   }
 }

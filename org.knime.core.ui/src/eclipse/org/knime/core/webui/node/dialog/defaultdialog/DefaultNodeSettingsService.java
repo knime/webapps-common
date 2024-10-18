@@ -54,7 +54,7 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import static org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.TextToJsonUtil.textToJson;
 import static org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.VariableSettingsUtil.addVariableSettingsToRootJson;
 import static org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.VariableSettingsUtil.rootJsonToVariableSettings;
-import static org.knime.core.webui.node.dialog.defaultdialog.util.MapValuesUtil.restrictValues;
+import static org.knime.core.webui.node.dialog.defaultdialog.util.SettingsTypeMapUtil.map;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -75,11 +75,16 @@ import org.knime.core.webui.node.dialog.configmapping.NodeSettingsCorrectionUtil
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsSettingsImpl;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.persisttree.PersistTreeFactory;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.PasswordHolder;
 import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.JsonDataToDefaultNodeSettingsUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.NodeSettingsToJsonFormsSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.NodeSettingsToDefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.settingsconversion.ToNodeSettingsUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.tree.Tree;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
+import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeFactory;
 import org.knime.core.webui.node.dialog.internal.InternalVariableSettings;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -126,15 +131,15 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
             previousSettings.entrySet().stream().collect(Collectors.toMap(Entry::getKey, Entry::getValue)),
             extractedVariableSettings, defaultNodeSettings);
         copyLeftToRight(extractedNodeSettings, settings);
-        rootJsonToVariableSettings(root, restrictValues(settings));
+        rootJsonToVariableSettings(root, map(settings));
     }
 
     private static Map<SettingsType, VariableSettingsRO>
         extractVariableSettings(final Map<SettingsType, NodeAndVariableSettingsWO> settings, final JsonNode root) {
         final var currentFlowVars = settings.keySet().stream()
             .collect(Collectors.toMap(Function.identity(), k -> new InternalVariableSettings()));
-        rootJsonToVariableSettings(root, restrictValues(currentFlowVars));
-        return restrictValues(currentFlowVars);
+        rootJsonToVariableSettings(root, map(currentFlowVars));
+        return map(currentFlowVars);
     }
 
     private void alignSettingsWithFlowVariables( //
@@ -160,11 +165,16 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
     public String fromNodeSettings(final Map<SettingsType, NodeAndVariableSettingsRO> settings,
         final PortObjectSpec[] specs) {
         var context = createContext(specs);
-        final var jsonFormsSettings = new NodeSettingsToJsonFormsSettings(context, m_settingsClasses)
-            .nodeSettingsToJsonFormsSettingsOrDefault(restrictValues(settings));
+        final var loadedSettings = new NodeSettingsToDefaultNodeSettings(context, m_settingsClasses)
+            .nodeSettingsToDefaultNodeSettingsOrDefault(map(settings));
         final var mapper = JsonFormsDataUtil.getMapper();
+
+        final var widgetTreeFactory = new WidgetTreeFactory();
+        final var widgetTrees = map(loadedSettings, (type, s) -> widgetTreeFactory.createTree(s.getClass(), type));
+
+        final var jsonFormsSettings = new JsonFormsSettingsImpl(loadedSettings, context, widgetTrees);
         final var root = jsonFormsSettingsToJson(jsonFormsSettings, mapper);
-        addVariableSettingsToRootJson(root, restrictValues(settings), context);
+        addAdditionalFieldsToRoot(root, settings, loadedSettings, context, widgetTrees);
         return jsonToString(root, mapper);
     }
 
@@ -174,6 +184,26 @@ final class DefaultNodeSettingsService implements NodeSettingsService {
         root.set(FIELD_NAME_SCHEMA, jsonFormsSettings.getSchema());
         root.putRawValue(FIELD_NAME_UI_SCHEMA, jsonFormsSettings.getUiSchema(m_asyncChoicesHolder));
         return root;
+    }
+
+    private static void addAdditionalFieldsToRoot(final ObjectNode root,
+        final Map<SettingsType, NodeAndVariableSettingsRO> settings,
+        final Map<SettingsType, DefaultNodeSettings> loadedSettings, final DefaultNodeSettingsContext context,
+        final Map<SettingsType, Tree<WidgetGroup>> widgetTrees) {
+        addVariableSettingsToRootJson(root, map(settings), context);
+        addUpdates(root, loadedSettings, context, widgetTrees);
+        addPersist(root, loadedSettings);
+    }
+
+    private static void addUpdates(final ObjectNode root, final Map<SettingsType, DefaultNodeSettings> loadedSettings,
+        final DefaultNodeSettingsContext context, final Map<SettingsType, Tree<WidgetGroup>> widgetTrees) {
+        UpdatesUtil.addUpdates(root, widgetTrees.values(), map(loadedSettings), context);
+    }
+
+    private static void addPersist(final ObjectNode root, final Map<SettingsType, DefaultNodeSettings> loadedSettings) {
+        final var persistTreeFactory = new PersistTreeFactory();
+        final var persistTrees = map(loadedSettings, (type, s) -> persistTreeFactory.createTree(s.getClass(), type));
+        PersistUtil.addPersist(root, persistTrees);
     }
 
     private static String jsonToString(final ObjectNode root, final ObjectMapper mapper) {

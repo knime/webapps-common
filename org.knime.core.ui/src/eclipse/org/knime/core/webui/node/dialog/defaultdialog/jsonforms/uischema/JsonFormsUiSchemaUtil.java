@@ -70,7 +70,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeFacto
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
 /**
  * Class for creating ui schema content from a settings POJO class.
@@ -89,10 +88,6 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
  */
 public final class JsonFormsUiSchemaUtil {
 
-    private JsonFormsUiSchemaUtil() {
-        // utility class
-    }
-
     private static ObjectMapper MAPPER; // NOSONAR
 
     /**
@@ -106,12 +101,11 @@ public final class JsonFormsUiSchemaUtil {
     }
 
     private static ObjectMapper createMapper() {
-        final var mapper = new ObjectMapper();
-        /**
-         * Added for resolving jdk8 dependent state providers
-         */
-        mapper.registerModule(new Jdk8Module());
-        return mapper;
+        return new ObjectMapper();
+    }
+
+    private JsonFormsUiSchemaUtil() {
+        // utility class
     }
 
     /**

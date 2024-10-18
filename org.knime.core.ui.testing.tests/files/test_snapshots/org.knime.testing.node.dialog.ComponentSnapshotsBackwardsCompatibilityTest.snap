@@ -1,7 +1,7 @@
 {
   "data" : {
     "model" : {
-      "fileChooser" : {
+      "fileSelection" : {
         "path" : {
           "fsCategory" : "LOCAL",
           "path" : "",
@@ -232,7 +232,7 @@
               "inputKind" : "SINGLE"
             }
           },
-          "fileChooser" : {
+          "fileSelection" : {
             "type" : "object",
             "properties" : {
               "path" : {
@@ -303,7 +303,7 @@
   "ui_schema" : {
     "elements" : [ {
       "type" : "Control",
-      "scope" : "#/properties/model/properties/fileChooser",
+      "scope" : "#/properties/model/properties/fileSelection",
       "options" : {
         "format" : "fileChooser"
       }
@@ -350,127 +350,127 @@
     }, {
       "type" : "Control",
       "scope" : "#/properties/model/properties/nestedSettingsWithCustomPersistor/properties/nestedString"
-    } ],
-    "globalUpdates" : [ {
-      "trigger" : {
-        "id" : "after-open-dialog",
-        "triggerInitially" : true
-      },
-      "dependencies" : [ ]
-    }, {
-      "trigger" : {
-        "id" : "org.knime.testing.node.dialog.DefaultNodeSettingsWithAllWidgets$SimpleButtonWidgetRef"
-      },
-      "dependencies" : [ ]
-    } ],
-    "persist" : {
-      "type" : "object",
-      "properties" : {
-        "model" : {
-          "type" : "object",
-          "properties" : {
-            "fileChooser" : {
-              "type" : "object",
-              "properties" : {
-                "path" : { }
-              }
-            },
-            "credentials" : {
-              "configPaths" : [ [ "credentials" ] ]
-            },
-            "dynamicValuesInput" : {
-              "type" : "object",
-              "properties" : {
-                "values" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "object",
-                    "properties" : { }
-                  }
-                },
-                "inputKind" : { }
-              }
-            },
-            "columnSelection" : {
-              "type" : "object",
-              "properties" : {
-                "selected" : { },
-                "compatibleTypes" : {
-                  "configKeys" : [ ]
+    } ]
+  },
+  "persist" : {
+    "type" : "object",
+    "properties" : {
+      "model" : {
+        "type" : "object",
+        "properties" : {
+          "fileSelection" : {
+            "type" : "object",
+            "properties" : {
+              "path" : { }
+            }
+          },
+          "credentials" : {
+            "configPaths" : [ [ "credentials" ] ]
+          },
+          "dynamicValuesInput" : {
+            "type" : "object",
+            "properties" : {
+              "values" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "object",
+                  "properties" : { }
                 }
+              },
+              "inputKind" : { }
+            }
+          },
+          "columnSelection" : {
+            "type" : "object",
+            "properties" : {
+              "selected" : { },
+              "compatibleTypes" : {
+                "configPaths" : [ ]
               }
-            },
-            "columnFilter" : {
-              "type" : "object",
-              "properties" : {
-                "selected" : {
-                  "configKeys" : [ ]
-                },
-                "mode" : { },
-                "patternFilter" : {
-                  "type" : "object",
-                  "properties" : {
-                    "pattern" : { },
-                    "isCaseSensitive" : { },
-                    "isInverted" : { }
-                  }
-                },
-                "manualFilter" : {
-                  "type" : "object",
-                  "properties" : {
-                    "manuallySelected" : { },
-                    "manuallyDeselected" : { },
-                    "includeUnknownColumns" : { }
-                  }
-                },
-                "typeFilter" : {
-                  "type" : "object",
-                  "properties" : {
-                    "selectedTypes" : { },
-                    "typeDisplays" : {
-                      "type" : "array",
-                      "configPaths" : [ ],
-                      "items" : {
-                        "type" : "object",
-                        "properties" : {
-                          "id" : { },
-                          "text" : { }
-                        }
+            }
+          },
+          "columnFilter" : {
+            "type" : "object",
+            "properties" : {
+              "selected" : {
+                "configPaths" : [ ]
+              },
+              "mode" : { },
+              "patternFilter" : {
+                "type" : "object",
+                "properties" : {
+                  "pattern" : { },
+                  "isCaseSensitive" : { },
+                  "isInverted" : { }
+                }
+              },
+              "manualFilter" : {
+                "type" : "object",
+                "properties" : {
+                  "manuallySelected" : { },
+                  "manuallyDeselected" : { },
+                  "includeUnknownColumns" : { }
+                }
+              },
+              "typeFilter" : {
+                "type" : "object",
+                "properties" : {
+                  "selectedTypes" : { },
+                  "typeDisplays" : {
+                    "type" : "array",
+                    "configPaths" : [ ],
+                    "items" : {
+                      "type" : "object",
+                      "properties" : {
+                        "id" : { },
+                        "text" : { }
                       }
                     }
                   }
                 }
               }
-            },
-            "simpleButton" : { },
-            "string" : { },
-            "nested" : {
-              "type" : "object",
-              "properties" : {
-                "nestedString" : { }
-              }
-            },
-            "nestedSettingsRenamed" : {
-              "configKey" : "myNestedSettings",
-              "type" : "object",
-              "properties" : {
-                "nestedString" : { }
-              }
-            },
-            "nestedSettingsWithCustomPersistor" : {
-              "configPaths" : [ [ "customConfigKeyForNestedSettings" ] ],
-              "deprecatedConfigKeys" : [ {
-                "new" : [ [ "customConfigKeyForNestedSettings" ] ],
-                "deprecated" : [ [ "deprecatedConfigKey" ] ]
-              } ],
-              "type" : "object",
-              "properties" : {
-                "nestedString" : { }
-              }
+            }
+          },
+          "simpleButton" : { },
+          "string" : { },
+          "nested" : {
+            "type" : "object",
+            "properties" : {
+              "nestedString" : { }
+            }
+          },
+          "nestedSettingsRenamed" : {
+            "configKey" : "myNestedSettings",
+            "type" : "object",
+            "properties" : {
+              "nestedString" : { }
+            }
+          },
+          "nestedSettingsWithCustomPersistor" : {
+            "configPaths" : [ [ "customConfigKeyForNestedSettings" ] ],
+            "deprecatedConfigKeys" : [ {
+              "new" : [ [ "customConfigKeyForNestedSettings" ] ],
+              "deprecated" : [ [ "deprecatedConfigKey" ] ]
+            } ],
+            "type" : "object",
+            "properties" : {
+              "nestedString" : { }
             }
           }
         }
       }
     }
-  }
+  },
+  "globalUpdates" : [ {
+    "trigger" : {
+      "id" : "after-open-dialog",
+      "triggerInitially" : true
+    },
+    "dependencies" : [ ]
+  }, {
+    "trigger" : {
+      "id" : "org.knime.testing.node.dialog.DefaultNodeSettingsWithAllWidgets$SimpleButtonWidgetRef"
+    },
+    "dependencies" : [ ]
+  } ]
 }

@@ -11,6 +11,8 @@ import { ref } from "vue";
 import DialogLabel from "../DialogLabel.vue";
 import DialogComponentWrapper from "../../DialogComponentWrapper.vue";
 import { Label } from "@knime/components";
+import { injectionKey as injectionKeyHasNodeView } from "@/nodeDialog/composables/components/useHasNodeView";
+import { injectionKey as injectionKeyShowAdvancedSettings } from "@/nodeDialog/composables/components/useAdvancedSettings";
 
 describe("LabeledControl.vue", () => {
   let props, flowSettings;
@@ -23,13 +25,14 @@ describe("LabeledControl.vue", () => {
         path: "path.to.setting",
         schema: {},
         label: "title",
-        rootSchema: {},
         uischema: {},
       },
     };
   });
 
-  const mountLabeledControl = () =>
+  const mountLabeledControl = (
+    { provideOverrides } = { provideOverrides: {} },
+  ) =>
     mount(LabeledControl, {
       props,
       global: {
@@ -38,7 +41,10 @@ describe("LabeledControl.vue", () => {
             flowSettings,
             configPaths: [],
           },
+          [injectionKeyShowAdvancedSettings]: ref(false),
+          [injectionKeyHasNodeView]: ref(false),
           getDialogPopoverTeleportDest: () => null,
+          ...provideOverrides,
         },
       },
     });
@@ -53,9 +59,12 @@ describe("LabeledControl.vue", () => {
   });
 
   it("visually displays model settings", () => {
-    props.control.rootSchema.hasNodeView = true;
     props.control.uischema.scope = "#/properties/model/...";
-    const wrapper = mountLabeledControl();
+    const wrapper = mountLabeledControl({
+      provideOverrides: {
+        [injectionKeyHasNodeView]: ref(true),
+      },
+    });
     expect(wrapper.findComponent(ReexecutionIcon).exists()).toBe(true);
   });
 

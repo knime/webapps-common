@@ -63,6 +63,8 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.util.workflow.def.FallibleSupplier;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
+import org.knime.core.webui.node.dialog.defaultdialog.PersistUtil;
+import org.knime.core.webui.node.dialog.defaultdialog.UpdatesUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsDataUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsSettingsImpl;
@@ -79,6 +81,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 @SuppressWarnings("restriction")
 final class JsonFormsSnapshot extends Snapshot {
+
     private final int m_instance;
 
     private final Map<SettingsType, FallibleSupplier<DefaultNodeSettings>> m_settings;
@@ -120,13 +123,15 @@ final class JsonFormsSnapshot extends Snapshot {
             }));
 
         // turn it into the json-forms representation
-        var jsonFormsSettings =
-            new JsonFormsSettingsImpl(instances, DefaultNodeSettings.createDefaultNodeSettingsContext(specs));
+        final var context = DefaultNodeSettings.createDefaultNodeSettingsContext(specs);
+        var jsonFormsSettings = new JsonFormsSettingsImpl(instances, context);
         var mapper = JsonFormsDataUtil.getMapper();
         var objectNode = mapper.createObjectNode();
         objectNode.set(JsonFormsConsts.FIELD_NAME_DATA, jsonFormsSettings.getData());
         objectNode.set(JsonFormsConsts.FIELD_NAME_SCHEMA, jsonFormsSettings.getSchema());
         objectNode.putRawValue(JsonFormsConsts.FIELD_NAME_UI_SCHEMA, jsonFormsSettings.getUiSchema(null));
+        PersistUtil.constructTreesAndAddPersist(objectNode, instances);
+        UpdatesUtil.constructTreesAndAddUpdates(objectNode, instances, context);
         return mapper.readTree(mapper.writeValueAsString(objectNode));
     }
 

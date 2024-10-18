@@ -48,10 +48,11 @@
  */
 package org.knime.core.webui.node.dialog.defaultdialog.jsonforms;
 
+import static org.knime.core.webui.node.dialog.defaultdialog.util.SettingsTypeMapUtil.map;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.apache.commons.io.IOUtils;
 import org.knime.core.webui.node.dialog.SettingsType;
@@ -59,11 +60,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.JsonFormsSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.PersistUtil;
-import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UpdatesUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.persisttree.PersistTreeFactory;
 import org.knime.core.webui.node.dialog.defaultdialog.tree.Tree;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
 import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeFactory;
@@ -87,19 +84,23 @@ import com.fasterxml.jackson.databind.util.RawValue;
  */
 public final class JsonFormsSettingsImpl implements JsonFormsSettings {
 
-    private final Class<? extends DefaultNodeSettings> m_modelSettingsClass;
-
-    private final Class<? extends DefaultNodeSettings> m_viewSettingsClass;
-
-    private final DefaultNodeSettings m_modelSettings;
-
-    private final DefaultNodeSettings m_viewSettings;
-
     private final DefaultNodeSettingsContext m_context;
 
     private final Map<SettingsType, Tree<WidgetGroup>> m_widgetTrees;
 
-    private final Map<SettingsType, Tree<PersistableSettings>> m_persistTrees;
+    private Map<SettingsType, DefaultNodeSettings> m_settings;
+
+    /**
+     * @param settings the POJOs from which to derive the schema, data and uiSchema
+     * @param context the current {@link DefaultNodeSettingsContext} with access to input ports
+     * @param widgetTrees of the settings
+     */
+    public JsonFormsSettingsImpl(final Map<SettingsType, DefaultNodeSettings> settings,
+        final DefaultNodeSettingsContext context, final Map<SettingsType, Tree<WidgetGroup>> widgetTrees) {
+        m_settings = settings;
+        m_context = context;
+        m_widgetTrees = widgetTrees;
+    }
 
     /**
      * @param settings the POJOs from which to derive the schema, data and uiSchema
@@ -107,35 +108,19 @@ public final class JsonFormsSettingsImpl implements JsonFormsSettings {
      */
     public JsonFormsSettingsImpl(final Map<SettingsType, DefaultNodeSettings> settings,
         final DefaultNodeSettingsContext context) {
-        m_modelSettings = settings.get(SettingsType.MODEL);
-        m_modelSettingsClass = m_modelSettings == null ? null : m_modelSettings.getClass();
-        m_viewSettings = settings.get(SettingsType.VIEW);
-        m_viewSettingsClass = m_viewSettings == null ? null : m_viewSettings.getClass();
-        final var widgetTreeFactory = new WidgetTreeFactory();
-        final var persistTreeFactory = new PersistTreeFactory();
-        m_widgetTrees = createSettingsTypeMap(//
-            m_modelSettingsClass == null ? null
-                : widgetTreeFactory.createTree(m_modelSettingsClass, SettingsType.MODEL), //
-            m_viewSettings == null ? null : widgetTreeFactory.createTree(m_viewSettingsClass, SettingsType.VIEW)//
-        );
-        m_persistTrees = createSettingsTypeMap(//
-            m_modelSettingsClass == null ? null
-                : persistTreeFactory.createTree(m_modelSettingsClass, SettingsType.MODEL), //
-            m_viewSettings == null ? null : persistTreeFactory.createTree(m_viewSettingsClass, SettingsType.VIEW)//
-        );
-        m_context = context;
+        this(settings, context, map(settings, (type, s) -> new WidgetTreeFactory().createTree(s.getClass(), type)));
     }
 
     @Override
     public JsonNode getSchema() {
-        var settingsClasses = createSettingsTypeMap(m_modelSettingsClass, m_viewSettingsClass);
-        return JsonFormsSchemaUtil.buildCombinedSchema(settingsClasses, m_widgetTrees, m_context,
-            JsonFormsDataUtil.getMapper());
+        return JsonFormsSchemaUtil.buildCombinedSchema(map(m_settings, DefaultNodeSettings::getClass), m_widgetTrees,
+            m_context, JsonFormsDataUtil.getMapper());
     }
 
     @Override
     public RawValue getUiSchema(final AsyncChoicesHolder asyncChoicesHolder) {
-        final var clazz = m_viewSettingsClass != null ? m_viewSettingsClass : m_modelSettingsClass;
+        final var clazz = m_settings.containsKey(SettingsType.VIEW) ? m_settings.get(SettingsType.VIEW).getClass()
+            : m_settings.get(SettingsType.MODEL).getClass();
         try (final var inputStream = clazz.getResourceAsStream("uischema.json")) {
             if (inputStream == null) {
                 return generateUiSchema(asyncChoicesHolder == null ? new AsyncChoicesHolder() : asyncChoicesHolder);
@@ -148,31 +133,13 @@ public final class JsonFormsSettingsImpl implements JsonFormsSettings {
     }
 
     private RawValue generateUiSchema(final AsyncChoicesHolder asyncChoicesHolder) {
-        final var settings = JsonFormsSettingsImpl.<WidgetGroup> createSettingsTypeMap(m_modelSettings, m_viewSettings);
         final var uiSchema = JsonFormsUiSchemaUtil.buildUISchema(m_widgetTrees.values(), m_context, asyncChoicesHolder);
-        UpdatesUtil.addUpdates(uiSchema, m_widgetTrees.values(), settings, m_context);
-        PersistUtil.addPersist(uiSchema, m_persistTrees);
         return new RawValue(uiSchema.toString());
     }
 
     @Override
     public JsonNode getData() {
-        var settings = createSettingsTypeMap(m_modelSettings, m_viewSettings);
-        return JsonFormsDataUtil.toCombinedJsonData(settings);
-    }
-
-    private static <T> Map<SettingsType, T> createSettingsTypeMap(final T modelSettingsObj, final T viewSettingsObj) {
-        /**
-         * Some nodes rely on view settings within the same section as model settings appear beneath those.
-         */
-        final Map<SettingsType, T> sortedMap = new TreeMap<>();
-        if (modelSettingsObj != null) {
-            sortedMap.put(SettingsType.MODEL, modelSettingsObj);
-        }
-        if (viewSettingsObj != null) {
-            sortedMap.put(SettingsType.VIEW, viewSettingsObj);
-        }
-        return sortedMap;
+        return JsonFormsDataUtil.toCombinedJsonData(map(m_settings));
     }
 
 }

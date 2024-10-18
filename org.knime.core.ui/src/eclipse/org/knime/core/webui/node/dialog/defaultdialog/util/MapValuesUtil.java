@@ -50,6 +50,7 @@ package org.knime.core.webui.node.dialog.defaultdialog.util;
 
 import static java.util.stream.Collectors.toMap;
 
+import java.util.Comparator;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -80,6 +81,22 @@ public final class MapValuesUtil {
     }
 
     /**
+     * Utility method for mapping the values of a {@link Map} and sorting the keys.
+     *
+     * @param <K> keys
+     * @param <V1> values before mapping
+     * @param <V2> values after mapping
+     * @param map the map the mapping should be applied to
+     * @param mapping to be applied to the values
+     * @param keyComparator the comparator to sort the keys
+     * @return a new map with the same keys and mapped values
+     */
+    public static <K, V1, V2> Map<K, V2> mapValues(final Map<K, V1> map, final Function<V1, V2> mapping,
+        final Comparator<K> keyComparator) {
+        return mapValuesWithKeys(map, (key, value) -> mapping.apply(value), keyComparator);
+    }
+
+    /**
      * Utility method for restricting the type of values of a {@link Map}.
      *
      * @param <K> keys
@@ -104,6 +121,24 @@ public final class MapValuesUtil {
      */
     public static <K, V1, V2> Map<K, V2> mapValuesWithKeys(final Map<K, V1> map, final BiFunction<K, V1, V2> mapping) {
         return map.entrySet().stream()//
+            .collect(toMap(Map.Entry::getKey, e -> mapping.apply(e.getKey(), e.getValue())));
+    }
+
+    /**
+     * Utility method for mapping the values of a {@link Map} and sorting the keys.
+     *
+     * @param <K> keys
+     * @param <V1> values before mapping
+     * @param <V2> values after mapping
+     * @param map the map the mapping should be applied to
+     * @param mapping defining the new values from key and old value
+     * @param keyComparator the comparator to sort the keys
+     * @return a new map with the same keys and mapped values
+     */
+    public static <K, V1, V2> Map<K, V2> mapValuesWithKeys(final Map<K, V1> map, final BiFunction<K, V1, V2> mapping,
+        final Comparator<K> keyComparator) {
+        return map.entrySet().stream()//
+            .sorted(Map.Entry.comparingByKey(keyComparator))
             .collect(toMap(Map.Entry::getKey, e -> mapping.apply(e.getKey(), e.getValue())));
     }
 

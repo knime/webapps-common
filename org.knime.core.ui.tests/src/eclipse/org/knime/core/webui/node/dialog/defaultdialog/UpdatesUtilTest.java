@@ -46,7 +46,7 @@
  * History
  *   Feb 22, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema;
+package org.knime.core.webui.node.dialog.defaultdialog;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -66,9 +66,8 @@ import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.webui.node.dialog.SettingsType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialogTest;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
+import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.UiSchemaGenerationException;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnselection.ColumnSelection;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.fileselection.FileSelection;
@@ -100,7 +99,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * @author Paul Bärnreuther
  */
 @SuppressWarnings("java:S2698") // we accept assertions without messages
-class UpdatesUtilTest {
+public class UpdatesUtilTest {
 
     private static DefaultNodeSettingsContext createDefaultNodeSettingsContext() {
         return DefaultNodeDialogTest.createDefaultNodeSettingsContext(new PortType[]{BufferedDataTable.TYPE},
@@ -118,7 +117,8 @@ class UpdatesUtilTest {
         return objectNode;
     }
 
-    static ObjectNode buildUpdates(final WidgetGroup settings) {
+    @SuppressWarnings("javadoc")
+    public static ObjectNode buildUpdates(final WidgetGroup settings) {
         return buildUpdates(Map.of(SettingsType.MODEL, settings));
     }
 

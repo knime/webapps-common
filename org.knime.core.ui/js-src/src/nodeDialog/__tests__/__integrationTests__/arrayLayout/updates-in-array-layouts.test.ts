@@ -92,9 +92,9 @@ describe("updates in array layouts", () => {
           },
         } as any,
       ],
-      globalUpdates: [] as Update[],
-      initialUpdates: [] as UpdateResult[],
     },
+    globalUpdates: [] as Update[],
+    initialUpdates: [] as UpdateResult[],
     flowVariableSettings: {},
   };
 
@@ -131,7 +131,7 @@ describe("updates in array layouts", () => {
 
   const registerButtonTriggerInGlobalUpdates = (buttonId: string) => {
     const dependencies: ValueReference[] = [];
-    initialDataJson[uiSchemaKey].globalUpdates = [
+    initialDataJson.globalUpdates = [
       {
         trigger: {
           id: buttonId,
@@ -217,7 +217,7 @@ describe("updates in array layouts", () => {
       {
         type: "boolean",
       };
-    initialDataJson[uiSchemaKey].globalUpdates = [
+    initialDataJson.globalUpdates = [
       {
         trigger: {
           id: "checkboxFieldId",
@@ -590,14 +590,14 @@ describe("updates in array layouts", () => {
         [
           "computeBeforeOpenDialog",
           (updateResult: UpdateResult) => {
-            initialDataJson[uiSchemaKey].initialUpdates = [updateResult];
+            initialDataJson.initialUpdates = [updateResult];
             return { expectAfterMount: () => {} };
           },
         ],
         [
           "computeAfterOpenDialog",
           (updateResult: UpdateResult) => {
-            initialDataJson[uiSchemaKey].globalUpdates = [
+            initialDataJson.globalUpdates = [
               {
                 trigger: {
                   id: "afterOpenDialog",

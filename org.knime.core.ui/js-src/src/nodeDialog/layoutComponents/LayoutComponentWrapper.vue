@@ -1,27 +1,27 @@
 <script>
 import { defineComponent } from "vue";
+import { injectShowAdvancedSettings } from "../composables/components/useAdvancedSettings";
 
 const LayoutComponentWrapper = defineComponent({
   name: "LayoutComponentWrapper",
-  inject: ["jsonforms"],
   props: {
     layout: {
       type: Object,
       default: () => {},
     },
   },
+  setup() {
+    const showAdvancedSettings = injectShowAdvancedSettings();
+    return { showAdvancedSettings };
+  },
   computed: {
     isVisible() {
       return (
-        this.layout.visible &&
-        (this.rootSchema.showAdvancedSettings || !this.isAdvanced)
+        this.layout.visible && (this.showAdvancedSettings || !this.isAdvanced)
       );
     },
     isAdvanced() {
       return this.layout.uischema.options?.isAdvanced;
-    },
-    rootSchema() {
-      return this.jsonforms.core.schema;
     },
   },
 });

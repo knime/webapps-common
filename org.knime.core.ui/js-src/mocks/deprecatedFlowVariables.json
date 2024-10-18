@@ -64,38 +64,38 @@
             }
           ]
         }
-      ],
-      "persist": {
-        "type": "object",
-        "properties": {
-          "model": {
-            "type": "object",
-            "properties": {
-              "settingWithDeprecatedFlowVariables": {
-                "deprecatedConfigKeys": [
-                  {
-                    "new": [["settingWithDeprecatedFlowVariables"]],
-                    "deprecated": [
-                      ["i", "am", "deprecated"],
-                      ["me", "too"],
-                      ["also", "me", "but", "i", "am", "not", "set"]
-                    ]
-                  }
-                ]
-              },
-              "settingWithMultipleDeprecatedFlowVariables": {
-                "configPaths": [["one"], ["two"]],
-                "deprecatedConfigKeys": [
-                  {
-                    "new": [["one"]],
-                    "deprecated": [["i", "am", "also", "deprecated"]]
-                  },
-                  {
-                    "new": [["two"]],
-                    "deprecated": [["and", "i", "am", "too"]]
-                  }
-                ]
-              }
+      ]
+    },
+    "persist": {
+      "type": "object",
+      "properties": {
+        "model": {
+          "type": "object",
+          "properties": {
+            "settingWithDeprecatedFlowVariables": {
+              "deprecatedConfigKeys": [
+                {
+                  "new": [["settingWithDeprecatedFlowVariables"]],
+                  "deprecated": [
+                    ["i", "am", "deprecated"],
+                    ["me", "too"],
+                    ["also", "me", "but", "i", "am", "not", "set"]
+                  ]
+                }
+              ]
+            },
+            "settingWithMultipleDeprecatedFlowVariables": {
+              "configPaths": [["one"], ["two"]],
+              "deprecatedConfigKeys": [
+                {
+                  "new": [["one"]],
+                  "deprecated": [["i", "am", "also", "deprecated"]]
+                },
+                {
+                  "new": [["two"]],
+                  "deprecated": [["and", "i", "am", "too"]]
+                }
+              ]
             }
           }
         }

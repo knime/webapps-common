@@ -39,10 +39,12 @@ export const mergeDeep = <T extends object>(
   return mergeDeepUntyped(obj1, obj2);
 };
 
-export const isModelSettingAndHasNodeView = (control: Control) => {
+export const isModelSettingAndHasNodeView = (
+  control: Control,
+  hasNodeView: boolean,
+) => {
   return (
-    control?.rootSchema.hasNodeView &&
-    control?.uischema.scope?.startsWith("#/properties/model")
+    hasNodeView && control?.uischema.scope?.startsWith("#/properties/model")
   );
 };
 

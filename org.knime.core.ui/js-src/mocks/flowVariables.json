@@ -465,92 +465,92 @@
             }
           ]
         }
-      ],
-      "persist": {
-        "type": "object",
-        "properties": {
-          "model": {
-            "type": "object",
-            "properties": {
-              "noVariableSet": {},
-              "controlling": {},
-              "exposed": {},
-              "exposedAndControlling": {},
-              "missingFlowVariable": {},
-              "controlledByNonAvailable": {},
-              "oneDataPathMultiplePersistPaths": {
-                "configPaths": [["one"], ["two"]]
-              },
-              "multipleDataAndPersistPaths": {
-                "type": "object",
-                "properties": {
-                  "manualFilter": {
-                    "type": "object",
-                    "properties": {
-                      "includeUnknownColumns": {},
-                      "manuallyDeselected": {},
-                      "manuallySelected": {}
-                    }
-                  },
-                  "mode": {},
-                  "patternFilter": {
-                    "type": "object",
-                    "properties": {
-                      "isCaseSensitive": {},
-                      "isInverted": {},
-                      "pattern": {}
-                    }
-                  },
-                  "selected": {
-                    "configPaths": []
-                  },
-                  "typeFilter": {
-                    "type": "object",
-                    "properties": {
-                      "selectedTypes": {},
-                      "typeDisplays": {
-                        "configPaths": []
-                      }
-                    }
+      ]
+    },
+    "persist": {
+      "type": "object",
+      "properties": {
+        "model": {
+          "type": "object",
+          "properties": {
+            "noVariableSet": {},
+            "controlling": {},
+            "exposed": {},
+            "exposedAndControlling": {},
+            "missingFlowVariable": {},
+            "controlledByNonAvailable": {},
+            "oneDataPathMultiplePersistPaths": {
+              "configPaths": [["one"], ["two"]]
+            },
+            "multipleDataAndPersistPaths": {
+              "type": "object",
+              "properties": {
+                "manualFilter": {
+                  "type": "object",
+                  "properties": {
+                    "includeUnknownColumns": {},
+                    "manuallyDeselected": {},
+                    "manuallySelected": {}
                   }
                 },
-                "configKey": "one"
-              },
-              "multipleDataAndPersistPathsWithCustomSubConfigKeys": {
-                "properties": {
-                  "manualFilter": {
-                    "type": "object",
-                    "properties": {
-                      "includeUnknownColumns": {},
-                      "manuallyDeselected": {},
-                      "manuallySelected": {}
-                    }
-                  },
-                  "mode": {},
-                  "patternFilter": {
-                    "type": "object",
-                    "properties": {
-                      "isCaseSensitive": {},
-                      "isInverted": {},
-                      "pattern": {}
-                    }
-                  },
-                  "selected": {},
-                  "typeFilter": {
-                    "type": "object",
-                    "properties": {
-                      "selectedTypes": {},
-                      "typeDisplays": {
-                        "configPaths": []
-                      }
-                    }
+                "mode": {},
+                "patternFilter": {
+                  "type": "object",
+                  "properties": {
+                    "isCaseSensitive": {},
+                    "isInverted": {},
+                    "pattern": {}
                   }
                 },
-                "configPaths": [
-                  ["some", "sub", "config", "key"],
-                  ["some", "other", "sub", "config", "key"]
-                ]
-              }
+                "selected": {
+                  "configPaths": []
+                },
+                "typeFilter": {
+                  "type": "object",
+                  "properties": {
+                    "selectedTypes": {},
+                    "typeDisplays": {
+                      "configPaths": []
+                    }
+                  }
+                }
+              },
+              "configKey": "one"
+            },
+            "multipleDataAndPersistPathsWithCustomSubConfigKeys": {
+              "properties": {
+                "manualFilter": {
+                  "type": "object",
+                  "properties": {
+                    "includeUnknownColumns": {},
+                    "manuallyDeselected": {},
+                    "manuallySelected": {}
+                  }
+                },
+                "mode": {},
+                "patternFilter": {
+                  "type": "object",
+                  "properties": {
+                    "isCaseSensitive": {},
+                    "isInverted": {},
+                    "pattern": {}
+                  }
+                },
+                "selected": {},
+                "typeFilter": {
+                  "type": "object",
+                  "properties": {
+                    "selectedTypes": {},
+                    "typeDisplays": {
+                      "configPaths": []
+                    }
+                  }
+                }
+              },
+              "configPaths": [
+                ["some", "sub", "config", "key"],
+                ["some", "other", "sub", "config", "key"]
+              ]
             }
           }
         }

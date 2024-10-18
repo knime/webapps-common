@@ -135,43 +135,43 @@
             }
           ]
         }
-      ],
-      "globalUpdates": [
-        {
-          "trigger": {
+      ]
+    },
+    "globalUpdates": [
+      {
+        "trigger": {
+          "scopes": [
+            "#/properties/view/properties/dummyArrayLayout",
+            "#/properties/title"
+          ]
+        },
+        "dependencies": [
+          {
             "scopes": [
               "#/properties/view/properties/dummyArrayLayout",
               "#/properties/title"
-            ]
-          },
-          "dependencies": [
-            {
-              "scopes": [
-                "#/properties/view/properties/dummyArrayLayout",
-                "#/properties/title"
-              ],
-              "id": "Title"
-            }
+            ],
+            "id": "Title"
+          }
+        ]
+      },
+      {
+        "trigger": {
+          "scopes": [
+            "#/properties/view/properties/dummyArrayLayout",
+            "#/properties/subTitle"
           ]
         },
-        {
-          "trigger": {
+        "dependencies": [
+          {
             "scopes": [
               "#/properties/view/properties/dummyArrayLayout",
               "#/properties/subTitle"
-            ]
-          },
-          "dependencies": [
-            {
-              "scopes": [
-                "#/properties/view/properties/dummyArrayLayout",
-                "#/properties/subTitle"
-              ],
-              "id": "SubTitle"
-            }
-          ]
-        }
-      ]
-    }
+            ],
+            "id": "SubTitle"
+          }
+        ]
+      }
+    ]
   }
 }

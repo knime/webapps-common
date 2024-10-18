@@ -176,9 +176,4 @@ describe("RadioControlBase.vue", () => {
     });
     expect(wrapper.vm.disabled).toBeTruthy();
   });
-
-  it("does not disable radioControl when not controlled by a flow variable", () => {
-    props.control.rootSchema.flowVariablesMap[props.control.path] = {};
-    expect(wrapper.vm.disabled).toBeFalsy();
-  });
 });

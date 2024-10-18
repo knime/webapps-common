@@ -92,10 +92,7 @@
             }
           }
         }
-      },
-      "flowVariablesMap": {},
-      "hasNodeView": false,
-      "showAdvancedSettings": false
+      }
     },
     "ui_schema": {
       "elements": [

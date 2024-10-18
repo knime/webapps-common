@@ -46,10 +46,7 @@
             }
           }
         }
-      },
-      "flowVariablesMap": {},
-      "hasNodeView": true,
-      "showAdvancedSettings": false
+      }
     },
     "ui_schema": {
       "elements": [

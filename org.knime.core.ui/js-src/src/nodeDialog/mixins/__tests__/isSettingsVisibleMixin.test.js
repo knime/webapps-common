@@ -2,11 +2,14 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { shallowMount } from "@vue/test-utils";
 import MockComponent from "./mockComponent.vue";
 import isSettingsVisibleMixin from "../isSettingsVisibleMixin";
+import { injectionKey as injectionKeyShowAdvancedSettings } from "@/nodeDialog/composables/components/useAdvancedSettings";
+import { ref } from "vue";
 
 describe("isSettingsVisibleMixin.js", () => {
-  let props;
+  let props, showAdvancedSettings;
 
   beforeEach(() => {
+    showAdvancedSettings = ref(false);
     props = {
       control: {
         visible: true,
@@ -15,34 +18,36 @@ describe("isSettingsVisibleMixin.js", () => {
             isAdvanced: false,
           },
         },
-        rootSchema: {
-          showAdvancedSettings: false,
-        },
       },
     };
   });
 
-  it("shows settings that are not advanced", () => {
-    const wrapper = shallowMount(MockComponent, {
+  const shallowMountMockComponent = () =>
+    shallowMount(MockComponent, {
       props,
       mixins: [isSettingsVisibleMixin],
+      global: {
+        provide: {
+          [injectionKeyShowAdvancedSettings]: showAdvancedSettings,
+        },
+      },
     });
+
+  it("shows settings that are not advanced", () => {
+    const wrapper = shallowMountMockComponent();
     expect(wrapper.vm.isVisible).toBe(true);
   });
 
   it("shows settings that are advanced and advanced options are to be shown", () => {
     props.control.uischema.options.isAdvanced = true;
-    props.control.rootSchema.showAdvancedSettings = true;
-    const wrapper = shallowMount(MockComponent, {
-      props,
-      mixins: [isSettingsVisibleMixin],
-    });
+    showAdvancedSettings.value = true;
+    const wrapper = shallowMountMockComponent();
     expect(wrapper.vm.isVisible).toBe(true);
   });
 
   it("does not show settings that are advanced and advanced options are not to be shown", () => {
     props.control.uischema.options.isAdvanced = true;
-    props.control.rootSchema.showAdvancedSettings = false;
+    showAdvancedSettings.value = false;
     const wrapper = shallowMount(MockComponent, {
       props,
       mixins: [isSettingsVisibleMixin],

@@ -39,6 +39,9 @@ import useCurrentData from "./composables/nodeDialog/useCurrentData";
 import useServices from "./composables/nodeDialog/useServices";
 import LoadingDialog from "./loading/LoadingDialog.vue";
 import { PersistSchema } from "./types/Persist";
+import { InitialData } from "./types/InitialData";
+import { useHasNodeView } from "./composables/components/useHasNodeView";
+import { useShowAdvancedSettings } from "./composables/components/useAdvancedSettings";
 
 const renderers = [...fallbackRenderers, ...defaultRenderers];
 
@@ -179,6 +182,10 @@ export default {
     const { setRegisterSettingsMethod } = provideAndGetSetupMethod();
     const subPanels = ref<null | HTMLElement>(null);
     const dialogPopoverTeleportDest = ref<null | HTMLElement>(null);
+
+    const hasNodeView = useHasNodeView();
+    const showAdvancedSettings = useShowAdvancedSettings();
+
     return {
       setCurrentData,
       getCurrentData,
@@ -205,6 +212,8 @@ export default {
       providedFlowVariablesMap,
       setInitialFlowVariablesMap,
       dialogPopoverTeleportDest,
+      hasNodeView,
+      showAdvancedSettings,
     };
   },
   data() {
@@ -212,43 +221,29 @@ export default {
       flawedControllingVariablePaths: new Set() satisfies Set<string>,
       possiblyFlawedControllingVariablePaths: new Set() satisfies Set<string>,
       renderers: Object.freeze(renderers),
-      schema: {} as JsonSchema & {
-        showAdvancedSettings: boolean;
-        flowVariablesMap: Record<string, FlowSettings>;
-      },
-      uischema: {} as UISchemaElement & {
-        /**
-         * Data defining the value updates from dependencies to targets
-         */
-        globalUpdates?: Update[];
-        /**
-         * Data defining values that have been computed while opening the dialog
-         */
-        initialUpdates?: UpdateResult[];
-        /**
-         * Information on the persist structure used to map flow variables to controls.
-         */
-        persist?: PersistSchema;
-      },
+      schema: {} as JsonSchema,
+      uischema: {} as UISchemaElement,
+      persist: null as null | PersistSchema,
+      flowVariablesMap: {} as Record<string, FlowSettings>,
       ready: false,
       isMetaKeyPressed: false,
     };
   },
   async mounted() {
-    const initialSettings = await this.jsonDataService.initialData();
-    const { schema } = initialSettings;
-    schema.flowVariablesMap = this.initializeFlowVariablesMap(initialSettings);
-    this.setInitialFlowVariablesMap(schema.flowVariablesMap);
-    schema.hasNodeView = this.dialogService.hasNodeView();
-    schema.showAdvancedSettings = false;
-    this.schema = schema;
+    const initialSettings =
+      (await this.jsonDataService.initialData()) as InitialData;
+    this.flowVariablesMap = this.initializeFlowVariablesMap(initialSettings);
+    this.setInitialFlowVariablesMap(this.flowVariablesMap);
+    this.hasNodeView = this.dialogService.hasNodeView();
+    this.schema = initialSettings.schema;
     this.uischema = initialSettings.ui_schema;
     this.setCurrentData(initialSettings.data);
     this.setRegisterSettingsMethod(
       this.dialogService.registerSettings.bind(this.dialogService),
     );
-    this.resolveInitialUpdates(this.uischema?.initialUpdates ?? []);
-    this.registerGlobalUpdates(this.uischema?.globalUpdates ?? []);
+    this.resolveInitialUpdates(initialSettings.initialUpdates ?? []);
+    this.registerGlobalUpdates(initialSettings.globalUpdates ?? []);
+    this.persist = initialSettings.persist;
     this.dialogService.setApplyListener(this.applySettings.bind(this));
     this.ready = true;
   },
@@ -259,7 +254,7 @@ export default {
       });
     },
     getPersistSchema() {
-      return this.uischema.persist ?? {};
+      return this.persist ?? {};
     },
     callDataService({
       method,
@@ -350,7 +345,7 @@ export default {
       if (this.schema === null) {
         return;
       }
-      this.schema.showAdvancedSettings = !this.schema.showAdvancedSettings;
+      this.showAdvancedSettings = !this.showAdvancedSettings;
     },
     hasAdvancedOptions() {
       if (!this.uischema) {
@@ -382,7 +377,7 @@ export default {
           class="advanced-options"
           @click="changeAdvancedSettings"
         >
-          {{ schema.showAdvancedSettings ? "Hide" : "Show" }} advanced settings
+          {{ showAdvancedSettings ? "Hide" : "Show" }} advanced settings
         </a>
       </Form>
       <template #fallback><LoadingDialog /></template>

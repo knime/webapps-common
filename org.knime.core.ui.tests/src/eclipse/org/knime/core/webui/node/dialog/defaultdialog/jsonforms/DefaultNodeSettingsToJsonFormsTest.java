@@ -211,28 +211,7 @@ class DefaultNodeSettingsToJsonFormsTest {
                       "type": "Control",
                       "scope": "#/properties/model/properties/nestedSettings/properties/nestedField"
                     }
-                  ],
-                  "persist": {
-                    "type": "object",
-                    "properties": {
-                      "model": {
-                        "type": "object",
-                        "properties": {
-                          "field": {},
-                          "fieldWithPrefix": {},
-                          "fieldWithNullValue": {},
-                          "fieldWithoutAnnotation": {},
-                          "nestedSettings": {
-                            "type": "object",
-                            "properties": {
-                              "nestedField": {},
-                              "nestedFieldWithoutAnnotation": {}
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
+                  ]
                 }
                 """);
     }

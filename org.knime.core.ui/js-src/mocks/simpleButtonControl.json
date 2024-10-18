@@ -32,15 +32,15 @@
             "triggerId": "buttonTriggerId (from simpleButtonInput.json)"
           }
         }
-      ],
-      "globalUpdates": [
-        {
-          "trigger": {
-            "id": "buttonTriggerId (from simpleButtonInput.json)"
-          },
-          "dependencies": []
-        }
       ]
-    }
+    },
+    "globalUpdates": [
+      {
+        "trigger": {
+          "id": "buttonTriggerId (from simpleButtonInput.json)"
+        },
+        "dependencies": []
+      }
+    ]
   }
 }

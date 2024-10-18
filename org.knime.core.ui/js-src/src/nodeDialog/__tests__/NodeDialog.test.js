@@ -117,7 +117,7 @@ describe("NodeDialog.vue", () => {
       };
 
       expect(publishDataSpy).toHaveBeenCalledWith({
-        flowVariableSettings: dialogInitialData.schema.flowVariablesMap,
+        flowVariableSettings: dialogInitialData.flowVariableSettings,
         data: expectedData,
       });
     });
@@ -498,10 +498,9 @@ describe("NodeDialog.vue", () => {
               },
             },
             schema: {},
-            [uiSchemaKey]: {
-              globalUpdates,
-              initialUpdates,
-            },
+            [uiSchemaKey]: {},
+            globalUpdates,
+            initialUpdates,
             flowVariableSettings: {},
           }),
         ),
