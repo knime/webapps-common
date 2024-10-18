@@ -66,6 +66,7 @@ import org.knime.core.data.renderer.AbstractPainterDataValueRenderer;
 import org.knime.core.data.renderer.DefaultDataValueRenderer;
 import org.knime.core.data.renderer.ImageValueRenderer;
 import org.knime.core.data.renderer.MultiLineStringValueRenderer;
+import org.knime.core.data.xml.XMLValueRenderer2;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.webui.node.view.table.data.TableViewDataServiceImpl;
 
@@ -149,6 +150,14 @@ public final class SwingBasedRendererFactory implements DataValueRendererFactory
 
         @Override
         public DataCellContentType getContentType() {
+            // Cannot compare by instance since this would introduce a dependency cycle between knime-base,
+            // knime-core-ui, and knime-json
+            if (m_renderer.getDescription().equals("JSON value")) {
+                return DataCellContentType.JSON;
+            }
+            if (m_renderer instanceof XMLValueRenderer2) {
+                return DataCellContentType.XML;
+            }
             if (m_renderer instanceof MultiLineStringValueRenderer) {
                 return DataCellContentType.MULTI_LINE_TXT;
             }

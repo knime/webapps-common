@@ -6,6 +6,7 @@ import type { LibraryOptions } from "vite";
 import { loadEnv } from "vite";
 // @ts-ignore
 import { svgoConfig } from "@knime/styles/config/svgo.config";
+import path from "node:path";
 
 const camelCase = (input: string) => {
   return input
@@ -169,6 +170,20 @@ export default defineConfig(({ mode }) => {
       setupFiles: [
         fileURLToPath(new URL(getTestSetupFile(testMode), import.meta.url)),
       ],
+      alias: {
+        "monaco-editor/esm/vs/editor/editor.worker?worker": path.resolve(
+          __dirname,
+          "node_modules/monaco-editor/esm/vs/editor/editor.worker?worker",
+        ),
+        "monaco-editor/esm/vs/language/json/json.worker?worker": path.resolve(
+          __dirname,
+          "node_modules/monaco-editor/esm/vs/language/json/json.worker?worker",
+        ),
+        "monaco-editor": path.resolve(
+          __dirname,
+          "node_modules/monaco-editor/esm/vs/editor/editor.main.js",
+        ),
+      },
       coverage: {
         all: true,
         exclude: [

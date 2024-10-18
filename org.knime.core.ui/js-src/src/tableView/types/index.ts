@@ -2,6 +2,7 @@ import type { UIExtensionService } from "@knime/ui-extension-service";
 import type TableViewViewSettings from "./ViewSettings";
 import type { MenuItem } from "@knime/components";
 import { FilterConfig } from "@knime/knime-ui-table";
+import { ColumnContentType } from "./Table";
 import { DataType } from "./InitialData";
 
 export { DataType };
@@ -42,7 +43,7 @@ export interface TableViewDisplayProps {
   header: {
     displayedColumns: string[];
     columnFiltersMap?: Map<string | symbol, FilterConfig>;
-    columnContentTypes: ("txt" | "multi_line_txt" | "img_path" | "html")[];
+    columnContentTypes: ColumnContentType[];
     dataTypes: Record<string, DataType>;
     columnDataTypeIds: string[];
     colNameSelectedRendererId?: Record<string, string>;

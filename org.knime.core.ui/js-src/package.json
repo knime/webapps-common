@@ -22,6 +22,7 @@
     "build:ImageView": "vite build --mode ImageView",
     "build:html": "run-p build:html:*",
     "build:html:ImageValueView": "vite build --mode html:ImageValueView",
+    "build:html:CodeValueView": "vite build --mode html:CodeValueView",
     "type-check": "vue-tsc -p tsconfig.vitest.json",
     "format": "prettier --cache --write .",
     "format:check": "prettier --cache --check .",
@@ -57,7 +58,9 @@
     "@tiptap/core": "2.1.10",
     "date-fns": "2.29.3",
     "focus-trap-vue": "4.0.2",
+    "highlight.js": "11.10.0",
     "lodash-es": "4.17.21",
+    "monaco-editor": "0.51.0",
     "tabbable": "6.2.0",
     "uuid": "9.0.1"
   },

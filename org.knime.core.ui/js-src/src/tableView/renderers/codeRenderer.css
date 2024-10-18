@@ -1,0 +1,42 @@
+/**
+* Variables to mimic the Visual Studio Code theme for JSON and XML based on scopes from highlight.js.
+* For the use of further languages, extend the tags in this file with the tags given in the highlight.js documentation
+* at https://highlightjs.readthedocs.io/en/latest/css-classes-reference.html.
+*/
+
+.hljs-keyword,
+.hljs-string {
+  color: rgb(4, 81, 165);
+}
+
+.hljs-number {
+  color: rgb(9, 134, 88);
+}
+
+.hljs-symbol {
+  color: rgb(0, 0, 255);
+}
+
+.hljs-comment {
+  color: rgb(0, 128, 0);
+}
+
+.hljs-tag {
+  color: rgb(0, 0, 255);
+
+  & .hljs-attr {
+    color: rgb(255, 0, 0);
+  }
+
+  & .hljs-string {
+    color: rgb(0, 0, 255);
+  }
+}
+
+.hljs-name {
+  color: rgb(128, 0, 0);
+}
+
+.hljs-attr {
+  color: rgb(163, 21, 21);
+}

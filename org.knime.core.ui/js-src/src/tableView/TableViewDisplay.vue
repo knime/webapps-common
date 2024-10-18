@@ -7,6 +7,7 @@ import {
 } from "@knime/knime-ui-table";
 import ImageRenderer from "./renderers/ImageRenderer.vue";
 import HtmlRenderer from "./renderers/HtmlRenderer.vue";
+import CodeRenderer from "./renderers/CodeRenderer.vue";
 import MultiLineTextRenderer from "./renderers/MultiLineTextRenderer.vue";
 import getDataConfig from "./utils/getDataConfig";
 import getTableConfig from "./utils/getTableConfig";
@@ -260,6 +261,9 @@ const onDataValueView = (config: DataValueViewConfig) =>
   });
 
 const onCloseDataValueView = () => emit("closeDataValueView");
+
+const useCodeRenderer = (index: number) =>
+  ["xml", "json"].includes(getContentType(index));
 </script>
 
 <template>
@@ -354,6 +358,12 @@ const onCloseDataValueView = () => emit("closeDataValueView");
           v-else-if="getContentType(index) === 'multi_line_txt'"
           :text="cell"
           :padding-top-bottom="paddingTopBottom"
+        />
+        <!-- @vue-expect-error getContentType can only be xml or json due to v-else-if -->
+        <CodeRenderer
+          v-else-if="useCodeRenderer(index)"
+          :content="cell"
+          :language="getContentType(index)"
         />
       </template>
     </TableUIWithAutoSizeCalculation>

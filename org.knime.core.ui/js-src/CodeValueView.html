@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>KNIME CodeValueView</title>
+    <style>
+      @import "@fontsource/roboto-mono/400";
+
+      #editor-container {
+        width: 100vw;
+        height: 100vh;
+      }
+
+      #editor {
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="editor-container">
+      <div id="editor" />
+    </div>
+    <script type="module">
+      import { CodeValueView } from "./src/html-renderers/codeValueView/CodeValueView";
+
+      const editor = new CodeValueView(document.getElementById("editor"));
+      editor.init();
+    </script>
+  </body>
+</html>
