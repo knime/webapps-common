@@ -79,6 +79,13 @@ const getTestSetupFile = (mode: "integration" | "unit") => {
   }
 };
 
+const htmlModePrefix = "html:";
+const getHtmlViewRollupOptions = (mode: string) => ({
+  input: fileURLToPath(
+    new URL(`./${mode.replace(htmlModePrefix, "")}.html`, import.meta.url),
+  ),
+});
+
 // https://vitest.dev/config/
 export default defineConfig(({ mode }) => {
   const env = { ...process.env, ...loadEnv(mode, process.cwd()) };
@@ -101,53 +108,55 @@ export default defineConfig(({ mode }) => {
       lib: getCurrentLibrary(mode as ComponentLibraries),
       emptyOutDir: false,
       cssCodeSplit: false,
-      rollupOptions: {
-        ...conditionalRollupOptions,
-        ...{
-          plugins: [
-            {
-              apply: "build",
-              enforce: "post",
-              name: "macro-replace-css",
-              generateBundle(opts, bundle) {
-                // we only support this for ES format, umd uses the head injection
-                if (opts.format !== "es") {
-                  return;
-                }
-                const bundleKeys = Object.keys(bundle);
-                const bundleFilename = bundleKeys.filter((name) =>
-                  name.endsWith(".js"),
-                );
-                const cssFilename = bundleKeys.find((name) =>
-                  name.endsWith(".css"),
-                );
+      rollupOptions: mode.startsWith(htmlModePrefix)
+        ? getHtmlViewRollupOptions(mode)
+        : {
+            ...conditionalRollupOptions,
+            ...{
+              plugins: [
+                {
+                  apply: "build",
+                  enforce: "post",
+                  name: "macro-replace-css",
+                  generateBundle(opts, bundle) {
+                    // we only support this for ES format, umd uses the head injection
+                    if (opts.format !== "es") {
+                      return;
+                    }
+                    const bundleKeys = Object.keys(bundle);
+                    const bundleFilename = bundleKeys.filter((name) =>
+                      name.endsWith(".js"),
+                    );
+                    const cssFilename = bundleKeys.find((name) =>
+                      name.endsWith(".css"),
+                    );
 
-                if (!bundleFilename || !cssFilename) {
-                  // eslint-disable-next-line no-console
-                  console.log("Do not call macro-replace-css");
-                  return;
-                }
+                    if (!bundleFilename || !cssFilename) {
+                      // eslint-disable-next-line no-console
+                      console.log("Do not call macro-replace-css");
+                      return;
+                    }
 
-                bundleFilename.forEach((file) => {
-                  const {
-                    // @ts-ignore
-                    [cssFilename]: { source: rawCss },
-                    [file]: component,
-                  } = bundle;
+                    bundleFilename.forEach((file) => {
+                      const {
+                        // @ts-ignore
+                        [cssFilename]: { source: rawCss },
+                        [file]: component,
+                      } = bundle;
 
-                  // @ts-ignore
-                  component.code = component.code.replace(
-                    "__INLINE_CSS_CODE__",
-                    JSON.stringify(rawCss),
-                  );
-                });
-                // remove css file from final bundle
-                delete bundle[cssFilename];
-              },
+                      // @ts-ignore
+                      component.code = component.code.replace(
+                        "__INLINE_CSS_CODE__",
+                        JSON.stringify(rawCss),
+                      );
+                    });
+                    // remove css file from final bundle
+                    delete bundle[cssFilename];
+                  },
+                },
+              ],
             },
-          ],
-        },
-      },
+          },
     },
     test: {
       include: getIncludedTestFiles(testMode),
