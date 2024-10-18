@@ -8,6 +8,7 @@ export class BaseTreeNode {
   readonly name: string;
   readonly level: number;
   readonly icon?: FunctionalComponent<SVGAttributes>;
+  readonly customSlot?: string;
   loading = false;
   hasChildren = false;
   showCheckbox: TypeWithUndefined<boolean>;
@@ -20,6 +21,7 @@ export class BaseTreeNode {
     this.key = options.nodeKey;
     this.name = options.name;
     this.icon = options.icon;
+    this.customSlot = options.customSlot;
     this.showCheckbox = options.showCheckbox;
     this.parentKey = parent?.key;
     this.parentKeys = parent ? [...parent.parentKeys, parent.key] : [];

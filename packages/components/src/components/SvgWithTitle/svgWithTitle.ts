@@ -1,4 +1,4 @@
-import { type ComponentInstance, h as createElement } from "vue";
+import { type ComponentInstance, h } from "vue";
 
 /**
  * Higher order component that decorates a SVG component (loaded with vue-svg-loader) with a `<title>` element
@@ -6,13 +6,20 @@ import { type ComponentInstance, h as createElement } from "vue";
  *
  * @example
  *
- * import MyIcon from '~/icons/foo.svg';
- * import svgWithTitle from '…';
+ * import MyIcon from "~/icons/foo.svg";
+ * import svgWithTitle from "…";
  * export default {
  *   components: {
- *       MyIcon: svgWithTitle(MyIcon, 'My Title')
+ *       MyIcon: svgWithTitle(MyIcon, "My Title")
  *   }
  * };
+ *
+ * or for sfc setup
+ *
+ * import MyIcon from "~/icons/foo.svg";
+ * import svgWithTitle from "…";
+ * const MyIconWithTitle = svgWithTitle(MyIcon, "My Title")
+ *
  *
  * @param SvgComponent The component to decorate
  * @param title The title to insert
@@ -20,9 +27,9 @@ import { type ComponentInstance, h as createElement } from "vue";
  */
 export default (SvgComponent: ComponentInstance<any>, title: string) => ({
   render() {
-    const renderedComponent = SvgComponent.render.apply(this, createElement);
+    const renderedComponent = SvgComponent.render({}, []);
 
-    const titleEl = createElement("title", title);
+    const titleEl = h("title", title);
     // @ts-ignore
     titleEl.ns = "svg";
 
