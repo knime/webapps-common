@@ -103,7 +103,7 @@ const onShowDetailsClicked = () => {
       <div class="copy-button-wrapper">
         <Button @click="copyToClipboard">
           <template v-if="copied"
-            ><CheckIcon class="check-icon" />Error was copied</template
+            ><CheckIcon class="copy-icon" />Error was copied</template
           >
           <template v-else
             ><CopyIcon class="copy-icon" />Copy error to clipboard
@@ -152,13 +152,6 @@ const onShowDetailsClicked = () => {
 }
 
 .copy-icon {
-  &svg {
-    margin-top: 2px;
-    width: 12px;
-  }
-}
-
-.check-icon {
   &svg {
     width: 12px;
   }
