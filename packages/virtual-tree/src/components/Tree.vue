@@ -4,9 +4,8 @@
  */
 import { nextTick, ref } from "vue";
 
-import { useKeyPressedUntilMouseClick } from "@knime/components";
+import { LoadingIcon, useKeyPressedUntilMouseClick } from "@knime/components";
 import ArrowNextIcon from "@knime/styles/img/icons/arrow-next.svg";
-import ReloadIcon from "@knime/styles/img/icons/reload.svg";
 
 import BaseTree, { type EventParams } from "../baseTree";
 import {
@@ -128,6 +127,10 @@ defineExpose({
   getSelectedTreeNode: () =>
     // eslint-disable-next-line no-undefined
     props.selectable ? baseTree.value?.getSelectedNode() : undefined,
+  /** trigger loadData function (prop) to load the children of the given nodeKey. Does not remove current children. */
+  loadChildren: (nodeKey: NodeKey) => baseTree.value?.loadChildren(nodeKey),
+  /** remove all children of a given nodeKey. */
+  clearChildren: (nodeKey: NodeKey) => baseTree.value?.clearChildren(nodeKey),
 });
 </script>
 
@@ -163,7 +166,7 @@ defineExpose({
               },
             ]"
             @click="() => onExpandableClick(node)"
-            ><slot name="expandable" :tree-node="node"
+            ><slot :name="node.customSlot ?? 'expandable'" :tree-node="node"
               ><Component :is="node.icon" v-if="node.icon" />
               {{ node.name }}</slot
             ></span
@@ -176,7 +179,7 @@ defineExpose({
               'leaf',
               { selected: isTreeNodeSelected(node), focus: hasFocus(node) },
             ]"
-            ><slot name="leaf" :tree-node="node"
+            ><slot :name="node.customSlot ?? 'leaf'" :tree-node="node"
               ><Component :is="node.icon" v-if="node.icon" />
               {{ node.name }}</slot
             ></span
@@ -186,7 +189,7 @@ defineExpose({
     </template>
     <template #icon="slotProps">
       <slot name="icon" v-bind="slotProps">
-        <ReloadIcon v-if="slotProps.loading" class="icon" />
+        <LoadingIcon v-if="slotProps.loading" class="loading-icon" />
         <ArrowNextIcon v-else class="icon" />
       </slot>
     </template>
@@ -440,9 +443,6 @@ defineExpose({
 .vir-tree-node .node-arrow.expanded {
   transform: rotate(90deg);
 }
-.vir-tree-node .node-arrow .ico-loading {
-  animation: roundLoading 1s linear infinite;
-}
 .vir-tree-node .node-content {
   display: flex;
   align-items: center;
@@ -465,14 +465,6 @@ defineExpose({
 }
 .node-selected .node-title {
   background-color: var(--assist-color);
-}
-@keyframes roundLoading {
-  0% {
-    transform: rotate(0);
-  }
-  to {
-    transform: rotate(360deg);
-  }
 }
 /* stylelint-enable */
 </style>

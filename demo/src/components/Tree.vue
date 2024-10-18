@@ -43,11 +43,25 @@ const loadData = (treeNode: BaseTreeNode, callback: (children: TreeNodeOptions[]
 const codeExampleSlot = `
 import { Tree, type BaseTreeNode, type TreeNodeOptions } from "@knime/virtual-tree";
 
-const loadData = (treeNode: BaseTreeNode, callback: (children: TreeNodeOptions[]) => void) => {
-  callback([{ nodeKey: "more", name: "more loaded content" }]);
+const loadedTimes = ref(0);
+const loadDataWithCustomSlot = async (
+  treeNode: BaseTreeNode,
+  callback: (children: TreeNodeOptions[]) => void,
+) => {
+  // eslint-disable-next-line no-magic-numbers
+  await new Promise((r) => setTimeout(r, 1000));
+  loadedTimes.value++;
+  callback([
+    {
+      nodeKey: "more",
+      name: "more loaded content #" + loadedTimes.value,
+      customSlot: "somethingFancy",
+    },
+  ]);
 };
 
 <Tree
+  ref="tree"
   :selectable="false"
   :source="[
     {
@@ -61,12 +75,28 @@ const loadData = (treeNode: BaseTreeNode, callback: (children: TreeNodeOptions[]
       hasChildren: true,
     },
   ]"
-  :load-data="loadData"
+  :load-data="loadDataWithCustomSlot"
 >
   <template #leaf="{ treeNode }">
     <div @dblclick="console.log(treeNode)">
       {{ treeNode.name }}
     </div>
+  </template>
+  <template
+    #somethingFancy="{ treeNode }: { treeNode: BaseTreeNode }"
+  >
+    {{ treeNode.name }}
+    <button
+      with-border
+      @click="
+        () => {
+          $refs.tree?.clearChildren(treeNode.parentKey!);
+          $refs.tree?.loadChildren(treeNode.parentKey!);
+        }
+      "
+    >
+      Reload
+    </button>
   </template>
 </Tree>
 `;
@@ -95,6 +125,23 @@ const loadData = async (
   callback([
     { nodeKey: "more", name: "more loaded content" },
     { nodeKey: "more2", name: "another item" },
+  ]);
+};
+
+const loadedTimes = ref(0);
+const loadDataWithCustomSlot = async (
+  treeNode: BaseTreeNode,
+  callback: (children: TreeNodeOptions[]) => void,
+) => {
+  // eslint-disable-next-line no-magic-numbers
+  await new Promise((r) => setTimeout(r, 1000));
+  loadedTimes.value++;
+  callback([
+    {
+      nodeKey: "more",
+      name: `more loaded content #${loadedTimes.value}`,
+      customSlot: "somethingFancy",
+    },
   ]);
 };
 
@@ -232,6 +279,7 @@ const hugeList = ref(recursion("v", 2, 35));
       <div class="grid-container">
         <div class="grid-item-5">
           <Tree
+            ref="tree3"
             :selectable="false"
             :source="[
               {
@@ -245,12 +293,32 @@ const hugeList = ref(recursion("v", 2, 35));
                 hasChildren: true,
               },
             ]"
-            :load-data="loadData"
+            :load-data="loadDataWithCustomSlot"
           >
             <template #leaf="{ treeNode }">
               <div @dblclick="doubleClickedItem = treeNode">
                 {{ treeNode.name }}
               </div>
+            </template>
+            <template
+              #somethingFancy="{ treeNode }: { treeNode: BaseTreeNode }"
+            >
+              {{ treeNode.name }}
+              <button
+                with-border
+                @click="
+                  () => {
+                    ($refs.tree3 as InstanceType<typeof Tree>)?.clearChildren(
+                      treeNode.parentKey!,
+                    );
+                    ($refs.tree3 as InstanceType<typeof Tree>)?.loadChildren(
+                      treeNode.parentKey!,
+                    );
+                  }
+                "
+              >
+                Reload
+              </button>
             </template>
           </Tree>
         </div>

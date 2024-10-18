@@ -12,6 +12,7 @@ interface TreeNodeOptions {
   name: string;
   showCheckbox?: boolean;
   hasChildren?: boolean;
+  customSlot?: string;
   icon?: FunctionalComponent<SVGAttributes>;
   children?: TreeNodeOptions[];
   [key: string]: any;
@@ -65,6 +66,8 @@ type TreeContext = Readonly<{
   getHalfCheckedNodes: () => BaseTreeNode[];
   getExpandedKeys: () => NodeKey[];
   toggleExpand: (nodeKey: NodeKey, state?: boolean) => void;
+  loadChildren: (nodeKey: NodeKey) => void;
+  clearChildren: (nodeKey: NodeKey) => void;
 }>;
 
 export type {

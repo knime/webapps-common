@@ -185,33 +185,51 @@ watch(
 
 const loading = ref(false);
 
+/** loads children via props.loadData  */
+function loadChildren(node: BaseTreeNode) {
+  if (!props.loadData) {
+    return;
+  }
+  node.loading = true;
+  loading.value = true;
+  props.loadData(node, (children) => {
+    node.loading = false;
+    loading.value = false;
+    if (children.length) {
+      lazyLoad(node, children);
+
+      useCheckState([...checkedKeys.value], {
+        checkedKeys: checkedKeys.value,
+        halfCheckedKeys: halfCheckedKeys.value,
+        checkStrictly: props.checkStrictly,
+        key2TreeNode: key2TreeNode.value,
+      });
+    } else {
+      node.children = [];
+      node.hasChildren = false;
+    }
+  });
+}
+
 function toggleExpand({ state, node, source }: EventParams) {
   if (loading.value) {
     return;
   }
   expandedKeys.value[addOrDelete(state)](node.key);
-  if (state && !node.children.length && props.loadData) {
-    node.loading = true;
-    loading.value = true;
-    props.loadData(node, (children) => {
-      node.loading = false;
-      loading.value = false;
-      if (children.length) {
-        lazyLoad(node, children);
-
-        useCheckState([...checkedKeys.value], {
-          checkedKeys: checkedKeys.value,
-          halfCheckedKeys: halfCheckedKeys.value,
-          checkStrictly: props.checkStrictly,
-          key2TreeNode: key2TreeNode.value,
-        });
-      } else {
-        node.children = [];
-        node.hasChildren = false;
-      }
-    });
+  if (state && !node.children.length) {
+    loadChildren(node);
   }
   emit("expandChange", { state, node, source: source || "click" });
+}
+
+function clearChildren(node: BaseTreeNode) {
+  const indexInFlattenData = flattenTreeData.value.findIndex(
+    (item) => item.key === node.key,
+  );
+
+  const size = getFlattenTreeData(node.children).length;
+  node.children = [];
+  flattenTreeData.value.splice(indexInFlattenData + 1, size);
 }
 
 function lazyLoad(node: BaseTreeNode, children: TreeNodeOptions[]) {
@@ -389,6 +407,9 @@ const context = shallowReactive({
       node: key2TreeNode.value[nodeKey],
       source: "api",
     }),
+  loadChildren: (nodeKey: NodeKey) => loadChildren(key2TreeNode.value[nodeKey]),
+  clearChildren: (nodeKey: NodeKey) =>
+    clearChildren(key2TreeNode.value[nodeKey]),
 });
 
 defineExpose(toRaw(context));
