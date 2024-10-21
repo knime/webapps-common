@@ -6,6 +6,7 @@ import {
   type UIExtensionService,
   type Alert,
   RenderingType,
+  DataValueViewConfig,
 } from "@knime/ui-extension-service";
 import NodeDialog from "@/nodeDialog/NodeDialog.vue";
 import dataServiceMock from "./dataServiceMock";
@@ -139,6 +140,12 @@ export default {
         setControlsVisibility(param) {
           console.log("setControlsVisibility called with", param);
           return Promise.resolve();
+        },
+        showDataValueView(config: DataValueViewConfig) {
+          console.log("showDataValueView called with", config);
+        },
+        closeDataValueView() {
+          console.log("closeDataValueView called");
         },
       };
     },

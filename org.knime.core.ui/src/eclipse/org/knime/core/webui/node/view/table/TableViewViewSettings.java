@@ -430,10 +430,17 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     public boolean m_showOnlySelectedRowsConfigurable = true;
 
     /**
-     * If there should be a limit on rendered Columns
+     * Whether there should be a limit on rendered Columns
      */
     @Persist(hidden = true, optional = true)
     public boolean m_skipRemainingColumns;
+
+    /**
+     * Whether data value views are enabled. Limited to port views currently, but should be made a configurable settings
+     * in the TableView once it is enabled there.
+     */
+    @Persist(hidden = true, optional = true)
+    public boolean m_enableDataValueViews;
 
     /**
      * Create a new {@link TableViewViewSettings} with default values

@@ -42,6 +42,7 @@ type GenericTableViewViewSettings<T extends string[] | undefined> = {
   showOnlySelectedRowsConfigurable: boolean;
   displayedColumns: { selected: T };
   enableCellCopying: boolean;
+  enableDataValueViews: boolean;
 };
 
 type TableViewViewSettings = GenericTableViewViewSettings<string[]>;

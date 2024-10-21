@@ -154,6 +154,7 @@ describe("TableViewInteractive.vue", () => {
         showOnlySelectedRows: false,
         showOnlySelectedRowsConfigurable: true,
         enableCellCopying: true,
+        enableDataValueViews: true,
       },
     };
 

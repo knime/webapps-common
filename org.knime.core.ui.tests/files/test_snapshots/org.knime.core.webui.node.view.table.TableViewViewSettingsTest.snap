@@ -38,7 +38,8 @@
       "selectionMode" : "EDIT",
       "showOnlySelectedRows" : false,
       "showOnlySelectedRowsConfigurable" : true,
-      "skipRemainingColumns" : false
+      "skipRemainingColumns" : false,
+      "enableDataValueViews" : false
     }
   },
   "schema" : {
@@ -226,6 +227,11 @@
             "description" : "Enables or disables the ability to perform a column search inside the table.",
             "default" : true,
             "configKeys" : [ "enableColumnSearch" ]
+          },
+          "enableDataValueViews" : {
+            "type" : "boolean",
+            "default" : false,
+            "configKeys" : [ "enableDataValueViews_Internals" ]
           },
           "enableGlobalSearch" : {
             "type" : "boolean",

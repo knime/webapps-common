@@ -1269,7 +1269,7 @@ export default {
     :enable-cell-selection="
       enableCellSelection && Boolean(settings.enableCellCopying)
     "
-    :enable-data-value-views="true"
+    :enable-data-value-views="settings.enableDataValueViews"
     :knime-service="knimeService"
     :force-hide-table-sizes="forceHideTableSizes"
     :first-row-image-dimensions="table.firstRowImageDimensions || {}"
