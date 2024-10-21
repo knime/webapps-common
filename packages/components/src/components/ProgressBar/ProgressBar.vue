@@ -43,7 +43,7 @@ const progressValue = computed(() => {
 });
 
 const toolTip = computed(() => {
-  return props.toolTip || `Progress:${progressValue.value}%`;
+  return props.toolTip || `Progress: ${progressValue.value}%`;
 });
 </script>
 
@@ -94,6 +94,7 @@ const toolTip = computed(() => {
   & .progress::-webkit-progress-value {
     border-radius: var(--progress-bar-radius);
     background-color: var(--progress-bar-foreground-color);
+    transition: width 0.5s;
   }
 
   /* Firefox uses this to target the bar that represents the value of the progress element */
