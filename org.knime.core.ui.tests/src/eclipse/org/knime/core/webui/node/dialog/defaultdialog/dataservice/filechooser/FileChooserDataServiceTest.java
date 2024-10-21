@@ -194,8 +194,12 @@ class FileChooserDataServiceTest {
 
             assertThat(result.errorMessage()).isEmpty();
             assertThat(result.folder().path()).isNull();
-            assertThat(result.filePathRelativeToFolder())
-                .isEqualTo(m_emptyPathDirectory.getParent().getParent().relativize(m_subFolder).toString());
+            assertThat(result.filePathRelativeToFolder()).isEqualTo(relativizeFromRoot(m_subFolder).toString());
+        }
+
+        static Path relativizeFromRoot(final Path path) {
+            final var root = path.getRoot();
+            return root.relativize(path);
         }
 
     }
