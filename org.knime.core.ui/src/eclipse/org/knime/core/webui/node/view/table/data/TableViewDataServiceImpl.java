@@ -78,6 +78,7 @@ import org.knime.core.data.sort.RowComparator;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.webui.data.DataServiceContext;
 import org.knime.core.webui.data.DataServiceException;
 import org.knime.core.webui.node.view.table.data.render.DataCellContentType;
@@ -115,6 +116,8 @@ public class TableViewDataServiceImpl implements TableViewDataService {
     private final String m_tableId;
 
     private final Supplier<Set<RowKey>> m_selectionSupplier;
+
+    private static final NodeLogger LOGGER = NodeLogger.getLogger(TableViewDataServiceImpl.class);
 
     // Execution context reference is being kept until the data service is deactivated (view not visible anymore)
     // or disposed (workflow closed, node removed). It is cleared via 'clearCache'.
@@ -176,6 +179,11 @@ public class TableViewDataServiceImpl implements TableViewDataService {
         final String[][] columnFilterValue, final boolean filterRowKeys, final String[] rendererIdsParam,
         final boolean updateDisplayedColumns, final boolean updateTotalSelected, final boolean forceClearImageDataCache,
         final boolean trimColumns, final boolean showOnlySelectedRows) {
+
+        logParametersOnDebug(columns, fromIndex, numRows, sortColumn, sortAscending, globalSearchTerm,
+            columnFilterValue, filterRowKeys, rendererIdsParam, updateDisplayedColumns, updateTotalSelected,
+            forceClearImageDataCache, trimColumns, showOnlySelectedRows);
+
         var bufferedDataTable = m_tableSupplier.get();
         if (bufferedDataTable == null) {
             return createEmptyTable();
@@ -683,6 +691,30 @@ public class TableViewDataServiceImpl implements TableViewDataService {
 
         };
 
+    }
+
+    /**
+     * Added as part of UIEXT-2221 - "sometimes" columns are nor displayed
+     *
+     * the below sys property will add additional debug out.
+     */
+    private static final boolean SYSPROP_DEBUG_PRINT = Boolean.getBoolean("knime.tableviewdataservice.debug");
+
+    private static void logParametersOnDebug(final String[] columns, final long fromIndex, final int numRows,
+        final String sortColumn, final boolean sortAscending, final String globalSearchTerm,
+        final String[][] columnFilterValue, final boolean filterRowKeys, final String[] rendererIdsParam,
+        final boolean updateDisplayedColumns, final boolean updateTotalSelected, final boolean forceClearImageDataCache,
+        final boolean trimColumns, final boolean showOnlySelectedRows) {
+        if (SYSPROP_DEBUG_PRINT && LOGGER.isDebugEnabled()) {
+            LOGGER.debug("getFilteredAndSortedTable: columns: " + Arrays.toString(columns) + ", fromIndex: " + fromIndex
+                + ", numRows: " + numRows + ", sortColumn: " + sortColumn + ", sortAscending: " + sortAscending
+                + ", globalSearchTerm: " + globalSearchTerm + ", columnFilterValue: "
+                + Arrays.deepToString(columnFilterValue) + ", filterRowKeys: " + filterRowKeys + ", rendererIdsParam: "
+                + Arrays.toString(rendererIdsParam) + ", updateDisplayedColumns: " + updateDisplayedColumns
+                + ", updateTotalSelected: " + updateTotalSelected + ", forceClearImageDataCache: "
+                + forceClearImageDataCache + ", trimColumns: " + trimColumns + ", showOnlySelectedRows: "
+                + showOnlySelectedRows);
+        }
     }
 
 }
