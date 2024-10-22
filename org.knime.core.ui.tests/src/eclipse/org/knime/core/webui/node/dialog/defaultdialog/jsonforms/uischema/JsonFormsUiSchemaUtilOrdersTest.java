@@ -816,4 +816,31 @@ class JsonFormsUiSchemaUtilOrdersTest {
             () -> JsonFormsUiSchemaUtilTest.buildTestUiSchema(DummySettings.class));
 
     }
+
+    @Test
+    void testAllowsReferencingRootAsSibling() {
+        class DummySettings implements DefaultNodeSettings {
+            @Widget(title = "", description = "")
+            OtherRootSettings m_otherRootSettings;
+
+
+            @After(OtherRootSettings.class)
+            interface AfterOtherRootSettings {
+
+            }
+
+            @Widget(title = "", description = "")
+            @Layout(AfterOtherRootSettings.class)
+            String m_field;
+
+        }
+
+
+        final var response = JsonFormsUiSchemaUtilTest.buildTestUiSchema(DummySettings.class);
+        assertThatJson(response).inPath("$.elements").isArray().hasSize(2);
+        assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("HorizontalLayout");
+        assertThatJson(response).inPath("$.elements[1].type").isString().isEqualTo("Control");
+
+    }
+
 }

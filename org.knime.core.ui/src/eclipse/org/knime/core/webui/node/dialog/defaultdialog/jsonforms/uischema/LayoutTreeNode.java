@@ -55,6 +55,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -247,12 +248,14 @@ public final class LayoutTreeNode {
      * is thrown.
      */
     void adaptParentFromPointers() {
-        var pointsToParents =
-            getPointsToLeaves(new HashSet<>()).stream().map(LayoutTreeNode::getParent).collect(Collectors.toSet());
+        final var pointsToLeaves = getPointsToLeaves(new HashSet<>());
+        var pointsToParents = pointsToLeaves.stream().map(LayoutTreeNode::getParent).collect(Collectors.toSet());
         if (pointsToParents.size() > 1) {
             throwOrderDependenciesException();
         }
         pointsToParents.stream().filter(Objects::nonNull).findAny().ifPresent(this::setParent);
+        Optional.ofNullable(getParent()).ifPresent(
+            parent -> pointsToLeaves.stream().filter(LayoutTreeNode::isRoot).forEach(leaf -> leaf.setParent(parent)));
     }
 
     private Collection<LayoutTreeNode> getPointsToLeaves(final Collection<LayoutTreeNode> alreadyVisitedNodes) {
