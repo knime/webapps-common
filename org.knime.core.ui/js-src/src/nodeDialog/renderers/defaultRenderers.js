@@ -11,7 +11,6 @@ import { columnFilterRenderer } from "./columnFilterRenderer";
 import { nameFilterRenderer } from "./nameFilterRenderer";
 import { columnSelectRenderer } from "./columnSelectRenderer";
 import { comboBoxRenderer } from "./comboBoxRenderer";
-import { dateTimeRenderer } from "./dateTimeRenderer";
 import { dropdownRenderer } from "./dropdownRenderer";
 import { integerRenderer } from "./integerRenderer";
 import { numberRenderer } from "./numberRenderer";
@@ -30,6 +29,8 @@ import { dynamicValueRenderer } from "./dynamicValueRenderer";
 import { editResetButtonRenderer } from "./editResetButtonRenderer";
 import { elementCheckboxRenderer } from "./elementCheckboxRenderer";
 import { textMessageRenderer } from "./textMessageRenderer";
+import { dateRenderer } from "./localDateRenderer";
+import { timeRenderer } from "./localTimeRenderer";
 
 export const defaultRenderers = [
   /* layout renderers */
@@ -48,7 +49,8 @@ export const defaultRenderers = [
   nameFilterRenderer,
   columnSelectRenderer,
   comboBoxRenderer,
-  dateTimeRenderer,
+  dateRenderer,
+  timeRenderer,
   dropdownRenderer,
   integerRenderer,
   numberRenderer,

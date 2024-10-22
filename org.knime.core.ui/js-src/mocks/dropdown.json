@@ -21,7 +21,8 @@
       },
       "AsyncChoicesFail": {
         "selected": "SUM"
-      }
+      },
+      "OptionalDropdown": "OptionalDropdown"
     },
     "schema": {
       "type": "object",
@@ -117,6 +118,12 @@
           "title": "Async possible values (fail)",
           "description": "Possible values are fetched asynchronously but the result has state 'FAIL'",
           "default": ""
+        },
+        "OptionalDropdown": {
+          "type": "string",
+          "title": "Optional dropdown test",
+          "description": "Tests a dropdown that can be disabled via a checkbox",
+          "default": "Europe/Berlin"
         }
       }
     },
@@ -247,6 +254,19 @@
                 "showRowKeys": false,
                 "showNoneColumn": false,
                 "choicesProviderClass": "failingChoicesProvider"
+              }
+            },
+            {
+              "type": "Control",
+              "scope": "#/properties/model/properties/OptionalDropdown",
+              "options": {
+                "choicesProviderClass": "successfulChoicesProvider",
+                "format": "dropDown",
+                "hideOnNull": true,
+                "showNoneColumn": false,
+                "showRowKeys": false,
+                "showSearch": true,
+                "showMode": true
               }
             }
           ]

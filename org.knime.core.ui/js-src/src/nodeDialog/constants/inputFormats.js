@@ -22,4 +22,6 @@ export const inputFormats = {
   fileChooser: "fileChooser",
   dynamicValue: "dynamicValue",
   textMessage: "textMessage",
+  localTime: "localTime",
+  localDate: "localDate",
 };

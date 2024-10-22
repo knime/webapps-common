@@ -8,6 +8,7 @@ describe("DateTimeControl", () => {
     properties: {
       dateTime: {
         type: "string",
+        // This is important for `isDateTimeControl` from the jsonforms core/src/testers
         format: "date-time",
       },
     },
@@ -15,6 +16,7 @@ describe("DateTimeControl", () => {
 
   it("dateTimeControl config error", () => {
     const uiSchema = {
+      // This error is intentional.
       type: "Controll",
       scope: "#/properties/dateTime",
     };
@@ -27,7 +29,7 @@ describe("DateTimeControl", () => {
       type: "Control",
       scope: "#/properties/dateTime",
       options: {
-        format: "date-time",
+        format: "dateTime",
       },
     };
 

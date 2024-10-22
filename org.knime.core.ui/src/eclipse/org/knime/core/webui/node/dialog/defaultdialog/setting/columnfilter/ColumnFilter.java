@@ -197,4 +197,17 @@ public class ColumnFilter implements PersistableSettings {
             default -> getSelectedIncludingMissing(choices, spec);
         };
     }
+
+    /**
+     * Get selected columns that appears in the given full spec.
+     * @param spec
+     * @return the array of currently selected columns with respect to the mode which are contained in the given array
+     */
+    public String[] getSelectedFromFullSpec(final DataTableSpec spec) {
+        var choices = spec.getColumnNames();
+        if (choices == null) {
+            return new String[0];
+        }
+        return getSelected(spec.getColumnNames(), spec);
+    }
 }

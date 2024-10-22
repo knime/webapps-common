@@ -54,6 +54,7 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtilTest.buildUiSchema;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -154,6 +155,9 @@ class UiSchemaOptionsTest {
             LocalDate m_localDate;
 
             @Widget(title = "", description = "")
+            LocalTime m_localTime;
+
+            @Widget(title = "", description = "")
             Credentials m_credentials;
 
             @Widget(title = "", description = "")
@@ -177,18 +181,20 @@ class UiSchemaOptionsTest {
         assertThatJson(response).inPath("$.elements[4].scope").isString().contains("columnSelection");
         assertThatJson(response).inPath("$.elements[4].options.format").isString().isEqualTo("columnSelection");
         assertThatJson(response).inPath("$.elements[5].scope").isString().contains("localDate");
-        assertThatJson(response).inPath("$.elements[5].options.format").isString().isEqualTo("date-time");
+        assertThatJson(response).inPath("$.elements[5].options.format").isString().isEqualTo("localDate");
         assertThatJson(response).inPath("$.elements[5].options.showTime").isBoolean().isFalse();
         assertThatJson(response).inPath("$.elements[5].options.showSeconds").isBoolean().isFalse();
         assertThatJson(response).inPath("$.elements[5].options.showMilliseconds").isBoolean().isFalse();
-        assertThatJson(response).inPath("$.elements[6].scope").isString().contains("credentials");
-        assertThatJson(response).inPath("$.elements[6].options.format").isString().isEqualTo("credentials");
-        assertThatJson(response).inPath("$.elements[7].scope").isString().contains("legacyCredentials");
-        assertThatJson(response).inPath("$.elements[7].options.format").isString().isEqualTo("legacyCredentials");
-        assertThatJson(response).inPath("$.elements[8].scope").isString().contains("fileSelection");
-        assertThatJson(response).inPath("$.elements[8].options.format").isString().isEqualTo("fileChooser");
-        assertThatJson(response).inPath("$.elements[9].scope").isString().contains("nameFilter");
-        assertThatJson(response).inPath("$.elements[9].options.format").isString().isEqualTo("nameFilter");
+        assertThatJson(response).inPath("$.elements[6].scope").isString().contains("localTime");
+        assertThatJson(response).inPath("$.elements[6].options.format").isString().isEqualTo("localTime");
+        assertThatJson(response).inPath("$.elements[7].scope").isString().contains("credentials");
+        assertThatJson(response).inPath("$.elements[7].options.format").isString().isEqualTo("credentials");
+        assertThatJson(response).inPath("$.elements[8].scope").isString().contains("legacyCredentials");
+        assertThatJson(response).inPath("$.elements[8].options.format").isString().isEqualTo("legacyCredentials");
+        assertThatJson(response).inPath("$.elements[9].scope").isString().contains("fileSelection");
+        assertThatJson(response).inPath("$.elements[9].options.format").isString().isEqualTo("fileChooser");
+        assertThatJson(response).inPath("$.elements[10].scope").isString().contains("nameFilter");
+        assertThatJson(response).inPath("$.elements[10].options.format").isString().isEqualTo("nameFilter");
     }
 
     @Test
@@ -199,6 +205,22 @@ class UiSchemaOptionsTest {
             @TextInputWidget(optional = true)
             String m_string;
 
+        }
+
+        var response = buildTestUiSchema(HidableStringSettings.class);
+
+        assertThatJson(response).inPath("$.elements[0].scope").isString().contains("string");
+        assertThatJson(response).inPath("$.elements[0].options.hideOnNull").isBoolean().isTrue();
+
+    }
+
+    @Test
+    void testHidableChoicesWidgetSetting() {
+        class HidableStringSettings implements DefaultNodeSettings {
+
+            @Widget(title = "", description = "")
+            @ChoicesWidget(choices = TestChoicesProvider.class, optional = true)
+            String m_string = "TestString";
         }
 
         var response = buildTestUiSchema(HidableStringSettings.class);
@@ -783,7 +805,7 @@ class UiSchemaOptionsTest {
 
         var response = buildTestUiSchema(DateTimeDefaultTestSettings.class);
         assertThatJson(response).inPath("$.elements[0]").isObject().containsKey("options");
-        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("date-time");
+        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("localDate");
         assertThatJson(response).inPath("$.elements[0].options.showTime").isBoolean().isFalse();
         assertThatJson(response).inPath("$.elements[0].options.showSeconds").isBoolean().isFalse();
         assertThatJson(response).inPath("$.elements[0].options.showMilliseconds").isBoolean().isFalse();
@@ -805,7 +827,7 @@ class UiSchemaOptionsTest {
 
         var response = buildTestUiSchema(DateTimeDefaultTestSettings.class);
         assertThatJson(response).inPath("$.elements[0]").isObject().containsKey("options");
-        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("date-time");
+        assertThatJson(response).inPath("$.elements[0].options.format").isString().isEqualTo("localDate");
         assertThatJson(response).inPath("$.elements[0].options.showTime").isBoolean().isTrue();
         assertThatJson(response).inPath("$.elements[0].options.showSeconds").isBoolean().isTrue();
         assertThatJson(response).inPath("$.elements[0].options.showMilliseconds").isBoolean().isTrue();

@@ -240,7 +240,9 @@ public final class JsonFormsConsts {
 
             public static final String SIMPLE_BUTTON = "simpleButton";
 
-            public static final String DATE_TIME = "date-time";
+            public static final String LOCAL_DATE = "localDate";
+
+            public static final String LOCAL_TIME = "localTime";
 
             public static final String RICH_TEXT_INPUT = "richTextInput";
 
@@ -376,5 +378,10 @@ public final class JsonFormsConsts {
          * The type of a horizontal layout part
          */
         public static final String TYPE_HORIZONTAL_LAYOUT = "HorizontalLayout";
+
+        /**
+         * The type of a vertical layout part
+         */
+        public static final String TYPE_VERTICAL_LAYOUT = "VerticalLayout";
     }
 }

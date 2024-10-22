@@ -119,6 +119,14 @@ public @interface ChoicesWidget {
     String excludedLabel() default "";
 
     /**
+     * With this field set to true, the input also has a checkbox which indicates whether the value is null. If so, the
+     * dropdown is hidden. This is currently only implemented for dropdowns
+     *
+     * @return whether the input should be hidden in case the value is null.
+     */
+    boolean optional() default false;
+
+    /**
      * TODO: UIEXT-1491 Remove this in favor of using {@link #choicesProvider} instead
      *
      * @return a handler which defined dependencies from one or multiple setting to this one and updates the possible

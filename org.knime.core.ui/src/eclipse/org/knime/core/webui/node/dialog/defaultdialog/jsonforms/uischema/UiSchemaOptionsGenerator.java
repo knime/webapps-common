@@ -217,8 +217,11 @@ final class UiSchemaOptionsGenerator {
                     options.put(TAG_FORMAT, Format.COLUMN_SELECTION);
                     break;
                 case LOCAL_DATE:
-                    options.put(TAG_FORMAT, Format.DATE_TIME);
+                    options.put(TAG_FORMAT, Format.LOCAL_DATE);
                     disableTimeFields(options);
+                    break;
+                case LOCAL_TIME:
+                    options.put(TAG_FORMAT, Format.LOCAL_TIME);
                     break;
                 case STRING_ARRAY:
                     options.put(TAG_FORMAT, Format.COMBO_BOX);
@@ -255,8 +258,9 @@ final class UiSchemaOptionsGenerator {
         }
 
         if (annotatedWidgets.contains(DateTimeWidget.class)) {
+
             final var dateTimeWidget = m_node.getAnnotation(DateTimeWidget.class).orElseThrow();
-            options.put(TAG_FORMAT, Format.DATE_TIME);
+            options.put(TAG_FORMAT, Format.LOCAL_DATE);
             selectTimeFields(options, dateTimeWidget.showTime(), dateTimeWidget.showSeconds(),
                 dateTimeWidget.showMilliseconds());
             if (!dateTimeWidget.timezone().isEmpty()) {
@@ -457,6 +461,10 @@ final class UiSchemaOptionsGenerator {
                 && !m_fieldClass.equals(NameFilter.class)) {
                 String format = getChoicesComponentFormat();
                 options.put(TAG_FORMAT, format);
+            }
+
+            if (choicesWidget.optional()) {
+                options.put("hideOnNull", choicesWidget.optional());
             }
             options.put("showNoneColumn", choicesWidget.showNoneColumn());
             options.put("showRowKeys", choicesWidget.showRowKeysColumn());

@@ -179,7 +179,12 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect;
  * <td>LocalDate</td>
  * <td>Date Picker</td>
  * <td>{@link DateWidget}</td>
+ * </tr>
  * <tr>
+ * <td>LocalTime</td>
+ * <td>Time Picker</td>
+ * <td></td>
+ * </tr>
  * <td>String[]</td>
  * <td></td>
  * <td>{@link ChoicesWidget} (drop-down) <br>

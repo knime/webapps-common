@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { type PropType, computed, onMounted, onBeforeUnmount } from "vue";
+import { type PropType, computed, onMounted, onBeforeUnmount, ref } from "vue";
 import { rendererProps } from "@jsonforms/vue";
 import LoadingDropdown from "./loading/LoadingDropdown.vue";
+import { Checkbox } from "@knime/components";
 import { AlertType } from "@knime/ui-extension-service";
 import { set } from "lodash-es";
 import getFlattenedSettings from "../utils/getFlattenedSettings";
@@ -15,6 +16,7 @@ import useDialogControl, {
 import LabeledControl from "./label/LabeledControl.vue";
 import useProvidedState from "../composables/components/useProvidedState";
 import { withSpecialChoices } from "../utils/getPossibleValuesFromUiSchema";
+import useHideOnNull from "./composables/useHideOnNull";
 
 const props = defineProps({
   ...rendererProps(),
@@ -39,15 +41,15 @@ const props = defineProps({
     default: (value: string | null) => value,
   },
 });
-const {
-  control,
-  onChange: onChangeControl,
-  disabled,
-} = props.jsonFormsControl ?? useDialogControl<string>({ props });
+const { control, onChange, disabled } =
+  props.jsonFormsControl ??
+  useDialogControl<string | null | undefined>({ props });
 const getPossibleValuesFromUiSchema = inject("getPossibleValuesFromUiSchema");
 const registerWatcher = inject("registerWatcher");
 const getData = inject("getData");
 const sendAlert = inject("sendAlert");
+
+const controlElement = ref(null);
 
 const choicesProvider = computed(
   () => control.value.uischema.options?.choicesProvider,
@@ -57,11 +59,33 @@ const options = withSpecialChoices(
   control.value,
 );
 
+const previousControlData = ref(control.value.data);
+
 const getFirstValueFromDropdownOrNull = (result: IdAndText[]) => {
   return props.dropdownValueToControlData(
     result.length > 0 ? result[0].id : null,
   );
 };
+
+const { showCheckbox, showControl, checkboxProps } = useHideOnNull(
+  {
+    control,
+    disabled,
+    controlElement,
+  },
+  {
+    setDefault: () => {
+      if (!previousControlData.value && options.value) {
+        onChange(getFirstValueFromDropdownOrNull(options.value));
+      } else {
+        onChange(previousControlData.value);
+      }
+    },
+    setNull: () => {
+      onChange(null);
+    },
+  },
+);
 
 const dropdownValue = computed(() =>
   props.controlDataToDropdownValue(control.value.data),
@@ -93,7 +117,7 @@ const getUpdateOptionsMethod = async (
           control.value.path,
           getFirstValueFromDropdownOrNull(result),
         );
-        onChangeControl(getFirstValueFromDropdownOrNull(result));
+        onChange(getFirstValueFromDropdownOrNull(result));
       }
     };
 
@@ -149,26 +173,34 @@ onBeforeUnmount(() => {
   unregisterWatcher();
 });
 
-const onChange = (value: string) => {
-  onChangeControl(props.dropdownValueToControlData(value));
+const onChangeDropDown = (value: string) => {
+  previousControlData.value = props.dropdownValueToControlData(value);
+  onChange(previousControlData.value);
 };
 </script>
 
 <template>
   <LabeledControl
-    #default="{ labelForId }"
     :control="control"
-    @controlling-flow-variable-set="onChange"
+    @controlling-flow-variable-set="onChangeDropDown"
   >
-    <!-- eslint-disable vue/attribute-hyphenation typescript complains with ':aria-label' instead of ':ariaLabel'-->
-    <LoadingDropdown
-      :id="labelForId ?? ''"
-      :ariaLabel="control.label"
-      :disabled="disabled"
-      :model-value="dropdownValue"
-      :possible-values="options"
-      compact
-      @update:model-value="onChange"
-    />
+    <template #before-label>
+      <Checkbox v-if="showCheckbox" v-bind="checkboxProps" />
+    </template>
+
+    <template #default="{ labelForId }">
+      <!-- eslint-disable vue/attribute-hyphenation typescript complains with ':aria-label' instead of ':ariaLabel'-->
+      <LoadingDropdown
+        v-if="showControl"
+        :id="labelForId ?? ''"
+        ref="controlElement"
+        :ariaLabel="control.label"
+        :disabled="disabled"
+        :model-value="dropdownValue"
+        :possible-values="options"
+        compact
+        @update:model-value="onChangeDropDown"
+      />
+    </template>
   </LabeledControl>
 </template>

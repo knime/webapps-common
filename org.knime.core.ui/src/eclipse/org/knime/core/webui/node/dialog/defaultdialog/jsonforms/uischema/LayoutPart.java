@@ -56,12 +56,14 @@ import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonForms
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TAG_TYPE;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TYPE_HORIZONTAL_LAYOUT;
 import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TYPE_SECTION;
+import static org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonFormsConsts.UiSchema.TYPE_VERTICAL_LAYOUT;
 
 import java.util.function.Function;
 
 import org.knime.core.webui.node.dialog.defaultdialog.layout.CheckboxesWithVennDiagram;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.HorizontalLayout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.VerticalLayout;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.updates.Effect;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -74,6 +76,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 enum LayoutPart {
         SECTION(LayoutPart::getSection), //
         HORIZONTAL_LAYOUT(LayoutPart::getHorizontalLayout), //
+        VERTICAL_LAYOUT(LayoutPart::getVerticalLayout), //
         VIRTUAL_SECTION(LayoutNodeCreationContext::parent), //
         VENN(LayoutPart::getVenn);
 
@@ -95,6 +98,9 @@ enum LayoutPart {
         }
         if (clazz.isAnnotationPresent(HorizontalLayout.class)) {
             return HORIZONTAL_LAYOUT;
+        }
+        if (clazz.isAnnotationPresent(VerticalLayout.class)) {
+            return VERTICAL_LAYOUT;
         }
         return VIRTUAL_SECTION;
     }
@@ -131,6 +137,14 @@ enum LayoutPart {
         final var parent = creationContext.parent();
         final var node = parent.addObject();
         node.put(TAG_TYPE, TYPE_HORIZONTAL_LAYOUT);
+        applyRules(node, creationContext);
+        return node.putArray(TAG_ELEMENTS);
+    }
+
+    private static ArrayNode getVerticalLayout(final LayoutNodeCreationContext creationContext) {
+        final var parent = creationContext.parent();
+        final var node = parent.addObject();
+        node.put(TAG_TYPE, TYPE_VERTICAL_LAYOUT);
         applyRules(node, creationContext);
         return node.putArray(TAG_ELEMENTS);
     }

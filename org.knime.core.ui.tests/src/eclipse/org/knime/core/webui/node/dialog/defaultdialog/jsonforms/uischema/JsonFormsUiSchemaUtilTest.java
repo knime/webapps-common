@@ -70,6 +70,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.layout.HorizontalLayout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Inside;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Layout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.Section;
+import org.knime.core.webui.node.dialog.defaultdialog.layout.VerticalLayout;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Widget;
@@ -581,6 +582,64 @@ class JsonFormsUiSchemaUtilTest {
             .isEqualTo("#/properties/model/properties/setting1");
         assertThatJson(response).inPath("$.elements[0].elements[1].scope").isString()
             .isEqualTo("#/properties/model/properties/setting2");
+    }
+
+    @Test
+    void testVerticalLayout() {
+
+        class TestHorizontalLayoutSettings implements DefaultNodeSettings {
+
+            //   [ ] Use hour   [ ] Use minute
+            //   Hours          Minutes
+            //   12             45
+            @HorizontalLayout
+            interface HoursMinutes {
+
+                @VerticalLayout
+                interface Hours {
+                }
+
+                @After(Hours.class)
+                @VerticalLayout
+                interface Minutes {
+                }
+            }
+
+            @Layout(HoursMinutes.Hours.class)
+            @Widget(title = "Use hour", description = "")
+            boolean m_useHour;
+
+            @Layout(HoursMinutes.Hours.class)
+            @Widget(title = "Hours", description = "")
+            int m_hour = 0;
+
+            @Layout(HoursMinutes.Minutes.class)
+            @Widget(title = "Use minute", description = "")
+            boolean m_useMinute;
+
+            @Layout(HoursMinutes.Minutes.class)
+            @Widget(title = "Minutes", description = "")
+            int m_minute = 0;
+        }
+
+        final var response = buildTestUiSchema(TestHorizontalLayoutSettings.class);
+
+        // Assertions for the outer structure
+        assertThatJson(response).inPath("$.elements[0].type").isString().isEqualTo("HorizontalLayout");
+
+        // Assertions for the first VerticalLayout
+        assertThatJson(response).inPath("$.elements[0].elements[0].type").isString().isEqualTo("VerticalLayout");
+        assertThatJson(response).inPath("$.elements[0].elements[0].elements[0].scope").isString()
+            .isEqualTo("#/properties/model/properties/useHour");
+        assertThatJson(response).inPath("$.elements[0].elements[0].elements[1].scope").isString()
+            .isEqualTo("#/properties/model/properties/hour");
+
+        // Assertions for the second VerticalLayout
+        assertThatJson(response).inPath("$.elements[0].elements[1].type").isString().isEqualTo("VerticalLayout");
+        assertThatJson(response).inPath("$.elements[0].elements[1].elements[0].scope").isString()
+            .isEqualTo("#/properties/model/properties/useMinute");
+        assertThatJson(response).inPath("$.elements[0].elements[1].elements[1].scope").isString()
+            .isEqualTo("#/properties/model/properties/minute");
     }
 
     @Test
