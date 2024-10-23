@@ -108,7 +108,7 @@ public interface FlowVariable {
             @Override
             public String getOwnerNodeId() {
                 NodeID owner = v.getOwner();
-                return owner != null && !owner.isRoot() ? owner.toString() : null;
+                return owner != null && !owner.isRoot() ? owner.toString() : "";
             }
 
             @Override
