@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { mount } from "@vue/test-utils";
 
-import HintPopover from "../HintPopover.vue";
+import HintPopover from "../PopoverContent.vue";
 
 describe("HintPopover", () => {
   const defaultProps = {

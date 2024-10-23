@@ -1,94 +1,90 @@
 <script lang="ts" setup>
-import { Button, FunctionButton } from "@knime/components";
-import CloseIcon from "@knime/styles/img/icons/close.svg";
+import { type Ref, nextTick, onMounted, ref, toRef } from "vue";
+import {
+  type MaybeElement,
+  type Placement,
+  arrow,
+  autoUpdate,
+  flip,
+  offset,
+  shift,
+  useFloating,
+} from "@floating-ui/vue";
+
+import PopoverContent from "./PopoverContent.vue";
 
 interface Props {
-  title: string;
-  description: string;
-  linkText?: string;
-  linkHref?: string;
-  video?: Array<{ source: string; type: string }>;
-  hideButtons?: boolean;
-  completeHint: () => void;
-  skipAllHints: () => void;
+  content: InstanceType<typeof PopoverContent>["$props"];
+  reference: string;
+  placement: Placement;
+  isVisible: Ref<boolean>;
 }
 
 const props = defineProps<Props>();
+const referenceElement = ref<MaybeElement<Element>>();
+const placement = toRef(props, "placement");
 
-const onGotItButtonClicked = () => {
-  props.completeHint();
-};
+onMounted(async () => {
+  await nextTick();
+  referenceElement.value = document.querySelector(props.reference);
+});
 
-const onSkipHintsButtonClicked = () => {
-  props.skipAllHints();
-};
+const floating = ref<HTMLElement>();
+const floatingArrow = ref<HTMLElement>();
+
+const { floatingStyles, middlewareData } = useFloating(
+  referenceElement,
+  floating,
+  {
+    whileElementsMounted: autoUpdate,
+    placement,
+    // eslint-disable-next-line no-magic-numbers
+    middleware: [
+      offset(10),
+      flip(),
+      shift(),
+      arrow({ element: floatingArrow }),
+    ],
+  },
+);
 </script>
 
 <template>
-  <div class="wrapper">
-    <div class="header">
-      <h6>{{ title }} asdfasf asdf asdf asddf asdf asfd asdf asfd sdf</h6>
-      <FunctionButton class="close-button" @click="onGotItButtonClicked"
-        ><CloseIcon
-      /></FunctionButton>
-    </div>
-    <p class="description">{{ description }}</p>
-    <template v-if="linkHref">
-      <div class="link">
-        <a :href="linkHref">{{ linkText ?? linkHref }}</a>
-      </div>
-    </template>
-    <div v-if="!hideButtons" class="button-controls">
-      <Button style="padding: 0" compact @click="onSkipHintsButtonClicked"
-        >Skip hints</Button
-      >
-      <Button with-border compact @click="onGotItButtonClicked">Got it!</Button>
-    </div>
+  <div
+    v-if="isVisible.value"
+    ref="floating"
+    class="hint-popover"
+    :style="floatingStyles"
+  >
+    <PopoverContent v-bind="content" />
+    <div
+      ref="floatingArrow"
+      class="arrow"
+      :style="{
+        position: 'absolute',
+        left:
+          middlewareData.arrow?.x != null ? `${middlewareData.arrow.x}px` : '',
+        top:
+          middlewareData.arrow?.y != null ? `${middlewareData.arrow.y}px` : '',
+      }"
+    />
   </div>
 </template>
 
-<style scoped lang="postcss">
-.wrapper {
-  padding: var(--space-16);
-  min-width: 270px;
-  font-family: Roboto, sans-serif;
-}
+<style lang="postcss" scoped>
+.hint-popover {
+  --hint-popover-background: var(--knime-white);
+  --hint-popover-arrow-size: 16px;
 
-h6 {
-  font-size: 18px;
-  color: var(--knime-masala);
-  font-style: normal;
-  font-weight: 700;
-  line-height: 1.5;
-  display: flex;
-  margin: 0;
-  padding: 0;
-}
+  background: var(--hint-popover-background);
+  box-shadow: var(--shadow-elevation-2);
 
-.header {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  margin-bottom: var(--space-12);
-}
-
-.close-button.function-button.single {
-  align-self: flex-start;
-}
-
-.description,
-.link {
-  color: var(--knime-masala);
-  font-size: 13px;
-  font-style: normal;
-  font-weight: 300;
-  line-height: 18px;
-}
-
-.button-controls {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  margin-top: var(--space-12);
+  & .arrow {
+    position: absolute;
+    background: var(--hint-popover-background);
+    width: var(--hint-popover-arrow-size);
+    height: var(--hint-popover-arrow-size);
+    transform: rotate(45deg);
+  }
 }
 </style>

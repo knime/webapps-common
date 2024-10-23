@@ -16,21 +16,18 @@
   "exports": {
     ".": {
       "import": "./src/index.ts"
-    },
-    "./css/hints.css": {
-      "import": "./css/hints.css"
     }
   },
   "scripts": {
     "test:unit": "TZ='Europe/Berlin' vitest"
   },
   "dependencies": {
+    "@floating-ui/vue": "1.0.2",
     "@knime/components": "workspace:*",
     "@knime/styles": "workspace:*",
     "@knime/utils": "workspace:*",
     "@vueuse/core": "10.4.1",
     "consola": "3.2.3",
-    "driver.js": "1.3.1",
     "lodash-es": "4.17.21",
     "typescript": "^5.4.5"
   },
@@ -39,10 +36,10 @@
   },
   "devDependencies": {
     "@knime/eslint-config": "workspace:*",
+    "@types/lodash-es": "4.17.12",
     "@vitejs/plugin-vue": "^5.1.4",
     "@vitest/coverage-v8": "2.1.1",
     "@vue/test-utils": "2.4.4",
-    "@types/lodash-es": "4.17.12",
     "vite": "^5.4.7",
     "vite-plugin-dts": "^4.2.2",
     "vite-svg-loader": "4.0.0",

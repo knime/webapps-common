@@ -154,7 +154,7 @@ export const useHint = ({
     const setHintCompleted = () => completeHint(hintId);
 
     const { showHint, closeHint } = createHint({
-      elementId: `#${hintId}`,
+      element: `#${hintId}`,
       title,
       description,
       linkText,

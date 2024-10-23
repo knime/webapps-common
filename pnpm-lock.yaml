@@ -115,7 +115,7 @@ importers:
         version: 20.11.6
       '@vitejs/plugin-vue':
         specifier: 5.0.3
-        version: 5.0.3(vite@5.4.6(@types/node@20.11.6)(sugarss@4.0.1(postcss@8.4.38)))(vue@3.4.27(typescript@5.4.5))
+        version: 5.0.3(vite@5.4.6(@types/node@20.11.6)(sugarss@4.0.1(postcss@8.4.47)))(vue@3.4.27(typescript@5.4.5))
       eslint:
         specifier: 8.56.0
         version: 8.56.0
@@ -133,7 +133,7 @@ importers:
         version: 16.1.0(typescript@5.4.5)
       vite:
         specifier: '>=5.2.14'
-        version: 5.4.6(@types/node@20.11.6)(sugarss@4.0.1(postcss@8.4.38))
+        version: 5.4.6(@types/node@20.11.6)(sugarss@4.0.1(postcss@8.4.47))
       vite-svg-loader:
         specifier: 5.1.0
         version: 5.1.0(vue@3.4.27(typescript@5.4.5))
@@ -219,6 +219,9 @@ importers:
 
   packages/hints:
     dependencies:
+      '@floating-ui/vue':
+        specifier: 1.0.2
+        version: 1.0.2(vue@3.4.27(typescript@5.4.5))
       '@knime/components':
         specifier: workspace:*
         version: link:../components
@@ -265,9 +268,6 @@ importers:
       vite:
         specifier: ^5.4.7
         version: 5.4.8(@types/node@20.16.7)(sugarss@4.0.1(postcss@8.4.47))
-      vite-plugin-css-injected-by-js:
-        specifier: ^3.5.1
-        version: 3.5.1(vite@5.4.8(@types/node@20.16.7)(sugarss@4.0.1(postcss@8.4.47)))
       vite-plugin-dts:
         specifier: ^4.2.2
         version: 4.2.2(@types/node@20.16.7)(rollup@4.22.4)(typescript@5.4.5)(vite@5.4.8(@types/node@20.16.7)(sugarss@4.0.1(postcss@8.4.47)))
@@ -5866,9 +5866,9 @@ snapshots:
 
   '@ungap/structured-clone@1.2.0': {}
 
-  '@vitejs/plugin-vue@5.0.3(vite@5.4.6(@types/node@20.11.6)(sugarss@4.0.1(postcss@8.4.38)))(vue@3.4.27(typescript@5.4.5))':
+  '@vitejs/plugin-vue@5.0.3(vite@5.4.6(@types/node@20.11.6)(sugarss@4.0.1(postcss@8.4.47)))(vue@3.4.27(typescript@5.4.5))':
     dependencies:
-      vite: 5.4.6(@types/node@20.11.6)(sugarss@4.0.1(postcss@8.4.38))
+      vite: 5.4.6(@types/node@20.11.6)(sugarss@4.0.1(postcss@8.4.47))
       vue: 3.4.27(typescript@5.4.5)
 
   '@vitejs/plugin-vue@5.1.4(vite@5.4.8(@types/node@20.16.7)(sugarss@4.0.1(postcss@8.4.47)))(vue@3.4.27(typescript@5.4.5))':
@@ -8818,11 +8818,6 @@ snapshots:
       - supports-color
       - typescript
 
-  sugarss@4.0.1(postcss@8.4.38):
-    dependencies:
-      postcss: 8.4.38
-    optional: true
-
   sugarss@4.0.1(postcss@8.4.47):
     dependencies:
       postcss: 8.4.47
@@ -9100,7 +9095,7 @@ snapshots:
       svgo: 3.3.2
       vue: 3.4.27(typescript@5.4.5)
 
-  vite@5.4.6(@types/node@20.11.6)(sugarss@4.0.1(postcss@8.4.38)):
+  vite@5.4.6(@types/node@20.11.6)(sugarss@4.0.1(postcss@8.4.47)):
     dependencies:
       esbuild: 0.21.5
       postcss: 8.4.47
@@ -9108,7 +9103,7 @@ snapshots:
     optionalDependencies:
       '@types/node': 20.11.6
       fsevents: 2.3.3
-      sugarss: 4.0.1(postcss@8.4.38)
+      sugarss: 4.0.1(postcss@8.4.47)
 
   vite@5.4.8(@types/node@20.16.7)(sugarss@4.0.1(postcss@8.4.47)):
     dependencies:

@@ -1,41 +1,23 @@
-import { h, render } from "vue";
-import { type DriveStep, driver } from "driver.js";
+import { h, ref, render } from "vue";
+import type { Placement } from "@floating-ui/vue";
 
 import HintPopover from "../components/HintPopover.vue";
 
-// Remove this click handler when https://github.com/kamranahmedse/driver.js/issues/476 is added
-let backDropClickCallback: any = null;
+const sideAndAlignToPlacement = (
+  side?: "top" | "right" | "bottom" | "left",
+  align?: "start" | "center" | "end",
+) => {
+  const sideWithFallback = side ?? "bottom";
 
-const removeBackDropClickCallback = () => {
-  document.removeEventListener("click", backDropClickCallback, {
-    capture: true,
-  });
-  backDropClickCallback = null;
-};
-
-const createBackDropClickCallback = ({
-  onCompleteHint,
-}: {
-  onCompleteHint: () => void;
-}) => {
-  if (backDropClickCallback) {
-    removeBackDropClickCallback();
+  if (!align || align === "center") {
+    return sideWithFallback as Placement;
   }
-  backDropClickCallback = (event: MouseEvent) => {
-    const overlay = document.getElementsByClassName("driver-overlay")?.[0];
-    const path = overlay?.children?.[0];
-
-    if (event.target === path) {
-      onCompleteHint();
-    }
-  };
-  document.addEventListener("click", backDropClickCallback, { capture: true });
-  return backDropClickCallback;
+  return `${sideWithFallback}-${align}` as Placement;
 };
 
 /**
  * Utility function to create a hint.
- * @param elementId The DOM element id of the hint target
+ * @param element querySelector string to find the element
  * @param title The title of the popover
  * @param description The description that is displayed on the popover
  * @param onCompleteHint Callback that is triggered when hint is completed
@@ -48,7 +30,7 @@ const createBackDropClickCallback = ({
  * @returns An object containing the callbacks showHint and closeHint
  */
 export const createHint = ({
-  elementId,
+  element,
   title,
   description,
   linkHref,
@@ -58,7 +40,7 @@ export const createHint = ({
   onCompleteHint,
   onSkipAllHints,
 }: {
-  elementId: string;
+  element: string;
   title: string;
   description: string;
   linkHref?: string;
@@ -68,60 +50,38 @@ export const createHint = ({
   onCompleteHint: () => void;
   onSkipAllHints: () => void;
 }) => {
-  const driverObj = driver({
-    animate: true,
-    stageRadius: 0,
-    popoverOffset: 15,
-    popoverClass: "driver-wrapper",
-    overlayOpacity: 0.0,
-    onPopoverRender: (popover, options) => {
-      const activeStep = options.state.activeStep! as DriveStep & {
-        custom: any;
-      };
-      const popoverInstance = h(HintPopover, {
-        title: activeStep.custom.title,
-        description: activeStep.custom.description,
-        linkText: activeStep.custom.linkText,
-        linkHref: activeStep.custom.linkHref,
-        completeHint: () => {
-          activeStep.custom.onCompleteHint();
-          driverObj.destroy();
-        },
-        skipAllHints: () => {
-          activeStep.custom.onSkipAllHints();
-          driverObj.destroy();
-        },
-      });
-      // handle click on backdrop overlay
-      createBackDropClickCallback({
-        onCompleteHint: activeStep.custom.onCompleteHint,
-      });
+  const isVisible = ref(false);
+  const show = () => {
+    isVisible.value = true;
+  };
+  const destroy = () => {
+    isVisible.value = false;
+  };
 
-      render(popoverInstance, popover.wrapper);
+  const popoverInstance = h(HintPopover, {
+    content: {
+      title,
+      description,
+      linkText,
+      linkHref,
+      completeHint: () => {
+        destroy();
+        onCompleteHint();
+      },
+      skipAllHints: () => {
+        destroy();
+        onSkipAllHints();
+      },
     },
-    onDestroyed: () => {
-      removeBackDropClickCallback();
-    },
+    isVisible,
+    reference: element,
+    placement: sideAndAlignToPlacement(side, align),
   });
-  // configure driver hint
+
+  render(popoverInstance, document.body);
+
   return {
-    showHint: () =>
-      driverObj.highlight({
-        element: elementId,
-        popover: {
-          align: align ?? "start",
-          side: side ?? "bottom",
-        },
-        // @ts-ignore
-        custom: {
-          onCompleteHint,
-          onSkipAllHints,
-          title,
-          description,
-          linkHref,
-          linkText,
-        },
-      }),
-    closeHint: () => driverObj.destroy(),
+    showHint: () => show(),
+    closeHint: () => destroy(),
   };
 };
