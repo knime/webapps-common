@@ -40,7 +40,7 @@ vi.mock("../useHintState", () => {
   };
 });
 
-vi.mock("../util/createHint", () => {
+vi.mock("../../util/createHint", () => {
   const showHintMock = vi.fn();
   const closeHintMock = vi.fn();
   const createHintMock = vi.fn();

@@ -32,3 +32,12 @@
   border-top-color: transparent;
   border-bottom-color: transparent;
 }
+
+.driver-overlay {
+  display: none !important;
+}
+
+.driver-active .driver-overlay,
+.driver-active * {
+  pointer-events: all !important;
+}

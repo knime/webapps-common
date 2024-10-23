@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import { Button } from "@knime/components";
-import BulbIcon from "@knime/styles/img/icons/bulb.svg";
+import { Button, FunctionButton } from "@knime/components";
 import CloseIcon from "@knime/styles/img/icons/close.svg";
 
 interface Props {
@@ -8,6 +7,8 @@ interface Props {
   description: string;
   linkText?: string;
   linkHref?: string;
+  video?: Array<{ source: string; type: string }>;
+  hideButtons?: boolean;
   completeHint: () => void;
   skipAllHints: () => void;
 }
@@ -25,63 +26,54 @@ const onSkipHintsButtonClicked = () => {
 
 <template>
   <div class="wrapper">
-    <div class="close-button">
-      <Button @click="onGotItButtonClicked"><CloseIcon /></Button>
+    <div class="header">
+      <h6>{{ title }} asdfasf asdf asdf asddf asdf asfd asdf asfd sdf</h6>
+      <FunctionButton class="close-button" @click="onGotItButtonClicked"
+        ><CloseIcon
+      /></FunctionButton>
     </div>
-    <div class="title">
-      <BulbIcon />
-      <div>{{ title }}</div>
-    </div>
-    <div class="description">{{ description }}</div>
+    <p class="description">{{ description }}</p>
     <template v-if="linkHref">
       <div class="link">
         <a :href="linkHref">{{ linkText ?? linkHref }}</a>
       </div>
     </template>
-    <div class="button-controls">
-      <Button @click="onSkipHintsButtonClicked">Skip hints</Button>
-      <Button @click="onGotItButtonClicked">Got it!</Button>
+    <div v-if="!hideButtons" class="button-controls">
+      <Button style="padding: 0" compact @click="onSkipHintsButtonClicked"
+        >Skip hints</Button
+      >
+      <Button with-border compact @click="onGotItButtonClicked">Got it!</Button>
     </div>
   </div>
 </template>
 
 <style scoped lang="postcss">
 .wrapper {
-  padding: 15px;
+  padding: var(--space-16);
   min-width: 270px;
   font-family: Roboto, sans-serif;
 }
 
-.title {
+h6 {
+  font-size: 18px;
   color: var(--knime-masala);
-  font-size: 16px;
   font-style: normal;
   font-weight: 700;
-  line-height: 21px;
+  line-height: 1.5;
   display: flex;
-  gap: 7px;
-  margin-bottom: 8px;
-
-  & svg {
-    width: 20px;
-  }
+  margin: 0;
+  padding: 0;
 }
 
-.close-button {
+.header {
   display: flex;
-  justify-content: flex-end;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: var(--space-12);
+}
 
-  & button {
-    padding: 0;
-    line-height: 8px;
-
-    & svg {
-      margin: 0;
-      width: 8px;
-      height: 8px;
-      stroke-width: 3;
-    }
-  }
+.close-button.function-button.single {
+  align-self: flex-start;
 }
 
 .description,
@@ -91,23 +83,12 @@ const onSkipHintsButtonClicked = () => {
   font-style: normal;
   font-weight: 300;
   line-height: 18px;
-  margin-bottom: 10px;
 }
 
 .button-controls {
-  border-top: 1px solid var(--knime-dove-gray);
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  padding-top: 8px;
-
-  & button {
-    color: var(--knime-dove-gray);
-    padding: 0 8px;
-    font-size: 13px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 18px;
-  }
+  margin-top: var(--space-12);
 }
 </style>

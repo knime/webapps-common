@@ -73,7 +73,7 @@ export const createHint = ({
     stageRadius: 0,
     popoverOffset: 15,
     popoverClass: "driver-wrapper",
-    overlayOpacity: 0.42,
+    overlayOpacity: 0.0,
     onPopoverRender: (popover, options) => {
       const activeStep = options.state.activeStep! as DriveStep & {
         custom: any;

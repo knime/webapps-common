@@ -17,10 +17,34 @@ npm install @knime/hints
 
 ## Usage
 
-TODO
+Minimal setup to show a hint:
 
 ```javascript
-TODO;
+import { setHintConfiguration, useHint } from "@knime/hints";
+
+// needs to only happen once very early in the app startup (ideally before app.mount())
+setHintConfiguration({
+  someElementsIdThatShouldBeHinted: {
+    title: "Look at this thing",
+    description: "Wow this is very cool.",
+    linkHref: "https://knime.com/?something",
+    linkText: "Learn more",
+    dependsOn: [],
+    align: "end",
+    side: "bottom",
+  },
+});
+
+const { createHintComponent } = useHint({
+  uniqueUserId: "someUserId", // used as part of the localstorage key
+});
+
+onMounted(() => {
+  createHintComponent({
+    hintId: "someElementsIdThatShouldBeHinted",
+    checkHintVisibilityCondition: () => true,
+  });
+});
 ```
 
 ## Join the Community
