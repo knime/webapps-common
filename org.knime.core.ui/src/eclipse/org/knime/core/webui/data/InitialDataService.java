@@ -56,6 +56,7 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.webui.data.rpc.json.impl.ObjectMapperUtil;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.exc.StreamConstraintsException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -109,6 +110,16 @@ public final class InitialDataService<D> extends AbstractDataService {
             var dataString = m_serializer.serialize(m_dataSupplier.get());
             try { // NOSONAR
                 root.set("result", m_mapper.readTree(dataString));
+            } catch (StreamConstraintsException ex) {
+                NodeLogger.getLogger(getClass()).error(ex);
+                return m_mapper.createObjectNode()
+                    .set("internalError",
+                        m_mapper.valueToTree(
+                            new InitialDataInternalError(new IOException(
+                                "The initial value for this view is too large to process. "
+                                + "Please verify if the output is expected to be this large.",
+                                ex))))
+                    .toString();
             } catch (JsonProcessingException ex) { // NOSONAR
                 // if it couldn't be parsed as a json, just return the string itself
                 root.put("result", dataString);
