@@ -181,7 +181,7 @@ public class TableViewViewSettings implements DefaultNodeSettings {
     @Effect(predicate = EnablePagination.class, type = EffectType.SHOW)
     public int m_pageSize = 10;
 
-    enum AUTO_SIZE_COLUMNS {
+    public enum AUTO_SIZE_COLUMNS {
             @Label(value = "Fixed", description = "the column sizing is fixed")
             FIXED, //
             @Label(value = "Fit content",
