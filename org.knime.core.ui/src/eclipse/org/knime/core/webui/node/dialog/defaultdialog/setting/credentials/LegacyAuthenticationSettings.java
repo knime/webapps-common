@@ -62,7 +62,6 @@ import org.knime.core.node.defaultnodesettings.SettingsModelAuthentication;
 import org.knime.core.node.workflow.CredentialsProvider;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation.Builder;
-import org.knime.core.webui.node.dialog.configmapping.NewAndDeprecatedConfigPaths;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
@@ -185,14 +184,12 @@ public final class LegacyAuthenticationSettings implements WidgetGroup {
         @Override
         public List<ConfigsDeprecation<LegacyAuthenticationSettings>> getConfigsDeprecations() {
             return List.of(new Builder<LegacyAuthenticationSettings>(this::loadFromSettingsModelSettings)//
-                .linkingNewAndDeprecatedConfigPaths(new NewAndDeprecatedConfigPaths.Builder()
-                    .withDeprecatedConfigPath(getConfigKey(), KEY_LEGACY_CREDENTIALS)
-                    .withNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_CREDENTIAL)
-                    .withNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_PASSWORD)
-                    .withNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_USERNAME).build())//
-                .linkingNewAndDeprecatedConfigPaths(
-                    new NewAndDeprecatedConfigPaths.Builder().withDeprecatedConfigPath(getConfigKey(), KEY_TYPE)
-                        .withNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_TYPE).build())//
+                .withDeprecatedConfigPath(getConfigKey(), KEY_LEGACY_CREDENTIALS)
+                .withNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_CREDENTIAL)
+                .withNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_PASSWORD)
+                .withNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_USERNAME)//
+                .withDeprecatedConfigPath(getConfigKey(), KEY_TYPE)
+                .withNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_TYPE)//
                 .withMatcher(settings -> !m_settingsModelAuthenticationPersistor.isSavedWithNewConfigKeys(settings))
                 .build());
         }

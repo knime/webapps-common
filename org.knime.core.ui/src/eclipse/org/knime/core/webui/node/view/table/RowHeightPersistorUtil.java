@@ -50,13 +50,12 @@ package org.knime.core.webui.node.view.table;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation.Builder;
-import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation.DeprecationMatcher;
-import org.knime.core.webui.node.dialog.configmapping.NewAndDeprecatedConfigPaths;
 import org.knime.core.webui.node.view.table.TableViewViewSettings.RowHeightMode;
 import org.knime.core.webui.node.view.table.TableViewViewSettings.VerticalPaddingMode;
 
@@ -171,7 +170,7 @@ public final class RowHeightPersistorUtil {
         return LEGACY_CUSTOM;
     }
 
-    static DeprecationMatcher getFirstTableVersionMatcher() {
+    static Predicate<NodeSettingsRO> getFirstTableVersionMatcher() {
         // accounting for a time where none of the settings existed
         return settings -> !settings.containsKey(COMPACT_MODE_LEGACY_CONFIG_KEY)
             && !settings.containsKey(ROW_HEIGHT_MODE_LEGACY_CONFIG_KEY)
@@ -194,19 +193,12 @@ public final class RowHeightPersistorUtil {
 
         return List.of( //
             new Builder<T>(settings -> legacyLoadResultExtractor.apply(LEGACY_DEFAULT, settings))
-                .linkingNewAndDeprecatedConfigPaths(
-                    new NewAndDeprecatedConfigPaths.Builder().withNewConfigPath(configKey).build())
-                .withMatcher(getFirstTableVersionMatcher()).build(),
+                .withNewConfigPath(configKey).withMatcher(getFirstTableVersionMatcher()).build(),
             new Builder<T>(
                 settings -> legacyLoadResultExtractor.apply(getLoadResultFromLegacyCompactMode(settings), settings))
-                    .linkingNewAndDeprecatedConfigPaths(new NewAndDeprecatedConfigPaths.Builder()
-                        .withNewConfigPath(configKey).withDeprecatedConfigPath(COMPACT_MODE_LEGACY_CONFIG_KEY).build())
-                    .build(),
+                    .withNewConfigPath(configKey).withDeprecatedConfigPath(COMPACT_MODE_LEGACY_CONFIG_KEY).build(),
             new Builder<T>(
                 settings -> legacyLoadResultExtractor.apply(getLoadResultFromLegacyRowHeightMode(settings), settings))
-                    .linkingNewAndDeprecatedConfigPaths(
-                        new NewAndDeprecatedConfigPaths.Builder().withNewConfigPath(configKey)
-                            .withDeprecatedConfigPath(ROW_HEIGHT_MODE_LEGACY_CONFIG_KEY).build())
-                    .build());
+                    .withNewConfigPath(configKey).withDeprecatedConfigPath(ROW_HEIGHT_MODE_LEGACY_CONFIG_KEY).build());
     }
 }

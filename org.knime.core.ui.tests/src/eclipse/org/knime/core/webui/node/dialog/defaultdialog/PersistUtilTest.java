@@ -61,7 +61,7 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation.Builder;
-import org.knime.core.webui.node.dialog.configmapping.NewAndDeprecatedConfigPaths;
+import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation.DeprecationLoader;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistor;
@@ -248,17 +248,20 @@ class PersistUtilTest {
 
         @Override
         public List<ConfigsDeprecation<Integer>> getConfigsDeprecations() {
-            return List.of(new Builder<Integer>(settings -> {
+            DeprecationLoader<Integer> dummyLoader = settings -> {
                 throw new IllegalStateException("Should not be called within this test");
-            }).linkingNewAndDeprecatedConfigPaths(new NewAndDeprecatedConfigPaths.Builder() //
-                .withNewConfigPath("D", "E").withDeprecatedConfigPath("A", "B").build())
-                .linkingNewAndDeprecatedConfigPaths(new NewAndDeprecatedConfigPaths.Builder() //
-                    .withNewConfigPath("F").withDeprecatedConfigPath("C").build())
-                .build(), //
-                new Builder<Integer>(settings -> {
-                    throw new IllegalStateException("Should not be called within this test");
-                }).linkingNewAndDeprecatedConfigPaths(new NewAndDeprecatedConfigPaths.Builder()
-                    .withNewConfigPath("I", "J").withDeprecatedConfigPath("G", "H").build()).build() //
+            };
+            return List.of(//
+                new Builder<Integer>(dummyLoader)//
+                    .withDeprecatedConfigPath("A", "B")//
+                    .withDeprecatedConfigPath("C")//
+                    .withNewConfigPath("D", "E")//
+                    .withNewConfigPath("F")//
+                    .build(), //
+                new Builder<Integer>(dummyLoader)//
+                    .withDeprecatedConfigPath("G", "H")//
+                    .withNewConfigPath("I", "J")//
+                    .build() //
             );
         }
 

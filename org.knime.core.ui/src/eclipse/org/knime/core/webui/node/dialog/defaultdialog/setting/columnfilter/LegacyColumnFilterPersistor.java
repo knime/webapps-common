@@ -49,7 +49,6 @@
 package org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -215,35 +214,22 @@ public final class LegacyColumnFilterPersistor extends NodeSettingsPersistorWith
         save(obj, settings, getConfigKey());
     }
 
-    /**
-     * TODO UIEXT-2127 remove when reworking config key handling
-     *
-     * @return e.g. ["filter_type", ..., "name_pattern.pattern", ...]
-     */
     @Override
-    public String[] getConfigKeys() {
-        return Arrays.stream(joinedSubConfigKeys()).map(subKey -> String.format("%s.%s", getConfigKey(), subKey))
-            .toArray(String[]::new);
+    public String[][] getConfigPaths() {
+        return getConfigPaths(getConfigKey());
     }
 
-    /**
-     * TODO UIEXT-2127 remove when reworking config key handling
-     *
-     * @return e.g. ["filter_type", ..., "name_pattern.pattern", ...]
-     */
-    public static String[] joinedSubConfigKeys() {
-        return Arrays.stream(subConfigKeys()).map(subKeys -> String.join(".", subKeys)).toArray(String[]::new);
-    }
-
-    /**
-     * @return the array of all sub config keys overridden by this persistor
-     */
-    public static String[][] subConfigKeys() {
-        return new String[][]{{KEY_FILTER_TYPE}, {LegacyManualFilterPersistorUtil.KEY_INCLUDED_NAMES},
-            {LegacyManualFilterPersistorUtil.OLD_EXCLUDED_NAMES}, {LegacyManualFilterPersistorUtil.KEY_ENFORCE_OPTION},
-            {PatternFilterConfiguration.TYPE, LegacyPatternFilterPersistorUtil.PATTERN_FILTER_PATTERN},
-            {PatternFilterConfiguration.TYPE, LegacyPatternFilterPersistorUtil.PATTERN_FILTER_TYPE},
-            {PatternFilterConfiguration.TYPE, LegacyPatternFilterPersistorUtil.PATTERN_FILTER_CASESENSITIVE},
-            {PatternFilterConfiguration.TYPE, LegacyPatternFilterPersistorUtil.PATTERN_FILTER_EXCLUDEMATCHING}};
+    private static String[][] getConfigPaths(final String configKey) {
+        return new String[][]{//
+            {configKey, KEY_FILTER_TYPE}, //
+            {configKey, LegacyManualFilterPersistorUtil.KEY_INCLUDED_NAMES}, //
+            {configKey, LegacyManualFilterPersistorUtil.OLD_EXCLUDED_NAMES}, //
+            {configKey, LegacyManualFilterPersistorUtil.KEY_ENFORCE_OPTION}, //
+            {configKey, PatternFilterConfiguration.TYPE, LegacyPatternFilterPersistorUtil.PATTERN_FILTER_PATTERN}, //
+            {configKey, PatternFilterConfiguration.TYPE, LegacyPatternFilterPersistorUtil.PATTERN_FILTER_TYPE}, //
+            {configKey, PatternFilterConfiguration.TYPE, LegacyPatternFilterPersistorUtil.PATTERN_FILTER_CASESENSITIVE}, //
+            {configKey, PatternFilterConfiguration.TYPE,
+                LegacyPatternFilterPersistorUtil.PATTERN_FILTER_EXCLUDEMATCHING} //
+        };
     }
 }

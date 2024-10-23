@@ -57,7 +57,6 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.defaultnodesettings.SettingsModelAuthentication;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation.Builder;
-import org.knime.core.webui.node.dialog.configmapping.NewAndDeprecatedConfigPaths;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
@@ -235,8 +234,12 @@ public final class AuthenticationSettings implements WidgetGroup, PersistableSet
             };
         }
 
-        boolean isSavedWithNewConfigKeys(final NodeSettingsRO settings) throws InvalidSettingsException {
-            return settings.getNodeSettings(getConfigKey()).containsKey(KEY_TYPE);
+        boolean isSavedWithNewConfigKeys(final NodeSettingsRO settings) {
+            try {
+                return settings.getNodeSettings(getConfigKey()).containsKey(KEY_TYPE);
+            } catch (InvalidSettingsException ex) { // NOSONAR
+                return false;
+            }
         }
 
         SettingsModelAuthentication loadModelFromSettings(final NodeSettingsRO settings)
@@ -261,14 +264,12 @@ public final class AuthenticationSettings implements WidgetGroup, PersistableSet
         public List<ConfigsDeprecation<AuthenticationSettings>> getConfigsDeprecations() {
             return List
                 .of(new Builder<AuthenticationSettings>(settings -> loadFromModel(loadModelFromSettings(settings)))
-                    .linkingNewAndDeprecatedConfigPaths(new NewAndDeprecatedConfigPaths.Builder()
-                        .withDeprecatedConfigPath(getConfigKey(), KEY_CREDENTIALS)
-                        .withNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_CREDENTIAL)
-                        .withNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_PASSWORD)
-                        .withNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_USERNAME).build())
-                    .linkingNewAndDeprecatedConfigPaths(new NewAndDeprecatedConfigPaths.Builder() //
-                        .withDeprecatedConfigPath(getConfigKey(), KEY_TYPE)
-                        .withNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_TYPE).build())//
+                    .withDeprecatedConfigPath(getConfigKey(), KEY_CREDENTIALS)
+                    .withNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_CREDENTIAL)
+                    .withNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_PASSWORD)
+                    .withNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_USERNAME)
+                    .withDeprecatedConfigPath(getConfigKey(), KEY_TYPE)
+                    .withNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_TYPE)//
                     .withMatcher(settings -> !isSavedWithNewConfigKeys(settings)).build());
         }
 

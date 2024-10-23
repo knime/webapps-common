@@ -54,23 +54,21 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import org.junit.jupiter.api.Test;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettings;
+import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation.Builder;
-import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation.DeprecationMatcher;
 
 class ConfigsDeprecationTest {
 
-    private static final Builder<Integer> createBuilder(final Optional<DeprecationMatcher> matcher) {
-
+    private static final Builder<Integer> createBuilder(final Optional<Predicate<NodeSettingsRO>> matcher) {
         final var builder = new ConfigsDeprecation.Builder<Integer>(settings -> {
             throw new IllegalStateException("Should not be called within this test");
-        }).linkingNewAndDeprecatedConfigPaths(new NewAndDeprecatedConfigPaths.Builder() //
-            .withNewConfigPath("D", "E").withDeprecatedConfigPath("A", "B").build())
-            .linkingNewAndDeprecatedConfigPaths(new NewAndDeprecatedConfigPaths.Builder() //
-                .withNewConfigPath("F").withDeprecatedConfigPath("C").build());
+        }).withNewConfigPath("D", "E").withDeprecatedConfigPath("A", "B").withNewConfigPath("F")
+            .withDeprecatedConfigPath("C");
 
         if (matcher.isPresent()) {
             builder.withMatcher(matcher.get());
@@ -80,7 +78,13 @@ class ConfigsDeprecationTest {
 
     @Test
     void testBuilderUsesGivenMatcher() {
-        final DeprecationMatcher matcher = settings -> settings.getNodeSettings("A").containsKey("B");
+        final Predicate<NodeSettingsRO> matcher = settings -> {
+            try {
+                return settings.getNodeSettings("A").containsKey("B");
+            } catch (InvalidSettingsException ex) {
+                throw new IllegalStateException(ex);
+            }
+        };
         final var configsDeprecation = createBuilder(Optional.of(matcher)).build();
 
         assertEquals(matcher, configsDeprecation.getMatcher());
@@ -104,10 +108,7 @@ class ConfigsDeprecationTest {
     void testBuilderThrowsWithoutMatcherAndDeprecatedConfigs() {
         final var builder = new ConfigsDeprecation.Builder<Integer>(settings -> {
             throw new IllegalStateException("Should not be called within this test");
-        }).linkingNewAndDeprecatedConfigPaths(
-            new NewAndDeprecatedConfigPaths.Builder().withNewConfigPath("D", "E").build())
-            .linkingNewAndDeprecatedConfigPaths(
-                new NewAndDeprecatedConfigPaths.Builder().withNewConfigPath("F").build());
+        }).withNewConfigPath("D", "E").withNewConfigPath("F");
 
         assertThrows(IllegalStateException.class, () -> builder.build());
     }

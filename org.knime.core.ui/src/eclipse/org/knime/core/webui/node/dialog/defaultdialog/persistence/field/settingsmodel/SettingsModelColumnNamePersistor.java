@@ -82,9 +82,8 @@ public class SettingsModelColumnNamePersistor extends NodeSettingsPersistorWithC
     }
 
     @Override
-    public String[] getConfigKeys() {
-        // TODO NOSONAR UIEXT-2127 Can be adjusted when reworking config key management.
-        return new String[]{getConfigKey() + ".columnName", getConfigKey() + ".useRowID"};
+    public String[][] getConfigPaths() {
+        return new String[][]{{getConfigKey(), "columnName"}, {getConfigKey(), "useRowID"}};
     }
 
 }

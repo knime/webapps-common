@@ -67,7 +67,7 @@ public final class ConfigMappings {
 
     final String m_key;
 
-    final Collection<NewAndDeprecatedConfigPaths> m_newAndDeprecatedConfigPaths;
+    final NewAndDeprecatedConfigPaths m_newAndDeprecatedConfigPaths;
 
     final UnaryOperator<NodeSettingsRO> m_oldSettingsToNewSettings;
 
@@ -104,7 +104,7 @@ public final class ConfigMappings {
      *            instead if multiple deprecations with different node settings methods are desired.
      *            </p>
      */
-    public ConfigMappings(final Collection<NewAndDeprecatedConfigPaths> newAndDeprecatedConfigPaths,
+    public ConfigMappings(final NewAndDeprecatedConfigPaths newAndDeprecatedConfigPaths,
         final UnaryOperator<NodeSettingsRO> oldSettingsToNewSettings) {
         m_newAndDeprecatedConfigPaths = newAndDeprecatedConfigPaths;
         m_oldSettingsToNewSettings = oldSettingsToNewSettings;

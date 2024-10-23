@@ -48,113 +48,24 @@
  */
 package org.knime.core.webui.node.dialog.configmapping;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
-
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistor;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 
 /**
- * This class provides a connection from an array of config paths relative to the base config of the field to another
- * one.
- * <ul>
- * <li>Deprecated config paths: Configs which are respected during {@link FieldNodeSettingsPersistor#load load} but are
- * not written to when saving the loaded data back during {@link FieldNodeSettingsPersistor#save save}.</li>
- * <li>New config paths: Those configs that are affected by the deprecated config paths. I.e. on
- * {@link FieldNodeSettingsPersistor#save save} their values might differ depending on the values of any of the legacy
- * config paths during {@link FieldNodeSettingsPersistor#load load}</li>
- * </ul>
+ * This class provides a connection from an array of config paths relative to the base config of a field to another one.
+ *
+ * @see ConfigsDeprecation
  *
  * @author Paul Bärnreuther
  */
-public final class NewAndDeprecatedConfigPaths {
-
-    private Collection<ConfigPath> m_newConfigPaths;
-
-    private Collection<ConfigPath> m_deprecatedConfigPaths;
-
-    /**
-     * Private. Use the {@link Builder} instead.
-     *
-     * @param newConfigPaths
-     * @param deprecatedConfigPaths
-     */
-    private NewAndDeprecatedConfigPaths(final Collection<ConfigPath> newConfigPaths,
-        final Collection<ConfigPath> deprecatedConfigPaths) {
-        this.m_newConfigPaths = newConfigPaths;
-        this.m_deprecatedConfigPaths = deprecatedConfigPaths;
-    }
+public interface NewAndDeprecatedConfigPaths {
 
     /**
      * @return the newConfigPaths relative to the base config path of the annotated setting
      */
-    public Collection<ConfigPath> getNewConfigPaths() {
-        return m_newConfigPaths;
-    }
+    Collection<ConfigPath> getNewConfigPaths();
 
     /**
      * @return the deprecatedConfigPaths relative to the base config path of the annotated setting
      */
-    public Collection<ConfigPath> getDeprecatedConfigPaths() {
-        return m_deprecatedConfigPaths;
-    }
-
-    /**
-     * Builder for {@link NewAndDeprecatedConfigPaths}.
-     *
-     * @author Robin Gerling
-     */
-    public static final class Builder {
-
-        private final List<ConfigPath> m_newConfigPaths = new ArrayList<>(0);
-
-        private final List<ConfigPath> m_deprecatedConfigPaths = new ArrayList<>(0);
-
-        /**
-         * Builder for {@link NewAndDeprecatedConfigPaths}. See {@link NewAndDeprecatedConfigPaths} for more
-         * information.
-         */
-        public Builder() {
-            // Builder
-        }
-
-        /**
-         * Enter a path to a config set during {@link FieldNodeSettingsPersistor#save} affected by the values of all of
-         * the config paths set with {@link #withDeprecatedConfigPath}. This method can called multiple times.
-         *
-         * @param configKeys the configKeys forming a path from the base config of the {@link Persist#customPersistor}
-         *            to a desired subconfig.
-         * @return the builder
-         */
-        public Builder withNewConfigPath(final String... configKeys) {
-            m_newConfigPaths.add(new ConfigPath(Arrays.stream(configKeys).toList()));
-            return this;
-        }
-
-        /**
-         * Enter a path to a config used during {@link FieldNodeSettingsPersistor#load} which is not written to in
-         * {@link FieldNodeSettingsPersistor#save} but instead affects the values of the configs specified with
-         * {@link #withNewConfigPath}. This method can called multiple times.
-         *
-         * @param configKeys the configKeys forming a path from the base config of the {@link Persist#customPersistor}
-         *            to a desired subconfig.
-         * @return the builder
-         */
-        public Builder withDeprecatedConfigPath(final String... configKeys) {
-            m_deprecatedConfigPaths.add(new ConfigPath(Arrays.stream(configKeys).toList()));
-            return this;
-        }
-
-        /**
-         * @return a new {@link ConfigsDeprecation} to be used in
-         *         {@link FieldNodeSettingsPersistor#getConfigsDeprecations()}
-         */
-        public NewAndDeprecatedConfigPaths build() {
-            return new NewAndDeprecatedConfigPaths(m_newConfigPaths, m_deprecatedConfigPaths);
-        }
-
-    }
-
+    Collection<ConfigPath> getDeprecatedConfigPaths();
 }

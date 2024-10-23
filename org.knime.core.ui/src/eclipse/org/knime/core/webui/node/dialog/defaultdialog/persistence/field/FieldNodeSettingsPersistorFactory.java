@@ -60,7 +60,6 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
-import org.knime.core.webui.node.dialog.configmapping.NewAndDeprecatedConfigPaths;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.ReflectionUtil;
@@ -75,9 +74,6 @@ import org.knime.core.webui.node.dialog.defaultdialog.widget.LatentWidget;
  */
 final class FieldNodeSettingsPersistorFactory {
 
-    /**
-     *
-     */
     private static final NodeLogger LOGGER = NodeLogger.getLogger(FieldNodeSettingsPersistorFactory.class);
 
     private final Tree<PersistableSettings> m_settingsTree;
@@ -238,9 +234,7 @@ final class FieldNodeSettingsPersistorFactory {
 
         @Override
         public List<ConfigsDeprecation<S>> getConfigsDeprecations() {
-            return List.of(new ConfigsDeprecation.Builder<S>(settings -> m_default)
-                .linkingNewAndDeprecatedConfigPaths(
-                    new NewAndDeprecatedConfigPaths.Builder().withNewConfigPath(m_configKey).build())
+            return List.of(new ConfigsDeprecation.Builder<S>(settings -> m_default).withNewConfigPath(m_configKey)
                 .withMatcher(settings -> !settings.containsKey(m_configKey)).build());
         }
     }

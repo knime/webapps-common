@@ -76,7 +76,7 @@ public interface FieldNodeSettingsPersistor<T> extends NodeSettingsPersistor<T> 
     @Override
     default ConfigMappings getConfigMappings(final T obj) {
         return new ConfigMappings(getConfigsDeprecations().stream().map(
-            configsDeprecation -> new ConfigMappings(configsDeprecation.getNewAndDeprecatedConfigPaths(), settings -> {
+            configsDeprecation -> new ConfigMappings(configsDeprecation, settings -> {
                 T fromPrevious = loadOrDefault(settings, configsDeprecation.getLoader(), obj);
                 final var newSettings = new NodeSettings("newSettings");
                 save(fromPrevious, newSettings);

@@ -170,12 +170,12 @@ public final class PersistUtil {
         } else if (configRename.isPresent()) {
             node.put("configKey", configRename.get());
         }
-        var deprecatedConfigsList =
+        var configsDeprecationList =
             persistor.map(FieldNodeSettingsPersistor::getConfigsDeprecations).orElse(Collections.emptyList());
-        if (!deprecatedConfigsList.isEmpty()) {
+        if (!configsDeprecationList.isEmpty()) {
             final var deprecatedConfigsNode = node.putArray("deprecatedConfigKeys");
-            deprecatedConfigsList.stream().forEach(deprecatedConfigs -> putDeprecatedConfig(deprecatedConfigsNode,
-                deprecatedConfigs.getNewAndDeprecatedConfigPaths()));
+            configsDeprecationList.stream()
+                .forEach(configsDeprecation -> putDeprecatedConfig(deprecatedConfigsNode, configsDeprecation));
         }
 
     }
@@ -194,19 +194,17 @@ public final class PersistUtil {
     }
 
     private static void putDeprecatedConfig(final ArrayNode deprecatedConfigsNode,
-        final Collection<NewAndDeprecatedConfigPaths> newAndDeprecatedConfigPathsList) {
+        final NewAndDeprecatedConfigPaths newAndDeprecatedConfigPaths) {
         final var nextDeprecatedConfigs = deprecatedConfigsNode.addObject();
 
-        final List<List<String>> newConfigPaths =
-            newAndDeprecatedConfigPathsList.stream().flatMap(newAndDeprecatedConfigPaths -> newAndDeprecatedConfigPaths
-                .getNewConfigPaths().stream().map(ConfigPath::path)).toList();
+        final var newConfigPaths = newAndDeprecatedConfigPaths.getNewConfigPaths();
+        final var deprecatedConfigPaths = newAndDeprecatedConfigPaths.getDeprecatedConfigPaths();
+        add2DStingArray(nextDeprecatedConfigs, "new", to2DList(newConfigPaths));
+        add2DStingArray(nextDeprecatedConfigs, "deprecated", to2DList(deprecatedConfigPaths));
+    }
 
-        final List<List<String>> deprecatedConfigPaths =
-            newAndDeprecatedConfigPathsList.stream().flatMap(newAndDeprecatedConfigPaths -> newAndDeprecatedConfigPaths
-                .getDeprecatedConfigPaths().stream().map(ConfigPath::path)).toList();
-
-        add2DStingArray(nextDeprecatedConfigs, "new", newConfigPaths);
-        add2DStingArray(nextDeprecatedConfigs, "deprecated", deprecatedConfigPaths);
+    private static List<List<String>> to2DList(final Collection<ConfigPath> newConfigPaths) {
+        return newConfigPaths.stream().map(ConfigPath::path).toList();
     }
 
     private static void add2DStingArray(final ObjectNode node, final String key,

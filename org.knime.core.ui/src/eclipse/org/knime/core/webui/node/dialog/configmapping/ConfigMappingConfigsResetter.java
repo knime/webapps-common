@@ -53,7 +53,6 @@ import static org.knime.core.webui.node.dialog.configmapping.NodeSettingsAtPathU
 import static org.knime.core.webui.node.dialog.configmapping.NodeSettingsAtPathUtil.getNodeSettingsROAtPath;
 import static org.knime.core.webui.node.dialog.configmapping.NodeSettingsAtPathUtil.replaceAtPathIfPresent;
 
-import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
@@ -70,7 +69,7 @@ class ConfigMappingConfigsResetter implements ConfigsResetter {
 
     private ConfigPath m_basePath;
 
-    private Collection<NewAndDeprecatedConfigPaths> m_newAndDeprecatedConfigPaths;
+    private NewAndDeprecatedConfigPaths m_newAndDeprecatedConfigPaths;
 
     private Function<NodeSettingsRO, NodeSettingsRO> m_oldSettingsToNewSettings;
 
@@ -87,7 +86,7 @@ class ConfigMappingConfigsResetter implements ConfigsResetter {
         return m_mappedPreviousSettings;
     }
 
-    record ConfigMapping(ConfigPath basePath, Collection<NewAndDeprecatedConfigPaths> newAndDeprecatedConfigPaths,
+    record ConfigMapping(ConfigPath basePath, NewAndDeprecatedConfigPaths newAndDeprecatedConfigPaths,
         UnaryOperator<NodeSettingsRO> oldSettingsToNewSettings) {
     }
 
@@ -117,9 +116,8 @@ class ConfigMappingConfigsResetter implements ConfigsResetter {
     @Override
     public void resetAtPath(final ConfigPath path) {
         final var relativeToBasePath = path.relativize(m_basePath);
-        final var isOldPath = m_newAndDeprecatedConfigPaths.stream()
-            .flatMap(newAndDeprecatedConfigPaths -> newAndDeprecatedConfigPaths.getDeprecatedConfigPaths().stream())
-            .anyMatch(relativeToBasePath::startsWith);
+        final var isOldPath =
+            m_newAndDeprecatedConfigPaths.getDeprecatedConfigPaths().stream().anyMatch(relativeToBasePath::startsWith);
 
         if (isOldPath) {
             getNewAndOldPaths().forEach(subPath -> {
@@ -133,9 +131,8 @@ class ConfigMappingConfigsResetter implements ConfigsResetter {
     }
 
     private Stream<ConfigPath> getNewAndOldPaths() {
-        return m_newAndDeprecatedConfigPaths.stream().flatMap(
-            newAndDeprecatedConfigPaths -> Stream.concat(newAndDeprecatedConfigPaths.getNewConfigPaths().stream(),
-                newAndDeprecatedConfigPaths.getDeprecatedConfigPaths().stream()));
+        return Stream.concat(m_newAndDeprecatedConfigPaths.getNewConfigPaths().stream(),
+            m_newAndDeprecatedConfigPaths.getDeprecatedConfigPaths().stream());
     }
 
 }

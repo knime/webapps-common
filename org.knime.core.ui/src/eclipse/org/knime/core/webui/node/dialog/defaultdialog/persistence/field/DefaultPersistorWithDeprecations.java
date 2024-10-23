@@ -63,21 +63,45 @@ import org.knime.core.node.NodeSettingsWO;
  */
 public interface DefaultPersistorWithDeprecations<T> extends FieldNodeSettingsPersistor<T> {
 
+    /**
+     * This method should not be overwritten by implementing classes. Instead, the save method of whatever default would
+     * be used when this persistor was not present will be used.
+     *
+     * {@inheritDoc}
+     */
     @Override
     default void save(final T obj, final NodeSettingsWO settings) {
         throw new IllegalAccessError("This method should never be called");
     }
 
+    /**
+     * This method should not be overwritten by implementing classes. Instead, the load method of whatever default would
+     * be used when this persistor was not present will be used.
+     *
+     * {@inheritDoc}
+     */
     @Override
     default T load(final NodeSettingsRO settings) throws InvalidSettingsException {
         throw new IllegalAccessError("This method should never be called");
     }
 
+    /**
+     * This method should not be overwritten by implementing classes. Instead, the getConfigKeys method of whatever
+     * default would be used when this persistor was not present will
+     *
+     * {@inheritDoc}
+     */
     @Override
     default String[] getConfigKeys() {
         throw new IllegalAccessError("This method should never be called");
     }
 
+    /**
+     * This method should not be overwritten by implementing classes. Instead, the getConfigPaths method of whatever
+     * default would be used when this persistor was not present will
+     *
+     * {@inheritDoc}
+     */
     @Override
     default String[][] getConfigPaths() {
         throw new IllegalAccessError("This method should never be called");
