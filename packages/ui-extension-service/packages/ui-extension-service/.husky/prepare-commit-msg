@@ -1,0 +1,1 @@
+npm exec knime-eslint-config-prepare-commit-msg "$@"

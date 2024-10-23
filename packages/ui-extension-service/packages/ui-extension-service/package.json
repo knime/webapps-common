@@ -1,0 +1,66 @@
+{
+  "name": "@knime/ui-extension-service",
+  "version": "0.39.0",
+  "description": "KNIME UI Extension Service for KNIME Analytics Platform",
+  "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE LICENSE IN license.txt)",
+  "author": "KNIME AG, Zurich, Switzerland",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://bitbucket.org/KNIME/knime-ui-extension-service"
+  },
+  "scripts": {
+    "build": "npm-run-all cleanDist type-check --parallel build:* -l",
+    "build:es": "vite build --mode es",
+    "build:iifeMin": "vite build --mode iifeMin",
+    "build:iifeDev": "vite build --mode iifeDev",
+    "type-check": "tsc -p tsconfig.vitest.json",
+    "format": "prettier --cache --write .",
+    "format:check": "prettier --cache --check .",
+    "lint": "eslint --cache --fix --ext .ts .",
+    "ci:lint": "eslint --cache --ext .ts,.vue -f json -o test-results/eslint.json",
+    "ci:lint-format": "run-p ci:lint format:check -c -l",
+    "cleanDist": "rimraf dist",
+    "audit": "npm audit --omit=dev",
+    "test:unit": "vitest",
+    "coverage": "vitest run --coverage",
+    "coverage:watch": "npm run test:unit -- --coverage --watch",
+    "prepare": "husky && license-check -c"
+  },
+  "dependencies": {
+    "color-convert": "2.0.1",
+    "uuid": "9.0.1"
+  },
+  "devDependencies": {
+    "@knime/eslint-config": "8.1.0",
+    "@knime/licenses": "1.0.1",
+    "@tsconfig/node20": "20.1.2",
+    "@types/color-convert": "2.0.3",
+    "@types/uuid": "9.0.8",
+    "@vitest/coverage-v8": "1.6.0",
+    "eslint": "8.57.0",
+    "flush-promises": "1.0.2",
+    "husky": "9.0.11",
+    "jsdom": "24.0.0",
+    "lint-staged": "15.2.2",
+    "npm-run-all": "4.1.5",
+    "prettier": "3.2.5",
+    "terser": "^5.31.0",
+    "ts-loader": "9.5.1",
+    "typescript": "5.3.3",
+    "vite": "5.1.1",
+    "vite-plugin-dts": "3.9.1",
+    "vitest": "1.6.0"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": "18.x - 20.x"
+  },
+  "volta": {
+    "node": "20.11.1"
+  }
+}
