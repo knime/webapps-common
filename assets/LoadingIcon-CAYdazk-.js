@@ -1,1 +1,0 @@
-import{R as n}from"./reload-z_SVDJKj.js";import{s as e}from"./svgWithTitle-D2aMSwB5.js";import{_ as a,r as c,o as s,j as t}from"./index-CWEbbkqz.js";const r={name:"LoadingIcon",components:{ReloadIcon:e(n,"Loading…")}};function p(d,_,i,m,f,l){const o=c("ReloadIcon");return s(),t(o)}const L=a(r,[["render",p],["__scopeId","data-v-37d1885f"]]);export{L};
