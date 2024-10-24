@@ -51,7 +51,6 @@ package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
 import org.knime.filehandling.core.connections.FSLocation;
 import org.knime.filehandling.core.data.location.FSLocationSerializationUtils;
 import org.knime.filehandling.core.data.location.variable.FSLocationVariableType;

@@ -54,8 +54,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
-
 /**
  * Allows to define the persistence of individual fields to NodeSettings if field based persistence is used.
  *

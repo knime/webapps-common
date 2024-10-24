@@ -71,7 +71,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.tree.TreeNode;
  * @author Adrian Nembach, KNIME GmbH, Konstanz, Germany
  * @param <S> The concrete {@link PersistableSettings} class
  */
-public class FieldBasedNodeSettingsPersistor<S extends PersistableSettings> implements FieldNodeSettingsPersistor<S> {
+public class FieldBasedNodeSettingsPersistor<S extends PersistableSettings> implements NodeSettingsPersistor<S> {
 
     @SuppressWarnings("javadoc")
     protected Map<TreeNode<PersistableSettings>, FieldNodeSettingsPersistor<?>> m_persistors;

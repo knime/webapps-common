@@ -62,7 +62,7 @@ import org.knime.core.webui.node.dialog.SettingsType;
  * Some nodes rely on view settings within the same section as model settings appear beneath those. So any map used to
  * store settings should be sorted by {@link SettingsType}.
  */
-public class SettingsTypeMapUtil {
+public final class SettingsTypeMapUtil {
 
     private static final Comparator<SettingsType> SETTINGS_TYPE_COMPARATOR =
         Comparator.comparing(SettingsType::ordinal);
@@ -90,8 +90,7 @@ public class SettingsTypeMapUtil {
      * @param mapping to be applied to the entries
      * @return a new map with the same keys and mapped values
      */
-    public static <T, U> Map<SettingsType, U> map(final Map<SettingsType, T> inMap,
-        final Function<T, U> mapping) {
+    public static <T, U> Map<SettingsType, U> map(final Map<SettingsType, T> inMap, final Function<T, U> mapping) {
         return mapValues(inMap, mapping, SETTINGS_TYPE_COMPARATOR);
     }
 
@@ -107,4 +106,7 @@ public class SettingsTypeMapUtil {
         return map(inMap, t -> t);
     }
 
+    private SettingsTypeMapUtil() {
+        // utility class
+    }
 }

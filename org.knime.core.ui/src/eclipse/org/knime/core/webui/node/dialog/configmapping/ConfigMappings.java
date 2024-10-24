@@ -99,10 +99,6 @@ public final class ConfigMappings {
      *            settings. It is used only when the previous value should be used but overwritten by a new flow
      *            variable, i.e. when the user de-selected a deprecated flow variable and selects a new one before
      *            applying.
-     *            <p>
-     *            Use {@link #ConfigMappings(ConfigsDeprecation, Function)} and {@link #ConfigMappings(Collection)}
-     *            instead if multiple deprecations with different node settings methods are desired.
-     *            </p>
      */
     public ConfigMappings(final NewAndDeprecatedConfigPaths newAndDeprecatedConfigPaths,
         final UnaryOperator<NodeSettingsRO> oldSettingsToNewSettings) {

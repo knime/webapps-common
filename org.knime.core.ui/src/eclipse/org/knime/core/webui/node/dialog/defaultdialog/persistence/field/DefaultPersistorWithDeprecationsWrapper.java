@@ -62,11 +62,12 @@ import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
  * @author Robin Gerling
  * @param <T> the type of object loaded by the persistor
  */
-public final class DefaultPersistorWithDeprecationsWrapper<T> implements FieldNodeSettingsPersistor<T> {
+final class DefaultPersistorWithDeprecationsWrapper<T>
+    implements FieldNodeSettingsPersistorWithInferredConfigs<T> {
 
     final DefaultPersistorWithDeprecations<T> m_customPersistor;
 
-    final FieldNodeSettingsPersistor<T> m_defaultPersistor;
+    final FieldNodeSettingsPersistorWithInferredConfigs<T> m_defaultPersistor;
 
     /**
      * @param customPersistor the custom persistor of the node settings field handling deprecated configs
@@ -74,7 +75,7 @@ public final class DefaultPersistorWithDeprecationsWrapper<T> implements FieldNo
      *
      */
     public DefaultPersistorWithDeprecationsWrapper(final DefaultPersistorWithDeprecations<T> customPersistor,
-        final FieldNodeSettingsPersistor<T> defaultPersistor) {
+        final FieldNodeSettingsPersistorWithInferredConfigs<T> defaultPersistor) {
         m_customPersistor = customPersistor;
         m_defaultPersistor = defaultPersistor;
     }
@@ -97,5 +98,10 @@ public final class DefaultPersistorWithDeprecationsWrapper<T> implements FieldNo
     @Override
     public List<ConfigsDeprecation<T>> getConfigsDeprecations() {
         return m_customPersistor.getConfigsDeprecations();
+    }
+
+    @Override
+    public String getConfigKey() {
+        return m_defaultPersistor.getConfigKey();
     }
 }

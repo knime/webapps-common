@@ -56,7 +56,6 @@ import org.junit.jupiter.api.Test;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
 
 /**
  * Contains unit tests for the {@link FieldNodeSettingsPersistor}.
@@ -119,4 +118,5 @@ class FieldNodeSettingsPersistorTest {
             return super.getConfigKey();
         }
     }
+
 }

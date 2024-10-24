@@ -49,6 +49,7 @@
 package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -57,10 +58,11 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.webui.node.dialog.configmapping.ConfigMappings;
+import org.knime.core.webui.node.dialog.configmapping.ConfigPath;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation.DeprecationLoader;
+import org.knime.core.webui.node.dialog.configmapping.NewAndDeprecatedConfigPaths;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
 
 /**
  * A {@link NodeSettingsPersistor} that persists a single field of a settings object. Implementing classes must provide
@@ -75,8 +77,8 @@ public interface FieldNodeSettingsPersistor<T> extends NodeSettingsPersistor<T> 
 
     @Override
     default ConfigMappings getConfigMappings(final T obj) {
-        return new ConfigMappings(getConfigsDeprecations().stream().map(
-            configsDeprecation -> new ConfigMappings(configsDeprecation, settings -> {
+        return new ConfigMappings(getConfigsDeprecations().stream()
+            .map(configsDeprecation -> new ConfigMappings(inferNewConfigsIfNeccesary(configsDeprecation), settings -> {
                 T fromPrevious = loadOrDefault(settings, configsDeprecation.getLoader(), obj);
                 final var newSettings = new NodeSettings("newSettings");
                 save(fromPrevious, newSettings);
@@ -133,6 +135,41 @@ public interface FieldNodeSettingsPersistor<T> extends NodeSettingsPersistor<T> 
      */
     default List<ConfigsDeprecation<T>> getConfigsDeprecations() {
         return Collections.emptyList();
+    }
+
+    /**
+     * As defined by {@link #forNewConfigPath}, we want all new configs to be affected in case none are explicitly set.
+     */
+    private NewAndDeprecatedConfigPaths
+        inferNewConfigsIfNeccesary(final NewAndDeprecatedConfigPaths newAndDeprecatedConfigPaths) {
+        if (!newAndDeprecatedConfigPaths.getNewConfigPaths().isEmpty()) {
+            return newAndDeprecatedConfigPaths;
+        }
+        final var configPaths = inferConfigPaths();
+        return new NewAndDeprecatedConfigPaths() {
+
+            @Override
+            public Collection<ConfigPath> getNewConfigPaths() {
+                return configPaths;
+            }
+
+            @Override
+            public Collection<ConfigPath> getDeprecatedConfigPaths() {
+                return newAndDeprecatedConfigPaths.getDeprecatedConfigPaths();
+            }
+        };
+
+    }
+
+    private Collection<ConfigPath> inferConfigPaths() {
+        final var configPaths = getConfigPaths();
+        if (configPaths == null) {
+            if (this instanceof FieldNodeSettingsPersistorWithInferredConfigs<?> withInferredConfigs) {
+                return List.of(new ConfigPath(List.of(withInferredConfigs.getConfigKey())));
+            }
+            throw new IllegalStateException("for inferred configs, getConfigPaths must be implemented");
+        }
+        return Arrays.stream(configPaths).map(Arrays::asList).map(ConfigPath::new).toList();
     }
 
     /**

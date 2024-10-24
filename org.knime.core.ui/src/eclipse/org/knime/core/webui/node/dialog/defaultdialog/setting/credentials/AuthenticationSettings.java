@@ -59,9 +59,9 @@ import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation.Builder;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.DefaultPersistorWithDeprecations;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.NodeSettingsPersistorWithConfigKey;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.Label;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.RadioButtonsWidget;
@@ -265,11 +265,11 @@ public final class AuthenticationSettings implements WidgetGroup, PersistableSet
             return List
                 .of(new Builder<AuthenticationSettings>(settings -> loadFromModel(loadModelFromSettings(settings)))
                     .withDeprecatedConfigPath(getConfigKey(), KEY_CREDENTIALS)
-                    .withNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_CREDENTIAL)
-                    .withNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_PASSWORD)
-                    .withNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_USERNAME)
+                    .forNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_CREDENTIAL)
+                    .forNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_PASSWORD)
+                    .forNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_USERNAME)
                     .withDeprecatedConfigPath(getConfigKey(), KEY_TYPE)
-                    .withNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_TYPE)//
+                    .forNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_TYPE)//
                     .withMatcher(settings -> !isSavedWithNewConfigKeys(settings)).build());
         }
 

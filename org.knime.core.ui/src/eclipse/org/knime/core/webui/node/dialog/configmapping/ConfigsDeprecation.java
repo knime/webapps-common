@@ -180,13 +180,23 @@ public final class ConfigsDeprecation<T> implements NewAndDeprecatedConfigPaths 
 
         /**
          * Enter a path to a config set during {@link FieldNodeSettingsPersistor#save} affected by the values of all of
-         * the config paths set with {@link #withDeprecatedConfigPath}. This method can called multiple times.
+         * the config paths set with {@link #withDeprecatedConfigPath}. For nested configs, it suffices to enter the
+         * path to the config for which all child configs are affected.
+         *
+         * Only call this method if the configs being deprecated do not impact all other configs. I.e. when a pair of
+         * two configs "a" and "b" is changed by renaming "a" to "c" but "b" still stores the same information and is
+         * not affected by this renaming, use forNewConfigPath("c") to exclude "b" from being linked to the deprecated
+         * config path "a".
+         *
+         * I.e. if this method is never called for a builder, all new config paths are affected.
+         *
+         * This method can called multiple times.
          *
          * @param configKeys the configKeys forming a path from the base config of the {@link Persist#customPersistor}
          *            to a desired subconfig.
          * @return the builder
          */
-        public Builder<T> withNewConfigPath(final String... configKeys) {
+        public Builder<T> forNewConfigPath(final String... configKeys) {
             m_newConfigPaths.add(new ConfigPath(Arrays.stream(configKeys).toList()));
             return this;
         }
@@ -233,6 +243,7 @@ public final class ConfigsDeprecation<T> implements NewAndDeprecatedConfigPaths 
             if (m_matcher == null) {
                 createMatcherByDeprecatedConfigPaths();
             }
+
             return new ConfigsDeprecation<>(m_newConfigPaths, m_deprecatedConfigPaths, m_matcher, m_loader);
         }
 

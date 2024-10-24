@@ -345,7 +345,27 @@ describe("paths", () => {
       );
     });
 
-    it("detects deprecatedConfigKeys", () => {
+    it.each([
+      // Scenario 1: "model" and one of its sub keys are impacted
+      [
+        [
+          ["model"],
+          /**
+           * For checking that config paths that are more specific than the requested path are ignored
+           */
+          ["model", "mySetting", "subSetting"],
+        ],
+      ],
+      // Scenario 2: all sub keys are impacted
+      [
+        [
+          /**
+           * For checking that an empty config path leads to matching any path
+           */
+          [],
+        ],
+      ],
+    ])("detects deprecatedConfigKeys", (newConfigPathsForModelDeprecation) => {
       const path = "model.mySetting";
       const persistSchema: PersistSchema = {
         type: "object",
@@ -358,7 +378,7 @@ describe("paths", () => {
                   ["deprecated", "1"],
                   ["deprecated", "2"],
                 ],
-                new: [["model"], ["model", "mySetting", "subSetting"]],
+                new: newConfigPathsForModelDeprecation,
               },
               {
                 deprecated: [["deprecated", "3"]],

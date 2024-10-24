@@ -64,9 +64,9 @@ import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
 import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation.Builder;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldBasedNodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.NodeSettingsPersistorWithConfigKey;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.AuthenticationSettings.AuthenticationType;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.AuthenticationSettings.AuthenticationTypeRef;
@@ -185,11 +185,11 @@ public final class LegacyAuthenticationSettings implements WidgetGroup {
         public List<ConfigsDeprecation<LegacyAuthenticationSettings>> getConfigsDeprecations() {
             return List.of(new Builder<LegacyAuthenticationSettings>(this::loadFromSettingsModelSettings)//
                 .withDeprecatedConfigPath(getConfigKey(), KEY_LEGACY_CREDENTIALS)
-                .withNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_CREDENTIAL)
-                .withNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_PASSWORD)
-                .withNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_USERNAME)//
+                .forNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_CREDENTIAL)
+                .forNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_PASSWORD)
+                .forNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_USERNAME)//
                 .withDeprecatedConfigPath(getConfigKey(), KEY_TYPE)
-                .withNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_TYPE)//
+                .forNewConfigPath(getConfigKey(), SETTINGS_MODEL_KEY_TYPE)//
                 .withMatcher(settings -> !m_settingsModelAuthenticationPersistor.isSavedWithNewConfigKeys(settings))
                 .build());
         }

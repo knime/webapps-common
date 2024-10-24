@@ -62,7 +62,7 @@ import org.knime.core.node.NodeSettingsWO;
  * @author Paul Bärnreuther
  * @param <E> The enum that should be persisted
  */
-public final class EnumFieldPersistor<E extends Enum<E>> implements FieldNodeSettingsPersistor<E> {
+public final class EnumFieldPersistor<E extends Enum<E>> implements FieldNodeSettingsPersistorWithInferredConfigs<E> {
 
     private final String m_configKey;
 
@@ -96,8 +96,8 @@ public final class EnumFieldPersistor<E extends Enum<E>> implements FieldNodeSet
     }
 
     @Override
-    public String[] getConfigKeys() {
-        return null;  // NOSONAR
+    public String getConfigKey() {
+        return m_configKey;
     }
 
 }

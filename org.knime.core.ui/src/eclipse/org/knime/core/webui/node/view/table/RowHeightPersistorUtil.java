@@ -193,12 +193,12 @@ public final class RowHeightPersistorUtil {
 
         return List.of( //
             new Builder<T>(settings -> legacyLoadResultExtractor.apply(LEGACY_DEFAULT, settings))
-                .withNewConfigPath(configKey).withMatcher(getFirstTableVersionMatcher()).build(),
+                .forNewConfigPath(configKey).withMatcher(getFirstTableVersionMatcher()).build(),
             new Builder<T>(
                 settings -> legacyLoadResultExtractor.apply(getLoadResultFromLegacyCompactMode(settings), settings))
-                    .withNewConfigPath(configKey).withDeprecatedConfigPath(COMPACT_MODE_LEGACY_CONFIG_KEY).build(),
+                    .forNewConfigPath(configKey).withDeprecatedConfigPath(COMPACT_MODE_LEGACY_CONFIG_KEY).build(),
             new Builder<T>(
                 settings -> legacyLoadResultExtractor.apply(getLoadResultFromLegacyRowHeightMode(settings), settings))
-                    .withNewConfigPath(configKey).withDeprecatedConfigPath(ROW_HEIGHT_MODE_LEGACY_CONFIG_KEY).build());
+                    .forNewConfigPath(configKey).withDeprecatedConfigPath(ROW_HEIGHT_MODE_LEGACY_CONFIG_KEY).build());
     }
 }

@@ -97,7 +97,7 @@ class ConfigKeyUtilTest {
         public List<ConfigsDeprecation<Integer>> getConfigsDeprecations() {
             return List.of(new ConfigsDeprecation.Builder<Integer>(settings -> {
                 throw new IllegalStateException("Should not be called within this test");
-            }).withNewConfigPath("custom_key0").withDeprecatedConfigPath("old_config_key").build());
+            }).forNewConfigPath("custom_key0").withDeprecatedConfigPath("old_config_key").build());
         }
 
     }

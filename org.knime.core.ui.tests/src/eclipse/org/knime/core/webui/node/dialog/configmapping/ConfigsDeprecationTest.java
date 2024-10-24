@@ -67,7 +67,7 @@ class ConfigsDeprecationTest {
     private static final Builder<Integer> createBuilder(final Optional<Predicate<NodeSettingsRO>> matcher) {
         final var builder = new ConfigsDeprecation.Builder<Integer>(settings -> {
             throw new IllegalStateException("Should not be called within this test");
-        }).withNewConfigPath("D", "E").withDeprecatedConfigPath("A", "B").withNewConfigPath("F")
+        }).forNewConfigPath("D", "E").withDeprecatedConfigPath("A", "B").forNewConfigPath("F")
             .withDeprecatedConfigPath("C");
 
         if (matcher.isPresent()) {
@@ -108,7 +108,7 @@ class ConfigsDeprecationTest {
     void testBuilderThrowsWithoutMatcherAndDeprecatedConfigs() {
         final var builder = new ConfigsDeprecation.Builder<Integer>(settings -> {
             throw new IllegalStateException("Should not be called within this test");
-        }).withNewConfigPath("D", "E").withNewConfigPath("F");
+        }).forNewConfigPath("D", "E").forNewConfigPath("F");
 
         assertThrows(IllegalStateException.class, () -> builder.build());
     }

@@ -60,7 +60,7 @@ import org.knime.core.node.util.filter.PatternFilterConfiguration;
 import org.knime.core.node.util.filter.column.DataColumnSpecFilterConfiguration;
 import org.knime.core.node.workflow.NodeContext;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.NodeSettingsPersistorWithConfigKey;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.columnfilter.PatternFilter.PatternMode;
 
 /**

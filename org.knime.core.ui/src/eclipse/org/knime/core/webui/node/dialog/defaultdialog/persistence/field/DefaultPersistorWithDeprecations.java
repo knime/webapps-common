@@ -86,17 +86,6 @@ public interface DefaultPersistorWithDeprecations<T> extends FieldNodeSettingsPe
     }
 
     /**
-     * This method should not be overwritten by implementing classes. Instead, the getConfigKeys method of whatever
-     * default would be used when this persistor was not present will
-     *
-     * {@inheritDoc}
-     */
-    @Override
-    default String[] getConfigKeys() {
-        throw new IllegalAccessError("This method should never be called");
-    }
-
-    /**
      * This method should not be overwritten by implementing classes. Instead, the getConfigPaths method of whatever
      * default would be used when this persistor was not present will
      *

@@ -213,8 +213,7 @@
           },
           "enableDataValueViews" : {
             "type" : "boolean",
-            "default" : false,
-            "configKeys" : [ "enableDataValueViews_Internals" ]
+            "default" : false
           },
           "enableGlobalSearch" : {
             "type" : "boolean",
@@ -615,6 +614,9 @@
           "showOnlySelectedRows" : { },
           "showOnlySelectedRowsConfigurable" : { },
           "skipRemainingColumns" : {
+            "configPaths" : [ ]
+          },
+          "enableDataValueViews" : {
             "configPaths" : [ ]
           }
         }

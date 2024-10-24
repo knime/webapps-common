@@ -99,7 +99,8 @@ class SettingsModelPersistorTest {
         return new DefaultPersistorWithDeprecationsWrapper<AuthenticationSettings>(
             FieldNodeSettingsPersistor.createInstance(SettingsModelAuthenticationPersistor.class,
                 AuthenticationSettings.class, CFG_KEY),
-            new FieldBasedNodeSettingsPersistor<AuthenticationSettings>(AuthenticationSettings.class));
+            new DefaultFieldNodeSettingsPersistorFactory.NestedPersistor<>(CFG_KEY,
+                new FieldBasedNodeSettingsPersistor<AuthenticationSettings>(AuthenticationSettings.class)));
     }
 
     @Test
@@ -129,7 +130,8 @@ class SettingsModelPersistorTest {
         final var persistor = new DefaultPersistorWithDeprecationsWrapper<AuthenticationSettings>(
             FieldNodeSettingsPersistor.createInstance(SettingsModelAuthenticationPersistor.class,
                 AuthenticationSettings.class, CFG_KEY),
-            new FieldBasedNodeSettingsPersistor<AuthenticationSettings>(AuthenticationSettings.class));
+            new DefaultFieldNodeSettingsPersistorFactory.NestedPersistor<>(CFG_KEY,
+                new FieldBasedNodeSettingsPersistor<AuthenticationSettings>(AuthenticationSettings.class)));
         final var savedSettings = new NodeSettings("node_settings");
         new SettingsModelAuthentication(CFG_KEY, oldType, username, password, null).saveSettingsTo(savedSettings);
         final var loaded = FieldBasedNodeSettingsPersistor.loadFromFieldPersistor(persistor, savedSettings);

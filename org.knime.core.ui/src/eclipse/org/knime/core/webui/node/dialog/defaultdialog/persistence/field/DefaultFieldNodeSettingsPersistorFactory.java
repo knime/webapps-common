@@ -68,7 +68,6 @@ import org.knime.core.node.config.base.ConfigBaseRO;
 import org.knime.core.webui.node.dialog.configmapping.ConfigMappings;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorFactory;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.setting.credentials.Credentials;
 import org.knime.core.webui.node.dialog.defaultdialog.tree.ArrayParentNode;
@@ -94,8 +93,8 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
      * @return a new persistor
      * @throws IllegalArgumentException if there is no persistor available for the provided fieldType
      */
-    static FieldNodeSettingsPersistor<?> createDefaultPersistor(final TreeNode<PersistableSettings> node,
-        final String configKey) {
+    static FieldNodeSettingsPersistorWithInferredConfigs<?>
+        createDefaultPersistor(final TreeNode<PersistableSettings> node, final String configKey) {
         if (node instanceof ArrayParentNode<PersistableSettings> array) {
             return createDefaultArrayPersistor(array.getElementTree(), configKey);
         } else if (node instanceof Tree<PersistableSettings> tree) {
@@ -105,17 +104,18 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
         }
     }
 
-    private static <S extends PersistableSettings> FieldNodeSettingsPersistor<S[]>
+    private static <S extends PersistableSettings> ArrayFieldPersistor<S>
         createDefaultArrayPersistor(final Tree<PersistableSettings> elementTree, final String configKey) {
         return new ArrayFieldPersistor<>(elementTree, configKey);
     }
 
-    private static FieldNodeSettingsPersistor<?> createNestedFieldBasedPersistor(final String configKey,
+    private static NestedPersistor<?> createNestedFieldBasedPersistor(final String configKey,
         final Tree<PersistableSettings> tree) {
         return new NestedPersistor<>(configKey, NodeSettingsPersistorFactory.createPersistor(tree));
     }
 
-    static final class NestedPersistor<S extends PersistableSettings> implements FieldNodeSettingsPersistor<S> {
+    static final class NestedPersistor<S extends PersistableSettings>
+        implements FieldNodeSettingsPersistorWithInferredConfigs<S> {
 
         private final String m_configKey;
 
@@ -142,13 +142,14 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
         }
 
         @Override
-        public String[] getConfigKeys() {
-            return null; // NOSONAR
+        public String getConfigKey() {
+            return m_configKey;
         }
 
     }
 
-    static final class ArrayFieldPersistor<S extends PersistableSettings> implements FieldNodeSettingsPersistor<S[]> {
+    static final class ArrayFieldPersistor<S extends PersistableSettings>
+        implements FieldNodeSettingsPersistorWithInferredConfigs<S[]> {
 
         private final String m_configKey;
 
@@ -200,8 +201,8 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
         }
 
         @Override
-        public String[] getConfigKeys() {
-            return null; // NOSONAR
+        public String getConfigKey() {
+            return m_configKey;
         }
 
     }
@@ -218,25 +219,26 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
      * @return a new persistor
      * @throws IllegalArgumentException if there is no persistor available for the provided fieldType
      */
-    public static <T> FieldNodeSettingsPersistor<T> createPersistor(final Class<T> fieldType, final String configKey) {
+    public static <T> FieldNodeSettingsPersistorWithInferredConfigs<T> createPersistor(final Class<T> fieldType,
+        final String configKey) {
         @SuppressWarnings("unchecked") // Type-save since IMPL_MAP maps Class<T> to FieldPersistor<T>
         var impl = (FieldPersistor<T>)IMPL_MAP.get(fieldType);
         return createPersistorFromImpl(fieldType, configKey, impl);
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> FieldNodeSettingsPersistor<T> createPersistorFromImpl(final Class<T> fieldType,
-        final String configKey, final FieldPersistor<T> impl) {
+    private static <T> FieldNodeSettingsPersistorWithInferredConfigs<T>
+        createPersistorFromImpl(final Class<T> fieldType, final String configKey, final FieldPersistor<T> impl) {
         if (impl != null) {
             return new DefaultFieldNodeSettingsPersistor<>(configKey, impl);
         } else if (fieldType.isEnum()) {
             return createEnumPersistor(configKey, fieldType);
         } else if (fieldType.equals(LocalDate.class)) {
-            return (FieldNodeSettingsPersistor<T>)createLocalDatePersistor(configKey);
+            return (FieldNodeSettingsPersistorWithInferredConfigs<T>)createLocalDatePersistor(configKey);
         } else if (fieldType.equals(Credentials.class)) {
-            return (FieldNodeSettingsPersistor<T>)createCredentialsPersistor(configKey);
+            return (FieldNodeSettingsPersistorWithInferredConfigs<T>)createCredentialsPersistor(configKey);
         } else if (fieldType.equals(FSLocation.class)) {
-            return (FieldNodeSettingsPersistor<T>)createFSLocationPersistor(configKey);
+            return (FieldNodeSettingsPersistorWithInferredConfigs<T>)createFSLocationPersistor(configKey);
         } else {
             throw new IllegalArgumentException(
                 String.format("No default persistor available for type '%s'.", fieldType));
@@ -289,7 +291,7 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static <T> FieldNodeSettingsPersistor<T> createEnumPersistor(final String configKey,
+    private static <T> FieldNodeSettingsPersistorWithInferredConfigs<T> createEnumPersistor(final String configKey,
         final Class<T> fieldType) {
         return new EnumFieldPersistor<>(configKey, (Class)fieldType);
     }
@@ -322,8 +324,10 @@ public final class DefaultFieldNodeSettingsPersistorFactory {
 
     }
 
-    private static FieldNodeSettingsPersistor<Credentials> createCredentialsPersistor(final String configKey) {
-        return new Credentials.CredentialsPersistor(configKey);
+    private static FieldNodeSettingsPersistorWithInferredConfigs<Credentials>
+        createCredentialsPersistor(final String configKey) {
+        return FieldNodeSettingsPersistor.createInstance(Credentials.CredentialsPersistor.class, Credentials.class,
+            configKey);
     }
 
     private static FieldNodeSettingsPersistor<FSLocation> createFSLocationPersistor(final String configKey) {

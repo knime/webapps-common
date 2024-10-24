@@ -75,7 +75,7 @@ import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.JsonNodeSettings
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.JsonFormsSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.uischema.JsonFormsUiSchemaUtil;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistorWithConfigKey;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.NodeSettingsPersistorWithConfigKey;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.choices.impl.AsyncChoicesHolder;
 import org.knime.core.webui.node.dialog.defaultdialog.widgettree.WidgetTreeFactory;
@@ -228,8 +228,8 @@ class DefaultNodeSettingsServiceTest {
     private static final List<ConfigsDeprecation<String>>
         createConfigsDeprecationsForMyLegacyPersistor(final String configKey, final DeprecationLoader<String> loader) {
         return List
-            .of(ConfigsDeprecation.builder(loader).withNewConfigPath(configKey).withDeprecatedConfigPath("valueLegacy1")
-                .withNewConfigPath(configKey).withDeprecatedConfigPath("valueLegacy2").build());
+            .of(ConfigsDeprecation.builder(loader).forNewConfigPath(configKey).withDeprecatedConfigPath("valueLegacy1")
+                .forNewConfigPath(configKey).withDeprecatedConfigPath("valueLegacy2").build());
     }
 
     static class MigratedSettings implements DefaultNodeSettings {

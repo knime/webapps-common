@@ -42,57 +42,37 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
- *
- * History
- *   Oct 10, 2023 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.setting.selection;
-
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.EnumFieldPersistor;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.NodeSettingsPersistorWithConfigKey;
+package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 
 /**
+ * Extend this persistor in order to write custom persistors which need to access the configKey of a field during save
+ * or load. See {@link Persist}
  *
  * @author Paul Bärnreuther
+ * @param <T> type of object loaded by the persistor
  */
-public class SelectionCheckboxesToSelectionModePersistor extends NodeSettingsPersistorWithConfigKey<SelectionMode> {
+public abstract class NodeSettingsPersistorWithConfigKey<T>
+    implements FieldNodeSettingsPersistorWithInferredConfigs<T> {
 
-    private EnumFieldPersistor<SelectionMode> persistor;
+    private String m_configKey;
 
+    /**
+     * @return the configKey. Note that this method yields null when run from the constructor, as the setter method
+     *         below is called afterwards.
+     */
     @Override
+    public String getConfigKey() {
+        return m_configKey;
+    }
+
+    /**
+     * Sets the config key for this persistor. Is only ever called once, directly after initialization.
+     *
+     * @param configKey the configKey to set
+     */
     public void setConfigKey(final String configKey) {
-        super.setConfigKey(configKey);
-        persistor = new EnumFieldPersistor<>(configKey, SelectionMode.class);
+        m_configKey = configKey;
     }
 
-    @Override
-    public SelectionMode load(final NodeSettingsRO settings) throws InvalidSettingsException {
-        if (settings.containsKey(getConfigKey())) {
-            return persistor.load(settings);
-        }
-        if (settings.containsKey("publishSelection") && settings.containsKey("subscribeToSelection")) {
-            final var publish = settings.getBoolean("publishSelection");
-            final var show = settings.getBoolean("subscribeToSelection");
-            /**
-             * There is no option for only publishing since this change to a value switch. I.e. in this case, we now
-             * also subscribe to the selection.
-             */
-            if (publish) {
-                return SelectionMode.EDIT;
-            }
-            if (show) {
-                return SelectionMode.SHOW;
-            }
-            return SelectionMode.OFF;
-        }
-        return SelectionMode.EDIT;
-    }
-
-    @Override
-    public void save(final SelectionMode obj, final NodeSettingsWO settings) {
-        persistor.save(obj, settings);
-    }
 }

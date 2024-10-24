@@ -129,9 +129,9 @@ final class FieldNodeSettingsPersistorFactory {
             final var customPersistorClass = persist.get().customPersistor();
             if (!customPersistorClass.equals(FieldNodeSettingsPersistor.class)) {
                 final var customPersistor = createCustomPersistor(customPersistorClass, node.getType(), configKey);
-                if (DefaultPersistorWithDeprecations.class.isAssignableFrom(customPersistorClass)) {
-                    return new DefaultPersistorWithDeprecationsWrapper(
-                        (DefaultPersistorWithDeprecations)customPersistor, createDefaultPersistor(node, configKey));
+                if (customPersistor instanceof DefaultPersistorWithDeprecations withDeprecations) {
+                    return new DefaultPersistorWithDeprecationsWrapper(withDeprecations,
+                        createDefaultPersistor(node, configKey));
                 }
                 return customPersistor;
             }
@@ -140,8 +140,8 @@ final class FieldNodeSettingsPersistorFactory {
 
     }
 
-    private static FieldNodeSettingsPersistor<?> createDefaultPersistor(final TreeNode<PersistableSettings> node,
-        final String configKey) {
+    private static FieldNodeSettingsPersistorWithInferredConfigs<?>
+        createDefaultPersistor(final TreeNode<PersistableSettings> node, final String configKey) {
         return DefaultFieldNodeSettingsPersistorFactory.createDefaultPersistor(node, configKey);
     }
 
@@ -234,7 +234,7 @@ final class FieldNodeSettingsPersistorFactory {
 
         @Override
         public List<ConfigsDeprecation<S>> getConfigsDeprecations() {
-            return List.of(new ConfigsDeprecation.Builder<S>(settings -> m_default).withNewConfigPath(m_configKey)
+            return List.of(new ConfigsDeprecation.Builder<S>(settings -> m_default).forNewConfigPath(m_configKey)
                 .withMatcher(settings -> !settings.containsKey(m_configKey)).build());
         }
     }

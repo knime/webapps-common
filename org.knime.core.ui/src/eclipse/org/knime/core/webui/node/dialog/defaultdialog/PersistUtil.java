@@ -57,6 +57,7 @@ import java.util.Map;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.webui.node.dialog.SettingsType;
 import org.knime.core.webui.node.dialog.configmapping.ConfigPath;
+import org.knime.core.webui.node.dialog.configmapping.ConfigsDeprecation;
 import org.knime.core.webui.node.dialog.configmapping.NewAndDeprecatedConfigPaths;
 import org.knime.core.webui.node.dialog.defaultdialog.layout.WidgetGroup;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.PersistableSettings;
@@ -199,8 +200,19 @@ public final class PersistUtil {
 
         final var newConfigPaths = newAndDeprecatedConfigPaths.getNewConfigPaths();
         final var deprecatedConfigPaths = newAndDeprecatedConfigPaths.getDeprecatedConfigPaths();
-        add2DStingArray(nextDeprecatedConfigs, "new", to2DList(newConfigPaths));
+        add2DStingArray(nextDeprecatedConfigs, "new", addEmptyItemIfEmpty(to2DList(newConfigPaths)));
         add2DStingArray(nextDeprecatedConfigs, "deprecated", to2DList(deprecatedConfigPaths));
+    }
+
+    /**
+     * No new config keys means they should be inferred (see {@link ConfigsDeprecation.Builder#forNewConfigPath}). The
+     * front end does so for an empty list as item in the array.
+     */
+    private static List<List<String>> addEmptyItemIfEmpty(final List<List<String>> to2dList) {
+        if (to2dList.isEmpty()) {
+            return List.of(List.of());
+        }
+        return to2dList;
     }
 
     private static List<List<String>> to2DList(final Collection<ConfigPath> newConfigPaths) {

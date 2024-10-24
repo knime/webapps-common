@@ -42,42 +42,35 @@
  *  may freely choose the license terms applicable to such Node, including
  *  when such Node is propagated with or for interoperation with KNIME.
  * ---------------------------------------------------------------------
+ *
+ * History
+ *   Oct 24, 2024 (Paul Bärnreuther): created
  */
-package org.knime.core.webui.node.dialog.defaultdialog.persistence;
+package org.knime.core.webui.node.dialog.defaultdialog.persistence.field;
 
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistor;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.Persist;
+import org.knime.core.webui.node.dialog.configmapping.ConfigMappings;
 
 /**
- * Extend this persistor in order to write custom persistors which need to access the configKey of a field during save
- * or load. See {@link Persist}
+ * A {@link FieldNodeSettingsPersistor} should extend this interface if the config keys to which it saves can be
+ * inferred by the framework. Since we need to know these config keys for {@link ConfigMappings} to work, we limit
+ * ourselves to the case of one known config key.
  *
  * @author Paul Bärnreuther
- * @param <T> type of object loaded by the persistor
  */
-public abstract class NodeSettingsPersistorWithConfigKey<T> implements FieldNodeSettingsPersistor<T> {
-
-    private String m_configKey;
+interface FieldNodeSettingsPersistorWithInferredConfigs<T> extends FieldNodeSettingsPersistor<T> {
 
     /**
-     * @return the configKey. Note that this method yields null when run from the constructor, as the setter method
-     *         below is called afterwards.
-     */
-    protected String getConfigKey() {
-        return m_configKey;
-    }
-
-    /**
-     * Sets the config key for this persistor. Is only ever called once, directly after initialization.
+     * Instead of returning the config key here, we return null in order to let the framework infer the config key.
      *
-     * @param configKey the configKey to set
+     * {@inheritDoc}
      */
-    public void setConfigKey(final String configKey) {
-        m_configKey = configKey;
+    @Override
+    default String[] getConfigKeys() {
+        return null;
     }
 
-    @Override
-    public String[] getConfigKeys() {
-        return null; // NOSONAR
-    }
+    /**
+     * @return the configKey provided by the framework.
+     */
+    String getConfigKey();
 }

@@ -62,7 +62,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.webui.node.dialog.defaultdialog.persistence.NodeSettingsPersistor;
-import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.FieldNodeSettingsPersistor;
+import org.knime.core.webui.node.dialog.defaultdialog.persistence.field.NodeSettingsPersistorWithConfigKey;
 
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -258,7 +258,7 @@ public final class Credentials {
      *
      * @author Marc Bux, KNIME GmbH, Berlin, Germany
      */
-    public static final class CredentialsPersistor implements FieldNodeSettingsPersistor<Credentials> {
+    public static final class CredentialsPersistor extends NodeSettingsPersistorWithConfigKey<Credentials> {
 
         private static final String CFG_PASSWORD = "weaklyEncryptedPassword";
 
@@ -268,18 +268,9 @@ public final class Credentials {
 
         private static final String SECOND_FACTOR_SECRET = "lLNIScQYgDJJXUrUdhSG";
 
-        private final String m_configKey;
-
-        /**
-         * @param configKey the configuration key for these credentials
-         */
-        public CredentialsPersistor(final String configKey) {
-            m_configKey = configKey;
-        }
-
         @Override
         public Credentials load(final NodeSettingsRO settings) throws InvalidSettingsException {
-            final var credentialsConfig = settings.getNodeSettings(m_configKey);
+            final var credentialsConfig = settings.getNodeSettings(getConfigKey());
             final var username = credentialsConfig.getString(CFG_LOGIN);
             final var password = credentialsConfig.containsKey(CFG_TRANSIENT_PASSWORD)
                 ? credentialsConfig.getTransientString(CFG_TRANSIENT_PASSWORD) // overwritten via variable
@@ -293,7 +284,7 @@ public final class Credentials {
 
         @Override
         public void save(final Credentials credentials, final NodeSettingsWO settings) {
-            final var credentialsConfig = settings.addNodeSettings(m_configKey);
+            final var credentialsConfig = settings.addNodeSettings(getConfigKey());
             // only to comply to schema for variable type detection (value doesn't matter)
             credentialsConfig.addBoolean(CFG_IS_CREDENTIALS_FLAG, true);
 
@@ -320,9 +311,14 @@ public final class Credentials {
             }
         }
 
+        /**
+         * It is important to overwride the config here, because otherwise, the framework would infer flow variables for
+         * the nested fields within these credentials (password, username, ...) and instead, it should be overidable by
+         * one variable.
+         */
         @Override
         public String[] getConfigKeys() {
-            return new String[]{m_configKey};
+            return new String[]{getConfigKey()};
         }
 
     }
