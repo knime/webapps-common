@@ -5,6 +5,8 @@
 This project is a monorepo that packages shared config files, Vue components, CSS files, utilities, etc. that can be used for the frontend
 of all KNIME web projects.
 
+This repository is maintained by [UI Core](mailto:team-ui-core@knime.com).
+
 ## Demo
 
 A demo of all contained UI components, icons, CSS colors etc. can be found here:
