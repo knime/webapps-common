@@ -116,12 +116,10 @@ const selectedItem = ref();
 const selectedItemVirtualTree = ref();
 const doubleClickedItem = ref();
 
-const loadData = async (
+const loadData = (
   treeNode: BaseTreeNode,
   callback: (children: TreeNodeOptions[]) => void,
 ) => {
-  // eslint-disable-next-line no-magic-numbers
-  await new Promise((r) => setTimeout(r, 800));
   callback([
     { nodeKey: "more", name: "more loaded content" },
     { nodeKey: "more2", name: "another item" },
@@ -134,7 +132,7 @@ const loadDataWithCustomSlot = async (
   callback: (children: TreeNodeOptions[]) => void,
 ) => {
   // eslint-disable-next-line no-magic-numbers
-  await new Promise((r) => setTimeout(r, 1000));
+  await new Promise((r) => setTimeout(r, 1200));
   loadedTimes.value++;
   callback([
     {

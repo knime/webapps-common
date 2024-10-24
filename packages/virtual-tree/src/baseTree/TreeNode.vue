@@ -110,6 +110,7 @@ const arrowClick = (event: MouseEvent) => {
     <div
       :class="[
         'node-arrow',
+        props.node.loading ? 'loading' : '',
         props.expandedKeys.has(props.node.key) ? 'expanded' : '',
       ]"
       @click="arrowClick"

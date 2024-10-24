@@ -440,7 +440,7 @@ defineExpose({
 .vir-tree-node:has(.node-arrow:empty) {
   grid-template-columns: 1fr;
 }
-.vir-tree-node .node-arrow.expanded {
+.vir-tree-node .node-arrow.expanded:not(.loading) {
   transform: rotate(90deg);
 }
 .vir-tree-node .node-content {
