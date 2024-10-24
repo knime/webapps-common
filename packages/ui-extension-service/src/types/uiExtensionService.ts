@@ -62,6 +62,10 @@ export type UIExtensionServiceConfig = AlertConfig &
      * whether the ui-extension (dialog) supports a large mode or not
      */
     canBeEnlarged?: boolean;
+    /**
+     * whether the ui-extension (dialog) should initially be opened in large mode
+     */
+    startEnlarged?: boolean;
   };
 
 export enum ApplyState {

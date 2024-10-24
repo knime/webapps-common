@@ -53,4 +53,5 @@ export const extensionConfig: UIExtensionServiceConfig = {
   },
   extensionType: ExtensionTypes.VIEW,
   hasNodeView: true,
+  startEnlarged: true,
 };

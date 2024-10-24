@@ -30,6 +30,7 @@ type DialogServiceExtensionConfig = Identifiers & {
   hasNodeView: boolean;
   writeProtected?: boolean;
   canBeEnlarged?: boolean;
+  startEnlarged?: boolean;
 };
 
 export type DialogServiceAPILayer = Pick<

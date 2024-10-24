@@ -86,6 +86,10 @@ export class DialogService extends AbstractService<DialogServiceAPILayer> {
     this.removeCallbacksMap.set(callback, removeCallback);
   }
 
+  getInitialDisplayMode(): "small" | "large" {
+    return this.baseService.getConfig().startEnlarged ? "large" : "small";
+  }
+
   /**
    * Removes previously added callback.
    * @param {function} callback - that needs to be removed from events.

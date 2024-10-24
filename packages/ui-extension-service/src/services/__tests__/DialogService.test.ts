@@ -30,6 +30,7 @@ describe("DialogService", () => {
 
     expect(dialogService.hasNodeView()).toBeTruthy();
     expect(dialogService.isWriteProtected()).toBeFalsy();
+    expect(dialogService.getInitialDisplayMode()).toBe("large");
   });
 
   it("sets controls visibility", () => {
