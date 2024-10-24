@@ -1,7 +1,7 @@
 import { h, ref, render } from "vue";
 import type { Placement } from "@floating-ui/vue";
 
-import HintPopover from "../components/HintPopover.vue";
+import HintPopoverByElementId from "../components/HintPopoverByElementId.vue";
 
 const sideAndAlignToPlacement = (
   side?: "top" | "right" | "bottom" | "left",
@@ -58,7 +58,8 @@ export const createHint = ({
     isVisible.value = false;
   };
 
-  const popoverInstance = h(HintPopover, {
+  const popoverInstance = h(HintPopoverByElementId, {
+    key: element,
     content: {
       title,
       description,
