@@ -1,5 +1,11 @@
 # @knime/components
 
+## 1.4.5
+
+### Patch Changes
+
+- c12d135: Tree: add customSlot to tree node options; add two new api methods to clear a sub tree and trigger the load of the children
+
 ## 1.4.4
 
 ### Patch Changes
