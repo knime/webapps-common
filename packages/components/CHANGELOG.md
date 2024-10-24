@@ -1,5 +1,12 @@
 # @knime/components
 
+## 1.4.4
+
+### Patch Changes
+
+- e5fff5a: fix content jumping in Toast API error template
+- 9364d3a: make ProgressBar smoother by adding transition
+
 ## 1.4.3
 
 ### Patch Changes
