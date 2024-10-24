@@ -1,4 +1,8 @@
 <script lang="ts" setup>
+/**
+ * Popover component for hints with automatic positioning and an arrow. floating ui based.
+ * For the content you should use Popover Content in the default slot.
+ */
 import { type Ref, computed, ref, toRef } from "vue";
 import {
   type MaybeElement,
@@ -11,13 +15,10 @@ import {
   useFloating,
 } from "@floating-ui/vue";
 
-import PopoverContent from "./PopoverContent.vue";
-
 const arrowSize = 12; // px
 const floatingOffset = 4; // px
 
 export interface Props {
-  content: InstanceType<typeof PopoverContent>["$props"];
   reference: MaybeElement<Element>;
   placement: Placement;
   isVisible: Ref<boolean>;
@@ -82,7 +83,7 @@ const arrowDynamicPositionStyle = computed(() => {
     class="hint-popover"
     :style="floatingStyles"
   >
-    <PopoverContent v-bind="content" />
+    <slot />
     <div
       ref="floatingArrow"
       class="arrow"

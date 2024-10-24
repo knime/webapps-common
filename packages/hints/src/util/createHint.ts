@@ -2,6 +2,7 @@ import { h, ref, render } from "vue";
 import type { Placement } from "@floating-ui/vue";
 
 import HintPopoverByElementId from "../components/HintPopoverByElementId.vue";
+import type { VideoSource } from "../types";
 
 const sideAndAlignToPlacement = (
   side?: "top" | "right" | "bottom" | "left",
@@ -35,6 +36,8 @@ export const createHint = ({
   description,
   linkHref,
   linkText,
+  hideButtons,
+  video,
   align,
   side,
   onCompleteHint,
@@ -45,6 +48,8 @@ export const createHint = ({
   description: string;
   linkHref?: string;
   linkText?: string;
+  hideButtons?: boolean;
+  video?: VideoSource;
   side?: "top" | "right" | "bottom" | "left";
   align?: "start" | "center" | "end";
   onCompleteHint: () => void;
@@ -65,14 +70,16 @@ export const createHint = ({
       description,
       linkText,
       linkHref,
-      completeHint: () => {
-        destroy();
-        onCompleteHint();
-      },
-      skipAllHints: () => {
-        destroy();
-        onSkipAllHints();
-      },
+      hideButtons,
+      video,
+    },
+    completeHint: () => {
+      destroy();
+      onCompleteHint();
+    },
+    skipAllHints: () => {
+      destroy();
+      onSkipAllHints();
     },
     isVisible,
     reference: element,

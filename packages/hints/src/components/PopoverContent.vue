@@ -1,26 +1,31 @@
 <script lang="ts" setup>
-import { Button, FunctionButton } from "@knime/components";
+import { AutoPlayVideo, Button, FunctionButton } from "@knime/components";
 import CloseIcon from "@knime/styles/img/icons/close.svg";
+
+import type { VideoSource } from "../types";
 
 interface Props {
   title: string;
   description: string;
   linkText?: string;
   linkHref?: string;
-  video?: Array<{ source: string; type: string }>;
+  video?: VideoSource;
   hideButtons?: boolean;
-  completeHint: () => void;
-  skipAllHints: () => void;
 }
 
-const props = defineProps<Props>();
+defineProps<Props>();
 
-const onGotItButtonClicked = () => {
-  props.completeHint();
+const emit = defineEmits<{
+  close: [];
+  skipAll: [];
+}>();
+
+const close = () => {
+  emit("close");
 };
 
-const onSkipHintsButtonClicked = () => {
-  props.skipAllHints();
+const skipAll = () => {
+  emit("skipAll");
 };
 </script>
 
@@ -28,10 +33,18 @@ const onSkipHintsButtonClicked = () => {
   <div class="wrapper">
     <div class="header">
       <h6>{{ title }}</h6>
-      <FunctionButton class="close-button" @click="onGotItButtonClicked"
+      <FunctionButton class="close-button" @click="close"
         ><CloseIcon
       /></FunctionButton>
     </div>
+    <AutoPlayVideo v-if="video && video.length > 0" with-border class="video">
+      <source
+        v-for="{ source, type } in video"
+        :key="source"
+        :src="source"
+        :type="type"
+      />
+    </AutoPlayVideo>
     <p class="description">{{ description }}</p>
     <template v-if="linkHref">
       <div class="link">
@@ -39,10 +52,8 @@ const onSkipHintsButtonClicked = () => {
       </div>
     </template>
     <div v-if="!hideButtons" class="button-controls">
-      <Button style="padding: 0" compact @click="onSkipHintsButtonClicked"
-        >Skip hints</Button
-      >
-      <Button with-border compact @click="onGotItButtonClicked">Got it!</Button>
+      <Button style="padding: 0" compact @click="skipAll">Skip hints</Button>
+      <Button with-border compact @click="close">Got it!</Button>
     </div>
   </div>
 </template>

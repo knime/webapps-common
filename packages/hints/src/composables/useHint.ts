@@ -146,6 +146,8 @@ export const useHint = ({
       linkText = undefined,
       // eslint-disable-next-line no-undefined
       linkHref = undefined,
+      video = [],
+      hideButtons = false,
       align = "center",
       side = "bottom",
     } = hintConfiguration;
@@ -159,6 +161,8 @@ export const useHint = ({
       description,
       linkText,
       linkHref,
+      video,
+      hideButtons,
       onCompleteHint: () => {
         unWatchVisibility();
         setHintCompleted();
