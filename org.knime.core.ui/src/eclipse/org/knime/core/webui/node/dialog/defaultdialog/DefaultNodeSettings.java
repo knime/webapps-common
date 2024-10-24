@@ -285,6 +285,15 @@ public interface DefaultNodeSettings extends PersistableSettings, WidgetGroup {
         }
 
         /**
+         * Widens scope of constructor of {@link DefaultNodeSettingsContext}. Only used in tests.
+         */
+        @SuppressWarnings("javadoc")
+        public static DefaultNodeSettingsContext createDefaultNodeSettingsContext(final PortType[] inPortTypes,
+            final PortObjectSpec[] specs, final FlowObjectStack stack, final CredentialsProvider credentialsProvider) {
+            return new DefaultNodeSettingsContext(inPortTypes, specs, stack, credentialsProvider);
+        }
+
+        /**
          * The node's input types. Not null and not containing null.
          *
          * @return the inTypes

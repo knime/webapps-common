@@ -102,7 +102,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class UpdatesUtilTest {
 
     private static DefaultNodeSettingsContext createDefaultNodeSettingsContext() {
-        return DefaultNodeDialogTest.createDefaultNodeSettingsContext(new PortType[]{BufferedDataTable.TYPE},
+        return DefaultNodeSettingsContext.createDefaultNodeSettingsContext(new PortType[]{BufferedDataTable.TYPE},
             new PortObjectSpec[]{null}, null, null);
     }
 

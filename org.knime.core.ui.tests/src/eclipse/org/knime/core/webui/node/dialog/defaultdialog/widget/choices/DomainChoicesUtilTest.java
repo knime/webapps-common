@@ -68,7 +68,6 @@ import org.knime.core.data.def.StringCell;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialogTest;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
 
@@ -93,7 +92,7 @@ class DomainChoicesUtilTest {
         colSpecCreator.setDomain(colDomain);
         final var colSpec = colSpecCreator.createSpec();
 
-        return DefaultNodeDialogTest.createDefaultNodeSettingsContext(new PortType[]{BufferedDataTable.TYPE},
+        return DefaultNodeSettingsContext.createDefaultNodeSettingsContext(new PortType[]{BufferedDataTable.TYPE},
             new PortObjectSpec[]{new DataTableSpec(//
                 new DataColumnSpec[]{colSpec} //
             )}, null, null);
@@ -130,7 +129,7 @@ class DomainChoicesUtilTest {
 
         final var colName = "colName";
 
-        final var context = DefaultNodeDialogTest.createDefaultNodeSettingsContext(
+        final var context = DefaultNodeSettingsContext.createDefaultNodeSettingsContext(
             new PortType[]{BufferedDataTable.TYPE}, new PortObjectSpec[]{null}, null, null);
 
         final var domainValues = DomainChoicesUtil.getChoicesByContextAndColumn(context, colName);

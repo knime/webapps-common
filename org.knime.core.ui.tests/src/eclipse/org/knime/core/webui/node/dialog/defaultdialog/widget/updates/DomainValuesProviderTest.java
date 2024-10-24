@@ -62,7 +62,7 @@ import org.knime.core.data.def.StringCell;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialogTest;
+import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.DomainValuesProvider;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.ErrorHandlingSingleton;
 import org.knime.core.webui.node.dialog.defaultdialog.widget.handler.WidgetHandlerException;
@@ -99,7 +99,7 @@ class DomainValuesProviderTest {
         colSpecCreator.setDomain(colDomain);
         final var colSpec = colSpecCreator.createSpec();
 
-        final var context = DefaultNodeDialogTest.createDefaultNodeSettingsContext(
+        final var context = DefaultNodeSettingsContext.createDefaultNodeSettingsContext(
             new PortType[]{BufferedDataTable.TYPE}, new PortObjectSpec[]{new DataTableSpec(//
                 new DataColumnSpec[]{colSpec} //
             )}, null, null);
@@ -115,17 +115,18 @@ class DomainValuesProviderTest {
         final var colSpecCreator = new DataColumnSpecCreator(testColumn, StringCell.TYPE);
         final var colSpec = colSpecCreator.createSpec();
 
-        final var context = DefaultNodeDialogTest.createDefaultNodeSettingsContext(
+        final var context = DefaultNodeSettingsContext.createDefaultNodeSettingsContext(
             new PortType[]{BufferedDataTable.TYPE}, new PortObjectSpec[]{new DataTableSpec(//
                 new DataColumnSpec[]{colSpec} //
             )}, null, null);
 
         final var domainChoicesStateProviderTester = new DomainValuesProviderTester();
 
-        assertThat(domainChoicesStateProviderTester.computeState(context)).isEmpty();;
+        assertThat(domainChoicesStateProviderTester.computeState(context)).isEmpty();
+        ;
         final var messages = ErrorHandlingSingleton.getErrorMessages();
         assertThat(messages).hasSize(1);
-        assertThat(messages.get(0))
-            .contains("No column domain values present for column \"colName\". Consider using a Domain Calculator node.");
+        assertThat(messages.get(0)).contains(
+            "No column domain values present for column \"colName\". Consider using a Domain Calculator node.");
     }
 }

@@ -66,7 +66,6 @@ import org.knime.core.data.def.StringCell;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialogTest;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.core.webui.node.dialog.defaultdialog.jsonforms.schema.JsonFormsSchemaUtil;
@@ -183,8 +182,9 @@ class ChoicesWidgetUiSchemaOptionsTest {
             new DataColumnSpecCreator("column2", DoubleCell.TYPE).createSpec()};
 
     private static DefaultNodeSettingsContext createDefaultNodeSettingsContext() {
-        DefaultNodeSettingsContext defaultNodeSettingsContext = DefaultNodeDialogTest.createDefaultNodeSettingsContext(
-            new PortType[]{BufferedDataTable.TYPE}, new PortObjectSpec[]{new DataTableSpec(columnSpecs)}, null, null);
+        DefaultNodeSettingsContext defaultNodeSettingsContext =
+            DefaultNodeSettingsContext.createDefaultNodeSettingsContext(new PortType[]{BufferedDataTable.TYPE},
+                new PortObjectSpec[]{new DataTableSpec(columnSpecs)}, null, null);
         return defaultNodeSettingsContext;
     }
 
@@ -623,7 +623,7 @@ class ChoicesWidgetUiSchemaOptionsTest {
     void testChoicesStateProvider() {
         final class ChoicesStateProviderTestSettings implements DefaultNodeSettings {
 
-            @Widget(description = "", title="")
+            @Widget(description = "", title = "")
             @ChoicesWidget(choicesProvider = TestChoicesStateProvider.class)
             ColumnFilter m_columnFilter;
 
@@ -638,7 +638,7 @@ class ChoicesWidgetUiSchemaOptionsTest {
     void testThrowsIfNewAndOldMechanismAreUsedSimultaneously() {
         class ChoicesWidgetTestSettings implements DefaultNodeSettings {
 
-            @Widget(description = "", title="")
+            @Widget(description = "", title = "")
             @ChoicesWidget(choices = TestChoicesProvider.class, choicesProvider = TestChoicesStateProvider.class)
             ColumnFilter m_foo;
 

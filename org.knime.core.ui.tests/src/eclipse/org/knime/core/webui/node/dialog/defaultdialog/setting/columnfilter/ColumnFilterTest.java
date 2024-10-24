@@ -57,7 +57,6 @@ import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
-import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeDialogTest;
 import org.knime.core.webui.node.dialog.defaultdialog.DefaultNodeSettings.DefaultNodeSettingsContext;
 import org.knime.testing.util.TableTestUtil;
 
@@ -71,8 +70,9 @@ class ColumnFilterTest {
 
     private static final DataColumnSpec COL_SPEC = TABLE_SPEC.getColumnSpec(0);
 
-    private static final DefaultNodeSettingsContext CONTEXT = DefaultNodeDialogTest.createDefaultNodeSettingsContext(
-        new PortType[]{BufferedDataTable.TYPE}, new PortObjectSpec[]{TABLE_SPEC}, null, null);
+    private static final DefaultNodeSettingsContext CONTEXT =
+        DefaultNodeSettingsContext.createDefaultNodeSettingsContext(new PortType[]{BufferedDataTable.TYPE},
+            new PortObjectSpec[]{TABLE_SPEC}, null, null);
 
     @Test
     void testGetSelectedByManualWithIncludeUnknownColumns() {
@@ -80,7 +80,8 @@ class ColumnFilterTest {
         selection.m_manualFilter.m_manuallyDeselected = new String[]{"Old deselected"};
         selection.m_manualFilter.m_includeUnknownColumns = true;
         final var choices = new String[]{COL_SPEC.getName()};
-        assertThat(selection.getSelectedIncludingMissing(choices, TABLE_SPEC)).isEqualTo(new String[]{"Old selected", choices[0]});
+        assertThat(selection.getSelectedIncludingMissing(choices, TABLE_SPEC))
+            .isEqualTo(new String[]{"Old selected", choices[0]});
     }
 
     @Test
