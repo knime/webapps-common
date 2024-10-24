@@ -1,3 +1,4 @@
+import AutoPlayVideo from "./AutoPlayVideo/AutoPlayVideo.vue";
 import Breadcrumb from "./Breadcrumb/Breadcrumb.vue";
 import Button from "./Buttons/Button.vue";
 import FunctionButton from "./Buttons/FunctionButton.vue";
@@ -52,6 +53,7 @@ export * from "./node";
 export * from "./FileExplorer";
 
 export {
+  AutoPlayVideo,
   BaseButton,
   BaseMenuItem,
   BaseMenuItems,
