@@ -93,6 +93,7 @@ export default defineConfig(({ mode }) => {
 
   const conditionalRollupOptions = { external: [], output: {} };
 
+  const isHTMLBuildMode = mode.startsWith(htmlModePrefix);
   return {
     define: {
       "process.env": env, // needed by v-calendar
@@ -104,11 +105,12 @@ export default defineConfig(({ mode }) => {
         "@@": fileURLToPath(new URL(".", import.meta.url)),
       },
     },
+    ...(isHTMLBuildMode ? { base: "./" } : {}),
     build: {
       lib: getCurrentLibrary(mode as ComponentLibraries),
       emptyOutDir: false,
       cssCodeSplit: false,
-      rollupOptions: mode.startsWith(htmlModePrefix)
+      rollupOptions: isHTMLBuildMode
         ? getHtmlViewRollupOptions(mode)
         : {
             ...conditionalRollupOptions,
