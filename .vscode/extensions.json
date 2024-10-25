@@ -4,6 +4,7 @@
     "esbenp.prettier-vscode",
     "dbaeumer.vscode-eslint",
     "stylelint.vscode-stylelint",
-    "cpylua.language-postcss"
+    "cpylua.language-postcss",
+    "vitest.explorer"
   ]
 }
