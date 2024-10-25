@@ -1,15 +1,15 @@
 import * as convert from "color-convert";
 
-import { AlertType } from "@/types/alert";
-import { UIExtensionService } from "@/types/uiExtensionService";
 import {
-  ColorModel,
+  type ColorModel,
   ColorModelType,
-  NumericColorModel,
+  type NumericColorModel,
 } from "../types/ColorModel";
+import { AlertType } from "../types/alert";
+import type { UIExtensionService } from "../types/uiExtensionService";
 
 import { AbstractService } from "./AbstractService";
-import { ColorServiceAPILayer } from "./types/serviceApiLayers";
+import type { ColorServiceAPILayer } from "./types/serviceApiLayers";
 import { createAlert } from "./utils";
 
 // TODO: UIEXT-858 Provide this default color via color model
@@ -85,19 +85,20 @@ export class ColorService extends AbstractService<ColorServiceAPILayer> {
   /**
    * Mapping from column name to attached color model given by the extension config.
    */
-  private colorModels: Record<string, ColorModel> | undefined;
+  private colorModels: Record<string, ColorModel>;
   private columnNamesColorModel: ColorModel | undefined;
 
   /**
    * @param {KnimeService} knimeService - knimeService instance which is used to communicate
    *      with the framework.
    */
-  constructor(baseService?: UIExtensionService<ColorServiceAPILayer>) {
+  constructor(baseService: UIExtensionService<ColorServiceAPILayer>) {
     super(baseService);
-    this.colorModels = baseService.getConfig().colorModels;
-    if (!this.colorModels) {
+    const { colorModels } = baseService.getConfig();
+    if (!colorModels) {
       throw new Error("No color models present in the given extension config.");
     }
+    this.colorModels = colorModels;
     this.columnNamesColorModel = baseService.getConfig().columnNamesColorModel;
   }
 

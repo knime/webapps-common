@@ -1,7 +1,7 @@
-import { UIExtensionPushEvents } from "@/types";
+import { UIExtensionPushEvents } from "../types";
 
 import { AbstractService } from "./AbstractService";
-import { SharedDataServiceAPILayer } from "./types/serviceApiLayers";
+import type { SharedDataServiceAPILayer } from "./types/serviceApiLayers";
 
 /**
  * A service used to share data between different UI Extensions.

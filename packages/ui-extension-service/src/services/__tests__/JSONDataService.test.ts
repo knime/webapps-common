@@ -8,9 +8,9 @@ import {
   vi,
 } from "vitest";
 
-import { setUpCustomEmbedderService } from "@/embedder";
-import { DataServiceType } from "@/types/DataServiceType";
-import { Alert, AlertType } from "@/types/alert";
+import { setUpCustomEmbedderService } from "../../embedder";
+import { DataServiceType } from "../../types/DataServiceType";
+import { type Alert, AlertType } from "../../types/alert";
 import { JsonDataService } from "../JsonDataService";
 
 import { extensionConfig, longMessage } from "./mocks";
@@ -119,7 +119,7 @@ describe("JsonDataService", () => {
   });
 
   describe("service.applyData", () => {
-    let jsonDataService: JsonDataService, callNodeDataService;
+    let jsonDataService: JsonDataService, callNodeDataService: Mock;
 
     beforeEach(() => {
       const constructed = constructJsonDataService();
@@ -254,7 +254,7 @@ describe("JsonDataService", () => {
   });
 
   describe("alert formatting", () => {
-    let jsonDataService, sendAlertSpy;
+    let jsonDataService: JsonDataService, sendAlertSpy: Mock;
 
     beforeEach(() => {
       const constructed = constructJsonDataService(extensionConfig);
@@ -263,6 +263,7 @@ describe("JsonDataService", () => {
     });
 
     it("formats a single warning message", () => {
+      // @ts-expect-error accessing private method
       jsonDataService.handleWarnings(["Message 1"]);
       const sentMessage = sendAlertSpy.mock.calls[0][0] as Alert;
       expect(sentMessage.message).toBe("Message 1");
@@ -272,6 +273,7 @@ describe("JsonDataService", () => {
 
     it("formats multiple warning messages", () => {
       const warnings = ["Message 1", "Message 2"];
+      // @ts-expect-error accessing private method
       jsonDataService.handleWarnings(warnings);
       const sentMessage = sendAlertSpy.mock.calls[0][0] as Alert;
       expect(sentMessage.message).toBe(warnings.join("\n\n"));
@@ -280,6 +282,7 @@ describe("JsonDataService", () => {
     });
 
     it("formats long warning messages", () => {
+      // @ts-expect-error accessing private method
       jsonDataService.handleWarnings([longMessage]);
       const sentMessage = sendAlertSpy.mock.calls[0][0] as Alert;
       expect(sentMessage.message).toBe(longMessage);
@@ -288,6 +291,7 @@ describe("JsonDataService", () => {
     });
 
     it("formats default error", () => {
+      // @ts-expect-error accessing private method
       jsonDataService.handleError({});
       const sentMessage = sendAlertSpy.mock.calls[0][0] as Alert;
       expect(sentMessage.message).toBe(
@@ -298,6 +302,7 @@ describe("JsonDataService", () => {
     });
 
     it("formats long error message", () => {
+      // @ts-expect-error accessing private method
       jsonDataService.handleError({ message: longMessage });
       const sentMessage = sendAlertSpy.mock.calls[0][0] as Alert;
       expect(sentMessage.message).toBe(longMessage);
@@ -306,6 +311,7 @@ describe("JsonDataService", () => {
     });
 
     it("formats all error information", () => {
+      // @ts-expect-error accessing private method
       jsonDataService.handleError({
         details: "Something went wrong",
         stackTrace: ["Line1", "Line2"],

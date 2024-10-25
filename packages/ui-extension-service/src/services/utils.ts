@@ -1,5 +1,9 @@
-import { NodeInfo } from "@/types/NodeInfo";
-import { AlertConfig, AlertType, CreateAlertParams } from "@/types/alert";
+import type { NodeInfo } from "../types/NodeInfo";
+import {
+  type AlertConfig,
+  AlertType,
+  type CreateAlertParams,
+} from "../types/alert";
 
 export const createAlert = (
   baseConfig: AlertConfig,

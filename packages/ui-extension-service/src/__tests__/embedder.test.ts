@@ -1,13 +1,13 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { setUpCustomEmbedderService, setUpEmbedderService } from "@/embedder";
+import { setUpCustomEmbedderService, setUpEmbedderService } from "../embedder";
 import {
   DialogService,
   JsonDataService,
   ReportingService,
   ResourceService,
   SelectionService,
-} from "@/index";
+} from "../index";
 
 describe("setUpEmbedderService", () => {
   it("can be used to create services", () => {

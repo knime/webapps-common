@@ -1,5 +1,5 @@
-import { DisplayModeEventPayload } from "@/services/DialogService";
-import { SelectionEventPayload } from "@/services/SelectionService";
+import type { DisplayModeEventPayload } from "../services/DialogService";
+import type { SelectionEventPayload } from "../services/SelectionService";
 
 export type Foo = "";
 
@@ -58,6 +58,6 @@ export namespace UIExtensionPushEvents {
      * This method is to be used by the embedder of a ui extension to
      * trigger registered client event listeners.
      */
-    dispatchPushEvent<T extends EventType>(event: PushEvent<T>);
+    dispatchPushEvent<T extends EventType>(event: PushEvent<T>): void;
   }
 }

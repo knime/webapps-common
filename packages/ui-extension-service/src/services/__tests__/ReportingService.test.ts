@@ -1,12 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { setUpCustomEmbedderService } from "@/embedder";
-import { UIExtensionServiceConfig } from "@/index";
+import { setUpCustomEmbedderService } from "../../embedder";
+import type { UIExtensionServiceConfig } from "../../index";
 import {
   ImageFormat,
   RenderingType,
-  ReportRenderingConfig,
-} from "@/types/RenderingConfig";
+  type ReportRenderingConfig,
+} from "../../types/RenderingConfig";
 import { ReportingService } from "../ReportingService";
 
 import { extensionConfig } from "./mocks";

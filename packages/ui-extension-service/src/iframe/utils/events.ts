@@ -1,4 +1,4 @@
-import { IframeMessageEvent, WrappedIframePushEvent } from "./types";
+import type { IframeMessageEvent, WrappedIframePushEvent } from "./types";
 
 export const isWrappedEventOfType = (
   event: IframeMessageEvent,

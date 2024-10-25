@@ -1,9 +1,8 @@
-import { DataServiceType } from "@/types/DataServiceType";
-import { ExtensionTypes } from "@/types/ExtensionTypes";
-import { Alert, AlertConfig } from "@/types/alert";
-
-import { ColorModel } from "./ColorModel";
-import { RenderingConfig } from "./RenderingConfig";
+import type { ColorModel } from "./ColorModel";
+import { DataServiceType } from "./DataServiceType";
+import { ExtensionTypes } from "./ExtensionTypes";
+import type { RenderingConfig } from "./RenderingConfig";
+import type { Alert, AlertConfig } from "./alert";
 import { UIExtensionPushEvents } from "./pushEvents";
 
 export type Identifiers = {

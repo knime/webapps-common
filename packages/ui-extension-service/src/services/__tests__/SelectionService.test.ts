@@ -1,11 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { setUpCustomEmbedderService } from "@/embedder";
-import { UIExtensionServiceConfig } from "@/index";
+import { setUpCustomEmbedderService } from "../../embedder";
+import type { UIExtensionServiceConfig } from "../../index";
 import {
-  SelectionEventCallbackParams,
+  type SelectionEventCallbackParams,
   SelectionModes,
-} from "@/services/SelectionService";
+} from "../../services/SelectionService";
 import { SelectionService } from "../SelectionService";
 
 import { extensionConfig } from "./mocks";

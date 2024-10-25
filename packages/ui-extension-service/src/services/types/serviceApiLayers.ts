@@ -1,11 +1,11 @@
 import {
-  AlertConfig,
+  type AlertConfig,
   ExtensionTypes,
-  Identifiers,
-  UIExtensionServiceAPILayer,
-} from "@/types";
-import { ColorModel } from "@/types/ColorModel";
-import { RenderingConfig } from "@/types/RenderingConfig";
+  type Identifiers,
+  type UIExtensionServiceAPILayer,
+} from "../../types";
+import type { ColorModel } from "../../types/ColorModel";
+import type { RenderingConfig } from "../../types/RenderingConfig";
 
 export type AlertingServiceAPILayer = Pick<
   UIExtensionServiceAPILayer,

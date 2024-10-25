@@ -1,10 +1,10 @@
-import { UIExtensionService } from "@/types";
+import type { UIExtensionService } from "../types";
 
 import {
-  SelectionEventCallbackParams,
+  type SelectionEventCallbackParams,
   SelectionService,
 } from "./SelectionService";
-import { SelectionServiceAPILayer } from "./types/serviceApiLayers";
+import type { SelectionServiceAPILayer } from "./types/serviceApiLayers";
 
 /**
  * A SelectionService which persists the current selection.
@@ -20,7 +20,7 @@ export class CachingSelectionService extends SelectionService {
 
   private addBackendSelection({
     mode,
-    selection,
+    selection = [],
   }: SelectionEventCallbackParams) {
     switch (mode) {
       case "ADD":

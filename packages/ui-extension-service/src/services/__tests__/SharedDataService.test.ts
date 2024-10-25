@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { setUpCustomEmbedderService } from "@/embedder";
-import { UIExtensionPushEvents } from "@/index";
+import { setUpCustomEmbedderService } from "../../embedder";
+import { UIExtensionPushEvents } from "../../index";
 import { SharedDataService } from "../SharedDataService";
-import { SharedDataServiceAPILayer } from "../types/serviceApiLayers";
+import type { SharedDataServiceAPILayer } from "../types/serviceApiLayers";
 
 describe("SharedDataService", () => {
   const constructSharedDataService = (

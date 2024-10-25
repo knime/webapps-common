@@ -1,6 +1,6 @@
 {
   "name": "@knime/ui-extension-service",
-  "version": "1.0.0",
+  "version": "0.40.0",
   "description": "KNIME UI Extension Service for KNIME Analytics Platform",
   "license": "GPL 3 and Additional Permissions according to Sec. 7 (SEE LICENSE IN license.txt)",
   "author": "KNIME AG, Zurich, Switzerland",
@@ -10,11 +10,10 @@
     "url": "https://bitbucket.org/KNIME/knime-ui-extension-service"
   },
   "scripts": {
-    "build": "npm-run-all cleanDist type-check --parallel build:* -l",
+    "build": "npm-run-all cleanDist --parallel build:* -l",
     "build:es": "vite build --mode es",
     "build:iifeMin": "vite build --mode iifeMin",
     "build:iifeDev": "vite build --mode iifeDev",
-    "type-check": "tsc -p tsconfig.vitest.json",
     "cleanDist": "rimraf dist",
     "test:unit": "vitest",
     "coverage": "vitest run --coverage",
@@ -25,13 +24,10 @@
     "uuid": "9.0.1"
   },
   "devDependencies": {
-    "@knime/eslint-config": "8.1.0",
-    "@knime/licenses": "1.0.1",
     "@tsconfig/node20": "20.1.2",
     "@types/color-convert": "2.0.3",
     "@types/uuid": "9.0.8",
-    "@vitest/coverage-v8": "1.6.0",
-    "eslint": "8.57.0",
+    "@vitest/coverage-v8": "2.1.1",
     "flush-promises": "1.0.2",
     "husky": "9.0.11",
     "jsdom": "24.0.0",
@@ -42,7 +38,7 @@
     "typescript": "5.3.3",
     "vite": "5.1.1",
     "vite-plugin-dts": "3.9.1",
-    "vitest": "1.6.0"
+    "vitest": "2.1.1"
   },
   "main": "dist/index.js",
   "exports": {
@@ -53,6 +49,14 @@
     "./internal": {
       "import": "./dist/index2.js",
       "types": "./dist/internal.d.ts"
+    },
+    "./iife": {
+      "import": "./dist/knime-ui-extension-service.min.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./iifeDev": {
+      "import": "./dist/knime-ui-extension-service.dev.js",
+      "types": "./dist/index.d.ts"
     }
   },
   "types": "dist/index.d.ts",

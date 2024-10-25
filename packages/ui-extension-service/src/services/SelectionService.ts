@@ -1,8 +1,8 @@
-import { UIExtensionPushEvents } from "@/types/pushEvents";
-import { UIExtensionService } from "@/types/uiExtensionService";
+import { UIExtensionPushEvents } from "../types/pushEvents";
+import type { UIExtensionService } from "../types/uiExtensionService";
 
 import { AbstractService } from "./AbstractService";
-import { SelectionServiceAPILayer } from "./types/serviceApiLayers";
+import type { SelectionServiceAPILayer } from "./types/serviceApiLayers";
 
 /**
  * Selection service modes available by default to UI Extension nodes.
@@ -119,7 +119,7 @@ export class SelectionService extends AbstractService<SelectionServiceAPILayer> 
   ): void {
     const wrappedCallback = (event?: SelectionEventPayload): void => {
       const { nodeId, selection, mode } = event || {};
-      if (this.baseService.getConfig().nodeId === nodeId) {
+      if (this.baseService.getConfig().nodeId === nodeId && mode) {
         callback({ selection, mode });
       }
     };
@@ -138,7 +138,7 @@ export class SelectionService extends AbstractService<SelectionServiceAPILayer> 
   removeOnSelectionChangeCallback(
     callback: (event: SelectionEventCallbackParams) => void,
   ): void {
-    this.removeCallbacksMap.get(callback)();
+    this.removeCallbacksMap.get(callback)?.();
     this.removeCallbacksMap.delete(callback);
   }
 
@@ -149,6 +149,13 @@ export class SelectionService extends AbstractService<SelectionServiceAPILayer> 
    * @returns {Promise<any>}
    */
   publishOnSelectionChange(selectionMode: SelectionModes, rowKeys: string[]) {
-    return this[selectionMode.toLowerCase()](rowKeys);
+    const methodMap: {
+      [key in SelectionModes]: (selection: string[]) => Promise<any>;
+    } = {
+      [SelectionModes.ADD]: this.add.bind(this),
+      [SelectionModes.REMOVE]: this.remove.bind(this),
+      [SelectionModes.REPLACE]: this.replace.bind(this),
+    };
+    return methodMap[selectionMode](rowKeys);
   }
 }

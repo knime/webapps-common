@@ -2,8 +2,8 @@
 import { describe, expect, it, vi } from "vitest";
 import flushPromises from "flush-promises";
 
-import { setUpCustomEmbedderService } from "@/embedder";
-import { ApplyState, UIExtensionPushEvents, ViewState } from "@/index";
+import { setUpCustomEmbedderService } from "../../embedder";
+import { ApplyState, UIExtensionPushEvents, ViewState } from "../../index";
 import { DialogService } from "../DialogService";
 
 import { extensionConfig } from "./mocks";

@@ -1,5 +1,5 @@
 import { AbstractService } from "./AbstractService";
-import { ResourceServiceAPILayer } from "./types/serviceApiLayers";
+import type { ResourceServiceAPILayer } from "./types/serviceApiLayers";
 
 export class ResourceService extends AbstractService<ResourceServiceAPILayer> {
   getResourceUrl(path: string) {

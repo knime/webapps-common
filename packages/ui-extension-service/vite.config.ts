@@ -1,10 +1,10 @@
 import { URL, fileURLToPath } from "node:url";
 
 import {
-  BuildOptions,
-  LibraryFormats,
-  PluginOption,
-  TerserOptions,
+  type BuildOptions,
+  type LibraryFormats,
+  type PluginOption,
+  type TerserOptions,
   defineConfig,
 } from "vite";
 import dts from "vite-plugin-dts";
@@ -49,11 +49,6 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins,
-    resolve: {
-      alias: {
-        "@": fileURLToPath(new URL("src/.", import.meta.url)),
-      },
-    },
     build: {
       lib: {
         entry: {

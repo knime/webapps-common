@@ -1,10 +1,10 @@
 import {
-  ImageGenerationRenderingConfig,
+  type ImageGenerationRenderingConfig,
   RenderingType,
-} from "@/types/RenderingConfig";
+} from "../types/RenderingConfig";
 
 import { AbstractService } from "./AbstractService";
-import { ImageGenerationServiceAPILayer } from "./types/serviceApiLayers";
+import type { ImageGenerationServiceAPILayer } from "./types/serviceApiLayers";
 
 /**
  * ImageGenerationService is used in views in order to detect that the view is generated in an image generation context

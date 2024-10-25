@@ -2,10 +2,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   UIExtensionPushEvents,
-  UIExtensionService,
+  type UIExtensionService,
   setUpIframeEmbedderService,
-} from "@/index";
-import { getInitializedBaseServiceProxy } from "@/services/AbstractService";
+} from "../../index";
+import { getInitializedBaseServiceProxy } from "../../services/AbstractService";
 
 class Embedder<APILayer extends { getConfig: () => {} }> {
   iframe: HTMLIFrameElement;
@@ -22,12 +22,15 @@ class Embedder<APILayer extends { getConfig: () => {} }> {
     iframe.contentWindow.parent = window;
     const { dispatchPushEvent } = setUpIframeEmbedderService(
       apiLayer as any,
-      iframe.contentWindow,
+      iframe.contentWindow!,
     );
     this.dispatchPushEvent = dispatchPushEvent;
     this.iframe = iframe;
     // Tests fail without this wrapper, since event.source is null in this constructed test setup.
-    window.postMessage = (message: any, targetOrigin: string) => {
+    window.postMessage = (
+      message: any,
+      targetOrigin: string | WindowPostMessageOptions | undefined,
+    ) => {
       expect(targetOrigin).toBe("*");
       const event = new MessageEvent("message", {
         data: message,
@@ -49,8 +52,8 @@ class Embedder<APILayer extends { getConfig: () => {} }> {
     stringLines.shift();
     stringLines.pop();
     const injectedScriptBodyText = stringLines.join("\n");
-    this.iframe.contentDocument.open();
-    this.iframe.contentDocument.write(`<!doctype html>
+    this.iframe.contentDocument!.open();
+    this.iframe.contentDocument!.write(`<!doctype html>
       <html lang="en">
       <head>
         <meta charset="UTF-8" />
@@ -66,7 +69,7 @@ class Embedder<APILayer extends { getConfig: () => {} }> {
       </body>
     </html>
     `);
-    this.iframe.contentDocument.close();
+    this.iframe.contentDocument!.close();
   }
 
   cleanUp() {

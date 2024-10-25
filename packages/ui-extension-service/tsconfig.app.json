@@ -1,16 +1,3 @@
 {
-  "include": ["src/**/*"],
-  "exclude": ["src/**/__tests__/*"],
-  "compilerOptions": {
-    "composite": true,
-    "baseUrl": ".",
-    "moduleResolution": "node",
-    "lib": ["DOM"],
-    "paths": {
-      "@/*": ["./src/*"]
-    },
-    "jsx": "preserve",
-    "noEmit": true,
-    "verbatimModuleSyntax": false
-  }
+  "extends": "../../tsconfig.app.json"
 }

@@ -1,15 +1,15 @@
-import { APILayerDirtyState, ApplyState, ViewState } from "@/types";
+import { type APILayerDirtyState, ApplyState, ViewState } from "../../types";
 
-import { SettingComparator } from "./SettingComparator";
+import type { SettingComparator } from "./SettingComparator";
 import { createSetting } from "./setting";
-import { SettingState } from "./types";
+import type { SettingState } from "./types";
 
 type Construct<T extends object> = {
   [K in keyof T]: () => T[K];
 };
 
 const useDirtyStatesGeneric =
-  <T extends object>(cleanState: T) =>
+  <T extends { [key: string]: any }>(cleanState: T) =>
   (construct: Construct<T>, onChangeCallback?: (state: T) => void) => {
     const state = { ...cleanState };
 

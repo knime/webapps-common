@@ -1,7 +1,7 @@
 import { UIExtensionPushEvents as Events } from "../types";
 
 import { isWrappedEventOfType, toWrappedEventOfType } from "./utils/events";
-import { IframeMessageEvent } from "./utils/types";
+import type { IframeMessageEvent } from "./utils/types";
 
 const iframePushEventId = "UIExtensionPushEvent";
 

@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 
-import { API, PayloadForKey, RequestForKey } from "../types";
+import type { API, PayloadForKey, RequestForKey } from "../types";
 import { toWrappedEventOfType } from "../utils/events";
 
 const REQUEST_TIMEOUT_MS = 10000;

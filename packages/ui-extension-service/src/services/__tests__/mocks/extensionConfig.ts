@@ -1,6 +1,6 @@
 /* eslint-disable no-magic-numbers */
-import { ExtensionTypes } from "@/types/ExtensionTypes";
-import { UIExtensionServiceConfig } from "@/types/uiExtensionService";
+import { ExtensionTypes } from "../../../types/ExtensionTypes";
+import type { UIExtensionServiceConfig } from "../../../types/uiExtensionService";
 
 export const extensionConfig: UIExtensionServiceConfig = {
   initialData: {
@@ -47,8 +47,8 @@ export const extensionConfig: UIExtensionServiceConfig = {
   nodeInfo: {
     nodeAnnotation: "",
     nodeState: "executed",
-    nodeErrorMessage: null,
-    nodeWarnMessage: null,
+    nodeErrorMessage: "",
+    nodeWarnMessage: "",
     nodeName: "Scatter Plot",
   },
   extensionType: ExtensionTypes.VIEW,

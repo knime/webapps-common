@@ -1,4 +1,4 @@
-import { NodeInfo } from "./NodeInfo";
+import type { NodeInfo } from "./NodeInfo";
 
 /**
  * @enum

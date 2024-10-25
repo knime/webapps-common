@@ -3,7 +3,7 @@ import type {
   UIExtensionServiceAPILayer,
 } from "../../types/uiExtensionService";
 import { IframeAddEventListener } from "../pushEvents";
-import { API, ProxyMethodFor } from "../types";
+import type { API, ProxyMethodFor } from "../types";
 
 import callEmbedderMethod from "./callEmbedderMethod";
 
@@ -34,7 +34,7 @@ function proxyMissingMethods<A extends API, T extends Record<string, any>>(
   handleMethodCall: ProxyMethodFor<A>,
 ) {
   return new Proxy(obj, {
-    get<K extends keyof A & string>(target, methodName: K) {
+    get<K extends keyof A & string>(target: any, methodName: K) {
       if (typeof target[methodName] !== "undefined") {
         return target[methodName];
       }
@@ -75,6 +75,7 @@ export const createProxy = (
     methodsWithImplementation,
     <K extends keyof UIExtensionServiceAPILayer>(
       method: K,
+      // @ts-ignore
       ...params: Parameters<UIExtensionServiceAPILayer[K]>
     ) => {
       return callEmbedderMethod({ method, params }, iframeWindow);

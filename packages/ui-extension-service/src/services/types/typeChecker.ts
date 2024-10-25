@@ -2,9 +2,9 @@
  *  This file is only used to check that the exposed API Layer for embedders
  * is exactly the layer required by all of the services
  */
-import { UIExtensionServiceAPILayer } from "@/types";
+import type { UIExtensionServiceAPILayer } from "../../types";
 
-import {
+import type {
   AlertingServiceAPILayer,
   ColorServiceAPILayer,
   DataValueViewAPILayer,

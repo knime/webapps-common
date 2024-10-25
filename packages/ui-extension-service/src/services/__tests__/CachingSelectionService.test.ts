@@ -1,14 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { setUpCustomEmbedderService } from "@/embedder";
+import { setUpCustomEmbedderService } from "../../embedder";
 import {
   CachingSelectionService,
   SelectionService,
   UIExtensionPushEvents,
-  UIExtensionService,
-} from "@/index";
+  type UIExtensionService,
+} from "../../index";
 import { SelectionModes } from "../SelectionService";
-import { SelectionServiceAPILayer } from "../types/serviceApiLayers";
+import type { SelectionServiceAPILayer } from "../types/serviceApiLayers";
 
 import { extensionConfig } from "./mocks";
 

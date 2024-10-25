@@ -2,12 +2,12 @@
 import { type Mock, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
-  APILayerDirtyState,
+  type APILayerDirtyState,
   ApplyState,
   DefaultSettingComparator,
   ViewState,
-} from "@/index";
-import { createDialogDirtyStateHandler } from "@/services/dialogDirtyState";
+} from "../../../index";
+import { createDialogDirtyStateHandler } from "../../dialogDirtyState";
 
 describe("dialogDirtyState", () => {
   type AddSetting = ReturnType<

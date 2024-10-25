@@ -1,10 +1,10 @@
 /* eslint-disable class-methods-use-this */
-import { ApplyState, ViewState } from "@/types";
+import { ApplyState, ViewState } from "../../types";
 
 import { useDirtyStates } from ".";
 import {
   DefaultSettingComparator,
-  SettingComparator,
+  type SettingComparator,
 } from "./SettingComparator";
 import {
   useControllingFlowVariables,

@@ -1,7 +1,10 @@
-import { RenderingType, ReportRenderingConfig } from "@/types/RenderingConfig";
+import {
+  RenderingType,
+  type ReportRenderingConfig,
+} from "../types/RenderingConfig";
 
 import { AbstractService } from "./AbstractService";
-import { ReportingServiceAPILayer } from "./types/serviceApiLayers";
+import type { ReportingServiceAPILayer } from "./types/serviceApiLayers";
 
 /**
  * ReportingService is used in views in order to detect that the view is generated in a reporting context

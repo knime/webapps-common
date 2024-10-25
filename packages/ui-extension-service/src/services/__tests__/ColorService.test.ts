@@ -1,21 +1,27 @@
 /* eslint-disable no-magic-numbers */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { setUpCustomEmbedderService } from "@/embedder";
-import { UIExtensionService } from "@/index";
-import { ColorModelType } from "@/types/ColorModel";
+import { setUpCustomEmbedderService } from "../../embedder";
+import type { UIExtensionService } from "../../index";
+import { type ColorModel, ColorModelType } from "../../types/ColorModel";
 import {
   ColorService,
   NominalColorHandler,
   NumericColorHandler,
 } from "../ColorService";
-import { ColorServiceAPILayer } from "../types/serviceApiLayers";
+import type { ColorServiceAPILayer } from "../types/serviceApiLayers";
 
 import { extensionConfig } from "./mocks";
 
-const createServices = ({ colorModels = {}, columnNamesColorModel = null }) => {
+const createServices = ({
+  colorModels = {},
+  columnNamesColorModel = undefined,
+}: {
+  colorModels?: Record<string, ColorModel>;
+  columnNamesColorModel?: ColorModel;
+}) => {
   const config = { ...extensionConfig, colorModels, columnNamesColorModel };
-  const knimeService = setUpCustomEmbedderService({
+  const knimeService = setUpCustomEmbedderService<ColorServiceAPILayer>({
     sendAlert: vi.fn(),
     getConfig: () => config,
   }).service;

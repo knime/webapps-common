@@ -1,8 +1,8 @@
-import { addDefaults } from "@/embedder";
+import { addDefaults } from "../embedder";
 import type { UIExtensionServiceAPILayer } from "../types/uiExtensionService";
 
 import { IframeDispatchEvent } from "./pushEvents";
-import { PayloadForKey, RequestFor, Response } from "./types";
+import type { PayloadForKey, RequestFor, Response } from "./types";
 
 /**
  * Sets up the necessary handler on the window to receive

@@ -1,6 +1,7 @@
-import { DataValueViewConfig } from "..";
+import type { DataValueViewConfig } from "..";
+
 import { AbstractService } from "./AbstractService";
-import { DataValueViewAPILayer } from "./types/serviceApiLayers";
+import type { DataValueViewAPILayer } from "./types/serviceApiLayers";
 
 export class DataValueViewService extends AbstractService<DataValueViewAPILayer> {
   showDataValueView(config: DataValueViewConfig) {

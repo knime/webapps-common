@@ -1,8 +1,8 @@
-import { UIExtensionPushEvents, UIExtensionService } from "@/types";
+import { UIExtensionPushEvents, type UIExtensionService } from "../types";
 
 import { AbstractService } from "./AbstractService";
 import { createDialogDirtyStateHandler } from "./dialogDirtyState";
-import { DialogServiceAPILayer } from "./types/serviceApiLayers";
+import type { DialogServiceAPILayer } from "./types/serviceApiLayers";
 
 export interface DisplayModeEventPayload {
   mode: "small" | "large";
@@ -79,6 +79,7 @@ export class DialogService extends AbstractService<DialogServiceAPILayer> {
   ): void {
     const removeCallback = this.baseService.addPushEventListener(
       UIExtensionPushEvents.EventTypes.DisplayModeEvent,
+      // @ts-ignore
       callback,
     );
 
@@ -93,7 +94,7 @@ export class DialogService extends AbstractService<DialogServiceAPILayer> {
   removeOnDisplayModeChangeCallback(
     callback: (event: DisplayModeEventCallbackParams) => void,
   ): void {
-    this.removeCallbacksMap.get(callback)();
+    this.removeCallbacksMap.get(callback)?.();
     this.removeCallbacksMap.delete(callback);
   }
 }
