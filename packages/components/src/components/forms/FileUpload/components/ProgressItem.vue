@@ -1,5 +1,5 @@
 <script lang="ts">
-export const FIXED_HEIGHT_ITEM = 76;
+export const FIXED_HEIGHT_ITEM = 60;
 </script>
 
 <script lang="ts" setup>
@@ -79,54 +79,65 @@ const onCancel = (index: string) => {
 </script>
 
 <template>
-  <div class="progress-item">
-    <div class="item-info">
-      <Component :is="icon" class="file-type-icon" />
-      <div ref="textDiv" class="item-name">
-        <div class="file-name" :title="props.fileName">
-          {{ props.fileName }}
+  <div class="progress-wrapper" :style="{ height: `${FIXED_HEIGHT_ITEM}px` }">
+    <div class="progress-item">
+      <div class="item-info">
+        <Component :is="icon" class="file-type-icon" />
+        <div ref="textDiv" class="item-name">
+          <div class="file-name" :title="props.fileName">
+            {{ props.fileName }}
+          </div>
+          <span class="file-size">
+            {{ progressedFileSizeFormat }} of {{ fileSizeFormat }}
+          </span>
         </div>
-        <span class="file-size">
-          {{ progressedFileSizeFormat }} of {{ fileSizeFormat }}
-        </span>
+      </div>
+      <div class="item-action">
+        <Pill
+          v-if="props.status"
+          :variant="props.status === 'cancelled' ? 'error' : props.status"
+        >
+          <component :is="statusMapper[props.status][1]" />
+          {{ statusMapper[props.status][0] }}
+        </Pill>
+        <FunctionButton v-if="isProgressing" @click="onCancel(fileName)">
+          <CloseIcon class="action-icon" />
+        </FunctionButton>
+        <FunctionButton v-else @click="onRemove(fileName)">
+          <TrashIcon class="action-icon" />
+        </FunctionButton>
       </div>
     </div>
-    <div class="item-action">
-      <Pill
-        v-if="props.status"
-        :variant="props.status === 'cancelled' ? 'error' : props.status"
-      >
-        <component :is="statusMapper[props.status][1]" />
-        {{ statusMapper[props.status][0] }}
-      </Pill>
-      <FunctionButton v-if="isProgressing" @click="onCancel(fileName)">
-        <CloseIcon class="action-icon" />
-      </FunctionButton>
-      <FunctionButton v-else @click="onRemove(fileName)">
-        <TrashIcon class="action-icon" />
-      </FunctionButton>
+    <div class="progress">
+      <ProgressBar
+        v-if="isProgressing"
+        :percentage="percentage"
+        :compact="true"
+      />
     </div>
-  </div>
-  <div class="progress">
-    <ProgressBar
-      v-if="isProgressing"
-      :percentage="percentage"
-      :compact="true"
-    />
   </div>
 </template>
 
 <style scoped lang="postcss">
 @import url("@knime/styles/css/mixins.css");
 
-.progress-item {
+.progress-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+& .progress-item {
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 72px;
   width: 100%;
   gap: var(--space-16);
   border-top: 1px solid var(--knime-gray-light-semi);
+}
+
+& .progress {
+  padding: 8px;
 }
 
 & .item:first-child .progress-item {
