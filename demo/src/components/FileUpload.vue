@@ -9,6 +9,7 @@ const HTTP_STATUS_SUCCESS_MIN = 200;
 const HTTP_STATUS_SUCCESS_MAX = 299;
 
 type FileItem = {
+  id: string;
   fileName: string;
   percentage: number;
   fileSize: number;
@@ -18,6 +19,7 @@ type FileItem = {
 
 const demoValues = ref<FileItem[]>([
   {
+    id: Date().toString(),
     fileName: "temp_name.pdf",
     percentage: 100,
     fileSize: 132,
@@ -26,26 +28,31 @@ const demoValues = ref<FileItem[]>([
 
 const demoValuesNotRestricted = ref<FileItem[]>([
   {
+    id: Date().toString(),
     fileName: "temp1_name.pdf",
     percentage: 100,
     fileSize: 132,
   },
   {
+    id: Date().toString(),
     fileName: "temp2_name.pdf",
     percentage: 100,
     fileSize: 132,
   },
   {
+    id: Date().toString(),
     fileName: "temp3_name.pdf",
     percentage: 100,
     fileSize: 132,
   },
   {
+    id: Date().toString(),
     fileName: "temp4_name.pdf",
     percentage: 100,
     fileSize: 132,
   },
   {
+    id: Date().toString(),
     fileName: "temp5_name.pdf",
     percentage: 100,
     fileSize: 132,
@@ -115,6 +122,7 @@ const uploadFile = (file: File, fileItem: FileItem) => {
 const handleFileAdded = (file: File) => {
   const abortController = new AbortController();
   const newFile: FileItem = {
+    id: Date().toString(),
     fileName: file.name,
     percentage: 0,
     fileSize: file.size,
@@ -149,7 +157,7 @@ const handleFileAdded = (file: File) => {
       <div class="grid-item-6">
         <FileUpload
           v-model="demoValuesNotRestricted"
-          :scrollable="4"
+          :number-of-visible-items="4"
           @file-added="handleFileAdded"
         />
       </div>
@@ -164,7 +172,6 @@ const handleFileAdded = (file: File) => {
         <FileUpload
           v-model="demoValuesDisabled"
           label-text="Choose a custom label"
-          supported-formats="Choose custom supported formats"
           :disabled="true"
           @file-added="handleFileAdded"
         />
@@ -180,7 +187,6 @@ const handleFileAdded = (file: File) => {
         <FileUpload
           v-model="demoValuesDisabled"
           label-text="Choose a custom label"
-          supported-formats="Choose custom supported formats"
           :disabled="true"
           :disallowed="true"
           @file-added="handleFileAdded"

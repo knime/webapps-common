@@ -1,3 +1,7 @@
+<script lang="ts">
+export const FIXED_HEIGHT_ITEM = 76;
+</script>
+
 <script lang="ts" setup>
 import { computed } from "vue";
 import { partial } from "filesize";
@@ -52,6 +56,14 @@ const progressedFileSizeFormat = computed(() => {
   return parsedSize;
 });
 
+const isProgressing = computed(() => {
+  return (
+    (props.percentage as number) < 100 &&
+    props.status !== "error" &&
+    props.status !== "cancelled"
+  );
+});
+
 const icon = computed(() => {
   let candidate =
     `${getFileExtension(props.fileName)}Icon` as keyof typeof icons;
@@ -84,18 +96,10 @@ const onCancel = (index: string) => {
         v-if="props.status"
         :variant="props.status === 'cancelled' ? 'error' : props.status"
       >
-        <component :is="statusMapper[props.status]?.[1]" />
-        {{ statusMapper[props.status]?.[0] }}
+        <component :is="statusMapper[props.status][1]" />
+        {{ statusMapper[props.status][0] }}
       </Pill>
-      <FunctionButton
-        v-if="
-          (percentage as number) > 0 &&
-          (percentage as number) < 100 &&
-          props.status !== 'error' &&
-          props.status !== 'cancelled'
-        "
-        @click="onCancel(fileName)"
-      >
+      <FunctionButton v-if="isProgressing" @click="onCancel(fileName)">
         <CloseIcon class="action-icon" />
       </FunctionButton>
       <FunctionButton v-else @click="onRemove(fileName)">
@@ -105,11 +109,7 @@ const onCancel = (index: string) => {
   </div>
   <div class="progress">
     <ProgressBar
-      v-if="
-        (percentage as number) < 100 &&
-        props.status !== 'cancelled' &&
-        props.status !== 'error'
-      "
+      v-if="isProgressing"
       :percentage="percentage"
       :compact="true"
     />
@@ -123,7 +123,7 @@ const onCancel = (index: string) => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 60px;
+  height: 72px;
   width: 100%;
   gap: var(--space-16);
   border-top: 1px solid var(--knime-gray-light-semi);
@@ -151,15 +151,15 @@ const onCancel = (index: string) => {
   gap: var(--space-16);
   font-size: 13px;
   line-height: 14px;
-  flex-grow: 1; /* Allow item-info to take the available space */
-  overflow: hidden; /* Prevent item-info from overflowing */
+  flex-grow: 1;
+  overflow: hidden;
 
   & .item-name {
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
-    flex-grow: 1; /* Allow item-name to grow to take up available space */
-    overflow: hidden; /* Ensure overflow is hidden */
+    flex-grow: 1;
+    overflow: hidden;
 
     & .file-name {
       white-space: nowrap;
@@ -188,9 +188,5 @@ const onCancel = (index: string) => {
   & .action-icon {
     stroke: var(--knime-dove-gray);
   }
-}
-
-& .progress {
-  padding: 6px;
 }
 </style>

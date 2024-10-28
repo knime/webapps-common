@@ -1,8 +1,25 @@
-import type { FunctionalComponent, SVGAttributes } from "vue";
-
 export type State = "info" | "error" | "success" | "cancelled";
 
+export type AllowedFileFormat =
+  | "csv"
+  | "docx"
+  | "html"
+  | "md"
+  | "odp"
+  | "ods"
+  | "odt"
+  | "pdf"
+  | "pptx"
+  | "ps"
+  | "xls"
+  | "xlsx"
+  | "xml"
+  | "zip"
+  | "exe"
+  | "txt";
+
 export type ProgressItemProps = {
+  id: string;
   fileName: string;
   percentage?: number;
   fileSize?: number;
@@ -11,8 +28,7 @@ export type ProgressItemProps = {
 
 export type DropzoneProps = {
   labelText?: string;
-  supportedFormats?: string;
-  icon: FunctionalComponent<SVGAttributes>;
+  allowedFiles: AllowedFileFormat[];
   disabled?: boolean;
 };
 
@@ -24,8 +40,8 @@ export type FileUploadProps = {
   modelValue: List[];
   label?: string;
   labelText?: string;
-  supportedFormats?: string;
+  supportedFormats?: AllowedFileFormat[];
   disabled?: boolean;
   disallowed?: boolean;
-  scrollable?: number;
+  numberOfVisibleItems?: number;
 };

@@ -3,17 +3,15 @@ import { computed } from "vue";
 
 import { type ProgressItemProps } from "../types";
 
-import ProgressItem from "./ProgressItem.vue";
+import ProgressItem, { FIXED_HEIGHT_ITEM } from "./ProgressItem.vue";
 
 type Prop = {
   list: ProgressItemProps[];
-  scrollable?: number;
+  numberOfVisibleItems?: number;
 };
 
 const props = defineProps<Prop>();
 const emit = defineEmits(["remove", "cancel"]);
-
-const FIXED_HEIGHT_ITEM = 72;
 
 const onRemove = (fileName: string) => {
   emit("remove", fileName);
@@ -24,16 +22,18 @@ const onCancel = (fileName: string) => {
 };
 
 const calcHeight = computed(() => {
-  return props.scrollable
-    ? `${props.scrollable * FIXED_HEIGHT_ITEM}px`
-    : "auto";
+  return (
+    props.numberOfVisibleItems &&
+    `${props.numberOfVisibleItems * FIXED_HEIGHT_ITEM}px`
+  );
 });
 </script>
 
 <template>
   <div class="progress-wrapper" :style="{ height: calcHeight }">
-    <div v-for="(item, index) in list" :key="index" class="item">
+    <div v-for="item in list" :key="item.id" class="item">
       <ProgressItem
+        :id="item.id"
         :file-name="item.fileName"
         :file-size="item.fileSize"
         :percentage="item.percentage"

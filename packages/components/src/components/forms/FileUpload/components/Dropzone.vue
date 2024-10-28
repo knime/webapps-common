@@ -1,26 +1,61 @@
+<!-- <script lang="ts">
+const defaultSupportedFormats: AllowedFileFormat[] = [
+  "csv",
+  "docx",
+  "html",
+  "md",
+  "odp",
+  "ods",
+  "odt",
+  "pdf",
+  "pptx",
+  "ps",
+  "xls",
+  "xlsx",
+  "xml",
+  "zip",
+  "exe",
+  "txt",
+];
+export { defaultSupportedFormats };
+</script> -->
+
 <script lang="ts" setup>
-import { ref } from "vue";
+import { computed, ref } from "vue";
+
+import CloseIcon from "@knime/styles/img/icons/circle-close.svg";
+import FilePlus from "@knime/styles/img/icons/file-plus.svg";
+import { isIconExisting } from "@knime/utils";
 
 import Button from "../../../Buttons/Button.vue";
 import { type DropzoneProps } from "../types";
 
 const props = withDefaults(defineProps<DropzoneProps>(), {
   labelText: "Choose a file or drag it here",
-  supportedFormats: "Supported formats: .pdf, .docx, .jpeg, .png, .xls, .xlsx",
-  disabled: false,
+  supportedFormats: [],
   disallowed: false,
 });
+const errorState = ref(false);
 
 const emit = defineEmits<{
   (e: "file-added", file: File): void;
 }>();
+
+const getFileExtension = (path: string) => {
+  const basename = path.split(/[\\/]/).pop();
+  const pos = basename?.lastIndexOf(".") as number;
+  if (basename === "" || pos < 1) {
+    return "";
+  }
+  return basename?.slice(pos + 1);
+};
 
 const dragOver = ref(false);
 const dragging = ref(false);
 const inputRef = ref<HTMLInputElement | null>(null);
 
 const onDragOver = () => {
-  if (props.disabled || props.disallowed) {
+  if (props.disabled || errorState.value) {
     return;
   }
   dragOver.value = true;
@@ -31,13 +66,20 @@ const onDragLeave = () => {
 };
 
 const onDrop = (e: DragEvent) => {
-  if (props.disabled || props.disallowed) {
+  if (props.disabled || errorState.value) {
     return;
   }
   dragOver.value = false;
-  const file = e.dataTransfer?.files[0];
-  if (file) {
-    emit("file-added", file);
+
+  const target = e.dataTransfer;
+
+  if (target?.files) {
+    Array.from(target.files).forEach((file) => {
+      const extension = getFileExtension(file.name);
+      isIconExisting(`${extension}Icon`)
+        ? emit("file-added", file)
+        : (errorState.value = true);
+    });
   }
 };
 
@@ -48,7 +90,7 @@ const triggerInput = () => {
 };
 
 const onChange = (e: Event) => {
-  if (props.disabled || props.disallowed) {
+  if (props.disabled || errorState.value) {
     return;
   }
 
@@ -59,15 +101,22 @@ const onChange = (e: Event) => {
     });
   }
 };
+// const supportedFormatsText = computed(() =>
+//   props.supportedFormats?.length
+//     ? `Supported formats: ${props.supportedFormats.join(", ")}`
+//     : "",
+// );
+const icon = computed(() => (errorState.value ? CloseIcon : FilePlus));
 </script>
 
 <template>
+  {{ errorState }}
   <div
     class="dropzone"
     :class="{
       'dropzone-active': dragging,
-      'dropzone-hovered': dragOver,
-      disable: props.disabled || props.disallowed,
+      'drag-over': dragOver,
+      disable: props.disabled || errorState,
     }"
     @dragover.prevent="onDragOver"
     @dragleave="onDragLeave"
@@ -75,7 +124,7 @@ const onChange = (e: Event) => {
   >
     <div class="dropzone-content">
       <slot name="icon">
-        <Component :is="props.icon" class="dropzone-icon" />
+        <Component :is="icon" class="dropzone-icon" />
       </slot>
       <div class="dropzone-info">
         <p class="dropzone-text">
@@ -96,7 +145,13 @@ const onChange = (e: Event) => {
         </Button>
       </slot>
     </div>
-    <input ref="inputRef" type="file" hidden @change="onChange" />
+    <input
+      ref="inputRef"
+      :disabled="props.disabled || errorState"
+      type="file"
+      hidden
+      @change="onChange"
+    />
   </div>
 </template>
 
@@ -106,47 +161,37 @@ const onChange = (e: Event) => {
 .dropzone {
   background-color: var(--knime-gray-ultra-light);
   border: 2px dashed var(--knime-silver-sand-semi);
-  max-width: 100%;
+  width: 100%;
   border-radius: 12px;
   text-align: center;
   cursor: pointer;
-  transition: border-color 0.3s;
+  transition: all 0.3s;
   margin: 0 auto;
   display: flex;
-  padding: 16px 0;
+  padding: var(--space-16) 0;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--space-12);
 
   &.disable {
     opacity: 0.5;
     cursor: not-allowed;
-
-    &:hover {
-      background-color: var(--knime-gray-ultra-light); /* No hover effect */
-    }
   }
 
   &:not(.disable) {
     &:hover {
       background-color: var(--knime-cornflower-semi);
-
-      & .yellow-button {
-        background-color: var(--knime-black);
-        color: var(--knime-white);
-      }
     }
 
     &.dropzone-active {
       border-color: var(--knime-cornflower-semi);
     }
 
-    &.dropzone-hovered {
+    &.drag-over {
       background-color: var(--knime-cornflower-semi);
+    }
 
-      & .yellow-button {
-        background-color: var(--knime-black);
-        color: var(--knime-white);
-      }
+    &:focus-visible {
+      outline: 3px solid var(--knime-focus-color);
     }
   }
 
@@ -170,7 +215,7 @@ const onChange = (e: Event) => {
 
   & .dropzone-info {
     & .dropzone-text {
-      font-weight: 600;
+      font-weight: 500;
       font-size: 13px;
       text-align: center;
       line-height: 14px;

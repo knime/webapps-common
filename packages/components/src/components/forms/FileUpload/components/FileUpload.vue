@@ -1,9 +1,4 @@
 <script lang="ts" setup>
-import { computed } from "vue";
-
-import CloseIcon from "@knime/styles/img/icons/circle-close.svg";
-import FilePlus from "@knime/styles/img/icons/file-plus.svg";
-
 import Label from "../../Label/Label.vue";
 import { type FileUploadProps, type List } from "../types";
 
@@ -15,11 +10,7 @@ const props = defineProps<FileUploadProps>();
 const emit = defineEmits<{
   (e: "update:modelValue", value: List[]): void;
   (e: "file-added", file: File): void;
-  // update : [value : List]
-  // change : [file : File]
 }>();
-
-const icon = computed(() => (props.disallowed ? CloseIcon : FilePlus));
 
 const onRemove = (index: string) => {
   const updatedValues = [...props.modelValue];
@@ -46,7 +37,6 @@ const onCancel = (index: string) => {
         :label-text="props.labelText"
         :supported-formats="props.supportedFormats"
         :disabled="props.disabled"
-        :icon="icon"
         @file-added="(file) => emit('file-added', file)"
       />
     </Label>
@@ -54,7 +44,7 @@ const onCancel = (index: string) => {
   <div class="list">
     <ProgressList
       :list="props.modelValue"
-      :scrollable="props.scrollable"
+      :number-of-visible-items="props.numberOfVisibleItems"
       @remove="onRemove"
       @cancel="onCancel"
     />
