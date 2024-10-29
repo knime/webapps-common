@@ -5,6 +5,7 @@ import PlusButton from "./Buttons/PlusButton.vue";
 import SplitButton from "./Buttons/SplitButton.vue";
 import Carousel from "./Carousel/Carousel.vue";
 import Collapser from "./Collapser/Collapser.vue";
+import CollapsiblePanel from "./CollapsiblePanel/CollapsiblePanel.vue";
 import Description from "./Description/Description.vue";
 import DonutChart from "./DonutChart/DonutChart.vue";
 import Error from "./Error/Error.vue";
@@ -36,6 +37,11 @@ import TabBar from "./TabBar/TabBar.vue";
 import Tag from "./Tag/Tag.vue";
 import TagList from "./Tag/TagList.vue";
 import Tooltip from "./Tooltip/Tooltip.vue";
+import {
+  type UploadProgressItem,
+  type UploadProgressItemStatus,
+  UploadProgressPanel,
+} from "./UploadProgressPanel";
 import BaseButton from "./base/Button/BaseButton.vue";
 import BaseMenuItem from "./base/MenuItem/BaseMenuItem.vue";
 import BaseMenuItemText from "./base/MenuItem/BaseMenuItemText.vue";
@@ -64,6 +70,7 @@ export {
   Button,
   Carousel,
   Collapser,
+  CollapsiblePanel,
   Description,
   DonutChart,
   Error,
@@ -97,10 +104,16 @@ export {
   Tag,
   TagList,
   Tooltip,
+  UploadProgressPanel,
   svgWithTitle,
   ProgressBar,
   ProgressItem,
   ProgressList,
 };
 
-export type { InlineMessageVariant, PillVariant };
+export type {
+  InlineMessageVariant,
+  PillVariant,
+  UploadProgressItem,
+  UploadProgressItemStatus,
+};

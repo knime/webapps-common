@@ -15,8 +15,8 @@ describe("ProgressItem.vue", () => {
   beforeEach(() => {
     defaultProps = {
       id: "test",
-      fileName: "testfile.txt",
-      percentage: 50,
+      title: "testfile.txt",
+      progress: 50,
       fileSize: 200,
       status: "info",
     };

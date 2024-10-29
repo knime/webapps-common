@@ -6,6 +6,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    speed: {
+      type: String,
+      default: "0.4s",
+    },
   },
   methods: {
     onBeforeEnter(el) {
@@ -46,7 +50,7 @@ export default {
 
 <style lang="postcss" scoped>
 .panel {
-  transition: height 0.4s ease-in-out;
+  transition: height v-bind("speed") ease-in-out;
   overflow: hidden;
 }
 </style>

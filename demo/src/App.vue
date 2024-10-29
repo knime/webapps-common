@@ -93,6 +93,9 @@ const demoComponents = {
     CollapsiblePanel: defineAsyncComponent(
       () => import("./components/CollapsiblePanel.vue"),
     ),
+    UploadProgressPanel: defineAsyncComponent(
+      () => import("./components/UploadProgressPanel.vue"),
+    ),
   },
   toasts: {
     "Toast Service": defineAsyncComponent(

@@ -14,15 +14,15 @@ describe("ProgressList.vue", () => {
     list: [
       {
         id: "1",
-        fileName: "testfile1.txt",
-        percentage: 50,
+        title: "testfile1.txt",
+        progress: 50,
         fileSize: 200,
         status: "info",
       },
       {
         id: "2",
-        fileName: "testfile2.txt",
-        percentage: 50,
+        title: "testfile2.txt",
+        progress: 50,
         fileSize: 200,
         status: "info",
       },
@@ -47,12 +47,10 @@ describe("ProgressList.vue", () => {
     });
 
     const progressItems = wrapper.findAllComponents(ProgressItem);
-    progressItems[0].vm.$emit("remove", defaultProps.list[0].fileName);
+    progressItems[0].vm.$emit("remove", defaultProps.list[0].title);
 
     expect(wrapper.emitted().remove).toBeTruthy();
-    expect(wrapper.emitted().remove[0]).toEqual([
-      defaultProps.list[0].fileName,
-    ]);
+    expect(wrapper.emitted().remove[0]).toEqual([defaultProps.list[0].title]);
   });
 
   it("emits 'cancel' when the cancel event is triggered", () => {
@@ -61,11 +59,9 @@ describe("ProgressList.vue", () => {
     });
 
     const progressItems = wrapper.findAllComponents(ProgressItem);
-    progressItems[1].vm.$emit("cancel", defaultProps.list[1].fileName);
+    progressItems[1].vm.$emit("cancel", defaultProps.list[1].title);
 
     expect(wrapper.emitted().cancel).toBeTruthy();
-    expect(wrapper.emitted().cancel[0]).toEqual([
-      defaultProps.list[1].fileName,
-    ]);
+    expect(wrapper.emitted().cancel[0]).toEqual([defaultProps.list[1].title]);
   });
 });
