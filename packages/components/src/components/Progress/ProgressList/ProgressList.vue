@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<!-- <script lang="ts" setup>
 import { computed } from "vue";
 
 import ProgressItem, {
@@ -44,9 +44,9 @@ const calcHeight = computed(() => {
     <div v-for="item in list" :key="item.id" class="item">
       <ProgressItem
         :id="item.id"
-        :file-name="item.fileName"
+        :title="item.fileName"
         :file-size="item.fileSize"
-        :percentage="item.percentage"
+        :progress="item.percentage"
         :status="item.status"
         @remove="onRemove"
         @cancel="onCancel"
@@ -80,6 +80,24 @@ const calcHeight = computed(() => {
     width: 100%;
     justify-content: space-between;
     flex-direction: column;
+  }
+}
+</style> -->
+
+<script setup lang="ts"></script>
+
+<template>
+  <div class="progress-list">
+    <slot />
+  </div>
+</template>
+
+<style lang="postcss" scoped>
+.progress-list {
+  &:deep(.progress-wrapper) {
+    &:not(:first-child) {
+      border-top: 1px solid var(--knime-porcelain);
+    }
   }
 }
 </style>

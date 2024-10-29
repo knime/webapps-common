@@ -1,9 +1,13 @@
-export type State = "info" | "error" | "success" | "cancelled";
+import type { PillVariant } from "../Pill/Pill.vue";
 
 export type ProgressItemProps = {
   id: string;
-  fileName: string;
-  percentage?: number;
-  fileSize?: number;
-  status?: State;
+  title: string;
+  subtitle?: string;
+  progress?: number;
+  statusPill?: {
+    text: string;
+    variant: PillVariant;
+    icon: any;
+  };
 };

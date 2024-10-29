@@ -90,6 +90,9 @@ const demoComponents = {
       () => import("./components/LocalDateTime.vue"),
     ),
     Pill: defineAsyncComponent(() => import("./components/Pill.vue")),
+    CollapsiblePanel: defineAsyncComponent(
+      () => import("./components/CollapsiblePanel.vue"),
+    ),
   },
   toasts: {
     "Toast Service": defineAsyncComponent(
