@@ -97,7 +97,7 @@ public final class DataValueViewManager {
         new PageResourceManager<>(PageType.DATA_VALUE, dvw -> getDataValueView(dvw).toCreatedPage(), null, null, true);
 
     private final DataServiceManager<DataValueWrapper> m_dataServiceManager =
-        new DataServiceManager<>(dvw -> getDataValueView(dvw).view());
+        new DataServiceManager<>(dvw -> getDataValueView(dvw).view(), true);
 
     /**
      * @return a singleton instance of this class
@@ -192,7 +192,6 @@ public final class DataValueViewManager {
     private static RowCursor createCursor(final int rowIdx, final int colIdx, final BufferedDataTable table) {
         var filter = new TableFilter.Builder() //
             .withFromRowIndex(rowIdx)//
-            .withToRowIndex(rowIdx + 1L)//
             .withMaterializeColumnIndices(colIdx)//
             .build();
         return table.cursor(filter);
