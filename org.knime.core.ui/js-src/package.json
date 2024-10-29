@@ -21,7 +21,7 @@
     "build:FlowVariableView": "vite build --mode FlowVariableView",
     "build:ImageView": "vite build --mode ImageView",
     "build:html": "run-p build:html:*",
-    "build:html:placeholder": "",
+    "build:html:ImageValueView": "vite build --mode html:ImageValueView",
     "type-check": "vue-tsc -p tsconfig.vitest.json",
     "format": "prettier --cache --write .",
     "format:check": "prettier --cache --check .",
