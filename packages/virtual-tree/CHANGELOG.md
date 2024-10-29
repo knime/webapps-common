@@ -1,5 +1,28 @@
 # @knime/virtual-tree
 
+## 1.2.0
+
+### Minor Changes
+
+- c12d135: Tree: add customSlot to tree node options; add two new api methods to clear a sub tree and trigger the load of the children
+
+### Patch Changes
+
+- Updated dependencies [c12d135]
+  - @knime/components@1.4.5
+
+## 1.1.0
+
+### Minor Changes
+
+- 4230d50: Add optional icon prop to TreeNodeOptions and render a icon in front of the node text.
+
+### Patch Changes
+
+- Updated dependencies [e5fff5a]
+- Updated dependencies [9364d3a]
+  - @knime/components@1.4.4
+
 ## 1.0.15
 
 ### Patch Changes

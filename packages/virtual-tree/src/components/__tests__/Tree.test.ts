@@ -83,6 +83,94 @@ describe("Tree", () => {
       ]);
     });
 
+    describe("load children", () => {
+      it("does nothing if loadData prop is not set", async () => {
+        const { wrapper } = doMount({
+          props: {
+            source: treeSource,
+          },
+        });
+
+        wrapper.vm.loadChildren("root/1");
+        await nextTick();
+
+        const treeNodes = wrapper.findAllComponents({ name: "TreeNode" });
+        expect(treeNodes.length).toBe(2);
+      });
+
+      it("loads children", async () => {
+        const { wrapper } = doMount();
+
+        wrapper.vm.loadChildren("root/1");
+        await nextTick();
+
+        // still open it as otherwise it will not be rendered
+        wrapper.vm.toggleExpand("root/1", true);
+        await nextTick();
+
+        expect(wrapper.props("loadData")).toBeCalledTimes(1);
+
+        const treeNodes = wrapper.findAllComponents({ name: "TreeNode" });
+        expect(treeNodes.length).toBe(3);
+      });
+
+      it("handle empty load data response", async () => {
+        const emptyLoadDataMock = vi.fn((node, callback) => {
+          callback([]);
+        });
+        const { wrapper } = doMount({
+          props: {
+            source: treeSource,
+            loadData: emptyLoadDataMock,
+          },
+        });
+
+        wrapper.vm.loadChildren("root/1");
+        await nextTick();
+
+        expect(emptyLoadDataMock).toBeCalled();
+
+        // still open it as otherwise it will not be rendered
+        wrapper.vm.toggleExpand("root/1", true);
+        await nextTick();
+
+        const treeNodes = wrapper.findAllComponents({ name: "TreeNode" });
+        expect(treeNodes.length).toBe(2);
+      });
+    });
+
+    it("clear children", async () => {
+      const { wrapper } = doMount({
+        props: {
+          source: [
+            {
+              ...treeSource[0],
+              children: [
+                { nodeKey: "child/1", name: "Child 1" },
+                { nodeKey: "child/2", name: "Child 2" },
+              ],
+            },
+            treeSource[1],
+          ],
+        },
+      });
+
+      // still open it as otherwise it will not be rendered
+      wrapper.vm.toggleExpand("root/1", true);
+      await nextTick();
+
+      const treeNodes = wrapper.findAllComponents({ name: "TreeNode" });
+      expect(treeNodes.length).toBe(4);
+
+      wrapper.vm.clearChildren("root/1");
+      await nextTick();
+
+      const treeNodesAfterClear = wrapper.findAllComponents({
+        name: "TreeNode",
+      });
+      expect(treeNodesAfterClear.length).toBe(2);
+    });
+
     describe("keyboard navigation", () => {
       it("arrow up/down and enter", async () => {
         const { wrapper, mountOptions } = doMount();

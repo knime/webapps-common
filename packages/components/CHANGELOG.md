@@ -1,5 +1,18 @@
 # @knime/components
 
+## 1.4.5
+
+### Patch Changes
+
+- c12d135: Tree: add customSlot to tree node options; add two new api methods to clear a sub tree and trigger the load of the children
+
+## 1.4.4
+
+### Patch Changes
+
+- e5fff5a: fix content jumping in Toast API error template
+- 9364d3a: make ProgressBar smoother by adding transition
+
 ## 1.4.3
 
 ### Patch Changes

@@ -25,7 +25,9 @@ import Messages from "./Messages/Messages.vue";
 import Modal from "./Modal/Modal.vue";
 import OpenSourceCredits from "./OpenSourceCredits/OpenSourceCredits.vue";
 import Pill, { type PillVariant } from "./Pill/Pill.vue";
-import ProgressBar from "./ProgressBar/ProgressBar.vue";
+import ProgressBar from "./Progress/ProgressBar/ProgressBar.vue";
+import ProgressItem from "./Progress/ProgressItem/ProgressItem.vue";
+import ProgressList from "./Progress/ProgressList/ProgressList.vue";
 import SideDrawer from "./SideDrawer/SideDrawer.vue";
 import StyledListItem from "./StyleListItem/StyledListItem.vue";
 import SubMenu from "./SubMenu/SubMenu.vue";
@@ -97,6 +99,8 @@ export {
   Tooltip,
   svgWithTitle,
   ProgressBar,
+  ProgressItem,
+  ProgressList,
 };
 
 export type { InlineMessageVariant, PillVariant };

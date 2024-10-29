@@ -1,5 +1,21 @@
 # @knime/ui-extension-renderer
 
+## 1.1.28
+
+### Patch Changes
+
+- Updated dependencies [c12d135]
+  - @knime/components@1.4.5
+
+## 1.1.27
+
+### Patch Changes
+
+- 9c30746: Add data value view methods to API layer
+- Updated dependencies [e5fff5a]
+- Updated dependencies [9364d3a]
+  - @knime/components@1.4.4
+
 ## 1.1.26
 
 ### Patch Changes
