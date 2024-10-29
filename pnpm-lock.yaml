@@ -409,7 +409,7 @@ importers:
         specifier: workspace:*
         version: link:../styles
       '@knime/ui-extension-service':
-        specifier: ^0.40.0
+        specifier: 0.40.0
         version: 0.40.0
       '@vueuse/shared':
         specifier: ^10.10.0
