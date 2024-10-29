@@ -22,6 +22,7 @@ import getWrappedAroundIndex from "./getWrappedAroundIndex";
 import getLocalTimeZone from "./localTimezone";
 import * as navigatorUtils from "./navigator";
 import numIntegerDigits from "./numIntegerDigits";
+import * as promise from "./promise";
 import sleep from "./sleep";
 import truncateString from "./truncateString";
 import updateDate from "./updateDate";
@@ -35,6 +36,7 @@ export namespace HotkeysNS {
 }
 
 export {
+  promise,
   capitalize,
   caseFormatter,
   debounce,
