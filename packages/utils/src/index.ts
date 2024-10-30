@@ -27,6 +27,11 @@ import sleep from "./sleep";
 import truncateString from "./truncateString";
 import updateDate from "./updateDate";
 import updateTime from "./updateTime";
+import type {
+  UploaderManagerConfig as _UploadManagerConfig,
+  UploadStateName as _UploadStateName,
+} from "./uploadManager";
+import * as uploadManager from "./uploadManager";
 
 const hotkeys = { formatHotkeys, formatHotkey, getDefaultSeparator };
 
@@ -35,7 +40,13 @@ export namespace HotkeysNS {
   export type KnownHotkey = _KnownHotkey;
 }
 
+export namespace UploadManagerNS {
+  export type UploaderConfig = _UploadManagerConfig;
+  export type UploadStateName = _UploadStateName;
+}
+
 export {
+  uploadManager,
   promise,
   capitalize,
   caseFormatter,

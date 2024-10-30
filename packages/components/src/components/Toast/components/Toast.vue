@@ -198,8 +198,8 @@ watch(toRef(props, "active"), (active) => {
   --gap-size: 25px;
   --icon-size: 24px;
 
-  box-shadow: 0 2px 10px 0 var(--knime-gray-dark-semi);
-  border-radius: 3px;
+  box-shadow: var(--elevation-2);
+  border-radius: 4px;
   overflow: hidden;
   background-color: var(--knime-white);
   color: var(--knime-masala);

@@ -22,7 +22,7 @@ const props = defineProps<ProgressItemProps>();
           <div class="title" :title="props.title">
             {{ props.title }}
           </div>
-          <span class="subtitle">
+          <span v-if="subtitle" class="subtitle">
             {{ subtitle }}
           </span>
         </div>

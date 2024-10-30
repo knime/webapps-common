@@ -14,10 +14,10 @@ import LoadingIcon from "../LoadingIcon/LoadingIcon.vue";
 import type { PillVariant } from "../Pill/Pill.vue";
 import ProgressItem from "../Progress/ProgressItem/ProgressItem.vue";
 
-import type { UploadProgressItem, UploadProgressItemStatus } from "./types";
+import type { UploadItem, UploadItemStatus } from "./types";
 
 type Props = {
-  item: UploadProgressItem;
+  item: UploadItem;
   allowCancel: boolean;
   allowRemove: boolean;
 };
@@ -56,7 +56,7 @@ const statusMapper = computed(() => {
     failed: ["Failed", "error", CircleClose],
     complete: ["Uploaded", "success", CircleCheck],
     cancelled: ["Cancelled", "error", CircleClose],
-  } satisfies Record<UploadProgressItemStatus, [string, PillVariant, any]>;
+  } satisfies Record<UploadItemStatus, [string, PillVariant, any]>;
 });
 
 const statusPill = computed(() => {
@@ -70,7 +70,7 @@ const shouldShowCancelAction = computed(
 );
 
 const shouldShowRemoveAction = computed(() => {
-  const allowedStatuses: UploadProgressItemStatus[] = ["failed", "cancelled"];
+  const allowedStatuses: UploadItemStatus[] = ["failed", "cancelled"];
   return props.allowRemove && allowedStatuses.includes(props.item.status);
 });
 </script>
@@ -90,11 +90,19 @@ const shouldShowRemoveAction = computed(() => {
     <template #actions>
       <slot name="extra-actions" />
 
-      <FunctionButton v-if="shouldShowCancelAction" @click="emit('cancel')">
+      <FunctionButton
+        v-if="shouldShowCancelAction"
+        data-test-id="cancel-action"
+        @click="emit('cancel')"
+      >
         <CloseIcon class="action-icon" />
       </FunctionButton>
 
-      <FunctionButton v-if="shouldShowRemoveAction" @click="emit('remove')">
+      <FunctionButton
+        v-if="shouldShowRemoveAction"
+        data-test-id="remove-action"
+        @click="emit('remove')"
+      >
         <TrashIcon class="action-icon" />
       </FunctionButton>
     </template>

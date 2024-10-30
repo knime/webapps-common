@@ -2,13 +2,15 @@
 import { ref } from "vue";
 
 import {
-  type UploadProgressItem,
+  FunctionButton,
+  type UploadItem,
   UploadProgressPanel,
 } from "@knime/components";
+import ActivityIcon from "@knime/styles/img/icons/activity.svg";
 
 const isExpanded = ref(true);
 
-const mockData: UploadProgressItem[] = [
+const mockData: UploadItem[] = [
   {
     id: "1",
     name: "Hello world.txt",
@@ -37,8 +39,20 @@ const mockData: UploadProgressItem[] = [
     size: 200_000,
     status: "cancelled",
   },
-  { id: "5", name: "document.csv", size: 200_000, status: "complete" },
-  { id: "6", name: "document.csv", size: 200_000, status: "failed" },
+  {
+    id: "5",
+    name: "document.docx",
+    progress: 100,
+    size: 200_000,
+    status: "complete",
+  },
+  {
+    id: "6",
+    name: "slides.pptx",
+    progress: 20,
+    size: 200_000,
+    status: "failed",
+  },
 ];
 </script>
 
@@ -46,7 +60,13 @@ const mockData: UploadProgressItem[] = [
   <section>
     <div class="grid-container">
       <div class="grid-item-12">
-        <UploadProgressPanel v-model="isExpanded" :items="mockData" />
+        <UploadProgressPanel v-model="isExpanded" :items="mockData">
+          <template #extra-actions>
+            <FunctionButton>
+              <ActivityIcon />
+            </FunctionButton>
+          </template>
+        </UploadProgressPanel>
       </div>
     </div>
   </section>

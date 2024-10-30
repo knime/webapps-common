@@ -1,13 +1,11 @@
-export type UploadProgressItemStatus =
-  | "inprogress"
-  | "complete"
-  | "failed"
-  | "cancelled";
+import type { UploadManagerNS } from "@knime/utils";
 
-export type UploadProgressItem = {
+export type UploadItemStatus = Exclude<UploadManagerNS.UploadStateName, "idle">;
+
+export type UploadItem = {
   id: string;
   name: string;
+  progress: number;
   size: number;
-  status: UploadProgressItemStatus;
-  progress?: number;
+  status: UploadItemStatus;
 };

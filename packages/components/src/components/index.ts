@@ -26,9 +26,6 @@ import Messages from "./Messages/Messages.vue";
 import Modal from "./Modal/Modal.vue";
 import OpenSourceCredits from "./OpenSourceCredits/OpenSourceCredits.vue";
 import Pill, { type PillVariant } from "./Pill/Pill.vue";
-import ProgressBar from "./Progress/ProgressBar/ProgressBar.vue";
-import ProgressItem from "./Progress/ProgressItem/ProgressItem.vue";
-import ProgressList from "./Progress/ProgressList/ProgressList.vue";
 import SideDrawer from "./SideDrawer/SideDrawer.vue";
 import StyledListItem from "./StyleListItem/StyledListItem.vue";
 import SubMenu from "./SubMenu/SubMenu.vue";
@@ -37,11 +34,6 @@ import TabBar from "./TabBar/TabBar.vue";
 import Tag from "./Tag/Tag.vue";
 import TagList from "./Tag/TagList.vue";
 import Tooltip from "./Tooltip/Tooltip.vue";
-import {
-  type UploadProgressItem,
-  type UploadProgressItemStatus,
-  UploadProgressPanel,
-} from "./UploadProgressPanel";
 import BaseButton from "./base/Button/BaseButton.vue";
 import BaseMenuItem from "./base/MenuItem/BaseMenuItem.vue";
 import BaseMenuItemText from "./base/MenuItem/BaseMenuItemText.vue";
@@ -58,6 +50,8 @@ export * from "./Toast";
 export * from "./forms";
 export * from "./node";
 export * from "./FileExplorer";
+export * from "./UploadProgressPanel";
+export * from "./Progress";
 
 export {
   BaseButton,
@@ -104,16 +98,7 @@ export {
   Tag,
   TagList,
   Tooltip,
-  UploadProgressPanel,
   svgWithTitle,
-  ProgressBar,
-  ProgressItem,
-  ProgressList,
 };
 
-export type {
-  InlineMessageVariant,
-  PillVariant,
-  UploadProgressItem,
-  UploadProgressItemStatus,
-};
+export type { InlineMessageVariant, PillVariant };

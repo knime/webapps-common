@@ -62,9 +62,8 @@ const { iconFlipStyles } = useIconFlipper({
 
 .collapsible-panel {
   box-shadow: var(--shadow-elevation-2);
-  --padding: var(--space-16);
-
-  border-radius: 8px;
+  border-radius: 4px;
+  background: var(--knime-white);
 
   & .title-bar {
     display: flex;
@@ -72,16 +71,14 @@ const { iconFlipStyles } = useIconFlipper({
     padding: var(--space-8) var(--space-16);
     border-bottom: 1px solid var(--knime-porcelain);
     height: 40px;
+    font-size: 13px;
+    font-weight: 700;
 
     & .actions {
       display: flex;
       align-items: center;
       margin-left: auto;
       gap: var(--space-4);
-
-      & svg {
-        @mixin svg-icon-size 16;
-      }
     }
   }
 }

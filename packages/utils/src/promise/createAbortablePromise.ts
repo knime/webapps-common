@@ -40,9 +40,11 @@ export const createAbortablePromise = () => {
       request()
         .then(resolve)
         .catch((e) => {
-          if (!(e instanceof AbortError)) {
-            throw e;
+          if (e instanceof AbortError) {
+            return;
           }
+
+          reject(e);
         });
 
       abortController.signal.addEventListener("abort", abortListener);
