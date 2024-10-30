@@ -183,6 +183,11 @@ public final class DynamicValuesInput implements PersistableSettings {
         return new DynamicValuesInput(dataType, defaultValue, true);
     }
 
+    /**
+     * Creates a configured single-value input. Used within K-AI
+     *
+     * @noreference This method is not intended to be referenced by clients.
+     **/
     public static DynamicValuesInput singleValueWithInitialValue(final DataType dataType, final DataCell defaultValue) {
         // temporary method for K-AI to instantiate e.g. a row filter from model side
         return new DynamicValuesInput(dataType, defaultValue, true);
