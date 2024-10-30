@@ -35,6 +35,7 @@ export const getDefaultProps = (): TableViewDisplayProps => {
         { name: "type1renderer3", id: "t1r3" },
         { name: "type1renderer4", id: "t1r4" },
       ],
+      hasDataValueView: true,
     },
     datatype2: {
       name: "col3TypeName",
@@ -42,6 +43,7 @@ export const getDefaultProps = (): TableViewDisplayProps => {
         { name: "type2renderer1", id: "t2r1" },
         { name: "type2renderer2", id: "t2r2" },
       ],
+      hasDataValueView: false,
     },
     datatype3: {
       name: "col4TypeName",
@@ -50,6 +52,7 @@ export const getDefaultProps = (): TableViewDisplayProps => {
         { name: "type3renderer2", id: "t3r2" },
         { name: "type3renderer3", id: "t3r3" },
       ],
+      hasDataValueView: true,
     },
   };
   return {

@@ -169,20 +169,24 @@ class TableViewInitialDataTest {
         var stringType = dataTypes.get(String.valueOf(System.identityHashCode(StringCell.TYPE)));
         assertThat(stringType.getName()).isEqualTo("String");
         assertRendererNames(stringType.getRenderers(), "Multi-line String", "String");
+        assertThat(stringType.hasDataValueView()).isFalse(); // TODO: UIEXT-2207 adjust this.
 
         var doubleType = dataTypes.get(String.valueOf(System.identityHashCode(DoubleCell.TYPE)));
         assertThat(doubleType.getName()).isEqualTo("Number (double)");
         assertRendererNames(doubleType.getRenderers(), "Standard Double", "Percentage", "Full Precision", "Gray Scale",
             "Bars", "Default");
+        assertThat(doubleType.hasDataValueView()).isFalse();
 
         var booleanType = dataTypes.get(String.valueOf(System.identityHashCode(BooleanCell.TYPE)));
         assertThat(booleanType.getName()).isEqualTo("Boolean value");
         assertRendererNames(booleanType.getRenderers(), "Boolean", "Integer", "Standard Double", "Percentage",
             "Full Precision", "Gray Scale", "Bars", "Default");
+        assertThat(booleanType.hasDataValueView()).isFalse();
 
         var imageType = dataTypes.get(String.valueOf(System.identityHashCode(new PNGImageCellFactory().getDataType())));
         assertThat(imageType.getName()).isEqualTo("PNG Image");
         assertRendererNames(imageType.getRenderers(), "PNG Image", "Image");
+        assertThat(imageType.hasDataValueView()).isFalse(); // TODO: UIEXT-2210 adjust this
     }
 
     private static void assertRendererNames(final Renderer[] renderers, final String... expectedRendererNames) {

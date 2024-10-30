@@ -9,6 +9,7 @@ export interface Renderer {
 export interface DataType {
   name: string;
   renderers: Renderer[];
+  hasDataValueView: boolean;
 }
 
 interface InitialData {

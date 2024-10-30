@@ -48,6 +48,10 @@
  */
 package org.knime.core.webui.node.view.table.data;
 
+import org.knime.core.data.DataValue;
+import org.knime.core.webui.node.view.table.datavalue.DataValueView;
+import org.knime.core.webui.node.view.table.datavalue.DataValueViewManager;
+
 /**
  * Holds information related to a {@link org.knime.core.data.DataType}.
  *
@@ -64,6 +68,12 @@ public interface DataType {
      * @return the renderers offered by the data type
      */
     Renderer[] getRenderers();
+
+    /**
+     *
+     * @return whether the data type is compatible with a {@link DataValue} with a registered {@link DataValueView}.
+     */
+    boolean hasDataValueView();
 
     /**
      * Helper to create a data type instance.
@@ -83,6 +93,11 @@ public interface DataType {
             public Renderer[] getRenderers() {
                 return dataType.getRendererFactories().stream().map(f -> Renderer.create(f.getId(), f.getDescription()))
                     .toArray(Renderer[]::new);
+            }
+
+            @Override
+            public boolean hasDataValueView() {
+                return DataValueViewManager.getInstance().hasDataValueView(dataType);
             }
 
         };

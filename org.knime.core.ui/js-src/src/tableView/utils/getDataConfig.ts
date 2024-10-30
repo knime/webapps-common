@@ -100,6 +100,7 @@ export default ({
     columnTypeName,
     contentType,
     isSortable,
+    hasDataValueView,
     columnTypeRenderers,
     headerColor,
   }: {
@@ -108,6 +109,7 @@ export default ({
     columnName: string;
     filterConfig?: FilterConfig;
     isSortable: boolean;
+    hasDataValueView?: boolean;
     columnTypeName?: string;
     contentType?: ColumnContentType;
     columnTypeRenderers?: Renderer[];
@@ -124,6 +126,7 @@ export default ({
       isImage(contentType) ||
       isHtml(contentType) ||
       isMultiLineTxt(contentType),
+    hasDataValueView,
     size: columnSizes[index],
     filterConfig,
     ...(columnTypeRenderers && {
@@ -161,9 +164,10 @@ export default ({
   }
   displayedColumns.forEach((columnName: string, index: number) => {
     const columnFormatterDescription = columnFormatterDescriptions?.[index];
-    const renderers = dataTypes[columnDataTypeIds?.[index]]?.renderers as
-      | any[]
+    const dataType = dataTypes[columnDataTypeIds?.[index]] as
+      | DataType
       | undefined;
+    const renderers = dataType?.renderers as any[] | undefined;
     // + 2: offset for the index and rowKey, because the first column
     // (index 0) always contains the indices and the second one the row keys
     const columnInformation = {
@@ -173,7 +177,7 @@ export default ({
       filterConfig: columnFiltersMap?.get(columnName),
       contentType: columnContentTypes?.[index],
       ...(showColumnDataType && {
-        columnTypeName: dataTypes[columnDataTypeIds?.[index]]?.name,
+        columnTypeName: dataType?.name,
       }),
       ...(enableRendererSelection && {
         columnTypeRenderers: renderers && [
@@ -184,6 +188,7 @@ export default ({
         ],
       }),
       isSortable: true,
+      hasDataValueView: dataType?.hasDataValueView,
       headerColor: columnNamesColors?.[index],
     };
     columnConfigs.push(createColumnConfig(columnInformation));

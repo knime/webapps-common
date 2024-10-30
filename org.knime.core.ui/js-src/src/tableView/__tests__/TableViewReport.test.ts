@@ -45,10 +45,12 @@ describe("TableViewReport.vue", () => {
         id1: {
           name: "name1",
           renderers: [{ name: "renderer1", id: "id1" }],
+          hasDataValueView: false,
         },
         id2: {
           name: "name2",
           renderers: [{ name: "renderer2", id: "id2" }],
+          hasDataValueView: false,
         },
       },
       settings: {

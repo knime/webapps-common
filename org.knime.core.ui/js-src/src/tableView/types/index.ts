@@ -2,12 +2,9 @@ import type { UIExtensionService } from "@knime/ui-extension-service";
 import type TableViewViewSettings from "./ViewSettings";
 import type { MenuItem } from "@knime/components";
 import { FilterConfig } from "@knime/knime-ui-table";
+import { DataType } from "./InitialData";
 
-export interface DataType {
-  name: string;
-  renderers: { name: string; id: string }[];
-}
-
+export { DataType };
 export interface PageParams {
   currentRowCount: number;
   totalRowCount?: number;

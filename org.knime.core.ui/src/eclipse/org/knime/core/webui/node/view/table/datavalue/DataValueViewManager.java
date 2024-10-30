@@ -55,6 +55,7 @@ import java.util.Optional;
 import java.util.WeakHashMap;
 
 import org.knime.core.data.DataCell;
+import org.knime.core.data.DataType;
 import org.knime.core.data.DataValue;
 import org.knime.core.data.container.filter.TableFilter;
 import org.knime.core.data.v2.RowCursor;
@@ -145,7 +146,7 @@ public final class DataValueViewManager {
         }
 
         var dataCell = extractDataCell(wrapper);
-        var chosenValue = findCompatibleValue(dataCell);
+        var chosenValue = findCompatibleValue(dataCell.getType());
         if (chosenValue.isPresent()) {
             @SuppressWarnings("rawtypes")
             DataValueViewFactory factory = m_dataValueViewFactories.get(chosenValue.get());
@@ -178,11 +179,6 @@ public final class DataValueViewManager {
         return getDataCellAt(wrapper.getRowIdx(), wrapper.getColIdx(), table);
     }
 
-    private Optional<Class<? extends DataValue>> findCompatibleValue(final DataCell cell) {
-        return cell.getType().getValueClasses().stream().filter(m_dataValueViewFactories::containsKey).findFirst();
-
-    }
-
     private static DataCell getDataCellAt(final int rowIdx, final int colIdx, final BufferedDataTable table) {
         try (final var cursor = createCursor(rowIdx, colIdx, table)) {
             return cursor.forward().getAsDataCell(colIdx);
@@ -209,6 +205,19 @@ public final class DataValueViewManager {
      */
     public DataServiceManager<DataValueWrapper> getDataServiceManager() {
         return m_dataServiceManager;
+    }
+
+    /**
+     * @param dataType of a column
+     * @return whether a {@link DataValueView} is available for the given data type
+     */
+    public boolean hasDataValueView(final DataType dataType) {
+        return findCompatibleValue(dataType).isPresent();
+    }
+
+    private Optional<Class<? extends DataValue>> findCompatibleValue(final DataType type) {
+        return type.getValueClasses().stream().filter(m_dataValueViewFactories::containsKey).findFirst();
+
     }
 
 }

@@ -122,6 +122,7 @@ describe("TableViewDisplay.vue", () => {
           size: 50,
           subHeader: undefined,
           headerColor: "#ff0000",
+          hasDataValueView: true,
         });
       });
 
@@ -169,6 +170,7 @@ describe("TableViewDisplay.vue", () => {
           size: INDEX.defaultSize,
           subHeader: undefined,
           headerColor: undefined,
+          hasDataValueView: undefined,
         });
 
         expect(dataConfig?.columnConfigs[1]).toStrictEqual({
@@ -183,6 +185,7 @@ describe("TableViewDisplay.vue", () => {
           size: ROW_ID.defaultSize,
           subHeader: undefined,
           headerColor: undefined,
+          hasDataValueView: undefined,
         });
 
         expect(dataConfig?.columnConfigs[5]).toStrictEqual({
@@ -197,6 +200,7 @@ describe("TableViewDisplay.vue", () => {
           size: SKIPPED.defaultSize,
           subHeader: undefined,
           headerColor: undefined,
+          hasDataValueView: undefined,
         });
       });
 
@@ -220,6 +224,7 @@ describe("TableViewDisplay.vue", () => {
             size: 50,
             subHeader: undefined,
             headerColor: "#00ff00",
+            hasDataValueView: false,
           });
         });
 
